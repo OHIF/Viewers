@@ -1087,19 +1087,6 @@ function commandsModule({
         }
       });
       croppingTool.setClippingPlanesVisible(visible);
-
-      // Re-enable OrientationController when cropping is turned off.
-      // It may have been disabled during a decimation reload to work around
-      // the actor-order issue (see reloadVolumeWithDecimation).
-      if (!visible) {
-        try {
-          if (volume3d?.hasTool?.(toolNames.OrientationController)) {
-            volume3d.setToolEnabled(toolNames.OrientationController);
-          }
-        } catch (err) {
-          console.warn('Failed to re-enable OrientationController after cropping off', err);
-        }
-      }
     },
     toggle3Dhandles: () => {
       const { viewportGridService } = servicesManager.services;
@@ -1633,8 +1620,7 @@ function commandsModule({
      * Reloads the volume for the viewport with the given IJK decimation.
      * Affects all viewports showing the same volume. Uses original imageIds
      * from the display set / data source, purges the old volume from cache,
-     * creates and displays the new decimated volume, restores preset/VOI and
-     * re-enables OrientationController for 3D.
+     * creates and displays the new decimated volume, and restores preset/VOI.
      */
     reloadVolumeWithDecimation: async ({ viewportId, ijkDecimation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(
@@ -1648,50 +1634,6 @@ function commandsModule({
         });
         return;
       }
-
-      // Workaround: OrientationController overlay actors can become getActors()[0],
-      // causing VolumeCroppingTool to apply clipping to the wrong actor.
-      // Disable it during reload; only re-enable when cropping is off.
-      const volume3dToolGroup = toolGroupService.getToolGroup('volume3d');
-      const croppingTool = volume3dToolGroup?.getToolInstance?.(
-        'VolumeCropping'
-      ) as {
-        getClippingPlanesVisible?: () => boolean;
-        clippingPlanesVisible?: boolean;
-        setClippingPlanesVisible?: (visible: boolean) => void;
-        originalClippingPlanes?: unknown[];
-      } | null;
-
-      const wasCroppingVisible =
-        croppingTool?.getClippingPlanesVisible?.() ??
-        croppingTool?.clippingPlanesVisible ??
-        false;
-
-      try {
-        if (volume3dToolGroup?.hasTool?.(toolNames.OrientationController)) {
-          volume3dToolGroup.setToolDisabled(toolNames.OrientationController);
-        }
-      } catch (err) {
-        console.warn('Failed to disable OrientationController before decimation reload', err);
-      }
-
-      if (croppingTool) {
-        if (Array.isArray(croppingTool.originalClippingPlanes)) {
-          croppingTool.originalClippingPlanes.length = 0;
-        }
-        if (wasCroppingVisible && croppingTool.setClippingPlanesVisible) {
-          try {
-            croppingTool.setClippingPlanesVisible(false);
-          } catch (err) {
-            console.warn(
-              'Failed to hide cropping planes before decimation reload',
-              err
-            );
-          }
-        }
-      }
-      //  End workaround
-      //
 
       const currentVolumeId = viewport.getVolumeId?.();
       if (!currentVolumeId) {
@@ -1933,36 +1875,6 @@ function commandsModule({
           }
         } else {
           vpWithCamera.resetCamera?.();
-        }
-      }
-
-      try {
-        const volume3dToolGroup = toolGroupService.getToolGroup('volume3d');
-        if (
-          !wasCroppingVisible &&
-          volume3dToolGroup?.hasTool?.(toolNames.OrientationController)
-        ) {
-          volume3dToolGroup.setToolEnabled(toolNames.OrientationController);
-        }
-      } catch (err) {
-        console.warn(
-          'Failed to re-enable OrientationController after decimation reload',
-          err
-        );
-      }
-
-      if (wasCroppingVisible) {
-        try {
-          commandsManager.runCommand(
-            'toggleCropping',
-            { visible: true },
-            'CORNERSTONE'
-          );
-        } catch (err) {
-          console.warn(
-            'Failed to restore cropping after decimation reload',
-            err
-          );
         }
       }
 
