@@ -190,13 +190,25 @@ See [references/page-objects.md](references/page-objects.md) for fixture rules a
 
 ## Visual regression
 
-For anything drawn onto the WebGL canvas, compare a screenshot:
+**Direction:** the suite is moving off full-app screenshots and toward viewport-scoped ones. Treat this as the standard for new code — older specs that screenshot the whole page are legacy patterns being phased out, not examples to copy.
+
+For anything drawn onto the WebGL canvas, compare a screenshot scoped to a specific viewport or the viewport grid:
 
 ```ts
-await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
+await checkForScreenshot({
+  page,
+  screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
+  normalizedClip: { x: 0, y: 0, width: 1, height: 1 }, // viewport-relative, not full page
+});
 ```
 
-`checkForScreenshot` retries up to 10 times at 500 ms intervals (defaults), with `maxDiffPixelRatio: 0.02` and `threshold: 0.05`. Raise `maxDiffPixelRatio` to ~0.04 for 3D content, which is noisier. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
+`checkForScreenshot` retries up to 10 times at 500 ms intervals. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
+
+Rules (apply to all new screenshot assertions):
+
+- **Use the object form.** The positional form is legacy; don't introduce it in new code, and don't treat existing positional-form usage as a pattern to copy.
+- **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope to the viewport (or viewport grid) via `normalizedClip`. If you reach for `fullPage: true`, stop and pick a tighter clip.
+- **Do not tune `maxDiffPixelRatio` or `threshold`** to make a screenshot pass. If a baseline mismatches, regenerate it after a human review of the diff, or fix the underlying flake.
 
 ## Playwright config facts worth remembering
 
@@ -230,7 +242,7 @@ Full mapping in [references/patterns-by-feature.md](references/patterns-by-featu
 3. Use normalized coordinates (0–1) for viewport interactions.
 4. Use `visitStudy` with a real UID, correct mode, and a non-zero delay (2000 is conventional).
 5. Handle hydration and measurement-tracking prompts where applicable.
-6. Visual regression for canvas, DOM assertions for panels/dialogs/overlay text.
+6. Visual regression for canvas, DOM assertions for panels/dialogs/overlay text. Screenshots must use the object form and be scoped to a viewport or viewport grid — never the full app.
 7. Use `data-cy` selectors (already wired via `testIdAttribute`).
 8. When an assertion needs retry tolerance, wrap it in `expect.toPass({ timeout })`.
 9. Test in the correct mode — segmentation tools aren't available in `viewer` mode.
@@ -246,7 +258,7 @@ Before returning a generated OHIF test, confirm all items:
 3. Uses normalized viewport interactions (`normalizedClickAt` / `normalizedDragAt`) unless there is a strong reason otherwise.
 4. Uses a valid canonical StudyInstanceUID and compatible mode.
 5. Handles hydration or measurement tracking prompts when the workflow requires them.
-6. Uses visual regression for canvas assertions and DOM assertions for panel/dialog/overlay text state.
+6. Uses visual regression for canvas assertions and DOM assertions for panel/dialog/overlay text state. Any `checkForScreenshot` call uses the object form and a `normalizedClip` (viewport / viewport-grid scope) — no full-app screenshots.
 7. Replaces `page.waitForTimeout(...)` after viewport-rendering actions with `waitForViewportRenderCycle(page)` (started before the action) — keeps `waitForTimeout` only for non-render waits like the hydration prompt in `beforeEach`.
 8. If execution was skipped, states that explicitly and provides concrete run commands.
 

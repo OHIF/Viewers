@@ -55,12 +55,19 @@ Notably, 3D layouts in `viewer` mode (3DOnly, 3DFourUp, 3DMain, 3DPrimary) and M
 
 So: pick `10000` when the mode is `tmtv`, `2000` otherwise, and only ramp up if a specific test flakes on first-render assertions. The delay is a good first lever for "not visible" flakes, but it's not a universal upgrade.
 
-### `checkForScreenshot` has two call forms
+### `checkForScreenshot` — use the object form, never screenshot the full app
 
-- **Object form** (preferred in newer specs): `checkForScreenshot({ page, screenshotPath, maxDiffPixelRatio?, threshold?, normalizedClip?, fullPage? })`
-- **Positional form** (still in use across older specs): `checkForScreenshot(page, locator, screenshotPath, ...)`
+**This is the direction going forward** The suite is being migrated off full-app screenshots; any new spec must follow these rules, and any modification to an older spec should bring that spec in line when reasonable.
 
-The object form exposes tuning knobs the positional form doesn't — `maxDiffPixelRatio`, `threshold`, `normalizedClip`. For 3D content, bump `maxDiffPixelRatio` to around `0.04` because GPU rendering is noisier. Check the current signature in `tests/utils/checkForScreenshot.ts` (or wherever the barrel points) if something looks off.
+- **Object form** (required for all new specs): `checkForScreenshot({ page, screenshotPath, normalizedClip?, ... })`
+- **Positional form**: legacy. It still appears in older specs because they haven't been migrated yet. **Do not treat existing positional-form usage as a pattern to copy** — those specs are the thing being moved away from. Do not introduce the positional form in new code.
+
+**Hard rules for new screenshots:**
+
+1. Use the object form.
+2. Scope to a specific viewport or the viewport grid via `normalizedClip`. **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. If you find yourself reaching for `fullPage: true`, stop and pick a tighter clip.
+
+Do not tune `maxDiffPixelRatio` or `threshold` to make a screenshot pass — those are intentionally rarely touched and not the right knob for flakes. If a baseline mismatches, regenerate it (`--update-snapshots`) after a human review of the diff, or fix the underlying instability. Check the current signature in `tests/utils/checkForScreenshot.ts` if something looks off.
 
 ### `screenShotPaths` — use keys, not raw strings
 

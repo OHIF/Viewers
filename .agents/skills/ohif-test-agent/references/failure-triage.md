@@ -8,7 +8,7 @@ Before debugging, classify. Most OHIF test failures are timing or hydration — 
 | Selector | Element not found | Verify `data-cy` on the target; confirm the panel is open (`toggle()` / `select()` before interacting); check for capital `D` in `DOMOverlayPageObject` when destructuring |
 | Hydration | Segmentation/RT not interactive | Ensure the `segmentationHydration.yes.click()` fired; add `waitForTimeout(3000)` after `loadSeriesByModality('SEG'\|'RTSTRUCT'\|'SR')` |
 | Data | Study not found, empty viewport | Confirm the UID is in the canonical list (see [patterns-by-feature.md](patterns-by-feature.md)); confirm the mode supports the feature (segmentation tools aren't in `viewer` mode) |
-| Visual drift | Screenshot mismatch but feature works | Re-generate the baseline with `yarn playwright test --update-snapshots`; consider raising `maxDiffPixelRatio` to `0.04` for 3D content |
+| Visual drift | Screenshot mismatch but feature works | Have a human review the diff, then regenerate the baseline with `yarn playwright test --update-snapshots`. Do not adjust `maxDiffPixelRatio` or `threshold` to make a failing screenshot pass. |
 | Real regression | Feature is actually broken | Report as a bug — this is the test doing its job |
 
 ## Prefer render-cycle waits over sleeps

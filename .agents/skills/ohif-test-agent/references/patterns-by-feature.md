@@ -82,7 +82,7 @@ Visit `mode: 'tmtv'` with a longer delay (`10000`). `rightPanelPageObject.tmtvPa
 
 **Seeds:** `tests/MPR.spec.ts`, `tests/3DOnly.spec.ts`, `tests/3DFourUp.spec.ts`, `tests/3DMain.spec.ts`, `tests/AxialPrimary.spec.ts`
 
-Pattern: `mainToolbarPageObject.layoutSelection.<layoutName>.click()`. For 3D, wrap stabilization with `attemptAction(() => reduce3DViewportSize(page), 10, 100)` and screenshot with `maxDiffPixelRatio: 0.04`.
+Pattern: `mainToolbarPageObject.layoutSelection.<layoutName>.click()`. For 3D, wrap stabilization with `attemptAction(() => reduce3DViewportSize(page), 10, 100)` to settle the render before asserting.
 
 ## 11. Crosshairs
 
