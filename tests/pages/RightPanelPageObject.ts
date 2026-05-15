@@ -125,6 +125,7 @@ export class RightPanelPageObject {
         getMeasurementCount: async () => {
           return await page.getByTestId('data-row').count();
         },
+        rows: page.getByTestId('data-row'),
         locator: page.getByTestId('trackedMeasurements-panel').last(),
         nthMeasurement(index: number) {
           return getMeasurementByIdx(index);
