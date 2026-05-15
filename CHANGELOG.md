@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.73...v3.13.0-beta.74) (2026-05-15)
+
+
+### Bug Fixes
+
+* **security:** Update various dependencies to fix security vulnerabilities. ([#6023](https://github.com/OHIF/Viewers/issues/6023)) ([55b46f3](https://github.com/OHIF/Viewers/commit/55b46f39c65a183978a44a61fb322685134f3bd6))
+
+
+
+
+
+# [3.13.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.72...v3.13.0-beta.73) (2026-05-13)
+
+
+### Features
+
+* **llm:** add instructions md file for claude and other LLM tools ([#6017](https://github.com/OHIF/Viewers/issues/6017)) ([f231eff](https://github.com/OHIF/Viewers/commit/f231eff5980495c9f3ac0bd907a03388d06c5b90))
+
+
+
+
+
+# [3.13.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.71...v3.13.0-beta.72) (2026-05-12)
+
+
+### Bug Fixes
+
+* **measurement-tracking:** restore tracked state on undo after Delete all ([#5994](https://github.com/OHIF/Viewers/issues/5994)) ([397aa4d](https://github.com/OHIF/Viewers/commit/397aa4d0e361e95dcbd83e0557a9cd84c0b8440a))
+
+
+
+
+
+# [3.13.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.70...v3.13.0-beta.71) (2026-05-07)
+
+
+### Bug Fixes
+
+* remove waitForVolumeLoad from main toolbar page object ([#6004](https://github.com/OHIF/Viewers/issues/6004)) ([37e19f7](https://github.com/OHIF/Viewers/commit/37e19f734a675a95cedc8a8acc3980816a489574))
+
+
+
+
+
 # [3.13.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.69...v3.13.0-beta.70) (2026-05-07)
 
 **Note:** Version bump only for package ohif-monorepo-root

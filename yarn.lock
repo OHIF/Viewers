@@ -52,6 +52,11 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.29.0.tgz#00d03e8c0ac24dd9be942c5370990cbe1f17d88d"
   integrity sha512-T1NCJqT/j9+cn8fvkt7jtwbLBfLC/1y1c7NtCeXFRgzGTsafi68MRv8yzkYSapBnFA6L3U2VSc02ciDzoAJhJg==
 
+"@babel/compat-data@^7.29.3":
+  version "7.29.3"
+  resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.29.3.tgz#e3f5347f0589596c91d227ccb6a541d37fb1307b"
+  integrity sha512-LIVqM46zQWZhj17qA8wb4nW/ixr2y1Nw+r1etiAWgRM6U1IqP+LNhL1yg440jYZR72jCWcWbLWzIosH+uP1fqg==
+
 "@babel/core@7.28.0":
   version "7.28.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.28.0.tgz#55dad808d5bf3445a108eefc88ea3fdf034749a4"
@@ -465,6 +470,14 @@
   integrity sha512-g4L7OYun04N1WyqMNjldFwlfPCLVkgB54A/YCXICZYBsvJJE3kByKv9c9+R/nAfmIfjl2rKYLNyMHboYbZaWaA==
   dependencies:
     "@babel/helper-plugin-utils" "^7.27.1"
+
+"@babel/plugin-bugfix-safari-rest-destructuring-rhs-array@^7.29.3":
+  version "7.29.3"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-bugfix-safari-rest-destructuring-rhs-array/-/plugin-bugfix-safari-rest-destructuring-rhs-array-7.29.3.tgz#2e14f9335803d892ccb67ef487e23cf9726156fe"
+  integrity sha512-SRS46DFR4HqzUzCVgi90/xMoL+zeBDBvWdKYXSEzh79kXswNFEglUpMKxR04//dPqwYXWUBJ3mpUd933ru9Kmg==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.28.6"
+    "@babel/helper-skip-transparent-expression-wrappers" "^7.27.1"
 
 "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining@^7.27.1":
   version "7.27.1"
@@ -1093,20 +1106,10 @@
     "@babel/helper-module-transforms" "^7.28.6"
     "@babel/helper-plugin-utils" "^7.28.6"
 
-"@babel/plugin-transform-modules-systemjs@^7.27.1":
-  version "7.27.1"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-systemjs/-/plugin-transform-modules-systemjs-7.27.1.tgz#00e05b61863070d0f3292a00126c16c0e024c4ed"
-  integrity sha512-w5N1XzsRbc0PQStASMksmUeqECuzKuTJer7kFagK8AXgpCMkeDMO5S+aaFb7A51ZYDF7XI34qsTX+fkHiIm5yA==
-  dependencies:
-    "@babel/helper-module-transforms" "^7.27.1"
-    "@babel/helper-plugin-utils" "^7.27.1"
-    "@babel/helper-validator-identifier" "^7.27.1"
-    "@babel/traverse" "^7.27.1"
-
-"@babel/plugin-transform-modules-systemjs@^7.29.0":
-  version "7.29.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-systemjs/-/plugin-transform-modules-systemjs-7.29.0.tgz#e458a95a17807c415924106a3ff188a3b8dee964"
-  integrity sha512-PrujnVFbOdUpw4UHiVwKvKRLMMic8+eC0CuNlxjsyZUiBjhFdPsewdXCkveh2KqBA9/waD0W1b4hXSOBQJezpQ==
+"@babel/plugin-transform-modules-systemjs@7.29.4", "@babel/plugin-transform-modules-systemjs@^7.27.1", "@babel/plugin-transform-modules-systemjs@^7.29.0", "@babel/plugin-transform-modules-systemjs@^7.29.4":
+  version "7.29.4"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-systemjs/-/plugin-transform-modules-systemjs-7.29.4.tgz#f621105da99919c15cf4bde6fcc7346ef95e7b20"
+  integrity sha512-N7QmZ0xRZfjHOfZeQLJjwgX2zS9pdGHSVl/cjSGlo4dXMqvurfxXDMKY4RqEKzPozV78VMcd0lxyG13mlbKc4w==
   dependencies:
     "@babel/helper-module-transforms" "^7.28.6"
     "@babel/helper-plugin-utils" "^7.28.6"
@@ -1617,6 +1620,83 @@
     babel-plugin-polyfill-corejs3 "^0.13.0"
     babel-plugin-polyfill-regenerator "^0.6.5"
     core-js-compat "^3.43.0"
+    semver "^6.3.1"
+
+"@babel/preset-env@7.29.5":
+  version "7.29.5"
+  resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.29.5.tgz#c48b7ed94582c8b685e21b8b42de8633ec289268"
+  integrity sha512-/69t2aEzGKHD76DyLbHysF/QH2LJOB8iFnYO37unDTKBTubzcMRv0f3H5EiN1Q6ajOd/eB7dAInF0qdFVS06kA==
+  dependencies:
+    "@babel/compat-data" "^7.29.3"
+    "@babel/helper-compilation-targets" "^7.28.6"
+    "@babel/helper-plugin-utils" "^7.28.6"
+    "@babel/helper-validator-option" "^7.27.1"
+    "@babel/plugin-bugfix-firefox-class-in-computed-class-key" "^7.28.5"
+    "@babel/plugin-bugfix-safari-class-field-initializer-scope" "^7.27.1"
+    "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression" "^7.27.1"
+    "@babel/plugin-bugfix-safari-rest-destructuring-rhs-array" "^7.29.3"
+    "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining" "^7.27.1"
+    "@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly" "^7.28.6"
+    "@babel/plugin-proposal-private-property-in-object" "7.21.0-placeholder-for-preset-env.2"
+    "@babel/plugin-syntax-import-assertions" "^7.28.6"
+    "@babel/plugin-syntax-import-attributes" "^7.28.6"
+    "@babel/plugin-syntax-unicode-sets-regex" "^7.18.6"
+    "@babel/plugin-transform-arrow-functions" "^7.27.1"
+    "@babel/plugin-transform-async-generator-functions" "^7.29.0"
+    "@babel/plugin-transform-async-to-generator" "^7.28.6"
+    "@babel/plugin-transform-block-scoped-functions" "^7.27.1"
+    "@babel/plugin-transform-block-scoping" "^7.28.6"
+    "@babel/plugin-transform-class-properties" "^7.28.6"
+    "@babel/plugin-transform-class-static-block" "^7.28.6"
+    "@babel/plugin-transform-classes" "^7.28.6"
+    "@babel/plugin-transform-computed-properties" "^7.28.6"
+    "@babel/plugin-transform-destructuring" "^7.28.5"
+    "@babel/plugin-transform-dotall-regex" "^7.28.6"
+    "@babel/plugin-transform-duplicate-keys" "^7.27.1"
+    "@babel/plugin-transform-duplicate-named-capturing-groups-regex" "^7.29.0"
+    "@babel/plugin-transform-dynamic-import" "^7.27.1"
+    "@babel/plugin-transform-explicit-resource-management" "^7.28.6"
+    "@babel/plugin-transform-exponentiation-operator" "^7.28.6"
+    "@babel/plugin-transform-export-namespace-from" "^7.27.1"
+    "@babel/plugin-transform-for-of" "^7.27.1"
+    "@babel/plugin-transform-function-name" "^7.27.1"
+    "@babel/plugin-transform-json-strings" "^7.28.6"
+    "@babel/plugin-transform-literals" "^7.27.1"
+    "@babel/plugin-transform-logical-assignment-operators" "^7.28.6"
+    "@babel/plugin-transform-member-expression-literals" "^7.27.1"
+    "@babel/plugin-transform-modules-amd" "^7.27.1"
+    "@babel/plugin-transform-modules-commonjs" "^7.28.6"
+    "@babel/plugin-transform-modules-systemjs" "^7.29.4"
+    "@babel/plugin-transform-modules-umd" "^7.27.1"
+    "@babel/plugin-transform-named-capturing-groups-regex" "^7.29.0"
+    "@babel/plugin-transform-new-target" "^7.27.1"
+    "@babel/plugin-transform-nullish-coalescing-operator" "^7.28.6"
+    "@babel/plugin-transform-numeric-separator" "^7.28.6"
+    "@babel/plugin-transform-object-rest-spread" "^7.28.6"
+    "@babel/plugin-transform-object-super" "^7.27.1"
+    "@babel/plugin-transform-optional-catch-binding" "^7.28.6"
+    "@babel/plugin-transform-optional-chaining" "^7.28.6"
+    "@babel/plugin-transform-parameters" "^7.27.7"
+    "@babel/plugin-transform-private-methods" "^7.28.6"
+    "@babel/plugin-transform-private-property-in-object" "^7.28.6"
+    "@babel/plugin-transform-property-literals" "^7.27.1"
+    "@babel/plugin-transform-regenerator" "^7.29.0"
+    "@babel/plugin-transform-regexp-modifiers" "^7.28.6"
+    "@babel/plugin-transform-reserved-words" "^7.27.1"
+    "@babel/plugin-transform-shorthand-properties" "^7.27.1"
+    "@babel/plugin-transform-spread" "^7.28.6"
+    "@babel/plugin-transform-sticky-regex" "^7.27.1"
+    "@babel/plugin-transform-template-literals" "^7.27.1"
+    "@babel/plugin-transform-typeof-symbol" "^7.27.1"
+    "@babel/plugin-transform-unicode-escapes" "^7.27.1"
+    "@babel/plugin-transform-unicode-property-regex" "^7.28.6"
+    "@babel/plugin-transform-unicode-regex" "^7.27.1"
+    "@babel/plugin-transform-unicode-sets-regex" "^7.28.6"
+    "@babel/preset-modules" "0.1.6-no-external-plugins"
+    babel-plugin-polyfill-corejs2 "^0.4.15"
+    babel-plugin-polyfill-corejs3 "^0.14.0"
+    babel-plugin-polyfill-regenerator "^0.6.6"
+    core-js-compat "^3.48.0"
     semver "^6.3.1"
 
 "@babel/preset-env@^7.11.0", "@babel/preset-env@^7.20.2":
@@ -3776,10 +3856,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/base64/-/base64-1.1.2.tgz#4c85730e59b9a1f1f349047dbf24296034bb2735"
   integrity sha512-AZkcAA5vnN/v4PDqKyMR5lx7hZttPDgClv83E//FMNhR2TMcLUhfRUBHCmSl0oi9zMgDDqRUJkSxO3wm85+XLg==
 
-"@protobufjs/codegen@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@protobufjs/codegen/-/codegen-2.0.4.tgz#7ef37f0d010fb028ad1ad59722e506d9262815cb"
-  integrity sha512-YyFaikqM5sH0ziFZCN3xDC7zeGaB/d0IUb9CATugHWbd1FRFwWwt4ld4OYMPWu5a3Xe01mGAULCdqhMlPl29Jg==
+"@protobufjs/codegen@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@protobufjs/codegen/-/codegen-2.0.5.tgz#d9315ad7cf3f30aac70bda3c068443dc6f143659"
+  integrity sha512-zgXFLzW3Ap33e6d0Wlj4MGIm6Ce8O89n/apUaGNB/jx+hw+ruWEp7EwGUshdLKVRCxZW12fp9r40E1mQrf/34g==
 
 "@protobufjs/eventemitter@^1.1.0":
   version "1.1.0"
@@ -3804,6 +3884,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/inquire/-/inquire-1.1.0.tgz#ff200e3e7cf2429e2dcafc1140828e8cc638f089"
   integrity sha512-kdSefcPdruJiFMVSbn801t4vFK7KB/5gd2fYvrxhuJYg8ILrmn9SKSX2tZdV6V+ksulWqS7aXjBcRXl3wHoD9Q==
 
+"@protobufjs/inquire@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@protobufjs/inquire/-/inquire-1.1.1.tgz#6cb936f4ac50965230af1e9d0bbfd57ea3675aa4"
+  integrity sha512-mnzgDV26ueAvk7rsbt9L7bE0SuAoqyuys/sMMrmVcN5x9VsxpcG3rqAUSgDyLp0UZlmNfIbQ4fHfCtreVBk8Ew==
+
 "@protobufjs/path@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/path/-/path-1.1.2.tgz#6cc2b20c5c9ad6ad0dccfd21ca7673d8d7fbf68d"
@@ -3814,10 +3899,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/pool/-/pool-1.1.0.tgz#09fd15f2d6d3abfa9b65bc366506d6ad7846ff54"
   integrity sha512-0kELaGSIDBKvcgS4zkjz1PeddatrjYcmMWOlAuAPwAeccUrPHdUqo/J6LiymHHEiJT5NrF1UVwxY14f+fy4WQw==
 
-"@protobufjs/utf8@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
-  integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
+"@protobufjs/utf8@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.1.tgz#eaee5900122c110a3dbcb728c0597014a2621774"
+  integrity sha512-oOAWABowe8EAbMyWKM0tYDKi8Yaox52D+HWZhAIJqQXbqe0xI/GV7FhLWqlEKreMkfDjshR5FKgi3mnle0h6Eg==
 
 "@radix-ui/number@1.1.1":
   version "1.1.1"
@@ -16439,21 +16524,21 @@ proto-list@~1.2.1:
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==
 
-protobufjs@7.5.5, protobufjs@^7.1.2, protobufjs@^7.2.4:
-  version "7.5.5"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.5.5.tgz#b7089ca4410374c75150baf277353ef76db69f96"
-  integrity sha512-3wY1AxV+VBNW8Yypfd1yQY9pXnqTAN+KwQxL8iYm3/BjKYMNg4i0owhEe26PWDOMaIrzeeF98Lqd5NGz4omiIg==
+protobufjs@7.5.7, protobufjs@^7.1.2, protobufjs@^7.2.4:
+  version "7.5.7"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.5.7.tgz#1dde1c3848ec9cc70a2ad7e3c12ff7b7e5abe280"
+  integrity sha512-NGnrxS/nLKUo5nkbVQxlC71sB4hdfImdYIbFeSCidxtwATx0AHRPcANSLd0q5Bb2BkoSWo2iisQhGg5/r+ihbA==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
-    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/codegen" "^2.0.5"
     "@protobufjs/eventemitter" "^1.1.0"
     "@protobufjs/fetch" "^1.1.0"
     "@protobufjs/float" "^1.0.2"
-    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/inquire" "^1.1.1"
     "@protobufjs/path" "^1.1.2"
     "@protobufjs/pool" "^1.1.0"
-    "@protobufjs/utf8" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.1"
     "@types/node" ">=13.7.0"
     long "^5.0.0"
 

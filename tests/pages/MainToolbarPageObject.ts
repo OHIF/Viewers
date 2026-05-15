@@ -7,11 +7,6 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
-  async waitForVolumeLoad(): Promise<void> {
-    await this.page.waitForTimeout(2000);
-    await this.page.waitForLoadState('networkidle', { timeout: 120000 });
-  }
-
   get crosshairs() {
     const button = this.page.getByTestId('Crosshairs');
     return {
@@ -336,6 +331,24 @@ export class MainToolbarPageObject {
 
   get panTool() {
     const button = this.page.getByTestId('Pan');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
+  get undo() {
+    const button = this.page.getByTestId('undo-btn');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
+  get redo() {
+    const button = this.page.getByTestId('redo-btn');
     return {
       button,
       async click() {

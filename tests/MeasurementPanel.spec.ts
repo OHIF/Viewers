@@ -1,4 +1,12 @@
-import { addLengthMeasurement, expect, scrollVolumeViewport, test, visitStudy } from './utils';
+import {
+  addLengthMeasurement,
+  addOHIFConfiguration,
+  expect,
+  scrollVolumeViewport,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -212,4 +220,133 @@ test('checks if measurement item can be deleted through the context menu on the 
   await rightPanelPageObject.measurementsPanel.select();
   await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
   expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+});
+
+test('checks that undo after delete-all restores measurements as tracked', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+  mainToolbarPageObject,
+}) => {
+  await addLengthMeasurement(page, {
+    firstClick: [450, 180],
+    secondClick: [550, 180],
+  });
+
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
+  await addLengthMeasurement(page, {
+    firstClick: [450, 260],
+    secondClick: [550, 260],
+  });
+
+  await rightPanelPageObject.measurementsPanel.select();
+  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+
+  await mainToolbarPageObject.undo.click();
+
+  await waitForViewportsRendered(page);
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+
+  const activeViewport = await viewportPageObject.active;
+
+  const firstMeasurementLine = activeViewport.svg('line').first();
+  await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+
+  const secondMeasurementLine = activeViewport.svg('line').nth(2);
+  await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+});
+
+test('checks that delete-all prompt reappears after undo', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  mainToolbarPageObject,
+}) => {
+  await addLengthMeasurement(page, {
+    firstClick: [450, 180],
+    secondClick: [550, 180],
+  });
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+
+  await mainToolbarPageObject.undo.click();
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
+
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
+});
+
+test.describe('simplified tracking mode', () => {
+  test.beforeEach(async ({ page }) => {
+    await addOHIFConfiguration(page, {
+      measurementTrackingMode: 'simplified',
+    });
+    const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
+    await visitStudy(page, studyInstanceUID, 'viewer', 2000);
+  });
+
+  test('checks that undo after delete-all restores measurements as tracked (simplified mode)', async ({
+    page,
+    DOMOverlayPageObject,
+    rightPanelPageObject,
+    viewportPageObject,
+    mainToolbarPageObject,
+  }) => {
+    await addLengthMeasurement(page, {
+      firstClick: [450, 180],
+      secondClick: [550, 180],
+    });
+
+    await addLengthMeasurement(page, {
+      firstClick: [450, 260],
+      secondClick: [550, 260],
+    });
+
+    await rightPanelPageObject.measurementsPanel.select();
+    expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+
+    await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+    await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+    await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+    await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+
+    expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+
+    await mainToolbarPageObject.undo.click();
+
+    await waitForViewportsRendered(page);
+
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+
+    const activeViewport = await viewportPageObject.active;
+
+    const firstMeasurementLine = activeViewport.svg('line').first();
+    await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+
+    const secondMeasurementLine = activeViewport.svg('line').nth(2);
+    await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+  });
 });
