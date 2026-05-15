@@ -27,13 +27,8 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
-const shouldIgnoreWatchedPath = (watchedPath: string) => {
-  const normalizedPath = watchedPath.replace(/\\/g, '/');
-  return (
-    /(^|\/)node_modules\//.test(normalizedPath) &&
-    !/(^|\/)node_modules\/@cornerstonejs(\/|$)/.test(normalizedPath)
-  );
-};
+// Ignore node_modules except @cornerstonejs (symlinked local development).
+const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
 
 export default defineConfig({
   dev: {
@@ -94,7 +89,7 @@ export default defineConfig({
         },
       },
       watchOptions: {
-        ignored: shouldIgnoreWatchedPath,
+        ignored: WATCH_IGNORED,
         followSymlinks: true,
       },
     },

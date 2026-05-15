@@ -15,13 +15,8 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
-const shouldIgnoreWatchedPath = watchedPath => {
-  const normalizedPath = watchedPath.replace(/\\/g, '/');
-  return (
-    /(^|\/)node_modules\//.test(normalizedPath) &&
-    !/(^|\/)node_modules\/@cornerstonejs(\/|$)/.test(normalizedPath)
-  );
-};
+// Ignore node_modules except @cornerstonejs (symlinked local development).
+const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
 // ~~ Env Vars
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
@@ -214,7 +209,7 @@ module.exports = (env, argv) => {
   }
 
   mergedConfig.watchOptions = {
-    ignored: shouldIgnoreWatchedPath,
+    ignored: WATCH_IGNORED,
     followSymlinks: true,
   };
 
