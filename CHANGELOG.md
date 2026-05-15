@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.72...v3.13.0-beta.73) (2026-05-13)
+
+
+### Features
+
+* **llm:** add instructions md file for claude and other LLM tools ([#6017](https://github.com/OHIF/Viewers/issues/6017)) ([f231eff](https://github.com/OHIF/Viewers/commit/f231eff5980495c9f3ac0bd907a03388d06c5b90))
+
+
+
+
+
 # [3.13.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.71...v3.13.0-beta.72) (2026-05-12)
 
 
