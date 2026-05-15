@@ -178,15 +178,9 @@ Do not modify the core and always find a way to implement the solution via the e
 
 ## Skills
 
-The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/skills/ohif-test-agent/`. GitHub Copilot/VS Code Agent, OpenAI Codex, and Cursor scan `.agents/skills/` natively — no setup required. Claude Code scans only `.claude/skills/` so set up the symlink locally once after cloning:
+The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/skills/ohif-test-agent/`. GitHub Copilot/VS Code Agent, OpenAI Codex, and Cursor scan `.agents/skills/` natively. Since Claude Code scans only `.claude/skills/`, `preinstall.js` automatically symlinks `.agents/skills/` into `.claude/skills/` during `yarn install`. The symlinks point at the canonical skills, so future updates are picked up automatically and new skills added under `.agents/skills/` are linked on the next install.
 
-```bash
-mkdir -p .claude/skills && ln -s ../../.agents/skills/ohif-test-agent .claude/skills/ohif-test-agent
-```
-Other clients should also use the above method of setting up symlinks, should it require a separate directory for the discovery.
-The symlink points at the canonical skill, so future updates are picked up automatically.
-
-**Windows**: use `mklink /D` instead of `ln -s`, e.g. `mklink /D .claude\skills\ohif-test-agent ..\..\.agents\skills\ohif-test-agent`. Developer mode or admin must be on for symlinks to materialize.
+**Windows**: symlink creation needs developer mode or admin. If `preinstall.js` logs an `EPERM` for the skill symlinks, enable developer mode and re-run `yarn install`, or create the links manually with `mklink /D`, e.g. `mklink /D .claude\skills\ohif-test-agent ..\..\.agents\skills\ohif-test-agent`.
 
 ## Configuration
 
