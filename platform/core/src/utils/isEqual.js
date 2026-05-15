@@ -1,4 +1,7 @@
-/** @deprecated Import `isEqual` from `@cornerstonejs/utils` instead. */
-import { isEqual } from '@cornerstonejs/utils';
+/**
+ * Same behavior as `utilities.isEqual` from `@cornerstonejs/core` (numeric / array tolerance).
+ * Prefer importing `utilities` from `@cornerstonejs/core` in extension code.
+ */
+import { utilities } from '@cornerstonejs/core';
 
-export default isEqual;
+export default utilities.isEqual;

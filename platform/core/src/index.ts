@@ -7,7 +7,6 @@ import { ViewportRefsProvider } from './hooks/useViewportRef';
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
 import log from './log.js';
-import logger from './logger';
 import object from './object.js';
 import string from './string.js';
 import user from './user';
@@ -68,7 +67,6 @@ const OHIF = {
   errorHandler,
   object,
   log,
-  logger,
   DICOMWeb,
   viewer: {},
   //
@@ -115,7 +113,6 @@ export {
   errorHandler,
   object,
   log,
-  logger,
   DICOMWeb,
   //
   CineService,
