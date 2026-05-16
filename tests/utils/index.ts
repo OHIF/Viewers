@@ -20,7 +20,7 @@ import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
-import { getSvgPath } from './getSvgPath';
+import { getSvgAttribute } from './getSvgAttribute';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
@@ -51,7 +51,7 @@ export {
   attemptAction,
   addLengthMeasurement,
   subscribeToMeasurementAdded,
-  getSvgPath,
+  getSvgAttribute,
   navigateWithViewportArrow,
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,

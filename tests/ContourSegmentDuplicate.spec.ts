@@ -2,9 +2,9 @@ import {
   expect,
   test,
   visitStudy,
-  getSvgPath,
   waitForViewportsRendered,
 } from './utils';
+import { getSvgAttribute } from './utils/getSvgAttribute';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defaultSegment0Name = 'Threshold';
@@ -84,7 +84,7 @@ test('should render the duplicated contour on the viewport', async ({
   await segment0.toggleVisibility();
   await segment0.click();
 
-  const sourceSvgPath = await getSvgPath(viewportPageObject);
+  const sourceSvgPath = await getSvgAttribute(viewportPageObject, 'path', 'd');
   expect(sourceSvgPath, 'Expected a visible SVG path for the source segment').not.toBeNull();
 
   // New segment is at index 4
@@ -95,8 +95,10 @@ test('should render the duplicated contour on the viewport', async ({
   await segment0.toggleVisibility();
   await duplicatedSegment.click();
 
-  const duplicatedSvgPath = await getSvgPath(viewportPageObject);
+  const duplicatedSvgPath = await getSvgAttribute(viewportPageObject, 'path', 'd');
   expect(duplicatedSvgPath, 'Expected a visible SVG path for the duplicated segment').not.toBeNull();
+  const duplicatedSvgPathsCount = await (await viewportPageObject.getById('default')).svg('path').count();
+  expect(duplicatedSvgPathsCount, 'Expected only one SVG path element for the duplicated segment').toBe(1);
 
   expect(
     duplicatedSvgPath,
