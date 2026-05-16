@@ -86,6 +86,8 @@ test('should render the duplicated contour on the viewport', async ({
 
   const sourceSvgPath = await getSvgAttribute(viewportPageObject, 'path', 'd');
   expect(sourceSvgPath, 'Expected a visible SVG path for the source segment').not.toBeNull();
+  const sourceSvgPathsCount = await (await viewportPageObject.getById('default')).svg('path').count();
+  expect(sourceSvgPathsCount, 'Expected only one SVG path element for the original segment').toBe(1);
 
   // New segment is at index 4
   await segment0.actions.duplicate();
