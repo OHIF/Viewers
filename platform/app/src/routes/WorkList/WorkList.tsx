@@ -39,6 +39,7 @@ import {
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
+import FirebaseUserInfo from '../../components/FirebaseUserInfo';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -62,9 +63,7 @@ function WorkList({
 }: withAppTypes) {
   const { show, hide } = useModal();
   const { t } = useTranslation();
-  // ~ Modes
   const [appConfig] = useAppConfig();
-  // ~ Filters
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
@@ -559,6 +558,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
+        UserInfo={<FirebaseUserInfo />}
       />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
