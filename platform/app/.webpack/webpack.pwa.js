@@ -80,6 +80,14 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          'C:/Users/denni/Documents/Projects/24x7-ohif/modes/24x7-dental-ui/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          'C:/Users/denni/Documents/Projects/24x7-ohif/extensions/24x7-dental-ui/node_modules'
+        ),
       ],
     },
     plugins: [

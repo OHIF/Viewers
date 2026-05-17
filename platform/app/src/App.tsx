@@ -34,6 +34,8 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import FirebaseAuthRoutes from './utils/FirebaseAuthRoutes';
+import FirebaseUserInfo from './components/FirebaseUserInfo';
 import { ShepherdJourneyProvider } from 'react-shepherd';
 import './App.css';
 
@@ -157,13 +159,22 @@ function App({
     showStudyList,
   });
 
-  if (oidc) {
+  if (oidc?.length) {
     authRoutes = (
       <OpenIdConnectRoutes
         oidc={oidc}
         routerBasename={routerBasename}
         userAuthenticationService={userAuthenticationService}
       />
+    );
+  }
+
+  const firebaseEnabled = !oidc?.length && !!process.env.REACT_APP_FIREBASE_API_KEY;
+
+  if (firebaseEnabled) {
+    customizationService?.setCustomizations(
+      { 'ohif.userInfo': FirebaseUserInfo },
+      customizationService.Scope.Global
     );
   }
 
@@ -174,7 +185,13 @@ function App({
         future={routerFutureFlags}
       >
         {authRoutes}
-        {appRoutes}
+        {firebaseEnabled ? (
+          <FirebaseAuthRoutes userAuthenticationService={userAuthenticationService}>
+            {appRoutes}
+          </FirebaseAuthRoutes>
+        ) : (
+          appRoutes
+        )}
       </BrowserRouter>
     </CombinedProviders>
   );

@@ -39,6 +39,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   const { t } = useTranslation();
   const { show } = useModal();
 
+  const UserInfoComponent = customizationService.getCustomization('ohif.userInfo') as
+    | React.ComponentType
+    | undefined;
+
   const AboutModal = customizationService.getCustomization(
     'ohif.aboutModal'
   ) as Types.MenuComponentCustomization;
@@ -87,6 +91,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
+      UserInfo={UserInfoComponent ? <UserInfoComponent /> : undefined}
       Secondary={<Toolbar buttonSection="secondary" />}
       PatientInfo={
         appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (

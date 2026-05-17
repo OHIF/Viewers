@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&display=swap');
+
+html.dental-theme {
+  --background: 210 22% 97%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 185 78% 35%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 91%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 38% 95%;
+  --muted-foreground: 215 16% 43%;
+  --accent: 185 55% 88%;
+  --accent-foreground: 185 78% 20%;
+  --destructive: 0 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 30% 82%;
+  --input: 214 30% 89%;
+  --ring: 185 78% 35%;
+  --radius: 0.5rem;
+  --highlight: 185 80% 40%;
+  --neutral: 215 18% 48%;
+  --neutral-light: 215 55% 78%;
+  --neutral-dark: 215 28% 25%;
+}
+html.dental-theme,
+html.dental-theme body,
+html.dental-theme * {
+  font-family: 'Nunito Sans', 'Inter', 'Segoe UI', sans-serif;
+}
+html.dental-theme body {
+  letter-spacing: 0.01em;
+}
+html.dental-theme .ohif-scrollbar {
+  scrollbar-color: hsl(185 55% 65%) transparent;
+}
+html.dental-theme .ohif-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(185 55% 65%);
+}

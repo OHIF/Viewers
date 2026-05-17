@@ -65,6 +65,10 @@
     {
       "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-24x7-dental-ui",
+      "version": "1.0.0"
     }
   ],
   "modes": [
@@ -99,6 +103,10 @@
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-24x7-dental-ui",
+      "version": "1.0.0"
     }
   ],
   "public": [

@@ -31,6 +31,7 @@ interface HeaderProps {
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
   UndoRedo?: ReactNode;
+  UserInfo?: ReactNode;
 }
 
 function Header({
@@ -43,6 +44,7 @@ function Header({
   PatientInfo,
   UndoRedo,
   Secondary,
+  UserInfo,
   ...props
 }: HeaderProps): ReactNode {
   const onClickReturn = () => {
@@ -119,6 +121,8 @@ function Header({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
+            {UserInfo}
           </div>
         </div>
       </NavBar>
