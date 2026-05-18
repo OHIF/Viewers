@@ -92,6 +92,7 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
+        'Mode',
         'Pan',
         'WindowLevel',
         'Crosshairs',
