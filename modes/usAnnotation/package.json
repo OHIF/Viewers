@@ -51,7 +51,7 @@
     "@babel/plugin-transform-regenerator": "7.28.1",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "7.28.0",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@svgr/webpack": "8.1.0",
