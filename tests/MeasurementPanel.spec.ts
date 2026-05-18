@@ -69,15 +69,15 @@ test('checks if measurement item can be relabeled under Measurements panel', asy
 
   // Open measurement panel confirm default empty
   await rightPanelPageObject.measurementsPanel.select();
-  const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).locator;
-  await expect(measurementRow).toContainText('(empty)');
+  const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(measurementRow.title).toHaveText('(empty)');
 
   // Expand and click rename
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.rename(relabelText);
 
   // Check dialog closed and renamed
   await expect(DOMOverlayPageObject.dialog.input.locator).toBeHidden();
-  await expect(measurementRow).toContainText(relabelText);
+  await expect(measurementRow.title).toHaveText(relabelText);
 });
 
 test('checks if measurement item can be relabeled through the context menu on the viewport', async ({
@@ -98,8 +98,8 @@ test('checks if measurement item can be relabeled through the context menu on th
 
   // Open measurement panel confirm default empty
   await rightPanelPageObject.measurementsPanel.select();
-  const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).locator;
-  await expect(measurementRow).toContainText('(empty)');
+  const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(measurementRow.title).toHaveText('(empty)');
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu
@@ -117,7 +117,7 @@ test('checks if measurement item can be relabeled through the context menu on th
 
   // Check dialog closed and renamed
   await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
-  await expect(measurementRow).toContainText(relabelText);
+  await expect(measurementRow.title).toHaveText(relabelText);
 });
 
 test('checks if image would jump when clicked on a measurement item', async ({
