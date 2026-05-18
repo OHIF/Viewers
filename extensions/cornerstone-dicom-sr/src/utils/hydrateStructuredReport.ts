@@ -51,7 +51,6 @@ export default function hydrateStructuredReport(
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues');
-  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   const {
@@ -199,13 +198,21 @@ export default function hydrateStructuredReport(
       const referenceData = getReferenceData(toolData);
       const { referencedImageId } = referenceData;
 
+      /** Use SR subtypes for Probe and RectangleROI - they show label (e.g. Lesion) instead of intensity/stats */
+      const srAnnotationType =
+        annotationType === 'Probe'
+          ? 'SRPoint'
+          : annotationType === 'RectangleROI'
+            ? 'SRRectangleROI'
+            : annotationType;
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         predecessorImageId: toolData.predecessorImageId,
         metadata: {
           ...referenceData,
-          toolName: annotationType,
+          toolName: srAnnotationType,
         },
       };
       utilities.updatePlaneRestriction(annotation.data.handles.points, annotation.metadata);
@@ -223,11 +230,11 @@ export default function hydrateStructuredReport(
         }
       });
 
-      const matchingMapping = mappings.find(m => m.annotationType === annotationType);
+      const matchingMapping = mappings.find(m => m.annotationType === srAnnotationType);
 
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
-        annotationType,
+        srAnnotationType,
         { annotation },
         matchingMapping.toMeasurementSchema,
         dataSource
@@ -238,9 +245,7 @@ export default function hydrateStructuredReport(
         code: annotation.data.finding,
       });
 
-      if (disableEditing) {
-        locking.setAnnotationLocked(newAnnotationUID, true);
-      }
+      locking.setAnnotationLocked(newAnnotationUID, true);
 
       if (referencedImageId && !imageIds.includes(referencedImageId)) {
         imageIds.push(referencedImageId);

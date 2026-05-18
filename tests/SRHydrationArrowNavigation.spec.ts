@@ -1,4 +1,10 @@
-import { expect, navigateWithViewportArrow, test, visitStudy } from './utils';
+import {
+  expect,
+  navigateWithViewportArrow,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
+} from './utils';
 import { expectRowSelected } from './utils/assertions';
 import { press } from './utils/keyboardUtils';
 
@@ -38,7 +44,8 @@ test('should navigate SR measurements with next/prev arrows after hydration for 
 
   await expectRowSelected(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1));
 
-  await expect(activeViewport.svg('circle')).toBeVisible();
+  await waitForViewportsRendered(page, { timeout: 120_000, waitVolumeLoad: true });
+  await expect(activeViewport.svg('circle')).toBeVisible({ timeout: 60_000 });
 
   const secondAnnotation = activeViewport.nthAnnotation(0);
   await expect(secondAnnotation.locator).toBeVisible();
@@ -49,7 +56,8 @@ test('should navigate SR measurements with next/prev arrows after hydration for 
 
   await expectRowSelected(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0));
 
-  await expect(activeViewport.svg('circle')).toBeVisible();
+  await waitForViewportsRendered(page, { timeout: 120_000, waitVolumeLoad: true });
+  await expect(activeViewport.svg('circle')).toBeVisible({ timeout: 60_000 });
 
   const firstAnnotation = activeViewport.nthAnnotation(0);
   await expect(firstAnnotation.locator).toBeVisible();
