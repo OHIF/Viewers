@@ -132,6 +132,10 @@ const screenShotPaths = {
     segPreHydration: 'segPreHydration.png',
     segJumpToSegment: 'segJumpToSegment.png',
   },
+  segHydrationDeleteAndReload: {
+    viewportAfterSecondHydration: 'viewportAfterSecondHydration.png',
+    viewportAfterSecondDelete: 'viewportAfterSecondDelete.png',
+  },
   segHydrationThenMPR: {
     segPostHydration: 'segPostHydration.png',
     segPostHydrationMPRAxialPrimary: 'segPostHydrationMPRAxialPrimary.png',
