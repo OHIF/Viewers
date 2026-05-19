@@ -10,9 +10,7 @@
 
 [build]
   base = ""
-  # One-time cache bust for stale Babel hoisting (plugin@7.28.6 + helper@7.27.1).
-  # Remove this rm/reinstall prefix after the first green deploy preview.
-  build = "rm -rf \"$(git rev-parse --show-toplevel)/node_modules\" \"${NETLIFY_CACHE_DIR}/node_modules\" 2>/dev/null || true && yarn install --pure-lockfile && yarn run build:viewer:ci"
+  build = "yarn run build:viewer:ci"
   publish = "dist"
 
 
