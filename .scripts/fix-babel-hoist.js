@@ -1,5 +1,5 @@
 /**
- * Guards against stale Netlify node_modules where
+ * Guards against stale node_modules where
  * @babel/plugin-transform-class-static-block@7.28.x resolves a nested
  * @babel/helper-create-class-features-plugin@7.27.x (no buildNamedEvaluationVisitor).
  *
@@ -7,8 +7,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
-const { createRequire } = require('module');
+const { execSync, spawnSync } = require('child_process');
 
 const MARKER = 'FIX_BABEL_HOIST_RAN';
 const MIN_HELPER_FOR_PLUGIN_28 = '7.28.6';
@@ -56,21 +55,60 @@ function helperIsTooOld(helperVersion) {
 function paths(nodeModules) {
   const pluginDir = path.join(nodeModules, '@babel/plugin-transform-class-static-block');
   const helperDir = path.join(nodeModules, '@babel/helper-create-class-features-plugin');
-  const nestedBabelDir = path.join(pluginDir, 'node_modules', '@babel');
+  const pluginNodeModules = path.join(pluginDir, 'node_modules');
   const nestedHelperDir = path.join(
-    nestedBabelDir,
+    pluginNodeModules,
+    '@babel',
     'helper-create-class-features-plugin'
   );
-  return { pluginDir, helperDir, nestedBabelDir, nestedHelperDir };
+  return { pluginDir, helperDir, pluginNodeModules, nestedHelperDir };
 }
 
-function resolveHelperFromPlugin(pluginDir) {
-  const req = createRequire(path.join(pluginDir, 'lib/index.js'));
-  const resolved = req.resolve('@babel/helper-create-class-features-plugin');
-  return {
-    helper: req('@babel/helper-create-class-features-plugin'),
+function resolvedUnderPlugin(pluginDir, resolved) {
+  const prefix = path.join(pluginDir, 'node_modules') + path.sep;
+  return resolved.startsWith(prefix);
+}
+
+const VERIFY_CODE = `
+const path = require('path');
+const { createRequire } = require('module');
+const pluginDir = process.env.FIX_BABEL_PLUGIN_DIR;
+const helperDir = process.env.FIX_BABEL_HELPER_DIR;
+if (!pluginDir || !helperDir) {
+  throw new Error('FIX_BABEL_PLUGIN_DIR and FIX_BABEL_HELPER_DIR are required');
+}
+const req = createRequire(path.join(pluginDir, 'lib/index.js'));
+const resolved = req.resolve('@babel/helper-create-class-features-plugin');
+const helper = req('@babel/helper-create-class-features-plugin');
+const prefix = path.join(pluginDir, 'node_modules') + path.sep;
+console.log(
+  JSON.stringify({
     resolved,
-  };
+    resolvedUnderPlugin: resolved.startsWith(prefix),
+    buildNamedEvaluationVisitor: typeof helper.buildNamedEvaluationVisitor,
+    helperExportOk: typeof helper.buildNamedEvaluationVisitor === 'function',
+  })
+);
+`;
+
+/**
+ * Fresh Node process — avoids require.cache keeping a deleted nested helper.
+ */
+function verifyInSubprocess(pluginDir, helperDir) {
+  const result = spawnSync(process.execPath, ['-e', VERIFY_CODE], {
+    env: {
+      ...process.env,
+      FIX_BABEL_PLUGIN_DIR: pluginDir,
+      FIX_BABEL_HELPER_DIR: helperDir,
+    },
+    encoding: 'utf8',
+  });
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || 'verify subprocess failed');
+  }
+
+  return JSON.parse(result.stdout.trim());
 }
 
 function diagnose(nodeModules) {
@@ -87,6 +125,7 @@ function diagnose(nodeModules) {
     nestedHelperExists: fs.existsSync(nestedHelperDir),
     nestedHelperVersion: readVersion(nestedHelperDir),
     helperResolvedFromPlugin: null,
+    resolvedUnderPlugin: null,
     buildNamedEvaluationVisitor: null,
     helperExportOk: false,
   };
@@ -96,10 +135,9 @@ function diagnose(nodeModules) {
   }
 
   try {
-    const { helper, resolved } = resolveHelperFromPlugin(pluginDir);
-    report.helperResolvedFromPlugin = resolved;
-    report.buildNamedEvaluationVisitor = typeof helper.buildNamedEvaluationVisitor;
-    report.helperExportOk = report.buildNamedEvaluationVisitor === 'function';
+    const verify = verifyInSubprocess(pluginDir, helperDir);
+    Object.assign(report, verify);
+    report.helperResolvedFromPlugin = verify.resolved;
   } catch (error) {
     report.resolveError = error.message;
   }
@@ -127,8 +165,9 @@ function checkState(nodeModules) {
   const rootBad = helperIsTooOld(rootHelperVersion);
   const nestedBad =
     report.nestedHelperExists && helperIsTooOld(nestedHelperVersion);
+  const shadowedByPluginCopy = report.resolvedUnderPlugin === true;
 
-  if (!rootBad && !nestedBad && helperExportOk) {
+  if (!rootBad && !nestedBad && !shadowedByPluginCopy && helperExportOk) {
     return { ok: true, reason: 'aligned', report };
   }
 
@@ -137,6 +176,7 @@ function checkState(nodeModules) {
     report,
     rootBad,
     nestedBad,
+    shadowedByPluginCopy,
     helperExportOk,
   };
 }
@@ -149,27 +189,14 @@ function removeDir(dir) {
 }
 
 /**
- * Yarn often nests helper@7.27.1 under the plugin even when root helper@7.28.6 exists.
- * Node resolves the nested copy first — delete it so resolution uses the root helper.
+ * Drop all of plugin/node_modules so Node cannot resolve a nested helper@7.27.x.
  */
-function removeStaleNestedBabel(nodeModules) {
-  const { pluginDir, helperDir, nestedBabelDir, nestedHelperDir } = paths(nodeModules);
-
-  if (!fs.existsSync(pluginDir) || !fs.existsSync(nestedHelperDir)) {
-    return false;
-  }
-
-  const rootHelperVersion = readVersion(helperDir);
-  const nestedHelperVersion = readVersion(nestedHelperDir);
-
-  if (
-    !helperIsTooOld(rootHelperVersion) &&
-    helperIsTooOld(nestedHelperVersion)
-  ) {
-    removeDir(nestedBabelDir);
+function removePluginShadowTree(nodeModules) {
+  const { pluginNodeModules } = paths(nodeModules);
+  if (fs.existsSync(pluginNodeModules)) {
+    removeDir(pluginNodeModules);
     return true;
   }
-
   return false;
 }
 
@@ -188,6 +215,7 @@ function finishOk(root, startedAt, state, status) {
     report: state.report,
   });
   log(`status=${status} reason=${state.reason}`);
+  log(`resolved=${state.report.helperResolvedFromPlugin}`);
   log('END');
 }
 
@@ -196,7 +224,7 @@ function main() {
   const cwd = process.cwd();
   const root = repoRoot();
   const nodeModules = path.join(root, 'node_modules');
-  const { pluginDir, helperDir, nestedBabelDir } = paths(nodeModules);
+  const { pluginDir, helperDir, pluginNodeModules } = paths(nodeModules);
 
   log(`START at ${startedAt}`);
   log(`cwd=${cwd}`);
@@ -212,20 +240,20 @@ function main() {
     return;
   }
 
-  // Common Netlify case: root helper is fine; only nested 7.27.x shadows it.
-  if (!state.rootBad && state.nestedBad) {
-    log('status=repairing nested-only (root helper is already >= 7.28.6)');
-    removeStaleNestedBabel(nodeModules);
+  // Root helper is fine; nested / plugin node_modules shadows it.
+  if (!state.rootBad && (state.nestedBad || state.shadowedByPluginCopy || !state.helperExportOk)) {
+    log('status=repairing plugin shadow tree (remove plugin/node_modules)');
+    removePluginShadowTree(nodeModules);
     state = checkState(nodeModules);
-    log(`after nested-only: ${JSON.stringify(state.report, null, 2)}`);
+    log(`after shadow removal: ${JSON.stringify(state.report, null, 2)}`);
     if (state.ok) {
-      finishOk(root, startedAt, state, 'fixed-nested-only');
+      finishOk(root, startedAt, state, 'fixed-shadow-only');
       return;
     }
   }
 
   log('status=repairing full Babel class-features packages');
-  removeDir(nestedBabelDir);
+  removeDir(pluginNodeModules);
   removeDir(helperDir);
   removeDir(pluginDir);
 
@@ -235,9 +263,8 @@ function main() {
     stdio: 'inherit',
   });
 
-  // yarn install often re-creates nested@7.27.1 while root stays at 7.28.6
-  if (removeStaleNestedBabel(nodeModules)) {
-    log('stripped nested @babel re-created by yarn install');
+  if (removePluginShadowTree(nodeModules)) {
+    log('stripped plugin/node_modules re-created by yarn install');
   }
 
   state = checkState(nodeModules);
@@ -262,6 +289,7 @@ function main() {
     report: state.report,
   });
   log('status=repaired');
+  log(`resolved=${state.report.helperResolvedFromPlugin}`);
   log('END');
 }
 
