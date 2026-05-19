@@ -105,7 +105,9 @@ test.describe('3D four up to 3x2 layout SEG hydration', () => {
       screenshotPath: screenShotPaths.segHydrationAfterLayoutSwitchTo3By2.afterSEGHydrated,
     });
 
+    viewportRenderCycle = waitForViewportRenderCycle(page);
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
+    await viewportRenderCycle;
 
     await checkForScreenshot({
       page,
