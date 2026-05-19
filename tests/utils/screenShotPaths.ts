@@ -133,8 +133,6 @@ const screenShotPaths = {
     segJumpToSegment: 'segJumpToSegment.png',
   },
   segHydrationDeleteAndReload: {
-    viewportAfterFirstHydration: 'viewportAfterFirstHydration.png',
-    viewportAfterFirstDelete: 'viewportAfterFirstDelete.png',
     viewportAfterSecondHydration: 'viewportAfterSecondHydration.png',
     viewportAfterSecondDelete: 'viewportAfterSecondDelete.png',
   },

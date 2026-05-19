@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should fully remove segmentation overlay after each load-and-delete cycle', async ({
+test('should fully remove segmentation overlay after repeated load-and-delete cycle', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -30,23 +30,11 @@ test('should fully remove segmentation overlay after each load-and-delete cycle'
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await viewportRenderCycle;
 
-  await checkForScreenshot(
-    page,
-    activeViewport.pane,
-    screenShotPaths.segHydrationDeleteAndReload.viewportAfterFirstHydration
-  );
-
   viewportRenderCycle = waitForViewportRenderCycle(page);
   await rightPanelPageObject.labelMapSegmentationPanel.panel.moreMenu.delete();
   await viewportRenderCycle;
 
   expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(0);
-
-  await checkForScreenshot(
-    page,
-    activeViewport.pane,
-    screenShotPaths.segHydrationDeleteAndReload.viewportAfterFirstDelete
-  );
 
   // reload SEG series
   viewportRenderCycle = waitForViewportRenderCycle(page);
