@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.77...v3.13.0-beta.78) (2026-05-19)
+
+
+### Bug Fixes
+
+* **measurements:** read displayName in SplineROI and PlanarFreehandROI reports ([#5908](https://github.com/OHIF/Viewers/issues/5908)) ([27af682](https://github.com/OHIF/Viewers/commit/27af6821b56f2c5be3a5d4ce38d05be6fbce68f4))
+
+
+
+
+
+# [3.13.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.76...v3.13.0-beta.77) (2026-05-19)
+
+
+### Bug Fixes
+
+* **segmentation:** remove thresholdRange label in double-range tool settings ([#5931](https://github.com/OHIF/Viewers/issues/5931)) ([527cfb0](https://github.com/OHIF/Viewers/commit/527cfb0ae8c615aeaddbc7f16892ba4460a5b596))
+
+
+
+
+
+# [3.13.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.75...v3.13.0-beta.76) (2026-05-19)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.74...v3.13.0-beta.75) (2026-05-18)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.73...v3.13.0-beta.74) (2026-05-15)
+
+
+### Bug Fixes
+
+* **security:** Update various dependencies to fix security vulnerabilities. ([#6023](https://github.com/OHIF/Viewers/issues/6023)) ([55b46f3](https://github.com/OHIF/Viewers/commit/55b46f39c65a183978a44a61fb322685134f3bd6))
+
+
+
+
+
 # [3.13.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.72...v3.13.0-beta.73) (2026-05-13)
 
 

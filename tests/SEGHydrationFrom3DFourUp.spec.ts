@@ -36,9 +36,10 @@ test.describe('3D four up SEG hydration', async () => {
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG
     );
 
+    let viewportRenderCycle = waitForViewportRenderCycle(page);
     await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-    await waitForViewportsRendered(page);
+    await viewportRenderCycle;
 
     await checkForScreenshot(
       page,
@@ -50,7 +51,7 @@ test.describe('3D four up SEG hydration', async () => {
 
     // High rendered timeout needed: layout has 4 viewports (3D volume + MPR planes + SEG overlays),
     // which can take significantly longer time to fully render
-    const viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 180000 });
+    viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 180000 });
 
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
