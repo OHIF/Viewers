@@ -1,7 +1,7 @@
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = webpack.CssExtractRspackPlugin;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const pkg = require('./../package.json');

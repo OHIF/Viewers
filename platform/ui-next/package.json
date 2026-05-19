@@ -15,9 +15,9 @@
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "start": "pnpm run build --watch",
-    "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.playground.js",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
     "build:package": "pnpm run build"
   },
   "exports": {

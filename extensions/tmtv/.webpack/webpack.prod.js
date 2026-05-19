@@ -1,4 +1,4 @@
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
@@ -7,7 +7,7 @@ const pkg = require('./../package.json');
 const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = webpack.CssExtractRspackPlugin;
 
 const ENTRY = {
   app: `${SRC_DIR}/index.tsx`,

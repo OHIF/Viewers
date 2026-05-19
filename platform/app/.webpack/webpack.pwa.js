@@ -188,7 +188,8 @@ module.exports = (env, argv) => {
       },
       proxy: [
         {
-          '/dicomweb': 'http://localhost:5000',
+          context: ['/dicomweb'],
+          target: 'http://localhost:5000',
         },
       ],
       static: [
@@ -208,6 +209,7 @@ module.exports = (env, argv) => {
       historyApiFallback: {
         disableDotRule: !IS_COVERAGE,
         index: PUBLIC_URL + 'index.html',
+        htmlAcceptHeaders: ['text/html'],
       },
       devMiddleware: {
         writeToDisk: true,

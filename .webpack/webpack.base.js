@@ -23,7 +23,7 @@ const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // Only uncomment for old v2 stylus
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 let ReactRefreshWebpackPlugin;
-try { ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'); } catch { ReactRefreshWebpackPlugin = null; }
+try { ReactRefreshWebpackPlugin = require('@rspack/plugin-react-refresh'); } catch { ReactRefreshWebpackPlugin = null; }
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -225,10 +225,18 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         buffer: require.resolve('buffer'),
       },
     },
+    node: {
+      __filename: 'mock',
+      __dirname: 'mock',
+    },
     plugins: [
       new webpack.DefinePlugin(defineValues),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^(fs|path)$/,
+        contextRegExp: /@cornerstonejs[\\/]codec-/,
       }),
       ...(isProdBuild || IS_COVERAGE || !ReactRefreshWebpackPlugin
         ? []
