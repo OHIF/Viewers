@@ -38,19 +38,6 @@
   --chart-3: 35 80% 55%;
   --chart-4: 200 65% 55%;
   --chart-5: 340 70% 55%;
-  --radius: 0.5rem;
-  --success-bg: hsl(143, 85%, 96%);
-  --success-border: hsl(145, 92%, 91%);
-  --success-text: hsl(140, 100%, 27%);
-  --info-bg: hsl(208, 100%, 97%);
-  --info-border: hsl(221, 91%, 91%);
-  --info-text: hsl(210, 92%, 45%);
-  --warning-bg: hsl(49, 100%, 97%);
-  --warning-border: hsl(49, 91%, 91%);
-  --warning-text: hsl(31, 92%, 45%);
-  --error-bg: hsl(359, 100%, 97%);
-  --error-border: hsl(359, 100%, 94%);
-  --error-text: hsl(360, 100%, 45%);
 }
 
 /* ─── Tonal: Arctic ──────────────────────────────────────────────────── */
@@ -84,19 +71,6 @@
   --chart-3: 35 80% 55%;
   --chart-4: 280 65% 58%;
   --chart-5: 330 75% 55%;
-  --radius: 0.5rem;
-  --success-bg: hsl(143, 85%, 96%);
-  --success-border: hsl(145, 92%, 91%);
-  --success-text: hsl(140, 100%, 27%);
-  --info-bg: hsl(208, 100%, 97%);
-  --info-border: hsl(221, 91%, 91%);
-  --info-text: hsl(210, 92%, 45%);
-  --warning-bg: hsl(49, 100%, 97%);
-  --warning-border: hsl(49, 91%, 91%);
-  --warning-text: hsl(31, 92%, 45%);
-  --error-bg: hsl(359, 100%, 97%);
-  --error-border: hsl(359, 100%, 94%);
-  --error-text: hsl(360, 100%, 45%);
 }
 
 /* ─── Tonal: Verdant ─────────────────────────────────────────────────── */
@@ -130,19 +104,6 @@
   --chart-3: 35 80% 55%;
   --chart-4: 280 60% 55%;
   --chart-5: 340 70% 52%;
-  --radius: 0.5rem;
-  --success-bg: hsl(143, 85%, 96%);
-  --success-border: hsl(145, 92%, 91%);
-  --success-text: hsl(140, 100%, 27%);
-  --info-bg: hsl(208, 100%, 97%);
-  --info-border: hsl(221, 91%, 91%);
-  --info-text: hsl(210, 92%, 45%);
-  --warning-bg: hsl(49, 100%, 97%);
-  --warning-border: hsl(49, 91%, 91%);
-  --warning-text: hsl(31, 92%, 45%);
-  --error-bg: hsl(359, 100%, 97%);
-  --error-border: hsl(359, 100%, 94%);
-  --error-text: hsl(360, 100%, 45%);
 }
 
 /* ─── Neutral: Midnight ──────────────────────────────────────────────── */
@@ -176,19 +137,6 @@
   --chart-3: 35 85% 52%;
   --chart-4: 275 70% 58%;
   --chart-5: 335 80% 52%;
-  --radius: 0.5rem;
-  --success-bg: hsl(143, 85%, 96%);
-  --success-border: hsl(145, 92%, 91%);
-  --success-text: hsl(140, 100%, 27%);
-  --info-bg: hsl(208, 100%, 97%);
-  --info-border: hsl(221, 91%, 91%);
-  --info-text: hsl(210, 92%, 45%);
-  --warning-bg: hsl(49, 100%, 97%);
-  --warning-border: hsl(49, 91%, 91%);
-  --warning-text: hsl(31, 92%, 45%);
-  --error-bg: hsl(359, 100%, 97%);
-  --error-border: hsl(359, 100%, 94%);
-  --error-text: hsl(360, 100%, 45%);
 }
 
 /* ─── Neutral: Slate ─────────────────────────────────────────────────── */
@@ -222,19 +170,6 @@
   --chart-3: 35 75% 55%;
   --chart-4: 280 60% 58%;
   --chart-5: 340 70% 55%;
-  --radius: 0.5rem;
-  --success-bg: hsl(143, 85%, 96%);
-  --success-border: hsl(145, 92%, 91%);
-  --success-text: hsl(140, 100%, 27%);
-  --info-bg: hsl(208, 100%, 97%);
-  --info-border: hsl(221, 91%, 91%);
-  --info-text: hsl(210, 92%, 45%);
-  --warning-bg: hsl(49, 100%, 97%);
-  --warning-border: hsl(49, 91%, 91%);
-  --warning-text: hsl(31, 92%, 45%);
-  --error-bg: hsl(359, 100%, 97%);
-  --error-border: hsl(359, 100%, 94%);
-  --error-text: hsl(360, 100%, 45%);
 }
 
 /* ─── Neutral: Deep ──────────────────────────────────────────────────── */
@@ -268,17 +203,4 @@
   --chart-3: 35 50% 45%;
   --chart-4: 280 40% 48%;
   --chart-5: 340 45% 45%;
-  --radius: 0.5rem;
-  --success-bg: hsl(143, 85%, 96%);
-  --success-border: hsl(145, 92%, 91%);
-  --success-text: hsl(140, 100%, 27%);
-  --info-bg: hsl(208, 100%, 97%);
-  --info-border: hsl(221, 91%, 91%);
-  --info-text: hsl(210, 92%, 45%);
-  --warning-bg: hsl(49, 100%, 97%);
-  --warning-border: hsl(49, 91%, 91%);
-  --warning-text: hsl(31, 92%, 45%);
-  --error-bg: hsl(359, 100%, 97%);
-  --error-border: hsl(359, 100%, 94%);
-  --error-text: hsl(360, 100%, 45%);
 }

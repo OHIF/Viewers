@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 const STORAGE_KEY_CSS = 'ohif:custom-theme-css';
 const STORAGE_KEY_OPEN = 'ohif:custom-theme-open';
 
-function AppearanceModalDefault({ hide }: { hide: () => void }) {
+function AppearanceModalDefault() {
   const { activeTheme, setActiveTheme } = useActiveTheme();
   const { t } = useTranslation('AppearanceModal');
 

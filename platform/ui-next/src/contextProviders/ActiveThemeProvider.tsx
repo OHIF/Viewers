@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import '../themes/themes.css';
 import { themePresets } from '../themes';
