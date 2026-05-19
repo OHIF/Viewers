@@ -15,7 +15,11 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up Test', async () => {
-  test('should render 3D four up correctly.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D four up correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
@@ -24,7 +28,7 @@ test.describe('3D four up Test', async () => {
 
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly
     );
   });
