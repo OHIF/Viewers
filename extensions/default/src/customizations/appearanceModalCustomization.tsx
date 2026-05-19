@@ -85,7 +85,7 @@ function AppearanceModalDefault({ hide }: { hide: () => void }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="default">Tonal: OHIF Blue</SelectItem>
+                <SelectItem value="default">{t('Default Theme')}</SelectItem>
                 {themePresets.map(preset => (
                   <SelectItem
                     key={preset.name}
@@ -94,7 +94,7 @@ function AppearanceModalDefault({ hide }: { hide: () => void }) {
                     {preset.label}
                   </SelectItem>
                 ))}
-                {customCss && <SelectItem value="custom">Custom</SelectItem>}
+                {customCss && <SelectItem value="custom">{t('Custom')}</SelectItem>}
               </SelectContent>
             </Select>
           </div>
@@ -105,7 +105,7 @@ function AppearanceModalDefault({ hide }: { hide: () => void }) {
               size="sm"
               onClick={handleToggleCustom}
             >
-              {isCustomOpen ? 'Hide' : 'Custom Theme'}
+              {isCustomOpen ? t('Hide') : t('Custom Theme')}
             </Button>
           </div>
         </div>
@@ -115,7 +115,7 @@ function AppearanceModalDefault({ hide }: { hide: () => void }) {
             <textarea
               value={customCss}
               onChange={handleTextChange}
-              placeholder="Paste your custom theme color tokens here"
+              placeholder={t('Paste your custom theme color tokens here')}
               rows={8}
               className="bg-muted text-foreground border-input placeholder:text-muted-foreground rounded-md border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-1 focus:ring-inset focus:ring-ring"
             />
@@ -125,14 +125,14 @@ function AppearanceModalDefault({ hide }: { hide: () => void }) {
                 size="sm"
                 onClick={handleSave}
               >
-                Apply
+                {t('Apply')}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleClear}
               >
-                Clear
+                {t('Clear')}
               </Button>
             </div>
           </div>

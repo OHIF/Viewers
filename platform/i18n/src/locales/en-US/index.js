@@ -1,4 +1,5 @@
 import AboutModal from './AboutModal.json';
+import AppearanceModal from './AppearanceModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
@@ -35,6 +36,7 @@ import USAnnotationPanel from './USAnnotationPanel.json';
 export default {
   'en-US': {
     AboutModal,
+    AppearanceModal,
     Buttons,
     CineDialog,
     Common,
