@@ -10,7 +10,8 @@
 
 [build]
   base = ""
-  build = "yarn run build:viewer:ci"
+  # One-time guard for stale Netlify node_modules Babel hoisting; remove after deploy previews are green.
+  build = "node \"$(git rev-parse --show-toplevel)/.scripts/fix-babel-hoist.js\" && yarn run build:viewer:ci"
   publish = "dist"
 
 
