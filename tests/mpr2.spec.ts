@@ -1,4 +1,10 @@
-import { test, visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import {
+  test,
+  visitStudy,
+  checkForScreenshot,
+  screenShotPaths,
+  waitForViewportsRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID =
@@ -7,12 +13,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 10000);
 });
 
-test('should properly display MPR for MR', async ({
-  page,
-  mainToolbarPageObject,
-  viewportPageObject,
-}) => {
-  await mainToolbarPageObject.waitForVolumeLoad();
+test('should properly display MPR for MR', async ({ page, viewportPageObject }) => {
   await page.getByTestId('side-panel-header-right').click();
   // await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   await checkForScreenshot({
@@ -42,6 +43,8 @@ test('should properly display MPR for MR', async ({
       }
     }
   });
+
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot({
     page,
