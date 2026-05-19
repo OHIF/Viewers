@@ -55,10 +55,6 @@ function AppearanceModalDefault({ hide }: { hide: () => void }) {
       setIsCustomOpen(true);
       localStorage.setItem(STORAGE_KEY_OPEN, 'true');
     } else {
-      const style = document.getElementById('ohif-custom-theme');
-      if (style) {
-        style.remove();
-      }
       setIsCustomOpen(false);
       localStorage.setItem(STORAGE_KEY_OPEN, 'false');
     }
