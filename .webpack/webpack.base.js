@@ -23,7 +23,10 @@ const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // Only uncomment for old v2 stylus
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 let ReactRefreshWebpackPlugin;
-try { ReactRefreshWebpackPlugin = require('@rspack/plugin-react-refresh'); } catch { ReactRefreshWebpackPlugin = null; }
+try {
+  const mod = require('@rspack/plugin-react-refresh');
+  ReactRefreshWebpackPlugin = mod.ReactRefreshRspackPlugin || mod.default || mod;
+} catch { ReactRefreshWebpackPlugin = null; }
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;

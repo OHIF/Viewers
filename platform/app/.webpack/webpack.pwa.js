@@ -202,6 +202,7 @@ module.exports = (env, argv) => {
             setHeaders,
           },
           publicPath: '/viewer-testdata',
+          watch: false,
         },
       ],
       //public: 'http://localhost:' + 3000,
@@ -241,7 +242,7 @@ module.exports = (env, argv) => {
   }
 
   mergedConfig.watchOptions = {
-    ignored: /node_modules\/@cornerstonejs/,
+    ignored: ['**/node_modules/**', '**/dist/**', '**/.git/**'],
   };
 
   return mergedConfig;

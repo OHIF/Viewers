@@ -37,9 +37,11 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-ui',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-ui',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [

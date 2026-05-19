@@ -35,9 +35,11 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
+      library: {
+        name: 'ohif-extension-dicom-microscopy',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-extension-dicom-microscopy',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [

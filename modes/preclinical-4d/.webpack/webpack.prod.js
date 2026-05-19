@@ -33,10 +33,12 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-mode-preclinical-4d',
+        type: 'umd',
+        export: 'default',
+      },
       path: ROOT_DIR,
-      library: 'ohif-mode-preclinical-4d',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],

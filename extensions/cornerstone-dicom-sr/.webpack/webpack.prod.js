@@ -36,9 +36,11 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
+      library: {
+        name: 'ohif-extension-cornerstone-dicom-sr',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-extension-cornerstone-dicom-sr',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],

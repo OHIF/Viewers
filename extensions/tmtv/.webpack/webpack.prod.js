@@ -35,9 +35,11 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-extension-tmtv',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-extension-tmtv',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
