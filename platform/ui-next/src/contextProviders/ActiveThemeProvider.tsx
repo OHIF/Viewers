@@ -70,11 +70,13 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
 
     return () => {
       const classList = document.body.classList;
+      const toRemove: string[] = [];
       classList.forEach(cls => {
         if (cls.startsWith('theme-')) {
-          classList.remove(cls);
+          toRemove.push(cls);
         }
       });
+      toRemove.forEach(cls => classList.remove(cls));
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
