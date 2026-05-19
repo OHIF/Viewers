@@ -1,10 +1,9 @@
 /**
  * Guards against stale Netlify node_modules where
- * @babel/plugin-transform-class-static-block@7.28.x resolves an older
- * @babel/helper-create-class-features-plugin (no buildNamedEvaluationVisitor).
+ * @babel/plugin-transform-class-static-block@7.28.x resolves a nested
+ * @babel/helper-create-class-features-plugin@7.27.x (no buildNamedEvaluationVisitor).
  *
- * Invoked from platform/app `build:viewer:ci` (always runs on Netlify).
- * Search deploy logs for: FIX_BABEL_HOIST_RAN
+ * Invoked from platform/app `build:viewer:ci`. Search deploy logs for: FIX_BABEL_HOIST_RAN
  */
 const fs = require('fs');
 const path = require('path');
@@ -16,7 +15,6 @@ const MIN_HELPER_FOR_PLUGIN_28 = '7.28.6';
 const MIN_PLUGIN_USING_NAMED_EVAL = '7.28.6';
 
 function log(line) {
-  // Prefix makes grep in Netlify / CI logs trivial.
   console.log(`[${MARKER}] ${line}`);
 }
 
@@ -55,6 +53,17 @@ function helperIsTooOld(helperVersion) {
   return !helperVersion || semverLt(helperVersion, MIN_HELPER_FOR_PLUGIN_28);
 }
 
+function paths(nodeModules) {
+  const pluginDir = path.join(nodeModules, '@babel/plugin-transform-class-static-block');
+  const helperDir = path.join(nodeModules, '@babel/helper-create-class-features-plugin');
+  const nestedBabelDir = path.join(pluginDir, 'node_modules', '@babel');
+  const nestedHelperDir = path.join(
+    nestedBabelDir,
+    'helper-create-class-features-plugin'
+  );
+  return { pluginDir, helperDir, nestedBabelDir, nestedHelperDir };
+}
+
 function resolveHelperFromPlugin(pluginDir) {
   const req = createRequire(path.join(pluginDir, 'lib/index.js'));
   const resolved = req.resolve('@babel/helper-create-class-features-plugin');
@@ -65,14 +74,7 @@ function resolveHelperFromPlugin(pluginDir) {
 }
 
 function diagnose(nodeModules) {
-  const pluginDir = path.join(nodeModules, '@babel/plugin-transform-class-static-block');
-  const helperDir = path.join(nodeModules, '@babel/helper-create-class-features-plugin');
-  const nestedHelperDir = path.join(
-    pluginDir,
-    'node_modules',
-    '@babel',
-    'helper-create-class-features-plugin'
-  );
+  const { pluginDir, helperDir, nestedHelperDir } = paths(nodeModules);
 
   const report = {
     nodeModules,
@@ -146,10 +148,47 @@ function removeDir(dir) {
   }
 }
 
+/**
+ * Yarn often nests helper@7.27.1 under the plugin even when root helper@7.28.6 exists.
+ * Node resolves the nested copy first — delete it so resolution uses the root helper.
+ */
+function removeStaleNestedBabel(nodeModules) {
+  const { pluginDir, helperDir, nestedBabelDir, nestedHelperDir } = paths(nodeModules);
+
+  if (!fs.existsSync(pluginDir) || !fs.existsSync(nestedHelperDir)) {
+    return false;
+  }
+
+  const rootHelperVersion = readVersion(helperDir);
+  const nestedHelperVersion = readVersion(nestedHelperDir);
+
+  if (
+    !helperIsTooOld(rootHelperVersion) &&
+    helperIsTooOld(nestedHelperVersion)
+  ) {
+    removeDir(nestedBabelDir);
+    return true;
+  }
+
+  return false;
+}
+
 function writeReport(root, payload) {
   const reportPath = path.join(root, 'fix-babel-hoist-report.json');
   fs.writeFileSync(reportPath, `${JSON.stringify(payload, null, 2)}\n`);
   log(`wrote ${reportPath}`);
+}
+
+function finishOk(root, startedAt, state, status) {
+  writeReport(root, {
+    marker: MARKER,
+    status,
+    reason: state.reason,
+    startedAt,
+    report: state.report,
+  });
+  log(`status=${status} reason=${state.reason}`);
+  log('END');
 }
 
 function main() {
@@ -157,35 +196,35 @@ function main() {
   const cwd = process.cwd();
   const root = repoRoot();
   const nodeModules = path.join(root, 'node_modules');
-  const pluginDir = path.join(nodeModules, '@babel/plugin-transform-class-static-block');
-  const helperDir = path.join(nodeModules, '@babel/helper-create-class-features-plugin');
-  const nestedBabelDir = path.join(pluginDir, 'node_modules', '@babel');
+  const { pluginDir, helperDir, nestedBabelDir } = paths(nodeModules);
 
   log(`START at ${startedAt}`);
   log(`cwd=${cwd}`);
   log(`repoRoot=${root}`);
   log(`NETLIFY=${process.env.NETLIFY || '(unset)'}`);
   log(`CONTEXT=${process.env.CONTEXT || '(unset)'}`);
-  log(`DEPLOY_PRIME_URL=${process.env.DEPLOY_PRIME_URL || '(unset)'}`);
 
   let state = checkState(nodeModules);
   log(`before: ${JSON.stringify(state.report, null, 2)}`);
 
   if (state.ok) {
-    writeReport(root, {
-      marker: MARKER,
-      status: 'ok',
-      reason: state.reason,
-      startedAt,
-      report: state.report,
-    });
-    log(`status=ok reason=${state.reason}`);
-    log('END');
+    finishOk(root, startedAt, state, 'ok');
     return;
   }
 
-  log('status=repairing stale Babel hoisting');
+  // Common Netlify case: root helper is fine; only nested 7.27.x shadows it.
+  if (!state.rootBad && state.nestedBad) {
+    log('status=repairing nested-only (root helper is already >= 7.28.6)');
+    removeStaleNestedBabel(nodeModules);
+    state = checkState(nodeModules);
+    log(`after nested-only: ${JSON.stringify(state.report, null, 2)}`);
+    if (state.ok) {
+      finishOk(root, startedAt, state, 'fixed-nested-only');
+      return;
+    }
+  }
 
+  log('status=repairing full Babel class-features packages');
   removeDir(nestedBabelDir);
   removeDir(helperDir);
   removeDir(pluginDir);
@@ -195,6 +234,11 @@ function main() {
     cwd: root,
     stdio: 'inherit',
   });
+
+  // yarn install often re-creates nested@7.27.1 while root stays at 7.28.6
+  if (removeStaleNestedBabel(nodeModules)) {
+    log('stripped nested @babel re-created by yarn install');
+  }
 
   state = checkState(nodeModules);
   log(`after: ${JSON.stringify(state.report, null, 2)}`);
@@ -206,7 +250,7 @@ function main() {
       startedAt,
       report: state.report,
     });
-    log('status=failed still misaligned after yarn install');
+    log('status=failed still misaligned after repair');
     log('END');
     process.exit(1);
   }
