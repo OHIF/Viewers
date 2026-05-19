@@ -228,6 +228,7 @@ function SidePanelPreview({
   servicesManager: AppTypes.ServicesManager;
 }) {
   const [series, setSeries] = useState<any[]>([]);
+  const [appConfig] = useAppConfig();
   const { sortBySeriesDate } = utils as any;
   const { customizationService } = servicesManager.services;
   const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
@@ -280,44 +281,64 @@ function SidePanelPreview({
 
         setSeries(normalizedSeriesList);
 
-        for (const row of normalizedSeriesList) {
+        const fetchTargets = normalizedSeriesList.filter((row: any) => {
           const seriesUID = row.seriesInstanceUid || row.SeriesInstanceUID;
           if (!seriesUID) {
-            continue;
+            return false;
           }
-          if (row.thumbnailStatus?.status === PreviewThumbnailStatusState.NotApplicable) {
-            continue;
-          }
+          return row.thumbnailStatus?.status !== PreviewThumbnailStatusState.NotApplicable;
+        });
 
-          void (async () => {
-            let src: string | null = null;
-            try {
-              const getThumbnailSrc = dataSource?.retrieve?.getGetThumbnailSrc?.(
-                { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
-                undefined
-              );
-              src = (await getThumbnailSrc?.()) ?? null;
-            } catch {
-              src = null;
+        // Bound parallel thumbnail fetches so studies with many series don't
+        // saturate the connection and stall later viewer navigation. Mirrors
+        // CS3D's imageLoadPoolManager.maxNumRequests.thumbnail.
+        const maxParallelRequests = Math.max(1, appConfig?.maxNumRequests?.thumbnail ?? 5);
+        let nextIndex = 0;
+        const fetchThumbnail = async (row: (typeof fetchTargets)[number]) => {
+          const seriesUID = row.seriesInstanceUid || row.SeriesInstanceUID;
+          let src: string | null = null;
+          try {
+            const getThumbnailSrc = dataSource?.retrieve?.getGetThumbnailSrc?.(
+              { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
+              undefined
+            );
+            src = (await getThumbnailSrc?.()) ?? null;
+          } catch {
+            src = null;
+          }
+          if (cancelled) {
+            return;
+          }
+          setSeries(prev =>
+            prev.map(seriesItem => {
+              const itemUID = seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID;
+              if (itemUID !== seriesUID) {
+                return seriesItem;
+              }
+              return {
+                ...seriesItem,
+                thumbnailStatus: src
+                  ? { status: PreviewThumbnailStatusState.Ready, src }
+                  : { status: PreviewThumbnailStatusState.NotAvailable },
+              };
+            })
+          );
+        };
+        const thumbnailWorker = async () => {
+          while (!cancelled) {
+            const idx = nextIndex++;
+            if (idx >= fetchTargets.length) {
+              return;
             }
-            if (!cancelled) {
-              setSeries(prev =>
-                prev.map(seriesItem => {
-                  const itemUID = seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID;
-                  if (itemUID !== seriesUID) {
-                    return seriesItem;
-                  }
-                  return {
-                    ...seriesItem,
-                    thumbnailStatus: src
-                      ? { status: PreviewThumbnailStatusState.Ready, src }
-                      : { status: PreviewThumbnailStatusState.NotAvailable },
-                  };
-                })
-              );
-            }
-          })();
-        }
+            await fetchThumbnail(fetchTargets[idx]);
+          }
+        };
+        await Promise.all(
+          Array.from(
+            { length: Math.min(maxParallelRequests, fetchTargets.length) },
+            thumbnailWorker
+          )
+        );
       } catch (e) {
         if (!cancelled) {
           console.warn('Failed to load preview series/thumbnails for selected study.', e);
@@ -331,7 +352,7 @@ function SidePanelPreview({
     return () => {
       cancelled = true;
     };
-  }, [dataSource, selected]);
+  }, [dataSource, selected, appConfig?.maxNumRequests?.thumbnail]);
 
   const handleThumbnailImageError = useCallback((seriesUID: string) => {
     setSeries(prevSeriesList =>
