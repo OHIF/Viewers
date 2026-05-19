@@ -4,4 +4,3 @@ import { cn } from '../lib/utils';
 import { formatDICOMDate } from './formatDICOMDate';
 
 export { getToggledClassName, roundNumber, cn, formatDICOMDate };
-export { injectCustomTheme, clearCustomTheme } from './customThemeInjector';

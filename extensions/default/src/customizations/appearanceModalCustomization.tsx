@@ -9,62 +9,45 @@ import {
   Button,
   useActiveTheme,
   themePresets,
-  injectCustomTheme,
-  clearCustomTheme,
 } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 
-const STORAGE_KEY_CSS = 'ohif:custom-theme-css';
-const STORAGE_KEY_OPEN = 'ohif:custom-theme-open';
-
 function AppearanceModalDefault() {
-  const { activeTheme, setActiveTheme } = useActiveTheme();
+  const { activeTheme, setActiveTheme, customCss, applyCustomTheme, clearCustomTheme } =
+    useActiveTheme();
   const { t } = useTranslation('AppearanceModal');
 
-  const [isCustomOpen, setIsCustomOpen] = React.useState(
-    () => localStorage.getItem(STORAGE_KEY_OPEN) === 'true'
-  );
-  const [customCss, setCustomCss] = React.useState(
-    () => localStorage.getItem(STORAGE_KEY_CSS) || ''
-  );
+  const [draftCss, setDraftCss] = React.useState(() => customCss);
+  const [isCustomOpen, setIsCustomOpen] = React.useState(() => activeTheme === 'custom');
 
   const handleToggleCustom = () => {
-    const next = !isCustomOpen;
-    setIsCustomOpen(next);
-    localStorage.setItem(STORAGE_KEY_OPEN, String(next));
-    if (next) {
-      setActiveTheme('custom');
-    }
+    setIsCustomOpen(!isCustomOpen);
   };
 
   const handleSave = () => {
-    injectCustomTheme(customCss);
-    setActiveTheme('custom');
+    applyCustomTheme(draftCss);
   };
 
   const handleClear = () => {
     clearCustomTheme();
-    setCustomCss('');
+    setDraftCss('');
     setIsCustomOpen(false);
-    setActiveTheme('default');
   };
 
   const handlePresetChange = (value: string) => {
     if (value === 'custom') {
-      injectCustomTheme(customCss);
       setIsCustomOpen(true);
-      localStorage.setItem(STORAGE_KEY_OPEN, 'true');
+      if (draftCss) {
+        applyCustomTheme(draftCss);
+      }
     } else {
       setIsCustomOpen(false);
-      localStorage.setItem(STORAGE_KEY_OPEN, 'false');
+      setActiveTheme(value);
     }
-    setActiveTheme(value);
   };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setCustomCss(value);
-    localStorage.setItem(STORAGE_KEY_CSS, value);
+    setDraftCss(e.target.value);
   };
 
   return (
@@ -90,7 +73,9 @@ function AppearanceModalDefault() {
                     {preset.label}
                   </SelectItem>
                 ))}
-                {customCss && <SelectItem value="custom">{t('Custom')}</SelectItem>}
+                {(customCss || draftCss) && (
+                  <SelectItem value="custom">{t('Custom')}</SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -109,7 +94,7 @@ function AppearanceModalDefault() {
         {isCustomOpen && (
           <div className="mt-4 flex flex-col space-y-2">
             <textarea
-              value={customCss}
+              value={draftCss}
               onChange={handleTextChange}
               placeholder={t('Paste your custom theme color tokens here')}
               rows={8}
