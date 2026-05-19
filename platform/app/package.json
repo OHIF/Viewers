@@ -22,7 +22,7 @@
     "build:dev": "cross-env NODE_ENV=development yarn run build",
     "build:aws": "cross-env NODE_ENV=development APP_CONFIG=config/aws_static.js yarn run build && gzip -9 -r dist",
     "version:update": "cd ../.. && node ./version.mjs && cd platform/app",
-    "build:viewer:ci": "node ../../.scripts/fix-babel-hoist.js && yarn run version:update && cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=false yarn run build",
+    "build:viewer:ci": "yarn run version:update && cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=false yarn run build",
     "build:viewer:qa": "cross-env NODE_ENV=production APP_CONFIG=config/google.js yarn run build",
     "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html QUICK_BUILD=false yarn run build",
     "build": "node --max_old_space_size=8096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
