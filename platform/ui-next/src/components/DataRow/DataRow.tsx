@@ -182,6 +182,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
           <div
             key={`empty-${indent}`}
             className="h-2"
+            data-cy="data-row-detail-line-empty"
           ></div>
         );
       }
@@ -190,6 +191,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
         <div
           key={cleanText}
           className="whitespace-pre-wrap"
+          data-cy="data-row-detail-line"
         >
           {indentation}
           <span className="font-medium">{cleanText}</span>
@@ -197,14 +199,17 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
       );
     };
 
-    const renderDetails = (details: string[]) => {
+    const renderDetails = (details: string[], variant: 'primary' | 'secondary') => {
       const visibleLines = details.slice(0, 4);
       const hiddenLines = details.slice(4);
 
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="cursor-help">
+            <div
+              className="cursor-help"
+              data-cy={`data-row-details-${variant}`}
+            >
               <div className="flex flex-col space-y-1">
                 {visibleLines.map((line, lineIndex) =>
                   renderDetailText(line, line.startsWith('  ') ? 1 : 0)
@@ -418,12 +423,15 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
 
         {/* Details Section */}
         {details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
-          <div className="ml-7 px-2 py-2">
+          <div
+            className="ml-7 px-2 py-2"
+            data-cy="data-row-details"
+          >
             <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
-              {details.primary?.length > 0 && renderDetails(details.primary)}
+              {details.primary?.length > 0 && renderDetails(details.primary, 'primary')}
               {details.secondary?.length > 0 && (
                 <div className="text-muted-foreground ml-auto text-sm">
-                  {renderDetails(details.secondary)}
+                  {renderDetails(details.secondary, 'secondary')}
                 </div>
               )}
             </div>

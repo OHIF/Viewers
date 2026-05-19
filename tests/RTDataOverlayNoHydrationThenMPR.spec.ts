@@ -37,7 +37,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPreMPR
   );
 
@@ -47,7 +47,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPostMPR
   );
 
