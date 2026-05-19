@@ -250,7 +250,11 @@ function SidePanelPreview({
   const seriesView: PreviewSeriesView = forceListView ? 'list' : configuredSeriesView;
 
   useEffect(() => {
-    let cancelled = false;
+    // Drives cancellation when the selection changes or the panel unmounts: stops the
+    // worker pool from scheduling new fetches and aborts in-flight requests that honor
+    // AbortSignal (the `fetch` thumbnail strategy; the bulkDataURI XHR path cannot abort).
+    const abortController = new AbortController();
+    const { signal } = abortController;
 
     const run = async () => {
       const studyInstanceUID = (selected as any)?.studyInstanceUid;
@@ -261,7 +265,7 @@ function SidePanelPreview({
 
       try {
         const seriesList = await dataSource.query.series.search(studyInstanceUID);
-        if (cancelled) {
+        if (signal.aborted) {
           return;
         }
 
@@ -302,11 +306,11 @@ function SidePanelPreview({
               { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
               undefined
             );
-            src = (await getThumbnailSrc?.()) ?? null;
+            src = (await getThumbnailSrc?.({ signal })) ?? null;
           } catch {
             src = null;
           }
-          if (cancelled) {
+          if (signal.aborted) {
             return;
           }
           setSeries(prev =>
@@ -325,7 +329,7 @@ function SidePanelPreview({
           );
         };
         const thumbnailWorker = async () => {
-          while (!cancelled) {
+          while (!signal.aborted) {
             const idx = nextIndex++;
             if (idx >= fetchTargets.length) {
               return;
@@ -340,7 +344,7 @@ function SidePanelPreview({
           )
         );
       } catch (e) {
-        if (!cancelled) {
+        if (!signal.aborted) {
           console.warn('Failed to load preview series/thumbnails for selected study.', e);
           setSeries([]);
         }
@@ -350,7 +354,7 @@ function SidePanelPreview({
     void run();
 
     return () => {
-      cancelled = true;
+      abortController.abort();
     };
   }, [dataSource, selected, appConfig?.maxNumRequests?.thumbnail]);
 

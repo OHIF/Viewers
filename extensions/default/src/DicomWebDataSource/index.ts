@@ -299,11 +299,19 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             if (!options?.getImageSrc) {
               return null;
             }
+            // Note: options.signal (Cornerstone-backed loadImageToCanvas via getImageSrc) does
+            // not currently expose an AbortSignal hook, so abort is not propagated to the
+            // underlying image load. We short-circuit only if already aborted at call time.
+            if (options?.signal?.aborted) {
+              return null;
+            }
             return options.getImageSrc(imageId);
           };
         }
 
         // thumbnailDirect is for plain <img src> URLs without auth headers; never use fetch here.
+        // No network call happens at this layer (the <img> element loads the URL later), so
+        // options.signal is not applicable here.
         if (thumbnailRendering === 'thumbnailDirect') {
           return function getThumbnailSrc() {
             return this.directURL({
@@ -319,19 +327,27 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         const thumbnailRequestStrategy =
           dicomWebConfig.thumbnailRequestStrategy || 'bulkDataRetrieve';
         if (thumbnailRequestStrategy === 'fetch') {
-          return async function getThumbnailSrc() {
+          return async function getThumbnailSrc(options?: { signal?: AbortSignal }) {
             return fetchThumbnailWithQidoFallbackForSeries(
               thumbnailContext,
               thumbnailRendering,
               dicomWebConfig.wadoRoot,
               getAuthorizationHeader,
-              qidoDicomWebClient
+              qidoDicomWebClient,
+              options?.signal
             );
           };
         }
 
         if (thumbnailRendering === 'thumbnail') {
-          return async function getThumbnailSrc() {
+          return async function getThumbnailSrc(options?: { signal?: AbortSignal }) {
+            // Note: this path goes through bulkDataURI -> dicomweb-client retrieveBulkData,
+            // which is XHR-based and does NOT honor AbortSignal. The underlying request will
+            // run to completion server-side even if signal aborts; we only short-circuit
+            // before kicking it off if already aborted.
+            if (options?.signal?.aborted) {
+              return null;
+            }
             const endpoint = buildThumbnailEndpointPath(
               thumbnailContext,
               thumbnailRendering,
@@ -354,7 +370,14 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           }.bind(this);
         }
         if (thumbnailRendering === 'rendered') {
-          return async function getThumbnailSrc() {
+          return async function getThumbnailSrc(options?: { signal?: AbortSignal }) {
+            // Note: this path goes through bulkDataURI -> dicomweb-client retrieveBulkData,
+            // which is XHR-based and does NOT honor AbortSignal. The underlying request will
+            // run to completion server-side even if signal aborts; we only short-circuit
+            // before kicking it off if already aborted.
+            if (options?.signal?.aborted) {
+              return null;
+            }
             const endpoint = buildThumbnailEndpointPath(
               thumbnailContext,
               thumbnailRendering,
@@ -852,7 +875,8 @@ async function fetchThumbnailObjectURL(
   thumbnailContext: ThumbnailContext,
   thumbnailRendering: string,
   wadoRoot: string | undefined,
-  getAuthorizationHeader: () => HeadersInterface
+  getAuthorizationHeader: () => HeadersInterface,
+  signal?: AbortSignal
 ): Promise<string | null> {
   const fetchRequest = getThumbnailFetchRequest(
     thumbnailContext,
@@ -865,6 +889,7 @@ async function fetchThumbnailObjectURL(
     const response = await fetch(fetchRequest.url, {
       method: 'GET',
       headers: fetchRequest.headers,
+      signal,
     });
 
     if (!response.ok) {
@@ -877,6 +902,9 @@ async function fetchThumbnailObjectURL(
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   } catch (error) {
+    if ((error as { name?: string })?.name === 'AbortError') {
+      return null;
+    }
     console.warn('thumbnail fetch failed', error);
     return null;
   }
@@ -894,7 +922,8 @@ async function fetchThumbnailWithQidoFallbackForSeries(
   qidoClient: {
     headers: HeadersInterface;
     searchForInstances: (opts: unknown) => Promise<unknown[]>;
-  }
+  },
+  signal?: AbortSignal
 ): Promise<string | null> {
   const sopInstanceUidTag = '00080018';
 
@@ -902,10 +931,14 @@ async function fetchThumbnailWithQidoFallbackForSeries(
     thumbnailContext,
     thumbnailRendering,
     wadoRoot,
-    getAuthorizationHeader
+    getAuthorizationHeader,
+    signal
   );
   if (initialThumbnailUrl) {
     return initialThumbnailUrl;
+  }
+  if (signal?.aborted) {
+    return null;
   }
   if (thumbnailContext.SOPInstanceUID) {
     return null;
@@ -915,6 +948,9 @@ async function fetchThumbnailWithQidoFallbackForSeries(
   }
   try {
     qidoClient.headers = getAuthorizationHeader();
+    // Note: qidoClient.searchForInstances is XHR-based (dicomweb-client) and does not honor
+    // AbortSignal. If signal aborts mid-request the network call still completes; we just
+    // short-circuit before issuing a follow-up fetch below.
     const instances = await qidoClient.searchForInstances({
       studyInstanceUID: thumbnailContext.StudyInstanceUID,
       seriesInstanceUID: thumbnailContext.SeriesInstanceUID,
@@ -923,6 +959,9 @@ async function fetchThumbnailWithQidoFallbackForSeries(
         includefield: sopInstanceUidTag,
       },
     });
+    if (signal?.aborted) {
+      return null;
+    }
     const firstInstance = instances?.[0] as Record<string, unknown> | undefined;
     const sopAttr = firstInstance?.[sopInstanceUidTag] as { Value?: string[] } | undefined;
     const sopValues = sopAttr?.Value;
@@ -935,7 +974,8 @@ async function fetchThumbnailWithQidoFallbackForSeries(
       { ...thumbnailContext, SOPInstanceUID },
       thumbnailRendering,
       wadoRoot,
-      getAuthorizationHeader
+      getAuthorizationHeader,
+      signal
     );
   } catch (error) {
     console.warn('thumbnail fetch QIDO fallback failed', error);
