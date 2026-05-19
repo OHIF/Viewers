@@ -12,8 +12,12 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should invert the image', async ({ page, mainToolbarPageObject }) => {
+test('should invert the image', async ({ page, mainToolbarPageObject, viewportPageObject }) => {
   await mainToolbarPageObject.moreTools.invert.click();
   await waitForViewportsRendered(page);
-  await checkForScreenshot(page, page, screenShotPaths.invert.invertDisplayedCorrectly);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.invert.invertDisplayedCorrectly
+  );
 });

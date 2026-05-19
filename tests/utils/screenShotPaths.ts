@@ -192,13 +192,6 @@ const screenShotPaths = {
     secondLoadPostHydration: 'secondLoadPostHydration.png',
     viewportAfterSecondDelete: 'viewportAfterSecondDelete.png',
   },
-  crosshairs: {
-    crosshairsRendered: 'crosshairsRendered.png',
-    crosshairsRotated: 'crosshairsRotated.png',
-    crosshairsSlabThickness: 'crosshairsSlabThickness.png',
-    crosshairsResetToolbar: 'crosshairsResetToolbar.png',
-    crosshairsNewDisplayset: 'crosshairsNewDisplayset.png',
-  },
   tmtvRendering: {
     tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
   },

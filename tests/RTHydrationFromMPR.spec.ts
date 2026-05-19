@@ -12,6 +12,7 @@ test('should hydrate an RTSTRUCT from MPR', async ({
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
 
@@ -19,25 +20,37 @@ test('should hydrate an RTSTRUCT from MPR', async ({
 
   await page.waitForTimeout(10000);
 
-  await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprBeforeRT);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydrationFromMPR.mprBeforeRT
+  );
 
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprAfterRT);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydrationFromMPR.mprAfterRT
+  );
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprAfterRTHydrated);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydrationFromMPR.mprAfterRTHydrated
+  );
 
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.rtHydrationFromMPR.mprAfterRTHydratedAfterLayoutChange
   );
 });
