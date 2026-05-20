@@ -19,9 +19,10 @@ test('should display the bidirectional tool', async ({
     { x: 515, y: 339 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.bidirectional.bidirectionalDisplayedCorrectly
   );
 });

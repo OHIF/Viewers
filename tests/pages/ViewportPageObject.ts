@@ -5,15 +5,22 @@ import {
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
+import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-type SvgInnerElement = 'circle' | 'path' | 'd';
+type SvgInnerElement = 'circle' | 'path' | 'd' | 'line' | 'g';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
+  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathDragParams = {
+  path: { x: number; y: number }[];
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
 };
 
@@ -55,6 +62,7 @@ export interface IViewportPageObject {
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
+  normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
     leftMid: Locator;
@@ -80,6 +88,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  getSvgAnnotationStatTextLines: (uid: string) => Locator;
   navigationArrows: {
     locator: Locator;
     prev: {
@@ -91,6 +100,13 @@ export interface IViewportPageObject {
       click: () => Promise<void>;
     };
   };
+  sliceNavigation: {
+    toSlice: (sliceIndex: number) => Promise<void>;
+    toFirstSlice: () => Promise<void>;
+    toLastSlice: () => Promise<void>;
+    scrollBy: (delta: number) => Promise<void>;
+  };
+  magnifyGlass: MagnifyGlassPageObject;
 }
 
 export class ViewportPageObject {
@@ -200,6 +216,59 @@ export class ViewportPageObject {
     };
   }
 
+  /**
+   * Note: awaiting the returned methods (toSlice, toFirstSlice, toLastSlice, scrollBy)
+   * does not guarantee the viewport has finished rendering. Follow up with
+   * `waitForViewportsRendered` if you need pixel-stable state.
+   */
+  private getSliceNavigation(viewport: Locator) {
+    const page = this.page;
+
+    const jumpToImage = async (imageIndex: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      await page.evaluate(
+        ({ commandsManager, viewportId, imageIndex }) => {
+          return commandsManager.runCommand('jumpToImage', {
+            imageIndex,
+            viewport: { id: viewportId },
+          });
+        },
+        {
+          viewportId,
+          imageIndex,
+          commandsManager: await page.evaluateHandle('window.commandsManager'),
+        }
+      );
+    };
+
+    const scrollBy = async (delta: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      await page.evaluate(
+        ({ services, viewportId, delta }) => {
+          const cornerstoneViewport = (
+            services as any
+          ).cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!cornerstoneViewport) {
+            return;
+          }
+          return cornerstoneViewport.scroll(delta);
+        },
+        {
+          viewportId,
+          delta,
+          services: await page.evaluateHandle('window.services'),
+        }
+      );
+    };
+
+    return {
+      toSlice: jumpToImage,
+      toFirstSlice: () => jumpToImage(0),
+      toLastSlice: () => jumpToImage(-1),
+      scrollBy,
+    };
+  }
+
   private async viewportPageObjectFactory(viewport: Locator): Promise<IViewportPageObject> {
     return {
       nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
@@ -236,6 +305,15 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
+      normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
+        await simulateNormalizedPathDragOnElement({
+          locator: viewport,
+          path: params.path,
+          button: params.config?.button,
+          delay: params.config?.delay,
+          steps: params.config?.steps,
+        });
+      },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
       overlayMenu: await this.getOverlayMenu(viewport),
@@ -243,7 +321,14 @@ export class ViewportPageObject {
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
+      getSvgAnnotationStatTextLines: (uid: string) => {
+        return this.getSvg(viewport)
+          .locator(`g[data-annotation-uid="${uid}"]`)
+          .locator('tspan');
+      },
       navigationArrows: this.getNavigationArrows(viewport),
+      sliceNavigation: this.getSliceNavigation(viewport),
+      magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),
     };
   }
 

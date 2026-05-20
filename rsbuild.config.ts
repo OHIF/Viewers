@@ -27,7 +27,13 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
+// Ignore node_modules except @cornerstonejs (symlinked local development).
+const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
+
 export default defineConfig({
+  dev: {
+    lazyCompilation: false,
+  },
   source: {
     entry: {
       index: `${SRC_DIR}/index.js`,
@@ -83,7 +89,8 @@ export default defineConfig({
         },
       },
       watchOptions: {
-        ignored: /node_modules\/@cornerstonejs/,
+        ignored: WATCH_IGNORED,
+        followSymlinks: true,
       },
     },
   },

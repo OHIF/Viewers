@@ -3,6 +3,203 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.79...v3.13.0-beta.80) (2026-05-20)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.78...v3.13.0-beta.79) (2026-05-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.77...v3.13.0-beta.78) (2026-05-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.76...v3.13.0-beta.77) (2026-05-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.75...v3.13.0-beta.76) (2026-05-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.74...v3.13.0-beta.75) (2026-05-18)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.73...v3.13.0-beta.74) (2026-05-15)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.72...v3.13.0-beta.73) (2026-05-13)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.71...v3.13.0-beta.72) (2026-05-12)
+
+
+### Bug Fixes
+
+* **measurement-tracking:** restore tracked state on undo after Delete all ([#5994](https://github.com/OHIF/Viewers/issues/5994)) ([397aa4d](https://github.com/OHIF/Viewers/commit/397aa4d0e361e95dcbd83e0557a9cd84c0b8440a))
+
+
+
+
+
+# [3.13.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.70...v3.13.0-beta.71) (2026-05-07)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.69...v3.13.0-beta.70) (2026-05-07)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.68...v3.13.0-beta.69) (2026-05-06)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.67...v3.13.0-beta.68) (2026-05-05)
+
+
+### Bug Fixes
+
+* **ToolGroupService:** Centralize tool binding persistence and provide API to add and remove persisted bindings. ([#5989](https://github.com/OHIF/Viewers/issues/5989)) ([979d619](https://github.com/OHIF/Viewers/commit/979d619f7ccb426beb75d59721b01c98175d5241))
+
+
+
+
+
+# [3.13.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.66...v3.13.0-beta.67) (2026-04-30)
+
+
+### Features
+
+* **ui-next:** Adds toggle state for ToolButton and Crosshair example ([#5914](https://github.com/OHIF/Viewers/issues/5914)) ([691e267](https://github.com/OHIF/Viewers/commit/691e26731f4f3b3957fe81fc051b09c972696cf6))
+
+
+
+
+
+# [3.13.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.65...v3.13.0-beta.66) (2026-04-29)
+
+
+### Bug Fixes
+
+* **config url:** Hardening fetch options. ([#5985](https://github.com/OHIF/Viewers/issues/5985)) ([468e573](https://github.com/OHIF/Viewers/commit/468e5734a9ab02516430cc0dab5d7f2106dea950))
+
+
+
+
+
+# [3.13.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.64...v3.13.0-beta.65) (2026-04-29)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.63...v3.13.0-beta.64) (2026-04-27)
+
+
+### Bug Fixes
+
+* **seg:** prevent segmentations from spreading to all viewports before hydration confirmation in 3D four-up ([#5967](https://github.com/OHIF/Viewers/issues/5967)) ([f8ccf9f](https://github.com/OHIF/Viewers/commit/f8ccf9ff2ea9ab7c38bd427514a8ae87902822a3))
+
+
+
+
+
+# [3.13.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.62...v3.13.0-beta.63) (2026-04-27)
+
+
+### Bug Fixes
+
+* **security:** refine dynamic config URL trust policy and document trusted-origin behavior ([#5973](https://github.com/OHIF/Viewers/issues/5973)) ([f3cca21](https://github.com/OHIF/Viewers/commit/f3cca21e49729fbf4bab85aa1de64b9dcfebd0ce))
+
+
+
+
+
+# [3.13.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.61...v3.13.0-beta.62) (2026-04-23)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.60...v3.13.0-beta.61) (2026-04-23)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.59...v3.13.0-beta.60) (2026-04-21)
+
+
+### Bug Fixes
+
+* **configuration:** Harden dynamic datasource URL trust boundaries and credential handling. ([#5963](https://github.com/OHIF/Viewers/issues/5963)) ([eede569](https://github.com/OHIF/Viewers/commit/eede569a88ed6a3177bbdea8552dfb93ca13cac5))
+
+
+
+
+
+# [3.13.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.58...v3.13.0-beta.59) (2026-04-16)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.13.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.57...v3.13.0-beta.58) (2026-04-14)
 
 **Note:** Version bump only for package @ohif/extension-default
