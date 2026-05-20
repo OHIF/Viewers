@@ -8,6 +8,8 @@ sidebar_position: 9
 
 The `workList.*` namespace customizes the WorkList study-list route used as the default landing page in OHIF.
 
+With the exception of `workList.variant` itself, the customizations below only apply when `workList.variant` is `'default'`; they are ignored when the legacy study list is mounted.
+
 ## `workList.variant`
 
 Selects which study-list route is mounted at `/`.
@@ -27,7 +29,11 @@ Controls which series views are available in the preview panel that opens to the
 
 Note: the preview is forced to `'list'` when the active data source either declares `thumbnailRendering` as `'wadors'` or `'thumbnailDirect'`, or declares `thumbnailRequestStrategy` as `'bulkDataRetrieve'` (the default value for `thumbnailRequestStrategy`). In those cases, the customization is ignored and the technical override wins.
 
-This customization currently only applies when `workList.variant` is `'default'`.
+:::tip
+
+The customizations below — `workList.columns`, `workList.renderPreviewContent`, and `workList.settingsMenuItems` — accept functions whose return values frequently need access to React hooks, the services manager, or the commands manager (e.g. to open modals, navigate, run commands, or build translated labels). They can be set from `window.config`, but they're generally easier to author in a custom extension's `getCustomizationModule`, where the services manager is in scope and components can use hooks normally. Plain config is best suited to simple tweaks like reordering, removing, or inserting items that only need static handlers.
+
+:::
 
 ## `workList.columns`
 
@@ -40,8 +46,6 @@ type WorkListColumns = (
 ```
 
 The default customization value is the identity function (`(defaults) => defaults`), so out of the box the table shows `Patient`, `MRN`, `Study Date`, `Modalities`, `Description`, `Accession`, `Instances`, and a trailing actions column in that order. If the customization returns anything that is not an array, WorkList falls back to the defaults.
-
-This customization currently only applies when `workList.variant` is `'default'`.
 
 ## `workList.renderPreviewContent`
 
@@ -74,7 +78,27 @@ type RenderPreviewContent = (
 
 Use this customization to change the preview layout (e.g. a different patient summary, a custom series grid) while keeping the fetch, abort-on-selection-change, and bounded thumbnail worker pool intact. When the customization is unset (the default) or not a function, WorkList uses the built-in `<StudyList.PreviewContainer>` layout.
 
-This customization currently only applies when `workList.variant` is `'default'`.
+## `workList.settingsMenuItems`
+
+Builds the items in the WorkList settings popover (the gear menu in the top right). The customization is a function that receives the default items and must return a `SettingsMenuItem[]`.
+
+```ts
+type SettingsMenuItem = {
+  id: string;
+  label: React.ReactNode;
+  onClick: () => void;
+};
+
+type WorkListSettingsMenuItems = (defaults: SettingsMenuItem[]) => SettingsMenuItem[];
+```
+
+The default items are:
+
+- `about` — opens the About modal (`ohif.aboutModal` customization).
+- `userPreferences` — opens the User Preferences modal (`ohif.userPreferencesModal` customization).
+- `logout` — only included when `appConfig.oidc` is configured; navigates to `/logout`.
+
+Use it to reorder, remove, or insert items (e.g. a "Help" link, a "Send feedback" action) without rebuilding the popover shell. If the customization returns a non-array value, WorkList falls back to the defaults.
 
 import { workListCustomizations, TableGenerator } from './sampleCustomizations';
 

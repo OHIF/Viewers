@@ -18,7 +18,7 @@ type Props = withAppTypes & {
   onRefresh: () => void;
 };
 
-export default function WorkListUINext({
+export default function WorkList({
   data,
   dataSource,
   isLoadingData,

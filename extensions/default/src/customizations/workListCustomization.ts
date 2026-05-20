@@ -46,6 +46,15 @@
  *   logic intact. When unset (or not a function), the built-in
  *   `<StudyList.PreviewContainer>` layout is used.
  *   Currently only applies when `workList.variant` is `'default'`.
+ *
+ * - `workList.settingsMenuItems`: `(defaults) => SettingsMenuItem[]` (default: identity)
+ *   Builds the items in the WorkList settings popover. Receives the default
+ *   items (`about`, `userPreferences`, and `logout` when OIDC is configured)
+ *   and must return a
+ *   `SettingsMenuItem[]`. Each item is `{ id, label, onClick }`. Use this to
+ *   reorder, remove, or insert items without rebuilding the popover shell. If
+ *   the returned value is not an array, WorkList falls back to the defaults.
+ *   Currently only applies when `workList.variant` is `'default'`.
  */
 export default function getWorkListCustomization() {
   return {
@@ -53,5 +62,6 @@ export default function getWorkListCustomization() {
     'workList.previewSeriesView': 'all',
     'workList.columns': (defaults: unknown) => defaults,
     'workList.renderPreviewContent': undefined,
+    'workList.settingsMenuItems': (defaults: unknown) => defaults,
   };
 }

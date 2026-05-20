@@ -41,7 +41,7 @@ export function SidePanelPreview({
     thumbnailRequestStrategy === 'bulkDataRetrieve';
 
   const customizationSeriesView = customizationService.getCustomization(
-    'workListUINext.previewSeriesView'
+    'workList.previewSeriesView'
   );
   const configuredSeriesView: PreviewSeriesView = ALLOWED_PREVIEW_SERIES_VIEWS.includes(
     customizationSeriesView as PreviewSeriesView

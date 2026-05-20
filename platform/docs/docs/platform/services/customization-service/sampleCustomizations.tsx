@@ -514,6 +514,45 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'workList.settingsMenuItems',
+    description: (
+      <>
+        Builds the items in the WorkList settings popover (the gear menu in the top right). The
+        customization is a function that receives the default items and must return a{' '}
+        <code>SettingsMenuItem[]</code> (each <code>{'{ id, label, onClick }'}</code>). The
+        defaults are <code>about</code>, <code>userPreferences</code>, and (when{' '}
+        <code>appConfig.oidc</code> is configured) <code>logout</code>. Use it to reorder, remove,
+        or insert items without rebuilding the popover shell. If the customization returns a
+        non-array value, WorkList falls back to the defaults. Currently only applies when{' '}
+        <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: '(defaults) => defaults',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.settingsMenuItems': {
+        // Remove "User Preferences" and add a custom "Help" item at the top.
+        $set: (defaults) => {
+          const filtered = defaults.filter((i) => i.id !== 'userPreferences');
+          return [
+            {
+              id: 'help',
+              label: 'Help',
+              onClick: () => window.open('https://docs.example.com', '_blank'),
+            },
+            ...filtered,
+          ];
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const customizations = [
