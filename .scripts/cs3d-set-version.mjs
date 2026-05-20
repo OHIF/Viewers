@@ -110,8 +110,9 @@ for (const pkgPath of pkgPaths) {
   changes += updateDeps(pkg.resolutions, version);
 
   if (changes > 0) {
-    // Preserve original formatting (detect indent)
-    const indent = content.match(/^(\s+)/m)?.[1] || '  ';
+    // Preserve original formatting (detect indent — restrict to spaces/tabs so
+    // we don't accidentally capture a CRLF newline as part of the indent string)
+    const indent = content.match(/^([ \t]+)/m)?.[1] || '  ';
     writeFileSync(pkgPath, JSON.stringify(pkg, null, indent) + '\n');
     const rel = pkgPath.replace(rootDir + '/', '').replace(rootDir + '\\', '');
     console.log(`  Updated ${rel} (${changes} packages)`);
