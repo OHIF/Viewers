@@ -8,6 +8,7 @@ import { useParams, useLocation } from 'react-router';
 import useSearchParams from '../hooks/useSearchParams';
 import { useAppConfig } from '@state';
 import { shallowEqualIgnoringArrayOrder } from '../utils/shallowEqualIgnoringArrayOrder';
+import { URL_KEYS, getUrlParam } from '../utils/studyListFilterContract';
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -35,7 +36,6 @@ function DataSourceWrapper(props: withAppTypes) {
   const STUDIES_LIMIT = appConfig.queryLimit ?? 101;
   const DEFAULT_DATA = {
     studies: [],
-    dataTotal: 0,
     queryFilterValues: null,
   };
 
@@ -230,41 +230,38 @@ DataSourceWrapper.propTypes = {
 export default DataSourceWrapper;
 
 /**
- * Duplicated in `workList`
- * Need generic that can be shared? Isn't this what qs is for?
- * @param {*} query
+ * Translates the URL query string into the filter shape expected by the
+ * data source (`patientId`, `patientName`, `modalitiesInStudy`, …).
+ *
+ * URL keys come from the centralized contract in `studyListFilterContract.ts`,
+ * which is also what WorkList's URL serializer writes — so the read/write
+ * sides can't drift.
+ *
+ * @param {*} query - URL search string or `URLSearchParams`
  */
 function _getQueryFilterValues(query, queryLimit) {
-  query = new URLSearchParams(query);
-  const newParams = new URLSearchParams();
-  for (const [key, value] of query) {
-    newParams.set(key.toLowerCase(), value);
-  }
-  query = newParams;
+  const params = new URLSearchParams(query);
+  const modalities = getUrlParam(params, URL_KEYS.modalities);
 
   const queryFilterValues = {
     // DCM
-    patientId: query.get('mrn'),
-    patientName: query.get('patientname'),
-    studyDescription: query.get('description'),
-    modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
-    accessionNumber: query.get('accession'),
+    patientId: getUrlParam(params, URL_KEYS.mrn),
+    patientName: getUrlParam(params, URL_KEYS.patientName),
+    studyDescription: getUrlParam(params, URL_KEYS.description),
+    modalitiesInStudy: modalities ? modalities.split(',') : null,
+    accessionNumber: getUrlParam(params, URL_KEYS.accession),
     //
-    startDate: query.get('startdate'),
-    endDate: query.get('enddate'),
+    startDate: getUrlParam(params, URL_KEYS.startDate),
+    endDate: getUrlParam(params, URL_KEYS.endDate),
     // Rarely supported server-side
-    sortBy: query.get('sortby'),
-    sortDirection: query.get('sortdirection'),
+    sortBy: getUrlParam(params, URL_KEYS.sortBy),
+    sortDirection: getUrlParam(params, URL_KEYS.sortDirection),
     // So many different servers out there that we can't rely on them to support offset/limit.
     // So we just query for everything up to the queryLimit for those that support it.
     // For those that don't we will just assume we get everything back.
     offset: 0,
     limit: queryLimit,
   };
-
-  // patientName: good
-  // studyDescription: good
-  // accessionNumber: good
 
   // Delete null/undefined keys
   Object.keys(queryFilterValues).forEach(

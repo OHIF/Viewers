@@ -12,6 +12,11 @@ import {
   type StudyDateRangeFilter,
 } from '@ohif/ui-next';
 import { preserveQueryStrings } from '../utils/preserveQueryParameters';
+import {
+  URL_KEYS,
+  getUrlParam,
+  urlKeyForTextFilter,
+} from '../utils/studyListFilterContract';
 
 export type StudyListState = {
   sorting: SortingState;
@@ -47,7 +52,7 @@ export function useStudyListStateSync() {
     sessionState.sorting || parseSortingFromURL(searchParams)
   );
 
-  const dataSources = sessionState.dataSources || searchParams.get('datasources');
+  const dataSources = sessionState.dataSources || getUrlParam(searchParams, URL_KEYS.dataSources);
 
   const state = useMemo(
     () => ({ sorting, pagination, filters, dataSources }),
@@ -93,8 +98,8 @@ export function useStudyListStateSync() {
  * Parse sorting state from URL query parameters
  */
 function parseSortingFromURL(params: URLSearchParams): SortingState {
-  const sortBy = params.get('sortby');
-  const sortDirection = params.get('sortdirection');
+  const sortBy = getUrlParam(params, URL_KEYS.sortBy);
+  const sortDirection = getUrlParam(params, URL_KEYS.sortDirection);
 
   if (!sortBy) {
     return [];
@@ -112,8 +117,8 @@ function parseSortingFromURL(params: URLSearchParams): SortingState {
  * Parse pagination state from URL query parameters
  */
 function parsePaginationFromURL(params: URLSearchParams): PaginationState {
-  const page = params.get('pagenumber');
-  const perPage = params.get('resultsperpage');
+  const page = getUrlParam(params, URL_KEYS.pageNumber);
+  const perPage = getUrlParam(params, URL_KEYS.resultsPerPage);
 
   return {
     pageIndex: page ? parseInt(page, 10) - 1 : 0,
@@ -128,8 +133,7 @@ function parsePaginationFromURL(params: URLSearchParams): PaginationState {
 function parseFiltersFromURL(params: URLSearchParams): ColumnFiltersState {
   const filters: ColumnFiltersState = [];
 
-  // Example: Parse modality filter
-  const modalities = params.get(COLUMN_IDS.MODALITIES);
+  const modalities = getUrlParam(params, URL_KEYS.modalities);
   if (modalities) {
     const modalityList = modalities.split(',').filter(Boolean);
     if (modalityList.length > 0) {
@@ -140,8 +144,8 @@ function parseFiltersFromURL(params: URLSearchParams): ColumnFiltersState {
     }
   }
 
-  const startDate = params.get('startdate');
-  const endDate = params.get('enddate');
+  const startDate = getUrlParam(params, URL_KEYS.startDate);
+  const endDate = getUrlParam(params, URL_KEYS.endDate);
   if (startDate || endDate) {
     filters.push({
       id: COLUMN_IDS.STUDY_DATE_TIME,
@@ -152,13 +156,13 @@ function parseFiltersFromURL(params: URLSearchParams): ColumnFiltersState {
     });
   }
 
-  // Add other filter parsing as needed
-  // For text filters like patientName, mrn, etc.
-  TEXT_FILTER_COLUMN_IDS.forEach(key => {
-    const value = params.get(key);
+  // Text filters (patient name, MRN, accession, description). URL keys come
+  // from the centralized contract — see studyListFilterContract.ts.
+  TEXT_FILTER_COLUMN_IDS.forEach(id => {
+    const value = getUrlParam(params, urlKeyForTextFilter(id));
     if (value) {
       filters.push({
-        id: key,
+        id,
         value,
       });
     }
@@ -176,39 +180,37 @@ function buildQueryFromState(state: StudyListState): string {
   // Sorting
   if (state.sorting.length > 0) {
     const sort = state.sorting[0];
-    query.sortBy = sort.id;
-    query.sortDirection = sort.desc ? 'desc' : 'asc';
+    query[URL_KEYS.sortBy] = sort.id;
+    query[URL_KEYS.sortDirection] = sort.desc ? 'desc' : 'asc';
   }
 
   // Pagination
   if (state.pagination.pageIndex > 0) {
-    query.pageNumber = String(state.pagination.pageIndex + 1);
+    query[URL_KEYS.pageNumber] = String(state.pagination.pageIndex + 1);
   }
   if (state.pagination.pageSize !== 50) {
-    query.resultsPerPage = String(state.pagination.pageSize);
+    query[URL_KEYS.resultsPerPage] = String(state.pagination.pageSize);
   }
 
   // Filters
   state.filters.forEach(filter => {
     if (filter.id === COLUMN_IDS.MODALITIES && Array.isArray(filter.value)) {
-      query.modalities = filter.value.join(',');
+      query[URL_KEYS.modalities] = filter.value.join(',');
     } else if (filter.id === COLUMN_IDS.STUDY_DATE_TIME) {
       const dateRange = filter.value as StudyDateRangeFilter | undefined;
       if (dateRange?.startDate) {
-        query.startDate = dateRange.startDate;
+        query[URL_KEYS.startDate] = dateRange.startDate;
       }
       if (dateRange?.endDate) {
-        query.endDate = dateRange.endDate;
+        query[URL_KEYS.endDate] = dateRange.endDate;
       }
     } else if (typeof filter.value === 'string' && filter.value) {
-      // Map column IDs to URL keys (lowercase)
-      const urlKey = filter.id.toLowerCase();
-      query[urlKey] = filter.value;
+      query[urlKeyForTextFilter(filter.id)] = filter.value;
     }
   });
 
   if (state.dataSources) {
-    query.dataSources = state.dataSources;
+    query[URL_KEYS.dataSources] = state.dataSources;
   }
 
   preserveQueryStrings(query);
