@@ -16,10 +16,19 @@
  *   - declares `thumbnailRendering` as `'wadors'` or `'thumbnailDirect'`, or
  *   - declares `thumbnailRequestStrategy` as `'bulkDataRetrieve'` (default value).
  *   Currently only applies when `workList.variant` is `'default'`.
+ *
+ * - `workList.columns`: `(defaults) => ColumnDef[]` (default: identity)
+ *   Builds the column set for the WorkList table. Receives the default
+ *   `ColumnDef[]` (same shape as `StudyList.defaultColumns()`) and must return
+ *   a `ColumnDef[]`. Use this to reorder, hide, or insert columns without
+ *   rewriting the defaults. If the returned value is not an array, WorkList
+ *   falls back to the defaults.
+ *   Currently only applies when `workList.variant` is `'default'`.
  */
 export default function getWorkListCustomization() {
   return {
     'workList.variant': 'default',
     'workList.previewSeriesView': 'all',
+    'workList.columns': (defaults: unknown) => defaults,
   };
 }

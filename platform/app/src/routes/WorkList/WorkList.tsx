@@ -56,7 +56,16 @@ export default function WorkListUINext({
   const [selected, setSelected] = useState<StudyRow | null>(null);
   const [isPreviewOpen, setPreviewOpen] = useState(true);
 
-  const columns = useMemo(() => StudyList.defaultColumns(), []);
+  const columns = useMemo(() => {
+    type Columns = ReturnType<typeof StudyList.defaultColumns>;
+    const defaults: Columns = StudyList.defaultColumns();
+    const buildColumns = customizationService.getCustomization('workList.columns');
+    if (typeof buildColumns !== 'function') {
+      return defaults;
+    }
+    const result = (buildColumns as (defaults: Columns) => Columns)(defaults);
+    return Array.isArray(result) ? result : defaults;
+  }, [customizationService]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
     <Icons.OHIFLogoHorizontal

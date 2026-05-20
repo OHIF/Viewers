@@ -411,6 +411,38 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'workList.columns',
+    description: (
+      <>
+        Builds the column set for the WorkList table. The customization is a function that
+        receives the default <code>ColumnDef[]</code> (from <code>StudyList.defaultColumns()</code>)
+        and must return a <code>ColumnDef[]</code>. Use it to reorder, hide, or insert columns
+        without rewriting the defaults. The default value is the identity function. If the
+        customization returns a non-array value, WorkList falls back to the defaults. Currently
+        only applies when <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: '(defaults) => defaults',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.columns': {
+        // Hide the MRN column and move Instances to the front.
+        $set: (defaults) => {
+          const filtered = defaults.filter((c) => c.id !== 'mrn');
+          const instances = filtered.find((c) => c.id === 'instances');
+          if (!instances) return filtered;
+          return [instances, ...filtered.filter((c) => c.id !== 'instances')];
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const customizations = [
