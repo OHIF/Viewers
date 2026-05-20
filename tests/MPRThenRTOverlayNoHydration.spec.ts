@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -14,30 +21,34 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 }) => {
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.mprThenRTOverlayNoHydration.mprPreRTOverlayNoHydration
   );
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
-  await viewportPageObject.getById('mpr-sagittal').pane.hover();
-  const dataOverlayPageObject = viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay;
-  await dataOverlayPageObject.toggle('mpr-sagittal');
-  await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets', 'mpr-sagittal');
+  const sagittalViewport = await viewportPageObject.getById('mpr-sagittal');
+  await sagittalViewport.pane.hover();
+  const dataOverlayPageObject = sagittalViewport.overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
+
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+  await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
 
   // Hide the overlay menu.
-  await dataOverlayPageObject.toggle('mpr-sagittal');
+  await dataOverlayPageObject.toggle();
 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await viewportRenderCycle;
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.mprThenRTOverlayNoHydration.mprPostRTOverlayNoHydration,
     normalizedClip: { x: 0, y: 0, width: 1.0, height: 0.75 }, // clip to avoid any popups concerning surface creation and clipping
   });

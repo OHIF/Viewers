@@ -200,8 +200,13 @@ async function _load(
   srDisplaySet.isRehydratable = isRehydratable(srDisplaySet, mappings);
   srDisplaySet.isLoaded = true;
 
-  /** Check currently added displaySets and add measurements if the sources exist */
-  displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
+  /** Check currently added displaySets and add measurements if the sources exist.
+   *  Walk the SR's study first in default series order (not load order) so SCOORD3D
+   *  FrameOfReference matching picks a stable series when several share FOR. */
+  const displaySetsForSRPass = utils.sortDisplaySetsCopy(displaySetService.activeDisplaySets, {
+    studyInstanceUIDFirst: srDisplaySet.StudyInstanceUID,
+  });
+  displaySetsForSRPass.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(
       srDisplaySet,
       activeDisplaySet,

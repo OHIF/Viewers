@@ -734,10 +734,11 @@ const commandsModule = ({
         displaySetIndexToShow > -1 && displaySetIndexToShow < currentDisplaySets.length;
         displaySetIndexToShow += direction
       ) {
-        if (
-          !excludeNonImageModalities ||
-          !nonImageModalities.includes(currentDisplaySets[displaySetIndexToShow].Modality)
-        ) {
+        const nextDisplaySet = currentDisplaySets[displaySetIndexToShow];
+        if (nextDisplaySet.madeInClient) {
+          continue;
+        }
+        if (!excludeNonImageModalities || !nonImageModalities.includes(nextDisplaySet.Modality)) {
           break;
         }
       }

@@ -9,20 +9,20 @@ test('should display the window level text as an overlay in various viewport lay
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await expect(viewportPageObject.getNth(0).overlayText.bottomLeft.windowLevel).toBeVisible();
+  await expect((await viewportPageObject.getNth(0)).overlayText.bottomLeft.windowLevel).toBeVisible();
 
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-3-0').click();
 
   for (let i = 0; i < 3; i++) {
-    await expect(viewportPageObject.getNth(i).overlayText.bottomLeft.windowLevel).toBeVisible();
+    await expect((await viewportPageObject.getNth(i)).overlayText.bottomLeft.windowLevel).toBeVisible();
   }
 
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-1-1').click();
 
   for (let i = 0; i < 3; i++) {
-    await expect(viewportPageObject.getNth(i).overlayText.bottomLeft.windowLevel).toBeVisible();
+    await expect((await viewportPageObject.getNth(i)).overlayText.bottomLeft.windowLevel).toBeVisible();
   }
 });
 
@@ -35,6 +35,6 @@ test('should display the window level text as an overlay in the various TMTV vie
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
   for (let i = 0; i < 9; i++) {
-    await expect(viewportPageObject.getNth(i).overlayText.bottomLeft.windowLevel).toBeVisible();
+    await expect((await viewportPageObject.getNth(i)).overlayText.bottomLeft.windowLevel).toBeVisible();
   }
 });

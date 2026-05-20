@@ -70,7 +70,7 @@ function promptHydrationDialog({
 }: HydrationDialogProps): Promise<boolean | HydrationSRResult> {
   const { uiViewportDialogService, customizationService } = servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
-  const appConfig = extensionManager._appConfig;
+  const appConfig = extensionManager.appConfig;
 
   // Todo: make this use enum from the extension, we should move the enum
   const standardMode = appConfig?.measurementTrackingMode === 'standard';

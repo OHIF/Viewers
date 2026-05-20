@@ -107,26 +107,28 @@ const Row = ({ item, index }: RowProps) => {
 
   const { uid } = item;
   return (
-    <DataRow
-      key={item.uid}
-      description={item.label}
-      number={index + 1}
-      title={item.label}
-      colorHex={item.colorHex}
-      isSelected={item.isSelected}
-      details={item.displayText}
-      onDelete={e => onAction(e, 'removeMeasurement', uid)}
-      onSelect={e => onAction(e, 'jumpToMeasurement', uid)}
-      onRename={e => onAction(e, 'renameMeasurement', uid)}
-      onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
-      onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
-      onColor={e => onAction(e, 'changeMeasurementColor', uid)}
-      disableEditing={disableEditing}
-      isVisible={item.isVisible}
-      isLocked={item.isLocked}
-    >
-      {item.isUnmapped && <DataRow.Status.Warning tooltip={item.statusTooltip} />}
-    </DataRow>
+    <div data-cy={`measurement-table-row-${index}`}>
+      <DataRow
+        key={item.uid}
+        description={item.label}
+        number={index + 1}
+        title={item.label}
+        colorHex={item.colorHex}
+        isSelected={item.isSelected}
+        details={item.displayText}
+        onDelete={e => onAction(e, 'removeMeasurement', uid)}
+        onSelect={e => onAction(e, 'jumpToMeasurement', uid)}
+        onRename={e => onAction(e, 'renameMeasurement', uid)}
+        onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
+        onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
+        onColor={e => onAction(e, 'changeMeasurementColor', uid)}
+        disableEditing={disableEditing}
+        isVisible={item.isVisible}
+        isLocked={item.isLocked}
+      >
+        {item.isUnmapped && <DataRow.Status.Warning tooltip={item.statusTooltip} />}
+      </DataRow>
+    </div>
   );
 };
 

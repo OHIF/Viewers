@@ -110,8 +110,9 @@ for (const pkgPath of pkgPaths) {
   changes += updateDeps(pkg.resolutions, version);
 
   if (changes > 0) {
-    // Preserve original formatting (detect indent)
-    const indent = content.match(/^(\s+)/m)?.[1] || '  ';
+    // Preserve original formatting (detect indent — restrict to spaces/tabs so
+    // we don't accidentally capture a CRLF newline as part of the indent string)
+    const indent = content.match(/^([ \t]+)/m)?.[1] || '  ';
     writeFileSync(pkgPath, JSON.stringify(pkg, null, indent) + '\n');
     const rel = pkgPath.replace(rootDir + '/', '').replace(rootDir + '\\', '');
     console.log(`  Updated ${rel} (${changes} packages)`);
@@ -121,4 +122,10 @@ for (const pkgPath of pkgPaths) {
 
 console.log(
   `\nDone: ${totalChanges} version(s) updated to ${version} across ${pkgPaths.length} package files.`
+);
+console.log(
+  'This step changes package.json; the following install must not use a frozen Bun lockfile ' +
+    '(OHIF+CS3D combined “version” CI does: `bun install --config=./bunfig.update-lockfile.toml`). ' +
+    'Other installs stay frozen. Locally after this script, use that bun command and/or ' +
+    '`bun run install:update-lockfile` when you intend to commit lockfile updates.\n'
 );

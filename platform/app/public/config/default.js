@@ -250,6 +250,12 @@ window.config = {
       configuration: {
         friendlyName: 'dicomweb delegating proxy',
         name: 'dicomwebproxy',
+        // Security controls for runtime ?url=... datasource loading:
+        // In authenticated environments, runtime ?url origins must be allowlisted:
+        // dangerouslyAllowedOriginsForAuthenticatedEnvironments: [
+        //   'https://config.example.com',
+        //   'http://localhost:5000',
+        // ],
       },
     },
     {
@@ -258,6 +264,12 @@ window.config = {
       configuration: {
         friendlyName: 'dicom json',
         name: 'json',
+        // Security controls for runtime ?url=... datasource loading:
+        // In authenticated environments, runtime ?url origins must be allowlisted:
+        // dangerouslyAllowedOriginsForAuthenticatedEnvironments: [
+        //   'https://config.example.com',
+        //   'http://localhost:5000',
+        // ],
       },
     },
     {

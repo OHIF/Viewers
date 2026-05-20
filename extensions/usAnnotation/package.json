@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-ultrasound-pleura-bline",
-  "version": "3.13.0-beta.43",
+  "version": "3.13.0-beta.80",
   "description": "",
   "author": "Rodrigo Basilio",
   "license": "MIT",
@@ -42,13 +42,13 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/core": "4.20.0",
-    "@cornerstonejs/tools": "4.20.0",
-    "@ohif/core": "3.13.0-beta.43",
-    "@ohif/extension-cornerstone": "3.13.0-beta.43",
-    "@ohif/extension-default": "3.13.0-beta.43",
-    "@ohif/i18n": "3.13.0-beta.43",
-    "@ohif/ui-next": "3.13.0-beta.43"
+    "@cornerstonejs/core": "4.22.8",
+    "@cornerstonejs/tools": "4.22.8",
+    "@ohif/core": "3.13.0-beta.80",
+    "@ohif/extension-cornerstone": "3.13.0-beta.80",
+    "@ohif/extension-default": "3.13.0-beta.80",
+    "@ohif/i18n": "3.13.0-beta.80",
+    "@ohif/ui-next": "3.13.0-beta.80"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
@@ -61,7 +61,7 @@
     "@babel/plugin-transform-regenerator": "7.28.1",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "7.28.0",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@svgr/webpack": "8.1.0",
