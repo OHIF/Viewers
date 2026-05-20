@@ -3,8 +3,15 @@ import { defineConfig, devices } from '@playwright/test';
 const E2E_PORT = Number(process.env.OHIF_PORT || 3335);
 const E2E_BASE_URL = `http://localhost:${E2E_PORT}`;
 
+// Port cleanup must run before the dev server starts, not in globalSetup — Playwright
+// starts webServer before globalSetup, so killing the port there would stop the server
+// and cause net::ERR_CONNECTION_REFUSED in tests.
+const webServerStart = `cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=${E2E_PORT} nyc yarn start`;
+const webServerCommand = process.env.CI
+  ? `node .scripts/ci/free-ohif-e2e-port.mjs && ${webServerStart}`
+  : webServerStart;
+
 export default defineConfig({
-  globalSetup: './tests/global-setup.ts',
   testDir: './tests',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
@@ -49,7 +56,7 @@ export default defineConfig({
     //},
   ],
   webServer: {
-    command: `cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=${E2E_PORT} nyc yarn start`,
+    command: webServerCommand,
     url: E2E_BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 360_000,
