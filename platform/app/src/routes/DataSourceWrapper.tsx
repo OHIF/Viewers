@@ -7,6 +7,7 @@ import { extensionManager } from '../App';
 import { useParams, useLocation } from 'react-router';
 import useSearchParams from '../hooks/useSearchParams';
 import { useAppConfig } from '@state';
+import { shallowEqualIgnoringArrayOrder } from '../utils/shallowEqualIgnoringArrayOrder';
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -155,10 +156,17 @@ function DataSourceWrapper(props: withAppTypes) {
     }
 
     try {
-      // Check if query filters have changed
-      // Data is invalid if filters changed (filters, sorting, search terms, etc.)
-      // Pagination changes alone should not trigger a refetch since we're using manual pagination
-      const filtersChanged = !areQueryFiltersEqual(data.queryFilterValues, queryFilterValues);
+      // Refetch when the filter set has actually changed. Filters can include
+      // array-valued fields like `modalitiesInStudy` whose element order
+      // doesn't matter, so we compare with an unordered-array shallow equal
+      // rather than reference equality — otherwise a re-render that
+      // re-creates the array with the same contents would force a refetch.
+      // Pagination changes alone don't invalidate the data (we paginate
+      // client-side).
+      const filtersChanged = !shallowEqualIgnoringArrayOrder(
+        data.queryFilterValues,
+        queryFilterValues
+      );
       const isDataInvalid = !isLoading && filtersChanged;
 
       if (isDataInvalid) {
@@ -220,48 +228,6 @@ DataSourceWrapper.propTypes = {
 };
 
 export default DataSourceWrapper;
-
-/**
- * Compares two queryFilterValues objects
- * Returns true if they are the same, false otherwise.
- * @param {object} query1 - First query filter values object
- * @param {object} query2 - Second query filter values object
- * @returns {boolean} - True if filters are equal, false otherwise
- */
-function areQueryFiltersEqual(query1, query2) {
-  if (!query1 || !query2) {
-    return query1 === query2; // Both null/undefined or one is null
-  }
-
-  // Get all keys from both objects
-  const allKeys = new Set([...Object.keys(query1), ...Object.keys(query2)]);
-
-  for (const key of allKeys) {
-    const val1 = query1[key];
-    const val2 = query2[key];
-
-    // Handle array comparison (e.g., modalitiesInStudy)
-    if (Array.isArray(val1) && Array.isArray(val2)) {
-      if (val1.length !== val2.length) {
-        return false;
-      }
-      const s1 = new Set(val1);
-      const s2 = new Set(val2);
-      if (s1.size !== s2.size) {
-        return false;
-      }
-      for (const v of s2.values()) {
-        if (!s1.has(v)) {
-          return false;
-        }
-      }
-    } else if (val1 !== val2) {
-      return false;
-    }
-  }
-
-  return true;
-}
 
 /**
  * Duplicated in `workList`
