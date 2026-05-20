@@ -40,7 +40,7 @@ test('should duplicate a contour segment and add a new row to the panel', async 
   await segment0.actions.duplicate();
 
   const countAfterDuplicate = await panel.getSegmentCount();
-  expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').toBe(5);
+  expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').(5);
 
   //New segment's default name is formatted as "Segment {segmentCount}"
   const newSegmentLocator = panel.nthSegment(initialCount).title;
@@ -84,10 +84,10 @@ test('should render the duplicated contour on the viewport', async ({
   await segment0.toggleVisibility();
   await segment0.click();
 
-  const sourceSvgPath = await getSvgAttribute(viewportPageObject, 'path', 'd');
+  const sourceSvgPath = await getSvgAttribute({viewportPageObject, svgInnerElement: 'path', attributeName: 'd'});
   expect(sourceSvgPath, 'Expected a visible SVG path for the source segment').not.toBeNull();
-  const sourceSvgPathsCount = await (await viewportPageObject.getById('default')).svg('path').count();
-  expect(sourceSvgPathsCount, 'Expected only one SVG path element for the original segment').toBe(1);
+  const sourceSvgPaths = (await viewportPageObject.getById('default')).svg('path');
+  expect(sourceSvgPaths, 'Expected only one SVG path element for the original segment').toHaveCount(1);
 
   // New segment is at index 4
   await segment0.actions.duplicate();
@@ -97,10 +97,10 @@ test('should render the duplicated contour on the viewport', async ({
   await segment0.toggleVisibility();
   await duplicatedSegment.click();
 
-  const duplicatedSvgPath = await getSvgAttribute(viewportPageObject, 'path', 'd');
+  const duplicatedSvgPath = await getSvgAttribute({viewportPageObject, svgInnerElement: 'path', attributeName: 'd'});
   expect(duplicatedSvgPath, 'Expected a visible SVG path for the duplicated segment').not.toBeNull();
-  const duplicatedSvgPathsCount = await (await viewportPageObject.getById('default')).svg('path').count();
-  expect(duplicatedSvgPathsCount, 'Expected only one SVG path element for the duplicated segment').toBe(1);
+  const duplicatedSvgPaths = (await viewportPageObject.getById('default')).svg('path');
+  expect(duplicatedSvgPaths, 'Expected only one SVG path element for the duplicated segment').toHaveCount(1);
 
   expect(
     duplicatedSvgPath,

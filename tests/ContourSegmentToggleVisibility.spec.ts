@@ -78,7 +78,11 @@ test('should restore svg paths when segment visibility is toggled on/off', async
 
   const segment0 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
   await segment0.toggleVisibility();
-  const svgPathBefore = await getSvgAttribute(viewportPageObject, 'path', 'd');
+  const svgPathBefore = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+  });
   expect(svgPathBefore, 'Expected a visible SVG path for segment 0').not.toBeNull();
 
   await segment0.toggleVisibility();
@@ -88,7 +92,11 @@ test('should restore svg paths when segment visibility is toggled on/off', async
   ).toHaveCount(0);
 
   await segment0.toggleVisibility();
-  const svgPathAfter = await getSvgAttribute(viewportPageObject, 'path', 'd');
+  const svgPathAfter = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+  });
   expect(svgPathAfter, 'Expected SVG path to be restored after toggling visibility back on').toBe(
     svgPathBefore
   );
