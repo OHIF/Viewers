@@ -39,8 +39,6 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "webpack": "5.105.0",
-    "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
   },
   "keywords": [

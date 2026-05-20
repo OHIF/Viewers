@@ -70,8 +70,6 @@
     "worker-loader": "3.0.8"
   },
   "devDependencies": {
-    "cross-env": "7.0.3",
-    "webpack": "5.105.0",
-    "webpack-cli": "5.1.4"
+    "cross-env": "7.0.3"
   }
 }

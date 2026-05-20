@@ -6,29 +6,24 @@
 # We use Netlify for deploy previews and for publishing docs (gh-pages branch).
 # https://viewer.ohif.org is created using a different process that is
 # managed by CircleCI and deployed to our Google Hosting
-#
 
 [build]
   base = ""
-  build = "pnpm run build:viewer:ci"
-  publish = "dist"
+  command = "pnpm run build:ci"
+  publish = "platform/app/dist"
 
-
-# NODE_VERSION in root `.nvmrc` takes priority
 [build.environment]
   # If 'production', `pnpm install` does not install devDependencies
   NODE_ENV = "development"
   NODE_VERSION = "24"
 
 [[headers]]
-  # Define which paths this specific [[headers]] block will cover.
   for = "/*"
 
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
 
-    # Multi-key header rules are expressed with multi-line strings.
     cache-control = '''
     max-age=0,
     no-cache,

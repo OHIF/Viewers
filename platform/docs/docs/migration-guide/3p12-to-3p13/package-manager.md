@@ -148,7 +148,7 @@ were updated:
 -   "npm": ">=6",
 -   "yarn": ">=1.18.0"
 +   "node": ">=24",
-+   "pnpm": ">=10"
++   "pnpm": "11.1.1"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",

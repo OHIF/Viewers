@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": ">=24",
-    "pnpm": ">=10"
+    "pnpm": "11.1.1"
   },
   "scripts": {
     "deploy": "netlify deploy --prod --dir ./../platform/app/dist"

@@ -22,7 +22,7 @@ package's `engines.node` field have been updated.
 -   "npm": ">=6",
 -   "yarn": ">=1.20.0"
 +   "node": ">=24",
-+   "pnpm": ">=11"
++   "pnpm": "11.1.1"
   }
 ```
 
@@ -48,14 +48,14 @@ no longer supports either as the install path — see the
 Updated in this release:
 
 - `.node-version` — pinned to `24`.
-- `package.json` (root) — `engines.node >=24`, `engines.pnpm >=11`.
+- `package.json` (root) — `engines.node >=24`, `engines.pnpm 11.1.1`.
 - Every workspace package's `engines.node` field, including
   `platform/app`, `platform/core`, `platform/ui`, `platform/ui-next`,
   `platform/i18n`, `platform/cli`, every `extensions/*` package, and
   every `modes/*` package.
 - `platform/cli/templates/extension/dependencies.json` and
   `platform/cli/templates/mode/dependencies.json` — extensions and
-  modes generated from the CLI now require Node 24 and pnpm 10+.
+  modes generated from the CLI now require Node 24 and pnpm 11.1.1.
 - CI config (`.github/workflows/*`, `.circleci/config.yml`,
   `.netlify/build-deploy-preview.sh`) was bumped in lockstep.
 

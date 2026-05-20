@@ -31,7 +31,6 @@
   "peerDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
-    "@ohif/extension-measurement-tracking": "workspace:*",
     "@ohif/ui": "workspace:*",
     "dcmjs": "0.49.4",
     "dicom-parser": "1.8.21",
@@ -47,9 +46,7 @@
     "classnames": "2.5.1"
   },
   "devDependencies": {
-    "cross-env": "7.0.3",
-    "webpack": "5.105.0",
-    "webpack-cli": "5.1.4"
+    "cross-env": "7.0.3"
   },
   "keywords": [
     "ohif-extension"

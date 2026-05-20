@@ -46,9 +46,7 @@
     "@kitware/vtk.js": "34.15.1"
   },
   "devDependencies": {
-    "cross-env": "7.0.3",
-    "webpack": "5.105.0",
-    "webpack-cli": "5.1.4"
+    "cross-env": "7.0.3"
   },
   "keywords": [
     "ohif-extension"

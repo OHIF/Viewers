@@ -91,9 +91,6 @@ importers:
       '@istanbuljs/nyc-config-typescript':
         specifier: 1.0.2
         version: 1.0.2(nyc@17.1.0)
-      '@pmmmwh/react-refresh-webpack-plugin':
-        specifier: 0.5.17
-        version: 0.5.17(@types/webpack@4.41.40)(react-refresh@0.18.0)(type-fest@2.19.0)(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rsbuild/core':
         specifier: 1.7.3
         version: 1.7.3
@@ -166,9 +163,6 @@ importers:
       style-loader:
         specifier: 1.3.0
         version: 1.3.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-      terser-webpack-plugin:
-        specifier: 5.3.14
-        version: 5.3.14(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@25.9.1)(typescript@5.5.4)
@@ -190,10 +184,10 @@ importers:
         version: 7.28.2
       '@cornerstonejs/adapters':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/ai':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/codec-charls':
         specifier: 1.2.3
         version: 1.2.3
@@ -208,19 +202,19 @@ importers:
         version: 2.4.7
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/dicom-image-loader':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(dicom-parser@1.8.21)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(dicom-parser@1.8.21)
       '@cornerstonejs/labelmap-interpolation':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))
       '@cornerstonejs/polymorphic-segmentation':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))
       '@cornerstonejs/tools':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@icr/polyseg-wasm':
         specifier: 0.4.0
         version: 0.4.0
@@ -229,7 +223,7 @@ importers:
         version: 1.1.0
       '@kitware/vtk.js':
         specifier: 34.15.1
-        version: 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -280,17 +274,11 @@ importers:
         version: 1.3.1
       worker-loader:
         specifier: 3.0.8
-        version: 3.0.8(webpack@5.105.0)
+        version: 3.0.8(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
     devDependencies:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/cornerstone-dicom-pmap:
     dependencies:
@@ -299,13 +287,13 @@ importers:
         version: 7.28.2
       '@cornerstonejs/adapters':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@kitware/vtk.js':
         specifier: 34.15.1
-        version: 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -340,12 +328,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/cornerstone-dicom-rt:
     dependencies:
@@ -386,12 +368,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/cornerstone-dicom-seg:
     dependencies:
@@ -400,13 +376,13 @@ importers:
         version: 7.28.2
       '@cornerstonejs/adapters':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@kitware/vtk.js':
         specifier: 34.15.1
-        version: 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -441,12 +417,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/cornerstone-dicom-sr:
     dependencies:
@@ -455,22 +425,19 @@ importers:
         version: 7.28.2
       '@cornerstonejs/adapters':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/tools':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
         specifier: workspace:*
         version: link:../cornerstone
-      '@ohif/extension-measurement-tracking':
-        specifier: workspace:*
-        version: link:../measurement-tracking
       '@ohif/ui':
         specifier: workspace:*
         version: link:../../platform/ui
@@ -496,12 +463,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/cornerstone-dynamic-volume:
     dependencies:
@@ -510,10 +471,10 @@ importers:
         version: 7.28.2
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/tools':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -551,12 +512,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/default:
     dependencies:
@@ -603,12 +558,6 @@ importers:
         specifier: 1.8.11
         version: 1.8.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -670,12 +619,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/dicom-pdf:
     dependencies:
@@ -710,12 +653,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/dicom-video:
     dependencies:
@@ -750,12 +687,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/measurement-tracking:
     dependencies:
@@ -764,10 +695,10 @@ importers:
         version: 7.28.2
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/tools':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -805,12 +736,6 @@ importers:
         specifier: 4.38.3
         version: 4.38.3
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -848,12 +773,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/tmtv:
     dependencies:
@@ -888,12 +807,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
   extensions/usAnnotation:
     dependencies:
@@ -902,10 +815,10 @@ importers:
         version: 7.28.2
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/tools':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -984,25 +897,13 @@ importers:
         version: 8.1.0(typescript@5.5.4)
       babel-loader:
         specifier: 8.4.1
-        version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0)
-      clean-webpack-plugin:
-        specifier: 3.0.0
-        version: 3.0.0(webpack@5.105.0)
-      copy-webpack-plugin:
-        specifier: 9.1.0
-        version: 9.1.0(webpack@5.105.0)
+        version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
       dotenv:
         specifier: 8.6.0
         version: 8.6.0
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1037,9 +938,6 @@ importers:
         specifier: workspace:*
         version: link:../../extensions/dicom-video
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1071,9 +969,6 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1111,9 +1006,6 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1157,9 +1049,6 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1182,12 +1071,6 @@ importers:
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1216,9 +1099,6 @@ importers:
         specifier: workspace:*
         version: link:../../extensions/tmtv
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1300,25 +1180,13 @@ importers:
         version: 8.1.0(typescript@5.5.4)
       babel-loader:
         specifier: 8.4.1
-        version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0)
-      clean-webpack-plugin:
-        specifier: 3.0.0
-        version: 3.0.0(webpack@5.105.0)
-      copy-webpack-plugin:
-        specifier: 9.1.0
-        version: 9.1.0(webpack@5.105.0)
+        version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
       dotenv:
         specifier: 8.6.0
         version: 8.6.0
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1353,9 +1221,6 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1367,10 +1232,10 @@ importers:
         version: 7.28.2
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/tools':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -1425,25 +1290,13 @@ importers:
         version: 8.1.0(typescript@5.5.4)
       babel-loader:
         specifier: 8.4.1
-        version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0)
-      clean-webpack-plugin:
-        specifier: 3.0.0
-        version: 3.0.0(webpack@5.105.0)
-      copy-webpack-plugin:
-        specifier: 9.1.0
-        version: 9.1.0(webpack@5.105.0)
+        version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
       dotenv:
         specifier: 8.6.0
         version: 8.6.0
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1467,7 +1320,7 @@ importers:
         version: 2.4.7
       '@cornerstonejs/dicom-image-loader':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(dicom-parser@1.8.21)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(dicom-parser@1.8.21)
       '@emotion/serialize':
         specifier: 1.3.3
         version: 1.3.3
@@ -1552,12 +1405,9 @@ importers:
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
-      dotenv-webpack:
-        specifier: 1.8.0
-        version: 1.8.0(webpack@5.105.0)
       file-loader:
         specifier: 6.2.0
-        version: 6.2.0(webpack@5.105.0)
+        version: 6.2.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
@@ -1614,7 +1464,7 @@ importers:
         version: 13.0.3
       url-loader:
         specifier: 4.1.1
-        version: 4.1.1(file-loader@6.2.0(webpack@5.105.0))(webpack@5.105.0)
+        version: 4.1.1(file-loader@6.2.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       zustand:
         specifier: 4.5.5
         version: 4.5.5(@types/react@18.3.23)(immer@9.0.21)(react@18.3.1)
@@ -1622,9 +1472,6 @@ importers:
       '@babel/plugin-transform-private-methods':
         specifier: 7.27.1
         version: 7.27.1(@babel/core@7.28.0)
-      '@pmmmwh/react-refresh-webpack-plugin':
-        specifier: 0.5.17
-        version: 0.5.17(@types/webpack@4.41.40)(react-refresh@0.18.0)(type-fest@2.19.0)(webpack-dev-server@5.2.2)(webpack@5.105.0)
       '@rspack/cli':
         specifier: ^2.0.0
         version: 2.0.3(@rspack/core@2.0.3(@swc/helpers@0.5.21))(@rspack/dev-server@2.0.1(@rspack/core@2.0.3(@swc/helpers@0.5.21)))
@@ -1640,48 +1487,21 @@ importers:
       '@types/node':
         specifier: 20.19.9
         version: 20.19.9
-      clean-webpack-plugin:
-        specifier: 4.0.0
-        version: 4.0.0(webpack@5.105.0)
-      copy-webpack-plugin:
-        specifier: 10.2.4
-        version: 10.2.4(webpack@5.105.0)
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
-      extract-css-chunks-webpack-plugin:
-        specifier: 4.10.0
-        version: 4.10.0(webpack@5.105.0)
-      html-webpack-plugin:
-        specifier: 5.6.3
-        version: 5.6.3(@rspack/core@2.0.3(@swc/helpers@0.5.21))(webpack@5.105.0)
       identity-obj-proxy:
         specifier: 3.0.x
         version: 3.0.0
       mini-css-extract-plugin:
         specifier: 2.9.2
-        version: 2.9.2(webpack@5.105.0)
+        version: 2.9.2(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       shx:
         specifier: 0.3.4
         version: 0.3.4
       tailwindcss:
         specifier: 3.2.4
         version: 3.2.4(postcss@8.5.14)(ts-node@10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@20.19.9)(typescript@5.5.4))
-      terser-webpack-plugin:
-        specifier: 5.3.14
-        version: 5.3.14(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0)
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2)(webpack@5.105.0)
-      webpack-dev-server:
-        specifier: 5.2.2
-        version: 5.2.2(tslib@2.8.1)(webpack-cli@5.1.4)(webpack@5.105.0)
-      workbox-webpack-plugin:
-        specifier: 6.6.1
-        version: 6.6.1(@types/babel__core@7.20.5)(webpack@5.105.0)
 
   platform/cli:
     dependencies:
@@ -1747,10 +1567,10 @@ importers:
         version: 2.4.7
       '@cornerstonejs/core':
         specifier: 4.22.8
-        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+        version: 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@cornerstonejs/dicom-image-loader':
         specifier: 4.22.8
-        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(dicom-parser@1.8.21)
+        version: 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(dicom-parser@1.8.21)
       '@ohif/ui':
         specifier: workspace:*
         version: link:../ui
@@ -1800,12 +1620,6 @@ importers:
         specifier: 0.12.0
         version: 0.12.0
     devDependencies:
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -2029,12 +1843,6 @@ importers:
       react-i18next:
         specifier: 12.3.1
         version: 12.3.1(i18next@17.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -2125,9 +1933,6 @@ importers:
       react-with-direction:
         specifier: 1.4.0
         version: 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
     devDependencies:
       '@babel/core':
         specifier: 7.28.0
@@ -2138,9 +1943,6 @@ importers:
       babel-loader:
         specifier: 8.4.1
         version: 8.4.1(@babel/core@7.28.0)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-      dotenv-webpack:
-        specifier: 1.8.0
-        version: 1.8.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       postcss:
         specifier: 8.5.6
         version: 8.5.6
@@ -2268,12 +2070,6 @@ importers:
       '@babel/plugin-transform-private-property-in-object':
         specifier: 7.27.1
         version: 7.27.1(@babel/core@7.28.0)
-      webpack:
-        specifier: 5.105.0
-        version: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli:
-        specifier: 5.1.4
-        version: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
 
 packages:
 
@@ -4170,126 +3966,6 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@jsonjoy.com/base64@1.1.2':
-    resolution: {integrity: sha512-q6XAnWQDIMA3+FTiOYajoYqySkO+JSat0ytXGSuRdq9uXE7o92gzuQwQM14xaCRlBLGq3v5miDGC4vkVTn54xA==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/base64@17.67.0':
-    resolution: {integrity: sha512-5SEsJGsm15aP8TQGkDfJvz9axgPwAEm98S5DxOuYe8e1EbfajcDmgeXXzccEjh+mLnjqEKrkBdjHWS5vFNwDdw==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/buffers@1.2.1':
-    resolution: {integrity: sha512-12cdlDwX4RUM3QxmUbVJWqZ/mrK6dFQH4Zxq6+r1YXKXYBNgZXndx2qbCJwh3+WWkCSn67IjnlG3XYTvmvYtgA==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/buffers@17.67.0':
-    resolution: {integrity: sha512-tfExRpYxBvi32vPs9ZHaTjSP4fHAfzSmcahOfNxtvGHcyJel+aibkPlGeBB+7AoC6hL7lXIE++8okecBxx7lcw==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/codegen@1.0.0':
-    resolution: {integrity: sha512-E8Oy+08cmCf0EK/NMxpaJZmOxPqM+6iSe2S4nlSBrPZOORoDJILxtbSUEDKQyTamm/BVAhIGllOBNU79/dwf0g==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/codegen@17.67.0':
-    resolution: {integrity: sha512-idnkUplROpdBOV0HMcwhsCUS5TRUi9poagdGs70A6S4ux9+/aPuKbh8+UYRTLYQHtXvAdNfQWXDqZEx5k4Dj2Q==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-core@4.56.10':
-    resolution: {integrity: sha512-PyAEA/3cnHhsGcdY+AmIU+ZPqTuZkDhCXQ2wkXypdLitSpd6d5Ivxhnq4wa2ETRWFVJGabYynBWxIijOswSmOw==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-fsa@4.56.10':
-    resolution: {integrity: sha512-/FVK63ysNzTPOnCCcPoPHt77TOmachdMS422txM4KhxddLdbW1fIbFMYH0AM0ow/YchCyS5gqEjKLNyv71j/5Q==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-node-builtins@4.56.10':
-    resolution: {integrity: sha512-uUnKz8R0YJyKq5jXpZtkGV9U0pJDt8hmYcLRrPjROheIfjMXsz82kXMgAA/qNg0wrZ1Kv+hrg7azqEZx6XZCVw==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-node-to-fsa@4.56.10':
-    resolution: {integrity: sha512-oH+O6Y4lhn9NyG6aEoFwIBNKZeYy66toP5LJcDOMBgL99BKQMUf/zWJspdRhMdn/3hbzQsZ8EHHsuekbFLGUWw==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-node-utils@4.56.10':
-    resolution: {integrity: sha512-8EuPBgVI2aDPwFdaNQeNpHsyqPi3rr+85tMNG/lHvQLiVjzoZsvxA//Xd8aB567LUhy4QS03ptT+unkD/DIsNg==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-node@4.56.10':
-    resolution: {integrity: sha512-7R4Gv3tkUdW3dXfXiOkqxkElxKNVdd8BDOWC0/dbERd0pXpPY+s2s1Mino+aTvkGrFPiY+mmVxA7zhskm4Ue4Q==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-print@4.56.10':
-    resolution: {integrity: sha512-JW4fp5mAYepzFsSGrQ48ep8FXxpg4niFWHdF78wDrFGof7F3tKDJln72QFDEn/27M1yHd4v7sKHHVPh78aWcEw==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/fs-snapshot@4.56.10':
-    resolution: {integrity: sha512-DkR6l5fj7+qj0+fVKm/OOXMGfDFCGXLfyHkORH3DF8hxkpDgIHbhf/DwncBMs2igu/ST7OEkexn1gIqoU6Y+9g==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/json-pack@1.21.0':
-    resolution: {integrity: sha512-+AKG+R2cfZMShzrF2uQw34v3zbeDYUqnQ+jg7ORic3BGtfw9p/+N6RJbq/kkV8JmYZaINknaEQ2m0/f693ZPpg==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/json-pack@17.67.0':
-    resolution: {integrity: sha512-t0ejURcGaZsn1ClbJ/3kFqSOjlryd92eQY465IYrezsXmPcfHPE/av4twRSxf6WE+TkZgLY+71vCZbiIiFKA/w==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/json-pointer@1.0.2':
-    resolution: {integrity: sha512-Fsn6wM2zlDzY1U+v4Nc8bo3bVqgfNTGcn6dMgs6FjrEnt4ZCe60o6ByKRjOGlI2gow0aE/Q41QOigdTqkyK5fg==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/json-pointer@17.67.0':
-    resolution: {integrity: sha512-+iqOFInH+QZGmSuaybBUNdh7yvNrXvqR+h3wjXm0N/3JK1EyyFAeGJvqnmQL61d1ARLlk/wJdFKSL+LHJ1eaUA==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/util@1.9.0':
-    resolution: {integrity: sha512-pLuQo+VPRnN8hfPqUTLTHk126wuYdXVxE6aDmjSeV4NCAgyxWbiOIeNJVtID3h1Vzpoi9m4jXezf73I6LgabgQ==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
-  '@jsonjoy.com/util@17.67.0':
-    resolution: {integrity: sha512-6+8xBaz1rLSohlGh68D1pdw3AwDi9xydm8QNlAFkvnavCJYSze+pxoW2VKP8p308jtlMRLs5NTHfPlZLd4w7ew==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
   '@kitware/vtk.js@34.15.1':
     resolution: {integrity: sha512-9BH/a++drhclknBKNVzVpcOzDK95nc/OflKpQE8nY+IlaXTB1+Z6WXS6IwkEEUkRRUqSVskcW4ksgWdxihB49w==}
     hasBin: true
@@ -4418,32 +4094,6 @@ packages:
     resolution: {integrity: sha512-vSMYtL/zOcFpvJCW71Q/OEGQb7KYBPAdKh35WNSkaZA75JlAO8ED8UN6GUNTm3drWomcbcqRPFqQbLae8yBTdg==}
     engines: {node: '>=18'}
     hasBin: true
-
-  '@pmmmwh/react-refresh-webpack-plugin@0.5.17':
-    resolution: {integrity: sha512-tXDyE1/jzFsHXjhRZQ3hMl0IVhYe5qula43LDWIhVfjp9G/nT5OQY5AORVOrkEGAUltBJOfOWeETbmhm6kHhuQ==}
-    engines: {node: '>= 10.13'}
-    peerDependencies:
-      '@types/webpack': 4.x || 5.x
-      react-refresh: '>=0.10.0 <1.0.0'
-      sockjs-client: ^1.4.0
-      type-fest: '>=0.17.0 <5.0.0'
-      webpack: 5.105.0
-      webpack-dev-server: 3.x || 4.x || 5.x
-      webpack-hot-middleware: 2.x
-      webpack-plugin-serve: 0.x || 1.x
-    peerDependenciesMeta:
-      '@types/webpack':
-        optional: true
-      sockjs-client:
-        optional: true
-      type-fest:
-        optional: true
-      webpack-dev-server:
-        optional: true
-      webpack-hot-middleware:
-        optional: true
-      webpack-plugin-serve:
-        optional: true
 
   '@pnpm/config.env-replace@1.1.0':
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
@@ -5055,12 +4705,6 @@ packages:
     peerDependenciesMeta:
       '@types/babel__core':
         optional: true
-
-  '@rollup/plugin-node-resolve@11.2.1':
-    resolution: {integrity: sha512-yc2n43jcqVyGE2sqV5/YCmocy9ArjVAP/BeXyTtADTBBX6V0e5UMqwO8CdQ0kzjb6zu5P1qMzsScCMRvE9OlVg==}
-    engines: {node: '>= 10.0.0'}
-    peerDependencies:
-      rollup: 2.80.0
 
   '@rollup/plugin-node-resolve@15.3.1':
     resolution: {integrity: sha512-tgg6b91pAybXHJQMAAwW9VuWBO6Thi+q7BCNARLwSqlmsHz0XYURtGvh/AuwSADXSI4h/2uHbs7s4FzlZDGSGA==}
@@ -5766,9 +5410,6 @@ packages:
   '@types/express@4.17.25':
     resolution: {integrity: sha512-dVd04UKsfpINUnK0yBoYHDF3xu7xVH4BuDotC/xGuycx4CgbP48X/KF/586bcObxT0HENHXEU8Nqtu6NR+eKhw==}
 
-  '@types/glob@7.2.0':
-    resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
-
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
 
@@ -5822,10 +5463,6 @@ packages:
 
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
-
-  '@types/minimatch@6.0.0':
-    resolution: {integrity: sha512-zmPitbQ8+6zNutpwgcQuLcsEpn/Cj54Kbn7L5pX0Os5kdWplB7xPgEh/g+SWOB/qmows2gpuCaPyduq8ZZRnxA==}
-    deprecated: This is a stub types definition. minimatch provides its own type definitions, so you do not need this installed.
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -5888,17 +5525,11 @@ packages:
   '@types/react@18.3.23':
     resolution: {integrity: sha512-/LDXMQh55EzZQ0uVAZmKKhfENivEvWz6E+EYzh+/MCjMhNsotd+ZHhBGIjFDTi6+fz0OhQQQLbTgdQIxxCsC0w==}
 
-  '@types/resolve@1.17.1':
-    resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
-
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
   '@types/retry@0.12.0':
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
-
-  '@types/retry@0.12.2':
-    resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==}
 
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
@@ -5924,14 +5555,8 @@ packages:
   '@types/sockjs@0.3.36':
     resolution: {integrity: sha512-MK9V6NzAS1+Ud7JV9lJLFqW85VbC9dq3LmwZCuBe4wBDgKC0Kj/jd8Xl+nSviU+Qc3+m7umHHyHg//2KSa0a0Q==}
 
-  '@types/source-list-map@0.1.6':
-    resolution: {integrity: sha512-5JcVt1u5HDmlXkwOD2nslZVllBBc7HDuOICfiZah2Z0is8M8g+ddAEawbmd3VjedfDHBzxCaXLs07QEmb7y54g==}
-
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
-
-  '@types/tapable@1.0.12':
-    resolution: {integrity: sha512-bTHG8fcxEqv1M9+TD14P8ok8hjxoOCkfKc8XXLaaD05kI7ohpeI956jtDOD3XHKBQrlyPughUtzm1jtVhHpA5Q==}
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
@@ -5939,20 +5564,11 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@types/uglify-js@3.17.5':
-    resolution: {integrity: sha512-TU+fZFBTBcXj/GpDpDaBmgWk/gn96kMZ+uocaFUlV2f8a6WdMzzI44QBCmGcCiYR0Y6ZlNRiyUyKKt5nl/lbzQ==}
-
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
-
-  '@types/webpack-sources@3.2.3':
-    resolution: {integrity: sha512-4nZOdMwSPHZ4pTEZzSp0AsTM4K7Qmu40UKW4tJDiOVs20UzYF9l+qUe4s0ftfN0pin06n+5cWWDJXH+sbhAiDw==}
-
-  '@types/webpack@4.41.40':
-    resolution: {integrity: sha512-u6kMFSBM9HcoTpUXnL6mt2HSzftqb3JgYV6oxIgL2dl6sX6aCa5k6SOkzv5DuZjBTPUE/dJltKtwwuqrkZHpfw==}
 
   '@types/webxr@0.5.24':
     resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
@@ -6023,31 +5639,6 @@ packages:
 
   '@webassemblyjs/wast-printer@1.14.1':
     resolution: {integrity: sha512-kPSSXE6De1XOR820C90RIo2ogvZG+c3KiHzqUoO/F34Y2shGzesfqv7o57xrxovZJH/MetF5UjroJ/R/3isoiw==}
-
-  '@webpack-cli/configtest@2.1.1':
-    resolution: {integrity: sha512-wy0mglZpDSiSS0XHrVR+BAdId2+yxPSoJW8fsna3ZpYSlufjvxnP4YbKTCBZnNIcGN4r6ZPXV55X4mYExOfLmw==}
-    engines: {node: '>=14.15.0'}
-    peerDependencies:
-      webpack: 5.105.0
-      webpack-cli: 5.x.x
-
-  '@webpack-cli/info@2.0.2':
-    resolution: {integrity: sha512-zLHQdI/Qs1UyT5UBdWNqsARasIA+AaF8t+4u2aS2nEpBQh2mWIVb8qAklq0eUENnC5mOItrIB4LiS9xMtph18A==}
-    engines: {node: '>=14.15.0'}
-    peerDependencies:
-      webpack: 5.105.0
-      webpack-cli: 5.x.x
-
-  '@webpack-cli/serve@2.0.5':
-    resolution: {integrity: sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==}
-    engines: {node: '>=14.15.0'}
-    peerDependencies:
-      webpack: 5.105.0
-      webpack-cli: 5.x.x
-      webpack-dev-server: '*'
-    peerDependenciesMeta:
-      webpack-dev-server:
-        optional: true
 
   '@xstate/react@3.2.2':
     resolution: {integrity: sha512-feghXWLedyq8JeL13yda3XnHPZKwYDN5HPBLykpLeuNpr9178tQd2/3d0NrH6gSd0sG5mLuLeuD+ck830fgzLQ==}
@@ -6159,11 +5750,6 @@ packages:
     peerDependencies:
       react: ^0.14 || ^15.0.0 || ^16.0.0-alpha
 
-  ajv-errors@1.0.1:
-    resolution: {integrity: sha512-DCRfO/4nQ+89p/RK43i8Ezd41EqdGIU4ld7nGF8OQ14oc/we5rEntLCUa7+jrn3nn83BosfwZA0wb4pon2o8iQ==}
-    peerDependencies:
-      ajv: '>=5.0.0'
-
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
     peerDependencies:
@@ -6181,9 +5767,6 @@ packages:
     resolution: {integrity: sha512-YCS/JNFAUyr5vAuhk1DWm1CBxRHW9LbJ2ozWeemrIqpbsqKjHVxYPyi5GC0rjZIT5JxJ3virVTS8wk4i/Z+krw==}
     peerDependencies:
       ajv: ^8.8.2
-
-  ajv@6.14.0:
-    resolution: {integrity: sha512-IWrosm/yrn43eiKqkfkHis7QioDleaXQHdDVPKg0FSwwd/DuvyX79TZnFOnYpB7dcsFAMmtFztZuXPDvSePkFw==}
 
   ajv@6.15.0:
     resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
@@ -6220,11 +5803,6 @@ packages:
 
   ansi-html-community@0.0.8:
     resolution: {integrity: sha512-1APHAyr3+PCamwNw3bXCPp4HFLONZt/yIH0sZp0/469KWNTEy+qN5jQ3GVX6DMZ1UXAi34yVwtTeaG/HpBuuzw==}
-    engines: {'0': node >= 0.8.0}
-    hasBin: true
-
-  ansi-html@0.0.9:
-    resolution: {integrity: sha512-ozbS3LuenHVxNRh/wdnN16QapUHzauqSomAl1jwwJRRsGwFwtj644lIhxfWu0Fy0acCij2+AEgHvjscq3dlVXg==}
     engines: {'0': node >= 0.8.0}
     hasBin: true
 
@@ -6323,21 +5901,9 @@ packages:
   array-flatten@1.1.1:
     resolution: {integrity: sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==}
 
-  array-union@1.0.2:
-    resolution: {integrity: sha512-Dxr6QJj/RdU/hCaBjOfxW+q6lyuVE6JFWIrAUpuOOhoJJoQ99cUn3igRaHVB5P9WrgFVN0FfArM3x0cueOU8ng==}
-    engines: {node: '>=0.10.0'}
-
   array-union@2.1.0:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
-
-  array-union@3.0.1:
-    resolution: {integrity: sha512-1OvF9IbWwaeiM9VhzYXVQacMibxpXOMYVNIvMtKRyX9SImBXpKcFr8XvFDeEslCyuH/t6KRt7HEO94AlP8Iatw==}
-    engines: {node: '>=12'}
-
-  array-uniq@1.0.3:
-    resolution: {integrity: sha512-MNha4BWQ6JbwhFhj03YK552f7cb3AzoE8SzeljgChvL1dl3IcvggXVz1DilzySZkCja+CXuZbdW7yATchWn8/Q==}
-    engines: {node: '>=0.10.0'}
 
   array.prototype.find@2.2.3:
     resolution: {integrity: sha512-fO/ORdOELvjbbeIfZfzrXFMhYHGofRGqd+am9zm3tZ4GlJINj/pA2eITyfd65Vg6+ZbHd/Cys7stpoRSWtQFdA==}
@@ -6657,16 +6223,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  builtin-modules@3.3.0:
-    resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
-    engines: {node: '>=6'}
-
   builtin-status-codes@3.0.0:
     resolution: {integrity: sha512-HpGFw18DgFWlncDfjTa2rcQ4W88O1mC8e8yZ2AvQY5KDaktSTwo+KRf6nHK6FRI5FyRyb/5T6+TSxfP7QyGsmQ==}
-
-  bundle-name@4.1.0:
-    resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
-    engines: {node: '>=18'}
 
   bytes@3.0.0:
     resolution: {integrity: sha512-pMhOfFDPiv9t5jjIXkHosWmkSyQbvsgEVNkz0ERHbuLh2T/7j4Mqqpz523Fe8MVY89KC6Sh/QfS2sM+SjgFDcw==}
@@ -6836,18 +6394,6 @@ packages:
   clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
     engines: {node: '>=6'}
-
-  clean-webpack-plugin@3.0.0:
-    resolution: {integrity: sha512-MciirUH5r+cYLGCOL5JX/ZLzOZbVr1ot3Fw+KcvbhUb6PM+yycqd9ZhIlcigQ5gl+XhppNmw3bEFuaaMNyLj3A==}
-    engines: {node: '>=8.9.0'}
-    peerDependencies:
-      webpack: 5.105.0
-
-  clean-webpack-plugin@4.0.0:
-    resolution: {integrity: sha512-WuWE1nyTNAyW5T7oNyys2EN0cfP2fdRxhxnIQWiAp0bMabPdHhoGxM8A6YL2GhqwgrPnnaemVE7nv5XJ2Fhh2w==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      webpack: 5.105.0
 
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
@@ -7049,21 +6595,9 @@ packages:
     resolution: {integrity: sha512-T6SqyLd1iLuqPA90J5N4cTalrtovCySh58iiZDGJ6FGznbclKh4UI+FGacQSgFzwKG77W7XT5gwbVEbd9cIH1A==}
     engines: {node: '>=12'}
 
-  copy-webpack-plugin@10.2.4:
-    resolution: {integrity: sha512-xFVltahqlsRcyyJqQbDY6EYTtyQZF9rf+JPjwHObLdPFMEISqkFkr7mFoVOC6BfYS/dNThyoQKvziugm+OnwBg==}
-    engines: {node: '>= 12.20.0'}
-    peerDependencies:
-      webpack: 5.105.0
-
   copy-webpack-plugin@11.0.0:
     resolution: {integrity: sha512-fX2MWpamkW0hZxMEg0+mYnA40LTosOSa5TqZ9GYIBzyJa9C3QUaMPSE2xAi/buNr8u89SfD9wHSQVBzrRa/SOQ==}
     engines: {node: '>= 14.15.0'}
-    peerDependencies:
-      webpack: 5.105.0
-
-  copy-webpack-plugin@9.1.0:
-    resolution: {integrity: sha512-rxnR7PaGigJzhqETHGmAcxKnLZSR5u1Y3/bcIv/1FnqXedcL/E2ewK7ZCNrArJKCiSv8yVXhTqetJh8inDvfsA==}
-    engines: {node: '>= 12.13.0'}
     peerDependencies:
       webpack: 5.105.0
 
@@ -7513,14 +7047,6 @@ packages:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
 
-  default-browser-id@5.0.1:
-    resolution: {integrity: sha512-x1VCxdX4t+8wVfd1so/9w+vQ4vx7lKd2Qp5tDRutErwmR85OgmfX7RlLRMWafRMY7hbEiXIbudNrjOAPa/hL8Q==}
-    engines: {node: '>=18'}
-
-  default-browser@5.5.0:
-    resolution: {integrity: sha512-H9LMLr5zwIbSxrmvikGuI/5KGhZ8E2zH3stkMgM5LpOWDutGM2JZaj460Udnf1a+946zc7YBgrqEWwbk7zHvGw==}
-    engines: {node: '>=18'}
-
   default-gateway@6.0.3:
     resolution: {integrity: sha512-fwSOJsbbNzZ/CUFpqFBqYfYNLj1NbMPm8MMCIzHjC83iSJRBEGmDUxU+WP661BaBQImeC2yHwXtz+P/O9o+XEg==}
     engines: {node: '>= 10'}
@@ -7544,20 +7070,12 @@ packages:
     resolution: {integrity: sha512-Ds09qNh8yw3khSjiJjiUInaGX9xlqZDY7JVryGxdxV7NPeuqQfplOpQ66yJFZut3jLa5zOwkXw1g9EI2uKh4Og==}
     engines: {node: '>=8'}
 
-  define-lazy-prop@3.0.0:
-    resolution: {integrity: sha512-N+MeXYoqr3pOgn8xfyRPREN7gHakLYjhsHhWGT3fWAiL4IkAt0iDw14QiiEm2bE30c5XX5q0FtAA3CK5f9/BUg==}
-    engines: {node: '>=12'}
-
   define-properties@1.2.1:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
 
   defined@1.0.1:
     resolution: {integrity: sha512-hsBd2qSVCRE+5PmNdHt1uzyrFu5d3RwmFDKzyNZMFq/EwDNJF7Ee5+D5oEKF0hU6LhtoUF1macFvOe4AskQC1Q==}
-
-  del@4.1.1:
-    resolution: {integrity: sha512-QwGuEUouP2kVwQenAsOof5Fv8K9t3D8Ca8NxcXKrIpEHjTXK5J2nXLdP+ALI1cgv8wj7KuwBhTwBkOZSJKM5XQ==}
-    engines: {node: '>=6'}
 
   del@6.1.1:
     resolution: {integrity: sha512-ua8BhapfP0JUJKC/zV9yHHDW/rDoDxP4Zhn3AkA6/xT6gY7jYXJiaeyBZznYVujhZZET+UgcbZiQ7sN3WqcImg==}
@@ -7715,18 +7233,6 @@ packages:
     resolution: {integrity: sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA==}
     engines: {node: '>=10'}
 
-  dotenv-defaults@1.1.1:
-    resolution: {integrity: sha512-6fPRo9o/3MxKvmRZBD3oNFdxODdhJtIy1zcJeUSCs6HCy4tarUpd+G67UTU9tF6OWXeSPqsm4fPAB+2eY9Rt9Q==}
-
-  dotenv-webpack@1.8.0:
-    resolution: {integrity: sha512-o8pq6NLBehtrqA8Jv8jFQNtG9nhRtVqmoD4yWbgUyoU3+9WBlPe+c2EAiaJok9RB28QvrWvdWLZGeTT5aATDMg==}
-    peerDependencies:
-      webpack: 5.105.0
-
-  dotenv@6.2.0:
-    resolution: {integrity: sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==}
-    engines: {node: '>=6'}
-
   dotenv@8.6.0:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
@@ -7810,11 +7316,6 @@ packages:
   entities@6.0.1:
     resolution: {integrity: sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==}
     engines: {node: '>=0.12'}
-
-  envinfo@7.21.0:
-    resolution: {integrity: sha512-Lw7I8Zp5YKHFCXL7+Dz95g4CcbMEpgvqZNNq3AmlT5XAV6CgAAk6gyAMqn2zjw08K9BHfcNuKrMiCPLByGafow==}
-    engines: {node: '>=4'}
-    hasBin: true
 
   enzyme-shallow-equal@1.0.7:
     resolution: {integrity: sha512-/um0GFqUXnpM9SvKtje+9Tjoz3f1fpBC3eXRFrNs8kpYn69JljciYP7KZTqM/YQbUY9KUjvKB4jo/q+L6WGGvg==}
@@ -8036,12 +7537,6 @@ packages:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
     engines: {node: '>=4'}
 
-  extract-css-chunks-webpack-plugin@4.10.0:
-    resolution: {integrity: sha512-D/wb/Tbexq8XMBl4uhthto25WBaHI9P8vucDdzwPtLTyVi4Rdw/aiRLSL2rHaF6jZfPAjThWXepFU9PXsdtIbA==}
-    engines: {node: '>= 6.9.0'}
-    peerDependencies:
-      webpack: 5.105.0
-
   extract-zip@2.0.1:
     resolution: {integrity: sha512-GDhU9ntwuKyGXdZBUgTIe+vXnWj0fppUEtMDL0+idd5Sta8TGpHssn/eusA9mrPr9qNDym6SxAYZjNvCn/9RBg==}
     engines: {node: '>= 10.17.0'}
@@ -8066,10 +7561,6 @@ packages:
 
   fast-uri@3.1.2:
     resolution: {integrity: sha512-rVjf7ArG3LTk+FS6Yw81V1DLuZl1bRbNrev6Tmd/9RaroeeRRJhAt7jg/6YFxbvAQXUCavSoZhPPj6oOx+5KjQ==}
-
-  fastest-levenshtein@1.0.16:
-    resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
-    engines: {node: '>= 4.9.1'}
 
   fastq@1.20.1:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
@@ -8393,12 +7884,6 @@ packages:
     resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
     engines: {node: '>=10.13.0'}
 
-  glob-to-regex.js@1.2.0:
-    resolution: {integrity: sha512-QMwlOQKU/IzqMUOAZWubUOT8Qft+Y0KQWnX9nK3ch0CJg0tTp4TvGZsTfudYKv2NzoQSyPcnA6TYeIQ3jGichQ==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
-
   glob-to-regexp@0.4.1:
     resolution: {integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==}
 
@@ -8450,17 +7935,9 @@ packages:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
     engines: {node: '>=10'}
 
-  globby@12.2.0:
-    resolution: {integrity: sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
   globby@13.2.2:
     resolution: {integrity: sha512-Y1zNGV+pzQdh7H39l9zgB4PJqjRNqydvdYCDG4HFXM4XuvSaQQlEc91IU1yALL8gUTDomgBAfz3XJdmUS+oo0w==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
-  globby@6.1.0:
-    resolution: {integrity: sha512-KVbFv2TQtbzCoxAnfD6JcHZTYCzyliEaaeM/gH8qQdkKr5s0OP9scEgvdcngyk7AVdY6YVW/TJHd+lQ/Df3Daw==}
-    engines: {node: '>=0.10.0'}
 
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
@@ -8721,10 +8198,6 @@ packages:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
 
-  hyperdyperid@1.2.0:
-    resolution: {integrity: sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A==}
-    engines: {node: '>=10.18'}
-
   i18next-browser-languagedetector@3.1.1:
     resolution: {integrity: sha512-JBgFWijjI1t6as4WgGvDdX4GLJPZwC/SMHzLQQ3ef7XaJsEkomlXFqXifKvOVJg09Hj2BVWe6strDdIF4J/0ng==}
 
@@ -8841,10 +8314,6 @@ packages:
     resolution: {integrity: sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==}
     engines: {node: '>= 0.10'}
 
-  interpret@3.1.1:
-    resolution: {integrity: sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==}
-    engines: {node: '>=10.13.0'}
-
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
 
@@ -8942,11 +8411,6 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
-  is-docker@3.0.0:
-    resolution: {integrity: sha512-eljcgEDlEns/7AXFosB5K/2nCM4P7FQPkGc/DWLy5rmFEWvZayGrik1d9/QIY5nJ4f9YsVvBkA6kJpHn9rISdQ==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    hasBin: true
-
   is-extendable@0.1.1:
     resolution: {integrity: sha512-5BMULNob1vgFX6EjQw5izWDxrecWK9AM72rugNr0TFldMOi0fj6Jk+zeKIt0xGj4cEfQIJth4w3OKWOJ4f+AFw==}
     engines: {node: '>=0.10.0'}
@@ -8986,11 +8450,6 @@ packages:
   is-hexadecimal@2.0.1:
     resolution: {integrity: sha512-DgZQp241c8oO6cA1SbTEWiXeoxV42vlcJxgH+B3hi1AiqqKruZR3ZGF8In3fj4+/y/7rHvlOZLZtgJ/4ttYGZg==}
 
-  is-inside-container@1.0.0:
-    resolution: {integrity: sha512-KIYLCCJghfHZxqjYBE7rEy0OBuTd5xCHS7tHVgvCLkx7StIoaxwNW3hCALgEUjFfeRk+MG/Qxmp/vtETEF3tRA==}
-    engines: {node: '>=14.16'}
-    hasBin: true
-
   is-installed-globally@0.4.0:
     resolution: {integrity: sha512-iwGqO3J21aaSkC7jWnHP/difazwS7SFeIqxv6wEtLU8Y5KlzFTjyqcSIT0d8s4+dDhKytsk9PJZ2BkS5eZwQRQ==}
     engines: {node: '>=10'}
@@ -9016,10 +8475,6 @@ packages:
   is-negative-zero@2.0.3:
     resolution: {integrity: sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw==}
     engines: {node: '>= 0.4'}
-
-  is-network-error@1.3.1:
-    resolution: {integrity: sha512-6QCxa49rQbmUWLfk0nuGqzql9U8uaV2H6279bRErPBHe/109hCzsLUBUHfbEtvLIHBd6hyXbgedBSHevm43Edw==}
-    engines: {node: '>=16'}
 
   is-npm@6.1.0:
     resolution: {integrity: sha512-O2z4/kNgyjhQwVR1Wpkbfc19JIhggF97NZNCpWTnjH7kVcZMUrnut9XSN7txI7VdyIYk5ZatOq3zvSuWpU8hoA==}
@@ -9049,21 +8504,9 @@ packages:
     resolution: {integrity: sha512-w942bTcih8fdJPJmQHFzkS76NEP8Kzzvmw92cXsazb8intwLqPibPPdXf4ANdKV3rYMuuQYGIWtvz9JilB3NFQ==}
     engines: {node: '>=6'}
 
-  is-path-in-cwd@2.1.0:
-    resolution: {integrity: sha512-rNocXHgipO+rvnP6dk3zI20RpOtrAM/kzbB258Uw5BWr3TpXi861yzjo16Dn4hUox07iw5AyeMLHWsujkjzvRQ==}
-    engines: {node: '>=6'}
-
-  is-path-inside@2.1.0:
-    resolution: {integrity: sha512-wiyhTzfDWsvwAW53OBWF5zuvaOGlZ6PwYxAbPVDhpm+gM09xKQGjBq/8uYN12aDvMxnAnq3dxTyoSoRNmg5YFg==}
-    engines: {node: '>=6'}
-
   is-path-inside@3.0.3:
     resolution: {integrity: sha512-Fd4gABb+ycGAmKou8eMftCupSir5lRxqf4aD/vd0cD2qc4HL07OjCeuHMr8Ro4CoMaeCKDB0/ECBOVWjTwUvPQ==}
     engines: {node: '>=8'}
-
-  is-plain-obj@1.1.0:
-    resolution: {integrity: sha512-yvkRyxmFKEOQ4pNXCmJG5AEQNlXJS5LaONXo5/cLdTZdWvsZ1ioJEonLGAosKlMWE8lwUy/bJzMjcw8az73+Fg==}
-    engines: {node: '>=0.10.0'}
 
   is-plain-obj@3.0.0:
     resolution: {integrity: sha512-gwsOE28k+23GP1B6vFl1oVh/WOzmawBrKwo5Ev6wMKzPkaXaCDIQKzLnvsA42DRlbVTWorkgTKIviAKCWkfUwA==}
@@ -9156,10 +8599,6 @@ packages:
   is-wsl@2.2.0:
     resolution: {integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==}
     engines: {node: '>=8'}
-
-  is-wsl@3.1.1:
-    resolution: {integrity: sha512-e6rvdUCiQCAuumZslxRJWR/Doq4VpPR82kqclvcS0efgt430SlGIk05vdCN58+VrzgtIcfNODjozVielycD4Sw==}
-    engines: {node: '>=16'}
 
   is-yarn-global@0.4.1:
     resolution: {integrity: sha512-/kppl+R+LO5VmhYSEWARUFjodS25D68gvj8W7z0I7OWhUla5xWu8KL6CtB2V0R6yqhnRgbcaREMr4EEM6htLPQ==}
@@ -9409,10 +8848,6 @@ packages:
   jest-watcher@29.7.0:
     resolution: {integrity: sha512-49Fg7WXkU3Vl2h6LbLtMQ/HyB6rXSIX7SqvBLQmssRBGN9I0PNvPmAmCWSOY6SOvrjhI/F7/bGAv9RtnsPA03g==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-
-  jest-worker@26.6.2:
-    resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
-    engines: {node: '>= 10.13.0'}
 
   jest-worker@27.5.1:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
@@ -9974,11 +9409,6 @@ packages:
     resolution: {integrity: sha512-UERzLsxzllchadvbPs5aolHh65ISpKpM+ccLbOJ8/vvpBKmAWf+la7dXFy7Mr0ySHbdHrFv5kGFCUHHe6GFEmw==}
     engines: {node: '>= 4.0.0'}
 
-  memfs@4.56.10:
-    resolution: {integrity: sha512-eLvzyrwqLHnLYalJP7YZ3wBe79MXktMdfQbvMrVD80K+NhrIukCVBvgP30zTJYEEDh9hZ/ep9z0KOdD7FSHo7w==}
-    peerDependencies:
-      tslib: ^2.8.1
-
   memoize-one@5.2.1:
     resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
 
@@ -10222,10 +9652,6 @@ packages:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
 
-  mime-types@3.0.2:
-    resolution: {integrity: sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==}
-    engines: {node: '>=18'}
-
   mime@1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
     engines: {node: '>=4'}
@@ -10415,10 +9841,6 @@ packages:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
     engines: {node: '>=0.10.0'}
 
-  normalize-url@1.9.1:
-    resolution: {integrity: sha512-A48My/mtCklowHBlI8Fq2jFWK4tX4lJ5E6ytFsSOq1fzpvT0SQSgKhSg7lN5c2uYFOrUAOQp6zhhJnpp1eMloQ==}
-    engines: {node: '>=4'}
-
   normalize-url@8.1.1:
     resolution: {integrity: sha512-JYc0DPlpGWB40kH5g07gGTrYuMqV653k3uBKY6uITPWds3M0ov3GaWGp9lbE3Bzngx8+XkfzgvASb9vk9JDFXQ==}
     engines: {node: '>=14.16'}
@@ -10538,10 +9960,6 @@ packages:
   onnxruntime-web@1.17.1:
     resolution: {integrity: sha512-EotY9uJU4xFY/ZVZ2Zrl2OZmBcbTVTWn/2OOh4cCWODPwtsYN2xeJYgoz8LfCgZSrhenGg0q4ceYUWATXqEsYQ==}
 
-  open@10.2.0:
-    resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
-    engines: {node: '>=18'}
-
   open@8.4.2:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
@@ -10631,10 +10049,6 @@ packages:
   p-retry@4.6.2:
     resolution: {integrity: sha512-312Id396EbJdvRONlngUx0NydfrIQ5lsYu0znKVUzVvArzEIt08V1qhtyESbGVd1FGX7UKtiFp5uwKZdM8wIuQ==}
     engines: {node: '>=8'}
-
-  p-retry@6.2.1:
-    resolution: {integrity: sha512-hEt02O4hUct5wtwg4H4KcWgDdm+l1bOaEy/hWzd8xtXB9BqxTWBBhb+2ImAtH4Cv4rPjV76xN3Zumqk3k3AhhQ==}
-    engines: {node: '>=16.17'}
 
   p-timeout@6.1.4:
     resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
@@ -10787,10 +10201,6 @@ packages:
   pify@3.0.0:
     resolution: {integrity: sha512-C3FsVNH1udSEX48gGX1xfvwTWfsYWj5U+8/uK15BGzIGrKoUpghX8hWZwa/OFnakBiiVNmBvemTJR5mcy7iPcg==}
     engines: {node: '>=4'}
-
-  pify@4.0.1:
-    resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
-    engines: {node: '>=6'}
 
   pinkie-promise@2.0.1:
     resolution: {integrity: sha512-0Gni6D4UcLTbv9c57DfxDGdr41XfgUjqWZu492f0cIGr16zDU06BWP/RAEvOuo7CQ0CNjHaLlM59YJJFm3NWlw==}
@@ -11425,10 +10835,6 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prepend-http@1.0.4:
-    resolution: {integrity: sha512-PhmXi5XmoyKw1Un4E+opM2KcsJInDvKyuOumcjjw3waw86ZNjHwVUOOWLc4bCzLdcKNaWBH9e99sbWzDQsVaYg==}
-    engines: {node: '>=0.10.0'}
-
   prettier-plugin-tailwindcss@0.6.9:
     resolution: {integrity: sha512-r0i3uhaZAXYP0At5xGfJH876W3HHGHDp+LCRUJrs57PBeQ6mYHMwr25KH8NPX44F2yGTvdnH7OqCshlQx183Eg==}
     engines: {node: '>=14.21.3'}
@@ -11604,10 +11010,6 @@ packages:
   qs@6.14.1:
     resolution: {integrity: sha512-4EK3+xJl8Ts67nLYNwqw/dsFVnCf+qR7RgXSK9jEEm9unao3njwMDdmsdvoKBKHzxd7tCYz5e5M+SnMjdtXGQQ==}
     engines: {node: '>=0.6'}
-
-  query-string@4.3.4:
-    resolution: {integrity: sha512-O2XLNDBIg1DnTOa+2XrIwSiXEV8h2KImXUnjhhn2+UsvZ+Es2uyd5CCRTNQlDGbzUQOW3aYCBx9rVA6dzsiY7Q==}
-    engines: {node: '>=0.10.0'}
 
   query-string@6.14.1:
     resolution: {integrity: sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==}
@@ -11981,10 +11383,6 @@ packages:
     resolution: {integrity: sha512-HFM8rkZ+i3zrV+4LQjwQ0W+ez98pApMGM3HUrN04j3CqzPOzl9nmP15Y8YXNm8QHGv/eacOVEjqhmWpkRV0NAw==}
     engines: {node: '>= 0.10'}
 
-  rechoir@0.8.0:
-    resolution: {integrity: sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==}
-    engines: {node: '>= 10.13.0'}
-
   recma-build-jsx@1.0.0:
     resolution: {integrity: sha512-8GtdyqaBcDfva+GUKDr3nev3VpKAhup1+RvkMvUxURHpW7QyIvk9F5wz7Vzo06CEMSilw6uArgRqhpiUcWp8ew==}
 
@@ -12186,11 +11584,6 @@ packages:
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
-  rimraf@2.7.1:
-    resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
-    deprecated: Rimraf versions prior to v4 are no longer supported
-    hasBin: true
-
   rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
     deprecated: Rimraf versions prior to v4 are no longer supported
@@ -12199,12 +11592,6 @@ packages:
   ripemd160@2.0.3:
     resolution: {integrity: sha512-5Di9UC0+8h1L6ZD2d7awM7E/T4uA1fJRlx6zk/NvdCCVEoAnFqvHmCuNeIKoCeIixBX/q8uM+6ycDvF8woqosA==}
     engines: {node: '>= 0.8'}
-
-  rollup-plugin-terser@7.0.2:
-    resolution: {integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==}
-    deprecated: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-terser
-    peerDependencies:
-      rollup: 2.80.0
 
   rollup@2.80.0:
     resolution: {integrity: sha512-cIFJOD1DESzpjOBl763Kp1AH7UE/0fcdHe6rZXUdQ9c50uvgigvW97u3IcSeBwOkgqL/PXPBktBCh0KEu5L8XQ==}
@@ -12215,10 +11602,6 @@ packages:
     resolution: {integrity: sha512-FI+pHEn7Wc4NqKXMXFM+VAYKEj/mRIcW4h24YVwVtyjI+EqGrLc2Hx/Ny0lrZ21cBWU2goLy36eqMcNj3AQJig==}
     engines: {node: '>=12.0.0'}
     hasBin: true
-
-  run-applescript@7.1.0:
-    resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
-    engines: {node: '>=18'}
 
   run-async@2.4.1:
     resolution: {integrity: sha512-tvVnVv01b8c1RrA6Ep7JkStj85Guv/YrMcwqYQnwjsAS2cTmmPGBBjAjpCW7RrSodNSoE2/qg9O4bceNvUuDgQ==}
@@ -12273,10 +11656,6 @@ packages:
 
   scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
-
-  schema-utils@1.0.0:
-    resolution: {integrity: sha512-i27Mic4KovM/lnGsy8whRCHhc7VicJajAjTrYg11K9zfZXnYIt4k5F+kZkwjnrhKzLic/HLU4j11mjsz2G/75g==}
-    engines: {node: '>= 4'}
 
   schema-utils@2.7.0:
     resolution: {integrity: sha512-0ilKFI6QQF5nxDZLFn2dMjvc4hjg/Wkg7rHd3jK6/A4a1Hl9VFdQWvgB1UMGoU94pad1P/8N7fMcEnLnSiju8A==}
@@ -12497,13 +11876,6 @@ packages:
     resolution: {integrity: sha512-0xtkGhWCC9MGt/EzgnvbbbKhqWjl1+/rncmhTh5qCpbYguXh6S/qwePfv/JQ8jePXXmqingylxoC49pCkSPIbA==}
     engines: {node: '>= 6.3.0'}
 
-  sort-keys@1.1.2:
-    resolution: {integrity: sha512-vzn8aSqKgytVik0iwdBEi+zevbTYZogewTUM6dtpmGwEcdzbub/TX4bCzRhebDCRC3QzXgJsLRKB2V/Oof7HXg==}
-    engines: {node: '>=0.10.0'}
-
-  source-list-map@2.0.1:
-    resolution: {integrity: sha512-qnQ7gVMxGNxsiL4lEuJwe/To8UnK7fAnmbGEEH8RpLouuKbeEm0lhbQVFIrNSuB+G7tVrAlVsZgETT5nljf+Iw==}
-
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -12606,10 +11978,6 @@ packages:
 
   stream-http@3.2.0:
     resolution: {integrity: sha512-Oq1bLqisTyK3TSCXpPbT4sdeYNdmyZJv1LxpEm2vu1ZhK89kSE5YXwZc3cWk0MagGaKriBh9mCFbVGtO+vY29A==}
-
-  strict-uri-encode@1.1.0:
-    resolution: {integrity: sha512-R3f198pcvnB+5IpnBlRkphuE9n46WyVl8I39W/ZUTZLz4nqSP/oLYUrcnJrw462Ds8he4YKMov2efsTIw1BDGQ==}
-    engines: {node: '>=0.10.0'}
 
   strict-uri-encode@2.0.0:
     resolution: {integrity: sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==}
@@ -12874,12 +12242,6 @@ packages:
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
 
-  thingies@2.5.0:
-    resolution: {integrity: sha512-s+2Bwztg6PhWUD7XMfeYm5qliDdSiZm7M7n8KjTkIsm3l/2lgVRc2/Gx/v+ZX8lT4FMA+i8aQvhcWylldc+ZNw==}
-    engines: {node: '>=10.18'}
-    peerDependencies:
-      tslib: ^2.8.1
-
   throttleit@1.0.1:
     resolution: {integrity: sha512-vDZpf9Chs9mAdfY046mcPt8fg5QSZr37hEH4TXYBnDF+izxgrbRGUAAaBvIk/fJm9aOFCGFd1EsNg5AZCbnQCQ==}
 
@@ -12957,12 +12319,6 @@ packages:
   tr46@3.0.0:
     resolution: {integrity: sha512-l7FvfAHlcmulp8kr+flpQZmVwtu7nfRV7NZujtN0OqES8EL4O4e0qqzL0DC5gAvx/ZC/9lk6rhcUwYvkBnBnYA==}
     engines: {node: '>=12'}
-
-  tree-dump@1.1.0:
-    resolution: {integrity: sha512-rMuvhU4MCDbcbnleZTFezWsaZXRFemSqAM+7jPnzUl1fo9w3YEKOxAeui0fz3OI4EU4hf23iyA7uQRVko+UaBA==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      tslib: ^2.8.1
 
   tree-kill@1.2.2:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
@@ -13372,54 +12728,15 @@ packages:
     engines: {node: '>= 10.13.0'}
     hasBin: true
 
-  webpack-cli@5.1.4:
-    resolution: {integrity: sha512-pIDJHIEI9LR0yxHXQ+Qh95k2EvXpWzZ5l+d+jIo+RdSm9MiHfzazIxwwni/p7+x4eJZuvG1AJwgC4TNQ7NRgsg==}
-    engines: {node: '>=14.15.0'}
-    hasBin: true
-    peerDependencies:
-      '@webpack-cli/generators': '*'
-      webpack: 5.105.0
-      webpack-bundle-analyzer: '*'
-      webpack-dev-server: '*'
-    peerDependenciesMeta:
-      '@webpack-cli/generators':
-        optional: true
-      webpack-bundle-analyzer:
-        optional: true
-      webpack-dev-server:
-        optional: true
-
   webpack-dev-middleware@5.3.4:
     resolution: {integrity: sha512-BVdTqhhs+0IfoeAf7EoH5WE+exCmqGerHfDM0IL096Px60Tq2Mn9MAbnaGUe6HiMa41KMCYF19gyzZmBcq/o4Q==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
       webpack: 5.105.0
 
-  webpack-dev-middleware@7.4.5:
-    resolution: {integrity: sha512-uxQ6YqGdE4hgDKNf7hUiPXOdtkXvBJXrfEGYSx7P7LC8hnUYGK70X6xQXUvXeNyBDDcsiQXpG2m3G9vxowaEuA==}
-    engines: {node: '>= 18.12.0'}
-    peerDependencies:
-      webpack: 5.105.0
-    peerDependenciesMeta:
-      webpack:
-        optional: true
-
   webpack-dev-server@4.15.2:
     resolution: {integrity: sha512-0XavAZbNJ5sDrCbkpWL8mia0o5WPOd2YGtxrEiZkBK9FjLppIUK2TgxK6qGD2P3hUXTJNNPVibrerKcx5WkR1g==}
     engines: {node: '>= 12.13.0'}
-    hasBin: true
-    peerDependencies:
-      webpack: 5.105.0
-      webpack-cli: '*'
-    peerDependenciesMeta:
-      webpack:
-        optional: true
-      webpack-cli:
-        optional: true
-
-  webpack-dev-server@5.2.2:
-    resolution: {integrity: sha512-QcQ72gh8a+7JO63TAx/6XZf/CWhgMzu5m0QirvPfGvptOusAxG12w2+aua1Jkjr7hzaWDnJ2n6JFeexMHI+Zjg==}
-    engines: {node: '>= 18.12.0'}
     hasBin: true
     peerDependencies:
       webpack: 5.105.0
@@ -13437,9 +12754,6 @@ packages:
   webpack-merge@6.0.1:
     resolution: {integrity: sha512-hXXvrjtx2PLYx4qruKl+kyRSLc52V+cCvMxRjmKwoA+CBbbF5GfIBtR6kCvl0fYGqTUPKB+1ktVmTHqMOzgCBg==}
     engines: {node: '>=18.0.0'}
-
-  webpack-sources@1.4.3:
-    resolution: {integrity: sha512-lgTS3Xhv1lCOKo7SA5TjKXMjpSM4sBjNV5+q2bqesbSPs5FjGmU6jjtBSkX9b4qW87vDIsCIlUPOEhbZrMdjeQ==}
 
   webpack-sources@3.3.4:
     resolution: {integrity: sha512-7tP1PdV4vF+lYPnkMR0jMY5/la2ub5Fc/8VQrrU+lXkiM6C4TjVfGw7iKfyhnTQOsD+6Q/iKw0eFciziRgD58Q==}
@@ -13523,123 +12837,51 @@ packages:
   wildcard@2.0.1:
     resolution: {integrity: sha512-CC1bOL87PIWSBhDcTrdeLo6eGT7mCFtrg0uIJtqJUFyK+eJnzl8A1niH56uu7KMa5XFrtiV+AQuHO3n7DsHnLQ==}
 
-  workbox-background-sync@6.6.1:
-    resolution: {integrity: sha512-trJd3ovpWCvzu4sW0E8rV3FUyIcC0W8G+AZ+VcqzzA890AsWZlUGOTSxIMmIHVusUw/FDq1HFWfy/kC/WTRqSg==}
-    deprecated: this package has been deprecated
-
   workbox-background-sync@7.4.0:
     resolution: {integrity: sha512-8CB9OxKAgKZKyNMwfGZ1XESx89GryWTfI+V5yEj8sHjFH8MFelUwYXEyldEK6M6oKMmn807GoJFUEA1sC4XS9w==}
 
-  workbox-broadcast-update@6.6.1:
-    resolution: {integrity: sha512-fBhffRdaANdeQ1V8s692R9l/gzvjjRtydBOvR6WCSB0BNE2BacA29Z4r9/RHd9KaXCPl6JTdI9q0bR25YKP8TQ==}
-    deprecated: this package has been deprecated
-
   workbox-broadcast-update@7.4.0:
     resolution: {integrity: sha512-+eZQwoktlvo62cI0b+QBr40v5XjighxPq3Fzo9AWMiAosmpG5gxRHgTbGGhaJv/q/MFVxwFNGh/UwHZ/8K88lA==}
-
-  workbox-build@6.6.1:
-    resolution: {integrity: sha512-INPgDx6aRycAugUixbKgiEQBWD0MPZqU5r0jyr24CehvNuLPSXp/wGOpdRJmts656lNiXwqV7dC2nzyrzWEDnw==}
-    engines: {node: '>=16.0.0'}
-    deprecated: this package has been deprecated
 
   workbox-build@7.4.0:
     resolution: {integrity: sha512-Ntk1pWb0caOFIvwz/hfgrov/OJ45wPEhI5PbTywQcYjyZiVhT3UrwwUPl6TRYbTm4moaFYithYnl1lvZ8UjxcA==}
     engines: {node: '>=20.0.0'}
 
-  workbox-cacheable-response@6.6.1:
-    resolution: {integrity: sha512-85LY4veT2CnTCDxaVG7ft3NKaFbH6i4urZXgLiU4AiwvKqS2ChL6/eILiGRYXfZ6gAwDnh5RkuDbr/GMS4KSag==}
-    deprecated: workbox-background-sync@6.6.1
-
   workbox-cacheable-response@7.4.0:
     resolution: {integrity: sha512-0Fb8795zg/x23ISFkAc7lbWes6vbw34DGFIMw31cwuHPgDEC/5EYm6m/ZkylLX0EnEbbOyOCLjKgFS/Z5g0HeQ==}
-
-  workbox-core@6.6.1:
-    resolution: {integrity: sha512-ZrGBXjjaJLqzVothoE12qTbVnOAjFrHDXpZe7coCb6q65qI/59rDLwuFMO4PcZ7jcbxY+0+NhUVztzR/CbjEFw==}
-    deprecated: this package has been deprecated
 
   workbox-core@7.4.0:
     resolution: {integrity: sha512-6BMfd8tYEnN4baG4emG9U0hdXM4gGuDU3ectXuVHnj71vwxTFI7WOpQJC4siTOlVtGqCUtj0ZQNsrvi6kZZTAQ==}
 
-  workbox-expiration@6.6.1:
-    resolution: {integrity: sha512-qFiNeeINndiOxaCrd2DeL1Xh1RFug3JonzjxUHc5WkvkD2u5abY3gZL1xSUNt3vZKsFFGGORItSjVTVnWAZO4A==}
-    deprecated: this package has been deprecated
-
   workbox-expiration@7.4.0:
     resolution: {integrity: sha512-V50p4BxYhtA80eOvulu8xVfPBgZbkxJ1Jr8UUn0rvqjGhLDqKNtfrDfjJKnLz2U8fO2xGQJTx/SKXNTzHOjnHw==}
-
-  workbox-google-analytics@6.6.1:
-    resolution: {integrity: sha512-1TjSvbFSLmkpqLcBsF7FuGqqeDsf+uAXO/pjiINQKg3b1GN0nBngnxLcXDYo1n/XxK4N7RaRrpRlkwjY/3ocuA==}
-    deprecated: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
 
   workbox-google-analytics@7.4.0:
     resolution: {integrity: sha512-MVPXQslRF6YHkzGoFw1A4GIB8GrKym/A5+jYDUSL+AeJw4ytQGrozYdiZqUW1TPQHW8isBCBtyFJergUXyNoWQ==}
 
-  workbox-navigation-preload@6.6.1:
-    resolution: {integrity: sha512-DQCZowCecO+wRoIxJI2V6bXWK6/53ff+hEXLGlQL4Rp9ZaPDLrgV/32nxwWIP7QpWDkVEtllTAK5h6cnhxNxDA==}
-    deprecated: this package has been deprecated
-
   workbox-navigation-preload@7.4.0:
     resolution: {integrity: sha512-etzftSgdQfjMcfPgbfaZCfM2QuR1P+4o8uCA2s4rf3chtKTq/Om7g/qvEOcZkG6v7JZOSOxVYQiOu6PbAZgU6w==}
-
-  workbox-precaching@6.6.1:
-    resolution: {integrity: sha512-K4znSJ7IKxCnCYEdhNkMr7X1kNh8cz+mFgx9v5jFdz1MfI84pq8C2zG+oAoeE5kFrUf7YkT5x4uLWBNg0DVZ5A==}
-    deprecated: this package has been deprecated
 
   workbox-precaching@7.4.0:
     resolution: {integrity: sha512-VQs37T6jDqf1rTxUJZXRl3yjZMf5JX/vDPhmx2CPgDDKXATzEoqyRqhYnRoxl6Kr0rqaQlp32i9rtG5zTzIlNg==}
 
-  workbox-range-requests@6.6.1:
-    resolution: {integrity: sha512-4BDzk28govqzg2ZpX0IFkthdRmCKgAKreontYRC5YsAPB2jDtPNxqx3WtTXgHw1NZalXpcH/E4LqUa9+2xbv1g==}
-    deprecated: this package has been deprecated
-
   workbox-range-requests@7.4.0:
     resolution: {integrity: sha512-3Vq854ZNuP6Y0KZOQWLaLC9FfM7ZaE+iuQl4VhADXybwzr4z/sMmnLgTeUZLq5PaDlcJBxYXQ3U91V7dwAIfvw==}
-
-  workbox-recipes@6.6.1:
-    resolution: {integrity: sha512-/oy8vCSzromXokDA+X+VgpeZJvtuf8SkQ8KL0xmRivMgJZrjwM3c2tpKTJn6PZA6TsbxGs3Sc7KwMoZVamcV2g==}
-    deprecated: this package has been deprecated
 
   workbox-recipes@7.4.0:
     resolution: {integrity: sha512-kOkWvsAn4H8GvAkwfJTbwINdv4voFoiE9hbezgB1sb/0NLyTG4rE7l6LvS8lLk5QIRIto+DjXLuAuG3Vmt3cxQ==}
 
-  workbox-routing@6.6.1:
-    resolution: {integrity: sha512-j4ohlQvfpVdoR8vDYxTY9rA9VvxTHogkIDwGdJ+rb2VRZQ5vt1CWwUUZBeD/WGFAni12jD1HlMXvJ8JS7aBWTg==}
-    deprecated: this package has been deprecated
-
   workbox-routing@7.4.0:
     resolution: {integrity: sha512-C/ooj5uBWYAhAqwmU8HYQJdOjjDKBp9MzTQ+otpMmd+q0eF59K+NuXUek34wbL0RFrIXe/KKT+tUWcZcBqxbHQ==}
-
-  workbox-strategies@6.6.1:
-    resolution: {integrity: sha512-WQLXkRnsk4L81fVPkkgon1rZNxnpdO5LsO+ws7tYBC6QQQFJVI6v98klrJEjFtZwzw/mB/HT5yVp7CcX0O+mrw==}
-    deprecated: this package has been deprecated
 
   workbox-strategies@7.4.0:
     resolution: {integrity: sha512-T4hVqIi5A4mHi92+5EppMX3cLaVywDp8nsyUgJhOZxcfSV/eQofcOA6/EMo5rnTNmNTpw0rUgjAI6LaVullPpg==}
 
-  workbox-streams@6.6.1:
-    resolution: {integrity: sha512-maKG65FUq9e4BLotSKWSTzeF0sgctQdYyTMq529piEN24Dlu9b6WhrAfRpHdCncRS89Zi2QVpW5V33NX8PgH3Q==}
-    deprecated: this package has been deprecated
-
   workbox-streams@7.4.0:
     resolution: {integrity: sha512-QHPBQrey7hQbnTs5GrEVoWz7RhHJXnPT+12qqWM378orDMo5VMJLCkCM1cnCk+8Eq92lccx/VgRZ7WAzZWbSLg==}
 
-  workbox-sw@6.6.1:
-    resolution: {integrity: sha512-R7whwjvU2abHH/lR6kQTTXLHDFU2izht9kJOvBRYK65FbwutT4VvnUAJIgHvfWZ/fokrOPhfoWYoPCMpSgUKHQ==}
-    deprecated: this package has been deprecated
-
   workbox-sw@7.4.0:
     resolution: {integrity: sha512-ltU+Kr3qWR6BtbdlMnCjobZKzeV1hN+S6UvDywBrwM19TTyqA03X66dzw1tEIdJvQ4lYKkBFox6IAEhoSEZ8Xw==}
-
-  workbox-webpack-plugin@6.6.1:
-    resolution: {integrity: sha512-zpZ+ExFj9NmiI66cFEApyjk7hGsfJ1YMOaLXGXBoZf0v7Iu6hL0ZBe+83mnDq3YYWAfA3fnyFejritjOHkFcrA==}
-    engines: {node: '>=16.0.0'}
-    deprecated: this package has been deprecated
-    peerDependencies:
-      webpack: 5.105.0
-
-  workbox-window@6.6.1:
-    resolution: {integrity: sha512-wil4nwOY58nTdCvif/KEZjQ2NP8uk3gGeRNy2jPBbzypU4BT4D9L8xiwbmDBpZlSgJd2xsT9FvSNU0gsxV51JQ==}
-    deprecated: this package has been deprecated
 
   workbox-window@7.4.0:
     resolution: {integrity: sha512-/bIYdBLAVsNR3v7gYGaV4pQW3M3kEPx5E8vDxGvxo6khTrGtSSCS7QiFKv9ogzBgZiy0OXLP9zO28U/1nF1mfw==}
@@ -13711,10 +12953,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-
-  wsl-utils@0.1.0:
-    resolution: {integrity: sha512-h3Fbisa2nKGPxCpm89Hk33lBLsnaGBvctQopaBSOW/uIs6FTe1ATyAnKFJrzVs9vpGdsTe73WF3V4lIsk4Gacw==}
-    engines: {node: '>=18'}
 
   wslink@2.5.0:
     resolution: {integrity: sha512-+m7GWH9G3Y2iAN9CP8M5z/Re2u/Q1KEXvUZ2ISGle7CF6T07z2jS8sWfgp4Y8ZRUbUCHp6IJnEL1xkbzeNn18Q==}
@@ -14908,21 +14146,21 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@cornerstonejs/adapters@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
+  '@cornerstonejs/adapters@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
     dependencies:
       '@babel/runtime-corejs2': 7.26.10
-      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
-      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
+      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       buffer: 6.0.3
       dcmjs: 0.49.4
       gl-matrix: 3.4.3
       ndarray: 1.0.19
 
-  '@cornerstonejs/ai@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
+  '@cornerstonejs/ai@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
     dependencies:
       '@babel/runtime-corejs2': 7.26.10
-      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
-      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
+      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       buffer: 6.0.3
       dcmjs: 0.49.4
       gl-matrix: 3.4.3
@@ -14941,9 +14179,9 @@ snapshots:
 
   '@cornerstonejs/codec-openjph@2.4.7': {}
 
-  '@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)':
+  '@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)':
     dependencies:
-      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       comlink: 4.4.2
       gl-matrix: 3.4.3
       loglevel: 1.9.2
@@ -14953,40 +14191,40 @@ snapshots:
       - webpack
       - wslink
 
-  '@cornerstonejs/dicom-image-loader@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(dicom-parser@1.8.21)':
+  '@cornerstonejs/dicom-image-loader@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(dicom-parser@1.8.21)':
     dependencies:
       '@cornerstonejs/codec-charls': 1.2.3
       '@cornerstonejs/codec-libjpeg-turbo-8bit': 1.2.2
       '@cornerstonejs/codec-openjpeg': 1.3.0
       '@cornerstonejs/codec-openjph': 2.4.7
-      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       comlink: 4.4.2
       dicom-parser: 1.8.21
       jpeg-lossless-decoder-js: 2.1.2
       pako: 2.1.0
       uuid: 9.0.1
 
-  '@cornerstonejs/labelmap-interpolation@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))':
+  '@cornerstonejs/labelmap-interpolation@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))':
     dependencies:
-      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
-      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
+      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@itk-wasm/morphological-contour-interpolation': 1.1.0
-      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       itk-wasm: 1.0.0-b.165
     transitivePeerDependencies:
       - debug
 
-  '@cornerstonejs/polymorphic-segmentation@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))':
+  '@cornerstonejs/polymorphic-segmentation@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))':
     dependencies:
-      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
-      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
+      '@cornerstonejs/tools': 4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@icr/polyseg-wasm': 0.4.0
-      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
 
-  '@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)':
+  '@cornerstonejs/tools@4.22.8(@cornerstonejs/core@4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)':
     dependencies:
-      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
-      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)
+      '@cornerstonejs/core': 4.22.8(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
+      '@kitware/vtk.js': 34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)
       '@types/d3-array': 3.2.1
       '@types/d3-interpolate': 3.0.4
       '@types/offscreencanvas': 2019.7.3
@@ -16881,134 +16119,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsonjoy.com/base64@1.1.2(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/base64@17.67.0(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/buffers@1.2.1(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/buffers@17.67.0(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/codegen@1.0.0(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/codegen@17.67.0(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-core@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/fs-node-builtins': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      thingies: 2.5.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-fsa@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/fs-core': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      thingies: 2.5.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-node-builtins@4.56.10(tslib@2.8.1)':
-    dependencies:
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-node-to-fsa@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/fs-fsa': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-node-utils@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/fs-node-builtins': 4.56.10(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-node@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/fs-core': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-print': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-snapshot': 4.56.10(tslib@2.8.1)
-      glob-to-regex.js: 1.2.0(tslib@2.8.1)
-      thingies: 2.5.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-print@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      tree-dump: 1.1.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/fs-snapshot@4.56.10(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/json-pack': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/util': 17.67.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/json-pack@1.21.0(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/base64': 1.1.2(tslib@2.8.1)
-      '@jsonjoy.com/buffers': 1.2.1(tslib@2.8.1)
-      '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
-      '@jsonjoy.com/json-pointer': 1.0.2(tslib@2.8.1)
-      '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
-      hyperdyperid: 1.2.0
-      thingies: 2.5.0(tslib@2.8.1)
-      tree-dump: 1.1.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/json-pack@17.67.0(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/base64': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/json-pointer': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/util': 17.67.0(tslib@2.8.1)
-      hyperdyperid: 1.2.0
-      thingies: 2.5.0(tslib@2.8.1)
-      tree-dump: 1.1.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/json-pointer@1.0.2(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
-      '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/json-pointer@17.67.0(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/util': 17.67.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/util@1.9.0(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/buffers': 1.2.1(tslib@2.8.1)
-      '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@jsonjoy.com/util@17.67.0(tslib@2.8.1)':
-    dependencies:
-      '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
-      '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
-      tslib: 2.8.1
-
-  '@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0)(wslink@2.5.0)':
+  '@kitware/vtk.js@34.15.1(@babel/preset-env@7.29.5(@babel/core@7.28.0))(autoprefixer@10.4.27(postcss@8.5.14))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))(wslink@2.5.0)':
     dependencies:
       '@babel/preset-env': 7.29.5(@babel/core@7.28.0)
       '@babel/runtime': 7.28.2
@@ -17027,7 +16138,7 @@ snapshots:
       stream-browserify: 3.0.0
       utif: 3.1.0
       webworker-promise: 0.5.0
-      worker-loader: 3.0.8(webpack@5.105.0)
+      worker-loader: 3.0.8(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       wslink: 2.5.0
       xmlbuilder2: 3.0.2
     transitivePeerDependencies:
@@ -17208,38 +16319,6 @@ snapshots:
   '@playwright/test@1.56.1':
     dependencies:
       playwright: 1.56.1
-
-  '@pmmmwh/react-refresh-webpack-plugin@0.5.17(@types/webpack@4.41.40)(react-refresh@0.18.0)(type-fest@2.19.0)(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))':
-    dependencies:
-      ansi-html: 0.0.9
-      core-js-pure: 3.49.0
-      error-stack-parser: 2.1.4
-      html-entities: 2.6.0
-      loader-utils: 2.0.4
-      react-refresh: 0.18.0
-      schema-utils: 4.3.3
-      source-map: 0.7.6
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-    optionalDependencies:
-      '@types/webpack': 4.41.40
-      type-fest: 2.19.0
-      webpack-dev-server: 5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-
-  '@pmmmwh/react-refresh-webpack-plugin@0.5.17(@types/webpack@4.41.40)(react-refresh@0.18.0)(type-fest@2.19.0)(webpack-dev-server@5.2.2)(webpack@5.105.0)':
-    dependencies:
-      ansi-html: 0.0.9
-      core-js-pure: 3.49.0
-      error-stack-parser: 2.1.4
-      html-entities: 2.6.0
-      loader-utils: 2.0.4
-      react-refresh: 0.18.0
-      schema-utils: 4.3.3
-      source-map: 0.7.6
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-    optionalDependencies:
-      '@types/webpack': 4.41.40
-      type-fest: 2.19.0
-      webpack-dev-server: 5.2.2(tslib@2.8.1)(webpack-cli@5.1.4)(webpack@5.105.0)
 
   '@pnpm/config.env-replace@1.1.0': {}
 
@@ -17860,16 +16939,6 @@ snapshots:
       '@types/babel__core': 7.20.5
     transitivePeerDependencies:
       - supports-color
-
-  '@rollup/plugin-node-resolve@11.2.1(rollup@2.80.0)':
-    dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@2.80.0)
-      '@types/resolve': 1.17.1
-      builtin-modules: 3.3.0
-      deepmerge: 4.3.1
-      is-module: 1.0.0
-      resolve: 1.22.11
-      rollup: 2.80.0
 
   '@rollup/plugin-node-resolve@15.3.1(rollup@2.80.0)':
     dependencies:
@@ -18534,11 +17603,6 @@ snapshots:
       '@types/qs': 6.14.0
       '@types/serve-static': 1.15.10
 
-  '@types/glob@7.2.0':
-    dependencies:
-      '@types/minimatch': 6.0.0
-      '@types/node': 25.9.1
-
   '@types/graceful-fs@4.1.9':
     dependencies:
       '@types/node': 25.9.1
@@ -18595,10 +17659,6 @@ snapshots:
   '@types/mdx@2.0.13': {}
 
   '@types/mime@1.3.5': {}
-
-  '@types/minimatch@6.0.0':
-    dependencies:
-      minimatch: 10.2.4
 
   '@types/ms@2.1.0': {}
 
@@ -18664,15 +17724,9 @@ snapshots:
       '@types/prop-types': 15.7.15
       csstype: 3.2.3
 
-  '@types/resolve@1.17.1':
-    dependencies:
-      '@types/node': 20.19.9
-
   '@types/resolve@1.20.2': {}
 
   '@types/retry@0.12.0': {}
-
-  '@types/retry@0.12.2': {}
 
   '@types/sax@1.2.7':
     dependencies:
@@ -18705,38 +17759,15 @@ snapshots:
     dependencies:
       '@types/node': 20.19.9
 
-  '@types/source-list-map@0.1.6': {}
-
   '@types/stack-utils@2.0.3': {}
-
-  '@types/tapable@1.0.12': {}
 
   '@types/tough-cookie@4.0.5': {}
 
   '@types/trusted-types@2.0.7': {}
 
-  '@types/uglify-js@3.17.5':
-    dependencies:
-      source-map: 0.6.1
-
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
-
-  '@types/webpack-sources@3.2.3':
-    dependencies:
-      '@types/node': 20.19.9
-      '@types/source-list-map': 0.1.6
-      source-map: 0.7.6
-
-  '@types/webpack@4.41.40':
-    dependencies:
-      '@types/node': 20.19.9
-      '@types/tapable': 1.0.12
-      '@types/uglify-js': 3.17.5
-      '@types/webpack-sources': 3.2.3
-      anymatch: 3.1.3
-      source-map: 0.6.1
 
   '@types/webxr@0.5.24': {}
 
@@ -18845,30 +17876,6 @@ snapshots:
       '@webassemblyjs/ast': 1.14.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4)(webpack@5.105.0)':
-    dependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
-
-  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4)(webpack@5.105.0)':
-    dependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
-
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)':
-    dependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
-    optionalDependencies:
-      webpack-dev-server: 5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.2)(webpack@5.105.0)':
-    dependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@5.2.2)(webpack@5.105.0)
-    optionalDependencies:
-      webpack-dev-server: 5.2.2(tslib@2.8.1)(webpack-cli@5.1.4)(webpack@5.105.0)
-
   '@xstate/react@3.2.2(react@18.3.1)(xstate@4.38.3)':
     dependencies:
       react: 18.3.1
@@ -18969,17 +17976,9 @@ snapshots:
       react: 18.3.1
       react-is: 16.13.1
 
-  ajv-errors@1.0.1(ajv@6.14.0):
-    dependencies:
-      ajv: 6.14.0
-
   ajv-formats@2.1.1(ajv@8.20.0):
     optionalDependencies:
       ajv: 8.20.0
-
-  ajv-keywords@3.5.2(ajv@6.14.0):
-    dependencies:
-      ajv: 6.14.0
 
   ajv-keywords@3.5.2(ajv@6.15.0):
     dependencies:
@@ -18989,13 +17988,6 @@ snapshots:
     dependencies:
       ajv: 8.20.0
       fast-deep-equal: 3.1.3
-
-  ajv@6.14.0:
-    dependencies:
-      fast-deep-equal: 3.1.3
-      fast-json-stable-stringify: 2.1.0
-      json-schema-traverse: 0.4.1
-      uri-js: 4.4.1
 
   ajv@6.15.0:
     dependencies:
@@ -19053,8 +18045,6 @@ snapshots:
       type-fest: 0.21.3
 
   ansi-html-community@0.0.8: {}
-
-  ansi-html@0.0.9: {}
 
   ansi-regex@2.1.1: {}
 
@@ -19124,15 +18114,7 @@ snapshots:
 
   array-flatten@1.1.1: {}
 
-  array-union@1.0.2:
-    dependencies:
-      array-uniq: 1.0.3
-
   array-union@2.1.0: {}
-
-  array-union@3.0.1: {}
-
-  array-uniq@1.0.3: {}
 
   array.prototype.find@2.2.3:
     dependencies:
@@ -19258,15 +18240,6 @@ snapshots:
       make-dir: 3.1.0
       schema-utils: 2.7.1
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  babel-loader@8.4.1(@babel/core@7.28.0)(webpack@5.105.0):
-    dependencies:
-      '@babel/core': 7.28.0
-      find-cache-dir: 3.3.2
-      loader-utils: 2.0.4
-      make-dir: 3.1.0
-      schema-utils: 2.7.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
 
   babel-loader@9.2.1(@babel/core@7.28.0)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
     dependencies:
@@ -19589,13 +18562,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  builtin-modules@3.3.0: {}
-
   builtin-status-codes@3.0.0: {}
-
-  bundle-name@4.1.0:
-    dependencies:
-      run-applescript: 7.1.0
 
   bytes@3.0.0: {}
 
@@ -19771,17 +18738,6 @@ snapshots:
       source-map: 0.6.1
 
   clean-stack@2.2.0: {}
-
-  clean-webpack-plugin@3.0.0(webpack@5.105.0):
-    dependencies:
-      '@types/webpack': 4.41.40
-      del: 4.1.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-
-  clean-webpack-plugin@4.0.0(webpack@5.105.0):
-    dependencies:
-      del: 4.1.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
 
   cli-boxes@3.0.0: {}
 
@@ -19965,16 +18921,6 @@ snapshots:
 
   copy-text-to-clipboard@3.2.2: {}
 
-  copy-webpack-plugin@10.2.4(webpack@5.105.0):
-    dependencies:
-      fast-glob: 3.3.3
-      glob-parent: 6.0.2
-      globby: 12.2.0
-      normalize-path: 3.0.0
-      schema-utils: 4.3.3
-      serialize-javascript: 7.0.4
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-
   copy-webpack-plugin@11.0.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
     dependencies:
       fast-glob: 3.3.3
@@ -19984,16 +18930,6 @@ snapshots:
       schema-utils: 4.3.3
       serialize-javascript: 7.0.4
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  copy-webpack-plugin@9.1.0(webpack@5.105.0):
-    dependencies:
-      fast-glob: 3.3.3
-      glob-parent: 6.0.2
-      globby: 11.1.0
-      normalize-path: 3.0.0
-      schema-utils: 3.3.0
-      serialize-javascript: 7.0.4
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
 
   core-js-compat@3.49.0:
     dependencies:
@@ -20544,13 +19480,6 @@ snapshots:
 
   deepmerge@4.3.1: {}
 
-  default-browser-id@5.0.1: {}
-
-  default-browser@5.5.0:
-    dependencies:
-      bundle-name: 4.1.0
-      default-browser-id: 5.0.1
-
   default-gateway@6.0.3:
     dependencies:
       execa: 5.1.1
@@ -20573,8 +19502,6 @@ snapshots:
 
   define-lazy-prop@2.0.0: {}
 
-  define-lazy-prop@3.0.0: {}
-
   define-properties@1.2.1:
     dependencies:
       define-data-property: 1.1.4
@@ -20582,16 +19509,6 @@ snapshots:
       object-keys: 1.1.1
 
   defined@1.0.1: {}
-
-  del@4.1.1:
-    dependencies:
-      '@types/glob': 7.2.0
-      globby: 6.1.0
-      is-path-cwd: 2.2.0
-      is-path-in-cwd: 2.1.0
-      p-map: 2.1.0
-      pify: 4.0.1
-      rimraf: 2.7.1
 
   del@6.1.1:
     dependencies:
@@ -20759,22 +19676,6 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  dotenv-defaults@1.1.1:
-    dependencies:
-      dotenv: 6.2.0
-
-  dotenv-webpack@1.8.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
-    dependencies:
-      dotenv-defaults: 1.1.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  dotenv-webpack@1.8.0(webpack@5.105.0):
-    dependencies:
-      dotenv-defaults: 1.1.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-
-  dotenv@6.2.0: {}
-
   dotenv@8.6.0: {}
 
   dunder-proto@1.0.1:
@@ -20847,8 +19748,6 @@ snapshots:
   entities@4.5.0: {}
 
   entities@6.0.1: {}
-
-  envinfo@7.21.0: {}
 
   enzyme-shallow-equal@1.0.7:
     dependencies:
@@ -21191,14 +20090,6 @@ snapshots:
       iconv-lite: 0.4.24
       tmp: 0.0.33
 
-  extract-css-chunks-webpack-plugin@4.10.0(webpack@5.105.0):
-    dependencies:
-      loader-utils: 2.0.4
-      normalize-url: 1.9.1
-      schema-utils: 1.0.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-sources: 1.4.3
-
   extract-zip@2.0.1(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
@@ -21226,8 +20117,6 @@ snapshots:
   fast-uri@3.1.0: {}
 
   fast-uri@3.1.2: {}
-
-  fastest-levenshtein@1.0.16: {}
 
   fastq@1.20.1:
     dependencies:
@@ -21282,12 +20171,6 @@ snapshots:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  file-loader@6.2.0(webpack@5.105.0):
-    dependencies:
-      loader-utils: 2.0.4
-      schema-utils: 3.3.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
 
   file-selector@0.1.19:
     dependencies:
@@ -21552,10 +20435,6 @@ snapshots:
     dependencies:
       is-glob: 4.0.3
 
-  glob-to-regex.js@1.2.0(tslib@2.8.1):
-    dependencies:
-      tslib: 2.8.1
-
   glob-to-regexp@0.4.1: {}
 
   glob@10.5.0:
@@ -21630,15 +20509,6 @@ snapshots:
       merge2: 1.4.1
       slash: 3.0.0
 
-  globby@12.2.0:
-    dependencies:
-      array-union: 3.0.1
-      dir-glob: 3.0.1
-      fast-glob: 3.3.3
-      ignore: 5.3.2
-      merge2: 1.4.1
-      slash: 4.0.0
-
   globby@13.2.2:
     dependencies:
       dir-glob: 3.0.1
@@ -21646,14 +20516,6 @@ snapshots:
       ignore: 5.3.2
       merge2: 1.4.1
       slash: 4.0.0
-
-  globby@6.1.0:
-    dependencies:
-      array-union: 1.0.2
-      glob: 7.2.3
-      object-assign: 4.1.1
-      pify: 2.3.0
-      pinkie-promise: 2.0.1
 
   gopd@1.2.0: {}
 
@@ -21930,17 +20792,6 @@ snapshots:
       '@rspack/core': 1.7.11(@swc/helpers@0.5.21)
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
 
-  html-webpack-plugin@5.6.3(@rspack/core@2.0.3(@swc/helpers@0.5.21))(webpack@5.105.0):
-    dependencies:
-      '@types/html-minifier-terser': 6.1.0
-      html-minifier-terser: 6.1.0
-      lodash: 4.18.1
-      pretty-error: 4.0.0
-      tapable: 2.2.2
-    optionalDependencies:
-      '@rspack/core': 2.0.3(@swc/helpers@0.5.21)
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-
   html2canvas@1.4.1:
     dependencies:
       css-line-break: 2.1.0
@@ -22043,8 +20894,6 @@ snapshots:
   human-signals@2.1.0: {}
 
   human-signals@5.0.0: {}
-
-  hyperdyperid@1.2.0: {}
 
   i18next-browser-languagedetector@3.1.1: {}
 
@@ -22153,8 +21002,6 @@ snapshots:
   internmap@2.0.3: {}
 
   interpret@1.4.0: {}
-
-  interpret@3.1.1: {}
 
   invariant@2.2.4:
     dependencies:
@@ -22278,8 +21125,6 @@ snapshots:
 
   is-docker@2.2.1: {}
 
-  is-docker@3.0.0: {}
-
   is-extendable@0.1.1: {}
 
   is-extglob@2.1.1: {}
@@ -22312,10 +21157,6 @@ snapshots:
 
   is-hexadecimal@2.0.1: {}
 
-  is-inside-container@1.0.0:
-    dependencies:
-      is-docker: 3.0.0
-
   is-installed-globally@0.4.0:
     dependencies:
       global-dirs: 3.0.1
@@ -22336,8 +21177,6 @@ snapshots:
 
   is-negative-zero@2.0.3: {}
 
-  is-network-error@1.3.1: {}
-
   is-npm@6.1.0: {}
 
   is-number-object@1.1.1:
@@ -22357,17 +21196,7 @@ snapshots:
 
   is-path-cwd@2.2.0: {}
 
-  is-path-in-cwd@2.1.0:
-    dependencies:
-      is-path-inside: 2.1.0
-
-  is-path-inside@2.1.0:
-    dependencies:
-      path-is-inside: 1.0.2
-
   is-path-inside@3.0.3: {}
-
-  is-plain-obj@1.1.0: {}
 
   is-plain-obj@3.0.0: {}
 
@@ -22441,10 +21270,6 @@ snapshots:
   is-wsl@2.2.0:
     dependencies:
       is-docker: 2.2.1
-
-  is-wsl@3.1.1:
-    dependencies:
-      is-inside-container: 1.0.0
 
   is-yarn-global@0.4.1: {}
 
@@ -22927,12 +21752,6 @@ snapshots:
       emittery: 0.13.1
       jest-util: 29.7.0
       string-length: 4.0.2
-
-  jest-worker@26.6.2:
-    dependencies:
-      '@types/node': 20.19.9
-      merge-stream: 2.0.0
-      supports-color: 7.2.0
 
   jest-worker@27.5.1:
     dependencies:
@@ -23667,23 +22486,6 @@ snapshots:
     dependencies:
       fs-monkey: 1.1.0
 
-  memfs@4.56.10(tslib@2.8.1):
-    dependencies:
-      '@jsonjoy.com/fs-core': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-fsa': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-builtins': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-to-fsa': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-node-utils': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-print': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/fs-snapshot': 4.56.10(tslib@2.8.1)
-      '@jsonjoy.com/json-pack': 1.21.0(tslib@2.8.1)
-      '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
-      glob-to-regex.js: 1.2.0(tslib@2.8.1)
-      thingies: 2.5.0(tslib@2.8.1)
-      tree-dump: 1.1.0(tslib@2.8.1)
-      tslib: 2.8.1
-
   memoize-one@5.2.1: {}
 
   memoize-one@6.0.0: {}
@@ -24192,10 +22994,6 @@ snapshots:
     dependencies:
       mime-db: 1.52.0
 
-  mime-types@3.0.2:
-    dependencies:
-      mime-db: 1.54.0
-
   mime@1.6.0: {}
 
   mimic-fn@1.2.0: {}
@@ -24213,12 +23011,6 @@ snapshots:
       schema-utils: 4.3.3
       tapable: 2.2.2
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  mini-css-extract-plugin@2.9.2(webpack@5.105.0):
-    dependencies:
-      schema-utils: 4.3.3
-      tapable: 2.2.2
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
 
   minimalistic-assert@1.0.1: {}
 
@@ -24346,13 +23138,6 @@ snapshots:
   normalize-path@3.0.0: {}
 
   normalize-range@0.1.2: {}
-
-  normalize-url@1.9.1:
-    dependencies:
-      object-assign: 4.1.1
-      prepend-http: 1.0.4
-      query-string: 4.3.4
-      sort-keys: 1.1.2
 
   normalize-url@8.1.1: {}
 
@@ -24503,13 +23288,6 @@ snapshots:
       platform: 1.3.6
       protobufjs: 7.5.7
 
-  open@10.2.0:
-    dependencies:
-      default-browser: 5.5.0
-      define-lazy-prop: 3.0.0
-      is-inside-container: 1.0.0
-      wsl-utils: 0.1.0
-
   open@8.4.2:
     dependencies:
       define-lazy-prop: 2.0.0
@@ -24596,12 +23374,6 @@ snapshots:
   p-retry@4.6.2:
     dependencies:
       '@types/retry': 0.12.0
-      retry: 0.13.1
-
-  p-retry@6.2.1:
-    dependencies:
-      '@types/retry': 0.12.2
-      is-network-error: 1.3.1
       retry: 0.13.1
 
   p-timeout@6.1.4: {}
@@ -24744,8 +23516,6 @@ snapshots:
   pify@2.3.0: {}
 
   pify@3.0.0: {}
-
-  pify@4.0.1: {}
 
   pinkie-promise@2.0.1:
     dependencies:
@@ -25488,8 +24258,6 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prepend-http@1.0.4: {}
-
   prettier-plugin-tailwindcss@0.6.9(prettier@3.6.2):
     dependencies:
       prettier: 3.6.2
@@ -25638,11 +24406,6 @@ snapshots:
   qs@6.14.1:
     dependencies:
       side-channel: 1.1.0
-
-  query-string@4.3.4:
-    dependencies:
-      object-assign: 4.1.1
-      strict-uri-encode: 1.1.0
 
   query-string@6.14.1:
     dependencies:
@@ -26109,10 +24872,6 @@ snapshots:
     dependencies:
       resolve: 1.22.11
 
-  rechoir@0.8.0:
-    dependencies:
-      resolve: 1.22.11
-
   recma-build-jsx@1.0.0:
     dependencies:
       '@types/estree': 1.0.8
@@ -26391,10 +25150,6 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rimraf@2.7.1:
-    dependencies:
-      glob: 7.2.3
-
   rimraf@3.0.2:
     dependencies:
       glob: 7.2.3
@@ -26403,14 +25158,6 @@ snapshots:
     dependencies:
       hash-base: 3.1.2
       inherits: 2.0.4
-
-  rollup-plugin-terser@7.0.2(rollup@2.80.0):
-    dependencies:
-      '@babel/code-frame': 7.29.0
-      jest-worker: 26.6.2
-      rollup: 2.80.0
-      serialize-javascript: 7.0.4
-      terser: 5.47.1
 
   rollup@2.80.0:
     optionalDependencies:
@@ -26422,8 +25169,6 @@ snapshots:
       picocolors: 1.1.1
       postcss: 8.5.6
       strip-json-comments: 3.1.1
-
-  run-applescript@7.1.0: {}
 
   run-async@2.4.1: {}
 
@@ -26479,12 +25224,6 @@ snapshots:
   scheduler@0.23.2:
     dependencies:
       loose-envify: 1.4.0
-
-  schema-utils@1.0.0:
-    dependencies:
-      ajv: 6.14.0
-      ajv-errors: 1.0.1(ajv@6.14.0)
-      ajv-keywords: 3.5.2(ajv@6.14.0)
 
   schema-utils@2.7.0:
     dependencies:
@@ -26781,12 +25520,6 @@ snapshots:
 
   sort-css-media-queries@2.2.0: {}
 
-  sort-keys@1.1.2:
-    dependencies:
-      is-plain-obj: 1.1.0
-
-  source-list-map@2.0.1: {}
-
   source-map-js@1.2.1: {}
 
   source-map-support@0.5.13:
@@ -26897,8 +25630,6 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
       xtend: 4.0.2
-
-  strict-uri-encode@1.1.0: {}
 
   strict-uri-encode@2.0.0: {}
 
@@ -27233,17 +25964,6 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.15.13(@swc/helpers@0.5.21)
 
-  terser-webpack-plugin@5.3.14(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.31
-      jest-worker: 27.5.1
-      schema-utils: 4.3.3
-      serialize-javascript: 7.0.4
-      terser: 5.47.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-    optionalDependencies:
-      '@swc/core': 1.15.13(@swc/helpers@0.5.21)
-
   terser-webpack-plugin@5.3.16(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
@@ -27252,17 +25972,6 @@ snapshots:
       serialize-javascript: 7.0.4
       terser: 5.47.1
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-    optionalDependencies:
-      '@swc/core': 1.15.13(@swc/helpers@0.5.21)
-
-  terser-webpack-plugin@5.3.16(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.31
-      jest-worker: 27.5.1
-      schema-utils: 4.3.3
-      serialize-javascript: 7.0.4
-      terser: 5.47.1
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
     optionalDependencies:
       '@swc/core': 1.15.13(@swc/helpers@0.5.21)
 
@@ -27292,10 +26001,6 @@ snapshots:
   thenify@3.3.1:
     dependencies:
       any-promise: 1.3.0
-
-  thingies@2.5.0(tslib@2.8.1):
-    dependencies:
-      tslib: 2.8.1
 
   throttleit@1.0.1: {}
 
@@ -27366,10 +26071,6 @@ snapshots:
   tr46@3.0.0:
     dependencies:
       punycode: 2.3.1
-
-  tree-dump@1.1.0(tslib@2.8.1):
-    dependencies:
-      tslib: 2.8.1
 
   tree-kill@1.2.2: {}
 
@@ -27656,15 +26357,6 @@ snapshots:
     optionalDependencies:
       file-loader: 6.2.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
 
-  url-loader@4.1.1(file-loader@6.2.0(webpack@5.105.0))(webpack@5.105.0):
-    dependencies:
-      loader-utils: 2.0.4
-      mime-types: 2.1.35
-      schema-utils: 3.3.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-    optionalDependencies:
-      file-loader: 6.2.0(webpack@5.105.0)
-
   url-parse@1.5.10:
     dependencies:
       querystringify: 2.2.0
@@ -27856,44 +26548,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  webpack-cli@5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0):
-    dependencies:
-      '@discoveryjs/json-ext': 0.5.7
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4)(webpack@5.105.0)
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4)(webpack@5.105.0)
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
-      colorette: 2.0.20
-      commander: 8.3.0
-      cross-spawn: 7.0.6
-      envinfo: 7.21.0
-      fastest-levenshtein: 1.0.16
-      import-local: 3.2.0
-      interpret: 3.1.1
-      rechoir: 0.8.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-merge: 5.10.0
-    optionalDependencies:
-      webpack-dev-server: 5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-
-  webpack-cli@5.1.4(webpack-dev-server@5.2.2)(webpack@5.105.0):
-    dependencies:
-      '@discoveryjs/json-ext': 0.5.7
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4)(webpack@5.105.0)
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4)(webpack@5.105.0)
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4)(webpack-dev-server@5.2.2)(webpack@5.105.0)
-      colorette: 2.0.20
-      commander: 8.3.0
-      cross-spawn: 7.0.6
-      envinfo: 7.21.0
-      fastest-levenshtein: 1.0.16
-      import-local: 3.2.0
-      interpret: 3.1.1
-      rechoir: 0.8.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-merge: 5.10.0
-    optionalDependencies:
-      webpack-dev-server: 5.2.2(tslib@2.8.1)(webpack-cli@5.1.4)(webpack@5.105.0)
-
   webpack-dev-middleware@5.3.4(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
     dependencies:
       colorette: 2.0.20
@@ -27902,33 +26556,6 @@ snapshots:
       range-parser: 1.2.1
       schema-utils: 4.3.3
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  webpack-dev-middleware@7.4.5(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
-    dependencies:
-      colorette: 2.0.20
-      memfs: 4.56.10(tslib@2.8.1)
-      mime-types: 3.0.2
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      schema-utils: 4.3.3
-    optionalDependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-    transitivePeerDependencies:
-      - tslib
-    optional: true
-
-  webpack-dev-middleware@7.4.5(tslib@2.8.1)(webpack@5.105.0):
-    dependencies:
-      colorette: 2.0.20
-      memfs: 4.56.10(tslib@2.8.1)
-      mime-types: 3.0.2
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      schema-utils: 4.3.3
-    optionalDependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-    transitivePeerDependencies:
-      - tslib
 
   webpack-dev-server@4.15.2(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
     dependencies:
@@ -27970,86 +26597,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  webpack-dev-server@5.2.2(tslib@2.8.1)(webpack-cli@5.1.4)(webpack@5.105.0):
-    dependencies:
-      '@types/bonjour': 3.5.13
-      '@types/connect-history-api-fallback': 1.5.4
-      '@types/express': 4.17.25
-      '@types/express-serve-static-core': 4.19.8
-      '@types/serve-index': 1.9.4
-      '@types/serve-static': 1.15.10
-      '@types/sockjs': 0.3.36
-      '@types/ws': 8.18.1
-      ansi-html-community: 0.0.8
-      bonjour-service: 1.3.0
-      chokidar: 3.6.0
-      colorette: 2.0.20
-      compression: 1.8.1
-      connect-history-api-fallback: 2.0.0
-      express: 4.22.1
-      graceful-fs: 4.2.11
-      http-proxy-middleware: 2.0.9(@types/express@4.17.25)
-      ipaddr.js: 2.3.0
-      launch-editor: 2.13.1
-      open: 10.2.0
-      p-retry: 6.2.1
-      schema-utils: 4.3.3
-      selfsigned: 2.4.1
-      serve-index: 1.9.2
-      sockjs: 0.3.24
-      spdy: 4.0.2
-      webpack-dev-middleware: 7.4.5(tslib@2.8.1)(webpack@5.105.0)
-      ws: 8.19.0
-    optionalDependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@5.2.2)(webpack@5.105.0)
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - supports-color
-      - tslib
-      - utf-8-validate
-
-  webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))):
-    dependencies:
-      '@types/bonjour': 3.5.13
-      '@types/connect-history-api-fallback': 1.5.4
-      '@types/express': 4.17.25
-      '@types/express-serve-static-core': 4.19.8
-      '@types/serve-index': 1.9.4
-      '@types/serve-static': 1.15.10
-      '@types/sockjs': 0.3.36
-      '@types/ws': 8.18.1
-      ansi-html-community: 0.0.8
-      bonjour-service: 1.3.0
-      chokidar: 3.6.0
-      colorette: 2.0.20
-      compression: 1.8.1
-      connect-history-api-fallback: 2.0.0
-      express: 4.22.1
-      graceful-fs: 4.2.11
-      http-proxy-middleware: 2.0.9(@types/express@4.17.25)
-      ipaddr.js: 2.3.0
-      launch-editor: 2.13.1
-      open: 10.2.0
-      p-retry: 6.2.1
-      schema-utils: 4.3.3
-      selfsigned: 2.4.1
-      serve-index: 1.9.2
-      sockjs: 0.3.24
-      spdy: 4.0.2
-      webpack-dev-middleware: 7.4.5(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-      ws: 8.19.0
-    optionalDependencies:
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - supports-color
-      - tslib
-      - utf-8-validate
-    optional: true
-
   webpack-merge@5.10.0:
     dependencies:
       clone-deep: 4.0.1
@@ -28061,11 +26608,6 @@ snapshots:
       clone-deep: 4.0.1
       flat: 5.0.2
       wildcard: 2.0.1
-
-  webpack-sources@1.4.3:
-    dependencies:
-      source-list-map: 2.0.1
-      source-map: 0.6.1
 
   webpack-sources@3.3.4: {}
 
@@ -28096,40 +26638,6 @@ snapshots:
       terser-webpack-plugin: 5.3.16(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       watchpack: 2.5.1
       webpack-sources: 3.3.4
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
-
-  webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4):
-    dependencies:
-      '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.8
-      '@types/json-schema': 7.0.15
-      '@webassemblyjs/ast': 1.14.1
-      '@webassemblyjs/wasm-edit': 1.14.1
-      '@webassemblyjs/wasm-parser': 1.14.1
-      acorn: 8.16.0
-      acorn-import-phases: 1.0.4(acorn@8.16.0)
-      browserslist: 4.28.1
-      chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.19.0
-      es-module-lexer: 2.0.0
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.11
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.3.1
-      mime-types: 2.1.35
-      neo-async: 2.6.2
-      schema-utils: 4.3.3
-      tapable: 2.2.2
-      terser-webpack-plugin: 5.3.16(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack@5.105.0)
-      watchpack: 2.5.1
-      webpack-sources: 3.3.4
-    optionalDependencies:
-      webpack-cli: 5.1.4(webpack-dev-server@5.2.2(tslib@2.8.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -28231,66 +26739,14 @@ snapshots:
 
   wildcard@2.0.1: {}
 
-  workbox-background-sync@6.6.1:
-    dependencies:
-      idb: 7.1.1
-      workbox-core: 6.6.1
-
   workbox-background-sync@7.4.0:
     dependencies:
       idb: 7.1.1
       workbox-core: 7.4.0
 
-  workbox-broadcast-update@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-
   workbox-broadcast-update@7.4.0:
     dependencies:
       workbox-core: 7.4.0
-
-  workbox-build@6.6.1(@types/babel__core@7.20.5):
-    dependencies:
-      '@apideck/better-ajv-errors': 0.3.6(ajv@8.18.0)
-      '@babel/core': 7.28.0
-      '@babel/preset-env': 7.28.0(@babel/core@7.28.0)
-      '@babel/runtime': 7.28.2
-      '@rollup/plugin-babel': 5.3.1(@babel/core@7.28.0)(@types/babel__core@7.20.5)(rollup@2.80.0)
-      '@rollup/plugin-node-resolve': 11.2.1(rollup@2.80.0)
-      '@rollup/plugin-replace': 2.4.2(rollup@2.80.0)
-      '@surma/rollup-plugin-off-main-thread': 2.2.3
-      ajv: 8.18.0
-      common-tags: 1.8.2
-      fast-json-stable-stringify: 2.1.0
-      fs-extra: 9.1.0
-      glob: 7.2.3
-      lodash: 4.18.1
-      pretty-bytes: 5.6.0
-      rollup: 2.80.0
-      rollup-plugin-terser: 7.0.2(rollup@2.80.0)
-      source-map: 0.8.0-beta.0
-      stringify-object: 3.3.0
-      strip-comments: 2.0.1
-      tempy: 0.6.0
-      upath: 1.2.0
-      workbox-background-sync: 6.6.1
-      workbox-broadcast-update: 6.6.1
-      workbox-cacheable-response: 6.6.1
-      workbox-core: 6.6.1
-      workbox-expiration: 6.6.1
-      workbox-google-analytics: 6.6.1
-      workbox-navigation-preload: 6.6.1
-      workbox-precaching: 6.6.1
-      workbox-range-requests: 6.6.1
-      workbox-recipes: 6.6.1
-      workbox-routing: 6.6.1
-      workbox-strategies: 6.6.1
-      workbox-streams: 6.6.1
-      workbox-sw: 6.6.1
-      workbox-window: 6.6.1
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - supports-color
 
   workbox-build@7.4.0(@types/babel__core@7.20.5):
     dependencies:
@@ -28335,34 +26791,16 @@ snapshots:
       - '@types/babel__core'
       - supports-color
 
-  workbox-cacheable-response@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-
   workbox-cacheable-response@7.4.0:
     dependencies:
       workbox-core: 7.4.0
 
-  workbox-core@6.6.1: {}
-
   workbox-core@7.4.0: {}
-
-  workbox-expiration@6.6.1:
-    dependencies:
-      idb: 7.1.1
-      workbox-core: 6.6.1
 
   workbox-expiration@7.4.0:
     dependencies:
       idb: 7.1.1
       workbox-core: 7.4.0
-
-  workbox-google-analytics@6.6.1:
-    dependencies:
-      workbox-background-sync: 6.6.1
-      workbox-core: 6.6.1
-      workbox-routing: 6.6.1
-      workbox-strategies: 6.6.1
 
   workbox-google-analytics@7.4.0:
     dependencies:
@@ -28371,19 +26809,9 @@ snapshots:
       workbox-routing: 7.4.0
       workbox-strategies: 7.4.0
 
-  workbox-navigation-preload@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-
   workbox-navigation-preload@7.4.0:
     dependencies:
       workbox-core: 7.4.0
-
-  workbox-precaching@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-      workbox-routing: 6.6.1
-      workbox-strategies: 6.6.1
 
   workbox-precaching@7.4.0:
     dependencies:
@@ -28391,22 +26819,9 @@ snapshots:
       workbox-routing: 7.4.0
       workbox-strategies: 7.4.0
 
-  workbox-range-requests@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-
   workbox-range-requests@7.4.0:
     dependencies:
       workbox-core: 7.4.0
-
-  workbox-recipes@6.6.1:
-    dependencies:
-      workbox-cacheable-response: 6.6.1
-      workbox-core: 6.6.1
-      workbox-expiration: 6.6.1
-      workbox-precaching: 6.6.1
-      workbox-routing: 6.6.1
-      workbox-strategies: 6.6.1
 
   workbox-recipes@7.4.0:
     dependencies:
@@ -28417,52 +26832,20 @@ snapshots:
       workbox-routing: 7.4.0
       workbox-strategies: 7.4.0
 
-  workbox-routing@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-
   workbox-routing@7.4.0:
     dependencies:
       workbox-core: 7.4.0
 
-  workbox-strategies@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-
   workbox-strategies@7.4.0:
     dependencies:
       workbox-core: 7.4.0
-
-  workbox-streams@6.6.1:
-    dependencies:
-      workbox-core: 6.6.1
-      workbox-routing: 6.6.1
 
   workbox-streams@7.4.0:
     dependencies:
       workbox-core: 7.4.0
       workbox-routing: 7.4.0
 
-  workbox-sw@6.6.1: {}
-
   workbox-sw@7.4.0: {}
-
-  workbox-webpack-plugin@6.6.1(@types/babel__core@7.20.5)(webpack@5.105.0):
-    dependencies:
-      fast-json-stable-stringify: 2.1.0
-      pretty-bytes: 5.6.0
-      upath: 1.2.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
-      webpack-sources: 1.4.3
-      workbox-build: 6.6.1(@types/babel__core@7.20.5)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - supports-color
-
-  workbox-window@6.6.1:
-    dependencies:
-      '@types/trusted-types': 2.0.7
-      workbox-core: 6.6.1
 
   workbox-window@7.4.0:
     dependencies:
@@ -28474,12 +26857,6 @@ snapshots:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))
-
-  worker-loader@3.0.8(webpack@5.105.0):
-    dependencies:
-      loader-utils: 2.0.4
-      schema-utils: 3.3.0
-      webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(webpack-cli@5.1.4)
 
   wrap-ansi@3.0.1:
     dependencies:
@@ -28523,10 +26900,6 @@ snapshots:
   ws@8.19.0: {}
 
   ws@8.20.1: {}
-
-  wsl-utils@0.1.0:
-    dependencies:
-      is-wsl: 3.1.1
 
   wslink@2.5.0:
     dependencies:

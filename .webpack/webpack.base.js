@@ -8,9 +8,6 @@ const webpack = require('@rspack/core');
 
 // ~~ PLUGINS
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-// rspack has built-in SWC-based minification; TerserJSPlugin kept for webpack fallback
-let TerserJSPlugin;
-try { TerserJSPlugin = require('terser-webpack-plugin'); } catch { TerserJSPlugin = null; }
 
 // ~~ PackageJSON
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
@@ -172,9 +169,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           },
         },
         cssToJavaScript,
-        // Note: Only uncomment the following if you are using the old style of stylus in v2
-        // Also you need to uncomment this platform/app/.webpack/rules/extractStyleChunks.js
-        // stylusToJavaScript,
         {
           test: /\.wasm/,
           type: 'asset/resource',
@@ -258,9 +252,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   };
 
   if (isProdBuild) {
-    config.optimization.minimizer = TerserJSPlugin
-      ? [new TerserJSPlugin({ parallel: true, terserOptions: {} })]
-      : [new webpack.SwcJsMinimizerRspackPlugin()];
+    config.optimization.minimizer = [new webpack.SwcJsMinimizerRspackPlugin()];
   }
 
   if (isQuickBuild) {

@@ -4,7 +4,7 @@
   "packageManager": "pnpm@11.1.1",
   "engines": {
     "node": ">=24",
-    "pnpm": ">=11"
+    "pnpm": "11.1.1"
   },
   "scripts": {
     "cm": "npx git-cz",
@@ -74,7 +74,6 @@
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
-    "@pmmmwh/react-refresh-webpack-plugin": "0.5.17",
     "@rsbuild/core": "1.7.3",
     "@rsbuild/plugin-node-polyfill": "1.4.4",
     "@rsbuild/plugin-react": "1.4.5",
@@ -99,7 +98,6 @@
     "shader-loader": "1.3.1",
     "source-map-support": "0.5.21",
     "style-loader": "1.3.0",
-    "terser-webpack-plugin": "5.3.14",
     "ts-node": "10.9.2",
     "worker-loader": "3.0.8"
   },

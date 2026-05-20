@@ -32,7 +32,6 @@
     "react-i18next": "12.3.1",
     "react-router": "6.30.3",
     "react-router-dom": "6.30.3",
-    "webpack": "5.105.0",
     "webpack-merge": "5.10.0"
   },
   "dependencies": {
@@ -61,12 +60,8 @@
     "@babel/preset-typescript": "7.27.1",
     "@svgr/webpack": "8.1.0",
     "babel-loader": "8.4.1",
-    "clean-webpack-plugin": "3.0.0",
-    "copy-webpack-plugin": "9.1.0",
     "cross-env": "7.0.3",
     "dotenv": "8.6.0",
-    "webpack": "5.105.0",
-    "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
   },
   "keywords": [
