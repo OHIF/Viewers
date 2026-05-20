@@ -5,17 +5,13 @@ export default defineConfig({
   globalSetup: './tests/globalSetup.ts',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 0,
-  workers: process.env.CI ? 6 : 1,
+  retries: process.env.CI ? 1 : 0,
+  maxFailures: process.env.CI ? 10 : undefined,
+  workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [
-    [
-      process.env.CI ? 'json' : 'html',
-      process.env.CI
-        ? { outputFile: './tests/playwright-report.json' }
-        : { outputFolder: './tests/playwright-report' },
-    ],
+    ['html', { outputFolder: './tests/playwright-report' }],
   ],
   globalTimeout: 800_000,
   timeout: 800_000,

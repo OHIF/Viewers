@@ -5,8 +5,6 @@ module.exports = {
   moduleNameMapper: {
     ...base.moduleNameMapper,
     '@ohif/(.*)': '<rootDir>/../../platform/$1/src',
-    '^@cornerstonejs/([^/]+)/(.*)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm/$2',
-    '^@cornerstonejs/([^/]+)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm',
   },
   // rootDir: "../.."
   // testMatch: [

@@ -178,14 +178,6 @@ export default async function init({
     );
   });
 
-  // add metadata providers
-  metaData.addProvider(
-    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
-      csUtilities.calibratedPixelSpacingMetadataProvider
-    )
-  ); // this provider is required for Calibration tool
-  metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
-
   // These are set reasonably low to allow for interleaved retrieves and slower
   // connections.
   imageLoadPoolManager.maxNumRequests = {
@@ -196,6 +188,16 @@ export default async function init({
   };
 
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
+
+  // Add OHIF metadata providers after dicomImageLoader.init().
+  // The linked metadata branch clears providers during loader init.
+  metaData.addProvider(csUtilities.genericMetadataProvider.get, 9998);
+  metaData.addProvider(
+    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
+      csUtilities.calibratedPixelSpacingMetadataProvider
+    )
+  ); // this provider is required for Calibration tool
+  metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
   /* Measurement Service */
   this.measurementServiceSource = connectToolsToMeasurementService({
