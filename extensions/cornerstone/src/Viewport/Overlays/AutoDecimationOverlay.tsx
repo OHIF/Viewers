@@ -1,4 +1,5 @@
 import React from 'react';
+import { Enums } from '@cornerstonejs/core';
 import { useViewportRendering } from '../../hooks';
 
 /**
@@ -18,10 +19,10 @@ function AutoDecimationOverlay({
     ?.getViewportOptions?.();
   const info = options?.autoDecimationInfo;
   const viewportType = options?.viewportType;
+
   const isVolume =
-    viewportType === 1 || viewportType === 2 || // Enums.ViewportType.ORTHOGRAPHIC, VOLUME_3D
-    viewportType === 'orthographic' ||
-    viewportType === 'volume3d';
+    viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
+    viewportType === Enums.ViewportType.VOLUME_3D;
 
   if (!info?.message || !isVolume) {
     return null;
