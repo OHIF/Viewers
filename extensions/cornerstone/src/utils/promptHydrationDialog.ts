@@ -98,18 +98,24 @@ function promptHydrationDialog({
         if (!viewport) {
           const waitForViewportDataChange = (
             cornerstoneViewportService: AppTypes.CornerstoneViewportService,
-            viewportId: string
+            viewportId: string,
+            timeoutMs = 5000
           ) => {
             return new Promise(resolve => {
               const { unsubscribe } = cornerstoneViewportService.subscribe(
                 cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
                 async ({ viewportId: updatedViewportId }) => {
                   if (updatedViewportId === viewportId) {
+                    clearTimeout(timer);
                     unsubscribe();
                     resolve(true);
                   }
                 }
               );
+              const timer = setTimeout(() => {
+                unsubscribe();
+                reject(new Error(`Viewport data change timed out for viewportId: ${viewportId}`));
+              }, timeoutMs);
             });
           };
           // If viewport is not ready, wait for it to be ready before hydrating
