@@ -10,6 +10,11 @@ import { useAppConfig } from '@state';
 import { shallowEqualIgnoringArrayOrder } from '../utils/shallowEqualIgnoringArrayOrder';
 import { URL_KEYS, getUrlParam } from '../utils/studyListFilterContract';
 
+const DEFAULT_DATA = {
+  studies: [],
+  queryFilterValues: null,
+};
+
 /**
  * Uses route properties to determine the data source that should be passed
  * to the child layout template. In some instances, initiates requests and
@@ -34,10 +39,6 @@ function DataSourceWrapper(props: withAppTypes) {
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
   const STUDIES_LIMIT = appConfig.queryLimit ?? 101;
-  const DEFAULT_DATA = {
-    studies: [],
-    queryFilterValues: null,
-  };
 
   const getInitialDataSourceName = useCallback(() => {
     // TODO - get the variable from the props all the time...
