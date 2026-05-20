@@ -119,9 +119,9 @@ module.exports = (env, argv) => {
     },
     resolve: {
       modules: [
-        // Modules specific to this package
+        // Preserve importer-relative node_modules walk-up for pnpm.
+        'node_modules',
         path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
       ],

@@ -206,11 +206,14 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
       },
-      // Which directories to search when resolving modules
+      // Which directories to search when resolving modules.
+      // The leading bare 'node_modules' preserves the default importer-relative
+      // walk-up, which pnpm's isolated layout requires so that transitive deps
+      // (e.g. react-remove-scroll → tslib 2.x) resolve to the sibling copy
+      // inside .pnpm/<pkg>/node_modules rather than a hoisted older version.
       modules: [
-        // Modules specific to this package
+        'node_modules',
         path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         path.resolve(__dirname, '../platform/app/node_modules'),
         path.resolve(__dirname, '../platform/ui/node_modules'),
@@ -229,8 +232,13 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       },
     },
     node: {
-      __filename: 'mock',
-      __dirname: 'mock',
+      // Leave __filename / __dirname references alone. The previous 'mock'
+      // value triggers an rspack warning whenever bundled deps reference
+      // __dirname (e.g. Emscripten-compiled cornerstone codecs). Those refs
+      // sit inside `if (ENVIRONMENT_IS_NODE)` branches that never execute in
+      // the browser, so leaving them un-substituted is harmless at runtime.
+      __filename: false,
+      __dirname: false,
     },
     plugins: [
       new webpack.DefinePlugin(defineValues),
