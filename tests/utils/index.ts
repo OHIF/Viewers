@@ -11,11 +11,15 @@ import {
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
 } from './simulateClicksOnElement';
-import { simulateNormalizedDragOnElement } from './simulateDragOnElement';
+import {
+  simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
+} from './simulateDragOnElement';
 import { reduce3DViewportSize } from './reduce3DviewportSize';
 import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
+import { getAnnotationStats } from './getAnnotationStats';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
@@ -42,11 +46,13 @@ export {
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
   reduce3DViewportSize,
   getMousePosition,
   initializeMousePositionTracker,
   getSUV,
   getTMTVModalityUnit,
+  getAnnotationStats,
   clearAllAnnotations,
   scrollVolumeViewport,
   attemptAction,
