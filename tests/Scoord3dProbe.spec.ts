@@ -1,4 +1,13 @@
+import { Locator } from '@playwright/test';
 import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+
+async function expectNonEmptyDetailLines(lines: Locator) {
+  const lineCount = await lines.count();
+  expect(lineCount).toBeGreaterThan(0);
+  for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+    await expect(lines.nth(lineIndex)).not.toBeEmpty();
+  }
+}
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
@@ -40,10 +49,12 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Wait for the SR to load and stabilize before taking screenshot
   await page.waitForTimeout(1000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot before hydration - use viewport locator instead of full page
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbePreHydration
   );
 
@@ -85,24 +96,18 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Take screenshot after hydration showing the probe measurements - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbePostHydration
   );
 
   // Verify the measurements list has the correct probe measurements
-  const measurementRows = page.getByTestId('data-row');
-  const rowCount = await measurementRows.count();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBeGreaterThan(
-    0
-  );
+  expect(await rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0);
+  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
 
-  // Verify that the measurements are probe measurements (not other types)
   for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Probe measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
   }
 
   // Test jumping to a specific measurement by scrolling and clicking
@@ -131,7 +136,7 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Take screenshot showing the jump to measurement functionality - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
   );
 });
@@ -182,10 +187,12 @@ test('should display SCOORD3D probe measurements correctly', async ({
   // Wait for rendering to complete before taking screenshot
   await page.waitForTimeout(2000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot showing the SCOORD3D probe measurements rendered correctly - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly
   );
 
@@ -195,10 +202,8 @@ test('should display SCOORD3D probe measurements correctly', async ({
 
   // Verify that the measurements are probe measurements (not other types like rectangle)
   for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Probe measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
   }
 });

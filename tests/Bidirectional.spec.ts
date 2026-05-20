@@ -13,14 +13,16 @@ test('should display the bidirectional tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.bidirectional.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.bidirectional.bidirectionalDisplayedCorrectly
   );
 });

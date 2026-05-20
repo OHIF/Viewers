@@ -1,7 +1,5 @@
 import { useSystem } from '../contextProviders/SystemProvider';
 import i18n from 'i18next';
-import { seriesSortCriteria } from './sortStudy';
-
 
 /**
  * Tab properties that drive which tab group is used for thumbnail display.
@@ -41,7 +39,6 @@ export function createStudyBrowserTabs(
   const { servicesManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
 
-  const shouldSortBySeriesUID = process.env.TEST_ENV === 'true';
   const primaryStudies = [];
   const allStudies = [];
 
@@ -50,10 +47,10 @@ export function createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    // sort them by seriesInstanceUID
-    const sortCriteria = shouldSortBySeriesUID
-      ? seriesSortCriteria.compareSeriesUID
-      : (customizationService.getCustomization('sortingCriteria') as (a, b) => number);
+    const sortCriteria = customizationService.getCustomization('sortingCriteria') as (
+      a,
+      b
+    ) => number;
     const sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
       const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
       const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);

@@ -1,22 +1,28 @@
 {
   "name": "@ohif/mode-basic",
-  "version": "3.13.0-beta.24",
+  "version": "3.13.0-beta.79",
   "description": "A basic mode used to build other modes on top of",
   "author": "OHIF Contributors",
   "license": "MIT",
+  "repository": "OHIF/Viewers",
   "main": "dist/ohif-mode-basic.js",
   "module": "src/index.tsx",
+  "engines": {
+    "node": ">=24"
+  },
   "files": [
     "dist/**",
     "public/**",
     "README.md"
   ],
-  "repository": "OHIF/Viewers",
-  "keywords": [
-    "ohif-mode"
-  ],
-  "engines": {
-    "node": ">=24"
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev:cornerstone": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
     "@ohif/core": "workspace:*",
@@ -35,13 +41,7 @@
     "webpack": "5.105.0",
     "webpack-merge": "5.10.0"
   },
-  "scripts": {
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
-    "dev:cornerstone": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
-    "build:package": "pnpm run build",
-    "start": "pnpm run dev",
-    "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
-  }
+  "keywords": [
+    "ohif-mode"
+  ]
 }

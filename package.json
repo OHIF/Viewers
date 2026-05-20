@@ -1,6 +1,5 @@
 {
   "name": "ohif-monorepo-root",
-  "version": "3.13.0-beta.24",
   "private": true,
   "packageManager": "pnpm@11.1.1",
   "engines": {
@@ -59,10 +58,6 @@
   "dependencies": {
     "execa": "8.0.1"
   },
-  "optionalDependencies": {
-    "@percy/cypress": "3.1.6",
-    "@playwright/test": "1.56.1"
-  },
   "devDependencies": {
     "@babel/core": "7.28.0",
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
@@ -75,7 +70,7 @@
     "@babel/plugin-transform-regenerator": "7.28.1",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "7.28.0",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
@@ -107,6 +102,10 @@
     "terser-webpack-plugin": "5.3.14",
     "ts-node": "10.9.2",
     "worker-loader": "3.0.8"
+  },
+  "optionalDependencies": {
+    "@percy/cypress": "3.1.6",
+    "@playwright/test": "1.56.1"
   },
   "husky": {
     "hooks": {

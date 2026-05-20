@@ -1,23 +1,20 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "3.13.0-beta.24",
+  "version": "3.13.0-beta.79",
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
   "license": "MIT",
+  "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-dicom-microscopy.umd.js",
+  "module": "src/index.tsx",
+  "engines": {
+    "node": ">=24"
+  },
   "files": [
     "dist/**",
     "public/**",
     "README.md"
   ],
-  "repository": "OHIF/Viewers",
-  "keywords": [
-    "ohif-extension"
-  ],
-  "module": "src/index.tsx",
-  "engines": {
-    "node": ">=24"
-  },
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
@@ -52,5 +49,8 @@
     "cross-env": "7.0.3",
     "webpack": "5.105.0",
     "webpack-cli": "5.1.4"
-  }
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }

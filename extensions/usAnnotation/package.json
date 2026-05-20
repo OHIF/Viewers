@@ -1,25 +1,22 @@
 {
   "name": "@ohif/extension-ultrasound-pleura-bline",
-  "version": "3.13.0-beta.24",
+  "version": "3.13.0-beta.79",
   "description": "",
   "author": "Rodrigo Basilio",
   "license": "MIT",
+  "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-ultrasound-pleura-bline.umd.js",
-  "publishConfig": {
-    "access": "public"
+  "module": "src/index.ts",
+  "engines": {
+    "node": ">=24"
   },
   "files": [
     "dist/**",
     "public/**",
     "README.md"
   ],
-  "repository": "OHIF/Viewers",
-  "keywords": [
-    "ohif-extension"
-  ],
-  "module": "src/index.ts",
-  "engines": {
-    "node": ">=24"
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
@@ -40,8 +37,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/core": "4.17.2",
-    "@cornerstonejs/tools": "4.17.2",
+    "@cornerstonejs/core": "4.22.8",
+    "@cornerstonejs/tools": "4.22.8",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
     "@ohif/extension-default": "workspace:*",
@@ -59,7 +56,7 @@
     "@babel/plugin-transform-regenerator": "7.28.1",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "7.28.0",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@svgr/webpack": "8.1.0",
@@ -71,5 +68,8 @@
     "webpack": "5.105.0",
     "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
-  }
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }

@@ -1,16 +1,24 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.13.0-beta.24",
+  "version": "3.13.0-beta.79",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
+  "author": "OHIF",
+  "license": "MIT",
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
-  "publishConfig": {
-    "access": "public"
+  "exports": {
+    "./tailwind.config": "./tailwind.config.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./components/*": "./src/components/*.tsx",
+    ".": "./src/index.ts"
   },
   "files": [
     "dist",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
@@ -19,12 +27,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
     "build:package": "pnpm run build"
-  },
-  "exports": {
-    "./tailwind.config": "./tailwind.config.ts",
-    "./lib/*": "./src/lib/*.ts",
-    "./components/*": "./src/components/*.tsx",
-    ".": "./src/index.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.11",
@@ -68,7 +70,5 @@
     "webpack": "5.105.0",
     "webpack-cli": "5.1.4"
   },
-  "keywords": [],
-  "author": "OHIF",
-  "license": "MIT"
+  "keywords": []
 }

@@ -1,15 +1,12 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.13.0-beta.24",
+  "version": "3.13.0-beta.79",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-default.umd.js",
   "module": "src/index.ts",
-  "publishConfig": {
-    "access": "public"
-  },
   "engines": {
     "node": ">=24"
   },
@@ -17,9 +14,9 @@
     "dist",
     "README.md"
   ],
-  "keywords": [
-    "ohif-extension"
-  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
@@ -40,7 +37,9 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-i18next": "12.3.1",
-    "react-window": "1.8.11"
+    "react-window": "1.8.11",
+    "webpack": "5.105.0",
+    "webpack-merge": "5.10.0"
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
@@ -53,5 +52,8 @@
     "webpack": "5.105.0",
     "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
-  }
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }
