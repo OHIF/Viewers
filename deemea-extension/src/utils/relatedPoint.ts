@@ -2,6 +2,7 @@ export interface Point {
   id: number;
   x: number;
   y: number;
+  sliceIndex: number;
   xOrigin: number;
   yOrigin: number;
   name: string;
