@@ -7,12 +7,17 @@ async function run() {
   // Log build context for diagnosing GitHub build issues (OHIF/CS3D branch and version)
   spawnSync('node', ['.scripts/log-build-context.mjs'], { stdio: 'inherit', cwd: process.cwd() });
 
-  const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
-  console.log('Current branch:', branchName);
+  const { stdout: gitBranch } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+  // On Netlify (and other CI that checks out a detached HEAD) git reports "HEAD".
+  // Fall back to the CI-provided branch env var so feature-branch versioning works.
+  const branchName =
+    gitBranch === 'HEAD' ? process.env.BRANCH || process.env.HEAD || gitBranch : gitBranch;
+  console.log('Current branch:', branchName, gitBranch === branchName ? '' : `(git HEAD: ${gitBranch})`);
 
-  // read the current version from package.json
-  const packageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'));
-  const currentVersion = packageJson.version;
+  // Read the current version from platform/app/package.json. The root package.json is a
+  // private workspace root with no version field since the lerna→pnpm migration.
+  const appPackageJson = JSON.parse(await fs.readFile('platform/app/package.json', 'utf-8'));
+  const currentVersion = appPackageJson.version;
 
   console.log('Current version:', currentVersion);
 
