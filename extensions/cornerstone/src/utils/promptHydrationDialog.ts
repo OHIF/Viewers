@@ -101,7 +101,7 @@ function promptHydrationDialog({
             viewportId: string,
             timeoutMs = 5000
           ) => {
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
               const { unsubscribe } = cornerstoneViewportService.subscribe(
                 cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
                 async ({ viewportId: updatedViewportId }) => {
