@@ -159,7 +159,13 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      measurementService.clearMeasurements();
+      const trackingContext = evt.trackedStudy
+        ? { StudyInstanceUID: evt.trackedStudy, SeriesInstanceUIDs: [...(evt.trackedSeries || [])] }
+        : undefined;
+      measurementService.clearMeasurements(
+        undefined,
+        trackingContext ? { trackingContext } : undefined
+      );
       measurementService.setIsMeasurementDeletedIndividually(false);
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
@@ -250,7 +256,7 @@ function TrackedMeasurementsContextProvider(
     simplifiedAndLoadSR: (ctx, evt, condMeta) => {
       return (
         appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
-        evt.data.isBackupSave === false
+        evt.data?.isBackupSave === false
       );
     },
     hasDirtyAndSimplified: (ctx, evt, condMeta) => {
@@ -369,10 +375,21 @@ function TrackedMeasurementsContextProvider(
   ]);
 
   useEffect(() => {
-    // The command needs to be bound to the context's sendTrackedMeasurementsEvent
-    // so the command has to be registered in a React component.
+    // These commands are bound to the context's sendTrackedMeasurementsEvent, so they have
+    // to be registered from inside this (React) component. Re-registration on each
+    // render is safe — registerCommand overwrites by key.
     commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
       commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
+    });
+    commandsManager.registerCommand('DEFAULT', 'restoreTrackedSeries', {
+      commandFn: ({ StudyInstanceUID, SeriesInstanceUIDs }) =>
+        sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
+          StudyInstanceUID,
+          SeriesInstanceUIDs,
+        }),
+    });
+    commandsManager.registerCommand('DEFAULT', 'clearTrackedSeries', {
+      commandFn: () => sendTrackedMeasurementsEvent('CLEAR_TRACKING_CONTEXT'),
     });
   }, [commandsManager, sendTrackedMeasurementsEvent]);
 

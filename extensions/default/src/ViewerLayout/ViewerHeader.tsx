@@ -101,6 +101,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           <Button
             variant="ghost"
             className="hover:bg-muted"
+            data-cy="undo-btn"
             onClick={() => {
               commandsManager.run('undo');
             }}
@@ -110,6 +111,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           <Button
             variant="ghost"
             className="hover:bg-muted"
+            data-cy="redo-btn"
             onClick={() => {
               commandsManager.run('redo');
             }}

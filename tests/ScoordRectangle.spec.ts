@@ -1,4 +1,21 @@
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import type { Locator } from '@playwright/test';
+
+import {
+  checkForScreenshot,
+  expect,
+  getAnnotationStats,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
+
+async function expectNonEmptyDetailLines(lines: Locator) {
+  const lineCount = await lines.count();
+  expect(lineCount).toBeGreaterThan(0);
+  for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+    await expect(lines.nth(lineIndex)).not.toBeEmpty();
+  }
+}
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
@@ -96,13 +113,11 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(rowCount).toBeGreaterThan(0);
 
-  // Verify that the measurements are rectangle measurements (not other types)
   for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Rectangle measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
+    await expectNonEmptyDetailLines(measurement.stats.secondary.lines);
   }
 
   // Test jumping to a specific measurement by scrolling and clicking
@@ -195,12 +210,38 @@ test('should display SCOORD rectangle measurements correctly', async ({
   const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(rowCount).toBeGreaterThan(0);
 
-  // Verify that the measurements are rectangle measurements (not other types like probe)
+  const firstMeasurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  const expectedFirstPrimaryDetailLines = ['276 mm²', 'Max: 598 HU', 'Lung structure'];
+  await expect(firstMeasurement.stats.primary.lines).toHaveCount(
+    expectedFirstPrimaryDetailLines.length
+  );
+  for (let lineIndex = 0; lineIndex < expectedFirstPrimaryDetailLines.length; lineIndex++) {
+    await expect(firstMeasurement.stats.primary.lines.nth(lineIndex)).toHaveText(
+      expectedFirstPrimaryDetailLines[lineIndex]
+    );
+  }
+
+  // Assert against the source-of-truth cachedStats on the cornerstone annotation,
+  // independent of UI label formatting. Values should match the displayed labels
+  // after rounding ("276 mm²", "Max: 598 HU").
+  const rectangles = await getAnnotationStats(page, { toolName: 'RectangleROI' });
+  expect(rectangles.length).toBeGreaterThan(0);
+
+  const stats = rectangles[0].firstTargetStats!;
+  expect(stats.areaUnit).toBe('mm²');
+  expect(Math.round(stats.area as number)).toBe(276);
+  expect(Math.round(stats.max as number)).toBe(598);
+  expect(stats.Modality).toBe('CT');
+  expect(stats.modalityUnit).toBe('HU');
+
+  const lines = activeViewport.getSvgAnnotationStatTextLines(rectangles[0].annotationUID);
+  await expect(lines).toHaveCount(5);
+  await expect(lines.nth(0)).toHaveText('Area: 276 mm²');
+
   for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Rectangle measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
+    await expectNonEmptyDetailLines(measurement.stats.secondary.lines);
   }
 });

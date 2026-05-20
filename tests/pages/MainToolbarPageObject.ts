@@ -30,6 +30,16 @@ export class MainToolbarPageObject {
 
     return {
       ...layoutSelection,
+      grid(cols: number, rows: number) {
+        const button = page.getByTestId(`Layout-${cols - 1}-${rows - 1}`);
+        return {
+          button,
+          async click() {
+            await layoutSelection.click();
+            await button.click();
+          },
+        };
+      },
       get axialPrimary() {
         const button = page.getByTestId('Axial Primary');
         return {
@@ -331,6 +341,24 @@ export class MainToolbarPageObject {
 
   get panTool() {
     const button = this.page.getByTestId('Pan');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
+  get undo() {
+    const button = this.page.getByTestId('undo-btn');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
+  get redo() {
+    const button = this.page.getByTestId('redo-btn');
     return {
       button,
       async click() {
