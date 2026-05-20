@@ -183,6 +183,38 @@ export function SidePanelPreview({
     );
   }, []);
 
+  const previewProps: PreviewContentProps = {
+    study: selected as StudyRow | null,
+    series,
+    seriesView,
+    onThumbnailImageError: handleThumbnailImageError,
+  };
+
+  const renderPreviewContent = customizationService.getCustomization('workList.renderPreviewContent');
+  if (typeof renderPreviewContent === 'function') {
+    return <>{(renderPreviewContent as RenderPreviewContent)(React, previewProps)}</>;
+  }
+  return <DefaultPreviewContent {...previewProps} />;
+}
+
+export type PreviewContentProps = {
+  study: StudyRow | null;
+  series: any[];
+  seriesView: PreviewSeriesView;
+  onThumbnailImageError: (seriesUID: string) => void;
+};
+
+export type RenderPreviewContent = (
+  React: typeof import('react'),
+  props: PreviewContentProps
+) => React.ReactNode;
+
+function DefaultPreviewContent({
+  study,
+  series,
+  seriesView,
+  onThumbnailImageError,
+}: PreviewContentProps) {
   return (
     <StudyList.PreviewContainer>
       <StudyList.PreviewHeader>
@@ -190,10 +222,10 @@ export function SidePanelPreview({
         <StudyList.ClosePreviewButton />
       </StudyList.PreviewHeader>
       <StudyList.PreviewContent
-        study={selected as StudyRow | null}
+        study={study}
         series={series}
         seriesView={seriesView}
-        onThumbnailImageError={handleThumbnailImageError}
+        onThumbnailImageError={onThumbnailImageError}
       />
     </StudyList.PreviewContainer>
   );

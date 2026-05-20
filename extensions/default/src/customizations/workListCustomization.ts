@@ -24,11 +24,34 @@
  *   rewriting the defaults. If the returned value is not an array, WorkList
  *   falls back to the defaults.
  *   Currently only applies when `workList.variant` is `'default'`.
+ *
+ * - `workList.renderPreviewContent`: `(React, props) => ReactNode` (default: undefined)
+ *   Render function for the preview panel content. Receives the host React and
+ *   `{ study, series, seriesView, onThumbnailImageError }`:
+ *   - `study`: the selected `StudyRow` (`null` when nothing is selected).
+ *   - `series`: the study's series; each item has the raw data-source fields
+ *     (`seriesInstanceUid`, `modality`, `description`, `seriesDate`,
+ *     `seriesNumber`, `numSeriesInstances`, etc.) plus `thumbnailStatus` added
+ *     by the shell, which is one of `{ status: 'loading' }`,
+ *     `{ status: 'ready', src }`, `{ status: 'notAvailable' }`, or
+ *     `{ status: 'notApplicable' }`. The `src` in the `'ready'` form is the
+ *     URL to render in an `<img>`.
+ *   - `seriesView`: `'all' | 'thumbnails' | 'list'`, resolved from
+ *     `workList.previewSeriesView` with `'list'` forced for data sources that
+ *     can't produce thumbnails. Honor it if your layout has both views.
+ *   - `onThumbnailImageError(seriesUID)`: call when an `<img>` you render fails
+ *     to load. The shell marks that series as `notAvailable` and revokes its
+ *     blob URL if needed.
+ *   Use this to change the preview layout while keeping the fetch/abort/thumbnail
+ *   logic intact. When unset (or not a function), the built-in
+ *   `<StudyList.PreviewContainer>` layout is used.
+ *   Currently only applies when `workList.variant` is `'default'`.
  */
 export default function getWorkListCustomization() {
   return {
     'workList.variant': 'default',
     'workList.previewSeriesView': 'all',
     'workList.columns': (defaults: unknown) => defaults,
+    'workList.renderPreviewContent': undefined,
   };
 }

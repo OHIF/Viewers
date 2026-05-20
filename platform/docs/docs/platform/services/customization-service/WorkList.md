@@ -43,6 +43,39 @@ The default customization value is the identity function (`(defaults) => default
 
 This customization currently only applies when `workList.variant` is `'default'`.
 
+## `workList.renderPreviewContent`
+
+Render function for the preview panel that opens to the right of the study list. The customization receives the host React and the same data the built-in renderer uses — series and thumbnails are fetched by the `SidePanelPreview` shell and passed in as props.
+
+```ts
+type PreviewContentProps = {
+  study: StudyRow | null;
+  series: any[];
+  seriesView: 'all' | 'thumbnails' | 'list';
+  onThumbnailImageError: (seriesUID: string) => void;
+};
+
+type RenderPreviewContent = (
+  React: typeof import('react'),
+  props: PreviewContentProps
+) => React.ReactNode;
+```
+
+### Props
+
+- **`study`** — the currently selected `StudyRow` (`null` when no study is selected). Useful fields include `studyInstanceUid`, `patientName`, `mrn`, `date`, `modalities`, `description`, `accession`, and `instances`.
+- **`series`** — the series belonging to `study`, sorted by series date. Each item has the raw fields returned by the data source (`seriesInstanceUid`, `modality`, `description`, `seriesDate`, `seriesNumber`, `numSeriesInstances`, etc.) plus a `thumbnailStatus` added by the shell:
+  - `{ status: 'loading' }` — a thumbnail fetch is in flight.
+  - `{ status: 'ready', src }` — `src` is the URL (often a `blob:` URL) you can render in an `<img>`.
+  - `{ status: 'notAvailable' }` — the fetch failed or `onThumbnailImageError` was called for this series.
+  - `{ status: 'notApplicable' }` — the modality has no displayable thumbnail (e.g. SR, KO).
+- **`seriesView`** — `'all' | 'thumbnails' | 'list'`. Resolved from `workList.previewSeriesView`, with `'list'` forced when the active data source uses `wadors`/`thumbnailDirect` rendering or `bulkDataRetrieve` retrieval. Honor it if you want to respect the user's toggle and the data-source constraints; ignore it if your custom layout doesn't have a thumbnails/list distinction.
+- **`onThumbnailImageError`** — call with a series UID when an `<img>` you render fails to load. The shell marks that series as `notAvailable` and revokes its blob URL if needed. Wire it to your image element's `onError` to keep the state consistent.
+
+Use this customization to change the preview layout (e.g. a different patient summary, a custom series grid) while keeping the fetch, abort-on-selection-change, and bounded thumbnail worker pool intact. When the customization is unset (the default) or not a function, WorkList uses the built-in `<StudyList.PreviewContainer>` layout.
+
+This customization currently only applies when `workList.variant` is `'default'`.
+
 import { workListCustomizations, TableGenerator } from './sampleCustomizations';
 
 {TableGenerator(workListCustomizations)}

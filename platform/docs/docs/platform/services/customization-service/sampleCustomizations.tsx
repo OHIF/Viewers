@@ -443,6 +443,77 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'workList.renderPreviewContent',
+    description: (
+      <>
+        Render function for the preview panel content. Receives the host React and{' '}
+        <code>{'{ study, series, seriesView, onThumbnailImageError }'}</code> — the same data the
+        built-in renderer uses, with series and thumbnails already fetched by the{' '}
+        <code>SidePanelPreview</code> shell.
+        <ul>
+          <li>
+            <code>study</code>: the selected <code>StudyRow</code>, or <code>null</code>.
+          </li>
+          <li>
+            <code>series</code>: the study's series with raw data-source fields (
+            <code>seriesInstanceUid</code>, <code>modality</code>, <code>description</code>,{' '}
+            <code>seriesDate</code>, <code>seriesNumber</code>, <code>numSeriesInstances</code>,
+            etc.) plus a <code>thumbnailStatus</code> added by the shell, which is one of{' '}
+            <code>{"{ status: 'loading' }"}</code>, <code>{"{ status: 'ready', src }"}</code>,{' '}
+            <code>{"{ status: 'notAvailable' }"}</code>, or{' '}
+            <code>{"{ status: 'notApplicable' }"}</code>. Use <code>src</code> from the{' '}
+            <code>'ready'</code> form as the <code>{'<img>'}</code> source.
+          </li>
+          <li>
+            <code>seriesView</code>: <code>'all' | 'thumbnails' | 'list'</code>, resolved from{' '}
+            <code>workList.previewSeriesView</code> with <code>'list'</code> forced for data
+            sources that can't produce thumbnails.
+          </li>
+          <li>
+            <code>onThumbnailImageError(seriesUID)</code>: call when an <code>{'<img>'}</code>{' '}
+            you render fails to load; the shell marks that series as <code>notAvailable</code>{' '}
+            and revokes its blob URL if needed.
+          </li>
+        </ul>
+        Use this to change the preview layout while keeping the fetch, abort, and thumbnail
+        worker-pool logic intact. When unset, the built-in{' '}
+        <code>{'<StudyList.PreviewContainer>'}</code> layout is used. Currently only applies when{' '}
+        <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: 'undefined',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.renderPreviewContent': {
+        $set: function (React, { study, series, seriesView, onThumbnailImageError }) {
+          // Render whatever layout you like using the data the shell provides.
+          return React.createElement(
+            'div',
+            { className: 'flex h-full flex-col bg-black p-4 text-white' },
+            React.createElement('h2', null, study?.patientName ?? 'No study selected'),
+            React.createElement(
+              'ul',
+              { className: 'mt-2 flex flex-col gap-2' },
+              series.map((s) =>
+                React.createElement(
+                  'li',
+                  { key: s.seriesInstanceUid },
+                  s.description
+                )
+              )
+            )
+          );
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const customizations = [
