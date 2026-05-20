@@ -40,7 +40,7 @@ test('should duplicate a contour segment and add a new row to the panel', async 
   await segment0.actions.duplicate();
 
   const countAfterDuplicate = await panel.getSegmentCount();
-  expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').(5);
+  expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').toBe(5);
 
   //New segment's default name is formatted as "Segment {segmentCount}"
   const newSegmentLocator = panel.nthSegment(initialCount).title;
