@@ -2231,7 +2231,6 @@ function commandsModule({
         }
 
         toolGroup.setToolConfiguration(toolNames.RegionSegmentPlus, {
-          segmentationMode: 'floodfill_full',
           hoverPrecheckEnabled: false,
           intensityRangeStrategy: 'canvasDiskTriClassLarge',
           maxDeltaK: nextMaxDeltaK,

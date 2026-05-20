@@ -39,7 +39,7 @@ import {
   OrientationMarkerTool,
   WindowLevelRegionTool,
   SegmentSelectTool,
-  RegionSegmentPlusTool,
+  RegionSegmentPlusFloodFillTool,
   SegmentLabelTool,
   LivewireContourSegmentationTool,
   SculptorTool,
@@ -112,7 +112,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SegmentLabelTool);
   addTool(LabelmapSlicePropagationTool);
   addTool(MarkerLabelmapTool);
-  addTool(RegionSegmentPlusTool);
+  addTool(RegionSegmentPlusFloodFillTool);
   addTool(LivewireContourSegmentationTool);
   addTool(SculptorTool);
   addTool(SplineContourSegmentationTool);
@@ -175,7 +175,7 @@ const toolNames = {
   SegmentLabel: SegmentLabelTool.toolName,
   LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
   MarkerLabelmap: MarkerLabelmapTool.toolName,
-  RegionSegmentPlus: RegionSegmentPlusTool.toolName,
+  RegionSegmentPlus: RegionSegmentPlusFloodFillTool.toolName,
   LivewireContourSegmentation: LivewireContourSegmentationTool.toolName,
   SculptorTool: SculptorTool.toolName,
   SplineContourSegmentation: SplineContourSegmentationTool.toolName,

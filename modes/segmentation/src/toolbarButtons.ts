@@ -769,12 +769,12 @@ export const toolbarButtons: Button[] = [
       icon: 'icon-tool-click-segment',
       label: i18n.t('Buttons:One Click Segment'),
       tooltip: i18n.t(
-        'Buttons:Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.'
+        'Buttons:Segments a region with one click using intensity flood fill. Adjust Max Delta K/IJ to limit growth in slice and in-plane directions.'
       ),
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['RegionSegmentPlus'],
+          toolNames: ['RegionSegmentPlusFloodFill'],
           disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
         },
         {
