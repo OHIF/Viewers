@@ -7,6 +7,7 @@ import { extensionManager } from '../App';
 import { useParams, useLocation } from 'react-router';
 import useSearchParams from '../hooks/useSearchParams';
 import { useAppConfig } from '@state';
+import { Button } from '@ohif/ui-next';
 import { shallowEqualIgnoringArrayOrder } from '../utils/shallowEqualIgnoringArrayOrder';
 import { URL_KEYS, getUrlParam } from '../utils/studyListFilterContract';
 
@@ -97,6 +98,13 @@ function DataSourceWrapper(props: withAppTypes) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
+  // Invalidate the cached data and re-arm the first-fetch gate so the
+  // search-effect re-queries the data source on the next render.
+  const refresh = useCallback(() => {
+    setHasFetchedOnce(false);
+    setData(DEFAULT_DATA);
+  }, []);
+
   /**
    * The effect to initialize the data source whenever it changes. Similar to
    * whenever a different Mode is entered, the Mode's data source is initialized, so
@@ -117,12 +125,11 @@ function DataSourceWrapper(props: withAppTypes) {
   useEffect(() => {
     const dataSourceChangedCallback = () => {
       setIsLoading(false);
-      setHasFetchedOnce(false);
       setIsDataSourceInitialized(false);
       setDataSourcePath('');
       setDataSource(extensionManager.getActiveDataSource()[0]);
-      // Setting data to DEFAULT_DATA triggers a new query just like it does for the initial load.
-      setData(DEFAULT_DATA);
+      // Triggers a new query just like the initial load.
+      refresh();
     };
 
     const sub = extensionManager.subscribe(
@@ -143,62 +150,72 @@ function DataSourceWrapper(props: withAppTypes) {
     async function getData() {
       setIsLoading(true);
       log.time(Enums.TimingEnum.SEARCH_TO_LIST);
-      const studies = await dataSource.query.studies.search(queryFilterValues);
+      try {
+        const studies = await dataSource.query.studies.search(queryFilterValues);
+        setData({
+          studies: studies || [],
+          queryFilterValues,
+        });
+        log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
+        log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
+      } catch (e) {
+        console.error(e);
+        // Record that we attempted these filter values even though the fetch
+        // failed. Without this, the effect's `filtersChanged` check would
+        // remain true on the next render and immediately retry the same
+        // failing query in a tight loop.
+        setData(prev => ({ ...prev, queryFilterValues }));
 
-      setData({
-        studies: studies || [],
-        queryFilterValues,
-      });
-      setHasFetchedOnce(true);
-      log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
-      log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
-
-      setIsLoading(false);
+        // If there is a data source configuration API, the Worklist will pop
+        // up its own dialog to attempt to configure it. Otherwise surface the
+        // failure via a modal with a Retry action.
+        const { configurationAPI, friendlyName } = dataSource.getConfig();
+        if (!configurationAPI) {
+          const { uiModalService } = servicesManager.services;
+          uiModalService.show({
+            title: 'Data Source Connection Error',
+            content: () => (
+              <div className="text-foreground">
+                <p className="text-red-600">Error: {(e as Error).message}</p>
+                <p>
+                  Please ensure the following data source is configured correctly or is running:
+                </p>
+                <div className="mt-2 font-bold">{friendlyName}</div>
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    onClick={() => {
+                      uiModalService.hide();
+                      refresh();
+                    }}
+                  >
+                    Retry
+                  </Button>
+                </div>
+              </div>
+            ),
+          });
+        }
+      } finally {
+        setIsLoading(false);
+        setHasFetchedOnce(true);
+      }
     }
 
-    try {
-      // Refetch when the filter set has actually changed. Filters can include
-      // array-valued fields like `modalitiesInStudy` whose element order
-      // doesn't matter, so we compare with an unordered-array shallow equal
-      // rather than reference equality — otherwise a re-render that
-      // re-creates the array with the same contents would force a refetch.
-      // Pagination changes alone don't invalidate the data (we paginate
-      // client-side).
-      const filtersChanged = !shallowEqualIgnoringArrayOrder(
-        data.queryFilterValues,
-        queryFilterValues
-      );
-      const isDataInvalid = !isLoading && filtersChanged;
+    // Refetch when the filter set has actually changed. Filters can include
+    // array-valued fields like `modalitiesInStudy` whose element order
+    // doesn't matter, so we compare with an unordered-array shallow equal
+    // rather than reference equality — otherwise a re-render that
+    // re-creates the array with the same contents would force a refetch.
+    // Pagination changes alone don't invalidate the data (we paginate
+    // client-side).
+    const filtersChanged = !shallowEqualIgnoringArrayOrder(
+      data.queryFilterValues,
+      queryFilterValues
+    );
+    const isDataInvalid = !isLoading && filtersChanged;
 
-      if (isDataInvalid) {
-        getData().catch(e => {
-          console.error(e);
-
-          const { configurationAPI, friendlyName } = dataSource.getConfig();
-          // If there is a data source configuration API, then the Worklist will popup the dialog to attempt to configure it
-          // and attempt to resolve this issue.
-          if (configurationAPI) {
-            return;
-          }
-
-          servicesManager.services.uiModalService.show({
-            title: 'Data Source Connection Error',
-            content: () => {
-              return (
-                <div className="text-foreground">
-                  <p className="text-red-600">Error: {e.message}</p>
-                  <p>
-                    Please ensure the following data source is configured correctly or is running:
-                  </p>
-                  <div className="mt-2 font-bold">{friendlyName}</div>
-                </div>
-              );
-            },
-          });
-        });
-      }
-    } catch (ex) {
-      console.warn(ex);
+    if (isDataInvalid) {
+      getData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, location, params, isLoading, setIsLoading, dataSource, isDataSourceInitialized]);
@@ -214,11 +231,7 @@ function DataSourceWrapper(props: withAppTypes) {
       dataSource={dataSource}
       isLoadingData={isLoading}
       hasFetchedOnce={hasFetchedOnce}
-      // To refresh the data, simply reset it to DEFAULT_DATA which invalidates it and triggers a new query to fetch the data.
-      onRefresh={() => {
-        setHasFetchedOnce(false);
-        setData(DEFAULT_DATA);
-      }}
+      onRefresh={refresh}
     />
   );
 }
