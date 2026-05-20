@@ -2,31 +2,31 @@
   "name": "@ohif/ui-next",
   "version": "3.13.0-beta.80",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
+  "author": "OHIF",
+  "license": "MIT",
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "scripts": {
-    "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "start": "yarn run build --watch",
-    "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.playground.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build"
-  },
   "exports": {
     "./tailwind.config": "./tailwind.config.ts",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     ".": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "start": "pnpm run build --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package": "pnpm run build"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.11",
@@ -68,7 +68,5 @@
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "7.27.1"
   },
-  "keywords": [],
-  "author": "OHIF",
-  "license": "MIT"
+  "keywords": []
 }

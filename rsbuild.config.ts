@@ -58,6 +58,15 @@ export default defineConfig({
       experiments: {
         asyncWebAssembly: true,
       },
+      // Leave __filename / __dirname references alone. rsbuild's default
+      // ('warn-mock') noisily warns whenever bundled deps reference them
+      // (e.g. Emscripten-compiled cornerstone codecs). Those references sit
+      // inside `if (ENVIRONMENT_IS_NODE)` branches that never execute in the
+      // browser, so leaving them un-substituted is harmless at runtime.
+      node: {
+        __filename: false,
+        __dirname: false,
+      },
       module: {
         rules: [
           {

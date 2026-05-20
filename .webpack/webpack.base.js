@@ -4,11 +4,10 @@ const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
 
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 
 // ~~ PLUGINS
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
@@ -20,7 +19,11 @@ const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // Only uncomment for old v2 stylus
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+let ReactRefreshWebpackPlugin;
+try {
+  const mod = require('@rspack/plugin-react-refresh');
+  ReactRefreshWebpackPlugin = mod.ReactRefreshRspackPlugin || mod.default || mod;
+} catch { ReactRefreshWebpackPlugin = null; }
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -65,7 +68,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    devtool: isProdBuild ? 'hidden-source-map' : 'cheap-module-source-map',
     entry: ENTRY,
     optimization: {
       // splitChunks: {
@@ -92,9 +95,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       children: false,
       warnings: true,
     },
-    cache: {
-      type: 'filesystem',
-    },
+    cache: isProdBuild ? false : { type: 'filesystem' },
     module: {
       noParse: [/(dicomicc)/],
       rules: [
@@ -168,9 +169,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           },
         },
         cssToJavaScript,
-        // Note: Only uncomment the following if you are using the old style of stylus in v2
-        // Also you need to uncomment this platform/app/.webpack/rules/extractStyleChunks.js
-        // stylusToJavaScript,
         {
           test: /\.wasm/,
           type: 'asset/resource',
@@ -202,11 +200,14 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
       },
-      // Which directories to search when resolving modules
+      // Which directories to search when resolving modules.
+      // The leading bare 'node_modules' preserves the default importer-relative
+      // walk-up, which pnpm's isolated layout requires so that transitive deps
+      // (e.g. react-remove-scroll → tslib 2.x) resolve to the sibling copy
+      // inside .pnpm/<pkg>/node_modules rather than a hoisted older version.
       modules: [
-        // Modules specific to this package
+        'node_modules',
         path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         path.resolve(__dirname, '../platform/app/node_modules'),
         path.resolve(__dirname, '../platform/ui/node_modules'),
@@ -214,7 +215,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       ],
       // Attempt to resolve these extensions in order.
       extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
-      // symlinked resources are resolved to their real path, not their symlinked location
+      // Workspace packages use relative imports between sibling packages.
+      // Resolve symlinks to keep those imports anchored at the real package paths.
       symlinks: true,
       fallback: {
         fs: false,
@@ -223,24 +225,34 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         buffer: require.resolve('buffer'),
       },
     },
+    node: {
+      // Leave __filename / __dirname references alone. The previous 'mock'
+      // value triggers an rspack warning whenever bundled deps reference
+      // __dirname (e.g. Emscripten-compiled cornerstone codecs). Those refs
+      // sit inside `if (ENVIRONMENT_IS_NODE)` branches that never execute in
+      // the browser, so leaving them un-substituted is harmless at runtime.
+      __filename: false,
+      __dirname: false,
+    },
     plugins: [
       new webpack.DefinePlugin(defineValues),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^(fs|path)$/,
+        contextRegExp: /@cornerstonejs[\\/]codec-/,
+      }),
+      ...(isProdBuild || IS_COVERAGE || !ReactRefreshWebpackPlugin
+        ? []
+        : [new ReactRefreshWebpackPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
   };
 
   if (isProdBuild) {
-    config.optimization.minimizer = [
-      new TerserJSPlugin({
-        parallel: true,
-        terserOptions: {},
-      }),
-    ];
+    config.optimization.minimizer = [new webpack.SwcJsMinimizerRspackPlugin()];
   }
 
   if (isQuickBuild) {

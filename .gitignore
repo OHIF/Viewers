@@ -1,6 +1,7 @@
 # Packages
 node_modules
 .cursor/
+.claude/
 .nyc_output/
 # Output
 build

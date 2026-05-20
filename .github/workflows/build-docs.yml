@@ -22,15 +22,22 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
         with:
-          bun-version: 1.2.23
+          version: latest
       - uses: actions/setup-node@v4
         with:
-          node-version: 20 # Or your desired Node version
+          node-version: 24
+          cache: pnpm
 
-      - name: Install root dependencies
-        run: bun install --frozen-lockfile
+      - name: Configure git for private repos
+        if: ${{ env.GITHUB_TOKEN }}
+        run: git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf ssh://git@github.com/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install
 
       # Removed Playwright tests and coverage generation steps
 
@@ -81,9 +88,6 @@ jobs:
           fi
           echo "Artifact downloaded successfully."
 
-      - name: Install docs dependencies
-        run: cd platform/docs && bun install
-
       - name: Copy coverage to docs static directory
         run: |
           # Copy files from the downloaded artifact directory
@@ -99,7 +103,7 @@ jobs:
           cp ./coverage-artifact/sorter.js platform/docs/static/
 
       - name: Build docs
-        run: cd platform/docs && bun run build
+        run: pnpm --filter ohif-docs run build
 
       - name: Deploy to Netlify
         run: |

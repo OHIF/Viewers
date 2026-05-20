@@ -1,15 +1,10 @@
 // https://developers.google.com/web/tools/workbox/guides/codelabs/webpack
 // ~~ WebPack
 const path = require('path');
+const fs = require('fs');
 const { merge } = require('webpack-merge');
-const webpack = require('webpack');
+const rspack = require('@rspack/core');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
-// ~~ Plugins
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { InjectManifest } = require('workbox-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -31,12 +26,60 @@ const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
-const Dotenv = require('dotenv-webpack');
+const dotenv = require('dotenv');
+dotenv.config();
 const writePluginImportFile = require('./writePluginImportsFile.js');
 // const MillionLint = require('@million/lint');
 const open = process.env.OHIF_OPEN !== 'false';
 
 const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
+
+class InjectServiceWorkerManifestPlugin {
+  constructor({ swSrc, swDest, publicPath, exclude, maximumFileSizeToCacheInBytes }) {
+    this.swSrc = swSrc;
+    this.swDest = swDest;
+    this.publicPath = publicPath;
+    this.exclude = exclude;
+    this.maximumFileSizeToCacheInBytes = maximumFileSizeToCacheInBytes;
+  }
+
+  apply(compiler) {
+    const pluginName = 'InjectServiceWorkerManifestPlugin';
+    const publicPath = this.publicPath.endsWith('/') ? this.publicPath : `${this.publicPath}/`;
+
+    compiler.hooks.thisCompilation.tap(pluginName, compilation => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: pluginName,
+          stage: rspack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+        },
+        () => {
+          const manifest = compilation
+            .getAssets()
+            .filter(asset => {
+              if (asset.name === this.swDest || asset.name.endsWith('.map')) {
+                return false;
+              }
+              if (this.exclude.some(pattern => pattern.test(asset.name))) {
+                return false;
+              }
+              return asset.source.size() <= this.maximumFileSizeToCacheInBytes;
+            })
+            .map(asset => ({
+              url: `${publicPath}${asset.name}`,
+              revision: asset.info.contenthash ? null : compilation.hash,
+            }));
+
+          const source = fs
+            .readFileSync(this.swSrc, 'utf8')
+            .replace('self.__WB_MANIFEST', JSON.stringify(manifest));
+
+          compilation.emitAsset(this.swDest, new rspack.sources.RawSource(source));
+        }
+      );
+    });
+  }
+}
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
@@ -65,6 +108,7 @@ module.exports = (env, argv) => {
       app: ENTRY_TARGET,
     },
     output: {
+      clean: true,
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
@@ -78,21 +122,16 @@ module.exports = (env, argv) => {
     },
     resolve: {
       modules: [
-        // Modules specific to this package
+        // Preserve importer-relative node_modules walk-up for pnpm.
+        'node_modules',
         path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
       ],
     },
     plugins: [
-      // For debugging re-renders
-      // MillionLint.webpack(),
-      new Dotenv(),
-      // Clean output.path
-      new CleanWebpackPlugin(),
-      // Copy "Public" Folder to Dist
-      new CopyWebpackPlugin({
+      // Copy "Public" Folder to Dist (rspack built-in)
+      new rspack.CopyRspackPlugin({
         patterns: [
           ...copyPluginFromExtensions,
           {
@@ -100,8 +139,6 @@ module.exports = (env, argv) => {
             to: DIST_DIR,
             toType: 'dir',
             globOptions: {
-              // Ignore our HtmlWebpackPlugin template file
-              // Ignore our configuration files
               ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
@@ -109,37 +146,33 @@ module.exports = (env, argv) => {
             from: '../../../node_modules/onnxruntime-web/dist',
             to: `${DIST_DIR}/ort`,
           },
-          // Short term solution to make sure GCloud config is available in output
-          // for our docker implementation
           {
             from: `${PUBLIC_DIR}/config/google.js`,
             to: `${DIST_DIR}/google.js`,
           },
-          // Copy over and rename our target app config file
           {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
         ],
       }),
-      // Generate "index.html" w/ correct includes/imports
-      new HtmlWebpackPlugin({
+      // Generate "index.html" w/ correct includes/imports (rspack built-in)
+      new rspack.HtmlRspackPlugin({
         template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
         filename: 'index.html',
         templateParameters: {
           PUBLIC_URL: PUBLIC_URL,
         },
       }),
-      // Generate a service worker for fast local loads
+      // Generate a service worker for fast local loads.
       ...(IS_COVERAGE
         ? []
         : [
-            new InjectManifest({
+            new InjectServiceWorkerManifestPlugin({
               swDest: 'sw.js',
               swSrc: path.join(SRC_DIR, 'service-worker.js'),
-              // Need to exclude the theme as it is updated independently
+              publicPath: PUBLIC_URL,
               exclude: [/theme/],
-              // Cache large files for the manifests to avoid warning messages
               maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
             }),
           ]),
@@ -158,7 +191,8 @@ module.exports = (env, argv) => {
       },
       proxy: [
         {
-          '/dicomweb': 'http://localhost:5000',
+          context: ['/dicomweb'],
+          target: 'http://localhost:5000',
         },
       ],
       static: [
@@ -171,13 +205,15 @@ module.exports = (env, argv) => {
             setHeaders,
           },
           publicPath: '/viewer-testdata',
+          watch: false,
         },
       ],
       //public: 'http://localhost:' + 3000,
       //writeToDisk: true,
       historyApiFallback: {
-        disableDotRule: true,
+        disableDotRule: !IS_COVERAGE,
         index: PUBLIC_URL + 'index.html',
+        htmlAcceptHeaders: ['text/html'],
       },
       devMiddleware: {
         writeToDisk: true,
@@ -201,7 +237,7 @@ module.exports = (env, argv) => {
 
   if (isProdBuild) {
     mergedConfig.plugins.push(
-      new MiniCssExtractPlugin({
+      new rspack.CssExtractRspackPlugin({
         filename: '[name].bundle.css',
         chunkFilename: '[id].css',
       })

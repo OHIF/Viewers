@@ -113,5 +113,6 @@
     "workerpool",
     "Colorbar",
     "Colorbars"
-  ]
+  ],
+  "liveServer.settings.port": 5501
 }
