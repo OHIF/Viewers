@@ -19,7 +19,6 @@ import {
 
 type Props = withAppTypes & {
   data: any[];
-  dataTotal: number;
   dataSource: any;
   isLoadingData: boolean;
   hasFetchedOnce?: boolean;
@@ -27,7 +26,7 @@ type Props = withAppTypes & {
   onRefresh: () => void;
 };
 
-export default function WorkList({
+export default function WorkListUINext({
   data,
   dataSource,
   isLoadingData,
@@ -240,7 +239,7 @@ function SidePanelPreview({
     thumbnailRequestStrategy === 'bulkDataRetrieve';
 
   const customizationSeriesView = customizationService.getCustomization(
-    'workList.previewSeriesView'
+    'workListUINext.previewSeriesView'
   );
   const configuredSeriesView: PreviewSeriesView = ALLOWED_PREVIEW_SERIES_VIEWS.includes(
     customizationSeriesView as PreviewSeriesView
