@@ -1,6 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const E2E_PORT = Number(process.env.OHIF_PORT || 3335);
+const E2E_BASE_URL = `http://localhost:${E2E_PORT}`;
+
 export default defineConfig({
+  globalSetup: './tests/global-setup.ts',
   testDir: './tests',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
@@ -15,7 +19,7 @@ export default defineConfig({
   globalTimeout: 800_000,
   timeout: 800_000,
   use: {
-    baseURL: 'http://localhost:3335',
+    baseURL: E2E_BASE_URL,
     trace: 'on-first-retry',
     video: 'on-first-retry',
     testIdAttribute: 'data-cy',
@@ -45,8 +49,8 @@ export default defineConfig({
     //},
   ],
   webServer: {
-    command: 'cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 nyc yarn start',
-    url: 'http://localhost:3335',
+    command: `cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=${E2E_PORT} nyc yarn start`,
+    url: E2E_BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 360_000,
   },

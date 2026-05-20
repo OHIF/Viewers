@@ -111,6 +111,8 @@ jobs:
       # ── Common: run tests ───────────────────────────────────────────────
       - name: Install Playwright browsers
         run: npx playwright install
+      - name: Free OHIF e2e port (stale self-hosted processes)
+        run: node .scripts/ci/free-ohif-e2e-port.mjs
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
