@@ -3,10 +3,11 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
-// Study list variants:
-// - Default: WorkListUINext (ui-next, with pre-DS hydration)
-// - Optional: WorkList (legacy)
+// Study list variants are selected by the `workList.variant` customization:
+// - `'legacy'`  → LegacyWorkList (the pre-3.13 study list)
+// - anything else (including `'default'`) → WorkList (ui-next study list)
 import WorkList from './WorkList/WorkList';
+import LegacyWorkList from './LegacyWorkList/LegacyWorkList';
 import DataSourceWrapper from './DataSourceWrapper';
 import Local from './Local';
 import Debug from './Debug';
@@ -17,7 +18,6 @@ import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
-import WorkListUINext from './WorkListUINext/WorkListUINext';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -124,15 +124,14 @@ const createRoutes = ({
 
   console.log('Registering worklist route', routerBasename, path);
 
+  const workListVariant = customizationService.getCustomization('workList.variant');
+  const WorkListComponent = workListVariant === 'legacy' ? LegacyWorkList : WorkList;
+
   const WorkListRoute = {
     path: '/',
     children: DataSourceWrapper,
     private: true,
-    props: { children: WorkListUINext, servicesManager, extensionManager },
-    // To use legacy WorkList instead:
-    // children: DataSourceWrapper,
-    // private: true,
-    // props: { children: WorkList, servicesManager, extensionManager },
+    props: { children: WorkListComponent, servicesManager, extensionManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');

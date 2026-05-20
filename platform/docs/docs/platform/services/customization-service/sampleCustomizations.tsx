@@ -356,19 +356,45 @@ window.config = {
   },
 ];
 
-export const workListUINextCustomizations = [
+export const workListCustomizations = [
   {
-    id: 'workListUINext.previewSeriesView',
+    id: 'workList.variant',
     description: (
       <>
-        Controls which series views are available in the WorkListUINext preview panel. Use{' '}
+        Selects which study-list route is mounted at <code>/</code>. Use <code>'default'</code>{' '}
+        (default customization value) for the new ui-next WorkList introduced in 3.13. Use{' '}
+        <code>'legacy'</code> to mount the pre-3.13 WorkList (internally{' '}
+        <code>LegacyWorkList</code>) as an opt-out while migrating. The customization is read once
+        during route registration, so changing it requires a reload.
+      </>
+    ),
+    default: 'default',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.variant': {
+        $set: 'legacy',
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.previewSeriesView',
+    description: (
+      <>
+        Controls which series views are available in the WorkList preview panel. Use{' '}
         <code>'all'</code> (default customization value) to show the thumbnails/list toggle. The
         initial preview view is thumbnails. Use <code>'thumbnails'</code> to lock the preview to
         thumbnails, or <code>'list'</code> to lock it to the series list. The preview is forced to{' '}
         <code>'list'</code> when the active data source declares <code>thumbnailRendering</code> as{' '}
         <code>'wadors'</code> or <code>'thumbnailDirect'</code>, or declares{' '}
         <code>thumbnailRequestStrategy</code> as <code>'bulkDataRetrieve'</code> (its default
-        value), regardless of this setting.
+        value), regardless of this setting. Currently only applies when <code>workList.variant</code> is{' '}
+        <code>'default'</code>.
       </>
     ),
     default: 'all',
@@ -377,7 +403,7 @@ window.config = {
   // rest of window config
   customizationService: [
     {
-      'workListUINext.previewSeriesView': {
+      'workList.previewSeriesView': {
         $set: 'list',
       },
     },
