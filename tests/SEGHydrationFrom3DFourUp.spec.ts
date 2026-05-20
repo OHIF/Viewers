@@ -7,6 +7,7 @@ import {
   visitStudy,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  expect,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -61,6 +62,57 @@ test.describe('3D four up SEG hydration', async () => {
       page,
       locator: viewportPageObject.grid,
       screenshotPath: screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated,
+    });
+  });
+});
+
+test.describe('3D four up to 3x2 layout SEG hydration', () => {
+  test.beforeEach(async ({ page }) => {
+    const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
+    const mode = 'viewer';
+    await visitStudy(page, studyInstanceUID, mode, 2000);
+  });
+  test('should hydrate SEG only in the target viewport and preserve other viewport orientations', async ({
+    page,
+    DOMOverlayPageObject,
+    leftPanelPageObject,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
+
+    let viewportRenderCycle = waitForViewportRenderCycle(page);
+    // Switch to a manual 3x2 grid layout
+    await mainToolbarPageObject.layoutSelection.grid(3, 2).click();
+    await viewportRenderCycle;
+
+    // Activate the 3rd viewport (index 2) then load the SEG into it
+    await viewportPageObject.getNthLocator(2).click();
+
+    await expect(viewportPageObject.getNthLocator(2)).toHaveAttribute('data-is-active', 'true');
+
+    await leftPanelPageObject.loadSeriesByDescription('SEG');
+
+    await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+
+    viewportRenderCycle = waitForViewportRenderCycle(page);
+    await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+    await viewportRenderCycle;
+
+    await checkForScreenshot({
+      page,
+      locator: viewportPageObject.grid,
+      screenshotPath: screenShotPaths.segHydrationAfterLayoutSwitchTo3By2.afterSEGHydrated,
+    });
+
+    viewportRenderCycle = waitForViewportRenderCycle(page);
+    await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
+    await viewportRenderCycle;
+
+    await checkForScreenshot({
+      page,
+      locator: viewportPageObject.grid,
+      screenshotPath: screenShotPaths.segHydrationAfterLayoutSwitchTo3By2.backTo3DFourUp,
     });
   });
 });
