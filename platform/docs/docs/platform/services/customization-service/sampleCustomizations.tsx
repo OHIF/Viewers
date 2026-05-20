@@ -1221,89 +1221,47 @@ window.config = {
   },
   {
     id: 'ohif.aboutModal',
-    description: 'The About modal',
+    description: (
+      <>
+        Replaces the About modal. The customization value is a React component; see{' '}
+        <code>extensions/default/src/customizations/aboutModalCustomization.tsx</code> for the
+        default and the <code>AboutModal</code> compound API. The consumer also reads optional{' '}
+        <code>title</code> and <code>containerClassName</code> static properties off the
+        component; both fall back to sensible defaults when omitted.
+      </>
+    ),
     image: aboutModal,
     default: 'Our own default component',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        Easiest to register from a custom extension's <code>getCustomizationModule</code>, where
+        JSX and the <code>@ohif/ui-next</code> imports work normally. See{' '}
+        <code>aboutModalCustomization.tsx</code> for the full default and the rest of the{' '}
+        <code>AboutModal</code> compound API.
+      </p>
+    ),
     configuration: `
-      window.config = {
-        // rest of window config
+import { AboutModal } from '@ohif/ui-next';
 
-        // You can use the component from AboutModal
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.aboutModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'viewportDownload.warningMessage',
-    description: 'Customizes the warning message for the viewport download form.',
-    image: viewportDownloadWarning,
-    default: {
-      enabled: true,
-      value: 'Not For Diagnostic Use',
-    },
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportDownload.warningMessage': {
-              $set: {
-                enabled: true,
-                value: 'Careful! This is not for diagnostic use.',
-              },
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'ohif.captureViewportModal',
-    description: 'The modal for capturing the viewport image.',
-    image: captureViewportModal,
-    default: 'Our own default component',
-    configuration: `
-      window.config = {
-        // rest of window config
+function MyAboutModal() {
+  return (
+    <AboutModal className="w-[400px]">
+      <AboutModal.ProductName>My Custom Viewer</AboutModal.ProductName>
+      <AboutModal.ProductVersion>1.2.3</AboutModal.ProductVersion>
+    </AboutModal>
+  );
+}
 
-        // You can use the component from ImageModal and FooterAction
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.captureViewportModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'ohif.aboutModal',
-    description: 'The About modal',
-    image: aboutModal,
-    default: 'Our own default component',
-    configuration: `
-      window.config = {
-        // rest of window config
+// Optional: override the modal title and container size.
+MyAboutModal.title = 'About My Custom Viewer';
+MyAboutModal.containerClassName = 'max-w-md';
 
-        // You can use the component from AboutModal
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.aboutModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
+window.config = {
+  // rest of window config
+  customizationService: [
+    { 'ohif.aboutModal': { $set: MyAboutModal } },
+  ],
+};
         `,
   },
   {
