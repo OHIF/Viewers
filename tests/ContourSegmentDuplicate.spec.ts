@@ -119,7 +119,7 @@ test.skip('should navigate to the correct instance number when a duplicated cont
   await originalSegment.click();
   const originalSegmentInstanceInfo = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
   expect(originalSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').not.toBeNull();
-  await expect(originalSegmentInstanceInfo, 'Expected instance information to be slice 46 for the Threshhold segment').toHaveText('I:46 (46/47)');
+  await expect(originalSegmentInstanceInfo, 'Expected instance information to be slice 46 for the Threshold segment').toHaveText('I:46 (46/47)');
 
   // Duplicate segment so new segment is at index 4
   await originalSegment.actions.duplicate();
