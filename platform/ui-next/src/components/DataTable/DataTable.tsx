@@ -136,6 +136,30 @@ function DataTableRoot<TData>({
     }
   }, [filters, sorting, pagination, onPaginationChange]);
 
+  // Deselect rows that are no longer on the current page (after filters +
+  // pagination). Without this, a selected row that gets filtered or paged out
+  // remains in rowSelection — keeping downstream consumers (e.g. a preview
+  // panel) pinned to a study the user can't see.
+  useEffect(() => {
+    const selectedIds = Object.keys(rowSelection);
+    if (selectedIds.length === 0) {
+      return;
+    }
+    const visibleIds = new Set(table.getPaginationRowModel().rows.map(r => r.id));
+    if (selectedIds.every(id => visibleIds.has(id))) {
+      return;
+    }
+    setRowSelection(prev => {
+      const next: RowSelectionState = {};
+      for (const id of Object.keys(prev)) {
+        if (visibleIds.has(id)) {
+          next[id] = prev[id];
+        }
+      }
+      return next;
+    });
+  }, [filters, sorting, pagination, data, table, rowSelection]);
+
   // Surface selection changes to consumers.
   useEffect(() => {
     if (!onSelectionChange) {
