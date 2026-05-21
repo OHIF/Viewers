@@ -17,7 +17,10 @@ import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
 import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
-import { writeDicomDictToPart10Buffer } from '../utils/dicomWriter';
+import {
+  setNonEnumerableInstanceProperty,
+  writeDicomDictToPart10Buffer,
+} from '../utils/dicomWriter';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -499,9 +502,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           instance,
         });
 
-        instance.imageId = imageId;
-        instance.wadoRoot = dicomWebConfig.wadoRoot;
-        instance.wadoUri = dicomWebConfig.wadoUri;
+        setNonEnumerableInstanceProperty(instance, 'imageId', imageId);
+        setNonEnumerableInstanceProperty(instance, 'wadoRoot', dicomWebConfig.wadoRoot);
+        setNonEnumerableInstanceProperty(instance, 'wadoUri', dicomWebConfig.wadoUri);
 
         metadataProvider.addImageIdToUIDs(imageId, {
           StudyInstanceUID,
@@ -598,8 +601,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach(instance => {
-          instance.wadoRoot = dicomWebConfig.wadoRoot;
-          instance.wadoUri = dicomWebConfig.wadoUri;
+          setNonEnumerableInstanceProperty(instance, 'wadoRoot', dicomWebConfig.wadoRoot);
+          setNonEnumerableInstanceProperty(instance, 'wadoUri', dicomWebConfig.wadoUri);
 
           const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
           const numberOfFrames = instance.NumberOfFrames || 1;
@@ -625,7 +628,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           const imageId = implementation.getImageIdsForInstance({
             instance,
           });
-          instance.imageId = imageId;
+          setNonEnumerableInstanceProperty(instance, 'imageId', imageId);
         });
 
         DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);

@@ -1,4 +1,4 @@
-import { utils, Types as OhifTypes } from '@ohif/core';
+import { utils, Types as OhifTypes, DicomMetadataStore, classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
@@ -7,6 +7,11 @@ import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 import { getSegmentationParserType } from './utils/segmentationConfig';
+import {
+  getFrameIndexFromImageId,
+  isLocalSchemeImageId,
+  stripFrameFromImageId,
+} from './utils/segLocalImageIds';
 
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4', '1.2.840.10008.5.1.4.1.1.66.7'];
 const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.7';
@@ -43,46 +48,164 @@ function getFrameImageIds(segImageId: string, numberOfFrames: number): string[] 
   return frameImageIds;
 }
 
-function _resolveSegImageIds(
+function _getSegNumberOfFrames(instance: Record<string, unknown>): number {
+  const fromTag = Number(instance.NumberOfFrames);
+  if (fromTag > 0) {
+    return fromTag;
+  }
+
+  const perFrame = instance.PerFrameFunctionalGroupsSequence;
+  if (Array.isArray(perFrame) && perFrame.length > 0) {
+    return perFrame.length;
+  }
+
+  return 1;
+}
+
+function _ensureSegImageIdMetadataRegistered(
+  imageId: string | undefined,
+  instance: Record<string, unknown>
+): void {
+  if (!imageId) {
+    return;
+  }
+
+  const metadataProvider = classes.MetadataProvider;
+
+  const StudyInstanceUID = instance.StudyInstanceUID as string | undefined;
+  const SeriesInstanceUID = instance.SeriesInstanceUID as string | undefined;
+  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as
+    | string
+    | undefined;
+
+  if (!StudyInstanceUID || !SeriesInstanceUID || !SOPInstanceUID) {
+    return;
+  }
+
+  metadataProvider.addImageIdToUIDs(imageId, {
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    frameNumber: getFrameIndexFromImageId(imageId),
+  });
+}
+
+/** Ensures metadataProvider.get('instance', imageId) resolves for frame-qualified local SEG ids. */
+function _ensureSegInstanceMetadataAvailable(
+  imageId: string | undefined,
+  instance: Record<string, unknown>
+): void {
+  if (!imageId) {
+    return;
+  }
+
+  _ensureSegImageIdMetadataRegistered(imageId, instance);
+
+  if (metaData.get('instance', imageId)) {
+    return;
+  }
+
+  const StudyInstanceUID = instance.StudyInstanceUID as string | undefined;
+  const SeriesInstanceUID = instance.SeriesInstanceUID as string | undefined;
+  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as
+    | string
+    | undefined;
+
+  const storedInstance =
+    StudyInstanceUID && SeriesInstanceUID && SOPInstanceUID
+      ? DicomMetadataStore.getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID)
+      : undefined;
+
+  classes.MetadataProvider.addCustomMetadata(
+    imageId,
+    'instance',
+    storedInstance || instance
+  );
+}
+
+function _getSegDataSource(extensionManager, instance: Record<string, unknown>) {
+  const StudyInstanceUID = instance.StudyInstanceUID as string | undefined;
+  const SeriesInstanceUID = instance.SeriesInstanceUID as string | undefined;
+  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as
+    | string
+    | undefined;
+
+  let localUrl: string | undefined;
+
+  if (StudyInstanceUID && SeriesInstanceUID && SOPInstanceUID) {
+    const storedInstance = DicomMetadataStore.getInstance(
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID
+    );
+    localUrl = storedInstance?.url as string | undefined;
+  }
+
+  localUrl = localUrl || (instance.url as string | undefined);
+
+  if (localUrl && isLocalSchemeImageId(localUrl)) {
+    const dicomLocal = extensionManager.getDataSources('dicomlocal');
+
+    if (dicomLocal?.[0]) {
+      return dicomLocal[0];
+    }
+  }
+
+  return extensionManager.getActiveDataSource()[0];
+}
+
+function _getSegImageIdFromInstance(
+  instance: Record<string, unknown>,
+  dataSource: { getImageIdsForInstance?: (args: { instance: unknown; frame?: number }) => unknown }
+): string | undefined {
+  const numberOfFrames = _getSegNumberOfFrames(instance);
+  const frame = numberOfFrames > 1 ? 1 : undefined;
+
+  return _normalizeImageId(
+    dataSource.getImageIdsForInstance?.({ instance, frame }) as string | string[] | undefined
+  );
+}
+
+function _resolveFrameImageIds(
   segImageIdStr: string,
   instance: Record<string, unknown>,
   dataSource: { getImageIdsForInstance?: (args: { instance: unknown; frame?: number }) => unknown }
 ): string[] {
-  const numberOfFrames = Number(instance.NumberOfFrames) || 1;
+  const numberOfFrames = _getSegNumberOfFrames(instance);
   const fromFrameUrl = getFrameImageIds(segImageIdStr, numberOfFrames);
 
   if (fromFrameUrl.length > 1) {
     return fromFrameUrl;
   }
 
-  // Fallback for imageIds that use &frame=N (e.g. wadouri) instead of /frames/N.
-  if (numberOfFrames > 1 && dataSource.getImageIdsForInstance) {
-    const fromDataSource: string[] = [];
-    for (let frame = 1; frame <= numberOfFrames; frame++) {
-      const frameImageId = _normalizeImageId(
-        dataSource.getImageIdsForInstance({ instance, frame }) as string | string[]
-      );
-      if (frameImageId) {
-        fromDataSource.push(frameImageId);
-      }
-    }
-    if (fromDataSource.length > 1) {
-      return fromDataSource;
+  if (numberOfFrames <= 1) {
+    return [segImageIdStr];
+  }
+
+  const frameImageIds: string[] = [];
+
+  for (let frame = 1; frame <= numberOfFrames; frame++) {
+    const frameImageId = _normalizeImageId(
+      dataSource.getImageIdsForInstance?.({ instance, frame }) as string | string[] | undefined
+    );
+
+    if (frameImageId) {
+      frameImageIds.push(frameImageId);
     }
   }
 
-  return [segImageIdStr];
+  return frameImageIds.length ? frameImageIds : [segImageIdStr];
 }
 
 function _logSegImageIds({
   segDisplaySet,
   segImageIdStr,
-  segImageIds,
+  frameImageIds,
   referencedImageIds,
 }: {
   segDisplaySet: AppTypes.DisplaySet;
   segImageIdStr: string;
-  segImageIds: string[];
+  frameImageIds: string[];
   referencedImageIds: string[];
 }) {
   const instance = segDisplaySet.instance as Record<string, unknown>;
@@ -98,8 +221,8 @@ function _logSegImageIds({
     referencedImageIdCount: referencedImageIds.length,
     referencedImageIds,
     segImageIdForMetadata: segImageIdStr,
-    segImageIds,
-    loadSegFramesIndividually: segImageIds.length > 1,
+    frameImageIds,
+    loadSegFramesIndividually: frameImageIds.length > 1,
   });
 }
 
@@ -273,15 +396,13 @@ async function _loadSegments({
 }: withAppTypes<{ segDisplaySet: AppTypes.DisplaySet }>) {
   const { segmentationService, uiNotificationService, customizationService } =
     servicesManager.services;
-  const dataSource = extensionManager.getActiveDataSource()[0];
-  const segImageId = dataSource.getImageIdsForInstance({
-    instance: segDisplaySet.instance,
-  });
-  const segImageIdStr = _normalizeImageId(segImageId as string | string[]);
+  const instance = segDisplaySet.instance as Record<string, unknown>;
+  const dataSource = _getSegDataSource(extensionManager, instance);
+  const segImageIdStr = _getSegImageIdFromInstance(instance, dataSource);
 
   if (!segImageIdStr) {
     throw new Error(
-      'Could not get imageId for SEG instance (getImageIdsForInstance not available or returned nothing).'
+      'Could not get imageId for SEG instance (no local wadouri url and getImageIdsForInstance returned nothing).'
     );
   }
 
@@ -310,18 +431,32 @@ async function _loadSegments({
     throw new Error('referencedDisplaySet has no imageIds');
   }
 
-  const segImageIds = _resolveSegImageIds(
+  (segDisplaySet as AppTypes.DisplaySet & { referencedImageIds?: string[] }).referencedImageIds =
+    imageIds;
+
+  if (!referencedDisplaySet.imageIds?.length) {
+    referencedDisplaySet.imageIds = imageIds;
+  }
+
+  const frameImageIds = _resolveFrameImageIds(
     segImageIdStr,
     segDisplaySet.instance as Record<string, unknown>,
     dataSource
   );
 
+  const segImageIdForMetadata = isLocalSchemeImageId(segImageIdStr)
+    ? stripFrameFromImageId(segImageIdStr)
+    : segImageIdStr;
+
   _logSegImageIds({
     segDisplaySet,
-    segImageIdStr,
-    segImageIds,
+    segImageIdStr: segImageIdForMetadata,
+    frameImageIds,
     referencedImageIds: imageIds,
   });
+
+  _ensureSegInstanceMetadataAvailable(segImageIdForMetadata, instance);
+  frameImageIds.forEach(id => _ensureSegInstanceMetadataAvailable(id, instance));
 
   const tolerance = 0.001;
   const onProgress = evt => {
@@ -336,7 +471,7 @@ async function _loadSegments({
   try {
     results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
       imageIds,
-      segImageIdStr,
+      segImageIdForMetadata,
       {
         metadataProvider: metaData,
         tolerance,
@@ -344,7 +479,7 @@ async function _loadSegments({
           segDisplaySet.SOPClassUID,
           customizationService
         ),
-        segImageIds,
+        frameImageIds,
       }
     );
   } finally {

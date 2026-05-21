@@ -60,10 +60,15 @@ export function getSegmentationSaveOptions(
     defaultMode === 'bitmap' ? BITMAP_SEG_SOP_CLASS_UID : LABELMAP_SEG_SOP_CLASS_UID;
   const transferSyntaxUID = getStoreTransferSyntaxUID(customizationService);
 
-  const options: { sopClassUID: string; transferSyntaxUID?: string } = { sopClassUID };
+  const options: {
+    sopClassUID: string;
+    transferSyntaxUID?: string;
+    transferSyntaxUid?: string;
+  } = { sopClassUID };
 
   if (transferSyntaxUID) {
     options.transferSyntaxUID = transferSyntaxUID;
+    options.transferSyntaxUid = transferSyntaxUID;
   }
 
   return options;

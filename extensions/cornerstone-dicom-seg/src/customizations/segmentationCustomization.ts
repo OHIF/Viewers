@@ -14,7 +14,7 @@ export type SegmentationStoreCustomization = {
 
 const segmentationCustomization = {
   'segmentation.store.defaultMode': 'labelmap' as SegmentationMode,
-  'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.5',
+  // transferSyntaxUID is configured in app config (customizationService), not here.
   'segmentation.segmentLabel': {
     enabledByDefault: false,
     hoverTimeout: 1,

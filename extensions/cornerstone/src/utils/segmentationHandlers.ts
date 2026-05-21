@@ -53,10 +53,14 @@ export function setupSegmentationDataModifiedHandler({
       });
 
       if (!isUnsubscribed && updatedSegmentation) {
-        segmentationService.addOrUpdateSegmentation({
-          segmentationId,
-          segments: updatedSegmentation.segments,
-        });
+        const existingSegmentation = segmentationService.getSegmentation(segmentationId);
+
+        if (existingSegmentation) {
+          segmentationService.addOrUpdateSegmentation({
+            segmentationId,
+            segments: updatedSegmentation.segments,
+          });
+        }
       }
     },
     1000
