@@ -20,7 +20,9 @@ const combineFrameInstance = (frame, instance) => {
   } = instance;
 
   if (NumberOfFrames < 2) {
-    return instance;
+    // Return a fresh proxy so callers can set properties (eg. imageId)
+    // without mutating the shared `instance` stored in DicomMetadataStore.
+    return Object.create(instance);
   }
 
   instance.ImageType = dicomSplit(ImageType);
@@ -32,7 +34,8 @@ const combineFrameInstance = (frame, instance) => {
 
   if (
     (PerFrameFunctionalGroupsSequence && SharedFunctionalGroupsSequence) ||
-    hasDetectorButMissingSpatialInfo || NumberOfFrames > 1
+    hasDetectorButMissingSpatialInfo ||
+    NumberOfFrames > 1
   ) {
     // this is to fix NM multiframe datasets with position and orientation
     // information inside DetectorInformationSequence
@@ -160,37 +163,37 @@ const combineFrameInstance = (frame, instance) => {
  * The storage key in the parent is in key
  */
 function createCombinedValue(parent, functionalGroups, key) {
-  if (parent[key]) {
-    return parent[key];
-  }
-  // Exclude any proxying values
-  const newInstance = Object.create(parent);
-  Object.defineProperty(parent, key, {
-    value: newInstance,
-    writable: false,
-    enumerable: false,
-  });
-  if (!functionalGroups) {
-    return newInstance;
-  }
-  const shared = functionalGroups
-    ? Object.values(functionalGroups)
+  // Ensure there's a cached template on the parent (a non-writable, non-enumerable object)
+  if (!parent[key]) {
+    const templateInstance = Object.create(parent);
+    Object.defineProperty(parent, key, {
+      value: templateInstance,
+      writable: false,
+      enumerable: false,
+    });
+
+    if (functionalGroups) {
+      const shared = Object.values(functionalGroups)
         .filter(Boolean)
         .map(it => it[0])
-        .filter(it => typeof it === 'object')
-    : [];
+        .filter(it => typeof it === 'object');
 
-  // merge the shared first then the per frame to override
-  [...shared].forEach(item => {
-    if (item.SOPInstanceUID) {
-      // This sub-item is a previous value information item, so don't merge it
-      return;
+      // merge the shared/per-frame attributes onto the template
+      [...shared].forEach(item => {
+        if (item.SOPInstanceUID) {
+          // This sub-item is a previous value information item, so don't merge it
+          return;
+        }
+        Object.entries(item).forEach(([k, value]) => {
+          templateInstance[k] = value;
+        });
+      });
     }
-    Object.entries(item).forEach(([key, value]) => {
-      newInstance[key] = value;
-    });
-  });
-  return newInstance;
+  }
+
+  // Return a fresh object that inherits from the cached template so
+  // mutations by the caller do not affect the cached template.
+  return Object.create(parent[key]);
 }
 
 export default combineFrameInstance;
