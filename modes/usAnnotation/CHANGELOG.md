@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.2](https://github.com/OHIF/Viewers/compare/v3.12.1...v3.12.2) (2026-05-18)
+
+
+### Bug Fixes
+
+* **security:** Update various dependencies to fix security vulnerabilities. Release 3.12.2 ([#6024](https://github.com/OHIF/Viewers/issues/6024)) ([75a24a3](https://github.com/OHIF/Viewers/commit/75a24a33935bda8779da30ef9b725b387d80723d))
+
+
+
+
+
 # [3.12.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.12.0) (2026-02-06)
 
 **Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline

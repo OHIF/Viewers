@@ -62,27 +62,40 @@ async function run() {
 
   console.log('Committing and pushing changes...');
   await execa('git', ['add', '-A']);
-  await execa('git', ['commit', '-m', 'chore(version): version.json [skip ci]']);
-  await execa('git', ['push', 'origin', branchName]);
+
+  // On re-runs after a partial release the peer-dep updates above are no-ops,
+  // leaving nothing staged. Skip the commit/push so the script stays idempotent.
+  const { stdout: stagedFiles } = await execa('git', ['diff', '--cached', '--name-only']);
+  if (stagedFiles.trim()) {
+    await execa('git', ['commit', '-m', 'chore(version): version.json [skip ci]']);
+    await execa('git', ['push', 'origin', branchName]);
+  } else {
+    console.log('No peer-dependency changes to commit, skipping');
+  }
 
   console.log('Setting the version using lerna...');
 
-  // add a message to the commit to indicate that the version was set using lerna
-  await execa('npx', [
-    'lerna',
-    'version',
-    nextVersion,
-    '--yes',
-    '--exact',
-    '--force-publish',
-    '--message',
-    'chore(version): Update package versions [skip ci]',
-    '--conventional-commits',
-    '--create-release',
-    'github',
-  ]);
+  // Skip lerna version if package versions already match the target (e.g. a
+  // previous release run finished the version bump but failed before publish).
+  if (lernaJson.version !== nextVersion.trim()) {
+    await execa('npx', [
+      'lerna',
+      'version',
+      nextVersion,
+      '--yes',
+      '--exact',
+      '--force-publish',
+      '--message',
+      'chore(version): Update package versions [skip ci]',
+      '--conventional-commits',
+      '--create-release',
+      'github',
+    ]);
 
-  console.log('Version set using lerna');
+    console.log('Version set using lerna');
+  } else {
+    console.log(`Already at target version ${nextVersion.trim()}, skipping lerna version`);
+  }
 }
 
 run().catch(err => {
