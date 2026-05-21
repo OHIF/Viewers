@@ -6,11 +6,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {
-    'segmentation.store.defaultMode': { $set: 'bitmap' },
-    // Explicit VR Little Endian (uncompressed bitmap) — isolate generator vs RLE encoder
-    'segmentation.store.transferSyntaxUID': { $set: '1.2.840.10008.1.2.1' },
-  },
+  customizationService: {},
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -292,10 +288,14 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
-  // More segmentation overrides (defaults from @ohif/extension-cornerstone-dicom-seg):
-  // 'segmentation.store.defaultMode': { $set: 'labelmap' },
-  // 'segmentation.store.transferSyntaxUID': { $set: '1.2.840.10008.1.2.1' }, // Explicit VR Little Endian (uncompressed)
-  // 'segmentation.segmentLabel': { $set: { enabledByDefault: true, labelColor: [255, 255, 0, 1], hoverTimeout: 1 } },
+  // segmentation: {
+  //   segmentLabel: {
+  //     enabledByDefault: true,
+  //     labelColor: [255, 255, 0, 1], // must be an array
+  //     hoverTimeout: 1,
+  //     background: 'rgba(100, 100, 100, 0.5)', // can be any valid css color
+  //   },
+  // },
   // whiteLabeling: {
   //   createLogoComponentFn: function (React) {
   //     return React.createElement(
