@@ -1,4 +1,7 @@
 {
+  "cli": {
+    "packageManager": "yarn"
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",
