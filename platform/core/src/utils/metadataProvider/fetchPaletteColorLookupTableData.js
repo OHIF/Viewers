@@ -30,9 +30,22 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   }
 
   const arrayBufferToPaletteColorLUT = arraybuffer => {
-    // Handle both ArrayBuffer and TypedArray inputs
-    const buffer = arraybuffer.buffer || arraybuffer;
-    const data = bits === 16 ? new Uint16Array(buffer) : new Uint8Array(buffer);
+    const data =
+      arraybuffer instanceof ArrayBuffer
+        ? bits === 16
+          ? new Uint16Array(arraybuffer)
+          : new Uint8Array(arraybuffer)
+        : bits === 16
+          ? new Uint16Array(
+              arraybuffer.buffer,
+              arraybuffer.byteOffset,
+              arraybuffer.byteLength / 2
+            )
+          : new Uint8Array(
+              arraybuffer.buffer,
+              arraybuffer.byteOffset,
+              arraybuffer.byteLength
+            );
     const lut = [];
 
     for (let i = 0; i < numLutEntries; i++) {
