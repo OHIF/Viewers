@@ -13,6 +13,96 @@ const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.7';
 
 const loadPromises = {};
 
+const SEG_LOAD_LOG_PREFIX = '[SEG load]';
+
+function _normalizeImageId(imageId: string | string[] | undefined): string | undefined {
+  if (imageId == null) {
+    return undefined;
+  }
+  return Array.isArray(imageId) ? imageId[0] : imageId;
+}
+
+/**
+ * Expands a WADO-RS frame imageId (…/frames/1) into one imageId per frame.
+ * Multiframe SEG is stored as separate /frames/N resources on the server.
+ */
+function getFrameImageIds(segImageId: string, numberOfFrames: number): string[] {
+  const frameMatch = segImageId.match(/(.*\/frames\/)(\d+)(.*)$/);
+  if (!frameMatch || numberOfFrames <= 1) {
+    return [segImageId];
+  }
+
+  const prefix = frameMatch[1];
+  const suffix = frameMatch[3] || '';
+  const frameImageIds: string[] = [];
+
+  for (let frameNumber = 1; frameNumber <= numberOfFrames; frameNumber++) {
+    frameImageIds.push(`${prefix}${frameNumber}${suffix}`);
+  }
+
+  return frameImageIds;
+}
+
+function _resolveSegImageIds(
+  segImageIdStr: string,
+  instance: Record<string, unknown>,
+  dataSource: { getImageIdsForInstance?: (args: { instance: unknown; frame?: number }) => unknown }
+): string[] {
+  const numberOfFrames = Number(instance.NumberOfFrames) || 1;
+  const fromFrameUrl = getFrameImageIds(segImageIdStr, numberOfFrames);
+
+  if (fromFrameUrl.length > 1) {
+    return fromFrameUrl;
+  }
+
+  // Fallback for imageIds that use &frame=N (e.g. wadouri) instead of /frames/N.
+  if (numberOfFrames > 1 && dataSource.getImageIdsForInstance) {
+    const fromDataSource: string[] = [];
+    for (let frame = 1; frame <= numberOfFrames; frame++) {
+      const frameImageId = _normalizeImageId(
+        dataSource.getImageIdsForInstance({ instance, frame }) as string | string[]
+      );
+      if (frameImageId) {
+        fromDataSource.push(frameImageId);
+      }
+    }
+    if (fromDataSource.length > 1) {
+      return fromDataSource;
+    }
+  }
+
+  return [segImageIdStr];
+}
+
+function _logSegImageIds({
+  segDisplaySet,
+  segImageIdStr,
+  segImageIds,
+  referencedImageIds,
+}: {
+  segDisplaySet: AppTypes.DisplaySet;
+  segImageIdStr: string;
+  segImageIds: string[];
+  referencedImageIds: string[];
+}) {
+  const instance = segDisplaySet.instance as Record<string, unknown>;
+  const numberOfFrames = Number(instance?.NumberOfFrames) || 1;
+
+  console.info(SEG_LOAD_LOG_PREFIX, 'Loading SEG pixel data', {
+    SOPInstanceUID: segDisplaySet.SOPInstanceUID,
+    SeriesInstanceUID: segDisplaySet.SeriesInstanceUID,
+    SOPClassUID: segDisplaySet.SOPClassUID,
+    NumberOfFrames: numberOfFrames,
+    segmentCount: Object.keys(segDisplaySet.segments || {}).length,
+    referencedDisplaySetInstanceUID: segDisplaySet.referencedDisplaySetInstanceUID,
+    referencedImageIdCount: referencedImageIds.length,
+    referencedImageIds,
+    segImageIdForMetadata: segImageIdStr,
+    segImageIds,
+    loadSegFramesIndividually: segImageIds.length > 1,
+  });
+}
+
 function _getDisplaySetsFromSeries(
   instances,
   servicesManager: AppTypes.ServicesManager,
@@ -187,7 +277,7 @@ async function _loadSegments({
   const segImageId = dataSource.getImageIdsForInstance({
     instance: segDisplaySet.instance,
   });
-  const segImageIdStr = Array.isArray(segImageId) ? segImageId[0] : segImageId;
+  const segImageIdStr = _normalizeImageId(segImageId as string | string[]);
 
   if (!segImageIdStr) {
     throw new Error(
@@ -203,9 +293,14 @@ async function _loadSegments({
     throw new Error('referencedDisplaySet is missing for SEG');
   }
 
+  // Prefer cached stack imageIds (multiframe SEG fix #4890), then data source expansion.
   let { imageIds } = referencedDisplaySet;
 
-  if (!imageIds) {
+  if (!imageIds?.length) {
+    imageIds = dataSource.getImageIdsForDisplaySet?.(referencedDisplaySet);
+  }
+
+  if (!imageIds?.length) {
     imageIds = (referencedDisplaySet as { images?: { imageId: string }[] }).images?.map(
       (img: { imageId: string }) => img.imageId
     );
@@ -214,6 +309,19 @@ async function _loadSegments({
   if (!imageIds?.length) {
     throw new Error('referencedDisplaySet has no imageIds');
   }
+
+  const segImageIds = _resolveSegImageIds(
+    segImageIdStr,
+    segDisplaySet.instance as Record<string, unknown>,
+    dataSource
+  );
+
+  _logSegImageIds({
+    segDisplaySet,
+    segImageIdStr,
+    segImageIds,
+    referencedImageIds: imageIds,
+  });
 
   const tolerance = 0.001;
   const onProgress = evt => {
@@ -236,6 +344,7 @@ async function _loadSegments({
           segDisplaySet.SOPClassUID,
           customizationService
         ),
+        segImageIds,
       }
     );
   } finally {
@@ -271,6 +380,17 @@ async function _loadSegments({
   }
 
   Object.assign(segDisplaySet, results);
+
+  const labelMapImageIds = (results as { labelMapImages?: { imageId: string }[][] })
+    .labelMapImages?.flat()
+    .map(image => image.imageId);
+
+  console.info(SEG_LOAD_LOG_PREFIX, 'SEG parse complete', {
+    SOPInstanceUID: segDisplaySet.SOPInstanceUID,
+    labelMapImageCount: labelMapImageIds?.length ?? 0,
+    labelMapImageIds,
+    segmentIndices: Object.keys(segDisplaySet.segments || {}),
+  });
 }
 
 function _segmentationExists(segDisplaySet) {
