@@ -26,7 +26,6 @@ test.beforeEach(async ({
 });
 
 test('should duplicate a contour segment and add a new row to the panel', async ({
-  page,
   rightPanelPageObject,
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
@@ -52,7 +51,6 @@ test('should duplicate a contour segment and add a new row to the panel', async 
 });
 
 test('should duplicate the same segment multiple times', async ({
-  page,
   rightPanelPageObject,
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
@@ -118,7 +116,7 @@ test.skip('should navigate to the correct instance number when a duplicated cont
   const originalSegment = panel.nthSegment(0);
   await originalSegment.click();
   const originalSegmentInstanceInfo = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
-  expect(originalSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').not.toBeNull();
+  expect(originalSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').toBeVisible();
   await expect(originalSegmentInstanceInfo, 'Expected instance information to be slice 46 for the Threshold segment').toHaveText('I:46 (46/47)');
 
   // Duplicate segment so new segment is at index 4
@@ -127,14 +125,14 @@ test.skip('should navigate to the correct instance number when a duplicated cont
   //click another segment to ensure instance number changes accordingly
   await panel.nthSegment(2).click();
   const anotherSegmentInstanceInfo = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
-  expect(anotherSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').not.toBeNull();
+  expect(anotherSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').toBeVisible();
   await expect(anotherSegmentInstanceInfo, 'Expected instance information to be different from original contour').not.toHaveText('I:46 (46/47)');
 
   //click duplicated segment to ensure instance number is consistent with original segment
   const duplicatedSegment = panel.nthSegment(4);
   await duplicatedSegment.click();
   const duplicatedSegmentInstanceInfoAfter = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
-  expect(duplicatedSegmentInstanceInfoAfter, 'Expected instance information to be displayed in the viewport overlay').not.toBeNull();
+  expect(duplicatedSegmentInstanceInfoAfter, 'Expected instance information to be displayed in the viewport overlay').toBeVisible();
   await expect(duplicatedSegmentInstanceInfoAfter, 'Expected instance information to be same as original contour after clicking duplicated segment').toHaveText('I:46 (46/47)');
 
   //verify the svg paths are the same for the original and duplicated segments
