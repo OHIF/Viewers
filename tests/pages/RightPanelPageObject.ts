@@ -112,29 +112,58 @@ export class RightPanelPageObject {
 
   get measurementsPanel() {
     const page = this.page;
-    const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getMeasurementByText = (text: string) => this.getPanelRowByText(text);
-    const menuButton = page.getByTestId('trackedMeasurements-btn');
+    const trackedMeasurementsPanel = page.getByTestId('trackedMeasurements-panel').last();
+    const measurementTableRows = trackedMeasurementsPanel.locator(
+      '[data-cy^="measurement-table-row-"]'
+    );
+    const getMeasurementStatsAt = (index: number) => {
+      const dataRow = trackedMeasurementsPanel
+        .getByTestId(`measurement-table-row-${index}`)
+        .getByTestId('data-row');
+      const locator = dataRow.locator('..').getByTestId('data-row-details');
+      const primaryLocator = locator.getByTestId('data-row-details-primary');
+      const secondaryLocator = locator.getByTestId('data-row-details-secondary');
+      return {
+        locator,
+        primary: {
+          locator: primaryLocator,
+          lines: primaryLocator.getByTestId('data-row-detail-line'),
+        },
+        secondary: {
+          locator: secondaryLocator,
+          lines: secondaryLocator.getByTestId('data-row-detail-line'),
+        },
+      };
+    };
+    const getMeasurementDataRowAt = (index: number) => {
+      const rowWrapper = trackedMeasurementsPanel.getByTestId(`measurement-table-row-${index}`);
+      const dataRow = rowWrapper.getByTestId('data-row');
+      const row = this.getPanelRowDataObject(rowWrapper);
+      // Selection highlight (bg-popover) is on the inner DataRow, not the measurement-table-row wrapper
+      return {
+        ...row,
+        locator: dataRow,
+        stats: getMeasurementStatsAt(index),
+      };
+    };
+    const trackedMeasurementsMenu = page.getByTestId('trackedMeasurements-btn');
 
     return {
-      menuButton,
       panel: {
         deleteAll: async () => {
           await page.getByRole('button', { name: 'Delete' }).click();
         },
         getMeasurementCount: async () => {
-          return await page.getByTestId('data-row').count();
+          return await measurementTableRows.count();
         },
-        locator: page.getByTestId('trackedMeasurements-panel').last(),
+        rows: measurementTableRows,
+        locator: trackedMeasurementsPanel,
         nthMeasurement(index: number) {
-          return getMeasurementByIdx(index);
-        },
-        measurementByText(text: string) {
-          return getMeasurementByText(text);
+          return getMeasurementDataRowAt(index);
         },
       },
       select: async () => {
-        await menuButton.click();
+        await trackedMeasurementsMenu.click();
       },
     };
   }
@@ -413,7 +442,6 @@ export class RightPanelPageObject {
   get microscopyPanel() {
     const page = this.page;
     const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getMeasurementByText = (text: string) => this.getPanelRowByText(text);
 
     return {
       locator: page.getByTestId('measurements-panel'),
@@ -422,9 +450,6 @@ export class RightPanelPageObject {
       },
       nthMeasurement(index: number) {
         return getMeasurementByIdx(index);
-      },
-      measurementByText(text: string) {
-        return getMeasurementByText(text);
       },
     };
   }

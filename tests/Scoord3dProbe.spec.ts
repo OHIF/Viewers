@@ -1,4 +1,13 @@
+import { Locator } from '@playwright/test';
 import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+
+async function expectNonEmptyDetailLines(lines: Locator) {
+  const lineCount = await lines.count();
+  expect(lineCount).toBeGreaterThan(0);
+  for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+    await expect(lines.nth(lineIndex)).not.toBeEmpty();
+  }
+}
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
@@ -92,19 +101,13 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   );
 
   // Verify the measurements list has the correct probe measurements
-  const measurementRows = page.getByTestId('data-row');
-  const rowCount = await measurementRows.count();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBeGreaterThan(
-    0
-  );
+  expect(await rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0);
+  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
 
-  // Verify that the measurements are probe measurements (not other types)
   for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Probe measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
   }
 
   // Test jumping to a specific measurement by scrolling and clicking
@@ -199,10 +202,8 @@ test('should display SCOORD3D probe measurements correctly', async ({
 
   // Verify that the measurements are probe measurements (not other types like rectangle)
   for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Probe measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
   }
 });
