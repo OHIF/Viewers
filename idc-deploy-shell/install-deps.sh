@@ -33,7 +33,7 @@ apt-get install -y g++
 # Following instructions at https://github.com/nodesource/distributions/blob/master/README.md#deb
 #
 
-curl -sL https://deb.nodesource.com/setup_18.x | bash -
+curl -sL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
 
 # Yarn via Corepack — matches package.json "packageManager" (yarn@1.22.22)
@@ -43,6 +43,7 @@ corepack prepare yarn@1.22.22 --activate
 
 # Verify installations
 echo "Installation complete!"
+echo "Node version: $(node --version)"
 echo "Yarn location: $(which yarn)"
 echo "Yarn version: $(yarn --version)"
 
