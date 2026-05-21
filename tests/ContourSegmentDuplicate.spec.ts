@@ -3,8 +3,8 @@ import {
   test,
   visitStudy,
   waitForViewportsRendered,
+  getSvgAttribute,
 } from './utils';
-import { getSvgAttribute } from './utils/getSvgAttribute';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defaultSegment0Name = 'Threshold';
@@ -108,7 +108,6 @@ test('should render the duplicated contour on the viewport', async ({
   ).toBe(sourceSvgPath);
 });
 
-
 test.skip('should navigate to the correct instance number when a duplicated contour segment is selected', async ({
   rightPanelPageObject,
   viewportPageObject,
@@ -120,7 +119,7 @@ test.skip('should navigate to the correct instance number when a duplicated cont
   await originalSegment.click();
   const originalSegmentInstanceInfo = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
   expect(originalSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').not.toBeNull();
-  await expect(originalSegmentInstanceInfo, 'Expected instance information to be 46 for the Threshhold segment').toHaveText('I:46 (46/47)');
+  await expect(originalSegmentInstanceInfo, 'Expected instance information to be slice 46 for the Threshhold segment').toHaveText('I:46 (46/47)');
 
   // Duplicate segment so new segment is at index 4
   await originalSegment.actions.duplicate();
