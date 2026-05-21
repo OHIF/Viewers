@@ -4,6 +4,7 @@ import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
+import { resolveConfigFetchPolicy, fetchConfigJson } from '../utils/secureConfigFetch';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -59,13 +60,18 @@ const findStudies = (key, value) => {
   return studies;
 };
 
-function createDicomJSONApi(dicomJsonConfig) {
+function createDicomJSONApi(dicomJsonConfig, servicesManager) {
+  const { userAuthenticationService } = servicesManager.services;
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
         url = query.get('url');
       }
-      let metaData = getMetaDataByURL(url);
+      const evaluatedUrl = resolveConfigFetchPolicy(url, {
+        allowedOrigins: dicomJsonConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+        userAuthenticationService,
+      });
+      let metaData = getMetaDataByURL(evaluatedUrl.normalizedUrl);
 
       // if we have already cached the data from this specific url
       // We are only handling one StudyInstanceUID to run; however,
@@ -76,8 +82,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         });
       }
 
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = await fetchConfigJson(evaluatedUrl);
 
       let StudyInstanceUID;
       let SeriesInstanceUID;
@@ -105,11 +110,11 @@ function createDicomJSONApi(dicomJsonConfig) {
       });
 
       _store.urls.push({
-        url,
+        url: evaluatedUrl.normalizedUrl,
         studies: [...data.studies],
       });
       _store.studyInstanceUIDMap.set(
-        url,
+        evaluatedUrl.normalizedUrl,
         data.studies.map(study => study.StudyInstanceUID)
       );
     },
@@ -252,6 +257,8 @@ function createDicomJSONApi(dicomJsonConfig) {
         console.warn(' DICOMJson store dicom not implemented');
       },
     },
+    reject: {},
+    deleteStudyMetadataPromise: () => {},
     getImageIdsForDisplaySet(displaySet) {
       const images = displaySet.images;
       const imageIds = [];
@@ -297,8 +304,21 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     getStudyInstanceUIDs: ({ params, query }) => {
       const url = query.get('url');
-      return _store.studyInstanceUIDMap.get(url);
+      if (!url) {
+        return;
+      }
+
+      try {
+        const evaluatedUrl = resolveConfigFetchPolicy(url, {
+          allowedOrigins: dicomJsonConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+          userAuthenticationService,
+        });
+        return _store.studyInstanceUIDMap.get(evaluatedUrl.normalizedUrl);
+      } catch {
+        return;
+      }
     },
+    getConfig: () => dicomJsonConfig,
   };
   return IWebApiDataSource.create(implementation);
 }
