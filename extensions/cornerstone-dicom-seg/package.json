@@ -48,6 +48,7 @@
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/adapters": "4.22.8",
     "@cornerstonejs/core": "4.22.8",
-    "@kitware/vtk.js": "34.15.1"
+    "@kitware/vtk.js": "34.15.1",
+    "dcmjs": "0.51.1"
   }
 }
