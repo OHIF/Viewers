@@ -39,7 +39,7 @@
     "@ohif/extension-default": "3.13.0-beta.81",
     "@ohif/ui": "3.13.0-beta.81",
     "classnames": "2.5.1",
-    "dcmjs": "0.49.4",
+    "dcmjs": "0.51.1",
     "lodash.debounce": "4.0.8",
     "prop-types": "15.8.1",
     "react": "18.3.1",

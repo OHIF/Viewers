@@ -83,6 +83,9 @@ const combineFrameInstance = (frame, instance) => {
     if (!instance._parentInstance) {
       Object.defineProperty(instance, '_parentInstance', {
         value: { ...instance },
+        enumerable: false,
+        writable: false,
+        configurable: false,
       });
     }
     const sharedInstance = createCombinedValue(
@@ -102,7 +105,7 @@ const combineFrameInstance = (frame, instance) => {
     Object.defineProperty(newInstance, 'frameNumber', {
       value: frameNumber,
       writable: true,
-      enumerable: true,
+      enumerable: false,
       configurable: true,
     });
     return newInstance;
@@ -113,6 +116,9 @@ const combineFrameInstance = (frame, instance) => {
     if (!instance._parentInstance) {
       Object.defineProperty(instance, '_parentInstance', {
         value: { ...instance },
+        enumerable: false,
+        writable: false,
+        configurable: false,
       });
     }
 
@@ -144,7 +150,7 @@ const combineFrameInstance = (frame, instance) => {
     Object.defineProperty(newInstance, 'frameNumber', {
       value: frameNumber,
       writable: true,
-      enumerable: true,
+      enumerable: false,
       configurable: true,
     });
 
