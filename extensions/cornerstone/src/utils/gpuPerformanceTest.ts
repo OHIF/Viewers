@@ -92,7 +92,7 @@ const DECIMATION_LOW: [number, number, number] = [2, 2, 1];
 
 interface GPUPerformanceResult {
   score: number;
-  level: 'low' | 'medium' | 'high' | 'very-high';
+  level: 'low' | 'medium' | 'high' | 'very-high' | 'failed';
   recommendedDecimation: [number, number, number];
   details: {
     webglVersion: string;
@@ -560,6 +560,61 @@ function getSamplingDefaults(
   };
 }
 
+function createFailedGPUPerformanceResult(): GPUPerformanceResult {
+  return {
+    score: FAILED_SCORE,
+    level: 'failed',
+    recommendedDecimation: [
+      FAILED_DECIMATION_X,
+      FAILED_DECIMATION_Y,
+      FAILED_DECIMATION_Z,
+    ],
+    details: {
+      webglVersion: 'Unknown',
+      renderer: 'Unknown',
+      vendor: 'Unknown',
+      maxTextureSize: FAILED_MAX_TEXTURE_SIZE,
+      maxVertexAttribs: DEFAULT_RETURN_VALUE,
+      maxVaryingVectors: DEFAULT_RETURN_VALUE,
+      maxFragmentUniforms: DEFAULT_RETURN_VALUE,
+      maxVertexUniforms: DEFAULT_RETURN_VALUE,
+      maxTextureImageUnits: DEFAULT_RETURN_VALUE,
+      maxVertexTextureImageUnits: DEFAULT_RETURN_VALUE,
+      maxCombinedTextureImageUnits: DEFAULT_RETURN_VALUE,
+      maxRenderBufferSize: DEFAULT_RETURN_VALUE,
+      maxViewportDims: [DEFAULT_RETURN_VALUE, DEFAULT_RETURN_VALUE],
+      aliasedLineWidthRange: [DEFAULT_RETURN_VALUE, DEFAULT_RETURN_VALUE],
+      aliasedPointSizeRange: [DEFAULT_RETURN_VALUE, DEFAULT_RETURN_VALUE],
+      maxAnisotropy: DEFAULT_ANISOTROPY,
+      extensions: [],
+    },
+    testResults: {
+      triangleRendering: DEFAULT_RETURN_VALUE,
+      textureUpload: DEFAULT_RETURN_VALUE,
+      bufferOperations: DEFAULT_RETURN_VALUE,
+    },
+  };
+}
+
+function buildGpuTestResultsForStorage(result: GPUPerformanceResult) {
+  return {
+    generalPerformanceScore: result.score,
+    renderer: result.details.renderer,
+    maxTextureSize: result.details.maxTextureSize,
+    memoryUsedMB: result.details.memoryInfo
+      ? Math.round(
+          result.details.memoryInfo.usedJSHeapSize / BYTES_PER_KB / BYTES_PER_KB
+        )
+      : DEFAULT_RETURN_VALUE,
+    memoryLimitMB: result.details.memoryInfo
+      ? Math.round(
+          result.details.memoryInfo.jsHeapSizeLimit / BYTES_PER_KB / BYTES_PER_KB
+        )
+      : DEFAULT_RETURN_VALUE,
+    ...result.testResults,
+  };
+}
+
 /**
  * GPU performance test helper for console logging and caching results.
  * Runs once (when gpuTestResults is missing); sets rotateSampleDistanceFactor and
@@ -573,26 +628,7 @@ export async function gpuPerformanceTest(
   try {
     const result = await runGPUPerformanceTest();
 
-    const gpuTestResults = {
-      generalPerformanceScore: result.score,
-      renderer: result.details.renderer,
-      maxTextureSize: result.details.maxTextureSize,
-      memoryUsedMB: result.details.memoryInfo
-        ? Math.round(
-            result.details.memoryInfo.usedJSHeapSize /
-              BYTES_PER_KB /
-              BYTES_PER_KB
-          )
-        : DEFAULT_RETURN_VALUE,
-      memoryLimitMB: result.details.memoryInfo
-        ? Math.round(
-            result.details.memoryInfo.jsHeapSizeLimit /
-              BYTES_PER_KB /
-              BYTES_PER_KB
-          )
-        : DEFAULT_RETURN_VALUE,
-      ...result.testResults,
-    };
+    const gpuTestResults = buildGpuTestResultsForStorage(result);
 
     const { rotateSampleDistanceFactor, sampleDistanceMultiplier } =
       getSamplingDefaults(result.score, volumeDownsampling);
@@ -630,45 +666,19 @@ export async function gpuPerformanceTest(
   } catch (error) {
     console.error('GPU Performance Test failed:', error);
 
-    const failedResult = {
-      generalPerformanceScore: FAILED_SCORE,
-      renderer: 'Unknown',
-      maxTextureSize: FAILED_MAX_TEXTURE_SIZE,
-      level: 'failed',
-      testResults: {
-        triangleRendering: DEFAULT_RETURN_VALUE,
-        textureUpload: DEFAULT_RETURN_VALUE,
-        bufferOperations: DEFAULT_RETURN_VALUE,
-      },
-    };
+    const failedResult = createFailedGPUPerformanceResult();
 
     const { rotateSampleDistanceFactor, sampleDistanceMultiplier } =
       getSamplingDefaults(FAILED_SCORE, volumeDownsampling);
 
     setVolumeOptions({
-      gpuTestResults: failedResult,
+      gpuTestResults: buildGpuTestResultsForStorage(failedResult),
       rotateSampleDistanceFactor,
       sampleDistanceMultiplier,
     });
 
-    (window as Window & { gpuPerformanceResult?: GPUPerformanceResult }).gpuPerformanceResult = {
-      score: FAILED_SCORE,
-      level: 'failed',
-      recommendedDecimation: [
-        FAILED_DECIMATION_X,
-        FAILED_DECIMATION_Y,
-        FAILED_DECIMATION_Z,
-      ] as [number, number, number],
-      details: {
-        renderer: 'Unknown',
-        maxTextureSize: FAILED_MAX_TEXTURE_SIZE,
-      },
-      testResults: {
-        triangleRendering: DEFAULT_RETURN_VALUE,
-        textureUpload: DEFAULT_RETURN_VALUE,
-        bufferOperations: DEFAULT_RETURN_VALUE,
-      },
-    };
+    (window as Window & { gpuPerformanceResult?: GPUPerformanceResult }).gpuPerformanceResult =
+      failedResult;
   }
 }
 
