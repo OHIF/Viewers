@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
+import ViewportSliceProgressScrollbar from './ViewportSliceProgressScrollbar/ViewportSliceProgressScrollbar';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
@@ -8,7 +9,7 @@ import AutoDecimationOverlay from './AutoDecimationOverlay';
 
 function CornerstoneOverlays(props: withAppTypes) {
   const { viewportId, element, scrollbarHeight, servicesManager } = props;
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, customizationService } = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -30,35 +31,51 @@ function CornerstoneOverlays(props: withAppTypes) {
     return () => {
       unsubscribe();
     };
-  }, [viewportId]);
+  }, [viewportId, cornerstoneViewportService]);
 
   if (!element) {
     return null;
   }
 
-  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-  const options = viewportInfo?.getViewportOptions?.();
-  const hideOverlays = options?.customViewportProps?.hideOverlays;
+  if (viewportData) {
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
-  if (viewportInfo && hideOverlays) {
-    return (
-      <div className="noselect">
-        <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
-      </div>
-    );
+    if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
+      return (
+        <div className="noselect">
+          <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
+        </div>
+      );
+    }
   }
 
+  const viewportScrollbarVariant = customizationService.getCustomization(
+    'viewportScrollbar.variant'
+  );
+  const useProgressScrollbar = viewportScrollbarVariant !== 'legacy';
+
   return (
-    <div className="noselect">                                                                                                    
-      <ViewportImageScrollbar
-        viewportId={viewportId}
-        viewportData={viewportData}
-        element={element}
-        imageSliceData={imageSliceData}
-        setImageSliceData={setImageSliceData}
-        scrollbarHeight={scrollbarHeight}
-        servicesManager={servicesManager}
-      />
+    <div className="noselect">
+      {useProgressScrollbar ? (
+        <ViewportSliceProgressScrollbar
+          viewportId={viewportId}
+          viewportData={viewportData}
+          element={element}
+          imageSliceData={imageSliceData}
+          setImageSliceData={setImageSliceData}
+          servicesManager={servicesManager}
+        />
+      ) : (
+        <ViewportImageScrollbar
+          viewportId={viewportId}
+          viewportData={viewportData}
+          element={element}
+          imageSliceData={imageSliceData}
+          setImageSliceData={setImageSliceData}
+          scrollbarHeight={scrollbarHeight}
+          servicesManager={servicesManager}
+        />
+      )}
 
       <CustomizableViewportOverlay
         imageSliceData={imageSliceData}
