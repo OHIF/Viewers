@@ -60,6 +60,42 @@ export class DOMOverlayPageObject {
         return new DicomTagBrowserPageObject(page);
       },
 
+      get colorPicker() {
+        const locator = page.getByTestId('color-picker-dialog');
+        // ChromePicker renders multiple <EditableInput> elements (hex / r / g / b / a)
+        // depending on the active view. Each input is associated with its own
+        // <label> (via htmlFor / id). Target the hex one by its label.
+        const hexInput = locator.getByLabel('hex');
+        const saveButton = page.getByTestId('color-picker-save-btn');
+        const cancelButton = page.getByTestId('color-picker-cancel-btn');
+        return {
+          locator,
+          hexInput,
+          saveButton,
+          cancelButton,
+          fillHex: async (hex: string) => {
+            await hexInput.fill(hex);
+            await hexInput.press('Enter');
+          },
+          save: async () => {
+            await saveButton.click();
+          },
+          cancel: async () => {
+            await cancelButton.click();
+          },
+          fillHexAndSave: async (hex: string) => {
+            await hexInput.fill(hex);
+            await hexInput.press('Enter');
+            await saveButton.click();
+          },
+          fillHexAndCancel: async (hex: string) => {
+            await hexInput.fill(hex);
+            await hexInput.press('Enter');
+            await cancelButton.click();
+          },
+        };
+      },
+
       title: page.locator('[role="dialog"] h2'),
     };
   }
