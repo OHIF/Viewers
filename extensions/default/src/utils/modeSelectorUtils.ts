@@ -8,11 +8,16 @@ const { formatPN } = utils;
 /** Fields read from `query.studies.search` responses; remainder spread into `study`. */
 type StudySearchRow = { modalities?: string } & Record<string, unknown>;
 
-/** Data source subset used when calling `studies.search` to populate the envelope. */
+type SeriesSearchRow = { modality?: string };
+
+/** Data source subset used when calling study/series search to populate the envelope. */
 export type DataSourceWithStudySearch = {
   query?: {
     studies?: {
       search?: (params: { studyInstanceUid: string }) => Promise<StudySearchRow[]> | StudySearchRow[];
+    };
+    series?: {
+      search?: (studyInstanceUid: string) => Promise<SeriesSearchRow[]> | SeriesSearchRow[];
     };
   };
 };
@@ -55,30 +60,107 @@ export function normalizeModalitiesString(raw?: string): string {
 }
 
 /**
- * Loads study metadata for the mode selector: tries the active data source search, then falls back
- * to `DicomMetadataStore` and builds modalities plus a study payload for validity checks.
+ * True when the normalized modalities string contains at least one non-empty modality token.
  */
-export async function fetchStudyEnvelope(
-  StudyInstanceUID: string,
-  dataSource: DataSourceWithStudySearch | null | undefined
-): Promise<StudyEnvelope | null> {
-  try {
-    // Call as a method on query.studies so `this` inside search is bound (do not extract the function).
-    if (dataSource?.query?.studies?.search) {
-      const rows = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
-      const row = rows?.[0];
-      if (row) {
-        return {
-          modalitiesToCheck: normalizeModalitiesString(row.modalities),
-          study: { ...row },
-        };
-      }
-    }
-  } catch (_e) {
-    // Fallback to locally loaded metadata
+export function hasUsableModalities(modalities?: string): boolean {
+  const normalized = normalizeModalitiesString(modalities);
+  if (!normalized) {
+    return false;
   }
 
-  const meta = DicomMetadataStore.getStudy(StudyInstanceUID);
+  return normalized.split('\\').some(token => token.trim() !== '');
+}
+
+/**
+ * Builds a sorted, normalized modalities string from a list of modality codes.
+ */
+export function modalitiesStringFromSet(modalitySet: Set<string>): string {
+  if (modalitySet.size === 0) {
+    return '';
+  }
+
+  return normalizeModalitiesString([...modalitySet].sort().join('/'));
+}
+
+/**
+ * Collects modalities from series already loaded in `DicomMetadataStore`.
+ */
+export function modalitiesFromMetadataStore(studyInstanceUID: string): string {
+  const meta = DicomMetadataStore.getStudy(studyInstanceUID);
+  if (!meta?.series?.length) {
+    return '';
+  }
+
+  const modalitySet = new Set<string>();
+
+  meta.series.forEach(series => {
+    if (series?.instances?.length) {
+      const rawModality = series.instances[0].Modality;
+      if (rawModality != null && `${rawModality}`.trim() !== '') {
+        modalitySet.add(String(rawModality));
+      }
+    }
+  });
+
+  return modalitiesStringFromSet(modalitySet);
+}
+
+/**
+ * Collects modalities from a QIDO series search when study-level tags are missing.
+ */
+export async function modalitiesFromSeriesSearch(
+  studyInstanceUID: string,
+  dataSource: DataSourceWithStudySearch | null | undefined
+): Promise<string> {
+  const seriesSearch = dataSource?.query?.series?.search;
+  if (!seriesSearch) {
+    return '';
+  }
+
+  try {
+    const series = await seriesSearch(studyInstanceUID);
+    const modalitySet = new Set<string>();
+
+    series?.forEach(row => {
+      const modality = row?.modality;
+      if (modality != null && `${modality}`.trim() !== '') {
+        modalitySet.add(String(modality));
+      }
+    });
+
+    return modalitiesStringFromSet(modalitySet);
+  } catch (_e) {
+    return '';
+  }
+}
+
+/**
+ * Resolves modalities for mode validity: QIDO study field, then loaded metadata, then series QIDO.
+ */
+export async function resolveStudyModalities(
+  studyInstanceUID: string,
+  dataSource: DataSourceWithStudySearch | null | undefined,
+  qidoModalities?: string
+): Promise<string> {
+  if (hasUsableModalities(qidoModalities)) {
+    return normalizeModalitiesString(qidoModalities);
+  }
+
+  const fromMetadataStore = modalitiesFromMetadataStore(studyInstanceUID);
+  if (hasUsableModalities(fromMetadataStore)) {
+    return fromMetadataStore;
+  }
+
+  const fromSeriesSearch = await modalitiesFromSeriesSearch(studyInstanceUID, dataSource);
+  if (hasUsableModalities(fromSeriesSearch)) {
+    return fromSeriesSearch;
+  }
+
+  return '';
+}
+
+function buildStudyEnvelopeFromMetadataStore(studyInstanceUID: string): StudyEnvelope | null {
+  const meta = DicomMetadataStore.getStudy(studyInstanceUID);
   if (!meta?.series?.length) {
     return null;
   }
@@ -96,12 +178,11 @@ export async function fetchStudyEnvelope(
     }
   });
 
-  const modalitiesStr = [...modalitySet].sort().join('/');
-  const modalitiesNormalized = normalizeModalitiesString(modalitiesStr);
+  const modalitiesNormalized = modalitiesStringFromSet(modalitySet);
   const firstSeriesWithInstance = meta.series.find(s => s?.instances?.length);
   const inst0 = firstSeriesWithInstance?.instances?.[0];
   const studyPayload = {
-    studyInstanceUid: StudyInstanceUID,
+    studyInstanceUid: studyInstanceUID,
     modalities: modalitiesNormalized,
     mrn: inst0?.PatientID,
     instances: numInstances,
@@ -110,13 +191,71 @@ export async function fetchStudyEnvelope(
     time: inst0?.StudyTime,
     accession: inst0?.AccessionNumber,
     patientName: inst0?.PatientName ? formatPN(inst0.PatientName) : '',
-    studyInstanceUID: StudyInstanceUID,
-    StudyInstanceUID,
+    studyInstanceUID: studyInstanceUID,
+    StudyInstanceUID: studyInstanceUID,
   };
 
   return {
     modalitiesToCheck: modalitiesNormalized,
     study: studyPayload,
+  };
+}
+
+/**
+ * Loads study metadata for the mode selector: tries the active data source search, then falls back
+ * to `DicomMetadataStore` and series QIDO when study-level modalities are missing.
+ */
+export async function fetchStudyEnvelope(
+  StudyInstanceUID: string,
+  dataSource: DataSourceWithStudySearch | null | undefined
+): Promise<StudyEnvelope | null> {
+  try {
+    // Call as a method on query.studies so `this` inside search is bound (do not extract the function).
+    if (dataSource?.query?.studies?.search) {
+      const rows = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
+      const row = rows?.[0];
+      if (row) {
+        const modalitiesToCheck = await resolveStudyModalities(
+          StudyInstanceUID,
+          dataSource,
+          row.modalities
+        );
+
+        return {
+          modalitiesToCheck,
+          study: { ...row, modalities: modalitiesToCheck },
+        };
+      }
+    }
+  } catch (_e) {
+    // Fallback to locally loaded metadata or series QIDO
+  }
+
+  const fromMetadataStore = buildStudyEnvelopeFromMetadataStore(StudyInstanceUID);
+  if (fromMetadataStore?.modalitiesToCheck) {
+    return fromMetadataStore;
+  }
+
+  const modalitiesToCheck = await resolveStudyModalities(StudyInstanceUID, dataSource);
+  if (!modalitiesToCheck) {
+    return fromMetadataStore;
+  }
+
+  if (fromMetadataStore) {
+    return {
+      modalitiesToCheck,
+      study: { ...fromMetadataStore.study, modalities: modalitiesToCheck },
+    };
+  }
+
+  return {
+    modalitiesToCheck,
+    study: {
+      studyInstanceUid: StudyInstanceUID,
+      studyInstanceUID: StudyInstanceUID,
+      StudyInstanceUID,
+      modalities: modalitiesToCheck,
+    },
   };
 }
 
