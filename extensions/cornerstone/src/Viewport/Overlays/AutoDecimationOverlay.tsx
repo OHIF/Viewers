@@ -19,7 +19,6 @@ function AutoDecimationOverlay({
   const info = options?.autoDecimationInfo;
   const viewportType = options?.viewportType;
   const isVolume =
-    viewportType === 1 || viewportType === 2 || // Enums.ViewportType.ORTHOGRAPHIC, VOLUME_3D
     viewportType === 'orthographic' ||
     viewportType === 'volume3d';
 
