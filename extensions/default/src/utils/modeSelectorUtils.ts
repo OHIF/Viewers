@@ -1,6 +1,4 @@
-import { useMemo } from 'react';
-
-import { type ExtensionManager, DicomMetadataStore, utils } from '@ohif/core';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import { preserveQueryParameters } from '@ohif/app';
 
 const { formatPN } = utils;
@@ -49,8 +47,6 @@ export type ModeWithValidityChecker = {
 export type LoadedModeRouteHint = {
   routeName?: string | null | undefined;
 };
-
-type ExtensionManagerDataSources = Pick<ExtensionManager, 'getDataSources'>;
 
 /**
  * Normalizes a modalities string for comparison (e.g. path-like separators are unified).
@@ -207,8 +203,16 @@ function buildStudyEnvelopeFromMetadataStore(studyInstanceUID: string): StudyEnv
  */
 export async function fetchStudyEnvelope(
   StudyInstanceUID: string,
-  dataSource: DataSourceWithStudySearch | null | undefined
+  dataSource: DataSourceWithStudySearch | null | undefined,
+  options?: { preferLoadedMetadata?: boolean }
 ): Promise<StudyEnvelope | null> {
+  if (options?.preferLoadedMetadata) {
+    const fromMetadataStore = buildStudyEnvelopeFromMetadataStore(StudyInstanceUID);
+    if (fromMetadataStore) {
+      return fromMetadataStore;
+    }
+  }
+
   try {
     // Call as a method on query.studies so `this` inside search is bound (do not extract the function).
     if (dataSource?.query?.studies?.search) {
@@ -298,41 +302,87 @@ export function evaluateModeValidity(
   }
 }
 
+export type BuildModeSwitchSearchOptions = {
+  /** Query param keys to remove when switching modes. */
+  stripQueryParams?: ReadonlyArray<string>;
+  /** Sets the `datasources` query param (standard OHIF mode routes omit the data source path segment). */
+  dataSourceName?: string;
+};
+
 /**
- * From the current URL path, returns the segment that names the data source (the piece after the mode route), if any.
+ * Builds the query string for mode-switch links.
+ * Ensures StudyInstanceUIDs are present when provided explicitly for navigation.
  */
-export function getDataSourcePathSegment(
-  locationPathname: string,
-  loadedModes: ReadonlyArray<LoadedModeRouteHint | null | undefined> | undefined,
-  extensionManager: ExtensionManagerDataSources | null | undefined
-): string | undefined {
-  const routeNames = new Set((loadedModes || []).filter(Boolean).map(m => m?.routeName).filter(Boolean));
-  const segs = locationPathname.split('/').filter(Boolean);
+export function buildModeSwitchSearch(
+  locationSearch: string,
+  studyInstanceUIDs?: string | ReadonlyArray<string>,
+  options: BuildModeSwitchSearchOptions = {}
+): string {
+  const next = new URLSearchParams(locationSearch);
+  const current = new URLSearchParams(locationSearch);
 
-  const modeSegmentIndex = segs.findIndex(seg => routeNames.has(seg));
-  if (modeSegmentIndex === -1 || modeSegmentIndex + 1 >= segs.length) {
-    return undefined;
+  preserveQueryParameters(next);
+
+  current.getAll('datasources').forEach(value => {
+    if (value && !next.getAll('datasources').includes(value)) {
+      next.append('datasources', value);
+    }
+  });
+
+  options.stripQueryParams?.forEach(key => {
+    next.delete(key);
+  });
+
+  if (options.dataSourceName) {
+    next.delete('datasources');
+    next.set('datasources', options.dataSourceName);
   }
 
-  const candidate = segs[modeSegmentIndex + 1];
-  if (
-    candidate &&
-    !routeNames.has(candidate) &&
-    extensionManager?.getDataSources?.(candidate)?.length
-  ) {
-    return candidate;
+  const uidsFromArg = (
+    studyInstanceUIDs ?
+      Array.isArray(studyInstanceUIDs) ?
+        studyInstanceUIDs
+      : [studyInstanceUIDs]
+    : []
+  ).filter(Boolean);
+
+  const existingUids = [...current.getAll('StudyInstanceUIDs'), ...current.getAll('studyInstanceUIDs')];
+
+  const uidsToSet = uidsFromArg.length > 0 ? uidsFromArg : existingUids;
+
+  if (uidsToSet.length > 0) {
+    next.delete('StudyInstanceUIDs');
+    next.delete('studyInstanceUIDs');
+    uidsToSet.forEach(uid => next.append('StudyInstanceUIDs', uid));
   }
-  return undefined;
+
+  const s = next.toString();
+  return s ? `?${s}` : '';
 }
 
+export type BuildModeSwitchHrefOptions = BuildModeSwitchSearchOptions;
+
 /**
- * React hook: builds the search string to append to mode-switch links while keeping viewer-wide query params.
+ * Full path + query for mode-switch navigation (string form for React Router `Link`).
+ * Uses the single-segment mode route (e.g. `/segmentation`) plus `datasources` in the query string.
  */
-export function usePreservedViewerSearch(locationSearch: string): string {
-  return useMemo(() => {
-    const next = new URLSearchParams(locationSearch);
-    preserveQueryParameters(next);
-    const s = next.toString();
-    return s ? `?${s}` : '';
-  }, [locationSearch]);
+export function buildModeSwitchHref(
+  routeName: string,
+  locationSearch: string,
+  studyInstanceUIDs?: string | ReadonlyArray<string>,
+  options: BuildModeSwitchHrefOptions = {}
+): string {
+  const search = buildModeSwitchSearch(locationSearch, studyInstanceUIDs, options);
+
+  return `/${routeName}${search}`;
+}
+
+/** Compares the current viewer location to a mode-switch href string. */
+export function isCurrentModeHref(
+  pathname: string,
+  search: string,
+  modeHref: string
+): boolean {
+  const current = `${pathname}${search || ''}`;
+  return current === modeHref || pathname === modeHref.split('?')[0];
 }

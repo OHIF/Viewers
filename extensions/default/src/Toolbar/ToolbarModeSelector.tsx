@@ -18,30 +18,35 @@ import { CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
+import type { ModeSelectorCustomization } from '../customizations/modeSelectorCustomization.types';
+import { defaultModeSelectorCustomization } from '../customizations/modeSelectorCustomization.types';
 import {
+  buildModeSwitchHref,
   evaluateModeValidity,
   fetchStudyEnvelope,
-  getDataSourcePathSegment,
+  isCurrentModeHref,
   modeIsValidForOrdering,
   type StudyEnvelope,
-  usePreservedViewerSearch,
   type LoadedModeRouteHint,
 } from '../utils/modeSelectorUtils';
-
-const HIDDEN_MODE_IDS = new Set(['ohif-gcp-mode']);
 
 type ToolbarMenuRow = {
   mode: LoadedModeRouteHint & { displayName?: string; hide?: boolean; isValidMode?: unknown };
   validity: Exclude<ReturnType<typeof evaluateModeValidity>, undefined>;
-  modeHref: { pathname: string; search: string };
+  modeHref: string;
   isCurrentRoute: boolean;
   isDisabled: boolean;
   label: string;
 };
 
 function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManager }) {
-  const extensionManager = servicesManager.services.customizationService.extensionManager;
+  const { customizationService } = servicesManager.services;
+  const extensionManager = customizationService.extensionManager;
   const { t } = useTranslation('ToolbarModeSelector');
+
+  const modeSelectorCustomization = (customizationService.getCustomization(
+    'ohif.modeSelector'
+  ) ?? defaultModeSelectorCustomization) as ModeSelectorCustomization;
 
   const labels = useMemo(
     () => ({
@@ -56,19 +61,54 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
   );
 
   const location = useLocation();
-  const preservedSearch = usePreservedViewerSearch(location.search);
 
   const [appConfig] = useAppConfig();
   const loadedModes = appConfig?.loadedModes || [];
   const groupEnabledModesFirst = appConfig?.groupEnabledModesFirst === true;
+  const defaultDataSourceName = appConfig?.defaultDataSourceName as string | undefined;
 
   const imageViewer = useImageViewer();
   const StudyInstanceUIDs = imageViewer?.StudyInstanceUIDs;
   const primaryUid = Array.isArray(StudyInstanceUIDs) ? StudyInstanceUIDs[0] : undefined;
 
+  const studyUidsForNavigation = useMemo(() => {
+    if (modeSelectorCustomization.resolveStudyUidsForNavigation) {
+      return modeSelectorCustomization.resolveStudyUidsForNavigation({
+        studyInstanceUIDsFromViewer:
+          Array.isArray(StudyInstanceUIDs) && StudyInstanceUIDs.length > 0 ?
+            StudyInstanceUIDs
+          : undefined,
+        pathname: location.pathname,
+        search: location.search,
+      });
+    }
+
+    return Array.isArray(StudyInstanceUIDs) && StudyInstanceUIDs.length > 0 ?
+        StudyInstanceUIDs
+      : undefined;
+  }, [
+    StudyInstanceUIDs,
+    location.pathname,
+    location.search,
+    modeSelectorCustomization.resolveStudyUidsForNavigation,
+  ]);
+
   const [studyEnvelope, setStudyEnvelope] = useState<StudyEnvelope | null>(null);
   const [metadataLoadFinished, setMetadataLoadFinished] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const fetchStudyEnvelopeOptions = useMemo(
+    () =>
+      modeSelectorCustomization.fetchStudyEnvelopeOptions?.({
+        pathname: location.pathname,
+        search: location.search,
+      }) ?? {},
+    [
+      location.pathname,
+      location.search,
+      modeSelectorCustomization.fetchStudyEnvelopeOptions,
+    ]
+  );
 
   const dataSource = useMemo(
     () =>
@@ -88,7 +128,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
         return;
       }
 
-      const env = await fetchStudyEnvelope(primaryUid, dataSource);
+      const env = await fetchStudyEnvelope(primaryUid, dataSource, fetchStudyEnvelopeOptions);
 
       if (!cancelled) {
         setStudyEnvelope(env);
@@ -101,10 +141,10 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
     return () => {
       cancelled = true;
     };
-  }, [primaryUid, dataSource]);
+  }, [fetchStudyEnvelopeOptions, primaryUid, dataSource]);
 
   const modesForToolbar = useMemo(
-    () => loadedModes.filter(m => !m.hide && !HIDDEN_MODE_IDS.has(m.id)),
+    () => loadedModes.filter(m => !m.hide),
     [loadedModes]
   );
 
@@ -128,11 +168,23 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
 
   const buildHrefForMode = useCallback(
     (routeName: string) => {
-      const dsSuffix = getDataSourcePathSegment(location.pathname, loadedModes, extensionManager);
-      const pathname = `/${routeName}${dsSuffix ? `/${dsSuffix}` : ''}`;
-      return { pathname, search: preservedSearch };
+      const switchOptions =
+        modeSelectorCustomization.augmentBuildModeSwitchOptions?.({
+          targetRouteName: routeName,
+          pathname: location.pathname,
+          search: location.search,
+          defaultDataSourceName,
+        }) ?? {};
+
+      return buildModeSwitchHref(routeName, location.search, studyUidsForNavigation, switchOptions);
     },
-    [extensionManager, loadedModes, location.pathname, preservedSearch]
+    [
+      defaultDataSourceName,
+      location.pathname,
+      location.search,
+      modeSelectorCustomization.augmentBuildModeSwitchOptions,
+      studyUidsForNavigation,
+    ]
   );
 
   const closePopover = useCallback(() => {
@@ -154,13 +206,20 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
         continue;
       }
       const modeHref = buildHrefForMode(routeName);
-      const isCurrentRoute = location.pathname === modeHref.pathname;
+      const isCurrentRoute = isCurrentModeHref(location.pathname, location.search, modeHref);
       const isDisabled = validity.valid !== true || isCurrentRoute;
       const label = mode.displayName || routeName;
       rows.push({ mode, validity, modeHref, isCurrentRoute, isDisabled, label });
     }
     return rows;
-  }, [buildHrefForMode, comparableModesList, labels.unableToEvaluate, location.pathname, studyEnvelope]);
+  }, [
+    buildHrefForMode,
+    comparableModesList,
+    labels.unableToEvaluate,
+    location.pathname,
+    location.search,
+    studyEnvelope,
+  ]);
 
   if (modesForToolbar.length <= 1) {
     return null;
