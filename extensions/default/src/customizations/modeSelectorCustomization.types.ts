@@ -20,8 +20,6 @@ export type ModeSelectorFetchEnvelopeContext = {
 
 /** Optional hooks for deployments that use non-standard mode URLs (e.g. GCP Healthcare paths). */
 export type ModeSelectorCustomization = {
-  /** Mode ids omitted from the toolbar mode selector. */
-  hiddenModeIds?: string[];
   resolveStudyUidsForNavigation?: (
     context: ModeSelectorStudyUidsContext
   ) => string[] | undefined;

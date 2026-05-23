@@ -48,11 +48,6 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
     'ohif.modeSelector'
   ) ?? defaultModeSelectorCustomization) as ModeSelectorCustomization;
 
-  const hiddenModeIds = useMemo(
-    () => new Set(modeSelectorCustomization.hiddenModeIds ?? []),
-    [modeSelectorCustomization.hiddenModeIds]
-  );
-
   const labels = useMemo(
     () => ({
       browseModes: t('Browse modes'),
@@ -149,8 +144,8 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
   }, [fetchStudyEnvelopeOptions, primaryUid, dataSource]);
 
   const modesForToolbar = useMemo(
-    () => loadedModes.filter(m => !m.hide && !hiddenModeIds.has(m.id)),
-    [hiddenModeIds, loadedModes]
+    () => loadedModes.filter(m => !m.hide),
+    [loadedModes]
   );
 
   const comparableModesList = useMemo(() => {
