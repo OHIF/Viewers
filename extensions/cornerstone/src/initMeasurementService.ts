@@ -1,4 +1,4 @@
-import { eventTarget, Types } from '@cornerstonejs/core';
+import { eventTarget, Types, utilities as csUtils } from '@cornerstonejs/core';
 import { Enums, annotation, cancelActiveManipulations } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
@@ -16,6 +16,8 @@ import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledEle
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
 const csToolsEvents = Enums.Events;
+
+const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 
 const initMeasurementService = (
   measurementService,
@@ -354,7 +356,7 @@ const connectMeasurementServiceToTools = ({
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
 
-  measurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
+  measurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements, trackingContext }) => {
     if (!Object.keys(measurements).length) {
       return;
     }
@@ -373,6 +375,29 @@ const connectMeasurementServiceToTools = ({
         options: { deleting: true },
       });
     }
+
+    // If tracking context was provided, push a memo that keeps XState in sync with
+    // Cornerstone's annotation history across unlimited undo/redo cycles:
+    //   undo  → re-populate trackedStudy/trackedSeries so the panel reflects the
+    //           restored annotations.
+    //   redo  → wipe trackedStudy/trackedSeries because the annotations have been
+    //           re-deleted by their own Cornerstone memos; no measurements are
+    //           deleted here (they are already gone), so CLEAR_TRACKING_CONTEXT is
+    //           used instead of UNTRACK_ALL to avoid a double-delete.
+    if (trackingContext) {
+      DefaultHistoryMemo.push({
+        id: csUtils.uuidv4(),
+        operationType: 'trackingState',
+        restoreMemo(undo?: boolean) {
+          if (undo === true) {
+            commandsManager.run('restoreTrackedSeries', trackingContext);
+          } else if (undo === false) {
+            commandsManager.run('clearTrackedSeries');
+          }
+        },
+      });
+    }
+
     commandsManager.run('endRecordingForAnnotationGroup');
 
     // trigger a render

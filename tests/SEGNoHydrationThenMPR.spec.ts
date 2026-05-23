@@ -11,17 +11,26 @@ test('should launch MPR with unhydrated SEG', async ({
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR
+  );
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR
+  );
 });
