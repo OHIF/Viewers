@@ -75,4 +75,19 @@ describe('applyServiceUrls', () => {
     expect(wadoClient.qidoURL).toBe('https://server.com/qidors');
     expect(wadoClient.stowURL).toBe('https://server.com/qidors');
   });
+
+  it('should apply stowRoot to wadoClient even when qidoRoot is absent', () => {
+    const qidoClient = { wadoURL: 'https://server.com/default', stowURL: 'https://server.com/default' };
+    const wadoClient = { qidoURL: 'https://server.com/default', stowURL: 'https://server.com/default' };
+
+    applyServiceUrls(qidoClient, wadoClient, {
+      wadoRoot: 'https://server.com/wadors',
+      stowRoot: 'https://server.com/stowrs',
+    });
+
+    expect(qidoClient.wadoURL).toBe('https://server.com/wadors');
+    expect(qidoClient.stowURL).toBe('https://server.com/stowrs');
+    expect(wadoClient.qidoURL).toBe('https://server.com/default');
+    expect(wadoClient.stowURL).toBe('https://server.com/stowrs');
+  });
 });

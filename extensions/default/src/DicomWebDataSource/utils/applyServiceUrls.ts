@@ -22,4 +22,9 @@ export function applyServiceUrls(
     wadoClient.qidoURL = config.qidoRoot;
     wadoClient.stowURL = effectiveStowRoot;
   }
+
+  if (config.stowRoot !== undefined) {
+    qidoClient.stowURL = config.stowRoot;
+    wadoClient.stowURL = config.stowRoot;
+  }
 }
