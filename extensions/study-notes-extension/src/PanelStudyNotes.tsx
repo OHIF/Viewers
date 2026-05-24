@@ -621,6 +621,12 @@ const PanelStudyNotes = ({ servicesManager }) => {
     );
   }
 
+  const showTemplateSection =
+    viewerMode === 'lab_booking' &&
+    (templates.length > 1 ||
+      actionRequired?.type === 'create_template' ||
+      Boolean(actionRequired?.create_template_url));
+
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-black pb-8 text-white">
       <div className="p-4">
@@ -734,55 +740,51 @@ const PanelStudyNotes = ({ servicesManager }) => {
           </div>
         )}
 
-        {viewerMode === 'lab_booking' &&
-          (templates.length > 0 ||
-            selectedTemplate ||
-            actionRequired?.type === 'select_template' ||
-            actionRequired?.type === 'create_template') && (
-            <div className="bg-gray-950/70 mb-4 rounded border border-gray-800 p-3">
-              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                Report Template
-              </div>
-
-              {templates.length > 1 && (
-                <div className="space-y-2">
-                  {templates.map(template => {
-                    const active = template.id === selectedTemplateId;
-                    return (
-                      <button
-                        key={template.id}
-                        type="button"
-                        onClick={() => handleTemplateSelection(template)}
-                        className={`block w-full rounded border p-3 text-left transition-colors ${
-                          active
-                            ? 'bg-blue-950/40 border-blue-500'
-                            : 'border-gray-800 bg-gray-900 hover:border-blue-800'
-                        }`}
-                      >
-                        <div className="text-sm font-semibold text-white">{template.name}</div>
-                        {template.short_description ? (
-                          <div className="mt-1 text-xs text-gray-400">
-                            {template.short_description}
-                          </div>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {actionRequired?.create_template_url && (
-                <button
-                  onClick={() =>
-                    window.open(actionRequired.create_template_url, '_blank', 'noopener,noreferrer')
-                  }
-                  className="mt-3 rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
-                >
-                  Create Template
-                </button>
-              )}
+        {showTemplateSection && (
+          <div className="bg-gray-950/70 mb-4 rounded border border-gray-800 p-3">
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Report Template
             </div>
-          )}
+
+            {templates.length > 1 && (
+              <div className="space-y-2">
+                {templates.map(template => {
+                  const active = template.id === selectedTemplateId;
+                  return (
+                    <button
+                      key={template.id}
+                      type="button"
+                      onClick={() => handleTemplateSelection(template)}
+                      className={`block w-full rounded border p-3 text-left transition-colors ${
+                        active
+                          ? 'bg-blue-950/40 border-blue-500'
+                          : 'border-gray-800 bg-gray-900 hover:border-blue-800'
+                      }`}
+                    >
+                      <div className="text-sm font-semibold text-white">{template.name}</div>
+                      {template.short_description ? (
+                        <div className="mt-1 text-xs text-gray-400">
+                          {template.short_description}
+                        </div>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {actionRequired?.create_template_url && (
+              <button
+                onClick={() =>
+                  window.open(actionRequired.create_template_url, '_blank', 'noopener,noreferrer')
+                }
+                className="mt-3 rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+              >
+                Create Template
+              </button>
+            )}
+          </div>
+        )}
         {selectedTemplate && (
           <div className="m-4">
             <div className="text-sm font-semibold text-blue-100">{selectedTemplate.name}</div>
