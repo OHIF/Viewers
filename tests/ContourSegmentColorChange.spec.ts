@@ -49,7 +49,7 @@ test('opens the color edit popup when "Change Color" is clicked', async ({
   );
 });
 
-test('changes the contour color when the user saves', async ({
+test('changes the contour color when the user saves the edits', async ({
   viewportPageObject,
   rightPanelPageObject,
   DOMOverlayPageObject,
@@ -59,7 +59,7 @@ test('changes the contour color when the user saves', async ({
   await segment.toggleVisibility();
   await segment.click();
 
-  await expect(segment.colorSwatch).toHaveCSS('background-color',THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB);
+  await expect(segment.rowDataColorHex).toHaveCSS('background-color',THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB);
 
   const svgStrokeAttributeBeforeColorChange = await getSvgAttribute({
     viewportPageObject,
@@ -75,7 +75,7 @@ test('changes the contour color when the user saves', async ({
   await segment.actions.changeColor(NEW_HEX);
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.locator).toBeHidden();
-  await expect(segment.colorSwatch).toHaveCSS('background-color', NEW_HEX_CSS_RGB);
+  await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_HEX_CSS_RGB);
 
   //check svg path stroke attribute is updated with new color
   const svgStrokeAttributeAfterColorChange = await getSvgAttribute({
@@ -99,7 +99,7 @@ test('does not change the contour color when the user cancels', async ({
   await segment.toggleVisibility();
   await segment.click();
 
-  await expect(segment.colorSwatch).toHaveCSS(
+  await expect(segment.rowDataColorHex).toHaveCSS(
     'background-color',
     THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB
   );
@@ -117,7 +117,7 @@ test('does not change the contour color when the user cancels', async ({
   await segment.actions.cancelChangeColor(NEW_HEX);
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.locator).toBeHidden();
-  await expect(segment.colorSwatch).toHaveCSS('background-color', THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB);
+  await expect(segment.rowDataColorHex).toHaveCSS('background-color', THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB);
 
   //check svg path stroke attribute is updated with new color
   const svgStrokeAttributeAfterColorChange = await getSvgAttribute({
@@ -141,7 +141,7 @@ test('duplicated contour will be generated with a new color', async ({
   await segment0.toggleVisibility();
   await segment0.click();
 
-   await expect(segment0.colorSwatch).toHaveCSS(
+   await expect(segment0.rowDataColorHex).toHaveCSS(
     'background-color',
     THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB
   );
@@ -169,7 +169,7 @@ test('duplicated contour will be generated with a new color', async ({
     attributeName: 'stroke',
   });
 
-  await expect(duplicateSegment.colorSwatch).not.toHaveCSS(
+  await expect(duplicateSegment.rowDataColorHex).not.toHaveCSS(
     'background-color',
     THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB
   );

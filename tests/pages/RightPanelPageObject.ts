@@ -104,8 +104,8 @@ export class RightPanelPageObject {
       get title() {
         return row.getByTestId('data-row-title');
       },
-      get colorSwatch() {
-        return row.getByTestId('data-row-color');
+      get rowDataColorHex() {
+        return row.getByTestId('data-row-colorhex');
       },
       click: async () => {
         await row.getByTestId('data-row-title').click();

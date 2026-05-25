@@ -275,7 +275,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               <span
                 className="ml-2 h-2 w-2 rounded-full"
                 style={{ backgroundColor: colorHex }}
-                data-cy="data-row-color"
+                data-cy="data-row-colorhex"
               ></span>
             </div>
           )}
