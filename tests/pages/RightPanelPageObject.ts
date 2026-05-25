@@ -227,6 +227,54 @@ export class RightPanelPageObject {
       select: async () => {
         await menuButton.click();
       },
+      get config() {
+        const configToggle = page.getByTestId('segmentation-config-toggle-Contour');
+        return {
+          toggle: {
+            locator: configToggle,
+            click: async () => {
+              await configToggle.click();
+            },
+          },
+          display: {
+            fillAndOutline: async () => {
+              await page
+                .getByTestId(`segmentation-config-display-fill-and-outline-Contour`)
+                .click();
+            },
+            outline: async () => {
+              await page.getByTestId(`segmentation-config-display-outline-Contour`).click();
+            },
+            fill: async () => {
+              await page.getByTestId(`segmentation-config-display-fill-Contour`).click();
+            },
+          },
+        };
+      },
+      get combineContours() {
+        return {
+          open: async () => {
+            await page.getByTestId('LogicalContourOperations').click();
+          },
+          selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
+            await page.getByTestId(`logical-contour-operation-${operation}`).click();
+          },
+          selectSegmentA: async (label: string) => {
+            await page.getByTestId('logical-contour-segment-a-trigger').click();
+            await page.getByRole('option', { name: label }).click();
+          },
+          selectSegmentB: async (label: string) => {
+            await page.getByTestId('logical-contour-segment-b-trigger').click();
+            await page.getByRole('option', { name: label }).click();
+          },
+          apply: async () => {
+            await page.getByTestId('apply-logical-contour-operation').click();
+          },
+          enableCreateNewSegment: async () => {
+            await page.getByTestId('logical-contour-create-new-segment-switch').click();
+          },
+        };
+      },
     };
   }
   get labelMapSegmentationPanel() {
