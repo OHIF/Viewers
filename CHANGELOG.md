@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.81...v3.13.0-beta.82) (2026-05-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.80...v3.13.0-beta.81) (2026-05-21)
+
+
+### Features
+
+* **tests:** Add tests for duplicating contour segments ([#6002](https://github.com/OHIF/Viewers/issues/6002)) ([2258c79](https://github.com/OHIF/Viewers/commit/2258c7957a18ed0f1a75d2bd5d379006797b2882))
+
+
+
+
+
 # [3.13.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.79...v3.13.0-beta.80) (2026-05-20)
 
 **Note:** Version bump only for package ohif-monorepo-root
