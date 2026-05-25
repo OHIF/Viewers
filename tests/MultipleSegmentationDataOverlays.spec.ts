@@ -49,6 +49,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
   });
 
@@ -58,6 +59,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
   });
 
@@ -70,6 +72,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaysDisplayed,
   });
 
@@ -85,6 +88,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaySEGsAndRTDisplayed,
   });
 
@@ -94,6 +98,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaySEGsAndRTDisplayed,
   });
 });
