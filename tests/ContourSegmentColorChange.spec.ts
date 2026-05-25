@@ -33,14 +33,13 @@ test('opens the color edit popup when "Change Color" is clicked', async ({
   rightPanelPageObject,
   DOMOverlayPageObject,
 }) => {
-  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
   const segment = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
   await segment.toggleVisibility();
 
   await segment.actions.openChangeColor();
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.locator).toBeVisible();
-  await expect(DOMOverlayPageObject.dialog.title).toContainText('Segment Color');
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Segment Color');
   await expect(DOMOverlayPageObject.dialog.colorPicker.saveButton).toBeVisible();
   await expect(DOMOverlayPageObject.dialog.colorPicker.cancelButton).toBeVisible();
 
