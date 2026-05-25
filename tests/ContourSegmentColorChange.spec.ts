@@ -23,10 +23,6 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
 
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await waitForViewportsRendered(page);
-
-  const hydrationCycle = waitForViewportRenderCycle(page);
-  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-  await hydrationCycle;
 });
 
 test('opens the color edit popup when "Change Color" is clicked', async ({
