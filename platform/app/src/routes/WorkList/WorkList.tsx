@@ -2,10 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { useAppConfig } from '@state';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
-import { useStudyListStateSync } from '../../hooks';
+import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
 import { StudyList, Icons, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
-import { useWorkListToolbarActions } from './useWorkListToolbarActions';
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 import { SidePanelPreview } from './SidePanelPreview';
 

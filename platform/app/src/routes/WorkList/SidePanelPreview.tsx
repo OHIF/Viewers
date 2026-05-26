@@ -1,14 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 
-import { useAppConfig } from '@state';
-import { utils } from '@ohif/core';
-import { thumbnailNoImageModalities } from '@ohif/core/src/utils/thumbnailNoImageModalities';
-import {
-  StudyList,
-  PreviewThumbnailStatusState,
-  type PreviewThumbnailStatus,
-  type StudyRow,
-} from '@ohif/ui-next';
+import { StudyList, type StudyRow } from '@ohif/ui-next';
+import { useSeriesFetch } from '../../hooks';
 
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 
@@ -28,13 +21,7 @@ export function SidePanelPreview({
   selected: StudyRow | null;
   servicesManager: AppTypes.ServicesManager;
 }) {
-  const [series, setSeries] = useState<any[]>([]);
-  // Blob URLs created by this panel (via the `fetch` thumbnail strategy).
-  // Tracked so we can URL.revokeObjectURL them on study change / unmount —
-  // otherwise every fetched series leaks one blob worth of memory.
-  const ownedBlobUrlsRef = useRef<string[]>([]);
-  const [appConfig] = useAppConfig();
-  const { sortBySeriesDate } = utils as any;
+  const { series, onThumbnailImageError } = useSeriesFetch({ dataSource, selected });
   const { customizationService } = servicesManager.services;
   const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
   const thumbnailRequestStrategy =
@@ -54,159 +41,11 @@ export function SidePanelPreview({
     : 'all';
   const seriesView: PreviewSeriesView = forceListView ? 'list' : configuredSeriesView;
 
-  useEffect(() => {
-    // Drives cancellation when the selection changes or the panel unmounts: stops the
-    // worker pool from scheduling new fetches and aborts in-flight requests that honor
-    // AbortSignal (the `fetch` thumbnail strategy; the bulkDataURI XHR path cannot abort).
-    const abortController = new AbortController();
-    const { signal } = abortController;
-
-    const run = async () => {
-      const studyInstanceUID = (selected as any)?.studyInstanceUid;
-      if (!studyInstanceUID) {
-        setSeries([]);
-        return;
-      }
-
-      try {
-        const seriesList = await dataSource.query.series.search(studyInstanceUID);
-        if (signal.aborted) {
-          return;
-        }
-
-        const sortedSeriesList = sortBySeriesDate?.(seriesList) ?? [];
-        const normalizedSeriesList = sortedSeriesList.map(row => {
-          const modality = String(row.modality || row.Modality || '').toUpperCase();
-          const thumbnailStatus: PreviewThumbnailStatus = thumbnailNoImageModalities.includes(
-            modality
-          )
-            ? { status: PreviewThumbnailStatusState.NotApplicable }
-            : { status: PreviewThumbnailStatusState.Loading };
-          return {
-            ...row,
-            thumbnailStatus,
-          };
-        });
-
-        setSeries(normalizedSeriesList);
-
-        const fetchTargets = normalizedSeriesList.filter((row: any) => {
-          const seriesUID = row.seriesInstanceUid || row.SeriesInstanceUID;
-          if (!seriesUID) {
-            return false;
-          }
-          return row.thumbnailStatus?.status !== PreviewThumbnailStatusState.NotApplicable;
-        });
-
-        // Bound parallel thumbnail fetches so studies with many series don't
-        // saturate the connection and stall later viewer navigation. Mirrors
-        // CS3D's imageLoadPoolManager.maxNumRequests.thumbnail.
-        const maxParallelRequests = Math.max(1, appConfig?.maxNumRequests?.thumbnail ?? 5);
-        let nextIndex = 0;
-        const fetchThumbnail = async (row: (typeof fetchTargets)[number]) => {
-          const seriesUID = row.seriesInstanceUid || row.SeriesInstanceUID;
-          let src: string | null = null;
-          try {
-            const getThumbnailSrc = dataSource?.retrieve?.getGetThumbnailSrc?.(
-              { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
-              undefined
-            );
-            src = (await getThumbnailSrc?.({ signal })) ?? null;
-          } catch {
-            src = null;
-          }
-          // Track ownership of blob URLs before the abort check so URLs that
-          // arrive just after abort are still revoked on cleanup.
-          if (src?.startsWith('blob:')) {
-            ownedBlobUrlsRef.current.push(src);
-          }
-          if (signal.aborted) {
-            return;
-          }
-          setSeries(prev =>
-            prev.map(seriesItem => {
-              const itemUID = seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID;
-              if (itemUID !== seriesUID) {
-                return seriesItem;
-              }
-              return {
-                ...seriesItem,
-                thumbnailStatus: src
-                  ? { status: PreviewThumbnailStatusState.Ready, src }
-                  : { status: PreviewThumbnailStatusState.NotAvailable },
-              };
-            })
-          );
-        };
-        const thumbnailWorker = async () => {
-          while (!signal.aborted) {
-            const idx = nextIndex++;
-            if (idx >= fetchTargets.length) {
-              return;
-            }
-            await fetchThumbnail(fetchTargets[idx]);
-          }
-        };
-        await Promise.all(
-          Array.from(
-            { length: Math.min(maxParallelRequests, fetchTargets.length) },
-            thumbnailWorker
-          )
-        );
-      } catch (e) {
-        if (!signal.aborted) {
-          console.warn('Failed to load preview series/thumbnails for selected study.', e);
-          setSeries([]);
-        }
-      }
-    };
-
-    void run();
-
-    return () => {
-      abortController.abort();
-      // Revoke blob URLs this run created. Safe even though the old series
-      // may still be in the DOM briefly: revokeObjectURL only invalidates
-      // future loads, the already-rendered <img> keeps its pixels.
-      const urls = ownedBlobUrlsRef.current;
-      ownedBlobUrlsRef.current = [];
-      urls.forEach(url => {
-        try {
-          URL.revokeObjectURL(url);
-        } catch {}
-      });
-    };
-  }, [dataSource, selected, appConfig?.maxNumRequests?.thumbnail]);
-
-  const handleThumbnailImageError = useCallback((seriesUID: string) => {
-    setSeries(prevSeriesList =>
-      prevSeriesList.map(seriesItem => {
-        const seriesItemUID = seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID;
-        if (seriesItemUID !== seriesUID) {
-          return seriesItem;
-        }
-        const thumbnailStatus = seriesItem.thumbnailStatus as PreviewThumbnailStatus | undefined;
-        if (
-          thumbnailStatus?.status === PreviewThumbnailStatusState.Ready &&
-          thumbnailStatus.src?.startsWith('blob:')
-        ) {
-          try {
-            URL.revokeObjectURL(thumbnailStatus.src);
-          } catch {}
-        }
-        return {
-          ...seriesItem,
-          thumbnailStatus: { status: PreviewThumbnailStatusState.NotAvailable },
-        };
-      })
-    );
-  }, []);
-
   const previewProps: PreviewContentProps = {
     study: selected as StudyRow | null,
     series,
     seriesView,
-    onThumbnailImageError: handleThumbnailImageError,
+    onThumbnailImageError,
   };
 
   const renderPreviewContent = customizationService.getCustomization('workList.renderPreviewContent');
