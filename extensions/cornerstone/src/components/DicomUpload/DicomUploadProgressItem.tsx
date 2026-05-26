@@ -60,11 +60,11 @@ const DicomUploadProgressItem = memo(
             />
           );
         case UploadStatus.InProgress:
-          return <Icons.ByName name="icon-transferring" className="text-highlight" />;
+          return <Icons.ByName name="icon-transferring" />;
         case UploadStatus.Failed:
-          return <Icons.ByName name="icon-alert-small" className="text-destructive" />;
+          return <Icons.ByName name="icon-alert-small" />;
         case UploadStatus.Cancelled:
-          return <Icons.ByName name="icon-alert-outline" className="text-highlight" />;
+          return <Icons.ByName name="icon-alert-outline" />;
         default:
           return <></>;
       }

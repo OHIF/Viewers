@@ -8,12 +8,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       className="toaster group"
-      loadingIcon={<Icons.LoadingSpinner className="text-highlight" />}
+      loadingIcon={<Icons.LoadingSpinner />}
       icons={{
         warning: <Icons.StatusWarning />,
         info: <Icons.Info className="text-secondary-foreground" />,
         success: <Icons.StatusSuccess />,
-        error: <Icons.StatusError className="text-destructive" />,
+        error: <Icons.StatusError />,
       }}
       theme="dark"
       richColors="true"

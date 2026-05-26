@@ -10,7 +10,7 @@ export const AlertOutline = (props: IconProps) => (
     {...props}
   >
     <g
-      stroke="currentColor"
+      stroke="#5ACCE6"
       fill="none"
       fillRule="evenodd"
       strokeLinecap="round"

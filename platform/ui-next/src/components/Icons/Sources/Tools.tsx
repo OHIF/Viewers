@@ -76,7 +76,7 @@ export const ToolLayout = (props: IconProps) => (
         <g
           id="gear"
           transform="translate(21.0876, 17.2796) rotate(-20) translate(-21.0876, -17.2796)translate(15.9634, 11.5127)"
-          stroke="hsl(var(--primary))"
+          stroke="#348CFD"
           strokeLinejoin="round"
           strokeWidth="1.25"
         >
@@ -1825,7 +1825,7 @@ export const ToolLayoutDefault = (props: IconProps) => (
         <g
           id="gear"
           transform="translate(21.0876, 17.2796) rotate(-20) translate(-21.0876, -17.2796)translate(15.9634, 11.5127)"
-          stroke="hsl(var(--primary))"
+          stroke="#348CFD"
           strokeLinejoin="round"
           strokeWidth="1.25"
         >

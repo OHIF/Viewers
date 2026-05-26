@@ -15,8 +15,8 @@ export const StatusTracking = (props: IconProps) => (
     >
       <path d="M0 0h16v16H0z" />
       <rect
-        stroke="currentColor"
-        fill="currentColor"
+        stroke="#5ACCE6"
+        fill="#5ACCE6"
         x=".5"
         y=".5"
         width="15"

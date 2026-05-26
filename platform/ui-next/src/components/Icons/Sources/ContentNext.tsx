@@ -20,7 +20,7 @@ export const ContentNext = (props: IconProps) => (
       <g
         id="Artboard"
         transform="translate(-460, -343)"
-        fill="currentColor"
+        fill="#FFFFFF"
       >
         <polygon
           id="chevron-next"

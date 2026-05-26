@@ -1,5 +1,5 @@
 .loading {
-  background-color: hsl(var(--muted));
+  background-color: #091731;
   height: 8px;
   border-radius: 4px;
   overflow: hidden;
