@@ -92,7 +92,10 @@ function promptHydrationDialog({
         callback();
       });
 
-      if (type === HydrationType.SEG || type === HydrationType.RTSTRUCT) {
+      if (
+        (type === HydrationType.SEG || type === HydrationType.RTSTRUCT) &&
+        cornerstoneViewportService?.getCornerstoneViewport
+      ) {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
