@@ -5,6 +5,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForPaintToSettle,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   expect,
@@ -57,6 +58,11 @@ test.describe('3D four up SEG hydration', async () => {
 
     // Wait until all viewports have finished rendering
     await viewportRenderCycle;
+    // 3D volume rendering keeps streaming refined geometry after the load
+    // status flips; give the GPU a window to present the final frame before
+    // screenshotting.
+    await page.waitForTimeout(2000);
+    await waitForPaintToSettle(page);
 
     await checkForScreenshot({
       page,

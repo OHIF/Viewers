@@ -3,6 +3,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForPaintToSettle,
   waitForViewportRenderCycle,
 } from './utils';
 
@@ -122,6 +123,12 @@ test('should hydrate in MPR correctly', async ({
   await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
   await seriesChangeRenderCycle;
+  // Series change unloads the old volume and progressively streams the new
+  // one; the wait helper resolves when loadStatus.loaded flips true, but the
+  // MPR mappers can still be sampling stale low-res frames for one tick.
+  // Give the streaming tail a chance to upload before screenshotting.
+  await page.waitForTimeout(2000);
+  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,
