@@ -38,10 +38,17 @@ export const URL_KEYS = {
 
 /**
  * Read a URL parameter by its canonical key, case-insensitively. Pass a
- * value from `URL_KEYS`.
+ * value from `URL_KEYS`. Matches regardless of how the params were
+ * constructed — callers don't need to pre-lowercase keys.
  */
 export function getUrlParam(params: URLSearchParams, key: string): string | null {
-  return params.get(key.toLowerCase());
+  const target = key.toLowerCase();
+  for (const [k, v] of params) {
+    if (k.toLowerCase() === target) {
+      return v;
+    }
+  }
+  return null;
 }
 
 /**
