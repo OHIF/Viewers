@@ -254,6 +254,7 @@ const DicomMicroscopyViewport = React.memo(
         </div>
         <div
           style={style}
+          data-viewportid={viewportId}
           ref={(ref: any) => {
             container.current = ref;
             resizeRef.current = ref;

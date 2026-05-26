@@ -13,10 +13,16 @@ test('should display the ellipse tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.ellipticalROI.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 446, y: 245 },
     { x: 508, y: 281 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.ellipse.ellipseDisplayedCorrectly);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.ellipse.ellipseDisplayedCorrectly
+  );
 });

@@ -55,6 +55,7 @@ export type SegmentationRepresentation = cstTypes.SegmentationRepresentation & {
   viewportId: string;
   id: string;
   label: string;
+  fallbackLabel?: string;
   styles: cstTypes.RepresentationStyle;
   segments: {
     [key: number]: SegmentRepresentation;
@@ -247,7 +248,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REMOVED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRemovedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -267,7 +268,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
-      this._onSegmentationRepresentationModifiedFromSource
+      this._onSegmentationRepresentationRemovedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -430,6 +431,7 @@ class SegmentationService extends PubSubService {
       },
       config: {
         label,
+        fallbackLabel: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         segments:
           options?.segments && Object.keys(options.segments).length > 0
             ? options.segments
@@ -583,6 +585,7 @@ class SegmentationService extends PubSubService {
       },
       config: {
         label: segDisplaySet.SeriesDescription,
+        fallbackLabel: `S:${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
         segments,
       },
     };
@@ -664,6 +667,7 @@ class SegmentationService extends PubSubService {
       },
       config: {
         label: rtDisplaySet.SeriesDescription,
+        fallbackLabel: `S:${rtDisplaySet.SeriesNumber} ${rtDisplaySet.Modality}`,
       },
     };
 
@@ -1284,14 +1288,14 @@ class SegmentationService extends PubSubService {
 
   /**
    * Clears segmentation representations from the viewport.
-   * Unlike removeSegmentationRepresentations, this doesn't update
+   * Unlike removeRepresentationsFromViewport, this doesn't update
    * removed display set and representation maps.
    * We track removed segmentations manually to avoid re-adding them
    * when the display set is added again.
    * @param viewportId - The viewport ID to clear segmentation representations from.
    */
   public clearSegmentationRepresentations(viewportId: string): void {
-    this.removeSegmentationRepresentations(viewportId);
+    this.removeRepresentationsFromViewport(viewportId);
   }
 
   /**
@@ -1307,7 +1311,7 @@ class SegmentationService extends PubSubService {
   }
 
   /**
-   * It removes the segmentation representations from the viewport.
+   * Removes segmentation representations from the viewport.
    * @param viewportId - The viewport id to remove the segmentation representations from.
    * @param specifier - The specifier to remove the segmentation representations.
    *
@@ -1317,7 +1321,7 @@ class SegmentationService extends PubSubService {
    * If a type specifier is provided, only the segmentation representation with the specified type are removed.
    * If both a segmentationId and type specifier are provided, only the segmentation representation with the specified segmentationId and type are removed.
    */
-  public removeSegmentationRepresentations(
+  public removeRepresentationsFromViewport(
     viewportId: string,
     specifier: {
       segmentationId?: string;
@@ -1842,6 +1846,7 @@ class SegmentationService extends PubSubService {
       id: id,
       segmentationId,
       label: segmentation.label,
+      fallbackLabel: segmentation.fallbackLabel,
       active,
       type,
       visible,
@@ -1861,7 +1866,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REMOVED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRemovedFromSource
     );
 
     eventTarget.addEventListener(
@@ -1881,7 +1886,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
-      this._onSegmentationRepresentationModifiedFromSource
+      this._onSegmentationRepresentationRemovedFromSource
     );
 
     eventTarget.addEventListener(
@@ -2120,6 +2125,14 @@ class SegmentationService extends PubSubService {
     });
   };
 
+  private _onSegmentationRepresentationRemovedFromSource = evt => {
+    const { segmentationId, viewportId } = evt.detail;
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED, {
+      segmentationId,
+      viewportId,
+    });
+  };
+
   private _onSegmentationModifiedFromSource = (
     evt: cstTypes.EventTypes.SegmentationModifiedEventType
   ) => {
@@ -2136,6 +2149,16 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = evt.detail;
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      segmentationId,
+    });
+  };
+
+  private _onSegmentationRemovedFromSource = (
+    evt: cstTypes.EventTypes.SegmentationRemovedEventType
+  ) => {
+    const { segmentationId } = evt.detail;
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,
     });
   };

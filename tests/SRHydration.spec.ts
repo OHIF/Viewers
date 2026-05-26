@@ -11,12 +11,17 @@ test('should hydrate SR reports correctly', async ({
   DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await rightPanelPageObject.measurementsPanel.select();
   await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.srHydration.srPreHydration
+  );
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -39,7 +44,11 @@ test('should hydrate SR reports correctly', async ({
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.srHydration.srPostHydration
+  );
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -62,5 +71,9 @@ test('should hydrate SR reports correctly', async ({
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.srHydration.srJumpToMeasurement
+  );
 });

@@ -11,6 +11,30 @@ export class RightPanelPageObject {
     this.DOMOverlayPageObject = new DOMOverlayPageObject(page);
   }
 
+  private getCollapsedMoreMenu(typeSuffix?: string) {
+    const page = this.page;
+    const testId = typeSuffix
+      ? `segmentation-collapsed-more-btn-${typeSuffix}`
+      : 'segmentation-collapsed-more-btn';
+    const button = page.getByTestId(testId);
+
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+      delete: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Delete' }).click();
+      },
+      rename: async (text: string) => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Rename' }).click();
+        await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
+      },
+    };
+  }
+
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
 
@@ -36,6 +60,19 @@ export class RightPanelPageObject {
         await this.page.getByTestId('Rename').click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
+      cancelRename: async (newName?: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Rename').click();
+        if (newName) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(newName);
+        } else {
+          await this.DOMOverlayPageObject.dialog.input.cancel();
+        }
+      },
+      duplicate: async () => {
+        await actionsButton.click();
+        await this.page.getByTestId('Duplicate').click();
+      },
     };
   }
 
@@ -46,8 +83,11 @@ export class RightPanelPageObject {
       get actions() {
         return getActionsMenu(row);
       },
+      get title() {
+        return row.getByTestId('data-row-title');
+      },
       click: async () => {
-        await row.click();
+        await row.getByTestId('data-row-title').click();
       },
       locator: row,
       toggleVisibility: async () => {
@@ -72,29 +112,83 @@ export class RightPanelPageObject {
 
   get measurementsPanel() {
     const page = this.page;
-    const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getMeasurementByText = (text: string) => this.getPanelRowByText(text);
-    const menuButton = page.getByTestId('trackedMeasurements-btn');
+    const trackedMeasurementsPanel = page.getByTestId('trackedMeasurements-panel').last();
+    const measurementTableRows = trackedMeasurementsPanel.locator(
+      '[data-cy^="measurement-table-row-"]'
+    );
+    const getMeasurementStatsAt = (index: number) => {
+      const dataRow = trackedMeasurementsPanel
+        .getByTestId(`measurement-table-row-${index}`)
+        .getByTestId('data-row');
+      const locator = dataRow.locator('..').getByTestId('data-row-details');
+      const primaryLocator = locator.getByTestId('data-row-details-primary');
+      const secondaryLocator = locator.getByTestId('data-row-details-secondary');
+      return {
+        locator,
+        primary: {
+          locator: primaryLocator,
+          lines: primaryLocator.getByTestId('data-row-detail-line'),
+        },
+        secondary: {
+          locator: secondaryLocator,
+          lines: secondaryLocator.getByTestId('data-row-detail-line'),
+        },
+      };
+    };
+    const getMeasurementDataRowAt = (index: number) => {
+      const rowWrapper = trackedMeasurementsPanel.getByTestId(`measurement-table-row-${index}`);
+      const dataRow = rowWrapper.getByTestId('data-row');
+      const row = this.getPanelRowDataObject(rowWrapper);
+      // Selection highlight (bg-popover) is on the inner DataRow, not the measurement-table-row wrapper
+      return {
+        ...row,
+        locator: dataRow,
+        stats: getMeasurementStatsAt(index),
+      };
+    };
+    const trackedMeasurementsMenu = page.getByTestId('trackedMeasurements-btn');
 
     return {
-      menuButton,
       panel: {
         deleteAll: async () => {
           await page.getByRole('button', { name: 'Delete' }).click();
         },
         getMeasurementCount: async () => {
-          return await page.getByTestId('data-row').count();
+          return await measurementTableRows.count();
         },
-        locator: page.getByTestId('trackedMeasurements-panel').last(),
+        rows: measurementTableRows,
+        locator: trackedMeasurementsPanel,
         nthMeasurement(index: number) {
-          return getMeasurementByIdx(index);
-        },
-        measurementByText(text: string) {
-          return getMeasurementByText(text);
+          return getMeasurementDataRowAt(index);
         },
       },
       select: async () => {
-        await menuButton.click();
+        await trackedMeasurementsMenu.click();
+      },
+    };
+  }
+
+  private getSegmentationSelect(type: string) {
+    const page = this.page;
+    const suffix = type ? `-${type}` : '';
+    const locator = page.getByTestId(`segmentation-select${suffix}`);
+    const selectedValue = page.getByTestId(`segmentation-select-value${suffix}`);
+
+    const nthSegmentation = async (n: number) => {
+      await locator.click();
+      return page.getByRole('option').nth(n);
+    };
+
+    return {
+      /** The SelectTrigger button element */
+      locator,
+      /** The span showing the currently selected segmentation label */
+      selectedValue,
+      /** Opens the dropdown and returns a locator for the nth option (0-based) */
+      nthSegmentation,
+      /** Opens the dropdown and clicks the nth segmentation (0-based) */
+      selectNthSegmentation: async (n: number) => {
+        await (await nthSegmentation(n)).click();
       },
     };
   }
@@ -109,12 +203,27 @@ export class RightPanelPageObject {
     };
   }
 
-  private get segmentationPanel() {
+  private getSegmentsVisibilityToggle(type?: string) {
+    const testId = type
+      ? `all-segments-visibility-toggle-${type}`
+      : 'all-segments-visibility-toggle';
+    const button = this.page.getByTestId(testId);
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
+  private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
     const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
     const getSegmentByText = (text: string) => this.getPanelRowByText(text);
+    const moreMenu = this.getCollapsedMoreMenu(typeSuffix);
 
     return {
+      moreMenu,
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
@@ -132,13 +241,17 @@ export class RightPanelPageObject {
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
-    const panel = this.segmentationPanel;
+    const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+    const segmentationSelect = this.getSegmentationSelect('Contour');
+    const segmentsVisibilityToggle = this.getSegmentsVisibilityToggle('Contour');
 
     return {
       addSegmentationButton,
       menuButton,
+      segmentsVisibilityToggle,
       panel,
+      segmentationSelect,
       select: async () => {
         await menuButton.click();
       },
@@ -147,13 +260,15 @@ export class RightPanelPageObject {
   get labelMapSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
-    const panel = this.segmentationPanel;
+    const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+    const segmentationSelect = this.getSegmentationSelect('Labelmap');
 
     return {
       addSegmentationButton,
       menuButton,
       panel,
+      segmentationSelect,
       select: async () => {
         await menuButton.click();
       },
@@ -201,12 +316,67 @@ export class RightPanelPageObject {
           };
         },
       },
+
+      get config() {
+        const configToggle = page.getByTestId('segmentation-config-toggle-Labelmap');
+        return {
+          toggle: {
+            locator: configToggle,
+            click: async () => {
+              await configToggle.click();
+            },
+          },
+
+          get opacity() {
+            const container = page.getByTestId('segmentation-config-opacity-Labelmap');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+
+          get border() {
+            const container = page.getByTestId('segmentation-config-border-Labelmap');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+
+          get opacityInactive() {
+            const container = page.getByTestId('segmentation-config-opacity-inactive-Labelmap');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+        };
+      },
+
+      get segmentBidirectional() {
+        const button = page.getByTestId('SegmentBidirectional');
+        return {
+          button,
+          click: async () => {
+            await button.click();
+          },
+        };
+      },
     };
   }
 
   get noToolsSegmentationPanel() {
     const page = this.page;
-    const panel = this.segmentationPanel;
+    const panel = this.getSegmentationPanel();
     const menuButton = page.getByTestId(/^panelSegmentation.*-btn$/).first();
 
     return {
@@ -265,6 +435,21 @@ export class RightPanelPageObject {
             },
           };
         },
+      },
+    };
+  }
+
+  get microscopyPanel() {
+    const page = this.page;
+    const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
+
+    return {
+      locator: page.getByTestId('measurements-panel'),
+      getMeasurementCount: async () => {
+        return await page.getByTestId('data-row').count();
+      },
+      nthMeasurement(index: number) {
+        return getMeasurementByIdx(index);
       },
     };
   }
