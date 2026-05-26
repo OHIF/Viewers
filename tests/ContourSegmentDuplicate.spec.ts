@@ -3,8 +3,8 @@ import {
   test,
   visitStudy,
   waitForViewportsRendered,
+  getSvgAttribute,
 } from './utils';
-import { getSvgAttribute } from './utils/getSvgAttribute';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defaultSegment0Name = 'Threshold';
@@ -26,7 +26,6 @@ test.beforeEach(async ({
 });
 
 test('should duplicate a contour segment and add a new row to the panel', async ({
-  page,
   rightPanelPageObject,
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
@@ -52,7 +51,6 @@ test('should duplicate a contour segment and add a new row to the panel', async 
 });
 
 test('should duplicate the same segment multiple times', async ({
-  page,
   rightPanelPageObject,
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
@@ -107,3 +105,53 @@ test('should render the duplicated contour on the viewport', async ({
     'Expected the duplicated segment to have the same SVG path as the source'
   ).toBe(sourceSvgPath);
 });
+
+test.skip('should navigate to the correct instance number when a duplicated contour segment is selected', async ({
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const panel = rightPanelPageObject.contourSegmentationPanel.panel;
+
+  // get instance overlay of the contour segment at index 0
+  const originalSegment = panel.nthSegment(0);
+  await originalSegment.click();
+  const originalSegmentInstanceInfo = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
+  expect(originalSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').toBeVisible();
+  await expect(originalSegmentInstanceInfo, 'Expected instance information to be slice 46 for the Threshold segment').toHaveText('I:46 (46/47)');
+
+  // Duplicate segment so new segment is at index 4
+  await originalSegment.actions.duplicate();
+
+  //click another segment to ensure instance number changes accordingly
+  await panel.nthSegment(2).click();
+  const anotherSegmentInstanceInfo = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
+  expect(anotherSegmentInstanceInfo, 'Expected instance information to be displayed in the viewport overlay').toBeVisible();
+  await expect(anotherSegmentInstanceInfo, 'Expected instance information to be different from original contour').not.toHaveText('I:46 (46/47)');
+
+  //click duplicated segment to ensure instance number is consistent with original segment
+  const duplicatedSegment = panel.nthSegment(4);
+  await duplicatedSegment.click();
+  const duplicatedSegmentInstanceInfoAfter = (await viewportPageObject.getById('default')).overlayText.bottomRight.instanceNumber;
+  expect(duplicatedSegmentInstanceInfoAfter, 'Expected instance information to be displayed in the viewport overlay').toBeVisible();
+  await expect(duplicatedSegmentInstanceInfoAfter, 'Expected instance information to be same as original contour after clicking duplicated segment').toHaveText('I:46 (46/47)');
+
+  //verify the svg paths are the same for the original and duplicated segments
+  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
+  await originalSegment.toggleVisibility();
+  await originalSegment.click();
+  const originalSegmentSvgPath = await getSvgAttribute({viewportPageObject, svgInnerElement: 'path', attributeName: 'd'});
+  expect(originalSegmentSvgPath, 'Expected a visible SVG path for the original segment').not.toBeNull();
+
+  // hide original segment to show duplicate only
+  await originalSegment.toggleVisibility();
+
+  await duplicatedSegment.toggleVisibility();
+  await duplicatedSegment.click();
+  const duplicatedSegmentSvgPath = await getSvgAttribute({viewportPageObject, svgInnerElement: 'path', attributeName: 'd'});
+  expect(duplicatedSegmentSvgPath, 'Expected a visible SVG path for the duplicated segment').not.toBeNull();
+
+  expect(
+    duplicatedSegmentSvgPath,
+    'Expected the duplicated segment to have the same SVG path as the original segment'
+  ).toBe(originalSegmentSvgPath);
+} );
