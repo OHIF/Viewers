@@ -35,6 +35,7 @@ import { ViewOptions } from './ViewOptions';
 import { ActionOverlayCell } from './ActionOverlayCell';
 import { FilterRow } from './FilterRow';
 import { ColumnHeader } from './ColumnHeader';
+import { ResponsiveColumnsProvider, useResponsiveColumns } from './useResponsiveColumns';
 import type { ColumnMeta } from './types';
 import {
   Table as BasicTable,
@@ -171,7 +172,7 @@ function DataTableRoot<TData>({
 
   return (
     <DataTableContext.Provider value={{ table } as DataTableContextValue<unknown>}>
-      {children}
+      <ResponsiveColumnsProvider>{children}</ResponsiveColumnsProvider>
     </DataTableContext.Provider>
   );
 }
@@ -198,6 +199,13 @@ type TableProps = {
  */
 function Table<TData>({ children, className, tableClassName }: TableProps) {
   const { table } = useDataTable<TData>();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  // Drive responsive column visibility from the wrapper's width. The hook
+  // is a no-op for tables whose columns don't declare meta.priority, and
+  // publishes the "unfit" set through ResponsiveColumnsProvider (rendered
+  // by DataTableRoot above us in the tree).
+  useResponsiveColumns(table, wrapperRef);
+
   const rows =
     typeof table.getPaginationRowModel === 'function'
       ? table.getPaginationRowModel().rows
@@ -246,7 +254,10 @@ function Table<TData>({ children, className, tableClassName }: TableProps) {
   });
 
   return (
-    <div className={cn('border-input/50 min-h-0 flex-1 rounded-md border', className)}>
+    <div
+      ref={wrapperRef}
+      className={cn('border-input/50 min-h-0 flex-1 rounded-md border', className)}
+    >
       <div className="flex h-full flex-col">
         {/* Header + filter row */}
         <div className="border-input/50 shrink-0 border-b">

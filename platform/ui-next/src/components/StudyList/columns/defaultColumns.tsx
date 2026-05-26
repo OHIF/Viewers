@@ -51,6 +51,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[165px]',
         cellClassName: 'min-w-[165px]',
         minWidth: 165,
+        priority: 100,
       },
     },
     {
@@ -66,6 +67,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[120px]',
         cellClassName: 'min-w-[120px]',
         minWidth: 120,
+        priority: 20,
       },
     },
     {
@@ -115,6 +117,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[195px]',
         cellClassName: 'min-w-[195px]',
         minWidth: 195,
+        priority: 70,
       },
     },
     {
@@ -139,6 +142,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[97px]',
         cellClassName: 'min-w-[97px]',
         minWidth: 97,
+        priority: 60,
       },
     },
     {
@@ -161,6 +165,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[290px]',
         cellClassName: 'min-w-[290px]',
         minWidth: 290,
+        priority: 90,
       },
     },
     {
@@ -176,6 +181,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[140px]',
         cellClassName: 'min-w-[140px]',
         minWidth: 140,
+        priority: 30,
       },
     },
     {
@@ -202,6 +208,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         headerClassName: 'min-w-[45px]',
         cellClassName: 'min-w-[45px] overflow-hidden',
         minWidth: 45,
+        priority: 50,
       },
     },
     // Non-hideable trailing actions column to keep the menu at row end

@@ -1,4 +1,4 @@
-import React, { type ReactNode, useMemo, useEffect } from 'react';
+import React, { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataTable, useDataTable } from '../../DataTable';
 import type { DataTableProps } from '../../DataTable/DataTable';
@@ -103,42 +103,6 @@ function TableContent({
   }, [table.options?.data]);
   // Access workflow provider for default workflow + launch
   const { getDefaultWorkflowForStudy } = useWorkflows();
-
-  // Responsive column visibility based on viewport width
-  useEffect(() => {
-    const updateVisibility = () => {
-      const width = window.innerWidth;
-      const isMobile = width < 768;
-      const isTablet = width >= 768 && width < 1024;
-
-      if (isMobile) {
-        // Mobile: Show only Patient, Description, Actions
-        table.getColumn(COLUMN_IDS.MRN)?.toggleVisibility(false);
-        table.getColumn(COLUMN_IDS.STUDY_DATE_TIME)?.toggleVisibility(false);
-        table.getColumn(COLUMN_IDS.MODALITIES)?.toggleVisibility(false);
-        table.getColumn(COLUMN_IDS.ACCESSION)?.toggleVisibility(false);
-        table.getColumn(COLUMN_IDS.INSTANCES)?.toggleVisibility(false);
-      } else if (isTablet) {
-        // Tablet: Add Study Date, Modalities
-        table.getColumn(COLUMN_IDS.MRN)?.toggleVisibility(false);
-        table.getColumn(COLUMN_IDS.STUDY_DATE_TIME)?.toggleVisibility(true);
-        table.getColumn(COLUMN_IDS.MODALITIES)?.toggleVisibility(true);
-        table.getColumn(COLUMN_IDS.ACCESSION)?.toggleVisibility(false);
-        table.getColumn(COLUMN_IDS.INSTANCES)?.toggleVisibility(false);
-      } else {
-        // Desktop: Show all
-        table.getColumn(COLUMN_IDS.MRN)?.toggleVisibility(true);
-        table.getColumn(COLUMN_IDS.STUDY_DATE_TIME)?.toggleVisibility(true);
-        table.getColumn(COLUMN_IDS.MODALITIES)?.toggleVisibility(true);
-        table.getColumn(COLUMN_IDS.ACCESSION)?.toggleVisibility(true);
-        table.getColumn(COLUMN_IDS.INSTANCES)?.toggleVisibility(true);
-      }
-    };
-
-    updateVisibility();
-    window.addEventListener('resize', updateVisibility);
-    return () => window.removeEventListener('resize', updateVisibility);
-  }, [table]);
 
   return (
     <div className="flex h-full flex-col">

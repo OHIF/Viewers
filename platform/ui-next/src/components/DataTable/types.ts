@@ -17,4 +17,11 @@ export type ColumnMeta = {
   cellClassName?: string;
   /** Optional minimum width for the column (can be a number or CSS string) */
   minWidth?: number | string;
+  /**
+   * Drop priority for responsive column visibility. Setting this opts the
+   * column in to responsive dropping; columns without a priority are never
+   * auto-hidden. Among opted-in columns, higher values are kept visible
+   * longer when container width shrinks; lower values are dropped first.
+   */
+  priority?: number;
 };
