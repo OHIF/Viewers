@@ -41,6 +41,12 @@ test.describe('3D four up SEG hydration', async () => {
     await leftPanelPageObject.loadSeriesByDescription('SEG');
 
     await viewportRenderCycle;
+    await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible({
+      timeout: 60000,
+    });
+    await waitForViewportsRendered(page, { timeout: 60000 });
+    await page.waitForTimeout(3000);
+    await waitForPaintToSettle(page);
 
     await checkForScreenshot(
       page,
@@ -61,7 +67,8 @@ test.describe('3D four up SEG hydration', async () => {
     // 3D volume rendering keeps streaming refined geometry after the load
     // status flips; give the GPU a window to present the final frame before
     // screenshotting.
-    await page.waitForTimeout(2000);
+    await waitForViewportsRendered(page, { timeout: 180000 });
+    await page.waitForTimeout(3000);
     await waitForPaintToSettle(page);
 
     await checkForScreenshot({
