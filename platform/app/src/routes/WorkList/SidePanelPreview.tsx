@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAppConfig } from '@state';
 import { utils } from '@ohif/core';
@@ -29,6 +29,10 @@ export function SidePanelPreview({
   servicesManager: AppTypes.ServicesManager;
 }) {
   const [series, setSeries] = useState<any[]>([]);
+  // Blob URLs created by this panel (via the `fetch` thumbnail strategy).
+  // Tracked so we can URL.revokeObjectURL them on study change / unmount —
+  // otherwise every fetched series leaks one blob worth of memory.
+  const ownedBlobUrlsRef = useRef<string[]>([]);
   const [appConfig] = useAppConfig();
   const { sortBySeriesDate } = utils as any;
   const { customizationService } = servicesManager.services;
@@ -111,6 +115,11 @@ export function SidePanelPreview({
           } catch {
             src = null;
           }
+          // Track ownership of blob URLs before the abort check so URLs that
+          // arrive just after abort are still revoked on cleanup.
+          if (src?.startsWith('blob:')) {
+            ownedBlobUrlsRef.current.push(src);
+          }
           if (signal.aborted) {
             return;
           }
@@ -156,6 +165,16 @@ export function SidePanelPreview({
 
     return () => {
       abortController.abort();
+      // Revoke blob URLs this run created. Safe even though the old series
+      // may still be in the DOM briefly: revokeObjectURL only invalidates
+      // future loads, the already-rendered <img> keeps its pixels.
+      const urls = ownedBlobUrlsRef.current;
+      ownedBlobUrlsRef.current = [];
+      urls.forEach(url => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+      });
     };
   }, [dataSource, selected, appConfig?.maxNumRequests?.thumbnail]);
 
