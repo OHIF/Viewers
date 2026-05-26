@@ -1,4 +1,10 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -111,9 +117,11 @@ test('should hydrate in MPR correctly', async ({
     screenShotPaths.jumpToMeasurementMPR.jumpInMPR
   );
 
+  const seriesChangeRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 30000 });
+
   await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
-  await page.waitForTimeout(5000);
+  await seriesChangeRenderCycle;
 
   await checkForScreenshot(
     page,
