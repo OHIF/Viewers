@@ -39,7 +39,11 @@ window.config = {
   },
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    {
+      'studyBrowser.studyMode': { $set: 'primary' },
+    }
+  ],
   showStudyList: false,
   disableConfirmationPrompts: true,
   disableEditing: true,
