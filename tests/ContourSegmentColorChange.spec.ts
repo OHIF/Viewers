@@ -2,7 +2,6 @@ import {
   expect,
   test,
   visitStudy,
-  waitForViewportRenderCycle,
   waitForViewportsRendered,
   getSvgAttribute,
 } from './utils';
