@@ -49,6 +49,8 @@ function parseCssVars(cssText: string): string[] {
     const value = line
       .slice(colonIdx + 1)
       .replace(/[{};]/g, '')
+      .replace(/\/\*/g, '')
+      .replace(/\*\//g, '')
       .trim();
     if (!value) continue;
 
