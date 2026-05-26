@@ -119,7 +119,12 @@ function promptHydrationDialog({
             });
           };
           // If viewport is not ready, wait for it to be ready before hydrating
-          await waitForViewportDataChange(cornerstoneViewportService, viewportId);
+          try {
+            await waitForViewportDataChange(cornerstoneViewportService, viewportId);
+          } catch (error) {
+            reject(error);
+            return;
+          }
         }
       }
 
