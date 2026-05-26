@@ -24,6 +24,7 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
   await waitForViewportsRendered(page);
 
   await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 });
 
 test('opens the color edit popup when "Change Color" is clicked', async ({

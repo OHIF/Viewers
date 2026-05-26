@@ -11,9 +11,9 @@ const NEW_HEX_CSS_RGB = 'rgb(255, 0, 255)';
 const NEW_HEX_CSS_RGBA = 'rgba(255, 0, 255, 1)';
 
 // Default colors baked into the RTSTRUCT in the canonical contour study.
-const THRESHHOLD_CONTOUR_DEFAULT_HEX = '#00EBEB';
-const THRESHHOLD_CONTOUR_DEFAULT_CSS_RGBA = 'rgba(0, 235, 235, 1)';
-const THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB = 'rgb(0, 235, 235)';
+const THRESHOLD_CONTOUR_DEFAULT_HEX = '#00EBEB';
+const THRESHOLD_CONTOUR_DEFAULT_CSS_RGBA = 'rgba(0, 235, 235, 1)';
+const THRESHOLD_CONTOUR_DEFAULT_CSS_RGB = 'rgb(0, 235, 235)';
 
 const STUDY_UID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
@@ -22,6 +22,8 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
 
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await waitForViewportsRendered(page);
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 });
 
 test('opens the color edit popup when "Change Color" is clicked', async ({
@@ -39,7 +41,7 @@ test('opens the color edit popup when "Change Color" is clicked', async ({
   await expect(DOMOverlayPageObject.dialog.colorPicker.cancelButton).toBeVisible();
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.hexInput).toHaveValue(
-    THRESHHOLD_CONTOUR_DEFAULT_HEX
+    THRESHOLD_CONTOUR_DEFAULT_HEX
   );
 });
 
@@ -53,7 +55,7 @@ test('changes the contour color when the user saves the edits', async ({
   await segment.toggleVisibility();
   await segment.click();
 
-  await expect(segment.rowDataColorHex).toHaveCSS('background-color',THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB);
+  await expect(segment.rowDataColorHex).toHaveCSS('background-color',THRESHOLD_CONTOUR_DEFAULT_CSS_RGB);
 
   const svgStrokeAttributeBeforeColorChange = await getSvgAttribute({
     viewportPageObject,
@@ -62,7 +64,7 @@ test('changes the contour color when the user saves the edits', async ({
   });
 
   expect(svgStrokeAttributeBeforeColorChange, 'Expected SVG stroke attribute to be original threshold color').toBe(
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGBA
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGBA
   );
 
   // change color
@@ -95,7 +97,7 @@ test('does not change the contour color when the user cancels', async ({
 
   await expect(segment.rowDataColorHex).toHaveCSS(
     'background-color',
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGB
   );
 
   const svgStrokeAttributeBeforeColorChange = await getSvgAttribute({
@@ -105,13 +107,13 @@ test('does not change the contour color when the user cancels', async ({
   });
 
   expect(svgStrokeAttributeBeforeColorChange, 'Expected SVG stroke attribute to be original threshold color').toBe(
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGBA
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGBA
   );
 
   await segment.actions.cancelChangeColor(NEW_HEX);
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.locator).toBeHidden();
-  await expect(segment.rowDataColorHex).toHaveCSS('background-color', THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB);
+  await expect(segment.rowDataColorHex).toHaveCSS('background-color', THRESHOLD_CONTOUR_DEFAULT_CSS_RGB);
 
   //check svg path stroke attribute is updated with new color
   const svgStrokeAttributeAfterColorChange = await getSvgAttribute({
@@ -121,7 +123,7 @@ test('does not change the contour color when the user cancels', async ({
   });
 
   expect(svgStrokeAttributeAfterColorChange, 'Expected SVG stroke attribute to remain the original color').toBe(
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGBA
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGBA
   );
 });
 
@@ -137,7 +139,7 @@ test('duplicated contour will be generated with a new color', async ({
 
    await expect(segment0.rowDataColorHex).toHaveCSS(
     'background-color',
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGB
   );
 
   const svgStrokeAttributeBeforeColorChange = await getSvgAttribute({
@@ -147,10 +149,12 @@ test('duplicated contour will be generated with a new color', async ({
   });
 
   expect(svgStrokeAttributeBeforeColorChange, 'Expected SVG stroke attribute to be original threshold color').toBe(
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGBA
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGBA
   );
 
   // duplicate the segment
+  const initialCount = await panel.getSegmentCount();
+  expect(initialCount, 'Expected to start with 4 segments').toBe(4);
   await segment0.actions.duplicate();
   await segment0.toggleVisibility(); // toggle original segment 0 visibility off to be able to grab the duplicated segment's path
 
@@ -165,10 +169,10 @@ test('duplicated contour will be generated with a new color', async ({
 
   await expect(duplicateSegment.rowDataColorHex).not.toHaveCSS(
     'background-color',
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGB
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGB
   );
 
   expect(duplicatedSegmentSvgStrokeAttribute, 'Expected duplicated segment to have a different stroke color').not.toBe(
-    THRESHHOLD_CONTOUR_DEFAULT_CSS_RGBA
+    THRESHOLD_CONTOUR_DEFAULT_CSS_RGBA
   );
 });
