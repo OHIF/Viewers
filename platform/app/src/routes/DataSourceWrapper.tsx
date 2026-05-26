@@ -39,7 +39,6 @@ function DataSourceWrapper(props: withAppTypes) {
   // studies.processResults --> <LayoutTemplate studies={} />
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
-  const STUDIES_LIMIT = appConfig.queryLimit ?? 101;
 
   const getInitialDataSourceName = useCallback(() => {
     // TODO - get the variable from the props all the time...
@@ -144,7 +143,10 @@ function DataSourceWrapper(props: withAppTypes) {
       return;
     }
 
-    const queryFilterValues = _getQueryFilterValues(location.search, STUDIES_LIMIT);
+    // Per-data-source result cap, passed to servers that honor the `limit`
+    // query parameter. Defaults to 101 when the data source doesn't set it.
+    const studiesLimit = dataSource.getConfig?.()?.queryLimit ?? 101;
+    const queryFilterValues = _getQueryFilterValues(location.search, studiesLimit);
 
     // 204: no content
     async function getData() {

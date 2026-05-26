@@ -217,6 +217,14 @@ thumbnailRendering: 'rendered',
 thumbnailRequestStrategy: 'fetch',
 ```
 
+#### `queryLimit`
+
+Optional. The maximum number of studies requested from the server for the study list, passed as the `limit` query parameter to data sources that honor it. Paging is handled in the OHIF client, so this value caps how many studies a single search returns. When not specified, it defaults to `101`.
+
+```js
+queryLimit: 101,
+```
+
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
 
