@@ -62,9 +62,6 @@ export class DOMOverlayPageObject {
 
       get colorPicker() {
         const locator = page.getByTestId('color-picker-dialog');
-        // ChromePicker renders multiple <EditableInput> elements (hex / r / g / b / a)
-        // depending on the active view. Each input is associated with its own
-        // <label> (via htmlFor / id). Target the hex one by its label.
         const hexInput = locator.getByLabel('hex');
         const saveButton = page.getByTestId('color-picker-save-btn');
         const cancelButton = page.getByTestId('color-picker-cancel-btn');
