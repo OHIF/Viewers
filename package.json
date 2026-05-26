@@ -68,6 +68,7 @@
     "test:e2e:debug": "cross-env TEST_ENV=true npx playwright test --debug",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "review:screenshots": "node scripts/screenshot-reviewer.mjs",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
