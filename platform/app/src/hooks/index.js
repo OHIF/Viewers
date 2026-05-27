@@ -3,6 +3,7 @@ import useSearchParams from './useSearchParams';
 import { useStudyListStateSync } from './useStudyListStateSync';
 import { useSeriesFetch } from './useSeriesFetch';
 import { useWorkListToolbarActions } from './useWorkListToolbarActions';
+import { useStudyListQuery } from './useStudyListQuery';
 
 export {
   useDebounce,
@@ -10,4 +11,5 @@ export {
   useStudyListStateSync,
   useSeriesFetch,
   useWorkListToolbarActions,
+  useStudyListQuery,
 };
