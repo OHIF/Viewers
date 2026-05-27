@@ -2,7 +2,21 @@ import update, { extend } from 'immutability-helper';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { Customization } from './types';
 import type { CommandsManager } from '../../classes';
-import type { ExtensionManager } from '../../extensions';
+import type ExtensionManager from '../../extensions/ExtensionManager';
+import { getCustomizationUrlPolicy } from './customizationUrl';
+import { getUrlCustomizationModulePayload } from './getUrlCustomizationModulePayload';
+import { resolveCustomizationUrl } from './resolve';
+import {
+  parseCustomizationParams,
+  validateCustomizationRequests,
+} from './validate';
+import type { ValidatedCustomization } from './validate';
+import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
+import type {
+  CustomizationModule,
+  LoadedCustomization,
+  LoadOptions,
+} from './customizationUrlTypes';
 
 const EVENTS = {
   MODE_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:modeModified',
@@ -28,7 +42,8 @@ export enum CustomizationScope {
 
   /**
    * Default customizations that serve as fallbacks when no global or mode-specific
-   * customizations are defined. These can only be defined once.
+   * customizations are defined. These are not cleared when the service re-inits
+   * for a mode change; only Mode scope is reset.
    */
   Default = 'default',
 }
@@ -89,10 +104,9 @@ export default class CustomizationService extends PubSubService {
   private modeCustomizations = new Map<string, Customization>();
 
   /**
-   * A collection of default customizations used as fallbacks. These serve as
-   * the base configuration and are registered at setup. Default customizations
-   * provide baseline values that can be overridden by mode or global customizations.
-   * Use these for cases where default values are necessary for predictable behavior.
+   * A collection of default customizations used as fallbacks. Entries are merged
+   * over time (including from `init()` re-reading extension default modules) and
+   * are not cleared on mode change. Mode and Global scopes override these values.
    */
   private defaultCustomizations = new Map<string, Customization>();
 
@@ -103,31 +117,62 @@ export default class CustomizationService extends PubSubService {
   private transformedCustomizations = new Map<string, Customization>();
   private configuration: AppTypes.Config;
 
+  /**
+   * URL customization modules already imported and applied (key = normalized `/prefix/name`).
+   * Entries are kept for the lifetime of the page: repeated loads skip imports, and the app
+   * normally applies `?customization=` only at bootstrap (see {@link applyWindowUrlCustomizations}).
+   */
+  private _urlCustomizationLoaded = new Map<string, LoadedCustomization>();
+
+  private _urlCustomizationPending = new Map<string, Promise<LoadedCustomization | null>>();
+
+  /**
+   * Extension module entry ids (e.g. `${extensionId}.customizationModule.default`) whose
+   * default/global payloads have already been merged via {@link init}. Matches the URL
+   * loader pattern: repeated {@link init} skips work for the same slot so immutability-style
+   * merges are not applied twice. A slot is recorded only after a module was present and applied;
+   * if a module appears only on a later {@link init} (e.g. a newly registered extension), it is merged then.
+   */
+  private _extensionCustomizationModuleApplied = new Set<string>();
+
   constructor({ configuration, commandsManager }) {
     super(EVENTS);
     this.configuration = configuration;
     this.commandsManager = commandsManager;
   }
 
+  /**
+   * Clears mode customizations and merges each extension's `customizationModule.default` /
+   * `customizationModule.global` into the service. Safe to call multiple times (e.g. from
+   * {@link onModeEnter}): each extension module slot is merged at most once per page session,
+   * matching the deduplication pattern used for URL-loaded modules in {@link requires}.
+   * Slots with no module yet are left unmarked so a later call can merge when the module appears.
+   */
   public init(extensionManager: ExtensionManager): void {
     this.extensionManager = extensionManager;
-    // Clear defaults as those are defined by the customization modules
-    this.defaultCustomizations.clear();
-    // Clear modes because those are defined in onModeEnter functions.
+    // Mode customizations are defined per mode in onModeEnter; reset them here.
+    // Default customizations are not cleared — they are merged again from
+    // extension modules below so definitions stay available across mode changes.
     this.modeCustomizations.clear();
 
     this.extensionManager.getRegisteredExtensionIds().forEach(extensionId => {
       const keyDefault = `${extensionId}.customizationModule.default`;
-      const defaultCustomizations = this._findExtensionValue(keyDefault);
-      if (defaultCustomizations) {
-        const { value } = defaultCustomizations;
-        this._addReference(value, CustomizationScope.Default);
+      if (!this._extensionCustomizationModuleApplied.has(keyDefault)) {
+        const defaultCustomizations = this._findExtensionValue(keyDefault);
+        if (defaultCustomizations) {
+          const { value } = defaultCustomizations;
+          this._addReference(value, CustomizationScope.Default);
+          this._extensionCustomizationModuleApplied.add(keyDefault);
+        }
       }
       const keyGlobal = `${extensionId}.customizationModule.global`;
-      const globalCustomizations = this._findExtensionValue(keyGlobal);
-      if (globalCustomizations) {
-        const { value } = globalCustomizations;
-        this._addReference(value, CustomizationScope.Global);
+      if (!this._extensionCustomizationModuleApplied.has(keyGlobal)) {
+        const globalCustomizations = this._findExtensionValue(keyGlobal);
+        if (globalCustomizations) {
+          const { value } = globalCustomizations;
+          this._addReference(value, CustomizationScope.Global);
+          this._extensionCustomizationModuleApplied.add(keyGlobal);
+        }
       }
     });
 
@@ -136,6 +181,109 @@ export default class CustomizationService extends PubSubService {
       this.addReferences(this.configuration);
       Object.defineProperty(this.configuration, '_hasBeenAdded', { value: true, writable: false });
     }
+  }
+
+  /**
+   * Loads and applies `?customization=` modules from `window.location.search`.
+   * Wraps {@link applyCustomizationUrlSearchParams} in try/catch so callers
+   * (e.g. app bootstrap) do not need their own error handling.
+   *
+   * **Intended SPA behavior:** The shell typically calls this once during startup. It does not
+   * run again on client-side route changes. The query key `customization` may still appear in
+   * URLs (for example preserved by worklist navigation) without implying that modules are
+   * re-evaluated on every navigation. Modules resolved here are also deduplicated by normalized
+   * URL for the lifetime of the page in {@link requires}. To pick up a different `?customization=`
+   * set, use a full page load or call {@link applyCustomizationUrlSearchParams} /
+   * {@link requires} from your own integration code when appropriate.
+   */
+  public async applyWindowUrlCustomizations(overrides?: Partial<LoadOptions>): Promise<void> {
+    try {
+      if (typeof window === 'undefined') {
+        return;
+      }
+      await this.applyCustomizationUrlSearchParams(
+        new URLSearchParams(window.location.search),
+        overrides
+      );
+    } catch (err) {
+      console.warn('[customizationUrl] application failed:', err);
+    }
+  }
+
+  /**
+   * Parses `?customization=` values from the search string and delegates to
+   * {@link requires}.
+   */
+  public async applyCustomizationUrlSearchParams(
+    params: URLSearchParams,
+    overrides?: Partial<LoadOptions>
+  ): Promise<void> {
+    const raws = parseCustomizationParams(params);
+    if (!raws.length) {
+      return;
+    }
+    await this.requires(raws, overrides);
+  }
+
+  /**
+   * Depth-first dynamic import of URL customization modules
+   * `requires` edges and `customization` field
+   * references are loaded before dependents. Already-loaded modules (same normalized key) are
+   * skipped for the rest of the page session; they are not unloaded when the address bar changes.
+   *
+   * When `policy.strict` is true, invalid query entries, resolve failures, failed
+   * imports, or modules without a customization payload reject the returned promise.
+   * When not strict, those cases are warned and skipped.
+   */
+  public requires(
+    names: string | string[],
+    overrides?: Partial<LoadOptions>
+  ): Promise<LoadedCustomization[]> {
+    const policy = overrides?.policy ?? getCustomizationUrlPolicy(this);
+    const list = (Array.isArray(names) ? names : [names])
+      .map(s => String(s).trim())
+      .filter(Boolean);
+    if (!list.length) {
+      return Promise.resolve([]);
+    }
+
+    const { valid, rejected } = validateCustomizationRequests(list, policy);
+    const logger = overrides?.logger || console;
+    for (const r of rejected) {
+      logger.warn(`[customizationUrl] rejecting customization "${r.raw}": ${r.reason}`);
+    }
+    if (policy.strict && rejected.length > 0) {
+      return Promise.reject(
+        new Error(`[customizationUrl] strict mode: ${rejected.length} invalid entries`)
+      );
+    }
+    if (!valid.length) {
+      return Promise.resolve([]);
+    }
+
+    const importFn = overrides?.importFn ?? this._urlDefaultImport.bind(this);
+    const requestedSet = new Set<string>();
+    const newlyLoaded: LoadedCustomization[] = [];
+
+    return valid
+      .reduce(
+        (prev, request) =>
+          prev.then(() =>
+            this._urlCustomizationLoadOne(
+              request,
+              policy,
+              importFn,
+              logger,
+              requestedSet,
+              newlyLoaded
+            )
+          ),
+        Promise.resolve() as Promise<void>
+      )
+      .then(() => {
+        this._applyLoadedUrlCustomizationModules(newlyLoaded);
+        return newlyLoaded;
+      });
   }
 
   public onModeEnter(): void {
@@ -157,6 +305,197 @@ export default class CustomizationService extends PubSubService {
     }
 
     this.modeCustomizations.clear();
+  }
+
+  private _urlDefaultImport(url: string): Promise<any> {
+    if (
+      typeof window !== 'undefined' &&
+      typeof (window as any).browserImportFunction === 'function'
+    ) {
+      return (window as any).browserImportFunction(url);
+    }
+    return Promise.reject(new Error(`No runtime importer available to load ${url}`));
+  }
+
+  private _normalizeImportedCustomizationModule(imported: any): CustomizationModule {
+    return imported && typeof imported === 'object' && 'customizations' in imported
+      ? imported
+      : imported && typeof imported.default === 'object'
+        ? imported.default
+        : imported;
+  }
+
+  private _collectUrlDependencyRefs(module: CustomizationModule): string[] {
+    const refs = new Set<string>();
+    const payload = getUrlCustomizationModulePayload(module);
+    if (!payload || typeof payload !== 'object') {
+      return Array.from(refs);
+    }
+    const moduleRequires = (payload as any).requires;
+    if (typeof moduleRequires === 'string' && moduleRequires) {
+      refs.add(moduleRequires);
+    } else if (Array.isArray(moduleRequires)) {
+      for (const id of moduleRequires) {
+        if (typeof id === 'string' && id) {
+          refs.add(id);
+        }
+      }
+    }
+    return Array.from(refs);
+  }
+
+  private _urlDependencyToRequest(
+    name: string,
+    policy: CustomizationUrlPolicy
+  ): ValidatedCustomization | null {
+    const trimmed = name.trim();
+    if (trimmed && !trimmed.startsWith('/') && /^ohif\.[a-zA-Z0-9._-]+$/.test(trimmed)) {
+      return null;
+    }
+    const result = validateCustomizationRequests([name], policy);
+    if (result.valid.length) {
+      return result.valid[0];
+    }
+    return null;
+  }
+
+  private _urlCustomizationLoadOne(
+    request: ValidatedCustomization,
+    policy: CustomizationUrlPolicy,
+    importFn: (url: string) => Promise<any>,
+    logger: { warn: (...args: any[]) => void; error: (...args: any[]) => void },
+    requestedSet: Set<string>,
+    newlyLoaded: LoadedCustomization[]
+  ): Promise<LoadedCustomization | null> {
+    const key = request.normalized;
+    if (this._urlCustomizationLoaded.has(key)) {
+      return Promise.resolve(this._urlCustomizationLoaded.get(key) || null);
+    }
+    if (this._urlCustomizationPending.has(key)) {
+      return this._urlCustomizationPending.get(key)!;
+    }
+
+    requestedSet.add(key);
+
+    const promise = this._urlCustomizationLoadOneBody(
+      request,
+      policy,
+      importFn,
+      logger,
+      requestedSet,
+      newlyLoaded
+    );
+
+    this._urlCustomizationPending.set(key, promise);
+    // Use then(success, failure) for cleanup — `finally` left rejections unhandled
+    // with the current Promise polyfill in the Jest/Node test stack.
+    promise.then(
+      () => this._urlCustomizationPending.delete(key),
+      () => this._urlCustomizationPending.delete(key)
+    );
+    return promise;
+  }
+
+  private _urlCustomizationLoadOneBody(
+    request: ValidatedCustomization,
+    policy: CustomizationUrlPolicy,
+    importFn: (url: string) => Promise<any>,
+    logger: { warn: (...args: any[]) => void; error: (...args: any[]) => void },
+    requestedSet: Set<string>,
+    newlyLoaded: LoadedCustomization[]
+  ): Promise<LoadedCustomization | null> {
+    const key = request.normalized;
+    const importFailedSentinel = Symbol('importFailed');
+
+    let url: string;
+    try {
+      url = resolveCustomizationUrl(request, policy);
+    } catch (err) {
+      const msg = `[customizationUrl] failed to resolve "${request.raw}": ${(err as Error).message}`;
+      if (policy.strict) {
+        return Promise.reject(new Error(msg));
+      }
+      logger.warn(msg);
+      return Promise.resolve(null);
+    }
+
+    return importFn(url)
+      .catch(err => {
+        const msg = `[customizationUrl] failed to import customization "${request.raw}" (${url}): ${(err as Error)?.message ?? String(err)}`;
+        if (policy.strict) {
+          throw new Error(msg);
+        }
+        logger.warn(
+          `[customizationUrl] failed to import customization "${request.raw}" (${url})`,
+          err
+        );
+        return importFailedSentinel;
+      })
+      .then(importedOrSentinel => {
+        if (importedOrSentinel === importFailedSentinel) {
+          return null;
+        }
+        const imported = importedOrSentinel;
+        const module = this._normalizeImportedCustomizationModule(imported);
+        if (!module || typeof module !== 'object') {
+          const msg = `[customizationUrl] missing customization module "${request.raw}" (${url}): module is not an object`;
+          if (policy.strict) {
+            throw new Error(msg);
+          }
+          logger.warn(msg);
+          return null;
+        }
+        if (!getUrlCustomizationModulePayload(module)) {
+          const msg = `[customizationUrl] missing customization module "${request.raw}" (${url}): no customizations payload`;
+          if (policy.strict) {
+            throw new Error(msg);
+          }
+          logger.warn(msg);
+          return null;
+        }
+
+        const depRefs = this._collectUrlDependencyRefs(module);
+        let depsChain: Promise<unknown> = Promise.resolve();
+        for (const depRef of depRefs) {
+          depsChain = depsChain.then(() => {
+            const depRequest = this._urlDependencyToRequest(depRef, policy);
+            if (!depRequest || requestedSet.has(depRequest.normalized)) {
+              return undefined;
+            }
+            return this._urlCustomizationLoadOne(
+              depRequest,
+              policy,
+              importFn,
+              logger,
+              requestedSet,
+              newlyLoaded
+            );
+          });
+        }
+
+        return depsChain.then(() => {
+          const loaded: LoadedCustomization = { request, module, url };
+          this._urlCustomizationLoaded.set(key, loaded);
+          newlyLoaded.push(loaded);
+          return loaded;
+        });
+      });
+  }
+
+  private _applyLoadedUrlCustomizationModules(loaded: LoadedCustomization[]): void {
+    if (!loaded?.length) {
+      return;
+    }
+    for (const entry of loaded) {
+      const payload = getUrlCustomizationModulePayload(entry.module);
+      if (payload?.global && typeof payload.global === 'object') {
+        this.setCustomizations(payload.global, CustomizationScope.Global);
+      } else if (!(payload as any)?.requires) {
+        console.warn(
+          `[customizationUrl] customization module "${entry.request.raw}" (${entry.url}) has no global payload and no requires; nothing was applied`
+        );
+      }
+    }
   }
 
   /**
@@ -182,6 +521,14 @@ export default class CustomizationService extends PubSubService {
       this.transformedCustomizations.set(customizationId, newTransformed);
     }
     return newTransformed;
+  }
+
+  /**
+   * Returns a customization value, or the provided fallback when unset.
+   */
+  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined {
+    const value = this.getCustomization(customizationId);
+    return (value === undefined ? fallbackValue : (value as T)) as T | undefined;
   }
 
   /**
@@ -340,15 +687,16 @@ export default class CustomizationService extends PubSubService {
 
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED, {
-      buttons: this.defaultCustomizations,
-      button: this.defaultCustomizations.get(id),
+      buttons: this.globalCustomizations,
+      button: this.globalCustomizations.get(id),
     });
   }
 
   private setDefaultCustomization(id: string, value: Customization): void {
-    if (this.defaultCustomizations.has(id)) {
-      console.warn(`Trying to update existing default for customization ${id}`);
-    }
+    // There are two inits now, without a clear between them, so we can't warn about existing defaults
+    // if (this.defaultCustomizations.has(id)) {
+    //   console.warn(`Trying to update existing default for customization ${id}`);
+    // }
     this.transformedCustomizations.clear();
 
     const sourceCustomization = this.defaultCustomizations.get(id);

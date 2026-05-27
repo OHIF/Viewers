@@ -200,11 +200,13 @@ function WorkList({
       }
     });
 
-    preserveQueryStrings(queryString);
+    preserveQueryStrings(queryString, customizationService);
 
     const search = qs.stringify(queryString, {
       skipNull: true,
       skipEmptyString: true,
+      // preserveQueryStrings stores preserved keys as arrays; default indices format breaks plain keys like configUrl
+      arrayFormat: 'repeat',
     });
     navigate({
       pathname: '/',
@@ -417,7 +419,7 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
-              preserveQueryParameters(query);
+              preserveQueryParameters(query, customizationService);
 
               return (
                 mode.displayName && (
