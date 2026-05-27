@@ -42,11 +42,12 @@ window.config = {
   customizationService: [
     {
       'studyBrowser.studyMode': { $set: 'primary' },
+      'panelSegmentation.disableEditing': { $set: true },
+      'panelMeasurement.disableEditing': { $set: true },
     }
   ],
   showStudyList: false,
   disableConfirmationPrompts: true,
-  disableEditing: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers

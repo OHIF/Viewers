@@ -6,7 +6,12 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    {
+      'panelSegmentation.disableEditing': { $set: true },
+      'panelMeasurement.disableEditing': { $set: true },
+    },
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -336,7 +341,6 @@ window.config = {
     ],
   },
   disableConfirmationPrompts: true,
-  disableEditing: true,
   defaultDataSourceName: 'ohif',
   dataSources: [
     {
