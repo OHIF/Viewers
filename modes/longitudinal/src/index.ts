@@ -10,6 +10,7 @@ import { initToolGroups, toolbarButtons, cornerstone,
   mode as basicMode,
   modeInstance as basicModeInstance,
  } from '@ohif/mode-basic';
+ import { ToolbarService } from '@ohif/core';
 
 export const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
@@ -41,6 +42,23 @@ export const longitudinalInstance = {
     }
   };
 
+  export const testTaskInstance = {
+    ...basicLayout,
+    id: ohif.layout,
+    props: {
+      ...basicLayout.props,
+      leftPanels: [tracked.measurements],
+      rightPanels: [cornerstone.segmentation, tracked.thumbnailList],
+      viewports: [
+        {
+          namespace: tracked.viewport,
+          // Re-use the display sets from basic
+          displaySetsToDisplay: basicLayout.props.viewports[0].displaySetsToDisplay,
+        },
+        ...basicLayout.props.viewports,
+        ],
+      }
+    };
 
 export const longitudinalRoute =
     {
@@ -52,15 +70,33 @@ export const longitudinalRoute =
       layoutInstance: longitudinalInstance,
     };
 
+    export const testTaskRoute =
+    {
+      ...basicRoute,
+      path: 'test-task',
+        /*init: ({ servicesManager, extensionManager }) => {
+          //defaultViewerRouteInit
+        },*/
+      layoutInstance: testTaskInstance,
+    };
+
+const moreTools = basicModeInstance.toolbarSections['MoreTools'].filter(item => item !== 'Angle');
+const measurementTools = ['Angle',...basicModeInstance.toolbarSections['MeasurementTools']];
+
 export const modeInstance = {
     ...basicModeInstance,
+    toolbarSections: {
+      ...basicModeInstance.toolbarSections,
+      MoreTools: moreTools,
+      MeasurementTools: measurementTools,
+    },
     // TODO: We're using this as a route segment
     // We should not be.
     id,
     routeName: 'viewer',
     displayName: i18n.t('Modes:Basic Viewer'),
     routes: [
-      longitudinalRoute
+      testTaskRoute
     ],
     extensions: extensionDependencies,
   };
