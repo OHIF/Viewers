@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
-import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +33,9 @@ import {
   Onboarding,
   ScrollArea,
   InvestigationalUseDialog,
+  formatDICOMDate,
+  formatDICOMTime,
+  parseStudyDateTimestamp,
 } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
@@ -105,7 +107,10 @@ function LegacyWorkList({
     return [...studies].sort((s1, s2) => {
       if (shouldUseDefaultSort) {
         const ascendingSortModifier = -1;
-        return _sortStringDates(s1, s2, ascendingSortModifier);
+        return (
+          (parseStudyDateTimestamp(s1.date, s1.time) - parseStudyDateTimestamp(s2.date, s2.time)) *
+          ascendingSortModifier
+        );
       }
 
       const s1Prop = s1[sortBy];
@@ -120,7 +125,10 @@ function LegacyWorkList({
       } else if (!s2Prop && s1Prop) {
         return 1 * sortModifier;
       } else if (sortBy === 'studyDate') {
-        return _sortStringDates(s1, s2, sortModifier);
+        return (
+          (parseStudyDateTimestamp(s1.date, s1.time) - parseStudyDateTimestamp(s2.date, s2.time)) *
+          sortModifier
+        );
       }
 
       return 0;
@@ -264,16 +272,8 @@ function LegacyWorkList({
       date,
       time,
     } = study;
-    const studyDate =
-      date &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat', 'MMM-DD-YYYY'));
-    const studyTime =
-      time &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
-        t('Common:localTimeFormat', 'hh:mm A')
-      );
+    const studyDate = formatDICOMDate(date, { fallbackFormat: 'MMM-DD-YYYY', invalidFallback: '' });
+    const studyTime = formatDICOMTime(time, { invalidFallback: '' });
 
     const makeCopyTooltipCell = textValue => {
       if (!textValue) {
@@ -680,20 +680,6 @@ function _getQueryFilterValues(params) {
   );
 
   return queryFilterValues;
-}
-
-function _sortStringDates(s1, s2, sortModifier) {
-  // TODO: Delimiters are non-standard. Should we support them?
-  const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-  const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-
-  if (s1Date.isValid() && s2Date.isValid()) {
-    return (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier;
-  } else if (s1Date.isValid()) {
-    return sortModifier;
-  } else if (s2Date.isValid()) {
-    return -1 * sortModifier;
-  }
 }
 
 export default LegacyWorkList;

@@ -5,7 +5,9 @@ import { Icons } from '../../Icons';
 import type { StudyDateRangeFilter, StudyRow } from '../types/types';
 import { ActionCell } from '../components/ActionCell';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
-import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDate';
+import { formatDICOMDate } from '../../../utils/formatDICOMDate';
+import { formatDICOMTime } from '../../../utils/formatDICOMTime';
+import { parseStudyDateTimestamp } from '../../../utils/parseStudyDateTimestamp';
 
 // Column ID constants - shared across the codebase
 export const COLUMN_IDS = {
@@ -74,7 +76,14 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       id: COLUMN_IDS.STUDY_DATE_TIME,
       accessorFn: row => {
         const r = row as StudyRow;
-        return formatStudyDate(r.date ?? '', r.time ?? '');
+        // Date drives the cell: with no valid date we show nothing, even if a
+        // time is present.
+        const date = formatDICOMDate(r.date ?? '', { fallbackFormat: 'MMM-DD-YYYY', invalidFallback: '' });
+        if (!date) {
+          return '';
+        }
+        const time = formatDICOMTime(r.time ?? '', { invalidFallback: '' });
+        return time ? `${date} ${time}` : date;
       },
       filterFn: (row, _colId, filter) => {
         const range =
