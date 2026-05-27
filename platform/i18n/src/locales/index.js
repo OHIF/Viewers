@@ -10,6 +10,7 @@ import pt_BR from './pt-BR/';
 import ru from './ru/';
 import vi from './vi/';
 import zh from './zh/';
+import hi from './hi/';
 import test_lng from './test-LNG/';
 
 export default {
@@ -25,5 +26,6 @@ export default {
   ...ru,
   ...vi,
   ...zh,
+  ...hi,
   ...test_lng,
 };
