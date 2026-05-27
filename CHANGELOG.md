@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.3](https://github.com/OHIF/Viewers/compare/v3.12.2...v3.12.3) (2026-05-27)
+
+
+### Bug Fixes
+
+* **security:** Add tmp as a resolution to fix security vulnerability. Trigger release 3.12.3. ([#6045](https://github.com/OHIF/Viewers/issues/6045)) ([fb4441b](https://github.com/OHIF/Viewers/commit/fb4441ba71ec95dd494d120152a61df9261024cb))
+
+
+
+
+
 ## [3.12.2](https://github.com/OHIF/Viewers/compare/v3.12.1...v3.12.2) (2026-05-18)
 
 
