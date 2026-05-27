@@ -56,6 +56,7 @@ function _getDisplaySetsFromSeries(
     StudyInstanceUID,
     SOPClassHandlerId,
     SOPClassUID,
+    FrameOfReferenceUID: null,
     referencedImages: null,
     referencedSeriesInstanceUID: null,
     referencedDisplaySetInstanceUID: null,
@@ -95,6 +96,9 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
+  displaySet.FrameOfReferenceUID =
+    instance.ReferencedFrameOfReferenceSequence?.[0]?.FrameOfReferenceUID;
+
   const { displaySetService } = servicesManager.services;
   const referencedDisplaySets =
     displaySetService.getDisplaySetsForReferences(referencedSeriesSequence);
@@ -113,6 +117,7 @@ function _getDisplaySetsFromSeries(
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
           displaySet.isReconstructable = addedDisplaySet.isReconstructable;
+          displaySet.FrameOfReferenceUID = addedDisplaySet.FrameOfReferenceUID;
           unsubscribe();
         }
       }
@@ -121,6 +126,7 @@ function _getDisplaySetsFromSeries(
     const [referencedDisplaySet] = referencedDisplaySets;
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
+    displaySet.FrameOfReferenceUID = referencedDisplaySet.FrameOfReferenceUID;
   }
 
   displaySet.load = ({ headers, createSegmentation = true }) =>

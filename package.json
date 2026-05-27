@@ -54,7 +54,13 @@
     "docs:preview": "pnpm --filter ohif-docs run serve",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "version:custom": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "cs3d:checkout": "cd libs/@cornerstonejs && git fetch && git checkout",
+    "cs3d:install": "pnpm -C libs/@cornerstonejs install",
+    "cs3d:build": "pnpm -C libs/@cornerstonejs run build:esm",
+    "cs3d:watch": "pnpm -C libs/@cornerstonejs run build:esm:watch",
+    "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
+    "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs ."
   },
   "dependencies": {
     "execa": "8.0.1"
@@ -75,7 +81,7 @@
     "@babel/plugin-transform-regenerator": "7.28.1",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "7.28.0",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@istanbuljs/nyc-config-typescript": "1.0.2",

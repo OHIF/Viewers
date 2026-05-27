@@ -1,8 +1,12 @@
 import { execa } from 'execa';
 import semver from 'semver';
 import fs from 'fs/promises';
+import { spawnSync } from 'child_process';
 
 async function run() {
+  // Log build context for diagnosing GitHub build issues (OHIF/CS3D branch and version)
+  spawnSync('node', ['.scripts/log-build-context.mjs'], { stdio: 'inherit', cwd: process.cwd() });
+
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
   console.log('Current branch:', branchName);
 

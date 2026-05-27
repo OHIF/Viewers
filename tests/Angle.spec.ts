@@ -13,11 +13,17 @@ test('should display the angle tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.angle.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 550, y: 200 },
     { x: 450, y: 250 },
     { x: 550, y: 300 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.angle.angleDisplayedCorrectly);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.angle.angleDisplayedCorrectly
+  );
 });
