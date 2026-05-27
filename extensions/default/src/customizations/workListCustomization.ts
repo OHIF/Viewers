@@ -1,3 +1,5 @@
+import { StudyList } from '@ohif/ui-next';
+
 /**
  * Default customization values for the WorkList study-list route.
  *
@@ -17,12 +19,30 @@
  *   - declares `thumbnailRequestStrategy` as `'bulkDataRetrieve'` (default value).
  *   Currently only applies when `workList.variant` is `'default'`.
  *
- * - `workList.columns`: `(defaults) => ColumnDef[]` (default: identity)
- *   Builds the column set for the WorkList table. Receives the default
- *   `ColumnDef[]` (same shape as `StudyList.defaultColumns()`) and must return
- *   a `ColumnDef[]`. Use this to reorder, hide, or insert columns without
- *   rewriting the defaults. If the returned value is not an array, WorkList
- *   falls back to the defaults.
+ * - `workList.columns`: `ColumnDef[]` (default: `StudyList.defaultColumns`)
+ *   The column set for the WorkList table, as a value (not a function). Because
+ *   it is a plain array, override it with immutability-helper commands:
+ *   - reorder / insert / remove: `$splice`
+ *   - relabel / resize / reprioritize (all plain data in `meta`): `$set` / `$merge`
+ *   - replace a renderer: `$set` a new `cell` / `header` function
+ *   - `$apply: (cols) => ColumnDef[]`: receive the current columns and return the
+ *     new array. Use it for anything the other commands don't express cleanly —
+ *     moves, conditional inserts, or any edit keyed off a column's `id` rather
+ *     than its position (e.g. `cols.find(c => c.id === 'modalities')`).
+ *   Use `StudyList.textColumn(id, label, meta?)` to build a simple display-only
+ *   column without writing the accessor/header/cell wiring.
+ *
+ *   Gotchas / limitations:
+ *   - A `ColumnDef`'s `accessorFn` / `cell` / `header` / `filterFn` / `sortingFn`
+ *     are functions: `$set`/`$push` accept them, but they are not serializable,
+ *     so columns that render anything beyond plain text still need code.
+ *   - The trailing `actions` column should stay last for correct layout (its
+ *     hover menu is right-aligned to sit at the row end) — this is cosmetic,
+ *     not a hard requirement. Insert new columns *before* it with `$splice`
+ *     (a `$push` lands after it, leaving the actions menu mid-row).
+ *   - Index-based commands (e.g. `{ 2: { meta: { label: { $set: '…' } } } }`)
+ *     are position-fragile; prefer `$apply` for id-based edits.
+ *   If the merged value is not an array, WorkList falls back to the defaults.
  *   Currently only applies when `workList.variant` is `'default'`.
  *
  * - `workList.renderPreviewContent`: `(React, props) => ReactNode` (default: undefined)
@@ -60,7 +80,7 @@ export default function getWorkListCustomization() {
   return {
     'workList.variant': 'default',
     'workList.previewSeriesView': 'all',
-    'workList.columns': (defaults: unknown) => defaults,
+    'workList.columns': StudyList.defaultColumns,
     'workList.renderPreviewContent': undefined,
     'workList.settingsMenuItems': (defaults: unknown) => defaults,
   };

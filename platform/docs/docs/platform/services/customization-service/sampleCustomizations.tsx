@@ -415,27 +415,37 @@ window.config = {
     id: 'workList.columns',
     description: (
       <>
-        Builds the column set for the WorkList table. The customization is a function that
-        receives the default <code>ColumnDef[]</code> (from <code>StudyList.defaultColumns()</code>)
-        and must return a <code>ColumnDef[]</code>. Use it to reorder, hide, or insert columns
-        without rewriting the defaults. The default value is the identity function. If the
-        customization returns a non-array value, WorkList falls back to the defaults. Currently
-        only applies when <code>workList.variant</code> is <code>'default'</code>.
+        The column set for the WorkList table, as a <code>ColumnDef[]</code> value (default:{' '}
+        <code>StudyList.defaultColumns</code>). Because it is a plain array, override it with
+        immutability-helper commands — <code>$splice</code> to reorder/insert/remove,{' '}
+        <code>$set</code>/<code>$merge</code> to tweak <code>meta</code> (label, width, priority),
+        or <code>$apply</code> — a function that receives the current columns and returns the new
+        array — for anything the other commands don't express cleanly (moves, conditional inserts,
+        or edits keyed off a column's <code>id</code> rather than its position). Use{' '}
+        <code>StudyList.textColumn(id, label, meta?)</code> for a simple display-only column.
+        Gotchas: a column's <code>cell</code>/<code>accessorFn</code>/etc. are functions (not
+        serializable, so non-text columns still need code); the trailing <code>actions</code>{' '}
+        column should stay last for correct layout (cosmetic, not required), so insert{' '}
+        <em>before</em> it with <code>$splice</code> rather than <code>$push</code>; and
+        index-based edits are position-fragile (prefer <code>$apply</code>{' '}
+        for id-based changes). If the merged value is not an array, WorkList falls back to the
+        defaults. Currently only applies when <code>workList.variant</code> is{' '}
+        <code>'default'</code>.
       </>
     ),
-    default: '(defaults) => defaults',
+    default: 'StudyList.defaultColumns',
     configuration: `
 window.config = {
   // rest of window config
   customizationService: [
     {
       'workList.columns': {
-        // Hide the MRN column and move Instances to the front.
-        $set: (defaults) => {
-          const filtered = defaults.filter((c) => c.id !== 'mrn');
-          const instances = filtered.find((c) => c.id === 'instances');
-          if (!instances) return filtered;
-          return [instances, ...filtered.filter((c) => c.id !== 'instances')];
+        // Insert a Referring Physician column before the trailing actions column.
+        $apply: (columns) => {
+          const actionsIndex = columns.findIndex((c) => c.id === 'actions');
+          const at = actionsIndex === -1 ? columns.length : actionsIndex;
+          const referring = StudyList.textColumn('referringPhysicianName', 'Referring Physician');
+          return [...columns.slice(0, at), referring, ...columns.slice(at)];
         },
       },
     },

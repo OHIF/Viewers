@@ -31,21 +31,91 @@ Note: the preview is forced to `'list'` when the active data source either decla
 
 :::tip
 
-The customizations below — `workList.columns`, `workList.renderPreviewContent`, and `workList.settingsMenuItems` — accept functions whose return values frequently need access to React hooks, the services manager, or the commands manager (e.g. to open modals, navigate, run commands, or build translated labels). They can be set from `window.config`, but they're generally easier to author in a custom extension's `getCustomizationModule`, where the services manager is in scope and components can use hooks normally. Plain config is best suited to simple tweaks like reordering, removing, or inserting items that only need static handlers.
+The customizations below often involve functions — `workList.renderPreviewContent` and `workList.settingsMenuItems` are functions, and `workList.columns` (a value) commonly carries cell/header renderers or an `$apply` transform. Those functions frequently need access to React hooks, the services manager, or the commands manager (e.g. to open modals, navigate, run commands, or build translated labels). They can be set from `window.config`, but they're generally easier to author in a custom extension's `getCustomizationModule`, where the services manager is in scope and components can use hooks normally. Plain config is best suited to simple tweaks like reordering, removing, or inserting items that only need static handlers.
 
 :::
 
 ## `workList.columns`
 
-Builds the column set for the WorkList table. The customization is a function with the same shape as `StudyList.defaultColumns` — it receives the default `ColumnDef[]` and must return a `ColumnDef[]`. Use it to reorder, hide, or insert columns without rewriting the defaults.
+The column set for the WorkList table, registered as a **value** — `ColumnDef<StudyRow, unknown>[]` — rather than a function. The default is `StudyList.defaultColumns`, so out of the box the table shows `Patient`, `MRN`, `Study Date`, `Modalities`, `Description`, `Accession`, `Instances`, and a trailing actions column in that order.
+
+Because it is a plain array, you customize it with [immutability-helper](https://github.com/kolodny/immutability-helper) commands:
+
+| Command | Use |
+| --- | --- |
+| `$splice` | reorder, insert, or remove columns |
+| `$set` / `$merge` | tweak a column's `meta` (label, `minWidth`, `priority`, `align`) |
+| `$set` a `cell`/`header` | replace a column's renderer |
+| `$apply: (cols) => cols` | run your own function over the current columns and return the new array |
+
+The first three commands cover the common, declarative tweaks. `$apply` is the general-purpose option for anything they don't express cleanly: instead of describing the change with a command, you receive the current `ColumnDef[]` and return the array you want. Because it's a plain function you can use normal JavaScript — `find`, `filter`, `map`, `slice`, conditionals — which makes it the right choice for moves, conditional inserts, or any edit that should be driven by a column's `id` rather than its position. For example, reordering by id:
 
 ```ts
-type WorkListColumns = (
-  defaults: ColumnDef<StudyRow, unknown>[]
-) => ColumnDef<StudyRow, unknown>[];
+'workList.columns': {
+  $apply: columns => {
+    // Move "Modalities" to the front, leaving everything else in order.
+    const modalities = columns.find(c => c.id === 'modalities');
+    return modalities ? [modalities, ...columns.filter(c => c.id !== 'modalities')] : columns;
+  },
+}
 ```
 
-The default customization value is the identity function (`(defaults) => defaults`), so out of the box the table shows `Patient`, `MRN`, `Study Date`, `Modalities`, `Description`, `Accession`, `Instances`, and a trailing actions column in that order. If the customization returns anything that is not an array, WorkList falls back to the defaults.
+For a simple, display-only column, `StudyList.textColumn(id, label, meta?)` fills in the accessor/header/cell wiring for you:
+
+```ts
+window.config = {
+  customizationService: [
+    {
+      'workList.columns': {
+        // Insert before the trailing actions column so it stays at row end.
+        $apply: columns => {
+          const at = columns.findIndex(c => c.id === 'actions');
+          const referring = StudyList.textColumn('referringPhysicianName', 'Referring Physician');
+          return [...columns.slice(0, at), referring, ...columns.slice(at)];
+        },
+      },
+    },
+  ],
+};
+```
+
+A pure-data tweak (e.g. relabel) needs no function at all:
+
+```ts
+'workList.columns': { 2: { meta: { label: { $set: 'Study Date / Time' } } } }
+```
+
+### Surfacing an attribute the data source doesn't map yet
+
+A column can only display data that's already on the study row. The default DICOMweb data source maps a fixed set of fields (`patientName`, `mrn`, `date`/`time`, `accession`, `description`, `modalities`, `instances`, `studyInstanceUid`, `referringPhysicianName`). To add a column for a DICOM attribute outside that set — say **Requesting Physician** `(0032,1032)` — extend the QIDO handling in `extensions/default/src/DicomWebDataSource/qido.js`:
+
+1. **Request the tag** — add it to `includefield` in `mapParams`, so the server is asked to return it:
+
+   ```js
+   const commaSeparatedFields = [
+     '00081030', // Study Description
+     '00080060', // Modality
+     '00080090', // Referring Physician's Name
+     '00321032', // Requesting Physician
+   ].join(',');
+   ```
+
+2. **Map it onto the row** — in `processResults` (a `PN`-VR field, so it goes through `formatPN`/`getName` like `patientName`):
+
+   ```js
+   requestingPhysician: utils.formatPN(getName(qidoStudy['00321032'])) || '',
+   ```
+
+Now any column can read `row.requestingPhysician` (e.g. `StudyList.textColumn('requestingPhysician', 'Requesting Physician')`). Note that **`StudyRow` does not need editing** — it carries an index signature, so data-source-mapped fields are readable without a type change.
+
+Two caveats: the server must actually return the tag (it has to support `includefield` — see the data source's `qidoSupportsIncludeField` — and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
+
+### Gotchas and limitations
+
+- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortingFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
+- **The `actions` column should stay last (cosmetic).** Its hover menu is right-aligned to anchor the row end, so placing it mid-row just looks wrong — it's not a functional requirement. Insert new columns *before* it (e.g. `$splice` at its index, or the `$apply` pattern above); a bare `$push` lands *after* it, leaving the actions menu mid-row.
+- **Index-based commands are position-fragile.** `{ 2: { … } }` targets whatever is at index 2, which shifts if earlier columns are added/removed. Prefer `$apply` with a `findIndex`/`id` lookup for edits that should survive reordering.
+- If the merged value is not an array, WorkList falls back to `StudyList.defaultColumns`.
 
 ## `workList.renderPreviewContent`
 

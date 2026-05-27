@@ -48,14 +48,10 @@ export default function WorkList({
   const [isPreviewOpen, setPreviewOpen] = useState(true);
 
   const columns = useMemo(() => {
-    type Columns = ReturnType<typeof StudyList.defaultColumns>;
-    const defaults: Columns = StudyList.defaultColumns();
-    const buildColumns = customizationService.getCustomization('workList.columns');
-    if (typeof buildColumns !== 'function') {
-      return defaults;
-    }
-    const result = (buildColumns as (defaults: Columns) => Columns)(defaults);
-    return Array.isArray(result) ? result : defaults;
+    // `workList.columns` is registered as a value (StudyList.defaultColumns) and
+    // merged via customization commands, so we read the result directly.
+    const customized = customizationService.getCustomization('workList.columns');
+    return Array.isArray(customized) ? customized : StudyList.defaultColumns;
   }, [customizationService]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (

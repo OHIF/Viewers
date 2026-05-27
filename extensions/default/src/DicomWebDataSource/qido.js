@@ -55,6 +55,7 @@ function processResults(qidoStudies) {
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
       description: getString(qidoStudy['00081030']) || '',
       modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
+      referringPhysicianName: utils.formatPN(getName(qidoStudy['00080090'])) || '', // Referring Physician's Name
     })
   );
 
@@ -151,6 +152,7 @@ function mapParams(params, options = {}) {
   const commaSeparatedFields = [
     '00081030', // Study Description
     '00080060', // Modality
+    '00080090', // Referring Physician's Name
     // Add more fields here if you want them in the result
   ].join(',');
 

@@ -10,6 +10,11 @@ export type StudyRow = {
   description: string;
   accession: string;
   instances: number;
+  // A data source may map additional fields (e.g. extra DICOM attributes pulled
+  // in via `includefield`). Allowing arbitrary keys means a custom column can
+  // read one without StudyRow needing an edit per field. The declared fields
+  // above keep their precise types.
+  [key: string]: unknown;
 };
 
 export type StudyDateRangeFilter = {
