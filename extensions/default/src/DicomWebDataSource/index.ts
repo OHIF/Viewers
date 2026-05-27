@@ -16,6 +16,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
+import { applyServiceUrls } from './utils/applyServiceUrls';
 import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
@@ -35,6 +36,7 @@ export type DicomWebConfig = {
   /** Base URL to use for QIDO requests */
   qidoRoot?: string;
   wadoRoot?: string; // - Base URL to use for WADO requests
+  stowRoot?: string; // - Base URL to use for STOW requests (defaults to wadoRoot)
   wadoUri?: string; // - Base URL to use for WADO URI requests
   qidoSupportsIncludeField?: boolean; // - Whether QIDO supports the "Include" option to request additional fields in response
   imageRendering?: string; // - wadors | ? (unsure of where/how this is used)
@@ -207,6 +209,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       wadoDicomWebClient = dicomWebConfig.staticWado
         ? new StaticWadoClient(wadoConfig)
         : new api.DICOMwebClient(wadoConfig);
+
+      applyServiceUrls(qidoDicomWebClient, wadoDicomWebClient, dicomWebConfig);
     },
     query: {
       studies: {
