@@ -3,6 +3,184 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.83...v3.13.0-beta.84) (2026-05-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.82...v3.13.0-beta.83) (2026-05-26)
+
+
+### Bug Fixes
+
+* **segmentation:** restore navigation for duplicated contour segments ([#6038](https://github.com/OHIF/Viewers/issues/6038)) ([0c1ca6b](https://github.com/OHIF/Viewers/commit/0c1ca6b04a6c1aef478c7a7d9f360f9b9c50f188))
+
+
+
+
+
+# [3.13.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.81...v3.13.0-beta.82) (2026-05-22)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.80...v3.13.0-beta.81) (2026-05-21)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.79...v3.13.0-beta.80) (2026-05-20)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.78...v3.13.0-beta.79) (2026-05-19)
+
+
+### Bug Fixes
+
+* **seg:** prevent viewport orientation change when loading SEG in manual grid layout ([#6021](https://github.com/OHIF/Viewers/issues/6021)) ([95251ab](https://github.com/OHIF/Viewers/commit/95251ab6709934e4ef59931379f8d9d7629f87b2))
+
+
+
+
+
+# [3.13.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.77...v3.13.0-beta.78) (2026-05-19)
+
+
+### Bug Fixes
+
+* **measurements:** read displayName in SplineROI and PlanarFreehandROI reports ([#5908](https://github.com/OHIF/Viewers/issues/5908)) ([27af682](https://github.com/OHIF/Viewers/commit/27af6821b56f2c5be3a5d4ce38d05be6fbce68f4))
+
+
+
+
+
+# [3.13.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.76...v3.13.0-beta.77) (2026-05-19)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.75...v3.13.0-beta.76) (2026-05-19)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.74...v3.13.0-beta.75) (2026-05-18)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.73...v3.13.0-beta.74) (2026-05-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.72...v3.13.0-beta.73) (2026-05-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.71...v3.13.0-beta.72) (2026-05-12)
+
+
+### Bug Fixes
+
+* **measurement-tracking:** restore tracked state on undo after Delete all ([#5994](https://github.com/OHIF/Viewers/issues/5994)) ([397aa4d](https://github.com/OHIF/Viewers/commit/397aa4d0e361e95dcbd83e0557a9cd84c0b8440a))
+
+
+
+
+
+# [3.13.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.70...v3.13.0-beta.71) (2026-05-07)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.69...v3.13.0-beta.70) (2026-05-07)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.68...v3.13.0-beta.69) (2026-05-06)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.67...v3.13.0-beta.68) (2026-05-05)
+
+
+### Bug Fixes
+
+* **ToolGroupService:** Centralize tool binding persistence and provide API to add and remove persisted bindings. ([#5989](https://github.com/OHIF/Viewers/issues/5989)) ([979d619](https://github.com/OHIF/Viewers/commit/979d619f7ccb426beb75d59721b01c98175d5241))
+
+
+
+
+
+# [3.13.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.66...v3.13.0-beta.67) (2026-04-30)
+
+
+### Features
+
+* **ui-next:** Adds toggle state for ToolButton and Crosshair example ([#5914](https://github.com/OHIF/Viewers/issues/5914)) ([691e267](https://github.com/OHIF/Viewers/commit/691e26731f4f3b3957fe81fc051b09c972696cf6))
+
+
+
+
+
+# [3.13.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.65...v3.13.0-beta.66) (2026-04-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.64...v3.13.0-beta.65) (2026-04-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.13.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.63...v3.13.0-beta.64) (2026-04-27)
 
 

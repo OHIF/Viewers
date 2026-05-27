@@ -103,14 +103,14 @@ describe('secureConfigFetch', () => {
         expect.objectContaining({
           method: 'GET',
           mode: 'cors',
-          credentials: 'omit',
+          credentials: 'same-origin',
           redirect: 'error',
           referrerPolicy: 'no-referrer',
         })
       );
     });
 
-    it('uses simple fetch for unauthenticated same-origin requests', async () => {
+    it('uses hardened fetch options for unauthenticated same-origin requests', async () => {
       global.fetch.mockResolvedValue({
         status: 200,
         ok: true,
@@ -124,11 +124,18 @@ describe('secureConfigFetch', () => {
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        `${window.location.origin}/protected/config.json`
+        `${window.location.origin}/protected/config.json`,
+        expect.objectContaining({
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'same-origin',
+          redirect: 'error',
+          referrerPolicy: 'no-referrer',
+        })
       );
     });
 
-    it('uses simple fetch in authenticated environments', async () => {
+    it('uses hardened fetch options in authenticated environments', async () => {
       global.fetch.mockResolvedValue({
         status: 200,
         ok: true,
@@ -141,7 +148,16 @@ describe('secureConfigFetch', () => {
         isSameOrigin: false,
       });
 
-      expect(global.fetch).toHaveBeenCalledWith('https://trusted.example.com/config.json');
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://trusted.example.com/config.json',
+        expect.objectContaining({
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'same-origin',
+          redirect: 'error',
+          referrerPolicy: 'no-referrer',
+        })
+      );
     });
   });
 });
