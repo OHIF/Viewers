@@ -288,7 +288,7 @@ function commandsModule({
               ? Enums.SegmentationRepresentations.Labelmap
               : Enums.SegmentationRepresentations.Contour;
 
-          segmentationService.addSegmentationRepresentation(activeViewportId, {
+          await segmentationService.addSegmentationRepresentation(activeViewportId, {
             segmentationId: displaySet.displaySetInstanceUID,
             type: representationType,
           });
@@ -298,6 +298,27 @@ function commandsModule({
       if (!loaded) {
         console.warn('No derived segmentations found for active viewport');
         return;
+      }
+
+      const disableEditing = customizationService.getCustomization(
+        'panelSegmentation.disableEditing'
+      );
+      if (disableEditing) {
+        const activeViewportId = viewportGridService.getActiveViewportId();
+        const segmentationRepresentations = segmentationService.getSegmentationRepresentations(
+          activeViewportId
+        );
+
+        segmentationRepresentations.forEach(representation => {
+          const segmentIndices = Object.keys(representation.segments);
+          segmentIndices.forEach(segmentIndex => {
+            segmentationService.setSegmentLocked(
+              representation.segmentationId,
+              parseInt(segmentIndex),
+              true
+            );
+          });
+        });
       }
 
       console.info('Segmentations loaded for active viewport.');
