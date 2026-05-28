@@ -142,6 +142,7 @@
     ]
   },
   "resolutions": {
+    "chalk": "4.1.2",
     "commander": "8.3.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
