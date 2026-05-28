@@ -840,10 +840,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     _presentations: Presentations = {}
   ): Promise<void> {
     const [displaySet] = viewportData.data;
-    return viewport.setDataIds(displaySet.imageIds, {
-      groupId: displaySet.displaySetInstanceUID,
-      viewReference: viewportInfo.getViewReference(),
-    });
+    // CS3D's "redo viewports" replaced setDataIds with the generic
+    // setDisplaySets({ displaySetId }) API; the legacy adapters key off
+    // imageIds[0] as the displaySetId, so do the same here.
+    await viewport.setDisplaySets({ displaySetId: displaySet.imageIds[0] });
+    const viewReference = viewportInfo.getViewReference();
+    if (viewReference) {
+      viewport.setViewReference(viewReference);
+    }
   }
 
   private async _setStackViewport(
