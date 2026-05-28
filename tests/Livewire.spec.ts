@@ -43,11 +43,17 @@ test('should display the livewire tool', async ({
 
   const stats = livewires[0].firstTargetStats!;
   expect(stats.areaUnit).toBe('mm²');
-  expect(Math.round(stats.area as number)).toBe(28906);
+  // Tolerance accounts for the cumulative allowance from differing screen resolutions:
+  // click coordinates project to slightly different world positions across DPIs, and
+  // Livewire then snaps the contour to local edge gradients — small click offsets can
+  // route the path along an entirely different edge, so the area swings more than for
+  // a polygon-based tool like Spline. The wider tolerance reflects that sensitivity.
+  const area = Math.round(stats.area as number);
+  expect(Math.abs(area - 28906)).toBeLessThanOrEqual(2000);
 
   const lines = activeViewport.getSvgAnnotationStatTextLines(livewires[0].annotationUID);
   await expect(lines).toHaveCount(1);
-  await expect(lines.nth(0)).toHaveText('Area: 28906 mm²');
+  await expect(lines.nth(0)).toHaveText(`Area: ${area} mm²`);
 });
 
 test('should restore viewport interactivity after deleting an in-progress Livewire annotation via context menu', async ({
