@@ -38,7 +38,6 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       CornerstoneViewportService.subscribe(
         CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
         () => {
-          console.log('Viewport data changed, sending IMAGE_READY message');
           window.parent.postMessage(
             {
               type: OHIFMessageType.IMAGE_READY,
@@ -96,7 +95,6 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       );
 
       window.addEventListener('message', event => {
-        console.log(event.data.type);
         if (event.data.type === OHIFMessageType.IMAGE_STATUS) {
           if (event.data.message.status === 'Validated') {
             if (event.data.message.imageType === '2D') {
@@ -195,7 +193,6 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
           measurementService.clearMeasurements();
           const relatedPoints = event.data.message.measures;
           demonstrateMeasurementService(servicesManager, relatedPoints, event.data.message.status);
-          const allAnnotations = cs3dTools.annotation.state.getAllAnnotations();
           const imageId = viewport.getCurrentImageId();
           const isVolumeViewport = viewport.type === 'volume' || viewport.getImageIds;
           const imageMetadata = isVolumeViewport

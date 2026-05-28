@@ -44,7 +44,6 @@ function convertFromDicomCoordinates(
 function convertToDicomCoordinates(
   normalizedX,
   normalizedY,
-  sliceIndex,
   imageWidth,
   imageHeight,
   numberOfSlices,
@@ -66,10 +65,12 @@ function convertToDicomCoordinates(
   const colDir = [orientationMatrix[3], orientationMatrix[4], orientationMatrix[5]]; // [cx, cy, cz]
 
   // Compute DICOM coordinates
+
   const dicomX = imagePositionPatient[0] + physicalX * rowDir[0] + physicalY * colDir[0];
   const dicomY = imagePositionPatient[1] + physicalX * rowDir[1] + physicalY * colDir[1];
+  const worldZ = imagePositionPatient[2];
 
-  return [dicomX, dicomY, numberOfSlices === 1 ? null : sliceIndex];
+  return [dicomX, dicomY, numberOfSlices === 1 ? null : worldZ];
 }
 
 async function matchNameWithAxis(
@@ -196,7 +197,7 @@ function lockMeasurementIfNeeded(data, imageStatus: boolean): void {
   const annotations = cs3dTools.annotation.state.getAllAnnotations();
   annotations?.forEach(annotation => {
     if (
-      (annotation.data.label! as unknown as { measurementId: string }).measurementId ===
+      (annotation.data.label! as unknown as { measurementId: string })?.measurementId ===
       data.measurementId &&
       (data.locked === true || imageStatus)
     ) {
@@ -259,7 +260,20 @@ export function createRectangleROI(viewport, imageMetadata, data: RelatedPoint) 
     const numberOfSlices = viewport.getNumberOfSlices();
     const imageIds = viewport.getImageIds();
     const sliceIndex = data.points[0].sliceIndex;
-    const imageId = sliceIndex ? imageIds[sliceIndex] : imageIds[0];
+
+    const firstSliceMeta = cornerstone.metaData.get('imagePlaneModule', imageIds[0]);
+    const lastSliceMeta = cornerstone.metaData.get(
+      'imagePlaneModule',
+      imageIds[numberOfSlices - 1]
+    );
+    const firstZ = firstSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const lastZ = lastSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const isZAscending = firstZ < lastZ;
+    const adjustedSliceIndex = isZAscending ? numberOfSlices - 1 - sliceIndex : sliceIndex;
+
+    const imageId = imageIds[adjustedSliceIndex] || imageIds[0];
+    const imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId);
+    const imagePositionPatient = imagePlaneModule.imagePositionPatient;
 
     const normalizedPoints = data.points.map(point => {
       const normalizedX = point.x ? point.x : point.xOrigin;
@@ -268,13 +282,11 @@ export function createRectangleROI(viewport, imageMetadata, data: RelatedPoint) 
       const imageHeight = imageMetadata.dimensions[1];
       const pixelSpacingX = imageMetadata.spacing[0];
       const pixelSpacingY = imageMetadata.spacing[1];
-      const imagePositionPatient = imageMetadata.origin;
       const orientationMatrix = imageMetadata.direction;
 
       return convertToDicomCoordinates(
         normalizedX,
         normalizedY,
-        sliceIndex,
         imageWidth,
         imageHeight,
         numberOfSlices,
@@ -322,7 +334,20 @@ export function createPoint(viewport, imageMetadata, data: RelatedPoint) {
     const numberOfSlices = viewport.getNumberOfSlices();
     const imageIds = viewport.getImageIds();
     const sliceIndex = data.points[0].sliceIndex;
-    const imageId = sliceIndex ? imageIds[sliceIndex] : imageIds[0];
+
+    const firstSliceMeta = cornerstone.metaData.get('imagePlaneModule', imageIds[0]);
+    const lastSliceMeta = cornerstone.metaData.get(
+      'imagePlaneModule',
+      imageIds[numberOfSlices - 1]
+    );
+    const firstZ = firstSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const lastZ = lastSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const isZAscending = firstZ < lastZ;
+    const adjustedSliceIndex = isZAscending ? numberOfSlices - 1 - sliceIndex : sliceIndex;
+
+    const imageId = imageIds[adjustedSliceIndex] || imageIds[0];
+    const imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId);
+    const imagePositionPatient = imagePlaneModule.imagePositionPatient;
 
     const normalizedX = data.points[0].x ? data.points[0].x : data.points[0].xOrigin;
     const normalizedY = data.points[0].y ? data.points[0].y : data.points[0].yOrigin;
@@ -330,13 +355,11 @@ export function createPoint(viewport, imageMetadata, data: RelatedPoint) {
     const imageHeight = imageMetadata.dimensions[1];
     const pixelSpacingX = imageMetadata.spacing[0];
     const pixelSpacingY = imageMetadata.spacing[1];
-    const imagePositionPatient = imageMetadata.origin;
     const orientationMatrix = imageMetadata.direction;
 
     const dicomCoords = convertToDicomCoordinates(
       normalizedX,
       normalizedY,
-      sliceIndex,
       imageWidth,
       imageHeight,
       numberOfSlices,
@@ -388,7 +411,20 @@ export function createLength(viewport, imageMetadata, data: RelatedPoint) {
     const numberOfSlices = viewport.getNumberOfSlices();
     const imageIds = viewport.getImageIds();
     const sliceIndex = data.points[0].sliceIndex;
-    const imageId = sliceIndex ? imageIds[sliceIndex] : imageIds[0];
+
+    const firstSliceMeta = cornerstone.metaData.get('imagePlaneModule', imageIds[0]);
+    const lastSliceMeta = cornerstone.metaData.get(
+      'imagePlaneModule',
+      imageIds[numberOfSlices - 1]
+    );
+    const firstZ = firstSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const lastZ = lastSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const isZAscending = firstZ < lastZ;
+    const adjustedSliceIndex = isZAscending ? numberOfSlices - 1 - sliceIndex : sliceIndex;
+
+    const imageId = imageIds[adjustedSliceIndex] || imageIds[0];
+    const imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId);
+    const imagePositionPatient = imagePlaneModule.imagePositionPatient;
 
     const normalizedX = data.points[0].x ? data.points[0].x : data.points[0].xOrigin;
     const normalizedY = data.points[0].y ? data.points[0].y : data.points[0].yOrigin;
@@ -396,13 +432,11 @@ export function createLength(viewport, imageMetadata, data: RelatedPoint) {
     const imageHeight = imageMetadata.dimensions[1];
     const pixelSpacingX = imageMetadata.spacing[0];
     const pixelSpacingY = imageMetadata.spacing[1];
-    const imagePositionPatient = imageMetadata.origin;
     const orientationMatrix = imageMetadata.direction;
 
     const dicomCoords = convertToDicomCoordinates(
       normalizedX,
       normalizedY,
-      sliceIndex,
       imageWidth,
       imageHeight,
       numberOfSlices,
@@ -419,19 +453,17 @@ export function createLength(viewport, imageMetadata, data: RelatedPoint) {
     const numberOfSlices2 = viewport.getNumberOfSlices();
     const pixelSpacingX2 = imageMetadata.spacing[0];
     const pixelSpacingY2 = imageMetadata.spacing[1];
-    const imagePositionPatient2 = imageMetadata.origin;
     const orientationMatrix2 = imageMetadata.direction;
 
     const dicomCoords2 = convertToDicomCoordinates(
       normalizedX2,
       normalizedY2,
-      sliceIndex,
       imageWidth2,
       imageHeight2,
       numberOfSlices2,
       pixelSpacingX2,
       pixelSpacingY2,
-      imagePositionPatient2,
+      imagePositionPatient,
       orientationMatrix2
     );
 
@@ -478,7 +510,21 @@ export function createAngleROI(viewport, imageMetadata, data: RelatedPoint) {
     const numberOfSlices = viewport.getNumberOfSlices();
     const imageIds = viewport.getImageIds();
     const sliceIndex = data.points[0].sliceIndex;
-    const imageId = sliceIndex ? imageIds[sliceIndex] : imageIds[0];
+
+    const firstSliceMeta = cornerstone.metaData.get('imagePlaneModule', imageIds[0]);
+    const lastSliceMeta = cornerstone.metaData.get(
+      'imagePlaneModule',
+      imageIds[numberOfSlices - 1]
+    );
+
+    const firstZ = firstSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const lastZ = lastSliceMeta?.imagePositionPatient?.[2] ?? 0;
+    const isZAscending = firstZ < lastZ;
+    const adjustedSliceIndex = isZAscending ? numberOfSlices - 1 - sliceIndex : sliceIndex;
+
+    const imageId = imageIds[adjustedSliceIndex] || imageIds[0];
+    const imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId);
+    const imagePositionPatient = imagePlaneModule.imagePositionPatient;
 
     const normalizedPoints = data.points.map(point => {
       const normalizedX = point.x ? point.x : point.xOrigin;
@@ -487,13 +533,11 @@ export function createAngleROI(viewport, imageMetadata, data: RelatedPoint) {
       const imageHeight = imageMetadata.dimensions[1];
       const pixelSpacingX = imageMetadata.spacing[0];
       const pixelSpacingY = imageMetadata.spacing[1];
-      const imagePositionPatient = imageMetadata.origin;
       const orientationMatrix = imageMetadata.direction;
 
       return convertToDicomCoordinates(
         normalizedX,
         normalizedY,
-        sliceIndex,
         imageWidth,
         imageHeight,
         numberOfSlices,
@@ -547,7 +591,11 @@ export async function createMeasurement(servicesManager, points) {
 
   const imageId = viewport.getCurrentImageId();
 
-  const imageMetadata = viewport.getImageData(imageId);
+  const imageIds = viewport.getImageIds();
+  const isVolumeViewport = viewport.type === 'volume' || imageIds.length > 1;
+  const imageMetadata = isVolumeViewport
+    ? viewport.getImageData() // Volume viewport - no argument
+    : viewport.getImageData(imageId); // Stack viewport - needs imageId
   const imageWidth = imageMetadata.dimensions[0];
   const imageHeight = imageMetadata.dimensions[1];
   const sliceIndex = viewport.getSliceIndex();
