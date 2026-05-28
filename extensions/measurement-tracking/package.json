@@ -48,7 +48,7 @@
     "webpack-merge": "5.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "@ohif/ui": "3.13.0-beta.86",
     "@xstate/react": "3.2.2",
     "xstate": "4.38.3"

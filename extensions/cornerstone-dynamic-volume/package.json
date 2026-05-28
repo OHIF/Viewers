@@ -41,7 +41,7 @@
     "react": "18.3.1"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "@cornerstonejs/core": "4.22.10",
     "@cornerstonejs/tools": "4.22.10",
     "classnames": "2.5.1"

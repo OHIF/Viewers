@@ -9,7 +9,7 @@
     "yarn": ">=1.19.1"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "@kitware/vtk.js": "34.15.1",
     "clsx": "2.1.1",
     "core-js": "3.45.1",

@@ -45,7 +45,7 @@
     "react-router-dom": "6.30.3"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "@cornerstonejs/adapters": "4.22.10",
     "@cornerstonejs/core": "4.22.10",
     "@kitware/vtk.js": "34.15.1"
