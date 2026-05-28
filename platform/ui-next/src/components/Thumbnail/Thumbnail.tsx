@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+
+const TAP_MOVE_THRESHOLD = 10;
+
+type TouchStartState = {
+  x: number;
+  y: number;
+  didMove: boolean;
+};
 
 /**
  * Display a thumbnail for a display set.
@@ -46,17 +54,72 @@ const Thumbnail = ({
   });
 
   const [lastTap, setLastTap] = useState(0);
+  const touchStartRef = useRef<TouchStartState | null>(null);
+  const ignoreClickRef = useRef(false);
 
   const hasDistinctDoubleClick = onDoubleClick && onDoubleClick !== onClick;
 
-  const handleClick = e => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (ignoreClickRef.current) {
+      ignoreClickRef.current = false;
+      return;
+    }
+
     if (!hasDistinctDoubleClick && e?.detail > 1) {
       return;
     }
     onClick(e);
   };
 
-  const handleTouchEnd = e => {
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches?.[0];
+
+    if (!touch) {
+      return;
+    }
+
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      didMove: false,
+    };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touchStart = touchStartRef.current;
+    const touch = e.touches?.[0];
+
+    if (!touchStart || !touch) {
+      return;
+    }
+
+    const deltaX = Math.abs(touch.clientX - touchStart.x);
+    const deltaY = Math.abs(touch.clientY - touchStart.y);
+
+    if (deltaX > TAP_MOVE_THRESHOLD || deltaY > TAP_MOVE_THRESHOLD) {
+      touchStart.didMove = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touchStart = touchStartRef.current;
+    touchStartRef.current = null;
+
+    if (!touchStart) {
+      return;
+    }
+
+    if (touchStart?.didMove) {
+      setLastTap(0);
+      return;
+    }
+
+    e.preventDefault();
+    ignoreClickRef.current = true;
+    window.setTimeout(() => {
+      ignoreClickRef.current = false;
+    }, 500);
+
     if (!hasDistinctDoubleClick) {
       onClick(e);
       return;
@@ -282,6 +345,8 @@ const Thumbnail = ({
       data-series={seriesNumber}
       onClick={handleClick}
       onDoubleClick={hasDistinctDoubleClick ? onDoubleClick : undefined}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       role="button"
     >
