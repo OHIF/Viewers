@@ -9,6 +9,7 @@ import {
   utilities as csUtils,
   VolumeViewport,
   VolumeViewport3D,
+  LegacyVolumeViewport3D,
   ECGViewport,
   cache,
   Enums as csEnums,
@@ -370,7 +371,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     return {
       viewportType: viewportInfo.getViewportType(),
-      viewReference: csViewport instanceof VolumeViewport3D ? null : csViewport.getViewReference(),
+      viewReference:
+        csViewport instanceof VolumeViewport3D || csViewport instanceof LegacyVolumeViewport3D
+          ? null
+          : csViewport.getViewReference(),
       viewPresentation: csViewport.getViewPresentation({ pan: true, zoom: true }),
       viewportId,
     };
@@ -1315,7 +1319,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     let displaySetPromise;
 
-    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
+    if (
+      viewport instanceof VolumeViewport ||
+      viewport instanceof VolumeViewport3D ||
+      viewport instanceof LegacyVolumeViewport3D
+    ) {
       displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
@@ -1351,7 +1359,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-    if ([VolumeViewport, VolumeViewport3D].some(type => viewport instanceof type)) {
+    if (
+      [VolumeViewport, VolumeViewport3D, LegacyVolumeViewport3D].some(
+        type => viewport instanceof type
+      )
+    ) {
       return this._setVolumeViewport(
         viewport as Types.IVolumeViewport,
         viewportData as VolumeViewportData,
