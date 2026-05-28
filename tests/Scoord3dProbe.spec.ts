@@ -1,5 +1,13 @@
 import { Locator } from '@playwright/test';
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportsRendered,
+} from './utils';
 
 async function expectNonEmptyDetailLines(lines: Locator) {
   const lineCount = await lines.count();
@@ -90,8 +98,12 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Click the hydrate button to load the SCOORD3D probe measurements
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-  // Wait for hydration to complete and rendering to stabilize
+  // Wait for hydration to complete and rendering to stabilize. SCOORD3D
+  // hydration can swap the displayed series (referenced vs. current volume),
+  // so we must wait for the new image set to render before screenshotting.
+  await waitForViewportsRendered(page);
   await page.waitForTimeout(3000);
+  await waitForPaintToSettle(page);
 
   // Take screenshot after hydration showing the probe measurements - use viewport locator
   await checkForScreenshot(

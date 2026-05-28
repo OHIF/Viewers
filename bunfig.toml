@@ -1,2 +1,3 @@
 [install]
 frozenLockfile = true
+minimumReleaseAge = 172800

@@ -68,6 +68,7 @@
     "test:e2e:debug": "cross-env TEST_ENV=true npx playwright test --debug",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "review:screenshots": "node scripts/screenshot-reviewer.mjs",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
@@ -141,6 +142,7 @@
     ]
   },
   "resolutions": {
+    "chalk": "4.1.2",
     "commander": "8.3.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
@@ -171,7 +173,7 @@
     "handlebars": "4.7.9",
     "protobufjs": "7.5.7",
     "@babel/plugin-transform-modules-systemjs": "7.29.4",
-    "tmp": "0.2.6"
+    "tmp": "0.2.5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
