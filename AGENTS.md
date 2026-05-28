@@ -176,6 +176,12 @@ Always prioritrize pub sub, by calling a services subscribe over useEffects as i
 ### Never modify core architecture
 Do not modify the core and always find a way to implement the solution via the extensions and modes, only modify core as a last resort if all other fail or there's an architectural constraint.
 
+## Skills
+
+The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/skills/ohif-test-agent/`. GitHub Copilot/VS Code Agent, OpenAI Codex, and Cursor scan `.agents/skills/` natively. Since Claude Code scans only `.claude/skills/`, `preinstall.js` automatically symlinks `.agents/skills/` into `.claude/skills/` during `yarn install`. The symlinks point at the canonical skills, so future updates are picked up automatically and new skills added under `.agents/skills/` are linked on the next install.
+
+**Windows**: symlink creation needs developer mode or admin. If `preinstall.js` logs an `EPERM` for the skill symlinks, enable developer mode and re-run `yarn install`, or create the links manually with `mklink /D`, e.g. `mklink /D .claude\skills\ohif-test-agent ..\..\.agents\skills\ohif-test-agent`.
+
 ## Configuration
 
 ### Plugin Configuration
