@@ -769,12 +769,12 @@ export const toolbarButtons: Button[] = [
       icon: 'icon-tool-click-segment',
       label: i18n.t('Buttons:One Click Segment'),
       tooltip: i18n.t(
-        'Buttons:Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.'
+        'Buttons:Segments a region with one click using intensity flood fill. Adjust Max Delta K/IJ to limit growth in slice and in-plane directions.'
       ),
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['RegionSegmentPlus'],
+          toolNames: ['RegionSegmentPlusFloodFill'],
           disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
         },
         {
@@ -784,10 +784,39 @@ export const toolbarButtons: Button[] = [
       ],
       commands: [
         'setToolActiveToolbar',
+        'setRegionSegmentPlusFloodFillConfiguration',
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
             segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+      options: [
+        {
+          name: i18n.t('Buttons:Max Delta K'),
+          id: 'region-segment-plus-max-delta-k',
+          type: 'range',
+          explicitRunOnly: true,
+          min: 1,
+          max: 1000,
+          step: 1,
+          value: 25,
+          commands: {
+            commandName: 'setRegionSegmentPlusFloodFillConfiguration',
+          },
+        },
+        {
+          name: i18n.t('Buttons:Max Delta IJ'),
+          id: 'region-segment-plus-max-delta-ij',
+          type: 'range',
+          explicitRunOnly: true,
+          min: 1,
+          max: 4096,
+          step: 1,
+          value: 100,
+          commands: {
+            commandName: 'setRegionSegmentPlusFloodFillConfiguration',
           },
         },
       ],
