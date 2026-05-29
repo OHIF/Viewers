@@ -47,7 +47,7 @@
     "webpack-merge": "5.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "@cornerstonejs/calculate-suv": "1.1.0",
     "lodash.get": "4.4.2",
     "lodash.uniqby": "4.7.0",

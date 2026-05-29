@@ -31,7 +31,7 @@
     "@ohif/extension-dicom-video": "3.13.0-beta.86"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2"
+    "@babel/runtime": "7.29.7"
   },
   "devDependencies": {
     "webpack": "5.105.0",
