@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-longitudinal",
-  "version": "3.13.0-beta.84",
+  "version": "3.13.0-beta.87",
   "description": "Longitudinal Workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "@ohif/mode-basic": "workspace:*"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "i18next": "17.3.1"
   },
   "devDependencies": {
