@@ -165,6 +165,10 @@ module.exports = (env, argv) => {
           changeOrigin: true,
           pathRewrite: { '^/fhir-proxy': '' },
           ws: true,
+          router: (req) => {
+            const target = req.headers['x-fhir-target'];
+            return target || FHIR_SERVER;
+          },
         },
       ],
       static: [
