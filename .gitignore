@@ -72,3 +72,7 @@ libs/
 link-cs3d.js
 unlink-cs3d.js
 auth.json
+
+# Local OHIF extensions/modes (not published to npm)
+extensions/nof-ohif-viewer/
+modes/node-on-fhir/

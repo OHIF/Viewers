@@ -65,10 +65,6 @@
     {
       "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/extension-nof-ohif-viewer",
-      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -103,9 +99,6 @@
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
       "version": "3.0.0"
-    },
-    {
-      "packageName": "node-on-fhir"
     }
   ],
   "public": [

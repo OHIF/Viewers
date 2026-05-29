@@ -150,8 +150,20 @@ const createCopyPluginToDistForBuild = (SRC_DIR, DIST_DIR, plugins, folderName) 
 function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   let pluginImportsJsContent = autogenerationDisclaimer;
 
-  const extensionLines = constructLines(pluginConfig.extensions, 'extensions');
-  const modeLines = constructLines(pluginConfig.modes, 'modes');
+  // Allow injecting additional extensions/modes via environment variables
+  // Usage: EXTRA_EXTENSIONS=@ohif/extension-foo,@ohif/extension-bar EXTRA_MODES=my-mode yarn dev
+  const extraExtensions = process.env.EXTRA_EXTENSIONS
+    ? process.env.EXTRA_EXTENSIONS.split(',').map(name => ({ packageName: name.trim() }))
+    : [];
+  const extraModes = process.env.EXTRA_MODES
+    ? process.env.EXTRA_MODES.split(',').map(name => ({ packageName: name.trim() }))
+    : [];
+
+  const allExtensions = [...pluginConfig.extensions, ...extraExtensions];
+  const allModes = [...pluginConfig.modes, ...extraModes];
+
+  const extensionLines = constructLines(allExtensions, 'extensions');
+  const modeLines = constructLines(allModes, 'modes');
 
   pluginImportsJsContent += getFormattedImportBlock([
     ...extensionLines.importLines,
@@ -163,8 +175,8 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   ]);
 
   pluginImportsJsContent += getRuntimeLoadModesExtensions([
-    ...pluginConfig.extensions,
-    ...pluginConfig.modes,
+    ...allExtensions,
+    ...allModes,
     ...pluginConfig.public,
   ]);
 
@@ -182,14 +194,14 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   const copyPluginPublicToDistBuild = createCopyPluginToDistForBuild(
     SRC_DIR,
     DIST_DIR,
-    [...pluginConfig.modes, ...pluginConfig.extensions],
+    [...allModes, ...allExtensions],
     'public'
   );
 
   const copyPluginPublicToDistLink = createCopyPluginToDistForLink(
     SRC_DIR,
     DIST_DIR,
-    [...pluginConfig.modes, ...pluginConfig.extensions, ...pluginConfig.public],
+    [...allModes, ...allExtensions, ...pluginConfig.public],
     'public'
   );
 
@@ -198,14 +210,14 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   const copyPluginDistToDistBuild = createCopyPluginToDistForBuild(
     SRC_DIR,
     DIST_DIR,
-    [...pluginConfig.modes, ...pluginConfig.extensions],
+    [...allModes, ...allExtensions],
     'dist'
   );
 
   const copyPluginDistToDistLink = createCopyPluginToDistForLink(
     SRC_DIR,
     DIST_DIR,
-    [...pluginConfig.modes, ...pluginConfig.extensions],
+    [...allModes, ...allExtensions],
     'dist'
   );
 
