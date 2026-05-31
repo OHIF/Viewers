@@ -1,4 +1,10 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+} from './utils';
 import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
@@ -15,8 +21,12 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 }) => {
   await leftPanelPageObject.loadSeriesByDescription('Apparent Diffusion Coefficient');
 
-  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
+    .dataOverlay;
   await dataOverlayPageObject.toggle();
+
+  // Start watching for viewport to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
 
   await dataOverlayPageObject.addSegmentation('T2 Weighted Axial Segmentations');
 
@@ -25,22 +35,21 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 
   // Hide the overlay menu.
   await dataOverlayPageObject.toggle();
-  await page.waitForTimeout(5000);
+
+  await viewportRenderCycle;
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage
   );
 
   // Navigate to the middle image of the default viewport.
   await press({ page, key: 'ArrowDown', nTimes: 12 });
 
-  await page.waitForTimeout(5000);
-
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage
   );
 });

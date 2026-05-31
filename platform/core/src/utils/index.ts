@@ -55,6 +55,7 @@ import {
   resolveRuntimeBasePathFromWindow,
   getPublicSubPath,
 } from './publicUrl';
+import { thumbnailNoImageModalities } from './thumbnailNoImageModalities';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
 
@@ -115,6 +116,7 @@ const utils = {
   getLocationBasePathFromPathname,
   resolveRuntimeBasePathFromWindow,
   getPublicSubPath,
+  thumbnailNoImageModalities,
   downloadBlob,
   downloadUrl,
   downloadCsv,
@@ -162,6 +164,7 @@ export {
   getLocationBasePathFromPathname,
   resolveRuntimeBasePathFromWindow,
   getPublicSubPath,
+  thumbnailNoImageModalities,
   downloadBlob,
   downloadUrl,
   downloadCsv,

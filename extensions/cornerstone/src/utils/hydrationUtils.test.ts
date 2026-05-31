@@ -262,6 +262,57 @@ describe('getUpdatedViewportsForSegmentation', () => {
     expect(result).toEqual(mockUpdatedViewports);
   });
 
+  it('should merge all grid viewports that reference the volume after hydration (e.g. 3D four-up)', () => {
+    const volumeUid = 'volume-1';
+    const viewports = new Map([
+      [
+        'vp-axial',
+        {
+          viewportId: 'vp-axial',
+          viewportOptions: { viewportId: 'vp-axial' },
+          displaySetInstanceUIDs: [volumeUid],
+        },
+      ],
+      [
+        'vp-sagittal',
+        {
+          viewportId: 'vp-sagittal',
+          viewportOptions: { viewportId: 'vp-sagittal' },
+          displaySetInstanceUIDs: [volumeUid],
+        },
+      ],
+      [
+        'vp-other-study',
+        {
+          viewportId: 'vp-other-study',
+          viewportOptions: { viewportId: 'vp-other-study' },
+          displaySetInstanceUIDs: ['other-volume'],
+        },
+      ],
+    ]);
+
+    mockViewportGridService.getState.mockReturnValue({
+      isHangingProtocolLayout: true,
+      viewports,
+      activeViewportId: 'vp-axial',
+    });
+
+    mockHangingProtocolService.getViewportsRequireUpdate.mockReturnValue([
+      { viewportId: 'vp-axial', displaySetInstanceUIDs: [volumeUid] },
+    ]);
+
+    const result = getUpdatedViewportsForSegmentation({
+      viewportId: 'vp-axial',
+      servicesManager: mockServicesManager as unknown as AppTypes.ServicesManager,
+      displaySetInstanceUIDs: [volumeUid],
+    });
+
+    expect(result).toEqual([
+      { viewportId: 'vp-axial', displaySetInstanceUIDs: [volumeUid] },
+      { viewportId: 'vp-sagittal', displaySetInstanceUIDs: [volumeUid] },
+    ]);
+  });
+
   it('should handle complex viewport structure', () => {
     const complexViewport = {
       viewportOptions: {
