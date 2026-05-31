@@ -146,11 +146,17 @@ export class CommandsManager {
   /**
    *
    * @method
-   * @param {String} commandName
+   * @param {String} commandName - Command to run. Accepts any string but can be
+   * parameterized with a command name union for autocomplete and type-checking on known commands.
    * @param {Object} [options={}] - Extra options to pass the command. Like a mousedown event
-   * @param {String} [contextName]
+   * @param {String} [contextName] Specific command to look in. Defaults to current activeContexts.
+   * Also allows an array of contexts to look in.
    */
-  public runCommand(commandName: string, options = {}, contextName?: string | string[]) {
+  public runCommand<CommandName extends string = string>(
+    commandName: CommandName | ((options?: Record<string, unknown>) => unknown),
+    options = {},
+    contextName?: string | string[]
+  ) {
     if (typeof commandName === 'function') {
       // If commandName is a function, run it directly
       return commandName(options);

@@ -3,6 +3,7 @@ import { cn, Icons, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
+import type { CornerstoneCommandName } from '../../commandsModule';
 
 function ViewportOrientationMenu({
   location,
@@ -91,7 +92,7 @@ function ViewportOrientationMenu({
       });
     } else {
       // Set the viewport orientation
-      commandsManager.runCommand('setViewportOrientation', {
+      commandsManager.runCommand<CornerstoneCommandName>('setViewportOrientation', {
         viewportId: viewportIdToUse,
         orientation: orientationEnum,
       });
