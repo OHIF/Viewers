@@ -1,5 +1,8 @@
 import { visitStudy } from './visitStudy';
-import { addOHIFConfiguration } from './OHIFConfiguration';
+import {
+  addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
+} from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -8,23 +11,33 @@ import {
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
 } from './simulateClicksOnElement';
-import { simulateNormalizedDragOnElement } from './simulateDragOnElement';
+import {
+  simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
+} from './simulateDragOnElement';
 import { reduce3DViewportSize } from './reduce3DviewportSize';
 import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
+import { getAnnotationStats } from './getAnnotationStats';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
-import { getSvgPath } from './getSvgPath';
+import { getSvgAttribute } from './getSvgAttribute';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import {
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
+} from './waitForViewportsRendered';
 
 export {
   visitStudy,
   addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
@@ -32,18 +45,23 @@ export {
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
   reduce3DViewportSize,
   getMousePosition,
   initializeMousePositionTracker,
   getSUV,
   getTMTVModalityUnit,
+  getAnnotationStats,
   clearAllAnnotations,
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
   subscribeToMeasurementAdded,
-  getSvgPath,
+  getSvgAttribute,
   navigateWithViewportArrow,
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
   test,
   expect,
 };

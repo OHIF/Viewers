@@ -15,6 +15,12 @@ import progressLoading from '../../../assets/img/Loading-Indicator.png';
 import loadingIndicatorProgress from '../../../assets/img/loading-indicator-icon.png';
 import loadingIndicatorPercent from '../../../assets/img/loading-indicator-percent.png';
 import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
+import viewportScrollbarVariantProgress from '../../../assets/img/viewport-scrollbar-variant-progress.png';
+import viewportScrollbarVariantLegacy from '../../../assets/img/viewport-scrollbar-variant-legacy.png';
+import viewportScrollbarShowLoadedEndpoints from '../../../assets/img/viewport-scrollbar-showLoadedEndpoints.png';
+import viewportScrollbarShowLoadedFill from '../../../assets/img/viewport-scrollbar-showLoadedFill.png';
+import viewportScrollbarShowViewedFill from '../../../assets/img/viewport-scrollbar-showViewedFill.png';
+import viewportScrollbarShowLoadingPattern from '../../../assets/img/viewport-scrollbar-showLoadingPattern.png';
 import contextMenu from '../../../assets/img/context-menu.jpg';
 import viewportDownloadWarning from '../../../assets/img/viewport-download-warning.png';
 import segmentationOverlay from '../../../assets/img/segmentation-overlay.png';
@@ -155,6 +161,406 @@ window.config = {
     ],
     configuration: `
       // same as above
+  `,
+  },
+];
+
+export const viewportScrollbarCustomizations = [
+  {
+    id: 'viewportScrollbar.variant',
+    description: (
+      <>
+        Controls which scrollbar implementation is rendered. Use <code>progress</code> for{' '}
+        ViewportSliceProgressScrollbar and <code>legacy</code> for ViewportImageScrollbar.
+      </>
+    ),
+    default: 'progress',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.variant': {
+        $set: 'legacy',
+      },
+    },
+  ],
+};
+  `,
+    image: [
+      { img: viewportScrollbarVariantProgress, caption: 'progress (default)' },
+      { img: viewportScrollbarVariantLegacy, caption: 'legacy' },
+    ],
+  },
+  {
+    id: 'viewportScrollbar.showLoadedEndpoints',
+    description:
+      'Shows/hides loaded-range endpoint caps in full progress mode (stack or acquisition-plane volume).',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadedEndpoints': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowLoadedEndpoints, caption: 'Loaded-range endpoint caps' },
+  },
+  {
+    id: 'viewportScrollbar.showLoadedFill',
+    description: 'Shows/hides the loaded/cached fill track in full progress mode.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadedFill': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowLoadedFill, caption: 'Loaded/cached fill track' },
+  },
+  {
+    id: 'viewportScrollbar.showViewedFill',
+    description: 'Shows/hides the viewed fill track in full progress mode.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showViewedFill': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowViewedFill, caption: 'Viewed fill track' },
+  },
+  {
+    id: 'viewportScrollbar.showLoadingPattern',
+    description:
+      'Shows/hides the dotted loading pattern for full progress mode. Minimal mode always disables this pattern.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadingPattern': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowLoadingPattern, caption: 'Dotted loading pattern' },
+  },
+  {
+    id: 'viewportScrollbar.viewedDwellMs',
+    description:
+      'Minimum time in milliseconds the current slice must stay on screen before it is marked as viewed in full progress mode. 0 marks immediately.',
+    default: 0,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.viewedDwellMs': {
+        $set: 500,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.loadedBatchIntervalMs',
+    description:
+      'Coalesces loaded/cached slice state changes into a single UI update at the configured interval in full progress mode. Lower values feel more responsive but trigger more re-renders; higher values reduce render churn but can make progress updates appear delayed. Set to 0 for immediate updates.',
+    default: 200,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.loadedBatchIntervalMs': {
+        $set: 100,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.indicator',
+    description: (
+      <>
+        Outer size (<code>totalWidth</code> × <code>totalHeight</code>, border included) and{' '}
+        <code>renderIndicator</code> for the progress scrollbar indicator.{' '}
+        <code>renderIndicator</code> receives <code>React</code> for config file compatibility. All
+        three properties must be provided or the default pill is used. See{' '}
+        <a href="#viewport-scrollbar-indicator-advanced">Advanced</a> for TSX overrides and{' '}
+        <code>useSmartScrollbarLayoutContext</code>.
+      </>
+    ),
+    default: '{}',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        This example sets a <code>10×10</code> SVG indicator (muted outer circle, lighter inner
+        circle) via <code>React.createElement</code>, matching <code>totalWidth</code> and{' '}
+        <code>totalHeight</code>.
+      </p>
+    ),
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.indicator': {
+        totalWidth: 10,
+        totalHeight: 10,
+        renderIndicator: function (React) {
+          return React.createElement(
+            'svg',
+            { width: 10, height: 10, viewBox: '0 0 10 10' },
+            React.createElement('circle', {
+              cx: 5,
+              cy: 5,
+              r: 5,
+              fill: 'hsl(213 22% 59% / 0.9)',
+            }),
+            React.createElement('circle', {
+              cx: 5,
+              cy: 5,
+              r: 4,
+              fill: 'hsl(0 0% 98% / 0.9)',
+            })
+          );
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+];
+
+export const workListCustomizations = [
+  {
+    id: 'workList.variant',
+    description: (
+      <>
+        Selects which study-list route is mounted at <code>/</code>. Use <code>'default'</code>{' '}
+        (default customization value) for the new ui-next WorkList introduced in 3.13. Use{' '}
+        <code>'legacy'</code> to mount the pre-3.13 WorkList (internally{' '}
+        <code>LegacyWorkList</code>) as an opt-out while migrating. The customization is read once
+        during route registration, so changing it requires a reload.
+      </>
+    ),
+    default: 'default',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.variant': {
+        $set: 'legacy',
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.previewSeriesView',
+    description: (
+      <>
+        Controls which series views are available in the WorkList preview panel. Use{' '}
+        <code>'all'</code> (default customization value) to show the thumbnails/list toggle. The
+        initial preview view is thumbnails. Use <code>'thumbnails'</code> to lock the preview to
+        thumbnails, or <code>'list'</code> to lock it to the series list. The preview is forced to{' '}
+        <code>'list'</code> when the active data source declares <code>thumbnailRendering</code> as{' '}
+        <code>'wadors'</code> or <code>'thumbnailDirect'</code>, or declares{' '}
+        <code>thumbnailRequestStrategy</code> as <code>'bulkDataRetrieve'</code> (its default
+        value), regardless of this setting. Currently only applies when <code>workList.variant</code> is{' '}
+        <code>'default'</code>.
+      </>
+    ),
+    default: 'all',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.previewSeriesView': {
+        $set: 'list',
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.columns',
+    description: (
+      <>
+        The column set for the WorkList table, as a <code>ColumnDef[]</code> value (default:{' '}
+        <code>StudyList.defaultColumns</code>). Because it is a plain array, override it with
+        immutability-helper commands — <code>$splice</code> to reorder/insert/remove,{' '}
+        <code>$set</code>/<code>$merge</code> to tweak <code>meta</code> (label, width, priority),
+        or <code>$apply</code> — a function that receives the current columns and returns the new
+        array — for anything the other commands don't express cleanly (moves, conditional inserts,
+        or edits keyed off a column's <code>id</code> rather than its position). Use{' '}
+        <code>StudyList.textColumn(id, label, meta?)</code> for a simple display-only column.
+        Gotchas: a column's <code>cell</code>/<code>accessorFn</code>/etc. are functions (not
+        serializable, so non-text columns still need code); the trailing <code>actions</code>{' '}
+        column should stay last for correct layout (cosmetic, not required), so insert{' '}
+        <em>before</em> it with <code>$splice</code> rather than <code>$push</code>; and
+        index-based edits are position-fragile (prefer <code>$apply</code>{' '}
+        for id-based changes). If the merged value is not an array, WorkList falls back to the
+        defaults. Currently only applies when <code>workList.variant</code> is{' '}
+        <code>'default'</code>.
+      </>
+    ),
+    default: 'StudyList.defaultColumns',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.columns': {
+        // Insert a Referring Physician column before the trailing actions column.
+        $apply: (columns) => {
+          const actionsIndex = columns.findIndex((c) => c.id === 'actions');
+          const at = actionsIndex === -1 ? columns.length : actionsIndex;
+          const referring = StudyList.textColumn('referringPhysicianName', 'Referring Physician');
+          return [...columns.slice(0, at), referring, ...columns.slice(at)];
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.renderPreviewContent',
+    description: (
+      <>
+        Render function for the preview panel content. Receives the host React and{' '}
+        <code>{'{ study, series, seriesView, onThumbnailImageError }'}</code> — the same data the
+        built-in renderer uses, with series and thumbnails already fetched by the{' '}
+        <code>SidePanelPreview</code> shell.
+        <ul>
+          <li>
+            <code>study</code>: the selected <code>StudyRow</code>, or <code>null</code>.
+          </li>
+          <li>
+            <code>series</code>: the study's series with raw data-source fields (
+            <code>seriesInstanceUid</code>, <code>modality</code>, <code>description</code>,{' '}
+            <code>seriesDate</code>, <code>seriesNumber</code>, <code>numSeriesInstances</code>,
+            etc.) plus a <code>thumbnailStatus</code> added by the shell, which is one of{' '}
+            <code>{"{ status: 'loading' }"}</code>, <code>{"{ status: 'ready', src }"}</code>,{' '}
+            <code>{"{ status: 'notAvailable' }"}</code>, or{' '}
+            <code>{"{ status: 'notApplicable' }"}</code>. Use <code>src</code> from the{' '}
+            <code>'ready'</code> form as the <code>{'<img>'}</code> source.
+          </li>
+          <li>
+            <code>seriesView</code>: <code>'all' | 'thumbnails' | 'list'</code>, resolved from{' '}
+            <code>workList.previewSeriesView</code> with <code>'list'</code> forced for data
+            sources that can't produce thumbnails.
+          </li>
+          <li>
+            <code>onThumbnailImageError(seriesUID)</code>: call when an <code>{'<img>'}</code>{' '}
+            you render fails to load; the shell marks that series as <code>notAvailable</code>{' '}
+            and revokes its blob URL if needed.
+          </li>
+        </ul>
+        Use this to change the preview layout while keeping the fetch, abort, and thumbnail
+        worker-pool logic intact. When unset, the built-in{' '}
+        <code>{'<StudyList.PreviewContainer>'}</code> layout is used. Currently only applies when{' '}
+        <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: 'undefined',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.renderPreviewContent': {
+        $set: function (React, { study, series, seriesView, onThumbnailImageError }) {
+          // Render whatever layout you like using the data the shell provides.
+          return React.createElement(
+            'div',
+            { className: 'flex h-full flex-col bg-black p-4 text-white' },
+            React.createElement('h2', null, study?.patientName ?? 'No study selected'),
+            React.createElement(
+              'ul',
+              { className: 'mt-2 flex flex-col gap-2' },
+              series.map((s) =>
+                React.createElement(
+                  'li',
+                  { key: s.seriesInstanceUid },
+                  s.description
+                )
+              )
+            )
+          );
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.settingsMenuItems',
+    description: (
+      <>
+        Builds the items in the WorkList settings popover (the gear menu in the top right). The
+        customization is a function that receives the default items and must return a{' '}
+        <code>SettingsMenuItem[]</code> (each <code>{'{ id, label, onClick }'}</code>). The
+        defaults are <code>about</code>, <code>userPreferences</code>, and (when{' '}
+        <code>appConfig.oidc</code> is configured) <code>logout</code>. Use it to reorder, remove,
+        or insert items without rebuilding the popover shell. If the customization returns a
+        non-array value, WorkList falls back to the defaults. Currently only applies when{' '}
+        <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: '(defaults) => defaults',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.settingsMenuItems': {
+        // Remove "User Preferences" and add a custom "Help" item at the top.
+        $set: (defaults) => {
+          const filtered = defaults.filter((i) => i.id !== 'userPreferences');
+          return [
+            {
+              id: 'help',
+              label: 'Help',
+              onClick: () => window.open('https://docs.example.com', '_blank'),
+            },
+            ...filtered,
+          ];
+        },
+      },
+    },
+  ],
+};
   `,
   },
 ];
@@ -825,89 +1231,47 @@ window.config = {
   },
   {
     id: 'ohif.aboutModal',
-    description: 'The About modal',
+    description: (
+      <>
+        Replaces the About modal. The customization value is a React component; see{' '}
+        <code>extensions/default/src/customizations/aboutModalCustomization.tsx</code> for the
+        default and the <code>AboutModal</code> compound API. The consumer also reads optional{' '}
+        <code>title</code> and <code>containerClassName</code> static properties off the
+        component; both fall back to sensible defaults when omitted.
+      </>
+    ),
     image: aboutModal,
     default: 'Our own default component',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        Easiest to register from a custom extension's <code>getCustomizationModule</code>, where
+        JSX and the <code>@ohif/ui-next</code> imports work normally. See{' '}
+        <code>aboutModalCustomization.tsx</code> for the full default and the rest of the{' '}
+        <code>AboutModal</code> compound API.
+      </p>
+    ),
     configuration: `
-      window.config = {
-        // rest of window config
+import { AboutModal } from '@ohif/ui-next';
 
-        // You can use the component from AboutModal
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.aboutModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'viewportDownload.warningMessage',
-    description: 'Customizes the warning message for the viewport download form.',
-    image: viewportDownloadWarning,
-    default: {
-      enabled: true,
-      value: 'Not For Diagnostic Use',
-    },
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportDownload.warningMessage': {
-              $set: {
-                enabled: true,
-                value: 'Careful! This is not for diagnostic use.',
-              },
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'ohif.captureViewportModal',
-    description: 'The modal for capturing the viewport image.',
-    image: captureViewportModal,
-    default: 'Our own default component',
-    configuration: `
-      window.config = {
-        // rest of window config
+function MyAboutModal() {
+  return (
+    <AboutModal className="w-[400px]">
+      <AboutModal.ProductName>My Custom Viewer</AboutModal.ProductName>
+      <AboutModal.ProductVersion>1.2.3</AboutModal.ProductVersion>
+    </AboutModal>
+  );
+}
 
-        // You can use the component from ImageModal and FooterAction
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.captureViewportModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'ohif.aboutModal',
-    description: 'The About modal',
-    image: aboutModal,
-    default: 'Our own default component',
-    configuration: `
-      window.config = {
-        // rest of window config
+// Optional: override the modal title and container size.
+MyAboutModal.title = 'About My Custom Viewer';
+MyAboutModal.containerClassName = 'max-w-md';
 
-        // You can use the component from AboutModal
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.aboutModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
+window.config = {
+  // rest of window config
+  customizationService: [
+    { 'ohif.aboutModal': { $set: MyAboutModal } },
+  ],
+};
         `,
   },
   {
@@ -1895,76 +2259,149 @@ window.config = {
   },
 ];
 
+function normalizeCustomizationImageItem(item: unknown): {
+  img: unknown;
+  caption?: React.ReactNode;
+} {
+  if (
+    item !== null &&
+    typeof item === 'object' &&
+    'img' in item &&
+    typeof (item as { img: unknown }).img !== 'undefined'
+  ) {
+    const o = item as { img: unknown; caption?: React.ReactNode };
+    return { img: o.img, caption: o.caption };
+  }
+  return { img: item };
+}
+
 export const TableGenerator = (customizations: any[]) => {
-  return customizations.map(({ id, description, default: defaultValue, configuration, image }) => (
-    <div
-      key={id}
-      style={{ marginBottom: '2rem', borderRadius: '8px', padding: '1rem' }}
-    >
-      <h3
-        id={id.toLowerCase().replace(/\./g, '')}
-        style={{ marginBottom: '1rem', fontSize: '1.5rem' }}
+  return customizations.map(
+    ({ id, description, default: defaultValue, configuration, configurationIntro, image }) => (
+      <div
+        key={id}
+        style={{ marginBottom: '2rem', borderRadius: '8px', padding: '1rem' }}
       >
-        {id}
-      </h3>
-      <table style={{ width: '100%', tableLayout: 'fixed' }}>
-        <tbody>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>ID</th>
-            <td style={{ wordBreak: 'break-word' }}>
-              <code>{id}</code>
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Description</th>
-            <td>
-              <div>{description}</div>
-              {image && (
-                <div>
-                  {Array.isArray(image) ? (
-                    image.map((img, index) => (
-                      <Image
-                        key={index}
-                        img={img}
-                        alt={`${id}-${index + 1}`}
-                        style={{ width: '400px' }}
-                      />
-                    ))
-                  ) : (
-                    <Image
-                      img={image}
-                      alt={id}
-                      style={{ width: '400px' }}
-                    />
-                  )}
-                </div>
-              )}
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Default Value</th>
-            <td style={{ wordBreak: 'break-word' }}>
-              <pre>
-                {typeof defaultValue === 'string'
-                  ? defaultValue
-                  : JSON.stringify(defaultValue, null, 2)}
-              </pre>
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Example</th>
-            <td style={{ wordBreak: 'break-word' }}>
-              {configuration && (
-                <div>
-                  <pre>
-                    <code>{configuration}</code>
-                  </pre>
-                </div>
-              )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  ));
+        <h3
+          id={id.toLowerCase().replace(/\./g, '')}
+          style={{ marginBottom: '1rem', fontSize: '1.5rem' }}
+        >
+          {id}
+        </h3>
+        <table style={{ width: '100%', tableLayout: 'fixed' }}>
+          <tbody>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>ID</th>
+              <td style={{ wordBreak: 'break-word' }}>
+                <code>{id}</code>
+              </td>
+            </tr>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Description</th>
+              <td>
+                <div>{description}</div>
+                {image && (
+                  <div>
+                    {Array.isArray(image)
+                      ? image.map((item, index) => {
+                          const { img, caption } = normalizeCustomizationImageItem(item);
+                          const altText =
+                            typeof caption === 'string' && caption.length > 0
+                              ? `${id}: ${caption}`
+                              : `${id} screenshot ${index + 1}`;
+                          return (
+                            <figure
+                              key={index}
+                              style={{ margin: '0 0 1rem 0' }}
+                            >
+                              <Image
+                                img={img}
+                                alt={altText}
+                                style={{ width: '400px' }}
+                              />
+                              {caption != null && caption !== '' && (
+                                <figcaption
+                                  style={{
+                                    fontSize: '0.9rem',
+                                    marginTop: '0.35rem',
+                                    color: 'var(--ifm-color-emphasis-700)',
+                                  }}
+                                >
+                                  {caption}
+                                </figcaption>
+                              )}
+                            </figure>
+                          );
+                        })
+                      : (() => {
+                          const { img, caption } = normalizeCustomizationImageItem(image);
+                          const altText =
+                            typeof caption === 'string' && caption.length > 0
+                              ? `${id}: ${caption}`
+                              : id;
+                          return (
+                            <figure style={{ margin: 0 }}>
+                              <Image
+                                img={img}
+                                alt={altText}
+                                style={{ width: '400px' }}
+                              />
+                              {caption != null && caption !== '' && (
+                                <figcaption
+                                  style={{
+                                    fontSize: '0.9rem',
+                                    marginTop: '0.35rem',
+                                    color: 'var(--ifm-color-emphasis-700)',
+                                  }}
+                                >
+                                  {caption}
+                                </figcaption>
+                              )}
+                            </figure>
+                          );
+                        })()}
+                  </div>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>
+                Default Value
+              </th>
+              <td style={{ wordBreak: 'break-word' }}>
+                <pre>
+                  {typeof defaultValue === 'string'
+                    ? defaultValue
+                    : JSON.stringify(defaultValue, null, 2)}
+                </pre>
+              </td>
+            </tr>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Example</th>
+              <td style={{ wordBreak: 'break-word' }}>
+                {configuration && (
+                  <div>
+                    {configurationIntro && (
+                      <div
+                        style={{
+                          marginBottom: '0.75rem',
+                          fontSize: '0.95rem',
+                          color: 'var(--ifm-color-emphasis-700)',
+                        }}
+                      >
+                        {configurationIntro}
+                      </div>
+                    )}
+                    <pre>
+                      <code>{configuration}</code>
+                    </pre>
+                  </div>
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )
+  );
 };

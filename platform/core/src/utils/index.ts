@@ -48,6 +48,7 @@ import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
+import { thumbnailNoImageModalities } from './thumbnailNoImageModalities';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
 
@@ -103,6 +104,7 @@ const utils = {
   getClosestOrientationFromIOP,
   calculateScanAxisNormal,
   areAllImageOrientationsEqual,
+  thumbnailNoImageModalities,
   downloadBlob,
   downloadUrl,
   downloadCsv,
@@ -145,6 +147,7 @@ export {
   MeasurementFilters,
   getClosestOrientationFromIOP,
   buildButtonCommands,
+  thumbnailNoImageModalities,
   downloadBlob,
   downloadUrl,
   downloadCsv,
