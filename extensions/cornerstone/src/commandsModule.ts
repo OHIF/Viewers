@@ -117,7 +117,7 @@ function commandsModule({
   servicesManager,
   commandsManager,
   extensionManager,
-}: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
+}: OhifTypes.Extensions.ExtensionParams) {
   const {
     viewportGridService,
     toolbarService,
@@ -2829,7 +2829,9 @@ function commandsModule({
     actions,
     definitions,
     defaultContext: 'CORNERSTONE',
-  };
+  } satisfies OhifTypes.Extensions.CommandsModule;
 }
+
+export type CornerstoneCommandName = keyof ReturnType<typeof commandsModule>['definitions'];
 
 export default commandsModule;
