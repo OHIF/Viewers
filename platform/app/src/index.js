@@ -2,6 +2,7 @@
  * Entry point for development and production PWA builds.
  */
 import 'regenerator-runtime/runtime';
+import './setRuntimePublicPath';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';
