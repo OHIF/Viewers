@@ -16,7 +16,8 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
-import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
+import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
+import { getGetThumbnailSrc, ThumbnailContext } from './retrieveThumbnail';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -47,6 +48,15 @@ export type DicomWebConfig = {
    thumbnail - render using the thumbnail endpoint on wadors using bulkDataURI, passing authentication params  to the url.
     rendered - should use the rendered endpoint instead of the thumbnail endpoint
 */
+  thumbnailRequestStrategy?: 'bulkDataRetrieve' | 'fetch';
+  /**
+   * Thumbnail data request strategy when `thumbnailRendering` is `thumbnail`/`rendered`; ignored for `wadors`/`thumbnailDirect`.
+   *
+   * - `bulkDataRetrieve` (default): Uses the DICOMweb client's bulk data retrieve API (`retrieveBulkData`)
+   * - `fetch`: `GET` the WADO-RS thumbnail or rendered resource URL with auth headers and use the
+   *          response body as a JPEG blob URL. For series-level context, if that `GET` fails, a single
+   *          QIDO instances query (`limit=1`) is used to obtain `SOPInstanceUID` and the fetch is retried once.
+   */
   /** Whether the server supports reject calls (i.e. DCM4CHEE) */
   supportsReject?: boolean;
   /** indicates if the retrieves can fetch singlepart. Options are bulkdata, video, image, or  true */
@@ -97,6 +107,7 @@ export type BulkDataURIConfig = {
    */
   relativeResolution?: 'studies' | 'series';
 };
+
 
 /**
  * The header options are the options passed into the generateWadoHeader
@@ -158,7 +169,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        */
       generateWadoHeader = (options: HeaderOptions): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        if (options?.includeTransferSyntax!==false) {
+        if (options?.includeTransferSyntax !== false) {
           //Generate accept header depending on config params
           const formattedAcceptHeader = utils.generateAcceptHeader(
             dicomWebConfig.acceptHeader,
@@ -175,7 +186,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           // which the server expects Accept: application/dicom+json will still include that in the
           // header.
           return {
-            ...authorizationHeader
+            ...authorizationHeader,
           };
         }
       };
@@ -261,70 +272,16 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
 
-      getGetThumbnailSrc: function (instance, imageId) {
-        if (dicomWebConfig.thumbnailRendering === 'wadors') {
-          return function getThumbnailSrc(options) {
-            if (!imageId) {
-              return null;
-            }
-            if (!options?.getImageSrc) {
-              return null;
-            }
-            return options.getImageSrc(imageId);
-          };
-        }
-        if (dicomWebConfig.thumbnailRendering === 'thumbnailDirect') {
-          return function getThumbnailSrc() {
-            return this.directURL({
-              instance: instance,
-              defaultPath: '/thumbnail',
-              defaultType: 'image/jpeg',
-              singlepart: true,
-              tag: 'Absent',
-            });
-          }.bind(this);
-        }
-
-        if (dicomWebConfig.thumbnailRendering === 'thumbnail') {
-          return async function getThumbnailSrc() {
-            const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/thumbnail?accept=image/jpeg`;
-            return URL.createObjectURL(
-              new Blob(
-                [
-                  await this.bulkDataURI({
-                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                    defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
-                    thumbnail: true,
-                  }),
-                ],
-                { type: 'image/jpeg' }
-              )
-            );
-          }.bind(this);
-        }
-        if (dicomWebConfig.thumbnailRendering === 'rendered') {
-          return async function getThumbnailSrc() {
-            const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered?accept=image/jpeg`;
-            return URL.createObjectURL(
-              new Blob(
-                [
-                  await this.bulkDataURI({
-                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                    defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
-                    thumbnail: true,
-                  }),
-                ],
-                { type: 'image/jpeg' }
-              )
-            );
-          }.bind(this);
-        }
+      getGetThumbnailSrc: function (thumbnailContext: ThumbnailContext, imageId) {
+        return getGetThumbnailSrc({
+          thumbnailContext,
+          imageId,
+          config: dicomWebConfig,
+          getAuthorizationHeader,
+          qidoDicomWebClient,
+          retrieve: this,
+        });
       },
-
       directURL: params => {
         return getDirectURL(
           {
