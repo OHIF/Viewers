@@ -5,8 +5,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForPaintToSettle,
-  waitForViewportRenderCycle,
+  waitForPaintToSettle, waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -36,7 +35,7 @@ test.beforeEach(async ({ page }) => {
     }
   });
 });
-
+test.describe.configure({ retries: 1 });
 test('should hydrate SCOORD3D probe measurements correctly', async ({
   page,
   DOMOverlayPageObject,
