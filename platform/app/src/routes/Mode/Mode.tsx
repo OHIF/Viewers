@@ -73,9 +73,10 @@ export default function ModeRoute({
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
+  const studyId = lowerCaseSearchParams.get('studyid');
 
   if (token) {
-    updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
+    updateAuthServiceAndCleanUrl(token, studyId, location, userAuthenticationService);
   }
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.

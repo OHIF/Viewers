@@ -126,6 +126,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
         if (authHeaders && authHeaders.Authorization) {
           xhrRequestHeaders.Authorization = authHeaders.Authorization;
+          xhrRequestHeaders["x-study-id"] = authHeaders["x-study-id"];
         }
         return xhrRequestHeaders;
       };

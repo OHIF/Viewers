@@ -6,6 +6,7 @@
  */
 export function updateAuthServiceAndCleanUrl(
   token: string,
+  studyId: string,
   location: any,
   userAuthenticationService: any
 ): void {
@@ -18,6 +19,7 @@ export function updateAuthServiceAndCleanUrl(
   userAuthenticationService.setServiceImplementation({
     getAuthorizationHeader: () => ({
       Authorization: 'Bearer ' + token,
+      "x-study-id": studyId
     }),
   });
 
