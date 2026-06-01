@@ -6,6 +6,7 @@ import {
   test,
   visitStudy,
   waitForPaintToSettle,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -141,9 +142,16 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
       viewport.render();
     }
   });
+  await waitForViewportsRendered(page, { waitVolumeLoad: false });
 
   // Click on a data row to jump to the measurement
+  const jumpRenderCycle = waitForViewportRenderCycle(page, {
+    renderedTimeout: 30000,
+    waitVolumeLoad: false,
+  });
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
+  await jumpRenderCycle;
+  await waitForPaintToSettle(page);
 
   // Take screenshot showing the jump to measurement functionality - use viewport locator
   await checkForScreenshot(
