@@ -284,14 +284,12 @@ export class RightPanelPageObject {
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
     const segmentationSelect = this.getSegmentationSelect('Labelmap');
-    const segmentsVisibilityToggle = this.getSegmentsVisibilityToggle('Labelmap');
 
     return {
       addSegmentationButton,
       menuButton,
       panel,
       segmentationSelect,
-      segmentsVisibilityToggle,
       select: async () => {
         await menuButton.click();
       },
