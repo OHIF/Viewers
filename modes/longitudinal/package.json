@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-longitudinal",
-  "version": "3.13.0-beta.81",
+  "version": "3.13.0-beta.87",
   "description": "Longitudinal Workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -34,19 +34,19 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.13.0-beta.81",
-    "@ohif/extension-cornerstone": "3.13.0-beta.81",
-    "@ohif/extension-cornerstone-dicom-rt": "3.13.0-beta.81",
-    "@ohif/extension-cornerstone-dicom-seg": "3.13.0-beta.81",
-    "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.81",
-    "@ohif/extension-default": "3.13.0-beta.81",
-    "@ohif/extension-dicom-pdf": "3.13.0-beta.81",
-    "@ohif/extension-dicom-video": "3.13.0-beta.81",
-    "@ohif/extension-measurement-tracking": "3.13.0-beta.81",
-    "@ohif/mode-basic": "3.13.0-beta.81"
+    "@ohif/core": "3.13.0-beta.87",
+    "@ohif/extension-cornerstone": "3.13.0-beta.87",
+    "@ohif/extension-cornerstone-dicom-rt": "3.13.0-beta.87",
+    "@ohif/extension-cornerstone-dicom-seg": "3.13.0-beta.87",
+    "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.87",
+    "@ohif/extension-default": "3.13.0-beta.87",
+    "@ohif/extension-dicom-pdf": "3.13.0-beta.87",
+    "@ohif/extension-dicom-video": "3.13.0-beta.87",
+    "@ohif/extension-measurement-tracking": "3.13.0-beta.87",
+    "@ohif/mode-basic": "3.13.0-beta.87"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "i18next": "17.3.1"
   },
   "devDependencies": {

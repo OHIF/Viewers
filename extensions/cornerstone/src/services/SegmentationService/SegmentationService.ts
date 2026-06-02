@@ -896,6 +896,7 @@ class SegmentationService extends PubSubService {
       active?: boolean;
       color?: csTypes.Color; // Add color type
       visibility?: boolean; // Add visibility option
+      cachedStats?: Record<string, unknown>;
     } = {}
   ): void {
     if (config?.segmentIndex === 0) {
