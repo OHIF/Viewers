@@ -2403,14 +2403,25 @@ function commandsModule({
       targetSegmentInfo?: SegmentInfo;
     }) => {
       if (!targetSegmentInfo) {
+        const sourceSegmentation = segmentationService.getSegmentation(
+          sourceSegmentInfo.segmentationId
+        );
+        const sourceCachedStats =
+          sourceSegmentation?.segments?.[sourceSegmentInfo.segmentIndex]?.cachedStats;
+
         targetSegmentInfo = {
           segmentationId: sourceSegmentInfo.segmentationId,
           segmentIndex: segmentationService.getNextAvailableSegmentIndex(
             sourceSegmentInfo.segmentationId
           ),
         };
+
+        // Copy source cachedStats so jump-to-segment navigation works on the duplicate segment.
         segmentationService.addSegment(targetSegmentInfo.segmentationId, {
           segmentIndex: targetSegmentInfo.segmentIndex,
+          ...(sourceCachedStats && {
+            cachedStats: csUtils.deepClone(sourceCachedStats) as Record<string, unknown>,
+          }),
         });
       }
 

@@ -531,6 +531,13 @@ function hasDollarKey(value) {
       }
     }
   } else if (value && typeof value === 'object') {
+    // React elements carry a `$$typeof` brand; they're values to render, not
+    // immutability-helper command specs, so don't scan into them (otherwise
+    // their `$$typeof` is misread as a command and `update()` runs on a value
+    // it shouldn't).
+    if (value.$$typeof) {
+      return false;
+    }
     for (const key of Object.keys(value)) {
       if (key.startsWith('$') && key !== '$transform') {
         return true;
