@@ -31,7 +31,6 @@ test('opens the color edit popup when "Change Color" is clicked', async ({
   DOMOverlayPageObject,
 }) => {
   const segment = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
-  await segment.toggleVisibility();
 
   await segment.actions.openChangeColor();
 

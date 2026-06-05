@@ -63,8 +63,8 @@ export class DOMOverlayPageObject {
       get colorPicker() {
         const locator = page.getByTestId('color-picker-dialog');
         const hexInput = locator.getByLabel('hex');
-        const saveButton = page.getByTestId('color-picker-save-btn');
-        const cancelButton = page.getByTestId('color-picker-cancel-btn');
+        const saveButton = locator.getByTestId('color-picker-save-btn');
+        const cancelButton = locator.getByTestId('color-picker-cancel-btn');
         return {
           locator,
           hexInput,

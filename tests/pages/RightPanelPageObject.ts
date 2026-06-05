@@ -82,6 +82,8 @@ export class RightPanelPageObject {
         await this.page.getByTestId('Change Color').click();
         await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndSave(hex);
       },
+      // This function assumes the user opens the change color dialog,
+      // but then cancels out of it instead of saving a new color.
       cancelChangeColor: async (hex?: string) => {
         await actionsButton.click();
         await this.page.getByTestId('Change Color').click();
