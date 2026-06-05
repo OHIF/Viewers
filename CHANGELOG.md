@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.4](https://github.com/OHIF/Viewers/compare/v3.12.3...v3.12.4) (2026-06-05)
+
+
+### Bug Fixes
+
+* **security:** Update axios to fix security vulnerabilities. Release 3.12.4 ([#6064](https://github.com/OHIF/Viewers/issues/6064)) ([62917c2](https://github.com/OHIF/Viewers/commit/62917c214246233b7b76aa8926fdfd645a2385a7))
+
+
+
+
+
 ## [3.12.3](https://github.com/OHIF/Viewers/compare/v3.12.2...v3.12.3) (2026-05-27)
 
 
