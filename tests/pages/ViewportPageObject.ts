@@ -5,16 +5,22 @@ import {
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-type SvgInnerElement = 'circle' | 'path' | 'd' | 'line';
+export type SvgInnerElement = 'circle' | 'path' | 'line' | 'g';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
+  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathDragParams = {
+  path: { x: number; y: number }[];
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
 };
 
@@ -56,6 +62,7 @@ export interface IViewportPageObject {
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
+  normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
     leftMid: Locator;
@@ -81,6 +88,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  getSvgAnnotationStatTextLines: (uid: string) => Locator;
   navigationArrows: {
     locator: Locator;
     prev: {
@@ -297,12 +305,26 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
+      normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
+        await simulateNormalizedPathDragOnElement({
+          locator: viewport,
+          path: params.path,
+          button: params.config?.button,
+          delay: params.config?.delay,
+          steps: params.config?.steps,
+        });
+      },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
       overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
+      },
+      getSvgAnnotationStatTextLines: (uid: string) => {
+        return this.getSvg(viewport)
+          .locator(`g[data-annotation-uid="${uid}"]`)
+          .locator('tspan');
       },
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),

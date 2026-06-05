@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.13.0-beta.73",
+  "version": "3.13.0-beta.87",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -38,7 +38,7 @@
     "react-i18next": "12.3.1"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2",
+    "@babel/runtime": "7.29.7",
     "i18next-locize-backend": "2.2.2",
     "locize-editor": "2.2.2",
     "locize-lastused": "1.1.1"
