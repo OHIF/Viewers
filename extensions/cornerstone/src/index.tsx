@@ -268,6 +268,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 };
 
 export type { PublicViewportOptions };
+export type { CornerstoneCommandName } from './commandsModule';
 export {
   measurementMappingUtils,
   PlanarFreehandROI,
