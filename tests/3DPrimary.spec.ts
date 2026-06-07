@@ -26,9 +26,9 @@ test.describe('3D primary Test', async () => {
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
     await viewportRenderWait;
 
-    viewportRenderWait = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
-    await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await viewportRenderWait;
+    // viewportRenderWait = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
+    // await attemptAction(() => reduce3DViewportSize(page), 10, 100);
+    // await viewportRenderWait;
 
     await checkForScreenshot(
       page,
