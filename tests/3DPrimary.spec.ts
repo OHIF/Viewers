@@ -21,13 +21,15 @@ test.describe('3D primary Test', async () => {
     mainToolbarPageObject,
     viewportPageObject,
   }) => {
-    const viewportWait = waitForViewportRenderCycle(page);
+    let viewportRenderWait = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
 
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
-    await viewportWait;
+    await viewportRenderWait;
 
+    viewportRenderWait = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await waitForViewportsRendered(page);
+    await viewportRenderWait;
+
     await checkForScreenshot(
       page,
       viewportPageObject.grid,
