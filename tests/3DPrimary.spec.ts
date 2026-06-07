@@ -5,6 +5,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -20,7 +21,10 @@ test.describe('3D primary Test', async () => {
     mainToolbarPageObject,
     viewportPageObject,
   }) => {
+    const viewportWait = waitForViewportRenderCycle(page);
+
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
+    await viewportWait;
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     await waitForViewportsRendered(page);
