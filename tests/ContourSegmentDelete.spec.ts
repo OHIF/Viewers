@@ -3,7 +3,6 @@ import {
   test,
   visitStudy,
   waitForViewportsRendered,
-  waitForViewportRenderCycle,
   getSvgAttribute,
 } from './utils';
 
@@ -83,9 +82,7 @@ test('should remove the deleted segment contour from the viewport', async ({
   await segment0.click();
 
   const svgPathLocator = (await viewportPageObject.getById('default')).svg('path');
-  await expect(svgPathLocator, 'Expected exactly one visible contour path before delete').toHaveCount(
-    1
-  );
+  await expect(svgPathLocator, 'Expected exactly one visible contour path before delete').toHaveCount(1);
 
   // Capture the contour path of the segment we are about to delete
   const segmentToBeDeletedSvgPath = await getSvgAttribute({
@@ -95,10 +92,7 @@ test('should remove the deleted segment contour from the viewport', async ({
   });
   expect(segmentToBeDeletedSvgPath, 'Expected a visible SVG path for the segment to delete').not.toBeNull();
 
-  // Wait for the render cycle the delete triggers
-  const viewportRenderCycle = waitForViewportRenderCycle(page);
   await segment0.actions.delete();
-  await viewportRenderCycle;
 
   await expect(
     svgPathLocator,
