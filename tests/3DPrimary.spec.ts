@@ -30,10 +30,11 @@ test.describe('3D primary Test', async () => {
     // await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     // await viewportRenderWait;
 
-    await checkForScreenshot(
+    await checkForScreenshot({
       page,
-      viewportPageObject.grid,
-      screenShotPaths.threeDPrimary.threeDPrimaryDisplayedCorrectly
-    );
+      locator: viewportPageObject.grid,
+      screenshotPath: screenShotPaths.threeDPrimary.threeDPrimaryDisplayedCorrectly,
+      delay: 10000,
+    });
   });
 });
