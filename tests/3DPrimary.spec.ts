@@ -5,7 +5,6 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -21,19 +20,16 @@ test.describe('3D primary Test', async () => {
     mainToolbarPageObject,
     viewportPageObject,
   }) => {
-    let viewportRenderWait = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
-
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
-    await viewportRenderWait;
 
-    // viewportRenderWait = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
-    // await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    // await viewportRenderWait;
+    await attemptAction(() => reduce3DViewportSize(page), 10, 100);
+    await waitForViewportsRendered(page);
 
     await checkForScreenshot({
       page,
       locator: viewportPageObject.grid,
       screenshotPath: screenShotPaths.threeDPrimary.threeDPrimaryDisplayedCorrectly,
+      attempts: 30,
       delay: 10000,
     });
   });
