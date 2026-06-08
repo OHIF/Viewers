@@ -114,6 +114,21 @@ These are the rare specs that use `page.goto(...)` directly instead of `visitStu
 
 Same shape as SEG hydration but load via `loadSeriesByModality('SR')`.
 
+## 16. User preferences / hotkeys / options menu / settings dialog
+
+**Seed:** none yet — this area isn't covered by an existing spec, so you'll be
+**creating page objects**, not mimicking one. Read [page-objects.md](page-objects.md) →
+"When the control you need isn't covered yet" first.
+
+Pattern: open the options menu and the User Preferences dialog (add an options-menu
+accessor to `DOMOverlayPageObject` and a `userPreferences` dialog page object reached
+through it — follow `DicomTagBrowserPageObject`), set the hotkey through a per-field
+accessor, save, then **verify the binding actually works**: trigger the hotkey and
+confirm the real effect on the viewport (e.g. activate Zoom, drag, and screenshot that
+the image zoomed via `locator: viewportPageObject.grid`) — not just that the toolbar
+button shows `data-active`. Add the Zoom button as a getter on `MainToolbarPageObject`.
+Any control without a `data-cy` gets one added to the source component.
+
 ---
 
 ## Advanced patterns worth knowing

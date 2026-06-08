@@ -25,7 +25,7 @@ This package follows the agentskills.io SKILL.md convention. `SKILL.md` is the e
 
 OHIF uses Playwright with a custom fixture system. Tests are **not** vanilla Playwright — they import `test`, `expect`, and utilities from `./utils`, which re-exports an extended test runner that injects page objects.
 
-```
+```text
 playwright.config.ts            → Chromium-only, port 3335, data-cy as testId
   └─ tests/utils/fixture.ts     → Extends playwright-test-coverage, injects page objects
        └─ tests/*.spec.ts       → Each imports { test, expect, ... } from './utils'
@@ -49,7 +49,7 @@ A few utilities (`press`, `downloadAsString`, the `assert*` helpers) are NOT re-
 
 ## The viewport is WebGL
 
-OHIF renders medical images onto a WebGL canvas. You cannot query pixels by CSS selector or assert on overlay drawings via DOM. Use **normalized coordinates** (0–1 range, top-left is `{x:0, y:0}`) for clicks and drags, and **visual regression** (screenshot comparison) for canvas assertions.
+OHIF renders medical images onto a WebGL canvas. You cannot query *canvas* pixels by CSS selector. Use **normalized coordinates** (0–1 range, top-left is `{x:0, y:0}`) for clicks and drags, and **visual regression** (screenshot comparison) for canvas assertions. (Not everything in the viewport is canvas — some overlays render as SVG you *can* query via DOM, e.g. a vector overlay's color through `getSvgAttribute`. The canvas rule is about raster output painted onto the WebGL surface.)
 
 ```ts
 const activeViewport = await viewportPageObject.active;
@@ -188,17 +188,80 @@ Two page objects are **not** fixture-injected:
 
 See [references/page-objects.md](references/page-objects.md) for fixture rules and a map of which file covers which concern; read the `.ts` file under `tests/pages/` for the current method surface.
 
+## When the control you need has no page object yet
+
+A spec must not reach for `page.getByTestId(...)` / `getByRole(...)` directly for
+application controls. If the button, menu, dialog, or field you need isn't already
+exposed by a page object, **add it to one — or create a new page object — instead of
+inlining a raw selector.** Raw selectors in a spec are the clearest sign a test was
+written without reading the existing suite: they duplicate locators, bypass the
+fixture wiring, and rot silently when the DOM changes.
+
+Where new coverage goes:
+
+| What you need | Where it belongs |
+|---|---|
+| A toolbar button or tool (Zoom, Pan) | a getter on `MainToolbarPageObject`, next to `crosshairs` / `measurementTools` |
+| A menu, prompt, context menu, or small dialog | `DOMOverlayPageObject` |
+| A substantial dialog with its own fields (User Preferences) | its **own** page object class, reached through `DOMOverlayPageObject` — follow `DicomTagBrowserPageObject` (`DOMOverlayPageObject.dialog.dicomTagBrowser`) |
+| Each field/row inside that dialog | a method or sub-object on the dialog's page object — not a raw selector in the spec |
+| A side-panel control | `LeftPanelPageObject` / `RightPanelPageObject` |
+
+If the control has no `data-cy`, **add `data-cy` to the source component** and target
+it — don't fall back to `getByRole`/text selectors, which are brittle and
+locale-sensitive (`testIdAttribute` is `data-cy`, so `getByTestId('Zoom')` resolves
+`[data-cy="Zoom"]`). Call out any `data-cy` you add so it ships in the same PR.
+
+**Worked example — "set the Zoom hotkey in User Preferences":** the options menu, the
+preferences dialog, each preference field, and the Zoom toolbar button should all be
+page-object surface — e.g. `mainToolbarPageObject.zoom`,
+`DOMOverlayPageObject.optionsMenu.settings.click()`,
+`DOMOverlayPageObject.dialog.userPreferences.hotkey('Zoom').set('q')`. The spec then
+reads as intent, not as a pile of `getByTestId` calls.
+
+## Assert the effect, not just the attribute
+
+Prefer asserting the actual rendered result over a proxy attribute. Activating Zoom and
+checking `data-active="true"` confirms the *button* toggled — not that zoom works. Drag
+on the viewport and assert the image actually zoomed (a viewport-scoped screenshot, or a
+measurable state change). Attribute checks are fine as a secondary signal, not the whole
+test.
+
 ## Visual regression
 
-**Direction:** the suite is moving off full-app screenshots and toward viewport-scoped ones. Treat this as the standard for new code — older specs that screenshot the whole page are legacy patterns being phased out, not examples to copy.
+**Direction:** the suite is moving off *full-app* screenshots — not off screenshots
+altogether. "Avoid screenshots" means: don't screenshot the whole page, and don't
+screenshot something that has a faithful DOM/state signal. It does **not** mean avoid
+screenshots for output that is genuinely canvas-only — for that output a screenshot is
+the correct and required tool, and you should use it without apology. Older specs that
+screenshot the whole page are the legacy pattern being phased out; viewport-scoped
+screenshots are not.
 
-For anything drawn onto the WebGL canvas, compare a screenshot scoped to a specific viewport or the viewport grid:
+### Screenshot vs. DOM assertion — how to choose
+
+Reach for the cheapest *faithful* signal, in this order:
+
+1. **A faithful DOM/SVG/state signal exists → assert on it.** Panel counts, dialog and
+   overlay text, enabled/disabled state, and any overlay that renders as SVG (a vector
+   overlay's color is readable via `getSvgAttribute`) all have a DOM representation — assert
+   on it directly, no screenshot.
+2. **The thing under test is painted onto the WebGL canvas with no DOM representation → a
+   screenshot is correct and required.** Raster output on the canvas exposes no attribute to
+   read for a painted pixel. Scope a `checkForScreenshot` to the viewport (pane or grid) and
+   assert it — this is the right tool, not a last resort, whenever what you're verifying is
+   the rendered canvas itself.
+3. **Never substitute a service/state read for a render assertion.** Reading a service's
+   state (any `window.services...`) asserts the *data model*, not the pixels the user sees —
+   it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
+   escape hatch for *setup*, not for *appearance* assertions.
+
+For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport or the viewport grid:
 
 ```ts
 await checkForScreenshot({
   page,
+  locator: viewportPageObject.grid, // scope to the viewport grid — not the whole page
   screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
-  normalizedClip: { x: 0, y: 0, width: 1, height: 1 }, // viewport-relative, not full page
 });
 ```
 
@@ -207,7 +270,7 @@ await checkForScreenshot({
 Rules (apply to all new screenshot assertions):
 
 - **Use the object form.** The positional form is legacy; don't introduce it in new code, and don't treat existing positional-form usage as a pattern to copy.
-- **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope to the viewport (or viewport grid) via `normalizedClip`. If you reach for `fullPage: true`, stop and pick a tighter clip.
+- **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope by passing a `locator` — `viewportPageObject.grid` for the grid, or a specific viewport pane. A bare `normalizedClip: { x: 0, y: 0, width: 1, height: 1 }` with no `locator` is **not** scoping — it clips to the full page. Use `normalizedClip` only to target a sub-region *of a locator* (e.g. a scrollbar strip). If you reach for `fullPage: true`, stop and pick a locator.
 - **Do not tune `maxDiffPixelRatio` or `threshold`** to make a screenshot pass. If a baseline mismatches, regenerate it after a human review of the diff, or fix the underlying flake.
 
 ## Playwright config facts worth remembering
@@ -242,12 +305,14 @@ Full mapping in [references/patterns-by-feature.md](references/patterns-by-featu
 3. Use normalized coordinates (0–1) for viewport interactions.
 4. Use `visitStudy` with a real UID, correct mode, and a non-zero delay (2000 is conventional).
 5. Handle hydration and measurement-tracking prompts where applicable.
-6. Visual regression for canvas, DOM assertions for panels/dialogs/overlay text. Screenshots must use the object form and be scoped to a viewport or viewport grid — never the full app.
+6. Choose the faithful signal: DOM/SVG assertions where the rendered result has one (panels, dialogs, overlay text, SVG/vector overlays), a viewport-scoped screenshot when what you're verifying is canvas-only raster output, and never a `window.services` state read standing in for a render check. Screenshots use the object form, scoped via a `locator` — never the full app.
 7. Use `data-cy` selectors (already wired via `testIdAttribute`).
 8. When an assertion needs retry tolerance, wrap it in `expect.toPass({ timeout })`.
 9. Test in the correct mode — segmentation tools aren't available in `viewer` mode.
 10. If a utility isn't exported from `./utils`, import from the deeper path (see [references/utilities.md](references/utilities.md)).
 11. After an action that re-renders the viewport, prefer `waitForViewportRenderCycle(page)` (started before the action) over `page.waitForTimeout(...)`. See the "Wait for renders, don't sleep" section.
+12. Don't inline raw `page.getByTestId(...)` / `getByRole(...)` for app controls. If a control has no page object, create or augment one (see "When the control you need has no page object yet"), adding a `data-cy` to the source if needed.
+13. Assert the actual effect (e.g. the image zoomed), not just a proxy attribute like `data-active`.
 
 ## Pre-output self-check (mandatory)
 
@@ -258,9 +323,11 @@ Before returning a generated OHIF test, confirm all items:
 3. Uses normalized viewport interactions (`normalizedClickAt` / `normalizedDragAt`) unless there is a strong reason otherwise.
 4. Uses a valid canonical StudyInstanceUID and compatible mode.
 5. Handles hydration or measurement tracking prompts when the workflow requires them.
-6. Uses visual regression for canvas assertions and DOM assertions for panel/dialog/overlay text state. Any `checkForScreenshot` call uses the object form and a `normalizedClip` (viewport / viewport-grid scope) — no full-app screenshots.
+6. Uses the faithful signal for each assertion — DOM/SVG where the result has a DOM representation, a viewport-scoped screenshot when what's verified is canvas-only raster output, and never a `window.services` state read in place of a render check. Any `checkForScreenshot` call uses the object form, scoped via a `locator` (viewport pane or grid) — no full-app screenshots.
 7. Replaces `page.waitForTimeout(...)` after viewport-rendering actions with `waitForViewportRenderCycle(page)` (started before the action) — keeps `waitForTimeout` only for non-render waits like the hydration prompt in `beforeEach`.
 8. If execution was skipped, states that explicitly and provides concrete run commands.
+9. Every application control is reached through a page object — no raw `getByTestId`/`getByRole` in the spec for buttons, menus, dialogs, or fields. Any control not already covered was added to the right page object (or a new one), with a source `data-cy` if it lacked one.
+10. Assertions verify the real effect where feasible (e.g. the image visibly zoomed), not only an attribute toggle.
 
 ## Output contract (for non-executing agents)
 

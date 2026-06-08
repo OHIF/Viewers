@@ -57,7 +57,7 @@ So: pick `10000` when the mode is `tmtv`, `2000` otherwise, and only ramp up if 
 
 ### `checkForScreenshot` — use the object form, never screenshot the full app
 
-**This is the direction going forward** The suite is being migrated off full-app screenshots; any new spec must follow these rules, and any modification to an older spec should bring that spec in line when reasonable.
+**This is the direction going forward** The suite is being migrated off *full-app* screenshots — not off screenshots altogether. Screenshots are the correct and required tool whenever what you're verifying is canvas-only raster output with no DOM signal; don't avoid them there. Avoid them only where a faithful DOM/SVG signal exists (e.g. a vector overlay's color via `getSvgAttribute`) or where you'd be capturing the whole app. See SKILL.md → "Screenshot vs. DOM assertion — how to choose". Any new spec must follow the rules below, and any modification to an older spec should bring it in line when reasonable.
 
 - **Object form** (required for all new specs): `checkForScreenshot({ page, screenshotPath, normalizedClip?, ... })`
 - **Positional form**: legacy. It still appears in older specs because they haven't been migrated yet. **Do not treat existing positional-form usage as a pattern to copy** — those specs are the thing being moved away from. Do not introduce the positional form in new code.
@@ -65,14 +65,18 @@ So: pick `10000` when the mode is `tmtv`, `2000` otherwise, and only ramp up if 
 **Hard rules for new screenshots:**
 
 1. Use the object form.
-2. Scope to a specific viewport or the viewport grid via `normalizedClip`. **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. If you find yourself reaching for `fullPage: true`, stop and pick a tighter clip.
+2. Scope by passing a `locator` — `viewportPageObject.grid` for the whole grid, or a specific viewport pane locator. **Never screenshot the full app.** `normalizedClip` is computed *relative to the locator* (and defaults to the full page when no locator is given), so `{ x: 0, y: 0, width: 1, height: 1 }` alone does not scope anything — reserve `normalizedClip` for clipping to a sub-region of a locator. If you find yourself reaching for `fullPage: true`, stop and pass a locator instead.
 
 Do not tune `maxDiffPixelRatio` or `threshold` to make a screenshot pass — those are intentionally rarely touched and not the right knob for flakes. If a baseline mismatches, regenerate it (`--update-snapshots`) after a human review of the diff, or fix the underlying instability. Check the current signature in `tests/utils/checkForScreenshot.ts` if something looks off.
 
 ### `screenShotPaths` — use keys, not raw strings
 
 ```ts
-await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
+await checkForScreenshot({
+  page,
+  locator: viewportPageObject.grid,
+  screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
+});
 ```
 
 The full tree of categories lives in `tests/utils/screenShotPaths.ts`. When you need a new baseline, **add the key there and reference it by name** rather than typing a raw path. A typo in a key becomes a compile error instead of a silent mismatch, and other tests become discoverable through the object.

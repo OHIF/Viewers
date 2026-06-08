@@ -38,8 +38,14 @@ test.describe('FEATURE NAME', () => {
     // 3. Handle prompts (first measurement prompts for tracking; SEG/RT/SR prompts for hydration)
     //    await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-    // 4. Assert canvas output via visual regression
-    //    await checkForScreenshot(page, page, screenShotPaths.YOUR_CATEGORY.YOUR_KEY);
+    // 4. Assert canvas output via visual regression — object form, scoped to the
+    //    viewport via a locator (not the full page). normalizedClip is only for
+    //    clipping to a sub-region of that locator.
+    //    await checkForScreenshot({
+    //      page,
+    //      locator: viewportPageObject.grid,
+    //      screenshotPath: screenShotPaths.YOUR_CATEGORY.YOUR_KEY,
+    //    });
 
     // 5. Assert DOM state directly
     //    const count = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();

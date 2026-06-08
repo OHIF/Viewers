@@ -68,6 +68,36 @@ The exact row/action methods vary by panel — check the source file for the one
 
 Tools nested inside a toolbar dropdown (measurement tools, more tools, layouts) each expose a `.click()` that opens the parent menu for you. You almost never need to open the menu first. `await mainToolbarPageObject.measurementTools.length.click()` does both the expand and the select.
 
+### When the control you need isn't covered yet — create or augment
+
+The page objects here cover what the suite currently exercises. When your test needs a
+control that isn't exposed, **extend the page object system rather than dropping a raw
+`page.getByTestId(...)` into the spec.** A raw selector in a spec is the clearest tell
+that the author didn't read the existing tests — it duplicates a locator that should
+live in one place and bypasses the fixture wiring.
+
+| What you need | Where it goes | Precedent to copy |
+|---|---|---|
+| A toolbar button/tool (Zoom, Pan) | a getter on `MainToolbarPageObject` | `crosshairs`, `measurementTools` |
+| A menu / prompt / context menu / small dialog | `DOMOverlayPageObject` | `viewport.measurementTracking`, `dialog.input` |
+| A large dialog with its own fields (User Preferences) | a **new** page object class reached via `DOMOverlayPageObject` | `DicomTagBrowserPageObject` (`DOMOverlayPageObject.dialog.dicomTagBrowser`) |
+| Individual fields/rows in that dialog | methods/sub-objects on the dialog's page object | `DicomTagBrowserPageObject.seriesSelect` |
+| Side-panel controls | `LeftPanelPageObject` / `RightPanelPageObject` | existing sub-panels |
+
+Two more expectations:
+
+- **Missing `data-cy`?** Add it to the source component and target it; don't fall back
+  to `getByRole`/text. `testIdAttribute` is `data-cy`, so `getByTestId('Zoom')` resolves
+  `[data-cy="Zoom"]`. Mention any attribute you added so it ships in the same PR.
+- **Mirror the existing shape.** A new getter should look like its neighbors (return a
+  locator, or a small object with `.click()` etc.) so the new surface is
+  indistinguishable from what was already there.
+
+Example — a "set the Zoom hotkey" test should make `mainToolbarPageObject.zoom`, an
+options-menu accessor on `DOMOverlayPageObject`, and a `userPreferences` dialog page
+object (with a per-hotkey field accessor) exist — then the spec reads as steps, not
+selectors.
+
 ---
 
 ## Page object map — what each class is *for*
