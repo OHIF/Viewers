@@ -27,8 +27,8 @@
     "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "4.22.10",
-    "@cornerstonejs/tools": "4.22.10",
+    "@cornerstonejs/core": "5.0.0",
+    "@cornerstonejs/tools": "5.0.0",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
     "@ohif/extension-default": "workspace:*",

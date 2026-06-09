@@ -9,7 +9,23 @@ strictPeerDependencies: false
 linkWorkspacePackages: true
 preferWorkspacePackages: true
 minimumReleaseAge: 2880
+# Exempt the cornerstone3D packages from the release-age check: they are pinned
+# to an exact version (5.0.0) that may be newer than the cutoff. Mirrors the
+# bunfig.toml `minimumReleaseAgeExcludes` list (pnpm supports glob patterns).
+minimumReleaseAgeExclude:
+  - '@cornerstonejs/*'
 frozenLockfile: true
+
+# Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
+# risk: minimatch/picomatch advisories reached only via build/CI tooling, never
+# fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
+# job and the root `audit` script.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-3ppc-4f35-3m26 # CVE-2026-26996  - minimatch (build/CI only, no CLI use)
+    - GHSA-7r86-cg39-jmmj # CVE-2026-27903  - minimatch (same)
+    - GHSA-23c5-xmqv-rm74 # CVE-2026-27904  - minimatch (same)
+    - GHSA-c2c7-rcm5-vvqj # CVE-2026-33671  - picomatch (build/CI only)
 
 allowBuilds:
   '@scarf/scarf': true
@@ -53,6 +69,11 @@ overrides:
   handlebars: 4.7.9
   protobufjs: 7.5.7
   tmp: 0.2.6
+  shell-quote: 1.8.4
+  # fast-uri <=3.1.1 reaches the tree only via platform/docs
+  # (@docusaurus/plugin-pwa > workbox-build > ajv). 3.1.2 patches both
+  # GHSA-q3j6-qgpj-74h6 (path traversal) and GHSA-v39h-62p7-jpjc (host confusion).
+  fast-uri: 3.1.2
   '@babel/plugin-transform-modules-systemjs': 7.29.4
   # pnpm-branch-only overrides (kept across merges from master).
   sharp: 0.34.5
