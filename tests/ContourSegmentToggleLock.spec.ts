@@ -1,4 +1,11 @@
-import { expect, getSvgAttribute, test, visitStudy, waitForViewportsRendered } from './utils';
+import {
+  expect,
+  getSvgAttribute,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
 import { simulateNormalizedDragOnElement } from './utils/simulateDragOnElement';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
@@ -13,6 +20,7 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
   await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+  await waitForViewportRenderCycle(page);
 });
 
 test('should show the lock indicator and flip the menu label between Lock and Unlock', async ({
@@ -85,6 +93,10 @@ test('should stop a locked contour segment from responding to drag edits', async
 
   // Lock the segment via the actions menu.
   await segment0.actions.toggleLock();
+  await expect(
+    segment0.locator.locator('g#Lock'),
+    'Expected the lock icon to appear on the row after locking'
+  ).toHaveCount(1);
 
   // drag path after locking
   await simulateNormalizedDragOnElement({
