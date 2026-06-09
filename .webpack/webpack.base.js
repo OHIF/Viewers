@@ -194,6 +194,12 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       mainFields: ['module', 'browser', 'main'],
       alias: {
         // Viewer project
+        // A couple of extensions import app-level utilities (history,
+        // preserveQueryParameters) from '@ohif/app'. pnpm's isolated layout does
+        // not expose the top-level app package to those extensions, and adding it
+        // as a workspace dependency would create an app<->default cycle, so we
+        // resolve the bare specifier to the app source here ($ = exact match).
+        '@ohif/app$': path.resolve(__dirname, '../platform/app/src/index.js'),
         '@': path.resolve(__dirname, '../platform/app/src'),
         '@components': path.resolve(__dirname, '../platform/app/src/components'),
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
