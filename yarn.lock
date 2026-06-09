@@ -2564,6 +2564,11 @@
     onnxruntime-common "1.17.1"
     onnxruntime-web "1.17.1"
 
+"@cornerstonejs/calculate-suv@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@cornerstonejs/calculate-suv/-/calculate-suv-1.0.3.tgz#6d99a72032c0f90cebf44dc6f0b12a5f1102e884"
+  integrity sha512-2SwVJKzC1DzyxdxJtCht9dhTND2GFjLwhhkDyyC7vJq5tIgbhxgPk1CSwovO1pxmoybAXzjOxnaubllxLgoT+w==
+
 "@cornerstonejs/calculate-suv@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/calculate-suv/-/calculate-suv-1.1.0.tgz#35c8049d3eea03611225a8398d398cd81bf0031a"
@@ -2622,6 +2627,16 @@
   dependencies:
     "@itk-wasm/morphological-contour-interpolation" "1.1.0"
     itk-wasm "1.0.0-b.165"
+
+"@cornerstonejs/metadata@5.0.0":
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/@cornerstonejs/metadata/-/metadata-5.0.0.tgz#354a2311ad79aa3835ce422e853a7d2750bd9159"
+  integrity sha512-G7lJ28San1HIyC5jThmS0Ez0n9pbCRB6nBFv0G8R28XR4alzMQC26Bpr/1iHL2rgYMK/k+mpKjp/jzNEOTIOsA==
+  dependencies:
+    "@cornerstonejs/calculate-suv" "1.0.3"
+    "@cornerstonejs/utils" "5.0.0"
+    dcmjs "0.50.1"
+    gl-matrix "3.4.3"
 
 "@cornerstonejs/polymorphic-segmentation@5.0.0":
   version "5.0.0"

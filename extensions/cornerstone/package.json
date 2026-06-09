@@ -57,6 +57,7 @@
     "@cornerstonejs/ai": "5.0.0",
     "@cornerstonejs/core": "5.0.0",
     "@cornerstonejs/labelmap-interpolation": "5.0.0",
+    "@cornerstonejs/metadata": "5.0.0",
     "@cornerstonejs/polymorphic-segmentation": "5.0.0",
     "@cornerstonejs/tools": "5.0.0",
     "@icr/polyseg-wasm": "0.4.0",
