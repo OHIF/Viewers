@@ -55,7 +55,14 @@
     "docs:preview": "pnpm --filter ohif-docs run serve",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "version:custom": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "cs3d:checkout": "cd libs/@cornerstonejs && git fetch && git checkout",
+    "cs3d:check": "node .scripts/cs3d-check.mjs",
+    "cs3d:build": "cd libs/@cornerstonejs && pnpm run build:esm",
+    "cs3d:watch": "cd libs/@cornerstonejs && pnpm run build:esm:watch",
+    "cs3d:install": "cd libs/@cornerstonejs && pnpm install",
+    "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
+    "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs ."
   },
   "dependencies": {
     "execa": "8.0.1"
