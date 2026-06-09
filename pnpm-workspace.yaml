@@ -2,7 +2,15 @@ packages:
   - platform/*
   - extensions/*
   - modes/*
-shamefullyHoist: true
+
+# Mirror the cornerstone3D pnpm setup (libs/@cornerstonejs) which is known-good.
+nodeLinker: hoisted
+strictPeerDependencies: false
+linkWorkspacePackages: true
+preferWorkspacePackages: true
+minimumReleaseAge: 2880
+frozenLockfile: true
+
 allowBuilds:
   '@scarf/scarf': true
   '@swc/core': true
@@ -27,7 +35,7 @@ overrides:
   package-json: 8.1.1
   rollup: 2.80.0
   body-parser: 1.20.3
-  axios: 1.15.2
+  axios: 1.17.0
   core-js: 3.45.1
   '@babel/runtime-corejs2': 7.26.10
   tapable: 2.2.2
@@ -44,6 +52,7 @@ overrides:
   flatted: 3.4.2
   handlebars: 4.7.9
   protobufjs: 7.5.7
+  tmp: 0.2.6
   '@babel/plugin-transform-modules-systemjs': 7.29.4
   # pnpm-branch-only overrides (kept across merges from master).
   sharp: 0.34.5

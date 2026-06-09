@@ -1,3 +1,13 @@
+/**
+ * Playwright global setup (wired via `globalSetup` in playwright.config.ts).
+ *
+ * Before the test suite runs, open the viewer once against a known study to
+ * "warm up" the dev/preview server: trigger the first (slow) Rspack lazy
+ * compilation, prime the browser/codec caches, and fetch the study metadata.
+ * Without this, the first real spec frequently times out waiting on a cold
+ * server compile. This run only loads the page and waits for the layout to
+ * render; it makes no assertions.
+ */
 import { chromium, type FullConfig } from '@playwright/test';
 
 const warmupStudyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';

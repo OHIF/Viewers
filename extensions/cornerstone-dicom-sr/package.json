@@ -31,7 +31,6 @@
   "peerDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
-    "@ohif/extension-measurement-tracking": "workspace:*",
     "@ohif/ui": "workspace:*",
     "dcmjs": "0.49.4",
     "dicom-parser": "1.8.21",
