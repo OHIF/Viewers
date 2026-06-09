@@ -123,7 +123,7 @@ test('should stop a locked contour segment from responding to drag edits', async
     svgInnerElement: 'path',
     attributeName: 'd',
   });
-  expect(svgPathDAttributeAfterDragWhileUnlocked, 'Expected a visible SVG path for the segment before dragging after unlocking').not.toBeNull();
+  expect(svgPathDAttributeAfterDragWhileUnlocked, 'Expected a visible SVG path for the segment after dragging while unlocked').not.toBeNull();
 
   // The path should change after dragging while unlocked.
   expect(
