@@ -37,6 +37,7 @@ export class RightPanelPageObject {
 
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
+    const lockToggleMenuItem = this.page.getByTestId('LockToggle');
 
     return {
       button: actionsButton,
@@ -47,9 +48,10 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Delete').click();
       },
+      lockToggleMenuItem,
       toggleLock: async () => {
         await actionsButton.click();
-        await this.page.getByTestId('LockToggle').click();
+        await lockToggleMenuItem.click();
       },
       unlock: async () => {
         await actionsButton.click();

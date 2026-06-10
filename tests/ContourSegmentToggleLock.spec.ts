@@ -7,6 +7,7 @@ import {
   waitForViewportsRendered,
 } from './utils';
 import { simulateNormalizedDragOnElement } from './utils/simulateDragOnElement';
+import { expectRowLocked, expectRowUnlocked } from './utils/assertions';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defaultSegment0Name = 'Threshold';
@@ -24,43 +25,34 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
 });
 
 test('should show the lock indicator and flip the menu label between Lock and Unlock', async ({
-  page,
   rightPanelPageObject,
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
   const segment0 = panel.nthSegment(0);
   await expect(segment0.title).toHaveText(defaultSegment0Name);
 
-  // The lock icon (svg group #Lock) is only rendered inside the row once locked.
-  const rowLockIcon = segment0.locator.locator('g#Lock');
-  await expect(rowLockIcon, 'Expected the row to start unlocked (no lock icon)').toHaveCount(0);
+  // The lock icon is only rendered inside the row once locked.
+  await expectRowUnlocked(segment0.locator);
 
-  //open the actions menu and check that the toggle option reads "Lock" before locking
   await segment0.actions.click();
-  const lockToggle = page.getByTestId('LockToggle');
+  const lockToggle = segment0.actions.lockToggleMenuItem;
   await expect(lockToggle, 'Expected the menu item to read "Lock" before locking').toHaveText(
     'Lock'
   );
 
   // Lock the segment by clicking the already-open menu item.
   await lockToggle.click();
-
-  await expect(rowLockIcon, 'Expected the lock icon to appear on the row after locking').toHaveCount(1);
+  await expectRowLocked(segment0.locator);
 
   // Reopen the actions menu: the toggle label should now read "Unlock".
   await segment0.actions.click();
-  await expect(
-    lockToggle,
-    'Expected the menu item to read "Unlock" after locking'
-  ).toHaveText('Unlock');
+  await expect(lockToggle, 'Expected the menu item to read "Unlock" after locking').toHaveText(
+    'Unlock'
+  );
 
   // Unlock the segment again by clicking the already-open menu item.
   await lockToggle.click();
-
-  await expect(
-    rowLockIcon,
-    'Expected the lock icon to disappear from the row after unlocking'
-  ).toHaveCount(0);
+  await expectRowUnlocked(segment0.locator);
 
   await segment0.actions.click();
   await expect(
@@ -76,6 +68,8 @@ test('should stop a locked contour segment from responding to drag edits', async
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
+  // Hide all segments and show only segment 0 so the viewport contains a single contour
+  // path, then select it so it is the active segment for the drag edits below.
   await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
   const segment0 = panel.nthSegment(0);
   await segment0.toggleVisibility();
@@ -91,27 +85,23 @@ test('should stop a locked contour segment from responding to drag edits', async
   });
   expect(originalSvgPathDAttribute, 'Expected a visible SVG path for the unlocked segment').not.toBeNull();
 
-  // Lock the segment via the actions menu.
+  // Lock the segment via the actions menu and confirm the lock state has propagated
+  // to the row before dragging.
   await segment0.actions.toggleLock();
-  await expect(
-    segment0.locator.locator('g#Lock'),
-    'Expected the lock icon to appear on the row after locking'
-  ).toHaveCount(1);
+  await expectRowLocked(segment0.locator);
 
-  // drag path after locking
+  // Drag the path while locked.
   await simulateNormalizedDragOnElement({
     locator: svgPath,
     start: { x: 0.8, y: 0.8 },
     end: { x: 0.2, y: 0.2 },
   });
 
-  // Recapture svg path d attribute after dragging
   const svgPathDAttributeAfterDragWhileLocked = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
   });
-  expect(svgPathDAttributeAfterDragWhileLocked, 'Expected a visible SVG path for the locked segment after dragging').not.toBeNull();
 
   // The path should not have changed after the drag attempt while locked.
   expect(
@@ -119,27 +109,25 @@ test('should stop a locked contour segment from responding to drag edits', async
     'Expected the contour path to remain unchanged after dragging while locked'
   ).toBe(originalSvgPathDAttribute);
 
-  // unlock the contour segment and try dragging again to confirm the path can change after unlocking
+  // Unlock the segment and confirm the lock indicator is gone before dragging again.
   await segment0.actions.toggleLock();
+  await expectRowUnlocked(segment0.locator);
 
-  //drag path after unlocking using same motion as while it was locked
+  // Drag with the same motion as while locked.
   await simulateNormalizedDragOnElement({
     locator: svgPath,
     start: { x: 0.8, y: 0.8 },
     end: { x: 0.2, y: 0.2 },
   });
 
-  // get svg path after dragging
-  const svgPathDAttributeAfterDragWhileUnlocked = await getSvgAttribute({
+  const svgPathDAfterDragWhileUnlocked = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
   });
-  expect(svgPathDAttributeAfterDragWhileUnlocked, 'Expected a visible SVG path for the segment after dragging while unlocked').not.toBeNull();
-
   // The path should change after dragging while unlocked.
   expect(
-    svgPathDAttributeAfterDragWhileUnlocked,
+    svgPathDAfterDragWhileUnlocked,
     'Expected the contour path to change after dragging while unlocked'
   ).not.toBe(originalSvgPathDAttribute);
 });

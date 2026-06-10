@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
 import { DOMOverlayPageObject } from '../pages';
@@ -64,4 +64,18 @@ export async function assertBoundingBoxIsContainedWithin({
 
 export async function expectRowSelected(rowObject) {
   await expect(rowObject.locator).toContainClass('bg-popover');
+}
+
+export async function expectRowLocked(rowObjectLocator: Locator) {
+  await expect(
+    rowObjectLocator.locator('g#Lock'),
+    'Expected the row to show the lock icon'
+  ).toHaveCount(1);
+}
+
+export async function expectRowUnlocked(rowObjectLocator: Locator) {
+  await expect(
+    rowObjectLocator.locator('g#Lock'),
+    'Expected the row to not show the lock icon'
+  ).toHaveCount(0);
 }
