@@ -1330,60 +1330,9 @@ importers:
       '@ohif/core':
         specifier: workspace:*
         version: link:../core
-      '@ohif/extension-cornerstone':
-        specifier: workspace:*
-        version: link:../../extensions/cornerstone
-      '@ohif/extension-cornerstone-dicom-pmap':
-        specifier: workspace:*
-        version: link:../../extensions/cornerstone-dicom-pmap
-      '@ohif/extension-cornerstone-dicom-rt':
-        specifier: workspace:*
-        version: link:../../extensions/cornerstone-dicom-rt
-      '@ohif/extension-cornerstone-dicom-seg':
-        specifier: workspace:*
-        version: link:../../extensions/cornerstone-dicom-seg
-      '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
-        version: link:../../extensions/cornerstone-dicom-sr
-      '@ohif/extension-default':
-        specifier: workspace:*
-        version: link:../../extensions/default
-      '@ohif/extension-dicom-microscopy':
-        specifier: workspace:*
-        version: link:../../extensions/dicom-microscopy
-      '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
-        version: link:../../extensions/dicom-pdf
-      '@ohif/extension-dicom-video':
-        specifier: workspace:*
-        version: link:../../extensions/dicom-video
-      '@ohif/extension-measurement-tracking':
-        specifier: workspace:*
-        version: link:../../extensions/measurement-tracking
-      '@ohif/extension-test':
-        specifier: workspace:*
-        version: link:../../extensions/test-extension
-      '@ohif/extension-ultrasound-pleura-bline':
-        specifier: workspace:*
-        version: link:../../extensions/usAnnotation
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../i18n
-      '@ohif/mode-basic-dev-mode':
-        specifier: workspace:*
-        version: link:../../modes/basic-dev-mode
-      '@ohif/mode-longitudinal':
-        specifier: workspace:*
-        version: link:../../modes/longitudinal
-      '@ohif/mode-microscopy':
-        specifier: workspace:*
-        version: link:../../modes/microscopy
-      '@ohif/mode-test':
-        specifier: workspace:*
-        version: link:../../modes/basic-test-mode
-      '@ohif/mode-ultrasound-pleura-bline':
-        specifier: workspace:*
-        version: link:../../modes/usAnnotation
       '@ohif/ui':
         specifier: workspace:*
         version: link:../ui

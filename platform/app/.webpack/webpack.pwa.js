@@ -123,6 +123,11 @@ module.exports = (env, argv) => {
       },
     },
     resolve: {
+      // Resolve every extension/mode declared in pluginConfig.json to its
+      // workspace source, so the dynamic import()s in pluginImports.js link
+      // without the plugins being dependencies of platform/app. Merged with the
+      // base aliases (webpack-merge deep-merges resolve.alias).
+      alias: writePluginImportFile.getPluginResolveAliases(),
       modules: [
         // Preserve importer-relative node_modules walk-up for pnpm.
         'node_modules',
