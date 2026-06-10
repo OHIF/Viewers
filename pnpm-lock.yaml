@@ -1333,6 +1333,9 @@ importers:
       '@ohif/extension-cornerstone':
         specifier: workspace:*
         version: link:../../extensions/cornerstone
+      '@ohif/extension-cornerstone-dicom-pmap':
+        specifier: workspace:*
+        version: link:../../extensions/cornerstone-dicom-pmap
       '@ohif/extension-cornerstone-dicom-rt':
         specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-rt
@@ -1354,6 +1357,9 @@ importers:
       '@ohif/extension-dicom-video':
         specifier: workspace:*
         version: link:../../extensions/dicom-video
+      '@ohif/extension-measurement-tracking':
+        specifier: workspace:*
+        version: link:../../extensions/measurement-tracking
       '@ohif/extension-test':
         specifier: workspace:*
         version: link:../../extensions/test-extension
