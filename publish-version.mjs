@@ -62,9 +62,10 @@ async function run() {
   await fs.writeFile('package.json', JSON.stringify(rootPackageJson, null, 2) + '\n');
   console.log('Updated root package.json');
 
-  // remove the .npmrc to not accidentally publish to npm
-  await fs.unlink('.npmrc').catch(() => {});
-  await execa('rm', ['-f', '.npmrc']);
+  // NOTE: Do not delete .npmrc here. It is tracked and holds pnpm workspace
+  // config (node-linker, workspace linking) with no npm credentials, so
+  // removing it would commit the loss of needed install config. This script
+  // does not publish, so there is no accidental-publish risk to guard against.
 
   console.log('Setting the version...');
 
