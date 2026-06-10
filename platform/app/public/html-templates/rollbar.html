@@ -34,6 +34,86 @@
       name="msapplication-TileColor"
       content="#fff"
     />
+    <script type="text/javascript">
+      (function () {
+        // Keep this inline runtime base-path bootstrap in sync with
+        // platform/core/src/utils/publicUrl.ts.
+        function normalizePublicUrl(value) {
+          var rawValue = typeof value === 'string' ? value.trim() : '';
+
+          if (!rawValue || rawValue === '.') {
+            return '/';
+          }
+
+          var normalized = rawValue.replace(/\\/g, '/');
+
+          if (!normalized.startsWith('/')) {
+            normalized = '/' + normalized;
+          }
+
+          normalized = normalized.replace(/\/{2,}/g, '/');
+
+          if (!normalized.endsWith('/')) {
+            normalized += '/';
+          }
+
+          return normalized;
+        }
+
+        function getLocationBasePathFromPathname(pathname) {
+          var locationPath = typeof pathname === 'string' && pathname.length > 0 ? pathname : '/';
+          var lowerPath = locationPath.toLowerCase();
+          var viewerIndex = lowerPath.lastIndexOf('/viewer');
+
+          if (viewerIndex >= 0) {
+            return normalizePublicUrl(locationPath.substring(0, viewerIndex));
+          }
+
+          if (lowerPath.endsWith('/index.html')) {
+            return normalizePublicUrl(
+              locationPath.substring(0, locationPath.length - '/index.html'.length)
+            );
+          }
+
+          if (locationPath === '/') {
+            return '/';
+          }
+
+          var lastSegment = locationPath.substring(locationPath.lastIndexOf('/') + 1);
+          if (lastSegment.indexOf('.') !== -1) {
+            return normalizePublicUrl(locationPath.substring(0, locationPath.lastIndexOf('/')));
+          }
+
+          return normalizePublicUrl(locationPath);
+        }
+
+        function resolveRuntimeBasePathFromWindow() {
+          var explicitBasePath =
+            window.__OHIF_BASE_PATH__ ||
+            window.PUBLIC_URL ||
+            (window.config && window.config.routerBasename);
+
+          if (typeof explicitBasePath === 'string' && explicitBasePath.trim().length > 0) {
+            return normalizePublicUrl(explicitBasePath);
+          }
+
+          return getLocationBasePathFromPathname(window.location.pathname || '/');
+        }
+
+        var basePath = resolveRuntimeBasePathFromWindow();
+
+        window.__OHIF_BASE_PATH__ = basePath;
+        window.PUBLIC_URL = basePath;
+
+        var baseElement = document.querySelector('base');
+        if (!baseElement) {
+          baseElement = document.createElement('base');
+          document.head.appendChild(baseElement);
+        }
+
+        baseElement.setAttribute('href', basePath);
+      })();
+    </script>
     <meta
       name="msapplication-TileImage"
       content="<%= PUBLIC_URL %>assets/mstile-144x144.png"
@@ -178,10 +258,6 @@
       rel="yandex-tableau-widget"
       href="<%= PUBLIC_URL %>assets/yandex-browser-manifest.json"
     />
-
-    <script type="text/javascript">
-      window.PUBLIC_URL = '<%= PUBLIC_URL %>';
-    </script>
     <script
       type="text/javascript"
       src="<%= PUBLIC_URL %>app-config.js"
