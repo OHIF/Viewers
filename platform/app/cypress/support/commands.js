@@ -1,4 +1,3 @@
-import '@percy/cypress';
 import 'cypress-file-upload';
 import { DragSimulator } from './DragSimulator.js';
 import {
@@ -392,21 +391,13 @@ Cypress.Commands.add('isInViewport', element => {
 });
 
 /**
- * Percy.io Canvas screenshot workaround
- *
+ * Capture a screenshot. Replaces the former @percy/cypress visual-snapshot
+ * integration with Cypress's built-in cy.screenshot. The name is kept stable to
+ * preserve existing call sites; canvas content is captured natively by Cypress,
+ * so the old canvas-to-image workaround is no longer needed.
  */
 Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
-  cy.document().then(doc => {
-    convertCanvas(doc);
-  });
-
-  // `domTransformation` does not appear to be working
-  // But modifying our immediate DOM does.
-  cy.percySnapshot(name, { ...options }); //, domTransformation: convertCanvas });
-
-  cy.document().then(doc => {
-    unconvertCanvas(doc);
-  });
+  cy.screenshot(name, { ...options });
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
@@ -417,38 +408,6 @@ Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
   cy.wait(10);
   cy.waitDicomImage();
 });
-
-function convertCanvas(documentClone) {
-  documentClone.querySelectorAll('canvas').forEach(selector => canvasToImage(selector));
-
-  return documentClone;
-}
-
-function unconvertCanvas(documentClone) {
-  // Remove previously generated images
-  documentClone.querySelectorAll('[data-percy-image]').forEach(selector => selector.remove());
-  // Restore canvas visibility
-  documentClone.querySelectorAll('[data-percy-canvas]').forEach(selector => {
-    selector.removeAttribute('data-percy-canvas');
-    selector.style = '';
-  });
-}
-
-function canvasToImage(selectorOrEl) {
-  let canvas =
-    typeof selectorOrEl === 'object' ? selectorOrEl : document.querySelector(selectorOrEl);
-  let image = document.createElement('img');
-  let canvasImageBase64 = canvas.toDataURL('image/png');
-
-  // Show Image
-  image.src = canvasImageBase64;
-  image.style = 'width: 100%';
-  image.setAttribute('data-percy-image', true);
-  // Hide Canvas
-  canvas.setAttribute('data-percy-canvas', true);
-  canvas.parentElement.appendChild(image);
-  canvas.style = 'display: none';
-}
 
 //Initialize aliases for User Preferences modal
 Cypress.Commands.add('initPreferencesModalAliases', () => {
