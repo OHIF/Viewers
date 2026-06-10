@@ -37,8 +37,10 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohif-extension-dicom-pdf',
-      libraryTarget: 'umd',
+      library: {
+        name: 'ohif-extension-dicom-pdf',
+        type: 'umd',
+      },
       filename: `${pkg.main}`,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
