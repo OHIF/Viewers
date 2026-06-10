@@ -3,6 +3,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForPaintToSettle,
   waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
@@ -36,6 +37,10 @@ test('should properly display MPR for MR', async ({
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
   await waitForViewportsRendered(page);
+  // SEG load triggers an additional progressive labelmap upload after the
+  // viewports first report 'rendered'; let that finish before screenshotting.
+  await page.waitForTimeout(1500);
+  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,
@@ -49,6 +54,11 @@ test('should properly display MPR for MR', async ({
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await viewportRenderCycle;
+  // Hydration propagates the labelmap volume to the sagittal/coronal MPR
+  // viewports asynchronously; wait for that propagation to render before
+  // capturing.
+  await page.waitForTimeout(1500);
+  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,
@@ -61,6 +71,8 @@ test('should properly display MPR for MR', async ({
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
   await viewportRenderAfterLayoutChange;
+  await page.waitForTimeout(1000);
+  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,

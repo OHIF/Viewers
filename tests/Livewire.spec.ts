@@ -43,11 +43,11 @@ test('should display the livewire tool', async ({
 
   const stats = livewires[0].firstTargetStats!;
   expect(stats.areaUnit).toBe('mm²');
-  expect(Math.round(stats.area as number)).toBe(28906);
+  expect(Math.round(stats.area as number)).toBe(30412);
 
   const lines = activeViewport.getSvgAnnotationStatTextLines(livewires[0].annotationUID);
   await expect(lines).toHaveCount(1);
-  await expect(lines.nth(0)).toHaveText('Area: 28906 mm²');
+  await expect(lines.nth(0)).toHaveText('Area: 30412 mm²');
 });
 
 test('should restore viewport interactivity after deleting an in-progress Livewire annotation via context menu', async ({

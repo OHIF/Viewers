@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.88...v3.13.0-beta.89) (2026-06-10)
+
+
+### Bug Fixes
+
+* ohif tests to run with cornerstone 3d 5.0 ([#6043](https://github.com/OHIF/Viewers/issues/6043)) ([6dd150d](https://github.com/OHIF/Viewers/commit/6dd150d401ad73d60632a23378b7dfd4b5142690))
+
+
+
+
+
+# [3.13.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.87...v3.13.0-beta.88) (2026-06-05)
+
+
+### Bug Fixes
+
+* **security:** Patch axios vulnerabilities. ([#6063](https://github.com/OHIF/Viewers/issues/6063)) ([99c6154](https://github.com/OHIF/Viewers/commit/99c615434309b113aed9ac9a977419eeae0528cb))
+
+
+
+
+
+# [3.13.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.86...v3.13.0-beta.87) (2026-05-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.85...v3.13.0-beta.86) (2026-05-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.84...v3.13.0-beta.85) (2026-05-28)
+
+
+### Features
+
+* **WorkList:** New Study List (WorkList based on ui-next); old study list renamed to LegacyWorklist ([#6005](https://github.com/OHIF/Viewers/issues/6005)) ([daae4c1](https://github.com/OHIF/Viewers/commit/daae4c144e7cb80bbee7c05d9fceef8b332ed2a0))
+
+
+
+
+
+# [3.13.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.83...v3.13.0-beta.84) (2026-05-27)
+
+
+### Bug Fixes
+
+* **security:** Add tmp as a resolution to fix security vulnerability. ([#6044](https://github.com/OHIF/Viewers/issues/6044)) ([bdcafc1](https://github.com/OHIF/Viewers/commit/bdcafc12de5e4f73a1a96cab9c0830d49315c044))
+
+
+
+
+
 # [3.13.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.82...v3.13.0-beta.83) (2026-05-26)
 
 

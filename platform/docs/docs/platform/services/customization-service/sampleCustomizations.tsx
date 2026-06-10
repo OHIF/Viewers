@@ -356,6 +356,215 @@ window.config = {
   },
 ];
 
+export const workListCustomizations = [
+  {
+    id: 'workList.variant',
+    description: (
+      <>
+        Selects which study-list route is mounted at <code>/</code>. Use <code>'default'</code>{' '}
+        (default customization value) for the new ui-next WorkList introduced in 3.13. Use{' '}
+        <code>'legacy'</code> to mount the pre-3.13 WorkList (internally{' '}
+        <code>LegacyWorkList</code>) as an opt-out while migrating. The customization is read once
+        during route registration, so changing it requires a reload.
+      </>
+    ),
+    default: 'default',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.variant': {
+        $set: 'legacy',
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.previewSeriesView',
+    description: (
+      <>
+        Controls which series views are available in the WorkList preview panel. Use{' '}
+        <code>'all'</code> (default customization value) to show the thumbnails/list toggle. The
+        initial preview view is thumbnails. Use <code>'thumbnails'</code> to lock the preview to
+        thumbnails, or <code>'list'</code> to lock it to the series list. The preview is forced to{' '}
+        <code>'list'</code> when the active data source declares <code>thumbnailRendering</code> as{' '}
+        <code>'wadors'</code> or <code>'thumbnailDirect'</code>, or declares{' '}
+        <code>thumbnailRequestStrategy</code> as <code>'bulkDataRetrieve'</code> (its default
+        value), regardless of this setting. Currently only applies when <code>workList.variant</code> is{' '}
+        <code>'default'</code>.
+      </>
+    ),
+    default: 'all',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.previewSeriesView': {
+        $set: 'list',
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.columns',
+    description: (
+      <>
+        The column set for the WorkList table, as a <code>ColumnDef[]</code> value (default:{' '}
+        <code>StudyList.defaultColumns</code>). Because it is a plain array, override it with
+        immutability-helper commands — <code>$splice</code> to reorder/insert/remove,{' '}
+        <code>$set</code>/<code>$merge</code> to tweak <code>meta</code> (label, width, priority),
+        or <code>$apply</code> — a function that receives the current columns and returns the new
+        array — for anything the other commands don't express cleanly (moves, conditional inserts,
+        or edits keyed off a column's <code>id</code> rather than its position). Use{' '}
+        <code>StudyList.textColumn(id, label, meta?)</code> for a simple display-only column.
+        Gotchas: a column's <code>cell</code>/<code>accessorFn</code>/etc. are functions (not
+        serializable, so non-text columns still need code); the trailing <code>actions</code>{' '}
+        column should stay last for correct layout (cosmetic, not required), so insert{' '}
+        <em>before</em> it with <code>$splice</code> rather than <code>$push</code>; and
+        index-based edits are position-fragile (prefer <code>$apply</code>{' '}
+        for id-based changes). If the merged value is not an array, WorkList falls back to the
+        defaults. Currently only applies when <code>workList.variant</code> is{' '}
+        <code>'default'</code>.
+      </>
+    ),
+    default: 'StudyList.defaultColumns',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.columns': {
+        // Insert a Referring Physician column before the trailing actions column.
+        $apply: (columns) => {
+          const actionsIndex = columns.findIndex((c) => c.id === 'actions');
+          const at = actionsIndex === -1 ? columns.length : actionsIndex;
+          const referring = StudyList.textColumn('referringPhysicianName', 'Referring Physician');
+          return [...columns.slice(0, at), referring, ...columns.slice(at)];
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.renderPreviewContent',
+    description: (
+      <>
+        Render function for the preview panel content. Receives the host React and{' '}
+        <code>{'{ study, series, seriesView, onThumbnailImageError }'}</code> — the same data the
+        built-in renderer uses, with series and thumbnails already fetched by the{' '}
+        <code>SidePanelPreview</code> shell.
+        <ul>
+          <li>
+            <code>study</code>: the selected <code>StudyRow</code>, or <code>null</code>.
+          </li>
+          <li>
+            <code>series</code>: the study's series with raw data-source fields (
+            <code>seriesInstanceUid</code>, <code>modality</code>, <code>description</code>,{' '}
+            <code>seriesDate</code>, <code>seriesNumber</code>, <code>numSeriesInstances</code>,
+            etc.) plus a <code>thumbnailStatus</code> added by the shell, which is one of{' '}
+            <code>{"{ status: 'loading' }"}</code>, <code>{"{ status: 'ready', src }"}</code>,{' '}
+            <code>{"{ status: 'notAvailable' }"}</code>, or{' '}
+            <code>{"{ status: 'notApplicable' }"}</code>. Use <code>src</code> from the{' '}
+            <code>'ready'</code> form as the <code>{'<img>'}</code> source.
+          </li>
+          <li>
+            <code>seriesView</code>: <code>'all' | 'thumbnails' | 'list'</code>, resolved from{' '}
+            <code>workList.previewSeriesView</code> with <code>'list'</code> forced for data
+            sources that can't produce thumbnails.
+          </li>
+          <li>
+            <code>onThumbnailImageError(seriesUID)</code>: call when an <code>{'<img>'}</code>{' '}
+            you render fails to load; the shell marks that series as <code>notAvailable</code>{' '}
+            and revokes its blob URL if needed.
+          </li>
+        </ul>
+        Use this to change the preview layout while keeping the fetch, abort, and thumbnail
+        worker-pool logic intact. When unset, the built-in{' '}
+        <code>{'<StudyList.PreviewContainer>'}</code> layout is used. Currently only applies when{' '}
+        <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: 'undefined',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.renderPreviewContent': {
+        $set: function (React, { study, series, seriesView, onThumbnailImageError }) {
+          // Render whatever layout you like using the data the shell provides.
+          return React.createElement(
+            'div',
+            { className: 'flex h-full flex-col bg-black p-4 text-white' },
+            React.createElement('h2', null, study?.patientName ?? 'No study selected'),
+            React.createElement(
+              'ul',
+              { className: 'mt-2 flex flex-col gap-2' },
+              series.map((s) =>
+                React.createElement(
+                  'li',
+                  { key: s.seriesInstanceUid },
+                  s.description
+                )
+              )
+            )
+          );
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'workList.settingsMenuItems',
+    description: (
+      <>
+        Builds the items in the WorkList settings popover (the gear menu in the top right). The
+        customization is a function that receives the default items and must return a{' '}
+        <code>SettingsMenuItem[]</code> (each <code>{'{ id, label, onClick }'}</code>). The
+        defaults are <code>about</code>, <code>userPreferences</code>, and (when{' '}
+        <code>appConfig.oidc</code> is configured) <code>logout</code>. Use it to reorder, remove,
+        or insert items without rebuilding the popover shell. If the customization returns a
+        non-array value, WorkList falls back to the defaults. Currently only applies when{' '}
+        <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: '(defaults) => defaults',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.settingsMenuItems': {
+        // Remove "User Preferences" and add a custom "Help" item at the top.
+        $set: (defaults) => {
+          const filtered = defaults.filter((i) => i.id !== 'userPreferences');
+          return [
+            {
+              id: 'help',
+              label: 'Help',
+              onClick: () => window.open('https://docs.example.com', '_blank'),
+            },
+            ...filtered,
+          ];
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+];
+
 export const customizations = [
   {
     id: 'ohif.hotkeyBindings',
@@ -1022,89 +1231,47 @@ window.config = {
   },
   {
     id: 'ohif.aboutModal',
-    description: 'The About modal',
+    description: (
+      <>
+        Replaces the About modal. The customization value is a React component; see{' '}
+        <code>extensions/default/src/customizations/aboutModalCustomization.tsx</code> for the
+        default and the <code>AboutModal</code> compound API. The consumer also reads optional{' '}
+        <code>title</code> and <code>containerClassName</code> static properties off the
+        component; both fall back to sensible defaults when omitted.
+      </>
+    ),
     image: aboutModal,
     default: 'Our own default component',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        Easiest to register from a custom extension's <code>getCustomizationModule</code>, where
+        JSX and the <code>@ohif/ui-next</code> imports work normally. See{' '}
+        <code>aboutModalCustomization.tsx</code> for the full default and the rest of the{' '}
+        <code>AboutModal</code> compound API.
+      </p>
+    ),
     configuration: `
-      window.config = {
-        // rest of window config
+import { AboutModal } from '@ohif/ui-next';
 
-        // You can use the component from AboutModal
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.aboutModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'viewportDownload.warningMessage',
-    description: 'Customizes the warning message for the viewport download form.',
-    image: viewportDownloadWarning,
-    default: {
-      enabled: true,
-      value: 'Not For Diagnostic Use',
-    },
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportDownload.warningMessage': {
-              $set: {
-                enabled: true,
-                value: 'Careful! This is not for diagnostic use.',
-              },
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'ohif.captureViewportModal',
-    description: 'The modal for capturing the viewport image.',
-    image: captureViewportModal,
-    default: 'Our own default component',
-    configuration: `
-      window.config = {
-        // rest of window config
+function MyAboutModal() {
+  return (
+    <AboutModal className="w-[400px]">
+      <AboutModal.ProductName>My Custom Viewer</AboutModal.ProductName>
+      <AboutModal.ProductVersion>1.2.3</AboutModal.ProductVersion>
+    </AboutModal>
+  );
+}
 
-        // You can use the component from ImageModal and FooterAction
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.captureViewportModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'ohif.aboutModal',
-    description: 'The About modal',
-    image: aboutModal,
-    default: 'Our own default component',
-    configuration: `
-      window.config = {
-        // rest of window config
+// Optional: override the modal title and container size.
+MyAboutModal.title = 'About My Custom Viewer';
+MyAboutModal.containerClassName = 'max-w-md';
 
-        // You can use the component from AboutModal
-        // to build your own custom component
-        customizationService: [
-          {
-            'ohif.aboutModal': {
-              $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
+window.config = {
+  // rest of window config
+  customizationService: [
+    { 'ohif.aboutModal': { $set: MyAboutModal } },
+  ],
+};
         `,
   },
   {

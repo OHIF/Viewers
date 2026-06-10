@@ -50,6 +50,7 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       },
     },
     retrieve: {
+      getGetThumbnailSrc: (...args) => dicomWebDelegate.retrieve.getGetThumbnailSrc(...args),
       directURL: (...args) => dicomWebDelegate.retrieve.directURL(...args),
       series: {
         metadata: async (...args) => dicomWebDelegate.retrieve.series.metadata(...args),

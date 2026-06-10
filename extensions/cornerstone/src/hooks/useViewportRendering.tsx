@@ -1,16 +1,13 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
-import {
-  StackViewport,
-  Types,
-  VolumeViewport3D,
-  utilities,
-  Enums,
-  BaseVolumeViewport,
-  cache,
-} from '@cornerstonejs/core';
+import { Types, utilities, Enums, cache } from '@cornerstonejs/core';
 import { getDataIdForViewport } from '../utils/getDataIdForViewport';
+import {
+  isStackViewportType,
+  isVolumeViewportType,
+  isVolume3DViewportType,
+} from '../utils/getLegacyViewportType';
 import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
@@ -130,7 +127,7 @@ export function useViewportRendering(
   const [viewport, setViewport] = useState<Types.IViewport | null>(() =>
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
   );
-  const [is3DVolume, setIs3DVolume] = useState(viewport instanceof VolumeViewport3D);
+  const [is3DVolume, setIs3DVolume] = useState(isVolume3DViewportType(viewport));
   const [opacity, setOpacityState] = useState<number | undefined>();
   const [opacityLinear, setOpacityLinearState] = useState<number | undefined>();
   const [threshold, setThresholdState] = useState<number | undefined>();
@@ -219,7 +216,7 @@ export function useViewportRendering(
       return;
     }
 
-    if (!(viewport instanceof BaseVolumeViewport)) {
+    if (!isVolumeViewportType(viewport)) {
       return;
     }
 
@@ -264,7 +261,7 @@ export function useViewportRendering(
   }, [allWindowLevelPresets, activeDisplaySetInstanceUID]);
 
   useEffect(() => {
-    setIs3DVolume(viewport instanceof VolumeViewport3D);
+    setIs3DVolume(isVolume3DViewportType(viewport));
 
     if (!viewport || !activeDisplaySetInstanceUID) {
       return;
@@ -573,7 +570,7 @@ export function useViewportRendering(
 
   const setOpacity = useCallback(
     (opacityValue: number) => {
-      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+      if (!viewport || !isVolumeViewportType(viewport)) {
         return;
       }
 
@@ -624,7 +621,7 @@ export function useViewportRendering(
 
   const setThreshold = useCallback(
     (thresholdValue: number) => {
-      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+      if (!viewport || !isVolumeViewportType(viewport)) {
         return;
       }
 
@@ -665,7 +662,7 @@ export function useViewportRendering(
         return null;
       }
 
-      if (viewport instanceof StackViewport) {
+      if (isStackViewportType(viewport)) {
         const { colormap } = viewport.getProperties();
         if (!colormap) {
           return (

@@ -34,7 +34,9 @@ import More from './Sources/More';
 import MultiplePatients from './Sources/MultiplePatients';
 import NavigationPanelReveal from './Sources/NavigationPanelReveal';
 import OHIFLogo from './Sources/OHIFLogo';
+import OHIFLogoHorizontal from './Sources/OHIFLogoHorizontal';
 import Patient from './Sources/Patient';
+import PatientStudyList from './Sources/PatientStudyList';
 import Pin from './Sources/Pin';
 import PinFill from './Sources/PinFill';
 import Plus from './Sources/Plus';
@@ -43,6 +45,7 @@ import Redo from './Sources/Redo';
 import Refresh from './Sources/Refresh';
 import Rename from './Sources/Rename';
 import Series from './Sources/Series';
+import SeriesPlaceholder from './Sources/SeriesPlaceholder';
 import Settings from './Sources/Settings';
 import Show from './Sources/Show';
 import SidePanelCloseLeft from './Sources/SidePanelCloseLeft';
@@ -50,6 +53,9 @@ import SidePanelCloseRight from './Sources/SidePanelCloseRight';
 import SortingAscending from './Sources/SortingAscending';
 import SocialGithub from './Sources/SocialGithub';
 import SortingDescending from './Sources/SortingDescending';
+import SortingNew from './Sources/SortingNew';
+import SortingNewAscending from './Sources/SortingNewAscending';
+import SortingNewDescending from './Sources/SortingNewDescending';
 import StatusError from './Sources/StatusError';
 import StatusSuccess from './Sources/StatusSuccess';
 import StatusTracking from './Sources/StatusTracking';
@@ -157,9 +163,11 @@ import ContentPrev from './Sources/ContentPrev';
 import ContentNext from './Sources/ContentNext';
 import CheckBoxChecked from './Sources/CheckBoxChecked';
 import CheckBoxUnchecked from './Sources/CheckBoxUnChecked';
+import CloudSettings from './Sources/CloudSettings';
 import Close from './Sources/Close';
 import Pause from './Sources/Pause';
 import Play from './Sources/Play';
+import PanelRight from './Sources/PanelRight';
 import ViewportWindowLevel from './Sources/ViewportWindowLevel';
 import Search from './Sources/Search';
 import Clear from './Sources/Clear';
@@ -233,6 +241,7 @@ import StatusAlert from './Sources/StatusAlert';
 import Undo from './Sources/Undo';
 import TabContours from './Sources/TabContours';
 import IllustrationNotFound from './Sources/IllustrationNotFound';
+import SettingsStudyList from './Sources/SettingsStudyList';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -422,6 +431,7 @@ export const Icons = {
   OrientationSwitchR,
   Checked,
   Clipboard,
+  CloudSettings,
   ActionNewDialog,
   GroupLayers,
   Database,
@@ -508,7 +518,9 @@ export const Icons = {
   MultiplePatients,
   NavigationPanelReveal,
   OHIFLogo,
+  OHIFLogoHorizontal,
   Patient,
+  PatientStudyList,
   Pin,
   PinFill,
   Plus,
@@ -516,14 +528,20 @@ export const Icons = {
   Refresh,
   Rename,
   Series,
+  SeriesPlaceholder,
   Settings,
+  SettingsStudyList,
   Show,
   SidePanelCloseLeft,
   SidePanelCloseRight,
+  PanelRight,
   SocialGithub,
   SortingAscending,
   SortingDescending,
   Sorting,
+  SortingNew,
+  SortingNewAscending,
+  SortingNewDescending,
   StatusError,
   StatusSuccess,
   StatusTracking,
@@ -650,6 +668,7 @@ export const Icons = {
   magnifier: (props: IconProps) => Magnifier(props),
   'status-alert-warning': (props: IconProps) => StatusWarning(props),
   'logo-dark-background': (props: IconProps) => OHIFLogoColorDarkBackground(props),
+  'ohif-logo-horizontal': (props: IconProps) => OHIFLogoHorizontal(props),
   'external-link': (props: IconProps) => ExternalLink(props),
   'checkbox-checked': (props: IconProps) => CheckBoxChecked(props),
   'checkbox-unchecked': (props: IconProps) => CheckBoxUnchecked(props),
@@ -692,6 +711,7 @@ export const Icons = {
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
   'icon-patient': (props: IconProps) => Patient(props),
+  'panel-right': (props: IconProps) => PanelRight(props),
   'chevron-down': (props: IconProps) => ChevronOpen(props),
   'tool-length': (props: IconProps) => ToolLength(props),
   'tool-3d-rotate': (props: IconProps) => Tool3DRotate(props),
@@ -760,6 +780,8 @@ export const Icons = {
   'content-prev': (props: IconProps) => ContentPrev(props),
   'content-next': (props: IconProps) => ContentNext(props),
   'icon-settings': (props: IconProps) => Settings(props),
+  'settings-study-list': (props: IconProps) => SettingsStudyList(props),
+  'cloud-settings': (props: IconProps) => CloudSettings(props),
   close: (props: IconProps) => Close(props),
   pause: (props: IconProps) => Pause(props),
   'icon-pause': (props: IconProps) => Pause(props),
