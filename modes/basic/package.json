@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-basic",
-  "version": "3.13.0-beta.83",
+  "version": "3.13.0-beta.89",
   "description": "A basic mode used to build other modes on top of",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -21,17 +21,17 @@
     "yarn": ">=1.16.0"
   },
   "peerDependencies": {
-    "@ohif/core": "3.13.0-beta.83",
-    "@ohif/extension-cornerstone": "3.13.0-beta.83",
-    "@ohif/extension-cornerstone-dicom-rt": "3.13.0-beta.83",
-    "@ohif/extension-cornerstone-dicom-seg": "3.13.0-beta.83",
-    "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.83",
-    "@ohif/extension-default": "3.13.0-beta.83",
-    "@ohif/extension-dicom-pdf": "3.13.0-beta.83",
-    "@ohif/extension-dicom-video": "3.13.0-beta.83"
+    "@ohif/core": "3.13.0-beta.89",
+    "@ohif/extension-cornerstone": "3.13.0-beta.89",
+    "@ohif/extension-cornerstone-dicom-rt": "3.13.0-beta.89",
+    "@ohif/extension-cornerstone-dicom-seg": "3.13.0-beta.89",
+    "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.89",
+    "@ohif/extension-default": "3.13.0-beta.89",
+    "@ohif/extension-dicom-pdf": "3.13.0-beta.89",
+    "@ohif/extension-dicom-video": "3.13.0-beta.89"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2"
+    "@babel/runtime": "7.29.7"
   },
   "devDependencies": {
     "webpack": "5.105.0",

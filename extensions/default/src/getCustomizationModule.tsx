@@ -24,6 +24,7 @@ import reportDialogCustomization from './customizations/reportDialogCustomizatio
 import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomization';
 import onboardingCustomization from './customizations/onboardingCustomization';
 import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
+import getWorkListCustomization from './customizations/workListCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -73,6 +74,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...hotkeyBindingsCustomization,
         ...onboardingCustomization,
         ...instanceSortingCriteriaCustomization,
+        ...getWorkListCustomization(),
       },
     },
   ];
