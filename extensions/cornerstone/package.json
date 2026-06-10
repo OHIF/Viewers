@@ -40,6 +40,7 @@
     "@cornerstonejs/codec-openjph": "2.4.7",
     "@cornerstonejs/dicom-image-loader": "5.0.0",
     "@ohif/core": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
     "@ohif/ui": "workspace:*",
     "dcmjs": "0.49.4",
     "dicom-parser": "1.8.21",

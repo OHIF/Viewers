@@ -230,6 +230,9 @@ importers:
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
+      '@ohif/extension-default':
+        specifier: workspace:*
+        version: link:../default
       '@ohif/ui':
         specifier: workspace:*
         version: link:../../platform/ui
