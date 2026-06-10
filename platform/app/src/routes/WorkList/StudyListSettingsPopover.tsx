@@ -41,6 +41,18 @@ export function defaultSettingsMenuItems({
       },
     },
     {
+      id: 'appearance',
+      label: 'Appearance',
+      onClick: () => {
+        const AppearanceModal = customizationService.getCustomization('ohif.appearanceModal');
+        show({
+          content: AppearanceModal,
+          title: AppearanceModal?.title ?? t('AppearanceModal:Appearance'),
+          containerClassName: AppearanceModal?.containerClassName ?? 'max-w-md',
+        });
+      },
+    },
+    {
       id: 'userPreferences',
       label: 'User Preferences',
       onClick: () => {
