@@ -194,8 +194,17 @@ function getPluginResolveAliases() {
 const createCopyPluginToDist = (distDir, plugins, folderName) => {
   return plugins
     .map(plugin => {
-      const dir = pluginAssetDir(plugin);
-      const from = dir && path.join(dir, folderName);
+      // An explicit `directory` is the asset source itself (third-party public
+      // entries like dicom-microscopy-viewer, or ./platform/public); copy it
+      // directly. Otherwise copy the package's <folderName> (public/ or dist/)
+      // subdirectory.
+      let from;
+      if (plugin.directory) {
+        from = fromDirectory(APP_SRC_DIR, plugin.directory);
+      } else {
+        const dir = pluginAssetDir(plugin);
+        from = dir && path.join(dir, folderName);
+      }
       return from && fs.existsSync(from)
         ? {
             from,
