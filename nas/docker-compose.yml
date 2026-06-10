@@ -1,0 +1,20 @@
+services:
+  mimps-viewer:
+    image: nginxinc/nginx-unprivileged:1.27-alpine
+    container_name: mimps-viewer
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: mimps-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - mimps-viewer

@@ -73,3 +73,7 @@ libs/
 link-cs3d.js
 unlink-cs3d.js
 auth.json
+
+# Python (audit-service)
+__pycache__/
+*.pyc
