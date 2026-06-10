@@ -4,9 +4,9 @@ import {
   Enums,
   eventTarget,
   utilities,
-  VolumeViewport3D,
 } from '@cornerstonejs/core';
 import { useByteArray } from '@ohif/ui-next';
+import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import { getImageIdFromCacheEvent, getImageIndexFromEvent, isProgressFullMode } from './helpers';
 import { ImageSliceData, ViewportData } from './types';
 
@@ -98,7 +98,7 @@ export function useViewportSliceSync({
     }
 
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    if (viewport && !(viewport instanceof VolumeViewport3D)) {
+    if (viewport && !isVolume3DViewportType(viewport)) {
       try {
         const currentImageIndex = viewport.getCurrentImageIdIndex();
         const currentNumberOfSlices = viewport.getNumberOfSlices();
@@ -120,7 +120,7 @@ export function useViewportSliceSync({
 
     const updateIndex = event => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (!viewport || viewport instanceof VolumeViewport3D) {
+      if (!viewport || isVolume3DViewportType(viewport)) {
         return;
       }
 

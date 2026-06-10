@@ -126,8 +126,9 @@ test.describe('Crosshairs Test', async () => {
     await viewportPageObject.crosshairs.axial.rotate();
     await viewportPageObject.crosshairs.sagittal.rotate();
     await viewportPageObject.crosshairs.coronal.rotate();
-    const afterRotate = await getCrosshairsSignature(page);
-    expect(afterRotate).not.toEqual(beforeRotate);
+    await expect
+      .poll(() => getCrosshairsSignature(page), { timeout: CROSSHAIRS_DOM_TIMEOUT_MS })
+      .not.toEqual(beforeRotate);
   });
 
   test('should allow the user to adjust the slab thickness', async ({
@@ -143,8 +144,9 @@ test.describe('Crosshairs Test', async () => {
     await viewportPageObject.crosshairs.axial.increase();
     await viewportPageObject.crosshairs.sagittal.increase();
     await viewportPageObject.crosshairs.coronal.increase();
-    const afterIncrease = await getLayerSignature(page, 'svg-layer-mpr-axial');
-    expect(afterIncrease).not.toEqual(beforeIncrease);
+    await expect
+      .poll(() => getLayerSignature(page, 'svg-layer-mpr-axial'), { timeout: CROSSHAIRS_DOM_TIMEOUT_MS })
+      .not.toEqual(beforeIncrease);
   });
 
   test('should reset the crosshairs to the initial position when reset is clicked', async ({
@@ -160,14 +162,27 @@ test.describe('Crosshairs Test', async () => {
     await viewportPageObject.crosshairs.axial.rotate();
     await viewportPageObject.crosshairs.sagittal.rotate();
     await viewportPageObject.crosshairs.coronal.rotate();
-    const rotatedPosition = await getCrosshairsSignature(page);
-    expect(rotatedPosition).not.toEqual(initialPosition);
+    await expect
+      .poll(() => getCrosshairsSignature(page), { timeout: CROSSHAIRS_DOM_TIMEOUT_MS })
+      .not.toEqual(initialPosition);
 
     await mainToolbarPageObject.moreTools.reset.click();
     await expectCrosshairsReady(page);
-    expect(await areLayerLinesAxisAligned(page, 'svg-layer-mpr-axial')).toBeTruthy();
-    expect(await areLayerLinesAxisAligned(page, 'svg-layer-mpr-sagittal')).toBeTruthy();
-    expect(await areLayerLinesAxisAligned(page, 'svg-layer-mpr-coronal')).toBeTruthy();
+    await expect
+      .poll(() => areLayerLinesAxisAligned(page, 'svg-layer-mpr-axial'), {
+        timeout: CROSSHAIRS_DOM_TIMEOUT_MS,
+      })
+      .toBe(true);
+    await expect
+      .poll(() => areLayerLinesAxisAligned(page, 'svg-layer-mpr-sagittal'), {
+        timeout: CROSSHAIRS_DOM_TIMEOUT_MS,
+      })
+      .toBe(true);
+    await expect
+      .poll(() => areLayerLinesAxisAligned(page, 'svg-layer-mpr-coronal'), {
+        timeout: CROSSHAIRS_DOM_TIMEOUT_MS,
+      })
+      .toBe(true);
   });
 
   test('should reset the crosshairs when a new displayset is loaded', async ({
@@ -184,13 +199,26 @@ test.describe('Crosshairs Test', async () => {
     await viewportPageObject.crosshairs.axial.rotate();
     await viewportPageObject.crosshairs.sagittal.rotate();
     await viewportPageObject.crosshairs.coronal.rotate();
-    const rotatedPosition = await getCrosshairsSignature(page);
-    expect(rotatedPosition).not.toEqual(initialPosition);
+    await expect
+      .poll(() => getCrosshairsSignature(page), { timeout: CROSSHAIRS_DOM_TIMEOUT_MS })
+      .not.toEqual(initialPosition);
 
     await leftPanelPageObject.loadSeriesByDescription('Recon 3: LIVER 3 PHASE (AP)');
     await expectCrosshairsReady(page);
-    expect(await areLayerLinesAxisAligned(page, 'svg-layer-mpr-axial')).toBeTruthy();
-    expect(await areLayerLinesAxisAligned(page, 'svg-layer-mpr-sagittal')).toBeTruthy();
-    expect(await areLayerLinesAxisAligned(page, 'svg-layer-mpr-coronal')).toBeTruthy();
+    await expect
+      .poll(() => areLayerLinesAxisAligned(page, 'svg-layer-mpr-axial'), {
+        timeout: CROSSHAIRS_DOM_TIMEOUT_MS,
+      })
+      .toBe(true);
+    await expect
+      .poll(() => areLayerLinesAxisAligned(page, 'svg-layer-mpr-sagittal'), {
+        timeout: CROSSHAIRS_DOM_TIMEOUT_MS,
+      })
+      .toBe(true);
+    await expect
+      .poll(() => areLayerLinesAxisAligned(page, 'svg-layer-mpr-coronal'), {
+        timeout: CROSSHAIRS_DOM_TIMEOUT_MS,
+      })
+      .toBe(true);
   });
 });
