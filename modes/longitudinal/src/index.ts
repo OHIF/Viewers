@@ -4,6 +4,7 @@ import { initToolGroups, toolbarButtons, cornerstone,
   ohif,
   dicomsr,
   dicomvideo,
+  blackvoxel,
   basicLayout,
   basicRoute,
   extensionDependencies as basicDependencies,
@@ -29,7 +30,7 @@ export const longitudinalInstance = {
   props: {
     ...basicLayout.props,
     leftPanels: [tracked.thumbnailList],
-    rightPanels: [cornerstone.segmentation, tracked.measurements],
+    rightPanels: [blackvoxel.findings, cornerstone.segmentation, tracked.measurements],
     viewports: [
       {
         namespace: tracked.viewport,

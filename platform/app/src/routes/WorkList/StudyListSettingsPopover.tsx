@@ -30,12 +30,12 @@ export function defaultSettingsMenuItems({
   const items: SettingsMenuItem[] = [
     {
       id: 'about',
-      label: 'About OHIF Viewer',
+      label: 'About BlackVoxel Viewer',
       onClick: () => {
         const AboutModal = customizationService.getCustomization('ohif.aboutModal');
         show({
           content: AboutModal,
-          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+          title: AboutModal?.title ?? t('AboutModal:About BlackVoxel Viewer'),
           containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
         });
       },

@@ -35,6 +35,7 @@ import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 import { ShepherdJourneyProvider } from 'react-shepherd';
+import { extractAndStoreToken } from './utils/jwtBridge';
 import './App.css';
 
 let commandsManager: CommandsManager,
@@ -71,6 +72,7 @@ function App({
 }) {
   const [init, setInit] = useState(null);
   useEffect(() => {
+    extractAndStoreToken(); // Extract ?token= from URL, store in sessionStorage, or redirect to login
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
     };

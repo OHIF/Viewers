@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="232" height="32" viewBox="0 0 232 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>BlackVoxel Viewer</title>
+  <g aria-label="BlackVoxel Viewer">
+    <rect x="1" y="1" width="13" height="13" rx="3" fill="#111827" stroke="#6366F1" stroke-width="2"/>
+    <rect x="18" y="1" width="13" height="13" rx="3" fill="#111827" stroke="#22D3EE" stroke-width="2"/>
+    <rect x="1" y="18" width="13" height="13" rx="3" fill="#111827" stroke="#22D3EE" stroke-width="2"/>
+    <rect x="18" y="18" width="13" height="13" rx="3" fill="#111827" stroke="#6366F1" stroke-width="2"/>
+    <text x="42" y="21" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="0.2">
+      BlackVoxel
+    </text>
+    <text x="145" y="21" fill="#A5B4FC" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="500">
+      Viewer
+    </text>
+  </g>
+</svg>

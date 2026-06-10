@@ -56,7 +56,7 @@ export default function WorkList({
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
     <Icons.OHIFLogoHorizontal
-      aria-label="OHIF logo"
+      aria-label="BlackVoxel Viewer logo"
       className="h-[22px] w-[232px]"
     />
   );
@@ -138,4 +138,3 @@ export default function WorkList({
     </div>
   );
 }
-

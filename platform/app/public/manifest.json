@@ -1,7 +1,7 @@
 {
-  "name": "OHIF Viewer",
-  "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "name": "BlackVoxel Viewer",
+  "short_name": "BlackVoxel",
+  "description": "BlackVoxel medical imaging viewer",
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",

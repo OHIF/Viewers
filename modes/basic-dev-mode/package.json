@@ -1,7 +1,7 @@
 {
   "name": "@ohif/mode-basic-dev-mode",
   "version": "3.13.0-beta.88",
-  "description": "Basic OHIF Viewer Using Cornerstone",
+  "description": "Basic BlackVoxel Viewer using Cornerstone",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",

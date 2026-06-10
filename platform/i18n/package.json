@@ -1,7 +1,7 @@
 {
   "name": "@ohif/i18n",
   "version": "3.13.0-beta.88",
-  "description": "Internationalization library for The OHIF Viewer",
+  "description": "Internationalization library for BlackVoxel Viewer",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
