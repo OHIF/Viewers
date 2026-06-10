@@ -12,14 +12,14 @@ const config = {
   devtool: 'source-map',
   output: {
     library: {
+      name: pkg.name,
       type: 'umd',
       umdNamedDefine: true,
     },
     path: outputFolder,
     filename: outputFile,
-    library: pkg.name,
-chunkFilename: '[name].chunk.js',
-globalObject: "typeof self !== 'undefined' ? self : this",
+    chunkFilename: '[name].chunk.js',
+    globalObject: "typeof self !== 'undefined' ? self : this",
   },
   externals: [
     {
