@@ -1,2 +1,16 @@
 [install]
 frozenLockfile = true
+minimumReleaseAge = 172800
+# bun's excludes match exact package names (no glob support). Only the main
+# @cornerstonejs/* packages pinned to 5.0.0 are exempted; codecs version separately.
+minimumReleaseAgeExcludes = [
+  "@cornerstonejs/adapters",
+  "@cornerstonejs/ai",
+  "@cornerstonejs/core",
+  "@cornerstonejs/dicom-image-loader",
+  "@cornerstonejs/labelmap-interpolation",
+  "@cornerstonejs/metadata",
+  "@cornerstonejs/polymorphic-segmentation",
+  "@cornerstonejs/tools",
+  "@cornerstonejs/utils",
+]

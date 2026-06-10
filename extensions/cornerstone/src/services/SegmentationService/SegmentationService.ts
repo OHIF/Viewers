@@ -10,6 +10,10 @@ import {
   metaData,
 } from '@cornerstonejs/core';
 import { ViewportType } from '@cornerstonejs/core/enums';
+import {
+  isVolume3DViewportType,
+  isVolumeViewportType,
+} from '../../utils/getLegacyViewportType';
 
 import {
   Enums as csToolsEnums,
@@ -312,7 +316,7 @@ class SegmentationService extends PubSubService {
     let isConverted = false;
 
     const defaultRepresentationType: csToolsEnums.SegmentationRepresentations =
-      csViewport.type === ViewportType.VOLUME_3D ? SURFACE : LABELMAP;
+      isVolume3DViewportType(csViewport) ? SURFACE : LABELMAP;
     let representationTypeToUse = type || defaultRepresentationType;
 
     if (representationTypeToUse === LABELMAP) {
@@ -1591,8 +1595,7 @@ class SegmentationService extends PubSubService {
   }
 
   private determineViewportAndSegmentationType(csViewport, segmentation) {
-    const isVolumeViewport =
-      csViewport.type === ViewportType.ORTHOGRAPHIC || csViewport.type === ViewportType.VOLUME_3D;
+    const isVolumeViewport = isVolumeViewportType(csViewport);
     const isVolumeSegmentation = 'volumeId' in segmentation.representationData[LABELMAP];
     return { isVolumeViewport, isVolumeSegmentation };
   }
@@ -1623,7 +1626,7 @@ class SegmentationService extends PubSubService {
   }
 
   private async handleVolumeViewportCase(csViewport, segmentation, isVolumeSegmentation) {
-    if (csViewport.type === ViewportType.VOLUME_3D) {
+    if (isVolume3DViewportType(csViewport)) {
       return {
         representationTypeToUse: SURFACE,
         isConverted: false,
