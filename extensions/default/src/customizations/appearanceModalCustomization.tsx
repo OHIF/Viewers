@@ -19,26 +19,30 @@ function AppearanceModalDefault() {
 
   const [draftCss, setDraftCss] = React.useState(() => customCss);
   const [isCustomOpen, setIsCustomOpen] = React.useState(() => activeTheme === 'custom');
+  const [parseFailed, setParseFailed] = React.useState(false);
 
   const handleToggleCustom = () => {
     setIsCustomOpen(!isCustomOpen);
   };
 
   const handleSave = () => {
-    applyCustomTheme(draftCss);
+    setParseFailed(!applyCustomTheme(draftCss));
   };
 
   const handleClear = () => {
     clearCustomTheme();
     setDraftCss('');
+    setParseFailed(false);
     setIsCustomOpen(false);
   };
 
   const handlePresetChange = (value: string) => {
     if (value === 'custom') {
+      // Selecting "Custom" restores the saved custom theme; the draft is only
+      // committed through the explicit Apply button.
       setIsCustomOpen(true);
-      if (draftCss) {
-        applyCustomTheme(draftCss);
+      if (customCss) {
+        applyCustomTheme(customCss);
       }
     } else {
       setIsCustomOpen(false);
@@ -48,6 +52,7 @@ function AppearanceModalDefault() {
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDraftCss(e.target.value);
+    setParseFailed(false);
   };
 
   return (
@@ -60,7 +65,10 @@ function AppearanceModalDefault() {
               value={activeTheme}
               onValueChange={handlePresetChange}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger
+                className="w-[200px]"
+                aria-label={t('Theme')}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -73,9 +81,7 @@ function AppearanceModalDefault() {
                     {preset.label}
                   </SelectItem>
                 ))}
-                {(customCss || draftCss) && (
-                  <SelectItem value="custom">{t('Custom')}</SelectItem>
-                )}
+                {(customCss || draftCss) && <SelectItem value="custom">{t('Custom')}</SelectItem>}
               </SelectContent>
             </Select>
           </div>
@@ -97,9 +103,18 @@ function AppearanceModalDefault() {
               value={draftCss}
               onChange={handleTextChange}
               placeholder={t('Paste your custom theme color tokens here')}
+              aria-label={t('Paste your custom theme color tokens here')}
               rows={8}
-              className="bg-muted text-foreground border-input placeholder:text-muted-foreground rounded-md border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-1 focus:ring-inset focus:ring-ring"
+              className="bg-muted text-foreground border-input placeholder:text-muted-foreground focus:ring-ring rounded-md border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-1 focus:ring-inset"
             />
+            {parseFailed && (
+              <span
+                className="text-destructive text-sm"
+                role="alert"
+              >
+                {t('No valid theme tokens found')}
+              </span>
+            )}
             <div className="flex space-x-2">
               <Button
                 variant="default"

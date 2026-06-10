@@ -63,13 +63,13 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         }),
     },
     {
-      title: t('Header:Appearance'),
+      title: AppearanceModal?.menuTitle ?? t('Header:Appearance'),
       icon: 'ColorChange',
       onClick: () =>
         show({
           content: AppearanceModal,
-          title: t('AppearanceModal:Appearance'),
-          containerClassName: 'max-w-md',
+          title: AppearanceModal?.title ?? t('AppearanceModal:Appearance'),
+          containerClassName: AppearanceModal?.containerClassName ?? 'max-w-md',
         }),
     },
     {

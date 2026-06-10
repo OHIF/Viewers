@@ -11,9 +11,16 @@ type ActiveThemeContextType = {
   activeTheme: string;
   setActiveTheme: (theme: string) => void;
   customCss: string;
-  applyCustomTheme: (cssText: string) => void;
+  applyCustomTheme: (cssText: string) => boolean;
   clearCustomTheme: () => void;
 };
+
+// 'custom' is deliberately not URL-addressable: the CSS behind it lives only in
+// the visitor's own localStorage, so a ?theme=custom link cannot reproduce a look
+// and would only strand the app in a custom state with no CSS behind it.
+function isValidUrlTheme(theme: string | null): theme is string {
+  return !!theme && theme !== 'custom' && VALID_THEMES.has(theme);
+}
 
 const ActiveThemeContext = React.createContext<ActiveThemeContextType | undefined>(undefined);
 
@@ -38,8 +45,20 @@ function removeCustomStyleElement() {
 function parseCssVars(cssText: string): string[] {
   const vars: string[] = [];
 
-  for (const raw of cssText.split('\n')) {
-    const line = raw.trim();
+  // Remove comment spans entirely (text included), then any unterminated tail,
+  // so comment contents never bleed into a variable value.
+  const stripped = cssText.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\*[\s\S]*$/, '');
+
+  // Split on newlines AND semicolons so single-line/minified CSS parses too.
+  for (const raw of stripped.split(/[\n;]/)) {
+    let line = raw.trim();
+
+    // Tolerate a selector prefix on the same segment, e.g. ":root {" or ".dark{".
+    const braceIdx = line.lastIndexOf('{');
+    if (braceIdx !== -1) {
+      line = line.slice(braceIdx + 1).trim();
+    }
+
     const colonIdx = line.indexOf(':');
     if (colonIdx === -1) continue;
 
@@ -48,11 +67,14 @@ function parseCssVars(cssText: string): string[] {
 
     const value = line
       .slice(colonIdx + 1)
-      .replace(/[{};]/g, '')
-      .replace(/\/\*/g, '')
-      .replace(/\*\//g, '')
+      .replace(/[{}]/g, '')
       .trim();
     if (!value) continue;
+
+    // Token values are plain HSL triplets — parentheses are never legitimate,
+    // and rejecting them keeps url(...) out of the injected stylesheet even if
+    // a future rule ever consumes a token outside hsl().
+    if (value.includes('(') || value.includes(')')) continue;
 
     vars.push(`  ${name}: ${value};`);
   }
@@ -77,8 +99,14 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
   const [activeTheme, setActiveThemeState] = React.useState<string>(() => {
     if (typeof window === 'undefined') return 'default';
     const urlTheme = new URLSearchParams(window.location.search).get('theme');
-    if (urlTheme && VALID_THEMES.has(urlTheme)) return urlTheme;
-    return localStorage.getItem(STORAGE_KEY_THEME) || 'default';
+    if (isValidUrlTheme(urlTheme)) return urlTheme;
+
+    // Validate the stored value the same way the URL param is validated — a stale
+    // key (renamed preset, older build) must not become a theme-* body class.
+    const stored = localStorage.getItem(STORAGE_KEY_THEME);
+    if (!stored || !VALID_THEMES.has(stored)) return 'default';
+    if (stored === 'custom' && !localStorage.getItem(STORAGE_KEY_CUSTOM_CSS)) return 'default';
+    return stored;
   });
 
   const [customCss, setCustomCssState] = React.useState<string>(() => {
@@ -107,9 +135,9 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
     }
   }, []);
 
-  const applyCustomTheme = React.useCallback((cssText: string) => {
+  const applyCustomTheme = React.useCallback((cssText: string): boolean => {
     const vars = parseCssVars(cssText);
-    if (vars.length === 0) return;
+    if (vars.length === 0) return false;
 
     injectCustomStyles(vars);
 
@@ -119,6 +147,7 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
     setActiveThemeState('custom');
     removeThemeClasses();
     localStorage.setItem(STORAGE_KEY_THEME, 'custom');
+    return true;
   }, []);
 
   const clearCustomTheme = React.useCallback(() => {
@@ -135,7 +164,7 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
   // Persist URL param override to localStorage
   React.useEffect(() => {
     const urlTheme = new URLSearchParams(window.location.search).get('theme');
-    if (urlTheme && VALID_THEMES.has(urlTheme)) {
+    if (isValidUrlTheme(urlTheme)) {
       if (urlTheme === 'default') {
         localStorage.removeItem(STORAGE_KEY_THEME);
       } else {
@@ -154,6 +183,7 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
 
     return () => {
       removeThemeClasses();
+      removeCustomStyleElement();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
