@@ -16,9 +16,7 @@ describe('OHIF General Viewer', function () {
     // top left viewport info shows the zoom values (it only shows up
     // when the zoom tool is active)
     cy.get('@zoomBtn')
-      // force: the click only activates the tool (see note above); in headless
-      // CI the cornerstone canvas can transiently overlap the button's hit-box.
-      .click({ force: true })
+      .click()
       .then($zoomBtn => {
         cy.wrap($zoomBtn).should('have.attr', 'data-active', 'true');
       });
