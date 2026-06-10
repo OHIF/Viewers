@@ -78,8 +78,6 @@ async function run() {
     '--message',
     `chore(version): Update package versions to ${nextVersion} [skip ci]`,
     '--conventional-commits',
-    '--create-release',
-    'github',
     '--no-push',
   ]);
 
