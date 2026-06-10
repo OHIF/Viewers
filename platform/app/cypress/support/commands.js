@@ -19,7 +19,7 @@ import {
 Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
   cy.get('[data-cy="Layout"]').click();
   if (screenshot) {
-    cy.percyCanvasSnapshot('Layout tool opened');
+    cy.screenshot('Layout tool opened');
   }
   cy.get('div').contains(presetName).should('be.visible').click();
   // fixed wait time for layout changes and rendering
@@ -388,16 +388,6 @@ Cypress.Commands.add('isInViewport', element => {
       expect(isInViewport).to.be.true;
     }
   });
-});
-
-/**
- * Capture a screenshot. Replaces the former @percy/cypress visual-snapshot
- * integration with Cypress's built-in cy.screenshot. The name is kept stable to
- * preserve existing call sites; canvas content is captured natively by Cypress,
- * so the old canvas-to-image workaround is no longer needed.
- */
-Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
-  cy.screenshot(name, { ...options });
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
