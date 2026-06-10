@@ -7,19 +7,18 @@ export default defineConfig({
     supportFile: 'cypress/support/index.js',
     setupNodeEvents(on, config) {
       on('before:browser:launch', (browser, launchOptions) => {
-        // `args` is an array of all the arguments that will
-        // be passed to browsers when it launches
-
-        console.log(launchOptions.args); // print all current args
-
         console.log('***', browser.family, browser.name, '***');
 
-        // CI runs headless with no GPU, so Chromium/Electron falls back to
-        // software WebGL. Newer Chromium deprecated that implicit fallback,
-        // which destabilizes canvas rendering (slow paints -> elements briefly
-        // overlapping toolbar buttons). Opt back in explicitly.
-        if (browser.family === 'chromium' && !launchOptions.args.includes('--enable-unsafe-swiftshader')) {
-          launchOptions.args.push('--enable-unsafe-swiftshader');
+        // Headless/no-GPU runs fall back to software WebGL, and newer Chromium
+        // deprecated that implicit fallback (destabilizes canvas rendering).
+        // Opt back in explicitly. Electron does NOT support launchOptions.args
+        // (it warns and ignores them) — it gets this flag via the
+        // ELECTRON_EXTRA_LAUNCH_ARGS env var (see .circleci/config.yml). So only
+        // push it for real Chromium browsers (e.g. chrome) used locally.
+        if (browser.family === 'chromium' && browser.name !== 'electron') {
+          if (!launchOptions.args.includes('--enable-unsafe-swiftshader')) {
+            launchOptions.args.push('--enable-unsafe-swiftshader');
+          }
         }
 
         // whatever you return here becomes the launchOptions

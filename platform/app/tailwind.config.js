@@ -11,6 +11,7 @@ module.exports = {
     './src/**/*.{jsx,js,ts,tsx,css}',
     '../../extensions/*/src/**/*.{jsx,js,ts,tsx,css}',
     '../ui/src/**/*.{jsx,js,ts,tsx,css}',
+    '../ui-next/src/**/*.{jsx,js,ts,tsx,css}',
     '../../modes/*/src/**/*.{jsx,js,ts,tsx,css}',
     './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
