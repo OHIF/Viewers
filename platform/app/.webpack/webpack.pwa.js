@@ -194,7 +194,10 @@ module.exports = (env, argv) => {
       open,
       port: OHIF_PORT,
       client: {
-        overlay: { errors: true, warnings: false },
+        // During e2e (COVERAGE=true) disable the dev-server overlay: its
+        // injected iframe intercepts pointer events and breaks Playwright/Cypress
+        // clicks. Keep it for normal local dev.
+        overlay: IS_COVERAGE ? false : { errors: true, warnings: false },
       },
       proxy: [
         {
