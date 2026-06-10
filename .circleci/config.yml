@@ -389,8 +389,12 @@ jobs:
       - cypress/install:
           install-command: pnpm install
       - cypress/run-tests:
+          # CI runs headless under Xvfb with no GPU, so Electron uses software
+          # WebGL. Newer Chromium deprecated that implicit fallback (canvas
+          # rendering degrades and races with element clicks). ELECTRON_EXTRA_LAUNCH_ARGS
+          # is the reliable way to pass the opt-in flag to Cypress's Electron browser.
           cypress-command: |
-            npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
+            npx wait-on@latest http://localhost:3000 && cd platform/app && ELECTRON_EXTRA_LAUNCH_ARGS="--enable-unsafe-swiftshader" npx cypress run --record --parallel
           start-command: pnpm run test:data && pnpm run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:
