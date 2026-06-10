@@ -11,6 +11,11 @@ async function run() {
   const nextVersion = (await fs.readFile('./version.txt', 'utf-8')).trim();
   const packages = ['extensions/*', 'platform/*', 'modes/*'];
 
+  // Track only the files this script writes, so the release commit stages
+  // exactly the version bump and never sweeps in unrelated local edits or
+  // generated artifacts via `git add -A`.
+  const updatedFiles = [];
+
   // For each package's package.json file, update:
   // 1. The package version
   // 2. Any @ohif/* peerDependencies to the next version
@@ -47,6 +52,7 @@ async function run() {
         }
 
         await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+        updatedFiles.push(packageJsonPath);
 
         console.log(`Updated ${packageJsonPath}`);
       } catch (err) {
@@ -60,6 +66,7 @@ async function run() {
   const rootPackageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'));
   rootPackageJson.version = nextVersion;
   await fs.writeFile('package.json', JSON.stringify(rootPackageJson, null, 2) + '\n');
+  updatedFiles.push('package.json');
   console.log('Updated root package.json');
 
   // NOTE: Do not delete .npmrc here. It is tracked and holds pnpm workspace
@@ -69,8 +76,9 @@ async function run() {
 
   console.log('Setting the version...');
 
-  // Stage all changes
-  await execa('git', ['add', '-A']);
+  // Stage only the package.json files this script updated, so the release
+  // commit is deterministic and doesn't pick up unrelated worktree changes.
+  await execa('git', ['add', '--', ...updatedFiles]);
 
   // Create the version commit
   const commitMessage = `chore(version): Update package versions to ${nextVersion} [skip ci]`;
