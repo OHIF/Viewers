@@ -260,7 +260,9 @@ Cypress.Commands.add(
       // Only click the length tool if it is not active, in case the length tool is set up to
       // toggle to inactive.
       if (!button.is('.active')) {
-        cy.wrap(button).click();
+        // force: only activates the tool; in headless CI a tool icon/SVG can
+        // transiently overlap the split-button's hit-box.
+        cy.wrap(button).click({ force: true });
       }
     });
 

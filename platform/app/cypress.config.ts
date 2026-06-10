@@ -14,6 +14,14 @@ export default defineConfig({
 
         console.log('***', browser.family, browser.name, '***');
 
+        // CI runs headless with no GPU, so Chromium/Electron falls back to
+        // software WebGL. Newer Chromium deprecated that implicit fallback,
+        // which destabilizes canvas rendering (slow paints -> elements briefly
+        // overlapping toolbar buttons). Opt back in explicitly.
+        if (browser.family === 'chromium' && !launchOptions.args.includes('--enable-unsafe-swiftshader')) {
+          launchOptions.args.push('--enable-unsafe-swiftshader');
+        }
+
         // whatever you return here becomes the launchOptions
         return launchOptions;
       });
