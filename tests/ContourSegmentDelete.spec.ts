@@ -37,21 +37,20 @@ test('should delete a contour segment and remove its row from the panel', async 
 
   const countAfterDelete = await panel.getSegmentCount();
   expect(countAfterDelete, 'Expected one fewer segment row after deleting').toBe(3);
+  // The deleted segment's title should no longer be present anywhere in the panel
+  await expect(
+    page.getByTestId('data-row-title').filter({ hasText: defaultSegment0Name }),
+    'Expected the deleted segment title to be gone from the panel'
+  ).toHaveCount(0);
 
   // Check that the next segment index is moved up
   await expect(
     panel.nthSegment(0).title,
     'Expected the next segment to take the first row after deletion'
   ).toHaveText(defaultSegment1Name);
-
-  // The deleted segment's title should no longer be present anywhere in the panel
-  await expect(
-    page.getByTestId('data-row-title').filter({ hasText: defaultSegment0Name }),
-    'Expected the deleted segment title to be gone from the panel'
-  ).toHaveCount(0);
 });
 
-test('should delete multiple contour segments sequentially', async ({ rightPanelPageObject }) => {
+test('should delete multiple contour segments sequentially', async ({page, rightPanelPageObject }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
   const initialCount = await panel.getSegmentCount();
@@ -64,6 +63,16 @@ test('should delete multiple contour segments sequentially', async ({ rightPanel
   await panel.nthSegment(0).actions.delete();
   const countAfterSecondDelete = await panel.getSegmentCount();
   expect(countAfterSecondDelete, 'Expected 2 segments after second delete').toBe(2);
+
+  await expect(
+    page.getByTestId('data-row-title').filter({ hasText: defaultSegment0Name }),
+    'Expected the deleted Threshold segment title to be gone from the panel'
+  ).toHaveCount(0);
+
+  await expect(
+    page.getByTestId('data-row-title').filter({ hasText: defaultSegment1Name }),
+    'Expected the deleted Big Sphere segment title to be gone from the panel'
+  ).toHaveCount(0);
 });
 
 test('should remove the deleted segment contour from the viewport', async ({
@@ -93,6 +102,10 @@ test('should remove the deleted segment contour from the viewport', async ({
   expect(segmentToBeDeletedSvgPath, 'Expected a visible SVG path for the segment to delete').not.toBeNull();
 
   await segment0.actions.delete();
+  await expect(
+    page.getByTestId('data-row-title').filter({ hasText: defaultSegment0Name }),
+    'Expected the Threshold segment title to be gone from the panel'
+  ).toHaveCount(0);
 
   await expect(
     svgPathLocator,
