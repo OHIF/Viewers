@@ -32,6 +32,10 @@ export class RightPanelPageObject {
         await page.getByRole('menuitem', { name: 'Rename' }).click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
+      createNewSegmentation: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Create New Segmentation' }).click();
+      },
     };
   }
 
@@ -231,6 +235,17 @@ export class RightPanelPageObject {
     };
   }
 
+  /** The "Add Segment" row button of the active segmentation in the visible panel */
+  private get addSegmentButton() {
+    const button = this.page.getByRole('button', { name: 'Add Segment' });
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
   private getSegmentsVisibilityToggle(type?: string) {
     const testId = type
       ? `all-segments-visibility-toggle-${type}`
@@ -276,6 +291,7 @@ export class RightPanelPageObject {
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
     const segmentationSelect = this.getSegmentationSelect('Contour');
@@ -283,6 +299,7 @@ export class RightPanelPageObject {
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       segmentsVisibilityToggle,
       panel,
@@ -295,12 +312,14 @@ export class RightPanelPageObject {
   get labelMapSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
     const segmentationSelect = this.getSegmentationSelect('Labelmap');
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       panel,
       segmentationSelect,
