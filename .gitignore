@@ -27,8 +27,54 @@ package-lock.json
 yarn-error.log
 .DS_Store
 .env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+!**/.env.*.example
 *.code-workspace
 .directory
+
+# Credentials and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*credentials*.json
+*credentials*.csv
+*secrets*.json
+*tokens*.json
+auth.json
+
+# Generated model weights and checkpoints
+**/checkpoints/
+**/weights/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.tflite
+*.h5
+*.pkl
+*.safetensors
+
+# Agent workspaces, instructions, memory, and task artifacts
+agents/
+agent/
+.agents/
+.claude/
+.codex/
+.cursor/
+**/.agents/
+**/.claude/
+**/.codex/
+**/.cursor/
+AGENTS.md
+CLAUDE.md
+CODEX.md
+*.agent.md
 
 # Common Example Data Directories
 sampledata/
@@ -72,8 +118,6 @@ libs/
 libs/
 link-cs3d.js
 unlink-cs3d.js
-auth.json
-
 # Python (audit-service)
 __pycache__/
 *.pyc
