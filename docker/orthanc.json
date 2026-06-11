@@ -1,0 +1,54 @@
+{
+  // MIMPS-05 — Orthanc DICOM server configuration (BlackVoxel PACS backend).
+  // Non-secret settings only. Secrets (RegisteredUsers) are injected at runtime
+  // via the ORTHANC__REGISTERED_USERS environment variable in docker-compose.yml
+  // (sourced from .env — see .env.example). Never add credentials to this file.
+  //
+  // CORS is intentionally NOT handled here: Orthanc has no native CORS support.
+  // The orthanc-nginx gateway service (docker/orthanc-nginx.conf.template) adds
+  // CORS headers for the OHIF viewer origin and injects HTTP Basic credentials
+  // server-side, so the browser never needs the Orthanc password.
+
+  "Name": "MIMPS-Orthanc",
+
+  "StorageDirectory": "/var/lib/orthanc/db",
+  "IndexDirectory": "/var/lib/orthanc/db",
+
+  "HttpPort": 8042,
+  "HttpServerEnabled": true,
+  // Required when Orthanc is accessed from outside its own container.
+  // Authentication remains mandatory (see below).
+  "RemoteAccessAllowed": true,
+
+  // Authentication is always on. Users are injected via env:
+  //   ORTHANC__REGISTERED_USERS={"mimps": "<password>"}
+  "AuthenticationEnabled": true,
+
+  "DicomServerEnabled": true,
+  "DicomPort": 4242,
+  "DicomAet": "MIMPS",
+
+  // DICOMweb plugin (bundled in orthancteam/orthanc image):
+  // QIDO-RS / WADO-RS / STOW-RS under /dicom-web, legacy WADO-URI under /wado.
+  "DicomWeb": {
+    "Enable": true,
+    "Root": "/dicom-web/",
+    "EnableWado": true,
+    "WadoRoot": "/wado",
+    "Ssl": false,
+    "StudiesMetadata": "Full",
+    "SeriesMetadata": "Full"
+  },
+
+  // Worklist QIDO behavior expected by the OHIF data source
+  // (supportsFuzzyMatching / wildcard queries).
+  "CaseSensitivePN": false,
+
+  // Demo-scale instance; keep the defaults small and predictable.
+  "ConcurrentJobs": 2,
+  "MaximumStorageSize": 0,
+  "MaximumPatientCount": 0,
+
+  // TLS is terminated by the edge nginx (MIMPS-14), never inside Orthanc.
+  "SslEnabled": false
+}

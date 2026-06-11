@@ -1,0 +1,56 @@
+# MIMPS-05 — PACS gateway in front of Orthanc.
+#
+# Responsibilities (kept out of Orthanc, which has no native CORS support):
+#   1. CORS for the OHIF viewer origin (${MIMPS_VIEWER_ORIGIN}).
+#   2. Server-side injection of Orthanc HTTP Basic credentials so the browser
+#      never sees or stores the Orthanc password (no secrets in app config).
+#
+# Rendered at container start by docker/orthanc-nginx-entrypoint.sh, which
+# substitutes ${ORTHANC_AUTH_B64} and ${MIMPS_VIEWER_ORIGIN} from the
+# environment (.env). Do not deploy this file unrendered.
+#
+# SECURITY NOTE (MIMPS-13/15): because this gateway injects credentials, it
+# must never be exposed publicly without an auth gate in front of it. Locally
+# it is bound to 127.0.0.1 only (see docker-compose.yml). On the VPS, the edge
+# nginx must apply its auth (JWT auth_request or htpasswd) to the /pacs/
+# location BEFORE proxying here.
+
+server {
+  listen 80;
+
+  # Allow large STOW-RS uploads (multi-frame DICOM).
+  client_max_body_size 512M;
+
+  location /pacs/ {
+    proxy_http_version 1.1;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Inject Orthanc credentials server-side (rendered from env).
+    proxy_set_header Authorization "Basic ${ORTHANC_AUTH_B64}";
+
+    # CORS for the OHIF viewer origin.
+    add_header 'Access-Control-Allow-Origin' '${MIMPS_VIEWER_ORIGIN}' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'Accept, Content-Type, Authorization' always;
+    add_header 'Access-Control-Expose-Headers' 'Content-Length, Content-Type' always;
+    add_header 'Vary' 'Origin' always;
+
+    # Preflight requests are answered here; they must not require auth.
+    if ($request_method = OPTIONS) {
+      add_header 'Access-Control-Allow-Origin' '${MIMPS_VIEWER_ORIGIN}' always;
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+      add_header 'Access-Control-Allow-Headers' 'Accept, Content-Type, Authorization' always;
+      add_header 'Access-Control-Max-Age' 86400;
+      return 204;
+    }
+
+    expires 0;
+    add_header Cache-Control private;
+
+    proxy_pass http://orthanc:8042/;
+  }
+}

@@ -1,0 +1,65 @@
+# MIMPS — DICOM backend (MIMPS-05).
+#
+# Local dev:
+#   cp .env.example .env   # set ORTHANC_PASSWORD
+#   docker compose up -d
+#   curl -u mimps:$ORTHANC_PASSWORD http://localhost:8042/system
+#   curl http://localhost:8899/pacs/dicom-web/studies   # via gateway (CORS + auth injection)
+#
+# VPS swap (once MIMPS-12 provisions the host): clone repo, copy .env, run the
+# same `docker compose up -d`. Nothing else changes — see docker/README.md.
+# This file will be extended by MIMPS-13 (viewer + edge nginx + audit-service).
+
+services:
+  orthanc:
+    image: orthancteam/orthanc:26.6.0
+    container_name: mimps-orthanc
+    restart: unless-stopped
+    ports:
+      # REST API / DICOMweb — loopback only; browsers go through orthanc-nginx.
+      # Kept exposed locally for the ingest script and admin curl.
+      - "127.0.0.1:8042:8042"
+      # DICOM protocol (C-STORE etc.) — loopback only for Sprint 1.
+      - "127.0.0.1:4242:4242"
+    volumes:
+      - ./docker/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - ./orthanc-storage:/var/lib/orthanc/db
+    environment:
+      # Secrets come from .env (gitignored). JSON map of user -> password.
+      ORTHANC__REGISTERED_USERS: '{"${ORTHANC_USERNAME:-mimps}": "${ORTHANC_PASSWORD:?set ORTHANC_PASSWORD in .env}"}'
+      # Data-residency hook (MIMPS-18 groundwork, ANVISA/LGPD): tags where DICOM
+      # data is allowed to live. Not yet consumed by services; MIMPS-18 will
+      # enforce it. Keep "br-*" values for Brazilian deployments.
+      DICOM_STORAGE_REGION: ${DICOM_STORAGE_REGION:-br-local}
+      # Disable the image's telemetry/verbose banners for predictable logs.
+      VERBOSE_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u \"$${ORTHANC_USERNAME:-mimps}:$${ORTHANC_PASSWORD}\" http://localhost:8042/system > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    # Pass these through so the healthcheck shell can read them.
+    env_file:
+      - .env
+
+  # PACS gateway: CORS for the viewer origin + server-side Basic auth injection.
+  # The OHIF data source points here (http://localhost:8899/pacs/dicom-web in
+  # dev, /pacs/dicom-web behind the edge nginx in prod). See the SECURITY NOTE
+  # in docker/orthanc-nginx.conf.template before exposing this publicly.
+  orthanc-nginx:
+    image: nginx:1.27-alpine
+    container_name: mimps-orthanc-nginx
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8899:80"
+    volumes:
+      - ./docker/orthanc-nginx.conf.template:/opt/mimps/orthanc-nginx.conf.template:ro
+      - ./docker/orthanc-nginx-entrypoint.sh:/docker-entrypoint.d/15-render-pacs-conf.sh:ro
+    environment:
+      ORTHANC_USERNAME: ${ORTHANC_USERNAME:-mimps}
+      ORTHANC_PASSWORD: ${ORTHANC_PASSWORD:?set ORTHANC_PASSWORD in .env}
+      MIMPS_VIEWER_ORIGIN: ${MIMPS_VIEWER_ORIGIN:-http://localhost:3000}
+    depends_on:
+      orthanc:
+        condition: service_healthy
