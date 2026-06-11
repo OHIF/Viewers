@@ -23,7 +23,7 @@ commands:
             # The cimg/node global modules dir (/usr/local/lib/node_modules) is
             # root-owned, so a plain `npm install -g` fails with EACCES. Install
             # with sudo so the global pnpm binary lands in the shared prefix.
-            sudo npm install -g pnpm@11.4.0
+            sudo npm install -g pnpm@11.5.2
             echo 'export PATH="$(pnpm store path)/../.bin:$PATH"' >> $BASH_ENV
             source $BASH_ENV
 
