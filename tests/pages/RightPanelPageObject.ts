@@ -227,6 +227,10 @@ export class RightPanelPageObject {
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
+      // get all the segment titles in the panel
+      getSegmentTitles: () => {
+        return page.getByTestId('data-row-title');
+      },
       // No data-cy exists in this panel, using Segmentation header button
       locator: page.getByRole('button', { name: 'Segmentations' }),
       nthSegment(index: number) {
