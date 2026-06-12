@@ -379,7 +379,16 @@ jobs:
       - run:
           name: Install System Dependencies
           command: |
-            sudo apt-get update
+            # CircleCI's base image registers third-party apt sources (git-lfs via
+            # packagecloud, git-core PPA via launchpad) that periodically hang
+            # `apt-get update`. The Cypress libs below all come from the Ubuntu
+            # archive, so drop those sources and bound the update with timeouts +
+            # retries so a slow mirror can't stall the job indefinitely.
+            sudo rm -f /etc/apt/sources.list.d/*git* || true
+            sudo apt-get update \
+              -o Acquire::Retries=3 \
+              -o Acquire::http::Timeout=20 \
+              -o Acquire::https::Timeout=20
             sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
       - run:
           name: Start Xvfb
