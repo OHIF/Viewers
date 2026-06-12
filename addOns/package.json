@@ -1,5 +1,5 @@
 {
-  "name": "ohif-monorepo-root",
+  "name": "@blackvoxel/mimps",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "workspaces": {

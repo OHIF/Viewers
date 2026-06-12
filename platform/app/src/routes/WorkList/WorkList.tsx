@@ -5,7 +5,7 @@ import { useAppConfig } from '@state';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
-import { StudyList, Icons, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
+import { StudyList, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 import { SidePanelPreview } from './SidePanelPreview';
 
@@ -65,9 +65,12 @@ export default function WorkList({
     );
   }, [customizationService, t]);
 
+  // MIMPS-01: fall back to the BlackVoxel wordmark (never the upstream OHIF
+  // logo) when no whiteLabeling config is present.
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
-    <Icons.OHIFLogoHorizontal
-      aria-label="BlackVoxel Viewer logo"
+    <img
+      src="/blackvoxel-logo.svg"
+      alt="BlackVoxel Viewer"
       className="h-[22px] w-[232px]"
     />
   );

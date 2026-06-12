@@ -81,7 +81,14 @@ function Header({
             >
               {isReturnEnabled && <Icons.ArrowLeft className="text-primary ml-1 h-7 w-7" />}
               <div className="ml-1">
-                {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
+                {/* MIMPS-01: BlackVoxel wordmark fallback instead of the upstream OHIF logo */}
+                {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
+                  <img
+                    src="/blackvoxel-logo.svg"
+                    alt="BlackVoxel Viewer"
+                    className="h-[22px] w-[232px]"
+                  />
+                )}
               </div>
             </div>
           </div>

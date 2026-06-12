@@ -30,7 +30,9 @@ const packageJsonPath = path.join(runningDirectory, 'package.json');
 
 try {
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  if (packageJson.name !== 'ohif-monorepo-root') {
+  // MIMPS: the monorepo root was renamed from ohif-monorepo-root (MIMPS-01);
+  // accept the legacy name so the cli keeps working on older checkouts.
+  if (!['@blackvoxel/mimps', 'ohif-monorepo-root'].includes(packageJson.name)) {
     console.log(packageJson);
     console.log(chalk.red('ohif-cli must run from the root of the OHIF platform'));
     process.exit(1);

@@ -2,7 +2,7 @@
   "name": "@ohif/app",
   "version": "3.13.0-beta.88",
   "productVersion": "3.4.0",
-  "description": "BlackVoxel Viewer",
+  "description": "MIMPS — Medical Imaging Platform by BlackVoxel",
   "author": "OHIF Contributors",
   "license": "MIT",
   "repository": "OHIF/Viewers",

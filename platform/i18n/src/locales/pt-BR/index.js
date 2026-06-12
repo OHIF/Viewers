@@ -5,6 +5,7 @@ import Common from './Common.json';
 import DataTable from './DataTable.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
+import InvestigationalUseDialog from './InvestigationalUseDialog.json';
 import Modes from './Modes.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
@@ -21,6 +22,7 @@ export default {
     DataTable,
     DatePicker,
     Header,
+    InvestigationalUseDialog,
     Modes,
     StudyList,
     UserPreferencesModal,

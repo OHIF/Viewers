@@ -1,5 +1,6 @@
 {
-  "name": "ohif-monorepo-root",
+  "name": "@blackvoxel/mimps",
+  "description": "MIMPS — Medical Imaging Platform by BlackVoxel",
   "private": true,
   "workspaces": {
     "packages": [

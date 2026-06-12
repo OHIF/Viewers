@@ -70,7 +70,7 @@ const InvestigationalUseDialog = ({
           <Icons.InvestigationalUse className="h-18 w-18" />
           <div className="flex flex-col">
             <div className="text-foreground text-[19px]">
-              BlackVoxel Viewer is{' '}
+              {t('BlackVoxel Viewer is')}{' '}
               <span className="text-highlight">{t('for investigational use only')}</span>
             </div>
             <div className="text-foreground text-[13px]">

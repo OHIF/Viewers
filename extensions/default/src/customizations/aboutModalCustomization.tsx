@@ -27,11 +27,8 @@ function AboutModalDefault() {
           label={t('Current Browser & OS')}
           value={`${browser}, ${os}`}
         />
-        <AboutModal.SocialItem
-          icon="SocialGithub"
-          url="OHIF/Viewers"
-          text="github.com/OHIF/Viewers"
-        />
+        {/* MIMPS-01: upstream GitHub link removed — prospects must not see
+            third-party branding in the About modal. */}
       </AboutModal.Body>
     </AboutModal>
   );

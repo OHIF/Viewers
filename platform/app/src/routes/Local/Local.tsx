@@ -8,7 +8,7 @@ import filesToStudies from './filesToStudies';
 
 import { extensionManager } from '../../App';
 
-import { Button, Icons } from '@ohif/ui-next';
+import { Button } from '@ohif/ui-next';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -134,12 +134,17 @@ function Local({ modePath }: LocalProps) {
           <div className="flex h-screen w-screen items-center justify-center">
             <div className="bg-muted border-primary/60 mx-auto space-y-2 rounded-xl border border-dashed py-12 px-12 drop-shadow-md">
               <div className="flex items-center justify-center">
-                <Icons.OHIFLogoColorDarkBackground className="h-18" />
+                {/* MIMPS-01: BlackVoxel wordmark instead of the upstream OHIF logo */}
+                <img
+                  src="/blackvoxel-logo.svg"
+                  alt="BlackVoxel Viewer"
+                  className="h-[32px] w-[232px]"
+                />
               </div>
               <div className="space-y-2 py-6 text-center">
                 {dropInitiated ? (
                   <div className="flex flex-col items-center justify-center pt-12">
-                    <LoadingIndicatorProgress className={'h-full w-full bg-background'} />
+                    <LoadingIndicatorProgress className={'bg-background h-full w-full'} />
                   </div>
                 ) : (
                   <div className="space-y-2">
