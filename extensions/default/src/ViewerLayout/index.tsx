@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
@@ -62,6 +62,24 @@ function ViewerLayout({
   const [rightPanelClosedState, setRightPanelClosed] = useState(initialRightPanelClosed);
   // MOB-02 (V6): AI/right-panel bottom sheet state (mobile only).
   const [mobileSheet, setMobileSheet] = useState<'closed' | 'peek' | 'full'>('closed');
+  // MOB-04: swipe on the sheet header — down snaps full→peek→closed, up
+  // snaps peek→full. Discrete snap on touchend only; no gesture library.
+  const sheetTouchStartY = useRef<number | null>(null);
+  const onSheetTouchStart = useCallback((e: React.TouchEvent) => {
+    sheetTouchStartY.current = e.touches[0].clientY;
+  }, []);
+  const onSheetTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (sheetTouchStartY.current === null) {
+      return;
+    }
+    const deltaY = e.changedTouches[0].clientY - sheetTouchStartY.current;
+    sheetTouchStartY.current = null;
+    if (deltaY > 48) {
+      setMobileSheet(s => (s === 'full' ? 'peek' : 'closed'));
+    } else if (deltaY < -48) {
+      setMobileSheet('full');
+    }
+  }, []);
 
   const [
     leftPanelProps,
@@ -190,9 +208,30 @@ function ViewerLayout({
       <div className="relative flex min-h-0 w-full flex-1 flex-row flex-nowrap items-stretch overflow-hidden bg-background">
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-background" />}
+          {/* MOB-04: on phones the left panel lives outside the resizable group —
+              the collapsed ~28px tab rail stays in the flex row, and the expanded
+              panel overlays the viewport (absolute) instead of squeezing the flex
+              row down to ~85px of image. */}
+          {hasLeftPanels && mobileLayout ? (
+            <div
+              className={classNames(
+                'flex h-full shrink-0',
+                !leftPanelClosedState && 'absolute inset-y-0 left-0 z-20 shadow-lg'
+              )}
+            >
+              <SidePanelWithServices
+                side="left"
+                servicesManager={servicesManager}
+                {...leftPanelProps}
+                isExpanded={!leftPanelClosedState}
+                onOpen={() => setLeftPanelClosed(false)}
+                onClose={() => setLeftPanelClosed(true)}
+              />
+            </div>
+          ) : null}
           <ResizablePanelGroup {...resizablePanelGroupProps}>
             {/* LEFT SIDEPANELS */}
-            {hasLeftPanels ? (
+            {hasLeftPanels && !mobileLayout ? (
               <>
                 <ResizablePanel {...resizableLeftPanelProps}>
                   <SidePanelWithServices
@@ -276,30 +315,39 @@ function ViewerLayout({
               mobileSheet === 'full' ? 'h-[92dvh]' : 'h-[60dvh]'
             )}
           >
+            {/* MOB-04: swipe surface = handle + header row only, so it never
+                competes with the scrollable body. touch-none stops the browser
+                interpreting the drag as scroll/pull-to-refresh. */}
             <div
-              className="mx-auto mt-2 h-1 w-9 rounded-full bg-white/20"
-              aria-hidden="true"
-            />
-            <div className="flex items-center pl-4 pr-2">
-              <span className="text-foreground flex-1 text-sm font-semibold">
-                {mobileRightPanel.label}
-              </span>
-              <button
-                type="button"
-                className="text-muted-foreground hover:text-foreground p-2.5"
-                onClick={() => setMobileSheet(s => (s === 'full' ? 'peek' : 'full'))}
-                aria-label={mobileSheet === 'full' ? 'Recolher painel' : 'Expandir painel'}
-              >
-                <Icons.ChevronOpen className={mobileSheet === 'full' ? '' : 'rotate-180'} />
-              </button>
-              <button
-                type="button"
-                className="text-muted-foreground hover:text-foreground p-2.5"
-                onClick={() => setMobileSheet('closed')}
-                aria-label="Fechar painel"
-              >
-                <Icons.Close />
-              </button>
+              className="touch-none"
+              onTouchStart={onSheetTouchStart}
+              onTouchEnd={onSheetTouchEnd}
+            >
+              <div
+                className="mx-auto mt-2 h-1 w-9 rounded-full bg-white/20"
+                aria-hidden="true"
+              />
+              <div className="flex items-center pl-4 pr-2">
+                <span className="text-foreground flex-1 text-sm font-semibold">
+                  {mobileRightPanel.label}
+                </span>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground p-2.5"
+                  onClick={() => setMobileSheet(s => (s === 'full' ? 'peek' : 'full'))}
+                  aria-label={mobileSheet === 'full' ? 'Recolher painel' : 'Expandir painel'}
+                >
+                  <Icons.ChevronOpen className={mobileSheet === 'full' ? '' : 'rotate-180'} />
+                </button>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground p-2.5"
+                  onClick={() => setMobileSheet('closed')}
+                  aria-label="Fechar painel"
+                >
+                  <Icons.Close />
+                </button>
+              </div>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto">
               <MobileRightPanelContent />

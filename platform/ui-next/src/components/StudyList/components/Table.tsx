@@ -1,4 +1,4 @@
-import React, { type ReactNode, useMemo } from 'react';
+import React, { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataTable, useDataTable } from '../../DataTable';
 import type { DataTableProps } from '../../DataTable/DataTable';
@@ -104,6 +104,15 @@ function TableContent({
   // Access workflow provider for default workflow + launch
   const { getDefaultWorkflowForStudy, getWorkflowsForStudy } = useWorkflows();
 
+  // MOB-04: below md the filter row collapses behind a "Filtros" toggle in the
+  // toolbar. Orientation flips mid-session are ignored, same as MOB-02 (V3/V5).
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const isMobileLayout =
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+  const hasToolbar = Boolean(showColumnVisibility || title);
+  // Without a toolbar there is no toggle, so never hide the filters then.
+  const showFilterRow = !isMobileLayout || !hasToolbar || mobileFiltersOpen;
+
   return (
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
@@ -114,6 +123,15 @@ function TableContent({
           <div className="absolute left-0 max-md:static max-md:pl-2">{toolbarLeftComponent}</div>
           {title ? <div className="hidden md:block"><DataTable.Title>{title}</DataTable.Title></div> : null}
           <div className="absolute right-0 flex items-center max-md:static max-md:ml-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden"
+              onClick={() => setMobileFiltersOpen(open => !open)}
+              aria-expanded={mobileFiltersOpen}
+            >
+              Filtros
+            </Button>
             {toolbarRightActionsComponent}
             {toolbarRightActionsComponent && <div className="bg-input mx-2 hidden h-4 w-px md:block" />}
             {/* Pagination appears to the left of the "View" button */}
@@ -131,7 +149,7 @@ function TableContent({
       )}
       <DataTable.Table<StudyRow> tableClassName={tableClassName}>
         <DataTable.Header<StudyRow> />
-        <DataTable.FilterRow<StudyRow>
+        {showFilterRow && <DataTable.FilterRow<StudyRow>
           excludeColumnIds={[COLUMN_IDS.INSTANCES]}
           renderFilterCell={({ columnId, value, setValue }) => {
             if (columnId === COLUMN_IDS.ACTIONS) {
@@ -198,7 +216,7 @@ function TableContent({
             // Return null/undefined to use default rendering for other columns
             return null;
           }}
-        />
+        />}
         <DataTable.Body<StudyRow>
           emptyMessage={t('No studies available')}
           isLoading={isLoading}

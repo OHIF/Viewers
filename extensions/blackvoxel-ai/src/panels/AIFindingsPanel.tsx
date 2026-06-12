@@ -242,7 +242,7 @@ function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactEleme
     <div className="mt-2 border-t border-white/10">
       <button
         onClick={() => setOpen(prev => !prev)}
-        className="flex w-full cursor-pointer items-center justify-between border-none bg-transparent px-3 py-2.5 text-left text-[12px] font-semibold text-white"
+        className="flex w-full cursor-pointer items-center justify-between border-none bg-transparent px-3 py-2.5 text-left text-[12px] font-semibold text-white max-md:min-h-[44px]"
         aria-expanded={open}
       >
         <span className="flex items-center gap-1.5">
@@ -301,7 +301,7 @@ function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactEleme
 
           <button
             onClick={onCopy}
-            className="mt-2 w-full cursor-pointer rounded-md border border-white/10 px-3 py-1.5 text-[11px] font-semibold text-white transition-colors"
+            className="mt-2 w-full cursor-pointer rounded-md border border-white/10 px-3 py-1.5 text-[11px] font-semibold text-white transition-colors max-md:min-h-[44px]"
             style={{ backgroundColor: copied ? '#10B981' : BRAND_VIOLET }}
             aria-live="polite"
           >
