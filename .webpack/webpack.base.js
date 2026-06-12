@@ -17,6 +17,8 @@ const webpack = require('@rspack/core');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
+// Module-resolution rules shared with the rsbuild build (see rsbuild.config.ts).
+const resolveConfig = require('./resolveConfig');
 // Only uncomment for old v2 stylus
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 let ReactRefreshWebpackPlugin;
@@ -192,33 +194,12 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     },
     resolve: {
       mainFields: ['module', 'browser', 'main'],
+      // alias and modules are shared with the rsbuild build via ./resolveConfig
+      // so the two pipelines resolve identically.
       alias: {
-        // Viewer project
-        // A couple of extensions import app-level utilities (history,
-        // preserveQueryParameters) from '@ohif/app'. pnpm's isolated layout does
-        // not expose the top-level app package to those extensions, and adding it
-        // as a workspace dependency would create an app<->default cycle, so we
-        // resolve the bare specifier to the app source here ($ = exact match).
-        '@ohif/app$': path.resolve(__dirname, '../platform/app/src/index.js'),
-        '@': path.resolve(__dirname, '../platform/app/src'),
-        '@components': path.resolve(__dirname, '../platform/app/src/components'),
-        '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
-        '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
-        '@state': path.resolve(__dirname, '../platform/app/src/state'),
+        ...resolveConfig.alias,
       },
-      // Which directories to search when resolving modules.
-      // The leading bare 'node_modules' preserves the default importer-relative
-      // walk-up, which pnpm's isolated layout requires so that transitive deps
-      // (e.g. react-remove-scroll → tslib 2.x) resolve to the sibling copy
-      // inside .pnpm/<pkg>/node_modules rather than a hoisted older version.
-      modules: [
-        'node_modules',
-        path.resolve(__dirname, '../node_modules'),
-        path.resolve(__dirname, '../../../node_modules'),
-        path.resolve(__dirname, '../platform/app/node_modules'),
-        path.resolve(__dirname, '../platform/ui/node_modules'),
-        SRC_DIR,
-      ],
+      modules: resolveConfig.getModules(SRC_DIR),
       // Attempt to resolve these extensions in order.
       extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
       // Workspace packages use relative imports between sibling packages.

@@ -3,6 +3,9 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
+// Module-resolution rules shared with the webpack/rspack build (webpack.base.js)
+// so the two pipelines resolve identically.
+import resolveConfig from './.webpack/resolveConfig';
 import fs from 'fs';
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
@@ -98,14 +101,8 @@ export default defineConfig({
         // resolve.alias above), so their imports of shared OHIF packages
         // (@ohif/ui-next, @ohif/core, ...) must resolve against platform/app's
         // installed dependencies rather than only the importer-relative
-        // node_modules. Mirrors webpack.pwa.js's resolve.modules.
-        modules: [
-          'node_modules',
-          path.resolve(__dirname, './node_modules'),
-          path.resolve(__dirname, './platform/app/node_modules'),
-          path.resolve(__dirname, './platform/ui/node_modules'),
-          SRC_DIR,
-        ],
+        // node_modules. Shared with webpack.base.js via ./.webpack/resolveConfig.
+        modules: resolveConfig.getModules(SRC_DIR),
         fallback: {
           buffer: require.resolve('buffer'),
         },
@@ -122,19 +119,11 @@ export default defineConfig({
       // Resolve every extension/mode declared in pluginConfig.json to its
       // source directory, so the dynamic import()s in the generated
       // pluginImports.js link without the plugins being dependencies of
-      // platform/app (mirrors webpack.pwa.js).
+      // platform/app. Merged in separately since it depends on pluginConfig.json.
       ...writePluginImportsFile.getPluginResolveAliases(),
-      // A couple of extensions import app-level utilities (history,
-      // preserveQueryParameters) from '@ohif/app'. pnpm's isolated layout does
-      // not expose the top-level app package to those extensions, so resolve the
-      // bare specifier to the app source here ($ = exact match). Mirrors
-      // webpack.base.js.
-      '@ohif/app$': path.resolve(__dirname, './platform/app/src/index.js'),
-      '@': path.resolve(__dirname, './platform/app/src'),
-      '@components': path.resolve(__dirname, './platform/app/src/components'),
-      '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
-      '@routes': path.resolve(__dirname, './platform/app/src/routes'),
-      '@state': path.resolve(__dirname, './platform/app/src/state'),
+      // App-level aliases (@ohif/app, @, @components, ...) shared with the
+      // webpack/rspack build via ./.webpack/resolveConfig.
+      ...resolveConfig.alias,
     },
   },
   output: {
