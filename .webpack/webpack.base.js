@@ -52,9 +52,14 @@ const defineValues = {
   'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
   'process.env.TEST_ENV': JSON.stringify(process.env.TEST_ENV || ''),
   /* BlackVoxel */
-  // Must be defined or the bare `process.env.…` in inferenceClient.ts reaches
-  // the browser and throws ReferenceError. null (not '') so `?? default` works.
+  // Every process.env.* read in fork browser code MUST be listed here, or the
+  // bare expression reaches the browser and throws ReferenceError (no `process`
+  // object exists there). null (not '') so `?? default` fallbacks apply.
   'process.env.BLACKVOXEL_API_URL': JSON.stringify(process.env.BLACKVOXEL_API_URL || null),
+  // Header back-link target (ui-next Header.tsx); rendered whenever truthy.
+  'process.env.BLACKVOXEL_PLATFORM_URL': JSON.stringify(
+    process.env.BLACKVOXEL_PLATFORM_URL || 'https://blackvoxel.ai'
+  ),
 };
 
 // Only redefine updated values.  This avoids warning messages in the logs
