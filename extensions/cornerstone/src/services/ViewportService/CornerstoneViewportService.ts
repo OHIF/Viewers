@@ -1282,24 +1282,48 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         ? csToolsEnums.SegmentationRepresentations.Labelmap
         : csToolsEnums.SegmentationRepresentations.Contour;
 
-    const { predecessorImageId } = displaySet;
-    const segmentationRepresentationPromise = segmentationService.addSegmentationRepresentation(
-      viewport.id,
-      {
-        segmentationId,
-        predecessorImageId,
-        type: representationType,
-        config: {
-          blendMode:
-            viewport?.getBlendMode?.() === 1
-              ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
-              : undefined,
-        },
+    const applyRepresentation = () => {
+      const { predecessorImageId } = displaySet;
+      const segmentationRepresentationPromise =
+        segmentationService.addSegmentationRepresentation(viewport.id, {
+          segmentationId,
+          predecessorImageId,
+          type: representationType,
+          config: {
+            blendMode:
+              viewport?.getBlendMode?.() === 1
+                ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+                : undefined,
+          },
+        });
+      this.storePresentation({ viewportId: viewport.id });
+      return segmentationRepresentationPromise;
+    };
+
+    // SEG overlay is registered during stack setup, but cornerstone segmentation state
+    // is created in displaySet.load() (async). Wait until it exists before adding representation.
+    if (displaySet.Modality === 'SEG') {
+      if (segmentationService.getSegmentation(segmentationId)) {
+        return applyRepresentation();
       }
-    );
-    // store the segmentation presentation id in the viewport info
-    this.storePresentation({ viewportId: viewport.id });
-    return segmentationRepresentationPromise;
+
+      return new Promise(resolve => {
+        const { unsubscribe } = segmentationService.subscribe(
+          segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+          async (evt: { segDisplaySet?: OhifTypes.DisplaySet }) => {
+            if (evt.segDisplaySet?.displaySetInstanceUID !== segmentationId) {
+              return;
+            }
+
+            unsubscribe();
+            await applyRepresentation();
+            resolve();
+          }
+        );
+      });
+    }
+
+    return applyRepresentation();
   }
 
   private async _addOverlayRepresentations(
