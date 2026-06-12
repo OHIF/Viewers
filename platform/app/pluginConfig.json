@@ -79,16 +79,24 @@
       "packageName": "@ohif/mode-basic"
     },
     {
-      "packageName": "@ohif/mode-segmentation"
+      "packageName": "@ohif/mode-segmentation",
+      "default": false,
+      "_mimps": "Sprint 1 (MIMPS-04): hidden from the demo build — remove default:false to re-enable"
     },
     {
-      "packageName": "@ohif/mode-tmtv"
+      "packageName": "@ohif/mode-tmtv",
+      "default": false,
+      "_mimps": "Sprint 1 (MIMPS-04): hidden from the demo build — remove default:false to re-enable"
     },
     {
-      "packageName": "@ohif/mode-microscopy"
+      "packageName": "@ohif/mode-microscopy",
+      "default": false,
+      "_mimps": "Sprint 1 (MIMPS-04): hidden from the demo build — remove default:false to re-enable"
     },
     {
-      "packageName": "@ohif/mode-preclinical-4d"
+      "packageName": "@ohif/mode-preclinical-4d",
+      "default": false,
+      "_mimps": "Sprint 1 (MIMPS-04): hidden from the demo build — remove default:false to re-enable"
     },
     {
       "packageName": "@ohif/mode-test",
@@ -102,6 +110,8 @@
     },
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
+      "default": false,
+      "_mimps": "Sprint 1 (MIMPS-04): hidden from the demo build — remove default:false to re-enable",
       "version": "3.0.0"
     }
   ],
