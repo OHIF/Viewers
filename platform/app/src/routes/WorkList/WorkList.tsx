@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@state';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
@@ -28,6 +29,7 @@ export default function WorkList({
   extensionManager,
 }: Props) {
   const [appConfig] = useAppConfig();
+  const { t } = useTranslation('StudyList');
   const { customizationService } = servicesManager.services;
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
@@ -51,8 +53,17 @@ export default function WorkList({
     // `workList.columns` is registered as a value (StudyList.defaultColumns) and
     // merged via customization commands, so we read the result directly.
     const customized = customizationService.getCustomization('workList.columns');
-    return Array.isArray(customized) ? customized : StudyList.defaultColumns;
-  }, [customizationService]);
+    const baseColumns = Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    // MIMPS-08: localize column header labels. Column defs carry plain-English
+    // `meta.label` strings; we map them through the StudyList i18n namespace so
+    // headers (and the column show/hide menu, which reads the same meta) render
+    // in the active language. Unknown labels fall back to their original text.
+    return baseColumns.map(column =>
+      column?.meta?.label
+        ? { ...column, meta: { ...column.meta, label: t(column.meta.label) } }
+        : column
+    );
+  }, [customizationService, t]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
     <Icons.OHIFLogoHorizontal
@@ -112,7 +123,7 @@ export default function WorkList({
                   <div className="h-8 w-8" />
                 )
               }
-              title={'Study List'}
+              title={t('StudyList')}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
               toolbarRightActionsComponent={toolbarActions}

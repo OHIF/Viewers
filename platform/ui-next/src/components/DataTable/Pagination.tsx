@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../Button';
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import { useDataTable } from './context';
  * Uses the TanStack table instance from DataTable context.
  */
 export function Pagination<TData>() {
+  const { t } = useTranslation('DataTable');
   const { table } = useDataTable<TData>();
   const { pageIndex, pageSize } = table.getState().pagination ?? { pageIndex: 0, pageSize: 50 };
 
@@ -35,7 +37,7 @@ export function Pagination<TData>() {
             className="text-primary/80 px-2 text-sm leading-tight"
             aria-label="Rows per page"
           >
-            {`${start}-${end} of ${total}`}
+            {t('{{start}}-{{end}} of {{total}}', { start, end, total })}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
@@ -49,7 +51,7 @@ export function Pagination<TData>() {
               className="flex items-center gap-[2px]"
             >
               <Icons.Checked className={`h-6 w-6 ${pageSize === size ? '' : 'invisible'}`} />
-              {size} per page
+              {t('{{size}} per page', { size })}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

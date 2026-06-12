@@ -20,6 +20,7 @@
  * - platform/ui-next/src/components/StudyList/components/PreviewContent.tsx (in-context example, including empty state handling)
  */
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../../lib/utils';
 import { Icons } from '../../Icons/Icons';
@@ -61,19 +62,19 @@ function Root({ data: dataProp, className, children }: RootProps) {
 }
 
 function Patient({ className }: { className?: string } = {}) {
+  const { t } = useTranslation('StudyList');
   const { data } = useSummaryContext();
   const patientName = data?.patientName;
   const mrn = data?.mrn;
 
-  const nameContent = patientName ?? 'Select a study';
+  const nameContent = patientName ?? t('Select a study');
   const nameTitle =
     typeof patientName === 'string' || typeof patientName === 'number'
       ? String(patientName)
       : undefined;
 
   const showMrn = mrn !== null && mrn !== undefined && mrn !== '';
-  const mrnTitle =
-    typeof mrn === 'string' || typeof mrn === 'number' ? String(mrn) : undefined;
+  const mrnTitle = typeof mrn === 'string' || typeof mrn === 'number' ? String(mrn) : undefined;
 
   return (
     <div className={cn('bg-muted flex items-center gap-3 rounded-lg px-4 py-3', className)}>
@@ -113,6 +114,7 @@ function Patient({ className }: { className?: string } = {}) {
  *   remaining applicable workflows as buttons below.
  */
 function Workflows({ className }: { className?: string } = {}) {
+  const { t } = useTranslation('StudyList');
   const { data: studyRow } = useSummaryContext();
   const { workflows, getWorkflowsForStudy, getDefaultWorkflowForStudy, setDefaultWorkflowId } =
     useWorkflows();
@@ -158,7 +160,9 @@ function Workflows({ className }: { className?: string } = {}) {
       )}
     >
       <div className="flex w-full items-center justify-between">
-        <span className="text-foreground text-base font-medium leading-tight">Launch workflow</span>
+        <span className="text-foreground text-base font-medium leading-tight">
+          {t('Launch workflow')}
+        </span>
         <span
           className="text-primary shrink-0 -translate-y-0.5"
           aria-hidden
@@ -201,7 +205,7 @@ function Workflows({ className }: { className?: string } = {}) {
       )}
 
       {defaultWorkflow && studyRow && otherWorkflows.length > 0 && (
-        <div className="text-muted-foreground mt-2 text-sm">Other Available Workflows</div>
+        <div className="text-muted-foreground mt-2 text-sm">{t('Other Available Workflows')}</div>
       )}
 
       {studyRow && otherWorkflows.length > 0 && (

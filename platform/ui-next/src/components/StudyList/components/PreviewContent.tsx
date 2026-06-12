@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Thumbnail } from '../../Thumbnail';
 import { TooltipProvider } from '../../Tooltip';
 import {
@@ -47,6 +48,7 @@ function PreviewContent({
    */
   onThumbnailImageError?: (seriesInstanceUid: string) => void;
 }) {
+  const { t } = useTranslation('StudyList');
   const isToggleVisible = seriesView === 'all';
   const [seriesViewMode, setSeriesViewMode] = React.useState<PreviewSeriesViewMode>('thumbnails');
   const effectiveSeriesViewMode: PreviewSeriesViewMode = isToggleVisible
@@ -78,7 +80,7 @@ function PreviewContent({
         </PreviewPatientSummary>
         <div className="text-muted-foreground flex h-5 w-full items-center justify-between gap-1 px-2 text-base">
           <span className="leading-tight">
-            {series?.length ? study?.description || 'No Description' : 'No Series'}
+            {series?.length ? study?.description || t('No Description') : t('No Series')}
           </span>
           {isToggleVisible && (
             <ToggleGroup

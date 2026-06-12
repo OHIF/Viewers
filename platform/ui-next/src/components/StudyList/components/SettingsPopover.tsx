@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Popover, PopoverTrigger, PopoverContent } from '../../Popover/Popover';
 import {
   Select,
@@ -120,6 +121,7 @@ function SettingsPopoverContent({ children }: ContentProps) {
  * Closes the popover after selection.
  */
 function Workflow() {
+  const { t } = useTranslation('StudyList');
   const { close } = useSettingsPopoverContext();
   const { workflows, defaultWorkflowId, setDefaultWorkflowId } = useWorkflows();
   const selectId = React.useId();
@@ -131,7 +133,7 @@ function Workflow() {
         htmlFor={selectId}
         className="whitespace-nowrap"
       >
-        Default Workflow
+        {t('Default Workflow')}
       </Label>
       <div className="min-w-0 flex-1">
         <Select
@@ -149,7 +151,7 @@ function Workflow() {
             id={selectId}
             className="w-full"
           >
-            <SelectValue placeholder="Select Workflow" />
+            <SelectValue placeholder={t('Select Workflow')} />
           </SelectTrigger>
           {/* Keep stopPropagation so the Select's portal doesn't trigger outside interactions on the Popover */}
           <SelectContent onPointerDown={e => e.stopPropagation()}>
@@ -162,7 +164,7 @@ function Workflow() {
               </SelectItem>
             ))}
             <SelectSeparator />
-            <SelectItem value={NO_DEFAULT_VALUE}>No Default</SelectItem>
+            <SelectItem value={NO_DEFAULT_VALUE}>{t('No Default')}</SelectItem>
           </SelectContent>
         </Select>
       </div>

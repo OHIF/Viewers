@@ -1,4 +1,5 @@
 import * as React from 'react';
+import i18n from 'i18next';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
 import type { ColumnMeta } from '../../DataTable/types';
@@ -185,7 +186,7 @@ export const defaultColumns: ColumnDef<StudyRow, unknown>[] = [
       const description = row.getValue(COLUMN_IDS.DESCRIPTION) as string;
       return (
         <div className={!description ? 'text-muted-foreground/40' : ''}>
-          {description || 'No Description'}
+          {description || i18n.t('StudyList:No Description')}
         </div>
       );
     },

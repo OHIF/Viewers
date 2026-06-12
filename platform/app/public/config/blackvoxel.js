@@ -10,6 +10,23 @@
 // CORS round-trip is needed (same origin as the app).
 //
 // Do NOT point any data source at an external/public demo server here.
+
+// MIMPS-08 — default the UI language to Brazilian Portuguese.
+// This script is loaded by index.html BEFORE the app bundle, so seeding the
+// i18next detector cache here runs ahead of i18n initialization. The detector
+// order is querystring > cookie > localStorage > navigator, so:
+//   - first visit: no cached language -> we seed pt-BR and the app boots in pt-BR
+//   - returning user who switched language in Preferences: their choice is
+//     already cached in localStorage and we leave it alone
+//   - ?lng=<locale> in the URL still overrides everything (demo escape hatch)
+try {
+  if (!window.localStorage.getItem('i18nextLng')) {
+    window.localStorage.setItem('i18nextLng', 'pt-BR');
+  }
+} catch (e) {
+  /* storage unavailable (private mode etc.) — fall back to browser detection */
+}
+
 window.config = {
   name: 'config/blackvoxel.js',
   routerBasename: null,
