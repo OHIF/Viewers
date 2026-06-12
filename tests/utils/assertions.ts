@@ -66,16 +66,10 @@ export async function expectRowSelected(rowObject) {
   await expect(rowObject.locator).toContainClass('bg-popover');
 }
 
-export async function expectRowLocked(rowObjectLocator: Locator) {
-  await expect(
-    rowObjectLocator.locator('g#Lock'),
-    'Expected the row to show the lock icon'
-  ).toHaveCount(1);
+export async function expectRowLocked(rowObject: { lockIcon: Locator }) {
+  await expect(rowObject.lockIcon, 'Expected the row to show the lock icon').toHaveCount(1);
 }
 
-export async function expectRowUnlocked(rowObjectLocator: Locator) {
-  await expect(
-    rowObjectLocator.locator('g#Lock'),
-    'Expected the row to not show the lock icon'
-  ).toHaveCount(0);
+export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
+  await expect(rowObject.lockIcon, 'Expected the row to not show the lock icon').toHaveCount(0);
 }

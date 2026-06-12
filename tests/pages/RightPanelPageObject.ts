@@ -48,14 +48,14 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Delete').click();
       },
-      lockToggleMenuItem,
+      // Open lock toggle menu item and return the locator
+      openLockToggleMenuItem: async () => {
+        await actionsButton.click();
+        return lockToggleMenuItem;
+      },
       toggleLock: async () => {
         await actionsButton.click();
         await lockToggleMenuItem.click();
-      },
-      unlock: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('Unlock').click();
       },
       rename: async (text: string) => {
         await actionsButton.click();
@@ -87,6 +87,9 @@ export class RightPanelPageObject {
       },
       get title() {
         return row.getByTestId('data-row-title');
+      },
+      get lockIcon() {
+        return row.locator('g#Lock');
       },
       click: async () => {
         await row.getByTestId('data-row-title').click();
