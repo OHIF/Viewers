@@ -7,7 +7,7 @@
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
   "exports": {
-    "./tailwind.config": "./tailwind.config.ts",
+    "./tailwind.config": "./tailwind.config.js",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     ".": "./src/index.ts"
