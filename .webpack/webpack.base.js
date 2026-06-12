@@ -60,6 +60,12 @@ const defineValues = {
   'process.env.BLACKVOXEL_PLATFORM_URL': JSON.stringify(
     process.env.BLACKVOXEL_PLATFORM_URL || 'https://blackvoxel.ai'
   ),
+  // onnxruntime-web's ESM loader glue falls back to bare `__filename` when
+  // `document.currentScript` is unavailable (always on viewer page reload —
+  // black-screens the whole app; MIMPS-16 finding). webpack's node-shim
+  // ('mock') only covers CommonJS modules, never ESM, so define it here.
+  // Value is only used by ort to locate its wasm next to the "script".
+  __filename: JSON.stringify('/ort-shim.js'),
 };
 
 // Only redefine updated values.  This avoids warning messages in the logs
