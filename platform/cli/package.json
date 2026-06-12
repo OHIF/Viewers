@@ -1,6 +1,6 @@
 {
   "name": "@ohif/cli",
-  "version": "3.13.0-beta.80",
+  "version": "3.13.0-beta.89",
   "description": "A CLI to bootstrap new OHIF extension or mode",
   "type": "module",
   "main": "src/index.js",
@@ -20,7 +20,7 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "7.28.0",
+    "@babel/core": "7.29.7",
     "axios": "1.13.5",
     "chalk": "5.4.1",
     "execa": "8.0.1",

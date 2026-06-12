@@ -1,9 +1,10 @@
 import { utils } from '@ohif/core';
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
-import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
+import { getEnabledElement } from '@cornerstonejs/core';
 import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
+import { isStackViewportType, isVolumeViewportType } from './getLegacyViewportType';
 import { useSystem } from '@ohif/core/src';
 
 const { downloadUrl } = utils;
@@ -127,10 +128,10 @@ const CornerstoneViewportDownloadForm = ({
       const viewPresentation = viewport.getViewPresentation?.();
       const viewRef = viewport.getViewReference?.();
 
-      if (downloadViewport instanceof StackViewport) {
+      if (isStackViewportType(downloadViewport)) {
         const imageId = viewport.getCurrentImageId();
         await downloadViewport.setStack([imageId]);
-      } else if (downloadViewport instanceof BaseVolumeViewport) {
+      } else if (isVolumeViewportType(downloadViewport)) {
         const volumeIds = viewport.getAllVolumeIds();
         await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
       }
