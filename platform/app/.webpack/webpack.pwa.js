@@ -203,9 +203,13 @@ module.exports = (env, argv) => {
 
   if (isProdBuild) {
     mergedConfig.plugins.push(
+      // MOB-02: content-hash the CSS filenames. The un-hashed app.bundle.css
+      // was cached by Cloudflare (max-age 14400) across deploys, so style
+      // changes shipped while stale CSS kept being served. The JS bundle was
+      // already hashed; this brings CSS in line.
       new MiniCssExtractPlugin({
-        filename: '[name].bundle.css',
-        chunkFilename: '[id].css',
+        filename: '[name].bundle.[contenthash].css',
+        chunkFilename: '[id].[contenthash].css',
       })
     );
   }
