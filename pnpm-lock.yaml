@@ -1108,6 +1108,9 @@ importers:
         specifier: workspace:*
         version: link:../../extensions/tmtv
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -2040,6 +2043,9 @@ importers:
       '@babel/plugin-transform-private-property-in-object':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7)
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
 
 packages:
 

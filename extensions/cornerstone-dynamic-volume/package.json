@@ -7,6 +7,9 @@
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-cornerstone-dynamic-volume.umd.js",
   "module": "src/index.ts",
+  "engines": {
+    "node": ">=24"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts"

@@ -71,6 +71,12 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   const config = {
     mode: isProdBuild ? 'production' : 'development',
     devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    // `rspack serve` (@rspack/cli) auto-enables lazyCompilation for web-only
+    // apps unless the config defines it explicitly. The on-demand proxy chunks
+    // it produces fail to load in the headless cypress/electron e2e run
+    // (ChunkLoadError on cornerstone vendor chunks), so disable it here to match
+    // the rsbuild build (see rsbuild.config.ts `dev.lazyCompilation: false`).
+    lazyCompilation: false,
     entry: ENTRY,
     optimization: {
       // splitChunks: {
