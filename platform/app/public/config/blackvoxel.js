@@ -98,8 +98,10 @@ window.config = {
   whiteLabeling: {
     createLogoComponentFn: function (React) {
       return React.createElement('img', {
-        src: './blackvoxel-logo.svg',
-        alt: 'BlackVoxel Viewer',
+        // MIMPS-02: absolute path — a relative './' src breaks on nested
+        // routes like /viewer?... where the URL directory is not the root.
+        src: '/blackvoxel-logo.svg',
+        alt: 'MIMPS by BlackVoxel',
         className: 'h-[32px] w-[232px]',
       });
     },

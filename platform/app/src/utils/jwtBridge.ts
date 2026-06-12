@@ -22,16 +22,21 @@ const PLATFORM_LOGIN_URL = 'https://blackvoxel.ai/login';
  * same-origin requests nginx gates with `auth_request` (the /pacs/ DICOMweb
  * proxy). XHR/fetch image loads can't carry an Authorization header through
  * cornerstone, so the cookie is the credential nginx's auth subrequest sees.
+ *
  * Session-scoped (no Max-Age) to match sessionStorage semantics; not HttpOnly
- * by necessity since it is set from JS.
+ * by necessity since it is set from JS. Hardened (SEC-17):
+ *   - SameSite=Strict: the /pacs/ image requests are same-origin, so the cookie
+ *     is never needed on cross-site navigations — Strict blocks it from riding
+ *     along on requests initiated by other sites (CSRF / token-leak surface).
+ *   - Secure on HTTPS so the token never traverses a plaintext origin hop.
  */
 function syncAuthCookie(token: string): void {
   const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${COOKIE_KEY}=${token}; Path=/; SameSite=Lax${secure}`;
+  document.cookie = `${COOKIE_KEY}=${token}; Path=/; SameSite=Strict${secure}`;
 }
 
 function clearAuthCookie(): void {
-  document.cookie = `${COOKIE_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
+  document.cookie = `${COOKIE_KEY}=; Path=/; Max-Age=0; SameSite=Strict`;
 }
 
 /**

@@ -2,3 +2,30 @@ body {
   overscroll-behavior: none;
   touch-action: none;
 }
+
+/*
+ * MIMPS-02 — BlackVoxel brand palette.
+ *
+ * ui-next defines its theme as HSL custom properties in
+ * platform/ui-next/src/tailwind.css. App.css is imported after the ui-next
+ * styles (last import in App.tsx), so these overrides win at equal
+ * specificity without touching the component library.
+ *
+ * Mapping (hex -> hsl):
+ *   primary       #7C3AED -> 262 83% 58%   (active tool buttons, links)
+ *   primary dark  #5B21B6 -> 263 69% 42%
+ *   accent        #10B981 -> 160 84% 39%   (reserved; not mapped to --accent,
+ *                                           which ui-next uses as a dark hover
+ *                                           surface, not a brand accent)
+ *
+ * --highlight drives the active/toggled state of viewer tool buttons
+ * (ToolButton.tsx: bg-highlight / text-highlight); --primary and --ring drive
+ * primary buttons and focus rings.
+ */
+:root,
+.dark {
+  --highlight: 262 83% 58%;
+  --primary: 262 83% 58%;
+  --ring: 262 83% 58%;
+  --secondary: 263 69% 42%;
+}

@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- MIMPS by BlackVoxel wordmark (MIMPS-02). Brand palette:
+     primary #7C3AED, primary dark #5B21B6, accent #10B981, text #FFFFFF / #A0ADB4 -->
 <svg width="232" height="32" viewBox="0 0 232 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <title>BlackVoxel Viewer</title>
-  <g aria-label="BlackVoxel Viewer">
-    <rect x="1" y="1" width="13" height="13" rx="3" fill="#111827" stroke="#6366F1" stroke-width="2"/>
-    <rect x="18" y="1" width="13" height="13" rx="3" fill="#111827" stroke="#22D3EE" stroke-width="2"/>
-    <rect x="1" y="18" width="13" height="13" rx="3" fill="#111827" stroke="#22D3EE" stroke-width="2"/>
-    <rect x="18" y="18" width="13" height="13" rx="3" fill="#111827" stroke="#6366F1" stroke-width="2"/>
-    <text x="42" y="21" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="0.2">
-      BlackVoxel
-    </text>
-    <text x="145" y="21" fill="#A5B4FC" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="500">
-      Viewer
-    </text>
+  <title>MIMPS by BlackVoxel</title>
+  <g aria-label="MIMPS by BlackVoxel">
+    <rect x="1" y="1" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#7C3AED" stroke-width="2"/>
+    <rect x="18" y="1" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#10B981" stroke-width="2"/>
+    <rect x="1" y="18" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#5B21B6" stroke-width="2"/>
+    <rect x="18" y="18" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#7C3AED" stroke-width="2"/>
+    <text x="42" y="22" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="0.4">MIMPS</text>
+    <text x="108" y="22" fill="#A0ADB4" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="500">by</text>
+    <text x="124" y="22" fill="#A78BFA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="600">BlackVoxel</text>
   </g>
 </svg>
