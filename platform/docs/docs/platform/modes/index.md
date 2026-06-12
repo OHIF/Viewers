@@ -451,10 +451,16 @@ find the `modes` to register.
 }
 ```
 
-:::note Important
-You SHOULD NOT directly register modes in the `pluginConfig.json` file.
-Use the provided `cli` to add/remove/install/uninstall modes. Read more [here](../../development/ohif-cli.md)
+:::note
+You can register modes by editing the `pluginConfig.json` file directly.
+The provided `cli` can also add/remove/install/uninstall modes
+([read more](../../development/ohif-cli.md)), but it is being phased out in
+favour of generating modes with an agent.
 :::
+
+For the full set of entry fields and the three ways a plugin can be located
+(in-tree, out-of-tree `directory`, or installed dependency), see the
+[pluginConfig.json reference](../extensions/pluginConfig.md).
 
 The final registration and import of the modes happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
 
