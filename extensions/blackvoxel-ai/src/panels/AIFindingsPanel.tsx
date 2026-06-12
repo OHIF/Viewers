@@ -1,18 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { utilities as cornerstoneUtilities } from '@cornerstonejs/core';
 import {
   getInference,
   InferenceError,
   InferenceResponse,
 } from '../services/inferenceClient';
+import { clearAIBoundingBoxes, showAIBoundingBoxes } from '../services/viewportOverlay';
+import { toPtLabel, toSeverityDisplay } from '../utils/labels';
 import { STATIC_DEMO_DATA } from './staticDemoData';
+
+// ---------------------------------------------------------------------------
+// Brand constants (MIMPS-02 palette)
+// ---------------------------------------------------------------------------
+
+const BRAND_VIOLET = '#7C3AED';
+const TEXT_SECONDARY = '#A0ADB4';
+const AMBER = '#D97706';
+
+const FOOTER_DISCLAIMER =
+  'Este rascunho foi gerado por IA e requer revisão e assinatura de médico habilitado antes de qualquer uso clínico.';
 
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
 interface AIFindingsPanelProps {
-  servicesManager?: unknown; // OHIF servicesManager — typed loosely; extension not wired yet
+  servicesManager?: unknown; // OHIF servicesManager — typed loosely at the extension boundary
   studyInstanceUID?: string;
   seriesInstanceUID?: string;
 }
@@ -83,109 +96,114 @@ async function captureActiveViewportImage(
 }
 
 // ---------------------------------------------------------------------------
+// Clipboard helper (with non-clipboard-API fallback)
+// ---------------------------------------------------------------------------
+
+async function copyTextToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_err) {
+      // Fall through to the legacy path (e.g. permissions / insecure context).
+    }
+  }
+
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(textarea);
+    return ok;
+  } catch (_err) {
+    return false;
+  }
+}
+
+function buildReportPlainText(report: InferenceResponse['report_draft']): string {
+  return [
+    'TÉCNICA',
+    report.tecnica,
+    '',
+    'ACHADOS',
+    report.achados,
+    '',
+    'IMPRESSÃO',
+    report.impressao,
+  ].join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
 function Spinner(): React.ReactElement {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
-        padding: '24px',
-      }}
-    >
+    <div className="flex flex-col items-center justify-center gap-2 p-6">
       <svg
         width="24"
         height="24"
         viewBox="0 0 24 24"
         fill="none"
-        style={{
-          animation: 'blackvoxel-spin 1s linear infinite',
-        }}
+        className="animate-spin"
         aria-label="Carregando..."
         role="img"
       >
-        <style>{`@keyframes blackvoxel-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
         <circle
           cx="12"
           cy="12"
           r="10"
-          stroke="#e2e8f0"
+          stroke="rgba(255,255,255,0.15)"
           strokeWidth="3"
         />
         <path
           d="M12 2a10 10 0 0 1 10 10"
-          stroke="#6366f1"
+          stroke={BRAND_VIOLET}
           strokeWidth="3"
           strokeLinecap="round"
         />
       </svg>
-      <span style={{ fontSize: '12px', color: '#94a3b8' }}>Analisando...</span>
+      <span
+        className="text-[12px]"
+        style={{ color: TEXT_SECONDARY }}
+      >
+        Analisando...
+      </span>
     </div>
   );
 }
 
-interface SeverityBadgeProps {
-  severity: string;
-}
-
-function SeverityBadge({ severity }: SeverityBadgeProps): React.ReactElement {
-  const colorMap: Record<string, { bg: string; text: string }> = {
-    low: { bg: '#dcfce7', text: '#166534' },
-    moderate: { bg: '#fef9c3', text: '#854d0e' },
-    high: { bg: '#fee2e2', text: '#991b1b' },
-  };
-  const colors = colorMap[severity.toLowerCase()] ?? { bg: '#f1f5f9', text: '#475569' };
-
+function SeverityChip({ severity }: { severity: string }): React.ReactElement {
+  const display = toSeverityDisplay(severity);
   return (
     <span
-      style={{
-        display: 'inline-block',
-        fontSize: '10px',
-        fontWeight: 600,
-        padding: '2px 6px',
-        borderRadius: '4px',
-        backgroundColor: colors.bg,
-        color: colors.text,
-        textTransform: 'capitalize',
-      }}
+      className="inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold"
+      style={{ backgroundColor: display.background, color: display.color }}
     >
-      {severity}
+      {display.label}
     </span>
   );
 }
 
-interface ConfidenceBarProps {
-  confidence: number; // 0–1
-}
-
-function ConfidenceBar({ confidence }: ConfidenceBarProps): React.ReactElement {
+function ConfidenceBar({ confidence }: { confidence: number }): React.ReactElement {
   const pct = Math.round(confidence * 100);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <div
-        style={{
-          flex: 1,
-          height: '4px',
-          backgroundColor: '#e2e8f0',
-          borderRadius: '2px',
-          overflow: 'hidden',
-        }}
-      >
+    <div className="flex items-center gap-2">
+      <div className="h-1 flex-1 overflow-hidden rounded-sm bg-white/10">
         <div
-          style={{
-            width: `${pct}%`,
-            height: '100%',
-            backgroundColor: '#6366f1',
-            borderRadius: '2px',
-          }}
+          className="h-full rounded-sm"
+          style={{ width: `${pct}%`, backgroundColor: BRAND_VIOLET }}
         />
       </div>
-      <span style={{ fontSize: '11px', color: '#64748b', minWidth: '28px', textAlign: 'right' }}>
+      <span
+        className="min-w-[30px] text-right text-[11px] font-medium text-white"
+        aria-label={`Confiança ${pct}%`}
+      >
         {pct}%
       </span>
     </div>
@@ -198,64 +216,104 @@ interface CollapsibleReportProps {
 
 function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactElement {
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current) {
+        clearTimeout(copiedTimerRef.current);
+      }
+    };
+  }, []);
+
+  const onCopy = useCallback(async () => {
+    const ok = await copyTextToClipboard(buildReportPlainText(report));
+    if (ok) {
+      setCopied(true);
+      if (copiedTimerRef.current) {
+        clearTimeout(copiedTimerRef.current);
+      }
+      copiedTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    }
+  }, [report]);
 
   return (
-    <div style={{ borderTop: '1px solid #f1f5f9', marginTop: '8px' }}>
+    <div className="mt-2 border-t border-white/10">
       <button
         onClick={() => setOpen(prev => !prev)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-          padding: '10px 12px',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '12px',
-          fontWeight: 600,
-          color: '#334155',
-          textAlign: 'left',
-        }}
+        className="flex w-full cursor-pointer items-center justify-between border-none bg-transparent px-3 py-2.5 text-left text-[12px] font-semibold text-white"
         aria-expanded={open}
       >
-        <span>Laudo Preliminar</span>
-        <span style={{ fontSize: '10px', color: '#94a3b8' }}>{open ? '▲' : '▼'}</span>
+        <span className="flex items-center gap-1.5">
+          {/* AI sparkle icon */}
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill={BRAND_VIOLET}
+            aria-hidden="true"
+          >
+            <path d="M12 2l2.1 5.9L20 10l-5.9 2.1L12 18l-2.1-5.9L4 10l5.9-2.1L12 2zM19 15l1.05 2.95L23 19l-2.95 1.05L19 23l-1.05-2.95L15 19l2.95-1.05L19 15z" />
+          </svg>
+          Rascunho de Laudo
+          <span
+            className="rounded px-1.5 py-0.5 text-[9px] font-bold"
+            style={{ backgroundColor: 'rgba(124,58,237,0.25)', color: '#C4B5FD' }}
+          >
+            ✦ Beta
+          </span>
+        </span>
+        <span
+          className="text-[10px]"
+          style={{ color: TEXT_SECONDARY }}
+          aria-hidden="true"
+        >
+          {open ? '▲' : '▼'}
+        </span>
       </button>
 
       {open && (
-        <div style={{ padding: '0 12px 12px' }}>
-          {(
-            [
-              { key: 'tecnica', label: 'TÉCNICA', value: report.tecnica },
-              { key: 'achados', label: 'ACHADOS', value: report.achados },
-              { key: 'impressao', label: 'IMPRESSÃO', value: report.impressao },
-            ] as const
-          ).map(({ key, label, value }) => (
-            <div key={key} style={{ marginBottom: '10px' }}>
+        <div className="px-3 pb-3">
+          {/* Clinical-document styling: monospace body on a subtle paper-like dark surface */}
+          <div className="rounded-md border border-white/10 bg-white/5 p-3">
+            {(
+              [
+                { key: 'tecnica', label: 'TÉCNICA', value: report.tecnica },
+                { key: 'achados', label: 'ACHADOS', value: report.achados },
+                { key: 'impressao', label: 'IMPRESSÃO', value: report.impressao },
+              ] as const
+            ).map(({ key, label, value }) => (
               <div
-                style={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  color: '#94a3b8',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
+                key={key}
+                className="mb-3 last:mb-0"
               >
-                {label}
+                <div
+                  className="mb-1 text-[10px] font-bold tracking-wider"
+                  style={{ color: '#C4B5FD' }}
+                >
+                  {label}
+                </div>
+                <p className="m-0 font-mono text-[11px] leading-relaxed text-white/90">{value}</p>
               </div>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '11px',
-                  color: '#475569',
-                  lineHeight: '1.5',
-                }}
-              >
-                {value}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <button
+            onClick={onCopy}
+            className="mt-2 w-full cursor-pointer rounded-md border border-white/10 px-3 py-1.5 text-[11px] font-semibold text-white transition-colors"
+            style={{ backgroundColor: copied ? '#10B981' : BRAND_VIOLET }}
+            aria-live="polite"
+          >
+            {copied ? 'Copiado!' : 'Copiar Rascunho'}
+          </button>
+
+          <p
+            className="mb-0 mt-2 text-[10px] leading-snug"
+            style={{ color: AMBER }}
+          >
+            {FOOTER_DISCLAIMER}
+          </p>
         </div>
       )}
     </div>
@@ -285,9 +343,29 @@ function AIFindingsPanel({
 
     let cancelled = false;
 
-    async function run(): Promise<void> {
+    function drawOverlay(result: InferenceResponse, imageId?: string): void {
+      // Only findings with a real bounding_box produce a viewport overlay
+      // (mock/static lanes). The live classifier returns null boxes and we
+      // never fabricate localization.
+      if (!imageId) {
+        return;
+      }
       try {
-        const capture = await captureActiveViewportImage(servicesManager);
+        showAIBoundingBoxes({ servicesManager, imageId, findings: result.findings });
+      } catch (err) {
+        console.warn('[blackvoxel-ai] viewport overlay failed:', err);
+      }
+    }
+
+    async function run(): Promise<void> {
+      let capture: ViewerCaptureResult = {};
+      try {
+        capture = await captureActiveViewportImage(servicesManager);
+      } catch (err) {
+        console.warn('[blackvoxel-ai] viewport capture failed:', err);
+      }
+
+      try {
         const result = await getInference({
           study_uid: studyUid,
           series_uid: seriesUid,
@@ -298,12 +376,17 @@ function AIFindingsPanel({
         if (!cancelled) {
           setData(result);
           setLoading(false);
+          drawOverlay(result, capture.imageId);
         }
       } catch (err: unknown) {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
 
         if (err instanceof InferenceError && err.status === 401) {
-          // getInference already triggered the redirect; show a brief message.
+          // getInference already evicted the token and triggered the SSO
+          // redirect; show a brief message. Never fall back to static data
+          // on auth failures.
           setSessionExpired(true);
           setLoading(false);
           return;
@@ -315,6 +398,7 @@ function AIFindingsPanel({
         setData(STATIC_DEMO_DATA);
         setUsingFallback(true);
         setLoading(false);
+        drawOverlay(STATIC_DEMO_DATA, capture.imageId);
       }
     }
 
@@ -322,6 +406,8 @@ function AIFindingsPanel({
 
     return () => {
       cancelled = true;
+      // Panel closing / re-running: never leave stale AI boxes on the viewport.
+      clearAIBoundingBoxes();
     };
   }, [servicesManager, studyInstanceUID, seriesInstanceUID]);
 
@@ -329,18 +415,10 @@ function AIFindingsPanel({
   if (sessionExpired) {
     return (
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          padding: '24px',
-          fontSize: '13px',
-          color: '#64748b',
-          textAlign: 'center',
-        }}
+        className="flex h-full items-center justify-center bg-black p-6 text-center text-[13px]"
+        style={{ color: TEXT_SECONDARY }}
       >
-        Sessão expirada. Redirecionando...
+        Sessão expirada. Redirecionando para o login...
       </div>
     );
   }
@@ -348,7 +426,7 @@ function AIFindingsPanel({
   // --- Loading state ---
   if (loading) {
     return (
-      <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
+      <div className="flex h-full items-center justify-center bg-black">
         <Spinner />
       </div>
     );
@@ -356,62 +434,31 @@ function AIFindingsPanel({
 
   // At this point data is guaranteed to be set (either real or fallback).
   const result = data as InferenceResponse;
+  const hasAnyLocalization = result.findings.some(f => f.bounding_box !== null);
+  const processingSeconds = (result.inference_time_ms / 1000).toFixed(1);
 
   // --- Panel (success or fallback) ---
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        backgroundColor: '#ffffff',
-        fontSize: '13px',
-        overflowY: 'auto',
-      }}
-    >
+    <div className="flex h-full flex-col overflow-y-auto bg-black text-[13px]">
       {/* Header */}
       <div
-        style={{
-          backgroundColor: '#6366f1',
-          padding: '10px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          flexShrink: 0,
-        }}
+        className="flex flex-shrink-0 items-center gap-2 px-3 py-2.5"
+        style={{ backgroundColor: BRAND_VIOLET }}
       >
-        <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '13px' }}>BlackVoxel AI</span>
-        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>
-          {result.model_version}
+        <span className="text-[13px] font-bold text-white">BlackVoxel IA — Achados</span>
+        <span className="ml-auto flex items-center gap-1">
+          <span className="text-[10px] text-white/70">{result.model_version}</span>
+          {result.is_mock && (
+            <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              Mock
+            </span>
+          )}
+          {!result.is_mock && result.is_research && (
+            <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              Research
+            </span>
+          )}
         </span>
-        {result.is_mock && (
-          <span
-            style={{
-              marginLeft: '4px',
-              fontSize: '10px',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              color: '#ffffff',
-              padding: '2px 6px',
-              borderRadius: '4px',
-            }}
-          >
-            Mock
-          </span>
-        )}
-        {!result.is_mock && result.is_research && (
-          <span
-            style={{
-              marginLeft: '4px',
-              fontSize: '10px',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              color: '#ffffff',
-              padding: '2px 6px',
-              borderRadius: '4px',
-            }}
-          >
-            Research
-          </span>
-        )}
       </div>
 
       {/* Offline / fallback banner */}
@@ -419,92 +466,81 @@ function AIFindingsPanel({
         <div
           role="status"
           aria-live="polite"
+          className="flex-shrink-0 border-b px-3 py-1.5 text-[11px]"
           style={{
-            backgroundColor: '#fffbeb',
-            borderBottom: '1px solid #fde68a',
-            padding: '6px 12px',
-            fontSize: '11px',
-            color: '#92400e',
-            flexShrink: 0,
+            backgroundColor: 'rgba(120, 53, 15, 0.35)',
+            borderColor: 'rgba(217, 119, 6, 0.4)',
+            color: '#FBBF24',
           }}
         >
           Resultados offline — exibindo dados de demonstração
-          {error && (
-            <span style={{ color: '#b45309', marginLeft: '4px' }}>({error})</span>
-          )}
+          {error && <span className="ml-1 text-[#F59E0B]">({error})</span>}
         </div>
       )}
 
       {/* Findings */}
-      <div style={{ padding: '12px', flex: 1 }}>
-        <div
-          style={{
-            fontSize: '11px',
-            fontWeight: 700,
-            color: '#94a3b8',
-            letterSpacing: '0.05em',
-            marginBottom: '10px',
-          }}
-        >
-          ACHADOS ({result.findings.length})
+      <div className="flex-1 p-3">
+        <div className="mb-2.5 flex items-baseline justify-between">
+          <span
+            className="text-[11px] font-bold tracking-wider"
+            style={{ color: TEXT_SECONDARY }}
+          >
+            ACHADOS ({result.findings.length})
+          </span>
+          <span
+            className="text-[10px]"
+            style={{ color: TEXT_SECONDARY }}
+          >
+            Processado em {processingSeconds}s
+          </span>
         </div>
 
         {result.findings.length === 0 ? (
-          <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>
+          <p
+            className="m-0 text-[12px]"
+            style={{ color: TEXT_SECONDARY }}
+          >
             Nenhum achado detectado.
           </p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="flex flex-col gap-2.5">
             {result.findings.map((finding, idx) => (
               <div
                 key={`${finding.label}-${idx}`}
-                style={{
-                  backgroundColor: '#f8fafc',
-                  borderRadius: '6px',
-                  padding: '10px',
-                  border: '1px solid #f1f5f9',
-                }}
+                className="rounded-md border border-white/10 bg-white/5 p-2.5"
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '6px',
-                  }}
-                >
-                  <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '12px' }}>
-                    {finding.label}
+                <div className="mb-1.5 flex items-center justify-between gap-2">
+                  <span className="text-[12px] font-bold text-white">
+                    {toPtLabel(finding.label)}
                   </span>
-                  <SeverityBadge severity={finding.severity} />
+                  <SeverityChip severity={finding.severity} />
                 </div>
                 <ConfidenceBar confidence={finding.confidence} />
               </div>
             ))}
           </div>
         )}
+
+        {result.findings.length > 0 && !hasAnyLocalization && (
+          <p
+            className="mb-0 mt-2.5 text-[10px] italic"
+            style={{ color: TEXT_SECONDARY }}
+          >
+            Localização não disponível nesta versão do modelo
+          </p>
+        )}
       </div>
 
       {/* Collapsible report draft */}
       <CollapsibleReport report={result.report_draft} />
 
-      {/* Disclaimer */}
-      <div
-        style={{
-          padding: '8px 12px',
-          borderTop: '1px solid #f1f5f9',
-          flexShrink: 0,
-        }}
-      >
+      {/* Server disclaimer */}
+      <div className="flex-shrink-0 border-t border-white/10 px-3 py-2">
         <p
-          style={{
-            margin: 0,
-            fontSize: '10px',
-            color: '#d97706',
-            lineHeight: '1.4',
-          }}
+          className="m-0 text-[10px] leading-snug"
+          style={{ color: AMBER }}
         >
-          {result.disclaimer ?? 'Uso restrito a pesquisa. Nao substitui laudo medico.'}
+          {result.disclaimer ?? 'Uso restrito a pesquisa. Não substitui laudo médico.'}
         </p>
       </div>
     </div>

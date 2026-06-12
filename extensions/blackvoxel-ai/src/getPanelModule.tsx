@@ -1,5 +1,6 @@
 import React from 'react';
 import AIFindingsPanel from './panels/AIFindingsPanel';
+import AIPanelErrorBoundary from './panels/AIPanelErrorBoundary';
 
 function getPanelModule({ servicesManager }: { servicesManager: unknown }): Array<{
   name: string;
@@ -14,7 +15,11 @@ function getPanelModule({ servicesManager }: { servicesManager: unknown }): Arra
       iconName: 'tab-analysis',
       iconLabel: 'AI',
       label: 'Achados IA',
-      component: () => <AIFindingsPanel servicesManager={servicesManager} />,
+      component: () => (
+        <AIPanelErrorBoundary>
+          <AIFindingsPanel servicesManager={servicesManager} />
+        </AIPanelErrorBoundary>
+      ),
     },
   ];
 }

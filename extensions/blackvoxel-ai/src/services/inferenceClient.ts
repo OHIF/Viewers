@@ -27,7 +27,12 @@ export interface BoundingBox {
 export interface InferenceFinding {
   label: string;
   confidence: number;
-  bounding_box: BoundingBox;
+  /**
+   * Pixel-space box on the analyzed frame, or null when the model lane has no
+   * localization (the live proxy-txv-v1 classifier returns null on every
+   * finding). Never synthesize a box when this is null.
+   */
+  bounding_box: BoundingBox | null;
   severity: string;
 }
 
@@ -97,8 +102,11 @@ export async function getInference(request: InferenceRequest): Promise<Inference
 
   if (!response.ok) {
     if (response.status === 401) {
+      // Evict the stale token, then bounce through the INT-05 SSO handoff so
+      // the platform returns the user to this exact viewer URL after re-auth.
       sessionStorage.removeItem(SESSION_KEY);
-      window.location.href = 'https://blackvoxel.ai/login';
+      const redirect = encodeURIComponent(window.location.href);
+      window.location.href = `https://blackvoxel.ai/login?redirect=${redirect}`;
       throw new InferenceError('Unauthorized', 401);
     }
     throw new InferenceError(`API error ${response.status}`, response.status);
