@@ -123,5 +123,6 @@
       "prettier --write",
       "git add"
     ]
-  }
+  },
+  "version": "3.13.0-beta.90"
 }
