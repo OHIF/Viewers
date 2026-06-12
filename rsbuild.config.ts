@@ -94,6 +94,18 @@ export default defineConfig({
         ],
       },
       resolve: {
+        // Extensions/modes are resolved from their source dirs (see the
+        // resolve.alias above), so their imports of shared OHIF packages
+        // (@ohif/ui-next, @ohif/core, ...) must resolve against platform/app's
+        // installed dependencies rather than only the importer-relative
+        // node_modules. Mirrors webpack.pwa.js's resolve.modules.
+        modules: [
+          'node_modules',
+          path.resolve(__dirname, './node_modules'),
+          path.resolve(__dirname, './platform/app/node_modules'),
+          path.resolve(__dirname, './platform/ui/node_modules'),
+          SRC_DIR,
+        ],
         fallback: {
           buffer: require.resolve('buffer'),
         },
@@ -107,6 +119,17 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // Resolve every extension/mode declared in pluginConfig.json to its
+      // source directory, so the dynamic import()s in the generated
+      // pluginImports.js link without the plugins being dependencies of
+      // platform/app (mirrors webpack.pwa.js).
+      ...writePluginImportsFile.getPluginResolveAliases(),
+      // A couple of extensions import app-level utilities (history,
+      // preserveQueryParameters) from '@ohif/app'. pnpm's isolated layout does
+      // not expose the top-level app package to those extensions, so resolve the
+      // bare specifier to the app source here ($ = exact match). Mirrors
+      // webpack.base.js.
+      '@ohif/app$': path.resolve(__dirname, './platform/app/src/index.js'),
       '@': path.resolve(__dirname, './platform/app/src'),
       '@components': path.resolve(__dirname, './platform/app/src/components'),
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),

@@ -224,15 +224,22 @@ function getPluginResolveAliases() {
   return alias;
 }
 
-const createCopyPluginToDist = (distDir, plugins, folderName) => {
+// Build CopyPlugin patterns for a set of plugins.
+//
+// For `public`-section entries (literalDirectory=true) a `directory` is the
+// asset source itself — e.g. `./platform/public` or
+// dicom-microscopy-viewer's prebuilt dist folder — so it is copied directly.
+//
+// For extension/mode entries a `directory` is instead the package ROOT (it
+// doubles as the resolve alias target), so we copy its <folderName> (public/
+// or dist/) subdirectory, exactly as we do for in-tree and node_modules
+// plugins. This keeps an out-of-tree extension's assets landing in the same
+// place as an in-tree one.
+const createCopyPluginToDist = (distDir, plugins, folderName, { literalDirectory = false } = {}) => {
   return plugins
     .map(plugin => {
-      // An explicit `directory` is the asset source itself (third-party public
-      // entries like dicom-microscopy-viewer, or ./platform/public); copy it
-      // directly. Otherwise copy the package's <folderName> (public/ or dist/)
-      // subdirectory.
       let from;
-      if (plugin.directory) {
+      if (literalDirectory && plugin.directory) {
         from = fromDirectory(APP_SRC_DIR, plugin.directory);
       } else {
         const dir = pluginAssetDir(plugin);
@@ -277,23 +284,34 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     }
   });
 
-  // Copy each plugin's static `public/` assets into the app dist. Plugins are
-  // resolved from their workspace source dir (see pluginAssetDir), so this works
-  // whether or not they are dependencies of platform/app.
+  // Copy each extension/mode's static `public/` assets into the app dist.
+  // Plugins are resolved from their source dir (see pluginAssetDir), so this
+  // works whether they are in-tree, out-of-tree (`directory`), or installed as
+  // dependencies of platform/app.
   const copyPluginPublicToDist = createCopyPluginToDist(
     DIST_DIR,
-    [...pluginConfig.modes, ...pluginConfig.extensions, ...(pluginConfig.public || [])],
+    [...pluginConfig.modes, ...pluginConfig.extensions],
     'public'
   );
 
-  // Some plugins ship prebuilt chunks/workers/wasm in dist/; copy them if present.
+  // Some extensions/modes ship prebuilt chunks/workers/wasm in dist/; copy them
+  // if present.
   const copyPluginDistToDist = createCopyPluginToDist(
     DIST_DIR,
     [...pluginConfig.modes, ...pluginConfig.extensions],
     'dist'
   );
 
-  return [...copyPluginPublicToDist, ...copyPluginDistToDist];
+  // `public`-section entries (e.g. ./platform/public, dicom-microscopy-viewer)
+  // point `directory` at the asset folder itself, so copy it verbatim.
+  const copyPublicSectionToDist = createCopyPluginToDist(
+    DIST_DIR,
+    pluginConfig.public || [],
+    'public',
+    { literalDirectory: true }
+  );
+
+  return [...copyPluginPublicToDist, ...copyPluginDistToDist, ...copyPublicSectionToDist];
 }
 
 module.exports = writePluginImportsFile;
