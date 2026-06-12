@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- MIMPS by BlackVoxel wordmark (MIMPS-02). Brand palette:
-     primary #7C3AED, primary dark #5B21B6, accent #10B981, text #FFFFFF / #A0ADB4 -->
+<!-- MIMPS by BlackVoxel wordmark (BRAND-03, 2026-06). Canonical tesseract
+     palette (assets/logo/web/brand.css): black #0a0a0f, surface #131318,
+     edge #b9b9c4, accent #8585ff (bright #9b9bff, dim #5d5da0),
+     text #9a9aa8, text-dim #6a6a78.
+     Spec: agents/02_brains/04_ideas/brand-application-spec-2026-06.md -->
 <svg width="232" height="32" viewBox="0 0 232 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <title>MIMPS by BlackVoxel</title>
   <g aria-label="MIMPS by BlackVoxel">
-    <rect x="1" y="1" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#7C3AED" stroke-width="2"/>
-    <rect x="18" y="1" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#10B981" stroke-width="2"/>
-    <rect x="1" y="18" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#5B21B6" stroke-width="2"/>
-    <rect x="18" y="18" width="13" height="13" rx="3" fill="#0F0F0F" stroke="#7C3AED" stroke-width="2"/>
-    <text x="42" y="22" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="0.4">MIMPS</text>
-    <text x="108" y="22" fill="#A0ADB4" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="500">by</text>
-    <text x="124" y="22" fill="#A78BFA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="600">BlackVoxel</text>
+    <!-- tesseract simple mark (cube-in-cube), scaled from the 64-box master -->
+    <g transform="scale(0.5)">
+      <polygon points="32,9 51.9,20.5 51.9,43.5 32,55 12.1,43.5 12.1,20.5" fill="#131318" stroke="#b9b9c4" stroke-width="3" stroke-linejoin="round"/>
+      <g stroke="#5d5da0" stroke-width="2" stroke-linecap="round">
+        <line x1="32" y1="9" x2="32" y2="21.5"/>
+        <line x1="51.9" y1="20.5" x2="41.1" y2="26.75"/>
+        <line x1="51.9" y1="43.5" x2="41.1" y2="37.25"/>
+        <line x1="32" y1="55" x2="32" y2="42.5"/>
+        <line x1="12.1" y1="43.5" x2="22.9" y2="37.25"/>
+        <line x1="12.1" y1="20.5" x2="22.9" y2="26.75"/>
+      </g>
+      <polygon points="32,21.5 41.1,26.75 41.1,37.25 32,42.5 22.9,37.25 22.9,26.75" fill="#1c1c3a" stroke="#8d8dff" stroke-width="3" stroke-linejoin="round"/>
+    </g>
+    <!-- textLength pins the layout across font fallbacks (img tags block webfonts) -->
+    <text x="40" y="21.5" fill="#FFFFFF" font-family="'Space Grotesk', Inter, Arial, sans-serif" font-size="16" font-weight="700" textLength="62" lengthAdjust="spacingAndGlyphs">MIMPS</text>
+    <text x="109" y="21.5" fill="#6a6a78" font-family="'Space Grotesk', Inter, Arial, sans-serif" font-size="11" font-weight="500" textLength="12" lengthAdjust="spacingAndGlyphs">by</text>
+    <text x="128" y="21.5" fill="#9a9aa8" font-family="'Space Grotesk', Inter, Arial, sans-serif" font-size="12" font-weight="700" textLength="49" lengthAdjust="spacingAndGlyphs">BLACK</text>
+    <text x="177" y="21.5" fill="#8585ff" font-family="'Space Grotesk', Inter, Arial, sans-serif" font-size="12" font-weight="700" textLength="50" lengthAdjust="spacingAndGlyphs">VOXEL</text>
   </g>
 </svg>

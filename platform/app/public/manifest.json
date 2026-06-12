@@ -53,7 +53,7 @@
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#0F0F0F",
+  "background_color": "#0a0a0f",
   "display": "standalone",
-  "theme_color": "#7C3AED"
+  "theme_color": "#8585ff"
 }
