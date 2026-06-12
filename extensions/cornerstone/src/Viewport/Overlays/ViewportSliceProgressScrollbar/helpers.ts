@@ -1,5 +1,6 @@
-import { Enums, VolumeViewport3D } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/core';
 import { ViewportData } from './types';
+import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 
 export function getImageIndexFromEvent(event): number | undefined {
   const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;
@@ -19,7 +20,7 @@ export function getViewportImageIds(viewportData: ViewportData): string[] {
 }
 
 export function isProgressFullMode(viewportData: ViewportData, viewport): boolean {
-  if (!viewportData || !viewport || viewport instanceof VolumeViewport3D) {
+  if (!viewportData || !viewport || isVolume3DViewportType(viewport)) {
     return false;
   }
 
