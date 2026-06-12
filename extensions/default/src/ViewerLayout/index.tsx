@@ -1,15 +1,27 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
+import {
+  Icons,
+  Onboarding,
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
 
 const resizableHandleClassName = 'mt-[1px] bg-background';
+
+// MOB-02: evaluated once at module load — orientation flips mid-session are
+// intentionally ignored for v1 (no resize listener).
+const isMobile = () =>
+  typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 
 function ViewerLayout({
   // From Extension Module Params
@@ -41,8 +53,15 @@ function ViewerLayout({
 
   const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
   const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
-  const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
-  const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
+  // MOB-02 (V5): side panels default-closed on phones — a 280px expanded panel
+  // leaves ~110px of image at 390px. The collapsed ~28px tab rail remains.
+  const [mobileLayout] = useState(isMobile);
+  const initialLeftPanelClosed = leftPanelClosed || mobileLayout;
+  const initialRightPanelClosed = rightPanelClosed || mobileLayout;
+  const [leftPanelClosedState, setLeftPanelClosed] = useState(initialLeftPanelClosed);
+  const [rightPanelClosedState, setRightPanelClosed] = useState(initialRightPanelClosed);
+  // MOB-02 (V6): AI/right-panel bottom sheet state (mobile only).
+  const [mobileSheet, setMobileSheet] = useState<'closed' | 'peek' | 'full'>('closed');
 
   const [
     leftPanelProps,
@@ -53,9 +72,11 @@ function ViewerLayout({
     resizableRightPanelProps,
     onHandleDragging,
   ] = useResizablePanels(
-    leftPanelClosed,
+    // MOB-02 (V5): the hook expands initially-open panels on first render, so
+    // it must see the mobile-adjusted initial values, not the raw mode props.
+    initialLeftPanelClosed,
     setLeftPanelClosed,
-    rightPanelClosed,
+    initialRightPanelClosed,
     setRightPanelClosed,
     hasLeftPanels,
     hasRightPanels,
@@ -149,18 +170,24 @@ function ViewerLayout({
 
   const viewportComponents = viewports.map(getViewportComponentData);
 
+  // MOB-02 (V6): on phones the 280px right side panel would bury the image, so
+  // the first right panel (the AI findings panel in this fork) renders inside a
+  // bottom sheet instead. Other right panels on mobile are deferred.
+  const mobileRightPanel = mobileLayout && hasRightPanels ? panelService.getPanels('right')[0] : null;
+  const MobileRightPanelContent = mobileRightPanel?.content as React.ComponentType | undefined;
+
   return (
-    <div>
+    // MOB-02 (V4): flex column with dvh replaces the former fixed-height
+    // `calc(100vh - 52px` scheme (missing paren, and 100vh breaks under the
+    // iOS Safari URL bar). Flex absorbs the variable header height with no math.
+    <div className="flex h-[100dvh] flex-col">
       <ViewerHeader
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
         appConfig={appConfig}
       />
-      <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-background"
-        style={{ height: 'calc(100vh - 52px' }}
-      >
+      <div className="relative flex min-h-0 w-full flex-1 flex-row flex-nowrap items-stretch overflow-hidden bg-background">
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-background" />}
           <ResizablePanelGroup {...resizablePanelGroupProps}>
@@ -197,7 +224,9 @@ function ViewerLayout({
                 </div>
               </div>
             </ResizablePanel>
-            {hasRightPanels ? (
+            {/* MOB-02 (V6): right panels never join the flex row on phones —
+                the first one renders in the bottom sheet below instead. */}
+            {hasRightPanels && !mobileLayout ? (
               <>
                 <ResizableHandle
                   onDragging={onHandleDragging}
@@ -217,6 +246,67 @@ function ViewerLayout({
           </ResizablePanelGroup>
         </React.Fragment>
       </div>
+      {/* MOB-02 (V6): mobile bottom sheet for the AI findings panel — FAB
+          trigger, 60dvh peek / 92dvh expanded, tap-to-dismiss scrim. The sheet
+          stays mounted once the layout exists so panel state (inference
+          results) survives open/close. */}
+      {mobileRightPanel && MobileRightPanelContent ? (
+        <>
+          <button
+            type="button"
+            className="bg-highlight text-background fixed bottom-4 right-4 z-30 flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold shadow-lg"
+            onClick={() => setMobileSheet('peek')}
+            aria-label={mobileRightPanel.label}
+          >
+            IA
+          </button>
+          {mobileSheet !== 'closed' && (
+            <div
+              className="fixed inset-0 z-30 bg-black/40"
+              onClick={() => setMobileSheet('closed')}
+              aria-hidden="true"
+            />
+          )}
+          <div
+            role="dialog"
+            aria-label={mobileRightPanel.label}
+            className={classNames(
+              'border-input bg-popover fixed inset-x-0 bottom-0 z-40 flex flex-col rounded-t-2xl border-t transition-[height] duration-200',
+              mobileSheet === 'closed' && 'hidden',
+              mobileSheet === 'full' ? 'h-[92dvh]' : 'h-[60dvh]'
+            )}
+          >
+            <div
+              className="mx-auto mt-2 h-1 w-9 rounded-full bg-white/20"
+              aria-hidden="true"
+            />
+            <div className="flex items-center pl-4 pr-2">
+              <span className="text-foreground flex-1 text-sm font-semibold">
+                {mobileRightPanel.label}
+              </span>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground p-2.5"
+                onClick={() => setMobileSheet(s => (s === 'full' ? 'peek' : 'full'))}
+                aria-label={mobileSheet === 'full' ? 'Recolher painel' : 'Expandir painel'}
+              >
+                <Icons.ChevronOpen className={mobileSheet === 'full' ? '' : 'rotate-180'} />
+              </button>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground p-2.5"
+                onClick={() => setMobileSheet('closed')}
+                aria-label="Fechar painel"
+              >
+                <Icons.Close />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <MobileRightPanelContent />
+            </div>
+          </div>
+        </>
+      ) : null}
       <Onboarding tours={customizationService.getCustomization('ohif.tours')} />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>

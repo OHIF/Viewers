@@ -102,20 +102,29 @@ function TableContent({
     return Array.from(new Set(tokens)).sort();
   }, [table.options?.data]);
   // Access workflow provider for default workflow + launch
-  const { getDefaultWorkflowForStudy } = useWorkflows();
+  const { getDefaultWorkflowForStudy, getWorkflowsForStudy } = useWorkflows();
 
   return (
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
         <DataTable.Toolbar>
-          <div className="absolute left-0">{toolbarLeftComponent}</div>
-          {title ? <DataTable.Title>{title}</DataTable.Title> : null}
-          <div className="absolute right-0 flex items-center">
+          {/* MOB-02 (V2): below md the absolutely-positioned clusters overlap on
+              narrow screens, so they fall back to a static flex row:
+              [logo] …spacer… [actions | pagination | settings]. */}
+          <div className="absolute left-0 max-md:static max-md:pl-2">{toolbarLeftComponent}</div>
+          {title ? <div className="hidden md:block"><DataTable.Title>{title}</DataTable.Title></div> : null}
+          <div className="absolute right-0 flex items-center max-md:static max-md:ml-auto">
             {toolbarRightActionsComponent}
-            {toolbarRightActionsComponent && <div className="bg-input mx-2 h-4 w-px" />}
+            {toolbarRightActionsComponent && <div className="bg-input mx-2 hidden h-4 w-px md:block" />}
             {/* Pagination appears to the left of the "View" button */}
             <DataTable.Pagination<StudyRow> />
-            {showColumnVisibility && <DataTable.ViewOptions<StudyRow> />}
+            {/* Column visibility toggles are pointless on mobile — responsive
+                columns override them anyway. */}
+            {showColumnVisibility && (
+              <div className="hidden md:block">
+                <DataTable.ViewOptions<StudyRow> />
+              </div>
+            )}
             {toolbarRightComponent}
           </div>
         </DataTable.Toolbar>
@@ -199,6 +208,22 @@ function TableContent({
             onClick: row => {
               const original = row.original as StudyRow;
               const defaultWorkflow = getDefaultWorkflowForStudy(original);
+              // MOB-02 (V3): on small touch screens a single tap launches the
+              // study — double-click is undiscoverable on touch. Fresh devices
+              // have no stored default workflow (localStorage is empty on the
+              // email-link demo path), so fall back to the first applicable
+              // workflow — the same entry the Actions menu lists first.
+              if (
+                typeof window !== 'undefined' &&
+                window.matchMedia('(pointer: coarse) and (max-width: 767px)').matches
+              ) {
+                const launchWorkflow = defaultWorkflow ?? getWorkflowsForStudy(original)[0];
+                if (launchWorkflow) {
+                  row.toggleSelected(true);
+                  launchWorkflow.launchWithStudy(original);
+                  return;
+                }
+              }
               // When a default workflow is set, do not allow a second click to unselect.
               // Always select on click; otherwise toggle selection.
               if (defaultWorkflow) {

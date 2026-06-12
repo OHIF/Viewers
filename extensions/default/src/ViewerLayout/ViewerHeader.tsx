@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Header, Icons, useModal } from '@ohif/ui-next';
+import { Button, Header, Icons, IconPresentationProvider, ToolButton, useModal } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
 import HeaderPatientInfo from './HeaderPatientInfo';
@@ -82,49 +82,64 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   }
 
   return (
-    <Header
-      menuOptions={menuOptions}
-      isReturnEnabled={!!appConfig.showStudyList}
-      onClickReturnButton={onClickReturnButton}
-      WhiteLabeling={appConfig.whiteLabeling}
-      Secondary={<Toolbar buttonSection="secondary" />}
-      PatientInfo={
-        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
-          <HeaderPatientInfo
-            servicesManager={servicesManager}
-            appConfig={appConfig}
-          />
-        )
-      }
-      UndoRedo={
-        <div className="text-primary flex cursor-pointer items-center">
-          <Button
-            variant="ghost"
-            className="hover:bg-muted"
-            data-cy="undo-btn"
-            onClick={() => {
-              commandsManager.run('undo');
-            }}
-          >
-            <Icons.Undo className="" />
-          </Button>
-          <Button
-            variant="ghost"
-            className="hover:bg-muted"
-            data-cy="redo-btn"
-            onClick={() => {
-              commandsManager.run('redo');
-            }}
-          >
-            <Icons.Redo className="" />
-          </Button>
+    <>
+      <Header
+        menuOptions={menuOptions}
+        isReturnEnabled={!!appConfig.showStudyList}
+        onClickReturnButton={onClickReturnButton}
+        WhiteLabeling={appConfig.whiteLabeling}
+        Secondary={<Toolbar buttonSection="secondary" />}
+        PatientInfo={
+          appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
+            <HeaderPatientInfo
+              servicesManager={servicesManager}
+              appConfig={appConfig}
+            />
+          )
+        }
+        UndoRedo={
+          <div className="text-primary flex cursor-pointer items-center">
+            <Button
+              variant="ghost"
+              className="hover:bg-muted"
+              data-cy="undo-btn"
+              onClick={() => {
+                commandsManager.run('undo');
+              }}
+            >
+              <Icons.Undo className="" />
+            </Button>
+            <Button
+              variant="ghost"
+              className="hover:bg-muted"
+              data-cy="redo-btn"
+              onClick={() => {
+                commandsManager.run('redo');
+              }}
+            >
+              <Icons.Redo className="" />
+            </Button>
+          </div>
+        }
+      >
+        {/* MOB-02 (V4): the 9-button primary toolbar (~430px) cannot fit a
+            phone-width header row; below md it moves to the scrollable strip. */}
+        <div className="relative hidden justify-center gap-[4px] md:flex">
+          <Toolbar buttonSection="primary" />
         </div>
-      }
-    >
-      <div className="relative flex justify-center gap-[4px]">
-        <Toolbar buttonSection="primary" />
+      </Header>
+      {/* MOB-02 (V4): horizontally scrollable primary tool strip below the
+          header on phones. Same IconPresentationProvider setup as Header so
+          ToolButtons render identically. */}
+      <div className="bg-popover border-background flex items-center gap-1 overflow-x-auto border-b px-2 py-1 [-webkit-overflow-scrolling:touch] md:hidden">
+        <IconPresentationProvider
+          size="large"
+          IconContainer={ToolButton}
+        >
+          <Toolbar buttonSection="primary" />
+        </IconPresentationProvider>
       </div>
-    </Header>
+    </>
   );
 }
 

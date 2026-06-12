@@ -143,8 +143,13 @@ export function onModeEnter({
   panelService,
   segmentationService,
 }: withAppTypes) {
-  const { measurementService, toolbarService, toolGroupService, customizationService } =
-    servicesManager.services;
+  const {
+    measurementService,
+    toolbarService,
+    toolGroupService,
+    customizationService,
+    hangingProtocolService,
+  } = servicesManager.services;
 
   measurementService.clearMeasurements();
 
@@ -155,6 +160,25 @@ export function onModeEnter({
 
   for (const [key, section] of Object.entries(this.toolbarSections)) {
     toolbarService.updateSection(key, section);
+  }
+
+  // MOB-02 (V7): on coarse-pointer devices (phones/tablets) default the active
+  // primary tool to StackScroll so a one-finger swipe scrolls slices — the
+  // natural touch gesture — instead of WindowLevel, which reads as a broken
+  // image. W/L stays reachable from the mobile tool strip; desktop untouched.
+  // Runs once after the hanging protocol populates the viewports (the command
+  // no-ops while the viewport grid is still empty at mode enter).
+  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+    const { unsubscribe } = hangingProtocolService.subscribe(
+      hangingProtocolService.EVENTS.PROTOCOL_CHANGED,
+      () => {
+        unsubscribe();
+        commandsManager.runCommand('setToolActiveToolbar', {
+          toolName: 'StackScroll',
+          toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+        });
+      }
+    );
   }
 
   if (!this.enableSegmentationEdit) {

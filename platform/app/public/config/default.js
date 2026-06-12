@@ -299,11 +299,21 @@ window.config = {
   // },
   whiteLabeling: {
     createLogoComponentFn: function (React) {
-      return React.createElement('img', {
-        src: './blackvoxel-logo.svg',
-        alt: 'BlackVoxel Viewer',
-        className: 'h-[32px] w-[232px]',
-      });
+      // MOB-02 (V4): mark-only logo below md, wordmark from md up.
+      return React.createElement(
+        'span',
+        { className: 'flex items-center' },
+        React.createElement('img', {
+          src: './blackvoxel-mark.svg',
+          alt: 'BlackVoxel Viewer',
+          className: 'h-6 w-6 md:hidden',
+        }),
+        React.createElement('img', {
+          src: './blackvoxel-logo.svg',
+          alt: 'BlackVoxel Viewer',
+          className: 'hidden h-[32px] w-[232px] md:block',
+        })
+      );
     },
   },
 };

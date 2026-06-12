@@ -65,7 +65,7 @@ function Header({
             {(process.env.BLACKVOXEL_PLATFORM_URL as string | undefined) && (
               <a
                 href={process.env.BLACKVOXEL_PLATFORM_URL as string}
-                className="text-muted-foreground hover:text-primary mr-3 flex items-center gap-1 text-xs hover:underline"
+                className="text-muted-foreground hover:text-primary mr-3 hidden items-center gap-1 text-xs hover:underline md:flex"
                 style={{ whiteSpace: 'nowrap' }}
               >
                 ← BlackVoxel Platform
@@ -81,26 +81,41 @@ function Header({
             >
               {isReturnEnabled && <Icons.ArrowLeft className="text-primary ml-1 h-7 w-7" />}
               <div className="ml-1">
-                {/* MIMPS-01: BlackVoxel wordmark fallback instead of the upstream OHIF logo */}
+                {/* MIMPS-01: BlackVoxel wordmark fallback instead of the upstream OHIF logo.
+                    MOB-02 (V4): mark-only logo below md — the 232px wordmark ate
+                    most of a phone-width header. */}
                 {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
-                  <img
-                    src="/blackvoxel-logo.svg"
-                    alt="BlackVoxel Viewer"
-                    className="h-[22px] w-[232px]"
-                  />
+                  <>
+                    <img
+                      src="/blackvoxel-mark.svg"
+                      alt="BlackVoxel Viewer"
+                      className="h-6 w-6 md:hidden"
+                    />
+                    <img
+                      src="/blackvoxel-logo.svg"
+                      alt="BlackVoxel Viewer"
+                      className="hidden h-[22px] w-[232px] md:block"
+                    />
+                  </>
                 )}
               </div>
             </div>
           </div>
-          <div className="absolute top-1/2 left-[250px] h-8 -translate-y-1/2">{Secondary}</div>
+          {/* MOB-02 (V4): the secondary toolbar is pinned at left-[250px] and
+              collides with everything below lg. */}
+          <div className="absolute top-1/2 left-[250px] hidden h-8 -translate-y-1/2 lg:block">
+            {Secondary}
+          </div>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
             <div className="flex items-center justify-center space-x-2">{children}</div>
           </div>
           <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
-            {UndoRedo}
-            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
-            {PatientInfo}
-            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
+            {/* MOB-02 (V4): undo/redo and patient info are desktop-only; the
+                gear menu stays at all widths (About/Preferences/Logout). */}
+            <div className="hidden md:flex">{UndoRedo}</div>
+            <div className="border-muted mx-1.5 hidden h-[25px] border-r md:block"></div>
+            <div className="hidden md:block">{PatientInfo}</div>
+            <div className="border-muted mx-1.5 hidden h-[25px] border-r md:block"></div>
             <div className="flex-shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

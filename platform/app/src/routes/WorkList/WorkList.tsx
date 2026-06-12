@@ -47,7 +47,14 @@ export default function WorkList({
   const defaultSorting = useMemo(() => [{ id: 'studyDateTime', desc: true }], []);
 
   const [selected, setSelected] = useState<StudyRow | null>(null);
-  const [isPreviewOpen, setPreviewOpen] = useState(true);
+  // MOB-02 (V3): evaluated once at mount — orientation flips mid-session are
+  // intentionally ignored for v1 (no resize listener).
+  const [isDesktop] = useState(
+    () => typeof window === 'undefined' || window.matchMedia('(min-width: 768px)').matches
+  );
+  // Preview panel closed by default on mobile: open it would cover ~50% of a
+  // phone screen with an empty "no study selected" pane.
+  const [isPreviewOpen, setPreviewOpen] = useState(isDesktop);
 
   const columns = useMemo(() => {
     // `workList.columns` is registered as a value (StudyList.defaultColumns) and
@@ -71,7 +78,7 @@ export default function WorkList({
     <img
       src="/blackvoxel-logo.svg"
       alt="BlackVoxel Viewer"
-      className="h-[22px] w-[232px]"
+      className="h-[18px] w-auto md:h-[22px] md:w-[232px]"
     />
   );
 
@@ -93,7 +100,7 @@ export default function WorkList({
   }, [isLoadingData, data]);
 
   return (
-    <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-black">
+    <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-black">
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full min-h-0 flex-col">
         <div className="flex min-h-0 flex-1 flex-col">
@@ -134,18 +141,23 @@ export default function WorkList({
                 !isPreviewOpen ? (
                   <div className="relative -top-px mt-1 ml-2 flex items-center gap-1">
                     <StudyListSettingsPopover />
-                    <StudyList.OpenPreviewButton />
+                    {/* MOB-02 (V3): no preview panel on mobile, so no open button */}
+                    {isDesktop && <StudyList.OpenPreviewButton />}
                   </div>
                 ) : undefined
               }
             />
-            <StudyList.Preview>
-              <SidePanelPreview
-                dataSource={dataSource}
-                selected={selected}
-                servicesManager={servicesManager}
-              />
-            </StudyList.Preview>
+            {/* MOB-02 (V3): the preview side panel (and its resize handle) is
+                desktop-only — at 390px it would consume half the screen. */}
+            {isDesktop && (
+              <StudyList.Preview>
+                <SidePanelPreview
+                  dataSource={dataSource}
+                  selected={selected}
+                  servicesManager={servicesManager}
+                />
+              </StudyList.Preview>
+            )}
           </StudyList>
         </div>
       </div>

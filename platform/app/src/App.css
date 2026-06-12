@@ -1,6 +1,10 @@
 body {
   overscroll-behavior: none;
-  touch-action: none;
+  /* MOB-02 (V1): `touch-action: none` here killed touch scrolling app-wide
+   * (worklist, panels — touch-action composes by intersection, children can't
+   * re-enable it). Cornerstone3D sets touch-action: none on its own viewport
+   * elements, so image gestures stay protected. If Android pull-to-refresh
+   * resurfaces, use `touch-action: pan-x pan-y` — never `none`. */
 }
 
 /*

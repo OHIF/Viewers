@@ -1,0 +1,13 @@
+<svg width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="BlackVoxel mark" xmlns="http://www.w3.org/2000/svg">
+<title>BlackVoxel simple mark</title>
+<polygon points="32,9 51.9,20.5 51.9,43.5 32,55 12.1,43.5 12.1,20.5" fill="#131318" stroke="#b9b9c4" stroke-width="2.5" stroke-linejoin="round"/>
+<g stroke="#5d5da0" stroke-width="1.5" stroke-linecap="round">
+<line x1="32" y1="9" x2="32" y2="21.5"/>
+<line x1="51.9" y1="20.5" x2="41.1" y2="26.75"/>
+<line x1="51.9" y1="43.5" x2="41.1" y2="37.25"/>
+<line x1="32" y1="55" x2="32" y2="42.5"/>
+<line x1="12.1" y1="43.5" x2="22.9" y2="37.25"/>
+<line x1="12.1" y1="20.5" x2="22.9" y2="26.75"/>
+</g>
+<polygon points="32,21.5 41.1,26.75 41.1,37.25 32,42.5 22.9,37.25 22.9,26.75" fill="#1c1c3a" stroke="#8d8dff" stroke-width="2.5" stroke-linejoin="round"/>
+</svg>

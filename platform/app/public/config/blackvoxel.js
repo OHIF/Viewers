@@ -97,13 +97,24 @@ window.config = {
   },
   whiteLabeling: {
     createLogoComponentFn: function (React) {
-      return React.createElement('img', {
-        // MIMPS-02: absolute path — a relative './' src breaks on nested
-        // routes like /viewer?... where the URL directory is not the root.
-        src: '/blackvoxel-logo.svg',
-        alt: 'MIMPS by BlackVoxel',
-        className: 'h-[32px] w-[232px]',
-      });
+      // MIMPS-02: absolute paths — a relative './' src breaks on nested
+      // routes like /viewer?... where the URL directory is not the root.
+      // MOB-02 (V4): mark-only logo below md — the 232px wordmark ate most of
+      // a phone-width header/worklist toolbar.
+      return React.createElement(
+        'span',
+        { className: 'flex items-center' },
+        React.createElement('img', {
+          src: '/blackvoxel-mark.svg',
+          alt: 'MIMPS by BlackVoxel',
+          className: 'h-6 w-6 md:hidden',
+        }),
+        React.createElement('img', {
+          src: '/blackvoxel-logo.svg',
+          alt: 'MIMPS by BlackVoxel',
+          className: 'hidden h-[32px] w-[232px] md:block',
+        })
+      );
     },
   },
 };
