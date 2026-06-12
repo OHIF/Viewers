@@ -302,7 +302,15 @@ class SegmentationService extends PubSubService {
     }
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
-    if (segmentation && !segmentation.predecessorImageId && predecessorImageId) {
+
+    if (!segmentation) {
+      console.warn(
+        `addSegmentationRepresentation: segmentation "${segmentationId}" is not in state yet`
+      );
+      return;
+    }
+
+    if (!segmentation.predecessorImageId && predecessorImageId) {
       segmentation.predecessorImageId = predecessorImageId;
     }
     const csViewport = this.getAndValidateViewport(viewportId);
@@ -488,7 +496,15 @@ class SegmentationService extends PubSubService {
       throw new Error('No instances were provided for the referenced display set of the SEG');
     }
 
-    const imageIds = images.map(image => image.imageId);
+    // Use the same imageIds as SEG parse (_loadSegments stores these on segDisplaySet).
+    const imageIds =
+      segDisplaySet.referencedImageIds ||
+      (referencedDisplaySet.imageIds as string[] | undefined) ||
+      images.map(image => image.imageId);
+
+    if (!imageIds?.length) {
+      throw new Error('referencedDisplaySet has no imageIds for SEG');
+    }
     const derivedImages = labelMapImages?.flat();
     const derivedImageIds = derivedImages.map(image => image.imageId);
 
@@ -772,9 +788,16 @@ class SegmentationService extends PubSubService {
     if (existingSegmentation) {
       // Update the existing segmentation
       this.updateSegmentationInSource(segmentationId, data as Partial<cstTypes.Segmentation>);
-    } else {
+    } else if (
+      'representation' in data &&
+      (data as cstTypes.SegmentationPublicInput).representation
+    ) {
       // Add a new segmentation
       this.addSegmentationToSource(data as cstTypes.SegmentationPublicInput);
+    } else {
+      console.warn(
+        `addOrUpdateSegmentation: skipping add for ${segmentationId} — missing representation`
+      );
     }
   }
 
@@ -1596,7 +1619,13 @@ class SegmentationService extends PubSubService {
 
   private determineViewportAndSegmentationType(csViewport, segmentation) {
     const isVolumeViewport = isVolumeViewportType(csViewport);
-    const isVolumeSegmentation = 'volumeId' in segmentation.representationData[LABELMAP];
+    const labelmapData = segmentation?.representationData?.[LABELMAP];
+
+    if (!labelmapData) {
+      return { isVolumeViewport, isVolumeSegmentation: false };
+    }
+
+    const isVolumeSegmentation = 'volumeId' in labelmapData;
     return { isVolumeViewport, isVolumeSegmentation };
   }
 

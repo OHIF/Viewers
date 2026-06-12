@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import { utilities } from '@cornerstonejs/core';
-import { imageIdToURI } from '../utils';
+import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
@@ -24,12 +24,12 @@ class MetadataProvider {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
-    const imageURI = imageIdToURI(imageId);
+    const imageURI = baseImageURIForMetadata(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
-    const imageURI = imageIdToURI(imageId);
+    const imageURI = baseImageURIForMetadata(imageId);
     if (!this.customMetadata.has(type)) {
       this.customMetadata.set(type, {});
     }
@@ -76,7 +76,7 @@ class MetadataProvider {
     // check inside custom metadata
     if (this.customMetadata.has(query)) {
       const customMetadata = this.customMetadata.get(query);
-      const imageURI = imageIdToURI(imageId);
+      const imageURI = baseImageURIForMetadata(imageId);
       if (customMetadata[imageURI]) {
         return customMetadata[imageURI];
       }
@@ -445,6 +445,9 @@ class MetadataProvider {
     if (imageId.includes('/frames')) {
       return getInformationFromURL('/frames', '/');
     }
+    if (imageId.includes('?frame=')) {
+      return getInformationFromURL('?frame=', '&');
+    }
     if (imageId.includes('&frame=')) {
       return getInformationFromURL('&frame=', '&');
     }
@@ -473,20 +476,7 @@ class MetadataProvider {
       };
     }
 
-    // Maybe its a non-standard imageId
-    // check if the imageId starts with http:// or https:// using regex
-    // Todo: handle non http imageIds
-    let imageURI;
-    const urlRegex = /^(http|https|dicomfile):\/\//;
-    if (urlRegex.test(imageId)) {
-      imageURI = imageId;
-    } else {
-      imageURI = imageIdToURI(imageId);
-    }
-
-    // remove &frame=number from imageId
-    imageURI = imageURI.split('&frame=')[0];
-
+    const imageURI = baseImageURIForMetadata(imageId);
     const uids = this.imageURIToUIDs.get(imageURI);
     const frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 

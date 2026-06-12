@@ -17,6 +17,10 @@ import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
 import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
+import {
+  setNonEnumerableInstanceProperty,
+  writeDicomDictToPart10Buffer,
+} from '../utils/dicomWriter';
 import { getGetThumbnailSrc, ThumbnailContext } from './retrieveThumbnail';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
@@ -26,6 +30,24 @@ const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-3.11.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
+function getDatasetTransferSyntaxUID(dataset) {
+  const transferSyntaxFromMeta = dataset?._meta?.TransferSyntaxUID;
+
+  if (typeof transferSyntaxFromMeta === 'string') {
+    return transferSyntaxFromMeta;
+  }
+
+  if (Array.isArray(transferSyntaxFromMeta?.Value)) {
+    return transferSyntaxFromMeta.Value[0];
+  }
+
+  if (typeof dataset?.TransferSyntaxUID === 'string') {
+    return dataset.TransferSyntaxUID;
+  }
+
+  return EXPLICIT_VR_LITTLE_ENDIAN;
+}
+
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -364,7 +386,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
               FileMetaInformationVersion: dataset._meta?.FileMetaInformationVersion?.Value,
               MediaStorageSOPClassUID: dataset.SOPClassUID,
               MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-              TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+              TransferSyntaxUID: getDatasetTransferSyntaxUID(dataset),
               ImplementationClassUID,
               ImplementationVersionName,
             };
@@ -376,7 +398,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             effectiveDicomDict = defaultDicomDict;
           }
 
-          const part10Buffer = effectiveDicomDict.write();
+          const part10Buffer = writeDicomDictToPart10Buffer(effectiveDicomDict);
 
           const options = {
             datasets: [part10Buffer],
@@ -437,9 +459,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           instance,
         });
 
-        instance.imageId = imageId;
-        instance.wadoRoot = dicomWebConfig.wadoRoot;
-        instance.wadoUri = dicomWebConfig.wadoUri;
+        setNonEnumerableInstanceProperty(instance, 'imageId', imageId);
+        setNonEnumerableInstanceProperty(instance, 'wadoRoot', dicomWebConfig.wadoRoot);
+        setNonEnumerableInstanceProperty(instance, 'wadoUri', dicomWebConfig.wadoUri);
 
         metadataProvider.addImageIdToUIDs(imageId, {
           StudyInstanceUID,
@@ -536,8 +558,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach(instance => {
-          instance.wadoRoot = dicomWebConfig.wadoRoot;
-          instance.wadoUri = dicomWebConfig.wadoUri;
+          setNonEnumerableInstanceProperty(instance, 'wadoRoot', dicomWebConfig.wadoRoot);
+          setNonEnumerableInstanceProperty(instance, 'wadoUri', dicomWebConfig.wadoUri);
 
           const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
           const numberOfFrames = instance.NumberOfFrames || 1;
@@ -563,7 +585,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           const imageId = implementation.getImageIdsForInstance({
             instance,
           });
-          instance.imageId = imageId;
+          setNonEnumerableInstanceProperty(instance, 'imageId', imageId);
         });
 
         DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);

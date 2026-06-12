@@ -6,6 +6,7 @@ import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
+import { getSegmentationSaveOptions } from './utils/segmentationConfig';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -34,7 +35,7 @@ const commandsModule = ({
   extensionManager,
   commandsManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const { segmentationService, displaySetService, viewportGridService } =
+  const { segmentationService, displaySetService, viewportGridService, customizationService } =
     servicesManager.services as AppTypes.Services;
 
   const actions = {
@@ -173,6 +174,7 @@ const commandsModule = ({
 
       const generatedSegmentation = generateSegmentation(referencedImages, labelmap3D, metaData, {
         predecessorImageId,
+        ...getSegmentationSaveOptions(customizationService),
         ...options,
       });
 

@@ -6,7 +6,25 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: {
+    // SEG store encoding — enable one variant; comment out the active block when switching.
+    //
+    // 1) Bitmap + RLE Lossless (1.2.840.10008.1.2.5)
+    // 'segmentation.store.defaultMode': 'bitmap',
+    // 'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.5',
+    //
+    // 2) Bitmap + uncompressed Explicit VR Little Endian (1.2.840.10008.1.2.1)
+    // 'segmentation.store.defaultMode': 'bitmap',
+    // 'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.1',
+    //
+    // 3) Labelmap + RLE Lossless (1.2.840.10008.1.2.5)
+    'segmentation.store.defaultMode': 'labelmap',
+    'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.5',
+    //
+    // 4) Labelmap + uncompressed Explicit VR Little Endian (1.2.840.10008.1.2.1)
+    // 'segmentation.store.defaultMode': 'labelmap',
+    // 'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.1',
+  },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
