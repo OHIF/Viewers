@@ -36,6 +36,10 @@ yarn-error.log
 *.code-workspace
 .directory
 
+# MIMPS Orthanc runtime data + ingest venv (never commit DICOM store / volumes)
+orthanc-storage/
+.venv-ingest/
+
 # Credentials and private keys
 *.pem
 *.key

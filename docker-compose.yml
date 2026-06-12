@@ -34,7 +34,19 @@ services:
       # Disable the image's telemetry/verbose banners for predictable logs.
       VERBOSE_ENABLED: "false"
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS -u \"$${ORTHANC_USERNAME:-mimps}:$${ORTHANC_PASSWORD}\" http://localhost:8042/system > /dev/null || exit 1"]
+      # The orthancteam/orthanc image ships no curl/wget, but bundles python3
+      # (for the Python plugin). Probe /system with Basic auth via urllib.
+      test:
+        - "CMD"
+        - "python3"
+        - "-c"
+        - |
+          import os, base64, urllib.request, sys
+          u = os.environ.get("ORTHANC_USERNAME", "mimps")
+          p = os.environ["ORTHANC_PASSWORD"]
+          req = urllib.request.Request("http://localhost:8042/system")
+          req.add_header("Authorization", "Basic " + base64.b64encode(f"{u}:{p}".encode()).decode())
+          sys.exit(0 if urllib.request.urlopen(req, timeout=5).status == 200 else 1)
       interval: 10s
       timeout: 5s
       retries: 12
