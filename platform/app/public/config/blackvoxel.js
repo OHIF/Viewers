@@ -1,0 +1,90 @@
+/** @type {AppTypes.Config} */
+// MIMPS-07 — production app config for the BlackVoxel viewer.
+//
+// This file is emitted as /app-config.js by the production build
+// (platform/app/package.json -> build:viewer sets APP_CONFIG=config/blackvoxel.js)
+// and is loaded at runtime by the deployed dist. It points the viewer at the
+// on-box Orthanc via the same-origin DICOMweb path /pacs/dicom-web, served by the
+// host nginx -> orthanc-nginx gateway. The gateway injects Orthanc HTTP Basic
+// credentials server-side, so the browser never holds Orthanc credentials and no
+// CORS round-trip is needed (same origin as the app).
+//
+// Do NOT point any data source at an external/public demo server here.
+window.config = {
+  name: 'config/blackvoxel.js',
+  routerBasename: null,
+  extensions: [],
+  modes: [],
+  customizationService: {},
+  showStudyList: true,
+  maxNumberOfWebWorkers: 3,
+  showWarningMessageForCrossOrigin: false, // same-origin: no cross-origin warning needed
+  showCPUFallbackMessage: true,
+  showLoadingIndicator: true,
+  experimentalStudyBrowserSort: false,
+  strictZSpacingForVolumeViewport: true,
+  groupEnabledModesFirst: true,
+  allowMultiSelectExport: false,
+  maxNumRequests: {
+    interaction: 100,
+    thumbnail: 5,
+    prefetch: 25,
+  },
+  showErrorDetails: 'dev',
+  studyPrefetcher: {
+    enabled: true,
+    displaySetsCount: 2,
+    maxNumPrefetchRequests: 10,
+    order: 'closest',
+  },
+  defaultDataSourceName: 'orthancProxy',
+  dataSources: [
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'orthancProxy',
+      configuration: {
+        friendlyName: 'BlackVoxel PACS (Orthanc)',
+        name: 'Orthanc',
+        // Same-origin, served by the host nginx /pacs/ block -> orthanc-nginx
+        // gateway (Basic auth injected server-side). Relative roots so the
+        // viewer works under whatever origin it is served from
+        // (https://viewer.blackvoxel.ai in production).
+        wadoUriRoot: '/pacs/wado',
+        qidoRoot: '/pacs/dicom-web',
+        wadoRoot: '/pacs/dicom-web',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        dicomUploadEnabled: false,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+      },
+    },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
+      sourceName: 'dicomlocal',
+      configuration: {
+        friendlyName: 'Abrir DICOM local',
+      },
+    },
+  ],
+  httpErrorHandler: error => {
+    console.warn(`HTTP Error Handler (status: ${error.status})`, error);
+  },
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement('img', {
+        src: './blackvoxel-logo.svg',
+        alt: 'BlackVoxel Viewer',
+        className: 'h-[32px] w-[232px]',
+      });
+    },
+  },
+};
