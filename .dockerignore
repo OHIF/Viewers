@@ -35,3 +35,11 @@ dockerfile
 coverage/
 platform/docs/
 testdata/
+
+# MIMPS: secrets and runtime data must never enter a build context (MIMPS-13)
+.env
+.env.*
+!.env.example
+orthanc-storage/
+.venv-ingest/
+audit-service/__pycache__/

@@ -1,14 +1,20 @@
-# MIMPS — DICOM backend (MIMPS-05).
+# MIMPS — DICOM backend (MIMPS-05) + full-stack profile (MIMPS-13).
 #
-# Local dev:
-#   cp .env.example .env   # set ORTHANC_PASSWORD
-#   docker compose up -d
+# Default service set (what the VPS runbook runs — DO NOT change its behavior):
+#   docker compose up -d                  # orthanc + orthanc-nginx only
 #   curl -u mimps:$ORTHANC_PASSWORD http://localhost:8042/system
 #   curl http://localhost:8899/pacs/dicom-web/studies   # via gateway (CORS + auth injection)
 #
-# VPS swap (once MIMPS-12 provisions the host): clone repo, copy .env, run the
-# same `docker compose up -d`. Nothing else changes — see docker/README.md.
-# This file will be extended by MIMPS-13 (viewer + edge nginx + audit-service).
+# Full stack (local dev / on-prem pilots): adds the containerized viewer and
+# the JWT audit-service behind compose profile "full":
+#   cp .env.example .env   # set ORTHANC_PASSWORD
+#   docker compose --profile full up -d --build
+#   open http://localhost:${MIMPS_VIEWER_PORT:-8088}
+#
+# The profile gating is deliberate: plain `docker compose up -d` never builds
+# or starts the new services, so scripts/vps-orthanc-runbook.sh keeps working
+# unchanged. On the VPS, viewer (static dist via host nginx) and audit-service
+# (systemd mimps-audit.service) run on the HOST — see docker/README.md.
 
 services:
   orthanc:
@@ -75,3 +81,70 @@ services:
     depends_on:
       orthanc:
         condition: service_healthy
+    healthcheck:
+      # nginx:alpine bundles busybox wget (no curl in the image).
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/pacs/system"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+
+  # ---------------------------------------------------------------------------
+  # Profile "full" (MIMPS-13): complete MIMPS stack for local dev and
+  # on-prem/hospital-pilot deployments. Never part of the default `up`.
+  # ---------------------------------------------------------------------------
+
+  # JWT verification service for nginx auth_request (INT-05). The viewer
+  # container reaches it as http://audit-service:8080; the host bind is
+  # loopback-only for direct curl/debugging.
+  audit-service:
+    profiles: ["full"]
+    build:
+      context: ./audit-service
+    container_name: mimps-audit-service
+    restart: unless-stopped
+    ports:
+      # 8081 on the host (not 8080) so this can never collide with a
+      # host-level audit-service (the VPS runs one under systemd on 8080).
+      - "127.0.0.1:${AUDIT_SERVICE_PORT:-8081}:8080"
+    environment:
+      BLACKVOXEL_JWKS_URL: ${BLACKVOXEL_JWKS_URL:-https://blackvoxel.ai/api/auth/.well-known/jwks.json}
+    healthcheck:
+      # python:slim ships no curl/wget; probe /health with stdlib urllib.
+      test:
+        - "CMD"
+        - "python3"
+        - "-c"
+        - "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=5).status == 200 else 1)"
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+
+  # Containerized viewer: nginx serving the built dist behind the JWT gate
+  # (docker/nginx.container.conf). /pacs/ -> auth_request audit-service,
+  # then proxied to the orthanc-nginx gateway (prefix preserved).
+  viewer:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: Dockerfile.viewer
+      args:
+        BLACKVOXEL_API_URL: ${BLACKVOXEL_API_URL:-https://blackvoxel.ai}
+        BLACKVOXEL_PLATFORM_URL: ${BLACKVOXEL_PLATFORM_URL:-https://blackvoxel.ai}
+    container_name: mimps-viewer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MIMPS_VIEWER_PORT:-8088}:80"
+    depends_on:
+      audit-service:
+        condition: service_healthy
+      orthanc-nginx:
+        condition: service_healthy
+    healthcheck:
+      # nginx:alpine bundles busybox wget (no curl in the image).
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s

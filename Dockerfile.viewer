@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1.7-labs
+# MIMPS-13 — containerized BlackVoxel viewer (compose "full" profile).
+#
+# Two stages:
+#   1. node builder: yarn workspaces install + the production viewer build
+#      (platform/app `build:viewer`, which pins APP_CONFIG=config/blackvoxel.js).
+#   2. nginx:alpine serving the dist with the JWT-gated edge config
+#      (docker/nginx.container.conf — auth_request -> audit-service,
+#      /pacs/ -> orthanc-nginx gateway).
+#
+# Build (heavy: webpack wants several GB of RAM — give the Docker VM >= 8 GB):
+#   docker compose --profile full build viewer
+#
+# Production note: the VPS does NOT use this image. The viewer is built on a
+# workstation and rsynced as a static dist served by the host nginx
+# (projects/1_platform/scripts/deploy-viewer-vps.sh). NEVER build on the VPS.
+
+# ---------------------------------------------------------------------------
+# Stage 1 — build the viewer
+# ---------------------------------------------------------------------------
+# 20.20: matches the workstation build env; lerna@9 needs ^20.19 || ^22.12.
+FROM node:20.20-slim AS builder
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends build-essential python3 ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
+
+# Manifests first so the (slow) install layer caches across source changes.
+# Same copy pattern as the upstream OHIF Dockerfile, but with yarn — this repo
+# uses yarn 1.x workspaces (see "packageManager" in package.json), not bun.
+COPY package.json yarn.lock preinstall.js lerna.json ./
+COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
+RUN yarn install --frozen-lockfile --network-timeout 600000
+
+# Now the rest of the source (node_modules/dist excluded via .dockerignore).
+COPY --link --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile --exclude=Dockerfile.viewer . .
+
+ENV QUICK_BUILD=true
+ENV PUBLIC_URL=/
+
+# Build-time wiring consumed by .webpack/webpack.base.js (DefinePlugin):
+#   BLACKVOXEL_API_URL      — platform inference API base (blackvoxel-ai ext)
+#   BLACKVOXEL_PLATFORM_URL — "<- BlackVoxel Platform" header link
+ARG BLACKVOXEL_API_URL=https://blackvoxel.ai
+ARG BLACKVOXEL_PLATFORM_URL=https://blackvoxel.ai
+ENV BLACKVOXEL_API_URL=${BLACKVOXEL_API_URL}
+ENV BLACKVOXEL_PLATFORM_URL=${BLACKVOXEL_PLATFORM_URL}
+
+# build:viewer pins NODE_ENV=production APP_CONFIG=config/blackvoxel.js.
+# Invoked via the workspace (not `lerna run`): lerna is only a transitive
+# dependency here and only platform/app defines build:viewer anyway.
+RUN yarn workspace @ohif/app run build:viewer \
+  && test -f platform/app/dist/index.html
+
+# ---------------------------------------------------------------------------
+# Stage 2 — serve the dist behind the JWT gate
+# ---------------------------------------------------------------------------
+FROM nginx:1.27-alpine
+
+COPY docker/nginx.container.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
+
+EXPOSE 80

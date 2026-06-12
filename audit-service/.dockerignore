@@ -1,0 +1,7 @@
+# Keep secrets and local artifacts out of the image build context.
+.env
+.env.*
+__pycache__/
+*.pyc
+Dockerfile
+.dockerignore
