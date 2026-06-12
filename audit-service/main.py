@@ -145,14 +145,23 @@ async def auth_verify(request: Request) -> JSONResponse:
     Returns 401 {"detail": "..."} on any auth failure.
 
     Nginx auth_request treats any 2xx as pass and any non-2xx as deny.
+
+    Token sources, in order:
+      1. `Authorization: Bearer <jwt>` header (API-style callers)
+      2. `blackvoxel_jwt` cookie — set by the viewer's jwtBridge so that
+         browser XHR image loads to /pacs/ carry a credential nginx can
+         forward here (cornerstone requests can't set Authorization headers)
     """
     authorization: str = request.headers.get("Authorization", "")
 
-    if not authorization.startswith("Bearer "):
-        logger.info("auth/verify: missing or malformed Authorization header")
-        return JSONResponse(status_code=401, content={"detail": "Missing token"})
+    if authorization.startswith("Bearer "):
+        token = authorization.removeprefix("Bearer ").strip()
+    else:
+        token = request.cookies.get("blackvoxel_jwt", "").strip()
 
-    token = authorization.removeprefix("Bearer ").strip()
+    if not token:
+        logger.info("auth/verify: no Bearer header and no blackvoxel_jwt cookie")
+        return JSONResponse(status_code=401, content={"detail": "Missing token"})
 
     try:
         payload = await validate_token(token)

@@ -65,37 +65,31 @@ done
 # -----------------------------------------------------------------------------
 # 3. Host nginx /pacs/ proxy block.
 #
-#    The host nginx serves the viewer dist for ${VIEWER_SERVER_NAME} (behind the
-#    demo Basic-auth gate from MIMPS-15). We add a /pacs/ location that forwards
-#    the *unmodified* URI (note: no path on proxy_pass, so /pacs/... is preserved)
-#    to the orthanc-nginx gateway, which strips /pacs/ and injects Orthanc Basic
-#    credentials before reaching Orthanc.
+#    The host nginx serves the viewer dist for ${VIEWER_SERVER_NAME}. We add a
+#    /pacs/ location that forwards the *unmodified* URI (note: no path on
+#    proxy_pass, so /pacs/... is preserved) to the orthanc-nginx gateway, which
+#    strips /pacs/ and injects Orthanc Basic credentials before reaching Orthanc.
 #
-#    EXACT LOCATION BLOCK (also written to ${NGINX_SNIPPET}):
+#    The exact location blocks are in the heredoc below.
 #
-#      location /pacs/ {
-#          # Preserve the /pacs/ prefix: the gateway strips it (proxy_pass .../ ).
-#          proxy_pass         http://127.0.0.1:8899;
-#          proxy_http_version 1.1;
-#          proxy_set_header   Host              $host;
-#          proxy_set_header   X-Real-IP         $remote_addr;
-#          proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-#          proxy_set_header   X-Forwarded-Proto $scheme;
-#          # Large STOW-RS uploads (not used by the viewer, but harmless).
-#          client_max_body_size 512M;
-#          # WADO-RS responses can be large; don't buffer to disk needlessly.
-#          proxy_buffering    off;
-#      }
-#
-#    The viewer's server-level `auth_basic` (MIMPS-15) already protects /pacs/,
-#    satisfying the gateway SECURITY NOTE (auth in front before proxying).
+#    AUTH (INT-05): /pacs/ carries `auth_request` against the audit-service
+#    (mimps-audit.service, 127.0.0.1:8080), which validates platform RS256
+#    JWTs via JWKS. This satisfies the gateway SECURITY NOTE (auth in front
+#    before proxying); the MIMPS-15 htpasswd gate is retired. The audit-service
+#    must be running or every /pacs/ request fails 500/502 (fail-closed).
 # -----------------------------------------------------------------------------
 log "Writing host nginx /pacs/ snippet -> ${NGINX_SNIPPET}"
 install -d -m 0755 "$(dirname "$NGINX_SNIPPET")"
 cat > "$NGINX_SNIPPET" <<'NGINX'
 # MIMPS-05 — proxy /pacs/ to the on-box orthanc-nginx gateway (127.0.0.1:8899).
+# INT-05 — /pacs/ is JWT-gated via auth_request against the audit-service
+# (mimps-audit.service on 127.0.0.1:8080). The htpasswd gate is retired; a
+# platform (blackvoxel.ai) JWT — Bearer header or blackvoxel_jwt cookie set by
+# the viewer's jwtBridge — is the only credential.
 # Managed by scripts/vps-orthanc-runbook.sh — edits here are overwritten on re-run.
 location /pacs/ {
+    auth_request /_mimps_auth_verify;
+
     # Preserve the /pacs/ prefix: the gateway strips it (proxy_pass .../ ).
     proxy_pass         http://127.0.0.1:8899;
     proxy_http_version 1.1;
@@ -105,6 +99,17 @@ location /pacs/ {
     proxy_set_header   X-Forwarded-Proto $scheme;
     client_max_body_size 512M;
     proxy_buffering    off;
+}
+
+# Internal auth_request subrequest target — not reachable from outside.
+location = /_mimps_auth_verify {
+    internal;
+    proxy_pass              http://127.0.0.1:8080/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header        Content-Length "";
+    proxy_set_header        Host           $host;
+    proxy_set_header        Authorization  $http_authorization;
+    proxy_set_header        Cookie         $http_cookie;
 }
 NGINX
 

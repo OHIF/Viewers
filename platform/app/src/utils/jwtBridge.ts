@@ -14,13 +14,32 @@
  */
 
 const SESSION_KEY = 'blackvoxel_jwt';
+const COOKIE_KEY = 'blackvoxel_jwt';
 const PLATFORM_LOGIN_URL = 'https://blackvoxel.ai/login';
+
+/**
+ * Mirror the JWT into a session cookie so the browser attaches it to
+ * same-origin requests nginx gates with `auth_request` (the /pacs/ DICOMweb
+ * proxy). XHR/fetch image loads can't carry an Authorization header through
+ * cornerstone, so the cookie is the credential nginx's auth subrequest sees.
+ * Session-scoped (no Max-Age) to match sessionStorage semantics; not HttpOnly
+ * by necessity since it is set from JS.
+ */
+function syncAuthCookie(token: string): void {
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${COOKIE_KEY}=${token}; Path=/; SameSite=Lax${secure}`;
+}
+
+function clearAuthCookie(): void {
+  document.cookie = `${COOKIE_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
+}
 
 /**
  * Call once at app startup (before appInit).
  *
- * - If `?token=` is in the URL: store in sessionStorage, strip from URL bar.
- * - If sessionStorage already holds a token: no-op (already authenticated).
+ * - If `?token=` is in the URL: store in sessionStorage + cookie, strip from URL bar.
+ * - If sessionStorage already holds a token: re-sync the cookie (covers tabs
+ *   that stored a token before the cookie carry existed) and continue.
  * - Otherwise: redirect to PLATFORM_LOGIN_URL with a `?redirect=` param so
  *   the platform can send the user back after login.
  */
@@ -30,6 +49,7 @@ export function extractAndStoreToken(): void {
 
   if (token) {
     sessionStorage.setItem(SESSION_KEY, token);
+    syncAuthCookie(token);
     // Strip ?token= from the URL bar without adding a browser history entry.
     // This prevents the raw JWT from appearing in the user's history or being
     // copied accidentally from the address bar.
@@ -44,11 +64,14 @@ export function extractAndStoreToken(): void {
   }
 
   // No token in URL — check whether we already have one from this session.
-  if (sessionStorage.getItem(SESSION_KEY)) {
+  const stored = sessionStorage.getItem(SESSION_KEY);
+  if (stored) {
+    syncAuthCookie(stored);
     return; // Already authenticated in this tab session.
   }
 
   // No token anywhere — send the user back to the platform to log in.
+  clearAuthCookie();
   const redirectParam = encodeURIComponent(window.location.origin);
   window.location.href = `${PLATFORM_LOGIN_URL}?redirect=${redirectParam}`;
 }
