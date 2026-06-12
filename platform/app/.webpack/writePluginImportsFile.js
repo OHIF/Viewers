@@ -118,15 +118,37 @@ const fromDirectory = (srcDir, dirPath) => {
 const APP_SRC_DIR = path.resolve(__dirname, '../src');
 const REPO_ROOT = path.resolve(__dirname, '../../../');
 
-// Scan the extensions/ and modes/ workspaces once, mapping each package's real
-// name to its directory. This lets the bundler resolve plugins declared in
-// pluginConfig.json from their source, without them being dependencies of
-// platform/app (and therefore without entries in package.json / the lockfile).
+// The set of plugin package names declared in pluginConfig.json. Resolution and
+// asset copying are driven entirely by this list — a package present in the
+// extensions/ or modes/ workspaces but NOT listed here is ignored, and an
+// external (out-of-tree) package listed here with a `directory` is included.
+let declaredPluginNamesCache;
+function getDeclaredPluginNames() {
+  if (declaredPluginNamesCache) {
+    return declaredPluginNamesCache;
+  }
+  const names = new Set();
+  for (const entry of [...(pluginConfig.extensions || []), ...(pluginConfig.modes || [])]) {
+    const name = extractName(entry);
+    if (name) {
+      names.add(name);
+    }
+  }
+  declaredPluginNamesCache = names;
+  return names;
+}
+
+// Map each in-tree plugin's real package name to its directory, but ONLY for the
+// plugins declared in pluginConfig.json. This lets the bundler resolve those
+// plugins from their source without them being dependencies of platform/app
+// (and therefore without entries in package.json / the lockfile), while leaving
+// undeclared workspace packages out of the build entirely.
 let workspacePluginDirsCache;
 function getWorkspacePluginDirs() {
   if (workspacePluginDirsCache) {
     return workspacePluginDirsCache;
   }
+  const declared = getDeclaredPluginNames();
   const map = {};
   for (const group of ['extensions', 'modes']) {
     const root = path.join(REPO_ROOT, group);
@@ -140,7 +162,7 @@ function getWorkspacePluginDirs() {
       }
       try {
         const { name } = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-        if (name) {
+        if (name && declared.has(name)) {
           map[name] = path.join(root, dir);
         }
       } catch {
@@ -153,7 +175,10 @@ function getWorkspacePluginDirs() {
 }
 
 // Source directory of a workspace plugin: an explicit `directory` override wins
-// (out-of-tree plugins), otherwise look it up by package name.
+// (out-of-tree plugins), otherwise look it up among the in-tree workspaces by
+// package name. Returns undefined for an external plugin that is instead
+// installed as a normal dependency (resolved from node_modules — see
+// pluginAssetDir and getPluginResolveAliases).
 function workspacePluginDir(plugin) {
   if (plugin.directory) {
     return fromDirectory(APP_SRC_DIR, plugin.directory);
@@ -161,9 +186,11 @@ function workspacePluginDir(plugin) {
   return getWorkspacePluginDirs()[extractName(plugin)];
 }
 
-// Where a plugin's copyable assets (public/, dist/) live. Workspace plugins use
-// their source dir; third-party packages declared in pluginConfig (e.g.
-// dicom-microscopy-viewer) still resolve from node_modules.
+// Where a plugin's copyable assets (public/, dist/) live. In-tree and
+// `directory`-overridden plugins use their source dir; anything else declared
+// in pluginConfig falls back to node_modules. This is what lets an external
+// extension/mode be included by adding it to the root package.json as a normal
+// dependency (e.g. third-party packages such as dicom-microscopy-viewer).
 function pluginAssetDir(plugin) {
   const dir = workspacePluginDir(plugin);
   if (dir) {
@@ -179,6 +206,12 @@ function pluginAssetDir(plugin) {
 // pluginImports.js imports, so deep subpath imports (e.g.
 // `@ohif/extension-cornerstone/types`) still flow through normal resolution and
 // honor each package's `exports` map.
+//
+// Only in-tree / `directory`-overridden plugins get an alias. An external
+// plugin installed as a root dependency intentionally gets none: its bare
+// specifier then resolves through webpack's normal node_modules walk-up
+// (resolve.modules includes the repo-root node_modules), exactly like any other
+// installed package.
 function getPluginResolveAliases() {
   const alias = {};
   for (const entry of [...(pluginConfig.extensions || []), ...(pluginConfig.modes || [])]) {
