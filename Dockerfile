@@ -34,8 +34,11 @@ RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
-# Copy package manifests for install caching
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+# Copy package manifests for install caching. preinstall.js is included because
+# the root package.json's "preinstall" lifecycle script (node preinstall.js)
+# runs during `pnpm install` below -- before the full source is copied -- so the
+# script file must already be present or install fails with MODULE_NOT_FOUND.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
 COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
 # Run the install before copying the rest of the files
 
