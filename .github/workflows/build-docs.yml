@@ -36,12 +36,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        # Use --no-frozen-lockfile to match every CircleCI job. The release flow
-        # (publish-version.mjs) rewrites @ohif/* workspace deps from "workspace:*"
-        # to the concrete version and commits that bump to master, which leaves
-        # pnpm-lock.yaml out of sync with the manifests. pnpm-workspace.yaml sets
-        # frozenLockfile:true, so a master-triggered install must opt out or it
-        # fails with ERR_PNPM_OUTDATED_LOCKFILE.
+        # publish-version.mjs bumps only each package's own manifest version and
+        # leaves internal @ohif/* deps as workspace:* in the committed
+        # package.json files, so pnpm-lock.yaml (which records those as links)
+        # stays consistent -- a frozen install passes even right after a bump.
+        # The exact versions appear only in published tarballs, where pnpm
+        # publish (not publish-version.mjs) rewrites workspace:* at pack time.
+        # --no-frozen-lockfile is kept as a lenient fallback matching the
+        # CircleCI jobs so a genuine lockfile lag never blocks the docs deploy.
         run: pnpm install --no-frozen-lockfile
 
       # Removed Playwright tests and coverage generation steps
