@@ -36,15 +36,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        # publish-version.mjs bumps only each package's own manifest version and
-        # leaves internal @ohif/* deps as workspace:* in the committed
-        # package.json files, so pnpm-lock.yaml (which records those as links)
-        # stays consistent -- a frozen install passes even right after a bump.
-        # The exact versions appear only in published tarballs, where pnpm
-        # publish (not publish-version.mjs) rewrites workspace:* at pack time.
-        # --no-frozen-lockfile is kept as a lenient fallback matching the
-        # CircleCI jobs so a genuine lockfile lag never blocks the docs deploy.
-        run: pnpm install --no-frozen-lockfile
+        # Internal @ohif/* deps are workspace:* in the committed manifests and the
+        # lockfile records them as links, so pnpm-lock.yaml stays in sync across
+        # version bumps and a frozen install passes. Frozen is the right choice
+        # for a deploy job: it fails fast if a PR ever changed a real dependency
+        # without committing the lockfile update, instead of silently reconciling.
+        # (Exact versions appear only in published tarballs, where pnpm publish
+        # rewrites workspace:* at pack time -- not publish-version.mjs.)
+        run: pnpm install --frozen-lockfile
 
       # Removed Playwright tests and coverage generation steps
 
