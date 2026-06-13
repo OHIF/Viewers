@@ -62,6 +62,7 @@ import StatusTracking from './Sources/StatusTracking';
 import StatusUntracked from './Sources/StatusUntracked';
 import StatusWarning from './Sources/StatusWarning';
 import Tab4D from './Sources/Tab4D';
+import TabAnalysis from './Sources/TabAnalysis';
 import TabLinear from './Sources/TabLinear';
 import TabPatientInfo from './Sources/TabPatientInfo';
 import TabRoiThreshold from './Sources/TabRoiThreshold';
@@ -707,6 +708,7 @@ export const Icons = {
   'tab-4d': (props: IconProps) => Tab4D(props),
   'tab-patient-info': (props: IconProps) => TabPatientInfo(props),
   'tab-roi-threshold': (props: IconProps) => TabRoiThreshold(props),
+  'tab-analysis': (props: IconProps) => TabAnalysis(props),
   'icon-mpr': (props: IconProps) => IconMPR(props),
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
