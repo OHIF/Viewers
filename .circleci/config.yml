@@ -170,7 +170,13 @@ jobs:
             git config --global user.name "ohif-bot"
       - run:
           name: Authenticate with NPM registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -202,7 +208,13 @@ jobs:
             git config --global user.name "ohif-bot"
       - run:
           name: Authenticate with NPM registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -224,8 +236,14 @@ jobs:
           command: |
             node ./publish-version.mjs
       - run:
-          name: Again set the NPM registry (was deleted in the version script)
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          name: Re-assert the NPM auth token before publishing
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: publish package dist
           command: |
