@@ -1,22 +1,31 @@
 """
-MIMPS Audit Service — JWT verification endpoint.
+MIMPS Audit Service — JWT verification + structured access log.
 
 Nginx delegates auth via `auth_request /auth/verify`. This service validates
 RS256 JWTs issued by 1_blackvoxel against the platform's JWKS endpoint.
 
+Structured access events are emitted as NDJSON to stdout (captured by journald
+on the VPS, and to ./access.log when ACCESS_LOG_FILE is set). Format per
+ANVISA RDC 657/2022 groundwork requirements:
+  {ts, event, user_id, email, uri, study_uid, remote_addr}
+
 JWKS is cached in-process with a 1-hour TTL to avoid fetching on every request.
 """
 
+import json
+import re
 import time
 import logging
+import sys
+from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from jose import jwt as jose_jwt, JWTError, jwk
 from pydantic_settings import BaseSettings
+from jose import jwt as jose_jwt, JWTError, jwk
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -24,6 +33,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     BLACKVOXEL_JWKS_URL: str = "http://localhost:8000/api/auth/.well-known/jwks.json"
+    ACCESS_LOG_FILE: str = ""  # optional path; empty = stdout only
 
     class Config:
         env_file = ".env"
@@ -33,7 +43,9 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # ---------------------------------------------------------------------------
-# Logging
+# Logging — two channels:
+#   - logger: plain-text operational logs (startup, JWKS refresh, errors)
+#   - access_log: NDJSON per-request audit events
 # ---------------------------------------------------------------------------
 
 logging.basicConfig(
@@ -41,6 +53,32 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s — %(message)s",
 )
 logger = logging.getLogger("audit-service")
+
+_access_log_fh = None
+if settings.ACCESS_LOG_FILE:
+    try:
+        _access_log_fh = open(settings.ACCESS_LOG_FILE, "a", buffering=1)  # line-buffered
+        logger.info("Access log file: %s", settings.ACCESS_LOG_FILE)
+    except OSError as _e:
+        logger.warning("Cannot open ACCESS_LOG_FILE %s: %s — falling back to stdout", settings.ACCESS_LOG_FILE, _e)
+
+
+def _emit_access_event(event: dict) -> None:
+    """Write a single NDJSON access event to stdout and optionally to a file."""
+    line = json.dumps(event, ensure_ascii=False)
+    print(line, flush=True)
+    if _access_log_fh:
+        _access_log_fh.write(line + "\n")
+
+
+_STUDY_UID_RE = re.compile(r"studies/([0-9.]+)")
+
+
+def _extract_study_uid(uri: str) -> Optional[str]:
+    """Extract a StudyInstanceUID from a DICOMweb URI, or return None."""
+    m = _STUDY_UID_RE.search(uri)
+    return m.group(1) if m else None
+
 
 # ---------------------------------------------------------------------------
 # JWKS cache — module-level, shared across all requests in this process.
@@ -151,6 +189,10 @@ async def auth_verify(request: Request) -> JSONResponse:
       2. `blackvoxel_jwt` cookie — set by the viewer's jwtBridge so that
          browser XHR image loads to /pacs/ carry a credential nginx can
          forward here (cornerstone requests can't set Authorization headers)
+
+    Extra headers from nginx (forwarded by the outer /pacs/ location):
+      X-Original-URI: the original client request URI
+      X-Real-IP:      the real client IP (after any Cloudflare/proxy unwrap)
     """
     authorization: str = request.headers.get("Authorization", "")
 
@@ -159,20 +201,59 @@ async def auth_verify(request: Request) -> JSONResponse:
     else:
         token = request.cookies.get("blackvoxel_jwt", "").strip()
 
+    # Audit context — populated from nginx-forwarded headers.
+    original_uri: str = request.headers.get("X-Original-URI", "")
+    remote_addr: str = (
+        request.headers.get("X-Real-IP")
+        or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        or (request.client.host if request.client else "")
+    )
+    ts = datetime.now(timezone.utc).isoformat()
+
     if not token:
         logger.info("auth/verify: no Bearer header and no blackvoxel_jwt cookie")
+        _emit_access_event({
+            "ts": ts,
+            "event": "access_denied",
+            "reason": "missing_token",
+            "user_id": None,
+            "email": None,
+            "uri": original_uri,
+            "study_uid": _extract_study_uid(original_uri),
+            "remote_addr": remote_addr,
+        })
         return JSONResponse(status_code=401, content={"detail": "Missing token"})
 
     try:
         payload = await validate_token(token)
     except (ValueError, JWTError, httpx.HTTPError) as exc:
         logger.info("auth/verify: token rejected — %s", exc)
+        _emit_access_event({
+            "ts": ts,
+            "event": "access_denied",
+            "reason": "invalid_token",
+            "user_id": None,
+            "email": None,
+            "uri": original_uri,
+            "study_uid": _extract_study_uid(original_uri),
+            "remote_addr": remote_addr,
+        })
         return JSONResponse(
             status_code=401, content={"detail": "Invalid or expired token"}
         )
 
     user_id: str = payload.get("sub", "")
-    logger.info("auth/verify: accepted sub=%s", user_id)
+    email: str = payload.get("email", "")
+    logger.info("auth/verify: accepted sub=%s uri=%s", user_id, original_uri or "(none)")
+    _emit_access_event({
+        "ts": ts,
+        "event": "access_granted",
+        "user_id": user_id,
+        "email": email,
+        "uri": original_uri,
+        "study_uid": _extract_study_uid(original_uri),
+        "remote_addr": remote_addr,
+    })
     return JSONResponse(status_code=200, content={"valid": True, "user_id": user_id})
 
 
