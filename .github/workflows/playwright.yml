@@ -119,7 +119,12 @@ jobs:
 
       # ── Common: run tests ───────────────────────────────────────────────
       - name: Install Playwright browsers
-        run: npx playwright install
+        # Only chromium is used (see playwright.config.ts and tests/globalSetup.ts);
+        # firefox/webkit projects are commented out. Scoping the install to chromium
+        # avoids downloading + dep-validating browsers we never launch (the WebKit
+        # validation is what surfaces the "missing libwoff1/libflite1/..." error on
+        # hosts without those libs).
+        run: npx playwright install chromium
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
