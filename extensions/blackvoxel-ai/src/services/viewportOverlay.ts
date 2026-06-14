@@ -21,6 +21,7 @@
 
 import {
   getEnabledElementByViewportId,
+  metaData,
   utilities as csUtils,
 } from '@cornerstonejs/core';
 import type { Types as CoreTypes } from '@cornerstonejs/core';
@@ -130,6 +131,42 @@ export interface ShowBoundingBoxesArgs {
   findings: InferenceFinding[];
 }
 
+interface PixelBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Pixel-space box for a finding: its explicit `bounding_box`, or its normalized
+ * Grad-CAM `region` (CXR-10) scaled by the image dimensions. Returns null when
+ * neither is usable (e.g. image metadata unavailable) — we never synthesize a box.
+ */
+function pixelBoxFor(finding: InferenceFinding, imageId: string): PixelBox | null {
+  if (finding.bounding_box) {
+    return finding.bounding_box;
+  }
+  const region = finding.region;
+  if (!region) {
+    return null;
+  }
+  const px = metaData.get('imagePixelModule', imageId) as
+    | { rows?: number; columns?: number }
+    | undefined;
+  const columns = px?.columns;
+  const rows = px?.rows;
+  if (!columns || !rows) {
+    return null;
+  }
+  return {
+    x: region.x * columns,
+    y: region.y * rows,
+    width: region.width * columns,
+    height: region.height * rows,
+  };
+}
+
 /**
  * Draws one read-only dashed violet rectangle per finding that carries a
  * bounding_box. Findings with bounding_box === null are skipped — we never
@@ -145,7 +182,7 @@ export function showAIBoundingBoxes({
   // Idempotency: re-runs replace, never stack.
   clearAIBoundingBoxes();
 
-  const localized = findings.filter(f => f.bounding_box !== null);
+  const localized = findings.filter(f => f.bounding_box != null || f.region != null);
   if (localized.length === 0 || !imageId) {
     return 0;
   }
@@ -173,7 +210,7 @@ export function showAIBoundingBoxes({
   let drawn = 0;
 
   for (const finding of localized) {
-    const box = finding.bounding_box;
+    const box = pixelBoxFor(finding, imageId);
     if (!box) {
       continue;
     }

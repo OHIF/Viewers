@@ -419,9 +419,9 @@ function AIFindingsPanel({
     let cancelled = false;
 
     function drawOverlay(result: InferenceResponse, imageId?: string): void {
-      // Only findings with a real bounding_box produce a viewport overlay
-      // (mock/static lanes). The live classifier returns null boxes and we
-      // never fabricate localization.
+      // Findings draw a viewport overlay when they carry a bounding_box
+      // (mock/static lanes) or a normalized Grad-CAM region (CXR-10, live
+      // proxy). Findings with neither are skipped — we never fabricate a box.
       if (!imageId) {
         return;
       }
