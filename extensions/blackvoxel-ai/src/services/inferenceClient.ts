@@ -24,6 +24,14 @@ export interface BoundingBox {
   height: number;
 }
 
+/** Normalized [0,1] region of interest (CXR-10 Grad-CAM). Resolution-independent. */
+export interface NormRegion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface InferenceFinding {
   label: string;
   confidence: number;
@@ -34,6 +42,11 @@ export interface InferenceFinding {
    */
   bounding_box: BoundingBox | null;
   severity: string;
+  /** CXR-09: English source pathology + calibration band. */
+  label_en?: string;
+  band?: 'provável' | 'indeterminado' | 'improvável' | string;
+  /** CXR-10: coarse Grad-CAM region (normalized), present findings only. */
+  region?: NormRegion | null;
 }
 
 export interface ReportDraft {

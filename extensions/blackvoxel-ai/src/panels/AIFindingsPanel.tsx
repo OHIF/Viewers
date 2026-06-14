@@ -3,6 +3,7 @@ import { utilities as cornerstoneUtilities } from '@cornerstonejs/core';
 import {
   getInference,
   InferenceError,
+  InferenceFinding,
   InferenceResponse,
 } from '../services/inferenceClient';
 import { clearAIBoundingBoxes, showAIBoundingBoxes } from '../services/viewportOverlay';
@@ -206,6 +207,80 @@ function ConfidenceBar({ confidence }: { confidence: number }): React.ReactEleme
       >
         {pct}%
       </span>
+    </div>
+  );
+}
+
+// CXR-12: calibration-band chip (provável / indeterminado / improvável).
+const BAND_STYLE: Record<string, { bg: string; fg: string }> = {
+  'provável': { bg: 'rgba(124,58,237,0.25)', fg: '#C4B5FD' },
+  'indeterminado': { bg: 'rgba(217,119,6,0.25)', fg: '#FBBF24' },
+  'improvável': { bg: 'rgba(255,255,255,0.08)', fg: '#A0ADB4' },
+};
+
+function BandChip({ band }: { band?: string }): React.ReactElement | null {
+  if (!band) {
+    return null;
+  }
+  const style = BAND_STYLE[band] ?? BAND_STYLE['improvável'];
+  return (
+    <span
+      className="inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold"
+      style={{ backgroundColor: style.bg, color: style.fg }}
+    >
+      {band}
+    </span>
+  );
+}
+
+function FindingRow({ finding }: { finding: InferenceFinding }): React.ReactElement {
+  return (
+    <div className="rounded-md border border-white/10 bg-white/5 p-2.5">
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span className="text-[12px] font-bold text-white">
+          {toPtLabel(finding.label)}
+          {finding.region ? (
+            <span title="Localização aproximada disponível" aria-label="Localização disponível"> ◎</span>
+          ) : null}
+        </span>
+        {finding.band ? <BandChip band={finding.band} /> : <SeverityChip severity={finding.severity} />}
+      </div>
+      <ConfidenceBar confidence={finding.confidence} />
+    </div>
+  );
+}
+
+function GroupLabel({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
+    <div
+      className="mb-1.5 text-[10px] font-bold tracking-wider"
+      style={{ color: TEXT_SECONDARY }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function UnlikelyGroup({ findings }: { findings: InferenceFinding[] }): React.ReactElement {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        className="flex w-full cursor-pointer items-center gap-1.5 border-none bg-transparent px-0 py-1 text-left text-[11px] font-semibold max-md:min-h-[44px]"
+        style={{ color: TEXT_SECONDARY }}
+        aria-expanded={open}
+      >
+        <span aria-hidden="true">{open ? '▲' : '▼'}</span>
+        {findings.length} achados improváveis
+      </button>
+      {open && (
+        <div className="mt-1.5 flex flex-col gap-2">
+          {findings.map((f, i) => (
+            <FindingRow key={`${f.label}-${i}`} finding={f} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -434,8 +509,20 @@ function AIFindingsPanel({
 
   // At this point data is guaranteed to be set (either real or fallback).
   const result = data as InferenceResponse;
-  const hasAnyLocalization = result.findings.some(f => f.bounding_box !== null);
+  const hasAnyLocalization = result.findings.some(
+    f => f.bounding_box !== null || f.region != null
+  );
   const processingSeconds = (result.inference_time_ms / 1000).toFixed(1);
+
+  // CXR-12: the live multi-label proxy bands each finding. Group by band so the
+  // full read is legible (present prominent, uncertain secondary, unlikely
+  // collapsed). Legacy lanes without bands fall back to a flat list.
+  const hasBands = result.findings.some(f => f.band);
+  const present = result.findings.filter(f => f.band === 'provável');
+  const uncertain = result.findings.filter(f => f.band === 'indeterminado');
+  const unlikely = result.findings.filter(
+    f => f.band && f.band !== 'provável' && f.band !== 'indeterminado'
+  );
 
   // --- Panel (success or fallback) ---
   return (
@@ -485,7 +572,9 @@ function AIFindingsPanel({
             className="text-[11px] font-bold tracking-wider"
             style={{ color: TEXT_SECONDARY }}
           >
-            ACHADOS ({result.findings.length})
+            {hasBands
+              ? `ACHADOS — ${present.length} provável(is)`
+              : `ACHADOS (${result.findings.length})`}
           </span>
           <span
             className="text-[10px]"
@@ -496,27 +585,42 @@ function AIFindingsPanel({
         </div>
 
         {result.findings.length === 0 ? (
-          <p
-            className="m-0 text-[12px]"
-            style={{ color: TEXT_SECONDARY }}
-          >
+          <p className="m-0 text-[12px]" style={{ color: TEXT_SECONDARY }}>
             Nenhum achado detectado.
           </p>
+        ) : hasBands ? (
+          <div className="flex flex-col gap-3">
+            {present.length > 0 && (
+              <div>
+                <GroupLabel>PROVÁVEIS ({present.length})</GroupLabel>
+                <div className="flex flex-col gap-2">
+                  {present.map((f, i) => (
+                    <FindingRow key={`p-${f.label}-${i}`} finding={f} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {uncertain.length > 0 && (
+              <div>
+                <GroupLabel>INDETERMINADOS ({uncertain.length})</GroupLabel>
+                <div className="flex flex-col gap-2">
+                  {uncertain.map((f, i) => (
+                    <FindingRow key={`u-${f.label}-${i}`} finding={f} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {present.length === 0 && uncertain.length === 0 && (
+              <p className="m-0 text-[12px]" style={{ color: TEXT_SECONDARY }}>
+                Nenhum achado provável ou indeterminado.
+              </p>
+            )}
+            {unlikely.length > 0 && <UnlikelyGroup findings={unlikely} />}
+          </div>
         ) : (
           <div className="flex flex-col gap-2.5">
             {result.findings.map((finding, idx) => (
-              <div
-                key={`${finding.label}-${idx}`}
-                className="rounded-md border border-white/10 bg-white/5 p-2.5"
-              >
-                <div className="mb-1.5 flex items-center justify-between gap-2">
-                  <span className="text-[12px] font-bold text-white">
-                    {toPtLabel(finding.label)}
-                  </span>
-                  <SeverityChip severity={finding.severity} />
-                </div>
-                <ConfidenceBar confidence={finding.confidence} />
-              </div>
+              <FindingRow key={`${finding.label}-${idx}`} finding={finding} />
             ))}
           </div>
         )}
