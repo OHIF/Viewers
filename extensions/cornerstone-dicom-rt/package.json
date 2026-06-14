@@ -1,11 +1,15 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-rt",
-  "version": "3.13.0-beta.88",
+  "version": "3.13.0-beta.92",
   "description": "DICOM RT read workflow",
   "author": "OHIF",
   "license": "MIT",
+  "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-cornerstone-dicom-rt.umd.js",
   "module": "src/index.tsx",
+  "engines": {
+    "node": ">=24"
+  },
   "files": [
     "dist/**",
     "public/**",
@@ -14,29 +18,20 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": "OHIF/Viewers",
-  "keywords": [
-    "ohif-extension"
-  ],
-  "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
-  },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:dicom-seg": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev:dicom-seg": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.13.0-beta.88",
-    "@ohif/extension-cornerstone": "3.13.0-beta.88",
-    "@ohif/extension-default": "3.13.0-beta.88",
-    "@ohif/i18n": "3.13.0-beta.88",
+    "@ohif/core": "3.13.0-beta.92",
+    "@ohif/extension-cornerstone": "3.13.0-beta.92",
+    "@ohif/extension-default": "3.13.0-beta.92",
+    "@ohif/i18n": "3.13.0-beta.92",
     "prop-types": "15.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -46,5 +41,11 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7"
-  }
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3"
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }
