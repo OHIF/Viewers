@@ -635,6 +635,26 @@ function AIFindingsPanel({
         )}
       </div>
 
+      {/* CXR-14: report consistency gate */}
+      {result.report_verified === false && (result.report_warnings?.length ?? 0) > 0 ? (
+        <div
+          role="alert"
+          className="mx-3 mt-2 rounded-md border px-3 py-2 text-[11px] leading-snug"
+          style={{
+            backgroundColor: 'rgba(217, 119, 6, 0.15)',
+            borderColor: 'rgba(217, 119, 6, 0.4)',
+            color: '#FBBF24',
+          }}
+        >
+          ⚠ Rascunho inconsistente com os achados — revisar:{' '}
+          {result.report_warnings?.join(' ')}
+        </div>
+      ) : result.report_verified === true ? (
+        <div className="mx-3 mt-2 text-[10px]" style={{ color: '#34D399' }}>
+          ✓ Rascunho consistente com os achados do modelo
+        </div>
+      ) : null}
+
       {/* Collapsible report draft */}
       <CollapsibleReport report={result.report_draft} />
 

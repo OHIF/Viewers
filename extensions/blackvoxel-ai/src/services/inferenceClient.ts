@@ -64,6 +64,9 @@ export interface InferenceResponse {
   is_mock: boolean;
   is_research?: boolean;
   disclaimer?: string | null;
+  /** CXR-14: findings↔report consistency gate. */
+  report_verified?: boolean;
+  report_warnings?: string[];
 }
 
 export class InferenceError extends Error {
