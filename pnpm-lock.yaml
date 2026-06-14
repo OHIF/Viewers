@@ -84,7 +84,7 @@ importers:
         version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/preset-env':
         specifier: 7.29.7
-        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/preset-react':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
@@ -228,13 +228,13 @@ importers:
         specifier: 35.5.3
         version: 35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       dcmjs:
         specifier: 0.49.4
@@ -301,16 +301,16 @@ importers:
         specifier: 35.5.3
         version: 35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       prop-types:
         specifier: 15.8.1
@@ -341,16 +341,16 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       prop-types:
         specifier: 15.8.1
@@ -390,16 +390,16 @@ importers:
         specifier: 35.5.3
         version: 35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       prop-types:
         specifier: 15.8.1
@@ -439,13 +439,13 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -482,19 +482,19 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -528,10 +528,10 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       dcmjs:
         specifier: 0.49.4
@@ -583,16 +583,16 @@ importers:
         specifier: 1.3.0
         version: 1.3.0
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       colormap:
         specifier: 2.3.2
@@ -635,10 +635,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -669,10 +669,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -709,16 +709,16 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       '@xstate/react':
         specifier: 3.2.2
@@ -755,10 +755,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -789,10 +789,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -829,19 +829,19 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../default
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/i18n
       '@ohif/ui-next':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/ui-next
       prop-types:
         specifier: 15.8.1
@@ -923,28 +923,28 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-rt':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-rt
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-video
     devDependencies:
       webpack-merge:
@@ -957,22 +957,22 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-video
       i18next:
         specifier: 17.3.1
@@ -988,28 +988,28 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-video
       '@ohif/extension-measurement-tracking':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/measurement-tracking
       '@ohif/extension-test':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/test-extension
       i18next:
         specifier: 17.3.1
@@ -1025,34 +1025,34 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-rt':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-rt
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-video
       '@ohif/extension-measurement-tracking':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/measurement-tracking
       '@ohif/mode-basic':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../basic
       i18next:
         specifier: 17.3.1
@@ -1068,10 +1068,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-dicom-microscopy':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-microscopy
       i18next:
         specifier: 17.3.1
@@ -1090,22 +1090,22 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dynamic-volume':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dynamic-volume
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-tmtv':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/tmtv
     devDependencies:
       cross-env:
@@ -1121,31 +1121,31 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-rt':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-rt
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-video
       '@ohif/mode-basic':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../basic
       i18next:
         specifier: 17.3.1
@@ -1209,25 +1209,25 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/dicom-video
       '@ohif/extension-measurement-tracking':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/measurement-tracking
       i18next:
         specifier: 17.3.1
@@ -1249,13 +1249,13 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../platform/core
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-ultrasound-pleura-bline':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../../extensions/usAnnotation
       i18next:
         specifier: 17.3.1
@@ -1337,16 +1337,16 @@ importers:
         specifier: 1.3.3
         version: 1.3.3
       '@ohif/core':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../core
       '@ohif/i18n':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../i18n
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../ui
       '@ohif/ui-next':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../ui-next
       '@svgr/webpack':
         specifier: 8.1.0
@@ -1551,7 +1551,7 @@ importers:
         specifier: 5.0.2
         version: 5.0.2
       '@ohif/ui':
-        specifier: workspace:*
+        specifier: 3.13.0-beta.92
         version: link:../ui
       cornerstone-math:
         specifier: 0.1.10
@@ -13999,7 +13999,7 @@ snapshots:
       '@babel/helpers': 7.29.2
       '@babel/parser': 7.29.3
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -14097,7 +14097,7 @@ snapshots:
       '@babel/helper-optimise-call-expression': 7.27.1
       '@babel/helper-replace-supers': 7.28.6(@babel/core@7.28.0)
       '@babel/helper-skip-transparent-expression-wrappers': 7.27.1
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -14202,7 +14202,7 @@ snapshots:
 
   '@babel/helper-member-expression-to-functions@7.28.5':
     dependencies:
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14216,7 +14216,7 @@ snapshots:
 
   '@babel/helper-module-imports@7.28.6':
     dependencies:
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14233,7 +14233,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14242,7 +14242,7 @@ snapshots:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14251,7 +14251,7 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14290,7 +14290,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-wrap-function': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14317,7 +14317,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-member-expression-to-functions': 7.28.5
       '@babel/helper-optimise-call-expression': 7.27.1
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14341,7 +14341,7 @@ snapshots:
 
   '@babel/helper-skip-transparent-expression-wrappers@7.27.1':
     dependencies:
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14368,7 +14368,7 @@ snapshots:
   '@babel/helper-wrap-function@7.28.6':
     dependencies:
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14403,7 +14403,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14508,7 +14508,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14798,7 +14798,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-remap-async-to-generator': 7.27.1(@babel/core@7.28.0)
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14933,7 +14933,7 @@ snapshots:
       '@babel/helper-globals': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-replace-supers': 7.28.6(@babel/core@7.28.0)
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14983,7 +14983,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -15152,7 +15152,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-compilation-targets': 7.28.6
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -15288,17 +15288,17 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.0)
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
+  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -15308,7 +15308,7 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.7)
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -15406,7 +15406,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/plugin-transform-destructuring': 7.28.5(@babel/core@7.28.0)
       '@babel/plugin-transform-parameters': 7.27.7(@babel/core@7.28.0)
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
 
@@ -16015,7 +16015,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
+  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))':
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/core': 7.29.7(supports-color@8.1.1)
@@ -16057,7 +16057,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-modules-amd': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-modules-commonjs': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
-      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-modules-umd': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-named-capturing-groups-regex': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-new-target': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
@@ -16284,7 +16284,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.0(supports-color@8.1.1)':
+  '@babel/traverse@7.29.0':
     dependencies:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.1
@@ -16951,7 +16951,7 @@ snapshots:
       '@babel/preset-typescript': 7.27.1(@babel/core@7.28.0)
       '@babel/runtime': 7.29.2
       '@babel/runtime-corejs3': 7.29.0
-      '@babel/traverse': 7.29.0(supports-color@8.1.1)
+      '@babel/traverse': 7.29.0
       '@docusaurus/logger': 3.7.0
       '@docusaurus/utils': 3.7.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       babel-plugin-dynamic-import-node: 2.3.3
