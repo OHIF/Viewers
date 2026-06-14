@@ -8,7 +8,7 @@ overrides:
   commander: 8.3.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
-  dcmjs: 0.49.4
+  dcmjs: 0.52.0
   path-to-regexp: 0.1.13
   nth-check: 2.1.1
   trim-newlines: 5.0.0
@@ -84,7 +84,7 @@ importers:
         version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/preset-env':
         specifier: 7.29.7
-        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/preset-react':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
@@ -237,8 +237,8 @@ importers:
         specifier: workspace:*
         version: link:../../platform/ui
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -451,8 +451,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -500,8 +500,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -534,8 +534,8 @@ importers:
         specifier: workspace:*
         version: link:../../platform/i18n
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicomweb-client:
         specifier: 0.10.4
         version: 0.10.4
@@ -644,8 +644,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -678,8 +678,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -727,8 +727,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       lodash.debounce:
         specifier: 4.0.8
         version: 4.0.8
@@ -764,8 +764,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -798,8 +798,8 @@ importers:
         specifier: 2.5.1
         version: 2.5.1
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -1364,8 +1364,8 @@ importers:
         specifier: 0.1.10
         version: 0.1.10
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       detect-gpu:
         specifier: 4.0.50
         version: 4.0.50
@@ -1548,8 +1548,8 @@ importers:
         specifier: 0.1.10
         version: 0.1.10
       dcmjs:
-        specifier: 0.49.4
-        version: 0.49.4
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -3290,6 +3290,10 @@ packages:
 
   '@babel/runtime-corejs3@7.29.0':
     resolution: {integrity: sha512-TgUkdp71C9pIbBcHudc+gXZnihEDOjUAmXO1VO4HHGES7QLZcShR0stfKIxLSNIYx2fqhmJChOjm/wkF8wv4gA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime-corejs3@7.29.2':
+    resolution: {integrity: sha512-Lc94FOD5+0aXhdb0Tdg3RUtqT6yWbI/BbFWvlaSJ3gAb9Ks+99nHRDKADVqC37er4eCB0fHyWT+y+K3QOvJKbw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/runtime@7.29.2':
@@ -6229,8 +6233,8 @@ packages:
     resolution: {integrity: sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==}
     engines: {node: '>= 10.0.0'}
 
-  adm-zip@0.5.16:
-    resolution: {integrity: sha512-TGw5yVi4saajsSEgz25grObGHEUaDrniwvA2qwSC060KfqGPdglhvPMA2lPIoxs3PQIItj2iag35fONcQqgUaQ==}
+  adm-zip@0.5.17:
+    resolution: {integrity: sha512-+Ut8d9LLqwEvHHJl1+PIHqoyDxFgVN847JTVM3Izi3xHDWPE4UtzzXysMZQs64DMcrJfBeS/uoEP4AD3HQHnQQ==}
     engines: {node: '>=12.0'}
 
   agent-base@6.0.2:
@@ -7453,8 +7457,9 @@ packages:
   dayjs@1.11.20:
     resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
 
-  dcmjs@0.49.4:
-    resolution: {integrity: sha512-w77Gde5JvLjg37FyGIAsTB+oWZIqkO/5NvBeheEVKy6k9XjBgeGsoAbVAByjuGAFLpGqRbf9iWI0edBq87yu/g==}
+  dcmjs@0.52.0:
+    resolution: {integrity: sha512-0/mT9NACKnwnOnkUx7JAqmWxRcUr7HiCoptw1KhN2StNYE0Hy6+tmpI7CU+lJuBc4rFpcMCalvI8QO6JkJ+7Fg==}
+    engines: {node: '>=22.13'}
 
   debounce@1.2.1:
     resolution: {integrity: sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==}
@@ -8409,6 +8414,9 @@ packages:
 
   gl-matrix@3.4.3:
     resolution: {integrity: sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA==}
+
+  gl-matrix@3.4.4:
+    resolution: {integrity: sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==}
 
   glob-parent@6.0.2:
     resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
@@ -13582,10 +13590,6 @@ packages:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
 
-  yaml@1.10.2:
-    resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
-    engines: {node: '>= 6'}
-
   yaml@1.10.3:
     resolution: {integrity: sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==}
     engines: {node: '>= 6'}
@@ -13799,7 +13803,7 @@ snapshots:
       '@babel/helpers': 7.29.2
       '@babel/parser': 7.29.3
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -13897,7 +13901,7 @@ snapshots:
       '@babel/helper-optimise-call-expression': 7.27.1
       '@babel/helper-replace-supers': 7.28.6(@babel/core@7.28.0)
       '@babel/helper-skip-transparent-expression-wrappers': 7.27.1
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -14002,7 +14006,7 @@ snapshots:
 
   '@babel/helper-member-expression-to-functions@7.28.5':
     dependencies:
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14016,7 +14020,7 @@ snapshots:
 
   '@babel/helper-module-imports@7.28.6':
     dependencies:
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14033,7 +14037,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14042,7 +14046,7 @@ snapshots:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14051,7 +14055,7 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14090,7 +14094,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-wrap-function': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14117,7 +14121,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-member-expression-to-functions': 7.28.5
       '@babel/helper-optimise-call-expression': 7.27.1
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14141,7 +14145,7 @@ snapshots:
 
   '@babel/helper-skip-transparent-expression-wrappers@7.27.1':
     dependencies:
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14168,7 +14172,7 @@ snapshots:
   '@babel/helper-wrap-function@7.28.6':
     dependencies:
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14203,7 +14207,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14308,7 +14312,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14598,7 +14602,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-remap-async-to-generator': 7.27.1(@babel/core@7.28.0)
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14733,7 +14737,7 @@ snapshots:
       '@babel/helper-globals': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-replace-supers': 7.28.6(@babel/core@7.28.0)
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14783,7 +14787,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -14952,7 +14956,7 @@ snapshots:
       '@babel/core': 7.28.0
       '@babel/helper-compilation-targets': 7.28.6
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15088,17 +15092,17 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.0)
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))':
+  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15108,7 +15112,7 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.7)
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15206,7 +15210,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/plugin-transform-destructuring': 7.28.5(@babel/core@7.28.0)
       '@babel/plugin-transform-parameters': 7.27.7(@babel/core@7.28.0)
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15815,7 +15819,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))':
+  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/core': 7.29.7(supports-color@8.1.1)
@@ -15857,7 +15861,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-modules-amd': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-modules-commonjs': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
-      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/plugin-transform-modules-umd': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-named-capturing-groups-regex': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/plugin-transform-new-target': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
@@ -16068,6 +16072,10 @@ snapshots:
     dependencies:
       core-js-pure: 3.49.0
 
+  '@babel/runtime-corejs3@7.29.2':
+    dependencies:
+      core-js-pure: 3.49.0
+
   '@babel/runtime@7.29.2': {}
 
   '@babel/runtime@7.29.7': {}
@@ -16084,7 +16092,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.0':
+  '@babel/traverse@7.29.0(supports-color@8.1.1)':
     dependencies:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.1
@@ -16129,7 +16137,7 @@ snapshots:
       '@cornerstonejs/core': 5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@cornerstonejs/tools': 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       buffer: 6.0.3
-      dcmjs: 0.49.4
+      dcmjs: 0.52.0
       gl-matrix: 3.4.3
       ndarray: 1.0.19
 
@@ -16139,7 +16147,7 @@ snapshots:
       '@cornerstonejs/core': 5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@cornerstonejs/tools': 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       buffer: 6.0.3
-      dcmjs: 0.49.4
+      dcmjs: 0.52.0
       gl-matrix: 3.4.3
       lodash.clonedeep: 4.5.0
       ndarray: 1.0.19
@@ -16200,7 +16208,7 @@ snapshots:
     dependencies:
       '@cornerstonejs/calculate-suv': 1.0.3
       '@cornerstonejs/utils': 5.0.2
-      dcmjs: 0.49.4
+      dcmjs: 0.52.0
       gl-matrix: 3.4.3
 
   '@cornerstonejs/polymorphic-segmentation@5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@cornerstonejs/tools@5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))':
@@ -16225,7 +16233,7 @@ snapshots:
 
   '@cornerstonejs/utils@5.0.2':
     dependencies:
-      dcmjs: 0.49.4
+      dcmjs: 0.52.0
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -16677,7 +16685,7 @@ snapshots:
       '@babel/preset-typescript': 7.27.1(@babel/core@7.28.0)
       '@babel/runtime': 7.29.2
       '@babel/runtime-corejs3': 7.29.0
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@docusaurus/logger': 3.7.0
       '@docusaurus/utils': 3.7.0(@swc/core@1.15.13(@swc/helpers@0.5.21))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       babel-plugin-dynamic-import-node: 2.3.3
@@ -18933,7 +18941,7 @@ snapshots:
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
-      resolve: 1.22.11
+      resolve: 1.22.12
     optionalDependencies:
       rollup: 2.80.0
 
@@ -19952,7 +19960,7 @@ snapshots:
 
   address@1.2.2: {}
 
-  adm-zip@0.5.16: {}
+  adm-zip@0.5.17: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -20190,7 +20198,7 @@ snapshots:
   autoprefixer@10.4.27(postcss@8.5.14):
     dependencies:
       browserslist: 4.28.2
-      caniuse-lite: 1.0.30001774
+      caniuse-lite: 1.0.30001793
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.5.14
@@ -20199,7 +20207,7 @@ snapshots:
   autoprefixer@10.4.27(postcss@8.5.6):
     dependencies:
       browserslist: 4.28.2
-      caniuse-lite: 1.0.30001774
+      caniuse-lite: 1.0.30001793
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.5.6
@@ -21486,11 +21494,11 @@ snapshots:
 
   dayjs@1.11.20: {}
 
-  dcmjs@0.49.4:
+  dcmjs@0.52.0:
     dependencies:
-      '@babel/runtime-corejs3': 7.29.0
-      adm-zip: 0.5.16
-      gl-matrix: 3.4.3
+      '@babel/runtime-corejs3': 7.29.2
+      adm-zip: 0.5.17
+      gl-matrix: 3.4.4
       lodash.clonedeep: 4.5.0
       loglevel: 1.9.2
       ndarray: 1.0.19
@@ -21698,7 +21706,7 @@ snapshots:
       '@cornerstonejs/codec-openjpeg': 1.3.0
       '@cornerstonejs/codec-openjph': 2.4.7
       colormap: 2.3.2
-      dcmjs: 0.49.4
+      dcmjs: 0.52.0
       dicomicc: 0.1.0
       dicomweb-client: 0.10.4
       image-type: 4.1.0
@@ -22583,6 +22591,8 @@ snapshots:
   gitignore@0.7.0: {}
 
   gl-matrix@3.4.3: {}
+
+  gl-matrix@3.4.4: {}
 
   glob-parent@6.0.2:
     dependencies:
@@ -25964,14 +25974,14 @@ snapshots:
       postcss: 8.5.14
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
-      resolve: 1.22.11
+      resolve: 1.22.12
 
   postcss-import@14.1.0(postcss@8.5.6):
     dependencies:
       postcss: 8.5.6
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
-      resolve: 1.22.11
+      resolve: 1.22.12
 
   postcss-initial@4.0.1(postcss@8.5.6):
     dependencies:
@@ -26005,7 +26015,7 @@ snapshots:
   postcss-load-config@3.1.4(postcss@8.5.14)(ts-node@10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@20.19.9)(typescript@5.5.4)):
     dependencies:
       lilconfig: 2.1.0
-      yaml: 1.10.2
+      yaml: 1.10.3
     optionalDependencies:
       postcss: 8.5.14
       ts-node: 10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@20.19.9)(typescript@5.5.4)
@@ -26013,7 +26023,7 @@ snapshots:
   postcss-load-config@3.1.4(postcss@8.5.14)(ts-node@10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@25.9.1)(typescript@5.5.4)):
     dependencies:
       lilconfig: 2.1.0
-      yaml: 1.10.2
+      yaml: 1.10.3
     optionalDependencies:
       postcss: 8.5.14
       ts-node: 10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@25.9.1)(typescript@5.5.4)
@@ -26021,7 +26031,7 @@ snapshots:
   postcss-load-config@3.1.4(postcss@8.5.6)(ts-node@10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@25.9.1)(typescript@5.5.4)):
     dependencies:
       lilconfig: 2.1.0
-      yaml: 1.10.2
+      yaml: 1.10.3
     optionalDependencies:
       postcss: 8.5.6
       ts-node: 10.9.2(@swc/core@1.15.13(@swc/helpers@0.5.21))(@types/node@25.9.1)(typescript@5.5.4)
@@ -26328,7 +26338,7 @@ snapshots:
       '@csstools/postcss-trigonometric-functions': 1.0.2(postcss@8.5.6)
       '@csstools/postcss-unset-value': 1.0.2(postcss@8.5.6)
       autoprefixer: 10.4.21(postcss@8.5.6)
-      browserslist: 4.28.1
+      browserslist: 4.28.2
       css-blank-pseudo: 3.0.3(postcss@8.5.6)
       css-has-pseudo: 3.0.4(postcss@8.5.6)
       css-prefers-color-scheme: 6.0.3(postcss@8.5.6)
@@ -26710,7 +26720,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.29.0
       address: 1.2.2
-      browserslist: 4.28.1
+      browserslist: 4.28.2
       chalk: 4.1.2
       cross-spawn: 7.0.6
       detect-port-alt: 1.1.6
@@ -28834,7 +28844,7 @@ snapshots:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.16.0
       acorn-import-phases: 1.0.4(acorn@8.16.0)
-      browserslist: 4.28.1
+      browserslist: 4.28.2
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.19.0
       es-module-lexer: 2.0.0
@@ -29151,8 +29161,6 @@ snapshots:
   yallist@3.1.1: {}
 
   yallist@5.0.0: {}
-
-  yaml@1.10.2: {}
 
   yaml@1.10.3: {}
 
