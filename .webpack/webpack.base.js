@@ -56,6 +56,10 @@ const defineValues = {
   // bare expression reaches the browser and throws ReferenceError (no `process`
   // object exists there). null (not '') so `?? default` fallbacks apply.
   'process.env.BLACKVOXEL_API_URL': JSON.stringify(process.env.BLACKVOXEL_API_URL || null),
+  // Annotation Studio (3_labels) labels-api base URL, read by
+  // @blackvoxel/extension-labeling/api/labelsClient. null so `?? default`
+  // falls back to localhost:8090 in dev / same-origin via nginx in prod.
+  'process.env.VITE_LABELS_API_URL': JSON.stringify(process.env.VITE_LABELS_API_URL || null),
   // Header back-link target (ui-next Header.tsx); rendered whenever truthy.
   'process.env.BLACKVOXEL_PLATFORM_URL': JSON.stringify(
     process.env.BLACKVOXEL_PLATFORM_URL || 'https://blackvoxel.ai'
