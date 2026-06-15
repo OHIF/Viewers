@@ -95,6 +95,14 @@ declare global {
       useNorm16Texture?: boolean;
       useCPURendering?: boolean;
       strictZSpacingForVolumeViewport?: boolean;
+      /**
+       * Routes legacy cornerstone viewport types (STACK / ORTHOGRAPHIC / VOLUME_3D / etc.)
+       * through the new GenericViewport-backed render paths while preserving the legacy
+       * public API via compatibility adapters. Maps to cornerstone
+       * config.rendering.useGenericViewport. Defaults to false (legacy classes).
+       * Requires @cornerstonejs/core >= 5.0.0-beta (GenericViewport architecture).
+       */
+      useGenericViewport?: boolean;
       useCursors?: boolean;
       maxCacheSize?: number;
       max3DTextureSize?: number;

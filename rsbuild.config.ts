@@ -29,6 +29,7 @@ const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
 // Ignore node_modules except @cornerstonejs (symlinked local development).
 const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
+const WATCH_AGGREGATE_TIMEOUT = Number(process.env.WATCH_AGGREGATE_TIMEOUT || 1500);
 
 export default defineConfig({
   dev: {
@@ -91,6 +92,7 @@ export default defineConfig({
       watchOptions: {
         ignored: WATCH_IGNORED,
         followSymlinks: true,
+        aggregateTimeout: WATCH_AGGREGATE_TIMEOUT,
       },
     },
   },

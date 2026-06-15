@@ -26,7 +26,9 @@ module.exports = {
         '@babel/preset-typescript',
       ],
       plugins: [
-        'babel-plugin-istanbul',
+        // jest's babel coverage provider injects babel-plugin-istanbul when
+        // --collectCoverage is set; adding it here too makes babel 7 (pulled in
+        // by jest 30) throw "Duplicate plugin/preset detected".
         '@babel/plugin-transform-object-rest-spread',
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',

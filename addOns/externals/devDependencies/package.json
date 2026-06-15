@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.13.0-beta.87",
+  "version": "3.13.0-beta.89",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@kitware/vtk.js": "34.15.1",
+    "@kitware/vtk.js": "35.5.3",
     "clsx": "2.1.1",
     "core-js": "3.45.1",
     "moment": "2.30.1"
@@ -52,10 +52,10 @@
     "extract-css-chunks-webpack-plugin": "4.10.0",
     "html-webpack-plugin": "5.6.3",
     "husky": "3.1.0",
-    "jest": "29.7.0",
+    "jest": "30.2.0",
     "jest-canvas-mock": "2.5.2",
-    "jest-environment-jsdom": "29.7.0",
-    "jest-junit": "6.4.0",
+    "jest-environment-jsdom": "30.2.0",
+    "jest-junit": "16.0.0",
     "lerna": "9.0.4",
     "lint-staged": "9.5.0",
     "mini-css-extract-plugin": "2.9.2",

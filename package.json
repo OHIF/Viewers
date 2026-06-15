@@ -68,6 +68,7 @@
     "test:e2e:debug": "cross-env TEST_ENV=true npx playwright test --debug",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "review:screenshots": "node scripts/screenshot-reviewer.mjs",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
@@ -153,7 +154,7 @@
     "package-json": "8.1.1",
     "rollup": "2.80.0",
     "body-parser": "1.20.3",
-    "axios": "1.15.2",
+    "axios": "1.17.0",
     "core-js": "3.45.1",
     "tapable": "2.2.2",
     "@cornerstonejs/codec-openjpeg": "1.3.0",
@@ -169,7 +170,8 @@
     "flatted": "3.4.2",
     "handlebars": "4.7.9",
     "protobufjs": "7.5.7",
-    "tmp": "0.2.6"
+    "tmp": "0.2.6",
+    "shell-quote": "1.8.4"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

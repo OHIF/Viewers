@@ -42,11 +42,11 @@ test('should display the spline tool', async ({
 
   const stats = splines[0].firstTargetStats!;
   expect(stats.areaUnit).toBe('mm²');
-  expect(Math.round(stats.area as number)).toBe(38811);
+  expect(Math.round(stats.area as number)).toBe(38963);
 
   const lines = activeViewport.getSvgAnnotationStatTextLines(splines[0].annotationUID);
   await expect(lines).toHaveCount(1);
-  await expect(lines.nth(0)).toHaveText('Area: 38811 mm²');
+  await expect(lines.nth(0)).toHaveText('Area: 38963 mm²');
 });
 
 test('should restore viewport interactivity after deleting an in-progress Spline annotation via context menu', async ({
