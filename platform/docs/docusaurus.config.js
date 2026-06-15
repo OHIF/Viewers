@@ -35,7 +35,11 @@ const baseUrl = process.env.BASE_URL || '/';
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   future: {
-    experimental_faster: true,
+    faster: true,
+    v4: {
+      removeLegacyPostBuildHeadAttribute: true,
+      useCssCascadeLayers: true,
+    },
   },
   title: 'OHIF',
   tagline: 'Open-source web-based medical imaging platform',
@@ -49,7 +53,11 @@ module.exports = {
     locales: ['en'],
   },
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
   favicon: 'img/favicon.ico',
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [

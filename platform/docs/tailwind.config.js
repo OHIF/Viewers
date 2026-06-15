@@ -1,8 +1,8 @@
 module.exports = {
-  // Don't purge any tailwind classes, usefull for debugging
-  // ...(process.env.NODE_ENV === 'development' && {
-  //   safelist: [{ pattern: /.*/ }],
-  // }),
+  darkMode: ['class', '[data-theme="dark"]'],
+  corePlugins: {
+    preflight: false,
+  },
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
