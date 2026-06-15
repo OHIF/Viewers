@@ -1,10 +1,4 @@
-import {
-  expect,
-  test,
-  visitStudy,
-  waitForViewportsRendered,
-  getSvgAttribute,
-} from './utils';
+import { expect, test, visitStudy, waitForViewportsRendered, getSvgAttribute } from './utils';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defaultSegment0Name = 'Threshold';
@@ -38,7 +32,7 @@ test('should delete a contour segment and remove its row from the panel', async 
   expect(countAfterDelete, 'Expected one fewer segment row after deleting').toBe(3);
   // The deleted segment's title should no longer be present anywhere in the panel
   await expect(
-    panel.getSegmentTitles().filter({ hasText: defaultSegment0Name }),
+    panel.getSegmentLabels().filter({ hasText: defaultSegment0Name }),
     'Expected the deleted segment title to be gone from the panel'
   ).toHaveCount(0);
 
@@ -64,12 +58,12 @@ test('should delete multiple contour segments sequentially', async ({ rightPanel
   expect(countAfterSecondDelete, 'Expected 2 segments after second delete').toBe(2);
 
   await expect(
-    panel.getSegmentTitles().filter({ hasText: defaultSegment0Name }),
+    panel.getSegmentLabels().filter({ hasText: defaultSegment0Name }),
     'Expected the deleted Threshold segment title to be gone from the panel'
   ).toHaveCount(0);
 
   await expect(
-    panel.getSegmentTitles().filter({ hasText: defaultSegment1Name }),
+    panel.getSegmentLabels().filter({ hasText: defaultSegment1Name }),
     'Expected the deleted Big Sphere segment title to be gone from the panel'
   ).toHaveCount(0);
 });
@@ -89,7 +83,10 @@ test('should remove the deleted segment contour from the viewport', async ({
   await segment0.click();
 
   const svgPathLocator = (await viewportPageObject.getById('default')).svg('path');
-  await expect(svgPathLocator, 'Expected exactly one visible contour path before delete').toHaveCount(1);
+  await expect(
+    svgPathLocator,
+    'Expected exactly one visible contour path before delete'
+  ).toHaveCount(1);
 
   // Capture the contour path of the segment we are about to delete
   const segmentToBeDeletedSvgPath = await getSvgAttribute({
@@ -97,11 +94,14 @@ test('should remove the deleted segment contour from the viewport', async ({
     svgInnerElement: 'path',
     attributeName: 'd',
   });
-  expect(segmentToBeDeletedSvgPath, 'Expected a visible SVG path for the segment to delete').not.toBeNull();
+  expect(
+    segmentToBeDeletedSvgPath,
+    'Expected a visible SVG path for the segment to delete'
+  ).not.toBeNull();
 
   await segment0.actions.delete();
   await expect(
-    panel.getSegmentTitles().filter({ hasText: defaultSegment0Name }),
+    panel.getSegmentLabels().filter({ hasText: defaultSegment0Name }),
     'Expected the Threshold segment title to be gone from the panel'
   ).toHaveCount(0);
 
@@ -125,7 +125,10 @@ test('should remove the deleted segment contour from the viewport', async ({
     svgInnerElement: 'path',
     attributeName: 'd',
   });
-  expect(newSegmentSvgPath, 'Expected a visible SVG path for the new index-0 segment').not.toBeNull();
+  expect(
+    newSegmentSvgPath,
+    'Expected a visible SVG path for the new index-0 segment'
+  ).not.toBeNull();
 
   expect(
     newSegmentSvgPath,
