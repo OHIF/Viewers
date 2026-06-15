@@ -31,17 +31,17 @@ export default function ComponentShowcase() {
           {/* Navigation cards */}
           <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-3">
             <a
-              href="/colors-and-type"
+              href="/theming"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
               <Card className="hover:bg-primary/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
-                    Colors & Typography
+                    Colors & Theming
                   </CardTitle>
                   <CardDescription className="text-lg">
-                    Color Palette and Typography Guidelines
+                    Color Tokens, Themes, and Accessibility
                   </CardDescription>
                 </CardHeader>
               </Card>
