@@ -188,6 +188,9 @@ importers:
       tailwindcss-animate:
         specifier: 1.0.7
         version: 1.0.7(tailwindcss@3.2.4(postcss@8.5.6))
+      tailwindcss-scoped-preflight:
+        specifier: 3.5.9
+        version: 3.5.9(postcss@8.5.6)(tailwindcss@3.2.4(postcss@8.5.6))
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -7195,6 +7198,12 @@ packages:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
+
+  tailwindcss-scoped-preflight@3.5.9:
+    resolution: {integrity: sha512-Q1lJssrJ2K96bCj8tocF/HCMy1NwMpFE30is3F4qFAAGfS9XYj6pz8JqfATSEnFhr7D6VAGLMn9apr/yqbSgTQ==}
+    peerDependencies:
+      postcss: ^8
+      tailwindcss: ^3
 
   tailwindcss@3.2.4:
     resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
@@ -16738,6 +16747,11 @@ snapshots:
 
   tailwindcss-animate@1.0.7(tailwindcss@3.2.4(postcss@8.5.6)):
     dependencies:
+      tailwindcss: 3.2.4(postcss@8.5.6)
+
+  tailwindcss-scoped-preflight@3.5.9(postcss@8.5.6)(tailwindcss@3.2.4(postcss@8.5.6)):
+    dependencies:
+      postcss: 8.5.6
       tailwindcss: 3.2.4(postcss@8.5.6)
 
   tailwindcss@3.2.4(postcss@8.5.6):

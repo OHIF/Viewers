@@ -207,31 +207,40 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.theme-doc-markdown h1,
+.theme-doc-markdown h2,
+.theme-doc-markdown h3,
+.theme-doc-markdown h4,
+.theme-doc-markdown h5 {
   color: var(--ifm-color-primary);
   font-weight: 400;
   font-family: 'Inter', sans-serif;
 }
 
-blockquote {
+.markdown blockquote,
+.theme-doc-markdown blockquote {
   border-left: 3px solid #4042af;
 }
 
 /* Temporary Type Size Changes */
 
-article header h1 {
+.markdown article header h1,
+.theme-doc-markdown article header h1 {
   font-size: 2.6rem !important;
 }
 
-article h2 {
+.markdown article h2,
+.theme-doc-markdown article h2 {
   font-size: 1.85rem !important;
 }
 
-article header h3 {
+.markdown article header h3,
+.theme-doc-markdown article header h3 {
   font-size: 1.5rem !important;
 }
 

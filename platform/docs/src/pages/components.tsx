@@ -131,7 +131,7 @@ export default function ComponentShowcase() {
       title="OHIF Viewer Design System"
       description="OHIF Viewer Design System"
     >
-      <div className="text-foreground min-h-screen bg-background">
+      <div className="showcase-isolated text-foreground min-h-screen bg-background">
         <div className="mx-auto my-4 max-w-5xl pt-6 pb-3">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <a
