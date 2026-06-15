@@ -30,7 +30,7 @@ test('should delete a contour segment and remove its row from the panel', async 
 
   const countAfterDelete = await panel.getSegmentCount();
   expect(countAfterDelete, 'Expected one fewer segment row after deleting').toBe(3);
-  // The deleted segment's title should no longer be present anywhere in the panel
+  // The deleted segment's label should no longer be present anywhere in the panel
   await expect(
     panel.getSegmentLabels().filter({ hasText: defaultSegment0Name }),
     'Expected the deleted segment title to be gone from the panel'
