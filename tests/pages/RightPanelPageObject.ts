@@ -247,6 +247,9 @@ export class RightPanelPageObject {
 
     return {
       moreMenu,
+      // Retrying-friendly locator for `expect(...).toHaveCount(n)` — prefer this
+      // over the one-shot getSegmentCount() when asserting row counts.
+      rows: page.getByTestId('data-row'),
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
