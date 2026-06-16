@@ -3,7 +3,6 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForPaintToSettle,
   waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
@@ -36,11 +35,11 @@ test('should properly display MPR for MR', async ({
 
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
+  // SEG load triggers a progressive labelmap volume upload. waitForViewportsRendered
+  // (waitVolumeLoad defaults to true) polls the viewport volume actors until the
+  // labelmap reports loadStatus.loaded, then settles, so the screenshot captures the
+  // finished upload rather than a mid-stream frame.
   await waitForViewportsRendered(page);
-  // SEG load triggers an additional progressive labelmap upload after the
-  // viewports first report 'rendered'; let that finish before screenshotting.
-  await page.waitForTimeout(1500);
-  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,
@@ -54,11 +53,11 @@ test('should properly display MPR for MR', async ({
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await viewportRenderCycle;
-  // Hydration propagates the labelmap volume to the sagittal/coronal MPR
-  // viewports asynchronously; wait for that propagation to render before
-  // capturing.
-  await page.waitForTimeout(1500);
-  await waitForPaintToSettle(page);
+  // Hydration propagates the labelmap volume to the sagittal/coronal MPR viewports
+  // asynchronously, adding new volume actors after the first render cycle resolves.
+  // waitForViewportsRendered re-polls every viewport's volume actors until those
+  // propagated labelmaps report loadStatus.loaded, then settles.
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot(
     page,
@@ -71,8 +70,9 @@ test('should properly display MPR for MR', async ({
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
   await viewportRenderAfterLayoutChange;
-  await page.waitForTimeout(1000);
-  await waitForPaintToSettle(page);
+  // The layout change rebuilds the viewports; wait for their volume actors (image
+  // + labelmap) to report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot(
     page,

@@ -16,6 +16,9 @@ minimumReleaseAgeExclude:
   - '@cornerstonejs/*'
 frozenLockfile: true
 
+# Skip the pre-`pnpm run` frozen deps-check; installs set freshness explicitly.
+verifyDepsBeforeRun: false
+
 # Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
 # risk: minimatch/picomatch advisories reached only via build/CI tooling, never
 # fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
