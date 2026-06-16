@@ -69,11 +69,6 @@
     {
       "packageName": "@blackvoxel/extension-blackvoxel-ai",
       "version": "0.1.0"
-    },
-    {
-      "packageName": "@blackvoxel/extension-labeling",
-      "version": "0.1.0",
-      "_mimps": "Annotation Studio (3_labels, LBL-01): assignment queue / ontology / earnings panels + submitForReview. Source under projects/3_labels/src, resolved via file: dep in root package.json."
     }
   ],
   "modes": [
@@ -82,11 +77,6 @@
     },
     {
       "packageName": "@ohif/mode-basic"
-    },
-    {
-      "packageName": "@blackvoxel/mode-labeling",
-      "default": false,
-      "_mimps": "Annotation Studio (3_labels, LBL-01). default:false keeps it out of the diagnostic worklist mode picker; reached at the /labeling route. Promote to its own labels.blackvoxel.ai instance at scale (founder D-arch / D2)."
     },
     {
       "packageName": "@ohif/mode-segmentation",
