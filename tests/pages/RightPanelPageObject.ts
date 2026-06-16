@@ -37,9 +37,7 @@ export class RightPanelPageObject {
 
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
-    // The actions menu content is rendered in a portal on the document body
-    // (DropdownMenuContent), so it is not a descendant of `row`.
-    const lockToggle = row.getByTestId('LockToggle');
+    const lockToggle = this.page.getByTestId('LockToggle');
 
     return {
       button: actionsButton,
