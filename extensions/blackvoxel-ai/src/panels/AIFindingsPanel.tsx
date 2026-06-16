@@ -635,6 +635,27 @@ function AIFindingsPanel({
         )}
       </div>
 
+      {/* CXR-26: which model wrote the draft + flag when the paid model is unavailable */}
+      <div
+        className="mx-3 mt-2 flex flex-wrap items-center gap-1.5 text-[10px]"
+        style={{ color: TEXT_SECONDARY }}
+      >
+        <span>
+          {result.report_source === 'medgemma'
+            ? 'Rascunho gerado por IA (MedGemma)'
+            : 'Rascunho: modelo gratuito (template determinístico)'}
+        </span>
+        {result.report_source !== 'medgemma' && result.paid_report_available === false && (
+          <span
+            className="rounded px-1.5 py-0.5"
+            style={{ backgroundColor: 'rgba(217, 119, 6, 0.15)', color: '#FBBF24' }}
+            title="O modelo generativo pago não está habilitado — usando o rascunho gratuito."
+          >
+            modelo pago indisponível
+          </span>
+        )}
+      </div>
+
       {/* CXR-14: report consistency gate */}
       {result.report_verified === false && (result.report_warnings?.length ?? 0) > 0 ? (
         <div

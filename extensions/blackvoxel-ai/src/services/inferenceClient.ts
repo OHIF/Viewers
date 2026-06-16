@@ -67,6 +67,12 @@ export interface InferenceResponse {
   /** CXR-14: findings↔report consistency gate. */
   report_verified?: boolean;
   report_warnings?: string[];
+  /** CXR-13/CXR-26: which lane wrote the draft — "template" or "medgemma". */
+  report_source?: string;
+  /** CXR-26: whether the paid generative model is currently enabled+configured. */
+  paid_report_available?: boolean;
+  /** CXR-26: why the free template was used — null | "paid_disabled" | "paid_unavailable" | "guardrail_rejected". */
+  report_fallback_reason?: string | null;
 }
 
 export class InferenceError extends Error {
