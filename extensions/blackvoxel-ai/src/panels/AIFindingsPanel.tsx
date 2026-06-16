@@ -9,6 +9,8 @@ import {
 import { clearAIBoundingBoxes, showAIBoundingBoxes } from '../services/viewportOverlay';
 import { toPtLabel, toSeverityDisplay } from '../utils/labels';
 import { STATIC_DEMO_DATA } from './staticDemoData';
+// MIMPS-26: research-only DICOM import button
+import { DicomImportButton } from '../components/DicomImportButton';
 
 // ---------------------------------------------------------------------------
 // Brand constants (MIMPS-02 palette)
@@ -547,6 +549,9 @@ function AIFindingsPanel({
           )}
         </span>
       </div>
+
+      {/* MIMPS-26: DICOM import affordance — only visible in Research mode */}
+      <DicomImportButton />
 
       {/* Offline / fallback banner */}
       {usingFallback && (

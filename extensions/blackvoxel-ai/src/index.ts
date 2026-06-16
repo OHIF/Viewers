@@ -23,3 +23,8 @@ export type { ViewerMode, ViewerModeState } from './stores/useViewerModeStore';
 // Re-export the change-mode button so the viewer header (or any future
 // toolbar integration) can render it without importing internal paths.
 export { ChangeModeButton } from './components/ViewerModeGate';
+
+// ---------------------------------------------------------------------------
+// MIMPS-26: DICOM import affordance (research-mode-gated)
+// ---------------------------------------------------------------------------
+export { DicomImportButton } from './components/DicomImportButton';
