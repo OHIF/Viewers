@@ -1,4 +1,11 @@
-import { expect, test, visitStudy, getSvgAttribute, navigateWithViewportArrow } from './utils';
+import {
+  expect,
+  test,
+  visitStudy,
+  getSvgAttribute,
+  navigateWithViewportArrow,
+  waitForViewportsRendered,
+} from './utils';
 import { expectRowSelected } from './utils/assertions';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
@@ -20,11 +27,20 @@ test.beforeEach(async ({
 });
 
 test('should navigate the contours when clicking each segments in the right panel', async ({
+  page,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
   const getSegment = (index: number) =>
     rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(index);
+
+  // Clicking a segment navigates the viewport to that segment's slice and
+  // re-renders its contour. Wait for the render to settle before reading the
+  // SVG path so we don't capture the previous segment's path on slower CI.
+  const selectSegment = async (index: number) => {
+    await getSegment(index).click();
+    await waitForViewportsRendered(page);
+  };
 
   const seg0 = await getSvgAttribute({
     viewportPageObject,
@@ -33,7 +49,7 @@ test('should navigate the contours when clicking each segments in the right pane
   });
   expect(seg0, 'Segment at index 0: expected a non-null SVG path').not.toBeNull();
 
-  await getSegment(3).click();
+  await selectSegment(3);
   const seg3 = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -42,7 +58,7 @@ test('should navigate the contours when clicking each segments in the right pane
   expect(seg3, 'Segment at index 3: expected a non-null SVG path').not.toBeNull();
   await expectRowSelected(getSegment(3));
 
-  await getSegment(2).click();
+  await selectSegment(2);
   const seg2 = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -51,7 +67,7 @@ test('should navigate the contours when clicking each segments in the right pane
   expect(seg2, 'Segment at index 2: expected a non-null SVG path').not.toBeNull();
   await expectRowSelected(getSegment(2));
 
-  await getSegment(1).click();
+  await selectSegment(1);
   const seg1 = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -61,7 +77,7 @@ test('should navigate the contours when clicking each segments in the right pane
   await expectRowSelected(getSegment(1));
 
   // Clicking segments again should return the original paths
-  await getSegment(2).click();
+  await selectSegment(2);
   const seg2Again = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -70,7 +86,7 @@ test('should navigate the contours when clicking each segments in the right pane
   expect(seg2Again, 'Segment 2 again: expected to match the original segment 2 path').toBe(seg2);
   await expectRowSelected(getSegment(2));
 
-  await getSegment(1).click();
+  await selectSegment(1);
   const seg1Again = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -79,7 +95,7 @@ test('should navigate the contours when clicking each segments in the right pane
   expect(seg1Again, 'Segment 1 again: expected to match the original segment 1 path').toBe(seg1);
   await expectRowSelected(getSegment(1));
 
-  await getSegment(0).click();
+  await selectSegment(0);
   const seg0Again = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -88,7 +104,7 @@ test('should navigate the contours when clicking each segments in the right pane
   expect(seg0Again, 'Segment 0 again: expected to match the original segment 0 path').toBe(seg0);
   await expectRowSelected(getSegment(0));
 
-  await getSegment(3).click();
+  await selectSegment(3);
   const seg3Again = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -99,11 +115,19 @@ test('should navigate the contours when clicking each segments in the right pane
 });
 
 test('should navigate the segmentations using the Viewport arrow buttons', async ({
+  page,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
   const getSegment = (index: number) =>
     rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(index);
+
+  // Arrow navigation jumps to the next/prev segment and re-renders its contour.
+  // Wait for the render to settle before reading the SVG path.
+  const navigate = async (direction: 'next' | 'prev') => {
+    await navigateWithViewportArrow(viewportPageObject, direction);
+    await waitForViewportsRendered(page);
+  };
 
   const initialSvgPath = await getSvgAttribute({
     viewportPageObject,
@@ -114,7 +138,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   // Expect the correct segment to be selected in the right panel
   await expectRowSelected(getSegment(0));
 
-  await navigateWithViewportArrow(viewportPageObject, 'next');
+  await navigate('next');
   const secondSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -123,7 +147,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   expect(secondSvgPath, 'Segment at index 1: expected a different SVG path from segment 0').not.toBe(initialSvgPath);
   await expectRowSelected(getSegment(1));
 
-  await navigateWithViewportArrow(viewportPageObject, 'next');
+  await navigate('next');
   const thirdSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -132,7 +156,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   expect(thirdSvgPath, 'Segment at index 2: expected a different SVG path from segment 1').not.toBe(secondSvgPath);
   await expectRowSelected(getSegment(2));
 
-  await navigateWithViewportArrow(viewportPageObject, 'next');
+  await navigate('next');
   const fourthSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -142,7 +166,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   await expectRowSelected(getSegment(3));
 
   // Wraparound test — next from last should return to first segment
-  await navigateWithViewportArrow(viewportPageObject, 'next');
+  await navigate('next');
   const svgPathWraparoundWithNext = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -155,7 +179,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   await expectRowSelected(getSegment(0));
 
   // Wraparound test — prev from first should return to last segment
-  await navigateWithViewportArrow(viewportPageObject, 'prev');
+  await navigate('prev');
   const svgPathWraparoundWithPrev = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -167,7 +191,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   ).toBe(fourthSvgPath);
   await expectRowSelected(getSegment(3));
 
-  await navigateWithViewportArrow(viewportPageObject, 'prev');
+  await navigate('prev');
   const backToThirdSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -176,7 +200,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   expect(backToThirdSvgPath, 'Expected path to match third segment after going prev from fourth').toBe(thirdSvgPath);
   await expectRowSelected(getSegment(2));
 
-  await navigateWithViewportArrow(viewportPageObject, 'prev');
+  await navigate('prev');
   const backToSecondSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -185,7 +209,7 @@ test('should navigate the segmentations using the Viewport arrow buttons', async
   expect(backToSecondSvgPath, 'Expected path to match second segment after going prev from third').toBe(secondSvgPath);
   await expectRowSelected(getSegment(1));
 
-  await navigateWithViewportArrow(viewportPageObject, 'prev');
+  await navigate('prev');
   const backToFirstSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',

@@ -1,8 +1,7 @@
 # Packages
 node_modules
 .cursor/
-/.claude/
-**/.claude/settings.local.json
+.claude/
 .nyc_output/
 # Output
 build

@@ -1,0 +1,87 @@
+packages:
+  - platform/*
+  - extensions/*
+  - modes/*
+
+# Mirror the cornerstone3D pnpm setup (libs/@cornerstonejs) which is known-good.
+nodeLinker: hoisted
+strictPeerDependencies: false
+linkWorkspacePackages: true
+preferWorkspacePackages: true
+minimumReleaseAge: 2880
+# Exempt the cornerstone3D packages from the release-age check: they are pinned
+# to an exact version (5.0.0) that may be newer than the cutoff. Mirrors the
+# bunfig.toml `minimumReleaseAgeExcludes` list (pnpm supports glob patterns).
+minimumReleaseAgeExclude:
+  - '@cornerstonejs/*'
+frozenLockfile: true
+
+# Skip the pre-`pnpm run` frozen deps-check; installs set freshness explicitly.
+verifyDepsBeforeRun: false
+
+# Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
+# risk: minimatch/picomatch advisories reached only via build/CI tooling, never
+# fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
+# job and the root `audit` script.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-3ppc-4f35-3m26 # CVE-2026-26996  - minimatch (build/CI only, no CLI use)
+    - GHSA-7r86-cg39-jmmj # CVE-2026-27903  - minimatch (same)
+    - GHSA-23c5-xmqv-rm74 # CVE-2026-27904  - minimatch (same)
+    - GHSA-c2c7-rcm5-vvqj # CVE-2026-33671  - picomatch (build/CI only)
+
+allowBuilds:
+  '@scarf/scarf': true
+  '@swc/core': true
+  core-js: true
+  core-js-pure: true
+  cypress: true
+  protobufjs: true
+  sharp: true
+overrides:
+  # Synced from origin/master's package.json `resolutions` block during the
+  # merge. Keep this list aligned with master so security/version pins from
+  # upstream PRs land here too.
+  commander: 8.3.0
+  cross-env: 7.0.3
+  cross-spawn: 7.0.6
+  dcmjs: 0.49.4
+  path-to-regexp: 0.1.13
+  nth-check: 2.1.1
+  trim-newlines: 5.0.0
+  glob-parent: 6.0.2
+  trim: 1.0.1
+  package-json: 8.1.1
+  rollup: 2.80.0
+  body-parser: 1.20.3
+  axios: 1.17.0
+  core-js: 3.45.1
+  '@babel/runtime-corejs2': 7.26.10
+  tapable: 2.2.2
+  '@cornerstonejs/codec-openjpeg': 1.3.0
+  node-forge: 1.4.0
+  qs: 6.14.1
+  lodash: 4.18.1
+  lodash-es: 4.18.1
+  diff: 5.2.2
+  webpack: 5.105.0
+  tar: 7.5.11
+  serialize-javascript: 7.0.4
+  svgo: 3.3.3
+  flatted: 3.4.2
+  handlebars: 4.7.9
+  protobufjs: 7.5.7
+  tmp: 0.2.6
+  shell-quote: 1.8.4
+  # fast-uri <=3.1.1 reaches the tree only via platform/docs
+  # (@docusaurus/plugin-pwa > workbox-build > ajv). 3.1.2 patches both
+  # GHSA-q3j6-qgpj-74h6 (path traversal) and GHSA-v39h-62p7-jpjc (host confusion).
+  fast-uri: 3.1.2
+  '@babel/plugin-transform-modules-systemjs': 7.29.4
+  # pnpm-branch-only overrides (kept across merges from master).
+  sharp: 0.34.5
+  # Force a single modern tslib for the whole workspace. Without this, rxjs@6
+  # pulls in tslib@1, which gets hoisted to root node_modules and shadows the
+  # tslib@2 that modern packages (e.g. react-remove-scroll) need for
+  # __spreadArray.
+  tslib: ^2.8.1
