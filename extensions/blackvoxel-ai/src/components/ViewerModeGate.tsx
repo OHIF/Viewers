@@ -110,8 +110,8 @@ function ModeCard({
         </div>
 
         {/* Content */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span
               className="text-[15px] font-bold"
               style={{ color: disabled ? TEXT_SECONDARY : '#fff' }}
@@ -126,7 +126,7 @@ function ModeCard({
             </span>
             {badge && (
               <span
-                className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
+                className="flex-shrink-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold"
                 style={{
                   backgroundColor: 'rgba(217,119,6,0.2)',
                   color: '#FBBF24',
@@ -202,7 +202,7 @@ function ViewerModeModal({
           className="rounded-t-2xl px-6 py-4"
           style={{ backgroundColor: BRAND_VIOLET }}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             {/* Sparkle icon */}
             <svg
               width="16"
@@ -220,7 +220,7 @@ function ViewerModeModal({
               BlackVoxel MIMPS
             </span>
             <span
-              className="ml-auto rounded px-2 py-0.5 text-[10px] font-semibold"
+              className="ml-auto flex-shrink-0 whitespace-nowrap rounded px-2 py-0.5 text-[10px] font-semibold"
               style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
             >
               Research Only
