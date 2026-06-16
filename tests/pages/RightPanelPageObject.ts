@@ -37,7 +37,9 @@ export class RightPanelPageObject {
 
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
-    const lockToggleMenuItem = this.page.getByTestId('LockToggle');
+    // The actions menu content is rendered in a portal on the document body
+    // (DropdownMenuContent), so it is not a descendant of `row`.
+    const lockToggle = row.getByTestId('LockToggle');
 
     return {
       button: actionsButton,
@@ -48,14 +50,14 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Delete').click();
       },
-      // Open lock toggle menu item and return the locator
-      openLockToggleMenuItem: async () => {
+      // Opens the actions menu and returns the lock/unlock menu item locator
+      lockToggleMenuItem: async () => {
         await actionsButton.click();
-        return lockToggleMenuItem;
+        return lockToggle;
       },
       toggleLock: async () => {
         await actionsButton.click();
-        await lockToggleMenuItem.click();
+        await lockToggle.click();
       },
       rename: async (text: string) => {
         await actionsButton.click();

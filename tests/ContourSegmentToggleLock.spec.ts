@@ -31,7 +31,7 @@ test('should show the lock indicator and flip the menu label between Lock and Un
   // The lock icon is only rendered inside the row once locked.
   await expectRowUnlocked(segment0);
 
-  let lockToggle = await segment0.actions.openLockToggleMenuItem();
+  let lockToggle = await segment0.actions.lockToggleMenuItem();
   await expect(lockToggle, 'Expected the menu item to read "Lock" before locking').toHaveText(
     'Lock'
   );
@@ -41,14 +41,14 @@ test('should show the lock indicator and flip the menu label between Lock and Un
   await expectRowLocked(segment0);
 
   // Reopen the actions menu: the toggle label should now read "Unlock".
-  lockToggle = await segment0.actions.openLockToggleMenuItem();
+  lockToggle = await segment0.actions.lockToggleMenuItem();
   await expect(lockToggle, 'Expected the menu item to read "Unlock" after locking').toHaveText('Unlock');
 
   // Unlock the segment again by clicking the already-open menu item.
   await lockToggle.click();
   await expectRowUnlocked(segment0);
 
-  lockToggle = await segment0.actions.openLockToggleMenuItem();
+  lockToggle = await segment0.actions.lockToggleMenuItem();
   await expect(
     lockToggle,
     'Expected the menu item to read "Lock" again after unlocking'
