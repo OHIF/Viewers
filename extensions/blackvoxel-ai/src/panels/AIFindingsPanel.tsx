@@ -11,6 +11,8 @@ import { toPtLabel, toSeverityDisplay } from '../utils/labels';
 import { STATIC_DEMO_DATA } from './staticDemoData';
 // MIMPS-26: research-only DICOM import button
 import { DicomImportButton } from '../components/DicomImportButton';
+// MIMPS-27: viewer-mode gate — AI inference is Research-mode only
+import { useViewerMode } from '../stores/useViewerModeStore';
 
 // ---------------------------------------------------------------------------
 // Brand constants (MIMPS-02 palette)
@@ -406,6 +408,10 @@ function AIFindingsPanel({
   studyInstanceUID,
   seriesInstanceUID,
 }: AIFindingsPanelProps): React.ReactElement {
+  // MIMPS-27: gate — all hooks must be called unconditionally (Rules of Hooks).
+  // The mode value guards the effect body so getInference never fires outside Research.
+  const { mode } = useViewerMode();
+
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<InferenceResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -413,6 +419,22 @@ function AIFindingsPanel({
   const [sessionExpired, setSessionExpired] = useState(false);
 
   useEffect(() => {
+    // MIMPS-27: Research mode is required for AI inference.
+    // Rationale: Research = de-identified / non-PHI → external model calls
+    // (including Gemini/MedGemma) are permitted.  Clinical = PHI context →
+    // no model network calls until a compliant deployment is in place.
+    if (mode !== 'research') {
+      // Ensure any stale overlay from a previous research session is cleared.
+      clearAIBoundingBoxes();
+      // Reset inference state so switching back to research triggers a fresh run.
+      setLoading(true);
+      setData(null);
+      setError(null);
+      setUsingFallback(false);
+      setSessionExpired(false);
+      return;
+    }
+
     // Resolve study/series UIDs: prefer props, fall back to URL query params.
     const params = new URLSearchParams(window.location.search);
     const studyUid = studyInstanceUID ?? params.get('StudyInstanceUIDs') ?? '';
@@ -486,7 +508,58 @@ function AIFindingsPanel({
       // Panel closing / re-running: never leave stale AI boxes on the viewport.
       clearAIBoundingBoxes();
     };
-  }, [servicesManager, studyInstanceUID, seriesInstanceUID]);
+  }, [mode, servicesManager, studyInstanceUID, seriesInstanceUID]);
+
+  // --- MIMPS-27: Non-research mode — AI models disabled ---
+  // Render a bilingual placeholder; no inference state is shown.
+  // DicomImportButton already gates itself to research mode (MIMPS-26).
+  if (mode !== 'research') {
+    return (
+      <div className="flex h-full flex-col bg-black text-[13px]">
+        {/* Keep the panel header so the panel feels anchored */}
+        <div
+          className="flex flex-shrink-0 items-center gap-2 px-3 py-2.5"
+          style={{ backgroundColor: BRAND_VIOLET }}
+        >
+          <span className="text-[13px] font-bold text-white">BlackVoxel IA — Achados</span>
+        </div>
+
+        {/* Bilingual placeholder */}
+        <div
+          className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          {/* Lock icon */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={TEXT_SECONDARY}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+
+          <p
+            className="m-0 max-w-[220px] text-[12px] leading-snug"
+            style={{ color: TEXT_SECONDARY }}
+          >
+            Os modelos de IA estão disponíveis apenas no modo Pesquisa.
+            <br />
+            <span className="opacity-70">
+              AI models are available in Research mode only.
+            </span>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // --- Session expired state ---
   if (sessionExpired) {
