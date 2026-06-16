@@ -1,7 +1,14 @@
 import React from 'react';
 import AIFindingsPanel from './panels/AIFindingsPanel';
 import AIPanelErrorBoundary from './panels/AIPanelErrorBoundary';
+import { ViewerModeGate } from './components/ViewerModeGate';
 
+/**
+ * MIMPS-25: The ViewerModeGate is mounted here alongside the AI panel.
+ * It renders a React portal into document.body, so it floats above all OHIF
+ * layers regardless of panel DOM position.  The gate is only visible when no
+ * valid mode has been chosen (mode === null in sessionStorage).
+ */
 function getPanelModule({ servicesManager }: { servicesManager: unknown }): Array<{
   name: string;
   iconName: string;
@@ -17,6 +24,8 @@ function getPanelModule({ servicesManager }: { servicesManager: unknown }): Arra
       label: 'Achados IA',
       component: () => (
         <AIPanelErrorBoundary>
+          {/* MIMPS-25: mode gate portal — blocks viewer until Research is chosen */}
+          <ViewerModeGate />
           <AIFindingsPanel servicesManager={servicesManager} />
         </AIPanelErrorBoundary>
       ),
