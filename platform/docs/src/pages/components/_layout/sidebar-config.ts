@@ -39,7 +39,7 @@ export const sidebarSections: SidebarSection[] = [
       { label: 'Select', href: '/components/select' },
       { label: 'Separator', href: '/components/separator' },
       { label: 'Slider', href: '/components/slider' },
-      { label: 'Switch', href: '/components/switch' },
+      { label: 'Switch', href: '/components/switch-toggle' },
       { label: 'Tabs', href: '/components/tabs' },
       { label: 'Toast', href: '/components/toast' },
       { label: 'Toggle', href: '/components/toggle' },

@@ -94,16 +94,6 @@ function ButtonPageContent() {
         />
       </Section>
 
-      <Section title="Usage">
-        <CodeBlock
-          code={`import { Button } from '@ohif/ui-next';
-
-<Button variant="default">Click me</Button>
-<Button variant="ghost" size="sm">Settings</Button>
-<Button variant="destructive">Delete</Button>`}
-        />
-      </Section>
-
       <Section title="Examples">
         <ExampleBlock title="Dialog footer">
           <div className="flex justify-end gap-2">
@@ -131,6 +121,16 @@ function ButtonPageContent() {
             <Button variant="ghost" disabled>Disabled Ghost</Button>
           </div>
         </ExampleBlock>
+      </Section>
+
+      <Section title="Usage">
+        <CodeBlock
+          code={`import { Button } from '@ohif/ui-next';
+
+<Button variant="default">Click me</Button>
+<Button variant="ghost" size="sm">Settings</Button>
+<Button variant="destructive">Delete</Button>`}
+        />
       </Section>
 
       <Section title="Props">
