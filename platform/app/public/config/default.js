@@ -3,6 +3,7 @@
 window.config = {
   name: 'config/default.js',
   routerBasename: null,
+  useNextViewports: true,
   // whiteLabeling: {},
   extensions: [],
   modes: [],

@@ -2151,7 +2151,14 @@ function commandsModule({
     setViewportOrientation: ({ viewportId, orientation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport || !isOrthographicViewportType(viewport)) {
+      // Accept legacy ORTHOGRAPHIC viewports and native Generic ("next") viewports
+      // currently in volume mode. A native PLANAR_NEXT viewport renders MPR but
+      // reports type=planarNext, so the legacy type guard alone misses it; the
+      // content-mode capability guard catches it. Both expose setOrientation().
+      if (
+        !viewport ||
+        !(isOrthographicViewportType(viewport) || csUtils.viewportIsInVolumeMode(viewport))
+      ) {
         console.warn('Orientation can only be set on volume viewports');
         return;
       }
