@@ -235,13 +235,13 @@ importers:
         specifier: 35.5.3
         version: 35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       dcmjs:
         specifier: 0.49.4
@@ -308,16 +308,16 @@ importers:
         specifier: 35.5.3
         version: 35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       prop-types:
         specifier: 15.8.1
@@ -348,16 +348,16 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       prop-types:
         specifier: 15.8.1
@@ -397,16 +397,16 @@ importers:
         specifier: 35.5.3
         version: 35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       prop-types:
         specifier: 15.8.1
@@ -446,13 +446,13 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -489,19 +489,19 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -535,10 +535,10 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       dcmjs:
         specifier: 0.49.4
@@ -590,16 +590,16 @@ importers:
         specifier: 1.3.0
         version: 1.3.0
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       colormap:
         specifier: 2.3.2
@@ -642,10 +642,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -676,10 +676,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -716,16 +716,16 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       '@xstate/react':
         specifier: 3.2.2
@@ -762,10 +762,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -796,10 +796,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui
       classnames:
         specifier: 2.5.1
@@ -836,19 +836,19 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../cornerstone
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../default
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/i18n
       '@ohif/ui-next':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/ui-next
       prop-types:
         specifier: 15.8.1
@@ -930,28 +930,28 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-rt':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-rt
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-video
     devDependencies:
       webpack-merge:
@@ -964,22 +964,22 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-video
       i18next:
         specifier: 17.3.1
@@ -995,28 +995,28 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-video
       '@ohif/extension-measurement-tracking':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/measurement-tracking
       '@ohif/extension-test':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/test-extension
       i18next:
         specifier: 17.3.1
@@ -1032,34 +1032,34 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-rt':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-rt
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-video
       '@ohif/extension-measurement-tracking':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/measurement-tracking
       '@ohif/mode-basic':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../basic
       i18next:
         specifier: 17.3.1
@@ -1075,10 +1075,10 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-dicom-microscopy':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-microscopy
       i18next:
         specifier: 17.3.1
@@ -1097,22 +1097,22 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dynamic-volume':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dynamic-volume
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-tmtv':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/tmtv
     devDependencies:
       cross-env:
@@ -1128,31 +1128,31 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-rt':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-rt
       '@ohif/extension-cornerstone-dicom-seg':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-seg
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-video
       '@ohif/mode-basic':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../basic
       i18next:
         specifier: 17.3.1
@@ -1216,25 +1216,25 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-default':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/default
       '@ohif/extension-dicom-pdf':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-pdf
       '@ohif/extension-dicom-video':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/dicom-video
       '@ohif/extension-measurement-tracking':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/measurement-tracking
       i18next:
         specifier: 17.3.1
@@ -1256,13 +1256,13 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(@cornerstonejs/core@5.0.2(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@cornerstonejs/metadata@5.0.2)(@cornerstonejs/utils@5.0.2)(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@kitware/vtk.js@35.5.3(@babel/preset-env@7.29.7(@babel/core@7.29.7))(autoprefixer@10.4.27(postcss@8.5.14))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../platform/core
       '@ohif/extension-cornerstone-dicom-sr':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/cornerstone-dicom-sr
       '@ohif/extension-ultrasound-pleura-bline':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../../extensions/usAnnotation
       i18next:
         specifier: 17.3.1
@@ -1344,16 +1344,16 @@ importers:
         specifier: 1.3.3
         version: 1.3.3
       '@ohif/core':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../core
       '@ohif/i18n':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../i18n
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../ui
       '@ohif/ui-next':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../ui-next
       '@svgr/webpack':
         specifier: 8.1.0
@@ -1558,7 +1558,7 @@ importers:
         specifier: 5.0.2
         version: 5.0.2
       '@ohif/ui':
-        specifier: 3.13.0-beta.92
+        specifier: workspace:*
         version: link:../ui
       cornerstone-math:
         specifier: 0.1.10
