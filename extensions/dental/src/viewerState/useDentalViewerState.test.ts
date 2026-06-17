@@ -41,7 +41,6 @@ function createServicesManager() {
   const hangingProtocolService = {
     getState: jest.fn(() => ({
       protocolId: '@ohif/extension-dental.hangingProtocolModule.dental2x2',
-      stage: { id: 'dental-2x2' },
     })),
   };
 
@@ -175,17 +174,21 @@ describe('useDentalViewerState', () => {
         },
       });
 
-      return waitFor(() =>
-        expect(fetcher).toHaveBeenCalledWith(
-          'http://localhost:4007/api/dental/state/study-1',
-          expect.objectContaining({
-            method: 'PUT',
-            body: expect.stringContaining('FDI-46'),
-          })
-        )
-      ).then(() => {
-        hook.restoreFetch();
-      });
+    return waitFor(() =>
+      expect(fetcher).toHaveBeenCalledWith(
+        'http://localhost:4007/api/dental/state/study-1',
+        expect.objectContaining({
+          method: 'PUT',
+          body: expect.stringContaining('FDI-46'),
+        })
+      )
+    ).then(() => {
+      const saveCall = fetcher.mock.calls.find(([, options]) => options.method === 'PUT');
+      const payload = JSON.parse(saveCall[1].body);
+
+      expect(payload.state.layoutContext.stageId).toBe('dental-2x2');
+      hook.restoreFetch();
     });
   });
+});
 });

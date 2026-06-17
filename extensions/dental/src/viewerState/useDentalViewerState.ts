@@ -25,6 +25,9 @@ type DentalBackendConfig = {
   authToken: string;
 };
 
+const DENTAL_2X2_PROTOCOL_ID = '@ohif/extension-dental.hangingProtocolModule.dental2x2';
+const DENTAL_2X2_STAGE_ID = 'dental-2x2';
+
 function getDentalBackendConfig(appConfig: AppTypes.Config): DentalBackendConfig {
   const dentalConfig = (appConfig as AppTypes.Config & { dental?: Record<string, string> })?.dental;
 
@@ -47,19 +50,45 @@ function getStudyInstanceUID(displaySetService): string | undefined {
   return displaySet?.StudyInstanceUID || instance?.StudyInstanceUID;
 }
 
+function getHangingProtocolStageId(hangingProtocolService): string | undefined {
+  const hangingProtocolState = hangingProtocolService?.getState?.();
+  const protocolId = hangingProtocolState?.protocolId;
+
+  if (typeof hangingProtocolState?.stage?.id === 'string') {
+    return hangingProtocolState.stage.id;
+  }
+
+  if (typeof hangingProtocolState?.activeStage?.id === 'string') {
+    return hangingProtocolState.activeStage.id;
+  }
+
+  const stageIndex = hangingProtocolState?.stageIndex;
+  const protocol = hangingProtocolService?.getProtocol?.(protocolId);
+  const stage = Number.isInteger(stageIndex) ? protocol?.stages?.[stageIndex] : undefined;
+
+  if (typeof stage?.id === 'string') {
+    return stage.id;
+  }
+
+  if (protocolId === DENTAL_2X2_PROTOCOL_ID) {
+    return DENTAL_2X2_STAGE_ID;
+  }
+
+  return undefined;
+}
+
 function getLayoutContext(servicesManager: AppTypes.ServicesManager): DentalLayoutContext {
   const { viewportGridService, hangingProtocolService } = servicesManager.services;
   const viewportGridState = viewportGridService?.getState?.();
   const hangingProtocolState = hangingProtocolService?.getState?.();
   const viewports = viewportGridState?.viewports || new Map();
   const viewportIds = Array.from(viewports.keys ? viewports.keys() : Object.keys(viewports));
-  const stage = hangingProtocolState?.stage;
 
   return {
     activeViewportId: viewportGridState?.activeViewportId,
     viewportIds,
     protocolId: hangingProtocolState?.protocolId,
-    stageId: stage?.id,
+    stageId: getHangingProtocolStageId(hangingProtocolService),
   };
 }
 
