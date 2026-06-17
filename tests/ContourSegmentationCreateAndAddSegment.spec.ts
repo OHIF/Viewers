@@ -75,6 +75,29 @@ test('should list every created segmentation in the segmentation selector', asyn
   await segmentationSelect.close();
 });
 
+test('should switch between segmentations and show the matching segments', async ({
+  rightPanelPageObject,
+}) => {
+  const { panel, segmentationSelect } = rightPanelPageObject.contourSegmentationPanel;
+
+  // Create a second segmentation alongside the hydrated RTSTRUCT one.
+  await panel.moreMenu.createNewSegmentation();
+  await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
+  await expect(panel.rows).toHaveCount(1);
+
+  // Switching to the RTSTRUCT segmentation shows its four segments.
+  await segmentationSelect.selectNthSegmentation(0);
+  await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
+  await expect(panel.rows).toHaveCount(4);
+  await expect(panel.getSegmentLabels().filter({ hasText: 'Threshold' })).toHaveCount(1);
+
+  // Switching back to the created segmentation shows only its default segment.
+  await segmentationSelect.selectNthSegmentation(1);
+  await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
+  await expect(panel.rows).toHaveCount(1);
+  await expect(panel.nthSegment(0).title).toHaveText('Segment 1');
+});
+
 test('should rename a segmentation and reflect the new name in the selector', async ({
   rightPanelPageObject,
 }) => {
