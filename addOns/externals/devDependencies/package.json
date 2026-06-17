@@ -77,7 +77,7 @@
     "typescript": "5.5.4",
     "unused-webpack-plugin": "2.4.0",
     "webpack": "5.105.0",
-    "webpack-bundle-analyzer": "4.10.2",
+    "webpack-bundle-analyzer": "5.3.0",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.2",
     "webpack-hot-middleware": "2.26.1",

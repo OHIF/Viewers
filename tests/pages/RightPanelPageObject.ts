@@ -11,6 +11,10 @@ export class RightPanelPageObject {
     this.DOMOverlayPageObject = new DOMOverlayPageObject(page);
   }
 
+  private getPanelRows() {
+    return this.page.getByTestId('data-row');
+  }
+
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
 
@@ -57,12 +61,12 @@ export class RightPanelPageObject {
   }
 
   private getPanelRowByIdx(index: number) {
-    const row = this.page.getByTestId('data-row').nth(index);
+    const row = this.getPanelRows().nth(index);
     return this.getPanelRowDataObject(row);
   }
 
   private getPanelRowByText(text: string) {
-    const row = this.page.getByTestId('data-row').filter({ hasText: text });
+    const row = this.getPanelRows().filter({ hasText: text });
     return this.getPanelRowDataObject(row);
   }
 
@@ -83,7 +87,10 @@ export class RightPanelPageObject {
           await page.getByRole('button', { name: 'Delete' }).click();
         },
         getMeasurementCount: async () => {
-          return await page.getByTestId('data-row').count();
+          return await this.getPanelRows().count();
+        },
+        getMeasurementRows: () => {
+          return this.getPanelRows();
         },
         locator: page.getByTestId('trackedMeasurements-panel').last(),
         nthMeasurement(index: number) {
@@ -116,7 +123,7 @@ export class RightPanelPageObject {
 
     return {
       getSegmentCount: async () => {
-        return await page.getByTestId('data-row').count();
+        return await this.getPanelRows().count();
       },
       // No data-cy exists in this panel, using Segmentation header button
       locator: page.getByRole('button', { name: 'Segmentations' }),
