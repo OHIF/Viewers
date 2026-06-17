@@ -216,6 +216,15 @@ export class RightPanelPageObject {
       locator,
       /** The span showing the currently selected segmentation label */
       selectedValue,
+      // Opens the dropdown and returns the option locator; leaves it open, so call close() after.
+      getSegmentationLabels: async () => {
+        await locator.click();
+        return page.getByRole('option');
+      },
+      // Click the selected option to dismiss without changing the active segmentation.
+      close: async () => {
+        await page.getByRole('option', { selected: true }).click();
+      },
       /** Opens the dropdown and returns a locator for the nth option (0-based) */
       nthSegmentation,
       /** Opens the dropdown and clicks the nth segmentation (0-based) */
