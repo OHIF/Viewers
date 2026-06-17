@@ -27,6 +27,10 @@ export class RightPanelPageObject {
         await button.click();
         await page.getByRole('menuitem', { name: 'Delete' }).click();
       },
+      removeFromViewport: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Remove from Viewport' }).click();
+      },
       rename: async (text: string) => {
         await button.click();
         await page.getByRole('menuitem', { name: 'Rename' }).click();

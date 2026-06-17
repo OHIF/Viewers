@@ -168,3 +168,42 @@ test('should delete every segmentation until none remain', async ({
   await expect(panel.rows).toHaveCount(0);
   await expect(addSegmentationButton.button).toBeVisible();
 });
+
+test('should remove a segmentation from the viewport and drop it from the selector', async ({
+  rightPanelPageObject,
+}) => {
+  const { panel, segmentationSelect } = rightPanelPageObject.contourSegmentationPanel;
+
+  await panel.moreMenu.createNewSegmentation();
+  await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
+
+  await panel.moreMenu.removeFromViewport();
+
+  // Removing from the viewport drops it from the selector; the RTSTRUCT one stays active.
+  await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
+  await expect(await segmentationSelect.getSegmentationLabels()).toHaveText(['Contours on PET']);
+  await segmentationSelect.close();
+});
+
+// KNOWN BUG: the last remaining segmentation cannot be removed from the viewport
+// ("Remove from Viewport" is a silent no-op once it is the only one left), so the
+// panel keeps its segment row instead of clearing. Skipped until the bug is fixed.
+test.skip('should remove every segmentation from the viewport', async ({
+  rightPanelPageObject,
+}) => {
+  const { panel, addSegmentationButton } = rightPanelPageObject.contourSegmentationPanel;
+
+  // Start with the hydrated RTSTRUCT plus two created segmentations.
+  await panel.moreMenu.createNewSegmentation();
+  await panel.moreMenu.createNewSegmentation();
+
+  // Remove each segmentation from the viewport one by one.
+  await panel.moreMenu.removeFromViewport();
+  await panel.moreMenu.removeFromViewport();
+  await panel.moreMenu.removeFromViewport();
+
+  // The viewport should have no segmentations left: the selector is empty and the
+  // "Add segmentation" entry point is shown again.
+  await expect(panel.rows).toHaveCount(0);
+  await expect(addSegmentationButton.button).toBeVisible();
+});
