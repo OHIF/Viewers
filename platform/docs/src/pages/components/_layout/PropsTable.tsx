@@ -16,7 +16,7 @@ export default function PropsTable({ props }: PropsTableProps) {
     <div className="overflow-x-auto">
       <table className="w-full text-base">
         <thead>
-          <tr className="border-b border-border text-left">
+          <tr className="border-b border-foreground text-left">
             <th className="text-foreground pb-2 pr-4 font-medium">Prop</th>
             <th className="text-foreground pb-2 pr-4 font-medium">Type</th>
             <th className="text-foreground pb-2 pr-4 font-medium">Default</th>
@@ -27,7 +27,7 @@ export default function PropsTable({ props }: PropsTableProps) {
           {props.map((prop, i) => (
             <tr
               key={prop.name}
-              className={i < props.length - 1 ? 'border-b border-border/50' : ''}
+              className={i < props.length - 1 ? 'border-b border-foreground/50' : ''}
             >
               <td className="py-2 pr-4 font-mono text-base text-foreground">{prop.name}</td>
               <td className="py-2 pr-4 font-mono text-base">{prop.type}</td>

@@ -14,7 +14,7 @@ export default function CodeBlock({ code }: CodeBlockProps) {
   };
 
   return (
-    <div className="relative rounded-lg border border-border bg-muted/30">
+    <div className="relative rounded-lg border border-input/50 bg-muted/30">
       <button
         onClick={handleCopy}
         className="absolute top-3 right-3 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground"
