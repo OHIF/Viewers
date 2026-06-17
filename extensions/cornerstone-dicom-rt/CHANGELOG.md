@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.5](https://github.com/OHIF/Viewers/compare/v3.12.4...v3.12.5) (2026-06-17)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-rt
+
+
+
+
+
 ## [3.12.4](https://github.com/OHIF/Viewers/compare/v3.12.3...v3.12.4) (2026-06-05)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-rt

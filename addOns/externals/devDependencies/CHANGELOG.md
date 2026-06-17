@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.5](https://github.com/OHIF/Viewers/compare/v3.12.4...v3.12.5) (2026-06-17)
+
+
+### Bug Fixes
+
+* **security:** Update dependencies to fix security vulnerabilities. Release 3.12.5 ([#6086](https://github.com/OHIF/Viewers/issues/6086)) ([f5f086c](https://github.com/OHIF/Viewers/commit/f5f086cd953bfcb783276fbb8d687e05fa118725))
+
+
+
+
+
 ## [3.12.4](https://github.com/OHIF/Viewers/compare/v3.12.3...v3.12.4) (2026-06-05)
 
 **Note:** Version bump only for package @externals/devDependencies
