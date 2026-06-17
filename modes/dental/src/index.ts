@@ -24,6 +24,7 @@ import { id } from './id';
 
 const dental = {
   layout: '@ohif/extension-dental.layoutTemplateModule.dentalViewerLayout',
+  hangingProtocol: '@ohif/extension-dental.hangingProtocolModule.dental2x2',
 };
 
 export const extensionDependencies = {
@@ -54,6 +55,7 @@ export const modeInstance = {
   displayName: i18n.t('Modes:Dental Viewer'),
   routes: [dentalRoute],
   extensions: extensionDependencies,
+  hangingProtocol: dental.hangingProtocol,
   toolbarSections,
   sopClassHandlers,
   toolbarButtons,

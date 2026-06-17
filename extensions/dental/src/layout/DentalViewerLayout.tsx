@@ -6,6 +6,7 @@ import { InvestigationalUseDialog, Onboarding } from '@ohif/ui-next';
 import { useAppConfig } from '@state';
 
 import { useDentalPreferences } from '../preferences/useDentalPreferences';
+import DentalViewportPlaceholders from './DentalViewportPlaceholders';
 import PracticeHeader from './PracticeHeader';
 import SidePanelWithServices from './SidePanelWithServices';
 
@@ -162,6 +163,7 @@ function DentalViewerLayout({
                 viewportComponents={viewportComponents}
                 commandsManager={commandsManager}
               />
+              <DentalViewportPlaceholders />
             </div>
           </div>
           {hasRightPanels ? (
