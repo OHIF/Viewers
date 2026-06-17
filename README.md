@@ -1,9 +1,4 @@
-# MIMPS — Medical Imaging Platform by BlackVoxel
-
-MIMPS is BlackVoxel's zero-footprint medical imaging viewer and PACS front end,
-aimed at Brazilian radiology workflows (pt-BR UI, DICOMweb, AI-assisted
-findings). It powers the BlackVoxel Viewer deployed at
-https://viewer.blackvoxel.ai.
+# MIMPS — Medical Imaging Platform 
 
 ## Quick start
 
