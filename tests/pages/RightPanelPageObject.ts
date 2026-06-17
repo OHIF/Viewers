@@ -32,6 +32,15 @@ export class RightPanelPageObject {
         await page.getByRole('menuitem', { name: 'Rename' }).click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
+      cancelRename: async (newName?: string) => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Rename' }).click();
+        if (newName) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(newName);
+        } else {
+          await this.DOMOverlayPageObject.dialog.input.cancel();
+        }
+      },
       createNewSegmentation: async () => {
         await button.click();
         await page.getByRole('menuitem', { name: 'Create New Segmentation' }).click();
