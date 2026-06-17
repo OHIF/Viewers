@@ -22,7 +22,6 @@ export const sidebarSections: SidebarSection[] = [
       { label: 'AllInOneMenu', href: '/components/all-in-one-menu' },
       { label: 'Badge', href: '/components/badge' },
       { label: 'Button', href: '/components/button' },
-      { label: 'Card', href: '/components/card' },
       { label: 'Checkbox', href: '/components/checkbox' },
       { label: 'CinePlayer', href: '/components/cine-player' },
       { label: 'Combobox', href: '/components/combobox' },
