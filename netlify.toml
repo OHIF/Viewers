@@ -1,0 +1,31 @@
+# Netlify Config
+#
+# TOML Reference:
+# https://www.netlify.com/docs/netlify-toml-reference/
+#
+# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
+# https://viewer.ohif.org is created using a different process that is
+# managed by CircleCI and deployed to our Google Hosting
+
+[build]
+  base = ""
+  command = "pnpm run build:ci"
+  publish = "platform/app/dist"
+
+[build.environment]
+  # If 'production', `pnpm install` does not install devDependencies
+  NODE_ENV = "development"
+  NODE_VERSION = "24"
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''

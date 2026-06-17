@@ -1,11 +1,7 @@
 import {
   getEnabledElement,
-  StackViewport,
-  VolumeViewport,
   utilities as csUtils,
-  Enums as CoreEnums,
   Types as CoreTypes,
-  BaseVolumeViewport,
   getRenderingEngines,
 } from '@cornerstonejs/core';
 import {
@@ -38,6 +34,12 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
+import {
+  isStackViewportType,
+  isOrthographicViewportType,
+  isVolume3DViewportType,
+  isVolumeViewportType,
+} from './utils/getLegacyViewportType';
 import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
@@ -324,7 +326,7 @@ function commandsModule({
           // Todo: check if PMAP modality should be handled such as SEG
           displaySet.Modality !== 'SEG'
             ? SegmentationRepresentations.Contour
-            : viewport.type === CoreEnums.ViewportType.VOLUME_3D
+            : isVolume3DViewportType(viewport)
               ? SegmentationRepresentations.Surface
               : SegmentationRepresentations.Labelmap;
 
@@ -910,7 +912,7 @@ function commandsModule({
 
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
 
-      if (viewport instanceof BaseVolumeViewport) {
+      if (isVolumeViewportType(viewport)) {
         const volumeId = actions.getVolumeIdForDisplaySet({
           viewportId,
           displaySetInstanceUID,
@@ -986,8 +988,12 @@ function commandsModule({
     },
     getVolumeIdForDisplaySet: ({ viewportId, displaySetInstanceUID }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (viewport instanceof BaseVolumeViewport) {
-        const volumeIds = viewport.getAllVolumeIds();
+      // `instanceof BaseVolumeViewport` is false for GenericViewport compat adapters,
+      // so use the capability guard instead (cornerstone 5.x generic-viewport guide).
+      // A stack-mode adapter passes the guard but getAllVolumeIds() returns [], so the
+      // result is the same null as before on stacks.
+      if (csUtils.viewportSupportsVolumeId(viewport)) {
+        const volumeIds = (viewport as CoreTypes.IVolumeViewport).getAllVolumeIds();
         const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
         return volumeId;
       }
@@ -1256,7 +1262,7 @@ function commandsModule({
       }
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
+      if (isStackViewportType(viewport)) {
         if (direction) {
           const { parallelScale } = viewport.getCamera();
           viewport.setCamera({ parallelScale: parallelScale * scaleFactor });
@@ -1286,9 +1292,9 @@ function commandsModule({
       // -> Copied from cornerstone3D jumpToSlice\_getImageSliceData()
       let numberOfSlices = 0;
 
-      if (viewport instanceof StackViewport) {
+      if (isStackViewportType(viewport)) {
         numberOfSlices = viewport.getImageIds().length;
-      } else if (viewport instanceof VolumeViewport) {
+      } else if (isOrthographicViewportType(viewport)) {
         numberOfSlices = csUtils.getImageSliceDataForVolumeViewport(viewport).numberOfSlices;
       } else {
         throw new Error('Unsupported viewport type');
@@ -1344,11 +1350,11 @@ function commandsModule({
       // HP takes priority over the default opacity
       colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      if (viewport instanceof StackViewport) {
+      if (isStackViewportType(viewport)) {
         viewport.setProperties({ colormap });
       }
 
-      if (viewport instanceof VolumeViewport) {
+      if (isOrthographicViewportType(viewport)) {
         if (!displaySetInstanceUID) {
           const { viewports } = viewportGridService.getState();
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
@@ -2145,7 +2151,7 @@ function commandsModule({
     setViewportOrientation: ({ viewportId, orientation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport || viewport.type !== CoreEnums.ViewportType.ORTHOGRAPHIC) {
+      if (!viewport || !isOrthographicViewportType(viewport)) {
         console.warn('Orientation can only be set on volume viewports');
         return;
       }
@@ -2227,7 +2233,7 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof BaseVolumeViewport) {
+      if (isVolumeViewportType(viewport)) {
         const camera = viewport.getCamera();
         const rotAngle = (rotation * Math.PI) / 180;
         const rotMat = mat4.identity(new Float32Array(16));
@@ -2403,14 +2409,25 @@ function commandsModule({
       targetSegmentInfo?: SegmentInfo;
     }) => {
       if (!targetSegmentInfo) {
+        const sourceSegmentation = segmentationService.getSegmentation(
+          sourceSegmentInfo.segmentationId
+        );
+        const sourceCachedStats =
+          sourceSegmentation?.segments?.[sourceSegmentInfo.segmentIndex]?.cachedStats;
+
         targetSegmentInfo = {
           segmentationId: sourceSegmentInfo.segmentationId,
           segmentIndex: segmentationService.getNextAvailableSegmentIndex(
             sourceSegmentInfo.segmentationId
           ),
         };
+
+        // Copy source cachedStats so jump-to-segment navigation works on the duplicate segment.
         segmentationService.addSegment(targetSegmentInfo.segmentationId, {
           segmentIndex: targetSegmentInfo.segmentIndex,
+          ...(sourceCachedStats && {
+            cachedStats: csUtils.deepClone(sourceCachedStats) as Record<string, unknown>,
+          }),
         });
       }
 

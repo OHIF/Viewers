@@ -32,6 +32,7 @@ import {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForPaintToSettle,
 } from './waitForViewportsRendered';
 
 export {
@@ -63,6 +64,7 @@ export {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForPaintToSettle,
   test,
   expect,
 };

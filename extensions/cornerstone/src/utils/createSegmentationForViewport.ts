@@ -36,7 +36,7 @@ type CreateSegmentationForViewportParams = {
 export async function createSegmentationForViewport(
   servicesManager: ServicesManager,
   { viewportId, options = {}, segmentationType }: CreateSegmentationForViewportParams
-): Promise<string> {
+): Promise<string | undefined> {
   const { viewportGridService, displaySetService, segmentationService } = servicesManager.services;
   const { viewports } = viewportGridService.getState();
   const targetViewportId = viewportId;
@@ -44,7 +44,15 @@ export async function createSegmentationForViewport(
   const viewport = viewports.get(targetViewportId);
 
   // Todo: add support for multiple display sets
-  const displaySetInstanceUID = options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
+  // Guard against the grid not having this viewport yet (a transient race when
+  // "Add segmentation" runs before the viewport is registered in the grid). Bail
+  // gracefully instead of throwing, which would surface an uncaught error overlay.
+  const displaySetInstanceUID =
+    options.displaySetInstanceUID || viewport?.displaySetInstanceUIDs?.[0];
+
+  if (!displaySetInstanceUID) {
+    return undefined;
+  }
 
   const segs = segmentationService.getSegmentations();
 

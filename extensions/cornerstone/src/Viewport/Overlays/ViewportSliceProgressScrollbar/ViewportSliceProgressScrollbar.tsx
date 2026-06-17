@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { VolumeViewport3D, utilities as csUtils } from '@cornerstonejs/core';
+import { utilities as csUtils } from '@cornerstonejs/core';
+import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import {
   SmartScrollbar,
   SmartScrollbarTrack,
@@ -102,7 +103,7 @@ function ViewportSliceProgressScrollbar({
   const onScrollbarValueChange = targetImageIndex => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-    if (!viewport || viewport instanceof VolumeViewport3D) {
+    if (!viewport || isVolume3DViewportType(viewport)) {
       return;
     }
 
