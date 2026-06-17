@@ -1,5 +1,9 @@
 import { Enums } from '@cornerstonejs/tools';
 import i18n from '@ohif/i18n';
+import {
+  getViewportProperties,
+  getViewportCameraState,
+} from './utils/getViewportPresentation';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -543,8 +547,8 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         const propId = button.id;
 
-        const properties = viewport.getProperties();
-        const camera = viewport.getCamera();
+        const properties = getViewportProperties(viewport);
+        const camera = getViewportCameraState(viewport);
 
         const prop = camera?.[propId] || properties?.[propId];
 

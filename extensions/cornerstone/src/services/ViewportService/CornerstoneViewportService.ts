@@ -34,6 +34,7 @@ import { usePositionPresentationStore } from '../../stores/usePositionPresentati
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
+import { getViewportProperties } from '../../utils/getViewportPresentation';
 import {
   getLegacyViewportType,
   isStackViewportType,
@@ -378,10 +379,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const viewportInfo = this.viewportsById.get(viewportId);
 
+    // Direct Generic ("next") viewports do not expose the legacy getViewPresentation
+    // (pan/zoom) surface; their pan/zoom lives in the semantic view state and is not
+    // restored through the legacy setPresentations path on the native mount. Omit it
+    // here so position snapshots (e.g. resize save/restore) do not throw.
+    const viewPresentation = csUtils.isGenericViewport(csViewport)
+      ? undefined
+      : csViewport.getViewPresentation({ pan: true, zoom: true });
+
     return {
       viewportType: viewportInfo.getViewportType(),
       viewReference: isVolume3DViewportType(csViewport) ? null : csViewport.getViewReference(),
-      viewPresentation: csViewport.getViewPresentation({ pan: true, zoom: true }),
+      viewPresentation,
       viewportId,
     };
   }
@@ -410,7 +419,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const properties = isVolumeViewportType(csViewport)
       ? new Map()
-      : cleanProperties(csViewport.getProperties());
+      : cleanProperties(getViewportProperties(csViewport));
 
     if (properties instanceof Map) {
       const volumeIds = (csViewport as Types.IBaseVolumeViewport).getAllVolumeIds();

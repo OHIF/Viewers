@@ -3,6 +3,7 @@ import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
 import { Types, utilities, Enums, cache } from '@cornerstonejs/core';
 import { getDataIdForViewport } from '../utils/getDataIdForViewport';
+import { getViewportProperties } from '../utils/getViewportPresentation';
 import {
   isStackViewportType,
   isVolumeViewportType,
@@ -269,10 +270,10 @@ export function useViewportRendering(
     try {
       const dataId = getDataIdForViewport(viewport as unknown, activeDisplaySetInstanceUID);
 
-      const properties =
-        dataId != null
-          ? (viewport as Types.IBaseVolumeViewport).getProperties(dataId)
-          : viewport.getProperties();
+      // Native Generic ("next") viewports expose per-display-set appearance via
+      // getDisplaySetPresentation rather than getProperties; the helper bridges
+      // both so this VOI/colormap initialization works regardless of backend.
+      const properties = getViewportProperties(viewport, dataId ?? activeDisplaySetInstanceUID);
 
       if (!properties) {
         return;

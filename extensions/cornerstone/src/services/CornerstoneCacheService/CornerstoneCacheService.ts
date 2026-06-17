@@ -41,12 +41,19 @@ class CornerstoneCacheService {
     const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
 
+    // Native Generic ("next") viewport types (e.g. PLANAR_NEXT) intentionally
+    // collapse the stack/volume distinction into a single type, so they cannot
+    // drive the stack-vs-volume data-builder decision below. Resolve the data
+    // shape from the legacy mapping (which preserves that distinction) and keep
+    // the resolved native type as the produced viewportData's viewportType.
+    const dataShapeType = getCornerstoneViewportType(viewportType, displaySets, false);
+
     if (
-      cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
-      cs3DViewportType === Enums.ViewportType.VOLUME_3D
+      dataShapeType === Enums.ViewportType.ORTHOGRAPHIC ||
+      dataShapeType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
-    } else if (cs3DViewportType === Enums.ViewportType.STACK) {
+    } else if (dataShapeType === Enums.ViewportType.STACK) {
       // Everything else looks like a stack
       viewportData = await this._getStackViewportData(
         dataSource,
