@@ -152,5 +152,18 @@ describe('getCornerstoneViewportType', () => {
         Enums.ViewportType.ORTHOGRAPHIC
       );
     });
+
+    it('is idempotent for already-native types regardless of the flag', () => {
+      // A viewport's stored cs type can be re-fed into the mapper.
+      expect(getCornerstoneViewportType('planarNext', undefined, false)).toBe(
+        Enums.ViewportType.PLANAR_NEXT
+      );
+      expect(getCornerstoneViewportType('planarNext', undefined, true)).toBe(
+        Enums.ViewportType.PLANAR_NEXT
+      );
+      expect(getCornerstoneViewportType('volume3dNext', undefined, true)).toBe(
+        Enums.ViewportType.VOLUME_3D_NEXT
+      );
+    });
   });
 });

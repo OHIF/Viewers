@@ -924,6 +924,62 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
+    // Native Generic Viewport ("next") stack mount: register the display set and
+    // mount it with setDisplaySets (render path inferred from the data), then
+    // apply VOI/colormap via setDisplaySetPresentation and pan/zoom/rotate/flip/
+    // displayArea via setViewState — instead of the legacy setStack/setProperties/
+    // setCamera surface, which a direct PLANAR_NEXT viewport does not expose.
+    if (csUtils.isGenericViewport(viewport)) {
+      const dataId = displaySetInstanceUIDs[0];
+
+      csUtils.genericViewportDataSetMetadataProvider.add(dataId, {
+        kind: 'planar',
+        imageIds,
+        initialImageIdIndex: initialImageIndexToUse,
+      });
+
+      await viewport.setDisplaySets({
+        displaySetId: dataId,
+        options: {
+          orientation: csEnums.OrientationAxis.ACQUISITION,
+          role: 'source',
+        },
+      });
+
+      const presentationProps: Record<string, unknown> = {};
+      if (properties.voiRange) {
+        presentationProps.voiRange = properties.voiRange;
+      }
+      if (properties.invert !== undefined) {
+        presentationProps.invert = properties.invert;
+      }
+      if (properties.colormap) {
+        presentationProps.colormap = properties.colormap;
+      }
+      if (Object.keys(presentationProps).length > 0) {
+        viewport.setDisplaySetPresentation(presentationProps);
+      }
+
+      const viewStatePatch: Record<string, unknown> = {};
+      if (displayArea) {
+        viewStatePatch.displayArea = displayArea;
+      }
+      if (rotation) {
+        viewStatePatch.rotation = rotation;
+      }
+      if (flipHorizontal) {
+        viewStatePatch.flipHorizontal = true;
+      }
+      if (Object.keys(viewStatePatch).length > 0) {
+        viewport.setViewState(viewStatePatch);
+      }
+
+      // Note: legacy presentation restore (setPresentations) and stack-context
+      // prefetch are handled on the native path in a later increment.
+      await this._addOverlayRepresentations(overlayProcessingResults);
+      return;
+    }
+
     await viewport.setStack(imageIds, initialImageIndexToUse);
     viewport.setProperties({ ...properties });
     this.setPresentations(viewport.id, presentations, viewportInfo);
@@ -1351,6 +1407,30 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
+    // Native Generic ("next") viewports report a single PLANAR_NEXT type for both
+    // stack and volume content, so the legacy isStack/isVolume type checks below
+    // do not classify them. Route by the data shape instead (VolumeData carries a
+    // `volume` field; StackData does not).
+    if (csUtils.isGenericViewport(viewport)) {
+      const firstData = (viewportData?.data?.[0] ?? {}) as Record<string, unknown>;
+
+      if ('volume' in firstData) {
+        return this._setVolumeViewport(
+          viewport as unknown as Types.IVolumeViewport,
+          viewportData as VolumeViewportData,
+          viewportInfo,
+          presentations
+        );
+      }
+
+      return this._setStackViewport(
+        viewport as unknown as Types.IStackViewport,
+        viewportData as StackViewportData,
+        viewportInfo,
+        presentations
+      );
+    }
+
     if (isStackViewportType(viewport)) {
       return this._setStackViewport(
         viewport,
