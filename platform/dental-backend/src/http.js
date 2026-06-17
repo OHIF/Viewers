@@ -9,6 +9,9 @@ function json(statusCode, body) {
     statusCode,
     headers: {
       'content-type': 'application/json; charset=utf-8',
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET, PUT, POST, DELETE, OPTIONS',
+      'access-control-allow-headers': 'authorization, content-type',
     },
     body: JSON.stringify(body),
   };
@@ -33,6 +36,10 @@ function parseJsonBody(body) {
 async function handleDentalRequest({ method, url, headers, body }, { store, config }) {
   const parsedUrl = new URL(url, 'http://localhost');
   const parts = parsedUrl.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+
+  if (method === 'OPTIONS') {
+    return json(204, {});
+  }
 
   if (parts.length === 1 && parts[0] === 'health') {
     return json(200, { ok: true });

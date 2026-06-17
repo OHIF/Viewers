@@ -8,6 +8,7 @@ import { preserveQueryParameters } from '@ohif/app';
 
 import { DentalPreferences } from '../preferences/dentalPreferences';
 import { ToothNumberingSystem } from '../tooth/toothIdentity';
+import { DentalViewerStateStatus } from '../viewerState/useDentalViewerState';
 import { formatHeaderValue, getPracticeName } from './practiceHeaderUtils';
 import ToothSelector from './ToothSelector';
 
@@ -26,9 +27,30 @@ const MODE_LABEL_CLASS_BY_THEME = {
   standard: 'text-muted-foreground text-[11px]',
 };
 
+function getStateStatusText(
+  stateStatus: DentalViewerStateStatus,
+  stateMessage: string | null
+): string | null {
+  if (stateStatus === 'loading') {
+    return 'Loading';
+  }
+
+  if (stateStatus === 'locked') {
+    return 'Locked';
+  }
+
+  if (stateStatus === 'unsaved') {
+    return stateMessage || 'Not saved';
+  }
+
+  return null;
+}
+
 type PracticeHeaderProps = withAppTypes<{
   appConfig: AppTypes.Config;
   preferences: DentalPreferences;
+  stateStatus: DentalViewerStateStatus;
+  stateMessage: string | null;
   onSelectedToothChange: (toothId: string) => void;
   onNumberingSystemChange: (numberingSystem: ToothNumberingSystem) => void;
   onThemeToggle: () => void;
@@ -37,6 +59,8 @@ type PracticeHeaderProps = withAppTypes<{
 function PracticeHeader({
   appConfig,
   preferences,
+  stateStatus,
+  stateMessage,
   onSelectedToothChange,
   onNumberingSystemChange,
   onThemeToggle,
@@ -48,6 +72,10 @@ function PracticeHeader({
 
   const practiceName = getPracticeName(appConfig);
   const isDentalTheme = preferences.theme === 'dental';
+  const stateStatusText = useMemo(
+    () => getStateStatusText(stateStatus, stateMessage),
+    [stateMessage, stateStatus]
+  );
 
   const studySummary = useMemo(() => {
     const displaySets = servicesManager.services.displaySetService.getActiveDisplaySets();
@@ -130,11 +158,23 @@ function PracticeHeader({
             </span>
           </div>
 
-          <ToothSelector
-            preferences={preferences}
-            onSelectedToothChange={onSelectedToothChange}
-            onNumberingSystemChange={onNumberingSystemChange}
-          />
+          <div className="flex min-w-0 items-center gap-2">
+            {stateStatusText ? (
+              <span
+                className="border-muted text-muted-foreground hidden h-7 max-w-[96px] items-center truncate rounded border px-2 text-[11px] xl:flex"
+                data-cy="dental-viewer-state-status"
+                title={stateStatusText}
+              >
+                {stateStatusText}
+              </span>
+            ) : null}
+
+            <ToothSelector
+              preferences={preferences}
+              onSelectedToothChange={onSelectedToothChange}
+              onNumberingSystemChange={onNumberingSystemChange}
+            />
+          </div>
 
           <Button
             variant={isDentalTheme ? 'default' : 'ghost'}

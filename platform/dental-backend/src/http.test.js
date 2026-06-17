@@ -56,6 +56,17 @@ describe('Dental backend API', () => {
     expect(invalid.statusCode).toBe(403);
   });
 
+  it('allows browser CORS preflight without auth', async () => {
+    const preflight = await handleDentalRequest(
+      { method: 'OPTIONS', url: '/api/dental/state/1.2.3', headers: {}, body: '' },
+      { store, config }
+    );
+
+    expect(preflight.statusCode).toBe(204);
+    expect(preflight.headers['access-control-allow-origin']).toBe('*');
+    expect(preflight.headers['access-control-allow-headers']).toContain('authorization');
+  });
+
   it('persists viewer state per user and study', async () => {
     const saved = await request(store, {
       method: 'PUT',

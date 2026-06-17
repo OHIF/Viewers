@@ -6,6 +6,7 @@ import { InvestigationalUseDialog, Onboarding } from '@ohif/ui-next';
 import { useAppConfig } from '@state';
 
 import { useDentalPreferences } from '../preferences/useDentalPreferences';
+import { useDentalViewerState } from '../viewerState/useDentalViewerState';
 import DentalViewportPlaceholders from './DentalViewportPlaceholders';
 import PracticeHeader from './PracticeHeader';
 import SidePanelWithServices from './SidePanelWithServices';
@@ -39,8 +40,18 @@ function DentalViewerLayout({
     preferences,
     setSelectedToothId,
     setNumberingSystem,
+    applyPreferences,
     toggleTheme,
   } = useDentalPreferences();
+  const {
+    status: dentalViewerStateStatus,
+    lastError: dentalViewerStateError,
+  } = useDentalViewerState({
+    appConfig,
+    servicesManager,
+    preferences,
+    applyPreferences,
+  });
 
   const hasPanels = useCallback((side): boolean => !!panelService.getPanels(side).length, [
     panelService,
@@ -134,6 +145,8 @@ function DentalViewerLayout({
         servicesManager={servicesManager}
         appConfig={appConfig}
         preferences={preferences}
+        stateStatus={dentalViewerStateStatus}
+        stateMessage={dentalViewerStateError}
         onSelectedToothChange={setSelectedToothId}
         onNumberingSystemChange={setNumberingSystem}
         onThemeToggle={toggleTheme}

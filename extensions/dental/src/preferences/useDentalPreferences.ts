@@ -59,6 +59,10 @@ export function useDentalPreferences() {
     }));
   }, []);
 
+  const applyPreferences = useCallback((nextPreferences: DentalPreferences) => {
+    setPreferences(normalizeDentalPreferences(nextPreferences));
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setPreferences(current => ({
       ...current,
@@ -71,6 +75,7 @@ export function useDentalPreferences() {
     setSelectedToothId,
     setNumberingSystem,
     setTheme,
+    applyPreferences,
     toggleTheme,
   };
 }
