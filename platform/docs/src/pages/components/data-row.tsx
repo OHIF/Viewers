@@ -4,6 +4,10 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 function DataRowPageContent() {
   const { DataRow } = require('../../../../ui-next/src/components/DataRow');
   const { TooltipProvider } = require('../../../../ui-next/src/components/Tooltip');
+  const { dataList } = require('../../../../ui-next/assets/data');
+
+  const roiToolsGroup = dataList.find(g => g.type === 'ROI Tools');
+  const measurementItems = roiToolsGroup ? roiToolsGroup.items.slice(0, 5) : [];
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
   const Section = require('./_layout/Section').default;
@@ -173,99 +177,27 @@ function DataRowPageContent() {
             </div>
           </ExampleBlock>
 
-          <ExampleBlock title="With status indicators">
+          <ExampleBlock title="Measurement list with details">
             <div className="w-[280px] space-y-px">
-              <DataRow
-                number={1}
-                title="Lesion 1 — Length"
-                description=""
-                isSelected={false}
-                isVisible={true}
-                isLocked={false}
-                disableEditing={false}
-                onToggleVisibility={noop}
-                onToggleLocked={noop}
-                onRename={noop}
-                onDelete={noop}
-                onColor={noop}
-              >
-                <DataRow.Status.Success tooltip="Measurement tracked" />
-              </DataRow>
-              <DataRow
-                number={2}
-                title="Lesion 2 — Bidirectional"
-                description=""
-                isSelected={false}
-                isVisible={true}
-                isLocked={false}
-                disableEditing={false}
-                onToggleVisibility={noop}
-                onToggleLocked={noop}
-                onRename={noop}
-                onDelete={noop}
-                onColor={noop}
-              >
-                <DataRow.Status.Warning tooltip="SR not compatible with this application" />
-              </DataRow>
-              <DataRow
-                number={3}
-                title="Failed annotation"
-                description=""
-                isSelected={false}
-                isVisible={true}
-                isLocked={false}
-                disableEditing={false}
-                onToggleVisibility={noop}
-                onToggleLocked={noop}
-                onRename={noop}
-                onDelete={noop}
-                onColor={noop}
-              >
-                <DataRow.Status.Error tooltip="Measurement data missing" />
-              </DataRow>
-            </div>
-          </ExampleBlock>
-
-          <ExampleBlock title="With details">
-            <div className="w-[280px] space-y-px">
-              <DataRow
-                number={1}
-                title="Lesion 1"
-                description=""
-                isSelected={true}
-                isVisible={true}
-                isLocked={false}
-                disableEditing={false}
-                details={{
-                  primary: ['Long axis: 24.3 mm', 'Short axis: 18.1 mm', 'Area: 345.2 mm²'],
-                  secondary: [],
-                }}
-                onSelect={noop}
-                onToggleVisibility={noop}
-                onToggleLocked={noop}
-                onRename={noop}
-                onDelete={noop}
-                onColor={noop}
-              />
-              <DataRow
-                number={2}
-                title="Lesion 2"
-                description=""
-                isSelected={false}
-                isVisible={true}
-                isLocked={false}
-                disableEditing={false}
-                details={{
-                  primary: ['Length: 15.7 mm'],
-                  secondary: [],
-                }}
-                onSelect={noop}
-                onToggleVisibility={noop}
-                onToggleLocked={noop}
-                onRename={noop}
-                onDelete={noop}
-                onColor={noop}
-              />
+              {measurementItems.map((item, index) => (
+                <DataRow
+                  key={item.id}
+                  number={index + 1}
+                  title={item.title}
+                  description={item.description}
+                  details={item.details}
+                  isSelected={index === 0}
+                  isVisible={true}
+                  isLocked={false}
+                  disableEditing={false}
+                  onSelect={noop}
+                  onToggleVisibility={noop}
+                  onToggleLocked={noop}
+                  onRename={noop}
+                  onDelete={noop}
+                  onColor={noop}
+                />
+              ))}
             </div>
           </ExampleBlock>
 
