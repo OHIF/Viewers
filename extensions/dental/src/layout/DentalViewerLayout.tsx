@@ -5,8 +5,19 @@ import { CommandsManager, HangingProtocolService } from '@ohif/core';
 import { InvestigationalUseDialog, Onboarding } from '@ohif/ui-next';
 import { useAppConfig } from '@state';
 
+import { useDentalPreferences } from '../preferences/useDentalPreferences';
 import PracticeHeader from './PracticeHeader';
 import SidePanelWithServices from './SidePanelWithServices';
+
+const LAYOUT_CLASS_BY_THEME = {
+  dental: 'min-h-screen bg-[#0d1715] font-sans text-[#e7fff9]',
+  standard: 'min-h-screen',
+};
+
+const VIEWER_BODY_CLASS_BY_THEME = {
+  dental: 'relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-[#0d1715]',
+  standard: 'relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-background',
+};
 
 function DentalViewerLayout({
   extensionManager,
@@ -23,6 +34,12 @@ function DentalViewerLayout({
   const [appConfig] = useAppConfig();
   const { panelService, hangingProtocolService, customizationService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
+  const {
+    preferences,
+    setSelectedToothId,
+    setNumberingSystem,
+    toggleTheme,
+  } = useDentalPreferences();
 
   const hasPanels = useCallback((side): boolean => !!panelService.getPanels(side).length, [
     panelService,
@@ -105,15 +122,23 @@ function DentalViewerLayout({
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
-    <div data-cy="dental-viewer-layout">
+    <div
+      data-cy="dental-viewer-layout"
+      data-dental-theme={preferences.theme}
+      className={LAYOUT_CLASS_BY_THEME[preferences.theme]}
+    >
       <PracticeHeader
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
         appConfig={appConfig}
+        preferences={preferences}
+        onSelectedToothChange={setSelectedToothId}
+        onNumberingSystemChange={setNumberingSystem}
+        onThemeToggle={toggleTheme}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-background"
+        className={VIEWER_BODY_CLASS_BY_THEME[preferences.theme]}
         style={{ height: 'calc(100vh - 56px)' }}
       >
         {showLoadingIndicator ? (
