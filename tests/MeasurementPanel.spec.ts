@@ -158,6 +158,7 @@ test('checks if measurement item can be deleted under Measurements panel', async
 
   // Open measurement panel, confirm 3 measurements
   await rightPanelPageObject.measurementsPanel.select();
+  await rightPanelPageObject.measurementsPanel.panel.locator.waitFor({ state: 'visible' });
   expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(3);
 
   // Delete from measurement
