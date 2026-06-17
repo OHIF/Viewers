@@ -11,10 +11,36 @@ const ECG = 'ecg';
 
 export default function getCornerstoneViewportType(
   viewportType: string,
-  displaySets?: Types.DisplaySet[]
+  displaySets?: Types.DisplaySet[],
+  useNextViewports = false
 ): Enums.ViewportType {
   const lowerViewportType =
     displaySets?.[0]?.viewportType?.toLowerCase() || viewportType.toLowerCase();
+
+  // Native Generic Viewport ("next") path (appConfig.useNextViewports). Stack and
+  // volume/orthographic both collapse to PLANAR_NEXT — the render path (image vs
+  // volume slice) is inferred from the data shape, not from the viewport type.
+  if (useNextViewports) {
+    switch (lowerViewportType) {
+      case STACK:
+      case VOLUME:
+      case ORTHOGRAPHIC:
+        return Enums.ViewportType.PLANAR_NEXT;
+      case VOLUME_3D:
+        return Enums.ViewportType.VOLUME_3D_NEXT;
+      case VIDEO:
+        return Enums.ViewportType.VIDEO_NEXT;
+      case WHOLESLIDE:
+        return Enums.ViewportType.WHOLE_SLIDE_NEXT;
+      case ECG:
+        return Enums.ViewportType.ECG_NEXT;
+      default:
+        throw new Error(
+          `Invalid viewport type: ${viewportType}. Valid types are: stack, volume, video, wholeslide, ecg`
+        );
+    }
+  }
+
   if (lowerViewportType === STACK) {
     return Enums.ViewportType.STACK;
   }
