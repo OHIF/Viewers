@@ -663,6 +663,18 @@ export function useViewportRendering(
         return null;
       }
 
+      // Native Generic ("next") viewports (stack or volume) expose colormap via
+      // getDisplaySetPresentation rather than getProperties/getActors; the helper
+      // reads it for both backends.
+      if (utilities.isGenericViewport(viewport)) {
+        const { colormap } = getViewportProperties(viewport, activeDisplaySetInstanceUID);
+        return (
+          colormap ||
+          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+          colorbarProperties?.colormaps?.[0]
+        );
+      }
+
       if (isStackViewportType(viewport)) {
         const { colormap } = viewport.getProperties();
         if (!colormap) {

@@ -1202,6 +1202,25 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // For SEG and RT viewports
     const overlayProcessingResults = this._processExtraDisplaySetsForViewport(viewport) || [];
+
+    // Native Generic ("next") volume/MPR mount: a direct PLANAR_NEXT viewport
+    // renders a volume by registering the dataset (with the already-cached
+    // volumeId) and calling setDisplaySets with the requested orientation;
+    // cornerstone selects the image vs reformatted-volume render path from that
+    // orientation. This replaces the legacy setVolumes/setProperties/
+    // setPresentations surface, which a direct PLANAR_NEXT viewport does not expose.
+    if (csUtils.isGenericViewport(viewport) && filteredVolumeInputArray.length) {
+      await this._setNativeVolumeDisplaySets(
+        viewport as unknown as Types.IViewport,
+        filteredVolumeInputArray,
+        volumesProperties,
+        viewportInfo,
+        overlayProcessingResults
+      );
+      this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, { viewportInfo });
+      return;
+    }
+
     if (!filteredVolumeInputArray.length && overlayProcessingResults?.length) {
       overlayProcessingResults.forEach(({ imageIds, addOverlayFn }) => {
         if (addOverlayFn) {
@@ -1297,6 +1316,75 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
     });
+  }
+
+  /**
+   * Mounts one or more volumes on a native Generic ("next") viewport for
+   * volume/MPR rendering. Each base volume is registered with its already-cached
+   * volumeId and bound via setDisplaySets at the viewport's requested orientation;
+   * the first base volume is the source binding, any others are overlays (fusion).
+   * VOI/colormap/invert are applied per-binding via setDisplaySetPresentation.
+   *
+   * Legacy presentation restore (setPresentations) and jumpToSlice are intentionally
+   * not applied on the native path yet (a later increment), as they call the legacy
+   * camera/properties surface a direct PLANAR_NEXT viewport does not expose.
+   */
+  private async _setNativeVolumeDisplaySets(
+    viewport: Types.IViewport,
+    filteredVolumeInputArray: Array<{ volumeInput; displaySetOptions }>,
+    volumesProperties: Array<{ properties: ViewportProperties; volumeId: string }>,
+    viewportInfo: ViewportInfo,
+    overlayProcessingResults
+  ): Promise<void> {
+    const orientation = viewportInfo.getOrientation();
+    const nativeViewport = viewport as unknown as {
+      setDisplaySets: (args: unknown) => Promise<void>;
+      setDisplaySetPresentation: (dataId: string, props: Record<string, unknown>) => void;
+      render: () => void;
+    };
+    const displaySetInstanceUIDs: string[] = [];
+
+    for (const [index, { volumeInput }] of filteredVolumeInputArray.entries()) {
+      const { imageIds, volumeId, displaySetInstanceUID } = volumeInput;
+      const dataId = displaySetInstanceUID;
+      displaySetInstanceUIDs.push(dataId);
+
+      csUtils.genericViewportDataSetMetadataProvider.add(dataId, {
+        kind: 'planar',
+        imageIds,
+        volumeId,
+      });
+
+      await nativeViewport.setDisplaySets({
+        displaySetId: dataId,
+        options: {
+          orientation,
+          role: index === 0 ? 'source' : 'overlay',
+        },
+      });
+
+      const props = volumesProperties[index]?.properties;
+      if (props) {
+        const presentationProps: Record<string, unknown> = {};
+        if (props.voiRange) {
+          presentationProps.voiRange = props.voiRange;
+        }
+        if (props.invert !== undefined) {
+          presentationProps.invert = props.invert;
+        }
+        if (props.colormap) {
+          presentationProps.colormap = props.colormap;
+        }
+        if (Object.keys(presentationProps).length > 0) {
+          nativeViewport.setDisplaySetPresentation(dataId, presentationProps);
+        }
+      }
+    }
+
+    this.viewportsDisplaySets.set((viewport as { id: string }).id, displaySetInstanceUIDs);
+
+    await this._addOverlayRepresentations(overlayProcessingResults);
+    nativeViewport.render();
   }
 
   private _processExtraDisplaySetsForViewport(
