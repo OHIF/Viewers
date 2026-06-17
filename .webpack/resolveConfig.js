@@ -6,15 +6,17 @@ const path = require('path');
 //     per-package webpack.prod.js / webpack.dev.js that merges webpack.base.js
 //   - the rsbuild build: rsbuild.config.ts (dev:fast)
 //
-// Plugin aliases (writePluginImportsFile.getPluginResolveAliases) are NOT
-// included here: they depend on pluginConfig.json and are merged in separately
-// by each config.
+const writePluginImportsFile = require('../platform/app/.webpack/writePluginImportsFile.js');
 //
 // All paths are anchored to this file's location (the repo-root `.webpack/`
 // directory), so the values are identical regardless of which package's build
 // is doing the resolving.
 
 const alias = {
+  // Resolve every extension/mode declared in pluginConfig.json to its workspace
+  // source. Keep this in the shared resolver so dev/build paths that only use
+  // webpack.base.js still resolve generated pluginImports.js bare specifiers.
+  ...writePluginImportsFile.getPluginResolveAliases(),
   // Some extensions import app-level utilities (e.g. history,
   // preserveQueryParameters) from '@ohif/app'. pnpm's isolated layout does not
   // expose the top-level app package to those extensions, and adding it as a
