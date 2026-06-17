@@ -158,15 +158,14 @@ test('checks if measurement item can be deleted under Measurements panel', async
 
   // Open measurement panel, confirm 3 measurements
   await rightPanelPageObject.measurementsPanel.select();
-  await rightPanelPageObject.measurementsPanel.panel.locator.waitFor({ state: 'visible' });
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(3);
+  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementRows().count()).toBe(3);
 
   // Delete from measurement
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.delete();
   await page.waitForTimeout(200);
 
   // Confirm one measurement is gone
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementRows().count()).toBe(2);
 
   // Delete all measurements via main Measurement Panel delete button and untrack
   await rightPanelPageObject.measurementsPanel.panel.deleteAll();
@@ -180,7 +179,7 @@ test('checks if measurement item can be deleted under Measurements panel', async
 
   // Check dialog closed and measurements gone
   await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementRows().count()).toBe(0);
 
   const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
   await expect(measurementsPanel).toContainText('No tracked measurements');
