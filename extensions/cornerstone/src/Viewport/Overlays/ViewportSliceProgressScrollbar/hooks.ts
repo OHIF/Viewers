@@ -97,11 +97,22 @@ export function useViewportSliceSync({
       return;
     }
 
+    // Native Generic ("next") viewports report viewportType=planarNext regardless
+    // of content, so resolve stack-vs-volume from the bound data shape (imageIds =
+    // stack, volume/volumeId = volume). This is known immediately when the effect
+    // runs, unlike a runtime getNumberOfSlices read which can be premature while
+    // the native viewport is still binding its data.
+    const firstData = Array.isArray(viewportData.data) ? viewportData.data[0] : viewportData.data;
+    const isVolumeData = !!(firstData && (firstData.volume || firstData.volumeId));
+
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     if (viewport && !isVolume3DViewportType(viewport)) {
       try {
         const currentImageIndex = viewport.getCurrentImageIdIndex();
-        const currentNumberOfSlices = viewport.getNumberOfSlices();
+        // For an image stack the slice count is known from the bound data; only
+        // fall back to the viewport for volume/MPR (count depends on orientation).
+        const currentNumberOfSlices =
+          (!isVolumeData && firstData?.imageIds?.length) || viewport.getNumberOfSlices();
 
         setImageSliceData({
           imageIndex: currentImageIndex,
@@ -116,6 +127,8 @@ export function useViewportSliceSync({
     const eventId =
       (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_NEW_IMAGE) ||
       (viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE) ||
+      (isVolumeData && Enums.Events.VOLUME_NEW_IMAGE) ||
+      (firstData?.imageIds && Enums.Events.STACK_NEW_IMAGE) ||
       Enums.Events.IMAGE_RENDERED;
 
     const updateIndex = event => {

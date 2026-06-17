@@ -4,6 +4,8 @@ import {
   getViewportProperties,
   getViewportCameraState,
 } from './utils/getViewportPresentation';
+// TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
+import { isNextViewportsEnabled } from './utils/nextViewports';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -472,6 +474,18 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: () => {
         return {
           disabled: false,
+        };
+      },
+    },
+    // TEMP (remove before merge — see TODO_BEFORE_MERGE.md): highlights the toggle
+    // button when the native GenericViewport ("next") backend is active.
+    {
+      name: 'evaluate.cornerstone.nextViewportsToggle',
+      evaluate: () => {
+        const active = isNextViewportsEnabled();
+        return {
+          className: utils.getToggledClassName(active),
+          label: active ? 'Next viewport: ON' : 'Next viewport: OFF',
         };
       },
     },

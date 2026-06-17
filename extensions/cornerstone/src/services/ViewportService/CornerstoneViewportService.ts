@@ -7,6 +7,7 @@ import {
   getRenderingEngine,
   utilities as csUtils,
   cache,
+  metaData,
   Enums as csEnums,
 } from '@cornerstonejs/core';
 
@@ -955,6 +956,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         },
       });
 
+      // Native viewports are presentation-driven and do NOT auto-derive a default
+      // window/level from the image's DICOM VOI metadata the way legacy StackViewport
+      // does, so without this the image renders with a raw/full-range VOI (too dark).
+      // When no explicit VOI is provided, seed it from the voiLutModule metadata.
+      if (!properties.voiRange) {
+        const defaultVoi = this._getDefaultVoiRangeFromMetadata(
+          imageIds[initialImageIndexToUse] ?? imageIds[0]
+        );
+        if (defaultVoi) {
+          properties.voiRange = defaultVoi;
+        }
+      }
+
       const presentationProps: Record<string, unknown> = {};
       if (properties.voiRange) {
         presentationProps.voiRange = properties.voiRange;
@@ -983,8 +997,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewport.setViewState(viewStatePatch);
       }
 
-      // Note: legacy presentation restore (setPresentations) and stack-context
-      // prefetch are handled on the native path in a later increment.
+      // Enable stack-context prefetch for the native path. setDisplaySets above has
+      // already populated imageIds via genericViewportDataSetMetadataProvider, so
+      // getStackData returns a valid stack at enable() time. Scroll re-prefetch is
+      // driven by the native STACK_NEW_IMAGE event.
+      csToolsUtils.stackContextPrefetch.enable(viewport.element);
+
+      // Note: legacy presentation restore (setPresentations) is handled on the
+      // native path in a later increment.
       await this._addOverlayRepresentations(overlayProcessingResults);
       return;
     }
@@ -1316,6 +1336,27 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
     });
+  }
+
+  /**
+   * Derives a default VOI window/level range from an image's DICOM voiLutModule
+   * metadata (first WindowCenter/WindowWidth pair). Used to seed native viewport
+   * windowing, which (unlike legacy StackViewport) is not auto-applied from
+   * metadata. Returns undefined when the metadata has no usable window.
+   */
+  private _getDefaultVoiRangeFromMetadata(
+    imageId: string
+  ): { lower: number; upper: number } | undefined {
+    if (!imageId) {
+      return;
+    }
+    const voiLut = metaData.get('voiLutModule', imageId);
+    const wc = Array.isArray(voiLut?.windowCenter) ? voiLut.windowCenter[0] : voiLut?.windowCenter;
+    const ww = Array.isArray(voiLut?.windowWidth) ? voiLut.windowWidth[0] : voiLut?.windowWidth;
+    if (wc == null || ww == null) {
+      return;
+    }
+    return csUtils.windowLevel.toLowHighRange(ww, wc);
   }
 
   /**

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OHIF → Cornerstone Generic Viewport Migration — Status &amp; Next Waves</title>
+<style>
+  :root {
+    --bg:#0f1115; --panel:#171a21; --panel-2:#1d212b; --ink:#e7ebf0; --ink-dim:#aab3c0;
+    --ink-faint:#7d879a; --line:#2a2f3a; --accent:#4ea1ff; --accent-soft:#1e3a5f;
+    --blocker:#ff5d5d; --blocker-bg:#3a1717; --major:#ffae42; --major-bg:#3a2a12;
+    --minor:#8c97a8; --minor-bg:#232833; --ok:#46d39a; --ok-bg:#11302a;
+    --code-bg:#11141a; --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.62;}
+  a{color:var(--accent);text-decoration:none;} a:hover{text-decoration:underline;}
+  code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px;border:1px solid var(--line);color:#d7e2f0;}
+  .layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:0;}
+  nav.toc{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 18px 60px;}
+  nav.toc .brand{font-size:14px;font-weight:700;line-height:1.35;} nav.toc .brand small{display:block;font-weight:500;color:var(--ink-faint);font-size:12px;margin-top:4px;}
+  nav.toc h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:18px 0 8px;}
+  nav.toc ol{list-style:none;margin:0;padding:0;} nav.toc ol li{margin:2px 0;}
+  nav.toc ol a{display:block;padding:4px 8px;border-radius:6px;color:var(--ink-dim);font-size:13.5px;}
+  nav.toc ol a:hover{background:var(--panel-2);color:var(--ink);text-decoration:none;}
+  main{padding:40px 48px 120px;max-width:1100px;}
+  header.hero{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px;}
+  header.hero h1{font-size:26px;line-height:1.25;margin:0 0 10px;}
+  header.hero .sub{color:var(--ink-dim);max-width:84ch;}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .chip{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);} .chip strong{color:var(--ink);}
+  h2.sec{font-size:21px;margin:44px 0 14px;padding-top:10px;border-top:1px solid var(--line);}
+  h2.sec .n{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:8px;}
+  h3{font-size:16.5px;margin:24px 0 8px;color:#d9e6f5;} h4{font-size:14.5px;margin:16px 0 6px;}
+  p{margin:9px 0;} ul,ol.list{margin:8px 0;padding-left:22px;} li{margin:5px 0;}
+  .callout{border-radius:10px;padding:13px 16px;margin:16px 0;border:1px solid var(--line);background:var(--panel);}
+  .callout .label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;}
+  .callout.done{border-color:#1f5a47;background:var(--ok-bg);} .callout.done .label{color:var(--ok);}
+  .callout.key{border-color:var(--accent-soft);background:#142133;} .callout.key .label{color:var(--accent);}
+  .callout.warn{border-color:#5a3a12;background:var(--major-bg);} .callout.warn .label{color:var(--major);}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.03em;vertical-align:middle;}
+  .b-done{color:var(--ok);background:var(--ok-bg);border:1px solid #1f5a47;}
+  .b-partial{color:var(--major);background:var(--major-bg);border:1px solid #5a3a12;}
+  .b-remaining{color:var(--blocker);background:var(--blocker-bg);border:1px solid #5e2222;}
+  .b-minor{color:var(--minor);background:var(--minor-bg);border:1px solid var(--line);}
+  .b-blocker{color:var(--blocker);background:var(--blocker-bg);border:1px solid #5e2222;}
+  .b-major{color:var(--major);background:var(--major-bg);border:1px solid #5a3a12;}
+  .b-trivial{color:var(--ok);background:var(--ok-bg);border:1px solid #1f5a47;}
+  .b-hard{color:var(--major);background:var(--major-bg);border:1px solid #5a3a12;}
+  .b-moderate{color:#ffd479;background:#332b14;border:1px solid #4d3f17;}
+  .blocker{border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:12px 16px;margin:12px 0;background:var(--panel);}
+  .blocker.sev-remaining{border-left-color:var(--blocker);} .blocker.sev-partial{border-left-color:var(--major);} .blocker.sev-minor{border-left-color:var(--minor);}
+  .blocker .bid{font-family:var(--mono);font-weight:700;} .blocker p{margin:6px 0;font-size:14px;color:var(--ink-dim);}
+  .blocker p .fixlabel{color:var(--ok);font-weight:700;} .blocker .where{font-family:var(--mono);font-size:12px;color:var(--ink-faint);}
+  .tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px;}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:720px;}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top;}
+  thead th{background:var(--panel-2);position:sticky;top:0;font-size:12px;}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.015);} tbody tr:hover{background:rgba(78,161,255,.06);}
+  td .feat{font-weight:600;color:var(--ink);} td code{font-size:11.5px;}
+  .step{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;background:var(--panel);}
+  .step .mtag{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:15px;margin-right:8px;}
+  .step .mtitle{font-weight:600;font-size:15.5px;} .step dl{margin:8px 0 0;}
+  .step dt{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:8px;}
+  .step dd{margin:2px 0 0;font-size:13.5px;color:var(--ink-dim);}
+  .flow{font-family:var(--mono);font-size:12.5px;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;white-space:pre-wrap;color:#cdd9e8;overflow-x:auto;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-faint);margin-top:10px;}
+  footer{color:var(--ink-faint);font-size:12.5px;margin-top:50px;padding-top:16px;border-top:1px solid var(--line);}
+  @media (max-width:900px){.layout{grid-template-columns:1fr;}nav.toc{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line);}main{padding:26px 18px 80px;}}
+  @media print{nav.toc{display:none;}body{background:#fff;color:#111;}.layout{display:block;}main{max-width:none;padding:0;}.callout,.blocker,.step,.tablewrap{break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc">
+    <div class="brand">Generic Viewport Migration
+      <small>OHIF → Cornerstone "next" · status v2 · 2026-06-16</small>
+    </div>
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#s1">1 · Status at a glance</a></li>
+      <li><a href="#s2">2 · Shipped (7 commits)</a></li>
+      <li><a href="#s3">3 · Remaining cornerstone work</a></li>
+      <li><a href="#s4">4 · Feature matrix (updated)</a></li>
+      <li><a href="#s5">5 · SR / RT / PMAP / tmtv</a></li>
+      <li><a href="#s6">6 · NEXT WAVE — decision</a></li>
+      <li><a href="#s7">7 · How OHIF consumes it</a></li>
+      <li><a href="#s8">8 · Validation gap &amp; risks</a></li>
+    </ol>
+    <h2>Status key</h2>
+    <div class="legend">
+      <span class="badge b-done">DONE</span>
+      <span class="badge b-partial">PARTIAL</span>
+      <span class="badge b-remaining">REMAINING</span>
+      <span class="badge b-minor">MINOR</span>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <h1>OHIF → Cornerstone Generic Viewport ("next") — Status &amp; Next Waves</h1>
+      <div class="sub">Living status of the native-next migration. The Playwright-validatable cornerstone
+        foundation is shipped (7 local commits); this document tracks only what remains and where the next
+        wave should go. The original full plan is in <code>GENERIC_VIEWPORT_MIGRATION_PLAN.md</code>.</div>
+      <div class="meta-row">
+        <span class="chip"><strong>Cornerstone:</strong> branch <code>cornerstoneohifnextapi</code> @ 5.0.8</span>
+        <span class="chip"><strong>Shipped:</strong> 7 commits (local, unpushed)</span>
+        <span class="chip"><strong>OHIF M0:</strong> not started</span>
+        <span class="chip"><strong>Updated:</strong> 2026-06-16</span>
+      </div>
+    </header>
+
+    <!-- 1 -->
+    <h2 class="sec" id="s1"><span class="n">1</span>Status at a glance</h2>
+    <div class="callout done"><span class="label">Cornerstone foundation: DONE &amp; Playwright-green</span>
+      <p style="margin:6px 0 0">8 blockers fully implemented (CS-1, CS-3, CS-5, CS-7, CS-11, CS-15, CS-17, CS-19),
+      4 already present in 5.0.x (CS-4, CS-13, CS-21, CS-22), and the read-only / sync parts of CS-8
+      (contour, reference lines, camera-position sync). Every commit was gated on the <code>tests/genericViewport</code>
+      Playwright suite (chromium, 124–126 passing, 0 failed).</p></div>
+    <div class="callout warn"><span class="label">What's left can't be gated in cornerstone</span>
+      <p style="margin:6px 0 0">The remaining blockers — CS-8 <em>writes</em> (CrosshairsTool, ReferenceCursors,
+      TrackballRotate), CS-9 cine, CS-10 crosshairs-orthographic — have <strong>no native Playwright coverage</strong>
+      in cornerstone's <code>tests/</code> (no crosshairs/cine/3D specs). They become honestly testable only when
+      driven through OHIF. That is why the <strong>next wave is the OHIF M0 seam</strong> (§6).</p></div>
+
+    <!-- 2 -->
+    <h2 class="sec" id="s2"><span class="n">2</span>Shipped — 7 commits on <code>cornerstoneohifnextapi</code></h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Commit</th><th>Blockers</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>5635bdab4</code></td><td>CS-5, CS-16(type), CS-17, CS-1, CS-6(slice), CS-7</td><td>content-mode predicate + capability guards + <code>IGenericViewport</code> type; <code>VOI_MODIFIED</code>/<code>COLORMAP_MODIFIED</code> events; <code>VOLUME_NEW_IMAGE</code>; native <code>getNumberOfSlices()</code></td></tr>
+        <tr><td><code>1b13aa55f</code></td><td>CS-3, CS-15</td><td>segmentation-preserving <code>setDisplaySets</code>; <code>canRenderOrientation()</code> + <code>canRender()</code></td></tr>
+        <tr><td><code>b1c633a74</code></td><td>CS-11</td><td>VOI + image-slice synchronizers work on native viewports</td></tr>
+        <tr><td><code>5e80431c1</code></td><td>CS-19</td><td>per-mount <code>PlanarSetDataOptions.forceCPU</code></td></tr>
+        <tr><td><code>06605d040</code></td><td>CS-8 (contour)</td><td>contour / RTSTRUCT rendering on native viewports via the <code>getViewportICamera</code> bridge</td></tr>
+        <tr><td><code>2a7ab294b</code></td><td>CS-8 (ref-lines)</td><td>ReferenceLinesTool on native viewports (read-only → fully works)</td></tr>
+        <tr><td><code>96e610d5c</code></td><td>CS-8 (camera sync)</td><td><code>cameraSyncCallback</code> via <code>setViewReference</code> on native viewports</td></tr>
+      </tbody>
+    </table></div>
+    <p style="color:var(--ink-dim)"><strong>Already present in 5.0.x (no work needed):</strong> CS-4 data-inferred
+      render path &amp; multi-volume mount · CS-13 labelmap-slice rendering · CS-21 view-reference resolution
+      (<code>referencedImageId</code> / <code>planeRestriction</code>; null-orientation edge cases may still need hardening)
+      · CS-22 fusion colormap + multi-point opacity TF (<code>ColormapPublic.opacity: OpacityMapping[]</code>).</p>
+    <div class="callout key"><span class="label">Design rule that shaped CS-8</span>
+      <p style="margin:6px 0 0">Native viewports must <strong>not</strong> expose <code>getCamera</code>/<code>setCamera</code>/<code>resetCamera</code>
+      — enforced by the jest test <em>"does not expose view-presentation methods on Planar Next"</em> (verified by reverting
+      the "cheap" approach). Tools read camera via the <code>getViewportICamera</code> bridge (resolved-view + legacy
+      fallback) and write via <code>setViewReference</code>/<code>setViewState</code>, guarded by <code>utilities.isGenericViewport</code>.</p></div>
+
+    <!-- 3 -->
+    <h2 class="sec" id="s3"><span class="n">3</span>Remaining cornerstone work</h2>
+
+    <div class="blocker sev-partial"><span class="bid">CS-8</span> <span class="badge b-partial">PARTIAL</span>
+      <span> — CrosshairsTool / ReferenceCursors / TrackballRotate camera <em>writes</em></span>
+      <p class="where">CrosshairsTool.ts (26 raw getCamera/setCamera) · ReferenceCursors.ts (4) · TrackballRotateTool.ts (2)</p>
+      <p>Reads → <code>getViewportICamera</code>; writes (slice-jump navigation) → <code>setViewReference</code>/<code>setViewState</code>, guarded by <code>isGenericViewport</code>. Crosshairs is large and intricate (linked-viewport navigation).
+        <span class="fixlabel">Validation:</span> no cornerstone native test — gate via OHIF crosshairs scenario.</p></div>
+
+    <div class="blocker sev-remaining"><span class="bid">CS-10</span> <span class="badge b-remaining">REMAINING</span>
+      <span> — Crosshairs assume ORTHOGRAPHIC volume viewports</span>
+      <p>Internal <code>instanceof VolumeViewport</code> / <code>type === ORTHOGRAPHIC</code> assumptions; resolve geometry via capability + view references. Tied to the CS-8 crosshairs migration above.</p></div>
+
+    <div class="blocker sev-remaining"><span class="bid">CS-9</span> <span class="badge b-remaining">REMAINING</span>
+      <span> — cine <code>playClip</code> throws on <code>PLANAR_NEXT</code></span>
+      <p class="where">utilities/cine/playClip.ts (instanceof Stack/Volume/Video branches; "Unknown viewport type")</p>
+      <p>Add a generic/<code>PLANAR_NEXT</code> branch using <code>getCurrentMode()</code>/<code>getNumberOfSlices()</code> instead of <code>instanceof</code>. No cornerstone cine spec — gate via OHIF cine.</p></div>
+
+    <div class="blocker sev-partial"><span class="bid">CS-6 (part 2)</span> <span class="badge b-partial">PARTIAL</span>
+      <span> — <code>VOLUME_VIEWPORT_NEW_VOLUME</code> on the native add path</span>
+      <p>Part 1 (<code>VOLUME_NEW_IMAGE</code>) shipped. Part 2 still fires only from the legacy compatibility controllers. Emit it once-per-<code>setDisplaySets</code> from the native volume mount and remove the legacy duplicate (double-fire care). Needed for per-volume OHIF init (seg reps, colorbar).</p></div>
+
+    <div class="blocker sev-partial"><span class="bid">CS-16</span> <span class="badge b-partial">PARTIAL</span>
+      <span> — widen <code>IEnabledElement.viewport</code> union</span>
+      <p>The <code>IGenericViewport</code> type ships; the union widening is intentionally deferred until tool consumers narrow (blocked on CS-8/CS-10, since ~114 tools files read <code>enabledElement.viewport.getCamera()</code>).</p></div>
+
+    <div class="blocker sev-minor"><span class="bid">CS-12 / CS-18 / CS-20</span> <span class="badge b-minor">MINOR</span>
+      <span> — calibration, registration-store GC, ECG/video/WSI id ergonomics</span>
+      <p>CS-12 native <code>calibrateSpacing()</code> on PlanarViewport · CS-18 registration-store eviction/validation · CS-20 cleaner display-set id setup for ECG/video/WSI. All low-priority polish; can land any time.</p></div>
+
+    <!-- 4 -->
+    <h2 class="sec" id="s4"><span class="n">4</span>Feature matrix (updated)</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Feature</th><th>Native-next path</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="feat">Stack load</td><td><code>add</code>+<code>setDisplaySets</code> (data-inferred)</td><td><span class="badge b-done">DONE</span></td></tr>
+        <tr><td class="feat">Volume / MPR load</td><td><code>setDisplaySets({orientation})</code></td><td><span class="badge b-done">DONE</span></td></tr>
+        <tr><td class="feat">PT/CT fusion</td><td>source+overlay roles + per-overlay <code>setDisplaySetPresentation</code></td><td><span class="badge b-done">DONE</span> (pre-existing)</td></tr>
+        <tr><td class="feat">VOI / W-L, colormap, invert</td><td><code>setDisplaySetPresentation</code> + VOI/COLORMAP events</td><td><span class="badge b-done">DONE</span> (CS-1)</td></tr>
+        <tr><td class="feat">Content-mode discrimination</td><td><code>getCurrentMode()</code> + <code>isGenericViewport</code> guards</td><td><span class="badge b-done">DONE</span> (CS-5/17)</td></tr>
+        <tr><td class="feat">Slice nav &amp; jump</td><td>native <code>getNumberOfSlices()</code>; <code>jumpToSlice</code></td><td><span class="badge b-done">DONE</span> (CS-7)</td></tr>
+        <tr><td class="feat">Orientation pre-check</td><td><code>canRenderOrientation()</code></td><td><span class="badge b-done">DONE</span> (CS-15)</td></tr>
+        <tr><td class="feat">Segmentation (labelmap)</td><td><code>useSliceRendering</code>; seg-preserving <code>setDisplaySets</code></td><td><span class="badge b-done">DONE</span> (CS-3/13)</td></tr>
+        <tr><td class="feat">Sync — VOI / image-slice / zoom-pan / camera-pos</td><td>native synchronizer callbacks</td><td><span class="badge b-done">DONE</span> (CS-11, CS-8)</td></tr>
+        <tr><td class="feat">Contour / RTSTRUCT</td><td><code>getViewportICamera</code> bridge</td><td><span class="badge b-done">DONE</span> (CS-8)</td></tr>
+        <tr><td class="feat">Reference lines</td><td><code>getViewportICamera</code> bridge</td><td><span class="badge b-done">DONE</span> (CS-8)</td></tr>
+        <tr><td class="feat">Crosshairs (+ MPR navigation)</td><td>bridge reads + <code>setViewReference</code> writes</td><td><span class="badge b-partial">PARTIAL</span> (CS-8/10)</td></tr>
+        <tr><td class="feat">Cine</td><td>generic branch in <code>playClip</code></td><td><span class="badge b-remaining">REMAINING</span> (CS-9)</td></tr>
+        <tr><td class="feat">3D / MIP VR</td><td>native VR preset API / TrackballRotate</td><td><span class="badge b-remaining">REMAINING</span> (CS-14)</td></tr>
+      </tbody>
+    </table></div>
+
+    <!-- 5 -->
+    <h2 class="sec" id="s5"><span class="n">5</span>SR / RT / PMAP / tmtv</h2>
+    <ul>
+      <li><strong>SR</strong> — thin layer; jump already uses <code>setViewReference</code>. Rides OHIF M1 (stack). View-reference resolution (CS-21) is largely present.</li>
+      <li><strong>RTSTRUCT</strong> — contour rendering now works on native viewports <span class="badge b-done">DONE</span> (CS-8 contour). The OHIF-side rep wiring rides M4.</li>
+      <li><strong>PMAP</strong> — a color-fusion second volume; rides M2 (mount) + M3 (presentation). Per-overlay colormap+opacity-TF already supported (CS-22).</li>
+      <li><strong>tmtv</strong> — heaviest consumer; fusion colormap (M3) + ROI-threshold labelmap (M4) + crosshairs (CS-8 writes) + MIP (CS-14). Integration/acceptance vehicle; depends on the crosshairs/3D remainder.</li>
+    </ul>
+
+    <!-- 6 -->
+    <h2 class="sec" id="s6"><span class="n">6</span>Next wave — decision: <span style="color:var(--accent)">OHIF M0 seam</span></h2>
+    <div class="callout key"><span class="label">Decision</span>
+      <p style="margin:6px 0 0"><strong>Do the OHIF M0 seam next, not more isolated cornerstone work.</strong> The
+      Playwright-validatable cornerstone foundation is done; the remaining cornerstone blockers (crosshairs writes,
+      cine, 3D) cannot be honestly gated where they live. OHIF M0 is the harness that turns them into observable,
+      gateable behavior — so pull them in <em>demand-driven</em> as real OHIF scenarios break.</p></div>
+
+    <h3>Why now</h3>
+    <ul>
+      <li>Cornerstone foundation (planar stack/volume/fusion, presentation events, synchronizers, contour, reference lines) is shipped and green.</li>
+      <li>Remaining cornerstone blockers have <strong>zero native Playwright coverage</strong> — adding more there is unfalsifiable progress.</li>
+      <li>OHIF M0 touches exactly <strong>two chokepoints</strong> (small, well-understood) and has <code>useGenericViewport</code> as a flag-threading precedent.</li>
+    </ul>
+
+    <h3>Ordered steps</h3>
+    <div class="step"><div><span class="mtag">0</span><span class="mtitle">Link OHIF to the local 5.0.8 cornerstone worktree</span></div>
+      <dd>The 7 commits are <strong>local &amp; unpushed</strong>, so npm <code>5.0.8</code> does <em>not</em> contain them. Use the repo's
+      <code>cs3d:install</code>/<code>cs3d:build</code>/<code>cs3d:link</code> scripts against
+      <code>/Users/alireza/open-source/clean/cornerstone3d.worktrees/cornerstoneohifnextapi</code> (this OHIF worktree has no <code>node_modules</code> yet). A plain version bump alone gets base 5.0.8 <em>without</em> these changes.</dd></div>
+    <div class="step"><div><span class="mtag">1</span><span class="mtitle">Add <code>appConfig.useNextViewports</code></span></div>
+      <dd>Type it in <code>platform/core/src/types/AppTypes.ts</code> next to <code>useGenericViewport</code>; read it in exactly two places. It does <strong>not</strong> set cornerstone's <code>useGenericViewport</code> (that's the forbidden legacy remap).</dd></div>
+    <div class="step"><div><span class="mtag">2</span><span class="mtitle"><code>*_NEXT</code> branch in <code>getCornerstoneViewportType.ts</code></span></div>
+      <dd>When the flag is on: <code>stack</code>/<code>volume</code>/<code>orthographic</code> → <code>PLANAR_NEXT</code>; others → their <code>*_NEXT</code>. (44-line pure mapper; no HP/mode edits.)</dd></div>
+    <div class="step"><div><span class="mtag">3</span><span class="mtitle">Backend split in <code>CornerstoneViewportService</code></span></div>
+      <dd>Move-only <code>legacyBackend</code> (byte-identical) vs <code>nextBackend</code> (<code>setDisplaySets</code>/<code>setDisplaySetPresentation</code>/<code>setViewState</code>/view references), selected by the flag in the constructor. The line-855 <code>setDisplaySets</code> is a legacy-adapter shim — build the real native path.</dd></div>
+    <div class="step"><div><span class="mtag">4</span><span class="mtitle">Fix <code>getLegacyViewportType</code> misclassification</span></div>
+      <dd>It reads <code>requestedType ?? type</code>; native <code>PLANAR_NEXT</code> carries no legacy <code>requestedType</code>, so route its ~67 consumers through <code>ViewportInfo</code> / capability guards before enabling the flag.</dd></div>
+    <div class="step"><div><span class="mtag">5</span><span class="mtitle">Validate native stack + MPR in OHIF behind the flag</span></div>
+      <dd>This is where CS-8 crosshairs/CS-9 cine/CS-14 3D become real, gateable bugs. Fix each in the 5.0.8 worktree as it breaks an OHIF scenario, re-link, and prove it with an OHIF-level Playwright test.</dd></div>
+
+    <!-- 7 -->
+    <h2 class="sec" id="s7"><span class="n">7</span>How OHIF consumes the cornerstone changes</h2>
+    <div class="callout warn"><span class="label">Dependency reality</span>
+      <p style="margin:6px 0 0">OHIF pins <code>@cornerstonejs/*</code> to <strong>5.0.0</strong>. The native-next commits live only
+      on the local <code>cornerstoneohifnextapi</code> worktree (5.0.8, <strong>unpushed</strong>). So:</p>
+      <ul style="margin:8px 0 0">
+        <li><strong>Right path:</strong> <code>cs3d:link</code> OHIF → the local 5.0.8 worktree (fast local iteration on the fixes discovered during M0).</li>
+        <li><strong>Not sufficient:</strong> bumping the npm pin to 5.0.8 — published 5.0.8 lacks these commits.</li>
+        <li><strong>Durable path:</strong> push/publish the cornerstone commits, then bump the OHIF pin.</li>
+      </ul></div>
+
+    <!-- 8 -->
+    <h2 class="sec" id="s8"><span class="n">8</span>Validation gap &amp; risks</h2>
+    <ul>
+      <li><strong>The core gap:</strong> cornerstone has no native crosshairs/cine/3D Playwright specs, so those blockers can only be validated through OHIF (M0) — the reason the next wave is OHIF, not more cornerstone.</li>
+      <li><strong>Backward-compat:</strong> the bridge migrations (contour/reference-lines/cameraSync) fall back to <code>getCamera()</code> on legacy viewports, so legacy behavior is byte-identical (validated by genericViewport + contour/MPR legacy specs).</li>
+      <li><strong>Highest residual risk:</strong> crosshairs camera <em>writes</em> (linked-viewport slice navigation) and cine playback on volume-backed planar — intricate; validate with dedicated OHIF MPR/cine scenarios.</li>
+      <li><strong>Don't force-break the community:</strong> M0 keeps the legacy path default and byte-identical; <code>useNextViewports</code> is opt-in.</li>
+    </ul>
+
+    <footer>
+      Status v2 · 2026-06-16 · cornerstone branch <code>cornerstoneohifnextapi</code> (7 local commits) ·
+      next wave = OHIF M0 seam (link to local 5.0.8). Source of record:
+      <code>GENERIC_VIEWPORT_MIGRATION_PLAN.md</code>.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

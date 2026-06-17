@@ -16,3 +16,39 @@ export function setNextViewportsEnabled(value: boolean): void {
 export function isNextViewportsEnabled(): boolean {
   return nextViewportsEnabled;
 }
+
+// TEMP (remove before merge — see TODO_BEFORE_MERGE.md): a localStorage override
+// lets the in-app toggle button flip the backend across reloads without editing
+// the config. When the key is absent, appConfig.useNextViewports wins.
+const NEXT_VIEWPORTS_OVERRIDE_KEY = 'ohif-use-next-viewports-override';
+
+/**
+ * Resolves the effective flag at init: a localStorage override (set by the
+ * dev toggle button) takes precedence over the appConfig value.
+ */
+export function resolveNextViewportsEnabled(appConfigValue: unknown): boolean {
+  try {
+    const override = window.localStorage?.getItem(NEXT_VIEWPORTS_OVERRIDE_KEY);
+    if (override !== null && override !== undefined) {
+      return override === 'true';
+    }
+  } catch {
+    // localStorage unavailable (SSR/private mode) — fall back to appConfig.
+  }
+  return Boolean(appConfigValue);
+}
+
+/**
+ * Flips the persisted override and reloads so all viewports are re-created with
+ * the other backend. Used by the temporary in-toolbar toggle button.
+ */
+export function toggleNextViewportsAndReload(): void {
+  const next = !isNextViewportsEnabled();
+  try {
+    window.localStorage?.setItem(NEXT_VIEWPORTS_OVERRIDE_KEY, String(next));
+  } catch {
+    // ignore — without persistence the reload below still applies the in-memory flip
+  }
+  setNextViewportsEnabled(next);
+  window.location.reload();
+}

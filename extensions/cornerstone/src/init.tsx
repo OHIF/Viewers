@@ -27,7 +27,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
 import initStudyPrefetcherService from './initStudyPrefetcherService';
-import { setNextViewportsEnabled } from './utils/nextViewports';
+import { setNextViewportsEnabled, resolveNextViewportsEnabled } from './utils/nextViewports';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -86,7 +86,9 @@ export default async function init({
   // API (PLANAR_NEXT, setDisplaySets, ...). Read by getCornerstoneViewportType
   // and the CornerstoneViewportService backend split. Distinct from
   // useGenericViewport above (which only enables cornerstone's compat remap).
-  setNextViewportsEnabled(Boolean(appConfig.useNextViewports));
+  // resolveNextViewportsEnabled honors the dev toggle's localStorage override
+  // (TEMP — see TODO_BEFORE_MERGE.md); without it, appConfig.useNextViewports wins.
+  setNextViewportsEnabled(resolveNextViewportsEnabled(appConfig.useNextViewports));
 
   // For debugging large datasets, otherwise prefer the defaults
   const { maxCacheSize } = appConfig;
