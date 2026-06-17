@@ -442,6 +442,7 @@ function SmartScrollbarDemo({
   const [speed, setSpeed] = useState<Speed>('normal');
   const [pattern, setPattern] = useState<LoadPattern>('from-indicator');
   const [currentIndex, setCurrentIndex] = useState(Math.round((DEFAULT_SLICES - 1) * 0.2));
+  const [resetKey, setResetKey] = useState(0);
 
   const { loaded, loadingPercent, simState, play, pause, reset: resetLoading } =
     useLoadingSimulation(speed, pattern, currentIndex, totalSlices, useByteArray);
@@ -466,6 +467,7 @@ function SmartScrollbarDemo({
   const handleReset = useCallback(() => {
     resetLoading();
     resetViewed();
+    setResetKey(k => k + 1);
   }, [resetLoading, resetViewed]);
 
   const handleSliceCountChange = useCallback(
@@ -474,6 +476,7 @@ function SmartScrollbarDemo({
       resetLoading();
       resetViewed();
       setCurrentIndex(Math.round((count - 1) * 0.2));
+      setResetKey(k => k + 1);
     },
     [resetLoading, resetViewed]
   );
@@ -485,6 +488,7 @@ function SmartScrollbarDemo({
     <div className="flex gap-6 items-start flex-wrap">
       <DemoViewport onWheel={handleWheel}>
         <SmartScrollbar
+          key={resetKey}
           value={currentIndex}
           total={totalSlices}
           onValueChange={setCurrentIndex}
