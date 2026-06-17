@@ -6,8 +6,8 @@ function HoverCardPageContent() {
     HoverCard,
     HoverCardTrigger,
     HoverCardContent,
-  } = require('../../../../ui-next/src/components/HoverCard/HoverCard');
-  const { Button } = require('../../../../ui-next/src/components/Button');
+    Button,
+  } = require('../../../../ui-next/src/components');
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
   const Section = require('./_layout/Section').default;

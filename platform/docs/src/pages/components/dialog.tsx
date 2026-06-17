@@ -11,10 +11,10 @@ function DialogPageContent() {
     DialogTitle,
     DialogDescription,
     DialogClose,
-  } = require('../../../../ui-next/src/components/Dialog/Dialog');
-  const { Button } = require('../../../../ui-next/src/components/Button');
-  const { Input } = require('../../../../ui-next/src/components/Input');
-  const { Label } = require('../../../../ui-next/src/components/Label');
+    Button,
+    Input,
+    Label,
+  } = require('../../../../ui-next/src/components');
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
   const Section = require('./_layout/Section').default;

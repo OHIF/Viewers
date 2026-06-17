@@ -2,8 +2,7 @@ import React from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 function ComboboxPageContent() {
-  const { Combobox } = require('../../../../ui-next/src/components/Combobox/Combobox');
-  const { Label } = require('../../../../ui-next/src/components/Label');
+  const { Combobox, Label } = require('../../../../ui-next/src/components');
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
   const Section = require('./_layout/Section').default;

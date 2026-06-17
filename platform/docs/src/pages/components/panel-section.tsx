@@ -2,10 +2,7 @@ import React from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 function PanelSectionPageContent() {
-  const { PanelSection } = require('../../../../ui-next/src/components/PanelSection/PanelSection');
-  const { Button } = require('../../../../ui-next/src/components/Button');
-  const { DataRow } = require('../../../../ui-next/src/components/DataRow');
-  const { TooltipProvider } = require('../../../../ui-next/src/components/Tooltip');
+  const { PanelSection, Button, DataRow, TooltipProvider } = require('../../../../ui-next/src/components');
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
   const Section = require('./_layout/Section').default;
