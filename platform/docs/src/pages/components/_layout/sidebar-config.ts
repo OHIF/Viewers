@@ -32,7 +32,7 @@ export const sidebarSections: SidebarSection[] = [
       { label: 'HoverCard', href: '/components/hover-card' },
       { label: 'Input', href: '/components/input' },
       { label: 'Label', href: '/components/label' },
-      { label: 'NumericMeta', href: '/components/numeric-meta' },
+      { label: 'Numeric', href: '/components/numeric' },
       { label: 'PanelSection', href: '/components/panel-section' },
       { label: 'Popover', href: '/components/popover' },
       { label: 'ScrollArea', href: '/components/scroll-area' },
