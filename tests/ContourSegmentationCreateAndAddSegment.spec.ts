@@ -109,3 +109,39 @@ test('should not rename a segmentation when the rename dialog is cancelled', asy
   await panel.moreMenu.cancelRename('Discarded Name');
   await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
 });
+
+test('should delete a segmentation and remove it from the selector', async ({
+  rightPanelPageObject,
+}) => {
+  const { panel, segmentationSelect } = rightPanelPageObject.contourSegmentationPanel;
+
+  await panel.moreMenu.createNewSegmentation();
+  await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
+
+  await panel.moreMenu.delete();
+
+  // The remaining RTSTRUCT segmentation becomes active and is the only one left.
+  await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
+  await expect(await segmentationSelect.getSegmentationLabels()).toHaveText(['Contours on PET']);
+  await segmentationSelect.close();
+});
+
+test('should delete every segmentation until none remain', async ({
+  rightPanelPageObject,
+}) => {
+  const { panel, addSegmentationButton } = rightPanelPageObject.contourSegmentationPanel;
+
+  // Start with the hydrated RTSTRUCT plus two created segmentations.
+  await panel.moreMenu.createNewSegmentation();
+  await panel.moreMenu.createNewSegmentation();
+
+  // Delete each of the three segmentations one by one.
+  await panel.moreMenu.delete();
+  await panel.moreMenu.delete();
+  await panel.moreMenu.delete();
+
+  // No segmentation remains, so the panel has no segment rows and the
+  // "Add segmentation" entry point is shown again.
+  await expect(panel.rows).toHaveCount(0);
+  await expect(addSegmentationButton.button).toBeVisible();
+});
