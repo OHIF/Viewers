@@ -41,7 +41,7 @@ jobs:
           # and breaking `pnpm install` with MODULE_NOT_FOUND.
       # Install pnpm via Corepack instead of pnpm/action-setup. The action's
       # self-installer is a JS action run under the runner's bundled
-      # externals/node24 and derives the `npm` path from that runtime — which
+      # externals/node{version} and derives the `npm` path from that runtime — which
       # on this self-hosted runner is corrupted (Cannot find module
       # '../lib/cli.js'), so it dies regardless of `standalone:true`. Corepack
       # ships inside the Node that setup-node just installed, reads the pinned
