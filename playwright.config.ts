@@ -7,23 +7,22 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   maxFailures: process.env.CI ? 10 : undefined,
-  workers: process.env.CI ? 6 : undefined,
+  workers: process.env.CI ? 8 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
-  reporter: [
-    ['html', { outputFolder: './tests/playwright-report' }],
-  ],
+  reporter: [['html', { outputFolder: './tests/playwright-report' }]],
   globalTimeout: 800_000,
   timeout: 800_000,
   use: {
     baseURL: 'http://localhost:3335',
     trace: 'on-first-retry',
-    video: 'on-first-retry',
+    video: 'retain-on-failure',
     testIdAttribute: 'data-cy',
     actionTimeout: 10_000,
     launchOptions: {
       // do not hide the scrollbars so that we can assert their look-and-feel
       ignoreDefaultArgs: ['--hide-scrollbars'],
+      args: ['--use-gl=egl'],
     },
   },
 

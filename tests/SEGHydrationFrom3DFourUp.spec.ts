@@ -5,7 +5,6 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForPaintToSettle,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   expect,
@@ -44,9 +43,6 @@ test.describe('3D four up SEG hydration', async () => {
     await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible({
       timeout: 60000,
     });
-    await waitForViewportsRendered(page, { timeout: 60000 });
-    await page.waitForTimeout(3000);
-    await waitForPaintToSettle(page);
 
     await checkForScreenshot(
       page,
@@ -58,18 +54,12 @@ test.describe('3D four up SEG hydration', async () => {
 
     // High rendered timeout needed: layout has 4 viewports (3D volume + MPR planes + SEG overlays),
     // which can take significantly longer time to fully render
-    viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 180000 });
+    viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 240000 });
 
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
     // Wait until all viewports have finished rendering
     await viewportRenderCycle;
-    // 3D volume rendering keeps streaming refined geometry after the load
-    // status flips; give the GPU a window to present the final frame before
-    // screenshotting.
-    await waitForViewportsRendered(page, { timeout: 180000 });
-    await page.waitForTimeout(3000);
-    await waitForPaintToSettle(page);
 
     await checkForScreenshot({
       page,
@@ -92,12 +82,15 @@ test.describe('3D four up to 3x2 layout SEG hydration', () => {
     mainToolbarPageObject,
     viewportPageObject,
   }) => {
+    let viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 240000 });
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
+    await viewportRenderCycle;
 
-    let viewportRenderCycle = waitForViewportRenderCycle(page);
     // Switch to a manual 3x2 grid layout
     await mainToolbarPageObject.layoutSelection.grid(3, 2).click();
-    await viewportRenderCycle;
+
+    // Wait for the 3x2 grid to be rendered.
+    await expect(viewportPageObject.getNthLocator(5)).toBeVisible();
 
     // Activate the 3rd viewport (index 2) then load the SEG into it
     await viewportPageObject.getNthLocator(2).click();

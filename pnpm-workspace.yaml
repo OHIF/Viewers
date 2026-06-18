@@ -16,16 +16,15 @@ minimumReleaseAgeExclude:
   - '@cornerstonejs/*'
 frozenLockfile: true
 
+# Skip the pre-`pnpm run` frozen deps-check; installs set freshness explicitly.
+verifyDepsBeforeRun: false
+
 # Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
 # risk: minimatch/picomatch advisories reached only via build/CI tooling, never
 # fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
 # job and the root `audit` script.
 auditConfig:
-  ignoreGhsas:
-    - GHSA-3ppc-4f35-3m26 # CVE-2026-26996  - minimatch (build/CI only, no CLI use)
-    - GHSA-7r86-cg39-jmmj # CVE-2026-27903  - minimatch (same)
-    - GHSA-23c5-xmqv-rm74 # CVE-2026-27904  - minimatch (same)
-    - GHSA-c2c7-rcm5-vvqj # CVE-2026-33671  - picomatch (build/CI only)
+  ignoreGhsas: []
 
 allowBuilds:
   '@scarf/scarf': true
@@ -67,8 +66,8 @@ overrides:
   svgo: 3.3.3
   flatted: 3.4.2
   handlebars: 4.7.9
-  protobufjs: 7.5.7
-  tmp: 0.2.6
+  protobufjs: 7.6.1
+  tmp: 0.2.7
   shell-quote: 1.8.4
   # fast-uri <=3.1.1 reaches the tree only via platform/docs
   # (@docusaurus/plugin-pwa > workbox-build > ajv). 3.1.2 patches both
@@ -81,4 +80,11 @@ overrides:
   # pulls in tslib@1, which gets hoisted to root node_modules and shadows the
   # tslib@2 that modern packages (e.g. react-remove-scroll) need for
   # __spreadArray.
-  tslib: ^2.8.1
+  tslib: 2.8.1
+  'ws@>=7.0.0 <7.5.11': 7.5.11
+  'ws@>=8.0.0 <8.21.0': 8.21.0
+  form-data: 4.0.6
+  'minimatch@<3.1.4': 3.1.5
+  'minimatch@>=10.0.0 <10.2.3': 10.2.5
+  'picomatch@<2.3.2': 2.3.2
+  'picomatch@>=4.0.0 <4.0.4': 4.0.4
