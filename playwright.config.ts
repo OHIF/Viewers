@@ -7,7 +7,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   maxFailures: process.env.CI ? 10 : undefined,
-  workers: process.env.CI ? 6 : undefined,
+  workers: process.env.CI ? 12 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [['html', { outputFolder: './tests/playwright-report' }]],

@@ -23,7 +23,7 @@ concurrency:
 jobs:
   playwright-tests:
     timeout-minutes: 120
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, nashua]
     strategy:
       fail-fast: false
       matrix:
