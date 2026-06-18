@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { utils } from '@ohif/core';
 import {
   Button,
   Badge,
@@ -21,6 +22,10 @@ import {
 } from './dentalMeasurementList';
 import { DentalMeasurementsService } from './DentalMeasurementsService';
 import { getToothDisplayLabel, getToothIdentityById } from '../tooth/toothIdentity';
+import {
+  createDentalMeasurementExport,
+  createDentalMeasurementExportFilename,
+} from './dentalMeasurementExport';
 
 const EMPTY_FILTERS: DentalMeasurementFilters = {
   label: '',
@@ -77,6 +82,39 @@ function DentalMeasurementsPanel({ servicesManager }: DentalMeasurementsPanelPro
     setFilters(current => ({ ...current, [key]: value === 'all' ? '' : value }));
   };
 
+  const displaySet = servicesManager.services.displaySetService.getActiveDisplaySets?.()?.[0];
+  const instance = displaySet?.instances?.[0] || displaySet?.instance;
+  const exportContext = {
+    studyInstanceUID: displaySet?.StudyInstanceUID || instance?.StudyInstanceUID,
+    patientId: instance?.PatientID || displaySet?.PatientID,
+  };
+
+  const handleExport = useCallback(() => {
+    if (!exportContext.studyInstanceUID) {
+      return;
+    }
+
+    const exportedAt = new Date();
+    const payload = createDentalMeasurementExport(
+      {
+        studyInstanceUID: exportContext.studyInstanceUID,
+        patientId: exportContext.patientId,
+        exportedAt: exportedAt.toISOString(),
+      },
+      measurements
+    );
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: 'application/json;charset=utf-8',
+    });
+
+    utils.downloadBlob(blob, {
+      filename: createDentalMeasurementExportFilename(
+        exportContext.studyInstanceUID,
+        exportedAt
+      ),
+    });
+  }, [exportContext.patientId, exportContext.studyInstanceUID, measurements]);
+
   const getToothLabel = (toothId: string) => {
     const tooth = getToothIdentityById(toothId);
     return tooth ? `FDI ${getToothDisplayLabel(tooth, 'FDI')} - ${tooth.label}` : toothId;
@@ -90,9 +128,22 @@ function DentalMeasurementsPanel({ servicesManager }: DentalMeasurementsPanelPro
       <div className="border-muted space-y-2 border-b p-3">
         <div className="flex items-center justify-between gap-2">
           <div className="text-sm font-semibold">Study Measurements</div>
-          {status !== 'idle' && status !== 'saved' ? (
-            <Badge variant="outline">{status}</Badge>
-          ) : null}
+          <div className="flex items-center gap-1">
+            {status !== 'idle' && status !== 'saved' ? (
+              <Badge variant="outline">{status}</Badge>
+            ) : null}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              title="Export JSON"
+              data-cy="dental-export-json"
+              disabled={!exportContext.studyInstanceUID || measurements.length === 0}
+              onClick={handleExport}
+            >
+              <Icons.Download className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <Select
@@ -193,7 +244,7 @@ function DentalMeasurementsPanel({ servicesManager }: DentalMeasurementsPanelPro
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">{measurement.label}</div>
                   <div className="text-primary text-lg font-semibold">
-                    {measurement.value ?? '—'} {measurement.unit}
+                    {measurement.value ?? '-'} {measurement.unit}
                   </div>
                   <div className="text-muted-foreground truncate text-[11px]">
                     {getToothLabel(measurement.toothId)}
