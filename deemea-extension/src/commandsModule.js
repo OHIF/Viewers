@@ -332,12 +332,14 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
     deleteMeasurement: ({ uid }) => {
       if (uid) {
         const { measurementService } = servicesManager.services;
+        const measurement = measurementService.getMeasurement(uid);
+        const measurementId = measurement.label.measurementId;
         measurementService.remove(uid);
 
         window.parent.postMessage(
           {
             type: OHIFMessageType.DELETE_MEASURE,
-            message: { uid },
+            message: { uid, measurementId },
           },
           '*'
         );
