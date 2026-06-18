@@ -20,6 +20,7 @@
 
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useViewerMode } from '../stores/useViewerModeStore';
 
 // ---------------------------------------------------------------------------
@@ -66,6 +67,7 @@ function UploadIcon(): React.ReactElement {
  * Rendered hidden (returns null) in clinical or unset modes.
  */
 export function DicomImportButton(): React.ReactElement | null {
+  const { t } = useTranslation('blackvoxel-ai');
   const { mode } = useViewerMode();
   const navigate = useNavigate();
 
@@ -104,26 +106,18 @@ export function DicomImportButton(): React.ReactElement | null {
         onBlur={e => {
           (e.currentTarget as HTMLButtonElement).style.outline = 'none';
         }}
-        aria-label="Importar arquivos DICOM locais / Import local DICOM files"
-        title="Importar DICOM local — apenas modo Pesquisa / Import local DICOM — Research mode only"
+        aria-label={t('import.aria')}
+        title={t('import.title')}
       >
         <UploadIcon />
-        Importar DICOM
-        <span
-          className="ml-1 text-[11px] font-normal"
-          style={{ color: 'rgba(255,255,255,0.75)' }}
-        >
-          / Import DICOM
-        </span>
+        {t('import.button')}
       </button>
 
       <p
         className="mb-0 mt-1.5 text-center text-[10px] leading-snug"
         style={{ color: TEXT_SECONDARY }}
       >
-        Arquivos ficam no navegador — nenhum upload para servidor.
-        {' '}
-        <span className="opacity-70">Files stay in the browser — no server upload.</span>
+        {t('import.note')}
       </p>
     </div>
   );

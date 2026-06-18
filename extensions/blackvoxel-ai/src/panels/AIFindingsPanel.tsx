@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { utilities as cornerstoneUtilities } from '@cornerstonejs/core';
+import { LanguageToggle } from '../components/LanguageToggle';
 import {
   getInference,
   InferenceError,
@@ -21,9 +23,6 @@ import { useViewerMode } from '../stores/useViewerModeStore';
 const BRAND_VIOLET = '#7C3AED';
 const TEXT_SECONDARY = '#A0ADB4';
 const AMBER = '#D97706';
-
-const FOOTER_DISCLAIMER =
-  'Este rascunho foi gerado por IA e requer revisão e assinatura de médico habilitado antes de qualquer uso clínico.';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -148,6 +147,7 @@ function buildReportPlainText(report: InferenceResponse['report_draft']): string
 // ---------------------------------------------------------------------------
 
 function Spinner(): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   return (
     <div className="flex flex-col items-center justify-center gap-2 p-6">
       <svg
@@ -156,7 +156,7 @@ function Spinner(): React.ReactElement {
         viewBox="0 0 24 24"
         fill="none"
         className="animate-spin"
-        aria-label="Carregando..."
+        aria-label={t('state.analyzing')}
         role="img"
       >
         <circle
@@ -177,7 +177,7 @@ function Spinner(): React.ReactElement {
         className="text-[12px]"
         style={{ color: TEXT_SECONDARY }}
       >
-        Analisando...
+        {t('state.analyzing')}
       </span>
     </div>
   );
@@ -266,6 +266,7 @@ function GroupLabel({ children }: { children: React.ReactNode }): React.ReactEle
 }
 
 function UnlikelyGroup({ findings }: { findings: InferenceFinding[] }): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -276,7 +277,7 @@ function UnlikelyGroup({ findings }: { findings: InferenceFinding[] }): React.Re
         aria-expanded={open}
       >
         <span aria-hidden="true">{open ? '▲' : '▼'}</span>
-        {findings.length} achados improváveis
+        {t('findings.unlikelyToggle', { count: findings.length })}
       </button>
       {open && (
         <div className="mt-1.5 flex flex-col gap-2">
@@ -294,6 +295,7 @@ interface CollapsibleReportProps {
 }
 
 function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -335,12 +337,12 @@ function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactEleme
           >
             <path d="M12 2l2.1 5.9L20 10l-5.9 2.1L12 18l-2.1-5.9L4 10l5.9-2.1L12 2zM19 15l1.05 2.95L23 19l-2.95 1.05L19 23l-1.05-2.95L15 19l2.95-1.05L19 15z" />
           </svg>
-          Rascunho de Laudo
+          {t('report.title')}
           <span
             className="rounded px-1.5 py-0.5 text-[9px] font-bold"
             style={{ backgroundColor: 'rgba(124,58,237,0.25)', color: '#C4B5FD' }}
           >
-            ✦ Beta
+            ✦ {t('report.beta')}
           </span>
         </span>
         <span
@@ -358,9 +360,9 @@ function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactEleme
           <div className="rounded-md border border-white/10 bg-white/5 p-3">
             {(
               [
-                { key: 'tecnica', label: 'TÉCNICA', value: report.tecnica },
-                { key: 'achados', label: 'ACHADOS', value: report.achados },
-                { key: 'impressao', label: 'IMPRESSÃO', value: report.impressao },
+                { key: 'tecnica', label: t('report.section.technique'), value: report.tecnica },
+                { key: 'achados', label: t('report.section.findings'), value: report.achados },
+                { key: 'impressao', label: t('report.section.impression'), value: report.impressao },
               ] as const
             ).map(({ key, label, value }) => (
               <div
@@ -384,14 +386,14 @@ function CollapsibleReport({ report }: CollapsibleReportProps): React.ReactEleme
             style={{ backgroundColor: copied ? '#10B981' : BRAND_VIOLET }}
             aria-live="polite"
           >
-            {copied ? 'Copiado!' : 'Copiar Rascunho'}
+            {copied ? t('report.copied') : t('report.copy')}
           </button>
 
           <p
             className="mb-0 mt-2 text-[10px] leading-snug"
             style={{ color: AMBER }}
           >
-            {FOOTER_DISCLAIMER}
+            {t('report.disclaimer')}
           </p>
         </div>
       )}
@@ -408,6 +410,7 @@ function AIFindingsPanel({
   studyInstanceUID,
   seriesInstanceUID,
 }: AIFindingsPanelProps): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   // MIMPS-27: gate — all hooks must be called unconditionally (Rules of Hooks).
   // The mode value guards the effect body so getInference never fires outside Research.
   const { mode } = useViewerMode();
@@ -521,10 +524,13 @@ function AIFindingsPanel({
           className="flex flex-shrink-0 items-center gap-2 px-3 py-2.5"
           style={{ backgroundColor: BRAND_VIOLET }}
         >
-          <span className="text-[13px] font-bold text-white">BlackVoxel IA — Achados</span>
+          <span className="text-[13px] font-bold text-white">{t('panel.title')}</span>
+          <span className="ml-auto">
+            <LanguageToggle />
+          </span>
         </div>
 
-        {/* Bilingual placeholder */}
+        {/* Placeholder */}
         <div
           className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center"
           role="status"
@@ -550,11 +556,7 @@ function AIFindingsPanel({
             className="m-0 max-w-[220px] text-[12px] leading-snug"
             style={{ color: TEXT_SECONDARY }}
           >
-            Os modelos de IA estão disponíveis apenas no modo Pesquisa.
-            <br />
-            <span className="opacity-70">
-              AI models are available in Research mode only.
-            </span>
+            {t('placeholder.aiResearchOnly')}
           </p>
         </div>
       </div>
@@ -568,7 +570,7 @@ function AIFindingsPanel({
         className="flex h-full items-center justify-center bg-black p-6 text-center text-[13px]"
         style={{ color: TEXT_SECONDARY }}
       >
-        Sessão expirada. Redirecionando para o login...
+        {t('state.sessionExpired')}
       </div>
     );
   }
@@ -607,17 +609,18 @@ function AIFindingsPanel({
         className="flex flex-shrink-0 items-center gap-2 px-3 py-2.5"
         style={{ backgroundColor: BRAND_VIOLET }}
       >
-        <span className="text-[13px] font-bold text-white">BlackVoxel IA — Achados</span>
+        <span className="text-[13px] font-bold text-white">{t('panel.title')}</span>
         <span className="ml-auto flex items-center gap-1">
+          <LanguageToggle />
           <span className="text-[10px] text-white/70">{result.model_version}</span>
           {result.is_mock && (
             <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-              Mock
+              {t('panel.badge.mock')}
             </span>
           )}
           {!result.is_mock && result.is_research && (
             <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-              Research
+              {t('panel.badge.research')}
             </span>
           )}
         </span>
@@ -638,7 +641,7 @@ function AIFindingsPanel({
             color: '#FBBF24',
           }}
         >
-          Resultados offline — exibindo dados de demonstração
+          {t('state.offlineBanner')}
           {error && <span className="ml-1 text-[#F59E0B]">({error})</span>}
         </div>
       )}
@@ -651,26 +654,26 @@ function AIFindingsPanel({
             style={{ color: TEXT_SECONDARY }}
           >
             {hasBands
-              ? `ACHADOS — ${present.length} provável(is)`
-              : `ACHADOS (${result.findings.length})`}
+              ? t('findings.headerBands', { count: present.length })
+              : t('findings.header', { count: result.findings.length })}
           </span>
           <span
             className="text-[10px]"
             style={{ color: TEXT_SECONDARY }}
           >
-            Processado em {processingSeconds}s
+            {t('findings.processedIn', { seconds: processingSeconds })}
           </span>
         </div>
 
         {result.findings.length === 0 ? (
           <p className="m-0 text-[12px]" style={{ color: TEXT_SECONDARY }}>
-            Nenhum achado detectado.
+            {t('state.noFindings')}
           </p>
         ) : hasBands ? (
           <div className="flex flex-col gap-3">
             {present.length > 0 && (
               <div>
-                <GroupLabel>PROVÁVEIS ({present.length})</GroupLabel>
+                <GroupLabel>{t('findings.group.probable', { count: present.length })}</GroupLabel>
                 <div className="flex flex-col gap-2">
                   {present.map((f, i) => (
                     <FindingRow key={`p-${f.label}-${i}`} finding={f} />
@@ -680,7 +683,7 @@ function AIFindingsPanel({
             )}
             {uncertain.length > 0 && (
               <div>
-                <GroupLabel>INDETERMINADOS ({uncertain.length})</GroupLabel>
+                <GroupLabel>{t('findings.group.uncertain', { count: uncertain.length })}</GroupLabel>
                 <div className="flex flex-col gap-2">
                   {uncertain.map((f, i) => (
                     <FindingRow key={`u-${f.label}-${i}`} finding={f} />
@@ -690,7 +693,7 @@ function AIFindingsPanel({
             )}
             {present.length === 0 && uncertain.length === 0 && (
               <p className="m-0 text-[12px]" style={{ color: TEXT_SECONDARY }}>
-                Nenhum achado provável ou indeterminado.
+                {t('state.noProbableOrUncertain')}
               </p>
             )}
             {unlikely.length > 0 && <UnlikelyGroup findings={unlikely} />}
@@ -708,7 +711,7 @@ function AIFindingsPanel({
             className="mb-0 mt-2.5 text-[10px] italic"
             style={{ color: TEXT_SECONDARY }}
           >
-            Localização não disponível nesta versão do modelo
+            {t('findings.noLocalization')}
           </p>
         )}
       </div>
@@ -720,8 +723,8 @@ function AIFindingsPanel({
       >
         <span>
           {result.report_source === 'medgemma'
-            ? 'Rascunho gerado por IA (MedGemma)'
-            : 'Rascunho: modelo gratuito (template determinístico)'}
+            ? t('report.source.medgemma')
+            : t('report.source.free')}
         </span>
         {result.report_source !== 'medgemma' && result.paid_report_available === false && (
           <span
@@ -729,7 +732,7 @@ function AIFindingsPanel({
             style={{ backgroundColor: 'rgba(217, 119, 6, 0.15)', color: '#FBBF24' }}
             title="O modelo generativo pago não está habilitado — usando o rascunho gratuito."
           >
-            modelo pago indisponível
+            {t('report.paidUnavailable')}
           </span>
         )}
       </div>
@@ -745,12 +748,12 @@ function AIFindingsPanel({
             color: '#FBBF24',
           }}
         >
-          ⚠ Rascunho inconsistente com os achados — revisar:{' '}
+          {t('report.inconsistent')}{' '}
           {result.report_warnings?.join(' ')}
         </div>
       ) : result.report_verified === true ? (
         <div className="mx-3 mt-2 text-[10px]" style={{ color: '#34D399' }}>
-          ✓ Rascunho consistente com os achados do modelo
+          {t('report.consistent')}
         </div>
       ) : null}
 
@@ -763,7 +766,7 @@ function AIFindingsPanel({
           className="m-0 text-[10px] leading-snug"
           style={{ color: AMBER }}
         >
-          {result.disclaimer ?? 'Uso restrito a pesquisa. Não substitui laudo médico.'}
+          {result.disclaimer ?? t('disclaimer.research')}
         </p>
       </div>
     </div>

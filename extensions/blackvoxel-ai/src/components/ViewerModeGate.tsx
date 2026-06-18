@@ -17,7 +17,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { useViewerMode, ViewerMode } from '../stores/useViewerModeStore';
+import { LanguageToggle } from './LanguageToggle';
 
 // ---------------------------------------------------------------------------
 // Brand tokens (matches AIFindingsPanel.tsx)
@@ -37,7 +39,7 @@ const BORDER = 'rgba(255,255,255,0.08)';
 
 interface ModeCardProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   description: string;
   badge?: string;
   disabled?: boolean;
@@ -118,12 +120,14 @@ function ModeCard({
             >
               {title}
             </span>
-            <span
-              className="text-[11px] font-normal"
-              style={{ color: TEXT_SECONDARY }}
-            >
-              / {subtitle}
-            </span>
+            {subtitle && (
+              <span
+                className="text-[11px] font-normal"
+                style={{ color: TEXT_SECONDARY }}
+              >
+                / {subtitle}
+              </span>
+            )}
             {badge && (
               <span
                 className="flex-shrink-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold"
@@ -162,6 +166,7 @@ function ViewerModeModal({
   onConfirm,
   initialSelection,
 }: ViewerModeModalProps): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   const [selected, setSelected] = useState<ViewerMode | null>(initialSelection ?? null);
   const confirmRef = useRef<HTMLButtonElement>(null);
 
@@ -217,13 +222,16 @@ function ViewerModeModal({
               id="bv-mode-gate-title"
               className="text-[15px] font-bold text-white"
             >
-              BlackVoxel MIMPS
+              {t('mode.brand')}
             </span>
-            <span
-              className="ml-auto flex-shrink-0 whitespace-nowrap rounded px-2 py-0.5 text-[10px] font-semibold"
-              style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
-            >
-              Research Only
+            <span className="ml-auto flex flex-shrink-0 items-center gap-2">
+              <LanguageToggle />
+              <span
+                className="whitespace-nowrap rounded px-2 py-0.5 text-[10px] font-semibold"
+                style={{ backgroundColor: 'rgba(255,255,255,0.2)', color: '#fff' }}
+              >
+                {t('mode.researchOnlyBadge')}
+              </span>
             </span>
           </div>
         </div>
@@ -235,27 +243,22 @@ function ViewerModeModal({
             className="mb-5 text-[13px] leading-relaxed"
             style={{ color: TEXT_SECONDARY }}
           >
-            Selecione o modo de uso do visualizador antes de continuar.{' '}
-            <span className="text-white/70">
-              Select the viewer usage mode to continue.
-            </span>
+            {t('mode.prompt')}
           </p>
 
           {/* Mode cards */}
           <div className="flex flex-col gap-3">
             <ModeCard
-              title="Pesquisa"
-              subtitle="Research"
-              description="Uso exclusivo para pesquisa. Resultados de IA não devem ser usados clinicamente. For research use only — AI results must not be used for clinical decisions."
+              title={t('mode.research.title')}
+              description={t('mode.research.desc')}
               selected={selected === 'research'}
               onClick={() => setSelected('research')}
             />
 
             <ModeCard
-              title="Clínico"
-              subtitle="Clinical"
-              description="Fluxo clínico validado com laudo médico habilitado. Clinical workflow with validated reporting — physician sign-off required."
-              badge="Em breve / Coming soon"
+              title={t('mode.clinical.title')}
+              description={t('mode.clinical.desc')}
+              badge={t('mode.clinical.badge')}
               disabled
               selected={selected === 'clinical'}
               onClick={() => setSelected('clinical')}
@@ -285,7 +288,7 @@ function ViewerModeModal({
             }}
             aria-disabled={!canConfirm}
           >
-            Confirmar modo / Confirm mode
+            {t('mode.confirm')}
           </button>
 
           {/* Disclaimer */}
@@ -293,9 +296,7 @@ function ViewerModeModal({
             className="mb-0 mt-4 text-center text-[10px] leading-snug"
             style={{ color: 'rgba(160,173,180,0.6)' }}
           >
-            Uso restrito a pesquisa. Não substitui laudo médico.
-            {' '}
-            For research use only. Not a substitute for a physician's report.
+            {t('mode.disclaimer')}
           </p>
         </div>
       </div>
@@ -308,6 +309,7 @@ function ViewerModeModal({
 // ---------------------------------------------------------------------------
 
 export function ChangeModeButton(): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   const { clearMode } = useViewerMode();
   return (
     <button
@@ -320,10 +322,10 @@ export function ChangeModeButton(): React.ReactElement {
         border: `1px solid rgba(124,58,237,0.4)`,
         cursor: 'pointer',
       }}
-      title="Trocar modo de uso / Change viewer mode"
-      aria-label="Trocar modo de uso / Change viewer mode"
+      title={t('mode.change')}
+      aria-label={t('mode.change')}
     >
-      Trocar modo
+      {t('mode.change')}
     </button>
   );
 }

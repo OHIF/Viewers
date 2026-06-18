@@ -36,6 +36,7 @@ import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 import { ShepherdJourneyProvider } from 'react-shepherd';
 import { extractAndStoreToken } from './utils/jwtBridge';
+import { applyLangFromQuery } from './utils/langBridge';
 import './App.css';
 
 let commandsManager: CommandsManager,
@@ -73,6 +74,7 @@ function App({
   const [init, setInit] = useState(null);
   useEffect(() => {
     extractAndStoreToken(); // Extract ?token= from URL, store in sessionStorage, or redirect to login
+    applyLangFromQuery(); // I18N-04: carry ?lang=pt|en from the platform into i18next + persist
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
     };
