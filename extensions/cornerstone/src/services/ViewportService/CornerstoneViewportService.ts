@@ -35,7 +35,11 @@ import { usePositionPresentationStore } from '../../stores/usePositionPresentati
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
-import { getViewportProperties } from '../../utils/getViewportPresentation';
+import {
+  getViewportProperties,
+  getViewportCameraState,
+  setViewportCameraState,
+} from '../../utils/getViewportPresentation';
 import {
   getLegacyViewportType,
   isStackViewportType,
@@ -693,7 +697,11 @@ class CornerstoneViewportService
 
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
-      const { viewPlaneNormal } = viewport.getCamera();
+      // Native PLANAR_NEXT viewports have no getCamera; the view-plane normal is
+      // exposed on the view reference instead (both backends populate it).
+      const viewPlaneNormal = csUtils.isGenericViewport(viewport)
+        ? (viewport.getViewReference?.() as { viewPlaneNormal?: Types.Point3 })?.viewPlaneNormal
+        : viewport.getCamera().viewPlaneNormal;
 
       if (!viewPlaneNormal) {
         continue;
@@ -1563,21 +1571,37 @@ class CornerstoneViewportService
   public updateViewport(viewportId: string, viewportData, keepCamera = false) {
     const viewportInfo = this.getViewportInfo(viewportId);
     const viewport = this.getCornerstoneViewport(viewportId);
-    const viewportCamera = viewport.getCamera();
 
     let displaySetPromise;
 
-    if (isVolumeViewportType(viewport)) {
-      displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
-        if (keepCamera) {
-          viewport.setCamera(viewportCamera);
+    if (csUtils.isGenericViewport(viewport)) {
+      // Native PLANAR_NEXT: no getCamera/setCamera. Snapshot/restore the camera via
+      // the semantic view state, and route the re-mount through the backend (it
+      // dispatches by data shape, since native stack and volume both report PLANAR_NEXT).
+      const viewState = keepCamera ? getViewportCameraState(viewport) : undefined;
+      displaySetPromise = this._setDisplaySets(viewport, viewportData, viewportInfo).then(() => {
+        if (keepCamera && viewState) {
+          setViewportCameraState(viewport, viewState);
           viewport.render();
         }
       });
-    }
+    } else {
+      const viewportCamera = viewport.getCamera();
 
-    if (isStackViewportType(viewport)) {
-      displaySetPromise = this._setStackViewport(viewport, viewportData, viewportInfo);
+      if (isVolumeViewportType(viewport)) {
+        displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(
+          () => {
+            if (keepCamera) {
+              viewport.setCamera(viewportCamera);
+              viewport.render();
+            }
+          }
+        );
+      }
+
+      if (isStackViewportType(viewport)) {
+        displaySetPromise = this._setStackViewport(viewport, viewportData, viewportInfo);
+      }
     }
 
     displaySetPromise.then(() => {
