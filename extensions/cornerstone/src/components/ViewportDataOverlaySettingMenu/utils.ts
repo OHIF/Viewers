@@ -18,7 +18,8 @@ const isValidVolumeDisplaySet = imageIds => {
 
   try {
     return csUtils.isValidVolume(imageIds);
-  } catch {
+  } catch (e) {
+    console.warn('[isValidVolumeDisplaySet] isValidVolume threw, treating as invalid:', e);
     return false;
   }
 };
