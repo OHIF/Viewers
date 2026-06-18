@@ -7,6 +7,8 @@ import { Toolbar, usePatientInfo } from '@ohif/extension-default';
 import { preserveQueryParameters } from '@ohif/app';
 
 import { DentalPreferences } from '../preferences/dentalPreferences';
+import DentalMeasurementsPalette from '../measurements/DentalMeasurementsPalette';
+import { DentalMeasurementPresetId } from '../measurements/dentalMeasurementPresets';
 import { ToothNumberingSystem } from '../tooth/toothIdentity';
 import { DentalViewerStateStatus } from '../viewerState/useDentalViewerState';
 import { formatHeaderValue, getPracticeName } from './practiceHeaderUtils';
@@ -54,6 +56,7 @@ type PracticeHeaderProps = withAppTypes<{
   onSelectedToothChange: (toothId: string) => void;
   onNumberingSystemChange: (numberingSystem: ToothNumberingSystem) => void;
   onThemeToggle: () => void;
+  onSelectMeasurementPreset: (presetId: DentalMeasurementPresetId, note: string) => void;
 }>;
 
 function PracticeHeader({
@@ -64,6 +67,7 @@ function PracticeHeader({
   onSelectedToothChange,
   onNumberingSystemChange,
   onThemeToggle,
+  onSelectMeasurementPreset,
 }: PracticeHeaderProps) {
   const { servicesManager, extensionManager, commandsManager } = useSystem();
   const { patientInfo } = usePatientInfo();
@@ -138,8 +142,9 @@ function PracticeHeader({
         </div>
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-          <div className="relative flex justify-center gap-[4px]">
+          <div className="relative flex items-center justify-center gap-[4px]">
             <Toolbar buttonSection="primary" />
+            <DentalMeasurementsPalette onSelectPreset={onSelectMeasurementPreset} />
           </div>
         </div>
 
