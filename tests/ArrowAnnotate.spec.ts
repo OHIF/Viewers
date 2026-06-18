@@ -38,11 +38,12 @@ async function expectArrowText({
 
   // Source-of-truth annotation state. ArrowAnnotate stores its text on
   // `data.label` rather than computed `cachedStats`, so read with requireStats: false.
-  const [arrow] = await getAnnotationStats(page, {
+  const arrows = await getAnnotationStats(page, {
     toolName: 'ArrowAnnotate',
     requireStats: false,
   });
-  expect(arrow.annotationUID).toBe(annotationUID);
+  const arrow = arrows.find(a => a.annotationUID === annotationUID);
+  expect(arrow).toBeDefined();
   expect(arrow.label).toBe(expectedText);
 }
 
@@ -85,11 +86,12 @@ test('should display the arrow tool and allow free-form text to be entered', asy
   });
 
   // Resolve the arrow annotation UID once; it remains stable across subsequent edits.
-  const [arrow] = await getAnnotationStats(page, {
+  const arrows = await getAnnotationStats(page, {
     toolName: 'ArrowAnnotate',
     requireStats: false,
   });
-  const annotationUID = arrow.annotationUID;
+  expect(arrows.length).toBeGreaterThan(0);
+  const annotationUID = arrows[0].annotationUID;
 
   await expectArrowText({
     page,
