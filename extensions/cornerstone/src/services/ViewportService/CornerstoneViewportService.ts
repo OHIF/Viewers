@@ -43,6 +43,11 @@ import {
   isVolumeViewportType,
 } from '../../utils/getLegacyViewportType';
 import { BlendModes } from '@cornerstonejs/core/enums';
+import { isNextViewportsEnabled } from '../../utils/nextViewports';
+import type { IViewportBackend } from './backends/IViewportBackend';
+import type { IViewportServiceInternals } from './backends/IViewportServiceInternals';
+import { LegacyViewportBackend } from './backends/LegacyViewportBackend';
+import { NextViewportBackend } from './backends/NextViewportBackend';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -109,7 +114,10 @@ export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
  */
-class CornerstoneViewportService extends PubSubService implements IViewportService {
+class CornerstoneViewportService
+  extends PubSubService
+  implements IViewportService, IViewportServiceInternals
+{
   static REGISTRATION = {
     name: 'cornerstoneViewportService',
     altName: 'CornerstoneViewportService',
@@ -134,11 +142,31 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   gridResizeDelay = 50;
   gridResizeTimeOut = null;
 
+  // Resolved once, lazily, on first use. Forked viewport concerns (mount dispatch +
+  // native dataId lifecycle) route through it.
+  private _backend: IViewportBackend | null = null;
+
   constructor(servicesManager: AppTypes.ServicesManager) {
     super(EVENTS);
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
+  }
+
+  /**
+   * Sanctioned flag read #2 (the only other is getCornerstoneViewportType): pick
+   * the viewport backend once, on first use. Resolved lazily (not in the
+   * constructor) because the service singleton is constructed during extension
+   * registration, BEFORE init.tsx runs setNextViewportsEnabled — the first mount
+   * (when this is first read) always happens after init, so the flag is settled.
+   */
+  private get backend(): IViewportBackend {
+    if (!this._backend) {
+      this._backend = isNextViewportsEnabled()
+        ? new NextViewportBackend(this)
+        : new LegacyViewportBackend(this);
+    }
+    return this._backend;
   }
   hangingProtocolService: unknown;
   viewportsInfo: unknown;
@@ -237,6 +265,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   public destroy() {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
+    // Flush any native dataId registrations the backend owns (§4.7); no-op for legacy.
+    this.backend.destroy();
     try {
       this.renderingEngine?.destroy?.();
     } catch (e) {
@@ -258,6 +288,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @param viewportId - The viewportId to disable
    */
   public disableElement(viewportId: string): void {
+    // Release native dataId registrations BEFORE the viewport bookkeeping is
+    // deleted (§4.7 ref-counted GC); no-op for the legacy backend.
+    this.backend.onViewportDisabled(viewportId);
+
     this.renderingEngine?.disableElement(viewportId);
 
     // clean up
@@ -839,7 +873,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   /**
    * Sets the image data for the given viewport.
    */
-  private async _setEcgViewport(
+  // Public so the viewport backends (IViewportServiceInternals) can dispatch to it.
+  async _setEcgViewport(
     viewport: Types.IECGViewport,
     viewportData: StackViewportData
   ): Promise<void> {
@@ -852,7 +887,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return viewport.setEcg(imageId);
   }
 
-  private async _setOtherViewport(
+  // Public so the viewport backends (IViewportServiceInternals) can dispatch to it.
+  async _setOtherViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
     viewportInfo: ViewportInfo,
@@ -869,7 +905,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
   }
 
-  private async _setStackViewport(
+  // Public so the viewport backends (IViewportServiceInternals) can dispatch to it.
+  async _setStackViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
     viewportInfo: ViewportInfo,
@@ -942,7 +979,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (csUtils.isGenericViewport(viewport)) {
       const dataId = displaySetInstanceUIDs[0];
 
-      csUtils.genericViewportDataSetMetadataProvider.add(dataId, {
+      // Register through the backend's ref-counted registry (§4.7) instead of the
+      // raw provider.add, so the registration is released on unmount and shared
+      // (MPR) registrations are not double-added or prematurely removed.
+      this.backend.registerDataId(viewport.id, dataId, {
         kind: 'planar',
         imageIds,
         initialImageIdIndex: initialImageIndexToUse,
@@ -1390,7 +1430,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const dataId = displaySetInstanceUID;
       displaySetInstanceUIDs.push(dataId);
 
-      csUtils.genericViewportDataSetMetadataProvider.add(dataId, {
+      // Ref-counted registration (§4.7): the MPR triptych shares one dataId across
+      // panes, so register() adds to the provider once and release() removes only
+      // when the last pane unmounts.
+      this.backend.registerDataId(viewport.id, dataId, {
         kind: 'planar',
         imageIds,
         volumeId,
@@ -1545,61 +1588,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
-    // Native Generic ("next") viewports report a single PLANAR_NEXT type for both
-    // stack and volume content, so the legacy isStack/isVolume type checks below
-    // do not classify them. Route by the data shape instead (VolumeData carries a
-    // `volume` field; StackData does not).
-    if (csUtils.isGenericViewport(viewport)) {
-      const firstData = (viewportData?.data?.[0] ?? {}) as Record<string, unknown>;
-
-      if ('volume' in firstData) {
-        return this._setVolumeViewport(
-          viewport as unknown as Types.IVolumeViewport,
-          viewportData as VolumeViewportData,
-          viewportInfo,
-          presentations
-        );
-      }
-
-      return this._setStackViewport(
-        viewport as unknown as Types.IStackViewport,
-        viewportData as StackViewportData,
-        viewportInfo,
-        presentations
-      );
-    }
-
-    if (isStackViewportType(viewport)) {
-      return this._setStackViewport(
-        viewport,
-        viewportData as StackViewportData,
-        viewportInfo,
-        presentations
-      );
-    }
-
-    if (isVolumeViewportType(viewport)) {
-      return this._setVolumeViewport(
-        viewport as Types.IVolumeViewport,
-        viewportData as VolumeViewportData,
-        viewportInfo,
-        presentations
-      );
-    }
-
-    if (getLegacyViewportType(viewport) === csEnums.ViewportType.ECG) {
-      return this._setEcgViewport(
-        viewport as unknown as Types.IECGViewport,
-        viewportData as StackViewportData
-      );
-    }
-
-    return this._setOtherViewport(
-      viewport,
-      viewportData as StackViewportData,
-      viewportInfo,
-      presentations
-    );
+    // The backend (legacy vs native, selected once in the constructor) owns the
+    // per-family routing: legacy dispatches by the runtime cornerstone viewport
+    // type; native dispatches by the bound data shape, because native stack and
+    // volume content both report a single PLANAR_NEXT type (§4.4).
+    return this.backend.dispatchMount(viewport, viewportData, viewportInfo, presentations);
   }
 
   /**
