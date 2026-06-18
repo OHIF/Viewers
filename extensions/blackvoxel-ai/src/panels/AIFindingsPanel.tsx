@@ -226,6 +226,17 @@ function BandChip({ band }: { band?: string }): React.ReactElement | null {
   if (!band) {
     return null;
   }
+  if (band === 'experimental') {
+    // Research-only experimental lane — loud red, never a clinical band.
+    return (
+      <span
+        className="inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold"
+        style={{ backgroundColor: 'rgba(239,68,68,0.28)', color: '#FCA5A5' }}
+      >
+        experimental
+      </span>
+    );
+  }
   const style = BAND_STYLE[band] ?? BAND_STYLE['improvável'];
   return (
     <span
@@ -621,6 +632,14 @@ function AIFindingsPanel({
           {!result.is_mock && result.is_research && (
             <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
               {t('panel.badge.research')}
+            </span>
+          )}
+          {!result.is_mock && result.model_version.includes('experimental') && (
+            <span
+              className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
+              style={{ backgroundColor: 'rgba(239,68,68,0.3)', color: '#FCA5A5' }}
+            >
+              {t('panel.badge.experimental')}
             </span>
           )}
         </span>

@@ -24,6 +24,7 @@ const en = {
   'panel.title': 'BlackVoxel AI — Findings',
   'panel.badge.mock': 'Mock',
   'panel.badge.research': 'Research',
+  'panel.badge.experimental': 'Experimental',
 
   // States
   'state.analyzing': 'Analyzing…',
@@ -93,6 +94,7 @@ const ptBR: typeof en = {
   'panel.title': 'BlackVoxel IA — Achados',
   'panel.badge.mock': 'Mock',
   'panel.badge.research': 'Research',
+  'panel.badge.experimental': 'Experimental',
 
   // States
   'state.analyzing': 'Analisando…',
