@@ -1361,6 +1361,18 @@ function commandsModule({
       // HP takes priority over the default opacity
       colormap = { ...colormap, opacity: hpOpacity || opacity };
 
+      if (csUtils.isGenericViewport(viewport)) {
+        // Native PLANAR_NEXT viewports (stack and volume) apply colormap via the
+        // per-binding display-set presentation; the legacy stack/orthographic guards
+        // below both report false for native, so without this it would be a no-op.
+        setViewportProperties(viewport, { colormap });
+
+        if (immediate) {
+          viewport.render();
+        }
+        return;
+      }
+
       if (isStackViewportType(viewport)) {
         viewport.setProperties({ colormap });
       }
