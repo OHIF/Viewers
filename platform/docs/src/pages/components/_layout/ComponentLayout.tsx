@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Layout from '@theme/Layout';
 import { sidebarSections } from './sidebar-config';
+import TableOfContents from './TableOfContents';
 
 interface ComponentLayoutProps {
   title: string;
@@ -10,6 +11,7 @@ interface ComponentLayoutProps {
 
 export default function ComponentLayout({ title, description, children }: ComponentLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const contentRef = useRef<HTMLElement>(null);
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 
   return (
@@ -98,9 +100,15 @@ export default function ComponentLayout({ title, description, children }: Compon
         </aside>
 
         {/* Content */}
-        <main className="min-w-0 flex-1 px-6 py-8 lg:px-12">
+        <main
+          ref={contentRef}
+          className="min-w-0 flex-1 px-6 py-8 lg:px-12"
+        >
           <div className="mx-auto max-w-4xl">{children}</div>
         </main>
+
+        {/* Right-hand table of contents */}
+        <TableOfContents contentRef={contentRef} />
       </div>
     </Layout>
   );
