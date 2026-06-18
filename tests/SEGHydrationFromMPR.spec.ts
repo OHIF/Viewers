@@ -35,6 +35,10 @@ test('should properly display MPR for MR', async ({
 
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
+  // SEG load triggers a progressive labelmap volume upload. waitForViewportsRendered
+  // (waitVolumeLoad defaults to true) polls the viewport volume actors until the
+  // labelmap reports loadStatus.loaded, then settles, so the screenshot captures the
+  // finished upload rather than a mid-stream frame.
   await waitForViewportsRendered(page);
 
   await checkForScreenshot(
@@ -49,6 +53,11 @@ test('should properly display MPR for MR', async ({
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await viewportRenderCycle;
+  // Hydration propagates the labelmap volume to the sagittal/coronal MPR viewports
+  // asynchronously, adding new volume actors after the first render cycle resolves.
+  // waitForViewportsRendered re-polls every viewport's volume actors until those
+  // propagated labelmaps report loadStatus.loaded, then settles.
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot(
     page,
@@ -61,6 +70,9 @@ test('should properly display MPR for MR', async ({
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
   await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors (image
+  // + labelmap) to report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot(
     page,
