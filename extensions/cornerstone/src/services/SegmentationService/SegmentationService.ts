@@ -588,11 +588,6 @@ class SegmentationService extends PubSubService {
     const colorLUTIndex = addColorLUT(colorLUT);
     this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
 
-    this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
-      segmentationId,
-      segDisplaySet,
-    });
-
     const seg: cstTypes.SegmentationPublicInput = {
       segmentationId,
       representation: {
@@ -612,7 +607,17 @@ class SegmentationService extends PubSubService {
 
     segDisplaySet.isLoaded = true;
 
+    // Add the segmentation to cornerstone state BEFORE broadcasting that loading is
+    // complete. Subscribers (e.g. CornerstoneViewportService) react synchronously and
+    // call addSegmentationRepresentation, which now early-returns when the segmentation
+    // is not yet in cornerstone state. Broadcasting first would make that guard always
+    // fire on initial load, silently preventing the representation from being attached.
     this.addOrUpdateSegmentation(seg);
+
+    this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
+      segmentationId,
+      segDisplaySet,
+    });
 
     return segmentationId;
   }

@@ -1307,19 +1307,68 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         return applyRepresentation();
       }
 
-      return new Promise(resolve => {
+      // Bound the wait so a failed/aborted SEG load (where SEGMENTATION_LOADING_COMPLETE
+      // never fires) cannot leave this promise — and the viewport setup awaiting it —
+      // hanging indefinitely.
+      const SEG_LOADING_TIMEOUT_MS = 120000;
+
+      return new Promise<void>(resolve => {
+        let settled = false;
+        let timeoutId;
+
+        const settle = () => {
+          settled = true;
+          clearTimeout(timeoutId);
+          unsubscribe();
+          resolve();
+        };
+
         const { unsubscribe } = segmentationService.subscribe(
           segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
           async (evt: { segDisplaySet?: OhifTypes.DisplaySet }) => {
-            if (evt.segDisplaySet?.displaySetInstanceUID !== segmentationId) {
+            if (settled || evt.segDisplaySet?.displaySetInstanceUID !== segmentationId) {
               return;
             }
 
-            unsubscribe();
-            await applyRepresentation();
-            resolve();
+            settle();
+
+            try {
+              await applyRepresentation();
+            } catch (error) {
+              console.warn(
+                `Failed to apply segmentation representation for "${segmentationId}":`,
+                error
+              );
+            }
           }
         );
+
+        // Stop waiting immediately if the SEG load itself fails — otherwise the
+        // loading-complete event never fires and we would idle until the timeout.
+        const loadingPromise = (displaySet as { loadingPromise?: Promise<unknown> })
+          .loadingPromise;
+        loadingPromise?.catch(error => {
+          if (settled) {
+            return;
+          }
+
+          console.warn(
+            `Segmentation "${segmentationId}" failed to load; skipping representation setup.`,
+            error
+          );
+          settle();
+        });
+
+        timeoutId = setTimeout(() => {
+          if (settled) {
+            return;
+          }
+
+          console.warn(
+            `Timed out waiting for segmentation "${segmentationId}" to load; skipping representation setup.`
+          );
+          settle();
+        }, SEG_LOADING_TIMEOUT_MS);
       });
     }
 

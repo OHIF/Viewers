@@ -1,4 +1,4 @@
-import { utils, Types as OhifTypes, DicomMetadataStore, classes } from '@ohif/core';
+import { utils, Types as OhifTypes, DicomMetadataStore, classes, log } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
@@ -211,7 +211,7 @@ function _logSegImageIds({
   const instance = segDisplaySet.instance as Record<string, unknown>;
   const numberOfFrames = Number(instance?.NumberOfFrames) || 1;
 
-  console.info(SEG_LOAD_LOG_PREFIX, 'Loading SEG pixel data', {
+  log.debug(SEG_LOAD_LOG_PREFIX, 'Loading SEG pixel data', {
     SOPInstanceUID: segDisplaySet.SOPInstanceUID,
     SeriesInstanceUID: segDisplaySet.SeriesInstanceUID,
     SOPClassUID: segDisplaySet.SOPClassUID,
@@ -386,6 +386,11 @@ function _load(
       });
   });
 
+  // Expose the in-flight load promise so observers (e.g. the viewport service
+  // waiting to attach the representation) can react to a load failure without
+  // re-invoking load().
+  segDisplaySet.loadingPromise = loadPromises[SOPInstanceUID];
+
   return loadPromises[SOPInstanceUID];
 }
 
@@ -520,7 +525,7 @@ async function _loadSegments({
     .labelMapImages?.flat()
     .map(image => image.imageId);
 
-  console.info(SEG_LOAD_LOG_PREFIX, 'SEG parse complete', {
+  log.debug(SEG_LOAD_LOG_PREFIX, 'SEG parse complete', {
     SOPInstanceUID: segDisplaySet.SOPInstanceUID,
     labelMapImageCount: labelMapImageIds?.length ?? 0,
     labelMapImageIds,
