@@ -2,7 +2,8 @@ import type CustomizationService from '@ohif/core/src/services/CustomizationServ
 
 /**
  * Keys preserved when navigating between worklist and viewer modes.
- * All preserved keys are handled as multi-valued query parameters.
+ * Each key may repeat in the URL; a single occurrence is preserved as a string and
+ * multiple occurrences as an array (see preserveQueryStrings).
  */
 export const PRESERVE_CUSTOMIZATION_KEYS_KEY = 'ohif.preserveCustomizationKeys';
 export const preserveKeys = [
@@ -48,8 +49,15 @@ export function preserveQueryStrings(
 ): void {
   for (const key of getPreserveKeys(customizationService)) {
     const values = current.getAll(key).filter(Boolean);
-    if (values.length) {
-      query[key] = values;
+    if (!values.length) {
+      continue;
     }
+    // A single value is stored as a plain string and repeated values as an array.
+    // The worklist stringifier (query-string) serializes both correctly with its
+    // default arrayFormat: a string becomes `key=value` and an array becomes
+    // duplicated `key=a&key=b` keys — no arrayFormat option required by callers.
+    // Keeping single values as strings also keeps them safe under stricter
+    // serializers (e.g. the `qs` library, whose default would index arrays).
+    query[key] = values.length === 1 ? values[0] : values;
   }
 }

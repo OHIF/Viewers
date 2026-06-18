@@ -1,4 +1,6 @@
-import qs from 'qs';
+// query-string is the stringifier used by the worklist navigation callers
+// (useStudyListStateSync, LegacyWorkList); test against it, not the `qs` library.
+import qs from 'query-string';
 
 import { preserveQueryParameters, preserveQueryStrings } from './preserveQueryParameters';
 
@@ -42,7 +44,7 @@ describe('preserveQueryParameters', () => {
 });
 
 describe('preserveQueryStrings', () => {
-  it('keeps all preserved keys as arrays', () => {
+  it('keeps single values as strings and repeated values as arrays', () => {
     const current = new URLSearchParams();
     current.append('configUrl', 'foo.js');
     current.append('customization', 'a');
@@ -50,16 +52,16 @@ describe('preserveQueryStrings', () => {
 
     const out: Record<string, string | string[]> = {};
     preserveQueryStrings(out, undefined, current);
-    expect(out.configUrl).toEqual(['foo.js']);
+    expect(out.configUrl).toBe('foo.js');
     expect(out.customization).toEqual(['a', 'b']);
   });
 
-  it('keeps a single customization value as an array', () => {
+  it('keeps a single customization value as a string', () => {
     const current = new URLSearchParams();
     current.append('customization', 'only');
     const out: Record<string, string | string[]> = {};
     preserveQueryStrings(out, undefined, current);
-    expect(out.customization).toEqual(['only']);
+    expect(out.customization).toBe('only');
   });
 
   it('uses customization service values for query string preservation', () => {
@@ -70,35 +72,31 @@ describe('preserveQueryStrings', () => {
     current.append('customizationAlt', 'c');
     const out: Record<string, string | string[]> = {};
     preserveQueryStrings(out, customizationService, current);
-    expect(out.customizationAlt).toEqual(['c']);
+    expect(out.customizationAlt).toBe('c');
     expect(customizationService.getValue).toHaveBeenCalled();
   });
 
-  it('serializes single preserved values as plain query keys with arrayFormat repeat', () => {
+  it('serializes single preserved values as plain query keys with default options', () => {
     const current = new URLSearchParams();
     current.append('configUrl', 'foo.js');
     const out: Record<string, string | string[]> = {};
     preserveQueryStrings(out, undefined, current);
-    const search = qs.stringify(out, {
-      skipNull: true,
-      skipEmptyString: true,
-      arrayFormat: 'repeat',
-    });
+    // Default options only — no arrayFormat. Single values are plain strings, so
+    // they round-trip unchanged regardless of arrayFormat.
+    const search = qs.stringify(out, { skipNull: true, skipEmptyString: true });
     expect(search).toBe('configUrl=foo.js');
     expect(search).not.toMatch(/configUrl\[/);
   });
 
-  it('serializes repeated preserved values as repeated keys', () => {
+  it('serializes repeated preserved values as duplicated keys with default options', () => {
     const current = new URLSearchParams();
     current.append('customization', 'a');
     current.append('customization', 'b');
     const out: Record<string, string | string[]> = {};
     preserveQueryStrings(out, undefined, current);
-    const search = qs.stringify(out, {
-      skipNull: true,
-      skipEmptyString: true,
-      arrayFormat: 'repeat',
-    });
+    // query-string's default arrayFormat already produces duplicated keys, so callers
+    // need no arrayFormat option for repeated preserved keys to round-trip.
+    const search = qs.stringify(out, { skipNull: true, skipEmptyString: true });
     expect(search).toBe('customization=a&customization=b');
   });
 });
