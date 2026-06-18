@@ -1275,6 +1275,14 @@ class CornerstoneViewportService
         viewportInfo,
         overlayProcessingResults
       );
+      // Restore persisted pan/zoom/rotation/flip (+ view reference) so a returning
+      // MPR/volume pane recovers its camera. Position-only and native-safe via the
+      // backend (setViewReference + setViewState); LUT was applied per-binding above.
+      if (presentations?.positionPresentation) {
+        this.setPresentations(viewport.id, {
+          positionPresentation: presentations.positionPresentation,
+        });
+      }
       this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, { viewportInfo });
       return;
     }
