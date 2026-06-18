@@ -1260,7 +1260,13 @@ function commandsModule({
       const { viewport } = enabledElement;
 
       viewport.resetProperties?.();
-      viewport.resetCamera();
+      if (csUtils.isGenericViewport(viewport)) {
+        // Native PLANAR_NEXT has no resetCamera; resetViewState resets
+        // pan/zoom/rotation/orientation/flip (navigation/slice is preserved).
+        (viewport as unknown as { resetViewState?: () => void }).resetViewState?.();
+      } else {
+        viewport.resetCamera();
+      }
 
       viewport.render();
     },
@@ -1272,6 +1278,24 @@ function commandsModule({
         return;
       }
       const { viewport } = enabledElement;
+
+      if (csUtils.isGenericViewport(viewport)) {
+        // Native PLANAR_NEXT has no getCamera/parallelScale; use the semantic zoom.
+        // parallelScale and zoom are inversely related (a smaller parallelScale =
+        // more zoomed in = a larger zoom), so divide by scaleFactor to match legacy.
+        const nv = viewport as unknown as {
+          getZoom: () => number;
+          setZoom: (z: number) => void;
+          resetViewState?: () => void;
+        };
+        if (direction) {
+          nv.setZoom(nv.getZoom() / scaleFactor);
+        } else {
+          nv.resetViewState?.();
+        }
+        viewport.render();
+        return;
+      }
 
       if (isStackViewportType(viewport)) {
         if (direction) {
@@ -2276,6 +2300,27 @@ function commandsModule({
         mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
         const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
         viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
+        viewport.render();
+        return;
+      }
+
+      if (csUtils.isGenericViewport(viewport)) {
+        // Native PLANAR_NEXT: rotation/flip live in the semantic view state; legacy
+        // getViewPresentation/setViewPresentation are absent (they throw). Read the
+        // current rotation (and flips, for 'set' parity) via the camera-state bridge
+        // (getViewState) and write the new rotation via setViewState.
+        const state = getViewportCameraState(viewport);
+        const currentRotation = (state.rotation as number) ?? 0;
+        const newRotation =
+          rotationMode === 'apply'
+            ? (currentRotation + rotation + 360) % 360
+            : (() => {
+                const flipsParity =
+                  (state.flipHorizontal ? 1 : 0) + (state.flipVertical ? 1 : 0);
+                const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
+                return (effectiveRotation + 360) % 360;
+              })();
+        setViewportCameraState(viewport, { rotation: newRotation });
         viewport.render();
         return;
       }
