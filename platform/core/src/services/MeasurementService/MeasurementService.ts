@@ -901,6 +901,12 @@ class MeasurementService extends PubSubService {
     return measurementUIDs.forEach(uid => this.toggleVisibilityMeasurement(uid, visibility));
   }
 
+  /**
+   * Updates the color of a specific measurement and broadcasts the update event.
+   *
+   * @param {string} measurementUID The unique identifier of the measurement
+   * @param {number[]} color The new color as an RGBA array [r, g, b, a]
+   */
   public updateColorMeasurement(measurementUID: string, color: number[]): void {
     const measurement = this.measurements.get(measurementUID);
 

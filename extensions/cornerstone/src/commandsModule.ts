@@ -638,9 +638,7 @@ function commandsModule({
      */
     _handleMeasurementLabelDialog: async uid => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      const renderContent = customizationService.getCustomization(
-        'ui.labellingComponent'
-      ) as React.ComponentType<any>;
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
 
       if (!measurement) {
@@ -691,9 +689,8 @@ function commandsModule({
         console.debug('No measurement found for color editing');
         return;
       }
-      
-      const color = measurement.color;
 
+       const color = measurement.color ?? [255, 255, 0, 255];
       const rgbaColor = {
         r: color[0],
         g: color[1],
@@ -709,7 +706,7 @@ function commandsModule({
           value: rgbaColor,
           onSave: newRgbaColor => {
             const colorArray = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-            const colorStr = `rgb(${newRgbaColor.r}, ${newRgbaColor.g}, ${newRgbaColor.b})`;
+            const colorStr = `rgba(${newRgbaColor.r}, ${newRgbaColor.g}, ${newRgbaColor.b}, ${newRgbaColor.a})`;
 
             // Update OHIF measurement service
             measurementService.updateColorMeasurement(uid, colorArray);
