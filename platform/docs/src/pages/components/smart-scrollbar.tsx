@@ -93,11 +93,13 @@ function DemoViewport({
   simState,
   onPlay,
   onWheel,
+  Button,
 }: {
   children: React.ReactNode;
   simState: SimState;
   onPlay: () => void;
   onWheel: (deltaY: number) => void;
+  Button: any;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -128,30 +130,18 @@ function DemoViewport({
       </div>
 
       {/* Play / Replay button — top-left corner */}
-      {simState !== 'loading' && (
-        <button
+      <div className="absolute z-10" style={{ top: 12, left: 12 }}>
+        <Button
           onClick={onPlay}
-          className="absolute z-10 flex items-center gap-1.5 rounded-md bg-card/90 px-2.5 py-1.5 text-xs text-foreground transition-colors hover:bg-card"
-          style={{ top: 12, left: 12 }}
+          disabled={simState === 'loading'}
+          className="gap-[5px]"
         >
-          {simState === 'complete' ? (
-            <>
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M2 7a5 5 0 1 1 1.5 3.5" strokeLinecap="round" />
-                <path d="M2 3v4h4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Replay
-            </>
-          ) : (
-            <>
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="currentColor">
-                <path d="M3 1.5v11l9-5.5L3 1.5z" />
-              </svg>
-              Play
-            </>
-          )}
-        </button>
-      )}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+            <path d="M3 1.5v11l9-5.5L3 1.5z" />
+          </svg>
+          {simState === 'complete' ? 'Replay' : simState === 'loading' ? 'Loading…' : 'Play'}
+        </Button>
+      </div>
 
       {/* Scrollbar area */}
       <div className="absolute" style={{ right: VP_PAD, top: VP_PAD, bottom: VP_PAD }}>
@@ -172,6 +162,7 @@ function SmartScrollbarDemo({
   SmartScrollbarIndicator,
   SmartScrollbarEndpoints,
   useByteArray,
+  Button,
 }: {
   SmartScrollbar: any;
   SmartScrollbarTrack: any;
@@ -179,6 +170,7 @@ function SmartScrollbarDemo({
   SmartScrollbarIndicator: any;
   SmartScrollbarEndpoints: any;
   useByteArray: any;
+  Button: any;
 }) {
   const [currentIndex, setCurrentIndex] = useState(START_INDEX);
   const [resetKey, setResetKey] = useState(0);
@@ -197,7 +189,7 @@ function SmartScrollbarDemo({
   }, [play, viewed]);
 
   return (
-    <DemoViewport simState={simState} onPlay={handlePlay} onWheel={handleWheel}>
+    <DemoViewport simState={simState} onPlay={handlePlay} onWheel={handleWheel} Button={Button}>
       <SmartScrollbar
         key={resetKey}
         value={currentIndex}
@@ -237,6 +229,7 @@ function SmartScrollbarPageContent() {
     SmartScrollbarIndicator,
     SmartScrollbarEndpoints,
     useByteArray,
+    Button,
   } = require('../../../../ui-next/src/components');
 
   const ComponentLayout = require('./_layout/ComponentLayout').default;
@@ -325,99 +318,95 @@ function SmartScrollbarPageContent() {
             SmartScrollbarIndicator={SmartScrollbarIndicator}
             SmartScrollbarEndpoints={SmartScrollbarEndpoints}
             useByteArray={useByteArray}
+            Button={Button}
           />
         </div>
       </Section>
 
-      <Section title="Composition">
+      <Section title="Customization">
         <div className="mb-4 text-lg text-secondary-foreground leading-relaxed">
           <p>
-            SmartScrollbar uses a compound component pattern. The root provides layout
-            context; children render into specific layers of the scrollbar.
+            Scrollbar behavior is configured via the{' '}
+            <strong className="text-foreground">Customization Service</strong>.
           </p>
         </div>
-        <CodeBlock
-          code={`<SmartScrollbar
-  value={imageIndex}
-  total={numberOfSlices}
-  onValueChange={jumpToSlice}
-  isLoading={!isFullyLoaded}
->
-  <SmartScrollbarTrack>
-    {/* Loaded images — neutral color, brighter while loading */}
-    <SmartScrollbarFill
-      marked={loaded.bytes}
-      version={loaded.version}
-      className="bg-neutral/25"
-      loadingClassName="bg-neutral/50"
-    />
-    {/* Viewed images — primary color */}
-    <SmartScrollbarFill
-      marked={viewed.bytes}
-      version={viewed.version}
-      className="bg-primary/35"
-    />
-  </SmartScrollbarTrack>
-  <SmartScrollbarIndicator />
-  <SmartScrollbarEndpoints
-    marked={loaded.bytes}
-    version={loaded.version}
-  />
-</SmartScrollbar>`}
-        />
-      </Section>
-
-      <Section title="Sub-components">
-        <div className="space-y-4 text-lg text-secondary-foreground leading-relaxed">
-          <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 4px 0' }}>
-              SmartScrollbarTrack
-            </h3>
-            <p>
-              Background container that shows an{' '}
-              <strong className="text-foreground">animated dot-grid</strong> pattern (2px dots,
-              4px gap) while <code className="text-highlight text-sm">isLoading</code> is true.
-              The grid fades out over 500ms when loading completes.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 4px 0' }}>
-              SmartScrollbarFill
-            </h3>
-            <p>
-              Renders colored bars for marked positions using a{' '}
-              <strong className="text-foreground">Uint8Array</strong>. Multiple fills
-              stack — typically one for loaded slices (neutral) and one for viewed slices
-              (primary). Uses{' '}
-              <strong className="text-foreground">conservative downsampling</strong>: a
-              pixel fills only when all mapped items are marked.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 4px 0' }}>
-              SmartScrollbarIndicator
-            </h3>
-            <p>
-              A pill-shaped SVG (12x7px) showing the current scroll position. Required
-              child — the component throws if omitted. Positioning adapts automatically
-              for dense (many items, few pixels) and sparse (few items, many pixels) content.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 4px 0' }}>
-              SmartScrollbarEndpoints
-            </h3>
-            <p>
-              SVG caps (4x3px) marking the top and bottom boundaries of the loaded range.
-              Rendered via{' '}
-              <strong className="text-foreground">portal</strong> into a stable layer so
-              they don't shift during width expand/contract animations.
-            </p>
-          </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-base">
+            <thead>
+              <tr className="border-b border-foreground text-left">
+                <th className="text-foreground pb-2 pr-4 font-medium">Key</th>
+                <th className="text-foreground pb-2 pr-4 font-medium">Default</th>
+                <th className="text-foreground pb-2 font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody className="text-secondary-foreground">
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">variant</td>
+                <td className="py-2 pr-4 font-mono text-base">'progress'</td>
+                <td className="py-2">Progress scrollbar or legacy range input</td>
+              </tr>
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">showLoadedFill</td>
+                <td className="py-2 pr-4 font-mono text-base">true</td>
+                <td className="py-2">Show the neutral loaded/cached fill</td>
+              </tr>
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">showViewedFill</td>
+                <td className="py-2 pr-4 font-mono text-base">true</td>
+                <td className="py-2">Show the primary viewed-slice fill</td>
+              </tr>
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">showLoadedEndpoints</td>
+                <td className="py-2 pr-4 font-mono text-base">true</td>
+                <td className="py-2">Show endpoint caps at loaded range boundaries</td>
+              </tr>
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">showLoadingPattern</td>
+                <td className="py-2 pr-4 font-mono text-base">true</td>
+                <td className="py-2">Show dot-grid pattern while loading</td>
+              </tr>
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">viewedDwellMs</td>
+                <td className="py-2 pr-4 font-mono text-base">0</td>
+                <td className="py-2">Delay before marking a slice as viewed (ms)</td>
+              </tr>
+              <tr className="border-b border-foreground/50">
+                <td className="py-2 pr-4 font-mono text-base text-foreground">loadedBatchIntervalMs</td>
+                <td className="py-2 pr-4 font-mono text-base">200</td>
+                <td className="py-2">Coalesce loaded-state updates for performance (ms)</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-mono text-base text-foreground">indicator</td>
+                <td className="py-2 pr-4 font-mono text-base">{'{}'}</td>
+                <td className="py-2">Custom indicator SVG (totalWidth, totalHeight, renderIndicator)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 text-lg text-secondary-foreground leading-relaxed">
+          <p>
+            All keys are prefixed with{' '}
+            <code className="text-highlight text-sm">viewportScrollbar.</code> in the
+            customization service. For full configuration examples, screenshots, and the
+            advanced indicator API, see the{' '}
+            <a
+              href="/platform/services/customization-service/ViewportScrollbar"
+              className="text-primary hover:text-primary/80 underline"
+            >
+              Viewport Scrollbar Customization
+            </a>{' '}
+            reference.
+          </p>
         </div>
       </Section>
 
       <Section title="Usage">
+        <div className="mb-4 text-lg text-secondary-foreground leading-relaxed">
+          <p>
+            SmartScrollbar uses a compound component pattern — the root provides layout
+            context and children render into specific layers of the scrollbar.
+          </p>
+        </div>
         <CodeBlock
           code={`import {
   SmartScrollbar,
