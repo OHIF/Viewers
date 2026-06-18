@@ -1032,8 +1032,17 @@ class CornerstoneViewportService
       // driven by the native STACK_NEW_IMAGE event.
       csToolsUtils.stackContextPrefetch.enable(viewport.element);
 
-      // Note: legacy presentation restore (setPresentations) is handled on the
-      // native path in a later increment.
+      // Restore persisted pan/zoom/rotation/flip (+ view reference) on top of the
+      // HP-derived defaults applied above, so a returning display set recovers its
+      // camera presentation. Position-only: the LUT was already applied inline above,
+      // and setPresentations is now native-safe via the backend (setViewReference +
+      // setViewState, no legacy setProperties/setViewPresentation).
+      if (presentations?.positionPresentation) {
+        this.setPresentations(viewport.id, {
+          positionPresentation: presentations.positionPresentation,
+        });
+      }
+
       await this._addOverlayRepresentations(overlayProcessingResults);
       return;
     }

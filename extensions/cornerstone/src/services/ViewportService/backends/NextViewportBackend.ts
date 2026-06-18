@@ -18,6 +18,45 @@ import { DataIdRegistry, type DataIdPayload } from './dataIdRegistry';
 // value import that would create a backend -> service circular dependency).
 const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
+// The PlanarViewState fields that encode pan/zoom/rotation/flip. Slice and
+// orientation are deliberately EXCLUDED — they are restored via the view reference,
+// and a partial setViewState patch that omits them leaves them untouched (the merge
+// at PlanarViewport.setViewState preserves unspecified fields).
+const NATIVE_VIEW_PRESENTATION_KEYS = [
+  'displayArea',
+  'anchorWorld',
+  'anchorCanvas',
+  'scale',
+  'scaleMode',
+  'rotation',
+  'flipHorizontal',
+  'flipVertical',
+] as const;
+
+// Minimal structural view of a native PlanarViewport's semantic accessors. These
+// live on IGenericViewport (not IStackViewport/IViewport), so we cast at the boundary
+// rather than import core-internal PlanarViewport/PlanarViewState types.
+type NativePlanarViewport = Types.IViewport & {
+  getViewState: () => Record<string, unknown>;
+  setViewState: (patch: Record<string, unknown>) => void;
+  getViewReference: () => Types.ViewReference;
+  setViewReference: (ref: Types.ViewReference) => void;
+  isReferenceViewable?: (ref: Types.ViewReference, opts?: unknown) => boolean;
+};
+
+/** Picks the pan/zoom/rotation/flip subset out of a (deep-cloned) getViewState() result. */
+function pickNativeViewPresentation(
+  viewState: Record<string, unknown>
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of NATIVE_VIEW_PRESENTATION_KEYS) {
+    if (viewState[key] !== undefined) {
+      out[key] = viewState[key];
+    }
+  }
+  return out;
+}
+
 /**
  * Native GenericViewport ("next") backend. Selected when `appConfig.useNextViewports`
  * is on. Routes the mount by the bound data shape (native stack and volume content
@@ -65,14 +104,23 @@ export class NextViewportBackend implements IViewportBackend {
     viewportInfo: ViewportInfo,
     viewportId: string
   ): PositionPresentation {
-    const vp = csViewport as Types.IStackViewport;
+    const is3D = isVolume3DViewportType(csViewport);
+    const vp = csViewport as NativePlanarViewport;
+
+    // A direct PLANAR_NEXT viewport has no getViewPresentation; pan/zoom/rotation/flip
+    // live in the semantic view state. getViewState() is already deep-cloned, normalized
+    // and JSON-serializable, so snapshot the pan/zoom subset (slice/orientation come back
+    // via the view reference).
+    const viewState =
+      !is3D && typeof vp.getViewState === 'function' ? vp.getViewState() : undefined;
+
     return {
       viewportType: viewportInfo.getViewportType(),
-      viewReference: isVolume3DViewportType(csViewport) ? null : vp.getViewReference(),
-      // A direct PLANAR_NEXT viewport has no getViewPresentation; its pan/zoom lives
-      // in the semantic view state. Persisting/restoring that across nav/resize is a
-      // later increment, so omit it here (matches the prior native behavior).
-      viewPresentation: undefined,
+      viewReference: is3D ? null : vp.getViewReference(),
+      // Opaque native pan/zoom blob; cast at the boundary (legacy stores a Types.ViewPresentation).
+      viewPresentation: (viewState
+        ? pickNativeViewPresentation(viewState)
+        : undefined) as unknown as Types.ViewPresentation,
       viewportId,
     };
   }
@@ -81,13 +129,36 @@ export class NextViewportBackend implements IViewportBackend {
     viewport: Types.IViewport,
     positionPresentation: PositionPresentation
   ): void {
-    const vp = viewport as Types.IStackViewport;
+    const vp = viewport as NativePlanarViewport;
+
+    // 1) Slice + orientation first, via the view reference.
     const viewRef = positionPresentation?.viewReference;
     if (viewRef && vp.isReferenceViewable?.(viewRef, WITH_ORIENTATION)) {
       vp.setViewReference(viewRef);
     }
-    // viewPresentation (pan/zoom) is undefined on the native path for now; restoring
-    // it via setViewState is a later increment.
+
+    // 2) Pan/zoom/rotation/flip second, as a partial setViewState patch that omits
+    //    slice/orientation so step 1 is preserved (the merge keeps unspecified fields).
+    const vpres = positionPresentation?.viewPresentation as unknown as
+      | Record<string, unknown>
+      | undefined;
+    if (vpres && typeof vp.setViewState === 'function') {
+      const patch: Record<string, unknown> = {};
+      for (const key of NATIVE_VIEW_PRESENTATION_KEYS) {
+        if (vpres[key] !== undefined) {
+          patch[key] = vpres[key];
+        }
+      }
+      if (Object.keys(patch).length > 0) {
+        // When the snapshot held live anchor/scale pan/zoom, displayArea was omitted;
+        // clear any stale displayArea explicitly so anchor/scale take effect (setViewState
+        // only rewrites displayArea when it is an own key of the patch).
+        if (!('displayArea' in patch)) {
+          patch.displayArea = undefined;
+        }
+        vp.setViewState(patch);
+      }
+    }
   }
 
   setLutPresentation(viewport: Types.IViewport, lutPresentation: LutPresentation): void {
