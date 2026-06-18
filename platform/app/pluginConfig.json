@@ -69,6 +69,10 @@
     {
       "packageName": "@blackvoxel/extension-blackvoxel-ai",
       "version": "0.1.0"
+    },
+    {
+      "packageName": "@blackvoxel/extension-labeling",
+      "version": "0.1.0"
     }
   ],
   "modes": [
@@ -113,6 +117,12 @@
       "default": false,
       "_mimps": "Sprint 1 (MIMPS-04): hidden from the demo build — remove default:false to re-enable",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@blackvoxel/mode-labeling",
+      "default": false,
+      "version": "0.1.0",
+      "_mimps": "LBL-13: labeling mode — kept out of the diagnostic mode picker; reached at the /labeling route"
     }
   ],
   "public": [

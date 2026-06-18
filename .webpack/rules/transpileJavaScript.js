@@ -1,9 +1,15 @@
 const excludeNodeModulesExcept = require('./../helpers/excludeNodeModulesExcept.js');
 
 function transpileJavaScript(mode) {
+  // @blackvoxel/{extension,mode}-labeling are file:-linked from 3_labels/src as raw
+  // TSX and get COPIED into node_modules by yarn (unlike the symlinked blackvoxel-ai
+  // extension, which resolves to its source path). They must be transpiled here or
+  // webpack fails to parse their TS type annotations (LBL-13 integration fix).
+  const blackvoxelLabeling = ['@blackvoxel/extension-labeling', '@blackvoxel/mode-labeling'];
   const exclude =
     mode === 'production'
       ? excludeNodeModulesExcept([
+          ...blackvoxelLabeling,
           // 'dicomweb-client',
           // https://github.com/react-dnd/react-dnd/blob/master/babel.config.js
           'react-dnd',
@@ -17,7 +23,7 @@ function transpileJavaScript(mode) {
           // https://github.com/openlayers/openlayers#supported-browsers
           // 'ol', --> Should be fine
         ])
-      : excludeNodeModulesExcept([]);
+      : excludeNodeModulesExcept([...blackvoxelLabeling]);
 
   return {
     // Include mjs, ts, tsx, js, and jsx files.
