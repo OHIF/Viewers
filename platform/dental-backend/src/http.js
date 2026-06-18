@@ -97,15 +97,21 @@ async function handleDentalRequest({ method, url, headers, body }, { store, conf
       }
 
       const measurement = await store.createMeasurement(session.userId, studyInstanceUID, {
-        id: payload.id || randomUUID(),
+        id: randomUUID(),
+        presetId: payload.presetId || null,
         label: payload.label,
         value: Number.isFinite(Number(payload.value)) ? Number(payload.value) : null,
         unit: payload.unit,
         toolName: payload.toolName || null,
         annotationUID: payload.annotationUID || null,
         toothId: payload.toothId || null,
-        notes: payload.notes || null,
+        note: payload.note || payload.notes || null,
+        viewportId: payload.viewportId || null,
+        displaySetInstanceUID: payload.displaySetInstanceUID || null,
+        referenceSeriesUID: payload.referenceSeriesUID || null,
+        points: Array.isArray(payload.points) ? payload.points : undefined,
         metadata: payload.metadata || {},
+        createdAt: payload.createdAt,
       });
 
       return json(201, { studyInstanceUID, measurement });

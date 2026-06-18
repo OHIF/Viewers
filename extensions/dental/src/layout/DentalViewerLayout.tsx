@@ -54,6 +54,7 @@ function DentalViewerLayout({
     applyPreferences,
   });
   const { armPreset } = useDentalMeasurements({
+    appConfig,
     commandsManager,
     servicesManager,
     preferences,

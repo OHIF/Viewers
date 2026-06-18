@@ -25,6 +25,7 @@ import { id } from './id';
 const dental = {
   layout: '@ohif/extension-dental.layoutTemplateModule.dentalViewerLayout',
   hangingProtocol: '@ohif/extension-dental.hangingProtocolModule.dental2x2',
+  measurements: '@ohif/extension-dental.panelModule.dentalMeasurements',
 };
 
 export const extensionDependencies = {
@@ -37,6 +38,7 @@ export const dentalLayout = {
   id: dental.layout,
   props: {
     ...basicLayout.props,
+    rightPanels: [dental.measurements],
     rightPanelClosed: true,
   },
 };

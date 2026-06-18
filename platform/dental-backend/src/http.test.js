@@ -97,12 +97,18 @@ describe('Dental backend API', () => {
       method: 'POST',
       url: '/api/dental/measurements/study-a',
       body: {
-        id: 'measurement-1',
         label: 'PA length',
         value: 12.5,
         unit: 'mm',
         toolName: 'Length',
         annotationUID: 'annotation-1',
+        presetId: 'pa-length',
+        toothId: 'permanent-1',
+        note: 'Distal root',
+        viewportId: 'dental-current',
+        displaySetInstanceUID: 'display-set-1',
+        referenceSeriesUID: 'series-1',
+        points: [[1, 2, 3], [4, 5, 6]],
         metadata: { source: 'preset' },
       },
     });
@@ -112,19 +118,54 @@ describe('Dental backend API', () => {
       url: '/api/dental/measurements/study-a',
       userId: 'user-b',
     });
+    const measurementId = parse(created).measurement.id;
     const deleted = await request(store, {
       method: 'DELETE',
-      url: '/api/dental/measurements/study-a/measurement-1',
+      url: `/api/dental/measurements/study-a/${measurementId}`,
     });
     const afterDelete = await request(store, { url: '/api/dental/measurements/study-a' });
 
     expect(created.statusCode).toBe(201);
     expect(parse(created).measurement.label).toBe('PA length');
+    expect(parse(created).measurement).toEqual(
+      expect.objectContaining({
+        presetId: 'pa-length',
+        toothId: 'permanent-1',
+        note: 'Distal root',
+        viewportId: 'dental-current',
+        displaySetInstanceUID: 'display-set-1',
+        referenceSeriesUID: 'series-1',
+        points: [[1, 2, 3], [4, 5, 6]],
+      })
+    );
     expect(parse(listed).measurements).toHaveLength(1);
     expect(parse(otherStudy).measurements).toHaveLength(0);
     expect(parse(otherUser).measurements).toHaveLength(0);
     expect(deleted.statusCode).toBe(200);
     expect(parse(afterDelete).measurements).toHaveLength(0);
+  });
+
+  it('upserts measurements by annotation UID', async () => {
+    const create = body =>
+      request(store, {
+        method: 'POST',
+        url: '/api/dental/measurements/study-a',
+        body: {
+          annotationUID: 'annotation-1',
+          presetId: 'pa-length',
+          label: 'PA length',
+          unit: 'mm',
+          toothId: 'permanent-1',
+          ...body,
+        },
+      });
+
+    await create({ value: 12 });
+    await create({ value: 14.5 });
+    const listed = await request(store, { url: '/api/dental/measurements/study-a' });
+
+    expect(parse(listed).measurements).toHaveLength(1);
+    expect(parse(listed).measurements[0].value).toBe(14.5);
   });
 
   it('persists state and measurements to the SQLite file', async () => {
@@ -140,7 +181,6 @@ describe('Dental backend API', () => {
       method: 'POST',
       url: '/api/dental/measurements/study-a',
       body: {
-        id: 'measurement-1',
         label: 'Root length',
         value: 18,
         unit: 'mm',
@@ -163,16 +203,17 @@ describe('Dental backend API', () => {
       method: 'POST',
       url: '/api/dental/measurements/study-a',
       body: {
-        id: 'measurement-1',
         label: 'Canal angle',
         value: 37,
         unit: 'deg',
       },
     });
 
+    const listed = await request(store, { url: '/api/dental/measurements/study-a' });
+    const measurementId = parse(listed).measurements[0].id;
     const deleted = await request(store, {
       method: 'DELETE',
-      url: '/api/dental/measurements/study-a/measurement-1',
+      url: `/api/dental/measurements/study-a/${measurementId}`,
       userId: 'user-b',
     });
 

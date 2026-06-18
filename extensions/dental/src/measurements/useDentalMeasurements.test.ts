@@ -1,26 +1,49 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { DEFAULT_DENTAL_PREFERENCES } from '../preferences/dentalPreferences';
+import { DentalMeasurementsService } from './DentalMeasurementsService';
 import { useDentalMeasurements } from './useDentalMeasurements';
 
 function createHarness() {
+  const originalFetch = global.fetch;
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: jest.fn().mockResolvedValue({ measurements: [] }),
+  });
   const subscribers = new Map<string, (event: any) => void>();
   const measurementService = {
     EVENTS: {
       MEASUREMENT_ADDED: 'measurementAdded',
       MEASUREMENT_UPDATED: 'measurementUpdated',
+      MEASUREMENT_REMOVED: 'measurementRemoved',
     },
     subscribe: jest.fn((event, callback) => {
       subscribers.set(event, callback);
       return { unsubscribe: jest.fn() };
     }),
+    getMeasurement: jest.fn(),
     update: jest.fn(),
   };
   const commandsManager = {
     runCommand: jest.fn(),
   };
+  const dentalMeasurementsService = new DentalMeasurementsService();
   const servicesManager = {
     services: {
+      dentalMeasurementsService,
+      displaySetService: {
+        EVENTS: {
+          DISPLAY_SETS_ADDED: 'displaySetsAdded',
+          DISPLAY_SETS_CHANGED: 'displaySetsChanged',
+        },
+        getActiveDisplaySets: jest.fn(() => [
+          {
+            StudyInstanceUID: 'study-1',
+          },
+        ]),
+        subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
+      },
       measurementService,
       viewportGridService: {
         getState: jest.fn(() => ({ activeViewportId: 'dental-current' })),
@@ -29,6 +52,12 @@ function createHarness() {
   };
   const hook = renderHook(() =>
     useDentalMeasurements({
+      appConfig: {
+        dental: {
+          measurementsApiUrl: 'http://localhost:4007/api/dental',
+          measurementsAuthToken: 'token',
+        },
+      } as AppTypes.Config,
       commandsManager: commandsManager as never,
       servicesManager: servicesManager as never,
       preferences: DEFAULT_DENTAL_PREFERENCES,
@@ -38,8 +67,12 @@ function createHarness() {
   return {
     ...hook,
     commandsManager,
+    dentalMeasurementsService,
     measurementService,
     emit: (event: string, payload: any) => act(() => subscribers.get(event)?.(payload)),
+    restoreFetch: () => {
+      global.fetch = originalFetch;
+    },
   };
 }
 
@@ -70,8 +103,6 @@ describe('useDentalMeasurements', () => {
     expect(harness.commandsManager.runCommand).toHaveBeenCalledWith('setToolActive', {
       toolName: 'Length',
     });
-    expect(harness.result.current.measurements).toEqual([]);
-
     harness.emit('measurementAdded', {
       measurement: {
         uid: 'annotation-1',
@@ -88,7 +119,7 @@ describe('useDentalMeasurements', () => {
       }),
       true
     );
-    expect(harness.result.current.measurements[0]).toEqual(
+    expect(harness.dentalMeasurementsService.getMeasurements()[0]).toEqual(
       expect.objectContaining({
         annotationUID: 'annotation-1',
         label: 'PA length',
@@ -105,7 +136,9 @@ describe('useDentalMeasurements', () => {
       },
     });
 
-    expect(harness.result.current.measurements).toHaveLength(1);
+    expect(harness.dentalMeasurementsService.getMeasurements()).toHaveLength(1);
+    harness.unmount();
+    harness.restoreFetch();
   });
 
   it('updates an existing record when the annotation value changes', () => {
@@ -127,6 +160,37 @@ describe('useDentalMeasurements', () => {
       },
     });
 
-    expect(harness.result.current.measurements[0].value).toBe(27.5);
+    expect(harness.dentalMeasurementsService.getMeasurements()[0].value).toBe(27.5);
+    harness.unmount();
+    harness.restoreFetch();
+  });
+
+  it('keeps panel state synchronized when a measurement is deleted', () => {
+    const harness = createHarness();
+
+    act(() => harness.result.current.armPreset('root-length'));
+    harness.emit('measurementAdded', {
+      measurement: {
+        uid: 'annotation-1',
+        toolName: 'Length',
+        data: { image: { length: 19 } },
+      },
+    });
+    harness.measurementService.getMeasurement.mockReturnValue({ uid: 'annotation-1' });
+
+    act(() => harness.dentalMeasurementsService.requestDelete('annotation-1'));
+
+    expect(harness.commandsManager.runCommand).toHaveBeenCalledWith('removeMeasurement', {
+      uid: 'annotation-1',
+    });
+    expect(harness.dentalMeasurementsService.getMeasurements()).toHaveLength(1);
+
+    harness.emit('measurementRemoved', {
+      measurement: { uid: 'annotation-1' },
+    });
+
+    expect(harness.dentalMeasurementsService.getMeasurements()).toEqual([]);
+    harness.unmount();
+    harness.restoreFetch();
   });
 });

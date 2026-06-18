@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { DentalPreferences } from '../preferences/dentalPreferences';
 import {
@@ -10,6 +10,11 @@ import {
   DentalMeasurementPresetId,
   getDentalMeasurementPreset,
 } from './dentalMeasurementPresets';
+import { DentalMeasurementsService } from './DentalMeasurementsService';
+import {
+  DentalMeasurementsAuthError,
+  createDentalMeasurementsApi,
+} from './dentalMeasurementsApi';
 
 type PendingMeasurement = {
   presetId: DentalMeasurementPresetId;
@@ -18,24 +23,98 @@ type PendingMeasurement = {
 };
 
 type UseDentalMeasurementsOptions = {
+  appConfig: AppTypes.Config;
   commandsManager: AppTypes.CommandsManager;
   servicesManager: AppTypes.ServicesManager;
   preferences: DentalPreferences;
 };
 
+function getStudyInstanceUID(displaySetService): string | undefined {
+  const displaySet = displaySetService.getActiveDisplaySets?.()?.[0];
+  const instance = displaySet?.instances?.[0] || displaySet?.instance;
+
+  return displaySet?.StudyInstanceUID || instance?.StudyInstanceUID;
+}
+
 export function useDentalMeasurements({
+  appConfig,
   commandsManager,
   servicesManager,
   preferences,
 }: UseDentalMeasurementsOptions) {
-  const { measurementService, viewportGridService } = servicesManager.services;
+  const {
+    dentalMeasurementsService,
+    displaySetService,
+    measurementService,
+    viewportGridService,
+  } = servicesManager.services as AppTypes.ServicesManager['services'] & {
+    dentalMeasurementsService: DentalMeasurementsService;
+  };
   const pendingMeasurementRef = useRef<PendingMeasurement | null>(null);
-  const measurementsRef = useRef(new Map<string, DentalMeasurement>());
-  const [measurements, setMeasurements] = useState<DentalMeasurement[]>([]);
+  const studyInstanceUIDRef = useRef<string | undefined>();
+  const lockedRef = useRef(false);
+  const saveTimersRef = useRef(new Map<string, ReturnType<typeof window.setTimeout>>());
+  const dentalConfig = (
+    appConfig as AppTypes.Config & { dental?: Record<string, string> }
+  )?.dental;
+  const api = useMemo(
+    () =>
+      createDentalMeasurementsApi({
+        baseUrl:
+          dentalConfig?.measurementsApiUrl ||
+          dentalConfig?.backendUrl ||
+          'http://localhost:4007/api/dental',
+        authToken:
+          dentalConfig?.measurementsAuthToken ||
+          dentalConfig?.backendAuthToken ||
+          'dev-dental-token',
+      }),
+    [
+      dentalConfig?.backendAuthToken,
+      dentalConfig?.backendUrl,
+      dentalConfig?.measurementsApiUrl,
+      dentalConfig?.measurementsAuthToken,
+    ]
+  );
 
-  const publishMeasurements = useCallback(() => {
-    setMeasurements(Array.from(measurementsRef.current.values()));
-  }, []);
+  const markApiError = useCallback(
+    (error: unknown) => {
+      if (error instanceof DentalMeasurementsAuthError) {
+        lockedRef.current = true;
+        dentalMeasurementsService.setStatus('locked');
+        return;
+      }
+
+      dentalMeasurementsService.setStatus('unsaved');
+    },
+    [dentalMeasurementsService]
+  );
+
+  const persistMeasurement = useCallback(
+    (measurement: DentalMeasurement) => {
+      const studyInstanceUID = studyInstanceUIDRef.current;
+
+      if (!studyInstanceUID || lockedRef.current) {
+        return;
+      }
+
+      const existingTimer = saveTimersRef.current.get(measurement.annotationUID);
+      if (existingTimer) {
+        window.clearTimeout(existingTimer);
+      }
+
+      dentalMeasurementsService.setStatus('unsaved');
+      const timer = window.setTimeout(() => {
+        api
+          .upsert(studyInstanceUID, measurement)
+          .then(() => dentalMeasurementsService.setStatus('saved'))
+          .catch(markApiError);
+        saveTimersRef.current.delete(measurement.annotationUID);
+      }, 300);
+      saveTimersRef.current.set(measurement.annotationUID, timer);
+    },
+    [api, dentalMeasurementsService, markApiError]
+  );
 
   const armPreset = useCallback(
     (presetId: DentalMeasurementPresetId, note = '') => {
@@ -52,6 +131,44 @@ export function useDentalMeasurements({
     },
     [commandsManager, preferences.selectedToothId]
   );
+
+  useEffect(() => {
+    const loadMeasurements = () => {
+      const studyInstanceUID = getStudyInstanceUID(displaySetService);
+
+      if (!studyInstanceUID || studyInstanceUID === studyInstanceUIDRef.current || lockedRef.current) {
+        return;
+      }
+
+      studyInstanceUIDRef.current = studyInstanceUID;
+      dentalMeasurementsService.setMeasurements([]);
+      dentalMeasurementsService.setStatus('loading');
+      api
+        .load(studyInstanceUID)
+        .then(measurements => {
+          dentalMeasurementsService.setMeasurements([
+            ...measurements,
+            ...dentalMeasurementsService.getMeasurements(),
+          ]);
+          dentalMeasurementsService.setStatus('saved');
+        })
+        .catch(markApiError);
+    };
+
+    loadMeasurements();
+    const subscriptions = [
+      displaySetService.subscribe?.(
+        displaySetService.EVENTS.DISPLAY_SETS_ADDED,
+        loadMeasurements
+      ),
+      displaySetService.subscribe?.(
+        displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+        loadMeasurements
+      ),
+    ].filter(Boolean);
+
+    return () => subscriptions.forEach(subscription => subscription.unsubscribe());
+  }, [api, dentalMeasurementsService, displaySetService, markApiError]);
 
   useEffect(() => {
     const addedSubscription = measurementService.subscribe(
@@ -78,8 +195,8 @@ export function useDentalMeasurements({
           viewportId: activeViewportId,
         });
 
-        measurementsRef.current.set(measurement.uid, dentalMeasurement);
-        publishMeasurements();
+        dentalMeasurementsService.upsertMeasurement(dentalMeasurement);
+        persistMeasurement(dentalMeasurement);
         measurementService.update(
           measurement.uid,
           {
@@ -95,28 +212,70 @@ export function useDentalMeasurements({
     const updatedSubscription = measurementService.subscribe(
       measurementService.EVENTS.MEASUREMENT_UPDATED,
       ({ measurement }) => {
-        const dentalMeasurement = measurementsRef.current.get(measurement.uid);
+        const dentalMeasurement = dentalMeasurementsService
+          .getMeasurements()
+          .find(candidate => candidate.annotationUID === measurement.uid);
 
         if (!dentalMeasurement) {
           return;
         }
 
-        measurementsRef.current.set(
-          measurement.uid,
-          updateDentalMeasurement(dentalMeasurement, measurement)
-        );
-        publishMeasurements();
+        const updatedMeasurement = updateDentalMeasurement(dentalMeasurement, measurement);
+        dentalMeasurementsService.upsertMeasurement(updatedMeasurement);
+        persistMeasurement(updatedMeasurement);
+      }
+    );
+    const removedSubscription = measurementService.subscribe(
+      measurementService.EVENTS.MEASUREMENT_REMOVED,
+      ({ measurement }) => {
+        const annotationUID = measurement?.uid;
+
+        if (!annotationUID) {
+          return;
+        }
+
+        dentalMeasurementsService.removeMeasurement(annotationUID);
+        const studyInstanceUID = studyInstanceUIDRef.current;
+        if (studyInstanceUID && !lockedRef.current) {
+          api.remove(studyInstanceUID, annotationUID).catch(markApiError);
+        }
       }
     );
 
     return () => {
       addedSubscription.unsubscribe();
       updatedSubscription.unsubscribe();
+      removedSubscription.unsubscribe();
     };
-  }, [measurementService, publishMeasurements, viewportGridService]);
+  }, [
+    api,
+    dentalMeasurementsService,
+    markApiError,
+    measurementService,
+    persistMeasurement,
+    viewportGridService,
+  ]);
 
-  return {
-    armPreset,
-    measurements,
-  };
+  useEffect(() => {
+    dentalMeasurementsService.setDeleteHandler(annotationUID => {
+      if (measurementService.getMeasurement(annotationUID)) {
+        commandsManager.runCommand('removeMeasurement', { uid: annotationUID });
+        return;
+      }
+
+      dentalMeasurementsService.removeMeasurement(annotationUID);
+      const studyInstanceUID = studyInstanceUIDRef.current;
+      if (studyInstanceUID && !lockedRef.current) {
+        api.remove(studyInstanceUID, annotationUID).catch(markApiError);
+      }
+    });
+
+    return () => {
+      dentalMeasurementsService.setDeleteHandler(null);
+      saveTimersRef.current.forEach(timer => window.clearTimeout(timer));
+      saveTimersRef.current.clear();
+    };
+  }, [api, commandsManager, dentalMeasurementsService, markApiError, measurementService]);
+
+  return { armPreset };
 }
