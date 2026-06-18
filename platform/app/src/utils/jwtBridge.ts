@@ -50,20 +50,27 @@ function clearAuthCookie(): void {
  */
 export function extractAndStoreToken(): void {
   const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
+  // Prefer the token from the URL *fragment* (#token=). Unlike the query string,
+  // the fragment is never sent to the server, so the JWT can't leak into nginx /
+  // proxy access logs or a Referer header on the first hop. The query-string form
+  // (?token=) is still accepted for backward compatibility during rollout.
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const token = hashParams.get('token') || params.get('token');
 
   if (token) {
     sessionStorage.setItem(SESSION_KEY, token);
     syncAuthCookie(token);
-    // Strip ?token= from the URL bar without adding a browser history entry.
-    // This prevents the raw JWT from appearing in the user's history or being
-    // copied accidentally from the address bar.
+    // Strip the token from BOTH the query and the fragment in the URL bar,
+    // without adding a browser history entry — keeps the raw JWT out of history
+    // and prevents accidental copy from the address bar.
     params.delete('token');
+    hashParams.delete('token');
     const newSearch = params.toString();
+    const newHash = hashParams.toString();
     const newUrl =
       window.location.pathname +
       (newSearch ? `?${newSearch}` : '') +
-      window.location.hash;
+      (newHash ? `#${newHash}` : '');
     window.history.replaceState({}, '', newUrl);
     return;
   }
