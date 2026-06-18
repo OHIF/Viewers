@@ -19,7 +19,7 @@ export default function ComponentLayout({ title, description, children }: Compon
       title={title}
       description={description || `OHIF ${title} component documentation`}
     >
-      <div className="showcase-isolated flex min-h-screen bg-background">
+      <div className="showcase-isolated flex min-h-screen font-['Inter',sans-serif] bg-background">
         {/* Mobile sidebar toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}

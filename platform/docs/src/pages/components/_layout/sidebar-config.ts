@@ -45,11 +45,4 @@ export const sidebarSections: SidebarSection[] = [
       { label: 'Tooltip', href: '/components/tooltip' },
     ],
   },
-  {
-    title: 'Patterns',
-    items: [
-      { label: 'Segmentation List', href: '/patterns' },
-      { label: 'Measurement List', href: '/patterns' },
-    ],
-  },
 ];

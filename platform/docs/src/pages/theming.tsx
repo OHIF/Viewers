@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import '../css/custom.css';
-import Layout from '@theme/Layout';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 const themes: Record<string, string> = {
   default: `--highlight: 191 74% 63%;
@@ -215,23 +215,8 @@ function TokenRow({
     <div className="mb-5 grid items-start gap-x-3" style={{ gridTemplateColumns: '24px 200px 1fr' }}>
       <Swatch color={color} />
       <code className="bg-transparent pl-0 pt-0.5 text-sm text-[#7cacf8]">{token}</code>
-      <div className="text-[15px] text-[#bbb]">{children}</div>
+      <div className="text-secondary-foreground text-lg">{children}</div>
     </div>
-  );
-}
-
-function SwatchCircle({ color }: { color: string }) {
-  return (
-    <div
-      className="rounded-full"
-      style={{
-        width: 36,
-        height: 36,
-        background: color,
-        border: '2px solid #232323',
-        marginLeft: -13,
-      }}
-    />
   );
 }
 
@@ -315,7 +300,7 @@ function ThemeRow({
         href={previewUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="whitespace-nowrap text-[13px] text-[#7cacf8] no-underline hover:text-[#a8c8ff]"
+        className="whitespace-nowrap text-[13px] text-primary no-underline hover:underline"
       >
         Preview in Viewer
       </a>
@@ -394,61 +379,38 @@ function Accordion({ title, id, children }: { title: string; id?: string; childr
 
 const BASE_VIEWER = 'https://ohif-theme-apply.netlify.app/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&theme=';
 
-export default function ThemingPage() {
+function ThemingPageContent() {
+  const ComponentLayout = require('./components/_layout/ComponentLayout').default;
+  const PageHeader = require('./components/_layout/PageHeader').default;
+  const Section = require('./components/_layout/Section').default;
+
   return (
-    <Layout title="Colors & Theming" description="OHIF Viewer Colors and Theming Guide">
-      <div className="showcase-isolated min-h-screen bg-black font-['Inter',sans-serif] text-[15px] font-light leading-relaxed text-[#c1c1c1]">
-        <div className="mx-auto max-w-[875px] px-10 pt-16 pb-32">
+    <ComponentLayout
+      title="Colors & Theming"
+      description="Color tokens, themes, and accessibility for the OHIF Viewer"
+    >
+      <PageHeader
+        title="Colors & Theming"
+        description="How color is used in the OHIF Viewer and how to apply new colors and themes for clinical use."
+      />
 
-          {/* ================================ */}
-          {/* COLORS & THEMING */}
-          {/* ================================ */}
+      {/* ================================ */}
+      {/* APPLYING THEMES */}
+      {/* ================================ */}
 
-          <h1 className="mb-2 text-4xl font-normal text-white">Colors &amp; Theming</h1>
-
-          <p className="mb-4">
-            This guide covers how color is used in the OHIF Viewer product and how to apply new
-            colors and themes so the product remains accessible and usable for clinical use.
-          </p>
-
-          <ul className="mb-4 list-disc pl-6">
-            <li className="mb-2">
-              <a href="#applying-themes" className="text-[#7cacf8] no-underline">Applying Themes</a>
-              {' '}&mdash; how to use the Appearance dialog to apply a theme
-            </li>
-            <li className="mb-2">
-              <a href="#color-tokens" className="text-[#7cacf8] no-underline">Color Tokens and Roles</a>
-              {' '}&mdash; shows what roles colors play and how they are used in combination
-            </li>
-            <li className="mb-2">
-              <a href="#creating-themes" className="text-[#7cacf8] no-underline">Creating Themes</a>
-              {' '}&mdash; an overview of different approaches to theming the product, plus testing and adding presets
-            </li>
-            <li className="mb-2">
-              <a href="#accessibility" className="text-[#7cacf8] no-underline">Accessibility</a>
-              {' '}&mdash; how to review new colors to ensure the product meets accessibility standards
-            </li>
-          </ul>
-
-          {/* ================================ */}
-          {/* APPLYING THEMES */}
-          {/* ================================ */}
-
-          <h1 id="applying-themes" className="mt-20 mb-2 border-t border-[#222] pt-12 text-[32px] font-normal text-white">
-            Applying Themes
-          </h1>
-
-          <p className="mb-4">
-            The <strong className="font-semibold text-white">Appearance</strong> dialog can be accessed from the settings menu in the
-            main header. Open the <strong className="font-semibold text-white">Theme</strong> dropdown and choose a preset. The
+      <Section title="Applying Themes">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
+            The <strong className="text-foreground">Appearance</strong> dialog can be accessed from the settings menu in the
+            main header. Open the <strong className="text-foreground">Theme</strong> dropdown and choose a preset. The
             interface will update immediately, and your selection is remembered the next time
-            you open the Viewer. Selecting <strong className="font-semibold text-white">Tonal: OHIF Blue</strong> returns to the default.
+            you open the Viewer. Selecting <strong className="text-foreground">Tonal: OHIF Blue</strong> returns to the default.
           </p>
 
-          <p className="mb-4">
-            <em className="text-[#999]">Testing custom theme colors:</em> Use this dialog to test your custom themes in
+          <p>
+            <em className="text-muted-foreground">Testing custom theme colors:</em> Use this dialog to test your custom themes in
             the viewer{' '}
-            <a href="#testing-themes" className="text-[#7cacf8] no-underline">(see more details)</a>
+            <a href="#testing-themes" className="text-primary no-underline hover:underline">(see more details)</a>
           </p>
 
           <img
@@ -456,16 +418,16 @@ export default function ThemingPage() {
             alt="Appearance modal with the Theme dropdown open, showing the preset options"
             className="my-4 mb-6 w-full rounded-lg border border-[#222]"
           />
+        </div>
+      </Section>
 
-          {/* ================================ */}
-          {/* COLOR TOKENS AND ROLES */}
-          {/* ================================ */}
+      {/* ================================ */}
+      {/* COLOR TOKENS AND ROLES */}
+      {/* ================================ */}
 
-          <h1 id="color-tokens" className="mt-20 mb-2 border-t border-[#222] pt-12 text-[32px] font-normal text-white">
-            Color Tokens and Roles
-          </h1>
-
-          <p className="mb-4">
+      <Section title="Color Tokens and Roles">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             While these token names are largely shared across many web applications, within the OHIF Viewer design,
             each one plays a specific role in the interface.
           </p>
@@ -475,219 +437,221 @@ export default function ThemingPage() {
             alt="Color roles overview"
             className="my-6 mb-8 w-full"
           />
+        </div>
 
-          {/* Layering Model Accordion */}
-          <Accordion title="Layering Model: colors used for hierarchy" id="layering-model">
-            <p className="mb-4">
-              A set of three background colors are used to create a layering system that shows visual depth
-              and hierarchy in the product. Background color use should align with these details:
-            </p>
+        {/* Layering Model Accordion */}
+        <Accordion title="Layering Model: colors used for hierarchy" id="layering-model">
+          <p className="text-secondary-foreground mb-4 text-lg">
+            A set of three background colors are used to create a layering system that shows visual depth
+            and hierarchy in the product. Background color use should align with these details:
+          </p>
 
-            <h3 className="mt-7 mb-3 text-lg font-normal text-white">Three Levels</h3>
+          <h3 className="mt-7 mb-3 text-lg font-medium text-foreground">Three Levels</h3>
 
-            <p className="mb-4">
-              <strong className="font-semibold text-white">Level 1: Surface</strong>{' '}
-              <Swatch color="hsl(0, 0%, 0%)" />{' '}
-              <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">background</code>
-            </p>
-            <ul className="mb-4 list-disc pl-6">
-              <li className="mb-2">The base layer of the entire interface</li>
-              <li className="mb-2">Includes the app shell, panel backgrounds, and empty or negative space</li>
-              <li className="mb-2">In the default OHIF theme, this is black to seamlessly match the viewport background</li>
-              <li className="mb-2">Changing this from black can create more separation from viewports or add a full background color to panels</li>
-            </ul>
+          <p className="text-secondary-foreground mb-4 text-lg">
+            <strong className="text-foreground">Level 1: Surface</strong>{' '}
+            <Swatch color="hsl(0, 0%, 0%)" />{' '}
+            <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">background</code>
+          </p>
+          <ul className="text-secondary-foreground mb-4 list-disc pl-6 text-lg">
+            <li className="mb-2">The base layer of the entire interface</li>
+            <li className="mb-2">Includes the app shell, panel backgrounds, and empty or negative space</li>
+            <li className="mb-2">In the default OHIF theme, this is black to seamlessly match the viewport background</li>
+            <li className="mb-2">Changing this from black can create more separation from viewports or add a full background color to panels</li>
+          </ul>
 
-            <p className="mb-4">
-              <strong className="font-semibold text-white">Level 2: Working Space</strong>{' '}
-              <Swatch color="hsl(234, 64%, 10%)" />{' '}
-              <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">muted</code> or{' '}
-              <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">card</code>
-            </p>
-            <ul className="mb-4 list-disc pl-6">
-              <li className="mb-2">This is the base content layer of the interface</li>
-              <li className="mb-2">Includes panel content areas, dialog backgrounds, rows of data, etc.</li>
-              <li className="mb-2">This is the base of the working space separated from the viewer content</li>
-            </ul>
+          <p className="text-secondary-foreground mb-4 text-lg">
+            <strong className="text-foreground">Level 2: Working Space</strong>{' '}
+            <Swatch color="hsl(234, 64%, 10%)" />{' '}
+            <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">muted</code> or{' '}
+            <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">card</code>
+          </p>
+          <ul className="text-secondary-foreground mb-4 list-disc pl-6 text-lg">
+            <li className="mb-2">This is the base content layer of the interface</li>
+            <li className="mb-2">Includes panel content areas, dialog backgrounds, rows of data, etc.</li>
+            <li className="mb-2">This is the base of the working space separated from the viewer content</li>
+          </ul>
 
-            <p className="mb-4">
-              <strong className="font-semibold text-white">Level 3: Elevated</strong>{' '}
-              <Swatch color="hsl(219, 90%, 15%)" />{' '}
-              <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">popover</code>
-            </p>
-            <ul className="mb-4 list-disc pl-6">
-              <li className="mb-2">The top-most layer, used for UI that floats above the surface</li>
-              <li className="mb-2">Includes popovers, dropdown menus, floating components, grouping elements such as panel sections</li>
-              <li className="mb-2">Use this for any component that needs to appear &quot;above&quot; the content layer</li>
-            </ul>
+          <p className="text-secondary-foreground mb-4 text-lg">
+            <strong className="text-foreground">Level 3: Elevated</strong>{' '}
+            <Swatch color="hsl(219, 90%, 15%)" />{' '}
+            <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">popover</code>
+          </p>
+          <ul className="text-secondary-foreground mb-4 list-disc pl-6 text-lg">
+            <li className="mb-2">The top-most layer, used for UI that floats above the surface</li>
+            <li className="mb-2">Includes popovers, dropdown menus, floating components, grouping elements such as panel sections</li>
+            <li className="mb-2">Use this for any component that needs to appear &quot;above&quot; the content layer</li>
+          </ul>
 
-            <img
-              src="/img/theming-layers.png"
-              alt="Layering model overview"
-              className="my-6 mb-8 w-full"
-            />
+          <img
+            src="/img/theming-layers.png"
+            alt="Layering model overview"
+            className="my-6 mb-8 w-full"
+          />
 
-            <h3 className="mt-7 mb-3 text-lg font-normal text-white">Creating Contrast</h3>
-            <ul className="mb-4 list-disc pl-6">
-              <li className="mb-2">
-                The <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">primary</code> color
-                is used across these different layers to show what elements are interactable. Be sure to review any
-                new colors for backgrounds work with <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">primary</code> as the foreground at each of the three different levels.
-              </li>
-              <li className="mb-2">
-                See the <a href="#creating-themes" className="text-[#7cacf8] no-underline">Creating Themes</a> section
-                for details on how different levels of contrast can be used to separate these layers.
-              </li>
-            </ul>
+          <h3 className="mt-7 mb-3 text-lg font-medium text-foreground">Creating Contrast</h3>
+          <ul className="text-secondary-foreground mb-4 list-disc pl-6 text-lg">
+            <li className="mb-2">
+              The <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">primary</code> color
+              is used across these different layers to show what elements are interactable. Be sure to review any
+              new colors for backgrounds work with <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">primary</code> as the foreground at each of the three different levels.
+            </li>
+            <li className="mb-2">
+              See the <a href="#creating-themes" className="text-primary no-underline hover:underline">Creating Themes</a> section
+              for details on how different levels of contrast can be used to separate these layers.
+            </li>
+          </ul>
 
-            <h3 className="mt-7 mb-3 text-lg font-normal text-white">Alpha Colors</h3>
-            <p className="mb-4">
-              <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">primary</code> also uses
-              various alpha values for many components across the product. This allows components to adapt and work
-              well with different background colors or various layers of the interface.
-            </p>
-          </Accordion>
+          <h3 className="mt-7 mb-3 text-lg font-medium text-foreground">Alpha Colors</h3>
+          <p className="text-secondary-foreground mb-4 text-lg">
+            <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">primary</code> also uses
+            various alpha values for many components across the product. This allows components to adapt and work
+            well with different background colors or various layers of the interface.
+          </p>
+        </Accordion>
 
-          {/* Token Sections */}
-          <div className="ml-[248px]">
-            <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Interactive or Currently Active</h2>
-          </div>
+        {/* Token Sections */}
+        <div className="ml-[248px]">
+          <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Interactive or Currently Active</h3>
+        </div>
 
-          <TokenRow color="hsl(214, 98%, 60%)" token="primary">
-            The most important color in the system. Primary represents anything the user can interact with
-            which includes: tool actions, toggles for showing and hiding content, links, navigation elements, etc.
-          </TokenRow>
+        <TokenRow color="hsl(214, 98%, 60%)" token="primary">
+          The most important color in the system. Primary represents anything the user can interact with
+          which includes: tool actions, toggles for showing and hiding content, links, navigation elements, etc.
+        </TokenRow>
 
-          <TokenRow color="hsl(191, 74%, 63%)" token="highlight">
-            The brightest color in the system. Highlight is used to show the user what is &quot;currently active&quot;.
-            It should not be used more than a few times in flows or screen views.
-            <ul className="mt-2 list-disc pl-6">
-              <li className="mb-1">Highlight border around the active viewport</li>
-              <li className="mb-1">Highlight background to show the active tool</li>
-              <li className="mb-1">Highlight color at the end of a selected data row</li>
-            </ul>
-          </TokenRow>
+        <TokenRow color="hsl(191, 74%, 63%)" token="highlight">
+          The brightest color in the system. Highlight is used to show the user what is &quot;currently active&quot;.
+          It should not be used more than a few times in flows or screen views.
+          <ul className="mt-2 list-disc pl-6">
+            <li className="mb-1">Highlight border around the active viewport</li>
+            <li className="mb-1">Highlight background to show the active tool</li>
+            <li className="mb-1">Highlight color at the end of a selected data row</li>
+          </ul>
+        </TokenRow>
 
-          <div className="ml-[248px]">
-            <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Text and Content</h2>
-          </div>
+        <div className="ml-[248px]">
+          <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Text and Content</h3>
+        </div>
 
-          <TokenRow color="hsl(0, 0%, 98%)" token="foreground">
-            Used for standard text or for more important text to stand out. This includes headings,
-            labels for controls, or anything critical for what the user is doing.
-          </TokenRow>
+        <TokenRow color="hsl(0, 0%, 98%)" token="foreground">
+          Used for standard text or for more important text to stand out. This includes headings,
+          labels for controls, or anything critical for what the user is doing.
+        </TokenRow>
 
-          <TokenRow color="hsl(200, 46%, 65%)" token="muted-foreground">
-            Used for secondary text that is paired with standard text. This includes sub titles,
-            help text, or anything that needs to play a reduced role for content.
-          </TokenRow>
+        <TokenRow color="hsl(200, 46%, 65%)" token="muted-foreground">
+          Used for secondary text that is paired with standard text. This includes sub titles,
+          help text, or anything that needs to play a reduced role for content.
+        </TokenRow>
 
-          <div className="ml-[248px]">
-            <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Background Colors</h2>
-            <p className="mb-4">
-              See the <a href="#layering-model" className="text-[#7cacf8] no-underline">Layering Model</a> above for detailed notes.
-            </p>
-          </div>
+        <div className="ml-[248px]">
+          <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Background Colors</h3>
+          <p className="text-secondary-foreground mb-4 text-lg">
+            See the <a href="#layering-model" className="text-primary no-underline hover:underline">Layering Model</a> above for detailed notes.
+          </p>
+        </div>
 
-          <TokenRow color="hsl(0, 0%, 0%)" token="background">
-            The base background layer of the product (app shell, panels, negative spaces)
-          </TokenRow>
-          <TokenRow color="hsl(234, 64%, 10%)" token="muted">
-            The second background layer where most content lives
-          </TokenRow>
-          <TokenRow color="hsl(219, 90%, 15%)" token="popover">
-            The third background layer for any content that needs to be elevated
-          </TokenRow>
+        <TokenRow color="hsl(0, 0%, 0%)" token="background">
+          The base background layer of the product (app shell, panels, negative spaces)
+        </TokenRow>
+        <TokenRow color="hsl(234, 64%, 10%)" token="muted">
+          The second background layer where most content lives
+        </TokenRow>
+        <TokenRow color="hsl(219, 90%, 15%)" token="popover">
+          The third background layer for any content that needs to be elevated
+        </TokenRow>
 
-          <div className="ml-[248px]">
-            <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Supporting Colors</h2>
-          </div>
+        <div className="ml-[248px]">
+          <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Supporting Colors</h3>
+        </div>
 
-          <TokenRow color="hsl(214, 65%, 36%)" token="secondary">
-            Used for secondary buttons in the interface
-          </TokenRow>
-          <TokenRow color="hsl(200, 50%, 84%)" token="secondary-foreground">
-            Text color used on secondary
-          </TokenRow>
-          <TokenRow color="hsl(217, 79%, 24%)" token="accent">
-            Sometimes used for hover states or other interaction feedback
-          </TokenRow>
-          <TokenRow color="hsl(0, 0%, 98%)" token="accent-foreground">
-            Text color used on accent
-          </TokenRow>
-          <TokenRow color="hsl(0, 62.8%, 30.6%)" token="destructive">
-            Used for any destructive action or operations in the interface
-          </TokenRow>
-          <TokenRow color="hsl(0, 0%, 98%)" token="destructive-foreground">
-            Text color used on destructive
-          </TokenRow>
+        <TokenRow color="hsl(214, 65%, 36%)" token="secondary">
+          Used for secondary buttons in the interface
+        </TokenRow>
+        <TokenRow color="hsl(200, 50%, 84%)" token="secondary-foreground">
+          Text color used on secondary
+        </TokenRow>
+        <TokenRow color="hsl(217, 79%, 24%)" token="accent">
+          Sometimes used for hover states or other interaction feedback
+        </TokenRow>
+        <TokenRow color="hsl(0, 0%, 98%)" token="accent-foreground">
+          Text color used on accent
+        </TokenRow>
+        <TokenRow color="hsl(0, 62.8%, 30.6%)" token="destructive">
+          Used for any destructive action or operations in the interface
+        </TokenRow>
+        <TokenRow color="hsl(0, 0%, 98%)" token="destructive-foreground">
+          Text color used on destructive
+        </TokenRow>
 
-          <div className="ml-[248px]">
-            <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Inputs and Borders</h2>
-          </div>
+        <div className="ml-[248px]">
+          <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Inputs and Borders</h3>
+        </div>
 
-          <TokenRow color="hsl(236, 52%, 30%)" token="input">
-            Used on input fields and other interactive components
-          </TokenRow>
-          <TokenRow color="hsl(0, 0%, 14.9%)" token="border">
-            A neutral color used minimally as separators
-          </TokenRow>
-          <TokenRow color="hsl(214, 98%, 60%)" token="ring">
-            Used as focus rings for accessibility &mdash; indicates which components are currently selected
-            (in use or keyboard highlighted)
-          </TokenRow>
+        <TokenRow color="hsl(236, 52%, 30%)" token="input">
+          Used on input fields and other interactive components
+        </TokenRow>
+        <TokenRow color="hsl(0, 0%, 14.9%)" token="border">
+          A neutral color used minimally as separators
+        </TokenRow>
+        <TokenRow color="hsl(214, 98%, 60%)" token="ring">
+          Used as focus rings for accessibility &mdash; indicates which components are currently selected
+          (in use or keyboard highlighted)
+        </TokenRow>
 
-          <div className="ml-[248px]">
-            <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Neutral Colors</h2>
-            <p className="mb-4">
-              Neutral colors are used sparingly across the interface in areas such as viewports.
-            </p>
-          </div>
+        <div className="ml-[248px]">
+          <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Neutral Colors</h3>
+          <p className="text-secondary-foreground mb-4 text-lg">
+            Neutral colors are used sparingly across the interface in areas such as viewports.
+          </p>
+        </div>
 
-          <TokenRow color="hsl(213, 22%, 59%)" token="neutral">
-            Used for elements like scrollbars in viewports
-          </TokenRow>
-          <TokenRow color="hsl(214, 69%, 81%)" token="neutral-light">
-            Lighter text that appears over dark background viewports
-          </TokenRow>
-          <TokenRow color="hsl(214, 16%, 21%)" token="neutral-dark">
-            Darker text that appears over light background viewports
-          </TokenRow>
+        <TokenRow color="hsl(213, 22%, 59%)" token="neutral">
+          Used for elements like scrollbars in viewports
+        </TokenRow>
+        <TokenRow color="hsl(214, 69%, 81%)" token="neutral-light">
+          Lighter text that appears over dark background viewports
+        </TokenRow>
+        <TokenRow color="hsl(214, 16%, 21%)" token="neutral-dark">
+          Darker text that appears over light background viewports
+        </TokenRow>
+      </Section>
 
-          {/* ================================ */}
-          {/* CREATING THEMES */}
-          {/* ================================ */}
+      {/* ================================ */}
+      {/* CREATING THEMES */}
+      {/* ================================ */}
 
-          <h1 id="creating-themes" className="mt-20 mb-2 border-t border-[#222] pt-12 text-[32px] font-normal text-white">
-            Creating Themes
-          </h1>
-
+      <Section title="Creating Themes">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
           <img
             src="/img/theming-themes.png"
             alt="Creating themes overview"
             className="my-6 mb-8 w-full"
           />
 
-          <p className="mb-4">
+          <p>
             Theming in the OHIF Viewer works by replacing the default color tokens and working with the product
             color system outlined in{' '}
-            <a href="#color-tokens" className="text-[#7cacf8] no-underline">Color Tokens and Roles</a> and{' '}
-            <a href="#layering-model" className="text-[#7cacf8] no-underline">Layering Model</a>.
+            <a href="#color-tokens-and-roles" className="text-primary no-underline hover:underline">Color Tokens and Roles</a> and{' '}
+            <a href="#layering-model" className="text-primary no-underline hover:underline">Layering Model</a>.
           </p>
 
-          <p className="mb-4">
+          <p>
             When updating any colors in the system, follow the{' '}
-            <a href="#accessibility" className="text-[#7cacf8] no-underline">Accessibility</a> section to ensure the
+            <a href="#accessibility" className="text-primary no-underline hover:underline">Accessibility</a> section to ensure the
             product retains accessibility standards.
           </p>
 
-          <p className="mb-4">
+          <p>
             OHIF can be themed with a few different approaches. Use the guidance below to match the desired
             product or brand feel.
           </p>
+        </div>
 
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Approach 1: Tonal</h2>
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Approach 1: Tonal</h3>
 
-          <p className="mb-4">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             A tonal theme applies a hue across the background layers of the product which gives the product a
             strong color identity. The default Viewer theme uses this approach with blue.
           </p>
@@ -698,53 +662,55 @@ export default function ThemingPage() {
             <li className="mb-2">A tonal theme does not need to match the saturation of the default, see examples</li>
             <li className="mb-2">Use this approach if you like the general feel of the Viewer, but want it to be more unique</li>
           </ul>
+        </div>
 
-          {/* Tonal theme grid */}
-          <div className="my-9 mb-8 grid items-center gap-x-2.5 gap-y-2.5" style={{ gridTemplateColumns: '82px 59px 59px auto auto auto' }}>
-            <span className="pb-1.5 text-[11px] font-normal text-[#555]">Backgrounds</span>
-            <span className="pb-1.5 text-[11px] font-normal text-[#555]">Text</span>
-            <span className="pb-1.5 text-[11px] font-normal text-[#555]">Interactive</span>
-            <span className="pb-1.5 pl-3.5 text-[11px] font-normal text-[#555]">Theme name</span>
-            <span></span>
-            <span></span>
+        {/* Tonal theme grid */}
+        <div className="my-9 mb-8 grid items-center gap-x-2.5 gap-y-2.5" style={{ gridTemplateColumns: '82px 59px 59px auto auto auto' }}>
+          <span className="pb-1.5 text-[11px] font-normal text-[#555]">Backgrounds</span>
+          <span className="pb-1.5 text-[11px] font-normal text-[#555]">Text</span>
+          <span className="pb-1.5 text-[11px] font-normal text-[#555]">Interactive</span>
+          <span className="pb-1.5 pl-3.5 text-[11px] font-normal text-[#555]">Theme name</span>
+          <span></span>
+          <span></span>
 
-            <ThemeRow
-              backgrounds={['hsl(0, 0%, 0%)', 'hsl(234, 64%, 10%)', 'hsl(219, 90%, 15%)']}
-              text={['hsl(200, 46%, 65%)', 'hsl(0, 0%, 98%)']}
-              interactive={['hsl(214, 98%, 60%)', 'hsl(191, 74%, 63%)']}
-              name="Default Blue"
-              previewUrl={BASE_VIEWER + 'default'}
-              themeName="default"
-            />
-            <ThemeRow
-              backgrounds={['hsl(270, 45%, 6%)', 'hsl(268, 40%, 10%)', 'hsl(264, 48%, 13%)']}
-              text={['hsl(272, 30%, 60%)', 'hsl(280, 15%, 96%)']}
-              interactive={['hsl(270, 85%, 65%)', 'hsl(292, 75%, 62%)']}
-              name="Orchid"
-              previewUrl={BASE_VIEWER + 'orchid'}
-              themeName="orchid"
-            />
-            <ThemeRow
-              backgrounds={['hsl(155, 40%, 5%)', 'hsl(152, 35%, 9%)', 'hsl(167, 65%, 10%)']}
-              text={['hsl(148, 25%, 55%)', 'hsl(140, 15%, 95%)']}
-              interactive={['hsl(152, 75%, 40%)', 'hsl(152, 79%, 52%)']}
-              name="Verdant"
-              previewUrl={BASE_VIEWER + 'verdant'}
-              themeName="verdant"
-            />
-            <ThemeRow
-              backgrounds={['hsl(0, 0%, 0%)', 'hsl(203, 39%, 9%)', 'hsl(202, 54%, 11%)']}
-              text={['hsl(185, 30%, 60%)', 'hsl(180, 10%, 97%)']}
-              interactive={['hsl(175, 85%, 42%)', 'hsl(173, 81%, 52%)']}
-              name="Arctic"
-              previewUrl={BASE_VIEWER + 'arctic'}
-              themeName="arctic"
-            />
-          </div>
+          <ThemeRow
+            backgrounds={['hsl(0, 0%, 0%)', 'hsl(234, 64%, 10%)', 'hsl(219, 90%, 15%)']}
+            text={['hsl(200, 46%, 65%)', 'hsl(0, 0%, 98%)']}
+            interactive={['hsl(214, 98%, 60%)', 'hsl(191, 74%, 63%)']}
+            name="Default Blue"
+            previewUrl={BASE_VIEWER + 'default'}
+            themeName="default"
+          />
+          <ThemeRow
+            backgrounds={['hsl(270, 45%, 6%)', 'hsl(268, 40%, 10%)', 'hsl(264, 48%, 13%)']}
+            text={['hsl(272, 30%, 60%)', 'hsl(280, 15%, 96%)']}
+            interactive={['hsl(270, 85%, 65%)', 'hsl(292, 75%, 62%)']}
+            name="Orchid"
+            previewUrl={BASE_VIEWER + 'orchid'}
+            themeName="orchid"
+          />
+          <ThemeRow
+            backgrounds={['hsl(155, 40%, 5%)', 'hsl(152, 35%, 9%)', 'hsl(167, 65%, 10%)']}
+            text={['hsl(148, 25%, 55%)', 'hsl(140, 15%, 95%)']}
+            interactive={['hsl(152, 75%, 40%)', 'hsl(152, 79%, 52%)']}
+            name="Verdant"
+            previewUrl={BASE_VIEWER + 'verdant'}
+            themeName="verdant"
+          />
+          <ThemeRow
+            backgrounds={['hsl(0, 0%, 0%)', 'hsl(203, 39%, 9%)', 'hsl(202, 54%, 11%)']}
+            text={['hsl(185, 30%, 60%)', 'hsl(180, 10%, 97%)']}
+            interactive={['hsl(175, 85%, 42%)', 'hsl(173, 81%, 52%)']}
+            name="Arctic"
+            previewUrl={BASE_VIEWER + 'arctic'}
+            themeName="arctic"
+          />
+        </div>
 
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Approach 2: Neutral</h2>
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Approach 2: Neutral</h3>
 
-          <p className="mb-4">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             A neutral theme still keeps the full color system in place, but reduces the reliance on color in backgrounds.
           </p>
 
@@ -755,45 +721,47 @@ export default function ThemingPage() {
             <li className="mb-2">This approach reduces the focus on color to emphasize image content</li>
             <li className="mb-2">Accessibility can be simpler, but testing is still recommended</li>
           </ul>
+        </div>
 
-          {/* Neutral theme grid */}
-          <div className="my-9 mb-8 grid items-center gap-x-2.5 gap-y-2.5" style={{ gridTemplateColumns: '82px 59px 59px auto auto auto' }}>
-            <span className="pb-1.5 text-[11px] font-normal text-[#555]">Backgrounds</span>
-            <span className="pb-1.5 text-[11px] font-normal text-[#555]">Text</span>
-            <span className="pb-1.5 text-[11px] font-normal text-[#555]">Interactive</span>
-            <span className="pb-1.5 pl-3.5 text-[11px] font-normal text-[#555]">Theme name</span>
-            <span></span>
-            <span></span>
+        {/* Neutral theme grid */}
+        <div className="my-9 mb-8 grid items-center gap-x-2.5 gap-y-2.5" style={{ gridTemplateColumns: '82px 59px 59px auto auto auto' }}>
+          <span className="pb-1.5 text-[11px] font-normal text-[#555]">Backgrounds</span>
+          <span className="pb-1.5 text-[11px] font-normal text-[#555]">Text</span>
+          <span className="pb-1.5 text-[11px] font-normal text-[#555]">Interactive</span>
+          <span className="pb-1.5 pl-3.5 text-[11px] font-normal text-[#555]">Theme name</span>
+          <span></span>
+          <span></span>
 
-            <ThemeRow
-              backgrounds={['hsl(240, 15%, 3%)', 'hsl(240, 12%, 8%)', 'hsl(225, 45%, 13%)']}
-              text={['hsl(210, 40%, 70%)', 'hsl(0, 0%, 99%)']}
-              interactive={['hsl(210, 100%, 62%)', 'hsl(188, 90%, 58%)']}
-              name="Midnight"
-              previewUrl={BASE_VIEWER + 'midnight'}
-              themeName="midnight"
-            />
-            <ThemeRow
-              backgrounds={['hsl(0, 0%, 0%)', 'hsl(0, 0%, 7%)', 'hsl(0, 0%, 9%)']}
-              text={['hsl(0, 0%, 60%)', 'hsl(0, 0%, 96%)']}
-              interactive={['hsl(230, 75%, 55%)', 'hsl(217, 97%, 52%)']}
-              name="Slate"
-              previewUrl={BASE_VIEWER + 'slate'}
-              themeName="slate"
-            />
-            <ThemeRow
-              backgrounds={['hsl(0, 0%, 0%)', 'hsl(214, 28%, 5%)', 'hsl(215, 30%, 8%)']}
-              text={['hsl(215, 18%, 48%)', 'hsl(215, 15%, 82%)']}
-              interactive={['hsl(200, 43%, 48%)', 'hsl(184, 53%, 54%)']}
-              name="Deep"
-              previewUrl={BASE_VIEWER + 'deep'}
-              themeName="deep"
-            />
-          </div>
+          <ThemeRow
+            backgrounds={['hsl(240, 15%, 3%)', 'hsl(240, 12%, 8%)', 'hsl(225, 45%, 13%)']}
+            text={['hsl(210, 40%, 70%)', 'hsl(0, 0%, 99%)']}
+            interactive={['hsl(210, 100%, 62%)', 'hsl(188, 90%, 58%)']}
+            name="Midnight"
+            previewUrl={BASE_VIEWER + 'midnight'}
+            themeName="midnight"
+          />
+          <ThemeRow
+            backgrounds={['hsl(0, 0%, 0%)', 'hsl(0, 0%, 7%)', 'hsl(0, 0%, 9%)']}
+            text={['hsl(0, 0%, 60%)', 'hsl(0, 0%, 96%)']}
+            interactive={['hsl(230, 75%, 55%)', 'hsl(217, 97%, 52%)']}
+            name="Slate"
+            previewUrl={BASE_VIEWER + 'slate'}
+            themeName="slate"
+          />
+          <ThemeRow
+            backgrounds={['hsl(0, 0%, 0%)', 'hsl(214, 28%, 5%)', 'hsl(215, 30%, 8%)']}
+            text={['hsl(215, 18%, 48%)', 'hsl(215, 15%, 82%)']}
+            interactive={['hsl(200, 43%, 48%)', 'hsl(184, 53%, 54%)']}
+            name="Deep"
+            previewUrl={BASE_VIEWER + 'deep'}
+            themeName="deep"
+          />
+        </div>
 
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Approach 3: Custom</h2>
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Approach 3: Custom</h3>
 
-          <p className="mb-4">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             Themes do not need to follow any of these models and more unique combinations can be
             considered by following the core color rules and product principles:
           </p>
@@ -801,42 +769,46 @@ export default function ThemingPage() {
           <ul className="mb-4 list-disc pl-6">
             <li className="mb-2">Three levels of background are separated enough</li>
             <li className="mb-2">Primary serves its purpose to show to users what can be interacted with</li>
-            <li className="mb-2">Colors are <a href="#accessibility" className="text-[#7cacf8] no-underline">accessible</a> in all content scenarios</li>
+            <li className="mb-2">Colors are <a href="#accessibility" className="text-primary no-underline hover:underline">accessible</a> in all content scenarios</li>
           </ul>
 
-          <p className="mb-4">
+          <p>
             Theming is flexible enough to support any direction, as long as the colors still work in the product.
           </p>
+        </div>
 
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">Experiment with the Color Tool</h2>
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">Experiment with the Color Tool</h3>
 
-          <p className="mb-4">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             We built a small public web tool that edits the color tokens directly, so you can experiment with
             colors and see the results instantly. When a combination looks right, use its{' '}
-            <strong className="font-semibold text-white">Copy Theme</strong> button and paste the result into the
+            <strong className="text-foreground">Copy Theme</strong> button and paste the result into the
             Custom Theme field in the Viewer&rsquo;s Appearance dialog (see{' '}
-            <a href="#testing-themes" className="text-[#7cacf8] no-underline">Testing Themes</a>) &mdash; an easy
+            <a href="#testing-themes" className="text-primary no-underline hover:underline">Testing Themes</a>) &mdash; an easy
             way to iterate quickly and find what works best. The tool is optional; you can also edit tokens by hand.
           </p>
 
-          <p className="mb-4">
+          <p>
             <a
               href="https://ohif-theming-beta.netlify.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#7cacf8] no-underline"
+              className="text-primary no-underline hover:underline"
             >
               Open the color tool &rarr;
             </a>
           </p>
+        </div>
 
-          <h2 id="testing-themes" className="mt-12 mb-4 text-[22px] font-normal text-white">
-            Testing Themes in the Viewer
-          </h2>
+        <h3 id="testing-themes" className="mt-12 mb-4 scroll-mt-20 text-[22px] font-normal text-foreground">
+          Testing Themes in the Viewer
+        </h3>
 
-          <p className="mb-4">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             You can preview a theme without writing any code using the{' '}
-            <strong className="font-semibold text-white">Custom Theme</strong> option in the Appearance dialog
+            <strong className="text-foreground">Custom Theme</strong> option in the Appearance dialog
             (settings menu in the main header) &mdash; useful while designing a theme around the approaches above.
           </p>
 
@@ -846,10 +818,10 @@ export default function ThemingPage() {
             className="my-4 mb-6 w-full rounded-lg border border-[#222]"
           />
 
-          <p className="mb-4">
-            The <strong className="font-semibold text-white">Custom Theme</strong> option opens a text field where
-            you paste CSS color tokens and press <strong className="font-semibold text-white">Apply</strong> to see
-            them right away. <strong className="font-semibold text-white">Clear</strong> removes them and returns to
+          <p>
+            The <strong className="text-foreground">Custom Theme</strong> option opens a text field where
+            you paste CSS color tokens and press <strong className="text-foreground">Apply</strong> to see
+            them right away. <strong className="text-foreground">Clear</strong> removes them and returns to
             the default. A pasted theme is remembered across page reloads.
           </p>
 
@@ -858,149 +830,156 @@ export default function ThemingPage() {
             alt="Custom theme text field for pasting color tokens, with Apply and Clear buttons"
             className="my-4 mb-6 w-full rounded-lg border border-[#222]"
           />
+        </div>
 
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">For Developers: Adding a New Preset</h2>
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">For Developers: Adding a New Preset</h3>
 
-          <p className="mb-4">
-            A preset lives in two places. The <strong className="font-semibold text-white">CSS block is what actually renders</strong>;
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
+            A preset lives in two places. The <strong className="text-foreground">CSS block is what actually renders</strong>;
             the JSON only registers the preset so it appears in the dropdown.
           </p>
 
           <ul className="mb-4 list-disc pl-6">
             <li className="mb-2">
-              <strong className="font-semibold text-white">themes.css</strong> &mdash; add a{' '}
+              <strong className="text-foreground">themes.css</strong> &mdash; add a{' '}
               <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">.theme-&#123;name&#125;</code>{' '}
               block to <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">platform/ui-next/src/themes/themes.css</code>{' '}
               with the full token set. This is the source of truth for the theme&rsquo;s colors.
             </li>
             <li className="mb-2">
-              <strong className="font-semibold text-white">&#123;name&#125;.json</strong> &mdash; create{' '}
+              <strong className="text-foreground">&#123;name&#125;.json</strong> &mdash; create{' '}
               <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">platform/ui-next/src/themes/&#123;name&#125;.json</code>{' '}
               providing <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">name</code> and{' '}
               <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">label</code> (the dropdown entry).
               Its <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">cssVars.dark</code> values
-              are <strong className="font-semibold text-white">not read at runtime</strong> &mdash; only{' '}
+              are <strong className="text-foreground">not read at runtime</strong> &mdash; only{' '}
               <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">name</code> and{' '}
               <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">label</code> are used &mdash;
               so the <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">.theme-&#123;name&#125;</code>{' '}
               CSS block above is what takes effect.
             </li>
             <li className="mb-2">
-              <strong className="font-semibold text-white">index.ts</strong> &mdash; import the JSON in{' '}
+              <strong className="text-foreground">index.ts</strong> &mdash; import the JSON in{' '}
               <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">platform/ui-next/src/themes/index.ts</code>{' '}
               and add it to the <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">themePresets</code> array.
             </li>
           </ul>
 
-          <p className="mb-4">
+          <p>
             The dropdown, persistence, and theme switching then work automatically. The JSON{' '}
             <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">name</code> field must match the
             CSS class suffix (e.g. <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">&quot;name&quot;: &quot;orchid&quot;</code>{' '}
             &harr; <code className="rounded bg-[#111] px-1.5 py-0.5 text-sm text-[#7cacf8]">.theme-orchid</code>).
           </p>
+        </div>
+      </Section>
 
-          {/* ================================ */}
-          {/* ACCESSIBILITY */}
-          {/* ================================ */}
+      {/* ================================ */}
+      {/* ACCESSIBILITY */}
+      {/* ================================ */}
 
-          <h1 id="accessibility" className="mt-20 mb-2 border-t border-[#222] pt-12 text-[32px] font-normal text-white">
-            Accessibility
-          </h1>
-
-          <p className="mb-4">
+      <Section title="Accessibility">
+        <div className="text-secondary-foreground space-y-4 text-lg leading-relaxed">
+          <p>
             The OHIF Viewer is a medical imaging product. The interface supports clinicians and other
             professionals working and reading images. Colors in theming should never get in the way.
             A theme needs to remain accessible with color contrast and other accessibility standards.
           </p>
 
-          <p className="mb-4">
+          <p>
             The default OHIF theme has been tested and works out of the box to meet these standards.
           </p>
 
-          <p className="mb-4">
+          <p>
             Color contrast must meet{' '}
             <a
               href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#7cacf8] no-underline"
+              className="text-primary no-underline hover:underline"
             >
               WCAG 2.1 Success Criterion 1.4.3 Contrast (Minimum), Level AA
             </a>
-            : text needs a contrast ratio of at least <strong className="font-semibold text-white">4.5:1</strong> against
-            its background (<strong className="font-semibold text-white">3:1</strong> for large text &mdash; 24px, or 18.66px bold).
+            : text needs a contrast ratio of at least <strong className="text-foreground">4.5:1</strong> against
+            its background (<strong className="text-foreground">3:1</strong> for large text &mdash; 24px, or 18.66px bold).
           </p>
 
-          <p className="mb-4">
-            The pairs below show the <strong className="font-semibold text-white">default OHIF theme</strong> and how its
-            colors meet the contrast requirements. The <strong className="font-semibold text-white">Result</strong> column
-            is each pair&apos;s actual contrast ratio, and the <strong className="font-semibold text-white">Guidance</strong>{' '}
+          <p>
+            The pairs below show the <strong className="text-foreground">default OHIF theme</strong> and how its
+            colors meet the contrast requirements. The <strong className="text-foreground">Result</strong> column
+            is each pair&apos;s actual contrast ratio, and the <strong className="text-foreground">Guidance</strong>{' '}
             column is the minimum it must meet. When creating your own theme, check every foreground against each
             background layer it can appear on.
           </p>
-
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">
-            Test Primary Across All Three Background Colors
-          </h2>
-
-          <p className="mb-4">
-            The most important color that shows content that can be interactive needs to be tested across
-            all three background layers.
-          </p>
-
-          <ContrastTable rows={[
-            { fgLabel: 'primary', fgColor: 'hsl(214, 98%, 60%)', bgLabel: 'background', bgColor: 'hsl(0, 0%, 0%)', result: '6.3:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'primary', fgColor: 'hsl(214, 98%, 60%)', bgLabel: 'muted', bgColor: 'hsl(234, 64%, 10%)', result: '5.7:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'primary', fgColor: 'hsl(214, 98%, 60%)', bgLabel: 'popover', bgColor: 'hsl(219, 90%, 15%)', result: '5.0:1', requirement: '≥ 4.5:1' },
-          ]} />
-
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">
-            Test Text Content Across All Three Background Colors
-          </h2>
-
-          <p className="mb-4">
-            Text appears on each background layer. Be sure to test each to ensure readability.
-          </p>
-
-          <ContrastTable rows={[
-            { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'background', bgColor: 'hsl(0, 0%, 0%)', result: '20.1:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'muted', bgColor: 'hsl(234, 64%, 10%)', result: '18.3:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'popover', bgColor: 'hsl(219, 90%, 15%)', result: '15.9:1', requirement: '≥ 4.5:1' },
-          ]} />
-
-          <ContrastTable rows={[
-            { fgLabel: 'muted-foreground', fgColor: 'hsl(200, 46%, 65%)', bgLabel: 'background', bgColor: 'hsl(0, 0%, 0%)', result: '9.2:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'muted-foreground', fgColor: 'hsl(200, 46%, 65%)', bgLabel: 'muted', bgColor: 'hsl(234, 64%, 10%)', result: '8.4:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'muted-foreground', fgColor: 'hsl(200, 46%, 65%)', bgLabel: 'popover', bgColor: 'hsl(219, 90%, 15%)', result: '7.3:1', requirement: '≥ 4.5:1' },
-          ]} />
-
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">
-            Test Viewport Text If You Change It
-          </h2>
-
-          <p className="mb-4">
-            Be sure to test the viewport neutral text over standard viewport backgrounds, but increase
-            the contrast here as much as possible since text needs to remain readable over various image content.
-          </p>
-
-          <ContrastTable rows={[
-            { fgLabel: 'neutral-light', fgColor: 'hsl(214, 69%, 81%)', bgLabel: '#000000', bgColor: '#000000', result: '12.5:1', requirement: '≥ 4.5:1 (aim higher)' },
-            { fgLabel: 'neutral-dark', fgColor: 'hsl(214, 16%, 21%)', bgLabel: '#FFFFFF', bgColor: '#ffffff', result: '12.5:1', requirement: '≥ 4.5:1 (aim higher)' },
-          ]} />
-
-          <h2 className="mt-12 mb-4 text-[22px] font-normal text-white">
-            Test Foreground Colors Over Their Backgrounds
-          </h2>
-
-          <ContrastTable rows={[
-            { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'primary/80', bgColor: 'hsla(214, 98%, 60%, 0.8)', result: '4.7:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'secondary-foreground', fgColor: 'hsl(200, 50%, 84%)', bgLabel: 'secondary', bgColor: 'hsl(214, 65%, 36%)', result: '5.3:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'accent-foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'accent', bgColor: 'hsl(217, 79%, 24%)', result: '11.9:1', requirement: '≥ 4.5:1' },
-            { fgLabel: 'destructive-foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'destructive', bgColor: 'hsl(0, 62.8%, 30.6%)', result: '9.6:1', requirement: '≥ 4.5:1' },
-          ]} />
-
         </div>
-      </div>
-    </Layout>
+
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">
+          Test Primary Across All Three Background Colors
+        </h3>
+
+        <p className="text-secondary-foreground mb-4 text-lg">
+          The most important color that shows content that can be interactive needs to be tested across
+          all three background layers.
+        </p>
+
+        <ContrastTable rows={[
+          { fgLabel: 'primary', fgColor: 'hsl(214, 98%, 60%)', bgLabel: 'background', bgColor: 'hsl(0, 0%, 0%)', result: '6.3:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'primary', fgColor: 'hsl(214, 98%, 60%)', bgLabel: 'muted', bgColor: 'hsl(234, 64%, 10%)', result: '5.7:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'primary', fgColor: 'hsl(214, 98%, 60%)', bgLabel: 'popover', bgColor: 'hsl(219, 90%, 15%)', result: '5.0:1', requirement: '≥ 4.5:1' },
+        ]} />
+
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">
+          Test Text Content Across All Three Background Colors
+        </h3>
+
+        <p className="text-secondary-foreground mb-4 text-lg">
+          Text appears on each background layer. Be sure to test each to ensure readability.
+        </p>
+
+        <ContrastTable rows={[
+          { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'background', bgColor: 'hsl(0, 0%, 0%)', result: '20.1:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'muted', bgColor: 'hsl(234, 64%, 10%)', result: '18.3:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'popover', bgColor: 'hsl(219, 90%, 15%)', result: '15.9:1', requirement: '≥ 4.5:1' },
+        ]} />
+
+        <ContrastTable rows={[
+          { fgLabel: 'muted-foreground', fgColor: 'hsl(200, 46%, 65%)', bgLabel: 'background', bgColor: 'hsl(0, 0%, 0%)', result: '9.2:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'muted-foreground', fgColor: 'hsl(200, 46%, 65%)', bgLabel: 'muted', bgColor: 'hsl(234, 64%, 10%)', result: '8.4:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'muted-foreground', fgColor: 'hsl(200, 46%, 65%)', bgLabel: 'popover', bgColor: 'hsl(219, 90%, 15%)', result: '7.3:1', requirement: '≥ 4.5:1' },
+        ]} />
+
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">
+          Test Viewport Text If You Change It
+        </h3>
+
+        <p className="text-secondary-foreground mb-4 text-lg">
+          Be sure to test the viewport neutral text over standard viewport backgrounds, but increase
+          the contrast here as much as possible since text needs to remain readable over various image content.
+        </p>
+
+        <ContrastTable rows={[
+          { fgLabel: 'neutral-light', fgColor: 'hsl(214, 69%, 81%)', bgLabel: '#000000', bgColor: '#000000', result: '12.5:1', requirement: '≥ 4.5:1 (aim higher)' },
+          { fgLabel: 'neutral-dark', fgColor: 'hsl(214, 16%, 21%)', bgLabel: '#FFFFFF', bgColor: '#ffffff', result: '12.5:1', requirement: '≥ 4.5:1 (aim higher)' },
+        ]} />
+
+        <h3 className="mt-12 mb-4 text-[22px] font-normal text-foreground">
+          Test Foreground Colors Over Their Backgrounds
+        </h3>
+
+        <ContrastTable rows={[
+          { fgLabel: 'foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'primary/80', bgColor: 'hsla(214, 98%, 60%, 0.8)', result: '4.7:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'secondary-foreground', fgColor: 'hsl(200, 50%, 84%)', bgLabel: 'secondary', bgColor: 'hsl(214, 65%, 36%)', result: '5.3:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'accent-foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'accent', bgColor: 'hsl(217, 79%, 24%)', result: '11.9:1', requirement: '≥ 4.5:1' },
+          { fgLabel: 'destructive-foreground', fgColor: 'hsl(0, 0%, 98%)', bgLabel: 'destructive', bgColor: 'hsl(0, 62.8%, 30.6%)', result: '9.6:1', requirement: '≥ 4.5:1' },
+        ]} />
+      </Section>
+    </ComponentLayout>
+  );
+}
+
+export default function ThemingPage() {
+  return (
+    <BrowserOnly fallback={<></>}>{() => <ThemingPageContent />}</BrowserOnly>
   );
 }
