@@ -32,9 +32,8 @@ auth gate. See `scripts/vps-orthanc-runbook.sh`.
   `${MIMPS_VIEWER_ORIGIN}` are substituted at container start.
 - `orthanc-nginx-entrypoint.sh` — renders the template (computes the Basic header
   from `ORTHANC_USERNAME`/`ORTHANC_PASSWORD`).
-- `nginx.conf` / `nginx.htpasswd.conf` — viewer edge nginx variants for the
-  **host** nginx (JWT vs htpasswd fallback), used by the VPS deploy; not part
-  of the compose stack.
+- `nginx.conf` — the viewer edge nginx config (JWT `auth_request` gate) for the
+  **host** nginx, used by the VPS deploy; not part of the compose stack.
 - `nginx.container.conf` — containerized variant of `nginx.conf`, baked into
   the `viewer` image by `../Dockerfile.viewer`. Upstreams are compose service
   names (`audit-service`, `orthanc-nginx`); `/pacs/` keeps its prefix so the

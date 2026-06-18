@@ -12,7 +12,7 @@
 # SECURITY NOTE (MIMPS-13/15): because this gateway injects credentials, it
 # must never be exposed publicly without an auth gate in front of it. Locally
 # it is bound to 127.0.0.1 only (see docker-compose.yml). On the VPS, the edge
-# nginx must apply its auth (JWT auth_request or htpasswd) to the /pacs/
+# nginx must apply its auth (JWT auth_request) to the /pacs/
 # location BEFORE proxying here.
 
 server {
