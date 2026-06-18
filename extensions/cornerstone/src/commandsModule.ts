@@ -638,7 +638,9 @@ function commandsModule({
      */
     _handleMeasurementLabelDialog: async uid => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      const renderContent = customizationService.getCustomization('ui.labellingComponent');
+      const renderContent = customizationService.getCustomization(
+        'ui.labellingComponent'
+      ) as React.ComponentType<any>;
       const measurement = measurementService.getMeasurement(uid);
 
       if (!measurement) {
@@ -680,6 +682,49 @@ function commandsModule({
     },
     renameMeasurement: async ({ uid }) => {
       await actions._handleMeasurementLabelDialog(uid);
+    },
+
+    changeMeasurementColor: ({uid}) => {
+      const measurement = measurementService.getMeasurement(uid);
+
+      if (!measurement) {
+        console.debug('No measurement found for color editing');
+        return;
+      }
+      
+      const color = measurement.color;
+
+      const rgbaColor = {
+        r: color[0],
+        g: color[1],
+        b: color[2],
+        a: (color[3] !== undefined ? color[3] : 255) / 255.0,
+      };
+
+      uiDialogService.show({
+        id: 'measurement-color-dialog',
+        content: colorPickerDialog,
+        title: i18n.t('Tools:Measurement Color'),
+        contentProps: {
+          value: rgbaColor,
+          onSave: newRgbaColor => {
+            const colorArray = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+            const colorStr = `rgb(${newRgbaColor.r}, ${newRgbaColor.g}, ${newRgbaColor.b})`;
+
+            // Update OHIF measurement service
+            measurementService.updateColorMeasurement(uid, colorArray);
+
+            // Update cornerstone tools rendering
+            annotation.config.style.setAnnotationStyles(uid, {
+              color: colorStr,
+            });
+
+            // Force re-render
+            const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+            renderingEngine.render();
+          },
+        },
+      });
     },
     /**
      *
@@ -2542,6 +2587,9 @@ function commandsModule({
     },
     renameMeasurement: {
       commandFn: actions.renameMeasurement,
+    },
+    changeMeasurementColor: {
+      commandFn: actions.changeMeasurementColor,
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,

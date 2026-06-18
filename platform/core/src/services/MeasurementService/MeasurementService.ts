@@ -543,6 +543,7 @@ class MeasurementService extends PubSubService {
     const newMeasurement = {
       ...oldMeasurement,
       ...measurement,
+      color: measurement.color || oldMeasurement?.color || [255, 255, 0, 255],
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
     };
