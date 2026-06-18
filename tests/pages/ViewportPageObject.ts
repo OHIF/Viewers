@@ -1,6 +1,5 @@
 import { Locator, Page } from '@playwright/test';
 import {
-  getMousePosition,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
@@ -362,6 +361,28 @@ export class ViewportPageObject {
       throw new Error('Could not find slab thickness handle for crosshairs interaction');
     }
 
+    // Drive the drag from the handle's own bounding-box center rather than the
+    // async window.mouseX/Y tracker: the tracker can lag behind the hover, which
+    // makes the drag start from a stale point and rotate/resize nothing. Stepped
+    // moves emit intermediate mousemove events so cornerstone registers a real
+    // drag instead of a single teleport (which can be dropped or mis-deltad).
+    const DRAG_DISTANCE = 100;
+    const DRAG_STEPS = 10;
+
+    async function dragHandleFromCenter(handle: Locator, dx: number, dy: number) {
+      const box = await handle.boundingBox();
+      if (!box) {
+        throw new Error('Could not resolve crosshairs handle bounding box for drag');
+      }
+      const cx = box.x + box.width / 2;
+      const cy = box.y + box.height / 2;
+
+      await page.mouse.move(cx, cy);
+      await page.mouse.down();
+      await page.mouse.move(cx + dx, cy + dy, { steps: DRAG_STEPS });
+      await page.mouse.up();
+    }
+
     async function increaseSlabThickness(locator: Locator, lineNumber: number, axis: string) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
@@ -370,18 +391,9 @@ export class ViewportPageObject {
       const slabHandleLocator = await getSlabHandleLocator(locator);
       await slabHandleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      await page.mouse.down();
-
-      const position = await getMousePosition(page);
-      switch (axis) {
-        case 'x':
-          await page.mouse.move(position.x + 100, position.y);
-          break;
-        case 'y':
-          await page.mouse.move(position.x, position.y + 100);
-          break;
-      }
-      await page.mouse.up();
+      const dx = axis === 'x' ? DRAG_DISTANCE : 0;
+      const dy = axis === 'y' ? DRAG_DISTANCE : 0;
+      await dragHandleFromCenter(slabHandleLocator, dx, dy);
     }
 
     async function rotateCrosshairs(locator: Locator, lineNumber: number) {
@@ -393,11 +405,7 @@ export class ViewportPageObject {
       await circleLocator.waitFor({ state: 'attached', timeout: crosshairHoverTimeout });
       await circleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      await page.mouse.down();
-
-      const position = await getMousePosition(page);
-      await page.mouse.move(position.x, position.y + 100);
-      await page.mouse.up();
+      await dragHandleFromCenter(circleLocator, 0, DRAG_DISTANCE);
     }
 
     function crosshairsFactory(
