@@ -2,17 +2,16 @@ import { expect, test, visitStudy, visitStudyAndHydrate, waitForViewportsRendere
 import { expectRowSelected, expectRowNotSelected } from './utils/assertions';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-test.describe('Contour Segmentation interactions without RTSTRUCT', () => {
-  test.beforeEach(async ({ page, rightPanelPageObject }) => {
+test.describe('Contour Segmentation from an empty panel', () => {
+  test('should add a contour segmentation from the empty panel', async ({
+    rightPanelPageObject,
+    page,
+  }) => {
     await visitStudy(page, studyInstanceUID, 'segmentation', 2000);
     await waitForViewportsRendered(page);
     // Segmentation mode opens on the labelmap tab; switch to the contour tab.
     await rightPanelPageObject.contourSegmentationPanel.select();
-  });
 
-  test('should add a contour segmentation from the empty panel', async ({
-    rightPanelPageObject,
-  }) => {
     const { addSegmentationButton, panel, segmentationSelect } =
       rightPanelPageObject.contourSegmentationPanel;
 
@@ -25,10 +24,13 @@ test.describe('Contour Segmentation interactions without RTSTRUCT', () => {
     // The segmentation is added and becomes the active selection.
     await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 1');
     await expect(panel.rows).toHaveCount(1);
+    const defaultSegment = panel.nthSegment(0);
+    await expect(defaultSegment.title).toHaveText('Segment 1');
+    await expectRowSelected(defaultSegment);
   });
 });
 
-test.describe('Contour Segmentation interactions on RTSTRUCT', () => {
+test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
   test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
     await visitStudyAndHydrate({
       page,
@@ -112,7 +114,12 @@ test.describe('Contour Segmentation interactions on RTSTRUCT', () => {
     await segmentationSelect.selectNthSegmentation(0);
     await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
     await expect(panel.rows).toHaveCount(4);
-    await expect(panel.getSegmentLabels().filter({ hasText: 'Threshold' })).toHaveCount(1);
+    await expect(panel.getSegmentLabels()).toHaveText([
+      'Threshold',
+      'Big Sphere',
+      'Small Sphere',
+      'Large Box',
+    ]);
 
     // Switching back to the created segmentation shows only its default segment.
     await segmentationSelect.selectNthSegmentation(1);
@@ -173,7 +180,8 @@ test.describe('Contour Segmentation interactions on RTSTRUCT', () => {
   });
 
   test('should delete every segmentation until none remain', async ({ rightPanelPageObject }) => {
-    const { panel, addSegmentationButton } = rightPanelPageObject.contourSegmentationPanel;
+    const { panel, addSegmentationButton, segmentationSelect } =
+      rightPanelPageObject.contourSegmentationPanel;
 
     // Start with the hydrated RTSTRUCT plus two created segmentations.
     await panel.moreMenu.createNewSegmentation();
@@ -181,7 +189,9 @@ test.describe('Contour Segmentation interactions on RTSTRUCT', () => {
 
     // Delete each of the three segmentations one by one.
     await panel.moreMenu.delete();
+    await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
     await panel.moreMenu.delete();
+    await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
     await panel.moreMenu.delete();
 
     // No segmentation remains, so the panel has no segment rows and the
