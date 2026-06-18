@@ -101,6 +101,15 @@ export const getWindowLevelsData = async (
     return [];
   }
 
+  // The per-volume histogram WL panel is a volume-viewport feature driven by
+  // getAllVolumeIds/getProperties. Direct PLANAR_NEXT ("next") viewports expose
+  // neither (they throw), so degrade gracefully to no histogram rows rather than
+  // erroring; the native WL path is driven by setViewportWindowLevel.
+  // TODO(next): port per-volume histograms to the native volume API.
+  if (typeof (viewport as Types.IBaseVolumeViewport).getAllVolumeIds !== 'function') {
+    return [];
+  }
+
   const volumeIds = (viewport as Types.IBaseVolumeViewport).getAllVolumeIds();
   const viewportProperties = viewport.getProperties();
   const { voiRange } = viewportProperties || {};
