@@ -348,10 +348,10 @@ export default class CustomizationService extends PubSubService {
     name: string,
     policy: CustomizationUrlPolicy
   ): ValidatedCustomization | null {
-    const trimmed = name.trim();
-    if (trimmed && !trimmed.startsWith('/') && /^ohif\.[a-zA-Z0-9._-]+$/.test(trimmed)) {
-      return null;
-    }
+    // `requires` entries are module names to load; each is validated/resolved like any
+    // other URL customization request. Entries that don't resolve to a valid module
+    // (e.g. a bare customization-key reference) are rejected by validation and skipped,
+    // or throw in strict mode — there is no namespace carve-out.
     const result = validateCustomizationRequests([name], policy);
     if (result.valid.length) {
       return result.valid[0];
