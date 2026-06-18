@@ -64,16 +64,16 @@ const InvestigationalUseDialog = ({
   }
 
   return (
-    <div className="fixed bottom-2 z-50 flex h-[86px] w-full justify-center">
-      <div className="bg-popover border-muted flex w-[90%] items-center justify-between rounded-lg border-2 pl-[22px] pr-[22px] pt-[10px] pb-[10px] shadow-lg">
-        <div className="flex items-center gap-4">
-          <Icons.InvestigationalUse className="h-18 w-18" />
-          <div className="flex flex-col">
-            <div className="text-foreground text-[19px]">
+    <div className="fixed bottom-2 z-50 flex w-full justify-center px-2">
+      <div className="bg-popover border-muted flex w-full max-w-[760px] items-center justify-between gap-2 rounded-lg border-2 px-3 py-2 shadow-lg sm:w-[90%] sm:gap-4 sm:px-[22px] sm:py-[10px]">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+          <Icons.InvestigationalUse className="h-10 w-10 shrink-0 sm:h-18 sm:w-18" />
+          <div className="flex min-w-0 flex-col">
+            <div className="text-foreground text-sm leading-tight sm:text-[19px]">
               {t('BlackVoxel Viewer is')}{' '}
               <span className="text-highlight">{t('for investigational use only')}</span>
             </div>
-            <div className="text-foreground text-[13px]">
+            <div className="text-foreground text-xs sm:text-[13px]">
               <span
                 className="text-primary cursor-pointer"
                 onClick={() => window.open('https://blackvoxel.ai/', '_blank')}
@@ -86,6 +86,7 @@ const InvestigationalUseDialog = ({
         <Button
           onClick={handleConfirmAndHide}
           dataCY="confirm-and-hide-button"
+          className="ml-2 shrink-0"
         >
           {t('Confirm and hide')}
         </Button>
