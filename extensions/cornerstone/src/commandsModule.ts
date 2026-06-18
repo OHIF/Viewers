@@ -248,8 +248,14 @@ function commandsModule({
         /**
          * If the measurement is not visible inside the current viewport,
          * we need to move the camera to the measurement.
+         *
+         * Native PLANAR_NEXT viewports have no getCamera/setCamera (both
+         * isMeasurementWithinViewport and the centering below would throw), so
+         * skip the in-plane re-centering on native; setViewReference above
+         * already navigated to the measurement's slice.
+         * TODO(next): port in-plane centering via the camera bridge + setViewState pan.
          */
-        if (!isMeasurementWithinViewport(viewport, measurement)) {
+        if (!csUtils.isGenericViewport(viewport) && !isMeasurementWithinViewport(viewport, measurement)) {
           const camera = viewport.getCamera();
           const { focalPoint: cameraFocalPoint, position: cameraPosition } = camera;
           const { center, extent } = getCenterExtent(measurement);
