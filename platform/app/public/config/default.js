@@ -7,23 +7,11 @@ window.config = {
   extensions: [],
   modes: [],
   customizationService: {
-    // SEG store encoding — enable one variant; comment out the active block when switching.
-    //
-    // 1) Bitmap + RLE Lossless (1.2.840.10008.1.2.5)
-    // 'segmentation.store.defaultMode': 'bitmap',
-    // 'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.5',
-    //
-    // 2) Bitmap + uncompressed Explicit VR Little Endian (1.2.840.10008.1.2.1)
-    // 'segmentation.store.defaultMode': 'bitmap',
-    // 'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.1',
-    //
-    // 3) Labelmap + RLE Lossless (1.2.840.10008.1.2.5)
+    // SEG store encoding. Labelmap + RLE Lossless is the intended default;
+    // the bitmap modes and the uncompressed Explicit VR Little Endian transfer
+    // syntax exist mainly for testing and are configured per-deployment when needed.
     'segmentation.store.defaultMode': 'labelmap',
     'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.5',
-    //
-    // 4) Labelmap + uncompressed Explicit VR Little Endian (1.2.840.10008.1.2.1)
-    // 'segmentation.store.defaultMode': 'labelmap',
-    // 'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.1',
   },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers

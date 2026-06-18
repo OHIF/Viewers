@@ -1,7 +1,16 @@
 import dcmjs from 'dcmjs';
 
+export const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
+
 export const DICOM_WRITE_OPTIONS = {
   allowInvalidVRLength: false,
+  // `fragmentMultiframe` only governs whether a SINGLE frame is split across
+  // multiple fragments (dcmjs splits frames larger than its 20KB fragment size).
+  // It does NOT merge frames: in an encapsulated (compressed) transfer syntax
+  // every frame is always written as its own fragment, preceded by the Basic
+  // Offset Table; in an uncompressed syntax pixel data is never fragmented at
+  // all. Keeping this `false` therefore yields exactly one fragment per frame
+  // for compressed SEG — the conformant layout — without splitting large frames.
   fragmentMultiframe: false,
 };
 
@@ -54,24 +63,22 @@ export function makeExistingPropertiesNonEnumerable(instance: Record<string, unk
   }
 }
 
-function getDatasetTransferSyntaxUID(dataset) {
-  const meta = dataset?._meta;
+export function getDatasetTransferSyntaxUID(dataset) {
+  const fromMeta = dataset?._meta?.TransferSyntaxUID;
 
-  if (!meta) {
-    return undefined;
+  if (typeof fromMeta === 'string') {
+    return fromMeta;
   }
 
-  const entry = meta.TransferSyntaxUID;
-
-  if (Array.isArray(entry?.Value)) {
-    return entry.Value[0];
+  if (Array.isArray(fromMeta?.Value)) {
+    return fromMeta.Value[0];
   }
 
-  if (typeof entry === 'string') {
-    return entry;
+  if (typeof dataset?.TransferSyntaxUID === 'string') {
+    return dataset.TransferSyntaxUID;
   }
 
-  return undefined;
+  return EXPLICIT_VR_LITTLE_ENDIAN;
 }
 
 function applyTransferSyntaxToFileMeta(dicomDict, transferSyntaxUID) {
