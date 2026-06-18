@@ -42,6 +42,8 @@ describe('MeasurementService.js', () => {
         { x: 1, y: 2 },
       ],
       source: source,
+      color: [255, 255, 0, 255],
+      isDirty: undefined,
     };
     // A measurement with various metadata missing (e.g. referenced SOPInstanceUID) that
     // would not typically get mapped my the MeasurementService possibly because it was
