@@ -7,8 +7,8 @@ export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 
 const getImageIdsFromDisplaySet = displaySet =>
   displaySet?.imageIds ||
-  displaySet?.images?.map(image => image.imageId).filter(Boolean) ||
-  displaySet?.instances?.map(instance => instance.imageId).filter(Boolean) ||
+  displaySet?.images?.map(image => image?.imageId).filter(Boolean) ||
+  displaySet?.instances?.map(instance => instance?.imageId).filter(Boolean) ||
   [];
 
 const isValidVolumeDisplaySet = imageIds => {
