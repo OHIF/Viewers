@@ -1,6 +1,10 @@
 import type { Types } from '@cornerstonejs/core';
 import type ViewportInfo from '../Viewport';
-import type { Presentations } from '../../../types/Presentation';
+import type {
+  Presentations,
+  PositionPresentation,
+  LutPresentation,
+} from '../../../types/Presentation';
 import type {
   StackViewportData,
   VolumeViewportData,
@@ -32,6 +36,34 @@ export interface IViewportBackend {
     viewportInfo: ViewportInfo,
     presentations?: Presentations
   ): Promise<void>;
+
+  /**
+   * Reads the position presentation (camera/zoom/pan + view reference) to persist
+   * for restore. Legacy uses getViewPresentation (pan/zoom); native stores the
+   * semantic view-state displayArea (pan/zoom) since it has no getViewPresentation.
+   */
+  getPositionPresentation(
+    csViewport: Types.IViewport,
+    viewportInfo: ViewportInfo,
+    viewportId: string
+  ): PositionPresentation;
+
+  /**
+   * Restores a position presentation. Both apply the view reference (slice/
+   * orientation); legacy then applies getViewPresentation via setViewPresentation,
+   * native applies the stored displayArea via setViewState.
+   */
+  setPositionPresentation(
+    viewport: Types.IViewport,
+    positionPresentation: PositionPresentation
+  ): void;
+
+  /**
+   * Restores a LUT presentation (VOI/colormap/invert). Legacy uses setProperties;
+   * native uses setDisplaySetPresentation (a PLANAR_NEXT viewport has no
+   * setProperties), so calling setPresentations on native no longer throws.
+   */
+  setLutPresentation(viewport: Types.IViewport, lutPresentation: LutPresentation): void;
 
   /**
    * Registers a native dataset id for a viewport against cornerstone's global

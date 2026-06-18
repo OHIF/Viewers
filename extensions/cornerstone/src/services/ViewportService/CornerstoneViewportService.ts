@@ -414,20 +414,9 @@ class CornerstoneViewportService
 
     const viewportInfo = this.viewportsById.get(viewportId);
 
-    // Direct Generic ("next") viewports do not expose the legacy getViewPresentation
-    // (pan/zoom) surface; their pan/zoom lives in the semantic view state and is not
-    // restored through the legacy setPresentations path on the native mount. Omit it
-    // here so position snapshots (e.g. resize save/restore) do not throw.
-    const viewPresentation = csUtils.isGenericViewport(csViewport)
-      ? undefined
-      : csViewport.getViewPresentation({ pan: true, zoom: true });
-
-    return {
-      viewportType: viewportInfo.getViewportType(),
-      viewReference: isVolume3DViewportType(csViewport) ? null : csViewport.getViewReference(),
-      viewPresentation,
-      viewportId,
-    };
+    // Forked per backend (§4.3 presentation read): legacy reads getViewPresentation
+    // (pan/zoom); native omits it (a PLANAR_NEXT viewport has no getViewPresentation).
+    return this.backend.getPositionPresentation(csViewport, viewportInfo, viewportId);
   }
 
   private _getLutPresentation(viewportId: string): LutPresentation {
@@ -1727,44 +1716,20 @@ class CornerstoneViewportService
     viewport: Types.IStackViewport | Types.IVolumeViewport,
     lutPresentation: LutPresentation
   ): void {
-    if (!lutPresentation) {
-      return;
-    }
-
-    const { properties } = lutPresentation;
-    if (isVolumeViewportType(viewport)) {
-      if (properties instanceof Map) {
-        properties.forEach((propertiesEntry, volumeId) => {
-          viewport.setProperties(propertiesEntry, volumeId);
-        });
-      } else {
-        viewport.setProperties(properties);
-      }
-    } else {
-      viewport.setProperties(properties);
-    }
+    // Forked per backend (§4.3 presentation write): legacy applies via setProperties;
+    // native via setDisplaySetPresentation (a PLANAR_NEXT viewport has no setProperties),
+    // so setPresentations no longer throws on the native path.
+    this.backend.setLutPresentation(viewport, lutPresentation);
   }
 
   private _setPositionPresentation(
     viewport: Types.IStackViewport | Types.IVolumeViewport,
     positionPresentation: PositionPresentation
   ): void {
-    const viewRef = positionPresentation?.viewReference;
-    if (viewRef) {
-      // The orientation can be updated here to navigate to the specified
-      // measurement or previous item, but this will not switch to volume
-      // or to stack from the other type
-      if (viewport.isReferenceViewable(viewRef, WITH_ORIENTATION)) {
-        viewport.setViewReference(viewRef);
-      } else {
-        console.warn('Unable to apply reference viewable', viewRef);
-      }
-    }
-
-    const viewPresentation = positionPresentation?.viewPresentation;
-    if (viewPresentation) {
-      viewport.setViewPresentation(viewPresentation);
-    }
+    // Forked per backend (§4.3 presentation write): both apply the view reference;
+    // legacy then applies getViewPresentation pan/zoom via setViewPresentation, native
+    // omits it for now (a PLANAR_NEXT viewport has no setViewPresentation).
+    this.backend.setPositionPresentation(viewport, positionPresentation);
   }
 
   private _setSegmentationPresentation(

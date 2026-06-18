@@ -1,6 +1,11 @@
 import { Types } from '@cornerstonejs/core';
+import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import type ViewportInfo from '../Viewport';
-import type { Presentations } from '../../../types/Presentation';
+import type {
+  Presentations,
+  PositionPresentation,
+  LutPresentation,
+} from '../../../types/Presentation';
 import type {
   StackViewportData,
   VolumeViewportData,
@@ -8,6 +13,10 @@ import type {
 import type { IViewportBackend } from './IViewportBackend';
 import type { IViewportServiceInternals } from './IViewportServiceInternals';
 import { DataIdRegistry, type DataIdPayload } from './dataIdRegistry';
+
+// Mirrors WITH_ORIENTATION in CornerstoneViewportService (inlined to avoid a
+// value import that would create a backend -> service circular dependency).
+const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
 /**
  * Native GenericViewport ("next") backend. Selected when `appConfig.useNextViewports`
@@ -49,6 +58,65 @@ export class NextViewportBackend implements IViewportBackend {
       viewportInfo,
       presentations
     );
+  }
+
+  getPositionPresentation(
+    csViewport: Types.IViewport,
+    viewportInfo: ViewportInfo,
+    viewportId: string
+  ): PositionPresentation {
+    const vp = csViewport as Types.IStackViewport;
+    return {
+      viewportType: viewportInfo.getViewportType(),
+      viewReference: isVolume3DViewportType(csViewport) ? null : vp.getViewReference(),
+      // A direct PLANAR_NEXT viewport has no getViewPresentation; its pan/zoom lives
+      // in the semantic view state. Persisting/restoring that across nav/resize is a
+      // later increment, so omit it here (matches the prior native behavior).
+      viewPresentation: undefined,
+      viewportId,
+    };
+  }
+
+  setPositionPresentation(
+    viewport: Types.IViewport,
+    positionPresentation: PositionPresentation
+  ): void {
+    const vp = viewport as Types.IStackViewport;
+    const viewRef = positionPresentation?.viewReference;
+    if (viewRef && vp.isReferenceViewable?.(viewRef, WITH_ORIENTATION)) {
+      vp.setViewReference(viewRef);
+    }
+    // viewPresentation (pan/zoom) is undefined on the native path for now; restoring
+    // it via setViewState is a later increment.
+  }
+
+  setLutPresentation(viewport: Types.IViewport, lutPresentation: LutPresentation): void {
+    if (!lutPresentation) {
+      return;
+    }
+    const { properties } = lutPresentation;
+    // Native LUT presentation is the getDisplaySetPresentation shape (voiRange/
+    // colormap/invert), not a per-volumeId Map; a PLANAR_NEXT viewport applies it via
+    // setDisplaySetPresentation (it has no legacy setProperties).
+    if (!properties || properties instanceof Map) {
+      return;
+    }
+    const nativeViewport = viewport as unknown as {
+      setDisplaySetPresentation: (props: Record<string, unknown>) => void;
+    };
+    const presentationProps: Record<string, unknown> = {};
+    if (properties.voiRange) {
+      presentationProps.voiRange = properties.voiRange;
+    }
+    if (properties.invert !== undefined) {
+      presentationProps.invert = properties.invert;
+    }
+    if (properties.colormap) {
+      presentationProps.colormap = properties.colormap;
+    }
+    if (Object.keys(presentationProps).length > 0) {
+      nativeViewport.setDisplaySetPresentation(presentationProps);
+    }
   }
 
   registerDataId(viewportId: string, dataId: string, payload: DataIdPayload): void {
