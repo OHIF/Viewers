@@ -40,8 +40,10 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 # script file must already be present or install fails with MODULE_NOT_FOUND.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
 COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
-# Run the install before copying the rest of the files
-
+# Run the install before copying the rest of the files.
+# Keep --no-frozen-lockfile here (unlike CI): .dockerignore excludes
+# platform/docs, so the lockfile's docs importer has no manifest in the build
+# context and a frozen install would fail. pnpm reconciles (drops docs) instead.
 RUN pnpm install --no-frozen-lockfile
 # Copy the local directory
 COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
