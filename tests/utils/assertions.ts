@@ -77,3 +77,14 @@ export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
 export async function expectRowNotSelected(rowObject) {
   await expect(rowObject.locator).not.toContainClass('bg-popover');
 }
+
+export async function expectSegmentationLabels(
+  segmentationSelect: {
+    getSegmentationLabels: () => Promise<Locator>;
+    close: () => Promise<void>;
+  },
+  labels: string[]
+) {
+  await expect(await segmentationSelect.getSegmentationLabels()).toHaveText(labels);
+  await segmentationSelect.close();
+}

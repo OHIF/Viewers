@@ -1,5 +1,9 @@
 import { expect, test, visitStudy, visitStudyAndHydrate, waitForViewportsRendered } from './utils';
-import { expectRowSelected, expectRowNotSelected } from './utils/assertions';
+import {
+  expectRowSelected,
+  expectRowNotSelected,
+  expectSegmentationLabels,
+} from './utils/assertions';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 test.describe('Contour Segmentation from an empty panel', () => {
@@ -85,19 +89,17 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
     const { panel, segmentationSelect } = rightPanelPageObject.contourSegmentationPanel;
 
     // Only the hydrated RTSTRUCT segmentation exists at first.
-    await expect(await segmentationSelect.getSegmentationLabels()).toHaveText(['Contours on PET']);
-    await segmentationSelect.close();
+    await expectSegmentationLabels(segmentationSelect, ['Contours on PET']);
 
     await panel.moreMenu.createNewSegmentation();
     await panel.moreMenu.createNewSegmentation();
 
     // The two newly created segmentations are added to the selector.
-    await expect(await segmentationSelect.getSegmentationLabels()).toHaveText([
+    await expectSegmentationLabels(segmentationSelect, [
       'Contours on PET',
       'Segmentation 2',
       'Segmentation 3',
     ]);
-    await segmentationSelect.close();
   });
 
   test('should switch between segmentations and show the matching segments', async ({
@@ -105,12 +107,16 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
   }) => {
     const { panel, segmentationSelect } = rightPanelPageObject.contourSegmentationPanel;
 
-    // Create a second segmentation alongside the hydrated RTSTRUCT one.
+    // Create two more segmentations alongside the hydrated RTSTRUCT one, so the
+    // selector lists: [0] Contours on PET, [1] Segmentation 2, [2] Segmentation 3.
     await panel.moreMenu.createNewSegmentation();
-    await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
-    await expect(panel.rows).toHaveCount(1);
+    await panel.moreMenu.createNewSegmentation();
+    await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 3');
 
-    // Switching to the RTSTRUCT segmentation shows its four segments.
+    // Select out of listed order (active is 2 → 0 → 2 → 1) to prove the active
+    // segmentation follows the selection, not the order the options are listed in.
+
+    // Index 0: the RTSTRUCT segmentation shows its four segments.
     await segmentationSelect.selectNthSegmentation(0);
     await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
     await expect(panel.rows).toHaveCount(4);
@@ -121,7 +127,13 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
       'Large Box',
     ]);
 
-    // Switching back to the created segmentation shows only its default segment.
+    // Jump to the last-created segmentation (index 2), skipping over index 1.
+    await segmentationSelect.selectNthSegmentation(2);
+    await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 3');
+    await expect(panel.rows).toHaveCount(1);
+    await expect(panel.nthSegment(0).title).toHaveText('Segment 1');
+
+    // Back up to the middle segmentation (index 1).
     await segmentationSelect.selectNthSegmentation(1);
     await expect(segmentationSelect.selectedValue).toHaveText('Segmentation 2');
     await expect(panel.rows).toHaveCount(1);
@@ -139,11 +151,7 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
     await panel.moreMenu.rename('Renamed Segmentation');
 
     await expect(segmentationSelect.selectedValue).toHaveText('Renamed Segmentation');
-    await expect(await segmentationSelect.getSegmentationLabels()).toHaveText([
-      'Contours on PET',
-      'Renamed Segmentation',
-    ]);
-    await segmentationSelect.close();
+    await expectSegmentationLabels(segmentationSelect, ['Contours on PET', 'Renamed Segmentation']);
   });
 
   test('should not rename a segmentation when the rename dialog is cancelled', async ({
@@ -175,8 +183,7 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
 
     // The remaining RTSTRUCT segmentation becomes active and is the only one left.
     await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
-    await expect(await segmentationSelect.getSegmentationLabels()).toHaveText(['Contours on PET']);
-    await segmentationSelect.close();
+    await expectSegmentationLabels(segmentationSelect, ['Contours on PET']);
   });
 
   test('should delete every segmentation until none remain', async ({ rightPanelPageObject }) => {
@@ -212,13 +219,13 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
 
     // Removing from the viewport drops it from the selector; the RTSTRUCT one stays active.
     await expect(segmentationSelect.selectedValue).toHaveText('Contours on PET');
-    await expect(await segmentationSelect.getSegmentationLabels()).toHaveText(['Contours on PET']);
-    await segmentationSelect.close();
+    await expectSegmentationLabels(segmentationSelect, ['Contours on PET']);
   });
 
   // KNOWN BUG: the last remaining segmentation cannot be removed from the viewport
   // ("Remove from Viewport" is a silent no-op once it is the only one left), so the
   // panel keeps its segment row instead of clearing. Skipped until the bug is fixed.
+  // Tracked in https://github.com/OHIF/Viewers/issues/6090
   test.skip('should remove every segmentation from the viewport', async ({
     rightPanelPageObject,
   }) => {
