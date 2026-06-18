@@ -1,4 +1,4 @@
-import { formatHeaderValue, getPracticeName } from './practiceHeaderUtils';
+import { formatHeaderValue, getPracticeName, getStudySummary } from './practiceHeaderUtils';
 
 describe('Practice Header utilities', () => {
   it('prefers Dental Mode practice name from app config', () => {
@@ -14,5 +14,25 @@ describe('Practice Header utilities', () => {
   it('formats missing header values consistently', () => {
     expect(formatHeaderValue(null)).toBe('Not available');
     expect(formatHeaderValue('CT')).toBe('CT');
+  });
+
+  it('reads study summary from active display set metadata', () => {
+    expect(
+      getStudySummary({
+        getActiveDisplaySets: () => [
+          {
+            instances: [
+              {
+                Modality: 'CT',
+                StudyDate: '20140522',
+              },
+            ],
+          },
+        ],
+      })
+    ).toEqual({
+      modality: 'CT',
+      studyDate: '20140522',
+    });
   });
 });

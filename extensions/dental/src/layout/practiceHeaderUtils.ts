@@ -12,3 +12,13 @@ export function getPracticeName(appConfig): string {
 export function formatHeaderValue(value, fallback = 'Not available'): string {
   return value || fallback;
 }
+
+export function getStudySummary(displaySetService) {
+  const displaySet = displaySetService.getActiveDisplaySets?.()?.[0];
+  const instance = displaySet?.instances?.[0] || displaySet?.instance;
+
+  return {
+    studyDate: instance?.StudyDate || displaySet?.StudyDate,
+    modality: instance?.Modality || displaySet?.Modality,
+  };
+}

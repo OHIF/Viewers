@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Button, IconPresentationProvider, Icons, ToolButton } from '@ohif/ui-next';
@@ -11,7 +11,7 @@ import DentalMeasurementsPalette from '../measurements/DentalMeasurementsPalette
 import { DentalMeasurementPresetId } from '../measurements/dentalMeasurementPresets';
 import { ToothNumberingSystem } from '../tooth/toothIdentity';
 import { DentalViewerStateStatus } from '../viewerState/useDentalViewerState';
-import { formatHeaderValue, getPracticeName } from './practiceHeaderUtils';
+import { formatHeaderValue, getPracticeName, getStudySummary } from './practiceHeaderUtils';
 import ToothSelector from './ToothSelector';
 
 const HEADER_CLASS_BY_THEME = {
@@ -70,6 +70,7 @@ function PracticeHeader({
   onSelectMeasurementPreset,
 }: PracticeHeaderProps) {
   const { servicesManager, extensionManager, commandsManager } = useSystem();
+  const { displaySetService } = servicesManager.services;
   const { patientInfo } = usePatientInfo();
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,16 +82,26 @@ function PracticeHeader({
     [stateMessage, stateStatus]
   );
 
-  const studySummary = useMemo(() => {
-    const displaySets = servicesManager.services.displaySetService.getActiveDisplaySets();
-    const displaySet = displaySets?.[0];
-    const instance = displaySet?.instances?.[0] || displaySet?.instance;
+  const [studySummary, setStudySummary] = useState(() => getStudySummary(displaySetService));
+  const refreshStudySummary = useCallback(() => {
+    setStudySummary(getStudySummary(displaySetService));
+  }, [displaySetService]);
 
-    return {
-      studyDate: instance?.StudyDate || displaySet?.StudyDate,
-      modality: instance?.Modality || displaySet?.Modality,
-    };
-  }, [servicesManager]);
+  useEffect(() => {
+    refreshStudySummary();
+    const subscriptions = [
+      displaySetService.subscribe?.(
+        displaySetService.EVENTS.DISPLAY_SETS_ADDED,
+        refreshStudySummary
+      ),
+      displaySetService.subscribe?.(
+        displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+        refreshStudySummary
+      ),
+    ].filter(Boolean);
+
+    return () => subscriptions.forEach(subscription => subscription.unsubscribe());
+  }, [displaySetService, refreshStudySummary]);
 
   const onClickReturnButton = () => {
     const { pathname } = location;
