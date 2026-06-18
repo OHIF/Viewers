@@ -43,6 +43,12 @@ import {
   isVolumeViewportType,
 } from './utils/getLegacyViewportType';
 import {
+  getViewportProperties,
+  getViewportCameraState,
+  setViewportProperties,
+  setViewportCameraState,
+} from './utils/getViewportPresentation';
+import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSelectedSegmentationsForViewportStore,
@@ -929,7 +935,10 @@ function commandsModule({
           volumeId
         );
       } else {
-        viewport.setProperties({
+        // Legacy stack uses setProperties; native (PLANAR_NEXT) stack and volume both
+        // report a non-volume runtime type, so they fall here and the bridge applies the
+        // voiRange via setDisplaySetPresentation on the active binding.
+        setViewportProperties(viewport, {
           voiRange: {
             upper,
             lower,
@@ -1186,13 +1195,13 @@ function commandsModule({
 
       let flipHorizontal: boolean;
       if (newValue === 'toggle') {
-        const { flipHorizontal: currentHorizontalFlip } = viewport.getCamera();
+        const { flipHorizontal: currentHorizontalFlip } = getViewportCameraState(viewport);
         flipHorizontal = !currentHorizontalFlip;
       } else {
         flipHorizontal = newValue;
       }
 
-      viewport.setCamera({ flipHorizontal });
+      setViewportCameraState(viewport, { flipHorizontal });
       viewport.render();
     },
     flipViewportVertical: ({
@@ -1214,12 +1223,12 @@ function commandsModule({
 
       let flipVertical: boolean;
       if (newValue === 'toggle') {
-        const { flipVertical: currentVerticalFlip } = viewport.getCamera();
+        const { flipVertical: currentVerticalFlip } = getViewportCameraState(viewport);
         flipVertical = !currentVerticalFlip;
       } else {
         flipVertical = newValue;
       }
-      viewport.setCamera({ flipVertical });
+      setViewportCameraState(viewport, { flipVertical });
       viewport.render();
     },
     invertViewport: ({ element }) => {
@@ -1237,8 +1246,8 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { invert } = viewport.getProperties();
-      viewport.setProperties({ invert: !invert });
+      const { invert } = getViewportProperties(viewport);
+      setViewportProperties(viewport, { invert: !invert });
       viewport.render();
     },
     resetViewport: () => {
