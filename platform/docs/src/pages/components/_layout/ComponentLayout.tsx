@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
 import { sidebarSections } from './sidebar-config';
 import TableOfContents from './TableOfContents';
 
@@ -76,8 +77,8 @@ export default function ComponentLayout({ title, description, children }: Compon
                       currentPath === item.href + '/';
                     return (
                       <li key={item.href + item.label}>
-                        <a
-                          href={item.href}
+                        <Link
+                          to={item.href}
                           onClick={() => setSidebarOpen(false)}
                           className={`
                             block rounded-md px-2 py-1.5 text-sm no-underline transition-colors
@@ -89,7 +90,7 @@ export default function ComponentLayout({ title, description, children }: Compon
                           `}
                         >
                           {item.label}
-                        </a>
+                        </Link>
                       </li>
                     );
                   })}
