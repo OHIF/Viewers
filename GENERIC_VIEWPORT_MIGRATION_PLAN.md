@@ -25,91 +25,137 @@ should be re-pinned to exact line numbers before any PR cites them.
 
 ---
 
-## Implementation status (as of 2026-06-17)
+## Implementation status (as of 2026-06-19)
 
-This section back-annotates the canonical plan with the state of the prototype on branch
-`ohifohifnextapi` (OHIF) and `cornerstoneohifnextapi` (cornerstone3D, local-only, not pushed).
-It supersedes the separately-authored `.html` status companion where they disagree. Be aware:
-**PARTIAL means PARTIAL** — the native path renders but does not yet persist presentation, and the
-biggest tool blockers (crosshairs writes, cine, 3D VR) are not done.
+This section back-annotates the canonical plan with the state of the prototype at HEAD
+(OHIF `3963b57c5` on branch `ohifohifnextapi`; cornerstone3D `b5ad0d3b3` on branch
+`cornerstoneohifnextapi`, local-only, not pushed). Both working trees are clean — everything
+described as DONE below is committed. It supersedes the separately-authored `.html` status
+companion where they disagree.
+
+Since the original 2026-06-17 freeze, 12 OHIF commits and 10 more cornerstone commits landed
+(18 cornerstone migration commits total since 5.0.8 `2769fcfcb`). The big shifts vs the freeze:
+native presentation **persistence** (pan/zoom/rotation/flip) now lands on mount; **every** viewport
+interaction/appearance command is native-safe and refactored into a Legacy/Next operations backend;
+and the three tool blockers the freeze called "not done" — **crosshairs writes, cine, and 3D VR
+render+interaction** — have ALL landed. What genuinely remains is concentrated in **segmentation
+(the OHIF half of M4), fusion/PMAP/tmtv OHIF integration, the non-planar mount families
+(video/WSI/ECG), M7 cleanup, and test coverage** — plus a handful of newly-found native-unsafe sites
+(see "OHIF-side native-unsafe sites still open" below).
 
 ### Milestone status
 
-- **M0 — Scaffolding & flag + backend seam: PARTIAL.** Done: `appConfig.useNextViewports`
-  (`AppTypes.ts`), `nextViewports.ts` accessor + `init.tsx` wiring (`setNextViewportsEnabled`),
-  `getCornerstoneViewportType` `*_NEXT` mapping (idempotent pass-through, jest test),
-  `CornerstoneCacheService` data-shape fix, and the backend seam itself
-  (`backends/`: `IViewportBackend`, `IViewportServiceInternals`, `LegacyViewportBackend`,
-  `NextViewportBackend`, ref-counted `DataIdRegistry`). Not done: the seam is **delegation, not the
-  full body extraction** the blueprint specified (see backend subsection); native presentation
-  **restore** is skipped on mount; several presentation READ sites are not yet capability-guarded;
-  the dual-CI presentation-snapshot proof was not executed. The whole `backends/` seam +
-  `VIEWPORT_BACKEND_M0_BLUEPRINT.md` are **UNCOMMITTED** working-tree changes (validated both lanes
-  manually).
+- **M0 — Scaffolding & flag + backend seam: DONE.** `appConfig.useNextViewports`, `nextViewports.ts`
+  accessor + `init.tsx` wiring, `getCornerstoneViewportType` `*_NEXT` mapping, `CornerstoneCacheService`
+  data-shape fix, and the full backend seam (`backends/`: `IViewportBackend`,
+  `IViewportServiceInternals`, `LegacyViewportBackend`, `NextViewportBackend`, ref-counted
+  `DataIdRegistry`) are all **committed** (the seam first landed in `6d9e46f74`; the freeze's
+  "UNCOMMITTED" status is stale). Residual M0-ish items are reclassified to M7: the literal §4.3
+  mount-body relocation is still deferred (the backend delegates to unchanged service methods), and the
+  presentation-snapshot CI lane + lint rule were never built.
 - **M1 — Planar stack, read-only: DONE.** Native `PLANAR_NEXT` stack renders end-to-end with zero
   console errors (295-slice CT NECK; scroll + `setImageIdIndex` navigate; cache fills to 295).
-  Includes `getViewportPresentation` read bridge, `CornerstoneCacheService` root-cause fix,
-  `ImageOverlayViewerTool` `getViewReferenceId` guard, mount-time VOI seeding, toolbar evaluator.
-  Caveat: presentation **persistence** (pan/zoom/VOI across nav/resize/HP) is still M5 work.
+  Read bridge, `CornerstoneCacheService` root-cause fix, `ImageOverlayViewerTool` guard, mount-time VOI
+  seeding, toolbar evaluator. Presentation **persistence** (previously deferred to M5) now also lands —
+  see M3.
 - **M2 — Planar volume + MPR: PARTIAL.** Native volume/MPR renders in all 3 orientations
-  (`_setNativeVolumeDisplaySets`); `setViewportOrientation` works on native volumes; round-trip
-  stack→sag→cor→axial→stack is clean. Not done: fusion (2nd base volume as overlay) is best-effort
-  and unvalidated; the `dataId` overlay-suffix scheme (`dataIdFor(uid, role)`) is a stub; volume
-  presentation restore not done.
-- **M3 — Presentation, VOI/colormap, synchronizers: PARTIAL/TODO.** Done on the cornerstone side:
-  VOI + image-slice synchronizers support native; `setDisplaySetPresentation` emits
-  `VOI_MODIFIED`/`COLORMAP_MODIFIED` (CS-1). Read bridging via `getViewportPresentation`. **Not
-  done:** native presentation **restore** (`setPresentations`) is skipped on both mounts, so pan /
-  zoom / VOI / position do not persist across study/grid navigation, resize, or hanging-protocol
-  application — the core M3 "prove" criteria are unmet. Several read sites remain unguarded
-  (`ColorbarService`, `ViewportWindowLevel/utils`, `commandsModule` invert/getViewPresentation,
-  `useViewportRendering`).
-- **M4 — Segmentation (labelmap/contour): PARTIAL.** Cornerstone: contour segmentation +
-  `handleContourSegmentation` render on native (CS-8 contour commit); labelmap-slice rendering
-  pre-existing (CS-13); `setDisplaySets` preserves segmentation overlays on same-source re-set
-  (CS-3). OHIF `_addOverlayRepresentations` path reused. Not done: `SegmentationService.ts:1731`
-  read site not capability-guarded; SEG/RT presentation persistence on native untested; no native
-  SEG/RT spec coverage.
-- **M5 — Crosshairs / reference lines / MPR tools: TODO.** Cornerstone foundations committed: camera
-  reads via `getViewportICamera` bridge, reference lines, camera-position sync, contour render. **Not
-  done:** the gating work — `CrosshairsTool` camera **writes** (22 `getCamera` + 4 `setCamera`) and
-  `ReferenceCursors` (CS-8 writes), and CS-10. No native Playwright coverage exists, so these cannot
-  be honestly gated yet; the running-OHIF loop is the intended gate.
-- **M6 — 3D / video / WSI / ECG: TODO.** `getCornerstoneViewportType` maps `ecg`/`video`/
-  `wholeslide`/`volume3d` to `*_NEXT` under the flag, and the backend interface reserves
-  `setEcg`/`setOther` dispatch, but native mounts are **not implemented** — the ECG/other bodies are
-  unchanged legacy. CS-14 (3D VR / `TrackballRotate`) and CS-20 (ECG/video/WSI dataId ergonomics) are
-  deferred.
-- **M7 — Default-on & cleanup: TODO.** `TODO_BEFORE_MERGE.md` tracks all dev-only reverts. **Not
-  done and must be reverted before merge:** `config/default.js` sets `useNextViewports: true` (flips
-  default for everyone); the in-toolbar legacy/next toggle + `localStorage` override
-  (`ohif-use-next-viewports-override`) are throwaway. No CI grep/lint allowlist rule for flag reads
-  yet; the backend seam is uncommitted; the blueprint validation plan (byte-identical diff gate, dual
-  CI lanes, presentation-snapshot + registry-GC tests) is not executed.
+  (`_setNativeVolumeDisplaySets`); `setViewportOrientation` works; pan/zoom restore on mount
+  (`93e15bd85`); native 3D VR mounts here too (`3963b57c5`). **Not done:** fusion overlay is wired
+  (2nd base volume → `role:'overlay'`, 2D-only) but the role-scoped `dataId` is unsound —
+  `_setNativeVolumeDisplaySets` registers the overlay under the **bare** `displaySetInstanceUID`,
+  `DataIdRegistry.dataIdFor(uid,'overlay')` exists but is an **unused stub**, and
+  `NextViewportOperations.setColormap` **drops** the `displaySetInstanceUID` so a fusion colormap
+  targets the *source* binding, not the overlay. Native fusion is unvalidated.
+- **M3 — Presentation, VOI/colormap, synchronizers: PARTIAL (much further than the freeze).** DONE:
+  pan/zoom/rotation/flip **persistence** via the backend (`ddd4ccc14`/`c51fe4c1d`/`93e15bd85` — closes
+  the freeze's biggest M3 gap); every interaction/appearance command (invert/flip/WL/colormap/reset/
+  scale/rotate/jumpToMeasurement/updateViewport) native-safe and moved into the operations backend
+  (`984e6ac95`); `ColorbarService` and the WL panel guarded. **Not done:** genuine native throws remain
+  at unmigrated sites — `CornerstoneViewportDownloadForm.tsx:127` (`getProperties` on the native
+  source) and tmtv `commandsModule.ts:264/293` (`getCamera().focalPoint` — fix needs
+  `getViewReference().cameraFocalPoint`, NOT a drop-in bridge swap, since `PlanarViewState` has no
+  `focalPoint`); latent guarded-skipped raw reads in `useViewportRendering.tsx:224/584/632`. Persistence
+  is proven only by single-shot manual validation — no committed e2e across study/grid/HP-stage nav,
+  VOI-sync, or anchor-drift cycles.
+- **M4 — Segmentation (labelmap/contour): split — cornerstone DONE, OHIF UNSTARTED.** Cornerstone:
+  contour render on native (`06605d040`), segmentation-preserving `setDisplaySets` (CS-3, `1b13aa55f`),
+  labelmap-slice render (CS-13, pre-existing). **The OHIF half is untouched** (`git log master..HEAD`
+  is empty for `SegmentationService`) and **throws on native**: `addSegmentationRepresentation`
+  dispatches on `isVolumeViewportType` (false for every native `PLANAR_NEXT`, stack AND MPR), routing
+  to `handleStackViewportCase` → `convertStackToVolumeViewport`, which calls `getViewPresentation()`
+  (1731) + `setViewPresentation()`/`setViewReference()` (1738-1739) — all absent on native. Reached
+  from both entry points (`convertStackToVolumeViewport:1655`, `attemptStackToVolumeConversion:1780`)
+  and driven unconditionally on every native mount (`CornerstoneViewportService._addOverlayRepresentations:1557`,
+  rehydrate `:1818`) with no `isGenericViewport` gate. RTSTRUCT (contour) is the one rep that bypasses
+  `convertStackToVolumeViewport` and rides CS-8 — but has zero OHIF native e2e and its post-load
+  `setPositionPresentation` still hardcodes `viewportType:'stack'`. Remedy: move rep selection off
+  `isVolume*` to content guards (`viewportIsInVolumeMode`/`getCurrentMode`), and eliminate/guard
+  `convertStackToVolumeViewport`.
+- **M5 — Crosshairs / reference lines / cine: split — cornerstone DONE, OHIF residue.** Cornerstone
+  crosshairs camera reads+writes (`9e32b3500`), `ReferenceCursors`, and cine (`7d13b013f`) all landed
+  (the freeze had this whole milestone as TODO). **Residual:** crosshairs ROTATE / SLAB-thickness /
+  auto-pan are intentionally gated OFF (no-op) on native — native MPR crosshairs scroll/jump but cannot
+  rotate the oblique plane or set slab; native in-plane measurement re-centering is graceful-degraded
+  (`NextViewportOperations.centerOnMeasurement` returns false — jump positions to slice only); cine
+  **degrades** to slice-scroll on native and 4D dynamic/time-point cine is NOT supported (breaks
+  `preclinical-4d`, whose `playClip._getVolumeFromViewport` returns undefined for a non-`VolumeViewport`);
+  tmtv fusion tool config hand-builds `cornerstoneStreamingImageVolume:${uid}` strings +
+  `filterActorUIDsToSetSlabThickness` that don't resolve to native bindings/roles.
+- **M6 — 3D / video / WSI / ECG: PARTIAL (3D done).** `VOLUME_3D_NEXT` renders natively (renderMode
+  `vtkVolume3d` + `applyPreset`, OHIF `3963b57c5`; cornerstone canvas-visibility `99e043c61`, VR
+  interaction tools `3dbcf5dc7`); all four VR ops work (`setPreset` is new native; quality/opacity/
+  lighting delegate to the `getActors`-based legacy ops, which native `VolumeViewport3D` supports).
+  **video/WSI/ECG NOT mounted natively:** `NextViewportBackend.dispatchMount` routes only by data shape
+  (volume vs stack) and never reaches `_setEcgViewport`/`_setOtherViewport`. Under the flag these
+  families construct as native classes but mis-run `_setStackViewport`'s stack-specific
+  prefetch/VOI/`kind:'planar'` logic (the variadic native `setDisplaySets` ignores the passed
+  `{options}` and forces its own render mode, so render mode is OK — the surrounding stack logic is
+  wrong); `_setEcgViewport` also calls `setEcg`, which the native ECG class lacks. The cornerstone
+  native classes ARE constructable — the gap is purely OHIF mount-dispatch + `dataId` registration
+  (CS-20). Footgun: `isVolume3DViewportType` is false for `VOLUME_3D_NEXT` when cornerstone's
+  `useGenericViewport` is off, so the VR ops are native-safe but the menu to invoke them may be hidden.
+- **M7 — Default-on & cleanup: TODO (unstarted).** `config/default.js` still sets
+  `useNextViewports: true`; the in-toolbar `ToggleNextViewport` button + `nextViewports.ts` localStorage
+  override + `init.tsx resolveNextViewportsEnabled` are all present (`TODO_BEFORE_MERGE.md` untouched
+  since `e164f8c5e`). No lint/grep allowlist rule — AND the "exactly two sanctioned flag reads" premise
+  is itself stale (8 files read the flag; the backend trio reads it legitimately), so the rule must be
+  redefined before it can be written. No dual CI lanes. **Coverage debt blocks honest sign-off** — see
+  the "Coverage debt" note below.
 
 ### M0 backend system (legacyBackend / nextBackend + facade + DataIdRegistry §4.7)
 
-**Status: UNCOMMITTED working-tree changes, validated on both lanes manually.** New `backends/` dir
-plus a modified `CornerstoneViewportService`. It is the scaffolding + dispatch + registry increment
-only — **not** the rich move-only interface §4.3 specified:
+**Status: COMMITTED (both lanes validated manually).** The `backends/` dir + modified
+`CornerstoneViewportService` first landed in `6d9e46f74`; the presentation read/write fork was added in
+`ddd4ccc14`, and a sibling Legacy/Next **operations** backend in `984e6ac95`. The freeze's
+"UNCOMMITTED working-tree changes" status is stale.
 
-- `IViewportBackend` has only **four** members: `dispatchMount`, `registerDataId`,
-  `onViewportDisabled`, `destroy`. The mount **bodies** (`_setStackViewport`,
-  `_setNativeVolumeDisplaySets`, `_setEcgViewport`, `_setOtherViewport`) and the presentation
-  read/write forks **stayed in the service**. Both backends' `dispatchMount` delegate back through a
-  narrow `IViewportServiceInternals` facade. `LegacyViewportBackend.dispatchMount` is a verbatim copy
-  of the old legacy type-dispatch chain (byte-identical off-path guaranteed by *not* moving bodies);
-  `NextViewportBackend.dispatchMount` routes by data shape (`'volume' in firstData`, then delegates
-  to `service._setVolumeViewport` → `_setNativeVolumeDisplaySets`, else `service._setStackViewport`).
+- `IViewportBackend` has grown from 4 to **seven** members: `dispatchMount`, `getPositionPresentation`,
+  `setPositionPresentation`, `setLutPresentation`, `registerDataId`, `onViewportDisabled`, `destroy` —
+  i.e. the presentation read/write fork the freeze said "stayed in the service" was **relocated** into
+  the backends (`ddd4ccc14`; the service now delegates `_getPositionPresentation`/`_setLutPresentation`/
+  `_setPositionPresentation` at `:425/1783/1793`). The mount **bodies** (`_setStackViewport`,
+  `_setNativeVolumeDisplaySets`, `_setEcgViewport`, `_setOtherViewport`) **still live in the service**;
+  `dispatchMount` delegates to them through the `IViewportServiceInternals` facade (explicit deferral
+  comment at `NextViewportBackend.ts:67-70`). A second twin, `IViewportOperations`
+  (`LegacyViewportOperations`/`NextViewportOperations`, dispatched per-viewport by
+  `viewportOperations.ts` on `isGenericViewport`), holds the 13 interaction/appearance command bodies
+  (`984e6ac95`).
+- `LegacyViewportBackend.dispatchMount` is a verbatim copy of the old legacy type-dispatch chain
+  (byte-identical off-path); `NextViewportBackend.dispatchMount` routes **only by data shape**
+  (`'volume' in firstData` → `_setVolumeViewport`/`_setNativeVolumeDisplaySets`, else
+  `_setStackViewport`). NOTE this data-shape-only routing is exactly why video/WSI/ECG never reach their
+  dedicated native mounts (M6).
 - Backend selection is a **lazy first-use getter** (`private get backend()` resolving
-  `isNextViewportsEnabled()` on first access), **not** the constructor read the blueprint and §4.2/
-  §4.3/§6 call "sanctioned read #2" — see Learnings.
-- `DataIdRegistry` (§4.7) shipped as designed: global ref-count map + per-viewport ledger;
-  `provider.add` only on 0→1, `provider.remove` only on 1→0; `releaseViewport` on disable;
-  `destroy()` removes each dataId individually (not `provider.clear()`). `registerDataId` replaced the
-  raw `genericViewportDataSetMetadataProvider.add` at both native mount sites; `disableElement` calls
-  `backend.onViewportDisabled(viewportId)` **before** deleting viewport bookkeeping. The
-  `dataIdFor(uid, role)` overlay-suffix is a stub (M0 uses the bare uid). GC unit tests not written.
+  `isNextViewportsEnabled()` on first access), **not** the constructor read §4.2/§4.3/§6 call
+  "sanctioned read #2" — see Learnings.
+- `DataIdRegistry` (§4.7) shipped as designed and **is committed** (the freeze's later "uncommitted
+  DataIdRegistry" reference is stale): global ref-count map + per-viewport ledger; `provider.add` only
+  on 0→1, `provider.remove` only on 1→0; `releaseViewport` on disable; `destroy()` removes each dataId
+  individually. `registerDataId` replaced the raw provider `.add` at both native mount sites;
+  `disableElement` calls `backend.onViewportDisabled` **before** deleting bookkeeping. This is the
+  OHIF-side answer to CS-18 (cornerstone's provider intentionally stays a dumb add/get/remove/clear
+  store). The `dataIdFor(uid, role)` overlay-suffix is **still an unused stub** (native mounts use the
+  bare uid — the M2 fusion-keying gap). GC unit tests not written.
 
 ### 5 native parity fixes (now COMMITTED in both repos)
 
@@ -133,17 +179,86 @@ Stack: `a3fa6adfa` (`PLANAR_NEXT`, 295 slices, scroll + `setImageIdIndex`). Volu
 ### Cornerstone-side blockers (§5) — actual status
 
 DONE (committed on `cornerstoneohifnextapi`, not pushed): **CS-1** (presentation events
-VOI/COLORMAP_MODIFIED — note this **contradicts** §5/§10 which still list CS-1 as the single biggest
-open blocker), **CS-3** (segmentation-preserving `setDisplaySets`), **CS-5/16/17** (content predicate
-+ guards; `IEnabledElement` union widening deferred), **CS-7** (`getNumberOfSlices`), **CS-11**
-(voi/imageSlice synchronizers), **CS-13** (labelmap-slice, pre-existing), **CS-15** (render-path
-decision), **CS-19** (`forceCPU`). **CS-4/CS-22** are pre-existing in `genericMultiVolumeAPI` (no work
-needed) — also contradicting the .md's treatment of them as work items. PARTIAL: **CS-6** (part 1
-`VOLUME_NEW_IMAGE` done; part 2 `VOLUME_VIEWPORT_NEW_VOLUME` dedup deferred), **CS-8** (reads /
-reference lines / contours / camera-position sync done; crosshairs **writes** + `ReferenceCursors`
-NOT done), **CS-18** (no upstream GC; addressed OHIF-side by the uncommitted `DataIdRegistry`). TODO:
-**CS-9** (cine — `playClip` throws on `PLANAR_NEXT`), **CS-10**, **CS-12** (calibration), **CS-14** (3D
-VR/`TrackballRotate`), **CS-20** (ECG/video/WSI ids), **CS-21** (view-ref resolution).
+VOI/COLORMAP_MODIFIED — §5/§10 are stale where they still call CS-1 "the single biggest blocker"),
+**CS-3** (segmentation-preserving `setDisplaySets`, `1b13aa55f`), **CS-5/16/17** (content predicate +
+guards; `IEnabledElement` **union** widening still deferred — only the guards/types shipped), **CS-7**
+(`getNumberOfSlices`), **CS-8** (reads via the pre-existing `getViewportICamera` bridge + reference
+lines + contours + camera-position sync + crosshairs **writes** + `ReferenceCursors`, all done in
+`9e32b3500`; only ROTATE/SLAB/auto-pan remain gated-off by design), **CS-9** (cine — `7d13b013f`; no
+longer throws, degrades to slice-scroll; 4D dynamic cine still unsupported), **CS-10** (folded into
+CS-8), **CS-11** (voi/imageSlice synchronizers), **CS-13** (labelmap-slice, pre-existing), **CS-14**
+(3D VR render + interaction tools, `99e043c61`/`3dbcf5dc7`), **CS-15** (render-path decision), **CS-19**
+(`forceCPU`), **CS-22** (multi-point opacity TF + threshold on the volume-slice path — pre-existing in
+the 5.0 base PR `aa68c904b`; confirmed, but with NO OHIF native fusion wiring exercising it). NOTE:
+only `setViewportCamera.ts` (`3dbcf5dc7`) is a newly-authored bridge; `getViewportICamera.ts` is
+pre-existing 5.0 infra — the migration *adopts* it across tools, it did not create it.
+
+GENUINELY OPEN (upstream cornerstone): **CS-6 part 2** (`VOLUME_VIEWPORT_NEW_VOLUME` still fires only
+from legacy-compat adapters — `PlanarLegacyCompatibilityController.ts:574`,
+`VolumeViewport3DLegacyAdapter.ts:296` — not native `setDisplaySets`, so per-volume init listeners
+never run on a native volume mount), **CS-12** (no native `calibrateSpacing`;
+`viewportSupportsStackCalibration` false for `PLANAR_NEXT` — OHIF's `CalibrationLineTool` reaches this
+live), **CS-16 union** (deferred), **CS-20** (ECG/video/WSI native mount + dataId ergonomics — classes
+constructable, no OHIF driving path), **CS-21** (view-ref resolution rides entirely on inherited 5.0
+base `planarViewReference.ts`, untouched on the branch; 2D `referencedImageId` + oblique
+`planeRestriction` resolve, but a focal-point-only 3D SCOORD3D yields `shouldReorient=false` so no
+default-orientation fill — SR/RT 3D-ref jump parity unproven).
+
+RE-SCOPED: **CS-18** is DONE at the OHIF layer (ref-counted `DataIdRegistry`, committed `6d9e46f74`),
+intentionally NOT internalized into cornerstone (the provider stays a dumb add/get/remove/clear store);
+it lacks a unit test. Do not list it as flatly TODO.
+
+### OHIF-side native-unsafe sites still open (newly audited 2026-06-19)
+
+Genuine native throws (unguarded, reachable on a native viewport):
+- `CornerstoneViewportDownloadForm.tsx:127` — `viewport.getProperties()` on the native source viewport
+  (the download modal opens unconditionally for the active viewport). File untouched by the migration.
+  (Lines 135/145 are NOT additional throws — 135 is shielded by an `isVolumeViewportType` gate, 145 is
+  unreachable behind the 127 throw.)
+- `SegmentationService` `convertStackToVolumeViewport` — `getViewPresentation:1731` /
+  `setViewPresentation`+`setViewReference:1738-1739` (the M4 OHIF gap; universal across native stack AND
+  MPR, both entry points 1655/1780).
+- tmtv `commandsModule.ts:264/293` — `getCamera().focalPoint` (ROI-threshold start/end slice). Fix must
+  use `getViewReference().cameraFocalPoint` (`PlanarViewState` has no `focalPoint`), not a bridge swap.
+
+Native data-path / string-branch gaps no prior audit captured:
+- `CornerstoneCacheService.invalidateViewportData:84` — tests `viewportData.viewportType ===
+  ViewportType.STACK`, which is `PLANAR_NEXT` (false) for native, so display-set **invalidation**
+  (`OHIFCornerstoneViewport.tsx:252`) silently rebuilds a native stack viewport as **VOLUME** data. The
+  render-path builder (`getViewportData:49`) was guarded via `dataShapeType`; the invalidate path was
+  not. Data-correctness gap (major).
+- `ViewportOrientationMarkers.tsx:49` — `viewportType === 'stack'` branch is dead on native (file
+  untouched while its sibling scrollbar was migrated with a `getCurrentMode()` branch); the synthetic-
+  IOP default-cosine guard is skipped. Markers still render (canvasToWorld math is native-safe); minor.
+- `CalibrationLineTool.ts:75` → `calibrateImageSpacing` → native `viewport.calibrateSpacing()` absent
+  (live OHIF consumer of CS-12). Minor/niche.
+- `isReferenceViewable.ts` native jump-target resolution and HangingProtocol matching-on-viewport-type
+  are both plan-§10 open items still unverified by any native test (likely low risk — both key on the
+  OHIF `viewportType` string, not the cornerstone enum — but unproven).
+
+Latent (guarded-skipped today, footguns): `useViewportRendering.tsx:224/584/632` raw `getAllVolumeIds`/
+`getProperties` behind `isVolumeViewportType` (false for native → silently skipped, so pixel-range /
+colormap-init no-op on native volume); `getVolumeIdForDisplaySet` (`commandsModule.ts:980`) and
+`ViewportWindowLevel.tsx:134` use `viewportSupportsVolumeId` (native passes via `hasVolumeId`) then call
+absent `getAllVolumeIds` — shielded today, fragile. Fusion read twin: `getViewportProperties` defaults
+to `getSourceDataId()` when no dataId is threaded, so an overlay reader without `displaySetInstanceUID`
+reads the source binding (read-side mirror of the `setColormap` overlay-keying bug).
+
+DUAL-FLAG FRAGILITY: every "native skips the legacy branch" guard depends on cornerstone's
+`useGenericViewport` being **off**. If a deployment sets BOTH `appConfig.useNextViewports` and
+cornerstone `rendering.useGenericViewport`, the rendering engine records a legacy `requestedType`,
+`isVolumeViewportType` flips to TRUE for native MPR, and these guards route into legacy branches that
+call absent methods. The intended path is `useNextViewports` alone.
+
+### Coverage debt (gates honest M4/M5/M6/M7 sign-off)
+
+There is effectively **zero automated coverage of the native path**: OHIF has only
+`getCornerstoneViewportType.test.ts` (7 type-mapping cases, `6c1aad1e5`+`ef25b550a`) and cornerstone has
+one jest unit test (`viewportContentMode.jest.js`). No Playwright/e2e mounts a `*_NEXT` viewport or
+exercises presentation persistence, crosshairs, cine, 3D, SEG, or fusion. The cornerstone
+`tests/genericViewport` suite does not cover crosshairs/cine/3D, and the `genericViewportShowcase`
+example (`948281359`) has no driving spec. ALL interaction validation to date is manual-in-browser. The
+dual-CI-lane + presentation-snapshot validation strategy is unbuilt.
 
 ### Learnings & corrections to the original plan
 
@@ -197,6 +312,21 @@ VR/`TrackballRotate`), **CS-20** (ECG/video/WSI ids), **CS-21** (view-ref resolu
 - **TEMP scaffolding the lint/grep rule must whitelist (§4.2).** `nextViewports.ts` override helpers,
   the `getToolbarModule` toggle evaluator, and the `modes/basic` toolbar button are
   remove-before-merge; `TODO_BEFORE_MERGE.md` is the cleanup tracker.
+- **§4.4 deepened — `getLegacyViewportType` cannot distinguish native stack from native MPR.** OHIF's
+  `getCornerstoneViewportType` pre-maps `stack`/`volume`/`orthographic` all to `PLANAR_NEXT` *before*
+  handing the type to cornerstone, so `requestedType` ends up `PLANAR_NEXT` (not STACK/ORTHOGRAPHIC) and
+  `getLegacyViewportType` returns `PLANAR_NEXT` for **both** content shapes. The legacy-type guards
+  therefore conflate "not native-volume" with "not a volume at all" — never use them as a native-content
+  discriminator; use cornerstone's `viewportIsInVolumeMode`/`getCurrentMode` instead.
+- **§4.2 contract already exceeded.** The "exactly two sanctioned flag reads" invariant is violated:
+  8 files in `extensions/cornerstone/src` read `useNextViewports`/`isNextViewportsEnabled` — the 2
+  sanctioned (`getCornerstoneViewportType`, the `CornerstoneViewportService` backend getter) PLUS the
+  backend trio (`NextViewportBackend`/`IViewportBackend`/`LegacyViewportBackend`) PLUS the 3 M7-throwaway
+  scaffolding files. The lint rule §4.2 prescribes must be redefined to whitelist the backend reads
+  before it can be written.
+- **dicom-microscopy WSI is correctly out of scope.** `extensions/dicom-microscopy` uses OpenLayers
+  (`dicom-microscopy-viewer`) and bypasses the cornerstone rendering engine — only the cornerstone WSI
+  path (`WHOLE_SLIDE_NEXT`) is the M6 target.
 
 ---
 
@@ -338,9 +468,12 @@ Add **`appConfig.useNextViewports`** (boolean, default `false`) next to `useGene
   remapped viewports; `useNextViewports` = native methods over native `*_NEXT` viewports).
   Document that `useNextViewports` overrides/ignores `useGenericViewport`.
 
-The flag is read in exactly **two** places: `getCornerstoneViewportType` (type selection) and the
-`CornerstoneViewportService` constructor (backend selection). A lint/grep CI rule should forbid it
-anywhere else so the off-path cannot drift.
+The flag was *intended* to be read in exactly two places (`getCornerstoneViewportType` type selection +
+`CornerstoneViewportService` backend selection). **In the built implementation this contract is already
+exceeded** — the backend trio (`NextViewportBackend`/`IViewportBackend`/`LegacyViewportBackend`) reads
+it legitimately, so 8 files read it in total (incl. the M7-throwaway scaffolding). The lint/grep CI rule
+must be (re)defined to whitelist the sanctioned set including the backend reads before it can be written;
+it cannot be the strict "two reads" rule as originally specified.
 
 ### 4.3 Backend split inside `CornerstoneViewportService`
 
@@ -446,6 +579,12 @@ Consolidated and de-duplicated from the investigation. Severity reflects the **v
 path (OHIF requesting `PLANAR_NEXT` directly, per §2.1). Re-pin all cornerstone `file:line`
 references against the pinned 5.0.x build before opening PRs.
 
+> **STATUS (2026-06-19):** This register is the original analysis; the per-blocker verdict now lives in
+> "Cornerstone-side blockers (§5) — actual status" above. Most blockers below — CS-1, CS-3, CS-7, CS-8,
+> CS-9, CS-10, CS-11, CS-13, CS-14, CS-15, CS-19, CS-22 — are now DONE/committed; only **CS-6 part 2,
+> CS-12, CS-16 union, CS-20, CS-21** remain genuinely open, and **CS-18 is solved OHIF-side**. The
+> "single biggest blocker" / "biggest open blocker" language below predates those landings.
+
 ### Blockers (gate the core planar milestones)
 
 - **CS-1 — `setDisplaySetPresentation` emits no event. [VERIFIED]**
@@ -456,7 +595,9 @@ references against the pinned 5.0.x build before opening PRs.
   or tool-driven presentation change. **Fix:** after `updateDataPresentation`, diff and
   `triggerEvent` `VOI_MODIFIED` (voiRange/invert), `COLORMAP_MODIFIED` (colormap), and a generic
   `VIEWPORT_DATA_PRESENTATION_MODIFIED` carrying the full delta + `displaySetId` (planar bindings
-  are multi). **This is the single biggest blocker.**
+  are multi). **[DONE — `5635bdab4`: `setDisplaySetPresentation` now emits `VOI_MODIFIED`/
+  `COLORMAP_MODIFIED` via `mergeDataPresentation` → `notifyDataPresentationModified`. This was the
+  original "single biggest blocker"; it is closed.]**
 
 - **CS-6 — slice / new-volume events on `PLANAR_NEXT`.** Volume-backed slices emit
   `STACK_NEW_IMAGE`, never `VOLUME_NEW_IMAGE`; `VOLUME_VIEWPORT_NEW_VOLUME` fires only from the
@@ -481,10 +622,11 @@ references against the pinned 5.0.x build before opening PRs.
   `getResolvedView().toICamera()` + `setViewReference`/`setViewState` (the labelmap chain already
   does this). `cameraSyncCallback` should mirror `zoomPanSyncCallback`'s projection fallback.
 
-- **CS-9 — cine `playClip` throws `'Unknown viewport type'` on `PLANAR_NEXT`.**
-  `_createCinePlayContext` only branches `instanceof Stack/Volume/Video`. **Fix:** add a
-  `PLANAR_NEXT` cine context (duck-type `scroll`/`getSliceIndex`/`getNumberOfSlices`; depends on
-  CS-7). Can stay legacy under the flag and ship in the tail.
+- **CS-9 — cine `playClip` threw `'Unknown viewport type'` on `PLANAR_NEXT`. [DONE — `7d13b013f`]**
+  `_createCinePlayContext` only branched `instanceof Stack/Volume/Video`; a `PLANAR_NEXT` cine context
+  (duck-type `scroll`/`getSliceIndex`/`getNumberOfSlices`) was added, so it no longer throws and degrades
+  to slice-scroll. **Residual:** 4D dynamic/time-point cine is still unsupported on native
+  (`_getVolumeFromViewport` returns undefined for a non-`VolumeViewport`) — breaks `preclinical-4d`.
 
 - **CS-10 — Crosshairs/ReferenceLines assume `ORTHOGRAPHIC` volume viewports.** Tool internals
   branch on `instanceof VolumeViewport` / `type === ORTHOGRAPHIC`. **Fix:** detect viewport
@@ -660,10 +802,13 @@ risks.
 - Because the representation is CONTOUR, it **skips** the `convertStackToVolumeViewport` /
   labelmap-slice path entirely (no CS-3/CS-13 exposure) — so it is the **cheapest M4
   representation** and a good first M4 validation case.
-- **Hard dependency: CS-8** — the cornerstone contour render path reads
-  `getCamera().viewPlaneNormal` for in-plane culling; on `PLANAR_NEXT` (no legacy camera) contour
-  visibility breaks. RT is entirely contour-based, so it is **non-functional** on the native path
-  until CS-8 lands. Sequence RT as the leading item of M4, ahead of labelmap (CS-13).
+- **CS-8 dependency: now LANDED (`06605d040`/`9e32b3500`).** The cornerstone contour render path read
+  `getCamera().viewPlaneNormal` for in-plane culling and broke on `PLANAR_NEXT`; it now reads via the
+  `getViewportICamera` bridge, so contour render is no longer cornerstone-blocked. **Residual:** because
+  contour bypasses `convertStackToVolumeViewport` it is the one SEG representation that does NOT hit the
+  M4 OHIF throw — but it has **zero OHIF end-to-end native verification**, and its post-load
+  `setPositionPresentation` still hardcodes `viewportType: 'stack'` (next line). Still the cheapest M4
+  validation case; sequence it ahead of labelmap (CS-13).
 - Minor: the post-load `setPositionPresentation` hardcodes `viewportType: 'stack'` — make it
   dynamic. MPR/volume contour overlay follows M2.
 
@@ -708,7 +853,7 @@ risks.
 
 Each milestone is independently shippable behind the flag; legacy stays default until M7.
 
-- **M0 — Scaffolding & flag (no behavior change when off). [PARTIAL]** Add `useNextViewports`; extract the
+- **M0 — Scaffolding & flag (no behavior change when off). [DONE]** Add `useNextViewports`; extract the
   `legacyBackend` (move-only) / `nextBackend` seam in `CornerstoneViewportService`; build the
   `dataId` wrapper + GC discipline (§4.7); add the dormant `useNextViewports` branch in
   `getCornerstoneViewportType`. **Prove:** full suite green with flag off; add a CI lane that runs
@@ -729,13 +874,13 @@ Each milestone is independently shippable behind the flag; legacy stays default 
   **CS deps (highest concentration):** CS-1 (presentation event), CS-11 (synchronizers). **Prove:**
   W/L drag updates readout + propagates across a VOI sync group; pan/zoom sync stays anchor-aligned
   over 20+ cycles (no drift); presentation persists across study/grid navigation.
-- **M4 — Segmentation (labelmap). [PARTIAL]** Move rep selection off `isVolume*` to capability/content; use
+- **M4 — Segmentation (labelmap). [cornerstone DONE / OHIF UNSTARTED — throws on native]** Move rep selection off `isVolume*` to capability/content; use
   `addLabelmapRepresentationToViewportMap` + `useSliceRendering`; eliminate
   `convertStackToVolumeViewport`. **CS deps:** CS-13, CS-3, CS-6.
-- **M5 — Crosshairs / reference lines / MPR tools. [TODO]** Almost entirely gated on upstream CS-8/CS-10
+- **M5 — Crosshairs / reference lines / MPR tools. [cornerstone DONE / OHIF residue]** Almost entirely gated on upstream CS-8/CS-10
   (+ CS-7 for jumps, CS-9 wiring). **Prove:** crosshairs drag moves the other panes to the correct
   world point; reference lines draw across panes.
-- **M6 — 3D / video / WSI / ECG. [TODO]** `VOLUME_3D_NEXT` (CS-14 VR API; 3D VR commands stay legacy under
+- **M6 — 3D / video / WSI / ECG. [PARTIAL — 3D DONE; video/WSI/ECG mounts unimplemented]** `VOLUME_3D_NEXT` (CS-14 VR API; 3D VR commands stay legacy under
   the flag until the API exists), `VIDEO_NEXT`/`WHOLE_SLIDE_NEXT` (already near-native; pass UID),
   `ECG_NEXT` via `setDisplaySets`.
 - **M7 — Default-on & cleanup. [TODO]** Flip default to `true`; after one release with both CI lanes green,
@@ -785,16 +930,20 @@ never delete a legacy branch before M7.
   non-engine component). The cornerstone WSI path (not the OpenLayers `dicom-microscopy` impl) is
   the `WHOLE_SLIDE_NEXT` target.
 
-**Still open (verify before relying on):**
-- **HangingProtocol matching:** verify no HP *matching rule* keys on viewport type, and that
-  `isReferenceViewable`'s `viewportOptions.viewportType === 'stack'` string branch behaves under the
-  flag.
-- **CS-22 fusion presentation shape:** confirm `setDisplaySetPresentation` accepts a multi-point
-  opacity transfer function for a non-segmentation overlay (gates PMAP + tmtv fusion).
-- **CS-21 view-reference resolution:** confirm `setViewReference({ referencedImageId })`,
-  `planeRestriction`, and null-orientation 3D references resolve on `*_NEXT` (gates SR/RT jump).
-- **PMAP volume precondition:** confirm the referenced series is still mounted as a volume under
-  `useNextViewports` (PMAP throws for stack).
+**Still open (verify before relying on) — status 2026-06-19:**
+- **HangingProtocol matching / `isReferenceViewable`:** still unverified by any native test. Both key on
+  the OHIF `viewportType` string (which `getCornerstoneViewportType` does NOT rewrite — only the
+  cornerstone enum flips), so the branches are *likely* native-safe, but no native jump-target test
+  exists.
+- **CS-22 fusion presentation shape:** CONFIRMED cornerstone-side — `setDisplaySetPresentation` accepts a
+  multi-point opacity TF + threshold on the volume-slice path (pre-existing 5.0 base PR `aa68c904b`).
+  But NO OHIF native fusion/PMAP path exercises it; the rendered fusion result is unproven and the
+  overlay `dataId`/colormap keying is buggy (see M2).
+- **CS-21 view-reference resolution:** 2D `referencedImageId` + oblique `planeRestriction` resolve on the
+  inherited 5.0 base; the residual gap is null-orientation 3D SCOORD3D (no default-orientation fill →
+  SR/RT 3D-ref jump parity unproven on native).
+- **PMAP volume precondition:** still unconfirmed under `useNextViewports` (PMAP throws for stack); the
+  pmap extension has zero native guards.
 
 **Verification debt before cornerstone PRs:** re-pin all cornerstone `file:line` references to the
 pinned 5.0.x build; runtime-validate multi-volume fusion presentation (the API supports per-binding
@@ -805,5 +954,5 @@ per-run and supports pixel-diffing (the parity strategy depends on it).
 **Resolved during this plan [VERIFIED]:** native `PlanarViewport` is built when `PLANAR_NEXT` is
 requested without a legacy `requestedType` (§2.1); `PlanarViewState` carries
 rotation/flip/displayArea/scale/anchor so M3 is not blocked on missing view-state fields (§2.2);
-`setDisplaySetPresentation` emits no event (CS-1); `setViewState` fires `CAMERA_MODIFIED` and
-`resetViewState` fires `CAMERA_RESET`.
+`setDisplaySetPresentation` originally emitted no event (CS-1 — since fixed, `5635bdab4`); `setViewState`
+fires `CAMERA_MODIFIED` and `resetViewState` fires `CAMERA_RESET`.
