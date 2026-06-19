@@ -1795,6 +1795,13 @@ importers:
       url-loader:
         specifier: 4.1.1
         version: 4.1.1(file-loader@6.2.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21))))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
+    devDependencies:
+      '@ohif/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ohif/ui-next':
+        specifier: workspace:*
+        version: link:../ui-next
 
   platform/i18n:
     dependencies:
