@@ -84,6 +84,10 @@
     "typescript": "5.5.4",
     "url-loader": "4.1.1"
   },
+  "devDependencies": {
+    "@ohif/core": "workspace:*",
+    "@ohif/ui-next": "workspace:*"
+  },
   "browserslist": {
     "production": [
       ">0.5%",
