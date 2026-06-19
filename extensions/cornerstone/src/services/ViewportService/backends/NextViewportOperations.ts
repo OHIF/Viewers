@@ -1,10 +1,15 @@
-import { utilities as csUtils, Types as CoreTypes } from '@cornerstonejs/core';
+import {
+  utilities as csUtils,
+  CONSTANTS as csConstants,
+  Types as CoreTypes,
+} from '@cornerstonejs/core';
 import {
   getViewportProperties,
   setViewportProperties,
   getViewportCameraState,
   setViewportCameraState,
 } from '../../../utils/getViewportPresentation';
+import { legacyViewportOperations } from './LegacyViewportOperations';
 import type {
   IViewportOperations,
   FlipValue,
@@ -23,21 +28,6 @@ type NativePlanarViewport = CoreTypes.IViewport & {
   getZoom?: () => number;
   setZoom?: (zoom: number) => void;
 };
-
-// CS-14: native VR has no vtk volume-actor pipeline yet, so the 3D volume-rendering
-// ops cannot run on a native viewport. Warn once per op (these are reached from
-// VR property sliders; a throw could wedge the panel) and no-op. Remove the gate
-// when native VR (CS-14) lands. `grep -rn "CS-14" extensions/cornerstone/src` lists them.
-const warnedVrOps = new Set<string>();
-function warnVrUnsupported(op: string): void {
-  if (warnedVrOps.has(op)) {
-    return;
-  }
-  warnedVrOps.add(op);
-  console.warn(
-    `[viewportOperations] ${op} is not supported on next (PLANAR_NEXT) viewports yet (CS-14); skipping.`
-  );
-}
 
 /**
  * Native ("next") lane of IViewportOperations for direct PLANAR_NEXT viewports.
@@ -131,19 +121,30 @@ export const nextViewportOperations: IViewportOperations = {
     setViewportProperties(viewport, { colormap: params.colormap });
   },
 
-  setPreset(): void {
-    warnVrUnsupported('setPreset'); // CS-14
+  setPreset(viewport: CoreTypes.IViewport, preset: string): void {
+    // The native VolumeViewport3D has no setProperties; apply the volume-rendering
+    // preset (RGBA transfer function) to the volume actor directly.
+    const presetObj = csConstants.VIEWPORT_PRESETS?.find(p => p.name === preset);
+    const actor = (
+      viewport as unknown as { getDefaultActor?: () => { actor?: unknown } | undefined }
+    ).getDefaultActor?.()?.actor;
+    if (presetObj && actor) {
+      csUtils.applyPreset(actor as Parameters<typeof csUtils.applyPreset>[0], presetObj);
+    }
   },
 
-  setVolumeRenderingQuality(): void {
-    warnVrUnsupported('setVolumeRenderingQuality'); // CS-14
+  // VR sample-distance / opacity-points / lighting operate on the vtk volume actor via
+  // getActors, which the native VolumeViewport3D exposes; the work is lane-agnostic, so
+  // reuse the legacy actor-based implementations.
+  setVolumeRenderingQuality(viewport: CoreTypes.IViewport, volumeQuality: number): void {
+    legacyViewportOperations.setVolumeRenderingQuality(viewport, volumeQuality);
   },
 
-  shiftVolumeOpacityPoints(): void {
-    warnVrUnsupported('shiftVolumeOpacityPoints'); // CS-14
+  shiftVolumeOpacityPoints(viewport: CoreTypes.IViewport, shift: number): void {
+    legacyViewportOperations.shiftVolumeOpacityPoints(viewport, shift);
   },
 
-  setVolumeLighting(): void {
-    warnVrUnsupported('setVolumeLighting'); // CS-14
+  setVolumeLighting(viewport: CoreTypes.IViewport, options: VolumeLightingOptions): void {
+    legacyViewportOperations.setVolumeLighting(viewport, options);
   },
 };

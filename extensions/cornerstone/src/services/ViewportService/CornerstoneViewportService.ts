@@ -9,6 +9,7 @@ import {
   cache,
   metaData,
   Enums as csEnums,
+  CONSTANTS as csConstants,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -1430,9 +1431,15 @@ class CornerstoneViewportService
     overlayProcessingResults
   ): Promise<void> {
     const orientation = viewportInfo.getOrientation();
+    // A native VOLUME_3D_NEXT viewport renders the volume as a 3D VTK volume
+    // (renderMode 'vtkVolume3d'), not a reformatted planar slice; its appearance is
+    // driven by a volume-rendering preset, not orientation/role.
+    const is3D =
+      (viewport as { type?: string }).type === csEnums.ViewportType.VOLUME_3D_NEXT;
     const nativeViewport = viewport as unknown as {
       setDisplaySets: (args: unknown) => Promise<void>;
       setDisplaySetPresentation: (dataId: string, props: Record<string, unknown>) => void;
+      getDefaultActor?: () => { actor?: unknown } | undefined;
       render: () => void;
     };
     const displaySetInstanceUIDs: string[] = [];
@@ -1444,7 +1451,8 @@ class CornerstoneViewportService
 
       // Ref-counted registration (§4.7): the MPR triptych shares one dataId across
       // panes, so register() adds to the provider once and release() removes only
-      // when the last pane unmounts.
+      // when the last pane unmounts. (kind is stored but ignored by the volume3d
+      // data provider, which reads imageIds/volumeId.)
       this.backend.registerDataId(viewport.id, dataId, {
         kind: 'planar',
         imageIds,
@@ -1453,10 +1461,12 @@ class CornerstoneViewportService
 
       await nativeViewport.setDisplaySets({
         displaySetId: dataId,
-        options: {
-          orientation,
-          role: index === 0 ? 'source' : 'overlay',
-        },
+        options: is3D
+          ? { renderMode: 'vtkVolume3d' }
+          : {
+              orientation,
+              role: index === 0 ? 'source' : 'overlay',
+            },
       });
 
       const props = volumesProperties[index]?.properties;
@@ -1468,11 +1478,23 @@ class CornerstoneViewportService
         if (props.invert !== undefined) {
           presentationProps.invert = props.invert;
         }
-        if (props.colormap) {
+        // colormap is a planar (LUT) concept; 3D appearance comes from the preset.
+        if (props.colormap && !is3D) {
           presentationProps.colormap = props.colormap;
         }
         if (Object.keys(presentationProps).length > 0) {
           nativeViewport.setDisplaySetPresentation(dataId, presentationProps);
+        }
+      }
+
+      // 3D volume rendering needs an RGBA transfer function (preset) to be visible;
+      // the bare native VolumeViewport3D has no setProperties, so apply the preset to
+      // the volume actor directly (mirrors the legacy adapter's applyPresetToBinding).
+      if (is3D && index === 0 && props?.preset) {
+        const preset = csConstants.VIEWPORT_PRESETS?.find(p => p.name === props.preset);
+        const actor = nativeViewport.getDefaultActor?.()?.actor;
+        if (preset && actor) {
+          csUtils.applyPreset(actor as Parameters<typeof csUtils.applyPreset>[0], preset);
         }
       }
     }
