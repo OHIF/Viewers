@@ -123,13 +123,14 @@ demonstrates a fourth scenario — replacing the viewport overlay layout via `vi
 #### 1. Site-specific window/level presets
 
 Override the CT presets offered in the window-level menu (key: `cornerstone.windowLevelPresets`).
+`$merge` replaces only the `CT` entry, so presets for other modalities (PT, etc.) are kept.
 
 ```js
 // platform/app/public/customizations/ctPresets.js  ->  ?customization=ctPresets
 export default {
   global: {
     'cornerstone.windowLevelPresets': {
-      $set: {
+      $merge: {
         CT: [
           { id: 'ct-soft-tissue', description: 'Soft tissue', window: '400', level: '40' },
           { id: 'ct-lung', description: 'Lung', window: '1500', level: '-600' },
@@ -167,20 +168,50 @@ export default {
 };
 ```
 
-#### 3. Read-only segmentation panel
+#### 3. Add a toolbar button
 
-Disable segment editing for a review/read-only deployment (key: `panelSegmentation.disableEditing`).
+The basic and longitudinal viewers register their toolbar as customizations
+(`cornerstone.toolbarButtons` — the button definitions, and `cornerstone.toolbarSections` — the
+layout that maps each section to a list of button ids). A module can therefore add a button by
+`$push`-ing a definition onto `cornerstone.toolbarButtons` and the button's id onto a section.
+
+The shipped [`smoothRotate.js`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/smoothRotate.js)
+adds a **Smooth Rotate** button to the *More Tools* menu that activates the cornerstone `PlanarRotate`
+tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 
 ```js
-// platform/app/public/customizations/readOnlySeg.js  ->  ?customization=readOnlySeg
+// platform/app/public/customizations/smoothRotate.js  ->  ?customization=smoothRotate
 export default {
   global: {
-    'panelSegmentation.disableEditing': {
-      $set: true,
+    'cornerstone.toolbarButtons': {
+      $push: [
+        {
+          id: 'SmoothRotate',
+          uiType: 'ohif.toolButton',
+          props: {
+            type: 'tool',
+            icon: 'tool-rotate-right',
+            label: 'Smooth Rotate',
+            tooltip: 'Smooth Rotate (drag to rotate the image freely)',
+            commands: {
+              commandName: 'setToolActiveToolbar',
+              commandOptions: { toolName: 'PlanarRotate' },
+            },
+            evaluate: 'evaluate.cornerstoneTool',
+          },
+        },
+      ],
+    },
+    'cornerstone.toolbarSections': {
+      MoreTools: { $push: ['SmoothRotate'] },
     },
   },
 };
 ```
+
+> Because the cornerstone extension registers the default toolbar at the *default* scope and a URL
+> module applies at the *global* scope, the `$push` **extends** the built-in buttons rather than
+> replacing them. The same pattern works for any tool already in the active tool group.
 
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
