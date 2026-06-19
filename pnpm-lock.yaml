@@ -571,6 +571,9 @@ importers:
         specifier: 1.8.11
         version: 1.8.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -752,6 +755,9 @@ importers:
         specifier: 4.38.3
         version: 4.38.3
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -954,6 +960,9 @@ importers:
         specifier: workspace:*
         version: link:../../extensions/dicom-video
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -985,6 +994,9 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1022,6 +1034,9 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1065,6 +1080,9 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
@@ -1240,6 +1258,9 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
     devDependencies:
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       webpack-merge:
         specifier: 5.10.0
         version: 5.10.0
