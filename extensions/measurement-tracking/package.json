@@ -48,6 +48,7 @@
     "xstate": "4.38.3"
   },
   "devDependencies": {
+    "cross-env": "7.0.3",
     "webpack-merge": "5.10.0"
   },
   "keywords": [

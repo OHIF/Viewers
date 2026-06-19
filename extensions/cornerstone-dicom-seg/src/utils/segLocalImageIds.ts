@@ -3,7 +3,19 @@ export function isLocalSchemeImageId(imageId: string): boolean {
 }
 
 export function stripFrameFromImageId(imageId: string): string {
-  return imageId.split('&frame=')[0].split('?frame=')[0];
+  const queryIndex = imageId.indexOf('?');
+  if (queryIndex === -1) {
+    return imageId;
+  }
+
+  const basePath = imageId.slice(0, queryIndex);
+  const rebuiltQuery = imageId
+    .slice(queryIndex + 1)
+    .split('&')
+    .filter(param => param.split('=')[0] !== 'frame')
+    .join('&');
+
+  return rebuiltQuery ? `${basePath}?${rebuiltQuery}` : basePath;
 }
 
 export function appendFrameToImageId(baseImageId: string, frame: number): string {
