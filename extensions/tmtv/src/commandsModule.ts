@@ -10,6 +10,7 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 import { Enums } from '@cornerstonejs/tools';
 import { utils } from '@ohif/core';
+import { getViewportFocalPoint } from '@ohif/extension-cornerstone';
 
 const { SegmentationRepresentations } = Enums;
 const { formatPN } = utils;
@@ -261,7 +262,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
-      const { focalPoint } = viewport.getCamera();
+      // Native ("next") viewports have no getCamera; the slice-center focal point
+      // comes from the view reference. Bridged so both lanes work.
+      const focalPoint = getViewportFocalPoint(viewport);
 
       const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
         ROI_THRESHOLD_MANUAL_TOOL_IDS
@@ -289,8 +292,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
-      // get the current focal point
-      const focalPointToEnd = viewport.getCamera().focalPoint;
+      // get the current focal point (bridged: native viewports use the view reference)
+      const focalPointToEnd = getViewportFocalPoint(viewport);
       annotation.data.endCoordinate = focalPointToEnd;
 
       // IMPORTANT: invalidate the toolData for the cached stat to get updated

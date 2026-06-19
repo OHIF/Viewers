@@ -1,4 +1,4 @@
-import { utilities as csUtils } from '@cornerstonejs/core';
+import { utilities as csUtils, Types as CoreTypes } from '@cornerstonejs/core';
 
 type GenericNextViewport = {
   getSourceDataId?: () => string | undefined;
@@ -107,4 +107,24 @@ export function setViewportCameraState(
   }
 
   (viewport as LegacyViewport).setCamera?.(patch);
+}
+
+/**
+ * Reads the world-space focal point (the current slice center) for both legacy and
+ * Generic ("next") viewports. Legacy viewports expose it via `getCamera().focalPoint`;
+ * direct Generic viewports have no `getCamera`, and their view state carries no
+ * `focalPoint`, so it comes from the view reference (`getViewReference().cameraFocalPoint`).
+ * Returns undefined when neither is available.
+ */
+export function getViewportFocalPoint(viewport: unknown): CoreTypes.Point3 | undefined {
+  if (csUtils.isGenericViewport(viewport)) {
+    const ref = (
+      viewport as unknown as {
+        getViewReference?: () => { cameraFocalPoint?: CoreTypes.Point3 } | undefined;
+      }
+    ).getViewReference?.();
+    return ref?.cameraFocalPoint;
+  }
+
+  return (viewport as LegacyViewport).getCamera?.()?.focalPoint as CoreTypes.Point3 | undefined;
 }

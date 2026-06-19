@@ -36,6 +36,7 @@ import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+import { getViewportFocalPoint } from './utils/getViewportPresentation';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
@@ -280,6 +281,7 @@ export {
   getEnabledElement,
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
+  getViewportFocalPoint,
   dicomLoaderService,
   // Export all stores
   useLutPresentationStore,

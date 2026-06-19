@@ -71,6 +71,9 @@ class CornerstoneCacheService {
     }
 
     viewportData.viewportType = cs3DViewportType;
+    // Persist the legacy stack/volume shape so consumers can distinguish stack from
+    // volume content even when viewportType is a native Generic type (PLANAR_NEXT).
+    viewportData.dataShapeType = dataShapeType;
 
     return viewportData;
   }
@@ -81,7 +84,13 @@ class CornerstoneCacheService {
     dataSource,
     displaySetService
   ): Promise<VolumeViewportData | StackViewportData> {
-    if (viewportData.viewportType === Enums.ViewportType.STACK) {
+    // Decide stack-vs-volume rebuild from the persisted data shape, NOT viewportType:
+    // native viewports collapse both onto PLANAR_NEXT, so a native stack would
+    // otherwise fall through to the volume rebuild and re-mount as volume data.
+    // Falls back to viewportType for legacy/older viewportData (byte-identical off-path).
+    const dataShapeType = viewportData.dataShapeType ?? viewportData.viewportType;
+
+    if (dataShapeType === Enums.ViewportType.STACK) {
       const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
       const imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
 
@@ -93,7 +102,10 @@ class CornerstoneCacheService {
       });
 
       return {
-        viewportType: Enums.ViewportType.STACK,
+        // Preserve the original viewportType (legacy STACK or native PLANAR_NEXT);
+        // the rebuilt data shape, not this field, drives the native re-mount dispatch.
+        viewportType: viewportData.viewportType,
+        dataShapeType: Enums.ViewportType.STACK,
         data: {
           StudyInstanceUID: displaySet.StudyInstanceUID,
           displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
@@ -135,6 +147,7 @@ class CornerstoneCacheService {
       displaySets,
       viewportData.viewportType
     );
+    newViewportData.dataShapeType = dataShapeType;
 
     return newViewportData;
   }

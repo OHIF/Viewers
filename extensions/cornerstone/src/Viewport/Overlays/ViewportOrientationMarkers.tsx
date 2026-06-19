@@ -46,7 +46,10 @@ function ViewportOrientationMarkers({
       return '';
     }
 
-    if (viewportData.viewportType === 'stack') {
+    // Use the persisted data shape, not viewportType: a native stack reports
+    // PLANAR_NEXT, which would skip this synthetic-IOP default-cosine guard.
+    const dataShapeType = viewportData.dataShapeType ?? viewportData.viewportType;
+    if (dataShapeType === Enums.ViewportType.STACK) {
       const imageIndex = imageSliceData.imageIndex;
       const imageId = viewportData.data[0].imageIds?.[imageIndex];
 
