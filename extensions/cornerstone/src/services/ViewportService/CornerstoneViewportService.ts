@@ -880,6 +880,22 @@ class CornerstoneViewportService
       console.error('[CornerstoneViewportService] ECG display set has no imageId');
       return;
     }
+
+    // Native ECG_NEXT has no setEcg; register the waveform under the display set's
+    // dataId and mount it through the generic setDisplaySets API (the native ECG data
+    // provider reads sourceDataId). Ref-counted via the backend registry (§4.7).
+    if (csUtils.isGenericViewport(viewport)) {
+      const dataId = displaySet.displaySetInstanceUID;
+      this.backend.registerDataId(viewport.id, dataId, { kind: 'ecg', sourceDataId: imageId });
+      this.viewportsDisplaySets.set(viewport.id, [dataId]);
+      await (
+        viewport as unknown as {
+          setDisplaySets: (args: { displaySetId: string }) => Promise<void>;
+        }
+      ).setDisplaySets({ displaySetId: dataId });
+      return;
+    }
+
     return viewport.setEcg(imageId);
   }
 
@@ -891,6 +907,40 @@ class CornerstoneViewportService
     _presentations: Presentations = {}
   ): Promise<void> {
     const [displaySet] = viewportData.data;
+
+    // Native VIDEO_NEXT / WHOLE_SLIDE_NEXT: register the family-specific dataId, then
+    // mount through the generic setDisplaySets API. The native video data provider
+    // reads sourceDataId; the WSI provider reads imageIds + a DICOMweb client, which
+    // we resolve from the WADO_WEB_CLIENT metadata exactly as the legacy WSI adapter
+    // does. Ref-counted via the backend registry (§4.7).
+    if (csUtils.isGenericViewport(viewport)) {
+      const dataId = displaySet.displaySetInstanceUID;
+      const imageId = displaySet.imageIds[0];
+      const isWsi =
+        (viewport as { type?: string }).type === csEnums.ViewportType.WHOLE_SLIDE_NEXT;
+      const payload = isWsi
+        ? {
+            kind: 'wsi' as const,
+            imageIds: displaySet.imageIds,
+            options: {
+              webClient: metaData.get(csEnums.MetadataModules.WADO_WEB_CLIENT, imageId),
+            },
+          }
+        : { kind: 'video' as const, sourceDataId: imageId };
+      this.backend.registerDataId(viewport.id, dataId, payload);
+      this.viewportsDisplaySets.set(viewport.id, [dataId]);
+      await (
+        viewport as unknown as {
+          setDisplaySets: (args: { displaySetId: string }) => Promise<void>;
+        }
+      ).setDisplaySets({ displaySetId: dataId });
+      const viewReference = viewportInfo.getViewReference();
+      if (viewReference) {
+        viewport.setViewReference(viewReference);
+      }
+      return;
+    }
+
     // CS3D's "redo viewports" replaced setDataIds with the generic
     // setDisplaySets({ displaySetId }) API; the legacy adapters key off
     // imageIds[0] as the displaySetId, so do the same here.

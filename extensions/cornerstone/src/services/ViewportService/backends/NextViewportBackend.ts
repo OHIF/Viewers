@@ -1,4 +1,4 @@
-import { Types } from '@cornerstonejs/core';
+import { Enums as csEnums, Types } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import type ViewportInfo from '../Viewport';
 import type {
@@ -80,6 +80,32 @@ export class NextViewportBackend implements IViewportBackend {
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
+    // Non-planar native families (video / WSI / ECG) route by viewport TYPE to their
+    // dedicated mounts: the bound data shape cannot distinguish them, and each needs
+    // family-specific dataId registration. Mirrors the legacy backend's type dispatch.
+    const type = (viewport as { type?: string }).type;
+
+    if (type === csEnums.ViewportType.ECG_NEXT) {
+      return this.service._setEcgViewport(
+        viewport as unknown as Types.IECGViewport,
+        viewportData as StackViewportData
+      );
+    }
+
+    if (
+      type === csEnums.ViewportType.VIDEO_NEXT ||
+      type === csEnums.ViewportType.WHOLE_SLIDE_NEXT
+    ) {
+      return this.service._setOtherViewport(
+        viewport as unknown as Types.IStackViewport,
+        viewportData as StackViewportData,
+        viewportInfo,
+        presentations
+      );
+    }
+
+    // Planar stack vs volume content both report PLANAR_NEXT, so infer from the bound
+    // data shape (§4.4): volume data carries a `volume` entry, stack data does not.
     const firstData = (viewportData?.data?.[0] ?? {}) as Record<string, unknown>;
 
     if ('volume' in firstData) {

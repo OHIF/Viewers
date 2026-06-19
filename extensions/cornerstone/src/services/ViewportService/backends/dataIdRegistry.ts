@@ -2,15 +2,17 @@ import { utilities as csUtils } from '@cornerstonejs/core';
 
 /**
  * Payload registered with cornerstone's global GenericViewport dataset metadata
- * provider. Mirrors the shape the native mount paths pass to
- * `genericViewportDataSetMetadataProvider.add`.
+ * provider. The shape is family-specific and mirrors what each native viewport's
+ * data provider reads (see the cornerstone genericViewport examples):
+ *   - planar : imageIds (+ optional volumeId) — stack / volume-slice / MPR / 3D
+ *   - video  : sourceDataId (the video imageId)
+ *   - ecg    : sourceDataId (the waveform imageId)
+ *   - wsi    : imageIds + a DICOMweb webClient used to fetch tiles
  */
-export type DataIdPayload = {
-  kind: 'planar';
-  imageIds: string[];
-  volumeId?: string;
-  initialImageIdIndex?: number;
-};
+export type DataIdPayload =
+  | { kind: 'planar'; imageIds: string[]; volumeId?: string; initialImageIdIndex?: number }
+  | { kind: 'video' | 'ecg'; sourceDataId: string }
+  | { kind: 'wsi'; imageIds: string[]; options: { webClient: unknown } };
 
 /**
  * Owns the lifecycle of OHIF's `dataId` registrations against cornerstone's
