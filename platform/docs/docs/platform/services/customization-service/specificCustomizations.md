@@ -108,6 +108,84 @@ When this module is loaded via `?customization=...`, the loader:
 
 This allows packaging layered customizations (base -> shared -> site-specific) without repeating setup in every module.
 
+### Example modules
+
+A URL-loaded module applies its `global` payload as **global customizations** — the same layer as
+`window.config`'s `customizationService` entries, but loaded at runtime from `?customization=`. Any
+customization key that is read through `customizationService.getCustomization(...)` can therefore be
+set this way. The examples below are complete files; drop one under `platform/app/public/customizations/`
+(the `default` prefix) and load it with `?customization=<fileName>`.
+
+The shipped [`veterinaryOverlay.js`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinaryOverlay.js)
+demonstrates a fourth scenario — replacing the viewport overlay layout via `viewportOverlay.topLeft` /
+`viewportOverlay.topRight`.
+
+#### 1. Site-specific window/level presets
+
+Override the CT presets offered in the window-level menu (key: `cornerstone.windowLevelPresets`).
+
+```js
+// platform/app/public/customizations/ctPresets.js  ->  ?customization=ctPresets
+export default {
+  global: {
+    'cornerstone.windowLevelPresets': {
+      $set: {
+        CT: [
+          { id: 'ct-soft-tissue', description: 'Soft tissue', window: '400', level: '40' },
+          { id: 'ct-lung', description: 'Lung', window: '1500', level: '-600' },
+          { id: 'ct-angio', description: 'Angio', window: '600', level: '300' },
+          { id: 'ct-bone', description: 'Bone', window: '2500', level: '480' },
+        ],
+      },
+    },
+  },
+};
+```
+
+#### 2. Predefined measurement labels
+
+Make the viewer prompt for a label from a fixed list whenever a measurement is created
+(key: `measurementLabels`).
+
+```js
+// platform/app/public/customizations/measurementLabels.js  ->  ?customization=measurementLabels
+export default {
+  global: {
+    measurementLabels: {
+      $set: {
+        labelOnMeasure: true,
+        exclusive: true,
+        items: [
+          { value: 'Head', label: 'Head' },
+          { value: 'Shoulder', label: 'Shoulder' },
+          { value: 'Knee', label: 'Knee' },
+          { value: 'Toe', label: 'Toe' },
+        ],
+      },
+    },
+  },
+};
+```
+
+#### 3. Read-only segmentation panel
+
+Disable segment editing for a review/read-only deployment (key: `panelSegmentation.disableEditing`).
+
+```js
+// platform/app/public/customizations/readOnlySeg.js  ->  ?customization=readOnlySeg
+export default {
+  global: {
+    'panelSegmentation.disableEditing': {
+      $set: true,
+    },
+  },
+};
+```
+
+Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
+commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
+also append to a list or merge into an existing object rather than replacing it wholesale.
+
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 
 Modules referenced from `?customization=` are loaded when the app applies URL customizations from

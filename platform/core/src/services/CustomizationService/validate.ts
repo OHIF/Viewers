@@ -15,6 +15,40 @@ export interface ValidationResult {
 
 const FULL_URL_REGEX = /^([a-z][a-z0-9+.-]*:|\/\/)/i;
 
+/**
+ * Fully percent-decode a customization value so validation runs against the
+ * string the URL parser (used by `import()`) ultimately resolves — not the
+ * escaped form. This is what blocks encoded traversal such as `%2e%2e`
+ * (decodes to `..`) or `%2f` (decodes to `/`): the WHATWG URL parser treats
+ * `%2e%2e` as a `..` path segment and would otherwise let a value escape the
+ * configured prefix directory.
+ *
+ * Returns the stable decoded string, or `null` when the value is malformed
+ * (invalid escape), still contains a literal `%` after decoding, or nests
+ * encoding too deeply to settle. Legitimate customization names are plain
+ * identifiers/paths and never need percent-encoding, so rejecting these is safe.
+ */
+export function fullyDecodeValue(value: string): string | null {
+  let current = value;
+  for (let i = 0; i < 5; i++) {
+    if (!current.includes('%')) {
+      return current;
+    }
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(current);
+    } catch {
+      return null;
+    }
+    if (decoded === current) {
+      // Stable but still contains a literal `%`; treat as unsafe.
+      return null;
+    }
+    current = decoded;
+  }
+  return null;
+}
+
 export function parseCustomizationParams(
   params: URLSearchParams,
   paramKey = 'customization'
@@ -67,16 +101,24 @@ export function validateCustomizationRequests(
   const prefixes = policy.prefixes || {};
 
   for (const raw of raws) {
-    if (raw.includes('..')) {
+    // Validate against the fully decoded value so percent-encoded traversal
+    // (e.g. `%2e%2e`, `%2f`) cannot slip past the checks below and escape the
+    // configured prefix once the URL parser normalizes the import path.
+    const decoded = fullyDecodeValue(raw);
+    if (decoded === null) {
+      result.rejected.push({ raw, reason: 'contains malformed or unsupported percent-encoding' });
+      continue;
+    }
+    if (decoded.includes('..')) {
       result.rejected.push({ raw, reason: 'contains ".." traversal segment' });
       continue;
     }
-    if (FULL_URL_REGEX.test(raw)) {
+    if (FULL_URL_REGEX.test(decoded)) {
       result.rejected.push({ raw, reason: 'full URLs are not permitted' });
       continue;
     }
 
-    const normalized = normalizeCustomizationValue(raw);
+    const normalized = normalizeCustomizationValue(decoded);
     if (!normalized) {
       result.rejected.push({ raw, reason: 'could not be normalized to /prefix/name form' });
       continue;

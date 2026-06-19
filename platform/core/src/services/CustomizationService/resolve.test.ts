@@ -70,4 +70,18 @@ describe('CustomizationService URL resolve', () => {
     const url = resolveCustomizationUrl(req('default', 'veterinary.js'), policy);
     expect(url.endsWith('/customizations/veterinary.js')).toBe(true);
   });
+
+  it('throws when an encoded traversal would escape the base after URL normalization', () => {
+    // `%2e%2e` survives the literal `..` check but the URL parser collapses it to
+    // `..`, which would otherwise escape the prefix directory.
+    expect(() => resolveCustomizationUrl(req('default', '%2e%2e/secret'), policy)).toThrow(
+      /escapes its configured prefix/
+    );
+  });
+
+  it('throws when an encoded traversal escapes an absolute (remote) prefix', () => {
+    expect(() =>
+      resolveCustomizationUrl(req('remote', '%2e%2e/%2e%2e/evil'), policy)
+    ).toThrow(/escapes its configured prefix/);
+  });
 });

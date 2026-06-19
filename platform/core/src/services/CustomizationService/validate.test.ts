@@ -106,5 +106,40 @@ describe('CustomizationService URL validate', () => {
       expect(result.valid).toEqual([]);
       expect(result.rejected[0].reason).toMatch(/unsafe/);
     });
+
+    it('rejects percent-encoded traversal that decodes to ".."', () => {
+      // URLSearchParams decodes one layer, so a double-encoded `..` arrives here
+      // as `%2e%2e`; the WHATWG URL parser would normalize that to `..`.
+      const result = validateCustomizationRequests(
+        ['foo/%2e%2e/%2e%2e/app-config', '/default/%2E%2E/secret'],
+        policy
+      );
+      expect(result.valid).toEqual([]);
+      expect(result.rejected).toHaveLength(2);
+      for (const r of result.rejected) {
+        expect(r.reason).toMatch(/traversal/);
+      }
+    });
+
+    it('rejects percent-encoded slashes that would inject extra path segments', () => {
+      const result = validateCustomizationRequests(['/default/foo%2f..%2fbar'], policy);
+      expect(result.valid).toEqual([]);
+      expect(result.rejected[0].reason).toMatch(/traversal/);
+    });
+
+    it('rejects encoded full URLs', () => {
+      const result = validateCustomizationRequests(['https%3A%2F%2Fevil.example.com/x'], policy);
+      expect(result.valid).toEqual([]);
+      expect(result.rejected[0].reason).toMatch(/full URLs/);
+    });
+
+    it('rejects malformed percent-encoding', () => {
+      const result = validateCustomizationRequests(['/default/foo%zz', '/default/bar%'], policy);
+      expect(result.valid).toEqual([]);
+      expect(result.rejected).toHaveLength(2);
+      for (const r of result.rejected) {
+        expect(r.reason).toMatch(/percent-encoding/);
+      }
+    });
   });
 });
