@@ -25,7 +25,9 @@ and reload. Remove all of:
   `toggleNextViewportsAndReload` import.
 - `extensions/cornerstone/src/getToolbarModule.tsx` — remove the
   `evaluate.cornerstone.nextViewportsToggle` evaluator and the
-  `isNextViewportsEnabled` import.
+  `isNextViewportsEnabled` import. Then also drop `getToolbarModule.tsx` from the
+  allowlist in `.scripts/check-next-viewports-flag-reads.mjs` (it is the one
+  TEMP-only entry there).
 - `modes/basic/src/toolbarButtons.ts` — remove the `ToggleNextViewport` button.
 - `modes/basic/src/index.tsx` — remove `'ToggleNextViewport'` from the primary
   toolbar section.
@@ -33,9 +35,22 @@ and reload. Remove all of:
 Each temporary block is marked with a `TEMP (remove before merge ...)` comment,
 so `git grep "remove before merge"` finds every site.
 
-## 3. Verify
+## 3. Flag-read allowlist guard (permanent — keep)
+
+`yarn next:check-flag-reads` (`.scripts/check-next-viewports-flag-reads.mjs`)
+enforces migration plan §4.2: the `useNextViewports` flag may be read only in the
+sanctioned set — `getCornerstoneViewportType.ts` (type selection),
+`CornerstoneViewportService.ts` (backend selection), `nextViewports.ts` (the
+accessor), `init.tsx` (the one `appConfig.useNextViewports` read that seeds the
+accessor), and — temporarily — `getToolbarModule.tsx` (the dev toggle). Everywhere
+else, branch on cornerstone content/capability predicates or the Legacy/Next
+backend twins. This guard is NOT a dev-only revert; it stays after merge.
+
+## 4. Verify
 After removing the above:
 - `git grep "remove before merge"` returns nothing.
 - `git grep useNextViewports -- platform/app/public/config` returns nothing.
+- `yarn next:check-flag-reads` still passes (with `getToolbarModule.tsx` dropped
+  from its allowlist).
 - The native path is still reachable purely by setting `useNextViewports: true`
   in a deployment config (the feature itself stays).

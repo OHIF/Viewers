@@ -80,6 +80,7 @@
     "link-list": "npm ls --depth=0 --link=true",
     "cs3d:checkout": "cd libs/@cornerstonejs && git fetch && git checkout",
     "cs3d:check": "node .scripts/cs3d-check.mjs",
+    "next:check-flag-reads": "node .scripts/check-next-viewports-flag-reads.mjs",
     "cs3d:build": "cd libs/@cornerstonejs && yarn run build:esm",
     "cs3d:watch": "cd libs/@cornerstonejs && yarn run build:esm:watch",
     "cs3d:install": "cd libs/@cornerstonejs && yarn install",
