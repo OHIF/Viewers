@@ -3,6 +3,8 @@
 > When writing a new OHIF test, find the closest feature area below and read the listed spec in full before writing. Playwright's own guidance says the seed test "serves as an example of all the generated tests" — that applies here.
 >
 > **If a spec listed below has moved or been renamed**, grep `tests/` for a remaining example (e.g. `grep -rn "loadSeriesByModality('RTSTRUCT')" tests/`). The pattern matters more than the exact filename — specs get renamed, the feature area persists.
+>
+> **No close match below?** This list only covers areas with a seed worth copying; don't add a stub for every untested area. See [Feature area not listed above?](#feature-area-not-listed-above-no-existing-seed).
 
 ## Canonical study UIDs
 
@@ -114,20 +116,26 @@ These are the rare specs that use `page.goto(...)` directly instead of `visitStu
 
 Same shape as SEG hydration but load via `loadSeriesByModality('SR')`.
 
-## 16. User preferences / hotkeys / options menu / settings dialog
+## Feature area not listed above? (no existing seed)
 
-**Seed:** none yet — this area isn't covered by an existing spec, so you'll be
-**creating page objects**, not mimicking one. Read [page-objects.md](page-objects.md) →
-"When the control you need isn't covered yet" first.
+Don't add a stub section here for an untested area. When your target isn't listed:
 
-Pattern: open the options menu and the User Preferences dialog (add an options-menu
-accessor to `DOMOverlayPageObject` and a `userPreferences` dialog page object reached
-through it — follow `DicomTagBrowserPageObject`), set the hotkey through a per-field
-accessor, save, then **verify the binding actually works**: trigger the hotkey and
-confirm the real effect on the viewport (e.g. activate Zoom, drag, and screenshot that
-the image zoomed via `locator: viewportPageObject.grid`) — not just that the toolbar
-button shows `data-active`. Add the Zoom button as a getter on `MainToolbarPageObject`.
-Any control without a `data-cy` gets one added to the source component.
+1. **Look for an indirect seed.** Grep `tests/` for the controls or flow you need
+   (`grep -rn "options-menu" tests/`, a related panel/dialog). An adjacent area's seed
+   usually still shows how the harness is driven.
+2. **If genuinely uncovered, you're *creating* page objects.** Read
+   [page-objects.md](page-objects.md) → "When the control you need isn't covered yet", then:
+   - One page object per new control. Dialogs follow `DicomTagBrowserPageObject` (reached
+     through `DOMOverlayPageObject`); toolbar buttons get a getter on `MainToolbarPageObject`.
+   - Add a `data-cy` to any control that lacks one.
+   - **Verify the real effect, not a proxy** — drag and screenshot that the image moved via
+     `locator: viewportPageObject.grid`, not just that a button gained `data-active`.
+
+**Example — user preferences / hotkeys (no seed today):** open the options menu and User
+Preferences dialog (options-menu accessor on `DOMOverlayPageObject` + a `userPreferences`
+dialog page object reached through it), set the hotkey, save, then trigger it and confirm the
+viewport effect (activate Zoom, drag, screenshot the zoom). Add the Zoom button as a getter on
+`MainToolbarPageObject`.
 
 ---
 
