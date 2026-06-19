@@ -19,7 +19,10 @@ function req(prefix: string, name: string): ValidatedCustomization {
 }
 
 describe('CustomizationService URL resolve', () => {
+  let originalLocation: PropertyDescriptor | undefined;
+
   beforeAll(() => {
+    originalLocation = Object.getOwnPropertyDescriptor(window, 'location');
     Object.defineProperty(window, 'location', {
       configurable: true,
       value: {
@@ -27,6 +30,12 @@ describe('CustomizationService URL resolve', () => {
         search: '',
       },
     });
+  });
+
+  afterAll(() => {
+    if (originalLocation) {
+      Object.defineProperty(window, 'location', originalLocation);
+    }
   });
 
   it('resolves /default/<name> against same-origin/base', () => {

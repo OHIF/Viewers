@@ -195,6 +195,10 @@ export default class CustomizationService extends PubSubService {
    * URL for the lifetime of the page in {@link requires}. To pick up a different `?customization=`
    * set, use a full page load or call {@link applyCustomizationUrlSearchParams} /
    * {@link requires} from your own integration code when appropriate.
+   *
+   * **Runtime requirement:** Module loading relies on `window.browserImportFunction` (defined by
+   * the standard OHIF shell's `index.html`). A custom host that embeds OHIF without that global
+   * must provide it, otherwise every URL customization load is rejected and skipped with a warning.
    */
   public async applyWindowUrlCustomizations(overrides?: Partial<LoadOptions>): Promise<void> {
     try {
