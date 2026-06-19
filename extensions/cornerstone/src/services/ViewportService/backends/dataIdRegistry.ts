@@ -35,9 +35,13 @@ export class DataIdRegistry {
   private readonly byViewport = new Map<string, string[]>();
 
   /**
-   * Builds the registration dataId for a display set (optionally scoped to an
-   * overlay role for fusion / labelmap overlays). For M0 only the bare source id
-   * is used; the overlay suffix lands here so call sites do not change later.
+   * Builds the registration dataId for a display set. PT/CT *fusion* overlays are
+   * distinct display sets with their own UIDs, so the bare displaySetInstanceUID is
+   * already collision-free and is used for both source and overlay bindings (the LUT
+   * presentation store keys by the same UID, giving a clean 1:1 dataId mapping). The
+   * `'overlay'` suffix is reserved for the case where a source and an overlay share the
+   * SAME displaySetInstanceUID but need distinct registrations — i.e. derived labelmap
+   * overlays (segmentation / M4), which are not yet on the native path.
    */
   static dataIdFor(displaySetInstanceUID: string, role?: 'overlay'): string {
     return role === 'overlay' ? `${displaySetInstanceUID}::overlay` : displaySetInstanceUID;
