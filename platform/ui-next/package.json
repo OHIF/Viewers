@@ -70,8 +70,5 @@
     "@babel/plugin-transform-private-property-in-object": "7.29.7",
     "cross-env": "7.0.3"
   },
-  "peerDependencies": {
-    "@ohif/core": "workspace:*"
-  },
   "keywords": []
 }

@@ -1954,9 +1954,6 @@ importers:
 
   platform/ui-next:
     dependencies:
-      '@ohif/core':
-        specifier: workspace:*
-        version: link:../core
       '@radix-ui/react-accordion':
         specifier: 1.2.11
         version: 1.2.11(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
