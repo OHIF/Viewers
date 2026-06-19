@@ -40,6 +40,7 @@ import {
   getViewportCameraState,
   setViewportCameraState,
 } from '../../utils/getViewportPresentation';
+import { viewportOperations } from './backends/viewportOperations';
 import {
   getLegacyViewportType,
   isStackViewportType,
@@ -697,11 +698,8 @@ class CornerstoneViewportService
 
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
-      // Native PLANAR_NEXT viewports have no getCamera; the view-plane normal is
-      // exposed on the view reference instead (both backends populate it).
-      const viewPlaneNormal = csUtils.isGenericViewport(viewport)
-        ? (viewport.getViewReference?.() as { viewPlaneNormal?: Types.Point3 })?.viewPlaneNormal
-        : viewport.getCamera().viewPlaneNormal;
+      // Lane-appropriate view-plane normal (legacy getCamera vs native getViewReference).
+      const viewPlaneNormal = viewportOperations.getViewPlaneNormal(viewport);
 
       if (!viewPlaneNormal) {
         continue;
