@@ -98,7 +98,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     expect(importFn).toHaveBeenCalledTimes(3);
   });
 
-  it('logs warnings for rejected entries but still loads valid ones when not strict', async () => {
+  it('logs warnings for rejected entries but still loads valid ones', async () => {
     const importFn = jest.fn(async () => ({
       customizations: { global: {} },
     }));
@@ -113,38 +113,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     expect(warn).toHaveBeenCalled();
   });
 
-  it('throws in strict mode when any path is rejected as invalid', async () => {
-    const importFn = jest.fn(async () => ({
-      customizations: { global: {} },
-    }));
-    const outcome = await service
-      .requires(['A', '/missing/foo'], {
-        policy: { ...policy, strict: true },
-        importFn,
-        logger: { warn: jest.fn(), error: jest.fn() },
-      })
-      .catch(e => e);
-    expect(outcome).toBeInstanceOf(Error);
-    expect((outcome as Error).message).toMatch(/strict mode/);
-    expect(importFn).not.toHaveBeenCalled();
-  });
-
-  it('throws in strict mode when import fails', async () => {
-    const importFn = jest.fn(async () => {
-      throw new Error('404');
-    });
-    const outcome = await service
-      .requires(['A'], {
-        policy: { ...policy, strict: true },
-        importFn,
-        logger: { warn: jest.fn(), error: jest.fn() },
-      })
-      .catch(e => e);
-    expect(outcome).toBeInstanceOf(Error);
-    expect((outcome as Error).message).toMatch(/failed to import/);
-  });
-
-  it('warns and skips when import fails if not strict', async () => {
+  it('warns and skips when import fails', async () => {
     const importFn = jest.fn(async () => {
       throw new Error('404');
     });
@@ -158,17 +127,16 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     expect(warn).toHaveBeenCalled();
   });
 
-  it('throws in strict mode when the module has no customization payload', async () => {
+  it('warns and skips when the module has no customization payload', async () => {
     const importFn = jest.fn(async () => ({}));
-    const outcome = await service
-      .requires(['A'], {
-        policy: { ...policy, strict: true },
-        importFn,
-        logger: { warn: jest.fn(), error: jest.fn() },
-      })
-      .catch(e => e);
-    expect(outcome).toBeInstanceOf(Error);
-    expect((outcome as Error).message).toMatch(/no customizations payload/);
+    const warn = jest.fn();
+    const loaded = await service.requires(['A'], {
+      policy,
+      importFn,
+      logger: { warn, error: jest.fn() },
+    });
+    expect(loaded).toHaveLength(0);
+    expect(warn).toHaveBeenCalled();
   });
 
   it('applyCustomizationUrlSearchParams delegates to requires', async () => {

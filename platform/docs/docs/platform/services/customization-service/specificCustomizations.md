@@ -54,7 +54,6 @@ window.config = {
             default: './customizations/',
             remote: 'https://cdn.example.com/ohif-customizations/',
           },
-          strict: false,
         },
       },
     },
@@ -78,7 +77,7 @@ Loading customization modules from the URL is **dynamic JavaScript import** in t
 
 - **Allowlisted resolution only:** Query values must normalize to `/prefix/name`. The loader rejects values that look like full URLs (with a scheme), rejects path traversal (`..`), rejects unknown `prefix` keys, and rejects unsafe name segments. The final import URL is always built from your configured `ohif.customizationUrl.prefixes` plus a `.js` file under that base—users cannot pass an arbitrary absolute URL as the customization token alone.
 - **Your prefixes define the trust boundary:** If a `prefix` maps to a host or path you do not control, or to a directory where untrusted parties can publish files, `?customization=` becomes a way to pull that code into the app. Prefer HTTPS bases, narrow directories, and static hosting of reviewed modules.
-- **`strict` mode:** With `ohif.customizationUrl.strict: true`, invalid entries, resolve failures, failed imports, or modules without a customization payload cause the load to **fail** instead of being skipped with a warning. That can be appropriate when you want a hard stop rather than a partially applied configuration.
+- **Invalid entries are skipped:** Invalid entries, resolve failures, failed imports, or modules without a customization payload are skipped with a warning rather than aborting the load, so a single bad entry never blocks the rest of the configuration.
 - **`requires` chains:** Dependencies declared in a loaded module are resolved with the **same** policy and validation. A trusted root module can still pull in further modules from the same prefix allowlist—review entire chains you ship.
 - **Links and social engineering:** Anyone can share a URL that includes `?customization=...`. Recipients’ browsers will attempt to load the corresponding modules if they pass validation. Combine with normal defenses (user education, authenticated portals, enterprise policies) as you would for any deep link that changes application behavior.
 

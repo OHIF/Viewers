@@ -231,9 +231,8 @@ export default class CustomizationService extends PubSubService {
    * references are loaded before dependents. Already-loaded modules (same normalized key) are
    * skipped for the rest of the page session; they are not unloaded when the address bar changes.
    *
-   * When `policy.strict` is true, invalid query entries, resolve failures, failed
-   * imports, or modules without a customization payload reject the returned promise.
-   * When not strict, those cases are warned and skipped.
+   * Invalid query entries, resolve failures, failed imports, and modules without a
+   * customization payload are warned and skipped.
    */
   public requires(
     names: string | string[],
@@ -251,11 +250,6 @@ export default class CustomizationService extends PubSubService {
     const logger = overrides?.logger || console;
     for (const r of rejected) {
       logger.warn(`[customizationUrl] rejecting customization "${r.raw}": ${r.reason}`);
-    }
-    if (policy.strict && rejected.length > 0) {
-      return Promise.reject(
-        new Error(`[customizationUrl] strict mode: ${rejected.length} invalid entries`)
-      );
     }
     if (!valid.length) {
       return Promise.resolve([]);
@@ -350,8 +344,8 @@ export default class CustomizationService extends PubSubService {
   ): ValidatedCustomization | null {
     // `requires` entries are module names to load; each is validated/resolved like any
     // other URL customization request. Entries that don't resolve to a valid module
-    // (e.g. a bare customization-key reference) are rejected by validation and skipped,
-    // or throw in strict mode — there is no namespace carve-out.
+    // (e.g. a bare customization-key reference) are rejected by validation and
+    // skipped — there is no namespace carve-out.
     const result = validateCustomizationRequests([name], policy);
     if (result.valid.length) {
       return result.valid[0];
@@ -412,19 +406,12 @@ export default class CustomizationService extends PubSubService {
       url = resolveCustomizationUrl(request, policy);
     } catch (err) {
       const msg = `[customizationUrl] failed to resolve "${request.raw}": ${(err as Error).message}`;
-      if (policy.strict) {
-        return Promise.reject(new Error(msg));
-      }
       logger.warn(msg);
       return Promise.resolve(null);
     }
 
     return importFn(url)
       .catch(err => {
-        const msg = `[customizationUrl] failed to import customization "${request.raw}" (${url}): ${(err as Error)?.message ?? String(err)}`;
-        if (policy.strict) {
-          throw new Error(msg);
-        }
         logger.warn(
           `[customizationUrl] failed to import customization "${request.raw}" (${url})`,
           err
@@ -439,17 +426,11 @@ export default class CustomizationService extends PubSubService {
         const module = this._normalizeImportedCustomizationModule(imported);
         if (!module || typeof module !== 'object') {
           const msg = `[customizationUrl] missing customization module "${request.raw}" (${url}): module is not an object`;
-          if (policy.strict) {
-            throw new Error(msg);
-          }
           logger.warn(msg);
           return null;
         }
         if (!getUrlCustomizationModulePayload(module)) {
           const msg = `[customizationUrl] missing customization module "${request.raw}" (${url}): no customizations payload`;
-          if (policy.strict) {
-            throw new Error(msg);
-          }
           logger.warn(msg);
           return null;
         }
