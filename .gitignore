@@ -61,8 +61,6 @@ tests/playwright-report/
 /blob-report/
 /playwright/.cache/
 
-**/.claude/settings.local.json
-
 # cornerstone3D local linking
 libs/
 
