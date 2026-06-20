@@ -28,7 +28,6 @@ const {
   },
 } = adaptersRT;
 
-
 const commandsModule = ({
   servicesManager,
   extensionManager,
@@ -91,46 +90,63 @@ const commandsModule = ({
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
       const predecessorImageId = options.predecessorImageId ?? segmentation.predecessorImageId;
 
-      const { imageIds } = segmentation.representationData.Labelmap;
+      const labelmapData = segmentation.representationData.Labelmap;
 
-      const segImages = imageIds.map(imageId => cache.getImage(imageId));
-      const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
+      // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
+      // derived labelmap image ids. When `referencedImageIds` is supplied (the
+      // multi-layer/overlap path) each frame is indexed by its source slice so the
+      // layers align to the same frames; otherwise frames are sequential (the legacy
+      // single-layer behavior, kept byte-identical).
+      const buildLabelmap3D = (segImageIds: string[], metadata, referencedImageIds?: string[]) => {
+        const segImages = segImageIds.map(imageId => cache.getImage(imageId));
+        const labelmaps2D = [];
 
-      const labelmaps2D = [];
+        let z = 0;
 
-      let z = 0;
+        for (const segImage of segImages) {
+          const segmentsOnLabelmap = new Set();
+          const pixelData = segImage.getPixelData();
+          const { rows, columns } = segImage;
 
-      for (const segImage of segImages) {
-        const segmentsOnLabelmap = new Set();
-        const pixelData = segImage.getPixelData();
-        const { rows, columns } = segImage;
-
-        // Use a single pass through the pixel data
-        for (let i = 0; i < pixelData.length; i++) {
-          const segment = pixelData[i];
-          if (segment !== 0) {
-            segmentsOnLabelmap.add(segment);
+          // Use a single pass through the pixel data
+          for (let i = 0; i < pixelData.length; i++) {
+            const segment = pixelData[i];
+            if (segment !== 0) {
+              segmentsOnLabelmap.add(segment);
+            }
           }
+
+          const frameIndex = referencedImageIds
+            ? referencedImageIds.indexOf(segImage.referencedImageId)
+            : z++;
+
+          if (frameIndex < 0) {
+            continue;
+          }
+
+          labelmaps2D[frameIndex] = {
+            segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
+            pixelData,
+            rows,
+            columns,
+          };
         }
 
-        labelmaps2D[z++] = {
-          segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
-          pixelData,
-          rows,
-          columns,
+        const allSegmentsOnLabelmap = labelmaps2D
+          .filter(Boolean)
+          .map(labelmap => labelmap.segmentsOnLabelmap);
+
+        return {
+          segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+          metadata,
+          labelmaps2D,
         };
-      }
-
-      const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
-
-      const labelmap3D = {
-        segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
-        metadata: [],
-        labelmaps2D,
       };
 
+      // Segment metadata (shared across all layers).
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       const representations = segmentationService.getRepresentationsForSegmentation(segmentationId);
+      const metadata = [];
 
       Object.entries(segmentationInOHIF.segments).forEach(([segmentIndex, segment]) => {
         // segmentation service already has a color for each segment
@@ -151,7 +167,7 @@ const commandsModule = ({
           color.slice(0, 3).map(value => value / 255)
         ).map(value => Math.round(value));
 
-        const segmentMetadata = {
+        metadata[segmentIndex] = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
           SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
@@ -168,10 +184,34 @@ const commandsModule = ({
             CodeMeaning: 'Tissue',
           },
         };
-        labelmap3D.metadata[segmentIndex] = segmentMetadata;
       });
 
-      const generatedSegmentation = generateSegmentation(referencedImages, labelmap3D, metaData, {
+      // Multi-layer (overlapping) SEGs register one labelmap layer per conflict-free
+      // group. Export each layer as its own labelmap3D against the UNIQUE referenced
+      // source series, so cornerstone writes overlapping segments as separate frames
+      // that reference the same source slice (the DICOM SEG overlap encoding). The
+      // cs3D adapter's fillSegmentation accepts an array of labelmap3D for exactly
+      // this. Single-layer SEGs keep the original single-labelmap3D path unchanged.
+      const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
+
+      let referencedImages;
+      let labelmaps3D;
+
+      if (layers && layers.length > 1) {
+        const referencedImageIds =
+          layers[0].referencedImageIds ?? labelmapData.referencedImageIds ?? [];
+        referencedImages = referencedImageIds.map(imageId => cache.getImage(imageId));
+        labelmaps3D = layers.map(layer =>
+          buildLabelmap3D(layer.imageIds ?? [], metadata, referencedImageIds)
+        );
+      } else {
+        const { imageIds } = labelmapData;
+        const segImages = imageIds.map(imageId => cache.getImage(imageId));
+        referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
+        labelmaps3D = buildLabelmap3D(imageIds, metadata);
+      }
+
+      const generatedSegmentation = generateSegmentation(referencedImages, labelmaps3D, metaData, {
         predecessorImageId,
         ...options,
       });
@@ -240,9 +280,7 @@ const commandsModule = ({
       }
 
       const defaultFileName =
-        modality === 'RTSTRUCT'
-          ? `rtss-${segmentationId}.dcm`
-          : `${label || 'segmentation'}.dcm`;
+        modality === 'RTSTRUCT' ? `rtss-${segmentationId}.dcm` : `${label || 'segmentation'}.dcm`;
 
       const storeFn = commandsManager.runCommand('createStoreFunction', {
         dataSource: dataSourceName,

@@ -5,7 +5,13 @@ function preserve(query, current, key) {
   }
 }
 
-export const preserveKeys = ['configUrl', 'multimonitor', 'screenNumber', 'hangingProtocolId'];
+export const preserveKeys = [
+  'configUrl',
+  'multimonitor',
+  'screenNumber',
+  'hangingProtocolId',
+  'debug',
+];
 
 export function preserveQueryParameters(
   query,

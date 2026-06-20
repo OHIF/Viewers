@@ -1091,12 +1091,18 @@ class CornerstoneViewportService
 
       // Restore persisted pan/zoom/rotation/flip (+ view reference) on top of the
       // HP-derived defaults applied above, so a returning display set recovers its
-      // camera presentation. Position-only: the LUT was already applied inline above,
-      // and setPresentations is now native-safe via the backend (setViewReference +
-      // setViewState, no legacy setProperties/setViewPresentation).
-      if (presentations?.positionPresentation) {
+      // camera presentation. The LUT was already applied inline above, so restore
+      // position + segmentation only. Replaying segmentationPresentation re-adds
+      // hydrated representations (RTSS contour / SEG labelmap) on this native re-mount;
+      // without it a hydrated overlay silently disappears (the contour-vanishes-on-
+      // hydrate bug), because the overlay display set is no longer in the viewport's
+      // display-set list after hydration. Native-safe: position via setViewReference/
+      // setViewState, and the replayed addSegmentationRepresentation routes through the
+      // native segmentation backend (no convertStackToVolumeViewport / getViewPresentation).
+      if (presentations?.positionPresentation || presentations?.segmentationPresentation) {
         this.setPresentations(viewport.id, {
           positionPresentation: presentations.positionPresentation,
+          segmentationPresentation: presentations.segmentationPresentation,
         });
       }
 
@@ -1333,11 +1339,14 @@ class CornerstoneViewportService
         overlayProcessingResults
       );
       // Restore persisted pan/zoom/rotation/flip (+ view reference) so a returning
-      // MPR/volume pane recovers its camera. Position-only and native-safe via the
-      // backend (setViewReference + setViewState); LUT was applied per-binding above.
-      if (presentations?.positionPresentation) {
+      // MPR/volume pane recovers its camera; LUT was applied per-binding above. Also
+      // replay segmentationPresentation so hydrated overlays (SEG labelmap / RTSS
+      // contour) reappear on this native re-mount instead of vanishing. Native-safe:
+      // position via setViewReference/setViewState, segmentation via the native backend.
+      if (presentations?.positionPresentation || presentations?.segmentationPresentation) {
         this.setPresentations(viewport.id, {
           positionPresentation: presentations.positionPresentation,
+          segmentationPresentation: presentations.segmentationPresentation,
         });
       }
       this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, { viewportInfo });

@@ -12,6 +12,10 @@ import path from 'node:path';
  * Sanctioned readers (keep this list and the plan §4.2 in sync):
  *   - utils/getCornerstoneViewportType.ts  — sanctioned read #1 (viewport type selection)
  *   - services/ViewportService/CornerstoneViewportService.ts — sanctioned read #2 (backend selection)
+ *   - services/SegmentationService/SegmentationService.ts — sanctioned read #3 (the one viewport-less
+ *                                             seg-backend dispatch: a DICOM SEG's single- vs multi-layer
+ *                                             overlap data shape is fixed at load, before any target
+ *                                             viewport exists, so it cannot use a capability predicate)
  *   - utils/nextViewports.ts                — the accessor module itself (defines get/set)
  *   - init.tsx                              — the single setup site that reads appConfig.useNextViewports
  *                                             to seed the accessor
@@ -30,6 +34,7 @@ const SRC_DIR = path.resolve(process.cwd(), 'extensions', 'cornerstone', 'src');
 const ALLOWLIST = new Set([
   'utils/getCornerstoneViewportType.ts',
   'services/ViewportService/CornerstoneViewportService.ts',
+  'services/SegmentationService/SegmentationService.ts',
   'utils/nextViewports.ts',
   'init.tsx',
   // TEMP — remove together with the dev toggle button (TODO_BEFORE_MERGE.md):
