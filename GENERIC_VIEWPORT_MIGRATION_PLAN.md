@@ -188,7 +188,11 @@ lines + contours + camera-position sync + crosshairs **writes** + `ReferenceCurs
 longer throws, degrades to slice-scroll; 4D dynamic cine still unsupported), **CS-10** (folded into
 CS-8), **CS-11** (voi/imageSlice synchronizers), **CS-13** (labelmap-slice, pre-existing), **CS-14**
 (3D VR render + interaction tools, `99e043c61`/`3dbcf5dc7`), **CS-15** (render-path decision), **CS-19**
-(`forceCPU`), **CS-22** (multi-point opacity TF + threshold on the volume-slice path — pre-existing in
+(`forceCPU`), **CS-12** (native `PlanarViewport.calibrateSpacing` + user-calibration merge in
+`buildPlanarImageData`, `d299fb659`; `viewportSupportsStackCalibration` is now true so
+`calibrateImageSpacing` routes to native, and `getImageData().calibration` reflects the
+`calibratedPixelSpacing` so CalibrationLine rescales native length measurements — validated live),
+**CS-22** (multi-point opacity TF + threshold on the volume-slice path — pre-existing in
 the 5.0 base PR `aa68c904b`; confirmed, but with NO OHIF native fusion wiring exercising it). NOTE:
 only `setViewportCamera.ts` (`3dbcf5dc7`) is a newly-authored bridge; `getViewportICamera.ts` is
 pre-existing 5.0 infra — the migration *adopts* it across tools, it did not create it.
@@ -196,10 +200,11 @@ pre-existing 5.0 infra — the migration *adopts* it across tools, it did not cr
 GENUINELY OPEN (upstream cornerstone): **CS-6 part 2** (`VOLUME_VIEWPORT_NEW_VOLUME` still fires only
 from legacy-compat adapters — `PlanarLegacyCompatibilityController.ts:574`,
 `VolumeViewport3DLegacyAdapter.ts:296` — not native `setDisplaySets`, so per-volume init listeners
-never run on a native volume mount), **CS-12** (no native `calibrateSpacing`;
-`viewportSupportsStackCalibration` false for `PLANAR_NEXT` — OHIF's `CalibrationLineTool` reaches this
-live), **CS-16 union** (deferred), **CS-20** (ECG/video/WSI native mount + dataId ergonomics — classes
-constructable, no OHIF driving path), **CS-21** (view-ref resolution rides entirely on inherited 5.0
+never run on a native volume mount), **CS-16 union** (deferred), **CS-20** (cornerstone ECG/video/WSI
+load *ergonomics* only — the native classes accept just a pre-registered dataId; OHIF now drives those
+mounts itself by registering `{kind,sourceDataId}` / `{kind:'wsi',imageIds,webClient}` (`ca746e2f0`),
+so no cornerstone change is required for OHIF — the ergonomic helper is a nice-to-have), **CS-21**
+(view-ref resolution rides entirely on inherited 5.0
 base `planarViewReference.ts`, untouched on the branch; 2D `referencedImageId` + oblique
 `planeRestriction` resolve, but a focal-point-only 3D SCOORD3D yields `shouldReorient=false` so no
 default-orientation fill — SR/RT 3D-ref jump parity unproven).
@@ -230,8 +235,9 @@ Native data-path / string-branch gaps no prior audit captured:
 - `ViewportOrientationMarkers.tsx:49` — `viewportType === 'stack'` branch is dead on native (file
   untouched while its sibling scrollbar was migrated with a `getCurrentMode()` branch); the synthetic-
   IOP default-cosine guard is skipped. Markers still render (canvasToWorld math is native-safe); minor.
-- `CalibrationLineTool.ts:75` → `calibrateImageSpacing` → native `viewport.calibrateSpacing()` absent
-  (live OHIF consumer of CS-12). Minor/niche.
+- `CalibrationLineTool.ts:75` → `calibrateImageSpacing` → native `viewport.calibrateSpacing()` —
+  RESOLVED by CS-12 (`d299fb659`): native `PlanarViewport.calibrateSpacing` now exists and the user
+  calibration is merged into `getImageData().calibration`. No OHIF change was needed.
 - `isReferenceViewable.ts` native jump-target resolution and HangingProtocol matching-on-viewport-type
   are both plan-§10 open items still unverified by any native test (likely low risk — both key on the
   OHIF `viewportType` string, not the cornerstone enum — but unproven).
@@ -581,8 +587,9 @@ references against the pinned 5.0.x build before opening PRs.
 
 > **STATUS (2026-06-19):** This register is the original analysis; the per-blocker verdict now lives in
 > "Cornerstone-side blockers (§5) — actual status" above. Most blockers below — CS-1, CS-3, CS-7, CS-8,
-> CS-9, CS-10, CS-11, CS-13, CS-14, CS-15, CS-19, CS-22 — are now DONE/committed; only **CS-6 part 2,
-> CS-12, CS-16 union, CS-20, CS-21** remain genuinely open, and **CS-18 is solved OHIF-side**. The
+> CS-9, CS-10, CS-11, CS-12, CS-13, CS-14, CS-15, CS-19, CS-22 — are now DONE/committed; only **CS-6
+> part 2, CS-16 union, CS-21** remain genuinely open (CS-20 is an optional cornerstone ergonomic; OHIF
+> drives ECG/video/WSI itself), and **CS-18 is solved OHIF-side**. The
 > "single biggest blocker" / "biggest open blocker" language below predates those landings.
 
 ### Blockers (gate the core planar milestones)
@@ -681,9 +688,12 @@ references against the pinned 5.0.x build before opening PRs.
   need null-checks OHIF-side. Ship a single `isGenericViewport(vp)` narrowing guard +
   content-capability utilities so OHIF replaces the `getLegacyViewportType` shim with capability
   branching.
-- **CS-12 — native spacing calibration.** `viewportSupportsStackCalibration` returns false for
-  native `PLANAR_NEXT` (`calibrateSpacing` is adapter-only); expose a native calibration entry
-  point. Non-core; can lag.
+- **CS-12 — native spacing calibration. [DONE — `d299fb659`]** `viewportSupportsStackCalibration`
+  returned false for native `PLANAR_NEXT` (`calibrateSpacing` was adapter-only). Added native
+  `PlanarViewport.calibrateSpacing(imageId)` (re-render + `IMAGE_SPACING_CALIBRATED` event) and merged
+  the user `calibratedPixelSpacing` into `buildPlanarImageData`'s `getImageData().calibration` (mirrors
+  legacy `{ ...csImage.calibration, ...this.calibration }`). `calibrateImageSpacing` now routes to
+  native; length tools rescale. Validated live.
 - **CS-21 — view-reference resolution on `*_NEXT` (SR/RT navigation).** SR and RTSTRUCT
   jump-to-measurement hand `setViewReference` a reference that may carry **only**
   `{ referencedImageId }` (2D SCOORD), a `planeRestriction` (oblique), or a 3D SCOORD3D reference
