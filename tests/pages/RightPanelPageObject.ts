@@ -73,6 +73,26 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Duplicate').click();
       },
+      openChangeColor: async () => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+      },
+      changeColor: async (hex: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+        await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndSave(hex);
+      },
+      // This function assumes the user opens the change color dialog,
+      // but then cancels out of it instead of saving a new color.
+      cancelChangeColor: async (hex?: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+        if (hex) {
+          await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndCancel(hex);
+        } else {
+          await this.DOMOverlayPageObject.dialog.colorPicker.cancel();
+        }
+      },
     };
   }
 
@@ -85,6 +105,9 @@ export class RightPanelPageObject {
       },
       get title() {
         return row.getByTestId('data-row-title');
+      },
+      get rowDataColorHex() {
+        return row.getByTestId('data-row-colorhex');
       },
       click: async () => {
         await row.getByTestId('data-row-title').click();
