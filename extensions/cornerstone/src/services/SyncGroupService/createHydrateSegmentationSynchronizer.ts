@@ -88,19 +88,17 @@ const segmentationRepresentationModifiedCallback = async (
     return;
   }
 
-  // Ensure the segmentation representation aligns with the target viewport type.
+  // Ensure the segmentation representation aligns with the target viewport type
   const is3D = isVolume3DViewportType(viewport);
   const requestedRepresentation =
     segmentationRepresentationType as Enums.SegmentationRepresentations;
-  const { Surface, Contour, Labelmap } = Enums.SegmentationRepresentations;
+  const { Surface, Labelmap } = Enums.SegmentationRepresentations;
 
   const type: Enums.SegmentationRepresentations = is3D
     ? Surface
-    : requestedRepresentation === Contour
-      ? Contour
-      : requestedRepresentation && requestedRepresentation !== Surface
-        ? requestedRepresentation
-        : Labelmap;
+    : requestedRepresentation && requestedRepresentation !== Surface
+      ? requestedRepresentation
+      : Labelmap;
 
   await segmentationService.addSegmentationRepresentation(targetViewportId, {
     segmentationId,
