@@ -56,8 +56,6 @@ const defineValues = {
   'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
   'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
   'process.env.TEST_ENV': JSON.stringify(process.env.TEST_ENV || ''),
-  /* SMART on FHIR */
-  'process.env.SMART_CLIENT_ID': JSON.stringify(process.env.SMART_CLIENT_ID || ''),
 };
 
 // Only redefine updated values.  This avoids warning messages in the logs
