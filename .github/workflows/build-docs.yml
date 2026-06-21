@@ -36,13 +36,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        # Use --no-frozen-lockfile to match every CircleCI job. The release flow
-        # (publish-version.mjs) rewrites @ohif/* workspace deps from "workspace:*"
-        # to the concrete version and commits that bump to master, which leaves
-        # pnpm-lock.yaml out of sync with the manifests. pnpm-workspace.yaml sets
-        # frozenLockfile:true, so a master-triggered install must opt out or it
-        # fails with ERR_PNPM_OUTDATED_LOCKFILE.
-        run: pnpm install --no-frozen-lockfile
+        # Internal @ohif/* deps are workspace:* in the committed manifests and the
+        # lockfile records them as links, so pnpm-lock.yaml stays in sync across
+        # version bumps and a frozen install passes. Frozen is the right choice
+        # for a deploy job: it fails fast if a PR ever changed a real dependency
+        # without committing the lockfile update, instead of silently reconciling.
+        # (Exact versions appear only in published tarballs, where pnpm publish
+        # rewrites workspace:* at pack time -- not publish-version.mjs.)
+        run: pnpm install --frozen-lockfile
 
       # Removed Playwright tests and coverage generation steps
 
@@ -111,9 +112,13 @@ jobs:
         run: pnpm --filter ohif-docs run build
 
       - name: Deploy to Netlify
-        run: |
-          cd platform/docs
-          npx netlify-cli deploy --dir=./build --prod
+        # The docs are already built by the "Build docs" step above, so pass
+        # --no-build: `netlify deploy` runs the build command by default, which
+        # would otherwise pick up the repo-root netlify.toml (configured for the
+        # main viewer app) and build the wrong project. --dir is resolved
+        # relative to the repo root (the netlify.toml base), not the cwd, so it
+        # must be the full path to the prebuilt docs output.
+        run: npx netlify-cli deploy --dir=platform/docs/build --prod --no-build
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
