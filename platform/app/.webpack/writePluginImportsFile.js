@@ -21,6 +21,16 @@ const path = require('path');
 // caches below are built, so name declaration, alias resolution, asset copying
 // and the generated pluginImports.js all treat them exactly like plugins
 // declared in pluginConfig.json.
+/**
+ * Parse a comma-separated EXTRA_EXTENSIONS / EXTRA_MODES env value into the
+ * plugin-entry shape used by pluginConfig.
+ *
+ * @param {string} [envValue] Comma-separated list of `packageName` or
+ *   `packageName=<directory>` entries. Empty/undefined yields an empty list.
+ * @returns {Array<{packageName: string, directory?: string}>} One entry per
+ *   parsed plugin; `directory` is present only when a `=<directory>` override
+ *   was supplied. Entries with no package name are dropped.
+ */
 function parseExtraPlugins(envValue) {
   if (!envValue) {
     return [];
