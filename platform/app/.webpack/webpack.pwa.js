@@ -22,6 +22,9 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
+// Dev-server target for the /fhir-proxy route below. Must not default to
+// OHIF's own port (3000), or the proxy would loop back into the dev server.
+const FHIR_SERVER = process.env.FHIR_SERVER || 'http://localhost:3100';
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
@@ -204,6 +207,21 @@ module.exports = (env, argv) => {
           context: ['/dicomweb'],
           target: 'http://localhost:5000',
         },
+        {
+          // Same-origin path to a FHIR server (avoids CORS during local
+          // development). `ws: true` also tunnels WebSocket upgrades, which
+          // FHIRcast subscriptions rely on.
+          context: ['/fhir-proxy'],
+          target: FHIR_SERVER,
+          changeOrigin: true,
+          pathRewrite: { '^/fhir-proxy': '' },
+          ws: true,
+          // A client may address a different FHIR server per request via the
+          // x-fhir-target header (e.g. one received from a SMART launch).
+          // Dev-server only — production deployments terminate /fhir-proxy at
+          // their own reverse proxy.
+          router: req => req.headers['x-fhir-target'] || FHIR_SERVER,
+        },
       ],
       static: [
         {
@@ -232,17 +250,18 @@ module.exports = (env, argv) => {
   });
 
   if (hasProxy) {
-    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy = [
-      {
-        context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
-        target: PROXY_DOMAIN,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
-        },
+    // Prepend rather than replace, so the env-configured proxy coexists with
+    // the default entries above (/dicomweb, /fhir-proxy) while still winning
+    // when its context overlaps one of them (first match takes the request).
+    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || [];
+    mergedConfig.devServer.proxy.unshift({
+      context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
+      target: PROXY_DOMAIN,
+      changeOrigin: true,
+      pathRewrite: {
+        [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
       },
-    ];
+    });
   }
 
   if (isProdBuild) {
