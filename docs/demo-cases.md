@@ -18,6 +18,21 @@ overwrite all identity tags with demo values).
 | 3 | PACIENTE-DEMO-03  | 00000005_000 | No Finding       | Sem achados radiologicos   | PA   | F   | 69  |
 | 4 | PACIENTE-DEMO-04  | 00000112_002 | Consolidation    | Consolidacao               | PA   | M   | 49  |
 | 5 | PACIENTE-DEMO-05  | 00000011_000 | Effusion         | Derrame pleural            | PA   | M   | 74  |
+| 6 | PACIENTE-DEMO-06  | 00000661_000 | Cardiomegaly     | Cardiomegalia              | PA   | M   | 57  |
+| 7 | PACIENTE-DEMO-07  | 00030634_000 | Effusion         | Derrame pleural            | PA   | F   | 60  |
+| 8 | PACIENTE-DEMO-08  | 00019892_003 | Pneumothorax     | Pneumotorax                | PA   | F   | 58  |
+| 9 | PACIENTE-DEMO-09  | 00023075_033 | Mass             | Massa                      | PA   | M   | 31  |
+| 10| PACIENTE-DEMO-10  | 00013118_008 | Atelectasis      | Atelectasia                | PA   | M   | 69  |
+| 11| PACIENTE-DEMO-11  | 00016487_002 | Nodule           | Nodulo                     | PA   | M   | 63  |
+| 12| PACIENTE-DEMO-12  | 00014251_029 | Infiltration     | Infiltrado                 | PA   | M   | 70  |
+
+> **Cases 6–12 (added 2026-06-22)** are the **pathology spread** for a richer demo
+> worklist — each a single-finding, PA-view case with a **confirmed localized box**
+> in `BBox_List_2017.csv`. They are **not** in `images_001.zip`, so they ingest from
+> local PNGs via `--png-dir` (not the HF range-pull). Cardiomegaly / Effusion /
+> Pneumothorax are `proxy-txv-v1`'s strongest detections, so the AI findings panel
+> lights up cleanly on those. Same deterministic UID scheme (`…1421.1.{6..12}`),
+> idempotent re-ingest.
 
 ## AI-overlay positive case (MIMPS-10)
 

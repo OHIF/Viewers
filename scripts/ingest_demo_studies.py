@@ -75,6 +75,18 @@ DEMO_CASES: list[DemoCase] = [
     DemoCase(3, "00000005_000.png", "No Finding", "Sem achados radiologicos", "F", 69),
     DemoCase(4, "00000112_002.png", "Consolidation", "Consolidacao", "M", 49),
     DemoCase(5, "00000011_000.png", "Effusion", "Derrame pleural", "M", 74),
+    # --- Pathology spread for the demo worklist (added 2026-06-22). All are
+    # single-finding, PA-view cases with a CONFIRMED localized box in
+    # BBox_List_2017.csv (NIH CXR14, CC0). Findings 6/7/8 are proxy-txv-v1's
+    # strongest detections, so the AI panel lights up cleanly. These are NOT in
+    # images_001.zip, so they ingest via --png-dir (local PNGs), not HF range-pull.
+    DemoCase(6, "00000661_000.png", "Cardiomegaly", "Cardiomegalia", "M", 57),
+    DemoCase(7, "00030634_000.png", "Effusion", "Derrame pleural", "F", 60),
+    DemoCase(8, "00019892_003.png", "Pneumothorax", "Pneumotorax", "F", 58),
+    DemoCase(9, "00023075_033.png", "Mass", "Massa", "M", 31),
+    DemoCase(10, "00013118_008.png", "Atelectasis", "Atelectasia", "M", 69),
+    DemoCase(11, "00016487_002.png", "Nodule", "Nodulo", "M", 63),
+    DemoCase(12, "00014251_029.png", "Infiltration", "Infiltrado", "M", 70),
 ]
 
 
@@ -144,6 +156,32 @@ def _extract(url: str, lho: int, csz: int, method: int) -> bytes:
     if method == 8:  # deflate
         return zlib.decompress(raw, -15)
     raise RuntimeError(f"Unsupported ZIP compression method {method}")
+
+
+def read_local_pngs(png_dir: str) -> dict[str, bytes]:
+    """Read each case's PNG from a local directory (recursively), bypassing the
+    HF range-pull. Used for cases outside images_001.zip (the pathology spread)
+    or fully-offline runs. The directory is searched recursively for each
+    case's basename so the nested NIH dataset layout works as-is."""
+    import os
+
+    index: dict[str, str] = {}
+    for dp, _dirs, fns in os.walk(png_dir):
+        for fn in fns:
+            if fn.endswith(".png") and fn not in index:
+                index[fn] = os.path.join(dp, fn)
+    out: dict[str, bytes] = {}
+    for c in DEMO_CASES:
+        path = index.get(c.png)
+        if not path:
+            raise RuntimeError(f"{c.png} not found under {png_dir}")
+        with open(path, "rb") as f:
+            png = f.read()
+        if png[:8] != b"\x89PNG\r\n\x1a\n":
+            raise RuntimeError(f"{path} is not a valid PNG")
+        out[c.png] = png
+        print(f"[ingest] read local {c.png} ({len(png)} bytes)", file=sys.stderr)
+    return out
 
 
 def fetch_pngs() -> dict[str, bytes]:
@@ -304,6 +342,9 @@ def main() -> int:
     ap.add_argument("--via-gateway", default=None,
                     help="STOW-RS DICOMweb root instead of REST /instances")
     ap.add_argument("--keep-dicom", default=None, help="Directory to also write .dcm files")
+    ap.add_argument("--png-dir", default=None,
+                    help="Read case PNGs from this local directory (recursive) instead of "
+                         "the HF range-pull. Required for cases outside images_001.zip.")
     ap.add_argument("--no-upload", action="store_true")
     args = ap.parse_args()
 
@@ -313,7 +354,7 @@ def main() -> int:
     if not args.no_upload and not args.via_gateway and not password:
         ap.error("Orthanc password required: pass --password or set ORTHANC_PASSWORD")
 
-    pngs = fetch_pngs()
+    pngs = read_local_pngs(args.png_dir) if args.png_dir else fetch_pngs()
 
     if args.keep_dicom:
         os.makedirs(args.keep_dicom, exist_ok=True)
