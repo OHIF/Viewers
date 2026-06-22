@@ -32,7 +32,39 @@ import { triggerAnnotationRenderForViewportIds } from '@cornerstonejs/tools/util
 import type { InferenceFinding } from './inferenceClient';
 import { toPtLabel } from '../utils/labels';
 
-const BRAND_VIOLET = '#7C3AED';
+/**
+ * Per-finding box hues. Deliberately a cool, brand-adjacent palette — NEVER the
+ * clinical traffic-light red/green (SD-004 / CLINICAL_SCOPE): a region-of-
+ * attention box must not look like a severity verdict. Colors only disambiguate
+ * which box belongs to which finding row; they carry no clinical meaning.
+ */
+const BOX_PALETTE = [
+  '#7C3AED', // brand violet
+  '#6366F1', // indigo
+  '#0EA5E9', // sky
+  '#06B6D4', // cyan
+  '#8B5CF6', // light violet
+  '#3B82F6', // blue
+];
+
+/**
+ * Stable per-finding key shared with the panel (AIFindingsPanel) so a hover on a
+ * findings-list row can highlight the matching box. Derived only from data the
+ * panel also has (label + confidence); never depends on render order.
+ */
+export function findingKey(finding: InferenceFinding): string {
+  return `${finding.label}::${finding.confidence}`;
+}
+
+/** Resolve a stable box color for a finding from its key (palette by hash). */
+export function colorForFinding(finding: InferenceFinding): string {
+  const key = findingKey(finding);
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  }
+  return BOX_PALETTE[hash % BOX_PALETTE.length];
+}
 
 /**
  * Display-only rectangle: renders like RectangleROI but is invisible to
@@ -57,6 +89,51 @@ class AIBoundingBoxTool extends RectangleROITool {
 let toolClassRegistered = false;
 const activeAnnotationUIDs = new Set<string>();
 let lastViewportId: string | null = null;
+
+/**
+ * findingKey -> { uid, color } for every box currently drawn, so the panel can
+ * highlight the box that matches a hovered findings-list row. Rebuilt on every
+ * showAIBoundingBoxes call; cleared by clearAIBoundingBoxes.
+ */
+const boxByFindingKey = new Map<string, { uid: string; color: string }>();
+/** The finding key whose box is currently highlighted, if any. */
+let highlightedKey: string | null = null;
+
+/** Base (resting) annotation style for a box of the given color. */
+function baseStyleFor(color: string): Record<string, string> {
+  return {
+    color,
+    colorHighlighted: color,
+    colorSelected: color,
+    colorLocked: color,
+    lineDash: '4,4',
+    lineWidth: '2',
+    textBoxColor: color,
+    textBoxColorHighlighted: color,
+    textBoxColorSelected: color,
+    textBoxColorLocked: color,
+  };
+}
+
+/**
+ * Emphasized style for a hovered box: same hue, solid + thicker line so the
+ * highlight reads as "this is the row you're pointing at" without changing the
+ * box geometry or implying any new clinical meaning.
+ */
+function highlightStyleFor(color: string): Record<string, string> {
+  return {
+    color,
+    colorHighlighted: color,
+    colorSelected: color,
+    colorLocked: color,
+    lineDash: '',
+    lineWidth: '3.5',
+    textBoxColor: color,
+    textBoxColorHighlighted: color,
+    textBoxColorSelected: color,
+    textBoxColorLocked: color,
+  };
+}
 
 function ensureToolOnViewport(servicesManager: unknown, viewportId: string): boolean {
   const services = (servicesManager as { services?: Record<string, unknown> })?.services;
@@ -113,6 +190,8 @@ export function clearAIBoundingBoxes(): void {
     }
   }
   activeAnnotationUIDs.clear();
+  boxByFindingKey.clear();
+  highlightedKey = null;
 
   if (lastViewportId) {
     try {
@@ -234,7 +313,11 @@ export function showAIBoundingBoxes({
     }
 
     const pct = Math.round(finding.confidence * 100);
+    // On-box caption is intentionally non-diagnostic: the "IA:" prefix + the
+    // descriptive pt-BR finding + the model-confidence % frame the box as model
+    // attention, never a verdict (SD-004 / CLINICAL_SCOPE). Kept verbatim.
     const label = `IA: ${toPtLabel(finding.label)} ${pct}%`;
+    const color = colorForFinding(finding);
     const annotationUID = csUtils.uuidv4();
 
     const aiAnnotation = {
@@ -274,24 +357,70 @@ export function showAIBoundingBoxes({
 
     csAnnotation.state.addAnnotation(aiAnnotation, viewport.element);
     csAnnotation.locking.setAnnotationLocked(annotationUID, true);
-    csAnnotation.config.style.setAnnotationStyles(annotationUID, {
-      color: BRAND_VIOLET,
-      colorHighlighted: BRAND_VIOLET,
-      colorSelected: BRAND_VIOLET,
-      colorLocked: BRAND_VIOLET,
-      lineDash: '4,4',
-      lineWidth: '2',
-      textBoxColor: BRAND_VIOLET,
-      textBoxColorHighlighted: BRAND_VIOLET,
-      textBoxColorSelected: BRAND_VIOLET,
-      textBoxColorLocked: BRAND_VIOLET,
-    });
+    csAnnotation.config.style.setAnnotationStyles(annotationUID, baseStyleFor(color));
 
     activeAnnotationUIDs.add(annotationUID);
+    // Last box wins on a duplicate key (same label+confidence) — harmless; the
+    // hover highlight still lands on a real box for that finding.
+    boxByFindingKey.set(findingKey(finding), { uid: annotationUID, color });
     drawn += 1;
   }
 
   lastViewportId = viewportId;
   triggerAnnotationRenderForViewportIds([viewportId]);
   return drawn;
+}
+
+/** Re-render the active viewport's AI boxes, swallowing a destroyed viewport. */
+function rerenderBoxes(): void {
+  if (!lastViewportId) {
+    return;
+  }
+  try {
+    triggerAnnotationRenderForViewportIds([lastViewportId]);
+  } catch (_err) {
+    // Viewport gone — nothing to re-render.
+  }
+}
+
+/**
+ * Emphasize the box matching `key` (from `findingKey`) and reset any previously
+ * highlighted box. Safe no-op when the key has no drawn box (e.g. the finding
+ * had no region). Read-only: only the line style changes, never geometry.
+ */
+export function highlightAIBoundingBox(key: string | null): void {
+  if (key === highlightedKey) {
+    return;
+  }
+  // Reset the previously highlighted box to its resting style.
+  if (highlightedKey) {
+    const prev = boxByFindingKey.get(highlightedKey);
+    if (prev) {
+      try {
+        csAnnotation.config.style.setAnnotationStyles(prev.uid, baseStyleFor(prev.color));
+      } catch (_err) {
+        // Annotation may be gone — ignore.
+      }
+    }
+  }
+  highlightedKey = null;
+
+  if (key) {
+    const next = boxByFindingKey.get(key);
+    if (next) {
+      try {
+        csAnnotation.config.style.setAnnotationStyles(next.uid, highlightStyleFor(next.color));
+        highlightedKey = key;
+      } catch (_err) {
+        // Annotation may be gone — leave nothing highlighted.
+      }
+    }
+  }
+
+  rerenderBoxes();
+}
+
+/** Clear any active box highlight (resets to resting style). */
+export function clearAIHighlight(): void {
+  highlightAIBoundingBox(null);
 }

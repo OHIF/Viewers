@@ -28,6 +28,36 @@ export function toPtLabel(label: string): string {
   return LABEL_PT[label.trim().toLowerCase()] ?? label;
 }
 
+/**
+ * MIMPS-28: anatomy (ChestX-Det segmentation) EN → pt-BR map.
+ *
+ * Unlike LABEL_PT (pathology, lowercased), these keys are the EXACT English
+ * structure keys returned by the seg lane (= `seg_inference.TARGETS`,
+ * byte-for-byte incl. spaces and the archaic 'Weasand'). Used by the
+ * measurements override dropdown and report subsection (MIMPS-29/30). Raw-key
+ * fallback so an unmapped/new structure is never hidden.
+ */
+export const ANATOMY_PT: Record<string, string> = {
+  'Left Clavicle': 'Clavícula esquerda',
+  'Right Clavicle': 'Clavícula direita',
+  'Left Scapula': 'Escápula esquerda',
+  'Right Scapula': 'Escápula direita',
+  'Left Lung': 'Campo pulmonar esquerdo',
+  'Right Lung': 'Campo pulmonar direito',
+  'Left Hilus Pulmonis': 'Hilo pulmonar esquerdo',
+  'Right Hilus Pulmonis': 'Hilo pulmonar direito',
+  'Heart': 'Coração / silhueta cardíaca',
+  'Aorta': 'Aorta',
+  'Facies Diaphragmatica': 'Cúpula diafragmática',
+  'Mediastinum': 'Mediastino',
+  'Weasand': 'Esôfago',
+  'Spine': 'Coluna vertebral',
+};
+
+export function anatomyToPt(key: string): string {
+  return ANATOMY_PT[key] ?? key;
+}
+
 export interface SeverityDisplay {
   /** pt-BR chip text */
   label: string;

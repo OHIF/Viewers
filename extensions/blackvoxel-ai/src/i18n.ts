@@ -58,6 +58,26 @@ const en = {
   'report.inconsistent': '⚠ Draft inconsistent with findings — review:',
   'report.consistent': '✓ Draft consistent with the model findings',
 
+  // Report draft — measurements subsection (MIMPS-30)
+  'report.section.medicoes': 'MEASUREMENTS',
+
+  // Measurements section (MIMPS-29)
+  'measurement.section.title': 'MEASUREMENTS ({{count}})',
+  'measurement.suggestion': 'AI suggestion: {{label}}',
+  'measurement.noSuggestion': 'Could not identify the structure',
+  'measurement.overrideLabel': 'Structure',
+  'measurement.overrideOther': 'Other…',
+  'measurement.overrideFreePlaceholder': 'Type a structure',
+  'measurement.uncalibrated': 'not calibrated',
+  'measurement.confirm': 'Confirm',
+  'measurement.confirmed': 'Confirmed',
+  'measurement.unconfirm': 'Edit',
+  'measurement.ict': 'CTR {{value}}',
+  'measurement.ictNote': 'measurement, not a diagnosis',
+  'measurement.measurementNotDiagnosis': 'measurement, not a diagnosis',
+  'measurement.abstain': 'Could not identify the structure.',
+  'measurement.empty': 'Draw a ruler to measure a structure.',
+
   // Server disclaimer fallback
   'disclaimer.research': 'For research use only. Not a substitute for a physician’s report.',
 
@@ -127,6 +147,26 @@ const ptBR: typeof en = {
   'report.paidUnavailable': 'modelo pago indisponível',
   'report.inconsistent': '⚠ Rascunho inconsistente com os achados — revisar:',
   'report.consistent': '✓ Rascunho consistente com os achados do modelo',
+
+  // Report draft — measurements subsection (MIMPS-30)
+  'report.section.medicoes': 'MEDIÇÕES',
+
+  // Measurements section (MIMPS-29)
+  'measurement.section.title': 'MEDIÇÕES ({{count}})',
+  'measurement.suggestion': 'Sugestão IA: {{label}}',
+  'measurement.noSuggestion': 'Não foi possível identificar a estrutura',
+  'measurement.overrideLabel': 'Estrutura',
+  'measurement.overrideOther': 'Outro…',
+  'measurement.overrideFreePlaceholder': 'Digite uma estrutura',
+  'measurement.uncalibrated': 'não calibrado',
+  'measurement.confirm': 'Confirmar',
+  'measurement.confirmed': 'Confirmado',
+  'measurement.unconfirm': 'Editar',
+  'measurement.ict': 'ICT {{value}}',
+  'measurement.ictNote': 'medição, não diagnóstico',
+  'measurement.measurementNotDiagnosis': 'medição, não diagnóstico',
+  'measurement.abstain': 'Não foi possível identificar a estrutura.',
+  'measurement.empty': 'Desenhe uma régua para medir uma estrutura.',
 
   // Server disclaimer fallback
   'disclaimer.research': 'Uso restrito a pesquisa. Não substitui laudo médico.',
