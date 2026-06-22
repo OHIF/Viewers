@@ -1496,13 +1496,26 @@ class CornerstoneViewportService
     const is3D =
       (viewport as { type?: string }).type === csEnums.ViewportType.VOLUME_3D_NEXT;
     const nativeViewport = viewport as unknown as {
-      setDisplaySets: (args: unknown) => Promise<void>;
+      setDisplaySets: (
+        ...entries: Array<{ displaySetId: string; options: Record<string, unknown> }>
+      ) => Promise<void>;
       setDisplaySetPresentation: (dataId: string, props: Record<string, unknown>) => void;
       getDefaultActor?: () => { actor?: unknown } | undefined;
       render: () => void;
     };
     const displaySetInstanceUIDs: string[] = [];
+    const setDisplaySetsEntries: Array<{
+      displaySetId: string;
+      options: Record<string, unknown>;
+    }> = [];
 
+    // First pass: register each dataId and build the COMPLETE entry set. The native
+    // PlanarViewport.setDisplaySets has replace semantics (removeReplaceableData), so
+    // it must receive ALL entries in ONE call - the first entry (role 'source')
+    // resolves the source binding and the rest are overlays. Calling it once per
+    // volume instead drops the previously-set source (e.g. the fusion CT): the next
+    // single-entry overlay call (PT) finds no source entry, falls back to entries[0]
+    // (= PT), and removeReplaceableData tears down CT - leaving only the PT colormap.
     for (const [index, { volumeInput }] of filteredVolumeInputArray.entries()) {
       const { imageIds, volumeId, displaySetInstanceUID } = volumeInput;
       const dataId = displaySetInstanceUID;
@@ -1518,7 +1531,7 @@ class CornerstoneViewportService
         volumeId,
       });
 
-      await nativeViewport.setDisplaySets({
+      setDisplaySetsEntries.push({
         displaySetId: dataId,
         options: is3D
           ? { renderMode: 'vtkVolume3d' }
@@ -1527,7 +1540,15 @@ class CornerstoneViewportService
               role: index === 0 ? 'source' : 'overlay',
             },
       });
+    }
 
+    // Single replace call with the full entry set so the source (CT) is resolved
+    // and preserved instead of being torn down by per-volume calls.
+    await nativeViewport.setDisplaySets(...setDisplaySetsEntries);
+
+    // Second pass: per-dataId presentations and the 3D preset.
+    for (const [index, { volumeInput }] of filteredVolumeInputArray.entries()) {
+      const dataId = volumeInput.displaySetInstanceUID;
       const props = volumesProperties[index]?.properties;
       if (props) {
         const presentationProps: Record<string, unknown> = {};
