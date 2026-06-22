@@ -41,6 +41,15 @@ const en = {
   'findings.group.uncertain': 'UNCERTAIN ({{count}})',
   'findings.unlikelyToggle': '{{count}} unlikely findings',
   'findings.noLocalization': 'Localization not available in this model version',
+  // CXR-32: anatomy grounding (proxy-seg-v1) — explanatory location, not a diagnosis.
+  'findings.lat.right': 'right lung',
+  'findings.lat.left': 'left lung',
+  'findings.zone.upper': 'upper zone',
+  'findings.zone.mid': 'mid zone',
+  'findings.zone.lower': 'lower zone',
+  'findings.location': '{{zone}}, {{lat}}',
+  'findings.locationZoneOnly': '{{zone}}',
+  'findings.locationLatOnly': '{{lat}}',
 
   // Report draft
   'report.title': 'Report Draft',
@@ -131,6 +140,15 @@ const ptBR: typeof en = {
   'findings.group.uncertain': 'INDETERMINADOS ({{count}})',
   'findings.unlikelyToggle': '{{count}} achados improváveis',
   'findings.noLocalization': 'Localização não disponível nesta versão do modelo',
+  // CXR-32: fundamentação anatômica (proxy-seg-v1) — localização, não diagnóstico.
+  'findings.lat.right': 'à direita',
+  'findings.lat.left': 'à esquerda',
+  'findings.zone.upper': 'terço superior',
+  'findings.zone.mid': 'terço médio',
+  'findings.zone.lower': 'terço inferior',
+  'findings.location': 'campo pulmonar {{zone}} {{lat}}',
+  'findings.locationZoneOnly': 'campo pulmonar {{zone}}',
+  'findings.locationLatOnly': 'campo pulmonar {{lat}}',
 
   // Report draft
   'report.title': 'Rascunho de Laudo',

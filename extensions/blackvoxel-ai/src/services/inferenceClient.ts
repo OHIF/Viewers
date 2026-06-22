@@ -55,6 +55,13 @@ export interface InferenceFinding {
   band?: 'provável' | 'indeterminado' | 'improvável' | string;
   /** CXR-10: coarse Grad-CAM region (normalized), present findings only. */
   region?: NormRegion | null;
+  /**
+   * CXR-31/32: anatomy grounding of the Grad-CAM region onto proxy-seg-v1 lung
+   * masks — explanatory location only (não-diagnóstico, SD-004). Absent unless
+   * the backend SEG_ENABLED lane ran; old JSON (no keys) stays compatible.
+   */
+  laterality?: 'right' | 'left' | string | null;
+  zone?: 'upper' | 'mid' | 'lower' | string | null;
 }
 
 export interface ReportDraft {

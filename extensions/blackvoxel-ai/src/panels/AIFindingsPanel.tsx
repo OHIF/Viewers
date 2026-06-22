@@ -267,7 +267,21 @@ function BandChip({ band }: { band?: string }): React.ReactElement | null {
   );
 }
 
+/** CXR-32: pt-BR/en location phrase from CXR-31 grounding (null when ungrounded). */
+function groundedLocationText(
+  finding: InferenceFinding,
+  t: (key: string, opts?: Record<string, unknown>) => string
+): string | null {
+  const lat = finding.laterality ? t(`findings.lat.${finding.laterality}`, { defaultValue: '' }) : '';
+  const zone = finding.zone ? t(`findings.zone.${finding.zone}`, { defaultValue: '' }) : '';
+  if (lat && zone) return t('findings.location', { zone, lat });
+  if (zone) return t('findings.locationZoneOnly', { zone });
+  if (lat) return t('findings.locationLatOnly', { lat });
+  return null;
+}
+
 function FindingRow({ finding }: { finding: InferenceFinding }): React.ReactElement {
+  const { t } = useTranslation('blackvoxel-ai');
   // A localized finding (region or explicit box) maps to one viewport box; hover
   // or keyboard-focus highlights that box. Non-localized rows are inert.
   const localized = finding.region != null || finding.bounding_box != null;
@@ -313,6 +327,12 @@ function FindingRow({ finding }: { finding: InferenceFinding }): React.ReactElem
         </span>
         {finding.band ? <BandChip band={finding.band} /> : <SeverityChip severity={finding.severity} />}
       </div>
+      {(() => {
+        const loc = groundedLocationText(finding, t);
+        return loc ? (
+          <div className="mb-1 text-[11px] font-medium text-white/55">{loc}</div>
+        ) : null;
+      })()}
       <ConfidenceBar confidence={finding.confidence} />
     </div>
   );
