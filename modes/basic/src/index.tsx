@@ -316,7 +316,11 @@ export const basicLayout = {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
     rightPanels: [blackvoxel.findings, cornerstone.segmentation, cornerstone.measurements],
-    rightPanelClosed: true,
+    // MIMPS: the AI findings panel (first tab) drives the product, so the right
+    // panel opens by default on study load. A radiologist's manual collapse is
+    // remembered across studies (see ViewerLayout right-panel preference) and a
+    // remembered-closed pref overrides this default.
+    rightPanelClosed: false,
     rightPanelResizable: true,
     viewports: [
       {

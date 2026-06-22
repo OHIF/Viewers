@@ -23,6 +23,31 @@ const resizableHandleClassName = 'mt-[1px] bg-background';
 const isMobile = () =>
   typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 
+// MIMPS: remember the radiologist's right-panel collapse choice across studies.
+// The mode default is open (so the AI findings panel is discoverable); once a
+// user manually collapses or re-opens the panel that choice is persisted and
+// overrides the default on subsequent loads. Desktop only — phones always start
+// with side panels closed (MOB-02), so we never read/write the pref there.
+const RIGHT_PANEL_PREF_KEY = 'blackvoxel:viewer:rightPanelClosed';
+
+const readRightPanelPref = (): boolean | null => {
+  try {
+    const stored = window.localStorage.getItem(RIGHT_PANEL_PREF_KEY);
+    return stored === null ? null : stored === 'true';
+  } catch {
+    // Private-mode / storage-disabled browsers: fall back to the mode default.
+    return null;
+  }
+};
+
+const writeRightPanelPref = (closed: boolean): void => {
+  try {
+    window.localStorage.setItem(RIGHT_PANEL_PREF_KEY, String(closed));
+  } catch {
+    /* storage unavailable — preference simply won't persist */
+  }
+};
+
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
@@ -57,9 +82,26 @@ function ViewerLayout({
   // leaves ~110px of image at 390px. The collapsed ~28px tab rail remains.
   const [mobileLayout] = useState(isMobile);
   const initialLeftPanelClosed = leftPanelClosed || mobileLayout;
-  const initialRightPanelClosed = rightPanelClosed || mobileLayout;
+  // MIMPS: on desktop, a remembered collapse/expand choice wins over the mode
+  // default; with no stored pref we fall back to the mode's `rightPanelClosed`.
+  const [rememberedRightClosed] = useState<boolean | null>(() =>
+    mobileLayout ? null : readRightPanelPref()
+  );
+  const initialRightPanelClosed = mobileLayout
+    ? true
+    : rememberedRightClosed ?? rightPanelClosed;
   const [leftPanelClosedState, setLeftPanelClosed] = useState(initialLeftPanelClosed);
   const [rightPanelClosedState, setRightPanelClosed] = useState(initialRightPanelClosed);
+
+  // MIMPS: persist the right-panel open/closed state so it survives study
+  // navigation and reloads. Desktop only — we never overwrite the saved
+  // desktop pref with the phone's force-closed layout (MOB-02).
+  useEffect(() => {
+    if (mobileLayout) {
+      return;
+    }
+    writeRightPanelPref(rightPanelClosedState);
+  }, [rightPanelClosedState, mobileLayout]);
   // MOB-02 (V6): AI/right-panel bottom sheet state (mobile only).
   const [mobileSheet, setMobileSheet] = useState<'closed' | 'peek' | 'full'>('closed');
   // MOB-04: swipe on the sheet header — down snaps full→peek→closed, up
