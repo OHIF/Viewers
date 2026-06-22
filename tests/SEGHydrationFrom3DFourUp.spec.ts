@@ -60,6 +60,9 @@ test.describe('3D four up SEG hydration', async () => {
 
     // Wait until all viewports have finished rendering
     await viewportRenderCycle;
+    // Hydration propagates labelmap volumes to MPR viewports asynchronously after the
+    // first render cycle resolves.
+    await waitForViewportsRendered(page);
 
     await checkForScreenshot({
       page,
