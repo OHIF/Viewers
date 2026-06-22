@@ -1,5 +1,6 @@
 import React from 'react';
 import AIFindingsPanel from './panels/AIFindingsPanel';
+import PatientContextPanel from './panels/PatientContextPanel';
 import AIPanelErrorBoundary from './panels/AIPanelErrorBoundary';
 import { ViewerModeGate } from './components/ViewerModeGate';
 
@@ -24,9 +25,22 @@ function getPanelModule({ servicesManager }: { servicesManager: unknown }): Arra
       label: 'Achados IA',
       component: () => (
         <AIPanelErrorBoundary>
-          {/* MIMPS-25: mode gate portal — blocks viewer until Research is chosen */}
+          {/* MIMPS-25: mode gate portal — blocks viewer until a mode is chosen */}
           <ViewerModeGate />
           <AIFindingsPanel servicesManager={servicesManager} />
+        </AIPanelErrorBoundary>
+      ),
+    },
+    {
+      // MIMPS-35: clinical-context panel. Renders inert (placeholder, no fetch)
+      // unless CLINICAL_MODE_ENABLED && mode === 'clinical' — ships dark.
+      name: 'blackvoxel-ai-patient-context',
+      iconName: 'tab-patient-info',
+      iconLabel: 'Contexto',
+      label: 'Contexto Clínico',
+      component: () => (
+        <AIPanelErrorBoundary>
+          <PatientContextPanel servicesManager={servicesManager} />
         </AIPanelErrorBoundary>
       ),
     },

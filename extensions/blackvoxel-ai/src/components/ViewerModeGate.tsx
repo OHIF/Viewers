@@ -20,6 +20,8 @@ import ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useViewerMode, ViewerMode } from '../stores/useViewerModeStore';
 import { LanguageToggle } from './LanguageToggle';
+// MIMPS-33: clinical-mode kill-switch (default false — ships dark).
+import { CLINICAL_MODE_ENABLED } from '../config/clinicalMode';
 
 // ---------------------------------------------------------------------------
 // Brand tokens (matches AIFindingsPanel.tsx)
@@ -176,13 +178,17 @@ function ViewerModeModal({
     confirmRef.current?.focus();
   }, []);
 
+  // MIMPS-33: clinical mode is selectable/confirmable ONLY when the build flag
+  // is on. Default (flag off) keeps the legacy research-only behaviour exactly:
+  // the clinical card is disabled and clinical can never be confirmed.
+  const canConfirm =
+    selected === 'research' || (selected === 'clinical' && CLINICAL_MODE_ENABLED);
+
   function handleConfirm(): void {
-    if (selected && selected !== 'clinical') {
+    if (selected && canConfirm) {
       onConfirm(selected);
     }
   }
-
-  const canConfirm = selected === 'research';
 
   return (
     /* Backdrop */
@@ -258,8 +264,11 @@ function ViewerModeModal({
             <ModeCard
               title={t('mode.clinical.title')}
               description={t('mode.clinical.desc')}
-              badge={t('mode.clinical.badge')}
-              disabled
+              // MIMPS-33: hide the "Em breve / Coming soon" badge once clinical
+              // mode is actually enabled; keep it (and the disabled state) dark
+              // by default.
+              badge={CLINICAL_MODE_ENABLED ? undefined : t('mode.clinical.badge')}
+              disabled={!CLINICAL_MODE_ENABLED}
               selected={selected === 'clinical'}
               onClick={() => setSelected('clinical')}
             />

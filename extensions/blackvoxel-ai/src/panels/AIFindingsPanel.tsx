@@ -28,6 +28,9 @@ import { DicomImportButton } from '../components/DicomImportButton';
 import { useViewerMode } from '../stores/useViewerModeStore';
 // MIMPS-28: live ruler (Length) measurements → classify wire shape
 import { useLengthMeasurements } from '../hooks/useLengthMeasurements';
+// MIMPS-33/36: clinical-mode flag + ephemeral clinical-context store
+import { CLINICAL_MODE_ENABLED } from '../config/clinicalMode';
+import { useClinicalContext } from '../stores/useClinicalContextStore';
 
 // ---------------------------------------------------------------------------
 // Brand constants (MIMPS-02 palette)
@@ -874,8 +877,18 @@ function AIFindingsPanel({
 }: AIFindingsPanelProps): React.ReactElement {
   const { t } = useTranslation('blackvoxel-ai');
   // MIMPS-27: gate — all hooks must be called unconditionally (Rules of Hooks).
-  // The mode value guards the effect body so getInference never fires outside Research.
+  // The mode value guards the effect body so getInference never fires outside an
+  // allowed mode.
   const { mode } = useViewerMode();
+  // MIMPS-36: ephemeral clinical context (populated by PatientContextPanel),
+  // attached to the InferenceRequest in clinical mode only.
+  const { context: clinicalContext } = useClinicalContext();
+
+  // MIMPS-33: AI inference runs in research mode, OR clinical mode when the
+  // CLINICAL_MODE_ENABLED flag is on. Default (flag off) is research-only —
+  // identical to the legacy behaviour.
+  const clinicalEnabled = CLINICAL_MODE_ENABLED && mode === 'clinical';
+  const inferenceAllowed = mode === 'research' || clinicalEnabled;
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<InferenceResponse | null>(null);
@@ -910,12 +923,13 @@ function AIFindingsPanel({
   })();
 
   useEffect(() => {
-    // MIMPS-27: Research mode is required for AI inference.
+    // MIMPS-27/33: AI inference requires an allowed mode — research always, or
+    // clinical when CLINICAL_MODE_ENABLED (ships dark, default off).
     // Rationale: Research = de-identified / non-PHI → external model calls
-    // (including Gemini/MedGemma) are permitted.  Clinical = PHI context →
-    // no model network calls until a compliant deployment is in place.
-    if (mode !== 'research') {
-      // Ensure any stale overlay from a previous research session is cleared.
+    // (including Gemini/MedGemma) are permitted. Clinical = PHI context →
+    // gated behind the flag + a compliant deployment (RG-08).
+    if (!inferenceAllowed) {
+      // Ensure any stale overlay from a previous session is cleared.
       clearAIBoundingBoxes();
       // Reset inference state so switching back to research triggers a fresh run.
       setLoading(true);
@@ -962,6 +976,12 @@ function AIFindingsPanel({
           modality: 'CXR',
           image_data_url: capture.imageDataUrl,
           image_id: capture.imageId,
+          // MIMPS-36: attach the de-identified clinical context ONLY in clinical
+          // mode (and only when one has been consented + fetched). Research-mode
+          // requests stay byte-identical to today (field absent).
+          ...(clinicalEnabled && clinicalContext
+            ? { clinical_context: clinicalContext }
+            : {}),
         });
         if (!cancelled) {
           setData(result);
@@ -999,12 +1019,21 @@ function AIFindingsPanel({
       // Panel closing / re-running: never leave stale AI boxes on the viewport.
       clearAIBoundingBoxes();
     };
-  }, [mode, servicesManager, studyInstanceUID, seriesInstanceUID]);
+  }, [
+    mode,
+    inferenceAllowed,
+    clinicalEnabled,
+    clinicalContext,
+    servicesManager,
+    studyInstanceUID,
+    seriesInstanceUID,
+  ]);
 
-  // --- MIMPS-27: Non-research mode — AI models disabled ---
-  // Render a bilingual placeholder; no inference state is shown.
+  // --- MIMPS-27/33: inference-disabled mode — AI models off ---
+  // Render a bilingual placeholder; no inference state is shown. Reached in
+  // research-disabled states: no mode yet, or clinical mode with the flag off.
   // DicomImportButton already gates itself to research mode (MIMPS-26).
-  if (mode !== 'research') {
+  if (!inferenceAllowed) {
     return (
       <div className="flex h-full flex-col bg-black text-[13px]">
         {/* Keep the panel header so the panel feels anchored */}

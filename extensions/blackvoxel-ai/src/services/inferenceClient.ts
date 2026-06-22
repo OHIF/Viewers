@@ -9,12 +9,92 @@
  * so the user re-authenticates without seeing a confusing error state.
  */
 
+// ---------------------------------------------------------------------------
+// MIMPS-36: clinical-context payload (clinical mode only).
+//
+// The 4 interfaces below are field-IDENTICAL (byte-for-byte snake_case) to the
+// cross-codebase contract surface: 4_labs (Py schemas), 1_platform
+// InferenceRequest (Py) and this viewer. The single anti-drift mechanism is the
+// checked-in key fixture `4_labs/backend/tests/fixtures/clinical_context_keys.json`
+// and the per-codebase field-parity test. See the contract:
+// 2026-06-22-clinical-context-fhir-contract.md §2/§3. Do NOT rename a field
+// without updating all three codebases + the fixture.
+//
+// Privacy-by-construction (enforced upstream in 4_labs, mirrored in the types):
+//   - `age_years` is the DERIVED age, never a birthDate.
+//   - `patient_ref` is a FHIR `Patient/{id}`, NEVER a raw CPF.
+//   - Raw identifiers never leave 4_labs; the viewer only ever sees this shape.
+// ---------------------------------------------------------------------------
+
+/** One laboratory result (FHIR Observation[laboratory] → mapped). */
+export interface LabResult {
+  /** LOINC code. */
+  code: string;
+  /** pt-BR display label. */
+  label: string;
+  value: number;
+  /** UCUM unit — MANDATORY (never omitted). */
+  unit: string;
+  ref_low: number | null;
+  ref_high: number | null;
+  /** Reference-range flag: High / Low / Normal, or null when unknown. */
+  flag: 'H' | 'L' | 'N' | null;
+  /** ISO-8601 observation timestamp, or null. */
+  observed_at: string | null;
+}
+
+/** Consent state for the clinical-context read — first-class, fetch-gating. */
+export interface ConsentRecord {
+  flag: boolean;
+  basis: 'implied_imaging_consent' | 'explicit_ehr_consent' | 'research_protocol';
+  /** ISO-8601 capture timestamp, or null. */
+  captured_at: string | null;
+}
+
+/** Where the context came from + who fetched it (audit provenance). */
+export interface Provenance {
+  source: 'fhir' | 'rnds' | 'mock' | 'manual';
+  /** ISO-8601 fetch timestamp. */
+  fetched_at: string;
+  /** JWT `sub` of the requesting user. */
+  fetched_by: string;
+}
+
+/**
+ * The de-identified, ephemeral clinical context for one study. Fetched from the
+ * 4_labs FHIR connector via `labsClient.getPatientContext`, populated onto an
+ * InferenceRequest ONLY in clinical mode, and discarded after the report.
+ */
+export interface ClinicalContext {
+  study_uid: string;
+  /** FHIR `Patient/{id}`, NEVER a CPF. Null when not resolvable. */
+  patient_ref: string | null;
+  /** Derived age in years (NOT a birthDate). Null when unknown. */
+  age_years: number | null;
+  sex: 'M' | 'F' | 'U' | null;
+  labs: LabResult[];
+  clinical_history: string | null;
+  comorbidities: string[];
+  medications: string[];
+  provenance: Provenance;
+  consent: ConsentRecord;
+  /** Retention policy — ephemeral by construction. */
+  retention: 'ephemeral' | 'stored';
+}
+
 export interface InferenceRequest {
   study_uid: string;
   series_uid: string;
   modality: string;
   image_data_url?: string;
   image_id?: string;
+  /**
+   * MIMPS-36: optional de-identified clinical context. Populated ONLY in
+   * clinical mode (CLINICAL_MODE_ENABLED) from PatientContextPanel's fetched,
+   * consented context. Absent on every research-mode / image-only request, so
+   * the existing research path is byte-identical to today.
+   */
+  clinical_context?: ClinicalContext;
 }
 
 export interface BoundingBox {

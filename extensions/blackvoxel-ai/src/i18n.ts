@@ -116,6 +116,27 @@ const en = {
 
   // Language toggle
   'lang.toggleAria': 'Switch language',
+
+  // MIMPS-35: Patient context panel (Clinical mode only)
+  'context.panel.title': 'Clinical Context',
+  'context.demographics.title': 'PATIENT',
+  'context.demographics.id': 'ID',
+  'context.demographics.sex': 'Sex',
+  'context.demographics.dob': 'DOB',
+  'context.demographics.none': 'No patient demographics available.',
+  'context.consent.label': 'I confirm consent to use clinical context for this report',
+  'context.consent.required': 'Confirm consent to load the clinical context.',
+  'context.ephemeral.banner': 'Data used only for this report and then discarded.',
+  'context.fetch.button': 'Load clinical context',
+  'context.fetch.loading': 'Loading clinical context…',
+  'context.fetch.empty': 'No clinical context available for this study.',
+  'context.fetch.error': 'Could not load the clinical context.',
+  'context.labs.title': 'LABORATORY',
+  'context.history.title': 'HISTORY',
+  'context.comorbidities.title': 'COMORBIDITIES',
+  'context.medications.title': 'MEDICATIONS',
+  'context.disclaimer':
+    'For physician reasoning only — not an autonomous diagnosis. Reviewed and signed by the radiologist.',
 };
 
 const ptBR: typeof en = {
@@ -215,6 +236,27 @@ const ptBR: typeof en = {
 
   // Language toggle
   'lang.toggleAria': 'Trocar idioma',
+
+  // MIMPS-35: Patient context panel (Clinical mode only)
+  'context.panel.title': 'Contexto Clínico',
+  'context.demographics.title': 'PACIENTE',
+  'context.demographics.id': 'ID',
+  'context.demographics.sex': 'Sexo',
+  'context.demographics.dob': 'Nasc.',
+  'context.demographics.none': 'Dados demográficos do paciente indisponíveis.',
+  'context.consent.label': 'Confirmo o consentimento para usar o contexto clínico neste laudo',
+  'context.consent.required': 'Confirme o consentimento para carregar o contexto clínico.',
+  'context.ephemeral.banner': 'Dados usados apenas neste laudo e descartados.',
+  'context.fetch.button': 'Carregar contexto clínico',
+  'context.fetch.loading': 'Carregando contexto clínico…',
+  'context.fetch.empty': 'Nenhum contexto clínico disponível para este estudo.',
+  'context.fetch.error': 'Não foi possível carregar o contexto clínico.',
+  'context.labs.title': 'LABORATÓRIO',
+  'context.history.title': 'HISTÓRIA',
+  'context.comorbidities.title': 'COMORBIDADES',
+  'context.medications.title': 'MEDICAÇÕES',
+  'context.disclaimer':
+    'Apenas para raciocínio médico — não é um diagnóstico autônomo. Revisado e assinado pelo radiologista.',
 };
 
 /**
