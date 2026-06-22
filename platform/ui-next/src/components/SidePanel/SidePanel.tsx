@@ -287,7 +287,10 @@ const SidePanel = ({
       <>
         <div
           className={classnames(
-            'bg-popover flex h-[28px] w-full cursor-pointer items-center rounded-md',
+            // MIMPS: high-contrast, taller reveal control so a collapsed panel
+            // (esp. the AI findings panel) is obviously re-openable rather than a
+            // faint low-contrast arrow.
+            'bg-primary text-primary-foreground hover:bg-primary/90 flex h-9 w-full cursor-pointer items-center rounded-md shadow-sm transition-colors',
             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
           )}
           onClick={() => {
@@ -296,7 +299,7 @@ const SidePanel = ({
           data-cy={`side-panel-header-${side}`}
         >
           <Icons.NavigationPanelReveal
-            className={classnames('text-primary', side === 'left' && 'rotate-180 transform')}
+            className={classnames('h-[13px] w-[22px]', side === 'left' && 'rotate-180 transform')}
           />
         </div>
         <div className={classnames('mt-3 flex flex-col space-y-3')}>
