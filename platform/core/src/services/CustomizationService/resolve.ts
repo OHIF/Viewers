@@ -57,7 +57,7 @@ export function resolveCustomizationUrl(
     throw new Error(`Customization name contains traversal: ${request.name}`);
   }
 
-  const fileName = request.name.endsWith('.js') ? request.name : `${request.name}.js`;
+  const fileName = request.name.endsWith('.jsonc') ? request.name : `${request.name}.jsonc`;
   const baseWithSlash = base.endsWith('/') ? base : `${base}/`;
   const joined = `${baseWithSlash}${fileName}`;
 

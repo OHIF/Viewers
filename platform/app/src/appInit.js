@@ -94,7 +94,11 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
 
   const { customizationService } = servicesManager.services;
-  // Merge extension default/global modules first; then URL ?customization= globals layer on top.
+  // Merge extension default/global modules first, then layer on any customizations
+  // requested via the `?customization=` URL parameter. Those are only loaded when
+  // `appConfig.customizationUrlPrefixes` allows their prefix; the feature is off by
+  // default, and a value with an unconfigured prefix throws here (aborting startup)
+  // rather than being silently ignored.
   customizationService.init(extensionManager);
   await customizationService.applyWindowUrlCustomizations();
 

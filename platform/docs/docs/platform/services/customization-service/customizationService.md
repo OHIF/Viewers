@@ -240,7 +240,7 @@ As you have guessed the `.setCustomizations` accept a second argument which is t
 
 Use this introduction page for the core model (scope, priority, and syntax), then refer to focused pages for specific areas:
 
-- [Specific Customizations](./specificCustomizations.md): Built-in keys such as `ohif.preserveCustomizationKeys` and `ohif.customizationUrl`, including `?customization=` and `requires` behavior, plus how URL-loaded modules interact with bootstrap and SPA navigation (intended one-time load per page).
+- [Specific Customizations](./specificCustomizations.md): Built-in keys such as `ohif.preserveCustomizationKeys`, plus the `customizationUrlPrefixes` app-config allowlist that drives `?customization=` (off by default) and `requires` behavior, and how URL-loaded files interact with bootstrap and SPA navigation (intended one-time load per page).
 - [Custom Routes](./customRoutes.md): Route-level customization through `routes.customRoutes`.
 - [Context Menu](./contextMenu.md): Context menu structures and interaction customization.
 - [Study Browser](./StudyBrowser.md): Study browser-specific configuration values.

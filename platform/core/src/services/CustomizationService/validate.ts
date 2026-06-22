@@ -72,18 +72,53 @@ export function parseCustomizationParams(
   return out;
 }
 
-export function normalizeCustomizationValue(value: string): string | null {
-  if (!value) return null;
-  let v = value.trim();
-  if (!v) return null;
-  if (!v.startsWith('/')) {
-    v = `/${DEFAULT_PREFIX}/${v}`;
-  }
-  const parts = v.split('/').filter(Boolean);
-  if (parts.length < 2) {
+/**
+ * Splits a customization value into its prefix and name.
+ *
+ * - A value with **no leading slash** uses the special `default` prefix and the
+ *   whole value is the name (e.g. `abc/def` -> prefix `default`, name `abc/def`).
+ * - A value with a **leading slash** is matched against its first `/segment/`,
+ *   which becomes the prefix (slashes included), and the remainder is the name
+ *   (e.g. `/remote/def` -> prefix `/remote/`, name `def`). This is why every
+ *   prefix other than `default` must start and end with a slash.
+ *
+ * Returns `null` when there is no usable name part.
+ */
+export function splitPrefixAndName(
+  value: string
+): { prefix: string; name: string } | null {
+  if (!value) {
     return null;
   }
-  return `/${parts.join('/')}`;
+  if (!value.startsWith('/')) {
+    return { prefix: DEFAULT_PREFIX, name: value };
+  }
+  const rest = value.slice(1);
+  const slashIdx = rest.indexOf('/');
+  if (slashIdx <= 0) {
+    return null;
+  }
+  const segment = rest.slice(0, slashIdx);
+  const name = rest.slice(slashIdx + 1);
+  if (!segment || !name) {
+    return null;
+  }
+  return { prefix: `/${segment}/`, name };
+}
+
+function buildNormalized(prefix: string, name: string): string {
+  return prefix === DEFAULT_PREFIX ? `/${DEFAULT_PREFIX}/${name}` : `${prefix}${name}`;
+}
+
+export function normalizeCustomizationValue(value: string): string | null {
+  if (!value) {
+    return null;
+  }
+  const split = splitPrefixAndName(value.trim());
+  if (!split) {
+    return null;
+  }
+  return buildNormalized(split.prefix, split.name);
 }
 
 function hasUnsafeNameSegments(name: string): boolean {
@@ -118,15 +153,12 @@ export function validateCustomizationRequests(
       continue;
     }
 
-    const normalized = normalizeCustomizationValue(decoded);
-    if (!normalized) {
-      result.rejected.push({ raw, reason: 'could not be normalized to /prefix/name form' });
+    const split = splitPrefixAndName(decoded.trim());
+    if (!split) {
+      result.rejected.push({ raw, reason: 'could not be split into a prefix and name' });
       continue;
     }
-
-    const parts = normalized.split('/').filter(Boolean);
-    const prefix = parts[0];
-    const name = parts.slice(1).join('/');
+    const { prefix, name } = split;
 
     if (!Object.prototype.hasOwnProperty.call(prefixes, prefix)) {
       result.rejected.push({ raw, reason: `unknown prefix "${prefix}"` });
@@ -138,7 +170,7 @@ export function validateCustomizationRequests(
       continue;
     }
 
-    result.valid.push({ raw, normalized, prefix, name });
+    result.valid.push({ raw, normalized: buildNormalized(prefix, name), prefix, name });
   }
 
   return result;

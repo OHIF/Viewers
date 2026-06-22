@@ -37,12 +37,12 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('loads dependencies first via module requires', async () => {
     const importFn = jest.fn(async (url: string) => {
-      if (url.endsWith('/A.js')) {
+      if (url.endsWith('/A.jsonc')) {
         return {
           customizations: { global: { 'pkg.A': { value: 'A' } }, requires: ['B'] },
         };
       }
-      if (url.endsWith('/B.js')) {
+      if (url.endsWith('/B.jsonc')) {
         return {
           customizations: { global: { 'pkg.B': { value: 'B' } } },
         };
@@ -57,12 +57,12 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('handles cycles per the spec: A requires B, B requires A => B then A', async () => {
     const importFn = jest.fn(async (url: string) => {
-      if (url.endsWith('/A.js')) {
+      if (url.endsWith('/A.jsonc')) {
         return {
           customizations: { global: { 'pkg.A': { value: 'A' } }, requires: ['B'] },
         };
       }
-      if (url.endsWith('/B.js')) {
+      if (url.endsWith('/B.jsonc')) {
         return {
           customizations: { global: { 'pkg.B': { value: 'B' } }, requires: ['A'] },
         };
@@ -93,24 +93,19 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     const importFn = jest.fn(async () => ({
       customizations: { global: { 'pkg.X': {} } },
     }));
-    const loaded = await service.requires(['A', 'B', '/default/C'], { policy, importFn });
+    const loaded = await service.requires(['A', 'B', 'C'], { policy, importFn });
     expect(loaded.map(l => l.request.name)).toEqual(['A', 'B', 'C']);
     expect(importFn).toHaveBeenCalledTimes(3);
   });
 
-  it('logs warnings for rejected entries but still loads valid ones', async () => {
+  it('throws and loads nothing when any entry is rejected', async () => {
     const importFn = jest.fn(async () => ({
       customizations: { global: {} },
     }));
-    const warn = jest.fn();
-    const loaded = await service.requires(['A', '/missing/foo', '../escape'], {
-      policy,
-      importFn,
-      logger: { warn, error: jest.fn() },
-    });
-    expect(loaded).toHaveLength(1);
-    expect(loaded[0].request.name).toBe('A');
-    expect(warn).toHaveBeenCalled();
+    await expect(
+      service.requires(['A', '/missing/foo', '../escape'], { policy, importFn })
+    ).rejects.toThrow(/refusing to load customization/);
+    expect(importFn).not.toHaveBeenCalled();
   });
 
   it('warns and skips when import fails', async () => {
@@ -145,7 +140,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     }));
     const params = new URLSearchParams();
     params.append('customization', 'A,B');
-    params.append('customization', '/default/C');
+    params.append('customization', 'C');
     await service.applyCustomizationUrlSearchParams(params, { policy, importFn });
     expect(importFn).toHaveBeenCalledTimes(3);
   });

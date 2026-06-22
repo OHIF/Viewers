@@ -50,7 +50,7 @@ describe('CustomizationService URL validate', () => {
       ...customizationUrlDefaults,
       prefixes: {
         default: './customizations/',
-        remote: 'https://customizations.example.com/ohifCustomizations',
+        '/remote/': 'https://customizations.example.com/ohifCustomizations',
       },
     };
 
@@ -73,8 +73,15 @@ describe('CustomizationService URL validate', () => {
     it('accepts remote-prefixed names', () => {
       const result = validateCustomizationRequests(['/remote/veterinaryOverlay'], policy);
       expect(result.rejected).toEqual([]);
-      expect(result.valid[0].prefix).toBe('remote');
+      expect(result.valid[0].prefix).toBe('/remote/');
       expect(result.valid[0].name).toBe('veterinaryOverlay');
+    });
+
+    it('keeps multi-segment names under a slash prefix', () => {
+      const result = validateCustomizationRequests(['/remote/siteA/theme'], policy);
+      expect(result.rejected).toEqual([]);
+      expect(result.valid[0].prefix).toBe('/remote/');
+      expect(result.valid[0].name).toBe('siteA/theme');
     });
 
     it('rejects values with .. traversal', () => {
@@ -101,8 +108,16 @@ describe('CustomizationService URL validate', () => {
       expect(result.rejected[0].reason).toMatch(/unknown prefix/);
     });
 
+    it('rejects an explicit /default/ prefix (the default prefix has no slashes)', () => {
+      // The `default` prefix is only reachable by values without a leading slash.
+      // A leading-slash value matches `/default/`, which is not a configured key.
+      const result = validateCustomizationRequests(['/default/foo'], policy);
+      expect(result.valid).toEqual([]);
+      expect(result.rejected[0].reason).toMatch(/unknown prefix/);
+    });
+
     it('rejects unsafe name segments', () => {
-      const result = validateCustomizationRequests(['/default/foo/./bar'], policy);
+      const result = validateCustomizationRequests(['foo/./bar'], policy);
       expect(result.valid).toEqual([]);
       expect(result.rejected[0].reason).toMatch(/unsafe/);
     });

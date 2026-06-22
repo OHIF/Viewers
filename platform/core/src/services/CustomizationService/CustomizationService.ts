@@ -1,4 +1,5 @@
 import update, { extend } from 'immutability-helper';
+import JSON5 from 'json5';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { Customization } from './types';
 import type { CommandsManager } from '../../classes';
@@ -141,6 +142,10 @@ export default class CustomizationService extends PubSubService {
     this.commandsManager = commandsManager;
   }
 
+  // ===========================================================================
+  // Public API
+  // ===========================================================================
+
   /**
    * Clears mode customizations and merges each extension's `customizationModule.default` /
    * `customizationModule.global` into the service. Safe to call multiple times (e.g. from
@@ -185,8 +190,11 @@ export default class CustomizationService extends PubSubService {
 
   /**
    * Loads and applies `?customization=` modules from `window.location.search`.
-   * Wraps {@link applyCustomizationUrlSearchParams} in try/catch so callers
-   * (e.g. app bootstrap) do not need their own error handling.
+   *
+   * **Throws on disallowed values.** A `?customization=` value whose prefix is
+   * not in `appConfig.customizationUrlPrefixes` (the default — the feature is off
+   * until prefixes are configured) rejects this promise, which by design aborts
+   * app bootstrap rather than silently ignoring the request.
    *
    * **Intended SPA behavior:** The shell typically calls this once during startup. It does not
    * run again on client-side route changes. The query key `customization` may still appear in
@@ -196,22 +204,20 @@ export default class CustomizationService extends PubSubService {
    * set, use a full page load or call {@link applyCustomizationUrlSearchParams} /
    * {@link requires} from your own integration code when appropriate.
    *
-   * **Runtime requirement:** Module loading relies on `window.browserImportFunction` (defined by
-   * the standard OHIF shell's `index.html`). A custom host that embeds OHIF without that global
-   * must provide it, otherwise every URL customization load is rejected and skipped with a warning.
+   * **What is loaded:** Each `?customization=` entry resolves to a JSONC file (JSON with
+   * comments / trailing commas) under a configured prefix directory. The file is fetched and
+   * parsed as **data** — it is never executed. Executable code (plugins, modes, extensions)
+   * loads only through `pluginConfig.json`, never from the customization URL path. A module's
+   * `global` payload is applied as global customizations and its `requires` are loaded first.
    */
   public async applyWindowUrlCustomizations(overrides?: Partial<LoadOptions>): Promise<void> {
-    try {
-      if (typeof window === 'undefined') {
-        return;
-      }
-      await this.applyCustomizationUrlSearchParams(
-        new URLSearchParams(window.location.search),
-        overrides
-      );
-    } catch (err) {
-      console.warn('[customizationUrl] application failed:', err);
+    if (typeof window === 'undefined') {
+      return;
     }
+    await this.applyCustomizationUrlSearchParams(
+      new URLSearchParams(window.location.search),
+      overrides
+    );
   }
 
   /**
@@ -252,8 +258,18 @@ export default class CustomizationService extends PubSubService {
 
     const { valid, rejected } = validateCustomizationRequests(list, policy);
     const logger = overrides?.logger || console;
-    for (const r of rejected) {
-      logger.warn(`[customizationUrl] rejecting customization "${r.raw}": ${r.reason}`);
+    // A `?customization=` value that is not allowed by the configured prefixes is
+    // a hard error: stop the load and let it propagate. The feature is off until
+    // `appConfig.customizationUrlPrefixes` allows a prefix, so on a default build
+    // any `?customization=` value throws here rather than being silently ignored.
+    if (rejected.length) {
+      const details = rejected.map(r => `"${r.raw}" (${r.reason})`).join('; ');
+      return Promise.reject(
+        new Error(
+          `[customizationUrl] refusing to load customization(s): ${details}. ` +
+            `Allowed prefixes are configured in appConfig.customizationUrlPrefixes.`
+        )
+      );
     }
     if (!valid.length) {
       return Promise.resolve([]);
@@ -294,6 +310,187 @@ export default class CustomizationService extends PubSubService {
     this.clearTransformedCustomizations();
   }
 
+  /**
+   * Unified getter for customizations.
+   *
+   * @param customizationId - The ID of the customization to retrieve.
+   * @param scope - (Optional) The scope to retrieve from: 'global', 'mode', or 'default'.
+   *                 If not specified, it retrieves based on priority: global > mode > default.
+   * @returns The requested customization, or undefined if not found
+   */
+  public getCustomization(customizationId: string): Customization | undefined {
+    const transformed = this.transformedCustomizations.get(customizationId);
+
+    if (transformed) {
+      return transformed;
+    }
+    const customization =
+      this.globalCustomizations.get(customizationId) ??
+      this.modeCustomizations.get(customizationId) ??
+      this.defaultCustomizations.get(customizationId);
+    const newTransformed = this.transform(customization);
+    if (newTransformed !== undefined) {
+      this.transformedCustomizations.set(customizationId, newTransformed);
+    }
+    return newTransformed;
+  }
+
+  /**
+   * Returns a customization value, or the provided fallback when unset.
+   */
+  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined {
+    const value = this.getCustomization(customizationId);
+    return (value === undefined ? fallbackValue : (value as T)) as T | undefined;
+  }
+
+  /**
+   * Takes an object with multiple properties, each property containing
+   * immutability-helper commands, and applies them one by one.
+   *
+   * Example:
+   *   customizationService.setCustomizations({
+   *     showAddSegment: { $set: false },
+   *     NumbersList: { $push: [99] },
+   *   }, CustomizationScope.Mode)
+   *
+   * Or you can simply apply a list of strings that are customization module items in the
+   * extension.
+   *
+   * Example:
+   *   customizationService.setCustomizations(['@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts'], CustomizationScope.Mode)
+   */
+  public setCustomizations(
+    customizations: string[] | Record<string, Customization>,
+    scope: CustomizationScope = CustomizationScope.Mode
+  ): void {
+    if (Array.isArray(customizations)) {
+      customizations.forEach(customization => {
+        this._addReference(customization, scope);
+      });
+    } else {
+      Object.entries(customizations).forEach(([key, value]) => {
+        this._setCustomization(key, value, scope);
+      });
+    }
+  }
+
+  /**
+   * @deprecated Use setCustomizations instead
+   */
+  public setCustomization(
+    customizationId: string,
+    customization: Customization | string,
+    scope: CustomizationScope = CustomizationScope.Mode
+  ): void {
+    console.warn(
+      'setCustomization is deprecated. Please use setCustomizations with an object instead.'
+    );
+    this._setCustomization(customizationId, customization, scope);
+  }
+
+  /**
+   * Gets all customizations for a given scope.
+   *
+   * @param scope - The scope to retrieve customizations from: 'global', 'mode', or 'default'
+   * @returns A Map containing all customizations for the specified scope
+   */
+  public getCustomizations(scope: CustomizationScope): Map<string, Customization> {
+    if (scope === CustomizationScope.Global) {
+      return this.globalCustomizations;
+    }
+    if (scope === CustomizationScope.Mode) {
+      return this.modeCustomizations;
+    }
+    return this.defaultCustomizations;
+  }
+
+  /**
+   *  Returns true if there is a mode customization.  Doesn't include defaults, but
+   * does return global overrides.
+   */
+  public hasCustomization(customizationId: string) {
+    return (
+      this.globalCustomizations.has(customizationId) || this.modeCustomizations.has(customizationId)
+    );
+  }
+
+  /**
+   * Applies any inheritance due to UI Type customization.
+   * This will look for inheritsFrom in the customization object
+   * and if that is found, will assign all iterable values from that
+   * type into the new type, allowing default behavior to be configured.
+   */
+  public transform(customization: Customization): Customization {
+    if (!customization) {
+      return customization;
+    }
+    const { inheritsFrom } = customization;
+    if (!inheritsFrom) {
+      return customization;
+    }
+    const parent = this.getCustomization(inheritsFrom);
+    const result = parent ? Object.assign({}, parent, customization) : customization;
+    // Execute an nested type information
+    return result.$transform?.(this) || result;
+  }
+
+  /**
+   * Registers a custom command to be used in customization updates.
+   * @param commandName - The name of the command (without the $ prefix)
+   *   it will be prefixed with $
+   * @param handler - Function that handles the command it receives the value and the original value
+   */
+  public registerCustomUpdateCommand(
+    commandName: string,
+    handler: (value: Customization, original: Customization) => Customization
+  ): void {
+    if (!commandName.startsWith('$')) {
+      commandName = '$' + commandName;
+    }
+    extend(commandName, handler);
+  }
+
+  _addReference(value?: any, type = CustomizationScope.Global): void {
+    if (!value) {
+      return;
+    }
+
+    if (typeof value === 'string') {
+      const extensionValue = this._findExtensionValue(value);
+      value = extensionValue.value;
+    }
+
+    Object.entries(value).forEach(([id, customization]) => {
+      const setName =
+        (type === CustomizationScope.Global && 'setGlobalCustomization') ||
+        (type === CustomizationScope.Default && 'setDefaultCustomization') ||
+        'setModeCustomization';
+      this[setName](id as string, customization as Customization);
+    });
+  }
+
+  /**
+   * Customizations can be specified as an array of strings or customizations,
+   * or as an object whose key is the reference id, and the value is the string
+   * or customization.
+   */
+  addReferences(references?: any, type = CustomizationScope.Global): void {
+    if (!references) {
+      return;
+    }
+    if (Array.isArray(references)) {
+      references.forEach(item => {
+        this._addReference(item, type);
+      });
+    } else {
+      this._addReference(references, type);
+    }
+  }
+
+  // ===========================================================================
+  // Private methods
+  // ===========================================================================
+
   private clearTransformedCustomizations(): void {
     super.reset();
 
@@ -305,14 +502,25 @@ export default class CustomizationService extends PubSubService {
     this.modeCustomizations.clear();
   }
 
-  private _urlDefaultImport(url: string): Promise<any> {
-    if (
-      typeof window !== 'undefined' &&
-      typeof (window as any).browserImportFunction === 'function'
-    ) {
-      return (window as any).browserImportFunction(url);
+  /**
+   * Default loader for a `?customization=` module. Customization files are
+   * **data**, not code: the file is fetched and parsed as JSONC (JSON with
+   * comments / trailing commas, via JSON5 which is a superset). It is never
+   * executed. Executable modules — plugins, modes and extensions — load only
+   * through `pluginConfig.json`, never from the customization URL path.
+   */
+  private async _urlDefaultImport(url: string): Promise<any> {
+    if (typeof fetch !== 'function') {
+      throw new Error(`No fetch implementation available to load customization ${url}`);
     }
-    return Promise.reject(new Error(`No runtime importer available to load ${url}`));
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch customization ${url}: ${response.status} ${response.statusText}`
+      );
+    }
+    const text = await response.text();
+    return JSON5.parse(text);
   }
 
   private _normalizeImportedCustomizationModule(imported: any): CustomizationModule {
@@ -484,84 +692,6 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
-   * Unified getter for customizations.
-   *
-   * @param customizationId - The ID of the customization to retrieve.
-   * @param scope - (Optional) The scope to retrieve from: 'global', 'mode', or 'default'.
-   *                 If not specified, it retrieves based on priority: global > mode > default.
-   * @returns The requested customization, or undefined if not found
-   */
-  public getCustomization(customizationId: string): Customization | undefined {
-    const transformed = this.transformedCustomizations.get(customizationId);
-
-    if (transformed) {
-      return transformed;
-    }
-    const customization =
-      this.globalCustomizations.get(customizationId) ??
-      this.modeCustomizations.get(customizationId) ??
-      this.defaultCustomizations.get(customizationId);
-    const newTransformed = this.transform(customization);
-    if (newTransformed !== undefined) {
-      this.transformedCustomizations.set(customizationId, newTransformed);
-    }
-    return newTransformed;
-  }
-
-  /**
-   * Returns a customization value, or the provided fallback when unset.
-   */
-  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined {
-    const value = this.getCustomization(customizationId);
-    return (value === undefined ? fallbackValue : (value as T)) as T | undefined;
-  }
-
-  /**
-   * Takes an object with multiple properties, each property containing
-   * immutability-helper commands, and applies them one by one.
-   *
-   * Example:
-   *   customizationService.setCustomizations({
-   *     showAddSegment: { $set: false },
-   *     NumbersList: { $push: [99] },
-   *   }, CustomizationScope.Mode)
-   *
-   * Or you can simply apply a list of strings that are customization module items in the
-   * extension.
-   *
-   * Example:
-   *   customizationService.setCustomizations(['@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts'], CustomizationScope.Mode)
-   */
-  public setCustomizations(
-    customizations: string[] | Record<string, Customization>,
-    scope: CustomizationScope = CustomizationScope.Mode
-  ): void {
-    if (Array.isArray(customizations)) {
-      customizations.forEach(customization => {
-        this._addReference(customization, scope);
-      });
-    } else {
-      Object.entries(customizations).forEach(([key, value]) => {
-        this._setCustomization(key, value, scope);
-      });
-    }
-  }
-
-  /**
-   * @deprecated Use setCustomizations instead
-   */
-  public setCustomization(
-    customizationId: string,
-    customization: Customization | string,
-    scope: CustomizationScope = CustomizationScope.Mode
-  ): void {
-    console.warn(
-      'setCustomization is deprecated. Please use setCustomizations with an object instead.'
-    );
-    this._setCustomization(customizationId, customization, scope);
-  }
-
-  /**
    * Internal method to set a single customization
    */
   private _setCustomization(
@@ -587,52 +717,6 @@ export default class CustomizationService extends PubSubService {
       default:
         throw new Error(`Invalid customization scope: ${scope}`);
     }
-  }
-
-  /**
-   * Gets all customizations for a given scope.
-   *
-   * @param scope - The scope to retrieve customizations from: 'global', 'mode', or 'default'
-   * @returns A Map containing all customizations for the specified scope
-   */
-  public getCustomizations(scope: CustomizationScope): Map<string, Customization> {
-    if (scope === CustomizationScope.Global) {
-      return this.globalCustomizations;
-    }
-    if (scope === CustomizationScope.Mode) {
-      return this.modeCustomizations;
-    }
-    return this.defaultCustomizations;
-  }
-
-  /**
-   *  Returns true if there is a mode customization.  Doesn't include defaults, but
-   * does return global overrides.
-   */
-  public hasCustomization(customizationId: string) {
-    return (
-      this.globalCustomizations.has(customizationId) || this.modeCustomizations.has(customizationId)
-    );
-  }
-
-  /**
-   * Applies any inheritance due to UI Type customization.
-   * This will look for inheritsFrom in the customization object
-   * and if that is found, will assign all iterable values from that
-   * type into the new type, allowing default behavior to be configured.
-   */
-  public transform(customization: Customization): Customization {
-    if (!customization) {
-      return customization;
-    }
-    const { inheritsFrom } = customization;
-    if (!inheritsFrom) {
-      return customization;
-    }
-    const parent = this.getCustomization(inheritsFrom);
-    const result = parent ? Object.assign({}, parent, customization) : customization;
-    // Execute an nested type information
-    return result.$transform?.(this) || result;
   }
 
   /**
@@ -699,22 +783,6 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
-   * Registers a custom command to be used in customization updates.
-   * @param commandName - The name of the command (without the $ prefix)
-   *   it will be prefixed with $
-   * @param handler - Function that handles the command it receives the value and the original value
-   */
-  public registerCustomUpdateCommand(
-    commandName: string,
-    handler: (value: Customization, original: Customization) => Customization
-  ): void {
-    if (!commandName.startsWith('$')) {
-      commandName = '$' + commandName;
-    }
-    extend(commandName, handler);
-  }
-
-  /**
    * Uses immutability-helper to apply the user's commands (e.g. $set, $push, $apply, etc.)
    * Takes into account the 'mergeType' if it's explicitly 'Replace'; otherwise does a normal update.
    */
@@ -746,43 +814,6 @@ export default class CustomizationService extends PubSubService {
 
     // Otherwise create a shallow copy of the object
     return { ...value };
-  }
-
-  _addReference(value?: any, type = CustomizationScope.Global): void {
-    if (!value) {
-      return;
-    }
-
-    if (typeof value === 'string') {
-      const extensionValue = this._findExtensionValue(value);
-      value = extensionValue.value;
-    }
-
-    Object.entries(value).forEach(([id, customization]) => {
-      const setName =
-        (type === CustomizationScope.Global && 'setGlobalCustomization') ||
-        (type === CustomizationScope.Default && 'setDefaultCustomization') ||
-        'setModeCustomization';
-      this[setName](id as string, customization as Customization);
-    });
-  }
-
-  /**
-   * Customizations can be specified as an array of strings or customizations,
-   * or as an object whose key is the reference id, and the value is the string
-   * or customization.
-   */
-  addReferences(references?: any, type = CustomizationScope.Global): void {
-    if (!references) {
-      return;
-    }
-    if (Array.isArray(references)) {
-      references.forEach(item => {
-        this._addReference(item, type);
-      });
-    } else {
-      this._addReference(references, type);
-    }
   }
 }
 

@@ -41,19 +41,19 @@ describe('CustomizationService URL resolve', () => {
   it('resolves /default/<name> against same-origin/base', () => {
     const url = resolveCustomizationUrl(req('default', 'veterinaryOverlay'), policy);
     expect(url.startsWith('https://viewer.example.com')).toBe(true);
-    expect(url.endsWith('/customizations/veterinaryOverlay.js')).toBe(true);
+    expect(url.endsWith('/customizations/veterinaryOverlay.jsonc')).toBe(true);
   });
 
   it('resolves an absolute trusted prefix to its remote URL', () => {
     const url = resolveCustomizationUrl(req('remote', 'veterinaryOverlay'), policy);
     expect(url).toBe(
-      'https://customizations.example.com/ohifCustomizations/veterinaryOverlay.js'
+      'https://customizations.example.com/ohifCustomizations/veterinaryOverlay.jsonc'
     );
   });
 
   it('resolves a relative absolute-path prefix against same origin', () => {
     const url = resolveCustomizationUrl(req('relative', 'foo'), policy);
-    expect(url).toBe('https://viewer.example.com/customAssets/foo.js');
+    expect(url).toBe('https://viewer.example.com/customAssets/foo.jsonc');
   });
 
   it('throws on unknown prefix', () => {
@@ -66,9 +66,9 @@ describe('CustomizationService URL resolve', () => {
     ).toThrow(/traversal/);
   });
 
-  it('accepts names that already include .js suffix', () => {
-    const url = resolveCustomizationUrl(req('default', 'veterinary.js'), policy);
-    expect(url.endsWith('/customizations/veterinary.js')).toBe(true);
+  it('accepts names that already include .jsonc suffix', () => {
+    const url = resolveCustomizationUrl(req('default', 'veterinary.jsonc'), policy);
+    expect(url.endsWith('/customizations/veterinary.jsonc')).toBe(true);
   });
 
   it('throws when an encoded traversal would escape the base after URL normalization', () => {

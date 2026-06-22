@@ -35,29 +35,23 @@ window.config = {
 
 With this example, navigation preserves the default keys plus `customizationAlt` and `experimentFlag`.
 
-## `ohif.customizationUrl`
+## `customizationUrlPrefixes` (app config)
 
-- **Purpose**: Controls how values in the `?customization=` URL parameter are resolved and loaded.
-- **Main field**: `prefixes` maps logical prefixes to base URLs.
-- **Default prefix**: `default` maps to `./customizations/`.
-- **Not the same as preserve keys**: This setting does not decide which query keys are preserved. It only controls how customization modules are loaded from `?customization=...`.
+- **Purpose**: Allowlist of prefixes that `?customization=` values may resolve against. The `?customization=` feature is **off until this is configured**.
+- **It is an app-config property, not a customization.** Because a customization can itself be loaded from the URL, letting one define prefixes would let it widen its own allowlist — so the allowlist lives on `window.config` directly and is never read from `customizationService`.
+- **Prefix model**:
+  - The special `default` prefix (no slashes) is used for values **without** a leading slash; the whole value is the file name (e.g. `ctAbdomen`, or `siteA/theme`).
+  - Every other prefix **must start and end with a slash** (e.g. `/remote/`) and is matched against the leading `/segment/` of the value.
+- **Off by default**: with no `customizationUrlPrefixes` configured, any `?customization=` value is rejected (see below).
 
 Example:
 
 ```js
 window.config = {
-  customizationService: [
-    {
-      'ohif.customizationUrl': {
-        $set: {
-          prefixes: {
-            default: './customizations/',
-            remote: 'https://cdn.example.com/ohif-customizations/',
-          },
-        },
-      },
-    },
-  ],
+  customizationUrlPrefixes: {
+    default: './customizations/',
+    '/remote/': 'https://cdn.example.com/ohif-customizations/',
+  },
 };
 ```
 
@@ -65,42 +59,41 @@ window.config = {
 
 You can pass one or more customization entries in the URL:
 
-- `?customization=/default/ctAbdomen`
-- `?customization=/remote/siteA`
-- `?customization=/default/basePack&customization=/default/siteOverrides`
+- `?customization=ctAbdomen` → `default` prefix → `./customizations/ctAbdomen.jsonc`
+- `?customization=/remote/siteA` → `/remote/` prefix → `https://cdn.example.com/ohif-customizations/siteA.jsonc`
+- `?customization=basePack&customization=siteOverrides`
 
-Each entry is normalized to `/prefix/name`, resolved through `ohif.customizationUrl.prefixes`, imported, and then applied.
+Each entry is split into a prefix and a name, resolved through `customizationUrlPrefixes`, fetched, parsed as JSONC, and then applied.
 
 #### Security considerations (`?customization=`)
 
-Loading customization modules from the URL is **dynamic JavaScript import** in the same browser context as the viewer. Treat it with the same seriousness as any other executable bundle you might load for your deployment.
+A URL-loaded customization is a **JSONC data file** (JSON with comments / trailing commas). It is fetched and parsed as data — it is **never executed** as code. Executable code (plugins, modes, extensions) loads only through `pluginConfig.json`, never from the customization URL path. This makes `?customization=` far lower risk than loading a JavaScript bundle, but the values still change application behavior, so treat the source directories as trusted configuration.
 
-- **Allowlisted resolution only:** Query values must normalize to `/prefix/name`. The loader rejects values that look like full URLs (with a scheme), rejects path traversal (`..`), rejects unknown `prefix` keys, and rejects unsafe name segments. The final import URL is always built from your configured `ohif.customizationUrl.prefixes` plus a `.js` file under that base—users cannot pass an arbitrary absolute URL as the customization token alone.
-- **Your prefixes define the trust boundary:** If a `prefix` maps to a host or path you do not control, or to a directory where untrusted parties can publish files, `?customization=` becomes a way to pull that code into the app. Prefer HTTPS bases, narrow directories, and static hosting of reviewed modules.
-- **Invalid entries are skipped:** Invalid entries, resolve failures, failed imports, or modules without a customization payload are skipped with a warning rather than aborting the load, so a single bad entry never blocks the rest of the configuration.
-- **`requires` chains:** Dependencies declared in a loaded module are resolved with the **same** policy and validation. A trusted root module can still pull in further modules from the same prefix allowlist—review entire chains you ship.
+- **Off until configured, and a hard failure when misused:** With no `customizationUrlPrefixes` set, every `?customization=` value is rejected. A value whose prefix is not on the allowlist **throws and aborts app startup** rather than being silently ignored — so a stray or hostile `?customization=` link on an unconfigured deployment fails loudly instead of partially applying.
+- **Allowlisted resolution only:** The loader rejects values that look like full URLs (with a scheme), rejects path traversal (`..`), rejects unknown prefixes, and rejects unsafe name segments. The final fetch URL is always built from your configured `customizationUrlPrefixes` plus a `.jsonc` file under that base—users cannot pass an arbitrary absolute URL as the customization token alone.
+- **Your prefixes define the trust boundary:** If a `prefix` maps to a host or path you do not control, or to a directory where untrusted parties can publish files, `?customization=` becomes a way to inject configuration into the app. Prefer HTTPS bases, narrow directories, and static hosting of reviewed files.
+- **`requires` chains:** Dependencies declared in a loaded file are resolved with the **same** policy and validation. A trusted root file can still pull in further files from the same prefix allowlist—review entire chains you ship.
 - **Links and social engineering:** Anyone can share a URL that includes `?customization=...`. Recipients’ browsers will attempt to load the corresponding modules if they pass validation. Combine with normal defenses (user education, authenticated portals, enterprise policies) as you would for any deep link that changes application behavior.
 
 #### What `requires` means
 
-A customization module can declare dependencies via `requires` so dependent modules load first.
+A customization file can declare dependencies via `requires` so dependent files load first.
 
-Example module shape:
+Example file shape:
 
-```js
-export default {
-  customizations: {
-    requires: ['/default/basePack', '/remote/sharedTools'],
-    global: {
-      'someCustomizationKey': {
-        $set: true,
-      },
-    },
-  },
-};
+```jsonc
+{
+  // load these first, then apply this file's `global` payload
+  "requires": ["basePack", "/remote/sharedTools"],
+  "global": {
+    "someCustomizationKey": {
+      "$set": true
+    }
+  }
+}
 ```
 
-When this module is loaded via `?customization=...`, the loader:
+When this file is loaded via `?customization=...`, the loader:
 
 1. Resolves and loads each `requires` dependency first.
 2. Applies dependency customizations first.
@@ -110,13 +103,14 @@ This allows packaging layered customizations (base -> shared -> site-specific) w
 
 ### Example modules
 
-A URL-loaded module applies its `global` payload as **global customizations** — the same layer as
+A URL-loaded file applies its `global` payload as **global customizations** — the same layer as
 `window.config`'s `customizationService` entries, but loaded at runtime from `?customization=`. Any
 customization key that is read through `customizationService.getCustomization(...)` can therefore be
 set this way. The examples below are complete files; drop one under `platform/app/public/customizations/`
-(the `default` prefix) and load it with `?customization=<fileName>`.
+(the `default` prefix) and load it with `?customization=<fileName>`. Because the files are JSONC, you
+can keep `//` comments and trailing commas in them.
 
-The shipped [`veterinaryOverlay.js`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinaryOverlay.js)
+The shipped [`veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinaryOverlay.jsonc)
 demonstrates a fourth scenario — replacing the viewport overlay layout via `viewportOverlay.topLeft` /
 `viewportOverlay.topRight`.
 
@@ -125,22 +119,22 @@ demonstrates a fourth scenario — replacing the viewport overlay layout via `vi
 Override the CT presets offered in the window-level menu (key: `cornerstone.windowLevelPresets`).
 `$merge` replaces only the `CT` entry, so presets for other modalities (PT, etc.) are kept.
 
-```js
-// platform/app/public/customizations/ctPresets.js  ->  ?customization=ctPresets
-export default {
-  global: {
-    'cornerstone.windowLevelPresets': {
-      $merge: {
-        CT: [
-          { id: 'ct-soft-tissue', description: 'Soft tissue', window: '400', level: '40' },
-          { id: 'ct-lung', description: 'Lung', window: '1500', level: '-600' },
-          { id: 'ct-angio', description: 'Angio', window: '600', level: '300' },
-          { id: 'ct-bone', description: 'Bone', window: '2500', level: '480' },
-        ],
-      },
-    },
-  },
-};
+```jsonc
+// platform/app/public/customizations/ctPresets.jsonc  ->  ?customization=ctPresets
+{
+  "global": {
+    "cornerstone.windowLevelPresets": {
+      "$merge": {
+        "CT": [
+          { "id": "ct-soft-tissue", "description": "Soft tissue", "window": "400", "level": "40" },
+          { "id": "ct-lung", "description": "Lung", "window": "1500", "level": "-600" },
+          { "id": "ct-angio", "description": "Angio", "window": "600", "level": "300" },
+          { "id": "ct-bone", "description": "Bone", "window": "2500", "level": "480" }
+        ]
+      }
+    }
+  }
+}
 ```
 
 #### 2. Predefined measurement labels
@@ -148,24 +142,24 @@ export default {
 Make the viewer prompt for a label from a fixed list whenever a measurement is created
 (key: `measurementLabels`).
 
-```js
-// platform/app/public/customizations/measurementLabels.js  ->  ?customization=measurementLabels
-export default {
-  global: {
-    measurementLabels: {
-      $set: {
-        labelOnMeasure: true,
-        exclusive: true,
-        items: [
-          { value: 'Head', label: 'Head' },
-          { value: 'Shoulder', label: 'Shoulder' },
-          { value: 'Knee', label: 'Knee' },
-          { value: 'Toe', label: 'Toe' },
-        ],
-      },
-    },
-  },
-};
+```jsonc
+// platform/app/public/customizations/measurementLabels.jsonc  ->  ?customization=measurementLabels
+{
+  "global": {
+    "measurementLabels": {
+      "$set": {
+        "labelOnMeasure": true,
+        "exclusive": true,
+        "items": [
+          { "value": "Head", "label": "Head" },
+          { "value": "Shoulder", "label": "Shoulder" },
+          { "value": "Knee", "label": "Knee" },
+          { "value": "Toe", "label": "Toe" }
+        ]
+      }
+    }
+  }
+}
 ```
 
 #### 3. Add a toolbar button
@@ -175,38 +169,38 @@ The basic and longitudinal viewers register their toolbar as customizations
 layout that maps each section to a list of button ids). A module can therefore add a button by
 `$push`-ing a definition onto `cornerstone.toolbarButtons` and the button's id onto a section.
 
-The shipped [`smoothRotate.js`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/smoothRotate.js)
+The shipped [`smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/smoothRotate.jsonc)
 adds a **Smooth Rotate** button to the *More Tools* menu that activates the cornerstone `PlanarRotate`
 tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 
-```js
-// platform/app/public/customizations/smoothRotate.js  ->  ?customization=smoothRotate
-export default {
-  global: {
-    'cornerstone.toolbarButtons': {
-      $push: [
+```jsonc
+// platform/app/public/customizations/smoothRotate.jsonc  ->  ?customization=smoothRotate
+{
+  "global": {
+    "cornerstone.toolbarButtons": {
+      "$push": [
         {
-          id: 'SmoothRotate',
-          uiType: 'ohif.toolButton',
-          props: {
-            type: 'tool',
-            icon: 'tool-rotate-right',
-            label: 'Smooth Rotate',
-            tooltip: 'Smooth Rotate (drag to rotate the image freely)',
-            commands: {
-              commandName: 'setToolActiveToolbar',
-              commandOptions: { toolName: 'PlanarRotate' },
+          "id": "SmoothRotate",
+          "uiType": "ohif.toolButton",
+          "props": {
+            "type": "tool",
+            "icon": "tool-rotate-right",
+            "label": "Smooth Rotate",
+            "tooltip": "Smooth Rotate (drag to rotate the image freely)",
+            "commands": {
+              "commandName": "setToolActiveToolbar",
+              "commandOptions": { "toolName": "PlanarRotate" }
             },
-            evaluate: 'evaluate.cornerstoneTool',
-          },
-        },
-      ],
+            "evaluate": "evaluate.cornerstoneTool"
+          }
+        }
+      ]
     },
-    'cornerstone.toolbarSections': {
-      MoreTools: { $push: ['SmoothRotate'] },
-    },
-  },
-};
+    "cornerstone.toolbarSections": {
+      "MoreTools": { "$push": ["SmoothRotate"] }
+    }
+  }
+}
 ```
 
 > Because the cornerstone extension registers the default toolbar at the *default* scope and a URL
@@ -226,11 +220,11 @@ from app initialization). That is intentional:
 - **No automatic refresh on SPA navigation:** Client-side routing may change the visible URL, and
   keys such as `customization` are often **kept in the query string** on purpose (see
   `ohif.preserveCustomizationKeys` above) so bookmarks and deep links stay consistent. That
-  preservation does **not** mean the viewer re-imports URL customization modules on every route
+  preservation does **not** mean the viewer re-fetches URL customization files on every route
   change.
-- **Previously loaded modules stay applied:** The service remembers each normalized module key for
-  the lifetime of the page. A later call to the same loader path skips modules that were already
-  imported, and global payloads from those modules are not rolled back when only the query string
+- **Previously loaded files stay applied:** The service remembers each normalized key for
+  the lifetime of the page. A later call to the same loader path skips files that were already
+  fetched, and global payloads from those files are not rolled back when only the query string
   changes.
 
 If you need a different `?customization=` pack to take effect without a full reload, your

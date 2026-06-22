@@ -86,6 +86,15 @@ declare global {
       studyBrowserMode?: 'all' | 'primary';
       routerBasename?: string;
       customizationService?: CustomizationServiceType;
+      /**
+       * Allowlist of prefixes for the `?customization=` URL parameter, mapping a
+       * prefix to a base URL/path. The `default` prefix (no slashes) handles
+       * values with no leading slash; every other prefix must start and end with
+       * a slash (e.g. `/remote/`). Intentionally an app-config property and not a
+       * customization so a URL-loaded customization cannot widen its own
+       * allowlist. Absent (the default) means `?customization=` is disabled.
+       */
+      customizationUrlPrefixes?: Record<string, string>;
       extensions?: string[];
       modes?: string[];
       experimentalStudyBrowserSort?: boolean;
