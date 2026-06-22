@@ -14,6 +14,7 @@ export const sidebarSections: SidebarSection[] = [
     items: [
       { label: 'Overview', href: '/components' },
       { label: 'Colors & Theming', href: '/theming' },
+      { label: 'Iconography', href: '/components/icons' },
     ],
   },
   {
