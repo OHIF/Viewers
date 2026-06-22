@@ -15,7 +15,7 @@
 [build.environment]
   # If 'production', `pnpm install` does not install devDependencies
   NODE_ENV = "development"
-  NODE_VERSION = "24"
+  NODE_VERSION = "24.15.0"
 
 [[headers]]
   for = "/*"
