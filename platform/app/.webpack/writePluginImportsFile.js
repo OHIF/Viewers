@@ -21,6 +21,11 @@ const path = require('path');
 // caches below are built, so name declaration, alias resolution, asset copying
 // and the generated pluginImports.js all treat them exactly like plugins
 // declared in pluginConfig.json.
+//
+// Companion-mode auto-detection: if an EXTRA_EXTENSIONS package bundles a mode in
+// a `mode/` subdirectory, that mode is registered automatically (see below), so
+// `EXTRA_EXTENSIONS=<ext>` alone brings in the extension and its mode without a
+// separate EXTRA_MODES entry.
 /**
  * Parse a comma-separated EXTRA_EXTENSIONS / EXTRA_MODES env value into the
  * plugin-entry shape used by pluginConfig.
@@ -164,6 +169,61 @@ const fromDirectory = (srcDir, dirPath) => {
 
 const APP_SRC_DIR = path.resolve(__dirname, '../src');
 const REPO_ROOT = path.resolve(__dirname, '../../../');
+
+// Resolve an injected EXTRA_EXTENSIONS entry to its package root: an explicit
+// `=<directory>` override wins, otherwise look it up among the in-tree
+// extensions/ workspaces by package name.
+function resolveInjectedExtensionDir(entry) {
+  if (entry.directory) {
+    return fromDirectory(APP_SRC_DIR, entry.directory);
+  }
+  const root = path.join(REPO_ROOT, 'extensions');
+  if (!fs.existsSync(root)) {
+    return undefined;
+  }
+  for (const dir of fs.readdirSync(root)) {
+    const pkgJsonPath = path.join(root, dir, 'package.json');
+    if (!fs.existsSync(pkgJsonPath)) {
+      continue;
+    }
+    try {
+      if (JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8')).name === entry.packageName) {
+        return path.join(root, dir);
+      }
+    } catch {
+      // ignore an unparseable package.json
+    }
+  }
+  return undefined;
+}
+
+// Auto-register a companion mode bundled inside an injected extension.
+// Convention: if an EXTRA_EXTENSIONS package contains a `mode/` subdirectory
+// with its own package.json, register that mode automatically — so
+// `EXTRA_EXTENSIONS=<ext>` alone pulls in the extension AND its bundled mode,
+// with no separate EXTRA_MODES entry. An explicit EXTRA_MODES still wins (a mode
+// already present by name is left untouched).
+for (const ext of parseExtraPlugins(process.env.EXTRA_EXTENSIONS)) {
+  const extDir = resolveInjectedExtensionDir(ext);
+  if (!extDir) {
+    continue;
+  }
+  const modeDir = path.join(extDir, 'mode');
+  const modePkgJsonPath = path.join(modeDir, 'package.json');
+  if (!fs.existsSync(modePkgJsonPath)) {
+    continue;
+  }
+  let modeName;
+  try {
+    modeName = JSON.parse(fs.readFileSync(modePkgJsonPath, 'utf8')).name;
+  } catch {
+    continue;
+  }
+  if (!modeName || pluginConfig.modes.some(m => extractName(m) === modeName)) {
+    continue;
+  }
+  pluginConfig.modes.push({ packageName: modeName, directory: modeDir });
+}
 
 // The set of plugin package names declared in pluginConfig.json. Resolution and
 // asset copying are driven entirely by this list — a package present in the
