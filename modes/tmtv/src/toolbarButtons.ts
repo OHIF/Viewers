@@ -456,6 +456,20 @@ const toolbarButtons = [
       },
     },
   },
+  // TEMP (remove before merge — see TODO_BEFORE_MERGE.md): dev-only toggle between
+  // the legacy and native GenericViewport ("next") backends. Flips the flag and
+  // reloads so the whole grid is re-created with the other backend.
+  {
+    id: 'ToggleNextViewport',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-settings',
+      label: 'Next viewport',
+      tooltip: 'Toggle native GenericViewport (next) backend',
+      commands: 'toggleNextViewports',
+      evaluate: 'evaluate.cornerstone.nextViewportsToggle',
+    },
+  },
 ];
 
 export default toolbarButtons;

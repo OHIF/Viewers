@@ -1005,7 +1005,7 @@ class CornerstoneViewportService
     const overlayProcessingResults = this._processExtraDisplaySetsForViewport(viewport);
 
     const referencedImageId = presentations?.positionPresentation?.viewReference?.referencedImageId;
-    if (referencedImageId) {
+    if (referencedImageId && imageIds) {
       initialImageIndexToUse = imageIds.indexOf(referencedImageId);
     }
 
