@@ -399,5 +399,3 @@ template, do the following:
   it is kept on for normal local dev.
 - The `dev:no:cache` script is now identical to `dev` — keep it as an
   alias if external scripts call it, or delete it.
-</content>
-</invoke>

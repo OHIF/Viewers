@@ -37,7 +37,7 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command: pnpm install --no-frozen-lockfile
+          command: pnpm install --frozen-lockfile
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
@@ -78,7 +78,7 @@ jobs:
       - install_pnpm
       - run:
           name: Install Dependencies
-          command: pnpm install --no-frozen-lockfile
+          command: pnpm install --frozen-lockfile
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
@@ -197,7 +197,7 @@ jobs:
           at: ~/repo
       - run:
           name: Install Dependencies
-          command: pnpm install --no-frozen-lockfile
+          command: pnpm install --frozen-lockfile
       - run:
           name: Avoid hosts unknown for github
           command: |
