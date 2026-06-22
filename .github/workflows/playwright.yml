@@ -133,7 +133,7 @@ jobs:
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
-          pnpm run test:e2e:coverage
+          bash .scripts/ci/with-nashua-lock.sh pnpm run test:e2e:coverage
 
       # ── Common: collect test results and coverage ───────────────────────
       - name: Create directory of test results
