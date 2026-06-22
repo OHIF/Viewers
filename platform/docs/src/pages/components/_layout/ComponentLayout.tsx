@@ -81,10 +81,10 @@ export default function ComponentLayout({ title, description, children }: Compon
                           to={item.href}
                           onClick={() => setSidebarOpen(false)}
                           className={`
-                            block rounded-md px-2 py-1.5 text-sm no-underline transition-colors
+                            block rounded-md px-2 py-1.5 text-base font-semibold no-underline transition-colors
                             ${
                               isActive
-                                ? 'bg-primary/15 text-primary font-medium'
+                                ? 'bg-primary/15 text-primary'
                                 : 'text-muted-foreground hover:bg-muted hover:text-highlight'
                             }
                           `}

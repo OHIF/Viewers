@@ -66,20 +66,17 @@ export default function TableOfContents({ contentRef }: TableOfContentsProps) {
   return (
     <nav className="hidden w-44 shrink-0 xl:block">
       <div className="sticky top-[60px] overflow-y-auto py-8 pl-4">
-        <p className="mb-3 text-sm font-medium text-foreground">
-          On This Page
-        </p>
-        <ul className="space-y-0.5 border-l border-border">
+        <ul className="space-y-0.5">
           {headings.map(({ id, text }) => (
             <li key={id}>
               <a
                 href={`#${id}`}
                 className={`
-                  -ml-px block border-l py-1 pl-3 text-sm no-underline transition-colors
+                  block py-1 pl-3 text-base font-semibold no-underline transition-colors
                   ${
                     activeId === id
-                      ? 'border-primary text-foreground'
-                      : 'border-transparent text-muted-foreground hover:text-foreground'
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                   }
                 `}
               >
