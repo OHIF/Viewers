@@ -42,23 +42,33 @@ export default function TableOfContents({ contentRef }: TableOfContentsProps) {
   useEffect(() => {
     if (headings.length === 0) return;
 
+    let rafId = 0;
     const handleScroll = () => {
-      const scrollTop = window.scrollY + 80;
-      let current = headings[0]?.id || '';
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const scrollTop = window.scrollY + 80;
+        let current = headings[0]?.id || '';
 
-      for (const { id } of headings) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= scrollTop) {
-          current = id;
+        for (const { id } of headings) {
+          const el = document.getElementById(id);
+          if (el) {
+            const top = el.getBoundingClientRect().top + window.scrollY;
+            if (top <= scrollTop) {
+              current = id;
+            }
+          }
         }
-      }
 
-      setActiveId(current);
+        setActiveId(current);
+      });
     };
 
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(rafId);
+    };
   }, [headings]);
 
   if (headings.length === 0) return null;
