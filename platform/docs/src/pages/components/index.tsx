@@ -1,9 +1,66 @@
 import React from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
+const foundations = [
+  {
+    label: 'Colors & Theming',
+    href: '/colors-and-theming',
+    description: 'Color tokens, theme presets, and accessibility guidance.',
+  },
+  {
+    label: 'Iconography',
+    href: '/components/icons',
+    description: '137 curated icons, searchable, with click-to-copy names.',
+  },
+];
+
+const componentGroups = [
+  {
+    category: 'Simple',
+    items: [
+      { label: 'Button', href: '/components/button' },
+      { label: 'Checkbox', href: '/components/checkbox' },
+      { label: 'Switch', href: '/components/switch-toggle' },
+      { label: 'Input', href: '/components/input' },
+      { label: 'Label', href: '/components/label' },
+      { label: 'Slider', href: '/components/slider' },
+    ],
+  },
+  {
+    category: 'Compound',
+    items: [
+      { label: 'Select', href: '/components/select' },
+      { label: 'Combobox', href: '/components/combobox' },
+      { label: 'Tabs', href: '/components/tabs' },
+      { label: 'Dialog', href: '/components/dialog' },
+      { label: 'DropdownMenu', href: '/components/dropdown-menu' },
+      { label: 'Popover', href: '/components/popover' },
+      { label: 'Tooltip', href: '/components/tooltip' },
+      { label: 'HoverCard', href: '/components/hover-card' },
+      { label: 'ScrollArea', href: '/components/scroll-area' },
+      { label: 'Toast / Sonner', href: '/components/toast' },
+    ],
+  },
+  {
+    category: 'OHIF-specific',
+    items: [
+      { label: 'ToolButton', href: '/components/tool-button' },
+      { label: 'ToolButtonList', href: '/components/tool-button-list' },
+      { label: 'DataRow', href: '/components/data-row' },
+      { label: 'PanelSection', href: '/components/panel-section' },
+      { label: 'Numeric', href: '/components/numeric' },
+      { label: 'CinePlayer', href: '/components/cine-player' },
+      { label: 'AllInOneMenu', href: '/components/all-in-one-menu' },
+      { label: 'SmartScrollbar', href: '/components/smart-scrollbar' },
+    ],
+  },
+];
+
 function OverviewContent() {
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
+  const Section = require('./_layout/Section').default;
+  const Link = require('@docusaurus/Link').default;
 
   return (
     <ComponentLayout
@@ -40,6 +97,51 @@ function OverviewContent() {
           explore the dark-first theming and color roles that tie the whole
           system together.
         </p>
+      </div>
+
+      <div className="mt-12">
+        <Section title="Foundations">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {foundations.map(item => (
+              <Link
+                key={item.href}
+                to={item.href}
+                className="group border-input/50 bg-muted/40 hover:border-primary/50 hover:bg-muted block rounded-lg border p-5 no-underline transition-colors"
+              >
+                <div className="text-foreground group-hover:text-highlight mb-1 text-lg font-semibold">
+                  {item.label}
+                </div>
+                <p className="text-muted-foreground mb-0 text-base">
+                  {item.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Components">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 md:grid-cols-3">
+            {componentGroups.map(group => (
+              <div key={group.category}>
+                <h3 className="border-input/50 text-foreground mb-3 border-b pb-2 text-lg font-semibold tracking-wide">
+                  {group.category}
+                </h3>
+                <ul className="space-y-1">
+                  {group.items.map(item => (
+                    <li key={item.href}>
+                      <Link
+                        to={item.href}
+                        className="text-muted-foreground hover:text-highlight inline-block py-0.5 text-lg no-underline transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </Section>
       </div>
     </ComponentLayout>
   );
