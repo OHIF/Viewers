@@ -26,6 +26,7 @@ export const sidebarSections: SidebarSection[] = [
       { label: 'CinePlayer', href: '/components/cine-player' },
       { label: 'Combobox', href: '/components/combobox' },
       { label: 'DataRow', href: '/components/data-row' },
+      { label: 'DataTable', href: '/components/data-table' },
       { label: 'Dialog', href: '/components/dialog' },
       { label: 'DropdownMenu', href: '/components/dropdown-menu' },
       { label: 'HoverCard', href: '/components/hover-card' },

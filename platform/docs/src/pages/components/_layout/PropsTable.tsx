@@ -12,31 +12,35 @@ interface PropsTableProps {
 }
 
 export default function PropsTable({ props }: PropsTableProps) {
+  const {
+    Table,
+    TableHeader,
+    TableBody,
+    TableHead,
+    TableRow,
+    TableCell,
+  } = require('../../../../../ui-next/src/components/Table');
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-base">
-        <thead>
-          <tr className="border-b border-foreground text-left">
-            <th className="text-foreground pb-2 pr-4 font-medium">Prop</th>
-            <th className="text-foreground pb-2 pr-4 font-medium">Type</th>
-            <th className="text-foreground pb-2 pr-4 font-medium">Default</th>
-            <th className="text-foreground pb-2 font-medium">Description</th>
-          </tr>
-        </thead>
-        <tbody className="text-secondary-foreground">
-          {props.map((prop, i) => (
-            <tr
-              key={prop.name}
-              className={i < props.length - 1 ? 'border-b border-foreground/50' : ''}
-            >
-              <td className="py-2 pr-4 font-mono text-base text-foreground">{prop.name}</td>
-              <td className="py-2 pr-4 font-mono text-base">{prop.type}</td>
-              <td className="py-2 pr-4 font-mono text-base">{prop.default}</td>
-              <td className="py-2">{prop.description}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="text-foreground font-medium">Prop</TableHead>
+          <TableHead className="text-foreground font-medium">Type</TableHead>
+          <TableHead className="text-foreground font-medium">Default</TableHead>
+          <TableHead className="text-foreground font-medium">Description</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {props.map(prop => (
+          <TableRow key={prop.name}>
+            <TableCell className="font-mono text-base text-foreground">{prop.name}</TableCell>
+            <TableCell className="font-mono text-base">{prop.type}</TableCell>
+            <TableCell className="font-mono text-base">{prop.default}</TableCell>
+            <TableCell>{prop.description}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
