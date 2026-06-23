@@ -39,6 +39,7 @@ export const sidebarSections: SidebarSection[] = [
       { label: 'Slider', href: '/components/slider' },
       { label: 'SmartScrollbar', href: '/components/smart-scrollbar' },
       { label: 'Switch', href: '/components/switch-toggle' },
+      { label: 'Table', href: '/components/table' },
       { label: 'Tabs', href: '/components/tabs' },
       { label: 'Toast', href: '/components/toast' },
       { label: 'ToolButton', href: '/components/tool-button' },

@@ -38,6 +38,7 @@ const componentGroups = [
       { label: 'Tooltip', href: '/components/tooltip' },
       { label: 'HoverCard', href: '/components/hover-card' },
       { label: 'ScrollArea', href: '/components/scroll-area' },
+      { label: 'Table', href: '/components/table' },
       { label: 'Toast / Sonner', href: '/components/toast' },
     ],
   },
