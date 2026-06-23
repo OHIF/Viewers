@@ -105,8 +105,26 @@ export function useViewportSliceSync({
     const firstData = Array.isArray(viewportData.data) ? viewportData.data[0] : viewportData.data;
     const isVolumeData = !!(firstData && (firstData.volume || firstData.volumeId));
 
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    if (viewport && !isVolume3DViewportType(viewport)) {
+    // Last values we pushed, so re-seeding on camera changes does not churn React
+    // state on pure pan/zoom (which keep the slice geometry unchanged).
+    const lastSlice = { imageIndex: -1, numberOfSlices: -1 };
+
+    const pushSliceData = (imageIndex: number, numberOfSlices: number) => {
+      if (imageIndex === lastSlice.imageIndex && numberOfSlices === lastSlice.numberOfSlices) {
+        return;
+      }
+      lastSlice.imageIndex = imageIndex;
+      lastSlice.numberOfSlices = numberOfSlices;
+      setImageSliceData({ imageIndex, numberOfSlices });
+    };
+
+    // Seeds the shared slice state from the live viewport. Re-run on the initial
+    // effect and on camera/orientation changes (below).
+    const syncFromViewport = () => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || isVolume3DViewportType(viewport)) {
+        return;
+      }
       try {
         const currentImageIndex = viewport.getCurrentImageIdIndex();
         // For an image stack the slice count is known from the bound data; only
@@ -114,14 +132,13 @@ export function useViewportSliceSync({
         const currentNumberOfSlices =
           (!isVolumeData && firstData?.imageIds?.length) || viewport.getNumberOfSlices();
 
-        setImageSliceData({
-          imageIndex: currentImageIndex,
-          numberOfSlices: currentNumberOfSlices,
-        });
+        pushSliceData(currentImageIndex, currentNumberOfSlices);
       } catch (error) {
         console.warn(error);
       }
-    }
+    };
+
+    syncFromViewport();
 
     const { viewportType } = viewportData;
     const eventId =
@@ -143,16 +160,21 @@ export function useViewportSliceSync({
       }
       const nextNumberOfSlices = viewport.getNumberOfSlices();
 
-      setImageSliceData({
-        imageIndex: nextImageIndex,
-        numberOfSlices: nextNumberOfSlices,
-      });
+      pushSliceData(nextImageIndex, nextNumberOfSlices);
     };
 
     element.addEventListener(eventId, updateIndex);
+    // Native ("next") viewports keep the same viewportData across a stack->volume
+    // transition or an orientation change, so this effect does not re-run and the
+    // slice-navigation event above may not fire until the first scroll, leaving the
+    // scrollbar unseeded (or stale, with a now-wrong slice count). CAMERA_MODIFIED
+    // fires on those orientation/geometry changes, so re-seed from the viewport
+    // then; the pushSliceData guard makes pan/zoom (same geometry) a no-op.
+    element.addEventListener(Enums.Events.CAMERA_MODIFIED, syncFromViewport);
 
     return () => {
       element.removeEventListener(eventId, updateIndex);
+      element.removeEventListener(Enums.Events.CAMERA_MODIFIED, syncFromViewport);
     };
   }, [viewportData, element, viewportId, cornerstoneViewportService, setImageSliceData]);
 }
