@@ -54,7 +54,7 @@ export default function getCornerstoneViewportType(
         return Enums.ViewportType.ECG_NEXT;
       default:
         throw new Error(
-          `Invalid viewport type: ${viewportType}. Valid types are: stack, volume, video, wholeslide, ecg`
+          `Invalid viewport type: ${viewportType}. Valid types are: stack, volume, orthographic, volume3d, video, wholeslide, ecg`
         );
     }
   }

@@ -41,8 +41,15 @@ const ALLOWLIST = new Set([
   'getToolbarModule.tsx',
 ]);
 
-// Matches an actual flag READ: the accessor call or the appConfig field access.
-const READ_PATTERNS = [/\bisNextViewportsEnabled\s*\(/, /\bappConfig[?.]*\.useNextViewports\b/];
+// Matches an actual flag READ: the accessor call, dotted field access, bracket
+// access, or destructuring off appConfig (so `appConfig['useNextViewports']` and
+// `const { useNextViewports } = appConfig` cannot silently bypass the guard).
+const READ_PATTERNS = [
+  /\bisNextViewportsEnabled\s*\(/,
+  /\bappConfig[?.]*\.useNextViewports\b/,
+  /\bappConfig\s*\[\s*['"]useNextViewports['"]\s*\]/,
+  /\{[^}]*\buseNextViewports\b[^}]*\}\s*=\s*appConfig\b/,
+];
 
 function isCommentLine(line) {
   const t = line.trim();

@@ -1023,6 +1023,13 @@ class CornerstoneViewportService
     // displayArea via setViewState — instead of the legacy setStack/setProperties/
     // setCamera surface, which a direct PLANAR_NEXT viewport does not expose.
     if (csUtils.isGenericViewport(viewport)) {
+      // Native stacks arrive as PLANAR_NEXT and bypass the legacy STACK-typed
+      // invalid-stack guard upstream, so guard empty/malformed stack data here
+      // before registering and indexing imageIds below.
+      if (!imageIds?.length) {
+        return;
+      }
+
       const dataId = displaySetInstanceUIDs[0];
 
       // Register through the backend's ref-counted registry (§4.7) instead of the
@@ -1416,7 +1423,11 @@ class CornerstoneViewportService
       } else {
         await viewport.setVolumes(baseVolumeInputs);
       }
-    } else if (volumeInputArray.length) {
+    } else if (volumeInputArray.length && !csUtils.isGenericViewport(viewport)) {
+      // Generic ("next") viewports don't expose the legacy setVolumes surface. A
+      // generic overlay-only mount (no base volume) skips the native block above
+      // (gated on filteredVolumeInputArray.length) and must not fall through to
+      // setVolumes here; its overlays are added via _addOverlayRepresentations below.
       await viewport.setVolumes(volumeInputArray);
     }
 
@@ -1594,7 +1605,11 @@ class CornerstoneViewportService
       }
     }
 
-    this.viewportsDisplaySets.set((viewport as { id: string }).id, displaySetInstanceUIDs);
+    // Do NOT overwrite viewportsDisplaySets here. The caller (_setVolumeViewport)
+    // already populated it with the COMPLETE set (base volumes + SEG/RT/fusion
+    // overlays) before this native mount; writing back the base-volume-only ids
+    // would drop the overlay UIDs from getViewportDisplaySets() and the later
+    // presentation/hydration flows.
 
     await this._addOverlayRepresentations(overlayProcessingResults);
     nativeViewport.render();

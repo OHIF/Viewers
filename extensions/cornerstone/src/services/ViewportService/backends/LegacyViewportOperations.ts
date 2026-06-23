@@ -184,7 +184,11 @@ export const legacyViewportOperations: IViewportOperations = {
   },
 
   setVolumeRenderingQuality(viewport: CoreTypes.IViewport, volumeQuality: number): void {
-    const { actor } = (viewport as unknown as CoreTypes.IVolumeViewport).getActors()[0];
+    const actorEntry = (viewport as unknown as CoreTypes.IVolumeViewport).getActors()[0];
+    if (!actorEntry) {
+      return;
+    }
+    const { actor } = actorEntry;
     const mapper = (actor as unknown as VtkActorChain['actor']).getMapper();
     const image = mapper.getInputData() as {
       getDimensions: () => number[];
@@ -204,7 +208,11 @@ export const legacyViewportOperations: IViewportOperations = {
   },
 
   shiftVolumeOpacityPoints(viewport: CoreTypes.IViewport, shift: number): void {
-    const { actor } = (viewport as unknown as CoreTypes.IVolumeViewport).getActors()[0];
+    const actorEntry = (viewport as unknown as CoreTypes.IVolumeViewport).getActors()[0];
+    if (!actorEntry) {
+      return;
+    }
+    const { actor } = actorEntry;
     const ofun = (actor as unknown as VtkActorChain['actor']).getProperty().getScalarOpacity(0) as {
       getSize: () => number;
       getNodeValue: (i: number, v: number[]) => void;
@@ -233,7 +241,11 @@ export const legacyViewportOperations: IViewportOperations = {
   },
 
   setVolumeLighting(viewport: CoreTypes.IViewport, options: VolumeLightingOptions): void {
-    const { actor } = (viewport as unknown as CoreTypes.IVolumeViewport).getActors()[0];
+    const actorEntry = (viewport as unknown as CoreTypes.IVolumeViewport).getActors()[0];
+    if (!actorEntry) {
+      return;
+    }
+    const { actor } = actorEntry;
     const property = (actor as unknown as VtkActorChain['actor']).getProperty() as {
       setShade: (v: boolean) => void;
       setAmbient: (v: number) => void;

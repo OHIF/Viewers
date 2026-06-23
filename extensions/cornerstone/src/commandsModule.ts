@@ -906,6 +906,12 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
+      // Stale/invalid viewport ids resolve to undefined; bail out before the VOI
+      // apply + render below would throw.
+      if (!viewport) {
+        return;
+      }
+
       // Legacy volume viewports target a specific volume; the command owns that
       // resolution (it needs the service). The operations backend applies the VOI
       // (legacy setProperties vs native setDisplaySetPresentation on the active binding).

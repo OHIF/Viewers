@@ -44,11 +44,21 @@ export function resolveNextViewportsEnabled(appConfigValue: unknown): boolean {
  */
 export function toggleNextViewportsAndReload(): void {
   const next = !isNextViewportsEnabled();
+  let persisted = false;
   try {
     window.localStorage?.setItem(NEXT_VIEWPORTS_OVERRIDE_KEY, String(next));
+    persisted = true;
   } catch {
-    // ignore — without persistence the reload below still applies the in-memory flip
+    // localStorage unavailable — the in-memory flip cannot survive a reload.
   }
   setNextViewportsEnabled(next);
-  window.location.reload();
+  if (persisted) {
+    window.location.reload();
+  } else {
+    // Reloading would wipe the in-memory flip and re-read the old appConfig value,
+    // so the backend would not actually switch. Skip the reload and warn instead.
+    console.warn(
+      '[next] Could not persist the viewport toggle (localStorage unavailable); reload skipped so the flip is not silently lost.'
+    );
+  }
 }

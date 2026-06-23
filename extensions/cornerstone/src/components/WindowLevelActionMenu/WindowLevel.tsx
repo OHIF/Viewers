@@ -28,6 +28,19 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
   // (because `foregroundDisplaySets` was still empty at mount) — otherwise the
   // tab stays pinned to CT once the foreground (PT) layer resolves.
   useEffect(() => {
+    // If the active tab's display set is no longer in the viewport (e.g. the
+    // viewport switched to a different study/series), drop the now-stale
+    // selection — including a user pick — so it re-defaults instead of leaving an
+    // invalid UID that later fails validateActiveDisplaySet.
+    const activeStillPresent = viewportDisplaySets?.some(
+      ds => ds.displaySetInstanceUID === activeDisplaySetUID
+    );
+    if (activeDisplaySetUID && viewportDisplaySets?.length && !activeStillPresent) {
+      userSelectedRef.current = false;
+      setActiveDisplaySetUID(defaultDisplaySetUID);
+      return;
+    }
+
     if (
       !userSelectedRef.current &&
       defaultDisplaySetUID &&
@@ -35,7 +48,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
     ) {
       setActiveDisplaySetUID(defaultDisplaySetUID);
     }
-  }, [activeDisplaySetUID, defaultDisplaySetUID]);
+  }, [activeDisplaySetUID, defaultDisplaySetUID, viewportDisplaySets]);
 
   // Use the hook with the active display set
   const { windowLevelPresets, setWindowLevel } = useViewportRendering(viewportId, {

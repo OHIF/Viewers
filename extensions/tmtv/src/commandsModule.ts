@@ -266,6 +266,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       // comes from the view reference. Bridged so both lanes work.
       const focalPoint = getViewportFocalPoint(viewport);
 
+      // Native viewports may not resolve a focal point; writing undefined into the
+      // annotation would invalidate its ROI-threshold coordinates.
+      if (!focalPoint) {
+        return;
+      }
+
       const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
         ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
@@ -294,6 +300,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       // get the current focal point (bridged: native viewports use the view reference)
       const focalPointToEnd = getViewportFocalPoint(viewport);
+      if (!focalPointToEnd) {
+        return;
+      }
       annotation.data.endCoordinate = focalPointToEnd;
 
       // IMPORTANT: invalidate the toolData for the cached stat to get updated

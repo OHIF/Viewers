@@ -339,6 +339,15 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       return;
     }
 
+    // A stale/invalid segmentationId yields no segmentation; fail fast with a clear
+    // message instead of dereferencing representationData deep inside the backend
+    // classification below.
+    if (!segmentation) {
+      throw new Error(
+        `SegmentationService: cannot add representation - segmentation "${segmentationId}" not found.`
+      );
+    }
+
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
     let isConverted = false;
