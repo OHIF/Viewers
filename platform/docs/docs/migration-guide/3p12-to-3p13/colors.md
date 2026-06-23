@@ -11,7 +11,7 @@ This guide covers migrating from legacy color classes to the new ui-next color s
 
 ## Current State (3.13+)
 
-The OHIF Viewer now uses the new [ui-next color system](/colors-and-theming) throughout. Some legacy UI components in the `platform/ui` package may still reference legacy color classes; use the mappings below to migrate them.
+The OHIF Viewer is now built entirely with ui-next components, which use the [new color system](/colors-and-theming). The legacy components in `platform/ui` remain on the old color system. For reference, the table below maps the legacy colors to their ui-next equivalents.
 
 ## Color Mapping Reference
 
