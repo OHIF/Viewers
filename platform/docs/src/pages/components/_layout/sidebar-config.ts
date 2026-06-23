@@ -13,7 +13,7 @@ export const sidebarSections: SidebarSection[] = [
     title: 'Foundations',
     items: [
       { label: 'Overview', href: '/components' },
-      { label: 'Colors & Theming', href: '/theming' },
+      { label: 'Colors & Theming', href: '/colors-and-theming' },
       { label: 'Iconography', href: '/components/icons' },
     ],
   },
