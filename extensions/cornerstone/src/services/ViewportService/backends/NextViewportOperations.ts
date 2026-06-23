@@ -24,7 +24,7 @@ import type {
 type NativePlanarViewport = CoreTypes.IViewport & {
   getViewReference?: () => CoreTypes.ViewReference;
   resetViewState?: () => void;
-  resetProperties?: () => void;
+  resetDisplaySetPresentation?: (dataId?: string) => void;
   getZoom?: () => number;
   setZoom?: (zoom: number) => void;
 };
@@ -74,7 +74,8 @@ export const nextViewportOperations: IViewportOperations = {
 
   reset(viewport: CoreTypes.IViewport): void {
     const vp = viewport as NativePlanarViewport;
-    vp.resetProperties?.();
+    // Reset the per-display-set presentation (VOI/colormap/invert) to defaults.
+    vp.resetDisplaySetPresentation?.();
     // No resetCamera on PLANAR_NEXT; resetViewState resets pan/zoom/rotation/orientation/flip.
     vp.resetViewState?.();
   },
