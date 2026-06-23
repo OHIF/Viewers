@@ -86,7 +86,7 @@ export class NextSegmentationBackend implements ISegmentationBackend {
     // primaryLabelmapId map via its `||=` guards, so this needs NO cornerstone change.
     const labelmaps: Record<
       string,
-      { labelmapId: string; type: 'stack'; imageIds: string[]; referencedImageIds: string[] }
+      { labelmapId: string; storageKind: 'stack'; imageIds: string[]; referencedImageIds: string[] }
     > = {};
     const segmentBindings: Record<number, { labelmapId: string; labelValue: number }> = {};
 
@@ -94,7 +94,7 @@ export class NextSegmentationBackend implements ISegmentationBackend {
       const labelmapId = `${segmentationId}-storage-${index}`;
       labelmaps[labelmapId] = {
         labelmapId,
-        type: 'stack',
+        storageKind: 'stack',
         imageIds: group.map(image => image.imageId),
         referencedImageIds,
       };

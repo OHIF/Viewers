@@ -37,6 +37,7 @@ import type { PublicViewportOptions } from './services/ViewportService/Viewport'
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { getViewportFocalPoint } from './utils/getViewportPresentation';
+import { isNextViewportsEnabled } from './utils/nextViewports';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
@@ -282,6 +283,7 @@ export {
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
   getViewportFocalPoint,
+  isNextViewportsEnabled,
   dicomLoaderService,
   // Export all stores
   useLutPresentationStore,

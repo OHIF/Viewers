@@ -1,3 +1,4 @@
+import { isNextViewportsEnabled } from '@ohif/extension-cornerstone';
 import {
   ctAXIAL,
   ctCORONAL,
@@ -10,6 +11,11 @@ import {
   ptCORONAL,
   ptSAGITTAL,
 } from './utils/hpViewports';
+
+// Initial PT opacity for the fusion viewports on the native ("next") path. The
+// legacy default (set in hpViewports) is 0.9; native uses a lower, more
+// CT-weighted starting blend for now.
+const NEXT_FUSION_PT_OPACITY = 0.4;
 
 /**
  * represents a 3x4 viewport layout configuration. The layout displays CT axial, sagittal, and coronal
@@ -339,6 +345,19 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
 };
 
 function getHangingProtocolModule() {
+  // Override the fusion PT initial opacity for the native ("next") path. Done
+  // here (not at module load) because the useNextViewports flag is set during
+  // cornerstone preRegistration, which runs before this module is gathered.
+  if (isNextViewportsEnabled()) {
+    [fusionAXIAL, fusionSAGITTAL, fusionCORONAL].forEach(viewport => {
+      const ptDisplaySet = viewport.displaySets?.find(ds => ds.id === 'ptDisplaySet');
+      const colormap = ptDisplaySet?.options?.colormap as { opacity?: number } | undefined;
+      if (colormap) {
+        colormap.opacity = NEXT_FUSION_PT_OPACITY;
+      }
+    });
+  }
+
   return [
     {
       name: ptCT.id,

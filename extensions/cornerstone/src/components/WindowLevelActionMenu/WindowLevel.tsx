@@ -1,15 +1,31 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { useTranslation } from 'react-i18next';
 
 export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
-  const { viewportDisplaySets } = useViewportRendering(viewportId);
+  const { viewportDisplaySets, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
+  // Default the active tab to the foreground layer (e.g. the PT in a PET/CT
+  // fusion), matching the other window-level controls, instead of the grayscale
+  // background (CT) at index 0. The CT/PT tabs still let the user switch.
+  const defaultDisplaySetUID =
+    foregroundDisplaySets?.length > 0
+      ? foregroundDisplaySets[foregroundDisplaySets.length - 1].displaySetInstanceUID
+      : viewportDisplaySets?.[0]?.displaySetInstanceUID;
   const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
-    viewportDisplaySets?.[0]?.displaySetInstanceUID
+    defaultDisplaySetUID
   );
+
+  // Adopt the foreground default if the display sets resolve after first render
+  // (and the user has not picked a tab yet).
+  useEffect(() => {
+    if (!activeDisplaySetUID && defaultDisplaySetUID) {
+      setActiveDisplaySetUID(defaultDisplaySetUID);
+    }
+  }, [activeDisplaySetUID, defaultDisplaySetUID]);
 
   // Use the hook with the active display set
   const { windowLevelPresets, setWindowLevel } = useViewportRendering(viewportId, {

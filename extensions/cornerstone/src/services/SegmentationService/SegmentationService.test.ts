@@ -1646,7 +1646,7 @@ describe('SegmentationService', () => {
         ]);
         expect(data.labelmaps['segmentationId-storage-0'].imageIds).toEqual(['g0i1', 'g0i2']);
         expect(data.labelmaps['segmentationId-storage-1'].imageIds).toEqual(['g1i1', 'g1i2']);
-        expect(data.labelmaps['segmentationId-storage-0'].type).toBe('stack');
+        expect(data.labelmaps['segmentationId-storage-0'].storageKind).toBe('stack');
 
         // segment->layer bindings recovered from the distinct non-zero voxel values
         expect(data.segmentBindings).toEqual({

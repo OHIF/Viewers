@@ -6,6 +6,7 @@ import {
 } from './utils/getViewportPresentation';
 // TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
 import { isNextViewportsEnabled } from './utils/nextViewports';
+import { isVolumeRenderingViewport } from './utils/getLegacyViewportType';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -315,7 +316,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           };
         }
 
-        if (viewport.type !== 'orthographic') {
+        // Recognize native "next" volume viewports too. A next MPR/volume viewport
+        // runs as PLANAR_NEXT (requestedType PLANAR_NEXT, not ORTHOGRAPHIC), so this
+        // checks volume content via getCurrentMode(). Without it the PT threshold
+        // control stayed disabled on the next backend (e.g. TMTV fusion/PT).
+        if (!isVolumeRenderingViewport(viewport)) {
           return {
             disabled: true,
           };
@@ -338,7 +343,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport || viewport.type !== 'orthographic') {
+        if (!viewport || !isVolumeRenderingViewport(viewport)) {
           return {
             disabled: true,
           };
