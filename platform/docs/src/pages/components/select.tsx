@@ -70,9 +70,9 @@ function SelectPageContent() {
 
         <ExampleBlock title="With label">
           <div className="flex items-center gap-4">
-            <Label>Display Set</Label>
+            <Label htmlFor="display-set-select">Display Set</Label>
             <Select defaultValue="ct">
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger id="display-set-select" className="w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

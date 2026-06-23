@@ -267,6 +267,7 @@ function CopyThemeLink({ themeName }: { themeName: string }) {
     <a
       href="#"
       onClick={handleCopy}
+      aria-label={`Copy ${themeName} theme tokens`}
       className="whitespace-nowrap text-[13px] no-underline transition-colors"
       style={{ color: copied ? '#6ee7b7' : '#7cacf8' }}
     >
@@ -300,6 +301,7 @@ function ThemeRow({
         href={previewUrl}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={`Preview ${name} theme in Viewer`}
         className="whitespace-nowrap text-[13px] text-primary no-underline hover:underline"
       >
         Preview in Viewer
@@ -353,14 +355,21 @@ function ContrastTable({
 
 function Accordion({ title, id, children }: { title: string; id?: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const buttonId = id ? `${id}-button` : undefined;
+  const contentId = id ? `${id}-content` : undefined;
   return (
     <div id={id} className="my-2 mb-9 rounded-lg border border-[#222] bg-[#0a0a0a] px-5">
       <button
+        id={buttonId}
+        type="button"
+        aria-expanded={open}
+        aria-controls={contentId}
         onClick={() => setOpen(!open)}
         className="flex w-full items-center bg-transparent py-4 text-left text-lg font-normal text-white"
         style={{ border: 'none', cursor: 'pointer' }}
       >
         <span
+          aria-hidden="true"
           className="mr-2 inline-block text-[#7cacf8] transition-transform"
           style={{ transform: open ? 'rotate(90deg)' : 'none' }}
         >
@@ -369,7 +378,7 @@ function Accordion({ title, id, children }: { title: string; id?: string; childr
         {title}
       </button>
       {open && (
-        <div className="mb-4 border-t border-[#222] pt-4">
+        <div id={contentId} role="region" aria-labelledby={buttonId} className="mb-4 border-t border-[#222] pt-4">
           {children}
         </div>
       )}
