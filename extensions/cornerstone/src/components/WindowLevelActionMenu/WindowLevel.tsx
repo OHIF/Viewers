@@ -18,11 +18,21 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
   const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
     defaultDisplaySetUID
   );
+  // Tracks whether the user has explicitly picked a tab, so the foreground-default
+  // sync below stops overriding their choice.
+  const userSelectedRef = useRef(false);
 
   // Adopt the foreground default if the display sets resolve after first render
-  // (and the user has not picked a tab yet).
+  // (and the user has not picked a tab yet). This must re-sync even when the
+  // initial render already seeded `activeDisplaySetUID` with the CT fallback
+  // (because `foregroundDisplaySets` was still empty at mount) — otherwise the
+  // tab stays pinned to CT once the foreground (PT) layer resolves.
   useEffect(() => {
-    if (!activeDisplaySetUID && defaultDisplaySetUID) {
+    if (
+      !userSelectedRef.current &&
+      defaultDisplaySetUID &&
+      activeDisplaySetUID !== defaultDisplaySetUID
+    ) {
       setActiveDisplaySetUID(defaultDisplaySetUID);
     }
   }, [activeDisplaySetUID, defaultDisplaySetUID]);
@@ -65,6 +75,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
           <Tabs
             value={activeDisplaySetUID}
             onValueChange={displaySetUID => {
+              userSelectedRef.current = true;
               setActiveDisplaySetUID(displaySetUID);
             }}
           >
