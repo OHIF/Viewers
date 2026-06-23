@@ -68,7 +68,7 @@ function DialogPageContent() {
             <DialogTrigger asChild>
               <Button variant="default">Open Dialog</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="showcase-portal">
               <DialogHeader>
                 <DialogTitle>Confirm Action</DialogTitle>
               </DialogHeader>
@@ -92,7 +92,7 @@ function DialogPageContent() {
             <DialogTrigger asChild>
               <Button variant="secondary">Edit Label</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="showcase-portal">
               <DialogHeader>
                 <DialogTitle>Measurement Label</DialogTitle>
                 <DialogDescription>
@@ -128,7 +128,7 @@ function DialogPageContent() {
             <DialogTrigger asChild>
               <Button variant="outline">Open Draggable</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="showcase-portal">
               <DialogHeader>
                 <DialogTitle>Draggable Dialog</DialogTitle>
               </DialogHeader>

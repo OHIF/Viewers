@@ -599,12 +599,22 @@ a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
   }
 }
 
-/* Extend isolation to Radix portal content (Dialog, Popover, Select, etc.).
-   Portals render as direct body children outside #__docusaurus and
-   .showcase-isolated, so they miss both the revert-layer and scoped preflight.
+/* Extend isolation to the showcase demos' portal content. Radix and Sonner
+   render floating UI (Dialog, Popover, Select, DropdownMenu, Tooltip, toasts)
+   as direct body children — outside #__docusaurus and .showcase-isolated — so
+   it misses both the revert-layer and the scoped preflight.
+
+   Scoped to the demos' OWN portal roots, NOT every body child:
+     - [data-radix-popper-content-wrapper]  Popover, Combobox, DropdownMenu,
+                                             Select, Tooltip (all popper-based)
+     - .showcase-portal                      explicit hook on Dialog demo content
+                                             (Radix Dialog isn't popper-based)
+     - [data-sonner-toaster]                 Sonner toast container
+   This deliberately leaves third-party body portals (medium-zoom image overlay,
+   Algolia DocSearch modal) untouched, which the previous catch-all reset broke.
    :where() keeps specificity at zero so Tailwind utility classes always win. */
-:where(body > :not(#__docusaurus):not(script):not(style):not(link)) {
-  font-family: 'Inter', sans-serif;
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]) {
+  font-family: Inter, sans-serif;
 
   &,
   * {
@@ -614,15 +624,15 @@ a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
   }
 }
 
-*:where(body > :not(#__docusaurus):not(script):not(style):not(link)),
-*:where(body > :not(#__docusaurus):not(script):not(style):not(link)) * {
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]),
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]) * {
   box-sizing: border-box;
   border-width: 0;
   border-style: solid;
   border-color: transparent;
 }
 
-:where(body > :not(#__docusaurus):not(script):not(style):not(link)) :where(button, input, select, textarea) {
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]) :where(button, input, select, textarea) {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;

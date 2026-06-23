@@ -161,8 +161,19 @@ function IconsPageContent() {
   const [iconSize, setIconSize] = useState(24);
   const [copiedIcon, setCopiedIcon] = useState<string | null>(null);
 
-  const handleCopyIcon = useCallback((name: string) => {
-    navigator.clipboard.writeText(name);
+  const handleCopyIcon = useCallback(async (name: string) => {
+    try {
+      await navigator.clipboard.writeText(name);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = name;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
     setCopiedIcon(name);
     setTimeout(() => setCopiedIcon(null), 1500);
   }, []);
@@ -240,6 +251,7 @@ function IconsPageContent() {
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               &times;
