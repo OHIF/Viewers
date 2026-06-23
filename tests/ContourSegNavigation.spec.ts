@@ -1,7 +1,7 @@
 import {
   expect,
   test,
-  visitStudy,
+  visitStudyAndHydrate,
   getSvgAttribute,
   navigateWithViewportArrow,
   waitForViewportsRendered,
@@ -10,17 +10,14 @@ import { expectRowSelected } from './utils/assertions';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
-test.beforeEach(async ({
-  page,
-  leftPanelPageObject,
-  DOMOverlayPageObject,
-  rightPanelPageObject
-}) => {
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
-  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
-  await page.waitForTimeout(5000);
-  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject, rightPanelPageObject }) => {
+  await visitStudyAndHydrate({
+    page,
+    leftPanelPageObject,
+    DOMOverlayPageObject,
+    studyInstanceUID,
+    modality: 'RTSTRUCT',
+  });
   // Click segment 0 in the right panel to establish a known starting position
   await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
   await page.waitForTimeout(5000);

@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.13.0-beta.89",
+  "version": "3.13.0-beta.101",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -83,6 +83,10 @@
     "tailwindcss-animate": "1.0.7",
     "typescript": "5.5.4",
     "url-loader": "4.1.1"
+  },
+  "devDependencies": {
+    "@ohif/core": "workspace:*",
+    "@ohif/ui-next": "workspace:*"
   },
   "browserslist": {
     "production": [

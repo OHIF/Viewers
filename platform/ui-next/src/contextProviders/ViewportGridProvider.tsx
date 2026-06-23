@@ -9,6 +9,17 @@ import React, {
 import merge from 'lodash.merge';
 
 import PropTypes from 'prop-types';
+// NOTE: `@ohif/core` is intentionally NOT declared in this package's
+// package.json (neither as a dependency nor a peerDependency). It is treated as
+// an implicit peer, satisfied by the consuming application via the monorepo
+// workspace. Declaring it as `"@ohif/core": "workspace:*"` was tried and
+// reverted: the release/publish process does not rewrite `workspace:*` ranges
+// inside `peerDependencies`, so the published tarball shipped a literal
+// `workspace:*` peer that non-pnpm package managers (npm/yarn) cannot resolve.
+// A plain `"*"` range would be an acceptable workaround if we ever want it
+// declared, but for now it stays undeclared. Note: the docs site (platform/docs)
+// must therefore add `@ohif/core` as a devDependency itself, because pulling in
+// the ui-next barrel reaches this module and nothing else anchors the import.
 import { ViewportGridService, utils } from '@ohif/core';
 
 const DEFAULT_STATE: AppTypes.ViewportGrid.State = {

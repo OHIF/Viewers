@@ -8,7 +8,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:24.0.0
+    - image: cimg/node:24.15.0
       environment:
         TERM: xterm
         QUICK_BUILD: true
@@ -37,7 +37,7 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command: pnpm install --no-frozen-lockfile
+          command: pnpm install --frozen-lockfile
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
@@ -78,7 +78,7 @@ jobs:
       - install_pnpm
       - run:
           name: Install Dependencies
-          command: pnpm install --no-frozen-lockfile
+          command: pnpm install --frozen-lockfile
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
@@ -170,7 +170,13 @@ jobs:
             git config --global user.name "ohif-bot"
       - run:
           name: Authenticate with NPM registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -191,7 +197,7 @@ jobs:
           at: ~/repo
       - run:
           name: Install Dependencies
-          command: pnpm install --no-frozen-lockfile
+          command: pnpm install --frozen-lockfile
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -202,7 +208,13 @@ jobs:
             git config --global user.name "ohif-bot"
       - run:
           name: Authenticate with NPM registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -224,8 +236,14 @@ jobs:
           command: |
             node ./publish-version.mjs
       - run:
-          name: Again set the NPM registry (was deleted in the version script)
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          name: Re-assert the NPM auth token before publishing
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: publish package dist
           command: |
@@ -251,8 +269,11 @@ jobs:
             if [[ ! -e version.txt ]]; then
               exit 0
             else
-              # Remove npm config
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
@@ -285,8 +306,11 @@ jobs:
             if [[ ! -e version.txt ]]; then
               exit 0
             else
-              # Remove npm config
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
@@ -323,7 +347,11 @@ jobs:
               exit 0
             else
               echo "Building and pushing Docker image from the master branch (beta releases)"
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
 
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
@@ -357,7 +385,11 @@ jobs:
               exit 0
             else
               echo "Building and pushing ARM64 Docker image from the master branch (beta releases)"
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
@@ -389,7 +421,7 @@ jobs:
               -o Acquire::Retries=3 \
               -o Acquire::http::Timeout=20 \
               -o Acquire::https::Timeout=20
-            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
+            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6
       - run:
           name: Start Xvfb
           command: Xvfb :99 -screen 0 1920x1080x24 &

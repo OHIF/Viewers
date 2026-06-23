@@ -37,6 +37,7 @@ export class RightPanelPageObject {
 
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
+    const lockToggle = this.page.getByTestId('LockToggle');
 
     return {
       button: actionsButton,
@@ -47,13 +48,14 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Delete').click();
       },
+      // Opens the actions menu and returns the lock/unlock menu item locator
+      lockToggleMenuItem: async () => {
+        await actionsButton.click();
+        return lockToggle;
+      },
       toggleLock: async () => {
         await actionsButton.click();
-        await this.page.getByTestId('LockToggle').click();
-      },
-      unlock: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('Unlock').click();
+        await lockToggle.click();
       },
       rename: async (text: string) => {
         await actionsButton.click();
@@ -73,6 +75,26 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Duplicate').click();
       },
+      openChangeColor: async () => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+      },
+      changeColor: async (hex: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+        await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndSave(hex);
+      },
+      // This function assumes the user opens the change color dialog,
+      // but then cancels out of it instead of saving a new color.
+      cancelChangeColor: async (hex?: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+        if (hex) {
+          await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndCancel(hex);
+        } else {
+          await this.DOMOverlayPageObject.dialog.colorPicker.cancel();
+        }
+      },
     };
   }
 
@@ -85,6 +107,12 @@ export class RightPanelPageObject {
       },
       get title() {
         return row.getByTestId('data-row-title');
+      },
+      get lockIcon() {
+        return row.locator('g#Lock');
+      },
+      get rowDataColorHex() {
+        return row.getByTestId('data-row-colorhex');
       },
       click: async () => {
         await row.getByTestId('data-row-title').click();
@@ -229,6 +257,10 @@ export class RightPanelPageObject {
       rows: page.getByTestId('data-row'),
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
+      },
+      // get all the segment titles in the panel
+      getSegmentLabels: () => {
+        return page.getByTestId('data-row-title');
       },
       // No data-cy exists in this panel, using Segmentation header button
       locator: page.getByRole('button', { name: 'Segmentations' }),

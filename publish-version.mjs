@@ -30,26 +30,12 @@ async function run() {
       try {
         const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 
-        // Update the package version
+        // Bump only the package's own version. Internal @ohif/* references stay
+        // as workspace:* in the committed manifests (and therefore the lockfile,
+        // which records them as links), so pnpm-lock.yaml never drifts on a
+        // version bump and frozen installs keep working. pnpm publish rewrites
+        // workspace:* to the exact version in the published tarball only.
         packageJson.version = nextVersion;
-
-        // Update peerDependencies
-        if (packageJson.peerDependencies) {
-          for (const dep of Object.keys(packageJson.peerDependencies)) {
-            if (dep.startsWith('@ohif/')) {
-              packageJson.peerDependencies[dep] = nextVersion;
-            }
-          }
-        }
-
-        // Update dependencies
-        if (packageJson.dependencies) {
-          for (const dep of Object.keys(packageJson.dependencies)) {
-            if (dep.startsWith('@ohif/')) {
-              packageJson.dependencies[dep] = nextVersion;
-            }
-          }
-        }
 
         await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
         updatedFiles.push(packageJsonPath);
