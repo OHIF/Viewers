@@ -264,7 +264,10 @@ function getDisplaySets(viewportData, displaySetService) {
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
   let instanceNumber;
 
-  switch (viewportData.viewportType) {
+  // Native ("next") viewports collapse stack/volume onto a single PLANAR_NEXT
+  // viewportType, so switch on the persisted stack/volume data shape instead
+  // (falling back to viewportType for legacy viewportData).
+  switch (viewportData.dataShapeType ?? viewportData.viewportType) {
     case Enums.ViewportType.STACK:
       instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
       break;
@@ -331,8 +334,15 @@ function _getInstanceNumberFromVolume(
     return;
   }
 
-  const camera = cornerstoneViewport.getCamera();
-  const { viewPlaneNormal } = camera;
+  // Native ("next") viewports expose no getCamera; read the current view-plane
+  // normal from the view reference instead (legacy viewports use getCamera).
+  const viewPlaneNormal = utilities.isGenericViewport(cornerstoneViewport)
+    ? cornerstoneViewport.getViewReference?.()?.viewPlaneNormal
+    : cornerstoneViewport.getCamera().viewPlaneNormal;
+
+  if (!viewPlaneNormal) {
+    return;
+  }
   // checking if camera is looking at the acquisition plane (defined by the direction on the volume)
 
   const scanAxisNormal = direction.slice(6, 9);
