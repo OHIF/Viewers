@@ -85,9 +85,6 @@
     "typescript": "5.5.4",
     "url-loader": "4.1.1"
   },
-  "resolutions": {
-    "sharp": "0.34.5"
-  },
   "devDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/ui-next": "workspace:*"
