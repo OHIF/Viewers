@@ -332,6 +332,22 @@ export function useViewportRendering(
       if (properties.voiRange) {
         setVoiRange(properties.voiRange);
         voiRangeRef.current = properties.voiRange;
+      } else if (utilities.isGenericViewport(viewport)) {
+        // Native ("next") viewports store only explicit VOI overrides in the
+        // per-display-set presentation; a freshly shown series has none, so fall
+        // back to its computed default VOI. Without this, changing the series left
+        // the overlay showing the previous series' window level (legacy
+        // getProperties always returns the applied VOI, so only native was stale).
+        const defaultVOIRange = (
+          viewport as unknown as {
+            getDefaultVOIRange?: (id?: string) => { lower: number; upper: number } | undefined;
+          }
+        ).getDefaultVOIRange?.(dataId ?? activeDisplaySetInstanceUID);
+
+        if (defaultVOIRange) {
+          setVoiRange(defaultVOIRange);
+          voiRangeRef.current = defaultVOIRange;
+        }
       }
 
       if (properties.colormap?.opacity !== undefined) {
