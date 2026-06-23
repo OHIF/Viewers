@@ -22,10 +22,15 @@ export default function InteractivePicker({
 
   return (
     <div className="overflow-hidden rounded-lg border border-input/50">
-      <div className="flex flex-wrap gap-1 border-b border-input/50 bg-muted/40 px-3 py-2">
+      <div
+        role="tablist"
+        className="flex flex-wrap gap-1 border-b border-input/50 bg-muted/40 px-3 py-2"
+      >
         {options.map(o => (
           <button
             key={o.value}
+            role="tab"
+            aria-selected={active === o.value}
             onClick={() => setActive(o.value)}
             className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
               active === o.value
@@ -37,7 +42,10 @@ export default function InteractivePicker({
           </button>
         ))}
       </div>
-      <div className="flex min-h-[160px] items-center justify-center bg-muted/10 p-8">
+      <div
+        role="tabpanel"
+        className="flex min-h-[160px] items-center justify-center bg-muted/10 p-8"
+      >
         {renderPreview(active)}
       </div>
       <div className="border-t border-input/50 bg-muted/20 px-4 py-3">

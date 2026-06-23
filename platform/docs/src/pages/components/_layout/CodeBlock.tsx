@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface CodeBlockProps {
   code: string;
@@ -6,17 +6,31 @@ interface CodeBlockProps {
 
 export default function CodeBlock({ code }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code.trim());
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code.trim());
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = code.trim();
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="relative rounded-lg border border-input/50 bg-muted/30">
       <button
         onClick={handleCopy}
+        aria-label={copied ? 'Copied' : 'Copy code'}
         className="absolute top-3 right-3 rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground"
       >
         {copied ? 'Copied!' : 'Copy'}

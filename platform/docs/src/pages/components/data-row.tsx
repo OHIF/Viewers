@@ -31,6 +31,7 @@ function DataRowPageContent() {
 
   const props = [
     { name: 'number', type: 'number | null', default: '—', description: 'Display index. Renders a colored number box when provided.' },
+    { name: 'description', type: 'string', default: '—', description: 'Secondary text shown below the title (e.g. volume, stats).' },
     { name: 'title', type: 'string', default: '—', description: 'Primary text label. Long titles (>25 chars) get a tooltip.' },
     { name: 'colorHex', type: 'string', default: '—', description: 'Hex color for the dot indicator (e.g. segmentation color)' },
     { name: 'isSelected', type: 'boolean', default: 'false', description: 'Primary selection state (highlighted background + title)' },

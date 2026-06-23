@@ -11,12 +11,19 @@ function ToastPageContent() {
   const ExampleBlock = require('./_layout/ExampleBlock').default;
   const PropsTable = require('./_layout/PropsTable').default;
 
-  const props = [
-    { name: 'message', type: 'string', default: '—', description: 'The toast message text (first argument to toast())' },
-    { name: 'description', type: 'string', default: '—', description: 'Secondary description text below the message' },
-    { name: 'duration', type: 'number', default: '4000', description: 'Time in ms before the toast auto-dismisses' },
+  const toastOptions = [
+    { name: 'message', type: 'string', default: '—', description: 'The toast message text (first positional argument)' },
+    { name: 'description', type: 'string', default: '—', description: 'Secondary text below the message' },
+    { name: 'duration', type: 'number', default: '4000', description: 'Time in ms before auto-dismiss' },
     { name: 'action', type: 'ReactNode', default: '—', description: 'Action button rendered inside the toast' },
     { name: 'cancel', type: 'ReactNode', default: '—', description: 'Cancel button rendered inside the toast' },
+  ];
+
+  const toasterProps = [
+    { name: 'position', type: 'string', default: '"bottom-right"', description: 'Where toasts appear on screen' },
+    { name: 'expand', type: 'boolean', default: 'false', description: 'Expand toasts by default instead of stacking' },
+    { name: 'richColors', type: 'boolean', default: 'false', description: 'Use Sonner built-in colored backgrounds per type' },
+    { name: 'duration', type: 'number', default: '4000', description: 'Default auto-dismiss duration for all toasts' },
   ];
 
   return (
@@ -157,8 +164,12 @@ toast.promise(fetchData(), {
         />
       </Section>
 
-      <Section title="Props">
-        <PropsTable props={props} />
+      <Section title="toast() Options">
+        <PropsTable props={toastOptions} />
+      </Section>
+
+      <Section title="Toaster Props">
+        <PropsTable props={toasterProps} />
       </Section>
 
       <Toaster />
