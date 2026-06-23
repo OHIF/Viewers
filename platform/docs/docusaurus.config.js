@@ -1,6 +1,10 @@
 // read this text file
 const fs = require('fs');
-const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
+const rawVersion = fs.readFileSync('../../version.txt', 'utf8').trim();
+const [major, minor] = rawVersion.split('.');
+const versionLabel = rawVersion.includes('beta')
+  ? `${major}.${minor} Beta`
+  : `${major}.${minor}`;
 
 const ArchivedVersionsDropdownItems = [
   {
@@ -105,7 +109,7 @@ module.exports = {
           //     : undefined,
           versions: {
             current: {
-              label: `${versions} (Latest)`,
+              label: `${versionLabel} (Latest)`,
             },
           },
         },
@@ -187,12 +191,6 @@ module.exports = {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',
             label: 'Help',
-            position: 'left',
-          },
-          {
-            to: '/migration-guide/3p10-to-3p11/',
-            //activeBaseRegex: '(^/help$)|(/help)',
-            label: '3.11 Migration Guides',
             position: 'left',
           },
           {
