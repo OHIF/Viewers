@@ -56,7 +56,7 @@ export default function ComponentLayout({ title, description, children }: Compon
         <aside
           className={`
             fixed top-[60px] left-0 z-40 h-[calc(100vh-60px)] w-60 shrink-0 overflow-y-auto
-            border-r border-border bg-background pb-8
+            component-sidebar bg-background pb-8
             transition-transform duration-200
             lg:sticky lg:translate-x-0
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}

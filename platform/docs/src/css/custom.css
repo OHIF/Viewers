@@ -478,6 +478,12 @@ html[data-theme='dark'] .markdown a:hover {
   color: #99ccff;
 }
 
+/* Component sidebar — reset preflight borders that leak from .showcase-isolated */
+.component-sidebar,
+.component-sidebar * {
+  border-width: 0;
+}
+
 /* Horizontal rule styling */
 .markdown hr {
   height: 1px;
