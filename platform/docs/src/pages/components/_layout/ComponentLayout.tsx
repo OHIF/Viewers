@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import { useLocation } from '@docusaurus/router';
 import { sidebarSections } from './sidebar-config';
 import TableOfContents from './TableOfContents';
 
@@ -13,7 +14,7 @@ interface ComponentLayoutProps {
 export default function ComponentLayout({ title, description, children }: ComponentLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const contentRef = useRef<HTMLElement>(null);
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  const { pathname: currentPath } = useLocation();
 
   return (
     <Layout
