@@ -74,7 +74,7 @@ function LabelPageContent() {
 
       <Section title="Usage">
         <CodeBlock
-          code={`import { Label } from '@ohif/ui-next';
+          code={`import { Label, Input } from '@ohif/ui-next';
 
 <Label htmlFor="name">Patient Name</Label>
 <Input id="name" placeholder="Enter name..." />`}

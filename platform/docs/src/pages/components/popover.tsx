@@ -117,7 +117,7 @@ function PopoverPageContent() {
 
       <Section title="Usage">
         <CodeBlock
-          code={`import { Popover, PopoverTrigger, PopoverContent } from '@ohif/ui-next';
+          code={`import { Popover, PopoverTrigger, PopoverContent, Button } from '@ohif/ui-next';
 
 <Popover>
   <PopoverTrigger asChild>

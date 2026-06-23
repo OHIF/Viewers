@@ -160,6 +160,7 @@ function DropdownMenuPageContent() {
       <Section title="Usage">
         <CodeBlock
           code={`import {
+  Button,
   DropdownMenu, DropdownMenuTrigger,
   DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator,

@@ -118,6 +118,7 @@ function TooltipPageContent() {
           <CodeBlock
             code={`import {
   Tooltip, TooltipTrigger, TooltipContent, TooltipProvider,
+  Button,
 } from '@ohif/ui-next';
 
 // Wrap your app (or a subtree) in TooltipProvider once

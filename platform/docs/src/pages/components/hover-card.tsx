@@ -219,7 +219,8 @@ function HoverCardPageContent() {
         <CodeBlock
           code={`import {
   HoverCard, HoverCardTrigger, HoverCardContent,
-  Card, CardHeader, CardTitle, CardContent,
+  Card, CardHeader, CardTitle, CardContent, CardDescription,
+  Button, Icons,
 } from '@ohif/ui-next';
 
 // Basic hover card
