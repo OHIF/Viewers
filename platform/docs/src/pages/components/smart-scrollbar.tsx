@@ -231,6 +231,14 @@ function SmartScrollbarPageContent() {
     useByteArray,
     Button,
   } = require('../../../../ui-next/src/components');
+  const {
+    Table,
+    TableHeader,
+    TableBody,
+    TableHead,
+    TableRow,
+    TableCell,
+  } = require('../../../../ui-next/src/components/Table');
 
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
@@ -330,59 +338,33 @@ function SmartScrollbarPageContent() {
             <strong className="text-foreground">Customization Service</strong>.
           </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-base">
-            <thead>
-              <tr className="border-b border-foreground text-left">
-                <th className="text-foreground pb-2 pr-4 font-medium">Key</th>
-                <th className="text-foreground pb-2 pr-4 font-medium">Default</th>
-                <th className="text-foreground pb-2 font-medium">Description</th>
-              </tr>
-            </thead>
-            <tbody className="text-secondary-foreground">
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">variant</td>
-                <td className="py-2 pr-4 font-mono text-base">'progress'</td>
-                <td className="py-2">Progress scrollbar or legacy range input</td>
-              </tr>
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">showLoadedFill</td>
-                <td className="py-2 pr-4 font-mono text-base">true</td>
-                <td className="py-2">Show the neutral loaded/cached fill</td>
-              </tr>
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">showViewedFill</td>
-                <td className="py-2 pr-4 font-mono text-base">true</td>
-                <td className="py-2">Show the primary viewed-slice fill</td>
-              </tr>
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">showLoadedEndpoints</td>
-                <td className="py-2 pr-4 font-mono text-base">true</td>
-                <td className="py-2">Show endpoint caps at loaded range boundaries</td>
-              </tr>
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">showLoadingPattern</td>
-                <td className="py-2 pr-4 font-mono text-base">true</td>
-                <td className="py-2">Show dot-grid pattern while loading</td>
-              </tr>
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">viewedDwellMs</td>
-                <td className="py-2 pr-4 font-mono text-base">0</td>
-                <td className="py-2">Delay before marking a slice as viewed (ms)</td>
-              </tr>
-              <tr className="border-b border-foreground/50">
-                <td className="py-2 pr-4 font-mono text-base text-foreground">loadedBatchIntervalMs</td>
-                <td className="py-2 pr-4 font-mono text-base">200</td>
-                <td className="py-2">Coalesce loaded-state updates for performance (ms)</td>
-              </tr>
-              <tr>
-                <td className="py-2 pr-4 font-mono text-base text-foreground">indicator</td>
-                <td className="py-2 pr-4 font-mono text-base">{'{}'}</td>
-                <td className="py-2">Custom indicator SVG (totalWidth, totalHeight, renderIndicator)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-foreground font-medium">Key</TableHead>
+              <TableHead className="text-foreground font-medium">Default</TableHead>
+              <TableHead className="text-foreground font-medium">Description</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[
+              ['variant', "'progress'", 'Progress scrollbar or legacy range input'],
+              ['showLoadedFill', 'true', 'Show the neutral loaded/cached fill'],
+              ['showViewedFill', 'true', 'Show the primary viewed-slice fill'],
+              ['showLoadedEndpoints', 'true', 'Show endpoint caps at loaded range boundaries'],
+              ['showLoadingPattern', 'true', 'Show dot-grid pattern while loading'],
+              ['viewedDwellMs', '0', 'Delay before marking a slice as viewed (ms)'],
+              ['loadedBatchIntervalMs', '200', 'Coalesce loaded-state updates for performance (ms)'],
+              ['indicator', '{}', 'Custom indicator SVG (totalWidth, totalHeight, renderIndicator)'],
+            ].map(([key, defaultVal, desc]) => (
+              <TableRow key={key}>
+                <TableCell className="font-mono text-base text-foreground">{key}</TableCell>
+                <TableCell className="font-mono text-base">{defaultVal}</TableCell>
+                <TableCell>{desc}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
         <div className="mt-4 text-lg text-secondary-foreground leading-relaxed">
           <p>
             All keys are prefixed with{' '}
@@ -391,7 +373,7 @@ function SmartScrollbarPageContent() {
             advanced indicator API, see the{' '}
             <a
               href="/platform/services/customization-service/ViewportScrollbar"
-              className="text-primary hover:text-primary/80 underline"
+              className="text-primary hover:underline"
             >
               Viewport Scrollbar Customization
             </a>{' '}
@@ -458,25 +440,25 @@ viewed.setByte(currentIndex);
       <Section title="Props">
         <div className="space-y-8">
           <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 12px 0' }}>
+            <h3 className="text-highlight mb-3 text-base font-semibold">
               SmartScrollbar
             </h3>
             <PropsTable props={scrollbarProps} />
           </div>
           <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 12px 0' }}>
+            <h3 className="text-highlight mb-3 text-base font-semibold">
               SmartScrollbarFill
             </h3>
             <PropsTable props={fillProps} />
           </div>
           <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 12px 0' }}>
+            <h3 className="text-highlight mb-3 text-base font-semibold">
               SmartScrollbarEndpoints
             </h3>
             <PropsTable props={endpointsProps} />
           </div>
           <div>
-            <h3 className="text-foreground text-lg font-medium" style={{ margin: '0 0 12px 0' }}>
+            <h3 className="text-highlight mb-3 text-base font-semibold">
               useByteArray(length) → ByteArrayHandle
             </h3>
             <PropsTable props={byteArrayFields} />

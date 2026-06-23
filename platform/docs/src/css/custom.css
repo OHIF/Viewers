@@ -266,6 +266,17 @@ body {
   text-decoration: none;
 }
 
+.mit-license-link {
+  color: rgba(255, 255, 255, 0.5) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  text-decoration: none !important;
+}
+
+.mit-license-link:hover {
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.7);
+}
+
 .menu {
   font-weight: 400;
   font-size: 0.9rem;
@@ -351,21 +362,6 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   display: none;
 } */
 
-/* Footer logo MGH */
-
-@media (max-width: 1200px) {
-  #mgh-logo {
-    margin-right: 100px;
-    width: 300px;
-  }
-}
-
-@media (max-width: 480px) {
-  #mgh-logo {
-    margin-right: 10px;
-    width: 300px;
-  }
-}
 
 .dropdown-separator {
   margin: 0.3rem 0;
@@ -428,6 +424,7 @@ div[class^='announcementBar_'] {
   display: flex;
   align-items: center;
 }
+
 
 /* List styling — scoped to doc content areas only */
 .markdown ul,

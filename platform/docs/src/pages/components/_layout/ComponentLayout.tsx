@@ -106,7 +106,7 @@ export default function ComponentLayout({ title, description, children }: Compon
           ref={contentRef}
           className="min-w-0 flex-1 px-6 py-8 lg:px-12"
         >
-          <div className="mx-auto max-w-4xl">{children}</div>
+          <div className="mx-auto max-w-4xl pb-36">{children}</div>
         </main>
 
         {/* Right-hand table of contents */}

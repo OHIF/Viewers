@@ -237,78 +237,7 @@ module.exports = {
       },
       footer: {
         style: 'dark',
-        links: [
-          {
-            title: ' ',
-            items: [
-              {
-                // This doesn't show up on dev for some reason, but displays in build
-                html: `
-                <a href="https://www.massgeneral.org/" target="_blank" rel="noreferrer noopener">
-                  <img src="/img/mgh-logo.png" id="mgh-logo" alt="MGH" />
-                </a>
-              `,
-              },
-            ],
-          },
-          {
-            title: 'Learn',
-            items: [
-              {
-                label: 'Introduction',
-                to: '/',
-              },
-              {
-                label: 'Getting Started',
-                to: 'development/getting-started',
-              },
-              {
-                label: 'FAQ',
-                to: '/faq',
-              },
-              {
-                label: 'Resources',
-                to: '/resources',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Discussion board',
-                href: 'https://community.ohif.org/',
-              },
-              {
-                label: 'Help',
-                to: '/help',
-              },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'Donate',
-                href: 'https://giving.massgeneral.org/ohif',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/OHIF/Viewers',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/OHIFviewer',
-              },
-            ],
-          },
-        ],
-        logo: {
-          alt: 'OHIF ',
-          src: 'img/netlify-color-accent.svg',
-          href: 'https://viewer.ohif.org/',
-        },
-        copyright: `OHIF is open source software released under the MIT license.`,
+        links: [],
       },
     }),
 };
