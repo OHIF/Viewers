@@ -1562,6 +1562,21 @@ class CornerstoneViewportService
         if (props.colormap && !is3D) {
           presentationProps.colormap = props.colormap;
         }
+        // Slab/blend for projection viewports (e.g. the TMTV MIP pane: blendMode
+        // 'MIP' + slabThickness 'fullVolume'). The native volume-slice render path
+        // maps blendMode -> reslice SlabType (MAX/MIN/MEAN) and applies the slab
+        // thickness on the reslice mapper; without them the mapper renders a single
+        // slice instead of a projection. 3D volume rendering derives its look from
+        // the preset, not a slab, so this is planar-only. blendMode was already
+        // normalized from the HP string ('MIP') to a BlendModes enum by
+        // ViewportInfo.mapDisplaySetOptions, and slabThickness was resolved to a
+        // number by _getSlabThickness ('fullVolume' -> volume diagonal).
+        if (!is3D && volumeInput.blendMode !== undefined) {
+          presentationProps.blendMode = volumeInput.blendMode;
+        }
+        if (!is3D && volumeInput.slabThickness !== undefined) {
+          presentationProps.slabThickness = volumeInput.slabThickness;
+        }
         if (Object.keys(presentationProps).length > 0) {
           nativeViewport.setDisplaySetPresentation(dataId, presentationProps);
         }
