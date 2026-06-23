@@ -26,6 +26,8 @@ import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgAttribute } from './getSvgAttribute';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
+import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
+import { visitStudyAndHydrate } from './visitStudyAndHydrate';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 import {
@@ -61,6 +63,8 @@ export {
   subscribeToMeasurementAdded,
   getSvgAttribute,
   navigateWithViewportArrow,
+  contourShowOnlyNthSegment,
+  visitStudyAndHydrate,
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,

@@ -37,6 +37,7 @@ export class RightPanelPageObject {
 
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
+    const lockToggle = this.page.getByTestId('LockToggle');
 
     return {
       button: actionsButton,
@@ -47,13 +48,14 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Delete').click();
       },
+      // Opens the actions menu and returns the lock/unlock menu item locator
+      lockToggleMenuItem: async () => {
+        await actionsButton.click();
+        return lockToggle;
+      },
       toggleLock: async () => {
         await actionsButton.click();
-        await this.page.getByTestId('LockToggle').click();
-      },
-      unlock: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('Unlock').click();
+        await lockToggle.click();
       },
       rename: async (text: string) => {
         await actionsButton.click();
@@ -105,6 +107,9 @@ export class RightPanelPageObject {
       },
       get title() {
         return row.getByTestId('data-row-title');
+      },
+      get lockIcon() {
+        return row.locator('g#Lock');
       },
       get rowDataColorHex() {
         return row.getByTestId('data-row-colorhex');
