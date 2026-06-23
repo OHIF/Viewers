@@ -40,7 +40,7 @@ exec 9<>"$LOCK" || { echo "::error::cannot open lock file $LOCK"; exit 1; }
 if ! flock -n 9; then
   echo "nashua Playwright runner busy — held by: $(cat "${LOCK}.info" 2>/dev/null || echo unknown). Waiting up to ${LOCK_WAIT}s…"
   if ! flock -w "$LOCK_WAIT" 9; then
-    echo "::error::Timed out after ${LOCK_WAIT}s waiting for the nashua Playwright lock" >&2
+    echo "::error::Timed out after ${LOCK_WAIT}s waiting for the nashua Playwright lock"
     exit 1
   fi
 fi
