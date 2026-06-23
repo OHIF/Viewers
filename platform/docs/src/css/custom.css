@@ -598,3 +598,38 @@ a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
     }
   }
 }
+
+/* Extend isolation to Radix portal content (Dialog, Popover, Select, etc.).
+   Portals render as direct body children outside #__docusaurus and
+   .showcase-isolated, so they miss both the revert-layer and scoped preflight.
+   :where() keeps specificity at zero so Tailwind utility classes always win. */
+:where(body > :not(#__docusaurus):not(script):not(style):not(link)) {
+  font-family: 'Inter', sans-serif;
+
+  &,
+  * {
+    @layer docusaurus.infima {
+      all: revert-layer;
+    }
+  }
+}
+
+*:where(body > :not(#__docusaurus):not(script):not(style):not(link)),
+*:where(body > :not(#__docusaurus):not(script):not(style):not(link)) * {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+:where(body > :not(#__docusaurus):not(script):not(style):not(link)) :where(button, input, select, textarea) {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  background-image: none;
+}

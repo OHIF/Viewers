@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 const FINAL_ICONS = [
+  'ActionNewDialog',
   'Actions',
   'ActionsBidirectional',
   'ActionsCombine',
@@ -13,22 +14,45 @@ const FINAL_ICONS = [
   'ActionsSimplify',
   'ActionsSmooth',
   'Add',
+  'Close',
+  'CloudSettings',
   'ColorChange',
+  'Controls',
   'Copy',
   'Delete',
   'DicomTagBrowser',
+  'DisplayFillAndOutline',
+  'DisplayFillOnly',
+  'DisplayOutlineOnly',
   'Download',
   'Export',
   'ExternalLink',
+  'EyeVisible',
   'FeedbackComplete',
+  'GearSettings',
+  'GroupLayers',
   'Hide',
   'IconColorLUT',
+  'IconMPR',
   'Info',
+  'InfoLink',
+  'InfoSeries',
   'JumpToSlice',
+  'LayerBackground',
   'LayerForeground',
   'LayerSegmentation',
+  'LayoutAdvanced3DFourUp',
+  'LayoutAdvanced3DMain',
+  'LayoutAdvanced3DOnly',
+  'LayoutAdvanced3DPrimary',
+  'LayoutAdvancedAxialPrimary',
+  'LayoutCommon1x1',
+  'LayoutCommon1x2',
+  'LayoutCommon2x2',
+  'LayoutCommon2x3',
   'ListView',
   'LoadingSpinner',
+  'Lock',
   'More',
   'MultiplePatients',
   'Opacity',
@@ -42,13 +66,27 @@ const FINAL_ICONS = [
   'Pin',
   'PinFill',
   'Play',
+  'Redo',
   'Rename',
   'Series',
+  'Settings',
   'Show',
+  'SidePanelCloseLeft',
+  'SidePanelCloseRight',
   'SocialGithub',
+  'SortingNew',
+  'SortingNewAscending',
+  'SortingNewDescending',
   'StatusError',
   'StatusSuccess',
   'StatusWarning',
+  'Tab4D',
+  'TabContours',
+  'TabLinear',
+  'TabPatientInfo',
+  'TabRoiThreshold',
+  'TabSegmentation',
+  'TabStudies',
   'Threshold',
   'ThumbnailView',
   'Tool3DRotate',
@@ -63,7 +101,9 @@ const FINAL_ICONS = [
   'ToolCircle',
   'ToolCobbAngle',
   'ToolContract',
+  'ToolCreateThreshold',
   'ToolCrosshair',
+  'ToolCrosshairChecked',
   'ToolDicomTagBrowser',
   'ToolEraser',
   'ToolExpand',
@@ -75,18 +115,30 @@ const FINAL_ICONS = [
   'ToolLayout',
   'ToolLength',
   'ToolMagneticRoi',
+  'ToolMagnify',
+  'ToolMeasureEllipse',
+  'ToolMove',
   'ToolPETSegment',
+  'ToolRectangle',
+  'ToolReferenceLines',
+  'ToolReset',
+  'ToolRotateRight',
   'ToolSegBrush',
   'ToolSegEraser',
-  'ToolSegShape',
   'ToolSegmentAnything',
   'ToolShape',
+  'ToolSplineRoi',
+  'ToolStackScroll',
   'ToolThreshold',
+  'ToolToggleDicomOverlay',
+  'ToolUltrasoundBidirectional',
+  'ToolWindowLevel',
   'ToolWindowRegion',
+  'ToolZoom',
+  'Undo',
   'ViewportViews',
   'ViewportWindowLevel',
   'WindowLevelAdvanced',
-  'tool-crosshair-checked',
 ];
 
 const SIZE_OPTIONS = [16, 20, 24, 32];
@@ -99,6 +151,7 @@ function IconsPageContent() {
     TooltipContent,
     TooltipProvider,
   } = require('../../../../ui-next/src/components/Tooltip');
+  const { Input } = require('../../../../ui-next/src/components/Input');
   const ComponentLayout = require('./_layout/ComponentLayout').default;
   const PageHeader = require('./_layout/PageHeader').default;
   const Section = require('./_layout/Section').default;
@@ -177,12 +230,12 @@ function IconsPageContent() {
       {/* Controls: search + size toggles */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm flex-1">
-          <input
+          <Input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search icons..."
-            className="w-full rounded-lg border border-input/50 bg-muted/30 px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-8 w-full px-3"
           />
           {searchQuery && (
             <button
