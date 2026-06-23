@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.13.0-beta.92",
+  "version": "3.13.0-beta.101",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -87,6 +87,10 @@
   },
   "resolutions": {
     "sharp": "0.34.5"
+  },
+  "devDependencies": {
+    "@ohif/core": "workspace:*",
+    "@ohif/ui-next": "workspace:*"
   },
   "browserslist": {
     "production": [
