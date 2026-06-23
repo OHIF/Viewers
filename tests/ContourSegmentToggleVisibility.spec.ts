@@ -1,14 +1,22 @@
-import { expect, test, visitStudy, getSvgAttribute, navigateWithViewportArrow } from './utils';
+import {
+  expect,
+  test,
+  visitStudyAndHydrate,
+  getSvgAttribute,
+  navigateWithViewportArrow,
+} from './utils';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
 test.beforeEach(
   async ({ page, leftPanelPageObject, DOMOverlayPageObject, rightPanelPageObject }) => {
-    const mode = 'segmentation';
-    await visitStudy(page, studyInstanceUID, mode, 2000);
-    await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
-    await page.waitForTimeout(5000);
-    await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+    await visitStudyAndHydrate({
+      page,
+      leftPanelPageObject,
+      DOMOverlayPageObject,
+      studyInstanceUID,
+      modality: 'RTSTRUCT',
+    });
     await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
     await page.waitForTimeout(1000);
   }
