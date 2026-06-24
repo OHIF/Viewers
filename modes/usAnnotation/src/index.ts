@@ -12,7 +12,7 @@ const ohif = {
   wsiSopClassHandler:
     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
 };
-
+//  hello
 const cornerstone = {
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
