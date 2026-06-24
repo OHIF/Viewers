@@ -1,5 +1,7 @@
+/** Callback invoked to hydrate a secondary display set into a viewport. */
 export type HydrationCallback = (params: any) => Promise<boolean>;
 
+/** Supported secondary display set types for hydration prompts. */
 export const HydrationType = {
   SEG: 'SEG',
   SR: 'SR',
@@ -34,6 +36,11 @@ const RESPONSE = {
   HYDRATE: 5,
 };
 
+/**
+ * Returns the customization message key for the hydration confirmation prompt.
+ *
+ * @param type - Hydration display set type (SEG, RTSTRUCT, or SR).
+ */
 function getCustomizationMessageKey(type: string): string {
   switch (type) {
     case HydrationType.RTSTRUCT:
@@ -47,6 +54,11 @@ function getCustomizationMessageKey(type: string): string {
   }
 }
 
+/**
+ * Returns the viewport dialog id for the hydration confirmation prompt.
+ *
+ * @param type - Hydration display set type (SEG, RTSTRUCT, or SR).
+ */
 function getDialogId(type: string): string {
   switch (type) {
     case HydrationType.RTSTRUCT:
@@ -204,6 +216,15 @@ function promptHydrationDialog({
   });
 }
 
+/**
+ * Shows the hydration confirmation dialog in the target viewport.
+ *
+ * @param uiViewportDialogService - Service used to show and hide viewport dialogs.
+ * @param customizationService - Service that supplies the localized prompt message.
+ * @param viewportId - Viewport where the dialog is displayed.
+ * @param type - Hydration display set type (SEG, RTSTRUCT, or SR).
+ * @returns The user's dialog response value.
+ */
 function _askHydrate(
   uiViewportDialogService: AppTypes.UIViewportDialogService,
   customizationService: AppTypes.CustomizationService,
