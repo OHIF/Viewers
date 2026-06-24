@@ -8,7 +8,6 @@ interface ContextMenuViewportProps {
     iconRight?: string;
     [key: string]: unknown;
   }>;
-  defaultPosition?: { x: number; y: number };
   [key: string]: unknown;
 }
 
