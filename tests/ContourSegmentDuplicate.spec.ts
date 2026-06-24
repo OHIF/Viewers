@@ -25,19 +25,20 @@ test('should duplicate a contour segment and add a new row to the panel', async 
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
-  const initialCount = await panel.getSegmentCount();
-  expect(initialCount, 'Expected to load with 4 segments').toBe(4);
+  await expect(panel.rows, 'Expected to load with 4 segments').toHaveCount(4);
 
   const segment0 = panel.nthSegment(0);
   await expect(segment0.title).toHaveText(defaultSegment0Name);
 
   await segment0.actions.duplicate();
 
-  const countAfterDuplicate = await panel.getSegmentCount();
-  expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').toBe(5);
+  await expect(
+    panel.rows,
+    'Expected one additional segment row after duplicating'
+  ).toHaveCount(5);
 
   //New segment's default name is formatted as "Segment {segmentCount}"
-  const newSegmentLocator = panel.nthSegment(initialCount).title;
+  const newSegmentLocator = panel.nthSegment(4).title;
   await expect(newSegmentLocator, 'Expected correct title for duplicated segment').toHaveText(
     `Segment 5`
   );
@@ -53,10 +54,10 @@ test('should duplicate the same segment multiple times', async ({ rightPanelPage
   const segment0 = panel.nthSegment(0);
 
   await segment0.actions.duplicate();
-  expect(
-    await panel.getSegmentCount(),
+  await expect(
+    panel.rows,
     'Expected one additional segment row after duplicating'
-  ).toBe(5);
+  ).toHaveCount(5);
 
   const firstDuplicateTitleLocator = panel.nthSegment(4).title;
   await expect(
@@ -65,10 +66,10 @@ test('should duplicate the same segment multiple times', async ({ rightPanelPage
   ).toHaveText(`Segment 5`);
 
   await segment0.actions.duplicate();
-  expect(
-    await panel.getSegmentCount(),
+  await expect(
+    panel.rows,
     'Expected another segment row after duplicating the same segment again'
-  ).toBe(6);
+  ).toHaveCount(6);
 
   const secondDuplicateTitleLocator = panel.nthSegment(5).title;
   await expect(
