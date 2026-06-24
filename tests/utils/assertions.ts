@@ -2,6 +2,7 @@ import { Locator, Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
 import { DOMOverlayPageObject } from '../pages';
+import type { SegmentationSelect } from '../pages/RightPanelPageObject';
 
 /**
  * Asserts the number of Modality Load Badges present on the page.
@@ -72,4 +73,18 @@ export async function expectRowLocked(rowObject: { lockIcon: Locator }) {
 
 export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
   await expect(rowObject.lockIcon, 'Expected the row to not show the lock icon').toHaveCount(0);
+}
+
+export async function expectRowNotSelected(rowObject) {
+  await expect(rowObject.locator).not.toContainClass('bg-popover');
+}
+
+// Opens the segmentation selector, asserts its options match `labels`, then closes it.
+export async function expectSegmentationLabels(
+  segmentationSelect: SegmentationSelect,
+  labels: string[]
+) {
+  const options = await segmentationSelect.getSegmentationLabels();
+  await expect(options).toHaveText(labels);
+  await segmentationSelect.close();
 }
