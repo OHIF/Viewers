@@ -30,7 +30,7 @@ import {
 } from '@ohif/extension-default';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 // TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
-import { toggleNextViewportsAndReload } from './utils/nextViewports';
+import { toggleNextViewportsAndReload, isNextViewportsEnabled } from './utils/nextViewports';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -354,6 +354,15 @@ function commandsModule({
         const results = commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+          // RTSTRUCT contours render correctly on a native ("next") stack/vtkImage
+          // viewport and scroll fast, so keep the referenced image in stack mode on
+          // hydrate rather than promoting it to a volume slice. (Without this, the
+          // re-mount resolves to a volume viewport, which the perf AC forbids.)
+          // Scoped to RTSTRUCT + next viewports; SEG and legacy keep current behavior.
+          viewportType:
+            displaySet.Modality === 'RTSTRUCT' && isNextViewportsEnabled()
+              ? 'stack'
+              : undefined,
         });
 
         const disableEditing = customizationService.getCustomization(
@@ -2014,7 +2023,7 @@ function commandsModule({
       }
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
-    loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
+    loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs, viewportType }) => {
       const updatedViewports = getUpdatedViewportsForSegmentation({
         viewportId,
         servicesManager,
@@ -2034,6 +2043,12 @@ function commandsModule({
         viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
           displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
+          // When the caller pins a viewportType (RTSTRUCT contour hydration on a
+          // native "next" viewport requests 'stack'), force it so the referenced
+          // image stays in that render mode instead of resolving to a volume slice.
+          ...(viewportType
+            ? { viewportOptions: { ...viewport.viewportOptions, viewportType } }
+            : {}),
         })),
       });
     },
