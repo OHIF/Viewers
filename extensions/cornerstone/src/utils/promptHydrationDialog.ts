@@ -60,6 +60,40 @@ function getDialogId(type: string): string {
   }
 }
 
+/**
+ * Waits for viewport data to initialize for the given viewportId.
+ *
+ * SEG and RTSTRUCT hydration require an active Cornerstone viewport. When hydration
+ * is triggered before the viewport has finished loading, this subscribes to
+ * VIEWPORT_DATA_CHANGED and resolves once that viewport receives data.
+ *
+ * @param cornerstoneViewportService - Service that owns viewport lifecycle events.
+ * @param viewportId - Viewport to wait for.
+ * @param timeoutMs - Maximum wait time before rejecting. Defaults to 5000ms.
+ */
+function waitForViewportDataChange(
+  cornerstoneViewportService: AppTypes.CornerstoneViewportService,
+  viewportId: string,
+  timeoutMs = 5000
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+      ({ viewportId: updatedViewportId }) => {
+        if (updatedViewportId === viewportId) {
+          clearTimeout(timer);
+          unsubscribe();
+          resolve();
+        }
+      }
+    );
+    const timer = setTimeout(() => {
+      unsubscribe();
+      reject(new Error(`Viewport data change timed out for viewportId: ${viewportId}`));
+    }, timeoutMs);
+  });
+}
+
 function promptHydrationDialog({
   servicesManager,
   viewportId,
@@ -92,6 +126,9 @@ function promptHydrationDialog({
         callback();
       });
 
+      // SEG and RTSTRUCT hydration must run after the Cornerstone viewport is ready.
+      // Replaces the previous setTimeout(0) deferral with an explicit wait for
+      // VIEWPORT_DATA_CHANGED when the viewport is not yet available.
       if (
         (type === HydrationType.SEG || type === HydrationType.RTSTRUCT) &&
         cornerstoneViewportService?.getCornerstoneViewport
@@ -99,29 +136,6 @@ function promptHydrationDialog({
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
-          const waitForViewportDataChange = (
-            cornerstoneViewportService: AppTypes.CornerstoneViewportService,
-            viewportId: string,
-            timeoutMs = 5000
-          ) => {
-            return new Promise((resolve, reject) => {
-              const { unsubscribe } = cornerstoneViewportService.subscribe(
-                cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-                async ({ viewportId: updatedViewportId }) => {
-                  if (updatedViewportId === viewportId) {
-                    clearTimeout(timer);
-                    unsubscribe();
-                    resolve(true);
-                  }
-                }
-              );
-              const timer = setTimeout(() => {
-                unsubscribe();
-                reject(new Error(`Viewport data change timed out for viewportId: ${viewportId}`));
-              }, timeoutMs);
-            });
-          };
-          // If viewport is not ready, wait for it to be ready before hydrating
           try {
             await waitForViewportDataChange(cornerstoneViewportService, viewportId);
           } catch (error) {
