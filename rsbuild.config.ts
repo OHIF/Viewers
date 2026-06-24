@@ -73,6 +73,16 @@ export default defineConfig({
       },
       module: {
         rules: [
+          // Consume the source maps emitted by the linked local Cornerstone
+          // packages (libs/@cornerstonejs, via cs3d:link + cs3d:watch) so browser
+          // stack traces and breakpoints resolve to the original .ts instead of
+          // the bundled dist/esm .js. Scoped to the linked packages only.
+          {
+            test: /\.js$/,
+            enforce: 'pre',
+            use: [require.resolve('source-map-loader')],
+            include: /libs[\\/]@cornerstonejs[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]esm/,
+          },
           {
             test: /\.css$/,
             use: [
