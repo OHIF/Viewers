@@ -849,10 +849,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     _presentations: Presentations = {}
   ): Promise<void> {
     const [displaySet] = viewportData.data;
-    // CS3D's "redo viewports" replaced setDataIds with the generic
-    // setDisplaySets({ displaySetId }) API; the legacy adapters key off
-    // imageIds[0] as the displaySetId, so do the same here.
-    await viewport.setDisplaySets({ displaySetId: displaySet.imageIds[0] });
+    // For WSI viewports we must go through setDataIds rather than calling
+    // setDisplaySets directly: setDataIds resolves the DICOMweb client (via the
+    // WADO_WEB_CLIENT metadata provider) and registers the imageIds->data
+    // binding before rendering. setDisplaySets({ displaySetId }) alone skips
+    // that registration, leaving the viewport with no data (gray). setDataIds
+    // is available on both the legacy WSIViewport and the GenericViewport
+    // compatibility adapter, so this works regardless of useGenericViewport.
+    await viewport.setDataIds(displaySet.imageIds);
     const viewReference = viewportInfo.getViewReference();
     if (viewReference) {
       viewport.setViewReference(viewReference);
