@@ -20,16 +20,14 @@ test('should delete a contour segment and remove its row from the panel', async 
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
-  const initialCount = await panel.getSegmentCount();
-  expect(initialCount, 'Expected to load with 4 segments').toBe(4);
+  await expect(panel.rows, 'Expected to load with 4 segments').toHaveCount(4);
 
   const segment0 = panel.nthSegment(0);
   await expect(segment0.title).toHaveText(defaultSegment0Name);
 
   await segment0.actions.delete();
 
-  const countAfterDelete = await panel.getSegmentCount();
-  expect(countAfterDelete, 'Expected one fewer segment row after deleting').toBe(3);
+  await expect(panel.rows, 'Expected one fewer segment row after deleting').toHaveCount(3);
   // The deleted segment's label should no longer be present anywhere in the panel
   await expect(
     panel.getSegmentLabels().filter({ hasText: defaultSegment0Name }),
@@ -46,16 +44,13 @@ test('should delete a contour segment and remove its row from the panel', async 
 test('should delete multiple contour segments sequentially', async ({ rightPanelPageObject }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
-  const initialCount = await panel.getSegmentCount();
-  expect(initialCount, 'Expected to load with 4 segments').toBe(4);
+  await expect(panel.rows, 'Expected to load with 4 segments').toHaveCount(4);
 
   await panel.nthSegment(0).actions.delete();
-  const countAfterFirstDelete = await panel.getSegmentCount();
-  expect(countAfterFirstDelete, 'Expected 3 segments after first delete').toBe(3);
+  await expect(panel.rows, 'Expected 3 segments after first delete').toHaveCount(3);
 
   await panel.nthSegment(0).actions.delete();
-  const countAfterSecondDelete = await panel.getSegmentCount();
-  expect(countAfterSecondDelete, 'Expected 2 segments after second delete').toBe(2);
+  await expect(panel.rows, 'Expected 2 segments after second delete').toHaveCount(2);
 
   await expect(
     panel.getSegmentLabels().filter({ hasText: defaultSegment0Name }),

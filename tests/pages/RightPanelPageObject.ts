@@ -2,6 +2,16 @@ import { Locator, Page } from '@playwright/test';
 
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
+/** The segmentation selector (dropdown) returned by the segmentation panels. */
+export type SegmentationSelect = {
+  locator: Locator;
+  selectedValue: Locator;
+  getSegmentationLabels: () => Promise<Locator>;
+  close: () => Promise<void>;
+  nthSegmentation: (n: number) => Promise<Locator>;
+  selectNthSegmentation: (n: number) => Promise<void>;
+};
+
 export class RightPanelPageObject {
   readonly page: Page;
   private readonly DOMOverlayPageObject: DOMOverlayPageObject;
@@ -27,10 +37,27 @@ export class RightPanelPageObject {
         await button.click();
         await page.getByRole('menuitem', { name: 'Delete' }).click();
       },
+      removeFromViewport: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Remove from Viewport' }).click();
+      },
       rename: async (text: string) => {
         await button.click();
         await page.getByRole('menuitem', { name: 'Rename' }).click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
+      },
+      cancelRename: async (newName?: string) => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Rename' }).click();
+        if (newName) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(newName);
+        } else {
+          await this.DOMOverlayPageObject.dialog.input.cancel();
+        }
+      },
+      createNewSegmentation: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Create New Segmentation' }).click();
       },
     };
   }
@@ -196,7 +223,7 @@ export class RightPanelPageObject {
     };
   }
 
-  private getSegmentationSelect(type: string) {
+  private getSegmentationSelect(type: string): SegmentationSelect {
     const page = this.page;
     const suffix = type ? `-${type}` : '';
     const locator = page.getByTestId(`segmentation-select${suffix}`);
@@ -212,6 +239,15 @@ export class RightPanelPageObject {
       locator,
       /** The span showing the currently selected segmentation label */
       selectedValue,
+      // Opens the dropdown and returns the option locator; leaves it open, so call close() after.
+      getSegmentationLabels: async () => {
+        await locator.click();
+        return page.getByRole('option');
+      },
+      // Click the selected option to dismiss without changing the active segmentation.
+      close: async () => {
+        await page.getByRole('option', { selected: true }).click();
+      },
       /** Opens the dropdown and returns a locator for the nth option (0-based) */
       nthSegmentation,
       /** Opens the dropdown and clicks the nth segmentation (0-based) */
@@ -223,6 +259,17 @@ export class RightPanelPageObject {
 
   private get addSegmentationButton() {
     const button = this.page.getByTestId('addSegmentation');
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
+  /** The "Add Segment" row button of the active segmentation in the visible panel */
+  private get addSegmentButton() {
+    const button = this.page.getByRole('button', { name: 'Add Segment' });
     return {
       button,
       click: async () => {
@@ -255,6 +302,11 @@ export class RightPanelPageObject {
       // Retrying-friendly locator for `expect(...).toHaveCount(n)` — prefer this
       // over the one-shot getSegmentCount() when asserting row counts.
       rows: page.getByTestId('data-row'),
+      /**
+       * @deprecated One-shot count that races the render. Prefer
+       * `expect(panel.rows).toHaveCount(n)` for assertions. Use this only to
+       * capture a stable baseline value (e.g. for a delta).
+       */
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
@@ -276,6 +328,7 @@ export class RightPanelPageObject {
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
     const segmentationSelect = this.getSegmentationSelect('Contour');
@@ -283,6 +336,7 @@ export class RightPanelPageObject {
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       segmentsVisibilityToggle,
       panel,
@@ -295,12 +349,14 @@ export class RightPanelPageObject {
   get labelMapSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
     const segmentationSelect = this.getSegmentationSelect('Labelmap');
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       panel,
       segmentationSelect,
