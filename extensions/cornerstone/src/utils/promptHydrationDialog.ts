@@ -94,6 +94,16 @@ function waitForViewportDataChange(
   });
 }
 
+/**
+ * Displays a hydration confirmation dialog (when required) and performs
+ * hydration for SEG, RTSTRUCT, or SR display sets.
+ *
+ * Executes pre-hydration callbacks, waits for the viewport to be ready
+ * when necessary, and invokes the appropriate hydration callback.
+ *
+ * @param params - Hydration dialog configuration.
+ * @returns A promise that resolves to the hydration result.
+ */
 function promptHydrationDialog({
   servicesManager,
   viewportId,
