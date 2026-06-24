@@ -255,6 +255,11 @@ export class RightPanelPageObject {
       // Retrying-friendly locator for `expect(...).toHaveCount(n)` — prefer this
       // over the one-shot getSegmentCount() when asserting row counts.
       rows: page.getByTestId('data-row'),
+      /**
+       * @deprecated One-shot count that races the render. Prefer
+       * `expect(panel.rows).toHaveCount(n)` for assertions. Use this only to
+       * capture a stable baseline value (e.g. for a delta).
+       */
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
