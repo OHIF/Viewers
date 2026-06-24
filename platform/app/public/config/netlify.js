@@ -3,7 +3,7 @@
 window.config = {
   routerBasename: null,
   customizationService: [
-    '@ohif/extension-default.customizationModule.appearance',
+    '@ohif/extension-default.customizationModule.theme',
   ],
   extensions: [],
   modes: [],

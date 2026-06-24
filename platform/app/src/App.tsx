@@ -94,6 +94,12 @@ function App({
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
 
+  const hasThemeModule =
+    Array.isArray(appConfigState.customizationService) &&
+    appConfigState.customizationService.some(
+      ref => typeof ref === 'string' && ref.includes('customizationModule.theme')
+    );
+
   // get the maximum 3D texture size
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl2');
@@ -119,7 +125,7 @@ function App({
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
-    [ActiveThemeProvider],
+    ...(hasThemeModule ? [[ActiveThemeProvider]] : []),
     [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
     [ViewportRefsProvider],
     [ViewportGridProvider, { service: viewportGridService }],

@@ -41,7 +41,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: helloPageCustomization,
     },
     {
-      name: 'appearance',
+      name: 'theme',
       value: appearanceModalCustomization,
     },
     {
