@@ -15,6 +15,7 @@ export default function ComponentLayout({ title, description, children }: Compon
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const contentRef = useRef<HTMLElement>(null);
   const { pathname: currentPath } = useLocation();
+  const { ScrollArea } = require('../../../../../ui-next/src/components/ScrollArea');
 
   return (
     <Layout
@@ -55,50 +56,52 @@ export default function ComponentLayout({ title, description, children }: Compon
         {/* Sidebar */}
         <aside
           className={`
-            fixed top-[60px] left-0 z-40 h-[calc(100vh-60px)] w-60 shrink-0 overflow-y-auto
-            component-sidebar bg-background pb-8
+            fixed top-[60px] left-0 z-40 h-[calc(100vh-60px)] w-60 shrink-0
+            component-sidebar bg-background
             transition-transform duration-200
             lg:sticky lg:translate-x-0
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
         >
-          <nav className="px-3 pt-4">
-            {sidebarSections.map(section => (
-              <div
-                key={section.title}
-                className="mb-4"
-              >
-                <h4 className="mb-1 px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                  {section.title}
-                </h4>
-                <ul className="space-y-0.5">
-                  {section.items.map(item => {
-                    const isActive =
-                      currentPath === item.href ||
-                      currentPath === item.href + '/';
-                    return (
-                      <li key={item.href + item.label}>
-                        <Link
-                          to={item.href}
-                          onClick={() => setSidebarOpen(false)}
-                          className={`
-                            block rounded-md px-2 py-1.5 text-base font-semibold no-underline transition-colors
-                            ${
-                              isActive
-                                ? 'bg-primary/15 text-primary'
-                                : 'text-muted-foreground hover:bg-muted hover:text-highlight'
-                            }
-                          `}
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </nav>
+          <ScrollArea className="h-full">
+            <nav className="px-3 pt-4 pb-8">
+              {sidebarSections.map(section => (
+                <div
+                  key={section.title}
+                  className="mb-4"
+                >
+                  <h4 className="mb-1 px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    {section.title}
+                  </h4>
+                  <ul className="space-y-0.5">
+                    {section.items.map(item => {
+                      const isActive =
+                        currentPath === item.href ||
+                        currentPath === item.href + '/';
+                      return (
+                        <li key={item.href + item.label}>
+                          <Link
+                            to={item.href}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`
+                              block rounded-md px-2 py-1.5 text-base font-semibold no-underline transition-colors
+                              ${
+                                isActive
+                                  ? 'bg-primary/15 text-primary'
+                                  : 'text-muted-foreground hover:bg-muted hover:text-highlight'
+                              }
+                            `}
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </ScrollArea>
         </aside>
 
         {/* Content */}
