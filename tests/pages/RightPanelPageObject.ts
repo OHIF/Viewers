@@ -268,9 +268,21 @@ export class RightPanelPageObject {
     };
   }
 
+  /** The "Add Segment" row button of the active segmentation in the visible panel */
+  private get addSegmentButton() {
+    const button = this.page.getByRole('button', { name: 'Add Segment' });
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
     const segmentationSelect = this.getSegmentationSelect('Contour');
@@ -278,12 +290,43 @@ export class RightPanelPageObject {
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       segmentsVisibilityToggle,
       panel,
       segmentationSelect,
       select: async () => {
         await menuButton.click();
+      },
+      // Contour drawing/editing tools rendered in the panel toolbox.
+      tools: {
+        get freehand() {
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool-btn');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
+        get spline() {
+          const button = page.getByTestId('SplineContourSegmentationTool-btn');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
+        get livewire() {
+          const button = page.getByTestId('LivewireContourSegmentationTool-btn');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
       },
     };
   }
