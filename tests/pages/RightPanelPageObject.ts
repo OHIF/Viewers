@@ -2,6 +2,16 @@ import { Locator, Page } from '@playwright/test';
 
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
+/** The segmentation selector (dropdown) returned by the segmentation panels. */
+export type SegmentationSelect = {
+  locator: Locator;
+  selectedValue: Locator;
+  getSegmentationLabels: () => Promise<Locator>;
+  close: () => Promise<void>;
+  nthSegmentation: (n: number) => Promise<Locator>;
+  selectNthSegmentation: (n: number) => Promise<void>;
+};
+
 export class RightPanelPageObject {
   readonly page: Page;
   private readonly DOMOverlayPageObject: DOMOverlayPageObject;
@@ -213,7 +223,7 @@ export class RightPanelPageObject {
     };
   }
 
-  private getSegmentationSelect(type: string) {
+  private getSegmentationSelect(type: string): SegmentationSelect {
     const page = this.page;
     const suffix = type ? `-${type}` : '';
     const locator = page.getByTestId(`segmentation-select${suffix}`);
