@@ -76,7 +76,7 @@ function getUpdatedViewportsForSegmentation({
     isHangingProtocolLayout
   );
 
-  if (updatedViewports == null) {
+  if (updatedViewports == null || !isHangingProtocolLayout) {
     return updatedViewports;
   }
 

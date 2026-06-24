@@ -24,7 +24,6 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
     .dataOverlay;
   await dataOverlayPageObject.toggle();
-  const viewportRenderCycle = waitForViewportRenderCycle(page);
   await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
 
   // Adding an overlay should not show the LOAD button.
@@ -32,22 +31,21 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   // Hide the overlay menu.
   await dataOverlayPageObject.toggle();
-
-  await viewportRenderCycle;
+  await waitForViewportsRendered(page);
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPreMPR
   );
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await waitForViewportsRendered(page, { timeout: 40000 });
-
+  // Waiting for the render via waitForViewportRenderCycle appears to wait 'forever', so instead
+  // we use the baked in wait for screenshot comparisons.
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPostMPR
   );
 

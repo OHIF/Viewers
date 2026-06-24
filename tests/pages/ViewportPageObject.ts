@@ -1,20 +1,25 @@
 import { Locator, Page } from '@playwright/test';
 import {
-  getMousePosition,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-type SvgInnerElement = 'circle' | 'path' | 'd';
+export type SvgInnerElement = 'circle' | 'path' | 'line' | 'g';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
+  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathDragParams = {
+  path: { x: number; y: number }[];
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
 };
 
@@ -56,6 +61,7 @@ export interface IViewportPageObject {
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
+  normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
     leftMid: Locator;
@@ -81,6 +87,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  getSvgAnnotationStatTextLines: (uid: string) => Locator;
   navigationArrows: {
     locator: Locator;
     prev: {
@@ -297,12 +304,26 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
+      normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
+        await simulateNormalizedPathDragOnElement({
+          locator: viewport,
+          path: params.path,
+          button: params.config?.button,
+          delay: params.config?.delay,
+          steps: params.config?.steps,
+        });
+      },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
       overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
+      },
+      getSvgAnnotationStatTextLines: (uid: string) => {
+        return this.getSvg(viewport)
+          .locator(`g[data-annotation-uid="${uid}"]`)
+          .locator('tspan');
       },
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
@@ -340,6 +361,28 @@ export class ViewportPageObject {
       throw new Error('Could not find slab thickness handle for crosshairs interaction');
     }
 
+    // Drive the drag from the handle's own bounding-box center rather than the
+    // async window.mouseX/Y tracker: the tracker can lag behind the hover, which
+    // makes the drag start from a stale point and rotate/resize nothing. Stepped
+    // moves emit intermediate mousemove events so cornerstone registers a real
+    // drag instead of a single teleport (which can be dropped or mis-deltad).
+    const DRAG_DISTANCE = 100;
+    const DRAG_STEPS = 10;
+
+    async function dragHandleFromCenter(handle: Locator, dx: number, dy: number) {
+      const box = await handle.boundingBox();
+      if (!box) {
+        throw new Error('Could not resolve crosshairs handle bounding box for drag');
+      }
+      const cx = box.x + box.width / 2;
+      const cy = box.y + box.height / 2;
+
+      await page.mouse.move(cx, cy);
+      await page.mouse.down();
+      await page.mouse.move(cx + dx, cy + dy, { steps: DRAG_STEPS });
+      await page.mouse.up();
+    }
+
     async function increaseSlabThickness(locator: Locator, lineNumber: number, axis: string) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
@@ -348,18 +391,9 @@ export class ViewportPageObject {
       const slabHandleLocator = await getSlabHandleLocator(locator);
       await slabHandleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      await page.mouse.down();
-
-      const position = await getMousePosition(page);
-      switch (axis) {
-        case 'x':
-          await page.mouse.move(position.x + 100, position.y);
-          break;
-        case 'y':
-          await page.mouse.move(position.x, position.y + 100);
-          break;
-      }
-      await page.mouse.up();
+      const dx = axis === 'x' ? DRAG_DISTANCE : 0;
+      const dy = axis === 'y' ? DRAG_DISTANCE : 0;
+      await dragHandleFromCenter(slabHandleLocator, dx, dy);
     }
 
     async function rotateCrosshairs(locator: Locator, lineNumber: number) {
@@ -371,11 +405,7 @@ export class ViewportPageObject {
       await circleLocator.waitFor({ state: 'attached', timeout: crosshairHoverTimeout });
       await circleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      await page.mouse.down();
-
-      const position = await getMousePosition(page);
-      await page.mouse.move(position.x, position.y + 100);
-      await page.mouse.up();
+      await dragHandleFromCenter(circleLocator, 0, DRAG_DISTANCE);
     }
 
     function crosshairsFactory(

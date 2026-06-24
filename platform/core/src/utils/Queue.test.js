@@ -30,7 +30,7 @@ describe('Queue', () => {
   //   });
   //   const end = await timer(threshold);
   //   expect(end - start >= 2 * threshold).toBe(true);
-  //   expect(mockedTimeout).toBeCalledTimes(2);
+  //   expect(mockedTimeout).toHaveBeenCalledTimes(2);
   // });
   it('should prevent task execution when queue limit is reached', async () => {
     const queue = new Queue(1);
@@ -46,7 +46,7 @@ describe('Queue', () => {
     }
     const elapsed = await promise;
     expect(elapsed >= threshold && elapsed < 2 * threshold).toBe(true);
-    expect(mockedTimeout).toBeCalledTimes(1);
+    expect(mockedTimeout).toHaveBeenCalledTimes(1);
   });
   it('should safely bind tasks to the queue', async () => {
     const queue = new Queue(1);
@@ -57,13 +57,13 @@ describe('Queue', () => {
     const promise = timer(threshold).then(time => time - start);
     await timer(threshold);
     expect(Date.now() - start < threshold).toBe(true);
-    expect(mockedErrorHandler).toBeCalledTimes(1);
-    expect(mockedErrorHandler).nthCalledWith(
+    expect(mockedErrorHandler).toHaveBeenCalledTimes(1);
+    expect(mockedErrorHandler).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({ message: 'Queue limit reached' })
     );
     const elapsed = await promise;
     expect(elapsed >= threshold && elapsed < 2 * threshold).toBe(true);
-    expect(mockedTimeout).toBeCalledTimes(1);
+    expect(mockedTimeout).toHaveBeenCalledTimes(1);
   });
 });

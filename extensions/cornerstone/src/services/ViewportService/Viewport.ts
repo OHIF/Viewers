@@ -2,10 +2,10 @@ import {
   Types,
   Enums,
   getEnabledElementByViewportId,
-  VolumeViewport,
   utilities,
 } from '@cornerstonejs/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { isOrthographicViewportType } from '../../utils/getLegacyViewportType';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -105,7 +105,7 @@ const dataContains = ({ data, displaySetUID, imageId, viewport }): boolean => {
     return !!data.imageIds.find(dataId => dataId === imageId);
   }
 
-  if (imageId && (data.volumeId || viewport instanceof VolumeViewport)) {
+  if (imageId && (data.volumeId || isOrthographicViewportType(viewport))) {
     const isAcquisition = !!viewport.getCurrentImageId();
 
     if (!isAcquisition) {
