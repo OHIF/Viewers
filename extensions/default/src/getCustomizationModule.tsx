@@ -41,6 +41,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: helloPageCustomization,
     },
     {
+      name: 'appearance',
+      value: appearanceModalCustomization,
+    },
+    {
       name: 'datasources',
       value: datasourcesCustomization,
     },
@@ -68,7 +72,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...contextMenuUICustomization,
         ...viewportNotificationCustomization,
         ...aboutModalCustomization,
-        ...appearanceModalCustomization,
         ...userPreferencesCustomization,
         ...reportDialogCustomization,
         ...hotkeyBindingsCustomization,

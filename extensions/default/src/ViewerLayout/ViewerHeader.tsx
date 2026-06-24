@@ -63,16 +63,6 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         }),
     },
     {
-      title: AppearanceModal?.menuTitle ?? t('Header:Appearance'),
-      icon: 'ColorChange',
-      onClick: () =>
-        show({
-          content: AppearanceModal,
-          title: AppearanceModal?.title ?? t('AppearanceModal:Appearance'),
-          containerClassName: AppearanceModal?.containerClassName ?? 'max-w-md',
-        }),
-    },
-    {
       title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
       onClick: () =>
@@ -84,6 +74,19 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         }),
     },
   ];
+
+  if (AppearanceModal) {
+    menuOptions.splice(1, 0, {
+      title: AppearanceModal.menuTitle ?? t('Header:Appearance'),
+      icon: 'ColorChange',
+      onClick: () =>
+        show({
+          content: AppearanceModal,
+          title: AppearanceModal.title ?? t('AppearanceModal:Appearance'),
+          containerClassName: AppearanceModal.containerClassName ?? 'max-w-md',
+        }),
+    });
+  }
 
   if (appConfig.oidc) {
     menuOptions.push({

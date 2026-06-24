@@ -2,6 +2,9 @@
 
 window.config = {
   routerBasename: null,
+  customizationService: [
+    '@ohif/extension-default.customizationModule.appearance',
+  ],
   extensions: [],
   modes: [],
   showStudyList: true,
