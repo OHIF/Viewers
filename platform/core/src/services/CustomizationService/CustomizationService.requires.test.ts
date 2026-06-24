@@ -15,18 +15,18 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('loads a single module', async () => {
     const importFn = jest.fn(async (url: string) => ({
-      customizations: { global: { entry: { value: url } } },
+      global: { entry: { value: url } },
     }));
     const loaded = await service.requires(['A'], { policy, importFn });
     expect(loaded).toHaveLength(1);
     expect(loaded[0].request.name).toBe('A');
-    expect(loaded[0].module.customizations).toBeDefined();
+    expect(loaded[0].module.global).toBeDefined();
     expect(importFn).toHaveBeenCalledTimes(1);
   });
 
   it('returns immediately when the same module is already loaded', async () => {
     const importFn = jest.fn(async (url: string) => ({
-      customizations: { global: { entry: { value: url } } },
+      global: { entry: { value: url } },
     }));
     await service.requires(['A'], { policy, importFn });
     expect(importFn).toHaveBeenCalledTimes(1);
@@ -39,12 +39,13 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     const importFn = jest.fn(async (url: string) => {
       if (url.endsWith('/A.jsonc')) {
         return {
-          customizations: { global: { 'pkg.A': { value: 'A' } }, requires: ['B'] },
+          global: { 'pkg.A': { value: 'A' } },
+          requires: ['B'],
         };
       }
       if (url.endsWith('/B.jsonc')) {
         return {
-          customizations: { global: { 'pkg.B': { value: 'B' } } },
+          global: { 'pkg.B': { value: 'B' } },
         };
       }
       return {};
@@ -59,12 +60,14 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     const importFn = jest.fn(async (url: string) => {
       if (url.endsWith('/A.jsonc')) {
         return {
-          customizations: { global: { 'pkg.A': { value: 'A' } }, requires: ['B'] },
+          global: { 'pkg.A': { value: 'A' } },
+          requires: ['B'],
         };
       }
       if (url.endsWith('/B.jsonc')) {
         return {
-          customizations: { global: { 'pkg.B': { value: 'B' } }, requires: ['A'] },
+          global: { 'pkg.B': { value: 'B' } },
+          requires: ['A'],
         };
       }
       return {};
@@ -78,10 +81,8 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('does not treat customization field refs as URL dependencies', async () => {
     const importFn = jest.fn(async () => ({
-      customizations: {
-        global: {
-          'viewportOverlay.topLeft.X': { customization: 'ohif.overlayItem' },
-        },
+      global: {
+        'viewportOverlay.topLeft.X': { customization: 'ohif.overlayItem' },
       },
     }));
     const loaded = await service.requires(['A'], { policy, importFn });
@@ -91,7 +92,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('parses comma-separated names like the URL query integration', async () => {
     const importFn = jest.fn(async () => ({
-      customizations: { global: { 'pkg.X': {} } },
+      global: { 'pkg.X': {} },
     }));
     const loaded = await service.requires(['A', 'B', 'C'], { policy, importFn });
     expect(loaded.map(l => l.request.name)).toEqual(['A', 'B', 'C']);
@@ -100,7 +101,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('throws and loads nothing when any entry is rejected', async () => {
     const importFn = jest.fn(async () => ({
-      customizations: { global: {} },
+      global: {},
     }));
     await expect(
       service.requires(['A', '/missing/foo', '../escape'], { policy, importFn })
@@ -136,7 +137,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
 
   it('applyCustomizationUrlSearchParams delegates to requires', async () => {
     const importFn = jest.fn(async () => ({
-      customizations: { global: { 'pkg.X': {} } },
+      global: { 'pkg.X': {} },
     }));
     const params = new URLSearchParams();
     params.append('customization', 'A,B');

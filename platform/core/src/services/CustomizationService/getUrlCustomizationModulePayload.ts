@@ -6,18 +6,14 @@ export function getUrlCustomizationModulePayload(
   if (!module || typeof module !== 'object') {
     return null;
   }
-  if (module.customizations && typeof module.customizations === 'object') {
-    return module.customizations;
-  }
-  const m = module as CustomizationModule;
-  const hasGlobal = m.global && typeof m.global === 'object';
+  const hasGlobal = module.global && typeof module.global === 'object';
   const hasRequires =
-    typeof m.requires === 'string' ||
-    (Array.isArray(m.requires) && m.requires.length > 0);
+    typeof module.requires === 'string' ||
+    (Array.isArray(module.requires) && module.requires.length > 0);
   if (hasGlobal || hasRequires) {
     return {
-      ...(hasGlobal ? { global: m.global } : {}),
-      ...(hasRequires ? { requires: m.requires } : {}),
+      ...(hasGlobal ? { global: module.global } : {}),
+      ...(hasRequires ? { requires: module.requires } : {}),
     };
   }
   return null;

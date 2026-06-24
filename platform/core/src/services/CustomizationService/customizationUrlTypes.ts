@@ -2,10 +2,6 @@ import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
 import type { ValidatedCustomization } from './validate';
 
 export interface CustomizationModule {
-  customizations?: {
-    global?: Record<string, any>;
-    requires?: string | string[];
-  };
   global?: Record<string, any>;
   requires?: string | string[];
   [key: string]: any;
