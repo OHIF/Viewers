@@ -57,6 +57,75 @@ customizationService: [{ 'ohif.customizationUrl': { $set: { prefixes: { default:
 customizationUrlPrefixes: { default: './customizations/' },
 ```
 
+## Phase-tagged customizations (lifecycle ordering)
+
+A customization module — whether loaded from a `?customization=` data file or
+declared inline in `appConfig.customizationService` — can tag its payload with
+the lifecycle phase it should be applied in. This makes ordering deterministic
+regardless of when extensions and modes load, and lets a single source target
+the pre-extension, global, and mode-entry time frames at once.
+
+```jsonc
+{
+  // Other URL customization data files to resolve FIRST (depth-first).
+  "requires": ["base"],
+
+  // Applied (Global scope) BEFORE extensions register — in place while they init.
+  "preExtension": { "someId": { "$set": "value" } },
+
+  // Applied (Global scope) AFTER extensions register / init — so `$apply`-style
+  // merges can build on extension-provided defaults.
+  "global": { "workList.columns": { "$splice": [[1, 0, { "id": "patientBirthDate", "meta": { "label": "Birth Date" } }]] } },
+
+  // Applied (Mode scope) on EVERY mode enter. The reserved `*` (general) block
+  // is applied first; a block keyed by the entered mode's id / routeName is
+  // applied after it, so a single mode can override the general values.
+  "mode": {
+    "*": { "someId": { "$set": "all modes" } },
+    "viewer": { "someId": { "$set": "viewer only" } }
+  }
+}
+```
+
+The same shape is accepted by the app config. The legacy array / object form is
+still supported and is applied to the Global scope during `init()` exactly as
+before:
+
+```js
+window.config = {
+  customizationUrlPrefixes: { default: './customizations/' },
+  customizationService: {
+    requires: ['patientBirthDate'],            // resolves ./customizations/patientBirthDate.jsonc
+    global: [                                  // mixes string references and inline maps
+      '@ohif/extension-default.customizationModule.datasources',
+      { 'workList.variant': 'default' },
+    ],
+    mode: {
+      '*': { 'someId': { $set: 'all modes' } },
+      viewer: { 'someId': { $set: 'viewer only' } },
+    },
+  },
+};
+```
+
+How the phases map onto the boot sequence:
+
+| Phase | When | Scope |
+| --- | --- | --- |
+| `requires` | resolved up front (before extensions register) | — (loads other modules) |
+| `preExtension` | before `extensionManager.registerExtensions` | Global |
+| `global` | after extensions register + `customizationService.init` | Global |
+| `mode` | on each mode enter, after the mode scope is reset | Mode |
+
+All `?customization=` data files and `requires` are **fetched once, up front**
+(well before any mode loads); only the *application* of each phase block is
+deferred to its lifecycle point.
+
+> Note: a `?customization=` data file is JSON and cannot carry render functions.
+> The WorkList expands a serializable column spec (an entry with an `id` and
+> `meta` but no `accessorFn`/`cell`) into a display-only text column that reads
+> `row[id]`, which is how the `patientBirthDate` example above renders.
+
 ## `config/default.js` is now a secure, minimal baseline
 
 `config/default.js` — what a plain production build with no `APP_CONFIG` emits —

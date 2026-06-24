@@ -15,9 +15,19 @@ import type { ValidatedCustomization } from './validate';
 import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
 import type {
   CustomizationModule,
+  CustomizationPhaseInput,
   LoadedCustomization,
   LoadOptions,
+  PhasedCustomizationConfig,
 } from './customizationUrlTypes';
+
+/**
+ * Reserved key in a `mode` phase block for the "general" customizations that
+ * apply to every mode. The general block is applied FIRST on each mode enter;
+ * a block keyed by the entered mode's id / routeName is applied after it so a
+ * single mode can override the general values.
+ */
+export const GENERAL_MODE_KEY = '*';
 
 const EVENTS = {
   MODE_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:modeModified',
@@ -128,6 +138,28 @@ export default class CustomizationService extends PubSubService {
   private _urlCustomizationPending = new Map<string, Promise<LoadedCustomization | null>>();
 
   /**
+   * Every URL customization module resolved this page session, in load order
+   * (dependencies before dependents). The lifecycle phase appliers
+   * ({@link applyPreExtensionCustomizations}, {@link applyGlobalCustomizations},
+   * {@link applyModeCustomizations}) iterate this list so a module's phase
+   * blocks are applied at the right time regardless of when it was fetched.
+   */
+  private _resolvedUrlModules: LoadedCustomization[] = [];
+
+  /**
+   * Normalized form of `appConfig.customizationService`. Either a phase-tagged
+   * config ({@link PhasedCustomizationConfig}) or, for the legacy array/object
+   * form, the references to add (Global) during {@link init}.
+   */
+  private _customizationConfig: {
+    phased?: PhasedCustomizationConfig;
+    legacyReferences?: unknown;
+  } | null = null;
+
+  /** Id/aliases of the mode currently entered, used to re-apply mode phase blocks. */
+  private _currentModeIds: string[] = [];
+
+  /**
    * Extension module entry ids (e.g. `${extensionId}.customizationModule.default`) whose
    * default/global payloads have already been merged via {@link init}. Matches the URL
    * loader pattern: repeated {@link init} skips work for the same slot so immutability-style
@@ -181,11 +213,26 @@ export default class CustomizationService extends PubSubService {
       }
     });
 
-    // Only add references for the configuration once.
-    if (!this.configuration?._hasBeenAdded) {
-      this.addReferences(this.configuration);
+    // Only add references for the configuration once. The phase-tagged config
+    // form (preExtension/global/mode) is applied by the lifecycle appliers
+    // instead, so only the legacy array/object form is added here as Global.
+    const config = this._getCustomizationConfig();
+    if (config.legacyReferences !== undefined && !this.configuration?._hasBeenAdded) {
+      this.addReferences(config.legacyReferences);
       Object.defineProperty(this.configuration, '_hasBeenAdded', { value: true, writable: false });
     }
+  }
+
+  /**
+   * Memoized, normalized view of `appConfig.customizationService`. Detects the
+   * phase-tagged form (any of `requires` / `preExtension` / `global` / `mode`)
+   * and otherwise treats the value as legacy Global references.
+   */
+  private _getCustomizationConfig(): { phased?: PhasedCustomizationConfig; legacyReferences?: unknown } {
+    if (!this._customizationConfig) {
+      this._customizationConfig = normalizeCustomizationConfig(this.configuration);
+    }
+    return this._customizationConfig;
   }
 
   /**
@@ -248,6 +295,28 @@ export default class CustomizationService extends PubSubService {
     names: string | string[],
     overrides?: Partial<LoadOptions>
   ): Promise<LoadedCustomization[]> {
+    return this.loadCustomizationModules(names, overrides).then(newlyLoaded => {
+      // Back-compat: a direct `requires()` / `applyWindowUrlCustomizations()`
+      // call applies the `global` slice immediately. The `preExtension` and
+      // `mode` phases are driven by the boot orchestration
+      // ({@link loadAndApplyPreExtensionCustomizations}) and {@link onModeEnter}.
+      this._applyLoadedUrlCustomizationModules(newlyLoaded);
+      return newlyLoaded;
+    });
+  }
+
+  /**
+   * Resolves (fetches + parses) the given URL customization modules and their
+   * `requires` dependencies depth-first, WITHOUT applying any phase block.
+   * Newly resolved modules are appended to {@link _resolvedUrlModules} in load
+   * order so the lifecycle appliers can apply each phase at the right time.
+   *
+   * Rejects (aborting the load) when any entry is disallowed by the policy.
+   */
+  public loadCustomizationModules(
+    names: string | string[],
+    overrides?: Partial<LoadOptions>
+  ): Promise<LoadedCustomization[]> {
     const policy = overrides?.policy ?? getCustomizationUrlPolicy(this);
     const list = (Array.isArray(names) ? names : [names])
       .map(s => String(s).trim())
@@ -295,9 +364,96 @@ export default class CustomizationService extends PubSubService {
         Promise.resolve() as Promise<void>
       )
       .then(() => {
-        this._applyLoadedUrlCustomizationModules(newlyLoaded);
+        this._resolvedUrlModules.push(...newlyLoaded);
         return newlyLoaded;
       });
+  }
+
+  /**
+   * Boot-time entry point that runs BEFORE extensions are registered. It:
+   *   1. records the ExtensionManager (so the URL policy / appConfig is readable),
+   *   2. resolves every customization module requested via the
+   *      `appConfig.customizationService.requires` list and the `?customization=`
+   *      URL parameter (their data is fetched once, up front — long before any
+   *      mode loads), and
+   *   3. applies the `preExtension` phase blocks.
+   *
+   * Rejects (aborting bootstrap) if a `?customization=` value is disallowed.
+   */
+  public async loadAndApplyPreExtensionCustomizations(
+    extensionManager: ExtensionManager,
+    overrides?: Partial<LoadOptions>
+  ): Promise<void> {
+    this.extensionManager = extensionManager;
+    const config = this._getCustomizationConfig();
+
+    const names: string[] = [];
+    const requires = config.phased?.requires;
+    if (typeof requires === 'string' && requires) {
+      names.push(requires);
+    } else if (Array.isArray(requires)) {
+      names.push(...requires.filter(name => typeof name === 'string' && name));
+    }
+    if (typeof window !== 'undefined') {
+      names.push(...parseCustomizationParams(new URLSearchParams(window.location.search)));
+    }
+
+    if (names.length) {
+      await this.loadCustomizationModules(names, overrides);
+    }
+
+    this.applyPreExtensionCustomizations();
+  }
+
+  /**
+   * Applies the `preExtension` phase (Global scope) of the structured app config
+   * and every resolved URL module. App-config blocks apply first so URL modules
+   * layer on top.
+   */
+  public applyPreExtensionCustomizations(): void {
+    this._applyPhase('preExtension');
+  }
+
+  /**
+   * Applies the `global` phase (Global scope) of the structured app config and
+   * every resolved URL module. Call after {@link init} so extension default /
+   * global customizations are already in place for `$apply`-style merges.
+   */
+  public applyGlobalCustomizations(): void {
+    this._applyPhase('global');
+  }
+
+  /**
+   * Applies the `mode` phase (Mode scope) for the entered mode. The general
+   * block (`*`) is applied FIRST, then any block keyed by one of `modeIds`
+   * (the mode's id / routeName), so a single mode can override the general
+   * values. Call this AFTER `customizationService.onModeEnter()` has reset the
+   * mode scope (i.e. after `extensionManager.onModeEnter()`).
+   */
+  public applyModeCustomizations(modeIds: string | string[]): void {
+    const ids = (Array.isArray(modeIds) ? modeIds : [modeIds]).filter(Boolean) as string[];
+    this._currentModeIds = ids;
+
+    const blocks = this._collectPhaseBlocks('mode') as Array<{
+      mode?: Record<string, CustomizationPhaseInput>;
+    }>;
+
+    // General first, for every source.
+    for (const block of blocks) {
+      const general = block.mode?.[GENERAL_MODE_KEY];
+      if (general) {
+        this.setCustomizations(general, CustomizationScope.Mode);
+      }
+    }
+    // Then mode-specific, for every source.
+    for (const block of blocks) {
+      for (const id of ids) {
+        const specific = block.mode?.[id];
+        if (specific) {
+          this.setCustomizations(specific, CustomizationScope.Mode);
+        }
+      }
+    }
   }
 
   public onModeEnter(): void {
@@ -681,12 +837,39 @@ export default class CustomizationService extends PubSubService {
     }
     for (const entry of loaded) {
       const payload = getUrlCustomizationModulePayload(entry.module);
-      if (payload?.global && typeof payload.global === 'object') {
+      if (payload?.global) {
         this.setCustomizations(payload.global, CustomizationScope.Global);
-      } else if (!(payload as any)?.requires) {
-        console.warn(
-          `[customizationUrl] customization module "${entry.request.raw}" (${entry.url}) has no global payload and no requires; nothing was applied`
-        );
+      }
+    }
+  }
+
+  /**
+   * Collects the phase blocks for `phase` from every source, in apply order:
+   * the structured app config first, then each resolved URL module in load
+   * order. Used by {@link applyModeCustomizations}; the simpler `preExtension` /
+   * `global` phases go through {@link _applyPhase}.
+   */
+  private _collectPhaseBlocks(phase: keyof PhasedCustomizationConfig): PhasedCustomizationConfig[] {
+    const blocks: PhasedCustomizationConfig[] = [];
+    const phased = this._getCustomizationConfig().phased;
+    if (phased && phased[phase] !== undefined) {
+      blocks.push(phased);
+    }
+    for (const entry of this._resolvedUrlModules) {
+      const payload = getUrlCustomizationModulePayload(entry.module);
+      if (payload && payload[phase] !== undefined) {
+        blocks.push(payload);
+      }
+    }
+    return blocks;
+  }
+
+  /** Applies a Global-scoped phase (`preExtension` / `global`) from all sources. */
+  private _applyPhase(phase: 'preExtension' | 'global'): void {
+    for (const block of this._collectPhaseBlocks(phase)) {
+      const value = block[phase] as CustomizationPhaseInput | undefined;
+      if (value) {
+        this.setCustomizations(value, CustomizationScope.Global);
       }
     }
   }
@@ -886,6 +1069,48 @@ extend('$filter', (query, original) => {
 
   return deepFilter(original, query);
 });
+
+const PHASE_CONFIG_KEYS: Array<keyof PhasedCustomizationConfig> = [
+  'requires',
+  'preExtension',
+  'global',
+  'mode',
+];
+
+/**
+ * Normalizes `appConfig.customizationService` into either:
+ *   - `{ phased }`           — the structured, phase-tagged config, detected by
+ *                              the presence of any of `requires` / `preExtension`
+ *                              / `global` / `mode`; or
+ *   - `{ legacyReferences }` — the legacy array / object-map form, which is
+ *                              added (Global scope) during `init()` exactly as
+ *                              before.
+ */
+export function normalizeCustomizationConfig(configuration: unknown): {
+  phased?: PhasedCustomizationConfig;
+  legacyReferences?: unknown;
+} {
+  if (!configuration) {
+    return {};
+  }
+  if (Array.isArray(configuration)) {
+    return { legacyReferences: configuration };
+  }
+  if (typeof configuration === 'object') {
+    const isPhased = PHASE_CONFIG_KEYS.some(key => key in (configuration as object));
+    if (isPhased) {
+      const phased: PhasedCustomizationConfig = {};
+      for (const key of PHASE_CONFIG_KEYS) {
+        if (key in (configuration as object)) {
+          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[key];
+        }
+      }
+      return { phased };
+    }
+    return { legacyReferences: configuration };
+  }
+  return {};
+}
 
 function hasDollarKey(value) {
   if (Array.isArray(value)) {

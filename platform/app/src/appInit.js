@@ -91,16 +91,24 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
   const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
-  await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
 
   const { customizationService } = servicesManager.services;
-  // Merge extension default/global modules first, then layer on any customizations
-  // requested via the `?customization=` URL parameter. Those are only loaded when
-  // `appConfig.customizationUrlPrefixes` allows their prefix; the feature is off by
-  // default, and a value with an unconfigured prefix throws here (aborting startup)
-  // rather than being silently ignored.
+  // Resolve every customization module up front — from
+  // `appConfig.customizationService.requires` and the `?customization=` URL
+  // parameter — long before any mode loads, then apply the `preExtension` phase
+  // BEFORE extensions register so it is in place while they initialize. Modules
+  // are only loaded when `appConfig.customizationUrlPrefixes` allows their
+  // prefix; the feature is off by default, and a value with an unconfigured
+  // prefix throws here (aborting startup) rather than being silently ignored.
+  await customizationService.loadAndApplyPreExtensionCustomizations(extensionManager);
+
+  await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+
+  // Merge extension default/global modules, then layer on the `global` phase of
+  // the structured config + the URL modules resolved above (so `$apply`-style
+  // overrides see the extension-provided defaults they build on).
   customizationService.init(extensionManager);
-  await customizationService.applyWindowUrlCustomizations();
+  customizationService.applyGlobalCustomizations();
 
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level

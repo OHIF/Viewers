@@ -1,0 +1,34 @@
+// Example URL-loaded customization: patientBirthDate
+//
+// Adds a "Birth Date" column to the WorkList study list, right after the
+// Patient column. Because a URL customization file is DATA (never executed), it
+// cannot carry a render function — it inserts a plain, serializable column spec
+// (`id` + `meta`) and WorkList expands it into a display-only text column that
+// reads `row.patientBirthDate` (surfaced by the DICOMweb data source from DICOM
+// tag 00100030).
+//
+// This applies in the `global` phase, so it is in place before the WorkList
+// renders. Load it with `?customization=patientBirthDate`, or pull it in from
+// `appConfig.customizationService.requires`.
+{
+  "global": {
+    "workList.columns": {
+      // Insert at index 1 (immediately after the Patient column). Using a
+      // fixed index keeps the trailing `actions` column last.
+      "$splice": [
+        [
+          1,
+          0,
+          {
+            "id": "patientBirthDate",
+            "meta": {
+              "label": "Birth Date",
+              "minWidth": 130,
+              "priority": 40
+            }
+          }
+        ]
+      ]
+    }
+  }
+}
