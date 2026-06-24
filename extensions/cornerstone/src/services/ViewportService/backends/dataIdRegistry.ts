@@ -33,6 +33,9 @@ export type DataIdPayload =
 export class DataIdRegistry {
   // Global ref-count keyed by dataId (the provider store is a single global namespace).
   private readonly refCounts = new Map<string, number>();
+  // Last payload registered per dataId, so a re-registration that promotes a
+  // stack-only dataId to volume-backed can be detected and forwarded to the provider.
+  private readonly payloads = new Map<string, DataIdPayload>();
   // Per-viewport ledger of the dataIds it registered, to drive release on unmount.
   private readonly byViewport = new Map<string, string[]>();
 
@@ -52,12 +55,25 @@ export class DataIdRegistry {
   /**
    * Registers (or ref-bumps) a dataId for a viewport. Adds to the cornerstone
    * provider only on the first reference. Idempotent payloads across panes that
-   * share a dataId are expected (same imageIds/volumeId), so first-writer wins.
+   * share a dataId are expected (same imageIds/volumeId), so first-writer wins —
+   * EXCEPT when a later payload promotes a previously stack-only registration to
+   * a volume-backed one (gains a `volumeId`). That happens when a data overlay
+   * (fusion) is added to a viewport whose source was first mounted as a vtkImage
+   * stack: the source is re-registered with its volumeId so it can render as a
+   * volume slice alongside the overlay. Without updating the provider here, the
+   * source would keep its volumeId-less payload and stay vtkImage while the
+   * overlay is a vtkVolumeSlice (broken fusion).
    */
   register(viewportId: string, dataId: string, payload: DataIdPayload): void {
     const prev = this.refCounts.get(dataId) ?? 0;
-    if (prev === 0) {
+    const existing = this.payloads.get(dataId);
+    const promotesToVolume =
+      !!(payload as { volumeId?: string }).volumeId &&
+      !(existing as { volumeId?: string } | undefined)?.volumeId;
+
+    if (prev === 0 || promotesToVolume) {
       csUtils.genericViewportDataSetMetadataProvider.add(dataId, payload);
+      this.payloads.set(dataId, payload);
     }
     this.refCounts.set(dataId, prev + 1);
 
@@ -79,6 +95,7 @@ export class DataIdRegistry {
       const next = (this.refCounts.get(dataId) ?? 1) - 1;
       if (next <= 0) {
         this.refCounts.delete(dataId);
+        this.payloads.delete(dataId);
         csUtils.genericViewportDataSetMetadataProvider.remove(dataId);
       } else {
         this.refCounts.set(dataId, next);
@@ -97,6 +114,7 @@ export class DataIdRegistry {
       csUtils.genericViewportDataSetMetadataProvider.remove(dataId);
     }
     this.refCounts.clear();
+    this.payloads.clear();
     this.byViewport.clear();
   }
 }

@@ -46,7 +46,20 @@ class CornerstoneCacheService {
     // drive the stack-vs-volume data-builder decision below. Resolve the data
     // shape from the legacy mapping (which preserves that distinction) and keep
     // the resolved native type as the produced viewportData's viewportType.
-    const dataShapeType = getCornerstoneViewportType(viewportType, displaySets, false);
+    let dataShapeType = getCornerstoneViewportType(viewportType, displaySets, false);
+
+    // A data overlay (fusion) of two or more reconstructable image display sets
+    // must render as a volume viewport so the source and overlay share one
+    // representation (volume slice). Without this, a next (PLANAR_NEXT) viewport
+    // keeps the source in vtkImage (stack) mode while the added overlay is a
+    // vtkVolumeSlice, producing the broken/unstable fusion. Legacy fusion already
+    // resolves to a volume shape, so this only promotes the stack-shaped case
+    // (and SEG/RT overlays are non-reconstructable, so they are not affected).
+    const isReconstructableFusion =
+      displaySets.length > 1 && displaySets.every(ds => ds.isReconstructable);
+    if (isReconstructableFusion && dataShapeType === Enums.ViewportType.STACK) {
+      dataShapeType = Enums.ViewportType.ORTHOGRAPHIC;
+    }
 
     if (
       dataShapeType === Enums.ViewportType.ORTHOGRAPHIC ||
