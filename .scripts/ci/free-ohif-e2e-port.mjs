@@ -120,7 +120,7 @@ function freeOhifE2ePortUnix(port) {
 
 function freeOhifE2ePortWindows(port) {
   const output = runQuiet(
-    `netstat -ano | findstr :${port} | findstr LISTENING`
+    `netstat -ano | findstr ":${port} " | findstr LISTENING`
   );
 
   if (!output) {

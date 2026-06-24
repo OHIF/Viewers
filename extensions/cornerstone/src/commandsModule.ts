@@ -213,9 +213,9 @@ function commandsModule({
     let maxDeltaK = 25;
     let maxDeltaIJ = 100;
 
-    if (viewport instanceof StackViewport) {
+    if (isStackViewportType(viewport)) {
       maxDeltaK = Math.max(1, viewport.getImageIds()?.length ?? 1);
-    } else if (viewport instanceof VolumeViewport) {
+    } else if (isVolumeViewportType(viewport)) {
       const sliceData = csUtils.getImageSliceDataForVolumeViewport(viewport);
       maxDeltaK = Math.max(1, sliceData?.numberOfSlices ?? 1);
     }
