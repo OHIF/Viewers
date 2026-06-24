@@ -2053,8 +2053,13 @@ function commandsModule({
      * when its state is not active, so running both is safe and order-independent.
      */
     cancelActiveOperation: () => {
-      actions.rejectPreview();
-      actions.cancelMeasurement();
+      try {
+        actions.rejectPreview();
+      } catch (error) {
+        console.debug('Error rejecting active preview', error);
+      } finally {
+        actions.cancelMeasurement();
+      }
     },
     clearMarkersForMarkerLabelmap: () => {
       const { viewport } = _getActiveViewportEnabledElement();
