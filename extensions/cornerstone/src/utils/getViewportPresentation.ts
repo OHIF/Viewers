@@ -1,8 +1,11 @@
 import { utilities as csUtils, Types as CoreTypes } from '@cornerstonejs/core';
 
+type VOIRange = { lower: number; upper: number };
+
 type GenericNextViewport = {
   getSourceDataId?: () => string | undefined;
   getDisplaySetPresentation?: (dataId: string) => Record<string, unknown> | undefined;
+  getDefaultVOIRange?: (dataId?: string) => VOIRange | undefined;
   setDisplaySetPresentation?: {
     (props: Record<string, unknown>): void;
     (dataId: string, props: Record<string, unknown>): void;
@@ -10,6 +13,9 @@ type GenericNextViewport = {
   getViewState?: () => Record<string, unknown> | undefined;
   setViewState?: (patch: Record<string, unknown>) => void;
 };
+
+const voiRangesClose = (a: VOIRange, b: VOIRange, eps = 0.001): boolean =>
+  Math.abs(a.lower - b.lower) < eps && Math.abs(a.upper - b.upper) < eps;
 
 type LegacyViewport = {
   getProperties?: (dataId?: string) => Record<string, unknown> | undefined;
@@ -37,7 +43,26 @@ export function getViewportProperties(
   if (csUtils.isGenericViewport(viewport)) {
     const vp = viewport as unknown as GenericNextViewport;
     const id = dataId ?? vp.getSourceDataId?.();
-    return (id ? vp.getDisplaySetPresentation?.(id) : undefined) ?? {};
+    const presentation = (id ? vp.getDisplaySetPresentation?.(id) : undefined) ?? {};
+
+    // A native binding's presentation normally holds only EXPLICIT VOI overrides,
+    // but a computed default VOI can transiently land here during intermediate
+    // mounts (e.g. while a SEG hydrates, the base image briefly mounts as a volume
+    // and its min/max default is stored). Flag such a VOI as computed when it
+    // matches the binding's default so the LUT-presentation capture (cleanProperties)
+    // strips it instead of persisting+restoring it over the real default — matching
+    // legacy StackViewport's isComputedVOI. Stamping is harmless even on a genuine
+    // user VOI that happens to equal the default (stripping it falls back to the
+    // same value).
+    const voiRange = presentation.voiRange as VOIRange | undefined;
+    if (voiRange && presentation.isComputedVOI === undefined) {
+      const defaultVOIRange = vp.getDefaultVOIRange?.(id);
+      if (defaultVOIRange && voiRangesClose(voiRange, defaultVOIRange)) {
+        return { ...presentation, isComputedVOI: true };
+      }
+    }
+
+    return presentation;
   }
 
   const legacy = viewport as LegacyViewport;
