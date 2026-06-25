@@ -123,6 +123,10 @@ window.config = {
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         staticWado: true,
+        // Static WADO has no efficient per-frame endpoint, so for multiframe
+        // SEG, fetch the whole instance once and serve frames from the registry.
+        // Value is the max ms to wait for that fetch before proceeding (0 = off).
+        loadMultiframeAsPart10RaceTimeMs: 3000,
         singlepart: 'bulkdata,video',
         // whether the data source should use retrieveBulkData to grab metadata,
         // and in case of relative path, what would it be relative to, options
@@ -153,6 +157,10 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
+        // Static WADO has no efficient per-frame endpoint, so for multiframe
+        // SEG, fetch the whole instance once and serve frames from the registry.
+        // Value is the max ms to wait for that fetch before proceeding (0 = off).
+        loadMultiframeAsPart10RaceTimeMs: 3000,
         singlepart: 'bulkdata,video',
         // whether the data source should use retrieveBulkData to grab metadata,
         // and in case of relative path, what would it be relative to, options
@@ -181,6 +189,10 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
+        // Static WADO has no efficient per-frame endpoint, so for multiframe
+        // SEG, fetch the whole instance once and serve frames from the registry.
+        // Value is the max ms to wait for that fetch before proceeding (0 = off).
+        loadMultiframeAsPart10RaceTimeMs: 3000,
         singlepart: 'bulkdata,video',
         // whether the data source should use retrieveBulkData to grab metadata,
         // and in case of relative path, what would it be relative to, options
@@ -210,6 +222,10 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
+        // Static WADO has no efficient per-frame endpoint, so for multiframe
+        // SEG, fetch the whole instance once and serve frames from the registry.
+        // Value is the max ms to wait for that fetch before proceeding (0 = off).
+        loadMultiframeAsPart10RaceTimeMs: 3000,
         singlepart: 'video',
         bulkDataURI: {
           enabled: true,

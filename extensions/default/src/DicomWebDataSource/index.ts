@@ -12,6 +12,7 @@ import dcm4cheeReject from './dcm4cheeReject.js';
 
 import getImageId from './utils/getImageId.js';
 import dcmjs from 'dcmjs';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
@@ -303,6 +304,88 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        * support any QIDO or STOW operations.
        */
       getWadoDicomWebClient: () => wadoDicomWebClient,
+
+      /**
+       * Best-effort prefetch of a whole multiframe instance as a single Part 10
+       * object, registered into the Cornerstone3D NATURALIZED frame registry so
+       * subsequent per-frame image loads are served locally instead of issuing
+       * one network request per frame (see the "Behaviours" doc
+       * segmentation-multiframe-part10-prefetch).
+       *
+       * Gated by `loadMultiframeAsPart10RaceTimeMs`: 0/undefined disables it.
+       * Never throws into the caller — on any failure it resolves `done` to
+       * `false` and the normal per-frame load path is used.
+       *
+       * @returns `{ done: Promise<boolean>, cancel: () => void }`.
+       */
+      prefetchInstanceFrames: ({
+        instance,
+        imageId,
+        loadMultiframeAsPart10RaceTimeMs,
+      }) => {
+        const noop = { done: Promise.resolve(false), cancel: () => {} };
+
+        if (!loadMultiframeAsPart10RaceTimeMs || !instance || !imageId) {
+          return noop;
+        }
+
+        const StudyInstanceUID = instance.StudyInstanceUID;
+        const SeriesInstanceUID = instance.SeriesInstanceUID;
+        const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
+
+        if (!StudyInstanceUID || !SeriesInstanceUID || !SOPInstanceUID) {
+          return noop;
+        }
+
+        let cancelled = false;
+
+        // Lazy resolver: dicomweb-client.retrieveInstance returns the Part 10
+        // instance as an ArrayBuffer, unwrapping multipart/related transparently
+        // (and returning the raw object for single-part responses).
+        const resolvePart10 = async () => {
+          wadoDicomWebClient.headers = getAuthorizationHeader();
+          const result = await wadoDicomWebClient.retrieveInstance({
+            studyInstanceUID: StudyInstanceUID,
+            seriesInstanceUID: SeriesInstanceUID,
+            sopInstanceUID: SOPInstanceUID,
+          });
+
+          if (cancelled) {
+            throw new Error('prefetchInstanceFrames cancelled');
+          }
+
+          if (result instanceof ArrayBuffer) {
+            return result;
+          }
+          if (Array.isArray(result) && result[0] instanceof ArrayBuffer) {
+            return result[0];
+          }
+          if (result && (result as { buffer?: ArrayBuffer }).buffer instanceof ArrayBuffer) {
+            return (result as ArrayBufferView).buffer as ArrayBuffer;
+          }
+          throw new Error('Unexpected retrieveInstance result for instance prefetch');
+        };
+
+        const done = (async () => {
+          try {
+            await dicomImageLoader.prefetchPart10Instance(imageId, resolvePart10);
+            return !cancelled;
+          } catch (error) {
+            console.warn(
+              '[prefetchInstanceFrames] full-instance prefetch failed; falling back to per-frame loads',
+              error
+            );
+            return false;
+          }
+        })();
+
+        return {
+          done,
+          cancel: () => {
+            cancelled = true;
+          },
+        };
+      },
 
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
         qidoDicomWebClient.headers = getAuthorizationHeader();

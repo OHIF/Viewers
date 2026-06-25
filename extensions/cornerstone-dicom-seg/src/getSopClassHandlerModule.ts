@@ -477,6 +477,39 @@ async function _loadSegments({
   };
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
 
+  // Optional: fetch the whole SEG instance as a single Part 10 object and
+  // register its per-frame compressed pixels into the Cornerstone3D frame
+  // registry, so the per-frame loads below are served locally instead of one
+  // network request per frame. Disabled (0) by default; opt-in via
+  // customization. Best-effort: any failure falls back to per-frame fetches.
+  const loadMultiframeAsPart10RaceTimeMs =
+    (dataSource?.getConfig?.()?.loadMultiframeAsPart10RaceTimeMs as
+      | number
+      | undefined) ??
+    (customizationService?.getCustomization?.(
+      'cornerstone.segmentation.loadMultiframeAsPart10RaceTimeMs'
+    ) as number | undefined) ??
+    0;
+
+  let prefetch;
+  if (loadMultiframeAsPart10RaceTimeMs > 0) {
+    prefetch = dataSource.retrieve?.prefetchInstanceFrames?.({
+      instance,
+      imageId: segImageIdForMetadata,
+      loadMultiframeAsPart10RaceTimeMs,
+    });
+
+    if (prefetch?.done) {
+      // Give the bulk fetch a head start, then proceed regardless: frames
+      // already registered are served locally; the rest fetch normally while
+      // registration continues in the background.
+      const raceTimer = new Promise(resolve =>
+        setTimeout(resolve, loadMultiframeAsPart10RaceTimeMs)
+      );
+      await Promise.race([prefetch.done, raceTimer]);
+    }
+  }
+
   let results;
   try {
     results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDicomSegImageId(
@@ -495,6 +528,7 @@ async function _loadSegments({
     );
   } finally {
     eventTarget.removeEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
+    prefetch?.cancel?.();
   }
 
   let usedRecommendedDisplayCIELabValue = true;
