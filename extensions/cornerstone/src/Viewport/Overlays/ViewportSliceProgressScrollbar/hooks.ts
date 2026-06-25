@@ -140,6 +140,15 @@ export function useViewportSliceSync({
 
     syncFromViewport();
 
+    // A post-mount camera carry (e.g. the layout-selector MPR protocol restoring
+    // the prior stack slice onto the freshly-mounted volume viewport) moves the
+    // camera and fires its slice events synchronously during the mount — before
+    // these listeners attach and around the initial seed above — so the scrollbar
+    // can latch the mount-time index instead of the carried slice. Re-seed once on
+    // the next frame, after the mount+carry settles; pushSliceData makes it a
+    // no-op when nothing changed (no churn/flicker).
+    const reseedRaf = requestAnimationFrame(syncFromViewport);
+
     const { viewportType } = viewportData;
     const eventId =
       (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_NEW_IMAGE) ||
@@ -173,6 +182,7 @@ export function useViewportSliceSync({
     element.addEventListener(Enums.Events.CAMERA_MODIFIED, syncFromViewport);
 
     return () => {
+      cancelAnimationFrame(reseedRaf);
       element.removeEventListener(eventId, updateIndex);
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, syncFromViewport);
     };
