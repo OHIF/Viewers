@@ -152,8 +152,7 @@ test('duplicated contour will be generated with a new color', async ({
   );
 
   // duplicate the segment
-  const initialCount = await panel.getSegmentCount();
-  expect(initialCount, 'Expected to start with 4 segments').toBe(4);
+  await expect(panel.rows, 'Expected to start with 4 segments').toHaveCount(4);
   await segment0.actions.duplicate();
   await segment0.toggleVisibility(); // toggle original segment 0 visibility off to be able to grab the duplicated segment's path
 
