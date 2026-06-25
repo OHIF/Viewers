@@ -20,6 +20,11 @@ const loadPromises = {};
 
 const SEG_LOAD_LOG_PREFIX = '[SEG load]';
 
+// Max number of SEG frames fetched/decoded concurrently by the segmentation
+// loader. Hard-coded to 16 for now; intended to become configurable (and to
+// pair with the full-instance prefetch capability) in a follow-up.
+const SEG_FRAME_DECODE_CONCURRENCY = 16;
+
 function _normalizeImageId(imageId: string | string[] | undefined): string | undefined {
   if (imageId == null) {
     return undefined;
@@ -485,6 +490,7 @@ async function _loadSegments({
           customizationService
         ),
         frameImageIds,
+        concurrency: SEG_FRAME_DECODE_CONCURRENCY,
       }
     );
   } finally {
