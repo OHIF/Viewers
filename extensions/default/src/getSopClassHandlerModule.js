@@ -85,10 +85,9 @@ const makeDisplaySet = (instances, index) => {
     ? DYNAMIC_VOLUME_LOADER_SCHEME
     : DEFAULT_VOLUME_LOADER_SCHEME;
 
-  // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
-  let imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
 
+  // Set attributes data sources may read before building image IDs (e.g. DicomJSON SeriesInstanceUID).
   imageSet.setAttributes({
     volumeLoaderSchema,
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
@@ -102,20 +101,25 @@ const makeDisplaySet = (instances, index) => {
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
+    isReconstructable,
+    isDynamicVolume,
+    dynamicVolumeInfo,
+    FrameOfReferenceUID: instance.FrameOfReferenceUID,
+  });
+
+  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
+
+  imageSet.setAttributes({
     countIcon: isReconstructable ? 'icon-mpr' : undefined,
     numImageFrames: imageIds.length,
     numImageFramesOriginal: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    isReconstructable,
     messages,
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
-    isDynamicVolume,
-    dynamicVolumeInfo,
     supportsWindowLevel: true,
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
-    FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
   let imageId = imageIds[Math.floor(imageIds.length / 2)];
