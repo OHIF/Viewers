@@ -1,7 +1,8 @@
 import React from 'react';
 import { cn, Icons, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
-import { Enums } from '@cornerstonejs/core';
+import { Enums, utilities as csUtils } from '@cornerstonejs/core';
+import { isOrthographicViewportType } from '../../utils/getLegacyViewportType';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
 
 function ViewportOrientationMenu({
@@ -36,8 +37,6 @@ function ViewportOrientationMenu({
 
   const handleOrientationChange = (orientation: string) => {
     setCurrentOrientation(orientation);
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportIdToUse);
-    const currentViewportType = viewportInfo?.getViewportType();
 
     if (!displaySets.length) {
       return;
@@ -72,8 +71,19 @@ function ViewportOrientationMenu({
 
     const displaySetUIDs = displaySets.map(ds => ds.displaySetInstanceUID);
 
-    // If viewport is not already a volume type, we need to convert it
-    if (currentViewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
+    // A viewport already rendering in volume mode (legacy ORTHOGRAPHIC OR a next
+    // viewport that reports planarNext but renders volume actors, e.g. a CT+PET
+    // fusion) can be reoriented in place. Recreating it via setDisplaySetsForViewports
+    // would pass empty displaySetOptions and drop per-display-set presentation such
+    // as the PET overlay colormap/opacity. Only the genuine stack -> volume (MPR)
+    // case needs recreation.
+    const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportIdToUse);
+    const isVolumeMode =
+      !!csViewport &&
+      (isOrthographicViewportType(csViewport) || csUtils.viewportIsInVolumeMode(csViewport));
+
+    // If viewport is not already in volume mode, we need to convert it
+    if (!isVolumeMode) {
       // Configure the viewport to be a volume viewport with current display sets
       const updatedViewport = {
         viewportId: viewportIdToUse,
