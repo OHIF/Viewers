@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import {
+  Icons,
   IconPresentationProvider,
   Popover,
   PopoverAnchor,
@@ -232,6 +233,18 @@ export default function PanelSegmentation({
     };
   });
 
+  const saveModality =
+    segmentationRepresentationTypes?.[0] === SegmentationRepresentations.Contour
+      ? 'RTSTRUCT'
+      : 'SEG';
+
+  const isCurrentSegExportable = !!(
+    selectedSegmentationIdForType &&
+    exportOptions.some(
+      o => o.segmentationId === selectedSegmentationIdForType && o.isExportable
+    )
+  );
+
   // Common props for SegmentationTable
   const tableProps = {
     disabled,
@@ -276,6 +289,32 @@ export default function PanelSegmentation({
     );
   };
 
+  const renderSaveButton = () => {
+    if (!isCurrentSegExportable) {
+      return null;
+    }
+    return (
+      <button
+        type="button"
+        className="text-foreground hover:text-primary ml-auto cursor-pointer"
+        title="Save segmentation"
+        onClick={e => {
+          e.stopPropagation();
+          commandsManager.run({
+            commandName: 'storeSegmentation',
+            commandOptions: {
+              segmentationId: selectedSegmentationIdForType,
+              modality: saveModality,
+            },
+            context: 'CORNERSTONE',
+          });
+        }}
+      >
+        <Icons.Database className="h-4 w-4" />
+      </button>
+    );
+  };
+
   // Render content based on mode
   const renderModeContent = () => {
     if (tableProps.mode === 'collapsed') {
@@ -288,6 +327,7 @@ export default function PanelSegmentation({
             </SegmentationTable.Collapsed.DropdownMenu>
             <SegmentationTable.Collapsed.Selector />
             <SegmentationTable.Collapsed.Info />
+            {renderSaveButton()}
           </SegmentationTable.Collapsed.Header>
           <SegmentationTable.Collapsed.Content>
             <SegmentationTable.AddSegmentRow />
@@ -307,6 +347,7 @@ export default function PanelSegmentation({
             </SegmentationTable.Expanded.DropdownMenu>
             <SegmentationTable.Expanded.Label />
             <SegmentationTable.Expanded.Info />
+            {renderSaveButton()}
           </SegmentationTable.Expanded.Header>
 
           <SegmentationTable.Expanded.Content>
