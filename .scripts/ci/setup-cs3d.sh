@@ -85,10 +85,47 @@ else
   BRANCH="$REF"
 fi
 
-# Never delete an existing checkout (e.g. a local git worktree at libs/@cornerstonejs).
-# On CI the dir is absent (libs/ is gitignored) so we clone; locally we build in place.
+# Obtain / refresh the CS3D checkout. Decide whether to force the existing
+# checkout to the requested branch HEAD ("sync") or build whatever is already
+# there in place.
+#
+#   - CI (Netlify/CircleCI/GitHub Actions all set $CI): libs/ is gitignored, so
+#     it is a disposable cache artifact that is NEVER hand-edited. But a restored
+#     cache makes the dir "present", and a naive "skip clone" then silently builds
+#     a STALE CS3D commit with broken workspace links (tools resolving the
+#     published @cornerstonejs/core instead of the local one). So on CI we
+#     hard-reset to the branch HEAD and wipe ignored build/install artifacts
+#     (node_modules, dist) so the reinstall below relinks the workspace cleanly.
+#   - Local (no $CI): NEVER touch the working tree — preserve uncommitted changes
+#     and (crucially) a local git worktree at libs/@cornerstonejs. Build in place;
+#     run your own `git -C libs/@cornerstonejs pull` to update.
+#
+# Safety overrides (in priority): CS3D_SYNC=1 forces sync, CS3D_SYNC=0 forces
+# build-in-place (e.g. a self-hosted CI that manages the dir itself). And even
+# when sync is requested, a *linked git worktree* (.git is a file, not a dir) is
+# never reset — that is the local-dev layout and wiping it would destroy work.
+case "${CS3D_SYNC:-auto}" in
+  1|true|yes) SHOULD_SYNC=1 ;;
+  0|false|no) SHOULD_SYNC=0 ;;
+  *)          if [[ -n "${CI:-}" ]]; then SHOULD_SYNC=1; else SHOULD_SYNC=0; fi ;;
+esac
+
+if [[ "$SHOULD_SYNC" == "1" && -f libs/@cornerstonejs/.git ]]; then
+  log "libs/@cornerstonejs is a linked git worktree — refusing destructive sync, building in place"
+  SHOULD_SYNC=0
+fi
+
 if [[ -e libs/@cornerstonejs/.git ]]; then
-  log "libs/@cornerstonejs already present — building in place (skipping clone)"
+  if [[ "$SHOULD_SYNC" == "1" ]]; then
+    log "libs/@cornerstonejs present — syncing to $BRANCH (hard reset; CI or CS3D_SYNC=1)"
+    git -C libs/@cornerstonejs remote set-url origin "$REPO" 2>/dev/null \
+      || git -C libs/@cornerstonejs remote add origin "$REPO"
+    git -C libs/@cornerstonejs fetch --depth 1 origin "$BRANCH"
+    git -C libs/@cornerstonejs reset --hard FETCH_HEAD
+    git -C libs/@cornerstonejs clean -ffdx
+  else
+    log "libs/@cornerstonejs already present — building in place (preserving local changes; set CS3D_SYNC=1 to force-update)"
+  fi
 else
   log "cloning $REPO @ $BRANCH"
   git clone --depth 1 --branch "$BRANCH" "$REPO" libs/@cornerstonejs
