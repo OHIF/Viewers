@@ -58,3 +58,37 @@ export type {
   ConsentRecord,
   Provenance,
 } from './services/inferenceClient';
+
+// ---------------------------------------------------------------------------
+// SUS-12: Conduta SUS panel (ships dark, CONDUTA_SUS_ENABLED). The panel calls
+// the platform proxy POST /api/v1/conduta/{draft,submit} (SUS-11) and gates on
+// Clinical mode + a physician-signed read. claims:none.
+// ---------------------------------------------------------------------------
+export { CONDUTA_SUS_ENABLED } from './config/condutaSus';
+export { default as CondutaSusPanel } from './panels/CondutaSusPanel';
+export { condutaDraft, condutaSubmit, CondutaError, CondutaDisabledError } from './services/conductaClient';
+export {
+  useSignedReport,
+  getSignedReport,
+  setSignedReport,
+  clearSignedReport,
+} from './stores/useSignedReportStore';
+export type { SignedReportState } from './stores/useSignedReportStore';
+export type {
+  CondutaRequest,
+  SignedReport,
+  CondutaFinding,
+  CondutaPatient,
+  CondutaPractitioner,
+  CondutaEstablishment,
+  CondutaPathway,
+  CondutaPriority,
+  CondutaPriorityName,
+  CondutaColor,
+  CondutaDraftResult,
+  CondutaDraftSuccess,
+  CondutaSubmitResult,
+  CondutaSubmitSuccess,
+  CondutaErrorResult,
+  CondutaErrorCode,
+} from './services/conductaClient';

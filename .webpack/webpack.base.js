@@ -56,6 +56,16 @@ const defineValues = {
   // bare expression reaches the browser and throws ReferenceError (no `process`
   // object exists there). null (not '') so `?? default` fallbacks apply.
   'process.env.BLACKVOXEL_API_URL': JSON.stringify(process.env.BLACKVOXEL_API_URL || null),
+  // MIMPS-33/34: clinical-context feature (ships dark). The flag + the 4_labs
+  // FHIR base URL are read by @blackvoxel/blackvoxel-ai (clinicalMode.ts /
+  // labsClient.ts). null/'' so the `?? default` / `=== 'true'` fallbacks apply
+  // and the feature stays OFF unless explicitly enabled at build time.
+  'process.env.CLINICAL_MODE_ENABLED': JSON.stringify(process.env.CLINICAL_MODE_ENABLED || ''),
+  'process.env.BLACKVOXEL_4LABS_URL': JSON.stringify(process.env.BLACKVOXEL_4LABS_URL || null),
+  // SUS-12: Conduta SUS panel feature flag (ships dark). Read by
+  // @blackvoxel/blackvoxel-ai (config/condutaSus.ts). '' so the `=== 'true'`
+  // check defaults closed unless explicitly enabled at build time.
+  'process.env.CONDUTA_SUS_ENABLED': JSON.stringify(process.env.CONDUTA_SUS_ENABLED || ''),
   // Annotation Studio (3_labels) labels-api base URL, read by
   // @blackvoxel/extension-labeling/api/labelsClient. null so `?? default`
   // falls back to localhost:8090 in dev / same-origin via nginx in prod.

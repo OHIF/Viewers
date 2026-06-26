@@ -1,8 +1,10 @@
 import React from 'react';
 import AIFindingsPanel from './panels/AIFindingsPanel';
 import PatientContextPanel from './panels/PatientContextPanel';
+import CondutaSusPanel from './panels/CondutaSusPanel';
 import AIPanelErrorBoundary from './panels/AIPanelErrorBoundary';
 import { ViewerModeGate } from './components/ViewerModeGate';
+import { CONDUTA_SUS_ENABLED } from './config/condutaSus';
 
 /**
  * MIMPS-25: The ViewerModeGate is mounted here alongside the AI panel.
@@ -10,14 +12,16 @@ import { ViewerModeGate } from './components/ViewerModeGate';
  * layers regardless of panel DOM position.  The gate is only visible when no
  * valid mode has been chosen (mode === null in sessionStorage).
  */
-function getPanelModule({ servicesManager }: { servicesManager: unknown }): Array<{
+interface BlackVoxelPanel {
   name: string;
   iconName: string;
   iconLabel: string;
   label: string;
   component: () => React.ReactElement;
-}> {
-  return [
+}
+
+function getPanelModule({ servicesManager }: { servicesManager: unknown }): Array<BlackVoxelPanel> {
+  const panels: BlackVoxelPanel[] = [
     {
       name: 'blackvoxel-ai-findings',
       iconName: 'tab-analysis',
@@ -45,6 +49,27 @@ function getPanelModule({ servicesManager }: { servicesManager: unknown }): Arra
       ),
     },
   ];
+
+  // SUS-12: Conduta SUS panel. Ships DARK — registered ONLY when the build-time
+  // CONDUTA_SUS_ENABLED flag is on, so it does not appear in the panel rail at
+  // all by default. Even when registered the panel itself further gates on
+  // Clinical mode + a physician-signed read (and degrades to "indisponível"
+  // when the platform proxy is disabled).
+  if (CONDUTA_SUS_ENABLED) {
+    panels.push({
+      name: 'blackvoxel-ai-conduta-sus',
+      iconName: 'tab-patient-info',
+      iconLabel: 'Conduta',
+      label: 'Conduta SUS',
+      component: () => (
+        <AIPanelErrorBoundary>
+          <CondutaSusPanel servicesManager={servicesManager} />
+        </AIPanelErrorBoundary>
+      ),
+    });
+  }
+
+  return panels;
 }
 
 export default getPanelModule;

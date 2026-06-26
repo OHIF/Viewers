@@ -19,6 +19,12 @@ import i18n from '@ohif/i18n';
 
 export const BV_AI_NS = 'blackvoxel-ai';
 
+// OHIF canonical locale codes the LanguageToggle switches between. OHIF/platform
+// i18n uses 'en-US' / 'pt-BR' (see platform/i18n/src/index.js). 'en-US' resolves
+// to our 'en' bundle via i18next language fallback (en-US -> en).
+export const OHIF_LOCALE_EN = 'en-US';
+export const OHIF_LOCALE_PT = 'pt-BR';
+
 const en = {
   // Panel header
   'panel.title': 'BlackVoxel AI — Findings',
@@ -137,6 +143,58 @@ const en = {
   'context.medications.title': 'MEDICATIONS',
   'context.disclaimer':
     'For physician reasoning only — not an autonomous diagnosis. Reviewed and signed by the radiologist.',
+
+  // SUS-12: Conduta SUS panel (Clinical mode + signed read only; ships dark)
+  'conduta.panel.title': 'SUS Regulation Pathway',
+  'conduta.intro':
+    'From the signed read, draft a SUS regulation request. The physician signs, the regulator decides.',
+  'conduta.placeholder.clinicalOnly': 'SUS regulation is available in Clinical mode only.',
+  'conduta.unavailable': 'SUS regulation is unavailable.',
+  'conduta.requiresSigned': 'Available after the report is signed',
+  'conduta.requiresSignedNote':
+    'Sign the report first. A regulation request is never drafted from an unsigned read.',
+  // Pathway cards
+  'conduta.card.acute.title': 'Acute',
+  'conduta.card.acute.desc': 'Urgent/emergency pathway — bed/leito request for a single signed read.',
+  'conduta.card.chronic.title': 'Chronic',
+  'conduta.card.chronic.desc': 'Elective/specialty pathway — outpatient referral for a single signed read.',
+  'conduta.card.triage.title': 'Triage',
+  'conduta.card.triage.desc': 'Ranks many reads into a worklist — not a single regulation bundle.',
+  'conduta.triageNote': 'Triage ranks a worklist; the regulator decides the order. No request is sent from here.',
+  // Actions
+  'conduta.generateDraft': 'Generate request draft',
+  'conduta.retryDraft': 'Try again',
+  'conduta.drafting': 'Generating draft…',
+  'conduta.rascunhoBadge': 'draft',
+  'conduta.suggestionLabel': 'SUGGESTED PRIORITY',
+  // Prioridade 0-3 + cor
+  'conduta.priorityChip': 'Priority {{priority}} · {{name}}',
+  'conduta.color.vermelho': 'red',
+  'conduta.color.amarelo': 'yellow',
+  'conduta.color.verde': 'green',
+  'conduta.color.azul': 'blue',
+  'conduta.ruleId': 'rule: {{id}}',
+  'conduta.rationaleLabel': 'RATIONALE (editable)',
+  'conduta.justificativaLabel': 'JUSTIFICATION (editable)',
+  'conduta.justificativaPlaceholder': 'Clinical justification (pt-BR)…',
+  'conduta.decidesNote': 'Suggestion only — the physician/regulator decides.',
+  // Submit (separate, explicit, confirmed — never auto-send)
+  'conduta.confirmSubmitLabel':
+    'I confirm I want to send this request to SUS regulation.',
+  'conduta.submit': 'Send to regulation',
+  'conduta.submitting': 'Sending…',
+  'conduta.submitNote': 'Sending is a separate, explicit action — nothing is sent automatically.',
+  'conduta.submitted.accepted': '✓ Request structurally accepted',
+  'conduta.submitted.rejected': 'Request not accepted — review the problems below',
+  'conduta.submitted.trackingId': 'Tracking: {{id}}',
+  'conduta.submitted.mockEnv': 'Mock environment — no real RNDS submission (structural signal only).',
+  'conduta.reset': 'New draft',
+  // Errors
+  'conduta.error.unsigned': 'Cannot draft from an unsigned read — sign the report first.',
+  'conduta.error.request': 'Request rejected ({{code}}). Review and try again.',
+  'conduta.error.generic': 'Could not reach the SUS regulation service. Try again.',
+  'conduta.disclaimer':
+    'Decision support only — not a diagnosis or a regulatory decision. The physician signs; the regulator decides. Mock environment, no real RNDS submission.',
 };
 
 const ptBR: typeof en = {
@@ -257,6 +315,58 @@ const ptBR: typeof en = {
   'context.medications.title': 'MEDICAÇÕES',
   'context.disclaimer':
     'Apenas para raciocínio médico — não é um diagnóstico autônomo. Revisado e assinado pelo radiologista.',
+
+  // SUS-12: painel Conduta SUS (modo Clínico + laudo assinado; nasce desligado)
+  'conduta.panel.title': 'Conduta SUS',
+  'conduta.intro':
+    'A partir do laudo assinado, gere um rascunho de solicitação de regulação SUS. O médico assina, o regulador decide.',
+  'conduta.placeholder.clinicalOnly': 'A regulação SUS está disponível apenas no modo Clínico.',
+  'conduta.unavailable': 'Conduta SUS indisponível.',
+  'conduta.requiresSigned': 'Disponível após assinatura do laudo',
+  'conduta.requiresSignedNote':
+    'Assine o laudo primeiro. Uma solicitação nunca é gerada a partir de um laudo não assinado.',
+  // Cartões de via
+  'conduta.card.acute.title': 'Aguda',
+  'conduta.card.acute.desc': 'Via de urgência/emergência — solicitação de leito para um laudo assinado.',
+  'conduta.card.chronic.title': 'Crônica',
+  'conduta.card.chronic.desc': 'Via eletiva/especialidade — encaminhamento ambulatorial para um laudo assinado.',
+  'conduta.card.triage.title': 'Triagem',
+  'conduta.card.triage.desc': 'Ordena vários laudos em uma fila — não é um bundle único de regulação.',
+  'conduta.triageNote': 'A triagem ordena uma fila; o regulador decide a ordem. Nenhuma solicitação é enviada daqui.',
+  // Ações
+  'conduta.generateDraft': 'Gerar rascunho de solicitação',
+  'conduta.retryDraft': 'Tentar novamente',
+  'conduta.drafting': 'Gerando rascunho…',
+  'conduta.rascunhoBadge': 'rascunho',
+  'conduta.suggestionLabel': 'PRIORIDADE SUGERIDA',
+  // Prioridade 0-3 + cor
+  'conduta.priorityChip': 'Prioridade {{priority}} · {{name}}',
+  'conduta.color.vermelho': 'vermelho',
+  'conduta.color.amarelo': 'amarelo',
+  'conduta.color.verde': 'verde',
+  'conduta.color.azul': 'azul',
+  'conduta.ruleId': 'regra: {{id}}',
+  'conduta.rationaleLabel': 'JUSTIFICATIVA DA PRIORIDADE (editável)',
+  'conduta.justificativaLabel': 'JUSTIFICATIVA CLÍNICA (editável)',
+  'conduta.justificativaPlaceholder': 'Justificativa clínica (pt-BR)…',
+  'conduta.decidesNote': 'Apenas sugestão — o médico/regulador decide.',
+  // Envio (separado, explícito, confirmado — nunca automático)
+  'conduta.confirmSubmitLabel':
+    'Confirmo que desejo enviar esta solicitação para a regulação do SUS.',
+  'conduta.submit': 'Enviar para regulação',
+  'conduta.submitting': 'Enviando…',
+  'conduta.submitNote': 'O envio é uma ação separada e explícita — nada é enviado automaticamente.',
+  'conduta.submitted.accepted': '✓ Solicitação aceita estruturalmente',
+  'conduta.submitted.rejected': 'Solicitação não aceita — verifique os problemas abaixo',
+  'conduta.submitted.trackingId': 'Protocolo: {{id}}',
+  'conduta.submitted.mockEnv': 'Ambiente mock — sem envio real ao RNDS (apenas sinal estrutural).',
+  'conduta.reset': 'Novo rascunho',
+  // Erros
+  'conduta.error.unsigned': 'Não é possível gerar a partir de um laudo não assinado — assine o laudo primeiro.',
+  'conduta.error.request': 'Solicitação rejeitada ({{code}}). Revise e tente novamente.',
+  'conduta.error.generic': 'Não foi possível contatar o serviço de regulação SUS. Tente novamente.',
+  'conduta.disclaimer':
+    'Apoio à decisão apenas — não é diagnóstico nem decisão regulatória. O médico assina; o regulador decide. Ambiente mock, sem envio real ao RNDS.',
 };
 
 /**
