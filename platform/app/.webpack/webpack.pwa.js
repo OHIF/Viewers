@@ -15,7 +15,6 @@ const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
 // ~~ Env Vars
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
-const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 
 // proxy settings
 const PROXY_TARGET = process.env.PROXY_TARGET;
@@ -103,6 +102,12 @@ const setHeaders = (res, path) => {
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
+  // Honor an explicit APP_CONFIG; otherwise the dev server gets the
+  // full-featured `config/dev.js` and a production build the locked-down
+  // `config/default.js`. This lets `APP_CONFIG=config/foo.js pnpm run dev`
+  // override the default instead of being clobbered by the script.
+  const APP_CONFIG =
+    process.env.APP_CONFIG || (isProdBuild ? 'config/default.js' : 'config/dev.js');
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
 
   const mergedConfig = merge(baseConfig, {
