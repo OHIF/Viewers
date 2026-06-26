@@ -38,6 +38,11 @@ jobs:
       - run:
           name: Install Dependencies
           command: pnpm install --frozen-lockfile
+      - run:
+          # Build/link the CS3D ref from .cs3d-ref so unit tests run against it
+          # (no-op when .cs3d-ref is absent). Runs after install.
+          name: 'CS3D integration: build & link ref from .cs3d-ref'
+          command: bash .scripts/ci/setup-cs3d.sh
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
@@ -160,6 +165,11 @@ jobs:
       - run:
           name: Install Dependencies
           command: pnpm install
+      - run:
+          # Build/link the CS3D ref from .cs3d-ref so the package build uses it
+          # (no-op when .cs3d-ref is absent). Runs after install.
+          name: 'CS3D integration: build & link ref from .cs3d-ref'
+          command: bash .scripts/ci/setup-cs3d.sh
       - run:
           name: Avoid hosts unknown for github
           command: |

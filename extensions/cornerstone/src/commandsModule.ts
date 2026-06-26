@@ -2071,10 +2071,6 @@ function commandsModule({
     },
     rejectPreview: () => {
       actions._handlePreviewAction('reject');
-      // ESC is commonly bound to rejectPreview in OHIF.
-      // Also cancel any in-flight tool operation so non-preview tools
-      // (e.g., one-click flood fill) can be interrupted consistently.
-      actions.cancelMeasurement();
     },
     cancelMeasurement: () => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -2101,6 +2097,24 @@ function commandsModule({
       if (cancelled) {
         const renderingEngine = cornerstoneViewportService.getRenderingEngine();
         renderingEngine.render();
+      }
+    },
+    /**
+     * Generic Escape handler. A single Escape press should discard whatever the
+     * user has in progress, but that can be one of two unrelated things: a
+     * provisional segmentation preview, or an annotation being drawn. Rather
+     * than bind both `rejectPreview` and `cancelMeasurement` to `esc` (Mousetrap
+     * keeps only one handler per key, so the second silently shadows the first),
+     * this command orchestrates both single-purpose commands. Each is a no-op
+     * when its state is not active, so running both is safe and order-independent.
+     */
+    cancelActiveOperation: () => {
+      try {
+        actions.rejectPreview();
+      } catch (error) {
+        console.debug('Error rejecting active preview', error);
+      } finally {
+        actions.cancelMeasurement();
       }
     },
     clearMarkersForMarkerLabelmap: () => {
@@ -2689,6 +2703,9 @@ function commandsModule({
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
+    cancelMeasurement: {
+      commandFn: actions.cancelMeasurement,
+    },
     toggleLockMeasurement: {
       commandFn: actions.toggleLockMeasurement,
     },
@@ -2937,7 +2954,7 @@ function commandsModule({
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
-    cancelMeasurement: actions.cancelMeasurement,
+    cancelActiveOperation: actions.cancelActiveOperation,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
     interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
