@@ -3,16 +3,15 @@
   "keywords": ["ohif-extension"],
   "module": "src/index.tsx",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "node": ">=24",
+    "pnpm": ">=11"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:my-extension": "yarn run dev",
+    "dev:my-extension": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev"
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^{LATEST_OHIF_VERSION}",
@@ -41,20 +40,16 @@
     "@babel/plugin-transform-regenerator": "^7.16.7",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "^7.28.0",
-    "@babel/preset-env": "7.28.0",
+    "@babel/preset-env": "7.29.5",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@babel/plugin-transform-private-property-in-object": "^7.27.1",
-    "@babel/eslint-parser": "7.28.0",
     "babel-loader": "^8.2.4",
     "@svgr/webpack": "^8.1.0",
-    "babel-plugin-module-resolver": "^5.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.0",
     "cross-env": "^7.0.3",
     "dotenv": "^14.1.0",
-    "eslint": "^8.39.0",
-    "eslint-loader": "^2.0.0",
     "webpack": "5.89.0",
     "webpack-merge": "^5.7.3",
     "webpack-cli": "^5.0.2"

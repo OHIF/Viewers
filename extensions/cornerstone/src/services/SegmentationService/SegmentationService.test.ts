@@ -1120,6 +1120,7 @@ describe('SegmentationService', () => {
         isDynamicVolume: false,
         SeriesNumber: 1,
         SeriesDescription: 'Series Description',
+        Modality: 'SEG',
       } as unknown as AppTypes.DisplaySet;
 
       jest
@@ -1145,6 +1146,7 @@ describe('SegmentationService', () => {
             info: 'S1: Series Description',
           },
           label: 'Segmentation 2',
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: true,
@@ -1175,6 +1177,7 @@ describe('SegmentationService', () => {
         dynamicVolumeInfo: {
           timePoints: ['timePoint1', 'timePoint2', 'timePoint3'],
         },
+        Modality: 'SEG',
       } as unknown as AppTypes.DisplaySet;
 
       jest
@@ -1212,6 +1215,7 @@ describe('SegmentationService', () => {
             info: 'S1: Series Description',
           },
           label: 'Segmentation 2',
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: true,
@@ -1320,6 +1324,8 @@ describe('SegmentationService', () => {
         },
         SeriesDate: '2025-01-01',
         SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+        SeriesNumber: 1,
       };
 
       const referencedDisplaySet = {
@@ -1379,6 +1385,7 @@ describe('SegmentationService', () => {
       const expectedSegmentation = {
         config: {
           label: segDisplaySet.SeriesDescription,
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: false,
@@ -1534,7 +1541,7 @@ describe('SegmentationService', () => {
     it('should create a segmentation for a RTSTRUCT display set', async () => {
       const segmentationId = 'segmentationId';
       const rtStructDisplaySet = {
-        modality: 'RTSTRUCT',
+        Modality: 'RTSTRUCT',
         displaySetInstanceUID: 'display-set-uid',
         referencedDisplaySetInstanceUID: 'existent-display-set-uid',
         SeriesDate: '2025-01-01',
@@ -1544,6 +1551,7 @@ describe('SegmentationService', () => {
           ROIContours: [{}, {}, {}],
           frameOfReferenceUID: 'frameOfReferenceUID',
         },
+        SeriesNumber: 1,
       };
 
       const referencedDisplaySet = {
@@ -1650,6 +1658,7 @@ describe('SegmentationService', () => {
       const expectedSegmentation = {
         config: {
           label: rtStructDisplaySet.SeriesDescription,
+          fallbackLabel: 'S:1 RTSTRUCT',
           segments: {
             '1': {
               active: false,
@@ -2567,12 +2576,12 @@ describe('SegmentationService', () => {
   describe('clearSegmentationRepresentations', () => {
     it('should clear the segmentation representations', () => {
       const viewportId = 'viewportId';
-      jest.spyOn(service, 'removeSegmentationRepresentations').mockReturnValue(undefined);
+      jest.spyOn(service, 'removeRepresentationsFromViewport').mockReturnValue(undefined);
 
       service.clearSegmentationRepresentations(viewportId);
 
-      expect(service.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
-      expect(service.removeSegmentationRepresentations).toHaveBeenCalledWith(viewportId);
+      expect(service.removeRepresentationsFromViewport).toHaveBeenCalledTimes(1);
+      expect(service.removeRepresentationsFromViewport).toHaveBeenCalledWith(viewportId);
     });
   });
 
@@ -2600,7 +2609,7 @@ describe('SegmentationService', () => {
     });
   });
 
-  describe('removeSegmentationRepresentations', () => {
+  describe('removeRepresentationsFromViewport', () => {
     it('should remove the segmentation representations', () => {
       const viewportId = 'viewportId';
       const specifier = {
@@ -2609,7 +2618,7 @@ describe('SegmentationService', () => {
       };
       jest.spyOn(cstSegmentation, 'removeSegmentationRepresentations').mockReturnValue(undefined);
 
-      service.removeSegmentationRepresentations(viewportId, specifier);
+      service.removeRepresentationsFromViewport(viewportId, specifier);
 
       expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
       expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledWith(

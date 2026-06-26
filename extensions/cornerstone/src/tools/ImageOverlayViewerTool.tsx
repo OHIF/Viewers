@@ -1,8 +1,9 @@
-import { VolumeViewport, metaData, utilities } from '@cornerstonejs/core';
+import { metaData, utilities } from '@cornerstonejs/core';
 import { IStackViewport, IVolumeViewport } from '@cornerstonejs/core/types';
 import { AnnotationDisplayTool, drawing } from '@cornerstonejs/tools';
 import { guid, b64toBlob } from '@ohif/core/src/utils';
 import OverlayPlaneModuleProvider from './OverlayPlaneModuleProvider';
+import { isOrthographicViewportType } from '../utils/getLegacyViewportType';
 
 interface CachedStat {
   color: number[]; // [r, g, b, a]
@@ -49,7 +50,7 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
   onSetToolDisabled = (): void => {};
 
   protected getReferencedImageId(viewport: IStackViewport | IVolumeViewport): string {
-    if (viewport instanceof VolumeViewport) {
+    if (isOrthographicViewportType(viewport)) {
       return;
     }
 

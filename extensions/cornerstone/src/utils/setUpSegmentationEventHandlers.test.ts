@@ -15,6 +15,7 @@ describe('setUpSegmentationEventHandlers', () => {
   const mockSegmentationService = {
     EVENTS: {
       SEGMENTATION_ADDED: 'SEGMENTATION_ADDED',
+      SEGMENTATION_REMOVED: 'SEGMENTATION_REMOVED',
     },
     subscribe: jest.fn(),
     getSegmentation: jest.fn(),
@@ -40,6 +41,7 @@ describe('setUpSegmentationEventHandlers', () => {
   const mockUnsubscribeDataModified = jest.fn();
   const mockUnsubscribeModified = jest.fn();
   const mockUnsubscribeCreated = jest.fn();
+  const mockUnsubscribeRemoved = jest.fn();
   const mockUnsubscribeSelectedSegmentationsForViewportEvents = [jest.fn(), jest.fn()];
 
   const defaultParameters = {
@@ -59,8 +61,14 @@ describe('setUpSegmentationEventHandlers', () => {
       unsubscribeSelectedSegmentationsForViewportEvents:
         mockUnsubscribeSelectedSegmentationsForViewportEvents,
     });
-    mockSegmentationService.subscribe.mockReturnValue({
-      unsubscribe: mockUnsubscribeCreated,
+    mockSegmentationService.subscribe.mockImplementation((eventName: string) => {
+      if (eventName === mockSegmentationService.EVENTS.SEGMENTATION_ADDED) {
+        return { unsubscribe: mockUnsubscribeCreated };
+      }
+      if (eventName === mockSegmentationService.EVENTS.SEGMENTATION_REMOVED) {
+        return { unsubscribe: mockUnsubscribeRemoved };
+      }
+      return { unsubscribe: jest.fn() };
     });
   });
 
@@ -99,6 +107,7 @@ describe('setUpSegmentationEventHandlers', () => {
         mockUnsubscribeDataModified,
         mockUnsubscribeModified,
         mockUnsubscribeCreated,
+        mockUnsubscribeRemoved,
         ...mockUnsubscribeSelectedSegmentationsForViewportEvents,
       ],
     });
@@ -358,5 +367,6 @@ describe('setUpSegmentationEventHandlers', () => {
     expect(mockUnsubscribeDataModified).toHaveBeenCalled();
     expect(mockUnsubscribeModified).toHaveBeenCalled();
     expect(mockUnsubscribeCreated).toHaveBeenCalled();
+    expect(mockUnsubscribeRemoved).toHaveBeenCalled();
   });
 });

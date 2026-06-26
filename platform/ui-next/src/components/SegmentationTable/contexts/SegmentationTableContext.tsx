@@ -17,6 +17,7 @@ export interface Segmentation {
   segmentationId: string;
   label: string;
   cachedStats: SegmentStats;
+  fallbackLabel?: string;
   segments: Record<number, Segment>;
 }
 

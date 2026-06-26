@@ -32,9 +32,11 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-i18n',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-i18n',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
   });

@@ -118,25 +118,16 @@ const renderRadioSetting = option => {
 
 function renderDoubleRangeSetting(option) {
   return (
-    <div
-      className="flex items-center"
+    <RowDoubleRange
       key={option.id}
-    >
-      <div className="w-1/3 text-[13px]">
-        {renderLabelWithTooltip(option.name, option.tooltip)}
-      </div>
-      <div className="w-2/3">
-        <RowDoubleRange
-          values={option.value}
-          onChange={option.onChange}
-          minValue={option.min}
-          maxValue={option.max}
-          step={option.step}
-          showLabel={false}
-          tooltip={option.tooltip}
-        />
-      </div>
-    </div>
+      values={option.value}
+      onChange={option.onChange}
+      minValue={option.min}
+      maxValue={option.max}
+      step={option.step}
+      showLabel={false}
+      tooltip={option.tooltip}
+    />
   );
 }
 
@@ -225,10 +216,11 @@ const renderSelectSetting = option => {
       className="flex items-center"
       key={option.id}
     >
-      <div className="w-1/3 text-[13px]">
-        {renderLabelWithTooltip(option.name, option.tooltip)}
-      </div>
-      <div className="w-2/3">
+      <div className="w-1/3 text-[13px]">{renderLabelWithTooltip(option.name, option.tooltip)}</div>
+      <div
+        className="w-2/3"
+        data-cy={option.id}
+      >
         <Select
           onValueChange={value => option.onChange?.(value)}
           value={option.value}
@@ -241,6 +233,7 @@ const renderSelectSetting = option => {
               <SelectItem
                 key={value.id}
                 value={value.id}
+                data-cy={value.id}
               >
                 {value.label}
               </SelectItem>
