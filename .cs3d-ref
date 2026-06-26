@@ -1,0 +1,6 @@
+# Cornerstone3D ref to build OHIF against in CI (read by .scripts/ci/setup-cs3d.sh).
+# A version (e.g. 5.0.2, 4.19+) builds against the published packages; anything
+# else is treated as a CS3D branch (optionally "owner:branch" for a fork) that is
+# cloned + built + linked. Must mirror the PR-body "CS3D_REF:" line; set back to a
+# published version (or remove this file) before merging to master.
+fix/grow-cut-suv-pt

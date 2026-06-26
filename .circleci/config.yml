@@ -431,6 +431,14 @@ jobs:
           command: export DISPLAY=:99
       - cypress/install:
           install-command: pnpm install
+      - run:
+          # Build OHIF against the CS3D ref in .cs3d-ref (a branch is cloned,
+          # built with build:esm, and symlinked into node_modules; a version is
+          # pinned + reinstalled). No-op when .cs3d-ref is absent, so master and
+          # non-integration PRs are unaffected. Runs after the install above so
+          # the link lands on the freshly-installed node_modules.
+          name: 'CS3D integration: build & link ref from .cs3d-ref'
+          command: bash .scripts/ci/setup-cs3d.sh
       - cypress/run-tests:
           # CI runs headless under Xvfb with no GPU, so Electron uses software
           # WebGL. Newer Chromium deprecated that implicit fallback (canvas
