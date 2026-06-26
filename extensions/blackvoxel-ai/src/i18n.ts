@@ -99,6 +99,16 @@ const en = {
   // Non-research placeholder
   'placeholder.aiResearchOnly': 'AI models are available in Research mode only.',
 
+  // MIMPS-41: modality gate — AI is CR/DR/DX (chest X-ray) only. MR/CT and any
+  // other modality are transport-only (no model); the panel reads "not available
+  // for this modality", never an error or a pending analysis.
+  'placeholder.aiModalityUnavailable': 'AI analysis is not available for this modality.',
+  // MIMPS-42: provenance — persisted (stored at ingest) vs live (just run).
+  'source.persisted': 'Stored at ingest',
+  'source.live': 'Live analysis',
+  'source.persistedTooltip':
+    'Findings computed once when the study was received and stored — not re-run now.',
+
   // Viewer mode gate
   'mode.brand': 'BlackVoxel MIMPS',
   'mode.researchOnlyBadge': 'Research Only',
@@ -264,6 +274,16 @@ const ptBR: typeof en = {
 
   // Non-research placeholder
   'placeholder.aiResearchOnly': 'Os modelos de IA estão disponíveis apenas no modo Pesquisa.',
+
+  // MIMPS-41: gate por modalidade — IA apenas para CR/DR/DX (radiografia de
+  // tórax). MR/CT e demais são apenas transporte (sem modelo); o painel informa
+  // "não disponível para esta modalidade", nunca um erro ou análise pendente.
+  'placeholder.aiModalityUnavailable': 'Análise de IA não disponível para esta modalidade.',
+  // MIMPS-42: procedência — persistido (gerado na recepção) vs ao vivo.
+  'source.persisted': 'Gerado na recepção',
+  'source.live': 'Análise ao vivo',
+  'source.persistedTooltip':
+    'Achados calculados uma vez quando o estudo foi recebido e armazenados — não reprocessados agora.',
 
   // Viewer mode gate
   'mode.brand': 'BlackVoxel MIMPS',

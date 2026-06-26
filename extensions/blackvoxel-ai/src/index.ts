@@ -30,6 +30,18 @@ export {
 } from './stores/useViewerModeStore';
 export type { ViewerMode, ViewerModeState } from './stores/useViewerModeStore';
 
+// ---------------------------------------------------------------------------
+// MIMPS-40/41/42: modality-integration viewer slice (ships dark behind the
+// window.config `blackvoxelWorklist.enabled` gate).
+//   - MIMPS-40: worklist gate read from app config (no new process.env flag).
+//   - MIMPS-41: modality gate — AI is CR/DR/DX only; MR/CT panel-less.
+//   - MIMPS-42: persisted-first findings (worklist detail) → live fallback.
+// ---------------------------------------------------------------------------
+export { isWorklistEnabled, getWorklistApiBaseUrl } from './config/worklist';
+export { useActiveModality, isCxrModality, CXR_MODALITIES } from './hooks/useActiveModality';
+export { getWorklistDetail, toInferenceResponse } from './services/worklistClient';
+export type { WorklistAIResult, WorklistItemDetail } from './services/worklistClient';
+
 // Re-export the change-mode button so the viewer header (or any future
 // toolbar integration) can render it without importing internal paths.
 export { ChangeModeButton } from './components/ViewerModeGate';

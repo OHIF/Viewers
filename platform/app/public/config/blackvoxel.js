@@ -33,6 +33,25 @@ window.config = {
   extensions: [],
   modes: [],
   customizationService: {},
+  // MIMPS-40 — modality-integration worklist gate (ships DARK, default OFF).
+  //
+  // The viewer's study list is driven by the QIDO-RS data source below, which
+  // already lists every study present in our Orthanc (demo set today; gateway-
+  // received studies once DICOM_INGEST_ENABLED is on upstream). So no NEW data
+  // source is needed — registry-backed studies appear via the same QIDO path.
+  //
+  // This block is the VIEWER-side gate for the additive worklist-integration
+  // behavior (registry metadata enrichment via the platform worklist API +
+  // surfacing the worklist entry point). With `enabled: false` the viewer
+  // behaves byte-identically to today: only QIDO/Orthanc drives the list, no
+  // platform worklist call fires, demo studies are untouched, and the
+  // Research/Clinical mode gate is unchanged. `apiBaseUrl` defaults to the
+  // platform origin the inference client already uses (blackvoxel.ai); set it
+  // only to point at a non-default platform deployment.
+  blackvoxelWorklist: {
+    enabled: false,
+    apiBaseUrl: null,
+  },
   showStudyList: true,
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: false, // same-origin: no cross-origin warning needed

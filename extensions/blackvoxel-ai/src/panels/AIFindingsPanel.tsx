@@ -29,6 +29,11 @@ import { useLengthMeasurements } from '../hooks/useLengthMeasurements';
 // MIMPS-33/36: clinical-mode flag + ephemeral clinical-context store
 import { CLINICAL_MODE_ENABLED } from '../config/clinicalMode';
 import { useClinicalContext } from '../stores/useClinicalContextStore';
+// MIMPS-41: modality gate — AI is CR/DR/DX (chest X-ray) only.
+import { useActiveModality, isCxrModality } from '../hooks/useActiveModality';
+// MIMPS-40/42: worklist gate + persisted-AIResult fetch (persisted-first, live fallback).
+import { isWorklistEnabled } from '../config/worklist';
+import { getWorklistDetail, toInferenceResponse } from '../services/worklistClient';
 
 // ---------------------------------------------------------------------------
 // Brand constants (MIMPS-02 palette)
@@ -882,17 +887,31 @@ function AIFindingsPanel({
   // attached to the InferenceRequest in clinical mode only.
   const { context: clinicalContext } = useClinicalContext();
 
+  // MIMPS-41: modality gate — the proxy-txv-v1 lane is chest-radiograph only
+  // (CR/DR/DX). MR/CT/other are transport-only (no model): the panel shows a
+  // neutral "not available for this modality" message and fires NO inference and
+  // NO persisted-result fetch. The CXR path below is unchanged.
+  const modality = useActiveModality(servicesManager);
+  // null modality = study not yet resolved; treat as eligible so the CXR demo
+  // (single-CR study) is byte-identical to today and we never flash the gate on
+  // a study whose displaySets just haven't loaded. The gate trips only once a
+  // concrete non-CXR modality is known.
+  const modalityEligible = modality === null || isCxrModality(modality);
+
   // MIMPS-33: AI inference runs in research mode, OR clinical mode when the
   // CLINICAL_MODE_ENABLED flag is on. Default (flag off) is research-only —
   // identical to the legacy behaviour.
   const clinicalEnabled = CLINICAL_MODE_ENABLED && mode === 'clinical';
-  const inferenceAllowed = mode === 'research' || clinicalEnabled;
+  const inferenceAllowed = (mode === 'research' || clinicalEnabled) && modalityEligible;
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<InferenceResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [usingFallback, setUsingFallback] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
+  // MIMPS-42: provenance of the rendered findings — 'persisted' (stored at
+  // ingest, no live call) vs 'live' (just run). Drives the header source chip.
+  const [source, setSource] = useState<'persisted' | 'live'>('live');
   // MIMPS-29/30: confirmed measurements (+ ICT) lifted from the Medições section.
   const [confirmedMeasurements, setConfirmedMeasurements] = useState<ConfirmedMeasurement[]>([]);
   const [confirmedIct, setConfirmedIct] = useState<IctResult | null>(null);
@@ -967,6 +986,50 @@ function AIFindingsPanel({
         console.warn('[blackvoxel-ai] viewport capture failed:', err);
       }
 
+      // MIMPS-42: persisted-first. When the worklist gate is on, fetch the
+      // latest persisted AIResult for this study and render it WITHOUT a live
+      // inference call (faster, deterministic, no redundant model run). Any
+      // miss (no persisted result, study unknown, worklist API off, or a
+      // transient error) falls through to the live path below, byte-identical
+      // to today. Auth (401) is the only hard stop — it triggers the SSO
+      // redirect and must not silently fall back to live.
+      if (isWorklistEnabled() && studyUid) {
+        try {
+          const detail = await getWorklistDetail(studyUid);
+          if (cancelled) {
+            return;
+          }
+          if (detail?.ai_result) {
+            const persisted = toInferenceResponse(detail.ai_result, studyUid);
+            setData(persisted);
+            setSource('persisted');
+            setUsingFallback(false);
+            setLoading(false);
+            // Persisted findings carry the same region/bounding_box fields the
+            // overlay already draws — render the Grad-CAM via the SAME path.
+            drawOverlay(persisted, capture.imageId);
+            return;
+          }
+          // detail with no ai_result (e.g. transport-only or inference was off
+          // at ingest) → fall through to live inference.
+        } catch (err: unknown) {
+          if (cancelled) {
+            return;
+          }
+          if (err instanceof InferenceError && err.status === 401) {
+            // getWorklistDetail already evicted the token + triggered the SSO
+            // redirect. Never fall back on an auth failure.
+            setSessionExpired(true);
+            setLoading(false);
+            return;
+          }
+          // Any other worklist error: treat as "no persisted result" and fall
+          // through to the live path so a worklist outage never breaks CXR AI.
+          console.warn('[blackvoxel-ai] worklist detail fetch failed; falling back to live:', err);
+        }
+      }
+
+      setSource('live');
       try {
         const result = await getInference({
           study_uid: studyUid,
@@ -1020,12 +1083,69 @@ function AIFindingsPanel({
   }, [
     mode,
     inferenceAllowed,
+    // MIMPS-41: re-run when the resolved modality changes (e.g. displaySets
+    // load after first paint). inferenceAllowed already folds in modality
+    // eligibility; this keeps the dep list honest for exhaustive-deps.
+    modality,
     clinicalEnabled,
     clinicalContext,
     servicesManager,
     studyInstanceUID,
     seriesInstanceUID,
   ]);
+
+  // --- MIMPS-41: modality gate — non-CXR (MR/CT/other) is transport-only ---
+  // The mode is allowed but the active study is not a chest radiograph, so the
+  // proxy-txv-v1 lane does not apply. Show a NEUTRAL "not available for this
+  // modality" message (info icon, not a lock/error) and render no inference
+  // state. The effect above already fired no inference and no worklist fetch
+  // for this study, so no request was ever made. PT/EN via i18n.
+  const isModalityBlocked = (mode === 'research' || clinicalEnabled) && !modalityEligible;
+  if (isModalityBlocked) {
+    return (
+      <div className="flex h-full flex-col bg-black text-[13px]">
+        <div
+          className="flex flex-shrink-0 items-center gap-2 px-3 py-2.5"
+          style={{ backgroundColor: BRAND_VIOLET }}
+        >
+          <span className="text-[13px] font-bold text-white">{t('panel.title')}</span>
+          <span className="ml-auto">
+            <LanguageToggle />
+          </span>
+        </div>
+
+        <div
+          className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          {/* Info icon — neutral, never an error/lock; this is an expected state */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={TEXT_SECONDARY}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+
+          <p
+            className="m-0 max-w-[220px] text-[12px] leading-snug"
+            style={{ color: TEXT_SECONDARY }}
+          >
+            {t('placeholder.aiModalityUnavailable')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // --- MIMPS-27/33: inference-disabled mode — AI models off ---
   // Render a bilingual placeholder; no inference state is shown. Reached in
@@ -1128,6 +1248,17 @@ function AIFindingsPanel({
         <span className="ml-auto flex items-center gap-1">
           <LanguageToggle />
           <span className="text-[10px] text-white/70">{result.model_version}</span>
+          {/* MIMPS-42: provenance — persisted (stored at ingest) vs live. An
+              honest, small label so the radiologist knows a persisted read is a
+              previously-computed analysis, not one just run now. */}
+          {source === 'persisted' && (
+            <span
+              className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white"
+              title={t('source.persistedTooltip')}
+            >
+              {t('source.persisted')}
+            </span>
+          )}
           {result.is_mock && (
             <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
               {t('panel.badge.mock')}
@@ -1236,63 +1367,72 @@ function AIFindingsPanel({
         )}
       </div>
 
-      {/* CXR-26: which model wrote the draft + flag when the paid model is unavailable */}
-      <div
-        className="mx-3 mt-2 flex flex-wrap items-center gap-1.5 text-[10px]"
-        style={{ color: TEXT_SECONDARY }}
-      >
-        <span>
-          {result.report_source === 'medgemma'
-            ? t('report.source.medgemma')
-            : t('report.source.free')}
-        </span>
-        {result.report_source !== 'medgemma' && result.paid_report_available === false && (
-          <span
-            className="rounded px-1.5 py-0.5"
-            style={{ backgroundColor: 'rgba(217, 119, 6, 0.15)', color: '#FBBF24' }}
-            title="O modelo generativo pago não está habilitado — usando o rascunho gratuito."
+      {/* MIMPS-42: the report draft, consistency gate, and live ruler
+          measurements are LIVE-inference artifacts. A persisted (stored-at-
+          ingest) read renders findings + Grad-CAM + provenance only — we never
+          fabricate or re-derive a draft from a stored result. Gate all of it to
+          the live source; the non-diagnostic disclaimer below shows for both. */}
+      {source === 'live' && (
+        <>
+          {/* CXR-26: which model wrote the draft + flag when the paid model is unavailable */}
+          <div
+            className="mx-3 mt-2 flex flex-wrap items-center gap-1.5 text-[10px]"
+            style={{ color: TEXT_SECONDARY }}
           >
-            {t('report.paidUnavailable')}
-          </span>
-        )}
-      </div>
+            <span>
+              {result.report_source === 'medgemma'
+                ? t('report.source.medgemma')
+                : t('report.source.free')}
+            </span>
+            {result.report_source !== 'medgemma' && result.paid_report_available === false && (
+              <span
+                className="rounded px-1.5 py-0.5"
+                style={{ backgroundColor: 'rgba(217, 119, 6, 0.15)', color: '#FBBF24' }}
+                title="O modelo generativo pago não está habilitado — usando o rascunho gratuito."
+              >
+                {t('report.paidUnavailable')}
+              </span>
+            )}
+          </div>
 
-      {/* CXR-14: report consistency gate */}
-      {result.report_verified === false && (result.report_warnings?.length ?? 0) > 0 ? (
-        <div
-          role="alert"
-          className="mx-3 mt-2 rounded-md border px-3 py-2 text-[11px] leading-snug"
-          style={{
-            backgroundColor: 'rgba(217, 119, 6, 0.15)',
-            borderColor: 'rgba(217, 119, 6, 0.4)',
-            color: '#FBBF24',
-          }}
-        >
-          {t('report.inconsistent')}{' '}
-          {result.report_warnings?.join(' ')}
-        </div>
-      ) : result.report_verified === true ? (
-        <div className="mx-3 mt-2 text-[10px]" style={{ color: '#34D399' }}>
-          {t('report.consistent')}
-        </div>
-      ) : null}
+          {/* CXR-14: report consistency gate */}
+          {result.report_verified === false && (result.report_warnings?.length ?? 0) > 0 ? (
+            <div
+              role="alert"
+              className="mx-3 mt-2 rounded-md border px-3 py-2 text-[11px] leading-snug"
+              style={{
+                backgroundColor: 'rgba(217, 119, 6, 0.15)',
+                borderColor: 'rgba(217, 119, 6, 0.4)',
+                color: '#FBBF24',
+              }}
+            >
+              {t('report.inconsistent')}{' '}
+              {result.report_warnings?.join(' ')}
+            </div>
+          ) : result.report_verified === true ? (
+            <div className="mx-3 mt-2 text-[10px]" style={{ color: '#34D399' }}>
+              {t('report.consistent')}
+            </div>
+          ) : null}
 
-      {/* MIMPS-29: ruler measurements → structure suggest/confirm.
-          Research-mode is already guaranteed in this render branch. */}
-      <MeasurementsSection
-        servicesManager={servicesManager}
-        studyInstanceUID={studyInstanceUID}
-        seriesInstanceUID={seriesInstanceUID}
-        onConfirmedChange={handleConfirmedChange}
-      />
+          {/* MIMPS-29: ruler measurements → structure suggest/confirm.
+              Research-mode is already guaranteed in this render branch. */}
+          <MeasurementsSection
+            servicesManager={servicesManager}
+            studyInstanceUID={studyInstanceUID}
+            seriesInstanceUID={seriesInstanceUID}
+            onConfirmedChange={handleConfirmedChange}
+          />
 
-      {/* Collapsible report draft — MIMPS-30 injects the confirmed Medições block */}
-      <CollapsibleReport
-        report={{
-          ...result.report_draft,
-          medicoes: medicoesText.length > 0 ? medicoesText : undefined,
-        }}
-      />
+          {/* Collapsible report draft — MIMPS-30 injects the confirmed Medições block */}
+          <CollapsibleReport
+            report={{
+              ...result.report_draft,
+              medicoes: medicoesText.length > 0 ? medicoesText : undefined,
+            }}
+          />
+        </>
+      )}
 
       {/* Server disclaimer */}
       <div className="flex-shrink-0 border-t border-white/10 px-3 py-2">
