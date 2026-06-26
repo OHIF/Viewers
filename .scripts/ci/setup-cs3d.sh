@@ -46,6 +46,22 @@ else
 fi
 log "ref=$REF type=$TYPE"
 
+# ── 2.5. Protected-branch guard ───────────────────────────────────────────────
+# A CS3D *branch* ref must never be consumed on a protected branch (master,
+# release/*): it would build/test against an unpublished, mutable CS3D branch.
+# A committed .cs3d-ref is meant to be reset to a published version (or removed)
+# before merging, but that is a manual step that is easy to forget. This mirrors
+# cs3d-branch-merge-guard.sh in the Playwright workflow (which blocks merging PRs
+# that tested against a branch ref); fail fast here so master/release CI can't
+# silently follow a forgotten branch ref. Version refs are published + reproducible
+# and remain allowed, matching the merge guard's policy.
+BRANCH_NAME="${CIRCLE_BRANCH:-${GITHUB_REF_NAME:-${BRANCH:-}}}"
+if [[ "$TYPE" == "branch" && ( "$BRANCH_NAME" == "master" || "$BRANCH_NAME" == release/* ) ]]; then
+  log "ERROR: refusing to consume CS3D branch ref '$REF' on protected branch '$BRANCH_NAME'."
+  log "Reset .cs3d-ref to a published version (e.g. 4.19+) or remove the file before merging."
+  exit 1
+fi
+
 # ── 3. Apply ─────────────────────────────────────────────────────────────────
 if [[ "$TYPE" == "version" ]]; then
   log "pinning @cornerstonejs/* to $REF and reinstalling"
