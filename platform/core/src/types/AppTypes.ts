@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import HangingProtocolServiceType from '../services/HangingProtocolService';
 import CustomizationServiceType from '../services/CustomizationService';
+import type { PhasedCustomizationConfig } from '../services/CustomizationService';
 import MeasurementServiceType from '../services/MeasurementService';
 import ViewportGridServiceType from '../services/ViewportGridService';
 import ToolbarServiceType from '../services/ToolBarService';
@@ -85,7 +86,29 @@ declare global {
     export interface Config {
       studyBrowserMode?: 'all' | 'primary';
       routerBasename?: string;
-      customizationService?: CustomizationServiceType;
+      /**
+       * Startup customizations. Two forms are accepted:
+       *
+       *   - **Legacy**: an array of references / object map applied to the Global
+       *     scope during `init()` (e.g.
+       *     `['@ohif/extension-default.customizationModule.datasources']`).
+       *   - **Phase-tagged** ({@link PhasedCustomizationConfig}): an object with
+       *     any of `requires` / `preExtension` / `global` / `mode`. `requires`
+       *     pulls in URL-style customization data files; `preExtension` /
+       *     `global` apply (Global scope) before / after extensions register; and
+       *     `mode` applies (Mode scope) per mode on entry — the `*` block to all
+       *     modes first, then a block keyed by the mode id / routeName.
+       */
+      customizationService?: PhasedCustomizationConfig | string[] | Record<string, unknown>;
+      /**
+       * Allowlist of prefixes for the `?customization=` URL parameter, mapping a
+       * prefix to a base URL/path. The `default` prefix (no slashes) handles
+       * values with no leading slash; every other prefix must start and end with
+       * a slash (e.g. `/remote/`). Intentionally an app-config property and not a
+       * customization so a URL-loaded customization cannot widen its own
+       * allowlist. Absent (the default) means `?customization=` is disabled.
+       */
+      customizationUrlPrefixes?: Record<string, string>;
       extensions?: string[];
       modes?: string[];
       experimentalStudyBrowserSort?: boolean;

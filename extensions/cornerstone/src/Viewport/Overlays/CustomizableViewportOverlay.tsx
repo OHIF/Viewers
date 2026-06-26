@@ -14,7 +14,7 @@ import './CustomizableViewportOverlay.css';
 import { useViewportRendering } from '../../hooks';
 
 const EPSILON = 1e-4;
-const { formatPN } = utils;
+const { formatPN, formatValue } = utils;
 
 type ViewportData = StackViewportData | VolumeViewportData;
 
@@ -184,7 +184,12 @@ function CustomizableViewportOverlay({
       } else {
         const renderItem = customizationService.transform(item);
 
-        if (typeof renderItem.contentF === 'function') {
+        if (
+          renderItem &&
+          typeof renderItem === 'object' &&
+          'contentF' in renderItem &&
+          typeof renderItem.contentF === 'function'
+        ) {
           return renderItem.contentF(overlayItemProps);
         }
       }
@@ -357,7 +362,8 @@ function OverlayItem(props) {
   const { instance, customization = {} } = props;
   const { color, attribute, title, label, background } = customization;
   const value = customization.contentF?.(props, customization) ?? instance?.[attribute];
-  if (value === undefined || value === null) {
+  const displayValue = formatValue(value);
+  if (displayValue === null || displayValue === '') {
     return null;
   }
   return (
@@ -367,7 +373,7 @@ function OverlayItem(props) {
       title={title}
     >
       {label ? <span className="mr-1 shrink-0">{label}</span> : null}
-      <span className="ml-0 shrink-0">{value}</span>
+      <span className="ml-0 shrink-0">{displayValue}</span>
     </div>
   );
 }

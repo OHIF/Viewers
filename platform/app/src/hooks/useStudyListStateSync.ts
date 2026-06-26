@@ -175,7 +175,9 @@ function parseFiltersFromURL(params: URLSearchParams): ColumnFiltersState {
  * Build URL query string from study list state preserving key query parameters.
  */
 function buildQueryFromState(state: StudyListState): string {
-  const query: Record<string, string> = {};
+  // preserveQueryStrings may write repeated values as arrays, so the value type
+  // must allow string[] in addition to string.
+  const query: Record<string, string | string[]> = {};
 
   // Sorting
   if (state.sorting.length > 0) {

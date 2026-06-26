@@ -1,12 +1,14 @@
 /** @type {AppTypes.Config} */
 
-// Public demo / Netlify deploy configuration.
+// Local development configuration.
 //
-// This is the full-featured config used for the Netlify deploy (build:viewer:ci).
-// Unlike the locked-down config/default.js, it enables every data source and
-// turns the `?customization=` URL feature ON via `customizationUrlPrefixes`.
+// This is the default config for the dev server (`pnpm run dev`, `dev:fast`,
+// `start`). Like config/netlify.js it is full-featured — every data source is
+// enabled and the `?customization=` URL feature is ON via
+// `customizationUrlPrefixes` — so the whole app can be exercised locally. The
+// locked-down config/default.js is what a plain production build emits instead.
 window.config = {
-  name: 'config/netlify.js',
+  name: 'config/dev.js',
   routerBasename: null,
   // whiteLabeling: {},
   extensions: [],
