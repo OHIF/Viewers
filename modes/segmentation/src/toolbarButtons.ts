@@ -783,7 +783,17 @@ export const toolbarButtons: Button[] = [
         },
       ],
       commands: [
-        'setToolActiveToolbar',
+        {
+          // The button id is 'RegionSegmentPlus' but the underlying tool is
+          // 'RegionSegmentPlusFloodFill'. setToolActiveToolbar (and
+          // getToolNameForButton) fall back to the button id when the first
+          // command has no commandOptions.toolName, which would try to activate a
+          // non-existent 'RegionSegmentPlus' tool. Pass the real tool name here.
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            toolName: 'RegionSegmentPlusFloodFill',
+          },
+        },
         'setRegionSegmentPlusFloodFillConfiguration',
         {
           commandName: 'activateSelectedSegmentationOfType',

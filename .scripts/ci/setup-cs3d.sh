@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # Portable CS3D integration setup — no GitHub token required.
 #
-# Resolves which Cornerstone3D to build OHIF against from, in priority:
+# The committed .cs3d-ref file at the repo root is the CANONICAL source for which
+# Cornerstone3D to build OHIF against; $CS3D_REF overrides it for ad-hoc runs.
+# Resolved in priority:
 #   1. $CS3D_REF environment variable (explicit override)
-#   2. the committed .cs3d-ref file at the repo root
+#   2. the first uncommented, non-blank line of .cs3d-ref (canonical)
 #   3. nothing -> leave the published @cornerstonejs/* from the lockfile in place
+#
+# .cs3d-ref is kept in the repo permanently: disable integration by commenting out
+# its ref line, NOT by deleting the file. See .cs3d-ref for the full instructions.
 #
 # A ref that looks like a version (e.g. 5.0.2, 4.19+, 4.x, 4.19.0-beta.1) takes
 # the "version" path; anything else is treated as a CS3D branch ("branch" path,
@@ -34,7 +39,7 @@ if [[ -z "$REF" && -f "$ROOT/.cs3d-ref" ]]; then
 fi
 
 if [[ -z "$REF" ]]; then
-  log "no ref configured (no \$CS3D_REF and no .cs3d-ref) — using published @cornerstonejs/* from the lockfile"
+  log "no ref configured (no \$CS3D_REF and no active .cs3d-ref line) — using published @cornerstonejs/* from the lockfile"
   exit 0
 fi
 
