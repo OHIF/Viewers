@@ -99,12 +99,6 @@ const en = {
   // Non-research placeholder
   'placeholder.aiResearchOnly': 'AI models are available in Research mode only.',
 
-  // DICOM import button
-  'import.button': 'Import DICOM',
-  'import.note': 'Files stay in the browser — no server upload.',
-  'import.aria': 'Import local DICOM files',
-  'import.title': 'Import local DICOM — Research mode only',
-
   // Viewer mode gate
   'mode.brand': 'BlackVoxel MIMPS',
   'mode.researchOnlyBadge': 'Research Only',
@@ -270,12 +264,6 @@ const ptBR: typeof en = {
 
   // Non-research placeholder
   'placeholder.aiResearchOnly': 'Os modelos de IA estão disponíveis apenas no modo Pesquisa.',
-
-  // DICOM import button
-  'import.button': 'Importar DICOM',
-  'import.note': 'Arquivos ficam no navegador — nenhum upload para servidor.',
-  'import.aria': 'Importar arquivos DICOM locais',
-  'import.title': 'Importar DICOM local — apenas modo Pesquisa',
 
   // Viewer mode gate
   'mode.brand': 'BlackVoxel MIMPS',

@@ -35,11 +35,6 @@ export type { ViewerMode, ViewerModeState } from './stores/useViewerModeStore';
 export { ChangeModeButton } from './components/ViewerModeGate';
 
 // ---------------------------------------------------------------------------
-// MIMPS-26: DICOM import affordance (research-mode-gated)
-// ---------------------------------------------------------------------------
-export { DicomImportButton } from './components/DicomImportButton';
-
-// ---------------------------------------------------------------------------
 // MIMPS-33/35/36: clinical-context feature (ships dark, CLINICAL_MODE_ENABLED).
 // ---------------------------------------------------------------------------
 export { CLINICAL_MODE_ENABLED } from './config/clinicalMode';

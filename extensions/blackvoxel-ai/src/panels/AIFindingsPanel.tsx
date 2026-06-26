@@ -22,8 +22,6 @@ import {
 } from '../services/viewportOverlay';
 import { toPtLabel, toSeverityDisplay, ANATOMY_PT, anatomyToPt } from '../utils/labels';
 import { STATIC_DEMO_DATA } from './staticDemoData';
-// MIMPS-26: research-only DICOM import button
-import { DicomImportButton } from '../components/DicomImportButton';
 // MIMPS-27: viewer-mode gate — AI inference is Research-mode only
 import { useViewerMode } from '../stores/useViewerModeStore';
 // MIMPS-28: live ruler (Length) measurements → classify wire shape
@@ -1032,7 +1030,7 @@ function AIFindingsPanel({
   // --- MIMPS-27/33: inference-disabled mode — AI models off ---
   // Render a bilingual placeholder; no inference state is shown. Reached in
   // research-disabled states: no mode yet, or clinical mode with the flag off.
-  // DicomImportButton already gates itself to research mode (MIMPS-26).
+  // (MIMPS-26: DICOM import now lives at the top of the study list, not here.)
   if (!inferenceAllowed) {
     return (
       <div className="flex h-full flex-col bg-black text-[13px]">
@@ -1150,9 +1148,6 @@ function AIFindingsPanel({
           )}
         </span>
       </div>
-
-      {/* MIMPS-26: DICOM import affordance — only visible in Research mode */}
-      <DicomImportButton />
 
       {/* Offline / fallback banner */}
       {usingFallback && (

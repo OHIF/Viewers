@@ -8,6 +8,7 @@ import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 import { StudyList, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 import { SidePanelPreview } from './SidePanelPreview';
+import { StudyListImportButton } from './StudyListImportButton';
 
 type Props = withAppTypes & {
   data: any[];
@@ -136,7 +137,14 @@ export default function WorkList({
               title={t('StudyList')}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
-              toolbarRightActionsComponent={toolbarActions}
+              toolbarRightActionsComponent={
+                <div className="flex items-center gap-1">
+                  {/* MIMPS-26: local DICOM import, relocated to the top of the
+                      study list so it's reachable from an empty worklist. */}
+                  <StudyListImportButton />
+                  {toolbarActions}
+                </div>
+              }
               toolbarRightComponent={
                 !isPreviewOpen ? (
                   <div className="relative -top-px mt-1 ml-2 flex items-center gap-1">

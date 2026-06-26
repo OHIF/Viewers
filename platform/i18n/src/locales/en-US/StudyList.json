@@ -6,6 +6,7 @@
   "Description": "Description",
   "Empty": "Empty",
   "Filter list to 100 studies or less to enable sorting": "Filter the list to 100 studies or less to enable sorting",
+  "ImportDICOM": "Import DICOM",
   "Instances": "Instances",
   "Launch workflow": "Launch workflow",
   "Modalities": "Modalities",
