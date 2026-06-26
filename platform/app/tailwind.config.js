@@ -1,5 +1,4 @@
-// Todo: we probably should add external installed extensions/modes here as well.
-
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   // Note: in Tailwind 3.0, JIT will purge unused styles by default
   // but in development, it is often useful to disable this to see
@@ -9,15 +8,15 @@ module.exports = {
   // }),
   presets: [require('../ui/tailwind.config.js'), require('../ui-next/tailwind.config.js')],
   content: [
-    './src/**/*.{jsx,js,ts,tsx, css}',
-    '../../extensions/**/*.{jsx,js,ts,tsx, css}',
-    '../ui/src/**/*.{jsx,js,ts,tsx, css}',
-    '../../modes/**/*.{jsx,js,ts,tsx, css}',
-    './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx, css}',
+    './src/**/*.{jsx,js,ts,tsx,css}',
+    '../../extensions/*/src/**/*.{jsx,js,ts,tsx,css}',
+    '../ui/src/**/*.{jsx,js,ts,tsx,css}',
+    '../ui-next/src/**/*.{jsx,js,ts,tsx,css}',
+    '../../modes/*/src/**/*.{jsx,js,ts,tsx,css}',
+    './node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/ui-next/src/**/*.{js,jsx,ts,tsx,css}',
-    '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,css, ts,tsx}',
-    '../../node_modules/@pixilib/**/*.{jsx,js,ts,tsx,css}',
+    '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,ts,tsx,css}',
   ],
   theme: {
     fontFamily: {
