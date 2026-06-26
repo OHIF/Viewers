@@ -43,11 +43,8 @@ ENV PUBLIC_URL=/
 
 # Build-time wiring consumed by .webpack/webpack.base.js (DefinePlugin):
 #   BLACKVOXEL_API_URL      — platform inference API base (blackvoxel-ai ext)
-#   BLACKVOXEL_PLATFORM_URL — "<- BlackVoxel Platform" header link
 ARG BLACKVOXEL_API_URL=https://blackvoxel.ai
-ARG BLACKVOXEL_PLATFORM_URL=https://blackvoxel.ai
 ENV BLACKVOXEL_API_URL=${BLACKVOXEL_API_URL}
-ENV BLACKVOXEL_PLATFORM_URL=${BLACKVOXEL_PLATFORM_URL}
 
 # build:viewer pins NODE_ENV=production APP_CONFIG=config/blackvoxel.js.
 # Invoked via the workspace (not `lerna run`): lerna is only a transitive

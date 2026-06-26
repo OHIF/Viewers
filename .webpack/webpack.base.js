@@ -70,10 +70,6 @@ const defineValues = {
   // @blackvoxel/extension-labeling/api/labelsClient. null so `?? default`
   // falls back to localhost:8090 in dev / same-origin via nginx in prod.
   'process.env.VITE_LABELS_API_URL': JSON.stringify(process.env.VITE_LABELS_API_URL || null),
-  // Header back-link target (ui-next Header.tsx); rendered whenever truthy.
-  'process.env.BLACKVOXEL_PLATFORM_URL': JSON.stringify(
-    process.env.BLACKVOXEL_PLATFORM_URL || 'https://blackvoxel.ai'
-  ),
   // onnxruntime-web's ESM loader glue falls back to bare `__filename` when
   // `document.currentScript` is unavailable (always on viewer page reload —
   // black-screens the whole app; MIMPS-16 finding). webpack's node-shim

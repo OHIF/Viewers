@@ -62,15 +62,6 @@ function Header({
       >
         <div className="relative h-[48px] items-center">
           <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
-            {(process.env.BLACKVOXEL_PLATFORM_URL as string | undefined) && (
-              <a
-                href={process.env.BLACKVOXEL_PLATFORM_URL as string}
-                className="text-muted-foreground hover:text-primary mr-3 hidden items-center gap-1 text-xs hover:underline md:flex"
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                ← BlackVoxel Platform
-              </a>
-            )}
             <div
               className={classNames(
                 'mr-3 inline-flex items-center',
