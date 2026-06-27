@@ -8,6 +8,7 @@ import {
   utilities as csUtils,
   cache,
   Enums as csEnums,
+  metaData,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -849,14 +850,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     _presentations: Presentations = {}
   ): Promise<void> {
     const [displaySet] = viewportData.data;
-    // For WSI viewports we must go through setDataIds rather than calling
-    // setDisplaySets directly: setDataIds resolves the DICOMweb client (via the
-    // WADO_WEB_CLIENT metadata provider) and registers the imageIds->data
-    // binding before rendering. setDisplaySets({ displaySetId }) alone skips
-    // that registration, leaving the viewport with no data (gray). setDataIds
-    // is available on both the legacy WSIViewport and the GenericViewport
-    // compatibility adapter, so this works regardless of useGenericViewport.
-    await viewport.setDataIds(displaySet.imageIds);
+    const displaySetId = displaySet.imageIds[0];
+    // Register the WSI dataset so the viewport can resolve its imageIds +
+    // webClient by display-set id, then mount via setDisplaySets. The webClient
+    // was registered under the WADO_WEB_CLIENT module (keyed by imageIds[0]) by
+    // the SM SOP class handler. Registering here rather than calling the legacy
+    // setDataIds means the same path works once WSI moves to the GenericViewport
+    // render path, whose data provider reads this same registry.
+    const webClient = metaData.get(
+      csEnums.MetadataModules.WADO_WEB_CLIENT,
+      displaySetId
+    );
+    csUtils.genericViewportDataSetMetadataProvider.add(displaySetId, {
+      imageIds: displaySet.imageIds,
+      kind: 'wsi',
+      options: { webClient },
+    });
+    await viewport.setDisplaySets({ displaySetId });
     const viewReference = viewportInfo.getViewReference();
     if (viewReference) {
       viewport.setViewReference(viewReference);
