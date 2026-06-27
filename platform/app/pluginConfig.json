@@ -73,10 +73,6 @@
     {
       "packageName": "@blackvoxel/extension-labeling",
       "version": "0.1.0"
-    },
-    {
-      "packageName": "@blackvoxel/app-surfaces",
-      "version": "0.1.0"
     }
   ],
   "modes": [

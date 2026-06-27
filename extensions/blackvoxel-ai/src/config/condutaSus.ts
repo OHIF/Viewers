@@ -22,7 +22,18 @@
  */
 
 function readCondutaSusEnabled(): boolean {
-  const raw = process.env.CONDUTA_SUS_ENABLED as string | undefined;
+  // Reference the LITERAL `process.env.CONDUTA_SUS_ENABLED` so webpack's
+  // DefinePlugin swaps it at build time. The try/catch is the FAIL-SAFE: if the
+  // matching DefinePlugin entry is ever missing, the bare `process` reference
+  // throws at module load and — since this module is imported during OHIF
+  // extension registration — would black-screen the whole viewer (the 2026-06-26
+  // incident). Catching it degrades this dark flag to its safe default (OFF).
+  let raw: string | undefined;
+  try {
+    raw = process.env.CONDUTA_SUS_ENABLED as string | undefined;
+  } catch {
+    raw = undefined; // no `process` in this build → default closed
+  }
   return raw === 'true' || raw === '1';
 }
 

@@ -17,7 +17,21 @@
  */
 
 function readClinicalModeEnabled(): boolean {
-  const raw = process.env.CLINICAL_MODE_ENABLED as string | undefined;
+  // Reference the LITERAL `process.env.CLINICAL_MODE_ENABLED` so webpack's
+  // DefinePlugin swaps it for a string literal at build time (a bracket/dynamic
+  // read would defeat DefinePlugin). The try/catch is the FAIL-SAFE: if a build
+  // is ever shipped WITHOUT the matching DefinePlugin entry — the 2026-06-26
+  // black-screen incident — the bare `process` reference reaches the browser and
+  // throws `ReferenceError: process is not defined` at module load. Because this
+  // module is imported during OHIF extension registration (pluginImports →
+  // appInit), that throw would crash boot and black-screen the WHOLE viewer.
+  // Catching it degrades this dark flag to its safe default (OFF) instead.
+  let raw: string | undefined;
+  try {
+    raw = process.env.CLINICAL_MODE_ENABLED as string | undefined;
+  } catch {
+    raw = undefined; // no `process` in this build → default closed
+  }
   return raw === 'true' || raw === '1';
 }
 

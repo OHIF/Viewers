@@ -89,8 +89,7 @@
   "dependencies": {
     "execa": "8.0.1",
     "@blackvoxel/extension-labeling": "file:../3_labels/src/extension-labeling",
-    "@blackvoxel/mode-labeling": "file:../3_labels/src/mode-labeling",
-    "@blackvoxel/app-surfaces": "file:../3_labels/src/app-surfaces"
+    "@blackvoxel/mode-labeling": "file:../3_labels/src/mode-labeling"
   },
   "optionalDependencies": {
     "@percy/cypress": "3.1.6",

@@ -272,8 +272,14 @@ export async function getInference(request: InferenceRequest): Promise<Inference
     throw new InferenceError('No auth token in session');
   }
 
-  const baseUrl =
-    (process.env.BLACKVOXEL_API_URL as string | undefined) ?? 'https://blackvoxel.ai';
+  // Literal read for DefinePlugin; try/catch fail-safe so a missing define never
+  // throws `process is not defined` (degrades to the default platform origin).
+  let baseUrl: string;
+  try {
+    baseUrl = (process.env.BLACKVOXEL_API_URL as string | undefined) ?? 'https://blackvoxel.ai';
+  } catch {
+    baseUrl = 'https://blackvoxel.ai';
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -331,8 +337,14 @@ export async function classifyMeasurements(
     throw new InferenceError('No auth token in session');
   }
 
-  const baseUrl =
-    (process.env.BLACKVOXEL_API_URL as string | undefined) ?? 'https://blackvoxel.ai';
+  // Literal read for DefinePlugin; try/catch fail-safe so a missing define never
+  // throws `process is not defined` (degrades to the default platform origin).
+  let baseUrl: string;
+  try {
+    baseUrl = (process.env.BLACKVOXEL_API_URL as string | undefined) ?? 'https://blackvoxel.ai';
+  } catch {
+    baseUrl = 'https://blackvoxel.ai';
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);

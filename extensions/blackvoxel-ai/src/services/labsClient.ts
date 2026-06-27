@@ -42,7 +42,14 @@ export async function getPatientContext(
   patient_ref: string | null,
   consent: boolean
 ): Promise<ClinicalContext | null> {
-  const baseUrl = process.env.BLACKVOXEL_4LABS_URL as string | undefined;
+  // Literal read for DefinePlugin; try/catch fail-safe so a missing define never
+  // throws `process is not defined` (degrades to lane-unconfigured / dark).
+  let baseUrl: string | undefined;
+  try {
+    baseUrl = process.env.BLACKVOXEL_4LABS_URL as string | undefined;
+  } catch {
+    baseUrl = undefined;
+  }
   if (!baseUrl) {
     // Lane unconfigured — graceful no-op (ships dark).
     return null;

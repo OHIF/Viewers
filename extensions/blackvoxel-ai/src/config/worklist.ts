@@ -56,6 +56,13 @@ export function getWorklistApiBaseUrl(): string {
   if (typeof configured === 'string' && configured.length > 0) {
     return configured.replace(/\/+$/, '');
   }
-  const envBase = process.env.BLACKVOXEL_API_URL as string | undefined;
+  // Literal read for DefinePlugin; try/catch fail-safe so a missing define never
+  // throws `process is not defined` (degrades to the default origin below).
+  let envBase: string | undefined;
+  try {
+    envBase = process.env.BLACKVOXEL_API_URL as string | undefined;
+  } catch {
+    envBase = undefined;
+  }
   return (envBase ?? 'https://blackvoxel.ai').replace(/\/+$/, '');
 }
