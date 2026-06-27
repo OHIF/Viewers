@@ -1083,10 +1083,16 @@ function AIFindingsPanel({
   }, [
     mode,
     inferenceAllowed,
-    // MIMPS-41: re-run when the resolved modality changes (e.g. displaySets
-    // load after first paint). inferenceAllowed already folds in modality
-    // eligibility; this keeps the dep list honest for exhaustive-deps.
-    modality,
+    // NOTE (2026-06-26 regression fix): `modality` is deliberately NOT a
+    // dependency. It resolves null→'CR' asynchronously on DISPLAY_SETS_ADDED and
+    // can briefly oscillate as the hanging protocol re-runs. Including it re-ran
+    // THIS effect mid-inference; the cleanup set `cancelled=true`, so the
+    // in-flight 200 landed in the `if (!cancelled)` guard and was DROPPED before
+    // `setLoading(false)` + `drawOverlay` ever ran — the read spun forever and no
+    // box drew. Modality *eligibility* transitions (the only thing that should
+    // re-run this effect) are already folded into `inferenceAllowed`, which is
+    // what the body actually reads; the raw `modality` string is never
+    // referenced here, so excluding it is exhaustive-deps clean.
     clinicalEnabled,
     clinicalContext,
     servicesManager,
