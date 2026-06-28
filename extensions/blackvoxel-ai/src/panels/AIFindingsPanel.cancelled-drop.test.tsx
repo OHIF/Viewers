@@ -48,9 +48,11 @@ jest.mock('../services/inferenceClient', () => {
     InferenceError,
   };
 });
+const mockClearAIBoundingBoxes = jest.fn();
+const mockShowAIBoundingBoxes = jest.fn();
 jest.mock('../services/viewportOverlay', () => ({
-  clearAIBoundingBoxes: jest.fn(),
-  showAIBoundingBoxes: jest.fn(),
+  clearAIBoundingBoxes: (...args: unknown[]) => mockClearAIBoundingBoxes(...args),
+  showAIBoundingBoxes: (...args: unknown[]) => mockShowAIBoundingBoxes(...args),
   highlightAIBoundingBox: jest.fn(),
   clearAIHighlight: jest.fn(),
   findingKey: (f: { label: string }) => f.label,
@@ -115,6 +117,8 @@ describe('AIFindingsPanel — cancelled-drop regression (2026-06-26)', () => {
   beforeEach(() => {
     mockModality = null;
     mockGetInference.mockReset();
+    mockClearAIBoundingBoxes.mockReset();
+    mockShowAIBoundingBoxes.mockReset();
   });
 
   it('a modality change after inference starts does NOT re-fire inference, and the read finishes', async () => {
@@ -145,5 +149,30 @@ describe('AIFindingsPanel — cancelled-drop regression (2026-06-26)', () => {
     });
     // And no second inference slipped in after the loading cleared.
     expect(mockGetInference).toHaveBeenCalledTimes(1);
+  });
+
+  // SD-004 incident: a non-401 inference error must show an HONEST error state
+  // ("IA indisponível" + the message), NEVER the fabricated STATIC_DEMO_DATA
+  // ("Pneumonia 87%" + a hardcoded box). Pins the no-fabrication contract.
+  it('a non-401 inference error shows an honest error state with NO fabricated finding and NO box', async () => {
+    mockGetInference.mockRejectedValue(new Error('inference backend down'));
+
+    const { container } = render(<AIFindingsPanel {...props} />);
+
+    await waitFor(() => expect(mockGetInference).toHaveBeenCalledTimes(1));
+
+    // Honest error copy is shown; the underlying message is surfaced.
+    await waitFor(() => {
+      expect(screen.getByText('IA indisponível')).toBeTruthy();
+    });
+    expect(screen.getByText('inference backend down')).toBeTruthy();
+
+    // NO fabricated finding leaks through. The old fallback rendered a canned
+    // "Pneumonia 87%"; with the honest state there is no findings list at all.
+    expect(container.textContent).not.toContain('87');
+
+    // Boxes are cleared on the error path and NO overlay is drawn.
+    expect(mockClearAIBoundingBoxes).toHaveBeenCalled();
+    expect(mockShowAIBoundingBoxes).not.toHaveBeenCalled();
   });
 });

@@ -21,7 +21,10 @@ import {
   colorForFinding,
 } from '../services/viewportOverlay';
 import { toPtLabel, toSeverityDisplay, ANATOMY_PT, anatomyToPt } from '../utils/labels';
-import { STATIC_DEMO_DATA } from './staticDemoData';
+// SD-004: STATIC_DEMO_DATA is intentionally NOT imported here. It must never be
+// used as a SILENT error fallback (the old error handler masked failed real
+// inference as a canned "Pneumonia 87%"). staticDemoData.ts is retained for a
+// future EXPLICIT demo flag; no such flag exists today, so it stays unimported.
 // MIMPS-27: viewer-mode gate — AI inference is Research-mode only
 import { useViewerMode } from '../stores/useViewerModeStore';
 // MIMPS-28: live ruler (Length) measurements → classify wire shape
@@ -1063,13 +1066,18 @@ function AIFindingsPanel({
           return;
         }
 
-        // Any other error: fall back to static demo data.
+        // SD-004: any other error shows an HONEST error state — NEVER a
+        // fabricated finding. Do not surface STATIC_DEMO_DATA (the old behavior
+        // masked a failed real inference as a canned "Pneumonia 87%" + box,
+        // which presents a fabricated diagnosis as if it were a model result).
+        // Clear any AI boxes, leave data null so the panel renders the error
+        // ("IA indisponível" + the message) with no finding and no overlay.
         const message = err instanceof Error ? err.message : 'Erro desconhecido';
+        clearAIBoundingBoxes();
+        setData(null);
         setError(message);
-        setData(STATIC_DEMO_DATA);
-        setUsingFallback(true);
+        setUsingFallback(false);
         setLoading(false);
-        drawOverlay(STATIC_DEMO_DATA, capture.imageId);
       }
     }
 
@@ -1225,7 +1233,61 @@ function AIFindingsPanel({
     );
   }
 
-  // At this point data is guaranteed to be set (either real or fallback).
+  // --- SD-004: honest error state ---
+  // A non-401 inference failure leaves `data` null and `error` set. NEVER
+  // fabricate a finding here (the removed fallback rendered a canned
+  // "Pneumonia 87%" + box). Show an honest "IA indisponível" message with the
+  // underlying error, no findings list, and no overlay (boxes already cleared).
+  if (!data) {
+    return (
+      <div className="flex h-full flex-col bg-black text-[13px]">
+        <div
+          className="flex flex-shrink-0 items-center gap-2 px-3 py-2.5"
+          style={{ backgroundColor: BRAND_VIOLET }}
+        >
+          <span className="text-[13px] font-bold text-white">{t('panel.title')}</span>
+          <span className="ml-auto">
+            <LanguageToggle />
+          </span>
+        </div>
+        <div
+          className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          {/* Warning icon */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#F59E0B"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          <p className="m-0 max-w-[220px] text-[13px] font-semibold leading-snug text-[#FBBF24]">
+            IA indisponível
+          </p>
+          {error && (
+            <p
+              className="m-0 max-w-[240px] text-[11px] leading-snug"
+              style={{ color: TEXT_SECONDARY }}
+            >
+              {error}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // At this point data is guaranteed to be set (a real or persisted result).
   const result = data as InferenceResponse;
   const hasAnyLocalization = result.findings.some(
     f => f.bounding_box !== null || f.region != null
