@@ -1,0 +1,16 @@
+{
+  "comment": "Example APP_PLUGIN_CONFIG override. Select it with `APP_PLUGIN_CONFIG=./pluginConfig.example.json`. It `include`s the static default pluginConfig.json and layers over it: plain arrays append (de-duped by packageName, an override entry replacing a same-named base entry), while immutability-helper commands replace instead — e.g. `\"modes\": { \"$set\": [ { \"packageName\": \"@ohif/mode-basic\" } ] }` would ship ONLY the basic mode. EXTRA_EXTENSIONS / EXTRA_MODES still append on top of whatever this file produces. See platform/app/.webpack/writePluginImportsFile.js.",
+  "include": "./pluginConfig.json",
+  "extensions": [
+    {
+      "packageName": "@ohif/extension-test",
+      "version": "3.0.0"
+    }
+  ],
+  "modes": [
+    {
+      "packageName": "@ohif/mode-test",
+      "version": "3.0.0"
+    }
+  ]
+}
