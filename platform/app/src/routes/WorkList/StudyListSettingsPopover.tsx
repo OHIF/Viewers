@@ -122,7 +122,7 @@ export function StudyListSettingsPopover() {
         >
           <Icons.SettingsStudyList
             aria-hidden="true"
-            className="h-4 w-4"
+            className="text-primary h-4 w-4"
           />
         </Button>
       </StudyList.SettingsPopover.Trigger>

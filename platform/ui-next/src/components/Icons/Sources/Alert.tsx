@@ -15,7 +15,7 @@ export const Alert = (props: IconProps) => (
     >
       <path
         d="M24 11.794c.017 6.667-5.333 12.108-12 12.205a11.823 11.823 0 0 1-12-11.79C-.019 5.541 5.331.1 12 .001a11.824 11.824 0 0 1 12 11.793z"
-        fill="#B70D11"
+        fill="currentColor"
       />
       <g
         stroke="#FFF"
