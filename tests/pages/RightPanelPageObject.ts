@@ -344,10 +344,40 @@ export class RightPanelPageObject {
       select: async () => {
         await menuButton.click();
       },
-      // Contour drawing/editing tools rendered in the panel toolbox.
+      // Switches to the contour tab and creates a new Contour-type segmentation,
+      // which enables the contour drawing tools (Spline / Livewire / Freehand).
+      addSegmentation: async () => {
+        await menuButton.click();
+        await addSegmentationButton.click();
+      },
       tools: {
-        get freehand() {
-          const button = page.getByTestId('PlanarFreehandContourSegmentationTool-btn');
+        get splineContour() {
+          const button = page.getByTestId('SplineContourSegmentationTool');
+          // Maps a friendly spline name to the underlying cornerstone tool name,
+          // which is also the data-cy of its option in the Spline Type dropdown.
+          const splineTypeToolNames = {
+            catmullRom: 'CatmullRomSplineROI',
+            linear: 'LinearSplineROI',
+            bSpline: 'BSplineROI',
+          } as const;
+          return {
+            button,
+            // Activates the Spline Contour tool, arming the spline variant currently
+            // selected in the Spline Type dropdown. This defaults to Catmull-Rom until
+            // selectType is used to switch it.
+            click: async () => {
+              await button.click();
+            },
+            // Opens the Spline Type dropdown (rendered once the tool is active) and
+            // switches to the requested spline variant.
+            selectType: async (type: keyof typeof splineTypeToolNames) => {
+              await page.getByTestId('splineTypeSelect').getByRole('combobox').click();
+              await page.getByTestId(splineTypeToolNames[type]).click();
+            },
+          };
+        },
+        get livewireContour() {
+          const button = page.getByTestId('LivewireContourSegmentationTool');
           return {
             button,
             click: async () => {
@@ -355,17 +385,8 @@ export class RightPanelPageObject {
             },
           };
         },
-        get spline() {
-          const button = page.getByTestId('SplineContourSegmentationTool-btn');
-          return {
-            button,
-            click: async () => {
-              await button.click();
-            },
-          };
-        },
-        get livewire() {
-          const button = page.getByTestId('LivewireContourSegmentationTool-btn');
+        get freehandContour() {
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
           return {
             button,
             click: async () => {
