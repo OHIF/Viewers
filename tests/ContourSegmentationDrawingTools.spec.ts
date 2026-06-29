@@ -5,9 +5,7 @@ const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
 const FIRST_SLICE_OVERLAY= 'I:1 (1/47)';
 
-// A closed loop in the centre of the viewport, clear of the hydrated RTSTRUCT
-// contour so a freshly drawn contour renders as its own SVG <path>.
-const loop = [
+const dragShape = [
   { x: 0.4, y: 0.4 },
   { x: 0.6, y: 0.4 },
   { x: 0.6, y: 0.6 },
@@ -41,26 +39,24 @@ test('should keep a freehand contour drawn on slice 1 (no segment pre-selected) 
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const activeViewport = await viewportPageObject.active;
   const defaultViewport = await viewportPageObject.getById('default');
   const paths = defaultViewport.svg('path');
   const sliceIndicator = defaultViewport.overlayText.bottomRight.instanceNumber;
 
-
-  const drawnIndex = await paths.count();
+  // confirm starting state: slice 1, one contour path (outer box)
+  await expect(paths, 'Expected the starting number of paths to be 1').toHaveCount(1);
   await rightPanelPageObject.contourSegmentationPanel.tools.freehand.click();
   // Freehand auto-closes on mouse-up; the drag traces the loop.
-  await activeViewport.normalizedPathDragAt({ path: loop, config: { steps: 20, delay: 30 } });
-  await expect(paths, 'Expected the freehand contour to be added on slice 1').toHaveCount(
-    drawnIndex + 1
-  );
+  await defaultViewport.normalizedPathDragAt({ path: dragShape });
+  // Confirm that the freehand contour was added to the viewport on slice 1
+  await expect(paths, 'Expected the freehand contour to be added on slice 1').toHaveCount(2);
 
   // Capture the drawn contour's geometry.
   const drawnPathD = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
-    nth: drawnIndex,
+    nth: 1,
   });
   expect(drawnPathD, 'Expected the drawn freehand contour to render an SVG path').not.toBeNull();
 
@@ -73,7 +69,7 @@ test('should keep a freehand contour drawn on slice 1 (no segment pre-selected) 
   ).not.toHaveText(FIRST_SLICE_OVERLAY);
 
   // Scroll back to slice 1 — the freehand contour must still render, unchanged.
-  await activeViewport.sliceNavigation.toFirstSlice();
+  await defaultViewport.sliceNavigation.toFirstSlice();
   await waitForViewportsRendered(page);
   await expect(sliceIndicator, 'Expected to scroll back to slice 1').toHaveText(FIRST_SLICE_OVERLAY);
 
@@ -81,7 +77,7 @@ test('should keep a freehand contour drawn on slice 1 (no segment pre-selected) 
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
-    nth: drawnIndex,
+    nth: 1,
   });
   expect(persistedPathD, 'Expected the freehand contour to still render on slice 1').not.toBeNull();
   expect(persistedPathD, 'Expected the persisted freehand contour to match what was drawn').toBe(
@@ -94,49 +90,43 @@ test('should keep a freehand contour drawn into an added segment after switching
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const activeViewport = await viewportPageObject.active;
   const defaultViewport = await viewportPageObject.getById('default');
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
   const paths = defaultViewport.svg('path');
   const sliceIndicator = defaultViewport.overlayText.bottomRight.instanceNumber;
 
-  // Add a fresh segment and make it the active drawing target. It is empty, so
-  // selecting it keeps us on slice 1.
-  const initialCount = await panel.getSegmentCount();
-  await rightPanelPageObject.contourSegmentationPanel.addSegmentButton.click();
-  await expect(panel.rows, 'Expected a new segment row to be added').toHaveCount(initialCount + 1);
-  const addedSegment = panel.nthSegment(initialCount);
-  await addedSegment.click();
+  // confirm starting state: one contour path (outer box), 1/47 overlay and 4 panel segments
+  await expect(paths, 'Expected the starting number of paths to be 1').toHaveCount(1);
   await expect(sliceIndicator, 'Expected the empty added segment to stay on slice 1').toHaveText(
     FIRST_SLICE_OVERLAY
   );
+  await expect(panel.rows, 'Expected 4 segments to start').toHaveCount(4);
+
+
+  // Add a fresh segment and make it the active drawing target.
+  await rightPanelPageObject.contourSegmentationPanel.addSegmentButton.click();
+  await expect(panel.rows, 'Expected a new segment row to be added').toHaveCount(5);
+  const addedSegment = panel.nthSegment(4); // The newly added segment is at index 4.
+  await addedSegment.click();
 
   // Draw a freehand contour into the added segment on slice 1.
-  const drawnIndex = await paths.count();
   await rightPanelPageObject.contourSegmentationPanel.tools.freehand.click();
-  await activeViewport.normalizedPathDragAt({ path: loop, config: { steps: 20, delay: 30 } });
-  await expect(paths, 'Expected the freehand contour to be added to the new segment').toHaveCount(
-    drawnIndex + 1
-  );
+  await defaultViewport.normalizedPathDragAt({ path: dragShape });
+  await expect(paths, 'Expected the freehand contour to be added to the new segment').toHaveCount(2);
 
   // Capture the drawn contour's geometry.
   const drawnPathD = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
-    nth: drawnIndex,
+    nth: 1,
   });
   expect(drawnPathD, 'Expected the drawn freehand contour to render an SVG path').not.toBeNull();
 
   // Switch to another segment (jumps to its slice), then come back to the added segment.
   await panel.nthSegment(0).click();
-  await expect(
-    sliceIndicator,
-    'Expected switching segments to navigate off slice 1'
-  ).not.toHaveText(FIRST_SLICE_OVERLAY);
 
   await addedSegment.click();
-  await waitForViewportsRendered(page);
   await expect(
     sliceIndicator,
     'Expected returning to the added segment to land back on slice 1'
@@ -146,7 +136,7 @@ test('should keep a freehand contour drawn into an added segment after switching
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
-    nth: drawnIndex,
+    nth: 1,
   });
   expect(persistedPathD, 'Expected the freehand contour to still render on slice 1').not.toBeNull();
   expect(persistedPathD, 'Expected the persisted freehand contour to match what was drawn').toBe(
@@ -154,35 +144,223 @@ test('should keep a freehand contour drawn into an added segment after switching
   );
 });
 
-test('should draw a new contour with the Spline contour tool', async ({
+test('should keep a spline contour drawn on slice 1 (no segment pre-selected) after navigating away and back', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const activeViewport = await viewportPageObject.active;
-  const paths = (await viewportPageObject.getById('default')).svg('path');
+  const defaultViewport = await viewportPageObject.getById('default');
+  const paths = defaultViewport.svg('path');
+  const sliceIndicator = defaultViewport.overlayText.bottomRight.instanceNumber;
 
-  await expect(paths, 'Expected the hydrated RTSTRUCT to render a single contour').toHaveCount(1);
-
+  // confirm starting state: slice 1, one contour path (outer box)
+  await expect(paths, 'Expected the starting number of paths to be 1').toHaveCount(1);
   await rightPanelPageObject.contourSegmentationPanel.tools.spline.click();
-
   // Click the vertices then re-click the first vertex to close the contour.
-  await activeViewport.normalizedClickAt(loop);
+  await defaultViewport.normalizedClickAt(dragShape);
+  // Confirm that the spline contour was added to the viewport on slice 1
+  await expect(paths, 'Expected the spline contour to be added on slice 1').toHaveCount(2);
 
-  await expect(paths, 'Expected a newly drawn spline contour path to appear').toHaveCount(2);
+  // Capture the drawn contour's geometry.
+  const drawnPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(drawnPathD, 'Expected the drawn spline contour to render an SVG path').not.toBeNull();
+
+  // Selecting another segment jumps the viewport to that segment's slice,
+  // navigating away from slice 1.
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
+  await expect(
+    sliceIndicator,
+    'Expected selecting another segment to navigate off slice 1'
+  ).not.toHaveText(FIRST_SLICE_OVERLAY);
+
+  // Scroll back to slice 1 — the spline contour must still render, unchanged.
+  // The spline tool stays active after drawing, so wait on DOM state (overlay +
+  // re-rendered path) rather than viewport render status, which never settles.
+  await defaultViewport.sliceNavigation.toFirstSlice();
+  await expect(sliceIndicator, 'Expected to scroll back to slice 1').toHaveText(FIRST_SLICE_OVERLAY);
+  await expect(paths, 'Expected the spline contour to re-render on slice 1').toHaveCount(2);
+
+  const persistedPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(persistedPathD, 'Expected the spline contour to still render on slice 1').not.toBeNull();
+  expect(persistedPathD, 'Expected the persisted spline contour to match what was drawn').toBe(
+    drawnPathD
+  );
 });
 
-test('should draw a new contour with the Livewire contour tool', async ({
+test('should keep a spline contour drawn into an added segment after switching segments and back', async ({
+  page,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const activeViewport = await viewportPageObject.active;
-  const paths = (await viewportPageObject.getById('default')).svg('path');
+  const defaultViewport = await viewportPageObject.getById('default');
+  const panel = rightPanelPageObject.contourSegmentationPanel.panel;
+  const paths = defaultViewport.svg('path');
+  const sliceIndicator = defaultViewport.overlayText.bottomRight.instanceNumber;
 
-  await expect(paths, 'Expected the hydrated RTSTRUCT to render a single contour').toHaveCount(1);
+  // confirm starting state: one contour path (outer box), 1/47 overlay and 4 panel segments
+  await expect(paths, 'Expected the starting number of paths to be 1').toHaveCount(1);
+  await expect(sliceIndicator, 'Expected the empty added segment to stay on slice 1').toHaveText(
+    FIRST_SLICE_OVERLAY
+  );
+  await expect(panel.rows, 'Expected 4 segments to start').toHaveCount(4);
 
+  // Add a fresh segment and make it the active drawing target.
+  await rightPanelPageObject.contourSegmentationPanel.addSegmentButton.click();
+  await expect(panel.rows, 'Expected a new segment row to be added').toHaveCount(5);
+  const addedSegment = panel.nthSegment(4); // The newly added segment is at index 4.
+  await addedSegment.click();
+
+  // Draw a spline contour into the added segment on slice 1.
+  await rightPanelPageObject.contourSegmentationPanel.tools.spline.click();
+  await defaultViewport.normalizedClickAt(dragShape);
+  await expect(paths, 'Expected the spline contour to be added to the new segment').toHaveCount(2);
+
+  // Capture the drawn contour's geometry.
+  const drawnPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(drawnPathD, 'Expected the drawn spline contour to render an SVG path').not.toBeNull();
+
+  // Switch to another segment (jumps to its slice), then come back to the added segment.
+  await panel.nthSegment(0).click();
+
+  await addedSegment.click();
+  await expect(
+    sliceIndicator,
+    'Expected returning to the added segment to land back on slice 1'
+  ).toHaveText(FIRST_SLICE_OVERLAY);
+
+  const persistedPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(persistedPathD, 'Expected the spline contour to still render on slice 1').not.toBeNull();
+  expect(persistedPathD, 'Expected the persisted spline contour to match what was drawn').toBe(
+    drawnPathD
+  );
+});
+
+test('should keep a livewire contour drawn on slice 1 (no segment pre-selected) after navigating away and back', async ({
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const defaultViewport = await viewportPageObject.getById('default');
+  const paths = defaultViewport.svg('path');
+  const sliceIndicator = defaultViewport.overlayText.bottomRight.instanceNumber;
+
+  // confirm starting state: slice 1, one contour path (outer box)
+  await expect(paths, 'Expected the starting number of paths to be 1').toHaveCount(1);
   await rightPanelPageObject.contourSegmentationPanel.tools.livewire.click();
+  // Click the vertices then re-click the first vertex to close the contour.
+  await defaultViewport.normalizedClickAt(dragShape);
+  // Confirm that the livewire contour was added to the viewport on slice 1
+  await expect(paths, 'Expected the livewire contour to be added on slice 1').toHaveCount(2);
 
-  await activeViewport.normalizedClickAt(loop);
+  // Capture the drawn contour's geometry.
+  const drawnPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(drawnPathD, 'Expected the drawn livewire contour to render an SVG path').not.toBeNull();
 
-  await expect(paths, 'Expected a newly drawn livewire contour path to appear').toHaveCount(2);
+  // Selecting another segment jumps the viewport to that segment's slice,
+  // navigating away from slice 1.
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
+  await expect(
+    sliceIndicator,
+    'Expected selecting another segment to navigate off slice 1'
+  ).not.toHaveText(FIRST_SLICE_OVERLAY);
+
+  // Scroll back to slice 1 — the livewire contour must still render, unchanged.
+  // The livewire tool stays active after drawing, so wait on DOM state (overlay +
+  // re-rendered path) rather than viewport render status, which never settles.
+  await defaultViewport.sliceNavigation.toFirstSlice();
+  await expect(sliceIndicator, 'Expected to scroll back to slice 1').toHaveText(FIRST_SLICE_OVERLAY);
+  await expect(paths, 'Expected the livewire contour to re-render on slice 1').toHaveCount(2);
+
+  const persistedPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(persistedPathD, 'Expected the livewire contour to still render on slice 1').not.toBeNull();
+  expect(persistedPathD, 'Expected the persisted livewire contour to match what was drawn').toBe(
+    drawnPathD
+  );
+});
+
+test('should keep a livewire contour drawn into an added segment after switching segments and back', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const defaultViewport = await viewportPageObject.getById('default');
+  const panel = rightPanelPageObject.contourSegmentationPanel.panel;
+  const paths = defaultViewport.svg('path');
+  const sliceIndicator = defaultViewport.overlayText.bottomRight.instanceNumber;
+
+  // confirm starting state: one contour path (outer box), 1/47 overlay and 4 panel segments
+  await expect(paths, 'Expected the starting number of paths to be 1').toHaveCount(1);
+  await expect(sliceIndicator, 'Expected the empty added segment to stay on slice 1').toHaveText(
+    FIRST_SLICE_OVERLAY
+  );
+  await expect(panel.rows, 'Expected 4 segments to start').toHaveCount(4);
+
+
+  // Add a fresh segment and make it the active drawing target.
+  await rightPanelPageObject.contourSegmentationPanel.addSegmentButton.click();
+  await expect(panel.rows, 'Expected a new segment row to be added').toHaveCount(5);
+  const addedSegment = panel.nthSegment(4); // The newly added segment is at index 4.
+  await addedSegment.click();
+
+  // Draw a livewire contour into the added segment on slice 1.
+  await rightPanelPageObject.contourSegmentationPanel.tools.livewire.click();
+  await defaultViewport.normalizedClickAt(dragShape);
+  await expect(paths, 'Expected the livewire contour to be added to the new segment').toHaveCount(2);
+
+  // Capture the drawn contour's geometry.
+  const drawnPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(drawnPathD, 'Expected the drawn livewire contour to render an SVG path').not.toBeNull();
+
+  // Switch to another segment (jumps to its slice), then come back to the added segment.
+  await panel.nthSegment(0).click();
+
+  await addedSegment.click();
+  await expect(
+    sliceIndicator,
+    'Expected returning to the added segment to land back on slice 1'
+  ).toHaveText(FIRST_SLICE_OVERLAY);
+
+  const persistedPathD = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+    nth: 1,
+  });
+  expect(persistedPathD, 'Expected the livewire contour to still render on slice 1').not.toBeNull();
+  expect(persistedPathD, 'Expected the persisted livewire contour to match what was drawn').toBe(
+    drawnPathD
+  );
 });

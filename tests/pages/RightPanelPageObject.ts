@@ -325,17 +325,6 @@ export class RightPanelPageObject {
     };
   }
 
-  /** The "Add Segment" row button of the active segmentation in the visible panel */
-  private get addSegmentButton() {
-    const button = this.page.getByRole('button', { name: 'Add Segment' });
-    return {
-      button,
-      click: async () => {
-        await button.click();
-      },
-    };
-  }
-
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
