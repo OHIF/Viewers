@@ -310,7 +310,7 @@ export default function PanelSegmentation({
           });
         }}
       >
-        <Icons.Database className="h-4 w-4" />
+        <Icons.Save className="h-4 w-4" />
       </button>
     );
   };

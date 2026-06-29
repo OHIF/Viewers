@@ -44,6 +44,7 @@ import PowerOff from './Sources/PowerOff';
 import Redo from './Sources/Redo';
 import Refresh from './Sources/Refresh';
 import Rename from './Sources/Rename';
+import Save from './Sources/Save';
 import Series from './Sources/Series';
 import SeriesPlaceholder from './Sources/SeriesPlaceholder';
 import Settings from './Sources/Settings';
@@ -435,6 +436,7 @@ export const Icons = {
   ActionNewDialog,
   GroupLayers,
   Database,
+  Save,
   InvestigationalUse,
   Tool3DRotate,
   ToolAngle,
