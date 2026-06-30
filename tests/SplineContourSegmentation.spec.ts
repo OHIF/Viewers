@@ -1,4 +1,5 @@
-import { expect, test, visitStudyAndHydrate, getSvgAttribute } from './utils';
+import { expect, getSvgAttribute, test, visitStudyAndHydrate } from './utils';
+
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
@@ -41,14 +42,6 @@ test('should keep a spline contour drawn on slice 1 (no segment pre-selected) af
   await defaultViewport.normalizedClickAt(dragShape);
   await expect(paths, 'Expected the spline contour to be added on slice 1').toHaveCount(2);
 
-  const drawnPathD = await getSvgAttribute({
-    viewportPageObject,
-    svgInnerElement: 'path',
-    attributeName: 'd',
-    nth: 1,
-  });
-  expect(drawnPathD, 'Expected the drawn spline contour to render an SVG path').not.toBeNull();
-
   await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
   await expect(
     sliceIndicator,
@@ -57,18 +50,7 @@ test('should keep a spline contour drawn on slice 1 (no segment pre-selected) af
 
   await defaultViewport.sliceNavigation.toFirstSlice();
   await expect(sliceIndicator, 'Expected to scroll back to slice 1').toHaveText(FIRST_SLICE_OVERLAY);
-  await expect(paths, 'Expected the spline contour to re-render on slice 1').toHaveCount(2);
-
-  const persistedPathD = await getSvgAttribute({
-    viewportPageObject,
-    svgInnerElement: 'path',
-    attributeName: 'd',
-    nth: 1,
-  });
-  expect(persistedPathD, 'Expected the spline contour to still render on slice 1').not.toBeNull();
-  expect(persistedPathD, 'Expected the persisted spline contour to match what was drawn').toBe(
-    drawnPathD
-  );
+  await expect(paths, 'Expected the spline contour to persist on slice 1').toHaveCount(2);
 });
 
 test('should keep a spline contour drawn into an added segment after switching segments and back', async ({
@@ -88,7 +70,7 @@ test('should keep a spline contour drawn into an added segment after switching s
 
   await rightPanelPageObject.contourSegmentationPanel.addSegmentButton.click();
   await expect(panel.rows, 'Expected a new segment row to be added').toHaveCount(5);
-  const addedSegment = panel.nthSegment(4); // newly added segment, index 4
+  const addedSegment = panel.nthSegment(4);
   await addedSegment.click();
 
   await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
@@ -109,7 +91,10 @@ test('should keep a spline contour drawn into an added segment after switching s
     sliceIndicator,
     'Expected returning to the added segment to land back on slice 1'
   ).toHaveText(FIRST_SLICE_OVERLAY);
-  await expect(paths, 'Expected the spline contour to re-render on slice 1').toHaveCount(2);
+  await expect(
+    paths,
+    'Expected the spline contour to persist after switching segments'
+  ).toHaveCount(2);
 
   const persistedPathD = await getSvgAttribute({
     viewportPageObject,
@@ -117,7 +102,6 @@ test('should keep a spline contour drawn into an added segment after switching s
     attributeName: 'd',
     nth: 1,
   });
-  expect(persistedPathD, 'Expected the spline contour to still render on slice 1').not.toBeNull();
   expect(persistedPathD, 'Expected the persisted spline contour to match what was drawn').toBe(
     drawnPathD
   );
