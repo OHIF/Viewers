@@ -1091,7 +1091,7 @@ class CornerstoneViewportService
       }
 
       // Enable stack-context prefetch for the native path. setDisplaySets above has
-      // already populated imageIds via genericViewportDataSetMetadataProvider, so
+      // already populated imageIds via genericViewportDisplaySetMetadataProvider, so
       // getStackData returns a valid stack at enable() time. Scroll re-prefetch is
       // driven by the native STACK_NEW_IMAGE event.
       csToolsUtils.stackContextPrefetch.enable(viewport.element);

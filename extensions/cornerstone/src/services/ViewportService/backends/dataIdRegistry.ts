@@ -16,7 +16,7 @@ export type DataIdPayload =
 
 /**
  * Owns the lifecycle of OHIF's `dataId` registrations against cornerstone's
- * process-global `genericViewportDataSetMetadataProvider` (see migration plan §4.7).
+ * process-global `genericViewportDisplaySetMetadataProvider` (see migration plan §4.7).
  *
  * Why this exists: cornerstone's `removeData`/`setDisplaySets` do NOT garbage-collect
  * the global registration store (upstream blocker CS-18), so OHIF must own add/remove.
@@ -72,7 +72,7 @@ export class DataIdRegistry {
       !(existing as { volumeId?: string } | undefined)?.volumeId;
 
     if (prev === 0 || promotesToVolume) {
-      csUtils.genericViewportDataSetMetadataProvider.add(dataId, payload);
+      csUtils.genericViewportDisplaySetMetadataProvider.add(dataId, payload);
       this.payloads.set(dataId, payload);
     }
     this.refCounts.set(dataId, prev + 1);
@@ -96,7 +96,7 @@ export class DataIdRegistry {
       if (next <= 0) {
         this.refCounts.delete(dataId);
         this.payloads.delete(dataId);
-        csUtils.genericViewportDataSetMetadataProvider.remove(dataId);
+        csUtils.genericViewportDisplaySetMetadataProvider.remove(dataId);
       } else {
         this.refCounts.set(dataId, next);
       }
@@ -111,7 +111,7 @@ export class DataIdRegistry {
    */
   destroy(): void {
     for (const dataId of this.refCounts.keys()) {
-      csUtils.genericViewportDataSetMetadataProvider.remove(dataId);
+      csUtils.genericViewportDisplaySetMetadataProvider.remove(dataId);
     }
     this.refCounts.clear();
     this.payloads.clear();
