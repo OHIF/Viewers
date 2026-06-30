@@ -1768,6 +1768,10 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
 
       return isConverted;
     }
+
+    // Frame-of-reference mismatch (or missing): no conversion happened. Return an
+    // explicit boolean so the Promise<boolean> contract holds for callers.
+    return false;
   }
 
   private addSegmentationToSource(segmentationPublicInput: cstTypes.SegmentationPublicInput) {

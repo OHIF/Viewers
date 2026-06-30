@@ -104,11 +104,21 @@ export class NextViewportBackend implements IViewportBackend {
       );
     }
 
-    // Planar stack vs volume content both report PLANAR_NEXT, so infer from the bound
-    // data shape (§4.4): volume data carries a `volume` entry, stack data does not.
+    // Planar stack vs volume content both report PLANAR_NEXT, so infer from the
+    // persisted dataShapeType contract (§4.4) — the canonical discriminator set by
+    // CornerstoneCacheService and used everywhere else. Don't probe `'volume' in
+    // firstData`: that field can be lazily initialized after the data object is built,
+    // so the presence check is unreliable. Fall back to the probe only when an older
+    // viewportData has no dataShapeType.
+    const dataShapeType = (viewportData as { dataShapeType?: csEnums.ViewportType })
+      .dataShapeType;
     const firstData = (viewportData?.data?.[0] ?? {}) as Record<string, unknown>;
+    const isVolumeContent =
+      dataShapeType === csEnums.ViewportType.ORTHOGRAPHIC ||
+      dataShapeType === csEnums.ViewportType.VOLUME_3D ||
+      (dataShapeType === undefined && 'volume' in firstData);
 
-    if ('volume' in firstData) {
+    if (isVolumeContent) {
       return this.service._setVolumeViewport(
         viewport as unknown as Types.IVolumeViewport,
         viewportData as VolumeViewportData,

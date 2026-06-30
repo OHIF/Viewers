@@ -83,6 +83,6 @@ export default function getCornerstoneViewportType(
   }
 
   throw new Error(
-    `Invalid viewport type: ${viewportType}. Valid types are: stack, volume, video, wholeslide, ecg`
+    `Invalid viewport type: ${viewportType}. Valid types are: stack, volume, orthographic, volume3d, video, wholeslide, ecg`
   );
 }
