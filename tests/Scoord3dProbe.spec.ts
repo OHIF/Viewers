@@ -152,11 +152,19 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   await jumpRenderCycle;
   await waitForPaintToSettle(page);
 
-  // Take screenshot showing the jump to measurement functionality - use viewport locator
+  // The jump path intentionally does not wait for the full volume to load
+  // (waitVolumeLoad: false above), so on slower CI the dynamic series
+  // (tfl_dyn_fast_tra) may still be progressively loading when this screenshot
+  // is taken, yielding a partially-loaded probe value. Extend the screenshot
+  // retry window (attempts x delay) to give the volume time to settle before
+  // failing. TODO: revisit whether the baseline should be regenerated if the
+  // post-load rendering has legitimately changed.
   await checkForScreenshot(
     page,
     activeViewport.pane,
-    screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
+    screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement,
+    20,
+    2000
   );
 });
 
