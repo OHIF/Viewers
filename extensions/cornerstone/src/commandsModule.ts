@@ -947,6 +947,7 @@ function commandsModule({
         windowWidth: windowWidthNum,
         windowCenter: windowCenterNum,
         volumeId,
+        displaySetInstanceUID,
       });
       viewport.render();
     },

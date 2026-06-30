@@ -85,12 +85,18 @@ export const nextViewportOperations: IViewportOperations = {
     // zoomed in = larger zoom), so divide by scaleFactor to match the legacy direction.
     const scaleFactor = direction > 0 ? 0.9 : 1.1;
     const vp = viewport as unknown as {
-      getZoom: () => number;
-      setZoom: (zoom: number) => void;
+      getZoom?: () => number;
+      setZoom?: (zoom: number) => void;
       resetViewState?: () => void;
     };
     if (direction) {
-      vp.setZoom(vp.getZoom() / scaleFactor);
+      // Zoom is only meaningful on planar (stack / volume-slice / MPR) native viewports.
+      // VolumeViewport3D is also a generic viewport but exposes no getZoom/setZoom, so
+      // guard before calling — a no-op there matches the legacy lane, which only zoomed
+      // stack viewports (otherwise the zoom hotkey would throw on a native 3D viewport).
+      if (vp.getZoom && vp.setZoom) {
+        vp.setZoom(vp.getZoom() / scaleFactor);
+      }
     } else {
       vp.resetViewState?.();
     }
@@ -114,8 +120,11 @@ export const nextViewportOperations: IViewportOperations = {
       params.windowWidth,
       params.windowCenter
     );
-    // Native stack and volume both apply the VOI on the active binding via the bridge.
-    setViewportProperties(viewport, { voiRange: { upper, lower } });
+    // Target the binding for params.displaySetInstanceUID so a PT/CT *fusion* W/L lands
+    // on the intended layer (e.g. the PT overlay) instead of always the source (CT) —
+    // mirroring setColormap. When no id is given (single stack/volume) the bridge falls
+    // back to the source binding.
+    setViewportProperties(viewport, { voiRange: { upper, lower } }, params.displaySetInstanceUID);
   },
 
   setColormap(viewport: CoreTypes.IViewport, params: ColormapParams): void {

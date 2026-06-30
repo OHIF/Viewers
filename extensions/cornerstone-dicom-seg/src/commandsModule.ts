@@ -101,6 +101,12 @@ const commandsModule = ({
         const segImages = segImageIds.map(imageId => cache.getImage(imageId));
         const labelmaps2D = [];
 
+        // Map each source imageId to its frame index once (O(n)) so the per-slice lookup
+        // below is O(1) — avoids the O(slices^2) indexOf scan on the multi-layer path.
+        const referencedFrameIndexById = referencedImageIds
+          ? new Map(referencedImageIds.map((imageId, index) => [imageId, index]))
+          : undefined;
+
         let z = 0;
 
         for (const segImage of segImages) {
@@ -116,8 +122,8 @@ const commandsModule = ({
             }
           }
 
-          const frameIndex = referencedImageIds
-            ? referencedImageIds.indexOf(segImage.referencedImageId)
+          const frameIndex = referencedFrameIndexById
+            ? referencedFrameIndexById.get(segImage.referencedImageId) ?? -1
             : z++;
 
           if (frameIndex < 0) {

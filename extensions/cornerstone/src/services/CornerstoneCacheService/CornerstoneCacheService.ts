@@ -52,12 +52,19 @@ class CornerstoneCacheService {
     // must render as a volume viewport so the source and overlay share one
     // representation (volume slice). Without this, a next (PLANAR_NEXT) viewport
     // keeps the source in vtkImage (stack) mode while the added overlay is a
-    // vtkVolumeSlice, producing the broken/unstable fusion. Legacy fusion already
-    // resolves to a volume shape, so this only promotes the stack-shaped case
-    // (and SEG/RT overlays are non-reconstructable, so they are not affected).
+    // vtkVolumeSlice, producing the broken/unstable fusion. SEG/RT overlays are
+    // non-reconstructable, so they are not affected.
+    //
+    // Scoped to the native (PLANAR_NEXT) path via cs3DViewportType — NOT the flag, and
+    // NOT the legacy lane: a legacy stack-shaped reconstructable overlay must keep its
+    // existing stack build so the flag-off path stays byte-identical.
     const isReconstructableFusion =
       displaySets.length > 1 && displaySets.every(ds => ds.isReconstructable);
-    if (isReconstructableFusion && dataShapeType === Enums.ViewportType.STACK) {
+    if (
+      isReconstructableFusion &&
+      dataShapeType === Enums.ViewportType.STACK &&
+      cs3DViewportType === Enums.ViewportType.PLANAR_NEXT
+    ) {
       dataShapeType = Enums.ViewportType.ORTHOGRAPHIC;
     }
 

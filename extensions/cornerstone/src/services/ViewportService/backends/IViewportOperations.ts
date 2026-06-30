@@ -15,6 +15,8 @@ export interface WindowLevelParams {
   windowCenter: number;
   /** Legacy volume target; resolved by the caller. Ignored on native (active binding). */
   volumeId?: string;
+  /** Native per-binding target (e.g. the PT overlay in a fusion); ignored on legacy. */
+  displaySetInstanceUID?: string;
 }
 
 export interface ColormapParams {
