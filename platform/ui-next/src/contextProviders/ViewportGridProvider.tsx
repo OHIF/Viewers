@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useReducer,
   ReactNode,
+  useRef,
 } from 'react';
 import merge from 'lodash.merge';
 
@@ -21,6 +22,8 @@ import PropTypes from 'prop-types';
 // must therefore add `@ohif/core` as a devDependency itself, because pulling in
 // the ui-next barrel reaches this module and nothing else anchors the import.
 import { ViewportGridService, utils } from '@ohif/core';
+
+const APPLY_VIEWPORT_GRID_STATE = 'APPLY_VIEWPORT_GRID_STATE';
 
 const DEFAULT_STATE: AppTypes.ViewportGrid.State = {
   activeViewportId: null,
@@ -152,7 +155,7 @@ interface ViewportGridProviderProps {
 }
 
 export function ViewportGridProvider({ children, service }: ViewportGridProviderProps) {
-  const viewportGridReducer = (state: AppTypes.ViewportGrid.State, action) => {
+  const viewportGridReducer = useCallback((state: AppTypes.ViewportGrid.State, action) => {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_ID': {
         return { ...state, ...{ activeViewportId: action.payload } };
@@ -356,7 +359,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
         const viewports = new Map(state.viewports);
         const viewport = viewports.get(viewportId);
         if (!viewport) {
-          return;
+          return state;
         }
 
         viewports.set(viewportId, {
@@ -370,12 +373,34 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
         };
       }
 
-      default:
+      case APPLY_VIEWPORT_GRID_STATE: {
         return action.payload;
+      }
+
+      default:
+        return state;
     }
-  };
+  }, []);
 
   const [viewportGridState, dispatch] = useReducer(viewportGridReducer, DEFAULT_STATE);
+  const viewportGridStateRef = useRef(viewportGridState);
+
+  useEffect(() => {
+    viewportGridStateRef.current = viewportGridState;
+  }, [viewportGridState]);
+
+  const applyReducerAndCommit = useCallback(
+    action => {
+      const nextState = viewportGridReducer(viewportGridStateRef.current, action);
+      viewportGridStateRef.current = nextState;
+      dispatch({
+        type: APPLY_VIEWPORT_GRID_STATE,
+        payload: nextState,
+      });
+      return nextState;
+    },
+    [viewportGridReducer]
+  );
 
   const getState = useCallback(() => {
     return viewportGridState;
@@ -387,22 +412,26 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
   };
 
   const setActiveViewportId = useCallback(
-    index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_ID', payload: index }),
-    [dispatch]
+    index =>
+      applyReducerAndCommit({
+        type: 'SET_ACTIVE_VIEWPORT_ID',
+        payload: index,
+      }),
+    [applyReducerAndCommit]
   );
 
   const setDisplaySetsForViewports = useCallback(
     viewports =>
-      dispatch({
+      applyReducerAndCommit({
         type: 'SET_DISPLAYSETS_FOR_VIEWPORTS',
         payload: viewports,
       }),
-    [dispatch]
+    [applyReducerAndCommit]
   );
 
   const setViewportIsReady = useCallback(
     (viewportId, isReady) => {
-      dispatch({
+      applyReducerAndCommit({
         type: 'VIEWPORT_IS_READY',
         payload: {
           viewportId,
@@ -410,7 +439,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
         },
       });
     },
-    [dispatch, viewportGridState]
+    [applyReducerAndCommit]
   );
 
   const getGridViewportsReady = useCallback(() => {
@@ -438,7 +467,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
       findOrCreateViewport,
       isHangingProtocolLayout,
     }) =>
-      dispatch({
+      applyReducerAndCommit({
         type: 'SET_LAYOUT',
         payload: {
           layoutType,
@@ -450,25 +479,25 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
           isHangingProtocolLayout,
         },
       }),
-    [dispatch]
+    [applyReducerAndCommit]
   );
 
   const reset = useCallback(
     () =>
-      dispatch({
+      applyReducerAndCommit({
         type: 'RESET',
         payload: {},
       }),
-    [dispatch]
+    [applyReducerAndCommit]
   );
 
   const set = useCallback(
     payload =>
-      dispatch({
+      applyReducerAndCommit({
         type: 'SET',
         payload,
       }),
-    [dispatch]
+    [applyReducerAndCommit]
   );
 
   const getViewportState = useCallback(

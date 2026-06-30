@@ -53,8 +53,15 @@ function ViewerViewportGrid(props: withAppTypes) {
       const viewportId = Array.from(viewportMatchDetails.keys())[pos];
       const details = viewportMatchDetails.get(viewportId);
       if (!details) {
-        console.log('No match details for viewport', viewportId);
-        return;
+        return {
+          // we should create an empty viewport here, if the grid will not allocate
+          // a pane
+          displaySetInstanceUIDs: [],
+          displaySetOptions: [],
+          viewportOptions: {
+            viewportId,
+          },
+        };
       }
 
       const { displaySetsInfo, viewportOptions } = details;

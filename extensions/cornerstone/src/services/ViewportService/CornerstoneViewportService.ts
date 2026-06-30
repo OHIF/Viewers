@@ -451,11 +451,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     presentations?: Presentations
   ): void {
     const renderingEngine = this.getRenderingEngine();
+    const { viewportGridService } = this.servicesManager.services;
 
     // if not valid viewportData then return early
     if (viewportData.viewportType === csEnums.ViewportType.STACK) {
       // check if imageIds is valid
       if (!viewportData.data[0].imageIds?.length) {
+        viewportGridService?.notifyViewportUpdateCompleted?.(viewportId);
         return;
       }
     }
@@ -544,6 +546,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportData,
         viewportId,
       });
+      viewportGridService?.notifyViewportUpdateCompleted?.(viewportId);
     });
   }
 
@@ -1321,6 +1324,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const viewportInfo = this.getViewportInfo(viewportId);
     const viewport = this.getCornerstoneViewport(viewportId);
     const viewportCamera = viewport.getCamera();
+    const { viewportGridService } = this.servicesManager.services;
 
     let displaySetPromise;
 
@@ -1342,6 +1346,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportData,
         viewportId,
       });
+      viewportGridService?.notifyViewportUpdateCompleted?.(viewportId);
     });
   }
 

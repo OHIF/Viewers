@@ -66,3 +66,20 @@ specific fields that have changed are:
 If these fields need formatted versions, it is recommended to add a secondary/computed
 metadata provider which simply gets the base metadata module and adds the
 formatting.  That way different metadata providers are all handled identically.
+
+## Viewport grid state change timing
+
+The `viewportGridService` now defers the `GRID_STATE_CHANGED` event until every
+affected viewport finishes its `viewport data changed` work (this happens just
+before Cornerstone renders). This guarantees listeners see the final display-set
+assignments instead of intermediate state.
+
+If you need to react earlier you can continue to use the other hooks that fire
+immediately:
+
+- `VIEWPORTS_READY` – panes are initialized, but their display sets may not be mounted
+- `LAYOUT_CHANGED` – grid rows/columns changed, but viewport data may still be updating
+
+Custom viewports must call `viewportGridService.notifyViewportUpdateCompleted(viewportId)`
+after they dispatch their own viewport-data-change event so the grid service knows when it
+can publish the queued state change.
