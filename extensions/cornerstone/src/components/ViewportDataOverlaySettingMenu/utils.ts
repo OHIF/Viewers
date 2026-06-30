@@ -5,6 +5,25 @@ export const DEFAULT_OPACITY = 0.5;
 export const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
 export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 
+const getImageIdsFromDisplaySet = displaySet =>
+  displaySet?.imageIds ||
+  displaySet?.images?.map(image => image?.imageId).filter(Boolean) ||
+  displaySet?.instances?.map(instance => instance?.imageId).filter(Boolean) ||
+  [];
+
+const isValidVolumeDisplaySet = imageIds => {
+  if (!imageIds?.length) {
+    return false;
+  }
+
+  try {
+    return csUtils.isValidVolume(imageIds);
+  } catch (e) {
+    console.warn('[isValidVolumeDisplaySet] isValidVolume threw, treating as invalid:', e);
+    return false;
+  }
+};
+
 /**
  * Get modality-specific color and opacity settings from the customization service
  */
@@ -60,11 +79,12 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
     displaySetService.getDisplaySetByUID(displaySetUID)
   );
 
-  const backgroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds || []);
   const backgroundDisplaySet = viewportDisplaySets[0];
+  const backgroundImageIds = getImageIdsFromDisplaySet(backgroundDisplaySet);
+  const backgroundCanBeVolume = isValidVolumeDisplaySet(backgroundImageIds);
 
   const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
-    if (!backgroundDisplaySet.isReconstructable) {
+    if (!backgroundDisplaySet?.isReconstructable) {
       return {
         ...displaySet,
         isOverlayable: false,
@@ -98,10 +118,10 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
         };
       }
 
-      const imageIds = displaySet.imageIds || displaySet.images?.map(image => image.imageId);
+      const imageIds = getImageIdsFromDisplaySet(displaySet);
       const isMultiframe = displaySet.isMultiFrame;
 
-      if (!isMultiframe && imageIds?.length > 0 && !csUtils.isValidVolume(imageIds)) {
+      if (!isMultiframe && imageIds?.length > 0 && !isValidVolumeDisplaySet(imageIds)) {
         return {
           ...displaySet,
           isOverlayable: false,
