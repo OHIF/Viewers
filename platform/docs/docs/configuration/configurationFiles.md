@@ -118,6 +118,7 @@ window.config = ({ servicesManager } = {}) => {
 
 
 Here are a list of some options available:
+- `customizationService`: An array of customization module references and inline overrides applied at the global scope. This is how deployers enable optional features like the [Appearance & Theming](./ui.md) system and configure UI components without modifying core code. See [Customization Service](../platform/services/customization-service/customizationService.md) for the full syntax reference.
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
   panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for

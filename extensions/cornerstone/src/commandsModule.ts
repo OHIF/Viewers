@@ -11,6 +11,7 @@ import {
   annotation,
   Types as ToolTypes,
   SplineContourSegmentationTool,
+  cancelActiveManipulations,
 } from '@cornerstonejs/tools';
 import {
   SegmentInfo,
@@ -301,6 +302,20 @@ function commandsModule({
       });
 
       commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
+    },
+
+    /**
+     * Cancels any in-progress annotation manipulation (e.g. drawing a Spline,
+     * Livewire or PlanarFreehand contour) on the active viewport. Reached on
+     * Escape via the `cancelActiveOperation` command. `cancelActiveManipulations`
+     * invokes the `cancel` method of each active/passive tool that has an
+     * in-progress annotation, so it is a no-op when nothing is being drawn.
+     */
+    cancelMeasurement: () => {
+      const element = _getActiveViewportEnabledElement()?.viewport?.element;
+      if (element) {
+        cancelActiveManipulations(element);
+      }
     },
 
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
@@ -1926,6 +1941,24 @@ function commandsModule({
     rejectPreview: () => {
       actions._handlePreviewAction('reject');
     },
+    /**
+     * Generic Escape handler. A single Escape press should discard whatever the
+     * user has in progress, but that can be one of two unrelated things: a
+     * provisional segmentation preview, or an annotation being drawn. Rather
+     * than bind both `rejectPreview` and `cancelMeasurement` to `esc` (Mousetrap
+     * keeps only one handler per key, so the second silently shadows the first),
+     * this command orchestrates both single-purpose commands. Each is a no-op
+     * when its state is not active, so running both is safe and order-independent.
+     */
+    cancelActiveOperation: () => {
+      try {
+        actions.rejectPreview();
+      } catch (error) {
+        console.debug('Error rejecting active preview', error);
+      } finally {
+        actions.cancelMeasurement();
+      }
+    },
     clearMarkersForMarkerLabelmap: () => {
       const { viewport } = _getActiveViewportEnabledElement();
       const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(viewport.id);
@@ -2429,6 +2462,9 @@ function commandsModule({
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
+    cancelMeasurement: {
+      commandFn: actions.cancelMeasurement,
+    },
     toggleLockMeasurement: {
       commandFn: actions.toggleLockMeasurement,
     },
@@ -2677,6 +2713,7 @@ function commandsModule({
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
+    cancelActiveOperation: actions.cancelActiveOperation,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
     interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
