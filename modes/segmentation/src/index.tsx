@@ -237,6 +237,7 @@ function modeFactory({ modeConfiguration }) {
     hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
+    ...modeConfiguration,
   };
 }
 
