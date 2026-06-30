@@ -63,7 +63,7 @@ describe('getCornerstoneViewportType', () => {
 
   it('should throw error for invalid viewport type', () => {
     expect(() => getCornerstoneViewportType('invalid')).toThrow(
-      'Invalid viewport type: invalid. Valid types are: stack, volume, video, wholeslide, ecg'
+      'Invalid viewport type: invalid. Valid types are: stack, volume, orthographic, volume3d, video, wholeslide, ecg'
     );
   });
 
