@@ -33,10 +33,9 @@ import {
   type ISegmentationBackend,
   type ISegmentationServiceInternals,
 } from './backends';
-// Sanctioned flag read (see .scripts/check-next-viewports-flag-reads.mjs): the SEG
-// data shape (single- vs multi-layer) is fixed at load time, before any target
-// viewport exists, so this one seg-backend dispatch cannot use a per-viewport
-// capability check and reads the session flag instead.
+// Sanctioned flag read: the SEG data shape (single- vs multi-layer) is fixed at
+// load time, before any target viewport exists, so this one seg-backend dispatch
+// cannot use a per-viewport capability check and reads the session flag instead.
 import { isNextViewportsEnabled } from '../../utils/nextViewports';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;

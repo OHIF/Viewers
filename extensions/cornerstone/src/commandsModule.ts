@@ -30,8 +30,9 @@ import {
   callInputDialog,
 } from '@ohif/extension-default';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
-// TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
-import { toggleNextViewportsAndReload, isNextViewportsEnabled } from './utils/nextViewports';
+// Sanctioned flag read: RTSTRUCT contour hydration pins the referenced image to
+// stack mode on the native ("next") path, a decision made before a target viewport exists.
+import { isNextViewportsEnabled } from './utils/nextViewports';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -2086,12 +2087,6 @@ function commandsModule({
         })),
       });
     },
-    // TEMP (remove before merge — see TODO_BEFORE_MERGE.md): flips the native
-    // GenericViewport ("next") backend on/off and reloads so the whole grid is
-    // re-created with the other viewport backend, for side-by-side comparison.
-    toggleNextViewports: () => {
-      toggleNextViewportsAndReload();
-    },
     setViewportOrientation: ({ viewportId, orientation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -2726,8 +2721,6 @@ function commandsModule({
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
-    // TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
-    toggleNextViewports: actions.toggleNextViewports,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,

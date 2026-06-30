@@ -56,11 +56,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.register(toolbarButtons);
 
-      // TEMP (remove before merge — see TODO_BEFORE_MERGE.md): 'ToggleNextViewport'
-      toolbarService.updateSection(toolbarService.sections.secondary, [
-        'ProgressDropdown',
-        'ToggleNextViewport',
-      ]);
+      toolbarService.updateSection(toolbarService.sections.secondary, ['ProgressDropdown']);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
         'orientationMenu',

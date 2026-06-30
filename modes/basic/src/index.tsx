@@ -224,8 +224,6 @@ export const toolbarSections = {
     'Layout',
     'Crosshairs',
     'MoreTools',
-    // TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
-    'ToggleNextViewport',
   ],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],

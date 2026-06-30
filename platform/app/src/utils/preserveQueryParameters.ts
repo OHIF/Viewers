@@ -11,6 +11,7 @@ export const preserveKeys = [
   'screenNumber',
   'hangingProtocolId',
   'debug',
+  'useNextViewports',
 ];
 
 export function preserveQueryParameters(

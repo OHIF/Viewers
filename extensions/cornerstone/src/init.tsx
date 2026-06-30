@@ -93,8 +93,8 @@ export default async function init({
   // API (PLANAR_NEXT, setDisplaySets, ...). Read by getCornerstoneViewportType
   // and the CornerstoneViewportService backend split. Distinct from
   // useGenericViewport above (which only enables cornerstone's compat remap).
-  // resolveNextViewportsEnabled honors the dev toggle's localStorage override
-  // (TEMP — see TODO_BEFORE_MERGE.md); without it, appConfig.useNextViewports wins.
+  // resolveNextViewportsEnabled lets a `?useNextViewports=true` URL param opt in
+  // per-session; when the param is absent, appConfig.useNextViewports wins.
   setNextViewportsEnabled(resolveNextViewportsEnabled(appConfig.useNextViewports));
 
   // For debugging large datasets, otherwise prefer the defaults

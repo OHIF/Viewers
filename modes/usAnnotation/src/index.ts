@@ -116,8 +116,6 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
-        // TEMP (remove before merge — see TODO_BEFORE_MERGE.md)
-        'ToggleNextViewport',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
