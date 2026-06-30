@@ -107,7 +107,7 @@ export default function WorkList({
               isLoading={showStudyListLoading}
               loadingComponent={
                 LoadingIndicatorProgress ? (
-                  <LoadingIndicatorProgress className="!relative bg-black" />
+                  <LoadingIndicatorProgress className="bg-background !relative" />
                 ) : (
                   <div className="h-8 w-8" />
                 )
