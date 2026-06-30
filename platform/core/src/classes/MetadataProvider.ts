@@ -60,7 +60,13 @@ class MetadataProvider {
       return;
     }
 
-    return (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
+    const combined = frameNumber && combineFrameInstance(frameNumber, instance);
+    if (combined) {
+      // Add imageId to multiframe result so it matches single-frame instance.
+      combined.imageId = imageId;
+      return combined;
+    }
+    return instance;
   }
 
   get(query, imageId, options = { fallback: false }) {
