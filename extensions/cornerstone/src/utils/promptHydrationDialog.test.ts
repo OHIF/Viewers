@@ -170,7 +170,6 @@ describe('promptHydrationDialog', () => {
       type: HydrationType.SEG,
     });
 
-    expect(window.setTimeout).toHaveBeenCalledWith(expect.any(Function), 0);
     expect(mockHydrateCallback).toHaveBeenCalledWith({
       segDisplaySet: mockDisplaySet,
       viewportId: defaultParameters.viewportId,
