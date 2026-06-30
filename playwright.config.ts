@@ -1,5 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const E2E_PORT = Number(process.env.OHIF_PORT || 3335);
+const E2E_BASE_URL = `http://localhost:${E2E_PORT}`;
+
+// Port cleanup must run before the dev server starts, not in globalSetup — Playwright
+// starts webServer before globalSetup, so killing the port there would stop the server
+// and cause net::ERR_CONNECTION_REFUSED in tests.
+const webServerStart = `cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=${E2E_PORT} OHIF_OPEN=false nyc pnpm --filter @ohif/app exec rspack serve --config .webpack/webpack.pwa.js`;
+const webServerCommand = process.env.CI
+  ? `node .scripts/ci/free-ohif-e2e-port.mjs && ${webServerStart}`
+  : webServerStart;
+
 export default defineConfig({
   testDir: './tests',
   globalSetup: './tests/globalSetup.ts',
@@ -7,22 +18,23 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   maxFailures: process.env.CI ? 10 : undefined,
-  workers: process.env.CI ? 18 : undefined,
+  workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
-  reporter: [['html', { outputFolder: './tests/playwright-report' }]],
+  reporter: [
+    ['html', { outputFolder: './tests/playwright-report' }],
+  ],
   globalTimeout: 800_000,
   timeout: 800_000,
   use: {
-    baseURL: 'http://localhost:3335',
+    baseURL: E2E_BASE_URL,
     trace: 'on-first-retry',
-    video: 'retain-on-failure',
+    video: 'on-first-retry',
     testIdAttribute: 'data-cy',
     actionTimeout: 10_000,
     launchOptions: {
       // do not hide the scrollbars so that we can assert their look-and-feel
       ignoreDefaultArgs: ['--hide-scrollbars'],
-      args: ['--use-gl=egl'],
     },
   },
 
@@ -45,9 +57,8 @@ export default defineConfig({
     //},
   ],
   webServer: {
-    command:
-      'cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 OHIF_OPEN=false nyc pnpm --filter @ohif/app exec rspack serve --config .webpack/webpack.pwa.js',
-    url: 'http://localhost:3335',
+    command: webServerCommand,
+    url: E2E_BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 360_000,
   },

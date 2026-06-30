@@ -14,9 +14,52 @@ This is useful for:
 - Upgrading CS3D versions with automated testing
 - Debugging issues that span both repositories
 
+## The `.cs3d-ref` File (Canonical)
+
+The committed `.cs3d-ref` file at the repository root is the **single source of truth**
+for which Cornerstone3D to build against. One file drives every CI system:
+
+| System | Entry point |
+|--------|-------------|
+| CircleCI (unit, Cypress, package build) | `.scripts/ci/setup-cs3d.sh` |
+| Netlify | `netlify.toml` → `setup-cs3d.sh` |
+| GitHub Actions Playwright | `.scripts/ci/cs3d-check-integration.sh` |
+
+**How it works**
+
+- The first **uncommented, non-blank** line is the active ref.
+- A **version** (`4.19+`, `4.18.2`, `4.x`) pins `@cornerstonejs/*` to that published
+  version and reinstalls.
+- A **branch** (`main`, `owner:branch`) is cloned, built (`build:esm`), and symlinked
+  into `node_modules`. Branch refs are **blocked from merging** to `master`/`release/*`
+  by the CS3D Branch Merge Guard.
+
+**Enabling and disabling**
+
+To disable integration, **comment the active line out — do not delete the file**.
+Keeping the file preserves its inline instructions for the next integration. The steady
+state on `master`/`release/*` is "no active line".
+
+**Build / deploy with a linked CS3D build**
+
+```bash
+# Set the active line in .cs3d-ref, then:
+bash .scripts/ci/setup-cs3d.sh   # clone+build+link a branch, or pin+reinstall a version
+pnpm run build                   # or: pnpm run dev / pnpm run build:ci
+
+# Ad-hoc override without editing the file:
+CS3D_REF=cornerstonejs:feat/foo bash .scripts/ci/setup-cs3d.sh
+```
+
+In CI, push the branch with the active line set; CircleCI, Netlify, and Playwright all
+pick it up, and Playwright deploys a Netlify preview. Comment the line out (or set a
+published version) before merging so protected-branch CI builds against the lockfile.
+
 ## CI Workflow
 
-The **Playwright Tests** workflow in GitHub Actions has built-in CS3D integration support.
+The **Playwright Tests** workflow in GitHub Actions has built-in CS3D integration
+support. It reads the ref from `.cs3d-ref` first; the label and PR-body mechanism below
+is a fallback used when `.cs3d-ref` has no active line.
 
 ### Triggering via Label
 

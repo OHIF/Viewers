@@ -46,6 +46,15 @@ function createTools({ utilityModule, commandsManager }) {
       },
       {
         toolName: toolNames.RegionSegmentPlus,
+        configuration: {
+          hoverPrecheckEnabled: false,
+          intensityRangeStrategy: 'canvasDiskTriClassLarge',
+          maxDeltaK: 25,
+          maxDeltaIJ: 100,
+          preview: {
+            enabled: false,
+          },
+        },
       },
       {
         toolName: 'CircularEraser',

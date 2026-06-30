@@ -9,7 +9,12 @@
 
 [build]
   base = ""
-  command = "pnpm run build:ci"
+  # Build OHIF against the canonical CS3D ref in .cs3d-ref (a branch is cloned,
+  # built with build:esm, and symlinked into node_modules; a version is pinned +
+  # reinstalled). No-op when .cs3d-ref has no active line (commented out), so
+  # production/master builds are unaffected. Runs after Netlify's own `pnpm
+  # install`, so the link lands on real node_modules.
+  command = "bash .scripts/ci/setup-cs3d.sh && pnpm run build:ci"
   publish = "platform/app/dist"
 
 [build.environment]

@@ -1,0 +1,40 @@
+# .cs3d-ref — canonical Cornerstone3D (CS3D) ref to build/test OHIF against.
+#
+# This file is the SINGLE SOURCE OF TRUTH for CS3D integration across all CI:
+#   - CircleCI   .scripts/ci/setup-cs3d.sh (UNIT_TESTS / CYPRESS / package build)
+#   - Netlify    netlify.toml -> setup-cs3d.sh
+#   - GitHub CI  .scripts/ci/cs3d-check-integration.sh (Playwright workflow)
+#
+# HOW IT WORKS
+#   The first uncommented, non-blank line below is the active ref. Two kinds:
+#     version  e.g. 5.0.2, 4.19+, 4.x, 4.18.2-beta.1
+#              -> @cornerstonejs/* are pinned to that published version + reinstalled.
+#     branch   e.g. main, feat/foo, or owner:branch for a fork
+#              -> that CS3D branch is cloned, built (build:esm), and symlinked into
+#                 OHIF's node_modules. A branch ref is BLOCKED from merging to
+#                 master/release/* (it points at mutable, unpublished code).
+#
+# ENABLING / DISABLING
+#   Enable : add a single uncommented line with the ref (see examples below).
+#   Disable: COMMENT THE LINE OUT (prefix it with "#"). Do NOT delete this file —
+#            keeping it preserves these instructions for the next integration.
+#   Steady state on master/release is "disabled" (no active line).
+#
+# BUILD / DEPLOY WITH A LINKED CS3D BUILD
+#   Local : set the active line below, then
+#             bash .scripts/ci/setup-cs3d.sh   # clone+build+link a branch, or pin+reinstall a version
+#             pnpm run build                   # or: pnpm run dev / pnpm run build:ci
+#           Override ad hoc without editing this file:
+#             CS3D_REF=<ref> bash .scripts/ci/setup-cs3d.sh
+#   CI    : push the branch with the active line set. CircleCI, Netlify, and the
+#           Playwright workflow all pick it up automatically; Playwright also
+#           deploys a Netlify preview.
+#   Merge : comment the line out (or point it at a published version) BEFORE
+#           merging so master/release CI builds against the lockfile.
+#
+# EXAMPLES (uncomment ONE, or add your own):
+#   4.19+
+#   main
+#   cornerstonejs:feat/my-feature
+
+fix/grow-cut-suv-pt

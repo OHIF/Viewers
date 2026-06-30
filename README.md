@@ -170,11 +170,54 @@ yarn install --frozen-lockfile
 
 ### Cornerstone3D Integration Testing
 
-OHIF's Playwright end-to-end tests can run against a **CS3D branch** or a
-**published CS3D version**, allowing changes that span both repositories to be
-validated together before merging.
+OHIF can be built and tested against a **CS3D branch** or a **published CS3D
+version**, allowing changes that span both repositories to be validated together
+before merging. This runs locally, in CircleCI, on Netlify previews, and in the
+GitHub Actions Playwright workflow.
 
-#### Setting up an integration build
+#### The `.cs3d-ref` file (canonical)
+
+The committed [`.cs3d-ref`](.cs3d-ref) file at the repo root is the **single source
+of truth** for which CS3D to build against. One file drives every CI system —
+CircleCI ([`setup-cs3d.sh`](.scripts/ci/setup-cs3d.sh)), Netlify, and the Playwright
+workflow ([`cs3d-check-integration.sh`](.scripts/ci/cs3d-check-integration.sh)) — so
+you set the ref in one place.
+
+- The first **uncommented, non-blank** line is the active ref.
+- **Version ref** (e.g. `4.19+`, `4.18.2`) — `@cornerstonejs/*` are pinned to that
+  published version and reinstalled.
+- **Branch ref** (e.g. `main`, `cornerstonejs:feat/foo`) — that CS3D branch is
+  cloned, built (`build:esm`), and symlinked into OHIF's `node_modules`. Branch
+  refs are **blocked from merging** to `master`/`release/*`.
+- **To disable, comment the line out — do not delete the file.** Keeping the file
+  preserves its inline instructions for the next integration. The steady state on
+  `master`/`release/*` is "no active line".
+
+##### Build / deploy with a linked CS3D build
+
+Locally:
+
+```bash
+# 1. Set the active ref in .cs3d-ref (or override ad hoc with CS3D_REF=<ref>).
+# 2. Clone/build/link the branch (or pin + reinstall a version):
+bash .scripts/ci/setup-cs3d.sh
+# 3. Build or run the viewer against the linked CS3D:
+pnpm run build        # or: pnpm run dev / pnpm run build:ci
+```
+
+In CI: push the branch with the active line set — CircleCI, Netlify, and Playwright
+pick it up automatically, and Playwright deploys a Netlify preview. **Before merging,
+comment the line out** (or point it at a published version) so `master`/`release/*`
+build against the lockfile.
+
+#### Deprecated: `ohif-integration` label / PR-body ref
+
+> **The `ohif-integration` label is no longer used or necessary.** `.cs3d-ref` is
+> now the canonical ref source (see above), and setting it is all you need —
+> CircleCI, Netlify, and Playwright all read it, with no label required. The label +
+> PR-body path below is kept only as a backward-compatible fallback that applies
+> when `.cs3d-ref` has **no active line**, and may be removed in a future release.
+> Prefer `.cs3d-ref` for all new work.
 
 1. Add the **`ohif-integration`** label to your OHIF pull request.
 2. In the PR body, add a line specifying the CS3D ref:
@@ -198,8 +241,8 @@ The [Playwright workflow](.github/workflows/playwright.yml) runs two jobs:
 
 | Job | Purpose |
 |-----|---------|
-| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, uploads test results and coverage, and deploys a Netlify preview when `ohif-integration` is active. |
-| **CS3D Branch Merge Guard** | A lightweight check that **fails** when the `ohif-integration` label is present and `CS3D_REF` points to a branch (not a version). This prevents merging while still letting the Playwright tests show green so you can see whether the code actually works. |
+| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, uploads test results and coverage, and deploys a Netlify preview when an active CS3D ref is set (via `.cs3d-ref`). |
+| **CS3D Branch Merge Guard** | A lightweight check that **fails** when the active CS3D ref (from `.cs3d-ref`, or the `ohif-integration` label + PR body) points to a branch (not a version). This prevents merging while still letting the Playwright tests show green so you can see whether the code actually works. |
 
 #### Testing changes that span both repos
 
@@ -207,21 +250,21 @@ If a feature requires changes in both Cornerstone3D and OHIF:
 
 1. Create your feature branch in CS3D and push it.
 2. Create a matching branch in OHIF.
-3. Add the `ohif-integration` label to the OHIF pull request.
-4. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
-5. Playwright tests will build CS3D from source, link it, and run the full
-   suite. The merge guard will block merge until you switch to a published
-   version — but you can see the test results and the preview deploy while
-   iterating.
-6. Once the CS3D side is merged and published, update the PR body to reference
-   the published version (e.g. `CS3D_REF: 4.19+`). The tests will run against
-   the registry version and the merge guard will pass.
+3. Set the active line in [`.cs3d-ref`](.cs3d-ref) to your CS3D branch (e.g.
+   `cornerstonejs:feat/my-feature`) and push. No label is required.
+4. Playwright tests will build CS3D from source, link it, and run the full
+   suite. The merge guard will block merge while the ref is a branch — but you
+   can see the test results and the preview deploy while iterating.
+5. Once the CS3D side is merged and published, point `.cs3d-ref` at the published
+   version (e.g. `4.19+`) or comment the line out. The tests will run against the
+   registry version and the merge guard will pass.
 
 #### Preview deploys
 
-When `ohif-integration` is active, the Playwright workflow also builds the OHIF
-viewer and deploys it to Netlify as a preview. This gives you a live URL to
-manually test the combined CS3D + OHIF changes without running anything locally.
+When an active CS3D ref is set (via `.cs3d-ref`), the Playwright workflow also
+builds the OHIF viewer and deploys it to Netlify as a preview. This gives you a
+live URL to manually test the combined CS3D + OHIF changes without running anything
+locally.
 
 For details on linking CS3D locally for development, see the
 [Cornerstone3D README](libs/@cornerstonejs/README.md#local-development-linking--unlinking).
