@@ -32,6 +32,15 @@ body {
  * --highlight drives the active/toggled state of viewer tool buttons
  * (ToolButton.tsx: bg-highlight / text-highlight); --primary and --ring drive
  * primary buttons and focus rings.
+ *
+ * VWR-BRAND-01 (2026-07) — extends BRAND-03. The original pass only
+ * retinted the 5 *interactive* tokens above; ui-next's own :root/.dark still
+ * defined --card/--popover/--muted/--accent as saturated OHIF navy (hue
+ * ~217-234, e.g. #0c1230-ish), so every panel/card/popover surface kept
+ * rendering stock OHIF blue underneath the periwinkle accent. Neutralizing
+ * those to the bv-surface/bv-surface-2 near-blacks (hue 240, ~desaturated)
+ * removes the last of the "still looks like OHIF" navy tint. Foreground
+ * pairs stay white/near-white — verified >15:1 against both new surfaces.
  */
 :root,
 .dark {
@@ -40,4 +49,45 @@ body {
   --primary-foreground: 240 20% 5%;
   --ring: 240 100% 76%;
   --secondary: 240 26% 50%;
+
+  --card: 240 12% 8%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 11%;
+  --popover-foreground: 0 0% 98%;
+  --muted: 240 12% 8%;
+  --muted-foreground: 220 9% 60%;
+  --accent: 240 31% 20%;
+  --accent-foreground: 0 0% 98%;
+  --background: 240 20% 5%;
+}
+
+/*
+ * VWR-BRAND-01 (2026-07) — the tesseract loading mark (TesseractLoadingMark,
+ * replaces the stock OHIF quad-square LoadingOHIFMark glyph across every
+ * study/series loading state in the app). The inner cube breathes gently
+ * so the mark reads as "working," not frozen; a plain fade would work too
+ * but a controlled scale pulse says "this is our shape" more than a generic
+ * spinner would. Same reduced-motion contract as the platform's animated
+ * TesseractLogo: motion-sensitive users get a single static frame.
+ */
+@keyframes tesseract-loading-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.82);
+    opacity: 0.72;
+  }
+}
+
+.tesseract-loading-pulse {
+  animation: tesseract-loading-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tesseract-loading-pulse {
+    animation: none;
+  }
 }

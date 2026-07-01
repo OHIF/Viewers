@@ -100,19 +100,21 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      // VWR-BRAND-01 (2026-07): matches the retint in platform/ui/tailwind.config.js
+      // — this preset's `extend` merges on top of that base, so both must agree.
       bkg: {
-        low: '#050615',
-        med: '#090C29',
-        full: '#041C4A',
+        low: '#0a0a0f',
+        med: '#131318',
+        full: '#131318',
       },
       info: {
         primary: '#FFFFFF',
-        secondary: '#7BB2CE',
+        secondary: '#9b9bff',
       },
       actions: {
-        primary: '#348CFD',
-        highlight: '#5ACCE6',
-        hover: 'rgba(52, 140, 253, 0.2)',
+        primary: '#8585ff',
+        highlight: '#9b9bff',
+        hover: 'rgba(133, 133, 255, 0.2)',
       },
     },
   },

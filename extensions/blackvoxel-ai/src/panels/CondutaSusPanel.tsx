@@ -48,7 +48,8 @@ import {
 } from '../services/conductaClient';
 
 // Brand tokens (shared with AIFindingsPanel / PatientContextPanel).
-const BRAND_VIOLET = '#7C3AED';
+// VWR-BRAND-01 (2026-07): canonical BlackVoxel accent-dim, >=4.5:1 white-on-fill.
+const BRAND_VIOLET = '#5d5da0';
 const TEXT_SECONDARY = '#A0ADB4';
 const AMBER = '#D97706';
 

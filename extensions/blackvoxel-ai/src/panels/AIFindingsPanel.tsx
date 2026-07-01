@@ -42,7 +42,10 @@ import { getWorklistDetail, toInferenceResponse } from '../services/worklistClie
 // Brand constants (MIMPS-02 palette)
 // ---------------------------------------------------------------------------
 
-const BRAND_VIOLET = '#7C3AED';
+// VWR-BRAND-01 (2026-07): canonical BlackVoxel accent-dim (brand.css
+// --bv-accent-dim), verified >=4.5:1 white-on-fill for the panel-header/
+// button uses of this const.
+const BRAND_VIOLET = '#5d5da0';
 const TEXT_SECONDARY = '#A0ADB4';
 const AMBER = '#D97706';
 

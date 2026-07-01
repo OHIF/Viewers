@@ -17,11 +17,11 @@ export const PanelRight = (props: IconProps) => (
       height="15"
       rx="1.5"
       transform="matrix(-1 0 0 1 18 0)"
-      stroke="#348CFD"
+      stroke="#8585ff"
     />
     <path
       d="M17 0.5H13.5V15.5H17C17.8284 15.5 18.5 14.8284 18.5 14V2C18.5 1.17157 17.8284 0.5 17 0.5Z"
-      stroke="#348CFD"
+      stroke="#8585ff"
     />
   </svg>
 );

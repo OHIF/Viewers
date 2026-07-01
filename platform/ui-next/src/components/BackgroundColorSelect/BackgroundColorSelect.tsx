@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../Select';
 
 const BackgroundColorSelect: React.FC = () => {
-  const [selectedColor, setSelectedColor] = useState('#050615');
+  const [selectedColor, setSelectedColor] = useState('#0a0a0f');
 
   useEffect(() => {
     const rows = document.querySelectorAll('.row') as NodeListOf<HTMLElement>;
@@ -26,9 +26,9 @@ const BackgroundColorSelect: React.FC = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="black">Viewport (Black)</SelectItem>
-          <SelectItem value="#050615">Base</SelectItem>
-          <SelectItem value="#090C29">Medium</SelectItem>
-          <SelectItem value="#041C4A">Header</SelectItem>
+          <SelectItem value="#0a0a0f">Base</SelectItem>
+          <SelectItem value="#131318">Medium</SelectItem>
+          <SelectItem value="#1a1a20">Header</SelectItem>
         </SelectContent>
       </Select>
     </div>

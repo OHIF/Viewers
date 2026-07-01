@@ -100,17 +100,17 @@ module.exports = {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       bkg: {
-        low: '#050615',
-        med: '#090C29',
-        full: '#041C4A',
+        low: '#0a0a0f',
+        med: '#131318',
+        full: '#131318',
       },
       info: {
         primary: '#FFFFFF',
-        secondary: '#7BB2CE',
+        secondary: '#9b9bff',
       },
       actions: {
-        primary: '#348CFD',
-        highlight: '#5ACCE6',
+        primary: '#8585ff',
+        highlight: '#9b9bff',
         hover: 'rgba(52, 140, 253, 0.2)',
       },
     },

@@ -24,32 +24,46 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
+      /*
+       * VWR-BRAND-01 (2026-07) — retint the legacy @ohif/ui brand-blue tokens
+       * to the canonical BlackVoxel tesseract palette (assets/logo/web/brand.css).
+       * Stock OHIF used a saturated navy/blue identity (#0944b3, #041c4a,
+       * #348cfd, ...) throughout this file; only App.css's 5 CSS-var overrides
+       * (highlight/primary/ring/secondary) had been retinted before this pass,
+       * so every component below (Button, Tooltip, StudyListTable, ContextMenu,
+       * Input, ...) still rendered OHIF's stock blue chrome. Ramp + WCAG
+       * contrast verified against white text and the near-black surfaces —
+       * see agents/02_brains/04_ideas/ for the derivation. Functional ramps
+       * (gray/red/orange/yellow/green/teal/blue/purple/pink, customgreen) are
+       * deliberately left untouched — they carry semantic meaning (errors,
+       * warnings, measurement colors), not brand identity.
+       */
       aqua: {
-        pale: '#7bb2ce',
+        pale: '#9b9bff',
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#9b9bff',
+        main: '#5d5da0',
+        dark: '#131318',
+        active: '#9b9bff',
       },
       inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#5acce6',
+        main: '#5d5da0',
+        disabled: '#232343',
+        focus: '#8585ff',
         placeholder: '#39383f',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
+        light: '#4f4f72',
+        main: '#232343',
+        dark: '#131318',
+        active: '#1a1a20',
       },
 
       indigo: {
-        dark: '#0b1a42',
+        dark: '#0a0a0f',
       },
 
       common: {
@@ -57,21 +71,21 @@ module.exports = {
         light: '#a19fad',
         main: '#fff',
         dark: '#726f7e',
-        active: '#2c3074',
+        active: '#5d5da0',
       },
       bkg: {
-        low: '#050615',
-        med: '#090C29',
-        full: '#041C4A',
+        low: '#0a0a0f',
+        med: '#131318',
+        full: '#131318',
       },
       info: {
         primary: '#FFFFFF',
-        secondary: '#7BB2CE',
+        secondary: '#9b9bff',
       },
       actions: {
-        primary: '#348CFD',
-        highlight: '#5ACCE6',
-        hover: 'rgba(52, 140, 253, 0.2)',
+        primary: '#8585FF',
+        highlight: '#9B9BFF',
+        hover: 'rgba(133, 133, 255, 0.2)',
       },
       customgreen: {
         100: '#05D97C',
@@ -79,20 +93,20 @@ module.exports = {
       },
 
       customblue: {
-        10: '#0A163F',
-        20: '#0B1F54',
-        30: '#09286e',
-        40: '#0E307F',
-        50: '#0F3A94',
-        80: '#1454D4',
-        100: '#c4fdff',
-        200: '#38daff',
-        300: '#1D204D',
-        400: '#90A0C1',
+        10: '#0a0a0f',
+        20: '#121221',
+        30: '#232343',
+        40: '#3e3e6f',
+        50: '#5d5da0',
+        80: '#8585ff',
+        100: '#d6d6ff',
+        200: '#8585ff',
+        300: '#19192e',
+        400: '#8f8fa8',
       },
 
       customgray: {
-        100: '#262943',
+        100: '#1a1a20',
       },
 
       gray: {

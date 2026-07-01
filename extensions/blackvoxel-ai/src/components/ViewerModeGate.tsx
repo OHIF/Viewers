@@ -27,9 +27,13 @@ import { CLINICAL_MODE_ENABLED } from '../config/clinicalMode';
 // Brand tokens (matches AIFindingsPanel.tsx)
 // ---------------------------------------------------------------------------
 
-const BRAND_VIOLET = '#7C3AED';
-const BRAND_VIOLET_HOVER = '#6D28D9';
-const BRAND_VIOLET_BG = 'rgba(124, 58, 237, 0.15)';
+// VWR-BRAND-01 (2026-07): retired stock-purple in favor of the canonical
+// BlackVoxel tesseract accent (assets/logo/web/brand.css --bv-accent-dim),
+// verified >=4.5:1 white-on-fill (this const backs both text buttons and
+// non-text borders/rings).
+const BRAND_VIOLET = '#5d5da0';
+const BRAND_VIOLET_HOVER = '#3e3e6f';
+const BRAND_VIOLET_BG = 'rgba(93, 93, 160, 0.15)';
 const TEXT_SECONDARY = '#A0ADB4';
 const SURFACE = '#0D0D0D';
 const SURFACE_CARD = '#1A1A1A';
@@ -282,7 +286,7 @@ function ViewerModeModal({
             onClick={handleConfirm}
             className="mt-5 w-full rounded-xl py-3 text-[14px] font-bold text-white transition-colors"
             style={{
-              backgroundColor: canConfirm ? BRAND_VIOLET : 'rgba(124,58,237,0.35)',
+              backgroundColor: canConfirm ? BRAND_VIOLET : 'rgba(93,93,160,0.35)',
               cursor: canConfirm ? 'pointer' : 'not-allowed',
             }}
             onMouseEnter={e => {
@@ -293,7 +297,7 @@ function ViewerModeModal({
             onMouseLeave={e => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor = canConfirm
                 ? BRAND_VIOLET
-                : 'rgba(124,58,237,0.35)';
+                : 'rgba(93,93,160,0.35)';
             }}
             aria-disabled={!canConfirm}
           >
@@ -326,9 +330,9 @@ export function ChangeModeButton(): React.ReactElement {
       onClick={clearMode}
       className="rounded px-2 py-0.5 text-[10px] font-semibold transition-colors"
       style={{
-        backgroundColor: 'rgba(124,58,237,0.25)',
-        color: '#C4B5FD',
-        border: `1px solid rgba(124,58,237,0.4)`,
+        backgroundColor: 'rgba(93,93,160,0.25)',
+        color: '#c9c9ff',
+        border: `1px solid rgba(93,93,160,0.4)`,
         cursor: 'pointer',
       }}
       title={t('mode.change')}

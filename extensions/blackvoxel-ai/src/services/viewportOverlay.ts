@@ -39,7 +39,7 @@ import { toPtLabel } from '../utils/labels';
  * which box belongs to which finding row; they carry no clinical meaning.
  */
 const BOX_PALETTE = [
-  '#7C3AED', // brand violet
+  '#8585ff', // brand accent (VWR-BRAND-01)
   '#6366F1', // indigo
   '#0EA5E9', // sky
   '#06B6D4', // cyan

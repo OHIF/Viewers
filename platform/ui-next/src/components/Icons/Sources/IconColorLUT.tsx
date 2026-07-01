@@ -58,7 +58,7 @@ export const IconColorLUT = (props: IconProps) => (
             <g
               id="Group"
               transform="translate(6.6939, 9.3583) rotate(40) translate(-6.6939, -9.3583)translate(3.4103, 2.8577)"
-              stroke="#041C4A"
+              stroke="#131318"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="1.25"
