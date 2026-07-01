@@ -27,6 +27,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
 import initStudyPrefetcherService from './initStudyPrefetcherService';
+import { setNextViewportsEnabled, resolveNextViewportsEnabled } from './utils/nextViewports';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -62,8 +63,15 @@ export default async function init({
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
 
+  // Enable cornerstone's stats/debug overlay when `?debug=true` is in the URL.
+  // Mirrors the cornerstone demo trigger so the same overlay is available inside
+  // OHIF: FPS / MS / MB panels plus the per-viewport actor & mapper bindings.
+  const statsOverlay =
+    new URLSearchParams(window.location.search).get('debug') === 'true';
+
   await cs3DInit({
     peerImport: appConfig.peerImport,
+    debug: { statsOverlay },
   });
 
   // For debugging e2e tests that are failing on CI
@@ -80,6 +88,14 @@ export default async function init({
       useGenericViewport: Boolean(appConfig.useGenericViewport),
     },
   });
+
+  // Opt-in: drive viewports through the DIRECT native GenericViewport ("next")
+  // API (PLANAR_NEXT, setDisplaySets, ...). Read by getCornerstoneViewportType
+  // and the CornerstoneViewportService backend split. Distinct from
+  // useGenericViewport above (which only enables cornerstone's compat remap).
+  // resolveNextViewportsEnabled lets a `?useNextViewports=true` URL param opt in
+  // per-session; when the param is absent, appConfig.useNextViewports wins.
+  setNextViewportsEnabled(resolveNextViewportsEnabled(appConfig.useNextViewports));
 
   // For debugging large datasets, otherwise prefer the defaults
   const { maxCacheSize } = appConfig;

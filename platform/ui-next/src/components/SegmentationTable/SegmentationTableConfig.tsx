@@ -124,10 +124,13 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
               mode="singleRange"
               min={0}
               max={10}
-              step={0.1}
+              step={1}
               value={outlineWidth}
               onChange={value =>
-                setOutlineWidth({ type: segmentationRepresentationTypes?.[0] }, value as number)
+                setOutlineWidth(
+                  { type: segmentationRepresentationTypes?.[0] },
+                  Math.round(value as number)
+                )
               }
             >
               <Numeric.SingleRange

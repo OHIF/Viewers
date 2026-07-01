@@ -19,6 +19,7 @@ import {
 import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import * as MapROIContoursToRTStructData from './RTSTRUCT/mapROIContoursToRTStructData';
 import SegmentationServiceClass, { SegmentationRepresentation } from './SegmentationService';
+import { setNextViewportsEnabled } from '../../utils/nextViewports';
 
 jest.mock('@cornerstonejs/core', () => ({
   ...jest.requireActual('@cornerstonejs/core'),
@@ -914,6 +915,101 @@ describe('SegmentationService', () => {
       });
     });
 
+    describe('next (generic) viewport', () => {
+      // A native GenericViewport (raw PlanarViewport) exposes setDisplaySets /
+      // setDisplaySetPresentation / setViewState, so csUtils.isGenericViewport is
+      // true and addSegmentationRepresentation routes to NextSegmentationBackend.
+      // It deliberately has NO getViewPresentation: the native path must never reach
+      // convertStackToVolumeViewport (the source of the observed
+      // "getViewPresentation is not a function" / silent ORTHOGRAPHIC flip).
+      const makeNextViewport = () => ({
+        element: { addEventListener: jest.fn(), removeEventListener: jest.fn() },
+        id: viewportId,
+        type: ViewportType.PLANAR_NEXT,
+        setDisplaySets: jest.fn(),
+        setDisplaySetPresentation: jest.fn(),
+        setViewState: jest.fn(),
+      });
+
+      it('renders the labelmap in place and never promotes the viewport (resolver maps in place)', async () => {
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+        jest
+          .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+          .mockReturnValue(makeNextViewport() as unknown as csTypes.IStackViewport);
+        jest
+          .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
+          .mockReturnValue('labelmapImageId');
+        jest
+          .spyOn(cstSegmentation, 'addSegmentationRepresentations')
+          .mockReturnValueOnce(undefined);
+        const convertSpy = jest.spyOn(service, 'convertStackToVolumeViewport');
+
+        const callback = jest.fn();
+        service.subscribe(service.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, callback);
+
+        await service.addSegmentationRepresentation(viewportId, {
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        });
+
+        // the native in-place resolver is consulted...
+        expect(
+          cstSegmentation.state.updateLabelmapSegmentationImageReferences
+        ).toHaveBeenCalledWith(viewportId, mockCornerstoneSegmentation.segmentationId);
+
+        // ...but the viewport is NEVER promoted to an ORTHOGRAPHIC volume viewport
+        expect(convertSpy).not.toHaveBeenCalled();
+        expect(
+          serviceManagerMock.services.viewportGridService.setDisplaySetsForViewport
+        ).not.toHaveBeenCalled();
+
+        // the representation is added in place, synchronously (isConverted === false)
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledWith(viewportId, [
+          {
+            type: csToolsEnums.SegmentationRepresentations.Labelmap,
+            segmentationId: mockCornerstoneSegmentation.segmentationId,
+            config: { colorLUTOrIndex: undefined },
+          },
+        ]);
+
+        expect(callback).toHaveBeenCalledWith({
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+        });
+      });
+
+      it('never promotes on native even when the in-place resolver cannot map (returns isConverted:false unconditionally)', async () => {
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+        jest
+          .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+          .mockReturnValue(makeNextViewport() as unknown as csTypes.IStackViewport);
+        // resolver fails (FrameOfReference mismatch / mount-timing race): on legacy this
+        // would fall through to convertStackToVolumeViewport; on native it must not.
+        jest
+          .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
+          .mockReturnValue(undefined);
+        jest
+          .spyOn(cstSegmentation, 'addSegmentationRepresentations')
+          .mockReturnValueOnce(undefined);
+        const convertSpy = jest.spyOn(service, 'convertStackToVolumeViewport');
+
+        await service.addSegmentationRepresentation(viewportId, {
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        });
+
+        expect(convertSpy).not.toHaveBeenCalled();
+        expect(
+          serviceManagerMock.services.viewportGridService.setDisplaySetsForViewport
+        ).not.toHaveBeenCalled();
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      });
+    });
+
     describe('volume viewport', () => {
       it('should add a segmentation representation to volume viewport without need for handling', async () => {
         jest
@@ -1470,6 +1566,136 @@ describe('SegmentationService', () => {
       expect(segDisplaySet).toEqual(expectedSegDisplaySet);
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+
+    describe('overlap / useSliceRendering (next backend)', () => {
+      const segmentationId = 'segmentationId';
+
+      // The session flag selects the seg-backend lane at SEG-load; reset it so it
+      // never leaks into the legacy-path tests that follow.
+      afterEach(() => {
+        setNextViewportsEnabled(false);
+      });
+
+      const segMetadata = {
+        data: [
+          {},
+          { SegmentNumber: '1', SegmentLabel: 'Segment 1', rgba: [255, 0, 0, 255] },
+          { SegmentNumber: '2', SegmentLabel: 'Segment 2', rgba: [0, 255, 0, 255] },
+        ],
+      };
+      const centroids = new Map([
+        [1, { image: { x: 0, y: 0, z: 0 }, world: { x: 0, y: 0, z: 0 } }],
+        [2, { image: { x: 1, y: 1, z: 1 }, world: { x: 1, y: 1, z: 1 } }],
+      ]);
+
+      // labelMapImages is the adapter's array-of-GROUPS (one conflict-free group per
+      // overlap layer). Two groups whose voxels carry values {1} and {2} respectively.
+      const makeOverlapGroups = () => {
+        const vm0 = { getScalarData: jest.fn().mockReturnValue([1, 0]), setScalarData: jest.fn() };
+        const vm1 = { getScalarData: jest.fn().mockReturnValue([0, 2]), setScalarData: jest.fn() };
+        return [
+          [
+            { imageId: 'g0i1', referencedImageId: 'r1', voxelManager: vm0 },
+            { imageId: 'g0i2', referencedImageId: 'r2', voxelManager: vm0 },
+          ],
+          [
+            { imageId: 'g1i1', referencedImageId: 'r1', voxelManager: vm1 },
+            { imageId: 'g1i2', referencedImageId: 'r2', voxelManager: vm1 },
+          ],
+        ];
+      };
+
+      const makeSegDisplaySet = (labelMapImages, overlappingSegments) => ({
+        centroids,
+        displaySetInstanceUID: 'display-set-uid',
+        referencedDisplaySetInstanceUID: 'existent-display-set-uid',
+        labelMapImages,
+        overlappingSegments,
+        segMetadata,
+        SeriesDate: '2025-01-01',
+        SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+        SeriesNumber: 1,
+      });
+
+      const primeMocks = () => {
+        jest
+          .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+          .mockReturnValue({ instances: [{ imageId: 'r1' }, { imageId: 'r2' }] });
+        jest.spyOn(metaData, 'get').mockReturnValue({});
+        jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      };
+
+      it('flag ON + overlapping SEG builds one labelmap layer per group + segmentBindings', async () => {
+        setNextViewportsEnabled(true);
+        primeMocks();
+
+        await service.createSegmentationForSEGDisplaySet(
+          makeSegDisplaySet(makeOverlapGroups(), true),
+          { type: csToolsEnums.SegmentationRepresentations.Labelmap, segmentationId }
+        );
+
+        const seg = jest.mocked(service.addOrUpdateSegmentation).mock.calls[0][0];
+        const data = seg.representation.data as Record<string, any>;
+
+        // one labelmap layer per conflict-free group, under ONE segmentationId
+        expect(Object.keys(data.labelmaps)).toEqual([
+          'segmentationId-storage-0',
+          'segmentationId-storage-1',
+        ]);
+        expect(data.labelmaps['segmentationId-storage-0'].imageIds).toEqual(['g0i1', 'g0i2']);
+        expect(data.labelmaps['segmentationId-storage-1'].imageIds).toEqual(['g1i1', 'g1i2']);
+        expect(data.labelmaps['segmentationId-storage-0'].storageKind).toBe('stack');
+
+        // segment->layer bindings recovered from the distinct non-zero voxel values
+        expect(data.segmentBindings).toEqual({
+          1: { labelmapId: 'segmentationId-storage-0', labelValue: 1 },
+          2: { labelmapId: 'segmentationId-storage-1', labelValue: 2 },
+        });
+        expect(data.primaryLabelmapId).toBe('segmentationId-storage-0');
+        // flattened list retained for legacy singular readers
+        expect(data.imageIds).toEqual(['g0i1', 'g0i2', 'g1i1', 'g1i2']);
+      });
+
+      it('flag ON + non-overlapping SEG stays a single layer (no multi-layer map)', async () => {
+        setNextViewportsEnabled(true);
+        primeMocks();
+
+        const vm = { getScalarData: jest.fn().mockReturnValue([1, 0]), setScalarData: jest.fn() };
+        const singleGroup = [
+          [
+            { imageId: 'i1', referencedImageId: 'r1', voxelManager: vm },
+            { imageId: 'i2', referencedImageId: 'r2', voxelManager: vm },
+          ],
+        ];
+
+        await service.createSegmentationForSEGDisplaySet(makeSegDisplaySet(singleGroup, false), {
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          segmentationId,
+        });
+
+        const seg = jest.mocked(service.addOrUpdateSegmentation).mock.calls[0][0];
+        const data = seg.representation.data as Record<string, any>;
+        expect(data.labelmaps).toBeUndefined();
+        expect(data.segmentBindings).toBeUndefined();
+        expect(data.imageIds).toEqual(['i1', 'i2']);
+      });
+
+      it('flag OFF + overlapping SEG collapses to a single flattened layer (legacy byte-identical)', async () => {
+        // flag stays off (default)
+        primeMocks();
+
+        await service.createSegmentationForSEGDisplaySet(
+          makeSegDisplaySet(makeOverlapGroups(), true),
+          { type: csToolsEnums.SegmentationRepresentations.Labelmap, segmentationId }
+        );
+
+        const seg = jest.mocked(service.addOrUpdateSegmentation).mock.calls[0][0];
+        const data = seg.representation.data as Record<string, any>;
+        expect(data.labelmaps).toBeUndefined();
+        expect(data.imageIds).toEqual(['g0i1', 'g0i2', 'g1i1', 'g1i2']);
+      });
     });
   });
 
@@ -2692,6 +2918,47 @@ describe('SegmentationService', () => {
         false,
         EasingFunctionEnum.EASE_IN_OUT
       );
+    });
+
+    it('navigates a native viewport via setViewReference (no jumpToWorld) and still highlights', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const viewportId = 'viewportId';
+      // A native PlanarViewport: csUtils.isGenericViewport is true (setDisplaySets +
+      // setDisplaySetPresentation + setViewState) and it has setViewReference but NO
+      // jumpToWorld, so jumpToSegmentCenter routes to the next twin.
+      const viewport = {
+        setDisplaySets: jest.fn(),
+        setDisplaySetPresentation: jest.fn(),
+        setViewState: jest.fn(),
+        setViewReference: jest.fn(),
+        render: jest.fn(),
+      };
+
+      const segmentationWithCenter = {
+        ...mockCornerstoneSegmentation,
+        segments: {
+          ...mockCornerstoneSegmentation.segments,
+          [segmentIndex]: {
+            ...mockCornerstoneSegmentation.segments[segmentIndex],
+            cachedStats: { center: { image: [1, 1, 1], world: [10, 10, 10] } },
+          },
+        },
+      };
+
+      jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(segmentationWithCenter);
+      // @ts-expect-error - mock only needed properties
+      getEnabledElementByViewportId.mockReturnValue({ viewport });
+      jest.spyOn(service, 'highlightSegment').mockReturnValue(undefined);
+
+      service.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
+
+      // native jump: a view reference centered on the segment world point, then render
+      expect(viewport.setViewReference).toHaveBeenCalledTimes(1);
+      expect(viewport.setViewReference).toHaveBeenCalledWith({ cameraFocalPoint: [10, 10, 10] });
+      expect(viewport.render).toHaveBeenCalledTimes(1);
+      // the recenter happened, so the highlight still runs
+      expect(service.highlightSegment).toHaveBeenCalledTimes(1);
     });
 
     it('should correctly handle custom animation parameters', () => {

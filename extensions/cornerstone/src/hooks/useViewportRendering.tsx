@@ -3,6 +3,7 @@ import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
 import { Types, utilities, Enums, cache } from '@cornerstonejs/core';
 import { getDataIdForViewport } from '../utils/getDataIdForViewport';
+import { getViewportProperties, setViewportProperties } from '../utils/getViewportPresentation';
 import {
   isStackViewportType,
   isVolumeViewportType,
@@ -92,14 +93,34 @@ const getPosition = (location: number): ColorbarPositionType => {
   }
 };
 
-const GAMMA = 1 / 5;
+// Opacity slider gamma. The legacy fusion path applies the slider value through
+// a gamma curve (1/5) that the legacy rendering expects. Native ("next") volume
+// viewports render the fusion as a volume *slice* whose blend is linear in the
+// opacity scalar, so they use an identity mapping (gamma = 1) instead, making the
+// slider position equal the applied opacity. See `opacityGamma` below, which
+// selects between the two based on the active viewport.
+const LEGACY_OPACITY_GAMMA = 1 / 5;
 
-const linearToOpacity = (linearValue: number): number => {
-  return Math.pow(linearValue, GAMMA);
-};
+/**
+ * Normalizes a colormap opacity value to a single 0..1 scalar for the opacity
+ * slider. `colormap.opacity` may be a plain number or an array of
+ * `{ value, opacity }` points (e.g. the HP fusion opacity ramp); for the array
+ * case we represent it by its maximum opacity. (A prior reduce ran over the point
+ * objects directly, producing NaN and a mispositioned slider.)
+ */
+const resolveOpacityScalar = (opacityVal: unknown): number | undefined => {
+  if (opacityVal === undefined || opacityVal === null) {
+    return undefined;
+  }
 
-const opacityToLinear = (opacityValue: number): number => {
-  return Math.pow(opacityValue, 1.0 / GAMMA);
+  if (Array.isArray(opacityVal)) {
+    return opacityVal.reduce((max: number, point) => {
+      const value = typeof point === 'number' ? point : (point?.opacity ?? 0);
+      return Math.max(max, value);
+    }, 0);
+  }
+
+  return opacityVal as number;
 };
 
 /**
@@ -128,12 +149,27 @@ export function useViewportRendering(
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
   );
   const [is3DVolume, setIs3DVolume] = useState(isVolume3DViewportType(viewport));
+
+  // Native ("next") volume viewports render fusion as a linear volume slice, so
+  // the opacity slider maps 1:1 (gamma = 1). The legacy path keeps its gamma
+  // curve. linear<->opacity conversions below use this, so the slider feel and
+  // its initial position match the rendering path.
+  const opacityGamma = viewport && utilities.isGenericViewport(viewport) ? 1 : LEGACY_OPACITY_GAMMA;
+  const linearToOpacity = useCallback(
+    (linearValue: number): number => Math.pow(linearValue, opacityGamma),
+    [opacityGamma]
+  );
+  const opacityToLinear = useCallback(
+    (opacityValue: number): number => Math.pow(opacityValue, 1.0 / opacityGamma),
+    [opacityGamma]
+  );
+
   const [opacity, setOpacityState] = useState<number | undefined>();
   const [opacityLinear, setOpacityLinearState] = useState<number | undefined>();
   const [threshold, setThresholdState] = useState<number | undefined>();
   const [pixelValueRange, setPixelValueRange] = useState<PixelValueRange>({ min: 0, max: 255 });
 
-  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+  const { viewportDisplaySets, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
   const { displaySetService } = servicesManager.services;
 
   // Determine the active display set instance UID (internal only, not exposed)
@@ -142,12 +178,21 @@ export function useViewportRendering(
       return options.displaySetInstanceUID;
     }
 
+    // Window-level / colormap / threshold controls operate on the foreground
+    // layer (e.g. the PT in a PET/CT fusion), not the grayscale background (CT).
+    // Use the topmost foreground display set when present; otherwise fall back to
+    // the (single) primary display set. SEG/derived overlays are already excluded
+    // from foregroundDisplaySets.
+    if (foregroundDisplaySets && foregroundDisplaySets.length > 0) {
+      return foregroundDisplaySets[foregroundDisplaySets.length - 1].displaySetInstanceUID;
+    }
+
     if (viewportDisplaySets && viewportDisplaySets.length > 0) {
       return viewportDisplaySets[0].displaySetInstanceUID;
     }
 
     return undefined;
-  }, [options?.displaySetInstanceUID, viewportDisplaySets]);
+  }, [options?.displaySetInstanceUID, viewportDisplaySets, foregroundDisplaySets]);
 
   const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
 
@@ -216,27 +261,33 @@ export function useViewportRendering(
       return;
     }
 
-    if (!isVolumeViewportType(viewport)) {
+    // Native ("next") volume viewports have no getAllVolumeIds/getImageData(volumeId),
+    // and isVolumeViewportType is true for them (requestedType ORTHOGRAPHIC), so the
+    // legacy actor lookup would throw. Resolve the active display set's volume from
+    // the cornerstone cache instead; legacy volume viewports keep their actor lookup.
+    let voxelManager;
+    if (utilities.isGenericViewport(viewport)) {
+      const volume = cache
+        .getVolumes()
+        .find(v => v.volumeId?.includes(activeDisplaySetInstanceUID));
+      voxelManager = volume?.voxelManager;
+    } else if (isVolumeViewportType(viewport)) {
+      const volumeIds = viewport.getAllVolumeIds();
+      const volumeId = volumeIds.find(id => id.includes(activeDisplaySetInstanceUID));
+
+      if (!volumeId) {
+        return;
+      }
+
+      const imageData = viewport.getImageData(volumeId);
+      voxelManager = imageData?.imageData?.get('voxelManager')?.voxelManager;
+    } else {
       return;
     }
 
-    const volumeIds = viewport.getAllVolumeIds();
-    const volumeId = volumeIds.find(id => id.includes(activeDisplaySetInstanceUID));
-
-    if (!volumeId) {
+    if (!voxelManager?.getRange) {
       return;
     }
-
-    // only handle volume viewports for now
-    const imageData = viewport.getImageData(volumeId);
-
-    if (!imageData) {
-      return;
-    }
-
-    const imageDataVtk = imageData.imageData;
-
-    const { voxelManager } = imageDataVtk.get('voxelManager');
 
     const range = voxelManager.getRange();
 
@@ -269,10 +320,10 @@ export function useViewportRendering(
     try {
       const dataId = getDataIdForViewport(viewport as unknown, activeDisplaySetInstanceUID);
 
-      const properties =
-        dataId != null
-          ? (viewport as Types.IBaseVolumeViewport).getProperties(dataId)
-          : viewport.getProperties();
+      // Native Generic ("next") viewports expose per-display-set appearance via
+      // getDisplaySetPresentation rather than getProperties; the helper bridges
+      // both so this VOI/colormap initialization works regardless of backend.
+      const properties = getViewportProperties(viewport, dataId ?? activeDisplaySetInstanceUID);
 
       if (!properties) {
         return;
@@ -281,18 +332,30 @@ export function useViewportRendering(
       if (properties.voiRange) {
         setVoiRange(properties.voiRange);
         voiRangeRef.current = properties.voiRange;
+      } else if (utilities.isGenericViewport(viewport)) {
+        // Native ("next") viewports store only explicit VOI overrides in the
+        // per-display-set presentation; a freshly shown series has none, so fall
+        // back to its computed default VOI. Without this, changing the series left
+        // the overlay showing the previous series' window level (legacy
+        // getProperties always returns the applied VOI, so only native was stale).
+        const defaultVOIRange = (
+          viewport as unknown as {
+            getDefaultVOIRange?: (id?: string) => { lower: number; upper: number } | undefined;
+          }
+        ).getDefaultVOIRange?.(dataId ?? activeDisplaySetInstanceUID);
+
+        if (defaultVOIRange) {
+          setVoiRange(defaultVOIRange);
+          voiRangeRef.current = defaultVOIRange;
+        }
       }
 
       if (properties.colormap?.opacity !== undefined) {
-        const opacityVal = properties.colormap.opacity;
-        const opacity = Array.isArray(opacityVal)
-          ? (opacityVal as unknown as number[]).reduce(
-              (max, current) => Math.max(max, current),
-              0
-            )
-          : opacityVal;
-        setOpacityState(opacity);
-        setOpacityLinearState(opacityToLinear(opacity));
+        const opacity = resolveOpacityScalar(properties.colormap.opacity);
+        if (opacity !== undefined) {
+          setOpacityState(opacity);
+          setOpacityLinearState(opacityToLinear(opacity));
+        }
       }
 
       if (properties.colormap?.threshold !== undefined) {
@@ -362,8 +425,11 @@ export function useViewportRendering(
       }
 
       if (colormap.opacity !== undefined) {
-        setOpacityState(colormap.opacity);
-        setOpacityLinearState(opacityToLinear(colormap.opacity));
+        const opacity = resolveOpacityScalar(colormap.opacity);
+        if (opacity !== undefined) {
+          setOpacityState(opacity);
+          setOpacityLinearState(opacityToLinear(opacity));
+        }
       }
     };
 
@@ -570,7 +636,7 @@ export function useViewportRendering(
 
   const setOpacity = useCallback(
     (opacityValue: number) => {
-      if (!viewport || !isVolumeViewportType(viewport)) {
+      if (!viewport) {
         return;
       }
 
@@ -580,6 +646,32 @@ export function useViewportRendering(
       setOpacityLinearState(opacityToLinear(opacityValue));
 
       const displaySetInstanceUID = validateActiveDisplaySet();
+
+      // Native ("next") volume viewports apply appearance via
+      // setDisplaySetPresentation (no getAllVolumeIds/getProperties/setProperties).
+      // Merge the opacity into the existing colormap so its name/threshold persist,
+      // targeting the active binding by its dataId (the bare display set UID).
+      if (utilities.isGenericViewport(viewport)) {
+        const current = getViewportProperties(viewport, displaySetInstanceUID);
+        const currentColormap = (current?.colormap as Record<string, unknown>) || {};
+        // Apply a uniform (flat) opacity so the slider behaves as a linear CT<->PT
+        // blend: 0 = background only, 1 = the foreground layer fully opaque ("100%
+        // PT"). The default presentation is also flat (see the fusion hanging
+        // protocol), so the slider position matches what is rendered and small
+        // moves produce small changes.
+        setViewportProperties(
+          viewport,
+          { colormap: { ...currentColormap, opacity: opacityValue } },
+          displaySetInstanceUID
+        );
+        viewport.render();
+        return;
+      }
+
+      if (!isVolumeViewportType(viewport)) {
+        return;
+      }
+
       const volumeIds = viewport.getAllVolumeIds();
       const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
 
@@ -621,21 +713,40 @@ export function useViewportRendering(
 
   const setThreshold = useCallback(
     (thresholdValue: number) => {
-      if (!viewport || !isVolumeViewportType(viewport)) {
+      if (!viewport) {
         return;
       }
 
+      const displaySetInstanceUID = validateActiveDisplaySet();
       setThresholdState(thresholdValue);
 
-      const displaySetInstanceUID = validateActiveDisplaySet();
+      // Native ("next") volume viewports apply per-display-set appearance through
+      // setDisplaySetPresentation (no getAllVolumeIds/setProperties). Merge the
+      // threshold into the existing colormap so its name/opacity persist, targeting
+      // the active (e.g. PT) binding by its dataId (the bare display set UID). The
+      // threshold is an absolute pixel/SUV value, matching the legacy volume path.
+      if (utilities.isGenericViewport(viewport)) {
+        const current = getViewportProperties(viewport, displaySetInstanceUID);
+        const currentColormap = (current?.colormap as Record<string, unknown>) || {};
+        setViewportProperties(
+          viewport,
+          { colormap: { ...currentColormap, threshold: thresholdValue } },
+          displaySetInstanceUID
+        );
+        viewport.render();
+        return;
+      }
+
+      if (!isVolumeViewportType(viewport)) {
+        return;
+      }
+
       const volumeIds = viewport.getAllVolumeIds();
       const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
 
       if (!volumeId) {
         return;
       }
-
-      console.debug('🚀 ~ thresholdValue:', thresholdValue);
 
       viewport.setProperties(
         {
@@ -660,6 +771,18 @@ export function useViewportRendering(
     try {
       if (!viewport) {
         return null;
+      }
+
+      // Native Generic ("next") viewports (stack or volume) expose colormap via
+      // getDisplaySetPresentation rather than getProperties/getActors; the helper
+      // reads it for both backends.
+      if (utilities.isGenericViewport(viewport)) {
+        const { colormap } = getViewportProperties(viewport, activeDisplaySetInstanceUID);
+        return (
+          colormap ||
+          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+          colorbarProperties?.colormaps?.[0]
+        );
       }
 
       if (isStackViewportType(viewport)) {

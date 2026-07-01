@@ -1,4 +1,4 @@
-import { Enums as csEnums, Types as csTypes } from '@cornerstonejs/core';
+import { Enums as csEnums, Types as csTypes, utilities as csUtils } from '@cornerstonejs/core';
 
 const { ViewportType } = csEnums;
 
@@ -63,4 +63,28 @@ export function isVolumeViewportType(
     legacyType === ViewportType.ORTHOGRAPHIC ||
     legacyType === ViewportType.VOLUME_3D
   );
+}
+
+/**
+ * True for any viewport that renders volume content and therefore supports
+ * volume-only appearance controls (threshold, per-layer opacity): a legacy
+ * ORTHOGRAPHIC viewport, or a native ("next") generic viewport whose active
+ * binding is a volume (`getCurrentMode() === 'volume'`).
+ *
+ * A native MPR/volume viewport runs as PLANAR_NEXT and reports `requestedType`
+ * PLANAR_NEXT (not ORTHOGRAPHIC), so `isOrthographicViewportType` alone misses
+ * it. Use this for "does this viewport support volume thresholding/opacity"
+ * gates that must work across both backends.
+ */
+export function isVolumeRenderingViewport(viewport: unknown): boolean {
+  if (isOrthographicViewportType(viewport)) {
+    return true;
+  }
+
+  if (csUtils.isGenericViewport(viewport)) {
+    const mode = (viewport as { getCurrentMode?: () => string }).getCurrentMode?.();
+    return mode === 'volume';
+  }
+
+  return false;
 }

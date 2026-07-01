@@ -1,4 +1,4 @@
-import { Enums } from '@cornerstonejs/core';
+import { Enums, utilities as csUtils } from '@cornerstonejs/core';
 import { ViewportData } from './types';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 
@@ -21,6 +21,24 @@ export function getViewportImageIds(viewportData: ViewportData): string[] {
 
 export function isProgressFullMode(viewportData: ViewportData, viewport): boolean {
   if (!viewportData || !viewport || isVolume3DViewportType(viewport)) {
+    return false;
+  }
+
+  // Native Generic ("next") viewports report viewportData.viewportType === PLANAR_NEXT
+  // (CornerstoneCacheService collapses stack/volume/orthographic to PLANAR_NEXT) and do
+  // not implement isInAcquisitionPlane. Classify by content mode + view-state orientation
+  // instead of the legacy viewportType.
+  if (csUtils.isGenericViewport(viewport)) {
+    const mode = viewport.getCurrentMode?.(); // 'stack' | 'volume' | 'empty' | 'unknown'
+    if (mode === 'stack') {
+      return true;
+    }
+    if (mode === 'volume') {
+      // acquisition-plane volume == full mode (native equivalent of legacy
+      // isInAcquisitionPlane). orientation defaults to ACQUISITION when unset.
+      const orientation = viewport.getViewState?.()?.orientation;
+      return orientation === Enums.OrientationAxis.ACQUISITION || orientation == null;
+    }
     return false;
   }
 

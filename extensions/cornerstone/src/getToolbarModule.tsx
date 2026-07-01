@@ -1,5 +1,10 @@
 import { Enums } from '@cornerstonejs/tools';
 import i18n from '@ohif/i18n';
+import {
+  getViewportProperties,
+  getViewportCameraState,
+} from './utils/getViewportPresentation';
+import { isVolumeRenderingViewport } from './utils/getLegacyViewportType';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -309,7 +314,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           };
         }
 
-        if (viewport.type !== 'orthographic') {
+        // Recognize native "next" volume viewports too. A next MPR/volume viewport
+        // runs as PLANAR_NEXT (requestedType PLANAR_NEXT, not ORTHOGRAPHIC), so this
+        // checks volume content via getCurrentMode(). Without it the PT threshold
+        // control stayed disabled on the next backend (e.g. TMTV fusion/PT).
+        if (!isVolumeRenderingViewport(viewport)) {
           return {
             disabled: true,
           };
@@ -332,7 +341,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport || viewport.type !== 'orthographic') {
+        if (!viewport || !isVolumeRenderingViewport(viewport)) {
           return {
             disabled: true,
           };
@@ -543,8 +552,8 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         const propId = button.id;
 
-        const properties = viewport.getProperties();
-        const camera = viewport.getCamera();
+        const properties = getViewportProperties(viewport);
+        const camera = getViewportCameraState(viewport);
 
         const prop = camera?.[propId] || properties?.[propId];
 

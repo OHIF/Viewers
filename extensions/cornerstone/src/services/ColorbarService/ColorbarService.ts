@@ -1,8 +1,26 @@
 import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
-import { getRenderingEngine } from '@cornerstonejs/core';
+import { getRenderingEngine, utilities as csUtils } from '@cornerstonejs/core';
 import { getDataIdForViewport } from '../../utils/getDataIdForViewport';
+import {
+  getViewportProperties,
+  setViewportProperties,
+} from '../../utils/getViewportPresentation';
 import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
+
+/**
+ * Native-safe "does this viewport have renderable content" check. Direct
+ * PLANAR_NEXT ("next") viewports have no getActors (it throws); their content
+ * presence is reported by getCurrentMode (empty/unknown means nothing bound).
+ */
+function viewportHasContent(viewport: unknown): boolean {
+  if (csUtils.isGenericViewport(viewport)) {
+    const mode = (viewport as { getCurrentMode?: () => string }).getCurrentMode?.();
+    return !!mode && mode !== 'empty' && mode !== 'unknown';
+  }
+  const actorEntries = (viewport as { getActors?: () => unknown[] })?.getActors?.();
+  return !!actorEntries && actorEntries.length > 0;
+}
 
 export default class ColorbarService extends PubSubService {
   static EVENTS = {
@@ -60,8 +78,7 @@ export default class ColorbarService extends PubSubService {
       return;
     }
 
-    const actorEntries = viewport.getActors();
-    if (!actorEntries || actorEntries.length === 0) {
+    if (!viewportHasContent(viewport)) {
       return;
     }
 
@@ -75,7 +92,7 @@ export default class ColorbarService extends PubSubService {
       }
 
       const dataId = getDataIdForViewport(viewport, displaySetInstanceUID);
-      const properties = dataId ? viewport.getProperties(dataId) : viewport.getProperties();
+      const properties = getViewportProperties(viewport, dataId);
       const colormap = properties?.colormap;
 
       if (activeColormapName && !colormap) {
@@ -222,8 +239,7 @@ export default class ColorbarService extends PubSubService {
   private setViewportColormap(viewportId, displaySetInstanceUID, colormap, immediate = false) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
-    const actorEntries = viewport?.getActors();
-    if (!viewport || !actorEntries || actorEntries.length === 0) {
+    if (!viewport || !viewportHasContent(viewport)) {
       return;
     }
 
@@ -231,7 +247,7 @@ export default class ColorbarService extends PubSubService {
     const dataId = getDataIdForViewport(viewport, displaySetInstanceUID);
 
     // Set properties with or without dataId based on what the viewport supports
-    viewport.setProperties({ colormap }, dataId);
+    setViewportProperties(viewport, { colormap }, dataId);
 
     if (immediate) {
       viewport.render();
