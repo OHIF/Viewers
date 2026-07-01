@@ -286,13 +286,18 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
       options: {
         colormap: {
           name: 'hsv',
-          // Flat (uniform) PT opacity so the fusion opacity slider acts as a
-          // linear CT<->PT blend where 100% fully shows PT. Legacy already
-          // flattens an opacity ramp to its peak, but the native "next" viewport
-          // applies the ramp literally, which keeps the background transparent
-          // and prevents 100% from covering the CT. The native ("next") path
-          // overrides this initial value in getHangingProtocolModule.
-          opacity: 0.9,
+          // Legacy fusion PT opacity ramp (unchanged): low PT values stay mostly
+          // transparent so the CT shows through. Do NOT flatten this to a scalar —
+          // the legacy viewport renders this ramp and depends on it. The native
+          // ("next") viewport would apply the ramp literally (keeping the
+          // background transparent and preventing the 100% opacity slider from
+          // fully covering the CT), so the next path replaces this ramp with a
+          // flat scalar in getHangingProtocolModule instead of changing it here.
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.8 },
+            { value: 1, opacity: 0.9 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
@@ -351,13 +356,18 @@ const fusionSAGITTAL = {
       options: {
         colormap: {
           name: 'hsv',
-          // Flat (uniform) PT opacity so the fusion opacity slider acts as a
-          // linear CT<->PT blend where 100% fully shows PT. Legacy already
-          // flattens an opacity ramp to its peak, but the native "next" viewport
-          // applies the ramp literally, which keeps the background transparent
-          // and prevents 100% from covering the CT. The native ("next") path
-          // overrides this initial value in getHangingProtocolModule.
-          opacity: 0.9,
+          // Legacy fusion PT opacity ramp (unchanged): low PT values stay mostly
+          // transparent so the CT shows through. Do NOT flatten this to a scalar —
+          // the legacy viewport renders this ramp and depends on it. The native
+          // ("next") viewport would apply the ramp literally (keeping the
+          // background transparent and preventing the 100% opacity slider from
+          // fully covering the CT), so the next path replaces this ramp with a
+          // flat scalar in getHangingProtocolModule instead of changing it here.
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.8 },
+            { value: 1, opacity: 0.9 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',
@@ -416,13 +426,18 @@ const fusionCORONAL = {
       options: {
         colormap: {
           name: 'hsv',
-          // Flat (uniform) PT opacity so the fusion opacity slider acts as a
-          // linear CT<->PT blend where 100% fully shows PT. Legacy already
-          // flattens an opacity ramp to its peak, but the native "next" viewport
-          // applies the ramp literally, which keeps the background transparent
-          // and prevents 100% from covering the CT. The native ("next") path
-          // overrides this initial value in getHangingProtocolModule.
-          opacity: 0.9,
+          // Legacy fusion PT opacity ramp (unchanged): low PT values stay mostly
+          // transparent so the CT shows through. Do NOT flatten this to a scalar —
+          // the legacy viewport renders this ramp and depends on it. The native
+          // ("next") viewport would apply the ramp literally (keeping the
+          // background transparent and preventing the 100% opacity slider from
+          // fully covering the CT), so the next path replaces this ramp with a
+          // flat scalar in getHangingProtocolModule instead of changing it here.
+          opacity: [
+            { value: 0, opacity: 0 },
+            { value: 0.1, opacity: 0.8 },
+            { value: 1, opacity: 0.9 },
+          ],
         },
         voi: {
           custom: 'getPTVOIRange',

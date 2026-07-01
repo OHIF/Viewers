@@ -12,9 +12,10 @@ import {
   ptSAGITTAL,
 } from './utils/hpViewports';
 
-// Initial PT opacity for the fusion viewports on the native ("next") path. The
-// legacy default (set in hpViewports) is 0.9; native uses a lower, more
-// CT-weighted starting blend for now.
+// Initial PT opacity for the fusion viewports on the native ("next") path. Legacy
+// (in hpViewports) uses a per-value opacity ramp; native needs a single flat scalar
+// (it applies a ramp literally, which would keep the background transparent), so the
+// native path replaces the ramp with this lower, more CT-weighted starting blend.
 const NEXT_FUSION_PT_OPACITY = 0.4;
 
 /**
@@ -345,13 +346,14 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
 };
 
 function getHangingProtocolModule() {
-  // Override the fusion PT initial opacity for the native ("next") path. Done
-  // here (not at module load) because the useNextViewports flag is set during
-  // cornerstone preRegistration, which runs before this module is gathered.
+  // Replace the fusion PT opacity ramp with a flat scalar for the native ("next")
+  // path only, leaving the legacy ramp in hpViewports untouched. Done here (not at
+  // module load) because the useNextViewports flag is set during cornerstone
+  // preRegistration, which runs before this module is gathered.
   if (isNextViewportsEnabled()) {
     [fusionAXIAL, fusionSAGITTAL, fusionCORONAL].forEach(viewport => {
       const ptDisplaySet = viewport.displaySets?.find(ds => ds.id === 'ptDisplaySet');
-      const colormap = ptDisplaySet?.options?.colormap as { opacity?: number } | undefined;
+      const colormap = ptDisplaySet?.options?.colormap as { opacity?: unknown } | undefined;
       if (colormap) {
         colormap.opacity = NEXT_FUSION_PT_OPACITY;
       }
