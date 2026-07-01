@@ -854,14 +854,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // Register the WSI dataset so the viewport can resolve its imageIds +
     // webClient by display-set id, then mount via setDisplaySets. The webClient
     // was registered under the WADO_WEB_CLIENT module (keyed by imageIds[0]) by
-    // the SM SOP class handler. Registering here rather than calling the legacy
-    // setDataIds means the same path works once WSI moves to the GenericViewport
-    // render path, whose data provider reads this same registry.
-    const webClient = metaData.get(
-      csEnums.MetadataModules.WADO_WEB_CLIENT,
-      displaySetId
-    );
-    csUtils.genericViewportDataSetMetadataProvider.add(displaySetId, {
+    // the SM SOP class handler. CS3D's "redo viewports" reads this same registry
+    // (genericViewportDisplaySetMetadataProvider) from its WSI data provider;
+    // without this entry setDisplaySets throws "No registered WSI dataset" and
+    // the viewport renders gray.
+    const webClient = metaData.get(csEnums.MetadataModules.WADO_WEB_CLIENT, displaySetId);
+    csUtils.genericViewportDisplaySetMetadataProvider.add(displaySetId, {
       imageIds: displaySet.imageIds,
       kind: 'wsi',
       options: { webClient },
