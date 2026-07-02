@@ -8,6 +8,7 @@ import {
   utilities as csUtils,
   cache,
   Enums as csEnums,
+  metaData,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';

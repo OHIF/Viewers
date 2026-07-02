@@ -1,4 +1,4 @@
-import { Enums as csEnums, Types } from '@cornerstonejs/core';
+import { Enums as csEnums, Types, metaData, utilities as csUtils } from '@cornerstonejs/core';
 import {
   getLegacyViewportType,
   isStackViewportType,
@@ -126,11 +126,25 @@ export class LegacyViewportBackend implements IViewportBackend {
     // CS3D's "redo viewports" replaced setDataIds with the generic
     // setDisplaySets({ displaySetId }) API; the legacy adapters key off
     // imageIds[0] as the displaySetId, so do the same here.
+    const displaySetId = displaySet.imageIds[0];
+    // Register the WSI dataset so the viewport can resolve its imageIds +
+    // webClient by display-set id, then mount via setDisplaySets. The webClient
+    // was registered under the WADO_WEB_CLIENT module (keyed by imageIds[0]) by
+    // the SM SOP class handler. CS3D's "redo viewports" reads this same registry
+    // (genericViewportDisplaySetMetadataProvider) from its WSI data provider;
+    // without this entry setDisplaySets throws "No registered WSI dataset" and
+    // the viewport renders gray.
+    const webClient = metaData.get(csEnums.MetadataModules.WADO_WEB_CLIENT, displaySetId);
+    csUtils.genericViewportDisplaySetMetadataProvider.add(displaySetId, {
+      imageIds: displaySet.imageIds,
+      kind: 'wsi',
+      options: { webClient },
+    });
     await (
       viewport as unknown as {
         setDisplaySets: (args: { displaySetId: string }) => Promise<void>;
       }
-    ).setDisplaySets({ displaySetId: displaySet.imageIds[0] });
+    ).setDisplaySets({ displaySetId });
   }
 
   remount(
