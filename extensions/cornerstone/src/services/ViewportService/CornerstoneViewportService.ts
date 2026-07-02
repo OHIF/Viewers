@@ -1395,6 +1395,12 @@ class CornerstoneViewportService
       keepCamera
     );
 
+    // remount() returns undefined for viewport families with no re-mount path
+    // (matching legacy behavior); nothing changed, so skip the event broadcast.
+    if (!displaySetPromise) {
+      return;
+    }
+
     displaySetPromise.then(() => {
       this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
         viewportData,

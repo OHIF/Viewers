@@ -153,12 +153,13 @@ export class LegacyViewportBackend implements IViewportBackend {
     viewportInfo: ViewportInfo,
     keepCamera: boolean
   ): Promise<void> | undefined {
-    const vp = viewport as Types.IStackViewport | Types.IVolumeViewport;
-    const viewportCamera = vp.getCamera();
-
     let displaySetPromise: Promise<void> | undefined;
 
     if (isVolumeViewportType(viewport)) {
+      // Snapshot the camera only for the family that uses it; taking it before
+      // the family checks would throw for families with no re-mount path.
+      const vp = viewport as Types.IVolumeViewport;
+      const viewportCamera = keepCamera ? vp.getCamera() : undefined;
       displaySetPromise = this.service
         ._setVolumeViewport(
           viewport as Types.IVolumeViewport,
@@ -166,7 +167,7 @@ export class LegacyViewportBackend implements IViewportBackend {
           viewportInfo
         )
         .then(() => {
-          if (keepCamera) {
+          if (viewportCamera) {
             vp.setCamera(viewportCamera);
             vp.render();
           }
