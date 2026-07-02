@@ -34,10 +34,9 @@ export interface ColormapParams {
  *
  * DISPATCH: unlike IViewportBackend (selected once by the appConfig flag because it owns
  * per-session mount lifecycle), operations are routed PER VIEWPORT via the dispatcher in
- * viewportOperations.ts (csUtils.isGenericViewport(viewport) ? next : legacy). The viewport
- * is already created and self-describing, and a session can hold a mix of legacy and native
- * viewports; per-viewport routing is the runtime truth and preserves the previous inline
- * `isGenericViewport(viewport)` branching byte-for-byte.
+ * viewportOperations.ts (isNextViewport(viewport) ? next : legacy). The viewport is
+ * already created and self-describing, and a session can hold a mix of legacy and native
+ * viewports; per-viewport routing is the runtime truth.
  *
  * RENDER: no method calls viewport.render(). The caller renders, matching today's
  * per-command render timing (e.g. setViewportColormap renders only when immediate).
@@ -70,10 +69,7 @@ export interface IViewportOperations {
    * slice jump. Returns true when it re-centered (caller should render), false when the
    * measurement was already visible or in-plane centering is unsupported on the lane.
    */
-  centerOnMeasurement(
-    viewport: CoreTypes.IViewport,
-    measurement: Record<string, unknown>
-  ): boolean;
+  centerOnMeasurement(viewport: CoreTypes.IViewport, measurement: Record<string, unknown>): boolean;
 
   // ---- appearance / properties ----
 

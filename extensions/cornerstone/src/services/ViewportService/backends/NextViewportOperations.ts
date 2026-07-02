@@ -3,12 +3,7 @@ import {
   CONSTANTS as csConstants,
   Types as CoreTypes,
 } from '@cornerstonejs/core';
-import {
-  getViewportProperties,
-  setViewportProperties,
-  getViewportCameraState,
-  setViewportCameraState,
-} from '../../../utils/getViewportPresentation';
+import { getViewportAdapter } from '../adapter';
 import { legacyViewportOperations } from './LegacyViewportOperations';
 import type {
   IViewportOperations,
@@ -19,10 +14,9 @@ import type {
   ColormapParams,
 } from './IViewportOperations';
 
-// Native PLANAR_NEXT semantic accessors not covered by the presentation/camera-state
-// bridges. They live on IGenericViewport, so cast structurally at the boundary.
+// Native PLANAR_NEXT semantic accessors not covered by the viewport adapter.
+// They live on IGenericViewport, so cast structurally at the boundary.
 type NativePlanarViewport = CoreTypes.IViewport & {
-  getViewReference?: () => CoreTypes.ViewReference;
   resetViewState?: () => void;
   resetDisplaySetPresentation?: (dataId?: string) => void;
   getZoom?: () => number;
@@ -31,8 +25,8 @@ type NativePlanarViewport = CoreTypes.IViewport & {
 
 /**
  * Native ("next") lane of IViewportOperations for direct PLANAR_NEXT viewports.
- * Appearance and camera/view-state ops go through the getViewportPresentation
- * bridges (which encapsulate the native getViewState/setViewState and
+ * Appearance and camera/view-state ops go through the viewport adapter (which
+ * encapsulates the native getViewState/setViewState and
  * getDisplaySetPresentation/setDisplaySetPresentation primitives, including the
  * active-binding dataId default); the remaining ops use the native semantic API
  * directly. The dispatcher only routes generic viewports here.
@@ -41,25 +35,28 @@ type NativePlanarViewport = CoreTypes.IViewport & {
  */
 export const nextViewportOperations: IViewportOperations = {
   flipHorizontal(viewport: CoreTypes.IViewport, newValue: FlipValue = 'toggle'): void {
+    const adapter = getViewportAdapter(viewport);
     const flipHorizontal =
-      newValue === 'toggle' ? !getViewportCameraState(viewport).flipHorizontal : newValue;
-    setViewportCameraState(viewport, { flipHorizontal });
+      newValue === 'toggle' ? !adapter.getViewState().flipHorizontal : newValue;
+    adapter.setViewState({ flipHorizontal });
   },
 
   flipVertical(viewport: CoreTypes.IViewport, newValue: FlipValue = 'toggle'): void {
-    const flipVertical =
-      newValue === 'toggle' ? !getViewportCameraState(viewport).flipVertical : newValue;
-    setViewportCameraState(viewport, { flipVertical });
+    const adapter = getViewportAdapter(viewport);
+    const flipVertical = newValue === 'toggle' ? !adapter.getViewState().flipVertical : newValue;
+    adapter.setViewState({ flipVertical });
   },
 
   invert(viewport: CoreTypes.IViewport): void {
-    const { invert } = getViewportProperties(viewport);
-    setViewportProperties(viewport, { invert: !invert });
+    const adapter = getViewportAdapter(viewport);
+    const { invert } = adapter.getPresentation();
+    adapter.setPresentation({ invert: !invert });
   },
 
   rotate(viewport: CoreTypes.IViewport, rotation: number, mode: RotationMode = 'apply'): void {
     // rotation/flip live in the semantic view state; getViewPresentation is absent.
-    const state = getViewportCameraState(viewport);
+    const adapter = getViewportAdapter(viewport);
+    const state = adapter.getViewState();
     const currentRotation = (state.rotation as number) ?? 0;
     const newRotation =
       mode === 'apply'
@@ -69,7 +66,7 @@ export const nextViewportOperations: IViewportOperations = {
             const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
             return (effectiveRotation + 360) % 360;
           })();
-    setViewportCameraState(viewport, { rotation: newRotation });
+    adapter.setViewState({ rotation: newRotation });
   },
 
   reset(viewport: CoreTypes.IViewport): void {
@@ -103,9 +100,7 @@ export const nextViewportOperations: IViewportOperations = {
   },
 
   getViewPlaneNormal(viewport: CoreTypes.IViewport): CoreTypes.Point3 | undefined {
-    return (viewport as NativePlanarViewport).getViewReference?.()?.viewPlaneNormal as
-      | CoreTypes.Point3
-      | undefined;
+    return getViewportAdapter(viewport).getViewPlaneNormal();
   },
 
   centerOnMeasurement(): boolean {
@@ -122,17 +117,23 @@ export const nextViewportOperations: IViewportOperations = {
     );
     // Target the binding for params.displaySetInstanceUID so a PT/CT *fusion* W/L lands
     // on the intended layer (e.g. the PT overlay) instead of always the source (CT) —
-    // mirroring setColormap. When no id is given (single stack/volume) the bridge falls
+    // mirroring setColormap. When no id is given (single stack/volume) the adapter falls
     // back to the source binding.
-    setViewportProperties(viewport, { voiRange: { upper, lower } }, params.displaySetInstanceUID);
+    getViewportAdapter(viewport).setPresentation(
+      { voiRange: { upper, lower } },
+      params.displaySetInstanceUID
+    );
   },
 
   setColormap(viewport: CoreTypes.IViewport, params: ColormapParams): void {
     // Target the binding for params.displaySetInstanceUID. OHIF's dataId scheme maps a
     // display set 1:1 onto its native dataId (bare UID), so a PT/CT *fusion* colormap lands
     // on the overlay (PT) binding instead of defaulting to the source (CT). When no id is
-    // given (single-volume / plain stack colormap) the bridge falls back to the source.
-    setViewportProperties(viewport, { colormap: params.colormap }, params.displaySetInstanceUID);
+    // given (single-volume / plain stack colormap) the adapter falls back to the source.
+    getViewportAdapter(viewport).setPresentation(
+      { colormap: params.colormap },
+      params.displaySetInstanceUID
+    );
   },
 
   setPreset(viewport: CoreTypes.IViewport, preset: string): void {

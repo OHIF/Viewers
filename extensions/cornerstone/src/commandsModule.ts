@@ -32,7 +32,7 @@ import {
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 // Sanctioned flag read: RTSTRUCT contour hydration pins the referenced image to
 // stack mode on the native ("next") path, a decision made before a target viewport exists.
-import { isNextViewportsEnabled } from './utils/nextViewports';
+import { getHydrationViewportTypeForModality } from './utils/nextViewportPolicies';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -44,6 +44,7 @@ import {
   isVolumeViewportType,
 } from './utils/getLegacyViewportType';
 import { viewportOperations as ops } from './services/ViewportService/backends/viewportOperations';
+import { getViewportAdapter } from './services/ViewportService/adapter';
 import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
@@ -370,15 +371,9 @@ function commandsModule({
         const results = commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
-          // RTSTRUCT contours render correctly on a native ("next") stack/vtkImage
-          // viewport and scroll fast, so keep the referenced image in stack mode on
-          // hydrate rather than promoting it to a volume slice. (Without this, the
-          // re-mount resolves to a volume viewport, which the perf AC forbids.)
-          // Scoped to RTSTRUCT + next viewports; SEG and legacy keep current behavior.
-          viewportType:
-            displaySet.Modality === 'RTSTRUCT' && isNextViewportsEnabled()
-              ? 'stack'
-              : undefined,
+          // RTSTRUCT-on-next pins the referenced image to stack mode on hydrate;
+          // see the policy's rationale in utils/nextViewportPolicies.
+          viewportType: getHydrationViewportTypeForModality(displaySet.Modality),
         });
 
         const disableEditing = customizationService.getCustomization(
@@ -2058,7 +2053,11 @@ function commandsModule({
       }
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
-    loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs, viewportType }) => {
+    loadSegmentationDisplaySetsForViewport: ({
+      viewportId,
+      displaySetInstanceUIDs,
+      viewportType,
+    }) => {
       const updatedViewports = getUpdatedViewportsForSegmentation({
         viewportId,
         servicesManager,
@@ -2090,14 +2089,9 @@ function commandsModule({
     setViewportOrientation: ({ viewportId, orientation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      // Accept legacy ORTHOGRAPHIC viewports and native Generic ("next") viewports
-      // currently in volume mode. A native PLANAR_NEXT viewport renders MPR but
-      // reports type=planarNext, so the legacy type guard alone misses it; the
-      // content-mode capability guard catches it. Both expose setOrientation().
-      if (
-        !viewport ||
-        !(isOrthographicViewportType(viewport) || csUtils.viewportIsInVolumeMode(viewport))
-      ) {
+      // Accept any viewport already rendering volume content (legacy ORTHOGRAPHIC
+      // or a native viewport in volume mode) — both expose setOrientation().
+      if (!viewport || !getViewportAdapter(viewport).canReorientInPlace()) {
         console.warn('Orientation can only be set on volume viewports');
         return;
       }

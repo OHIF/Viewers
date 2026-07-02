@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
-import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
+import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
@@ -9,6 +9,8 @@ import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { getViewportAdapter } from '../../services/ViewportService/adapter';
+import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 
 import './CustomizableViewportOverlay.css';
 import { useViewportRendering } from '../../hooks';
@@ -264,10 +266,7 @@ function getDisplaySets(viewportData, displaySetService) {
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
   let instanceNumber;
 
-  // Native ("next") viewports collapse stack/volume onto a single PLANAR_NEXT
-  // viewportType, so switch on the persisted stack/volume data shape instead
-  // (falling back to viewportType for legacy viewportData).
-  switch (viewportData.dataShapeType ?? viewportData.viewportType) {
+  switch (getViewportDataShapeType(viewportData)) {
     case Enums.ViewportType.STACK:
       instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
       break;
@@ -334,11 +333,7 @@ function _getInstanceNumberFromVolume(
     return;
   }
 
-  // Native ("next") viewports expose no getCamera; read the current view-plane
-  // normal from the view reference instead (legacy viewports use getCamera).
-  const viewPlaneNormal = utilities.isGenericViewport(cornerstoneViewport)
-    ? cornerstoneViewport.getViewReference?.()?.viewPlaneNormal
-    : cornerstoneViewport.getCamera().viewPlaneNormal;
+  const viewPlaneNormal = getViewportAdapter(cornerstoneViewport).getViewPlaneNormal();
 
   if (!viewPlaneNormal) {
     return;

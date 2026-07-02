@@ -1,16 +1,10 @@
 import { utils } from '@ohif/core';
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
-import { getEnabledElement, utilities as csUtils } from '@cornerstonejs/core';
+import { getEnabledElement } from '@cornerstonejs/core';
 import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
-import { isStackViewportType, isVolumeViewportType } from './getLegacyViewportType';
-import {
-  getViewportProperties,
-  setViewportProperties,
-  getViewportCameraState,
-  setViewportCameraState,
-} from './getViewportPresentation';
+import { getViewportAdapter } from '../services/ViewportService/adapter';
 import { useSystem } from '@ohif/core/src';
 
 const { downloadUrl } = utils;
@@ -127,67 +121,10 @@ const CornerstoneViewportDownloadForm = ({
     try {
       // Capture current viewport state. The download (capture) viewport is created
       // with the SAME type as the source (see handleEnableViewport), so source and
-      // capture are both legacy or both native.
-      const viewRef = viewport.getViewReference?.();
-
-      if (csUtils.isGenericViewport(viewport)) {
-        // Native ("next") capture: the source's dataId is already registered in the
-        // global GenericViewport metadata provider, so re-mount it on the capture
-        // viewport by id, then copy per-binding presentation + view state. The native
-        // classes have no setStack/setVolumes/setProperties/setViewPresentation.
-        const sourceDataId = (
-          viewport as unknown as { getSourceDataId?: () => string | undefined }
-        ).getSourceDataId?.();
-
-        if (sourceDataId) {
-          const { orientation } = getViewportCameraState(viewport);
-          await (
-            downloadViewport as unknown as { setDisplaySets: (args: unknown) => Promise<void> }
-          ).setDisplaySets({
-            displaySetId: sourceDataId,
-            options: { orientation, role: 'source' },
-          });
-
-          const captureDataId =
-            (downloadViewport as unknown as { getSourceDataId?: () => string | undefined })
-              .getSourceDataId?.() ?? sourceDataId;
-          setViewportProperties(
-            downloadViewport,
-            getViewportProperties(viewport, sourceDataId),
-            captureDataId
-          );
-        }
-
-        // Slice/orientation via the view reference, then pan/zoom/rotate/flip via view state.
-        if (viewRef && downloadViewport.setViewReference) {
-          downloadViewport.setViewReference(viewRef);
-        }
-        setViewportCameraState(downloadViewport, getViewportCameraState(viewport));
-      } else {
-        // Legacy capture (byte-identical to the original path).
-        // - properties: VOI, colormap, interpolation, etc.
-        // - viewPresentation: flip/rotate/zoom presentation state (preserves flip/rotate)
-        const properties = viewport.getProperties();
-        const viewPresentation = viewport.getViewPresentation?.();
-
-        if (isStackViewportType(downloadViewport)) {
-          const imageId = viewport.getCurrentImageId();
-          await downloadViewport.setStack([imageId]);
-        } else if (isVolumeViewportType(downloadViewport)) {
-          const volumeIds = viewport.getAllVolumeIds();
-          await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
-        }
-
-        if (viewPresentation && downloadViewport.setViewPresentation) {
-          downloadViewport.setViewPresentation(viewPresentation);
-        }
-
-        downloadViewport.setProperties(properties);
-
-        if (viewRef && downloadViewport.setViewReference) {
-          downloadViewport.setViewReference(viewRef);
-        }
-      }
+      // capture are both legacy or both native, and the source's adapter can mount
+      // its displayed content (data + appearance + view state) onto the capture
+      // viewport directly.
+      await getViewportAdapter(viewport).copyDisplayedContentTo(downloadViewport);
 
       downloadViewport.render();
 

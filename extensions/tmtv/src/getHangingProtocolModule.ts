@@ -1,4 +1,4 @@
-import { isNextViewportsEnabled } from '@ohif/extension-cornerstone';
+import { isNextViewportsEnabled, NEXT_FUSION_PT_OPACITY } from '@ohif/extension-cornerstone';
 import {
   ctAXIAL,
   ctCORONAL,
@@ -11,12 +11,6 @@ import {
   ptCORONAL,
   ptSAGITTAL,
 } from './utils/hpViewports';
-
-// Initial PT opacity for the fusion viewports on the native ("next") path. Legacy
-// (in hpViewports) uses a per-value opacity ramp; native needs a single flat scalar
-// (it applies a ramp literally, which would keep the background transparent), so the
-// native path replaces the ramp with this lower, more CT-weighted starting blend.
-const NEXT_FUSION_PT_OPACITY = 0.4;
 
 /**
  * represents a 3x4 viewport layout configuration. The layout displays CT axial, sagittal, and coronal

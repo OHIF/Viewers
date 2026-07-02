@@ -6,6 +6,7 @@ import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
 import { useViewportRendering } from '../../hooks';
+import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
 function ViewportOrientationMarkers({
@@ -48,8 +49,7 @@ function ViewportOrientationMarkers({
 
     // Use the persisted data shape, not viewportType: a native stack reports
     // PLANAR_NEXT, which would skip this synthetic-IOP default-cosine guard.
-    const dataShapeType = viewportData.dataShapeType ?? viewportData.viewportType;
-    if (dataShapeType === Enums.ViewportType.STACK) {
+    if (getViewportDataShapeType(viewportData) === Enums.ViewportType.STACK) {
       const imageIndex = imageSliceData.imageIndex;
       const imageId = viewportData.data[0].imageIds?.[imageIndex];
 

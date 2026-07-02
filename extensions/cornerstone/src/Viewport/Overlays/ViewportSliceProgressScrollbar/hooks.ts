@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  cache as cornerstoneCache,
-  Enums,
-  eventTarget,
-  utilities,
-} from '@cornerstonejs/core';
+import { cache as cornerstoneCache, Enums, eventTarget, utilities } from '@cornerstonejs/core';
 import { useByteArray } from '@ohif/ui-next';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
+import { getSliceEventName, getViewportSliceCount } from '../../../utils/viewportDataShape';
 import { getImageIdFromCacheEvent, getImageIndexFromEvent, isProgressFullMode } from './helpers';
 import { ImageSliceData, ViewportData } from './types';
 
@@ -97,14 +93,6 @@ export function useViewportSliceSync({
       return;
     }
 
-    // Native Generic ("next") viewports report viewportType=planarNext regardless
-    // of content, so resolve stack-vs-volume from the bound data shape (imageIds =
-    // stack, volume/volumeId = volume). This is known immediately when the effect
-    // runs, unlike a runtime getNumberOfSlices read which can be premature while
-    // the native viewport is still binding its data.
-    const firstData = Array.isArray(viewportData.data) ? viewportData.data[0] : viewportData.data;
-    const isVolumeData = !!(firstData && (firstData.volume || firstData.volumeId));
-
     // Last values we pushed, so re-seeding on camera changes does not churn React
     // state on pure pan/zoom (which keep the slice geometry unchanged).
     const lastSlice = { imageIndex: -1, numberOfSlices: -1 };
@@ -127,10 +115,7 @@ export function useViewportSliceSync({
       }
       try {
         const currentImageIndex = viewport.getCurrentImageIdIndex();
-        // For an image stack the slice count is known from the bound data; only
-        // fall back to the viewport for volume/MPR (count depends on orientation).
-        const currentNumberOfSlices =
-          (!isVolumeData && firstData?.imageIds?.length) || viewport.getNumberOfSlices();
+        const currentNumberOfSlices = getViewportSliceCount(viewportData, viewport);
 
         pushSliceData(currentImageIndex, currentNumberOfSlices);
       } catch (error) {
@@ -149,13 +134,7 @@ export function useViewportSliceSync({
     // no-op when nothing changed (no churn/flicker).
     const reseedRaf = requestAnimationFrame(syncFromViewport);
 
-    const { viewportType } = viewportData;
-    const eventId =
-      (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_NEW_IMAGE) ||
-      (viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE) ||
-      (isVolumeData && Enums.Events.VOLUME_NEW_IMAGE) ||
-      (firstData?.imageIds && Enums.Events.STACK_NEW_IMAGE) ||
-      Enums.Events.IMAGE_RENDERED;
+    const eventId = getSliceEventName(viewportData);
 
     const updateIndex = event => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);

@@ -5,11 +5,58 @@ import type {
   PositionPresentation,
   LutPresentation,
 } from '../../../types/Presentation';
-import type {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../../types/CornerstoneCacheService';
+import type { StackViewportData, VolumeViewportData } from '../../../types/CornerstoneCacheService';
 import type { DataIdPayload } from './dataIdRegistry';
+
+/** A pending overlay (SEG/RTSTRUCT) add produced by the service's prelude. */
+export type OverlayMountTask = {
+  imageIds?: string[];
+  addOverlayFn?: () => Promise<void>;
+};
+
+/**
+ * Everything the service's lane-agnostic stack-mount prelude computes: the
+ * backend receives it ready-made and performs only the lane-specific mount.
+ */
+export interface StackMountContext {
+  /** All display set UIDs bound to the viewport (first = the stack source). */
+  displaySetInstanceUIDs: string[];
+  imageIds: string[];
+  /** Resolved initial slice (position presentation / view reference / HP options). */
+  initialImageIndex: number;
+  /** VOI/invert/colormap seeded from the LUT presentation or display set options. */
+  properties: Record<string, unknown>;
+  displayArea?: unknown;
+  rotation?: number;
+  flipHorizontal?: boolean;
+  presentations: Presentations;
+  viewportInfo: ViewportInfo;
+  overlayProcessingResults?: OverlayMountTask[];
+}
+
+/**
+ * Everything the service's lane-agnostic volume-mount prelude computes before
+ * the lane fork in setVolumesForViewport.
+ */
+export interface VolumeMountContext {
+  /** Volume inputs with their display set options, overlays already filtered out. */
+  filteredVolumeInputArray: Array<{
+    volumeInput: {
+      imageIds?: string[];
+      volumeId: string;
+      displaySetInstanceUID: string;
+      blendMode?: unknown;
+      slabThickness?: number;
+      [key: string]: unknown;
+    };
+    displaySetOptions: unknown;
+  }>;
+  /** Per-volume VOI/invert/colormap/preset derived from the display set options. */
+  volumesProperties: Array<{ properties: Record<string, unknown>; volumeId: string }>;
+  viewportInfo: ViewportInfo;
+  overlayProcessingResults?: OverlayMountTask[];
+  presentations: Presentations;
+}
 
 /**
  * Selects how OHIF drives cornerstone viewports (migration plan §4.3). One
@@ -21,8 +68,11 @@ import type { DataIdPayload } from './dataIdRegistry';
  *   - NextViewportBackend: the native GenericViewport ("next") path.
  *
  * The service holds exactly one backend for its lifetime and routes the forked
- * concerns (mount dispatch, native dataId lifecycle) through it. The flag is read
- * only here and in getCornerstoneViewportType (the two sanctioned reads, §4.2).
+ * concerns through it: mount dispatch, the per-family MOUNT BODIES
+ * (mountStack/mountVolumes/mountEcg/mountOther/remount), presentation
+ * capture/restore, and the native dataId lifecycle. The service keeps only the
+ * lane-agnostic preludes (option/property derivation, bookkeeping, events) and
+ * the genuinely shared volume tail; it contains no per-lane branches itself.
  */
 export interface IViewportBackend {
   /**
@@ -36,6 +86,64 @@ export interface IViewportBackend {
     viewportInfo: ViewportInfo,
     presentations?: Presentations
   ): Promise<void>;
+
+  /**
+   * Mounts an image stack. Legacy: setStack/setProperties/setPresentations +
+   * displayArea/rotation/flip via the camera surface. Next: register the dataId,
+   * setDisplaySets, seed VOI from metadata, apply presentation + view state.
+   */
+  mountStack(viewport: Types.IStackViewport, context: StackMountContext): Promise<void>;
+
+  /**
+   * Lane-specific volume mount. Next mounts the volumes natively (registered
+   * dataIds + one setDisplaySets call + per-binding presentations) and returns
+   * true — the service then only broadcasts. Legacy returns false, and the
+   * service runs the shared volume tail (setVolumes/addVolumes optimization,
+   * property application, presentations, jumpToSlice), which a native
+   * overlay-only mount also traverses safely.
+   */
+  mountVolumes(viewport: Types.IViewport, context: VolumeMountContext): Promise<boolean>;
+
+  /**
+   * The shared volume tail's overlay-only fallback: when every volume input is
+   * an overlay display set, legacy still mounts them via setVolumes; next
+   * no-ops (its overlays are added via the segmentation representations).
+   */
+  mountOverlayOnlyVolumes(viewport: Types.IViewport, volumeInputArray: unknown[]): Promise<void>;
+
+  /**
+   * Mounts an ECG waveform. Legacy: viewport.setEcg(imageId). Next: register
+   * the display set's dataId and mount through the generic setDisplaySets API.
+   */
+  mountEcg(
+    viewport: Types.IECGViewport,
+    displaySet: { displaySetInstanceUID: string; imageIds?: string[] },
+    imageId: string
+  ): Promise<void>;
+
+  /**
+   * Mounts video / whole-slide content (the caller applies the view reference
+   * afterwards). Legacy keys the displaySetId off imageIds[0]; next registers
+   * the family-specific dataId first.
+   */
+  mountOther(
+    viewport: Types.IViewport,
+    displaySet: { displaySetInstanceUID: string; imageIds: string[] }
+  ): Promise<void>;
+
+  /**
+   * Re-mounts changed viewport data onto an existing viewport (updateViewport),
+   * optionally restoring the camera afterwards. Legacy snapshots getCamera and
+   * dispatches by runtime type; next snapshots the semantic view state and
+   * routes through dispatchMount. May return undefined when the viewport family
+   * has no re-mount path (matching the historical legacy behavior).
+   */
+  remount(
+    viewport: Types.IViewport,
+    viewportData: StackViewportData | VolumeViewportData,
+    viewportInfo: ViewportInfo,
+    keepCamera: boolean
+  ): Promise<void> | undefined;
 
   /**
    * Reads the position presentation (camera/zoom/pan + view reference) to persist

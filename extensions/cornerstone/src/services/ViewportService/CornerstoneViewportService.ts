@@ -7,9 +7,7 @@ import {
   getRenderingEngine,
   utilities as csUtils,
   cache,
-  metaData,
   Enums as csEnums,
-  CONSTANTS as csConstants,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -36,15 +34,10 @@ import { usePositionPresentationStore } from '../../stores/usePositionPresentati
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
-import {
-  getViewportProperties,
-  getViewportCameraState,
-  setViewportCameraState,
-} from '../../utils/getViewportPresentation';
+import { getViewportAdapter } from './adapter';
 import { viewportOperations } from './backends/viewportOperations';
 import {
   getLegacyViewportType,
-  isStackViewportType,
   isVolume3DViewportType,
   isVolumeViewportType,
 } from '../../utils/getLegacyViewportType';
@@ -160,7 +153,7 @@ class CornerstoneViewportService
   }
 
   /**
-   * Sanctioned flag read #2 (the only other is getCornerstoneViewportType): pick
+   * Sanctioned flag read (the exhaustive list lives in backends/README.md): pick
    * the viewport backend once, on first use. Resolved lazily (not in the
    * constructor) because the service singleton is constructed during extension
    * registration, BEFORE init.tsx runs setNextViewportsEnabled — the first mount
@@ -313,6 +306,12 @@ class CornerstoneViewportService
    * @param presentations - The presentations to apply to the viewport.
    * @param viewportInfo - Contains a view reference for immediate application
    */
+  // Public so the viewport backends (IViewportServiceInternals) can record which
+  // display sets a viewport shows from their mount bodies.
+  _trackViewportDisplaySets(viewportId: string, displaySetInstanceUIDs: string[]): void {
+    this.viewportsDisplaySets.set(viewportId, displaySetInstanceUIDs);
+  }
+
   public setPresentations(viewportId: string, presentations: Presentations): void {
     const viewport = this.getCornerstoneViewport(viewportId) as
       | Types.IStackViewport
@@ -449,7 +448,7 @@ class CornerstoneViewportService
 
     const properties = isVolumeViewportType(csViewport)
       ? new Map()
-      : cleanProperties(getViewportProperties(csViewport));
+      : cleanProperties(getViewportAdapter(csViewport).getPresentation());
 
     if (properties instanceof Map) {
       const volumeIds = (csViewport as Types.IBaseVolumeViewport).getAllVolumeIds();
@@ -881,22 +880,7 @@ class CornerstoneViewportService
       return;
     }
 
-    // Native ECG_NEXT has no setEcg; register the waveform under the display set's
-    // dataId and mount it through the generic setDisplaySets API (the native ECG data
-    // provider reads sourceDataId). Ref-counted via the backend registry (§4.7).
-    if (csUtils.isGenericViewport(viewport)) {
-      const dataId = displaySet.displaySetInstanceUID;
-      this.backend.registerDataId(viewport.id, dataId, { kind: 'ecg', sourceDataId: imageId });
-      this.viewportsDisplaySets.set(viewport.id, [dataId]);
-      await (
-        viewport as unknown as {
-          setDisplaySets: (args: { displaySetId: string }) => Promise<void>;
-        }
-      ).setDisplaySets({ displaySetId: dataId });
-      return;
-    }
-
-    return viewport.setEcg(imageId);
+    return this.backend.mountEcg(viewport, displaySet, imageId);
   }
 
   // Public so the viewport backends (IViewportServiceInternals) can dispatch to it.
@@ -908,43 +892,8 @@ class CornerstoneViewportService
   ): Promise<void> {
     const [displaySet] = viewportData.data;
 
-    // Native VIDEO_NEXT / WHOLE_SLIDE_NEXT: register the family-specific dataId, then
-    // mount through the generic setDisplaySets API. The native video data provider
-    // reads sourceDataId; the WSI provider reads imageIds + a DICOMweb client, which
-    // we resolve from the WADO_WEB_CLIENT metadata exactly as the legacy WSI adapter
-    // does. Ref-counted via the backend registry (§4.7).
-    if (csUtils.isGenericViewport(viewport)) {
-      const dataId = displaySet.displaySetInstanceUID;
-      const imageId = displaySet.imageIds[0];
-      const isWsi =
-        (viewport as { type?: string }).type === csEnums.ViewportType.WHOLE_SLIDE_NEXT;
-      const payload = isWsi
-        ? {
-            kind: 'wsi' as const,
-            imageIds: displaySet.imageIds,
-            options: {
-              webClient: metaData.get(csEnums.MetadataModules.WADO_WEB_CLIENT, imageId),
-            },
-          }
-        : { kind: 'video' as const, sourceDataId: imageId };
-      this.backend.registerDataId(viewport.id, dataId, payload);
-      this.viewportsDisplaySets.set(viewport.id, [dataId]);
-      await (
-        viewport as unknown as {
-          setDisplaySets: (args: { displaySetId: string }) => Promise<void>;
-        }
-      ).setDisplaySets({ displaySetId: dataId });
-      const viewReference = viewportInfo.getViewReference();
-      if (viewReference) {
-        viewport.setViewReference(viewReference);
-      }
-      return;
-    }
+    await this.backend.mountOther(viewport, displaySet);
 
-    // CS3D's "redo viewports" replaced setDataIds with the generic
-    // setDisplaySets({ displaySetId }) API; the legacy adapters key off
-    // imageIds[0] as the displaySetId, so do the same here.
-    await viewport.setDisplaySets({ displaySetId: displaySet.imageIds[0] });
     const viewReference = viewportInfo.getViewReference();
     if (viewReference) {
       viewport.setViewReference(viewReference);
@@ -1017,121 +966,20 @@ class CornerstoneViewportService
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    // Native Generic Viewport ("next") stack mount: register the display set and
-    // mount it with setDisplaySets (render path inferred from the data), then
-    // apply VOI/colormap via setDisplaySetPresentation and pan/zoom/rotate/flip/
-    // displayArea via setViewState — instead of the legacy setStack/setProperties/
-    // setCamera surface, which a direct PLANAR_NEXT viewport does not expose.
-    if (csUtils.isGenericViewport(viewport)) {
-      // Native stacks arrive as PLANAR_NEXT and bypass the legacy STACK-typed
-      // invalid-stack guard upstream, so guard empty/malformed stack data here
-      // before registering and indexing imageIds below.
-      if (!imageIds?.length) {
-        return;
-      }
-
-      const dataId = displaySetInstanceUIDs[0];
-
-      // Register through the backend's ref-counted registry (§4.7) instead of the
-      // raw provider.add, so the registration is released on unmount and shared
-      // (MPR) registrations are not double-added or prematurely removed.
-      this.backend.registerDataId(viewport.id, dataId, {
-        kind: 'planar',
-        imageIds,
-        initialImageIdIndex: initialImageIndexToUse,
-      });
-
-      await viewport.setDisplaySets({
-        displaySetId: dataId,
-        options: {
-          orientation: csEnums.OrientationAxis.ACQUISITION,
-          role: 'source',
-        },
-      });
-
-      // Native viewports are presentation-driven and do NOT auto-derive a default
-      // window/level from the image's DICOM VOI metadata the way legacy StackViewport
-      // does, so without this the image renders with a raw/full-range VOI (too dark).
-      // When no explicit VOI is provided, seed it from the voiLutModule metadata.
-      if (!properties.voiRange) {
-        const defaultVoi = this._getDefaultVoiRangeFromMetadata(
-          imageIds[initialImageIndexToUse] ?? imageIds[0]
-        );
-        if (defaultVoi) {
-          properties.voiRange = defaultVoi;
-        }
-      }
-
-      const presentationProps: Record<string, unknown> = {};
-      if (properties.voiRange) {
-        presentationProps.voiRange = properties.voiRange;
-      }
-      if (properties.invert !== undefined) {
-        presentationProps.invert = properties.invert;
-      }
-      if (properties.colormap) {
-        presentationProps.colormap = properties.colormap;
-      }
-      if (Object.keys(presentationProps).length > 0) {
-        viewport.setDisplaySetPresentation(presentationProps);
-      }
-
-      const viewStatePatch: Record<string, unknown> = {};
-      if (displayArea) {
-        viewStatePatch.displayArea = displayArea;
-      }
-      if (rotation) {
-        viewStatePatch.rotation = rotation;
-      }
-      if (flipHorizontal) {
-        viewStatePatch.flipHorizontal = true;
-      }
-      if (Object.keys(viewStatePatch).length > 0) {
-        viewport.setViewState(viewStatePatch);
-      }
-
-      // Enable stack-context prefetch for the native path. setDisplaySets above has
-      // already populated imageIds via genericViewportDisplaySetMetadataProvider, so
-      // getStackData returns a valid stack at enable() time. Scroll re-prefetch is
-      // driven by the native STACK_NEW_IMAGE event.
-      csToolsUtils.stackContextPrefetch.enable(viewport.element);
-
-      // Restore persisted pan/zoom/rotation/flip (+ view reference) on top of the
-      // HP-derived defaults applied above, so a returning display set recovers its
-      // camera presentation. The LUT was already applied inline above, so restore
-      // position + segmentation only. Replaying segmentationPresentation re-adds
-      // hydrated representations (RTSS contour / SEG labelmap) on this native re-mount;
-      // without it a hydrated overlay silently disappears (the contour-vanishes-on-
-      // hydrate bug), because the overlay display set is no longer in the viewport's
-      // display-set list after hydration. Native-safe: position via setViewReference/
-      // setViewState, and the replayed addSegmentationRepresentation routes through the
-      // native segmentation backend (no convertStackToVolumeViewport / getViewPresentation).
-      if (presentations?.positionPresentation || presentations?.segmentationPresentation) {
-        this.setPresentations(viewport.id, {
-          positionPresentation: presentations.positionPresentation,
-          segmentationPresentation: presentations.segmentationPresentation,
-        });
-      }
-
-      await this._addOverlayRepresentations(overlayProcessingResults);
-      return;
-    }
-
-    await viewport.setStack(imageIds, initialImageIndexToUse);
-    viewport.setProperties({ ...properties });
-    this.setPresentations(viewport.id, presentations, viewportInfo);
-
-    await this._addOverlayRepresentations(overlayProcessingResults);
-
-    if (displayArea) {
-      viewport.setDisplayArea(displayArea);
-    }
-    if (rotation) {
-      viewport.setProperties({ rotation });
-    }
-    if (flipHorizontal) {
-      viewport.setCamera({ flipHorizontal: true });
-    }
+    // The lane-specific mount (legacy setStack/setProperties vs native
+    // setDisplaySets/setDisplaySetPresentation/setViewState) lives in the backend.
+    return this.backend.mountStack(viewport, {
+      displaySetInstanceUIDs,
+      imageIds,
+      initialImageIndex: initialImageIndexToUse,
+      properties,
+      displayArea,
+      rotation,
+      flipHorizontal,
+      presentations,
+      viewportInfo,
+      overlayProcessingResults,
+    });
   }
 
   private _getInitialImageIndexForViewport(
@@ -1331,31 +1179,19 @@ class CornerstoneViewportService
     // For SEG and RT viewports
     const overlayProcessingResults = this._processExtraDisplaySetsForViewport(viewport) || [];
 
-    // Native Generic ("next") volume/MPR mount: a direct PLANAR_NEXT viewport
-    // renders a volume by registering the dataset (with the already-cached
-    // volumeId) and calling setDisplaySets with the requested orientation;
-    // cornerstone selects the image vs reformatted-volume render path from that
-    // orientation. This replaces the legacy setVolumes/setProperties/
-    // setPresentations surface, which a direct PLANAR_NEXT viewport does not expose.
-    if (csUtils.isGenericViewport(viewport) && filteredVolumeInputArray.length) {
-      await this._setNativeVolumeDisplaySets(
-        viewport as unknown as Types.IViewport,
-        filteredVolumeInputArray,
-        volumesProperties,
-        viewportInfo,
-        overlayProcessingResults
-      );
-      // Restore persisted pan/zoom/rotation/flip (+ view reference) so a returning
-      // MPR/volume pane recovers its camera; LUT was applied per-binding above. Also
-      // replay segmentationPresentation so hydrated overlays (SEG labelmap / RTSS
-      // contour) reappear on this native re-mount instead of vanishing. Native-safe:
-      // position via setViewReference/setViewState, segmentation via the native backend.
-      if (presentations?.positionPresentation || presentations?.segmentationPresentation) {
-        this.setPresentations(viewport.id, {
-          positionPresentation: presentations.positionPresentation,
-          segmentationPresentation: presentations.segmentationPresentation,
-        });
-      }
+    // Lane-specific volume mount: the native backend mounts registered dataIds via
+    // setDisplaySets + per-binding presentations and reports the mount handled;
+    // legacy reports unhandled and runs the shared setVolumes tail below (which a
+    // native overlay-only mount also traverses — its legacy-surface steps are
+    // lane-guarded via mountOverlayOnlyVolumes).
+    const handledByBackend = await this.backend.mountVolumes(viewport, {
+      filteredVolumeInputArray,
+      volumesProperties,
+      viewportInfo,
+      overlayProcessingResults,
+      presentations,
+    });
+    if (handledByBackend) {
       this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, { viewportInfo });
       return;
     }
@@ -1423,12 +1259,11 @@ class CornerstoneViewportService
       } else {
         await viewport.setVolumes(baseVolumeInputs);
       }
-    } else if (volumeInputArray.length && !csUtils.isGenericViewport(viewport)) {
-      // Generic ("next") viewports don't expose the legacy setVolumes surface. A
-      // generic overlay-only mount (no base volume) skips the native block above
-      // (gated on filteredVolumeInputArray.length) and must not fall through to
-      // setVolumes here; its overlays are added via _addOverlayRepresentations below.
-      await viewport.setVolumes(volumeInputArray);
+    } else if (volumeInputArray.length) {
+      // Every volume input is an overlay display set. Legacy still mounts them via
+      // setVolumes; the native backend no-ops (its overlays are added via
+      // _addOverlayRepresentations below).
+      await this.backend.mountOverlayOnlyVolumes(viewport, volumeInputArray);
     }
 
     await this._addOverlayRepresentations(overlayProcessingResults);
@@ -1459,160 +1294,6 @@ class CornerstoneViewportService
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
     });
-  }
-
-  /**
-   * Derives a default VOI window/level range from an image's DICOM voiLutModule
-   * metadata (first WindowCenter/WindowWidth pair). Used to seed native viewport
-   * windowing, which (unlike legacy StackViewport) is not auto-applied from
-   * metadata. Returns undefined when the metadata has no usable window.
-   */
-  private _getDefaultVoiRangeFromMetadata(
-    imageId: string
-  ): { lower: number; upper: number } | undefined {
-    if (!imageId) {
-      return;
-    }
-    const voiLut = metaData.get('voiLutModule', imageId);
-    const wc = Array.isArray(voiLut?.windowCenter) ? voiLut.windowCenter[0] : voiLut?.windowCenter;
-    const ww = Array.isArray(voiLut?.windowWidth) ? voiLut.windowWidth[0] : voiLut?.windowWidth;
-    if (wc == null || ww == null) {
-      return;
-    }
-    return csUtils.windowLevel.toLowHighRange(ww, wc);
-  }
-
-  /**
-   * Mounts one or more volumes on a native Generic ("next") viewport for
-   * volume/MPR rendering. Each base volume is registered with its already-cached
-   * volumeId and bound via setDisplaySets at the viewport's requested orientation;
-   * the first base volume is the source binding, any others are overlays (fusion).
-   * VOI/colormap/invert are applied per-binding via setDisplaySetPresentation.
-   *
-   * Legacy presentation restore (setPresentations) and jumpToSlice are intentionally
-   * not applied on the native path yet (a later increment), as they call the legacy
-   * camera/properties surface a direct PLANAR_NEXT viewport does not expose.
-   */
-  private async _setNativeVolumeDisplaySets(
-    viewport: Types.IViewport,
-    filteredVolumeInputArray: Array<{ volumeInput; displaySetOptions }>,
-    volumesProperties: Array<{ properties: ViewportProperties; volumeId: string }>,
-    viewportInfo: ViewportInfo,
-    overlayProcessingResults
-  ): Promise<void> {
-    const orientation = viewportInfo.getOrientation();
-    // A native VOLUME_3D_NEXT viewport renders the volume as a 3D VTK volume
-    // (renderMode 'vtkVolume3d'), not a reformatted planar slice; its appearance is
-    // driven by a volume-rendering preset, not orientation/role.
-    const is3D =
-      (viewport as { type?: string }).type === csEnums.ViewportType.VOLUME_3D_NEXT;
-    const nativeViewport = viewport as unknown as {
-      setDisplaySets: (
-        ...entries: Array<{ displaySetId: string; options: Record<string, unknown> }>
-      ) => Promise<void>;
-      setDisplaySetPresentation: (dataId: string, props: Record<string, unknown>) => void;
-      getDefaultActor?: () => { actor?: unknown } | undefined;
-      render: () => void;
-    };
-    const displaySetInstanceUIDs: string[] = [];
-    const setDisplaySetsEntries: Array<{
-      displaySetId: string;
-      options: Record<string, unknown>;
-    }> = [];
-
-    // First pass: register each dataId and build the COMPLETE entry set. The native
-    // PlanarViewport.setDisplaySets has replace semantics (removeReplaceableData), so
-    // it must receive ALL entries in ONE call - the first entry (role 'source')
-    // resolves the source binding and the rest are overlays. Calling it once per
-    // volume instead drops the previously-set source (e.g. the fusion CT): the next
-    // single-entry overlay call (PT) finds no source entry, falls back to entries[0]
-    // (= PT), and removeReplaceableData tears down CT - leaving only the PT colormap.
-    for (const [index, { volumeInput }] of filteredVolumeInputArray.entries()) {
-      const { imageIds, volumeId, displaySetInstanceUID } = volumeInput;
-      const dataId = displaySetInstanceUID;
-      displaySetInstanceUIDs.push(dataId);
-
-      // Ref-counted registration (§4.7): the MPR triptych shares one dataId across
-      // panes, so register() adds to the provider once and release() removes only
-      // when the last pane unmounts. (kind is stored but ignored by the volume3d
-      // data provider, which reads imageIds/volumeId.)
-      this.backend.registerDataId(viewport.id, dataId, {
-        kind: 'planar',
-        imageIds,
-        volumeId,
-      });
-
-      setDisplaySetsEntries.push({
-        displaySetId: dataId,
-        options: is3D
-          ? { renderMode: 'vtkVolume3d' }
-          : {
-              orientation,
-              role: index === 0 ? 'source' : 'overlay',
-            },
-      });
-    }
-
-    // Single replace call with the full entry set so the source (CT) is resolved
-    // and preserved instead of being torn down by per-volume calls.
-    await nativeViewport.setDisplaySets(...setDisplaySetsEntries);
-
-    // Second pass: per-dataId presentations and the 3D preset.
-    for (const [index, { volumeInput }] of filteredVolumeInputArray.entries()) {
-      const dataId = volumeInput.displaySetInstanceUID;
-      const props = volumesProperties[index]?.properties;
-      if (props) {
-        const presentationProps: Record<string, unknown> = {};
-        if (props.voiRange) {
-          presentationProps.voiRange = props.voiRange;
-        }
-        if (props.invert !== undefined) {
-          presentationProps.invert = props.invert;
-        }
-        // colormap is a planar (LUT) concept; 3D appearance comes from the preset.
-        if (props.colormap && !is3D) {
-          presentationProps.colormap = props.colormap;
-        }
-        // Slab/blend for projection viewports (e.g. the TMTV MIP pane: blendMode
-        // 'MIP' + slabThickness 'fullVolume'). The native volume-slice render path
-        // maps blendMode -> reslice SlabType (MAX/MIN/MEAN) and applies the slab
-        // thickness on the reslice mapper; without them the mapper renders a single
-        // slice instead of a projection. 3D volume rendering derives its look from
-        // the preset, not a slab, so this is planar-only. blendMode was already
-        // normalized from the HP string ('MIP') to a BlendModes enum by
-        // ViewportInfo.mapDisplaySetOptions, and slabThickness was resolved to a
-        // number by _getSlabThickness ('fullVolume' -> volume diagonal).
-        if (!is3D && volumeInput.blendMode !== undefined) {
-          presentationProps.blendMode = volumeInput.blendMode;
-        }
-        if (!is3D && volumeInput.slabThickness !== undefined) {
-          presentationProps.slabThickness = volumeInput.slabThickness;
-        }
-        if (Object.keys(presentationProps).length > 0) {
-          nativeViewport.setDisplaySetPresentation(dataId, presentationProps);
-        }
-      }
-
-      // 3D volume rendering needs an RGBA transfer function (preset) to be visible;
-      // the bare native VolumeViewport3D has no setProperties, so apply the preset to
-      // the volume actor directly (mirrors the legacy adapter's applyPresetToBinding).
-      if (is3D && index === 0 && props?.preset) {
-        const preset = csConstants.VIEWPORT_PRESETS?.find(p => p.name === props.preset);
-        const actor = nativeViewport.getDefaultActor?.()?.actor;
-        if (preset && actor) {
-          csUtils.applyPreset(actor as Parameters<typeof csUtils.applyPreset>[0], preset);
-        }
-      }
-    }
-
-    // Do NOT overwrite viewportsDisplaySets here. The caller (_setVolumeViewport)
-    // already populated it with the COMPLETE set (base volumes + SEG/RT/fusion
-    // overlays) before this native mount; writing back the base-volume-only ids
-    // would drop the overlay UIDs from getViewportDisplaySets() and the later
-    // presentation/hydration flows.
-
-    await this._addOverlayRepresentations(overlayProcessingResults);
-    nativeViewport.render();
   }
 
   private _processExtraDisplaySetsForViewport(
@@ -1683,7 +1364,9 @@ class CornerstoneViewportService
     return segmentationRepresentationPromise;
   }
 
-  private async _addOverlayRepresentations(
+  // Public so the viewport backends (IViewportServiceInternals) can run the
+  // pending overlay adds from their mount bodies.
+  async _addOverlayRepresentations(
     overlayProcessingResults?: Array<{ addOverlayFn?: () => Promise<void> }>
   ): Promise<void> {
     if (!overlayProcessingResults?.length) {
@@ -1702,37 +1385,14 @@ class CornerstoneViewportService
     const viewportInfo = this.getViewportInfo(viewportId);
     const viewport = this.getCornerstoneViewport(viewportId);
 
-    let displaySetPromise;
-
-    if (csUtils.isGenericViewport(viewport)) {
-      // Native PLANAR_NEXT: no getCamera/setCamera. Snapshot/restore the camera via
-      // the semantic view state, and route the re-mount through the backend (it
-      // dispatches by data shape, since native stack and volume both report PLANAR_NEXT).
-      const viewState = keepCamera ? getViewportCameraState(viewport) : undefined;
-      displaySetPromise = this._setDisplaySets(viewport, viewportData, viewportInfo).then(() => {
-        if (keepCamera && viewState) {
-          setViewportCameraState(viewport, viewState);
-          viewport.render();
-        }
-      });
-    } else {
-      const viewportCamera = viewport.getCamera();
-
-      if (isVolumeViewportType(viewport)) {
-        displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(
-          () => {
-            if (keepCamera) {
-              viewport.setCamera(viewportCamera);
-              viewport.render();
-            }
-          }
-        );
-      }
-
-      if (isStackViewportType(viewport)) {
-        displaySetPromise = this._setStackViewport(viewport, viewportData, viewportInfo);
-      }
-    }
+    // The camera snapshot/restore surface is forked per lane (legacy
+    // getCamera/setCamera vs native view state), so the backend owns the re-mount.
+    const displaySetPromise = this.backend.remount(
+      viewport,
+      viewportData,
+      viewportInfo,
+      keepCamera
+    );
 
     displaySetPromise.then(() => {
       this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {

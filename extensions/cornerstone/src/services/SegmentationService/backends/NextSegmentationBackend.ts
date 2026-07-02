@@ -18,7 +18,7 @@ const {
 /**
  * Native GenericViewport ("next") segmentation backend. Selected when the target
  * viewport is a native generic viewport (raw PlanarViewport;
- * `csUtils.isGenericViewport(viewport)` is true).
+ * `isNextViewport(viewport)` is true).
  *
  * The keystone of the native migration: a native PlanarViewport renders a labelmap
  * IN PLACE — cornerstone's `resolveLabelmapRenderPlan` picks `legacy-stack-image`

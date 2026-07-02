@@ -1,10 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
 import i18n from '@ohif/i18n';
-import {
-  getViewportProperties,
-  getViewportCameraState,
-} from './utils/getViewportPresentation';
-import { isVolumeRenderingViewport } from './utils/getLegacyViewportType';
+import { getViewportAdapter, isVolumeRenderingViewport } from './services/ViewportService/adapter';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -458,8 +454,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           mode === Enums.ToolModes.Enabled;
 
         const toolBindings = toolGroupService.getToolBindings(toolGroup.id, toolName);
-        const hasModifierKey =
-          toolBindings?.some(binding => binding.modifierKey != null) ?? false;
+        const hasModifierKey = toolBindings?.some(binding => binding.modifierKey != null) ?? false;
 
         return {
           disabled: false,
@@ -468,7 +463,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           icon:
             isToggled && hasModifierKey && toggledOnIcon
               ? toggledOnIcon
-              : defaultIcon ?? button.props.icon,
+              : (defaultIcon ?? button.props.icon),
         };
       },
     },
@@ -552,8 +547,9 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         const propId = button.id;
 
-        const properties = getViewportProperties(viewport);
-        const camera = getViewportCameraState(viewport);
+        const adapter = getViewportAdapter(viewport);
+        const properties = adapter.getPresentation();
+        const camera = adapter.getViewState();
 
         const prop = camera?.[propId] || properties?.[propId];
 

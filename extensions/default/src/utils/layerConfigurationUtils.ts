@@ -1,18 +1,9 @@
-import { utilities as csUtils } from '@cornerstonejs/core';
+import { isNextViewport, NEXT_OVERLAY_OPACITY } from '@ohif/extension-cornerstone';
 
 export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 export const DEFAULT_COLORMAP = 'hsv';
 export const DEFAULT_OPACITY = 0.9;
 export const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
-
-// Native ("next"/PLANAR_NEXT) viewports composite a data overlay as a 2D image
-// slice with a flat alpha blend and no volume ray-cast opacity attenuation. The
-// legacy nominal overlay opacity (0.9) renders at ~40% effective through the
-// volume ray-cast path, but reads ~80-90% on the native path. Override the
-// initial overlay opacity to the legacy-equivalent effective value for next
-// viewports. Mirrors NEXT_FUSION_PT_OPACITY in the TMTV fusion hanging protocol
-// (extensions/tmtv/src/getHangingProtocolModule.ts).
-const NEXT_OVERLAY_OPACITY = 0.4;
 
 /**
  * Get modality-specific color and opacity settings from the customization service
@@ -105,9 +96,9 @@ export function configureViewportForLayerAddition(params: {
   }
 
   // Native ("next") viewports need the legacy-equivalent initial overlay opacity
-  // (see NEXT_OVERLAY_OPACITY note above).
+  // (see the NEXT_OVERLAY_OPACITY policy in @ohif/extension-cornerstone).
   const liveCsViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  const isNextViewport = !!liveCsViewport && csUtils.isGenericViewport(liveCsViewport);
+  const isLiveViewportNext = !!liveCsViewport && isNextViewport(liveCsViewport);
 
   // create same amount of display set options as the number of display set UIDs
   const displaySetOptions = allDisplaySetInstanceUIDs.map((uid, index) => {
@@ -128,7 +119,7 @@ export function configureViewportForLayerAddition(params: {
       customizationService
     );
 
-    if (isNextViewport && typeof overlayOptions.colormap?.opacity === 'number') {
+    if (isLiveViewportNext && typeof overlayOptions.colormap?.opacity === 'number') {
       overlayOptions.colormap.opacity = NEXT_OVERLAY_OPACITY;
     }
 

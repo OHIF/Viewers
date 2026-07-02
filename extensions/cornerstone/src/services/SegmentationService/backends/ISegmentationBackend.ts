@@ -47,11 +47,11 @@ export interface LabelmapAddClassification {
  *
  * DISPATCH (deliberately diverges from IViewportBackend): unlike the viewport
  * lifecycle backend, which is selected ONCE by the appConfig flag, the segmentation
- * twin is routed PER VIEWPORT via `csUtils.isGenericViewport(viewport)` (the same
+ * twin is routed PER VIEWPORT via `isNextViewport(viewport)` (the same
  * runtime predicate used by `viewportOperations`). A flag-on session can hold both
  * legacy and native viewports, and every viewport-bearing method already has an
  * already-resolved, self-describing viewport in hand, so per-viewport routing is the
- * runtime truth. `isGenericViewport` is true for the native raw PlanarViewport and
+ * runtime truth. `isNextViewport` is true for the native raw PlanarViewport and
  * false for legacy StackViewport/VolumeViewport.
  *
  * BOUNDARY: viewport (re)creation is NOT a segmentation concern. The Next twin never

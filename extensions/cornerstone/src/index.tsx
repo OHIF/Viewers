@@ -36,8 +36,18 @@ import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import { getViewportFocalPoint } from './utils/getViewportPresentation';
+import {
+  getViewportAdapter,
+  getViewportFocalPoint,
+  isNextViewport,
+  isVolumeRenderingViewport,
+} from './services/ViewportService/adapter';
 import { isNextViewportsEnabled } from './utils/nextViewports';
+import {
+  NEXT_FUSION_PT_OPACITY,
+  NEXT_OVERLAY_OPACITY,
+  getHydrationViewportTypeForModality,
+} from './utils/nextViewportPolicies';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
@@ -104,11 +114,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }: withAppTypes): void => {
+  onModeEnter: ({ servicesManager, commandsManager, extensionManager }: withAppTypes): void => {
     const { cornerstoneViewportService, toolbarService, segmentationService } =
       servicesManager.services;
 
@@ -154,7 +160,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
      */
     const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
     const config = sourceConfig.stackRetrieveOptions ?? {};
-    const stackOptions = update(DEFAULT_STACK_RETRIEVE_OPTIONS, toUpdateSpec(config)) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
+    const stackOptions = update(
+      DEFAULT_STACK_RETRIEVE_OPTIONS,
+      toUpdateSpec(config)
+    ) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
     imageRetrieveMetadataProvider.add('stack', stackOptions);
   },
   getPanelModule,
@@ -282,8 +291,14 @@ export {
   getEnabledElement,
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
+  getViewportAdapter,
   getViewportFocalPoint,
+  isNextViewport,
+  isVolumeRenderingViewport,
   isNextViewportsEnabled,
+  NEXT_FUSION_PT_OPACITY,
+  NEXT_OVERLAY_OPACITY,
+  getHydrationViewportTypeForModality,
   dicomLoaderService,
   // Export all stores
   useLutPresentationStore,

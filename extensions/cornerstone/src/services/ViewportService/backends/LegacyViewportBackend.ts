@@ -11,11 +11,8 @@ import type {
   PositionPresentation,
   LutPresentation,
 } from '../../../types/Presentation';
-import type {
-  StackViewportData,
-  VolumeViewportData,
-} from '../../../types/CornerstoneCacheService';
-import type { IViewportBackend } from './IViewportBackend';
+import type { StackViewportData, VolumeViewportData } from '../../../types/CornerstoneCacheService';
+import type { IViewportBackend, StackMountContext, VolumeMountContext } from './IViewportBackend';
 import type { IViewportServiceInternals } from './IViewportServiceInternals';
 
 // Mirrors WITH_ORIENTATION in CornerstoneViewportService (inlined to avoid a
@@ -70,6 +67,107 @@ export class LegacyViewportBackend implements IViewportBackend {
       viewportInfo,
       presentations
     );
+  }
+
+  async mountStack(viewport: Types.IStackViewport, context: StackMountContext): Promise<void> {
+    const {
+      imageIds,
+      initialImageIndex,
+      properties,
+      displayArea,
+      rotation,
+      flipHorizontal,
+      presentations,
+      overlayProcessingResults,
+    } = context;
+
+    await viewport.setStack(imageIds, initialImageIndex);
+    viewport.setProperties({ ...properties });
+    this.service.setPresentations(viewport.id, presentations);
+
+    await this.service._addOverlayRepresentations(overlayProcessingResults);
+
+    if (displayArea) {
+      viewport.setDisplayArea(displayArea as Types.DisplayArea);
+    }
+    if (rotation) {
+      viewport.setProperties({ rotation } as Parameters<typeof viewport.setProperties>[0]);
+    }
+    if (flipHorizontal) {
+      viewport.setCamera({ flipHorizontal: true });
+    }
+  }
+
+  async mountVolumes(): Promise<boolean> {
+    // Legacy volumes mount through the service's shared volume tail
+    // (setVolumes/addVolumes optimization, property application, presentations).
+    return false;
+  }
+
+  async mountOverlayOnlyVolumes(
+    viewport: Types.IViewport,
+    volumeInputArray: unknown[]
+  ): Promise<void> {
+    await (viewport as Types.IVolumeViewport).setVolumes(volumeInputArray as Types.IVolumeInput[]);
+  }
+
+  async mountEcg(
+    viewport: Types.IECGViewport,
+    _displaySet: { displaySetInstanceUID: string; imageIds?: string[] },
+    imageId: string
+  ): Promise<void> {
+    return viewport.setEcg(imageId);
+  }
+
+  async mountOther(
+    viewport: Types.IViewport,
+    displaySet: { displaySetInstanceUID: string; imageIds: string[] }
+  ): Promise<void> {
+    // CS3D's "redo viewports" replaced setDataIds with the generic
+    // setDisplaySets({ displaySetId }) API; the legacy adapters key off
+    // imageIds[0] as the displaySetId, so do the same here.
+    await (
+      viewport as unknown as {
+        setDisplaySets: (args: { displaySetId: string }) => Promise<void>;
+      }
+    ).setDisplaySets({ displaySetId: displaySet.imageIds[0] });
+  }
+
+  remount(
+    viewport: Types.IViewport,
+    viewportData: StackViewportData | VolumeViewportData,
+    viewportInfo: ViewportInfo,
+    keepCamera: boolean
+  ): Promise<void> | undefined {
+    const vp = viewport as Types.IStackViewport | Types.IVolumeViewport;
+    const viewportCamera = vp.getCamera();
+
+    let displaySetPromise: Promise<void> | undefined;
+
+    if (isVolumeViewportType(viewport)) {
+      displaySetPromise = this.service
+        ._setVolumeViewport(
+          viewport as Types.IVolumeViewport,
+          viewportData as VolumeViewportData,
+          viewportInfo
+        )
+        .then(() => {
+          if (keepCamera) {
+            vp.setCamera(viewportCamera);
+            vp.render();
+          }
+        });
+    }
+
+    if (isStackViewportType(viewport)) {
+      displaySetPromise = this.service._setStackViewport(
+        viewport as Types.IStackViewport,
+        viewportData as StackViewportData,
+        viewportInfo
+      );
+    }
+
+    return displaySetPromise;
   }
 
   getPositionPresentation(

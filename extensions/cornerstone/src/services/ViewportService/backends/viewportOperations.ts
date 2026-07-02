@@ -1,4 +1,5 @@
-import { utilities as csUtils, Types as CoreTypes } from '@cornerstonejs/core';
+import { Types as CoreTypes } from '@cornerstonejs/core';
+import { isNextViewport } from '../adapter';
 import type {
   IViewportOperations,
   FlipValue,
@@ -14,11 +15,10 @@ import { nextViewportOperations } from './NextViewportOperations';
  * Picks the operations lane for a SPECIFIC viewport. Unlike the IViewportBackend
  * lifecycle backend (selected once by the appConfig flag because it owns the
  * per-session mount), operations route per viewport: the viewport is already created
- * and self-describing, a session can hold both legacy and native viewports, and this
- * mirrors the previous inline `csUtils.isGenericViewport(viewport)` branching exactly.
+ * and self-describing, and a session can hold both legacy and native viewports.
  */
 function backendFor(viewport: CoreTypes.IViewport): IViewportOperations {
-  return csUtils.isGenericViewport(viewport) ? nextViewportOperations : legacyViewportOperations;
+  return isNextViewport(viewport) ? nextViewportOperations : legacyViewportOperations;
 }
 
 /**

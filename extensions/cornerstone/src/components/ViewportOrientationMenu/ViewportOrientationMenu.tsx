@@ -1,8 +1,8 @@
 import React from 'react';
 import { cn, Icons, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
-import { Enums, utilities as csUtils } from '@cornerstonejs/core';
-import { isOrthographicViewportType } from '../../utils/getLegacyViewportType';
+import { Enums } from '@cornerstonejs/core';
+import { getViewportAdapter } from '../../services/ViewportService/adapter';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
 
 function ViewportOrientationMenu({
@@ -78,9 +78,7 @@ function ViewportOrientationMenu({
     // as the PET overlay colormap/opacity. Only the genuine stack -> volume (MPR)
     // case needs recreation.
     const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportIdToUse);
-    const isVolumeMode =
-      !!csViewport &&
-      (isOrthographicViewportType(csViewport) || csUtils.viewportIsInVolumeMode(csViewport));
+    const isVolumeMode = !!csViewport && getViewportAdapter(csViewport).canReorientInPlace();
 
     // If viewport is not already in volume mode, we need to convert it
     if (!isVolumeMode) {

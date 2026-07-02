@@ -37,6 +37,7 @@ import {
 // load time, before any target viewport exists, so this one seg-backend dispatch
 // cannot use a per-viewport capability check and reads the session flag instead.
 import { isNextViewportsEnabled } from '../../utils/nextViewports';
+import { isNextViewport } from '../ViewportService/adapter';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 
@@ -132,8 +133,9 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     this._segmentationGroupStatsMap = new Map();
 
     // Segmentation backend twins (mirror the viewport backend family). Routed PER
-    // VIEWPORT via _segBackend() using csUtils.isGenericViewport, because a flag-on
-    // session can mix native and legacy viewports. Both are constructed eagerly:
+    // VIEWPORT via _segBackend() using the adapter's isNextViewport predicate,
+    // because a flag-on session can mix native and legacy viewports. Both are
+    // constructed eagerly:
     // per-viewport dispatch has no per-session flag to defer on, and the twins read
     // state at call time (post-init), not at construction.
     this._legacySegBackend = new LegacySegmentationBackend(this);
@@ -146,7 +148,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
    * otherwise. Mirrors viewportOperations' per-viewport dispatch.
    */
   private _segBackend(viewport: csTypes.IViewport): ISegmentationBackend {
-    return csUtils.isGenericViewport(viewport) ? this._nextSegBackend : this._legacySegBackend;
+    return isNextViewport(viewport) ? this._nextSegBackend : this._legacySegBackend;
   }
 
   public onModeEnter(): void {
@@ -375,7 +377,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       const isOverlapping = labelmapLayers && Object.keys(labelmapLayers).length > 1;
       if (
         isOverlapping &&
-        csUtils.isGenericViewport(csViewport) &&
+        isNextViewport(csViewport) &&
         !csUtils.viewportIsInVolumeMode(csViewport)
       ) {
         console.warn(

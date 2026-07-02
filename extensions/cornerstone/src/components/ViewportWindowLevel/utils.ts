@@ -2,6 +2,7 @@ import { cache as cs3DCache, Types } from '@cornerstonejs/core';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { getViewportVolumeHistogram } from './getViewportVolumeHistogram';
+import { getViewportAdapter } from '../../services/ViewportService/adapter';
 
 /**
  * Gets node opacity from volume actor
@@ -101,17 +102,18 @@ export const getWindowLevelsData = async (
     return [];
   }
 
-  // The per-volume histogram WL panel is a volume-viewport feature driven by
-  // getAllVolumeIds/getProperties. Direct PLANAR_NEXT ("next") viewports expose
-  // neither (they throw), so degrade gracefully to no histogram rows rather than
-  // erroring; the native WL path is driven by setViewportWindowLevel.
+  // The per-volume histogram WL panel is a legacy volume-viewport feature; the
+  // adapter reports no volumeIds for native viewports (and legacy stacks), so
+  // those degrade gracefully to no histogram rows rather than erroring; the
+  // native WL path is driven by setViewportWindowLevel.
   // TODO(next): port per-volume histograms to the native volume API.
-  if (typeof (viewport as Types.IBaseVolumeViewport).getAllVolumeIds !== 'function') {
+  const adapter = getViewportAdapter(viewport);
+  const volumeIds = adapter.getVolumeIds();
+  if (!volumeIds.length) {
     return [];
   }
 
-  const volumeIds = (viewport as Types.IBaseVolumeViewport).getAllVolumeIds();
-  const viewportProperties = viewport.getProperties();
+  const viewportProperties = adapter.getPresentation();
   const { voiRange } = viewportProperties || {};
   const viewportVoi = voiRange
     ? {
