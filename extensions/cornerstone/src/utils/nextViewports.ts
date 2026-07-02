@@ -26,14 +26,39 @@ export function isNextViewportsEnabled(): boolean {
  * it; any other value disables it. When the param is absent, appConfig wins.
  */
 export function resolveNextViewportsEnabled(appConfigValue: unknown): boolean {
+  return resolveBooleanUrlOptIn('useNextViewports', appConfigValue);
+}
+
+/**
+ * Resolves the effective CPU-rendering flag at init. A `cpu` URL query parameter
+ * takes precedence over `appConfig.useCPURendering`, so the CPU render path can
+ * be forced per-session via the URL (e.g. `?cpu=true`) without editing the
+ * deployed config. `?cpu` (no value), `=true`, or `=1` enable it; any other
+ * value disables it. When the param is absent, appConfig wins.
+ *
+ * Under `useNextViewports` this drives the native GenericViewport onto the CPU
+ * render path (CPU_IMAGE / CPU_VOLUME): cornerstone's PlanarRenderPathDecision
+ * consults the global `setUseCPURendering` flag for both the image and volume
+ * paths, so a single `?cpu=true` forces the next viewport to render on CPU.
+ */
+export function resolveUseCPURendering(appConfigValue: unknown): boolean {
+  return resolveBooleanUrlOptIn('cpu', appConfigValue);
+}
+
+/**
+ * Reads a boolean opt-in URL query param, falling back to a config value when
+ * the param is absent. `?param` (no value), `=true`, or `=1` enable it; any
+ * other value disables it.
+ */
+function resolveBooleanUrlOptIn(paramName: string, fallbackValue: unknown): boolean {
   try {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('useNextViewports')) {
-      const value = params.get('useNextViewports');
+    if (params.has(paramName)) {
+      const value = params.get(paramName);
       return value === '' || value === 'true' || value === '1';
     }
   } catch {
-    // window/URL unavailable (SSR/non-browser) — fall back to appConfig.
+    // window/URL unavailable (SSR/non-browser) — fall back to the config value.
   }
-  return Boolean(appConfigValue);
+  return Boolean(fallbackValue);
 }

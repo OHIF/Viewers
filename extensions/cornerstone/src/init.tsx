@@ -27,7 +27,11 @@ import initCornerstoneTools from './initCornerstoneTools';
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
 import initStudyPrefetcherService from './initStudyPrefetcherService';
-import { setNextViewportsEnabled, resolveNextViewportsEnabled } from './utils/nextViewports';
+import {
+  setNextViewportsEnabled,
+  resolveNextViewportsEnabled,
+  resolveUseCPURendering,
+} from './utils/nextViewports';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -74,8 +78,10 @@ export default async function init({
     debug: { statsOverlay },
   });
 
-  // For debugging e2e tests that are failing on CI
-  cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+  // resolveUseCPURendering lets a `?cpu=true` URL param force the CPU render
+  // path per-session; when the param is absent, appConfig.useCPURendering wins.
+  // Under useNextViewports this drives the native GenericViewport onto CPU.
+  cornerstone.setUseCPURendering(resolveUseCPURendering(appConfig.useCPURendering));
 
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
