@@ -3,16 +3,12 @@ import { PubSubService } from '@ohif/core';
 import { Types as OhifTypes } from '@ohif/core';
 import {
   RenderingEngine,
-  StackViewport,
   Types,
   getRenderingEngine,
   utilities as csUtils,
-  VolumeViewport,
-  VolumeViewport3D,
-  ECGViewport,
   cache,
   Enums as csEnums,
-  BaseVolumeViewport,
+  metaData,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -39,6 +35,12 @@ import { usePositionPresentationStore } from '../../stores/usePositionPresentati
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
+import {
+  getLegacyViewportType,
+  isStackViewportType,
+  isVolume3DViewportType,
+  isVolumeViewportType,
+} from '../../utils/getLegacyViewportType';
 import { BlendModes } from '@cornerstonejs/core/enums';
 
 const EVENTS = {
@@ -48,6 +50,56 @@ const EVENTS = {
 
 const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
+
+// Actor class names that represent a primary volume binding in a viewport.
+// Legacy ORTHOGRAPHIC / VOLUME_3D render the source volume as a 'vtkVolume'
+// actor. Under the GenericViewport-backed compat path (useGenericViewport),
+// the MPR slice render path emits 'vtkImageSlice' actors instead, so the
+// volume-set-vs-add optimization below must recognize both. (3D still uses
+// 'vtkVolume'.) Without this, the optimization silently no-ops and a full
+// setVolumes() teardown blanks MPR during SEG hydration.
+const VOLUME_ACTOR_CLASS_NAMES = new Set(['vtkVolume', 'vtkImageSlice']);
+
+function getVolumeActorReferencedIds(viewport: Types.IVolumeViewport): string[] {
+  const actors = viewport.getActors?.() ?? [];
+  return actors
+    .filter(ac => VOLUME_ACTOR_CLASS_NAMES.has(ac.actor?.getClassName?.() ?? ''))
+    .map(ac => ac.referencedId)
+    .filter(Boolean) as string[];
+}
+
+function volumeIdPrefixesMatch(
+  existingIds: string[],
+  prefixLen: number,
+  targetIds: string[]
+): boolean {
+  if (prefixLen > targetIds.length) {
+    return false;
+  }
+  for (let i = 0; i < prefixLen; i++) {
+    if (existingIds[i] !== targetIds[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Returns true when the viewport type matches a volume-based presentation (ORTHOGRAPHIC or VOLUME_3D).
+ */
+function viewportMatchesDesiredVolumePresentation(
+  viewport: Types.IViewport,
+  desiredViewportInfo: ViewportInfo
+): boolean {
+  const desiredType = desiredViewportInfo.getViewportType();
+  if (getLegacyViewportType(viewport) !== desiredType) {
+    return false;
+  }
+  return (
+    desiredType === csEnums.ViewportType.ORTHOGRAPHIC ||
+    desiredType === csEnums.ViewportType.VOLUME_3D
+  );
+}
 
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
 export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
@@ -329,7 +381,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     return {
       viewportType: viewportInfo.getViewportType(),
-      viewReference: csViewport instanceof VolumeViewport3D ? null : csViewport.getViewReference(),
+      viewReference: isVolume3DViewportType(csViewport) ? null : csViewport.getViewReference(),
       viewPresentation: csViewport.getViewPresentation({ pan: true, zoom: true }),
       viewportId,
     };
@@ -357,10 +409,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return properties;
     };
 
-    const properties =
-      csViewport instanceof BaseVolumeViewport
-        ? new Map()
-        : cleanProperties(csViewport.getProperties());
+    const properties = isVolumeViewportType(csViewport)
+      ? new Map()
+      : cleanProperties(csViewport.getProperties());
 
     if (properties instanceof Map) {
       const volumeIds = (csViewport as Types.IBaseVolumeViewport).getAllVolumeIds();
@@ -799,10 +850,25 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     _presentations: Presentations = {}
   ): Promise<void> {
     const [displaySet] = viewportData.data;
-    return viewport.setDataIds(displaySet.imageIds, {
-      groupId: displaySet.displaySetInstanceUID,
-      viewReference: viewportInfo.getViewReference(),
+    const displaySetId = displaySet.imageIds[0];
+    // Register the WSI dataset so the viewport can resolve its imageIds +
+    // webClient by display-set id, then mount via setDisplaySets. The webClient
+    // was registered under the WADO_WEB_CLIENT module (keyed by imageIds[0]) by
+    // the SM SOP class handler. CS3D's "redo viewports" reads this same registry
+    // (genericViewportDisplaySetMetadataProvider) from its WSI data provider;
+    // without this entry setDisplaySets throws "No registered WSI dataset" and
+    // the viewport renders gray.
+    const webClient = metaData.get(csEnums.MetadataModules.WADO_WEB_CLIENT, displaySetId);
+    csUtils.genericViewportDisplaySetMetadataProvider.add(displaySetId, {
+      imageIds: displaySet.imageIds,
+      kind: 'wsi',
+      options: { webClient },
     });
+    await viewport.setDisplaySets({ displaySetId });
+    const viewReference = viewportInfo.getViewReference();
+    if (viewReference) {
+      viewport.setViewReference(viewReference);
+    }
   }
 
   private async _setStackViewport(
@@ -1100,7 +1166,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
             throw new Error('Background display set not found');
           }
 
-          if (viewport.type === csEnums.ViewportType.VOLUME_3D) {
+          if (isVolume3DViewportType(viewport)) {
             timeoutViewportCallback(() => {
               viewportGridService.setDisplaySetsForViewport({
                 viewportId: viewport.id,
@@ -1112,7 +1178,44 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    await viewport.setVolumes(volumeInputArray);
+    const baseVolumeInputs = filteredVolumeInputArray.map(({ volumeInput }) => volumeInput);
+    const nextBaseVolumeIds = baseVolumeInputs.map(v => v.volumeId);
+    const existingVolumeIds = getVolumeActorReferencedIds(viewport);
+
+    let skippedIdenticalBaseVolumes = false;
+
+    if (baseVolumeInputs.length) {
+      const singleBaseViewport = nextBaseVolumeIds.length === 1;
+
+      // Only skip setVolumes() when the viewport type already matches the desired OHIF type
+      // (ORTHOGRAPHIC / VOLUME_3D); otherwise a stack → MPR switch with the same volumeId
+      // would incorrectly skip rebuilding the viewport.
+      if (
+        singleBaseViewport &&
+        existingVolumeIds.length >= nextBaseVolumeIds.length &&
+        volumeIdPrefixesMatch(existingVolumeIds, nextBaseVolumeIds.length, nextBaseVolumeIds) &&
+        viewportMatchesDesiredVolumePresentation(viewport, viewportInfo)
+      ) {
+        // Same primary volume already loaded (e.g. labelmap / extra actors after it) — avoid
+        // setVolumes(), which tears down all actors and blanks MPR during SEG hydrate.
+        skippedIdenticalBaseVolumes = true;
+      } else if (
+        existingVolumeIds.length &&
+        nextBaseVolumeIds.length > existingVolumeIds.length &&
+        volumeIdPrefixesMatch(existingVolumeIds, existingVolumeIds.length, nextBaseVolumeIds) &&
+        typeof viewport.addVolumes === 'function'
+      ) {
+        const toAdd = baseVolumeInputs.slice(existingVolumeIds.length);
+        if (toAdd.length) {
+          await viewport.addVolumes(toAdd);
+        }
+      } else {
+        await viewport.setVolumes(baseVolumeInputs);
+      }
+    } else if (volumeInputArray.length) {
+      await viewport.setVolumes(volumeInputArray);
+    }
+
     await this._addOverlayRepresentations(overlayProcessingResults);
     viewport.render();
 
@@ -1124,8 +1227,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     this.setPresentations(viewport.id, presentations);
+    // Presentations apply segmentation (hydrated labelmap etc.) after the render above — redraw so
+    // every orthographic/3D tile shows the updated scene (fixes MPR siblings blank after SEG hydrate).
+    viewport.render();
 
-    if (!presentations.positionPresentation) {
+    if (!presentations.positionPresentation && !skippedIdenticalBaseVolumes) {
       const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
       if (imageIndex !== undefined) {
@@ -1230,7 +1336,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     let displaySetPromise;
 
-    if (viewport instanceof VolumeViewport || viewport instanceof VolumeViewport3D) {
+    if (isVolumeViewportType(viewport)) {
       displaySetPromise = this._setVolumeViewport(viewport, viewportData, viewportInfo).then(() => {
         if (keepCamera) {
           viewport.setCamera(viewportCamera);
@@ -1239,7 +1345,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    if (viewport instanceof StackViewport) {
+    if (isStackViewportType(viewport)) {
       displaySetPromise = this._setStackViewport(viewport, viewportData, viewportInfo);
     }
 
@@ -1257,7 +1363,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
-    if (viewport instanceof StackViewport) {
+    if (isStackViewportType(viewport)) {
       return this._setStackViewport(
         viewport,
         viewportData as StackViewportData,
@@ -1266,7 +1372,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-    if ([VolumeViewport, VolumeViewport3D].some(type => viewport instanceof type)) {
+    if (isVolumeViewportType(viewport)) {
       return this._setVolumeViewport(
         viewport as Types.IVolumeViewport,
         viewportData as VolumeViewportData,
@@ -1275,7 +1381,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-    if (viewport instanceof ECGViewport) {
+    if (getLegacyViewportType(viewport) === csEnums.ViewportType.ECG) {
       return this._setEcgViewport(
         viewport as unknown as Types.IECGViewport,
         viewportData as StackViewportData
@@ -1427,7 +1533,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     const { properties } = lutPresentation;
-    if (viewport instanceof BaseVolumeViewport) {
+    if (isVolumeViewportType(viewport)) {
       if (properties instanceof Map) {
         properties.forEach((propertiesEntry, volumeId) => {
           viewport.setProperties(propertiesEntry, volumeId);
@@ -1476,7 +1582,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { segmentationId, type, hydrated } = presentationItem;
 
       const { Labelmap, Surface } = csToolsEnums.SegmentationRepresentations;
-      const isVolume3D = viewport.type === csEnums.ViewportType.VOLUME_3D;
+      const isVolume3D = isVolume3DViewportType(viewport);
 
       // Determine the appropriate segmentation representation for the viewport.
       // If the current type is Surface but the viewport is not 3D, fallback to Labelmap.

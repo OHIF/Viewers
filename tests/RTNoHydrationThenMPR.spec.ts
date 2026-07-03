@@ -11,17 +11,26 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR
+  );
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPostMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPostMPR
+  );
 });

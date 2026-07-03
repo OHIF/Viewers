@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums, VolumeViewport3D, utilities as csUtils } from '@cornerstonejs/core';
+import { Enums, utilities as csUtils } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui-next';
+import { isVolume3DViewportType } from '../../utils/getLegacyViewportType';
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -40,7 +41,7 @@ function CornerstoneImageScrollbar({
 
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-    if (!viewport || viewport instanceof VolumeViewport3D) {
+    if (!viewport || isVolume3DViewportType(viewport)) {
       return;
     }
 
@@ -69,7 +70,7 @@ function CornerstoneImageScrollbar({
 
     const updateIndex = event => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (!viewport || viewport instanceof VolumeViewport3D) {
+      if (!viewport || isVolume3DViewportType(viewport)) {
         return;
       }
       const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;

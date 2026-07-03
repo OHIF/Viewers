@@ -23,21 +23,35 @@ concurrency:
 jobs:
   playwright-tests:
     timeout-minutes: 120
-    runs-on: self-hosted
+    runs-on: [self-hosted, nashua]
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20]
+        node-version: [24.15.0]
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          bun-version: 1.2.23
-      - uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Yarn
-        run: npm install -g yarn@1.22.22
+          # No `cache: pnpm`: this is a self-hosted runner with a persistent
+          # pnpm store on local disk. The Actions cache doesn't preserve the
+          # pnpm self-install's links faithfully, dropping pnpm/dist/worker.js
+          # and breaking `pnpm install` with MODULE_NOT_FOUND.
+      # Install pnpm via Corepack instead of pnpm/action-setup. The action's
+      # self-installer is a JS action run under the runner's bundled
+      # externals/node{version} and derives the `npm` path from that runtime — which
+      # on this self-hosted runner is corrupted (Cannot find module
+      # '../lib/cli.js'), so it dies regardless of `standalone:true`. Corepack
+      # ships inside the Node that setup-node just installed, reads the pinned
+      # `packageManager` (pnpm@11.5.2) from package.json, and fetches pnpm via
+      # Node's own https — it never invokes the npm CLI.
+      - name: Enable Corepack (pnpm)
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare --activate
 
       # ── CS3D integration: detect label and ref type ──────────────────────
       - name: Check for CS3D integration label
@@ -87,11 +101,11 @@ jobs:
       - name: Install & Build CS3D
         if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
         working-directory: libs/@cornerstonejs
-        run: bun install --frozen-lockfile && bun run build:esm
+        run: pnpm install --frozen-lockfile && pnpm run build:esm
 
       # ── Common: install OHIF dependencies ───────────────────────────────
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       # ── CS3D branch path: link packages after OHIF install ──────────────
       - name: Link CS3D packages
@@ -104,17 +118,22 @@ jobs:
         if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'version'
         run: |
           node .scripts/cs3d-set-version.mjs "${CS3D_VERSION}"
-          bun install
+          pnpm install --no-frozen-lockfile
         env:
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
 
       # ── Common: run tests ───────────────────────────────────────────────
       - name: Install Playwright browsers
-        run: npx playwright install
+        # Only chromium is used (see playwright.config.ts and tests/globalSetup.ts);
+        # firefox/webkit projects are commented out. Scoping the install to chromium
+        # avoids downloading + dep-validating browsers we never launch (the WebKit
+        # validation is what surfaces the "missing libwoff1/libflite1/..." error on
+        # hosts without those libs).
+        run: npx playwright install chromium
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
-          bun run test:e2e:coverage
+          bash .scripts/ci/with-nashua-lock.sh pnpm run test:e2e:coverage
 
       # ── Common: collect test results and coverage ───────────────────────
       - name: Create directory of test results
@@ -122,20 +141,20 @@ jobs:
         run: |
           mkdir -p packaged-test-results
           cp -r ./tests/test-results packaged-test-results/ || true
-          cp ./tests/playwright-report.json packaged-test-results/ || true
+          cp -r ./tests/playwright-report packaged-test-results/ || true
       - name: Upload directory of test results artifact
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: playwright-results
           path: packaged-test-results/
           retention-days: 5
       - name: create the coverage report
         run: |
-          bun nyc report --reporter=lcov --reporter=text
+          pnpm exec nyc report --reporter=lcov --reporter=text
       - name: Upload the coverage report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-report-pr
           path: coverage
@@ -152,12 +171,13 @@ jobs:
           fi
           node .scripts/log-build-context.mjs
         env:
-          BUILD_TYPE: ${{ steps.cs3d-ref.outputs.type == 'branch' && 'ohif-downstream' || 'ohif-upstream' }}
+          BUILD_TYPE:
+            ${{ steps.cs3d-ref.outputs.type == 'branch' && 'ohif-downstream' || 'ohif-upstream' }}
           CS3D_REF_TYPE: ${{ steps.cs3d-ref.outputs.type }}
 
       - name: Build OHIF viewer (CS3D preview)
         if: steps.cs3d-check.outputs.enabled == 'true'
-        run: bun run build:ci
+        run: pnpm run build:ci
 
       - name: Deploy CS3D preview to Netlify
         if: steps.cs3d-check.outputs.enabled == 'true'
@@ -194,11 +214,13 @@ jobs:
 
   # ── Separate job: block merge when using a CS3D branch ─────────────
   cs3d-branch-merge-guard:
-    name: "CS3D Branch Merge Guard"
+    name: 'CS3D Branch Merge Guard'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
       - name: Check for CS3D branch usage
         run: bash .scripts/ci/cs3d-branch-merge-guard.sh
         env:

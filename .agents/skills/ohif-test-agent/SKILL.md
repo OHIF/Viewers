@@ -1,0 +1,346 @@
+---
+name: ohif-test-agent
+description: Generate runnable Playwright E2E tests for the OHIF Viewer using its custom fixture system, page objects, and normalized WebGL viewport coordinates. Use this skill whenever the user asks to write, add, modify, or debug tests in an OHIF/Viewers context — including vague asks like "write a test for X" when working in the OHIF repo, tests touching platform/app/tests/, or anything involving Cornerstone viewports, DICOM studies, measurements, segmentations, or OHIF modes/extensions. Prefer this skill over generic test-writing even if the user doesn't say "Playwright" or "E2E" explicitly.
+---
+
+# OHIF Test Agent
+
+This skill teaches you to generate correct, runnable Playwright end-to-end tests for the OHIF Viewer. Follow the workflow below.
+
+## Environment model
+
+This package follows the agentskills.io SKILL.md convention. `SKILL.md` is the entire behavior contract — there is no separate runtime entrypoint.
+
+## Workflow: how to write a new OHIF test
+
+1. **Classify the feature.** What area does the test belong to — a measurement tool, segmentation hydration, contour panel interaction, MPR layout, crosshairs, tag browser, etc.? The area determines the mode, the StudyInstanceUID, and the seed spec you'll read.
+2. **Read the seed spec.** Consult [references/patterns-by-feature.md](references/patterns-by-feature.md) to find the canonical existing spec for that area. Read it end-to-end before writing. This is the single most important step — OHIF specs follow consistent idioms that are easier to mimic than to reconstruct from first principles. (This mirrors Playwright's own agent guidance: use seed tests as the example for generated tests.)
+3. **Scaffold from the template.** Start from [assets/spec-template.ts](assets/spec-template.ts) — or copy the seed spec and adapt.
+4. **Look up specifics in the source, not from memory.** The reference files [page-objects.md](references/page-objects.md) and [utilities.md](references/utilities.md) capture the **stable rules** — fixture keys, import conventions, access idioms, the reasons certain things trip people up. They deliberately do not enumerate methods. For the current method surface or a utility's exact signature, open the relevant file under `tests/pages/` or `tests/utils/` — the source evolves, and the source is always right. The seed spec you picked in step 2 is usually the fastest second source, because it co-evolves with the API.
+5. **Run the test when execution is available.** `yarn test:e2e:ci` runs the whole suite, but for iteration use `yarn playwright test tests/YourNew.spec.ts` (or via the Playwright VS Code extension).
+6. **If runtime execution is unavailable, do static validation.** Validate import source, fixture keys, normalized viewport usage, UID/mode pairing, and hydration/tracking prompt handling. Then report clearly that execution was not performed.
+7. **If it fails, triage before debugging.** Use [references/failure-triage.md](references/failure-triage.md) — most OHIF test failures are timing / hydration, not real regressions.
+
+## Architecture
+
+OHIF uses Playwright with a custom fixture system. Tests are **not** vanilla Playwright — they import `test`, `expect`, and utilities from `./utils`, which re-exports an extended test runner that injects page objects.
+
+```text
+playwright.config.ts            → Chromium-only, port 3335, data-cy as testId
+  └─ tests/utils/fixture.ts     → Extends playwright-test-coverage, injects page objects
+       └─ tests/*.spec.ts       → Each imports { test, expect, ... } from './utils'
+            ├─ tests/pages/     → Page objects (ViewportPageObject, MainToolbarPageObject, …)
+            └─ tests/utils/     → Utilities (visitStudy, checkForScreenshot, screenShotPaths, …)
+```
+
+Why the custom fixture matters: the page objects are created for each test and bound to the right Playwright `page`. If you `new ViewportPageObject(page)` manually, you skip the fixture wiring and some sub-objects won't resolve correctly.
+
+### Import rule
+
+```ts
+// Correct
+import { test, expect, visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+
+// Wrong — will compile but fixtures won't be injected
+import { test, expect } from '@playwright/test';
+```
+
+A few utilities (`press`, `downloadAsString`, the `assert*` helpers) are NOT re-exported from `./utils`. See [references/utilities.md](references/utilities.md) for the correct import path per utility.
+
+## The viewport is WebGL
+
+OHIF renders medical images onto a WebGL canvas. You cannot query *canvas* pixels by CSS selector. Use **normalized coordinates** (0–1 range, top-left is `{x:0, y:0}`) for clicks and drags, and **visual regression** (screenshot comparison) for canvas assertions. (Not everything in the viewport is canvas — some overlays render as SVG you *can* query via DOM, e.g. a vector overlay's color through `getSvgAttribute`. The canvas rule is about raster output painted onto the WebGL surface.)
+
+```ts
+const activeViewport = await viewportPageObject.active;
+
+await activeViewport.normalizedClickAt([{ x: 0.5, y: 0.5 }]);                 // click center
+await activeViewport.normalizedClickAt([{ x: 0.3, y: 0.3 }, { x: 0.7, y: 0.7 }]); // draw two points
+await activeViewport.normalizedClickAt([{ x: 0.5, y: 0.5 }], 'right');         // right-click
+await activeViewport.normalizedDragAt({
+  start: { x: 0.3, y: 0.3 },
+  end:   { x: 0.7, y: 0.7 },
+});
+```
+
+Pixel coordinates (`clickAt`, `doubleClickAt`) exist but prefer normalized for portability across viewport sizes.
+
+For DOM-rendered state (panel counts, dialog text, overlay text values, button enabled states), assert directly:
+
+```ts
+await expect(activeViewport.overlayText.bottomRight.instanceNumber).toContainText('17/');
+const count = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+expect(count).toBe(1);
+```
+
+## Study loading lifecycle
+
+Every test follows this sequence. Skipping steps causes flakiness:
+
+```ts
+test.beforeEach(async ({ page }) => {
+  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
+  const mode = 'viewer';
+  await visitStudy(page, studyInstanceUID, mode, 2000); // 2s delay is the community norm
+});
+```
+
+`visitStudy` navigates to `/{mode}/ohif?StudyInstanceUIDs={uid}`, waits for `domcontentloaded`, then `networkidle`, then the explicit delay. Default delay is `0`, but most specs pass `2000` to let the first render settle.
+
+Delay by scene type (observed across the current suite, not a rule to apply blindly):
+
+| Scene | Delay |
+|-------|-------|
+| Default (viewer mode, 2D/MPR/3D layouts, crosshairs) | `2000` |
+| `mode: 'tmtv'` | `10000` — PET fusion + SUV calculation takes noticeably longer |
+
+Start at the convention for your scene; ramp only if the test flakes on initial render. 3D layouts in `viewer` mode already stay at `2000` — the stabilization problem there is solved with `attemptAction(() => reduce3DViewportSize(page), 10, 100)`, not with a longer `visitStudy` delay.
+
+If the study has DICOM SEG, RT, or SR data, OHIF asks whether to hydrate. Handle it:
+
+```ts
+await leftPanelPageObject.loadSeriesByModality('SEG'); // or 'RTSTRUCT', 'SR'
+await page.waitForTimeout(3000);                        // allow the prompt to appear
+await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+```
+
+The first measurement you create triggers a "start tracking?" prompt:
+
+```ts
+await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+```
+
+For 3D / MPR scenes, wrap stabilization in `attemptAction(() => reduce3DViewportSize(page), 10, 100)` or insert a `page.waitForTimeout(...)` after the layout change before asserting.
+
+## Wait for renders, don't sleep
+
+`page.waitForTimeout(...)` after an action that re-renders the viewport is a smell. The viewports tell us when they're done — use that signal. `tests/utils/waitForViewportsRendered.ts` exposes three helpers, all barrel-exported from `./utils`:
+
+- `waitForViewportRenderCycle(page)` — wait for the next full cycle: a viewport enters `needsRender`, then **all** viewports report `rendered` (and volumes are loaded, by default).
+- `waitForViewportsRendered(page)` — only the second half: wait until all viewports are `rendered`. Use this when the action has already requested a render before you started waiting (e.g. a layout change or `loadSeriesByDescription`).
+- `waitForAnyViewportNeedsRender(page)` — only the first half. Rarely needed directly.
+
+The canonical idiom — **start the watcher before the action, await it after**:
+
+```ts
+// start watching for the next render cycle
+const viewportRenderCycle = waitForViewportRenderCycle(page);
+
+await action(); // e.g. segmentationHydration.yes.click(), layoutSelection.MPR.click(), addSegmentation, etc.
+
+// wait for the render to finish
+await viewportRenderCycle;
+
+await check(); // e.g. checkForScreenshot, count assertion, overlay text
+```
+
+Why "start before"? `waitForViewportRenderCycle` first waits for a viewport to enter `needsRender`. If you start it **after** the action, that transition may already be over and you'll hang until the timeout. Starting it first captures the cycle the action is about to trigger.
+
+When to use which:
+
+| Situation | Helper |
+|-----------|--------|
+| Click that triggers a re-render and you want to assert after | `waitForViewportRenderCycle(page)` started before the click |
+| Layout switch / series load — render already in flight | `await waitForViewportsRendered(page)` after the call |
+| Compose with another await (e.g. screenshot the same time as load) | Save the promise, `await` it later |
+
+Replace patterns like this:
+
+```ts
+// ❌ Sleep-and-pray
+await action();
+await page.waitForTimeout(5000);
+await checkForScreenshot(...);
+
+// ✅ Wait on the actual signal
+const cycle = waitForViewportRenderCycle(page);
+await action();
+await cycle;
+await checkForScreenshot(...);
+```
+
+This shaves real wall-clock time off the suite and removes a class of flake (sleep too short → flake; sleep too long → slow). `tests/SEGHydrationFromMPR.spec.ts` is the canonical seed for this pattern.
+
+Caveats:
+- These helpers wait on Cornerstone viewport state. They won't help for purely DOM-side state (panel rows appearing, dialogs opening) — for those, prefer `expect(locator).toHaveCount(n)` / `toBeVisible()` which auto-retry, or `expect.toPass({ timeout })`.
+- For some actions (hanging-protocol changes are the documented example) the viewport doesn't transition through `needsRender` synchronously — those still need a short `waitForTimeout`. The source comment in `waitForViewportsRendered.ts` calls this out.
+
+## Fixture-injected page objects
+
+Destructure these from the test function argument. **Never `new` them manually.**
+
+```ts
+test('my test', async ({
+  page,
+  viewportPageObject,
+  mainToolbarPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  DOMOverlayPageObject,          // note the capital D — this matches the fixture key
+  notFoundStudyPageObject,
+}) => { ... });
+```
+
+Two page objects are **not** fixture-injected:
+- `DataOverlayPageObject` — reach via `viewportPageObject.getById(id).overlayMenu.dataOverlay`.
+- `DicomTagBrowserPageObject` — reach via `DOMOverlayPageObject.dialog.dicomTagBrowser`.
+
+See [references/page-objects.md](references/page-objects.md) for fixture rules and a map of which file covers which concern; read the `.ts` file under `tests/pages/` for the current method surface.
+
+## When the control you need has no page object yet
+
+A spec must not reach for `page.getByTestId(...)` / `getByRole(...)` directly for
+application controls. If the button, menu, dialog, or field you need isn't already
+exposed by a page object, **add it to one — or create a new page object — instead of
+inlining a raw selector.** Raw selectors in a spec are the clearest sign a test was
+written without reading the existing suite: they duplicate locators, bypass the
+fixture wiring, and rot silently when the DOM changes.
+
+Where new coverage goes:
+
+| What you need | Where it belongs |
+|---|---|
+| A toolbar button or tool (Zoom, Pan) | a getter on `MainToolbarPageObject`, next to `crosshairs` / `measurementTools` |
+| A menu, prompt, context menu, or small dialog | `DOMOverlayPageObject` |
+| A substantial dialog with its own fields (User Preferences) | its **own** page object class, reached through `DOMOverlayPageObject` — follow `DicomTagBrowserPageObject` (`DOMOverlayPageObject.dialog.dicomTagBrowser`) |
+| Each field/row inside that dialog | a method or sub-object on the dialog's page object — not a raw selector in the spec |
+| A side-panel control | `LeftPanelPageObject` / `RightPanelPageObject` |
+
+If the control has no `data-cy`, **add `data-cy` to the source component** and target
+it — don't fall back to `getByRole`/text selectors, which are brittle and
+locale-sensitive (`testIdAttribute` is `data-cy`, so `getByTestId('Zoom')` resolves
+`[data-cy="Zoom"]`). Call out any `data-cy` you add so it ships in the same PR.
+
+**Worked example — "set the Zoom hotkey in User Preferences":** the options menu, the
+preferences dialog, each preference field, and the Zoom toolbar button should all be
+page-object surface — e.g. `mainToolbarPageObject.zoom`,
+`DOMOverlayPageObject.optionsMenu.settings.click()`,
+`DOMOverlayPageObject.dialog.userPreferences.hotkey('Zoom').set('q')`. The spec then
+reads as intent, not as a pile of `getByTestId` calls.
+
+## Assert the effect, not just the attribute
+
+Prefer asserting the actual rendered result over a proxy attribute. Activating Zoom and
+checking `data-active="true"` confirms the *button* toggled — not that zoom works. Drag
+on the viewport and assert the image actually zoomed (a viewport-scoped screenshot, or a
+measurable state change). Attribute checks are fine as a secondary signal, not the whole
+test.
+
+## Visual regression
+
+**Direction:** the suite is moving off *full-app* screenshots — not off screenshots
+altogether. "Avoid screenshots" means: don't screenshot the whole page, and don't
+screenshot something that has a faithful DOM/state signal. It does **not** mean avoid
+screenshots for output that is genuinely canvas-only — for that output a screenshot is
+the correct and required tool, and you should use it without apology. Older specs that
+screenshot the whole page are the legacy pattern being phased out; viewport-scoped
+screenshots are not.
+
+### Screenshot vs. DOM assertion — how to choose
+
+Reach for the cheapest *faithful* signal, in this order:
+
+1. **A faithful DOM/SVG/state signal exists → assert on it.** Panel counts, dialog and
+   overlay text, enabled/disabled state, and any overlay that renders as SVG (a vector
+   overlay's color is readable via `getSvgAttribute`) all have a DOM representation — assert
+   on it directly, no screenshot.
+2. **The thing under test is painted onto the WebGL canvas with no DOM representation → a
+   screenshot is correct and required.** Raster output on the canvas exposes no attribute to
+   read for a painted pixel. Scope a `checkForScreenshot` to the viewport (pane or grid) and
+   assert it — this is the right tool, not a last resort, whenever what you're verifying is
+   the rendered canvas itself.
+3. **Never substitute a service/state read for a render assertion.** Reading a service's
+   state (any `window.services...`) asserts the *data model*, not the pixels the user sees —
+   it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
+   escape hatch for *setup*, not for *appearance* assertions.
+
+For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport or the viewport grid:
+
+```ts
+await checkForScreenshot({
+  page,
+  locator: viewportPageObject.grid, // scope to the viewport grid — not the whole page
+  screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
+});
+```
+
+`checkForScreenshot` retries up to 10 times at 500 ms intervals. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
+
+Rules (apply to all new screenshot assertions):
+
+- **Use the object form.** The positional form is legacy; don't introduce it in new code, and don't treat existing positional-form usage as a pattern to copy.
+- **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope by passing a `locator` — `viewportPageObject.grid` for the grid, or a specific viewport pane. A bare `normalizedClip: { x: 0, y: 0, width: 1, height: 1 }` with no `locator` is **not** scoping — it clips to the full page. Use `normalizedClip` only to target a sub-region *of a locator* (e.g. a scrollbar strip). If you reach for `fullPage: true`, stop and pick a locator.
+- **Do not tune `maxDiffPixelRatio` or `threshold`** to make a screenshot pass. If a baseline mismatches, regenerate it after a human review of the diff, or fix the underlying flake.
+
+## Playwright config facts worth remembering
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| `baseURL` | `http://localhost:3335` | OHIF e2e uses 3335, not 3000 |
+| `testIdAttribute` | `data-cy` | `getByTestId(...)` maps to `[data-cy="..."]` |
+| `browser` | Chromium only | Firefox/WebKit disabled (SharedArrayBuffer + stability) |
+| `retries` | 3 in CI, 0 locally | Flaky rendering needs CI retries |
+| `workers` | 6 in CI, undefined locally | Parallel execution |
+| `globalTimeout` / `timeout` | 800_000 ms | Medical image loads are slow |
+| `actionTimeout` | 10_000 ms | Per-action cap |
+| `webServer.command` | `cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 nyc yarn start` | e2e config + coverage |
+
+## Test data: which study for which test
+
+| StudyInstanceUID | Mode | Used for |
+|------------------|------|----------|
+| `1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5` | `viewer` | General measurements, annotations, context menu |
+| `1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785` | `viewer` | 3D, MPR, crosshairs |
+| `1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458` | `viewer` or `segmentation` | Labelmap SEG |
+| `1.2.840.113619.2.290.3.3767434740.226.1600859119.501` | `viewer` / `segmentation` / `tmtv` | RTSTRUCT/contour and TMTV |
+| `1.3.6.1.4.1.14519.5.2.1.7695.4007.324475281161490036195179843543` | `viewer` | SR hydration |
+
+Full mapping in [references/patterns-by-feature.md](references/patterns-by-feature.md). **Do not invent UIDs** — they must exist on the e2e data server.
+
+## Rules (short, so they're actually read)
+
+1. Import `test`, `expect`, and utilities from `./utils`, not `@playwright/test`.
+2. Destructure fixture-injected page objects; don't `new` them.
+3. Use normalized coordinates (0–1) for viewport interactions.
+4. Use `visitStudy` with a real UID, correct mode, and a non-zero delay (2000 is conventional).
+5. Handle hydration and measurement-tracking prompts where applicable.
+6. Choose the faithful signal: DOM/SVG assertions where the rendered result has one (panels, dialogs, overlay text, SVG/vector overlays), a viewport-scoped screenshot when what you're verifying is canvas-only raster output, and never a `window.services` state read standing in for a render check. Screenshots use the object form, scoped via a `locator` — never the full app.
+7. Use `data-cy` selectors (already wired via `testIdAttribute`).
+8. When an assertion needs retry tolerance, wrap it in `expect.toPass({ timeout })`.
+9. Test in the correct mode — segmentation tools aren't available in `viewer` mode.
+10. If a utility isn't exported from `./utils`, import from the deeper path (see [references/utilities.md](references/utilities.md)).
+11. After an action that re-renders the viewport, prefer `waitForViewportRenderCycle(page)` (started before the action) over `page.waitForTimeout(...)`. See the "Wait for renders, don't sleep" section.
+12. Don't inline raw `page.getByTestId(...)` / `getByRole(...)` for app controls. If a control has no page object, create or augment one (see "When the control you need has no page object yet"), adding a `data-cy` to the source if needed.
+13. Assert the actual effect (e.g. the image zoomed), not just a proxy attribute like `data-active`.
+
+## Pre-output self-check (mandatory)
+
+Before returning a generated OHIF test, confirm all items:
+
+1. Imports `test`/`expect` from `./utils` (not `@playwright/test`).
+2. Uses fixture-injected keys and exact casing (especially `DOMOverlayPageObject`).
+3. Uses normalized viewport interactions (`normalizedClickAt` / `normalizedDragAt`) unless there is a strong reason otherwise.
+4. Uses a valid canonical StudyInstanceUID and compatible mode.
+5. Handles hydration or measurement tracking prompts when the workflow requires them.
+6. Uses the faithful signal for each assertion — DOM/SVG where the result has a DOM representation, a viewport-scoped screenshot when what's verified is canvas-only raster output, and never a `window.services` state read in place of a render check. Any `checkForScreenshot` call uses the object form, scoped via a `locator` (viewport pane or grid) — no full-app screenshots.
+7. Replaces `page.waitForTimeout(...)` after viewport-rendering actions with `waitForViewportRenderCycle(page)` (started before the action) — keeps `waitForTimeout` only for non-render waits like the hydration prompt in `beforeEach`.
+8. If execution was skipped, states that explicitly and provides concrete run commands.
+9. Every application control is reached through a page object — no raw `getByTestId`/`getByRole` in the spec for buttons, menus, dialogs, or fields. Any control not already covered was added to the right page object (or a new one), with a source `data-cy` if it lacked one.
+10. Assertions verify the real effect where feasible (e.g. the image visibly zoomed), not only an attribute toggle.
+
+## Output contract (for non-executing agents)
+
+When execution cannot be performed in the current environment, the response should include:
+
+1. The test code.
+2. Assumptions made (if any).
+3. Static checks that were verified.
+4. What still must be run locally and exact commands to run.
+
+## When to consult each reference
+
+- **Before writing** → [references/patterns-by-feature.md](references/patterns-by-feature.md). Pick the seed spec for the feature area and read it. The seed spec is the closest thing to a live API example because it co-evolves with the code.
+- **For a stable rule or idiom** (fixture keys, import paths, panel-access order, capital-D quirk, object-param convention) → [references/page-objects.md](references/page-objects.md), [references/utilities.md](references/utilities.md).
+- **For a method name, property, or signature** → read the source under `tests/pages/` or `tests/utils/`. Do not rely on a static table for these; they drift as the code is refactored.
+- **When a test fails** → [references/failure-triage.md](references/failure-triage.md).

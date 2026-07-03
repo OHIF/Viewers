@@ -19,5 +19,10 @@ test('should display the rectangle tool', async ({
     { x: 591, y: 217 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.rectangle.rectangleDisplayedCorrectly);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rectangle.rectangleDisplayedCorrectly
+  );
 });
