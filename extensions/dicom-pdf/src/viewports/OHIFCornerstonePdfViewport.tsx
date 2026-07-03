@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useSystem, useViewportRef } from '@ohif/core';
+import { useViewportRef } from '@ohif/core';
 import './OHIFCornerstonePdfViewport.css';
 
 function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
   const [url, setUrl] = useState(null);
   const viewportElementRef = useRef(null);
   const viewportRef = useViewportRef(viewportId);
-  const { servicesManager } = useSystem();
-  const { userAuthenticationService } = servicesManager?.services || {};
 
   useEffect(() => {
     document.body.addEventListener('drag', makePdfDropTarget);
@@ -35,48 +33,32 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   }
 
   const { renderedUrl } = displaySets[0];
+  const { getRenderedUrl } = displaySets[0];
 
   useEffect(() => {
-    let objectUrl;
     let isCancelled = false;
+    let revokeUrl;
+    const abortController = new AbortController();
 
     const load = async () => {
-      const resolvedUrl = await renderedUrl;
-
-      if (!resolvedUrl) {
-        return;
-      }
-
-      const authHeaders = userAuthenticationService?.getAuthorizationHeader?.();
-      const authorizationHeader = authHeaders?.Authorization;
-
-      if (!authorizationHeader) {
-        if (!isCancelled) {
-          setUrl(resolvedUrl);
-        }
-        return;
-      }
-
       try {
-        const response = await fetch(resolvedUrl, {
-          headers: authHeaders,
-        });
+        const result = getRenderedUrl
+          ? await getRenderedUrl({ signal: abortController.signal })
+          : { url: await renderedUrl };
 
-        if (!response.ok) {
-          throw new Error(`Unable to load authenticated PDF (${response.status})`);
+        if (isCancelled) {
+          result?.revoke?.();
+          return;
         }
 
-        const blob = await response.blob();
-        objectUrl = URL.createObjectURL(blob);
-
-        if (!isCancelled) {
-          setUrl(objectUrl);
-        }
+        revokeUrl = result?.revoke;
+        setUrl(result?.url || null);
       } catch (error) {
-        console.warn('Failed to load PDF with authorization header, using direct URL', error);
+        console.warn('Failed to load PDF', error);
         if (!isCancelled) {
-          setUrl(resolvedUrl);
+          setUrl(null);
         }
+        return;
       }
     };
 
@@ -84,11 +66,10 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
 
     return () => {
       isCancelled = true;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
+      abortController.abort();
+      revokeUrl?.();
     };
-  }, [renderedUrl, userAuthenticationService]);
+  }, [renderedUrl, getRenderedUrl]);
 
   return (
     <div

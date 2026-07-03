@@ -8,17 +8,44 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
     );
   }
 
-  const { videoUrl } = displaySets[0];
+  const { videoUrl, getVideoUrl } = displaySets[0];
   const mimeType = 'video/mp4';
   const [url, setUrl] = useState(null);
 
   useEffect(() => {
+    let isCancelled = false;
+    let revokeUrl;
+    const abortController = new AbortController();
+
     const load = async () => {
-      setUrl(await videoUrl);
+      try {
+        const result = getVideoUrl
+          ? await getVideoUrl({ signal: abortController.signal })
+          : { url: await videoUrl };
+
+        if (isCancelled) {
+          result?.revoke?.();
+          return;
+        }
+
+        revokeUrl = result?.revoke;
+        setUrl(result?.url || null);
+      } catch (error) {
+        console.warn('Failed to load video', error);
+        if (!isCancelled) {
+          setUrl(null);
+        }
+      }
     };
 
     load();
-  }, [videoUrl]);
+
+    return () => {
+      isCancelled = true;
+      abortController.abort();
+      revokeUrl?.();
+    };
+  }, [videoUrl, getVideoUrl]);
 
   // Need to copies of the source to fix a firefox bug
   return (
