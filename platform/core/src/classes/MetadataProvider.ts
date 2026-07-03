@@ -9,6 +9,21 @@ import combineFrameInstance from '../utils/combineFrameInstance';
 
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
 
+const FRAME_QUERY_PARAM = /[?&]frame=([^&#]*)/;
+const FRAME_QUERY_PARAM_WITH_SEPARATOR = /([?&])frame=[^&#]*(&)?/;
+
+function getFrameNumberFromImageURI(imageURI: string): string | undefined {
+  return imageURI.match(FRAME_QUERY_PARAM)?.[1];
+}
+
+function removeFrameNumberFromImageURI(imageURI: string): string {
+  return imageURI
+    .replace(FRAME_QUERY_PARAM_WITH_SEPARATOR, (_, separator: string, trailingSeparator?: string) => {
+      return trailingSeparator ? separator : '';
+    })
+    .replace(/[?&]$/, '');
+}
+
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
   // Can be used to store custom metadata for a specific type.
@@ -465,8 +480,10 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
-    // remove &frame=number from imageId
-    imageURI = imageURI.split('&frame=')[0];
+    const frameNumberFromImageId = getFrameNumberFromImageURI(imageURI);
+
+    // remove frame=number from imageId
+    imageURI = removeFrameNumberFromImageURI(imageURI);
 
     const uids = this.imageURIToUIDs.get(imageURI);
 
@@ -474,9 +491,7 @@ class MetadataProvider {
       return;
     }
 
-    // uids already have the information about frameNumber as each data source
-    // will add it at ingestion
-    const frameNumber = uids.frameNumber || '1';
+    const frameNumber = frameNumberFromImageId || uids.frameNumber || '1';
 
     return { ...uids, frameNumber };
   }
