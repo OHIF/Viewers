@@ -250,12 +250,14 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       });
     },
     linkMeasurement: info => {
+      const measurementId = info?.value?.data?.label?.measurementId;
       window.parent.postMessage(
         {
           type: OHIFMessageType.LINK_MEASURE,
           message: {
             elementType: info.toolName,
             uid: info.uid,
+            measurementId,
           },
         },
         '*'
