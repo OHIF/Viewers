@@ -20,5 +20,10 @@ test('should display the angle tool', async ({
     { x: 550, y: 300 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.angle.angleDisplayedCorrectly);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.angle.angleDisplayedCorrectly
+  );
 });

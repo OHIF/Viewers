@@ -3,6 +3,9 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
+// Module-resolution rules shared with the webpack/rspack build (webpack.base.js)
+// so the two pipelines resolve identically.
+import resolveConfig from './.webpack/resolveConfig';
 import fs from 'fs';
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
@@ -27,7 +30,14 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
+// Ignore node_modules except @cornerstonejs (symlinked local development).
+const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
+const WATCH_AGGREGATE_TIMEOUT = Number(process.env.WATCH_AGGREGATE_TIMEOUT || 1500);
+
 export default defineConfig({
+  dev: {
+    lazyCompilation: false,
+  },
   source: {
     entry: {
       index: `${SRC_DIR}/index.js`,
@@ -51,6 +61,15 @@ export default defineConfig({
     rspack: {
       experiments: {
         asyncWebAssembly: true,
+      },
+      // Leave __filename / __dirname references alone. rsbuild's default
+      // ('warn-mock') noisily warns whenever bundled deps reference them
+      // (e.g. Emscripten-compiled cornerstone codecs). Those references sit
+      // inside `if (ENVIRONMENT_IS_NODE)` branches that never execute in the
+      // browser, so leaving them un-substituted is harmless at runtime.
+      node: {
+        __filename: false,
+        __dirname: false,
       },
       module: {
         rules: [
@@ -78,22 +97,33 @@ export default defineConfig({
         ],
       },
       resolve: {
+        // Extensions/modes are resolved from their source dirs (see the
+        // resolve.alias above), so their imports of shared OHIF packages
+        // (@ohif/ui-next, @ohif/core, ...) must resolve against platform/app's
+        // installed dependencies rather than only the importer-relative
+        // node_modules. Shared with webpack.base.js via ./.webpack/resolveConfig.
+        modules: resolveConfig.getModules(SRC_DIR),
         fallback: {
           buffer: require.resolve('buffer'),
         },
       },
       watchOptions: {
-        ignored: /node_modules\/@cornerstonejs/,
+        ignored: WATCH_IGNORED,
+        followSymlinks: true,
+        aggregateTimeout: WATCH_AGGREGATE_TIMEOUT,
       },
     },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './platform/app/src'),
-      '@components': path.resolve(__dirname, './platform/app/src/components'),
-      '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
-      '@routes': path.resolve(__dirname, './platform/app/src/routes'),
-      '@state': path.resolve(__dirname, './platform/app/src/state'),
+      // Resolve every extension/mode declared in pluginConfig.json to its
+      // source directory, so the dynamic import()s in the generated
+      // pluginImports.js link without the plugins being dependencies of
+      // platform/app. Merged in separately since it depends on pluginConfig.json.
+      ...writePluginImportsFile.getPluginResolveAliases(),
+      // App-level aliases (@ohif/app, @, @components, ...) shared with the
+      // webpack/rspack build via ./.webpack/resolveConfig.
+      ...resolveConfig.alias,
     },
   },
   output: {

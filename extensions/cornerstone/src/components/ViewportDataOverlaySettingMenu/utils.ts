@@ -80,8 +80,8 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
 
     // Check if Frame of Reference matches
     if (
-      displaySet.frameOfReferenceUID &&
-      displaySet.frameOfReferenceUID !== backgroundDisplaySet.frameOfReferenceUID
+      displaySet.FrameOfReferenceUID &&
+      displaySet.FrameOfReferenceUID !== backgroundDisplaySet.FrameOfReferenceUID
     ) {
       return {
         ...displaySet,

@@ -19,5 +19,10 @@ test('should display the ellipse tool', async ({
     { x: 508, y: 281 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.ellipse.ellipseDisplayedCorrectly);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.ellipse.ellipseDisplayedCorrectly
+  );
 });

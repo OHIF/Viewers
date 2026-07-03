@@ -2,6 +2,9 @@
 
 window.config = {
   routerBasename: null,
+  customizationService: [
+    '@ohif/extension-default.customizationModule.theme',
+  ],
   extensions: [],
   modes: [],
   showStudyList: true,
@@ -26,7 +29,8 @@ window.config = {
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,

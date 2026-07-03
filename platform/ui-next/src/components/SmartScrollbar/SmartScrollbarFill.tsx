@@ -11,15 +11,17 @@ interface SmartScrollbarFillProps {
    * Recommended: manage `marked` + `version` together via `useByteArray()`.
    */
   version: number;
+  /** Fill color class. Defaults to `'bg-neutral/25'`. Override to customize (e.g. `'bg-primary/35'` for a viewed fill). */
   className?: string;
+  /** Fill color class used while the scrollbar is in a loading state. Defaults to `'bg-neutral/50'`. */
   loadingClassName?: string;
 }
 
 export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   marked,
   version,
-  className,
-  loadingClassName,
+  className = 'bg-neutral/25',
+  loadingClassName = 'bg-neutral/50',
 }: SmartScrollbarFillProps) {
   const { trackHeight, effectiveWidth, fillPadding, isLoading } = useSmartScrollbarLayoutContext();
 

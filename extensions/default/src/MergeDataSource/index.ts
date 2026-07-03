@@ -219,6 +219,13 @@ function createMergeDataSourceApi(
       },
     },
     retrieve: {
+      getGetThumbnailSrc: (...args: unknown[]) =>
+        callForDefaultDataSource({
+          path: 'retrieve.getGetThumbnailSrc',
+          args,
+          defaultDataSourceName,
+          extensionManager,
+        }),
       bulkDataURI: (...args: unknown[]) =>
         callForAllDataSourcesAsync({
           mergeMap,
