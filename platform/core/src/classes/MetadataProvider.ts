@@ -18,9 +18,12 @@ function getFrameNumberFromImageURI(imageURI: string): string | undefined {
 
 function removeFrameNumberFromImageURI(imageURI: string): string {
   return imageURI
-    .replace(FRAME_QUERY_PARAM_WITH_SEPARATOR, (_, separator: string, trailingSeparator?: string) => {
-      return trailingSeparator ? separator : '';
-    })
+    .replace(
+      FRAME_QUERY_PARAM_WITH_SEPARATOR,
+      (_, separator: string, trailingSeparator?: string) => {
+        return trailingSeparator ? separator : '';
+      }
+    )
     .replace(/[?&]$/, '');
 }
 
@@ -446,7 +449,6 @@ class MetadataProvider {
     return metadata;
   }
 
-
   getUIDsFromImageID(imageId) {
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
@@ -460,12 +462,13 @@ class MetadataProvider {
       };
     } else if (imageId.includes('?requestType=WADO')) {
       const qs = queryString.parse(imageId);
+      const frameNumber = qs.frameNumber || qs.frame;
 
       return {
         StudyInstanceUID: qs.studyUID,
         SeriesInstanceUID: qs.seriesUID,
         SOPInstanceUID: qs.objectUID,
-        frameNumber: qs.frameNumber,
+        frameNumber,
       };
     }
 
@@ -481,6 +484,12 @@ class MetadataProvider {
     }
 
     const frameNumberFromImageId = getFrameNumberFromImageURI(imageURI);
+    const exactUIDs = this.imageURIToUIDs.get(imageURI);
+
+    if (exactUIDs) {
+      const frameNumber = frameNumberFromImageId || exactUIDs.frameNumber || '1';
+      return { ...exactUIDs, frameNumber };
+    }
 
     // remove frame=number from imageId
     imageURI = removeFrameNumberFromImageURI(imageURI);
