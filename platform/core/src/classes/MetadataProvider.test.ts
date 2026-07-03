@@ -1,5 +1,13 @@
 import metadataProvider from './MetadataProvider';
 
+beforeEach(() => {
+  (
+    metadataProvider as unknown as {
+      imageURIToUIDs: Map<string, unknown>;
+    }
+  ).imageURIToUIDs.clear();
+});
+
 describe('MetadataProvider', () => {
   it('uses the WADO frame query parameter as the frame number', () => {
     expect(
