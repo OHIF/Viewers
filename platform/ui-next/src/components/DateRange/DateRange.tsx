@@ -94,7 +94,7 @@ export function DatePickerWithRange({
               value={start}
               onChange={e => handleInputChange(e, 'start')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus hover:text-foreground placeholder:text-muted-foreground h-7 w-full justify-start rounded border bg-background pl-1.5 pr-0.5 py-1 text-left text-base font-normal hover:bg-background'
+                'border-input focus:border-ring hover:text-foreground placeholder:text-muted-foreground h-7 w-full justify-start rounded border bg-background pl-1.5 pr-0.5 py-1 text-left text-base font-normal hover:bg-background'
               )}
               data-cy="input-date-range-start"
             />
@@ -135,7 +135,7 @@ export function DatePickerWithRange({
               value={end}
               onChange={e => handleInputChange(e, 'end')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus hover:text-foreground placeholder:text-muted-foreground h-7 w-full justify-start rounded border bg-background pl-1.5 pr-0.5 py-1 text-left text-base font-normal hover:bg-background'
+                'border-input focus:border-ring hover:text-foreground placeholder:text-muted-foreground h-7 w-full justify-start rounded border bg-background pl-1.5 pr-0.5 py-1 text-left text-base font-normal hover:bg-background'
               )}
               data-cy="input-date-range-end"
             />

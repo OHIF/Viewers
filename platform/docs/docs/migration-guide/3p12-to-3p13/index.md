@@ -6,7 +6,6 @@ title: 3.12 to 3.13 Migration Guide
 ---
 
 import DocCardList from '@theme/DocCardList';
-import { useCurrentSidebarCategory } from '@docusaurus/theme-common';
 
 # 3.12 to 3.13 Migration Guide
 
@@ -25,4 +24,4 @@ The largest changes in 3.13 are infrastructure-level:
 - **[SegmentationService](./segmentation-service.md)** — the
   `removeSegmentationRepresentations` method was renamed.
 
-<DocCardList items={useCurrentSidebarCategory().items.filter(item => item.docId !== 'migration-guide/3p12-to-3p13/index')} />
+<DocCardList />

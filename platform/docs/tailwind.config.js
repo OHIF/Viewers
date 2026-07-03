@@ -1,8 +1,13 @@
+const {
+  scopedPreflightStyles,
+  isolateInsideOfContainer,
+} = require('tailwindcss-scoped-preflight');
+
 module.exports = {
-  // Don't purge any tailwind classes, usefull for debugging
-  // ...(process.env.NODE_ENV === 'development' && {
-  //   safelist: [{ pattern: /.*/ }],
-  // }),
+  darkMode: ['class', '[data-theme="dark"]'],
+  corePlugins: {
+    preflight: false,
+  },
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -39,6 +44,29 @@ module.exports = {
       bold: '700',
       extrabold: '800',
       black: '900',
+    },
+    opacity: {
+      0: '0',
+      5: '.05',
+      10: '.10',
+      15: '.15',
+      20: '.20',
+      25: '.25',
+      30: '.30',
+      35: '.35',
+      40: '.40',
+      45: '.45',
+      50: '.50',
+      55: '.55',
+      60: '.60',
+      65: '.65',
+      70: '.70',
+      75: '.75',
+      80: '.80',
+      85: '.85',
+      90: '.90',
+      95: '.95',
+      100: '1',
     },
     extend: {
       colors: {
@@ -115,5 +143,10 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    scopedPreflightStyles({
+      isolationStrategy: isolateInsideOfContainer('.showcase-isolated'),
+    }),
+    require('tailwindcss-animate'),
+  ],
 };
