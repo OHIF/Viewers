@@ -46,6 +46,19 @@ export function resolveUseCPURendering(appConfigValue: unknown): boolean {
 }
 
 /**
+ * Resolves the effective stability-gated sync policy flag at init. A
+ * `useSyncStabilityPolicy` URL query parameter takes precedence over the
+ * appConfig value, so the policy can be opted into per-session via the URL
+ * (e.g. `?useSyncStabilityPolicy=true`) without editing the deployed config.
+ * `?useSyncStabilityPolicy` (no value), `=true`, or `=1` enable it; any other
+ * value disables it. When the param is absent, appConfig wins. Defaults to
+ * `false` so synchronizers behave exactly as before until an app opts in.
+ */
+export function isSyncStabilityPolicyEnabled(appConfigValue: unknown): boolean {
+  return resolveBooleanUrlOptIn('useSyncStabilityPolicy', appConfigValue);
+}
+
+/**
  * Reads a boolean opt-in URL query param, falling back to a config value when
  * the param is absent. `?param` (no value), `=true`, or `=1` enable it; any
  * other value disables it.

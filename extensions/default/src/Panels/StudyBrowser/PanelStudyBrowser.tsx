@@ -34,7 +34,9 @@ function PanelStudyBrowser({
   const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
   const fetchedStudiesRef = useRef(new Set());
 
-  const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
+  const viewports = useViewportGrid(state => state.viewports);
+  const isHangingProtocolLayout = useViewportGrid(state => state.isHangingProtocolLayout);
   const [activeTabName, setActiveTabName] = useState(studyMode);
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
     studyMode === 'primary' && StudyInstanceUIDs.length > 0

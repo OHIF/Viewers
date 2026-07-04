@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGrid, useViewportGridApi } from '@ohif/ui-next';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
 import { measurementTrackingMode } from './promptBeginTracking';
 import hydrateStructuredReport from './hydrateStructuredReport';
@@ -42,8 +42,9 @@ function TrackedMeasurementsContextProvider(
 ) {
   const [appConfig] = useAppConfig();
 
-  const [viewportGrid, viewportGridService] = useViewportGrid();
-  const { activeViewportId, viewports } = viewportGrid;
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
+  const viewports = useViewportGrid(state => state.viewports);
+  const viewportGridApi = useViewportGridApi();
   const {
     measurementService,
     displaySetService,
@@ -90,7 +91,7 @@ function TrackedMeasurementsContextProvider(
         }
       }
 
-      viewportGridService.setDisplaySetsForViewport({
+      viewportGridApi.setDisplaySetsForViewport({
         viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
         viewportOptions: {
@@ -131,7 +132,7 @@ function TrackedMeasurementsContextProvider(
         referencedImageId: trackedMeasurement.referencedImageId,
       });
 
-      viewportGridService.setDisplaySetsForViewport({
+      viewportGridApi.setDisplaySetsForViewport({
         viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
       });
@@ -141,7 +142,7 @@ function TrackedMeasurementsContextProvider(
       if (uids?.length > 0) {
         const StructuredReportDisplaySetInstanceUID = uids[0];
 
-        viewportGridService.setDisplaySetsForViewport({
+        viewportGridApi.setDisplaySetsForViewport({
           viewportId: evt.data.viewportId,
           displaySetInstanceUIDs: [StructuredReportDisplaySetInstanceUID],
         });
@@ -192,7 +193,7 @@ function TrackedMeasurementsContextProvider(
         displaySetInstanceUID
       );
 
-      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      viewportGridApi.setDisplaySetsForViewports(updatedViewports);
     },
   });
   machineOptions.services = Object.assign({}, machineOptions.services, {

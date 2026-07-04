@@ -10,8 +10,7 @@ import { useViewportGrid } from '@ohif/ui-next';
  */
 export function useViewportHover(viewportId: string): { isHovered: boolean; isActive: boolean } {
   const [isHovered, setIsHovered] = useState(false);
-  const [viewportGrid] = useViewportGrid();
-  const { activeViewportId } = viewportGrid;
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
 
   const isActive = activeViewportId === viewportId;
 

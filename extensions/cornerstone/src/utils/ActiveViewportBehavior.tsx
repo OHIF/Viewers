@@ -51,12 +51,12 @@ const ActiveViewportBehavior = memo(
     ]);
 
     useEffect(() => {
-      const subscription = viewportGridService.subscribe(
-        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-        ({ viewportId }) => setActiveViewportId(viewportId)
+      const unsubscribe = viewportGridService.select(
+        state => state.activeViewportId,
+        activeViewportId => setActiveViewportId(activeViewportId)
       );
 
-      return () => subscription.unsubscribe();
+      return unsubscribe;
     }, [viewportId, viewportGridService]);
 
     useEffect(() => {

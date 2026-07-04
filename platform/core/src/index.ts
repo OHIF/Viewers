@@ -38,6 +38,16 @@ import {
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
+import {
+  createViewportGridStore,
+  assembleLegacyState,
+  selectLayout,
+  selectActiveViewportId,
+  selectViewport,
+  selectIsActive,
+  selectStability,
+  shallowEqual,
+} from './services/ViewportGridService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 import useActiveViewportDisplaySets from './hooks/useActiveViewportDisplaySets';
@@ -128,6 +138,14 @@ export {
   MultiMonitorService,
   ToolbarService,
   ViewportGridService,
+  createViewportGridStore,
+  assembleLegacyState,
+  selectLayout,
+  selectActiveViewportId,
+  selectViewport,
+  selectIsActive,
+  selectStability,
+  shallowEqual,
   HangingProtocolService,
   UserAuthenticationService,
   IWebApiDataSource,
@@ -146,5 +164,25 @@ export { OHIF };
 
 export type { Types };
 export type { SortDisplaySetsCopyOptions } from './utils/sortStudy';
+export type {
+  ApplyLayoutProps,
+  DerivedGridState,
+  GetPresentationIds,
+  GridLayout,
+  LegacyViewportEntry,
+  LegacyViewportGridState,
+  PaneGeometry,
+  SelectOptions,
+  SetDisplaySetsUpdate,
+  StabilityLevel,
+  StabilitySelection,
+  ViewportComposition,
+  ViewportGridSnapshot,
+  ViewportGridStore,
+  ViewportGridStoreActions,
+  ViewportGridStoreState,
+  ViewportRuntimeEntry,
+  ViewportRuntimePhase,
+} from './services/ViewportGridService';
 
 export default OHIF;

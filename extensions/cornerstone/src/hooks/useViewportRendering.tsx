@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
-import { Types, utilities, Enums } from '@cornerstonejs/core';
+import { useViewportState } from './useViewportState';
+import { Types, utilities } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../utils/getLegacyViewportType';
 import { getViewportAdapter, LEGACY_OPACITY_GAMMA } from '../services/ViewportService/adapter';
 import { WindowLevelPreset } from '../types/WindowLevel';
@@ -131,11 +132,14 @@ export function useViewportRendering(
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
   const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
-  // Viewport from service; kept in state so we can subscribe to VIEWPORT_DATA_CHANGED when null and re-run effects when it becomes available
+  // Viewport from service; kept in state so effects re-run when it becomes available
   const [viewport, setViewport] = useState<Types.IViewport | null>(() =>
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
   );
   const [is3DVolume, setIs3DVolume] = useState(isVolume3DViewportType(viewport));
+  // Runtime-channel phase (plan section 4.7); transitions on mount/render/rebind
+  // and drives the getCornerstoneViewport reads below.
+  const runtimePhase = useViewportState(viewportId ?? '', snapshot => snapshot.phase);
 
   // The opacity slider gamma follows the rendering path (linear on native,
   // the historical 1/5 curve on legacy), so the slider feel and its initial
@@ -206,33 +210,25 @@ export function useViewportRendering(
     );
   }, [viewportDisplaySets, presets]);
 
-  // Keep viewport in state; when not available, subscribe to VIEWPORT_DATA_CHANGED so we set it when the viewport is ready
+  // Reset the viewport when the target viewport changes.
+  useEffect(() => {
+    setViewport(
+      viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
+    );
+  }, [viewportId, cornerstoneViewportService]);
+
+  // Runtime-channel phase changes replace the VIEWPORT_DATA_CHANGED
+  // subscription: the channel binds (and its phase moves) right before that
+  // event broadcasts, so re-reading here picks up the viewport once mounted.
   useEffect(() => {
     if (!viewportId) {
-      setViewport(null);
       return;
     }
-    const vp = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    setViewport(vp ?? null);
-    if (vp) {
-      return;
+    const next = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (next) {
+      setViewport(next);
     }
-    const { unsubscribe } = cornerstoneViewportService.subscribe(
-      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-      ({ viewportId: eventViewportId }) => {
-        if (eventViewportId !== viewportId) {
-          return;
-        }
-        const next = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        if (next) {
-          setViewport(next);
-        }
-      }
-    );
-    return () => {
-      unsubscribe();
-    };
-  }, [viewportId, cornerstoneViewportService]);
+  }, [viewportId, cornerstoneViewportService, runtimePhase]);
 
   // Calculate pixel value range for the active display set
   useEffect(() => {
@@ -279,53 +275,78 @@ export function useViewportRendering(
     return activePresetData.presets;
   }, [allWindowLevelPresets, activeDisplaySetInstanceUID]);
 
+  // Seed VOI/opacity/threshold from the viewport and keep them current over
+  // the runtime channel: the channel already bumps on VOI_MODIFIED and
+  // COLORMAP_MODIFIED (among other events), so a value-guarded re-read replaces
+  // the previous raw element listeners. The per-display-set read stays on the
+  // adapter because the channel snapshot's presentation is the active binding,
+  // not the foreground layer this hook targets.
   useEffect(() => {
     setIs3DVolume(isVolume3DViewportType(viewport));
 
-    if (!viewport || !activeDisplaySetInstanceUID) {
+    if (!viewportId || !viewport || !activeDisplaySetInstanceUID) {
       return;
     }
-    try {
-      const adapter = getViewportAdapter(viewport);
-      const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
-      const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
 
-      if (!properties) {
-        return;
-      }
+    const syncPresentationState = () => {
+      try {
+        const adapter = getViewportAdapter(viewport);
+        const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
+        const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
 
-      if (properties.voiRange) {
-        setVoiRange(properties.voiRange);
-        voiRangeRef.current = properties.voiRange;
-      } else {
+        if (!properties) {
+          return;
+        }
+
         // Native ("next") viewports store only explicit VOI overrides in the
         // per-display-set presentation; a freshly shown series has none, so fall
         // back to its computed default VOI (undefined on legacy, whose
         // getProperties always returns the applied VOI). Without this, changing
         // the series left the overlay showing the previous series' window level.
-        const defaultVOIRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
+        const nextVoiRange =
+          properties.voiRange ?? adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
 
-        if (defaultVOIRange) {
-          setVoiRange(defaultVOIRange);
-          voiRangeRef.current = defaultVOIRange;
+        if (
+          nextVoiRange &&
+          (!voiRangeRef.current || !areVoiRangesClose(voiRangeRef.current, nextVoiRange))
+        ) {
+          voiRangeRef.current = nextVoiRange;
+          setVoiRange(nextVoiRange);
         }
-      }
 
-      if (properties.colormap?.opacity !== undefined) {
-        const opacity = resolveOpacityScalar(properties.colormap.opacity);
-        if (opacity !== undefined) {
-          setOpacityState(opacity);
-          setOpacityLinearState(opacityToLinear(opacity));
+        if (properties.colormap?.opacity !== undefined) {
+          const opacity = resolveOpacityScalar(properties.colormap.opacity);
+          if (opacity !== undefined) {
+            setOpacityState(opacity);
+            setOpacityLinearState(opacityToLinear(opacity));
+          }
         }
-      }
 
-      if (properties.colormap?.threshold !== undefined) {
-        setThresholdState(properties.colormap.threshold);
+        if (properties.colormap?.threshold !== undefined) {
+          setThresholdState(properties.colormap.threshold);
+        }
+      } catch (error) {
+        console.error('Error initializing VOI range:', error);
       }
-    } catch (error) {
-      console.error('Error initializing VOI range:', error);
-    }
-  }, [activeDisplaySetInstanceUID, viewport]);
+    };
+
+    syncPresentationState();
+
+    const unsubscribe = cornerstoneViewportService.subscribeViewportRuntime(
+      viewportId,
+      syncPresentationState
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [
+    activeDisplaySetInstanceUID,
+    viewport,
+    viewportId,
+    cornerstoneViewportService,
+    opacityToLinear,
+  ]);
 
   useEffect(() => {
     if (!viewportId) {
@@ -348,60 +369,6 @@ export function useViewportRendering(
       unsubscribe();
     };
   }, [colorbarService, viewportId]);
-
-  useEffect(() => {
-    if (!activeDisplaySetInstanceUID || !viewport?.element) {
-      return;
-    }
-
-    const element = viewport.element;
-
-    const updateVOI = eventDetail => {
-      const { range } = eventDetail.detail;
-
-      if (!range) {
-        return;
-      }
-
-      // Check if this update is coming from our own setVOIRange or setWindowLevel call
-      // If so, we already updated our state and don't need to do it again
-      const isInternalUpdate = voiRangeRef.current && areVoiRangesClose(voiRangeRef.current, range);
-
-      if (!isInternalUpdate) {
-        voiRangeRef.current = range;
-        setVoiRange(range);
-      }
-    };
-
-    const updateColormap = eventDetail => {
-      const { colormap } = eventDetail.detail;
-
-      if (!colormap) {
-        return;
-      }
-
-      // Extract threshold from colormap in the event detail
-      if (colormap.threshold !== undefined) {
-        setThresholdState(colormap.threshold);
-      }
-
-      if (colormap.opacity !== undefined) {
-        const opacity = resolveOpacityScalar(colormap.opacity);
-        if (opacity !== undefined) {
-          setOpacityState(opacity);
-          setOpacityLinearState(opacityToLinear(opacity));
-        }
-      }
-    };
-
-    element.addEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
-    element.addEventListener(Enums.Events.COLORMAP_MODIFIED, updateColormap);
-
-    return () => {
-      element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
-      element.removeEventListener(Enums.Events.COLORMAP_MODIFIED, updateColormap);
-    };
-  }, [activeDisplaySetInstanceUID, viewport, opacityToLinear]);
 
   const validateActiveDisplaySet = useCallback(() => {
     if (!activeDisplaySetInstanceUID) {

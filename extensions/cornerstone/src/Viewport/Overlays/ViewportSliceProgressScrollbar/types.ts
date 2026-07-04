@@ -12,6 +12,5 @@ export type ViewportSliceProgressScrollbarProps = {
   viewportId: string;
   element: HTMLElement;
   imageSliceData: ImageSliceData;
-  setImageSliceData: (data: ImageSliceData) => void;
   servicesManager: AppTypes.ServicesManager;
 };

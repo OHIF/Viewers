@@ -28,8 +28,8 @@ function ViewportOrientationMenu({
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewportOrientation = viewportInfo.getOrientation();
 
-  const [gridState] = useViewportGrid();
-  const viewportIdToUse = viewportId || gridState.activeViewportId;
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
+  const viewportIdToUse = viewportId || activeViewportId;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
   const [currentOrientation, setCurrentOrientation] = React.useState<string>(
     typeof viewportOrientation === 'string' ? viewportOrientation : 'axial'

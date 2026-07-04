@@ -48,6 +48,10 @@ import type { IViewportBackend } from './backends/IViewportBackend';
 import type { IViewportServiceInternals } from './backends/IViewportServiceInternals';
 import { LegacyViewportBackend } from './backends/LegacyViewportBackend';
 import { NextViewportBackend } from './backends/NextViewportBackend';
+import { createViewportRuntimeManager } from './viewportRuntime';
+import type { ViewportRuntimeManager, ViewportRuntimeSnapshot } from './viewportRuntime';
+import { createViewportMountController } from './viewportMountController';
+import type { ViewportMountController, ViewportMountIntent } from './viewportMountController';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -146,6 +150,15 @@ class CornerstoneViewportService
   // native dataId lifecycle) route through it.
   private _backend: IViewportBackend | null = null;
 
+  // Per-viewport runtime channel (plan section 4.7), created lazily on the
+  // first mount so construction order does not matter.
+  private _runtimeManager: ViewportRuntimeManager | null = null;
+
+  // Mount controller (plan section 4.6, mount-intent variant), created lazily
+  // like the runtime manager. Owns the data-mount pipeline the viewport
+  // component used to drive from its loadViewportData effect.
+  private _mountController: ViewportMountController | null = null;
+
   constructor(servicesManager: AppTypes.ServicesManager) {
     super(EVENTS);
     this.renderingEngine = null;
@@ -168,6 +181,45 @@ class CornerstoneViewportService
     }
     return this._backend;
   }
+
+  private get runtimeManager(): ViewportRuntimeManager {
+    if (!this._runtimeManager) {
+      this._runtimeManager = createViewportRuntimeManager({
+        servicesManager: this.servicesManager,
+        getCornerstoneViewport: viewportId => this.getCornerstoneViewport(viewportId),
+        getViewportInfo: viewportId => this.getViewportInfo(viewportId),
+      });
+    }
+    return this._runtimeManager;
+  }
+
+  private get mountController(): ViewportMountController {
+    if (!this._mountController) {
+      this._mountController = createViewportMountController({
+        servicesManager: this.servicesManager,
+        setViewportData: (
+          viewportId,
+          viewportData,
+          viewportOptions,
+          displaySetOptions,
+          presentations
+        ) =>
+          this.setViewportData(
+            viewportId,
+            viewportData,
+            // The grid-shaped options the component publishes are the same
+            // objects the old effect passed here; only the declared types differ.
+            viewportOptions as unknown as PublicViewportOptions,
+            displaySetOptions as DisplaySetOptions[],
+            presentations
+          ),
+        updateViewport: (viewportId, viewportData, keepCamera) =>
+          this.updateViewport(viewportId, viewportData, keepCamera),
+        getViewportInfo: viewportId => this.getViewportInfo(viewportId),
+      });
+    }
+    return this._mountController;
+  }
   hangingProtocolService: unknown;
   viewportsInfo: unknown;
   sceneVolumeInputs: unknown;
@@ -186,6 +238,31 @@ class CornerstoneViewportService
     const viewportInfo = new ViewportInfo(viewportId);
     viewportInfo.setElement(elementRef);
     this.viewportsById.set(viewportId, viewportInfo);
+  }
+
+  /**
+   * Registers the viewport's DOM element with the mount controller; any
+   * pending mount intent for the viewport mounts immediately.
+   */
+  public attachViewportElement(viewportId: string, element: HTMLDivElement): void {
+    this.mountController.attachElement(viewportId, element);
+  }
+
+  /**
+   * Detaches the viewport's DOM element from the mount controller, cancelling
+   * any in-flight mount; a future re-attach remounts the last published intent.
+   */
+  public detachViewportElement(viewportId: string): void {
+    this.mountController.detachElement(viewportId);
+  }
+
+  /**
+   * Publishes the mount inputs for a viewport (plan section 4.6 mount-intent
+   * contract). Safe to call on every render; the controller's comparator
+   * dedupes equal intents.
+   */
+  public setViewportMountIntent(viewportId: string, intent: ViewportMountIntent): void {
+    this.mountController.setMountIntent(viewportId, intent);
   }
 
   public getViewportIds(): string[] {
@@ -265,6 +342,11 @@ class CornerstoneViewportService
   public destroy() {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
+    // The mount controller goes first: it drives mounts into everything below.
+    this._mountController?.destroy();
+    this._mountController = null;
+    this._runtimeManager?.destroy();
+    this._runtimeManager = null;
     // Flush any native dataId registrations the backend owns (§4.7); no-op for legacy.
     this.backend.destroy();
     try {
@@ -288,6 +370,17 @@ class CornerstoneViewportService
    * @param viewportId - The viewportId to disable
    */
   public disableElement(viewportId: string): void {
+    // Direct disableElement callers (not going through the component's
+    // detachViewportElement cleanup) must not leave a stale element
+    // registration behind in the mount controller; detach is idempotent, so
+    // the normal unmount path (detach then disable) is unaffected. Uses the
+    // backing field so teardown never lazily creates a controller.
+    this._mountController?.detachElement(viewportId);
+
+    // Detach the runtime channel listeners while the element and bookkeeping
+    // are still intact.
+    this._runtimeManager?.release(viewportId);
+
     // Release native dataId registrations BEFORE the viewport bookkeeping is
     // deleted (§4.7 ref-counted GC); no-op for the legacy backend.
     this.backend.onViewportDisabled(viewportId);
@@ -519,6 +612,18 @@ class CornerstoneViewportService
       throw new Error('element is not enabled for the given viewportId');
     }
 
+    // Mount-start invalidation: the grid store carries the runtime phase
+    // forward across setDisplaySets (bug-for-bug with the old isReady), so
+    // derived stability would read stale-true between the composition swap and
+    // this remount. Must stay AFTER the early-return guards above, or an
+    // early-returned viewport gets stuck detached.
+    this.servicesManager.services.viewportGridService?.setViewportIsReady?.(viewportId, false);
+
+    // Captured once at mount start: when a newer setViewportData for the same
+    // viewport interleaves before this mount's promise settles, the revision
+    // moves on and the stale .then below must not report mounted or rebind.
+    const mountRevision = this._getCurrentCompositionRevision(viewportId);
+
     // override the viewportOptions and displaySetOptions with the public ones
     // since those are the newly set ones, we set them here so that it handles defaults
     const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
@@ -579,11 +684,62 @@ class CornerstoneViewportService
     // viewport to access.  Doing it too early can result in exceptions or
     // invalid data.
     displaySetPromise.then(() => {
+      this._reportMountedAndBindRuntime(viewportId, mountRevision);
       this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
         viewportData,
         viewportId,
       });
     });
+  }
+
+  private _getCurrentCompositionRevision(viewportId: string): number | undefined {
+    return this.servicesManager.services.viewportGridService?.getViewportComposition?.(viewportId)
+      ?.compositionRevision;
+  }
+
+  /**
+   * Reports the mounted phase for the viewport's current composition revision
+   * to the grid (plan section 4.8) and (re)binds the runtime channel to the
+   * freshly mounted content. Runs before VIEWPORT_DATA_CHANGED is broadcast so
+   * event consumers already observe the mounted state.
+   *
+   * mountRevision is the compositionRevision captured at mount start; when it
+   * no longer matches the current revision, a newer mount superseded this one
+   * mid-flight, so reporting mounted (the store would accept it at the CURRENT
+   * revision) or rebinding would describe stale content. The newer mount's own
+   * completion reports and binds instead.
+   */
+  private _reportMountedAndBindRuntime(viewportId: string, mountRevision?: number): void {
+    const { viewportGridService } = this.servicesManager.services;
+    const compositionRevision = this._getCurrentCompositionRevision(viewportId);
+    if (
+      mountRevision !== undefined &&
+      compositionRevision !== undefined &&
+      mountRevision !== compositionRevision
+    ) {
+      return;
+    }
+    if (compositionRevision !== undefined) {
+      viewportGridService?.reportPhase?.(viewportId, 'mounted', compositionRevision);
+    }
+    this.runtimeManager.bind(viewportId);
+  }
+
+  /**
+   * Lazily computed runtime snapshot for a viewport (revision, phase, shape,
+   * view reference/state, presentation, slice position). Referentially stable
+   * per revision, as useSyncExternalStore requires.
+   */
+  public getViewportRuntime(viewportId: string): ViewportRuntimeSnapshot {
+    return this.runtimeManager.get(viewportId);
+  }
+
+  /**
+   * Subscribes to runtime snapshot changes for a viewport. Returns an
+   * unsubscribe function.
+   */
+  public subscribeViewportRuntime(viewportId: string, callback: () => void): () => void {
+    return this.runtimeManager.subscribe(viewportId, callback);
   }
 
   public getViewportOptions(viewportId: string): ViewportOptions {
@@ -1401,7 +1557,17 @@ class CornerstoneViewportService
       return;
     }
 
+    // Mount-start invalidation (see setViewportData). Placed after the no-op
+    // guard above so a viewport with no re-mount path keeps its runtime phase
+    // instead of getting stuck detached; the remount body is synchronous up to
+    // its first await, so nothing can observe stale-true stability in between.
+    this.servicesManager.services.viewportGridService?.setViewportIsReady?.(viewportId, false);
+
+    // Supersession guard (see _reportMountedAndBindRuntime).
+    const mountRevision = this._getCurrentCompositionRevision(viewportId);
+
     displaySetPromise.then(() => {
+      this._reportMountedAndBindRuntime(viewportId, mountRevision);
       this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
         viewportData,
         viewportId,

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGrid, useViewportGridApi } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
@@ -32,7 +32,8 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   }
 
   const segDisplaySet = displaySets[0];
-  const [viewportGrid, viewportGridService] = useViewportGrid();
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
+  const viewportGridApi = useViewportGridApi();
 
   // States
   const { setPositionPresentation } = usePositionPresentationStore();
@@ -50,8 +51,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   // refs
   const referencedDisplaySetRef = useRef(null);
-
-  const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
   // If the referencedDisplaySetInstanceUID is not found, it means the SEG series is being
@@ -190,9 +189,15 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
+        const { viewports, activeViewportId } = viewportGridApi.getState();
         const activeViewport = viewports.get(activeViewportId);
+        // The event can arrive after a grid reset, when there is no active
+        // viewport entry to read.
+        if (!activeViewport) {
+          return;
+        }
         if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
-          viewportGridService.setDisplaySetsForViewport({
+          viewportGridApi.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });

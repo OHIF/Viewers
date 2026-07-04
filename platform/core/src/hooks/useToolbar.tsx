@@ -49,22 +49,55 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     };
   }, [toolbarService]);
 
-  // Effect to handle active viewportId change event
+  // Effect to refresh the toolbar state on grid transitions: active viewport
+  // changes, layout changes and the all-viewports-mounted flip (the state
+  // transitions the ACTIVE_VIEWPORT_ID_CHANGED / LAYOUT_CHANGED /
+  // VIEWPORTS_READY events used to report).
   useEffect(() => {
-    const events = [
-      viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-      viewportGridService.EVENTS.VIEWPORTS_READY,
-      viewportGridService.EVENTS.LAYOUT_CHANGED,
+    let disposed = false;
+
+    // Deferred: select listeners run synchronously inside the grid store
+    // transaction, and the button evaluators must stay out of the mount
+    // pipeline (a throw there would abort the writing transaction). The
+    // setTimeout also preserves the deferred timing of the legacy grid
+    // events this effect replaced. The null guard matches those events,
+    // which never fired without an active viewport (eg during reset).
+    const refreshToolbarState = (viewportId?: string) => {
+      setTimeout(() => {
+        if (disposed) {
+          return;
+        }
+        const targetViewportId = viewportId || viewportGridService.getActiveViewportId();
+        if (!targetViewportId) {
+          return;
+        }
+        toolbarService.refreshToolbarState({ viewportId: targetViewportId });
+      }, 0);
+    };
+
+    const unsubscribers = [
+      viewportGridService.select(
+        state => state.activeViewportId,
+        activeViewportId => refreshToolbarState(activeViewportId)
+      ),
+      viewportGridService.select(
+        state => state.layout.layoutRevision,
+        () => refreshToolbarState()
+      ),
+      viewportGridService.select(
+        state => state.derived.allMounted,
+        allMounted => {
+          if (allMounted) {
+            refreshToolbarState();
+          }
+        }
+      ),
     ];
 
-    const subscriptions = events.map(event => {
-      return viewportGridService.subscribe(event, ({ viewportId }) => {
-        viewportId = viewportId || viewportGridService.getActiveViewportId();
-        toolbarService.refreshToolbarState({ viewportId });
-      });
-    });
-
-    return () => subscriptions.forEach(sub => sub.unsubscribe());
+    return () => {
+      disposed = true;
+      unsubscribers.forEach(unsubscribe => unsubscribe());
+    };
   }, [viewportGridService, toolbarService]);
 
   // Action API for toolbar buttons

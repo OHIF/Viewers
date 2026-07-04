@@ -5,7 +5,7 @@ import getCommandsModule from './getCommandsModule';
 import getCustomizationModule from './getCustomizationModule';
 import { Types } from '@ohif/core';
 
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGrid, useViewportGridApi } from '@ohif/ui-next';
 import getDicomMicroscopySRSopClassHandler from './DicomMicroscopySRSopClassHandler';
 import getDicomMicroscopyANNSopClassHandler from './DicomMicroscopyANNSopClassHandler';
 import MicroscopyService from './services/MicroscopyService';
@@ -59,8 +59,8 @@ const extension: Types.Extensions.Extension = {
     const ExtendedMicroscopyViewport = props => {
       const { viewportOptions } = props;
 
-      const [viewportGrid, viewportGridService] = useViewportGrid();
-      const { activeViewportId } = viewportGrid;
+      const activeViewportId = useViewportGrid(state => state.activeViewportId);
+      const viewportGridApi = useViewportGridApi();
 
       const displaySetsKey = useMemo(() => {
         return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
@@ -83,9 +83,9 @@ const extension: Types.Extensions.Extension = {
 
       const setViewportActive = useCallback(
         (viewportId: string) => {
-          viewportGridService.setActiveViewportId(viewportId);
+          viewportGridApi.setActiveViewportId(viewportId);
         },
-        [viewportGridService]
+        [viewportGridApi]
       );
 
       return (

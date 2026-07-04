@@ -1,4 +1,5 @@
 import { Types, DicomMetadataStore, utils } from '@ohif/core';
+import type { ViewportGridSnapshot } from '@ohif/core';
 import dcmjs from 'dcmjs';
 
 const { downloadBlob } = utils;
@@ -351,7 +352,7 @@ const commandsModule = ({
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        reuseCachedLayouts(state, hangingProtocolService);
+        reuseCachedLayouts(state, hangingProtocolService, viewportGridService);
         const { hangingProtocolStageIndexMap } = useHangingProtocolStageIndexStore.getState();
         const { displaySetSelectorMap } = useDisplaySetSelectorStore.getState();
 
@@ -418,7 +419,9 @@ const commandsModule = ({
             restoreProtocol,
           });
           if (restoreProtocol) {
-            viewportGridService.set(viewportGridState[storedHanging]);
+            // Stored by reuseCachedLayouts as a deep grid snapshot; restore()
+            // deep-copies again on the way in.
+            viewportGridService.restore(viewportGridState[storedHanging] as ViewportGridSnapshot);
           }
         }
         // Do this after successfully applying the update
@@ -542,9 +545,11 @@ const commandsModule = ({
         if (!toggleOneUpViewportGridStore) {
           return;
         }
-        // There is a state to toggle back to. The viewport that was
-        // originally toggled to one up was the former active viewport.
-        const viewportIdToUpdate = toggleOneUpViewportGridStore.activeViewportId;
+        // There is a deep grid snapshot (ViewportGridSnapshot) to toggle back
+        // to. The viewport that was originally toggled to one up was the
+        // former active viewport.
+        const snapshot = toggleOneUpViewportGridStore;
+        const viewportIdToUpdate = snapshot.activeViewportId;
 
         // We are restoring the previous layout but taking into the account that
         // the current one up viewport might have a new displaySet dragged and dropped on it.
@@ -564,40 +569,33 @@ const commandsModule = ({
                 )
                 .flat();
 
-        // findOrCreateViewport returns either one of the updatedViewportsViaHP
-        // returned from the HP service OR if there is not one from the HP service then
-        // simply returns what was in the previous state for a given position in the layout.
-        const findOrCreateViewport = (position: number, positionId: string) => {
-          // Find the viewport for the given position prior to the toggle to one-up.
-          const preOneUpViewport = Array.from(toggleOneUpViewportGridStore.viewports.values()).find(
-            viewport => viewport.positionId === positionId
-          );
+        // Restore the pre-one-up grid (layout, viewport compositions and the
+        // active viewport) from the deep snapshot. Note this also restores the
+        // snapshot's isHangingProtocolLayout, where the pre-snapshot code
+        // rebuilt the grid with isHangingProtocolLayout hardcoded to true.
+        viewportGridService.restore(snapshot);
 
-          // Use the viewport id from before the toggle to one-up to find any updates to the viewport.
-          const viewport = updatedViewportsViaHP.find(
-            viewport => viewport.viewportId === preOneUpViewport.viewportId
-          );
+        // Overlay the HP-driven updates on the restored grid, covering a
+        // display set dragged and dropped on the viewport while in one-up.
+        // Updates whose display sets match the restored composition are
+        // skipped: reapplying them would bump the composition revision and
+        // needlessly remount the surviving one-up viewport on a plain toggle.
+        const viewportsToUpdate = updatedViewportsViaHP
+          .filter(update => {
+            const restored = snapshot.viewports[update.viewportId];
+            return (
+              restored &&
+              (restored.displaySetInstanceUIDs.length !== update.displaySetInstanceUIDs.length ||
+                restored.displaySetInstanceUIDs.some(
+                  (uid, index) => uid !== update.displaySetInstanceUIDs[index]
+                ))
+            );
+          })
+          .map(update => ({ viewportOptions, displaySetOptions, ...update }));
 
-          return viewport
-            ? // Use the applicable viewport from the HP updated viewports
-              { viewportOptions, displaySetOptions, ...viewport }
-            : // Use the previous viewport for the given position
-              preOneUpViewport;
-        };
-
-        const layoutOptions = viewportGridService.getLayoutOptionsFromState(
-          toggleOneUpViewportGridStore
-        );
-
-        // Restore the previous layout including the active viewport.
-        viewportGridService.setLayout({
-          numRows: toggleOneUpViewportGridStore.layout.numRows,
-          numCols: toggleOneUpViewportGridStore.layout.numCols,
-          activeViewportId: viewportIdToUpdate,
-          layoutOptions,
-          findOrCreateViewport,
-          isHangingProtocolLayout: true,
-        });
+        if (viewportsToUpdate.length) {
+          viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+        }
 
         // Reset crosshairs after restoring the layout
         setTimeout(() => {
@@ -606,9 +604,11 @@ const commandsModule = ({
       } else {
         // We are not in one-up, so toggle to one up.
 
-        // Store the current viewport grid state so we can toggle it back later.
+        // Store a deep snapshot of the current grid so it can be restored when
+        // toggling back; the legacy getState() object aliases live state and
+        // must not be persisted.
         const { setToggleOneUpViewportGridStore } = useToggleOneUpViewportGridStore.getState();
-        setToggleOneUpViewportGridStore(viewportGridState);
+        setToggleOneUpViewportGridStore(viewportGridService.snapshot());
 
         // one being toggled to one up.
         const findOrCreateViewport = () => {

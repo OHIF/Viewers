@@ -2,11 +2,6 @@ import { ViewportData } from './types';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import { getViewportAdapter } from '../../../services/ViewportService/adapter';
 
-export function getImageIndexFromEvent(event): number | undefined {
-  const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;
-  return newImageIdIndex ?? imageIdIndex;
-}
-
 export function getViewportImageIds(viewportData: ViewportData): string[] {
   if (!viewportData?.data?.length) {
     return [];

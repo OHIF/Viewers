@@ -31,7 +31,9 @@ import {
   setNextViewportsEnabled,
   resolveNextViewportsEnabled,
   resolveUseCPURendering,
+  isSyncStabilityPolicyEnabled,
 } from './utils/nextViewports';
+import { installSyncStabilityPolicy } from './utils/syncStabilityPolicy';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -234,6 +236,14 @@ export default async function init({
 
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
+
+  // Opt-in (default off): suspend synchronizers while the viewport grid is
+  // unstable and resume once every viewport has rendered its composition.
+  // isSyncStabilityPolicyEnabled lets a `?useSyncStabilityPolicy=true` URL
+  // param opt in per-session; when the param is absent, appConfig wins.
+  if (isSyncStabilityPolicyEnabled(appConfig.useSyncStabilityPolicy)) {
+    installSyncStabilityPolicy({ servicesManager });
+  }
 
   measurementService.subscribe(measurementService.EVENTS.JUMP_TO_MEASUREMENT, evt => {
     const { measurement } = evt;

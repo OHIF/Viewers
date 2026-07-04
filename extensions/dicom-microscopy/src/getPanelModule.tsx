@@ -14,7 +14,8 @@ export default function getPanelModule({
   servicesManager,
 }: Types.Extensions.ExtensionParams) {
   const wrappedMeasurementPanel = ({}) => {
-    const [{ activeViewportId, viewports }] = useViewportGrid();
+    const activeViewportId = useViewportGrid(state => state.activeViewportId);
+    const viewports = useViewportGrid(state => state.viewports);
 
     return (
       <MicroscopyPanel
