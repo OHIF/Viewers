@@ -44,6 +44,86 @@ function wrapSequences(obj) {
     Array.isArray(obj) ? [] : {}
   );
 }
+
+function hasFrameQuery(url) {
+  return /[?&]frame=/.test(url);
+}
+
+function getDicomJSONImageId({ instance, frame, config }) {
+  if (!instance) {
+    return;
+  }
+
+  if (!instance.url) {
+    return getImageId({ instance, frame, config });
+  }
+
+  const imageId = getImageId({ instance, config });
+
+  if (frame === undefined || !imageId || hasFrameQuery(imageId)) {
+    return imageId;
+  }
+
+  return `${imageId}&frame=${frame}`;
+}
+
+function getInstanceMetadata({ instance, series, study, imageId }) {
+  const { instances, NumberOfFrames, ...seriesMetadata } = series;
+  const modifiedMetadata = wrapSequences(instance.metadata);
+  const obj = {
+    ...modifiedMetadata,
+    url: instance.url,
+    imageId,
+    ...seriesMetadata,
+    ...study,
+  };
+
+  if (modifiedMetadata.NumberOfFrames === undefined && instances.length === 1 && NumberOfFrames) {
+    obj.NumberOfFrames = NumberOfFrames;
+  }
+
+  delete obj.instances;
+  delete obj.series;
+  return obj;
+}
+
+function getDicomJSONImageIdsForDisplaySet({ displaySet, seriesInstances, config }) {
+  const images = displaySet.images;
+  const imageIds = [];
+
+  if (!images) {
+    return imageIds;
+  }
+
+  const instanceMap = new Map();
+  if (seriesInstances) {
+    seriesInstances.forEach(instance => {
+      if (instance?.metadata?.SOPInstanceUID) {
+        const { metadata, url } = instance;
+        const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
+        existingInstances.push({ ...metadata, url });
+        instanceMap.set(metadata.SOPInstanceUID, existingInstances);
+      }
+    });
+  }
+
+  images.forEach(instance => {
+    const NumberOfFrames = instance.NumberOfFrames || 1;
+    const instances =
+      NumberOfFrames > 1 ? instanceMap.get(instance.SOPInstanceUID) || [instance] : [instance];
+    for (let i = 0; i < NumberOfFrames; i++) {
+      const imageId = getDicomJSONImageId({
+        instance: instances[Math.min(i, instances.length - 1)],
+        frame: NumberOfFrames > 1 ? i : undefined,
+        config,
+      });
+      imageIds.push(imageId);
+    }
+  });
+
+  return imageIds;
+}
+
 const getMetaDataByURL = url => {
   return _store.urls.find(metaData => metaData.url === url);
 };
@@ -94,7 +174,7 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
 
           series.instances.forEach(instance => {
             const { metadata: naturalizedDicom } = instance;
-            const imageId = getImageId({ instance, config: dicomJsonConfig });
+            const imageId = getDicomJSONImageId({ instance, config: dicomJsonConfig });
 
             const { query } = qs.parseUrl(instance.url);
 
@@ -227,22 +307,12 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
           const numberOfSeries = series.length;
           series.forEach((series, index) => {
             const instances = series.instances.map(instance => {
-              // for instance.metadata if the key ends with sequence then
-              // we need to add a proxy to the first item in the sequence
-              // so that we can access the value of the sequence
-              // by using sequenceName.value
-              const modifiedMetadata = wrapSequences(instance.metadata);
-
-              const obj = {
-                ...modifiedMetadata,
-                url: instance.url,
-                imageId: getImageId({ instance, config: dicomJsonConfig }),
-                ...series,
-                ...study,
-              };
-              delete obj.instances;
-              delete obj.series;
-              return obj;
+              return getInstanceMetadata({
+                instance,
+                series,
+                study,
+                imageId: getDicomJSONImageId({ instance, config: dicomJsonConfig }),
+              });
             });
             storeInstances(instances);
             if (index === numberOfSeries - 1) {
@@ -260,46 +330,18 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
     reject: {},
     deleteStudyMetadataPromise: () => {},
     getImageIdsForDisplaySet(displaySet) {
-      const images = displaySet.images;
-      const imageIds = [];
-
-      if (!images) {
-        return imageIds;
-      }
-
       const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
       const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
       const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID) || {};
 
-      const instanceMap = new Map();
-      if (series.instances) {
-        series.instances.forEach(instance => {
-          if (instance?.metadata?.SOPInstanceUID) {
-            const { metadata, url } = instance;
-            const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
-            existingInstances.push({ ...metadata, url });
-            instanceMap.set(metadata.SOPInstanceUID, existingInstances);
-          }
-        });
-      }
-
-      displaySet.images.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames || 1;
-        const instances = instanceMap.get(instance.SOPInstanceUID) || [instance];
-        for (let i = 0; i < NumberOfFrames; i++) {
-          const imageId = getImageId({
-            instance: instances[Math.min(i, instances.length - 1)],
-            frame: NumberOfFrames > 1 ? i : undefined,
-            config: dicomJsonConfig,
-          });
-          imageIds.push(imageId);
-        }
+      return getDicomJSONImageIdsForDisplaySet({
+        displaySet,
+        seriesInstances: series.instances,
+        config: dicomJsonConfig,
       });
-
-      return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      const imageIds = getImageId({ instance, frame });
+      const imageIds = getDicomJSONImageId({ instance, frame });
       return imageIds;
     },
     getStudyInstanceUIDs: ({ params, query }) => {
@@ -323,4 +365,9 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
   return IWebApiDataSource.create(implementation);
 }
 
-export { createDicomJSONApi };
+export {
+  createDicomJSONApi,
+  getDicomJSONImageId,
+  getDicomJSONImageIdsForDisplaySet,
+  getInstanceMetadata,
+};
