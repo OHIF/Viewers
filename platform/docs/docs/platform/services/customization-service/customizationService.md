@@ -557,4 +557,9 @@ needless to say if you opted to choose `name: default` in the `getCustomizationM
 
 Below we are providing the example configuration for global scenario (using the configuration file), however, you can also use the `setCustomizations` method to set the customizations.
 
+In addition to the parts listed in the table below, the
+[Appearance & Theming](./appearance-theming.md) system is delivered as a
+customization module (`@ohif/extension-default.customizationModule.theme`) that
+adds theme preset switching, custom CSS overrides, and URL-based theme selection.
+
 {TableGenerator(customizations)}

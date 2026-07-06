@@ -42,7 +42,6 @@ export const dicomsr = {
 
 export const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
 export const dicomecg = {
