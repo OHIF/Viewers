@@ -33,7 +33,6 @@ const dicomsr = {
 
 const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
 const dicompdf = {
@@ -253,10 +252,6 @@ function modeFactory() {
                 {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
-                },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
                 },
                 {
                   namespace: dicompdf.viewport,
