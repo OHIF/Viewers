@@ -1,8 +1,10 @@
 import { TextEncoder, TextDecoder } from 'util';
 import {
   decodeNumericBulkData,
-  resolvePETPrivateScalarBulkData,
-} from './resolvePETPrivateScalarBulkData';
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+} from './resolveBulkDataTags';
 
 // jsdom does not expose TextEncoder/TextDecoder; the Node util implementations
 // are spec-compatible and match what browsers provide at runtime.
@@ -57,9 +59,13 @@ describe('decodeNumericBulkData', () => {
   });
 });
 
-describe('resolvePETPrivateScalarBulkData', () => {
+describe('resolveBulkDataTags', () => {
   const SUV_TAG = '70531000';
   const AC_TAG = '70531009';
+
+  it('registers the Philips PET scalar tags by default', () => {
+    expect(getResolvedBulkDataTags()).toEqual(expect.arrayContaining([SUV_TAG, AC_TAG]));
+  });
 
   it('resolves a Philips bulkdata tag to a number via retrieveBulkData', async () => {
     const instance: Record<string, unknown> = {
@@ -70,7 +76,7 @@ describe('resolvePETPrivateScalarBulkData', () => {
       },
     };
 
-    await resolvePETPrivateScalarBulkData([instance]);
+    await resolveBulkDataTags([instance]);
 
     expect(instance[SUV_TAG]).toBeCloseTo(0.00038, 8);
   });
@@ -88,47 +94,83 @@ describe('resolvePETPrivateScalarBulkData', () => {
       },
     };
 
-    await resolvePETPrivateScalarBulkData([instance]);
+    await resolveBulkDataTags([instance]);
 
     expect(instance[SUV_TAG]).toBeCloseTo(0.00038, 8);
     expect(instance[AC_TAG]).toBeCloseTo(1.881732, 6);
   });
 
+  it('resolves registered tags regardless of modality', async () => {
+    const instance: Record<string, unknown> = {
+      Modality: 'CT',
+      [SUV_TAG]: {
+        BulkDataURI: 'http://x',
+        retrieveBulkData: jest.fn().mockResolvedValue(textBuffer('0.5')),
+      },
+    };
+
+    await resolveBulkDataTags([instance]);
+
+    expect(instance[SUV_TAG]).toBe(0.5);
+  });
+
+  it('resolves additionally registered tags', async () => {
+    const CUSTOM_TAG = '00091001';
+    registerResolvedBulkDataTags(CUSTOM_TAG);
+    expect(getResolvedBulkDataTags()).toContain(CUSTOM_TAG);
+
+    const instance: Record<string, unknown> = {
+      [CUSTOM_TAG]: {
+        BulkDataURI: 'http://x/custom',
+        retrieveBulkData: jest.fn().mockResolvedValue(textBuffer('42.5')),
+      },
+    };
+
+    await resolveBulkDataTags([instance]);
+
+    expect(instance[CUSTOM_TAG]).toBe(42.5);
+  });
+
+  it('registers arrays of tags and normalizes casing', async () => {
+    registerResolvedBulkDataTags(['0019100a']);
+    expect(getResolvedBulkDataTags()).toContain('0019100A');
+
+    // The naturalized dataset may key the tag in either casing.
+    const instance: Record<string, unknown> = {
+      '0019100a': {
+        BulkDataURI: 'http://x',
+        retrieveBulkData: jest.fn().mockResolvedValue(textBuffer('7')),
+      },
+    };
+
+    await resolveBulkDataTags([instance]);
+
+    expect(instance['0019100a']).toBe(7);
+  });
+
   it('uses the cached value.Value without fetching again', async () => {
     const retrieveBulkData = jest.fn();
     const instance: Record<string, unknown> = {
-      Modality: 'PT',
       [SUV_TAG]: { BulkDataURI: 'http://x', Value: textBuffer('0.5'), retrieveBulkData },
     };
 
-    await resolvePETPrivateScalarBulkData([instance]);
+    await resolveBulkDataTags([instance]);
 
     expect(instance[SUV_TAG]).toBe(0.5);
     expect(retrieveBulkData).not.toHaveBeenCalled();
   });
 
-  it('ignores non-PT instances', async () => {
-    const retrieveBulkData = jest.fn().mockResolvedValue(textBuffer('0.5'));
-    const value = { BulkDataURI: 'http://x', retrieveBulkData };
-    const instance: Record<string, unknown> = { Modality: 'CT', [SUV_TAG]: value };
-
-    await resolvePETPrivateScalarBulkData([instance]);
-
-    expect(instance[SUV_TAG]).toBe(value);
-    expect(retrieveBulkData).not.toHaveBeenCalled();
-  });
-
   it('leaves an already-numeric value untouched', async () => {
-    const instance: Record<string, unknown> = { Modality: 'PT', [SUV_TAG]: 0.00038 };
-    await resolvePETPrivateScalarBulkData([instance]);
+    const instance: Record<string, unknown> = { [SUV_TAG]: 0.00038 };
+    await resolveBulkDataTags([instance]);
     expect(instance[SUV_TAG]).toBe(0.00038);
   });
 
   it('leaves the value untouched when bulkdata cannot be fetched (no retrieveBulkData)', async () => {
     const value = { BulkDataURI: 'http://x' };
-    const instance: Record<string, unknown> = { Modality: 'PT', [SUV_TAG]: value };
+    const instance: Record<string, unknown> = { [SUV_TAG]: value };
 
-    await resolvePETPrivateScalarBulkData([instance]);
+    await resolveBulkDataTags([instance]);
 
     expect(instance[SUV_TAG]).toBe(value);
   });
@@ -139,17 +181,15 @@ describe('resolvePETPrivateScalarBulkData', () => {
       BulkDataURI: 'http://x',
       retrieveBulkData: jest.fn().mockRejectedValue(new Error('request failed')),
     };
-    const instance: Record<string, unknown> = { Modality: 'PT', [SUV_TAG]: value };
+    const instance: Record<string, unknown> = { [SUV_TAG]: value };
 
-    await expect(resolvePETPrivateScalarBulkData([instance])).resolves.toBeUndefined();
+    await expect(resolveBulkDataTags([instance])).resolves.toBeUndefined();
     expect(instance[SUV_TAG]).toBe(value);
     warn.mockRestore();
   });
 
   it('is a no-op for empty / non-array input', async () => {
-    await expect(resolvePETPrivateScalarBulkData([])).resolves.toBeUndefined();
-    await expect(
-      resolvePETPrivateScalarBulkData(undefined as unknown as unknown[])
-    ).resolves.toBeUndefined();
+    await expect(resolveBulkDataTags([])).resolves.toBeUndefined();
+    await expect(resolveBulkDataTags(undefined as unknown as unknown[])).resolves.toBeUndefined();
   });
 });

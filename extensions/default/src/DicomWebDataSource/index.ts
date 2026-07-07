@@ -16,7 +16,6 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
-import { resolvePETPrivateScalarBulkData } from './utils/resolvePETPrivateScalarBulkData';
 import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
 import { getGetThumbnailSrc, ThumbnailContext } from './retrieveThumbnail';
 
@@ -461,9 +460,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       // bulkdata-valued tags can be resolved (matching the lazy-load path).
       const naturalizedInstancesMetadata = data.map(addRetrieveBulkData);
 
-      // Resolve PET private scalar tags (e.g. the Philips SUV Scale Factor)
-      // delivered as bulkdata into plain numbers BEFORE INSTANCES_ADDED fires.
-      await resolvePETPrivateScalarBulkData(naturalizedInstancesMetadata);
+      // Resolve the registered bulkdata tags (e.g. the Philips SUV Scale
+      // Factor) delivered as bulkdata into plain numbers BEFORE
+      // INSTANCES_ADDED fires.
+      await utils.resolveBulkDataTags(naturalizedInstancesMetadata);
 
       const seriesSummaryMetadata = {};
       const instancesPerSeries = {};
@@ -541,11 +541,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       async function storeInstances(instances) {
         const naturalizedInstances = instances.map(addRetrieveBulkData);
 
-        // Resolve PET private scalar tags (e.g. the Philips SUV Scale Factor)
-        // that the server delivered as bulkdata into plain numbers BEFORE
-        // INSTANCES_ADDED fires, so SUV scaling and every other subscriber read
-        // a fully-resolved value rather than an unresolved { BulkDataURI }.
-        await resolvePETPrivateScalarBulkData(naturalizedInstances);
+        // Resolve the registered bulkdata tags (e.g. the Philips SUV Scale
+        // Factor) that the server delivered as bulkdata into plain numbers
+        // BEFORE INSTANCES_ADDED fires, so SUV scaling and every other
+        // subscriber read a fully-resolved value rather than an unresolved
+        // { BulkDataURI }.
+        await utils.resolveBulkDataTags(naturalizedInstances);
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach(instance => {

@@ -1,27 +1,54 @@
 /**
- * Resolves Philips PET private scalar tags that a DICOMweb server delivered as
- * bulkdata (a `{ BulkDataURI }` reference) into plain numeric values, mutating
- * the naturalized instance in place.
+ * A static registry of DICOM tags whose values must be resolved from bulkdata
+ * into plain numbers during metadata ingestion, before INSTANCES_ADDED fires.
  *
- * Background: some servers return small private values - notably the Philips
+ * Background: some servers return small scalar values - notably the Philips
  * SUV Scale Factor (7053,1000) and Activity Concentration Scale Factor
  * (7053,1009) - as bulkdata rather than inline. dcmjs `naturalizeDataset` then
- * leaves them as `{ BulkDataURI: '...' }` objects under their raw hex key. SUV
- * scaling (calculate-suv) expects numbers and silently corrupts when handed an
- * object (the value is returned verbatim as `suvbw`, or multiplied to `NaN`),
- * so we resolve them here - during ingestion, before INSTANCES_ADDED fires - so
- * that every downstream consumer reads a fully-resolved number.
+ * leaves them as `{ BulkDataURI: '...' }` objects under their raw hex key.
+ * Downstream consumers (e.g. SUV scaling via calculate-suv) expect numbers and
+ * silently corrupt when handed an object, so data sources resolve the
+ * registered tags eagerly so that every subscriber reads a fully-resolved
+ * number.
  *
- * Resolution reuses the `retrieveBulkData` method that DicomWebDataSource binds
- * onto each bulkdata value (only present when `bulkDataURI.enabled`); when it is
- * absent the value is left untouched and SUV falls back gracefully.
+ * The registry is intentionally not tied to any data source: it is a static
+ * list that any data source can consume via `resolveBulkDataTags`, and that
+ * extensions can extend via `registerResolvedBulkDataTags`.
+ *
+ * Resolution reuses the `retrieveBulkData` method that data sources bind onto
+ * each bulkdata value; when it is absent the value is left untouched and
+ * consumers fall back gracefully.
  */
 
-// Philips PET Private Group scalar tags that may arrive as bulkdata, keyed by
-// the naturalized (lowercase, comma-less) hex tag. Both are VR DS in the
-// standard Philips definition, but the VR is auto-detected (see decode below)
-// because servers occasionally encode them as FL/FD.
-const PET_PRIVATE_SCALAR_TAGS = ['70531000', '70531009'];
+// Tags that may arrive as bulkdata and must be resolved to numbers, keyed by
+// the naturalized (comma-less) hex tag. Seeded with the Philips PET Private
+// Group scalar tags; both are VR DS in the standard Philips definition, but
+// the VR is auto-detected (see decode below) because servers occasionally
+// encode them as FL/FD.
+const resolvedBulkDataTags = new Set<string>([
+  '70531000', // Philips SUV Scale Factor
+  '70531009', // Philips Activity Concentration Scale Factor
+]);
+
+/**
+ * Registers additional tags (naturalized comma-less hex form, e.g.
+ * '70531000') to be resolved from bulkdata during metadata ingestion.
+ */
+export function registerResolvedBulkDataTags(tags: string | string[]): void {
+  const list = Array.isArray(tags) ? tags : [tags];
+  for (const tag of list) {
+    if (typeof tag === 'string' && tag.length) {
+      resolvedBulkDataTags.add(tag.toUpperCase());
+    }
+  }
+}
+
+/**
+ * Returns the tags currently registered for eager bulkdata resolution.
+ */
+export function getResolvedBulkDataTags(): string[] {
+  return [...resolvedBulkDataTags];
+}
 
 function toUint8(raw: unknown): Uint8Array | undefined {
   // Check views first: ArrayBuffer.isView is realm-agnostic.
@@ -119,18 +146,21 @@ async function resolveValueToNumber(value): Promise<number | undefined> {
 }
 
 /**
- * Resolves, in place, the Philips PET private scalar bulkdata tags on a single
- * naturalized instance. No-op for non-PT instances and for values that are
- * already numbers or that have no resolvable bulkdata.
+ * Resolves, in place, the registered bulkdata tags on a single naturalized
+ * instance. No-op for values that are already numbers or that have no
+ * resolvable bulkdata.
  */
 async function resolveInstance(instance): Promise<void> {
-  if (!instance || instance.Modality !== 'PT') {
+  if (!instance) {
     return;
   }
 
   await Promise.all(
-    PET_PRIVATE_SCALAR_TAGS.map(async tag => {
-      const value = instance[tag];
+    [...resolvedBulkDataTags].map(async tag => {
+      // Registered tags are normalized to uppercase hex; naturalized datasets
+      // key unknown private tags by their hex tag, so check both casings.
+      const key = tag in instance ? tag : tag.toLowerCase();
+      const value = instance[key];
       // Inline (already a number) or absent: nothing to resolve.
       if (value == null || typeof value !== 'object') {
         return;
@@ -138,24 +168,24 @@ async function resolveInstance(instance): Promise<void> {
       try {
         const num = await resolveValueToNumber(value);
         if (num !== undefined) {
-          instance[tag] = num;
+          instance[key] = num;
         }
       } catch (error) {
-        console.warn(`resolvePETPrivateScalarBulkData: failed to resolve tag ${tag}`, error);
+        console.warn(`resolveBulkDataTags: failed to resolve tag ${tag}`, error);
       }
     })
   );
 }
 
 /**
- * Resolves Philips PET private scalar bulkdata tags across a set of naturalized
- * instances, mutating them in place. Safe to call for any modality.
+ * Resolves the registered bulkdata tags across a set of naturalized
+ * instances, mutating them in place.
  */
-export async function resolvePETPrivateScalarBulkData(instances): Promise<void> {
+export async function resolveBulkDataTags(instances): Promise<void> {
   if (!Array.isArray(instances) || !instances.length) {
     return;
   }
   await Promise.all(instances.map(resolveInstance));
 }
 
-export default resolvePETPrivateScalarBulkData;
+export default resolveBulkDataTags;

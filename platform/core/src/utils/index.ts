@@ -49,6 +49,12 @@ import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
 import { thumbnailNoImageModalities } from './thumbnailNoImageModalities';
+import {
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
+} from './resolveBulkDataTags';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
 
@@ -109,6 +115,10 @@ const utils = {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
 };
 
 export {
@@ -152,6 +162,10 @@ export {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
 };
 
 export default utils;

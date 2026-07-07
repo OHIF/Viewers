@@ -57,7 +57,7 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   // numbers; an unresolved bulkdata object yields undefined and is dropped so it
   // can never corrupt the SUV calculation. SUVScaleFactor is (7053,1000) and
   // ActivityConcentrationScaleFactor is (7053,1009). These are resolved from
-  // bulkdata upstream during ingestion (resolvePETPrivateScalarBulkData).
+  // bulkdata upstream during ingestion (utils.resolveBulkDataTags).
   const suvScaleFactor = coerceNumber(dicomMetaData['70531000']);
   const activityConcentrationScaleFactor = coerceNumber(dicomMetaData['70531009']);
   if (suvScaleFactor !== undefined || activityConcentrationScaleFactor !== undefined) {
@@ -104,7 +104,7 @@ export { getPTImageIdInstanceMetadata };
  * an array - becomes undefined. This is the final backstop ensuring such a value
  * can never reach calculate-suv (which treats it as truthy and silently corrupts
  * the SUV factors). Bulkdata is meant to be resolved upstream during ingestion
- * (see resolvePETPrivateScalarBulkData); this guard catches anything that slips
+ * (see utils.resolveBulkDataTags); this guard catches anything that slips
  * through.
  */
 function coerceNumber(value: unknown): number | undefined {
