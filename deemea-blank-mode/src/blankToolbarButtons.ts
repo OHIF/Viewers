@@ -1,5 +1,4 @@
 import type { Button } from '@ohif/core/types';
-import { ViewportGridService } from '@ohif/core';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -7,15 +6,6 @@ const setToolActiveToolbar = {
     toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
-
-const callbacks = (toolName: string) => [
-  {
-    commandName: 'setViewportForToolConfiguration',
-    commandOptions: {
-      toolName,
-    },
-  },
-];
 
 const toolbarButtons: Button[] = [
   // tool defs

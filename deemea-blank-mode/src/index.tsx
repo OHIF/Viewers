@@ -1,6 +1,6 @@
-import toolbarButtons from './toolbarButtonsAnapath';
+import toolbarButtons from './blankToolbarButtons';
 import { id } from './id';
-import initToolGroups from './initToolGroupsAnapath';
+import initToolGroups from './initBlankToolGroups';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -12,16 +12,6 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-};
-
-const dicomvideo = {
-  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
-};
-
-const dicompdf = {
-  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
-  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
 };
 
 /**
@@ -37,7 +27,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-microscopy': '^3.0.0',
 };
 
-function modeFactory({ modeConfiguration }) {
+function modeFactory() {
   return {
     /**
      * Mode ID, which should be unique among modes used by the viewer. This ID
@@ -64,54 +54,17 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'measurementSection',
         'Zoom',
         'WindowLevel',
         'Pan',
-        'Capture',
         'Layout',
         'Crosshairs',
-        'moreToolsSection',
-      ]);
-
-      toolbarService.createButtonSection('measurementSection', [
-        'Length',
-        'Bidirectional',
-        'ArrowAnnotate',
-        'EllipticalROI',
-        'RectangleROI',
-        'CircleROI',
-        'PlanarFreehandROI',
-        'SplineROI',
-        'LivewireContour',
-      ]);
-
-      toolbarService.createButtonSection('moreToolsSection', [
-        'Reset',
-        'rotate-right',
-        'flipHorizontal',
-        'ImageSliceSync',
-        'ReferenceLines',
-        'ImageOverlayViewer',
-        'StackScroll',
-        'invert',
-        'Probe',
-        'Cine',
-        'Angle',
-        'CobbAngle',
-        'Magnify',
-        'CalibrationLine',
-        'TagBrowser',
-        'AdvancedMagnify',
-        'UltrasoundDirectionalTool',
-        'WindowLevelRegion',
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,
-        segmentationService,
         cornerstoneViewportService,
         uiDialogService,
         uiModalService,
@@ -121,7 +74,6 @@ function modeFactory({ modeConfiguration }) {
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
-      segmentationService.destroy();
       cornerstoneViewportService.destroy();
     },
     /** */
@@ -155,21 +107,7 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ohif.leftPanel],
-              rightPanels: [ohif.rightPanel],
-              leftPanelResizable: true,
-              leftPanelClosed: false,
-              rightPanelClosed: true,
-              rightPanelResizable: true,
               viewports: [
-                {
-                  namespace: '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
-                  displaySetsToDisplay: [
-                    // Share the sop class handler with cornerstone version of it
-                    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
-                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
-                  ],
-                },
                 {
                   namespace: cornerstone.viewport,
                   displaySetsToDisplay: [ohif.sopClassHandler],
@@ -185,12 +123,7 @@ function modeFactory({ modeConfiguration }) {
     /** HangingProtocol used by the mode */
     hangingProtocol: 'default',
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [
-      '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
-      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
-      dicomvideo.sopClassHandler,
-      dicompdf.sopClassHandler,
-    ],
+    sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
   };
 }
