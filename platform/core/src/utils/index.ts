@@ -15,6 +15,7 @@ import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatTime from './formatTime';
 import formatPN from './formatPN';
+import formatValue from './formatValue';
 import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
@@ -79,6 +80,7 @@ const utils = {
   formatDate,
   formatTime,
   formatPN,
+  formatValue,
   b64toBlob,
   urlUtil,
   imageIdToURI,
@@ -127,6 +129,7 @@ export {
   absoluteUrl,
   sortBy,
   formatDate,
+  formatValue,
   writeScript,
   b64toBlob,
   urlUtil,

@@ -1,11 +1,9 @@
 import update from 'immutability-helper';
-import { ToolbarService, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 
 import initToolGroups from './initToolGroups';
-import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 
-const { TOOLBAR_SECTIONS } = ToolbarService;
 const { structuredCloneWithFunctions } = utils;
 
 /**
@@ -145,9 +143,22 @@ export function onModeEnter({
   // Init Default and SR ToolGroups
   initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-  toolbarService.register(this.toolbarButtons);
+  // Toolbar buttons and layout may be supplied either as a customization name
+  // (a string, resolved through the customization service so `?customization=`
+  // modules can extend the cornerstone-registered defaults) or as a literal
+  // value (the button array / sections object) for modes that define them inline.
+  const resolveToolbarCustomization = (value: unknown) =>
+    typeof value === 'string' ? customizationService.getCustomization(value) : value;
 
-  for (const [key, section] of Object.entries(this.toolbarSections)) {
+  const toolbarButtons = resolveToolbarCustomization(this.toolbarButtons) as any;
+  const toolbarSections = (resolveToolbarCustomization(this.toolbarSections) ?? {}) as Record<
+    string,
+    string[]
+  >;
+
+  toolbarService.register(toolbarButtons);
+
+  for (const [key, section] of Object.entries(toolbarSections)) {
     toolbarService.updateSection(key, section);
   }
 
@@ -212,74 +223,6 @@ export function onModeExit({ servicesManager }: withAppTypes) {
   cornerstoneViewportService.destroy();
 }
 
-export const toolbarSections = {
-  [TOOLBAR_SECTIONS.primary]: [
-    'MeasurementTools',
-    'Zoom',
-    'Pan',
-    'TrackballRotate',
-    'WindowLevel',
-    'Capture',
-    'Layout',
-    'Crosshairs',
-    'MoreTools',
-  ],
-
-  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
-
-  [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],
-
-  AdvancedRenderingControls: [
-    'windowLevelMenuEmbedded',
-    'voiManualControlMenu',
-    'Colorbar',
-    'opacityMenu',
-    'thresholdMenu',
-  ],
-
-  [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: [
-    'modalityLoadBadge',
-    'trackingStatus',
-    'navigationComponent',
-  ],
-
-  [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
-
-  MeasurementTools: [
-    'Length',
-    'Bidirectional',
-    'ArrowAnnotate',
-    'EllipticalROI',
-    'RectangleROI',
-    'CircleROI',
-    'PlanarFreehandROI',
-    'SplineROI',
-    'LivewireContour',
-  ],
-
-  MoreTools: [
-    'Reset',
-    'rotate-right',
-    'flipHorizontal',
-    'ImageSliceSync',
-    'ReferenceLines',
-    'ImageOverlayViewer',
-    'StackScroll',
-    'invert',
-    'Probe',
-    'Cine',
-    'Angle',
-    'CobbAngle',
-    'Magnify',
-    'CalibrationLine',
-    'TagBrowser',
-    'AdvancedMagnify',
-    'UltrasoundDirectionalTool',
-    'WindowLevelRegion',
-    'SegmentLabelTool',
-  ],
-};
-
 export const basicLayout = {
   id: ohif.layout,
   props: {
@@ -342,7 +285,10 @@ export const modeInstance = {
   hide: false,
   displayName: 'Non-Longitudinal Basic',
   _activatePanelTriggersSubscriptions: [],
-  toolbarSections,
+  // Toolbar buttons and layout are referenced by customization name; the
+  // cornerstone extension registers the defaults and `?customization=` modules
+  // can extend them. onModeEnter resolves these names via the customization service.
+  toolbarSections: 'cornerstone.toolbarSections',
 
   /**
    * Lifecycle hooks
@@ -364,7 +310,7 @@ export const modeInstance = {
   // general handler needs to come last.  For this case, the dicomvideo must
   // come first to remove video transfer syntax before ohif uses images
   sopClassHandlers,
-  toolbarButtons,
+  toolbarButtons: 'cornerstone.toolbarButtons',
   enableSegmentationEdit: false,
   nonModeModalities: NON_IMAGE_MODALITIES,
 };
@@ -389,4 +335,4 @@ export const mode = {
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
+export { initToolGroups };
