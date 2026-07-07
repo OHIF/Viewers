@@ -24,6 +24,12 @@ describe('decodeNumericBulkData', () => {
     expect(decodeNumericBulkData(textBuffer('1.881732'))).toBeCloseTo(1.881732, 6);
   });
 
+  it('decodes a NUL-padded DS string', () => {
+    // Some servers pad DS/IS values with NUL (0x00) rather than space; trim()
+    // does not strip NUL, so this guards the explicit NUL handling in decodeText.
+    expect(decodeNumericBulkData(textBuffer('0.00038\0'))).toBeCloseTo(0.00038, 8);
+  });
+
   it('decodes scientific notation', () => {
     expect(decodeNumericBulkData(textBuffer('3.8e-4'))).toBeCloseTo(0.00038, 8);
   });

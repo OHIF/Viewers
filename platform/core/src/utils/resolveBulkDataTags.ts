@@ -95,7 +95,10 @@ function isPrintableNumeric(bytes: Uint8Array): boolean {
 }
 
 function decodeText(bytes: Uint8Array): number | undefined {
-  const text = new TextDecoder().decode(bytes).trim();
+  // `String.trim()` strips ASCII/Unicode whitespace but NOT NUL (0x00), which
+  // `isPrintableNumeric` treats as valid padding, so strip NULs explicitly -
+  // otherwise a NUL-padded value like "0.00038\0" survives as NaN.
+  const text = new TextDecoder().decode(bytes).replace(/\0+/g, '').trim();
   // DS/IS may be multi-valued (backslash-delimited); take the first value.
   const first = text.split('\\')[0].trim();
   if (!first) {

@@ -462,7 +462,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       // Resolve the registered bulkdata tags (e.g. the Philips SUV Scale
       // Factor) delivered as bulkdata into plain numbers BEFORE
-      // INSTANCES_ADDED fires.
+      // INSTANCES_ADDED fires. retrieveBulkData is bound to qidoDicomWebClient,
+      // so refresh its auth headers first (matching every other qido op here).
+      qidoDicomWebClient.headers = getAuthorizationHeader();
       await utils.resolveBulkDataTags(naturalizedInstancesMetadata);
 
       const seriesSummaryMetadata = {};
@@ -545,7 +547,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         // Factor) that the server delivered as bulkdata into plain numbers
         // BEFORE INSTANCES_ADDED fires, so SUV scaling and every other
         // subscriber read a fully-resolved value rather than an unresolved
-        // { BulkDataURI }.
+        // { BulkDataURI }. retrieveBulkData is bound to qidoDicomWebClient, so
+        // refresh its auth headers first (matching every other qido op here).
+        qidoDicomWebClient.headers = getAuthorizationHeader();
         await utils.resolveBulkDataTags(naturalizedInstances);
 
         // Adding instanceMetadata to OHIF MetadataProvider
