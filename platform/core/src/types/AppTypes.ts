@@ -93,8 +93,8 @@ declare global {
        *     scope during `init()` (e.g.
        *     `['@ohif/extension-default.customizationModule.datasources']`).
        *   - **Phase-tagged** ({@link PhasedCustomizationConfig}): an object with
-       *     any of `requires` / `preExtension` / `global` / `mode`. `requires`
-       *     pulls in URL-style customization data files; `preExtension` /
+       *     any of `requires` / `bootstrap` / `global` / `mode`. `requires`
+       *     pulls in URL-style customization data files; `bootstrap` /
        *     `global` apply (Global scope) before / after extensions register; and
        *     `mode` applies (Mode scope) per mode on entry — the `*` block to all
        *     modes first, then a block keyed by the mode id / routeName.

@@ -4,7 +4,7 @@ import type { CustomizationModule, PhasedCustomizationConfig } from './customiza
  * Extracts the phase-tagged payload from a loaded customization module.
  *
  * A module is considered to carry a payload when it declares any of the
- * lifecycle phase blocks (`preExtension` / `global` / `mode`) or a `requires`
+ * lifecycle phase blocks (`bootstrap` / `global` / `mode`) or a `requires`
  * edge. Returns `null` when none are present so callers can warn/skip a module
  * that does nothing.
  */
@@ -14,18 +14,18 @@ export function getUrlCustomizationModulePayload(
   if (!module || typeof module !== 'object') {
     return null;
   }
-  const hasPreExtension = isPhaseInput(module.preExtension);
+  const hasBootstrap = isPhaseInput(module.bootstrap);
   const hasGlobal = isPhaseInput(module.global);
   const hasMode = module.mode && typeof module.mode === 'object' && !Array.isArray(module.mode);
   const hasRequires =
     typeof module.requires === 'string' ||
     (Array.isArray(module.requires) && module.requires.length > 0);
 
-  if (!hasPreExtension && !hasGlobal && !hasMode && !hasRequires) {
+  if (!hasBootstrap && !hasGlobal && !hasMode && !hasRequires) {
     return null;
   }
   return {
-    ...(hasPreExtension ? { preExtension: module.preExtension } : {}),
+    ...(hasBootstrap ? { bootstrap: module.bootstrap } : {}),
     ...(hasGlobal ? { global: module.global } : {}),
     ...(hasMode ? { mode: module.mode } : {}),
     ...(hasRequires ? { requires: module.requires } : {}),

@@ -27,14 +27,14 @@ export type ModePhaseCustomizations = Record<string, CustomizationPhaseInput>;
  * Each block is applied at a distinct point in the app lifecycle so ordering is
  * deterministic regardless of when extensions / modes load:
  *   - `requires`     — other URL customization modules to resolve first.
- *   - `preExtension` — applied (Global scope) BEFORE extensions register.
+ *   - `bootstrap`    — applied (Global scope) BEFORE extensions register.
  *   - `global`       — applied (Global scope) AFTER extensions register / init.
  *   - `mode`         — applied (Mode scope) on every mode enter; general first,
  *                      then the entered mode's specific block.
  */
 export interface PhasedCustomizationConfig {
   requires?: string | string[];
-  preExtension?: CustomizationPhaseInput;
+  bootstrap?: CustomizationPhaseInput;
   global?: CustomizationPhaseInput;
   mode?: ModePhaseCustomizations;
 }

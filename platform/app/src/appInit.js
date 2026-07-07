@@ -95,12 +95,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const { customizationService } = servicesManager.services;
   // Resolve every customization module up front — from
   // `appConfig.customizationService.requires` and the `?customization=` URL
-  // parameter — long before any mode loads, then apply the `preExtension` phase
+  // parameter — long before any mode loads, then apply the `bootstrap` phase
   // BEFORE extensions register so it is in place while they initialize. Modules
   // are only loaded when `appConfig.customizationUrlPrefixes` allows their
   // prefix; the feature is off by default, and a value with an unconfigured
   // prefix throws here (aborting startup) rather than being silently ignored.
-  await customizationService.loadAndApplyPreExtensionCustomizations(extensionManager);
+  await customizationService.loadAndApplyBootstrapCustomizations(extensionManager);
 
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
 

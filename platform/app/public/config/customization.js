@@ -23,7 +23,7 @@ window.config = {
   // in the lifecycle so ordering is deterministic regardless of when extensions
   // and modes load:
   //   - requires:     URL customization data files to resolve up front.
-  //   - preExtension: applied (Global) BEFORE extensions register.
+  //   - bootstrap:    applied (Global) BEFORE extensions register.
   //   - global:       applied (Global) AFTER extensions register.
   //   - mode:         applied (Mode) on each mode enter — `*` (general) first,
   //                   then a block keyed by the mode id / routeName.

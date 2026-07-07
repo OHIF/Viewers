@@ -17,19 +17,19 @@ function makeExtensionManager(appConfig: Record<string, unknown> = {}) {
 }
 
 describe('CustomizationService phase-tagged loading', () => {
-  it('applies preExtension before extensions and global after, both Global scope', async () => {
+  it('applies bootstrap before extensions and global after, both Global scope', async () => {
     const service = new CustomizationService({
       commandsManager,
       configuration: {
-        preExtension: { early: { $set: 'pre' } },
+        bootstrap: { early: { $set: 'pre' } },
         global: { late: { $set: 'post' } },
       },
     });
 
     const extensionManager = makeExtensionManager();
-    await service.loadAndApplyPreExtensionCustomizations(extensionManager);
+    await service.loadAndApplyBootstrapCustomizations(extensionManager);
 
-    // preExtension is applied immediately; global is not yet.
+    // bootstrap is applied immediately; global is not yet.
     expect(service.getCustomization('early')).toBe('pre');
     expect(service.getCustomization('late')).toBeUndefined();
 

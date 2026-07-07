@@ -140,7 +140,7 @@ export default class CustomizationService extends PubSubService {
   /**
    * Every URL customization module resolved this page session, in load order
    * (dependencies before dependents). The lifecycle phase appliers
-   * ({@link applyPreExtensionCustomizations}, {@link applyGlobalCustomizations},
+   * ({@link applyBootstrapCustomizations}, {@link applyGlobalCustomizations},
    * {@link applyModeCustomizations}) iterate this list so a module's phase
    * blocks are applied at the right time regardless of when it was fetched.
    */
@@ -214,7 +214,7 @@ export default class CustomizationService extends PubSubService {
     });
 
     // Only add references for the configuration once. The phase-tagged config
-    // form (preExtension/global/mode) is applied by the lifecycle appliers
+    // form (bootstrap/global/mode) is applied by the lifecycle appliers
     // instead, so only the legacy array/object form is added here as Global.
     const config = this._getCustomizationConfig();
     if (config.legacyReferences !== undefined && !this.configuration?._hasBeenAdded) {
@@ -225,7 +225,7 @@ export default class CustomizationService extends PubSubService {
 
   /**
    * Memoized, normalized view of `appConfig.customizationService`. Detects the
-   * phase-tagged form (any of `requires` / `preExtension` / `global` / `mode`)
+   * phase-tagged form (any of `requires` / `bootstrap` / `global` / `mode`)
    * and otherwise treats the value as legacy Global references.
    */
   private _getCustomizationConfig(): { phased?: PhasedCustomizationConfig; legacyReferences?: unknown } {
@@ -297,9 +297,9 @@ export default class CustomizationService extends PubSubService {
   ): Promise<LoadedCustomization[]> {
     return this.loadCustomizationModules(names, overrides).then(newlyLoaded => {
       // Back-compat: a direct `requires()` / `applyWindowUrlCustomizations()`
-      // call applies the `global` slice immediately. The `preExtension` and
+      // call applies the `global` slice immediately. The `bootstrap` and
       // `mode` phases are driven by the boot orchestration
-      // ({@link loadAndApplyPreExtensionCustomizations}) and {@link onModeEnter}.
+      // ({@link loadAndApplyBootstrapCustomizations}) and {@link onModeEnter}.
       this._applyLoadedUrlCustomizationModules(newlyLoaded);
       return newlyLoaded;
     });
@@ -376,11 +376,11 @@ export default class CustomizationService extends PubSubService {
    *      `appConfig.customizationService.requires` list and the `?customization=`
    *      URL parameter (their data is fetched once, up front — long before any
    *      mode loads), and
-   *   3. applies the `preExtension` phase blocks.
+   *   3. applies the `bootstrap` phase blocks.
    *
    * Rejects (aborting bootstrap) if a `?customization=` value is disallowed.
    */
-  public async loadAndApplyPreExtensionCustomizations(
+  public async loadAndApplyBootstrapCustomizations(
     extensionManager: ExtensionManager,
     overrides?: Partial<LoadOptions>
   ): Promise<void> {
@@ -402,16 +402,16 @@ export default class CustomizationService extends PubSubService {
       await this.loadCustomizationModules(names, overrides);
     }
 
-    this.applyPreExtensionCustomizations();
+    this.applyBootstrapCustomizations();
   }
 
   /**
-   * Applies the `preExtension` phase (Global scope) of the structured app config
+   * Applies the `bootstrap` phase (Global scope) of the structured app config
    * and every resolved URL module. App-config blocks apply first so URL modules
    * layer on top.
    */
-  public applyPreExtensionCustomizations(): void {
-    this._applyPhase('preExtension');
+  public applyBootstrapCustomizations(): void {
+    this._applyPhase('bootstrap');
   }
 
   /**
@@ -846,7 +846,7 @@ export default class CustomizationService extends PubSubService {
   /**
    * Collects the phase blocks for `phase` from every source, in apply order:
    * the structured app config first, then each resolved URL module in load
-   * order. Used by {@link applyModeCustomizations}; the simpler `preExtension` /
+   * order. Used by {@link applyModeCustomizations}; the simpler `bootstrap` /
    * `global` phases go through {@link _applyPhase}.
    */
   private _collectPhaseBlocks(phase: keyof PhasedCustomizationConfig): PhasedCustomizationConfig[] {
@@ -864,8 +864,8 @@ export default class CustomizationService extends PubSubService {
     return blocks;
   }
 
-  /** Applies a Global-scoped phase (`preExtension` / `global`) from all sources. */
-  private _applyPhase(phase: 'preExtension' | 'global'): void {
+  /** Applies a Global-scoped phase (`bootstrap` / `global`) from all sources. */
+  private _applyPhase(phase: 'bootstrap' | 'global'): void {
     for (const block of this._collectPhaseBlocks(phase)) {
       const value = block[phase] as CustomizationPhaseInput | undefined;
       if (value) {
@@ -1072,7 +1072,7 @@ extend('$filter', (query, original) => {
 
 const PHASE_CONFIG_KEYS: Array<keyof PhasedCustomizationConfig> = [
   'requires',
-  'preExtension',
+  'bootstrap',
   'global',
   'mode',
 ];
@@ -1080,7 +1080,7 @@ const PHASE_CONFIG_KEYS: Array<keyof PhasedCustomizationConfig> = [
 /**
  * Normalizes `appConfig.customizationService` into either:
  *   - `{ phased }`           — the structured, phase-tagged config, detected by
- *                              the presence of any of `requires` / `preExtension`
+ *                              the presence of any of `requires` / `bootstrap`
  *                              / `global` / `mode`; or
  *   - `{ legacyReferences }` — the legacy array / object-map form, which is
  *                              added (Global scope) during `init()` exactly as

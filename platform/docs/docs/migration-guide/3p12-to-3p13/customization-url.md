@@ -63,15 +63,20 @@ A customization module — whether loaded from a `?customization=` data file or
 declared inline in `appConfig.customizationService` — can tag its payload with
 the lifecycle phase it should be applied in. This makes ordering deterministic
 regardless of when extensions and modes load, and lets a single source target
-the pre-extension, global, and mode-entry time frames at once.
+the bootstrap, global, and mode-entry time frames at once.
 
 ```jsonc
 {
-  // Other URL customization data files to resolve FIRST (depth-first).
-  "requires": ["base"],
+  // Other customization data files to resolve FIRST (depth-first). Each entry is
+  // itself a `?customization=` value — a customization module name resolved
+  // through the same `customizationUrlPrefixes` rules — NOT a customization id.
+  // So `"requiredCustomizationToLoad"` fetches
+  // ./customizations/requiredCustomizationToLoad.jsonc (via the `default` prefix)
+  // and applies its phase blocks before this file's.
+  "requires": ["requiredCustomizationToLoad"],
 
   // Applied (Global scope) BEFORE extensions register — in place while they init.
-  "preExtension": { "someId": { "$set": "value" } },
+  "bootstrap": { "someId": { "$set": "value" } },
 
   // Applied (Global scope) AFTER extensions register / init — so `$apply`-style
   // merges can build on extension-provided defaults.
@@ -93,6 +98,12 @@ before:
 
 ```js
 window.config = {
+  // `customizationUrlPrefixes` is a top-level app-config (window.config) property,
+  // deliberately NOT part of `customizationService`. The `customizationService`
+  // block below — and any customization loaded from a `?customization=` URL — can
+  // never read or widen this allowlist, because a URL-loaded customization must
+  // not be able to grant itself new load locations. It can only be changed here,
+  // in the global config, which is not itself updatable by any customization.
   customizationUrlPrefixes: { default: './customizations/' },
   customizationService: {
     requires: ['patientBirthDate'],            // resolves ./customizations/patientBirthDate.jsonc
@@ -113,7 +124,7 @@ How the phases map onto the boot sequence:
 | Phase | When | Scope |
 | --- | --- | --- |
 | `requires` | resolved up front (before extensions register) | — (loads other modules) |
-| `preExtension` | before `extensionManager.registerExtensions` | Global |
+| `bootstrap` | before `extensionManager.registerExtensions` | Global |
 | `global` | after extensions register + `customizationService.init` | Global |
 | `mode` | on each mode enter, after the mode scope is reset | Mode |
 
