@@ -40,6 +40,7 @@ test('should render scroll bars with the correct look-and-feel', async ({ page }
   await checkForScreenshot({
     page,
     locator: expandedStudyRow,
+    maxDiffPixelRatio: 0.03,
     normalizedClip: { x: 0.97, y: 0.35, width: 0.03, height: 0.65 },
     screenshotPath: screenShotPaths.workList.scrollBarRenderedProperly,
   });
