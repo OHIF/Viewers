@@ -143,6 +143,20 @@ export default class PanelService extends PubSubService {
     this._broadcastEvent(EVENTS.PANELS_CHANGED, { position, options });
   }
 
+  public removePanel(panelId: string, options): void {
+
+    const leftPanels = this._panelsGroups.get(PanelPosition.Left)?.map((p) => p.id) ?? [];
+    const rightPanels = this._panelsGroups.get(PanelPosition.Right)?.map((p) => p.id) ?? [];
+
+    const newLeftPanels = leftPanels.filter((id) => id !== panelId);
+    const newRightPanels = rightPanels.filter((id) => id !== panelId);
+
+    this.setPanels({
+      [PanelPosition.Left]: newLeftPanels,
+      [PanelPosition.Right]: newRightPanels,
+    } as any, options);
+  }
+
   public addPanels(position: PanelPosition, panelsIds: string[], options): void {
     if (!Array.isArray(panelsIds)) {
       throw new Error('Invalid "panelsIds" array');
@@ -151,10 +165,11 @@ export default class PanelService extends PubSubService {
     panelsIds.forEach(panelId => this.addPanel(position, panelId, options));
   }
 
-  public setPanels(panels: { [key in PanelPosition]: string[] }, options): void {
-    this.reset();
+public setPanels(panels: { [key in PanelPosition]: string[] }, options): void {
+    const positionsToUpdate = Object.keys(panels) as PanelPosition[];
 
-    Object.keys(panels).forEach((position: PanelPosition) => {
+    positionsToUpdate.forEach((position) => {
+      this._panelsGroups.delete(position);
       this.addPanels(position, panels[position], options);
     });
   }
