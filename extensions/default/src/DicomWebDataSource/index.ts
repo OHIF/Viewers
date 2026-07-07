@@ -18,6 +18,7 @@ import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
 import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
 import { getGetThumbnailSrc, ThumbnailContext } from './retrieveThumbnail';
+import { getRenderedURL } from './retrieveRendered';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -107,7 +108,6 @@ export type BulkDataURIConfig = {
    */
   relativeResolution?: 'studies' | 'series';
 };
-
 
 /**
  * The header options are the options passed into the generateWadoHeader
@@ -338,6 +338,14 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           },
           params
         );
+      },
+      renderedURL: (params, options) => {
+        return getRenderedURL({
+          config: dicomWebConfig,
+          getAuthorizationHeader,
+          retrieve: implementation.retrieve,
+          userAuthenticationService,
+        })(params, options);
       },
       /**
        * Provide direct access to the dicom web client for certain use cases

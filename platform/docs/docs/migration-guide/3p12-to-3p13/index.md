@@ -6,7 +6,6 @@ title: 3.12 to 3.13 Migration Guide
 ---
 
 import DocCardList from '@theme/DocCardList';
-import { useCurrentSidebarCategory } from '@docusaurus/theme-common';
 
 # 3.12 to 3.13 Migration Guide
 
@@ -24,5 +23,8 @@ The largest changes in 3.13 are infrastructure-level:
   is now **24**.
 - **[SegmentationService](./segmentation-service.md)** — the
   `removeSegmentationRepresentations` method was renamed.
+- **[DICOM video viewport](./dicom-video.md)** — the
+  `@ohif/extension-dicom-video.viewportModule.dicom-video` namespace was
+  removed; route DICOM video display sets through the Cornerstone viewport.
 
-<DocCardList items={useCurrentSidebarCategory().items.filter(item => item.docId !== 'migration-guide/3p12-to-3p13/index')} />
+<DocCardList />
