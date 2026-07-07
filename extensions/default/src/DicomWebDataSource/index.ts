@@ -24,6 +24,7 @@ import {
   writeDicomDictToPart10Buffer,
 } from '../utils/dicomWriter';
 import { getGetThumbnailSrc, ThumbnailContext } from './retrieveThumbnail';
+import { getRenderedURL } from './retrieveRendered';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -112,7 +113,6 @@ export type BulkDataURIConfig = {
    */
   relativeResolution?: 'studies' | 'series';
 };
-
 
 /**
  * The header options are the options passed into the generateWadoHeader
@@ -295,6 +295,14 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           },
           params
         );
+      },
+      renderedURL: (params, options) => {
+        return getRenderedURL({
+          config: dicomWebConfig,
+          getAuthorizationHeader,
+          retrieve: implementation.retrieve,
+          userAuthenticationService,
+        })(params, options);
       },
       /**
        * Provide direct access to the dicom web client for certain use cases

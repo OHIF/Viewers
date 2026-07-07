@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dynamic-volume",
-  "version": "3.13.0-beta.104",
+  "version": "3.13.0-beta.111",
   "description": "OHIF extension for 4D volumes data",
   "author": "OHIF",
   "license": "MIT",
@@ -45,8 +45,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@cornerstonejs/core": "5.0.2",
-    "@cornerstonejs/tools": "5.0.2",
+    "@cornerstonejs/core": "5.1.3",
+    "@cornerstonejs/tools": "5.1.3",
     "classnames": "2.5.1"
   },
   "devDependencies": {
