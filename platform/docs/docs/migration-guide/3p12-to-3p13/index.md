@@ -26,5 +26,9 @@ The largest changes in 3.13 are infrastructure-level:
 - **[DICOM video viewport](./dicom-video.md)** — the
   `@ohif/extension-dicom-video.viewportModule.dicom-video` namespace was
   removed; route DICOM video display sets through the Cornerstone viewport.
+- **[Deployment recipes](./deployment-recipes.md)** — the Keycloak recipes
+  now require a `.env` file and a generated client secret before
+  `docker compose up`, and the nginx recipes no longer send wildcard CORS
+  headers (cross-origin deployments must set an explicit origin).
 
 <DocCardList />
