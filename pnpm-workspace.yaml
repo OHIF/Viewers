@@ -20,16 +20,12 @@ frozenLockfile: true
 verifyDepsBeforeRun: false
 
 # Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
-# risk: advisories reached only via build/CI/data-asset tooling, never fed
-# user-supplied input. Kept in sync with the .circleci SECURITY_AUDIT job and
-# the root `audit` script.
+# risk: minimatch/picomatch advisories reached only via build/CI tooling, never
+# fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
+# job and the root `audit` script.
 auditConfig:
   ignoreGhsas:
-    # decompress <=4.2.1 zip-slip. No patched version is published (latest is
-    # 4.2.1), and it reaches the tree only via @itk-wasm/dam (a build/data-asset
-    # extraction tool) under @cornerstonejs/labelmap-interpolation. Pre-existing
-    # on master; surfaced here only because this branch touches pnpm-lock.yaml.
-    - 'GHSA-mp2f-45pm-3cg9'
+    - GHSA-mp2f-45pm-3cg9 # decompress is called only ever decompresses a hash-pinned, hardcoded archive in a dev-only CLI
 
 allowBuilds:
   '@scarf/scarf': true
