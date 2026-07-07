@@ -28,12 +28,16 @@ export async function visitStudyOptions(
   // await page.goto(`/?resultsPerPage=100&datasources=${datasources}`);
   // await page.getByTestId(studyInstanceUID).click();
   // await page.getByRole('button', { name: mode }).click();
-  const params = new URLSearchParams({ StudyInstanceUIDs: studyInstanceUID });
+  // studyInstanceUID may itself carry extra query params appended with `&`
+  // (e.g. `<uid>&hangingprotocolid=mpr`), so concatenate it raw rather than
+  // running it through URLSearchParams, which would percent-encode the `&`/`=`
+  // and collapse everything into a single invalid StudyInstanceUIDs value.
+  let url = `/${mode}/${resolvedDatasources}?StudyInstanceUIDs=${studyInstanceUID}`;
   if (customization) {
-    params.set('customization', customization);
+    url += `&customization=${encodeURIComponent(customization)}`;
   }
 
-  await page.goto(`/${mode}/${resolvedDatasources}?${params.toString()}`);
+  await page.goto(url);
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(resolvedDelay);
