@@ -35,6 +35,8 @@ test('should render scroll bars with the correct look-and-feel', async ({ page }
   // Additional wait to ensure scrollbar rendering is stable
   await page.waitForTimeout(1000);
 
+  expandedStudyRow.scrollIntoViewIfNeeded();
+
   await checkForScreenshot({
     page,
     locator: expandedStudyRow,
