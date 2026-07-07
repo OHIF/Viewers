@@ -84,6 +84,8 @@ module.exports = (env, argv) => {
         path.resolve(__dirname, 'deemea-mode/node_modules'),
         path.resolve(__dirname, 'deemea-mode-anapath/node_modules'),
         path.resolve(__dirname, 'deemea-extension-anapath/node_modules'),
+        path.resolve(__dirname, 'deemea-blank-mode/node_modules'),
+        path.resolve(__dirname, 'deemea-blank-extension/node_modules'),
       ],
     },
     plugins: [

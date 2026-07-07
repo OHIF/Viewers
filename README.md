@@ -55,6 +55,7 @@ us.
 3. `yarn install` to restore dependencies and link projects
 4. `yarn run cli link-extension deemea-extension` and `yarn run cli link-extension deemea-extension-3d` to link our custom extensions
 5. `yarn run cli link-mode deemea-mode` and `yarn run cli link-mode deemea-mode-3d` to link our custom modes
+6. `yarn run cli link-mode deemea-blank-mode` and `yarn run cli link-extension deemea-blank-extension` to link our blank custom extension and mode
 
 If you want to try OHIF on standalone mode you just have to do `yarn dev`
 

@@ -73,6 +73,10 @@
     {
       "packageName": "deemea-extension-anapath",
       "version": "0.0.1"
+    },
+    {
+      "packageName": "deemea-blank-extension",
+      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -111,6 +115,10 @@
     },
     {
       "packageName": "deemea-mode-anapath",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "deemea-blank-mode",
       "version": "0.0.1"
     }
   ],

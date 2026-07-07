@@ -25,8 +25,9 @@ jobs:
         run:
           yarn install && yarn run cli link-mode deemea-mode && yarn run cli link-extension
           deemea-extension && yarn run cli link-mode deemea-mode-3d && yarn run cli link-extension
-          deemea-extension-3d && yarn run cli link-mode deemea-mode-anapath
-          && yarn run cli link-extension deemea-extension-anapath
+          deemea-extension-3d && yarn run cli link-mode deemea-mode-anapath && yarn run cli
+          link-extension deemea-extension-anapath && yarn run cli link-mode deemea-blank-mode &&
+          yarn run cli link-extension deemea-blank-extension
 
       - name: Create production build
         run: yarn build
