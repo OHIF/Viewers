@@ -9,8 +9,8 @@ concurrency:
 
 jobs:
   playwright-tests:
-    timeout-minutes: 60
-    runs-on: self-hosted
+    timeout-minutes: 120
+    runs-on: [self-hosted, nashua]
     strategy:
       fail-fast: false
       matrix:
@@ -28,11 +28,16 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Install Playwright browsers
-        run: npx playwright install
+        # Only chromium is used (firefox/webkit projects are commented out in
+        # playwright.config.ts). Scoping the install to chromium avoids
+        # downloading + dep-validating browsers we never launch (the WebKit
+        # validation is what surfaces "missing libwoff1/libflite1/..." on hosts
+        # without those libs).
+        run: npx playwright install chromium
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
-          bun run test:e2e:coverage
+          bash .scripts/ci/with-nashua-lock.sh bun run test:e2e:coverage
       - name: Create directory of test results
         if: ${{ !cancelled() }}
         run: |

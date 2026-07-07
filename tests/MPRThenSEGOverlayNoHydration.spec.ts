@@ -19,11 +19,11 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForScreenshot({
     page,
-    page,
-    screenShotPaths.mprThenSEGOverlayNoHydration.mprPreSEGOverlayNoHydration
-  );
+    locator: page.getByTestId('viewport-grid'),
+    screenshotPath: screenShotPaths.mprThenSEGOverlayNoHydration.mprPreSEGOverlayNoHydration,
+  });
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
   await viewportPageObject.getById('mpr-axial').pane.hover();
@@ -39,9 +39,9 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForScreenshot({
     page,
-    page,
-    screenShotPaths.mprThenSEGOverlayNoHydration.mprPostSEGOverlayNoHydration
-  );
+    locator: page.getByTestId('viewport-grid'),
+    screenshotPath: screenShotPaths.mprThenSEGOverlayNoHydration.mprPostSEGOverlayNoHydration,
+  });
 });
