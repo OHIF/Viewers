@@ -69,6 +69,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
+      { toolName: toolNames.PlanarRotate },
       { toolName: toolNames.CalibrationLine },
       {
         toolName: toolNames.PlanarFreehandContourSegmentation,

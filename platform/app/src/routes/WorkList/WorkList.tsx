@@ -51,7 +51,16 @@ export default function WorkList({
     // `workList.columns` is registered as a value (StudyList.defaultColumns) and
     // merged via customization commands, so we read the result directly.
     const customized = customizationService.getCustomization('workList.columns');
-    return Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    const resolved = Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    // Expand data-only column specs. A `?customization=` JSONC file (or any
+    // serializable source) cannot carry render functions, so an entry that has
+    // an `id` but no `accessorFn`/`cell` is turned into a display-only text
+    // column that reads `row[id]` — matching `StudyList.textColumn`.
+    return resolved.map((col: any) =>
+      col && typeof col === 'object' && col.id && !col.accessorFn && !col.cell
+        ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
+        : col
+    );
   }, [customizationService]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
