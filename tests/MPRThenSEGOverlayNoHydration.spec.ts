@@ -17,7 +17,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await page.waitForTimeout(10000);
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot({
     page,
@@ -37,7 +37,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  await page.waitForTimeout(10000);
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot({
     page,
