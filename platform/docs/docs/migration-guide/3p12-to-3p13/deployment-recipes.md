@@ -15,25 +15,29 @@ one-time steps are now required. The viewer application itself is unaffected.
 
 Applies to `Nginx-Orthanc-Keycloak` and `Nginx-Dcm4chee-Keycloak`.
 
-The docker-compose files previously hardcoded the Keycloak database, Keycloak
-admin, and PostgreSQL passwords. They now read them from the environment and
-refuse to start while any is unset:
+The docker-compose files previously hardcoded the Keycloak admin and
+PostgreSQL passwords. They now read them from the environment and refuse to
+start while any is unset:
 
-```
-error while interpolating services.keycloak.environment.KC_DB_PASSWORD:
-required variable KC_DB_PASSWORD is missing a value: set KC_DB_PASSWORD in your .env
+```text
+error while interpolating services.keycloak.environment.POSTGRES_PASSWORD:
+required variable POSTGRES_PASSWORD is missing a value: set POSTGRES_PASSWORD in your .env
 ```
 
 **Migration:** copy `.env.example` to `.env` next to `docker-compose.yml` and
-set strong, unique values:
+set strong values:
 
 ```bash
 cp .env.example .env
 # then edit .env and fill in:
-# KC_DB_PASSWORD=
-# KEYCLOAK_ADMIN_PASSWORD=
 # POSTGRES_PASSWORD=
+# KEYCLOAK_ADMIN_PASSWORD=
 ```
+
+`POSTGRES_PASSWORD` is the single PostgreSQL credential - Keycloak connects to
+Postgres as the `keycloak` role provisioned with it, so `KC_DB_PASSWORD` is
+derived from `POSTGRES_PASSWORD` in the compose file rather than set
+separately.
 
 ## Keycloak client secret is now a placeholder
 
