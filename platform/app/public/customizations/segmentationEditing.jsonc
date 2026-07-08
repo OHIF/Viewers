@@ -1,0 +1,49 @@
+// URL-loaded customization: segmentationEditing
+//
+// Adds segmentation editing to the basic and longitudinal (viewer) modes by
+// composing the capability blocks the cornerstone extension already exports:
+//
+//   - the segmentation editing toolbar buttons and toolbox section wiring
+//     (`cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections`),
+//   - the segmentation editing tools for the modes' tool groups
+//     (`cornerstone.segmentationToolGroupTools`),
+//   - the segmentation panels that render the editing toolbox
+//     (`panelSegmentationWithToolsLabelMap` / `panelSegmentationWithToolsContour`),
+//   - and enables editing in the segmentation panel.
+//
+// Both modes read the `basic.*` toolbar/tool-group customizations (longitudinal
+// extends the basic mode instance), so a single set of commands covers both;
+// only the right-panel lists are mode specific.
+//
+// Load it with `?customization=segmentationEditing`.
+{
+  "global": {
+    "basic.toolbarButtons": {
+      "$push": ["cornerstone.segmentationToolbarButtons"]
+    },
+    "basic.toolbarSections": {
+      "$push": ["cornerstone.segmentationToolbarSections"]
+    },
+    "basic.toolGroupAdditions": {
+      "default": { "$push": ["cornerstone.segmentationToolGroupTools"] },
+      "mpr": { "$push": ["cornerstone.segmentationToolGroupTools"] }
+    },
+    "basic.rightPanels": {
+      "$set": [
+        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
+        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
+        "@ohif/extension-cornerstone.panelModule.panelMeasurement"
+      ]
+    },
+    "longitudinal.rightPanels": {
+      "$set": [
+        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
+        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
+        "@ohif/extension-measurement-tracking.panelModule.trackedMeasurements"
+      ]
+    },
+    // The basic/longitudinal modes disable segmentation panel editing only
+    // when no customization has expressed a preference, so this enables it.
+    "panelSegmentation.disableEditing": { "$set": false }
+  }
+}

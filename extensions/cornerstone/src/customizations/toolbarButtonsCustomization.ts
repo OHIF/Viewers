@@ -794,6 +794,27 @@ export const toolbarSections = {
 const toolbarButtonsCustomization = {
   'cornerstone.toolbarButtons': toolbarButtons,
   'cornerstone.toolbarSections': toolbarSections,
+
+  // What the basic (and longitudinal) mode reads by name. The list values may
+  // reference other customizations, so a `?customization=` module can extend a
+  // mode with an exported capability block by pushing its name, e.g.
+  // `"basic.toolbarButtons": { "$push": ["cornerstone.segmentationToolbarButtons"] }`.
+  'basic.toolbarButtons': ['cornerstone.toolbarButtons'],
+  'basic.toolbarSections': ['cornerstone.toolbarSections'],
+  // Extra tools layered onto the mode's tool groups after creation; entries
+  // reference tool blocks such as `cornerstone.segmentationToolGroupTools`.
+  'basic.toolGroupAdditions': {
+    default: [],
+    mpr: [],
+    SRToolGroup: [],
+    volume3d: [],
+  },
+  // Panel lists resolved by the basic mode's layout template.
+  'basic.leftPanels': ['@ohif/extension-default.panelModule.seriesList'],
+  'basic.rightPanels': [
+    '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+    '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+  ],
 };
 
 export { toolbarButtons };

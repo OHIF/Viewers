@@ -1,0 +1,40 @@
+// URL-loaded customization: segmentationAnnotationTools
+//
+// Enables the measurement/annotation tools inside the segmentation mode by
+// composing capability blocks the cornerstone extension already exports:
+//
+//   - the annotation buttons are already registered by the mode (its button
+//     list includes `cornerstone.toolbarButtons`), so the toolbar only needs a
+//     `MeasurementTools` section added to the primary bar,
+//   - the annotation tools themselves are added to the mode's tool groups via
+//     `cornerstone.annotationToolGroupTools`,
+//   - and the measurement panel is appended so annotations can be reviewed.
+//
+// Load it with `?customization=segmentationAnnotationTools`.
+{
+  "global": {
+    "cornerstone.segmentationModeToolbarSections": {
+      "primary": { "$unshift": ["MeasurementTools"] },
+      "MeasurementTools": {
+        "$set": [
+          "Length",
+          "Bidirectional",
+          "ArrowAnnotate",
+          "EllipticalROI",
+          "RectangleROI",
+          "CircleROI",
+          "PlanarFreehandROI",
+          "SplineROI",
+          "LivewireContour"
+        ]
+      }
+    },
+    "segmentation.toolGroupAdditions": {
+      "default": { "$push": ["cornerstone.annotationToolGroupTools"] },
+      "mpr": { "$push": ["cornerstone.annotationToolGroupTools"] }
+    },
+    "segmentation.rightPanels": {
+      "$push": ["@ohif/extension-cornerstone.panelModule.panelMeasurement"]
+    }
+  }
+}
