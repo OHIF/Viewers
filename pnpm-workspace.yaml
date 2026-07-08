@@ -24,7 +24,8 @@ verifyDepsBeforeRun: false
 # fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
 # job and the root `audit` script.
 auditConfig:
-  ignoreGhsas: []
+  ignoreGhsas:
+    - GHSA-mp2f-45pm-3cg9 # decompress is called only ever decompresses a hash-pinned, hardcoded archive in a dev-only CLI
 
 allowBuilds:
   '@scarf/scarf': true

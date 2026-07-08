@@ -13,7 +13,9 @@ const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
 const PUBLIC_DIR = path.resolve(__dirname, './platform/app/public');
 
 // Environment variables (similar to webpack.pwa.js)
-const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+// rsbuild is used only by the dev server (`dev:fast`), so default to the
+// full-featured `config/dev.js` while still honoring an explicit APP_CONFIG.
+const APP_CONFIG = process.env.APP_CONFIG || 'config/dev.js';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 
 // Add these constants

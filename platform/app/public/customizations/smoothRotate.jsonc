@@ -1,0 +1,42 @@
+// Example URL-loaded customization: smoothRotate
+//
+// Adds a "Smooth Rotate" tool button to the More Tools menu of the basic and
+// longitudinal viewers. It activates the cornerstone `PlanarRotate` tool, which
+// rotates the image freely as you drag (unlike the fixed 90° "Rotate Right").
+//
+// It extends the default toolbar customizations registered by the cornerstone
+// extension (`cornerstone.toolbarButtons` / `cornerstone.toolbarSections`) using
+// immutability-helper `$push` commands, so the built-in buttons are preserved.
+//
+// Load it with `?customization=smoothRotate`.
+{
+  "global": {
+    "cornerstone.toolbarButtons": {
+      "$push": [
+        {
+          "id": "SmoothRotate",
+          "uiType": "ohif.toolButton",
+          "props": {
+            "type": "tool",
+            // Re-use the existing rotate icon.
+            "icon": "tool-rotate-right",
+            "label": "Smooth Rotate",
+            "tooltip": "Smooth Rotate (drag to rotate the image freely)",
+            "commands": {
+              "commandName": "setToolActiveToolbar",
+              "commandOptions": {
+                "toolName": "PlanarRotate"
+              }
+            },
+            "evaluate": "evaluate.cornerstoneTool"
+          }
+        }
+      ]
+    },
+    "cornerstone.toolbarSections": {
+      "MoreTools": {
+        "$push": ["SmoothRotate"]
+      }
+    }
+  }
+}

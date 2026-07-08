@@ -28,7 +28,7 @@ import loadModules, { loadModule as peerImport } from './pluginImports';
 import { publicUrl } from './utils/publicUrl';
 
 /**
- * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
+ * @param {object|function} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
 async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
@@ -91,7 +91,24 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
   const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
+
+  const { customizationService } = servicesManager.services;
+  // Resolve every customization module up front — from
+  // `appConfig.customizationService.requires` and the `?customization=` URL
+  // parameter — long before any mode loads, then apply the `bootstrap` phase
+  // BEFORE extensions register so it is in place while they initialize. Modules
+  // are only loaded when `appConfig.customizationUrlPrefixes` allows their
+  // prefix; the feature is off by default, and a value with an unconfigured
+  // prefix throws here (aborting startup) rather than being silently ignored.
+  await customizationService.loadAndApplyBootstrapCustomizations(extensionManager);
+
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+
+  // Merge extension default/global modules, then layer on the `global` phase of
+  // the structured config + the URL modules resolved above (so `$apply`-style
+  // overrides see the extension-provided defaults they build on).
+  customizationService.init(extensionManager);
+  customizationService.applyGlobalCustomizations();
 
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level
