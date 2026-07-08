@@ -1,4 +1,12 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -10,6 +18,7 @@ test('should display the angle tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.angle.click();
@@ -26,4 +35,19 @@ test('should display the angle tool', async ({
     viewportPageObject.grid,
     screenShotPaths.angle.angleDisplayedCorrectly
   );
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  // AngleTool: panel and SVG both use roundNumber – format is identical.
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Angle',
+    formatPanelPrimaryLines: [measurementTextFormatters.angleLine],
+    formatSvgLines: [measurementTextFormatters.angleLine],
+    assertStats: stats => {
+      expect(stats.angle as number).toBeCloseTo(53.1, 1);
+    },
+  });
 });

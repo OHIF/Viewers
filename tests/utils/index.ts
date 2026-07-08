@@ -17,6 +17,11 @@ import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
+import {
+  expectAnnotationLabelText,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+} from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
@@ -52,6 +57,9 @@ export {
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
+  expectAnnotationLabelText,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   clearAllAnnotations,
   scrollVolumeViewport,
   attemptAction,

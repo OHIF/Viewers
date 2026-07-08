@@ -1,4 +1,12 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -10,6 +18,7 @@ test('should display the probe tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.probe.click();
@@ -22,4 +31,25 @@ test('should display the probe tool', async ({
     viewportPageObject.grid,
     screenShotPaths.probe.probeDisplayedCorrectly
   );
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  // Probe panel: single value line (no index coordinates).
+  // Probe SVG: 2 lines – voxel index "(i, j, k)" then the HU value.
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Probe',
+    formatPanelPrimaryLines: [measurementTextFormatters.probePanelLine],
+    formatSvgLines: [
+      measurementTextFormatters.probeIndexSvgLine,
+      measurementTextFormatters.probePanelLine,
+    ],
+    assertStats: stats => {
+      expect(stats.modalityUnit).toBe('HU');
+      expect(typeof stats.value).toBe('number');
+      expect(Array.isArray(stats.index)).toBe(true);
+    },
+  });
 });

@@ -1,4 +1,12 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -10,6 +18,7 @@ test('should display the length tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.length.click();
@@ -25,4 +34,19 @@ test('should display the length tool', async ({
     viewportPageObject.grid,
     screenShotPaths.length.lengthDisplayedCorrectly
   );
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Length',
+    formatPanelPrimaryLines: [measurementTextFormatters.lengthLine],
+    formatSvgLines: [measurementTextFormatters.lengthLine],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect(Math.round(stats.length as number)).toBe(278);
+    },
+  });
 });
