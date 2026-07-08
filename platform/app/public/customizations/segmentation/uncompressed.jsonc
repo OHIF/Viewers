@@ -1,0 +1,19 @@
+// URL-loaded customization: segmentation/uncompressed
+//
+// Stores exported/saved DICOM SEG objects UNCOMPRESSED — Explicit VR Little
+// Endian (1.2.840.10008.1.2.1) — instead of the OHIF default of RLE Lossless
+// (1.2.840.10008.1.2.5). Use this for back ends that reject compressed SEG
+// PixelData.
+//
+// Applied in the `global` phase. With this key left unset OHIF passes no
+// transfer syntax and the adapter falls back to RLE Lossless; setting it here
+// forces uncompressed instead. A data source may still override this per back
+// end via `configuration.segmentation.store.transferSyntaxUID`.
+//
+// Load it with `?customization=segmentation/uncompressed` (combine with
+// `&customization=segmentation/binary` to also switch the SOP class).
+{
+  "global": {
+    "segmentation.store.transferSyntaxUID": { "$set": "1.2.840.10008.1.2.1" }
+  }
+}
