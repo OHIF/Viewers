@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { id } from './id';
-import { initToolGroups, toolbarButtons, cornerstone,
+import { initToolGroups, cornerstone,
   ohif,
   dicomsr,
   dicomvideo,
@@ -73,4 +73,4 @@ const mode = {
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
+export { initToolGroups };

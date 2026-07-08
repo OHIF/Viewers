@@ -221,6 +221,12 @@ export default function ModeRoute({
         appConfig,
       });
 
+      // `extensionManager.onModeEnter` resets the customization mode scope via
+      // `customizationService.onModeEnter`; now layer on the `mode` phase blocks
+      // for this mode — the general (`*`) block first, then any block keyed by
+      // this mode's id / routeName so a single mode can override the general one.
+      customizationService.applyModeCustomizations([mode.id, mode.routeName]);
+
       // use the URL hangingProtocolId if it exists, otherwise use the one
       // defined in the mode configuration
       const hangingProtocolIdToUse = hangingProtocolService.getProtocolById(

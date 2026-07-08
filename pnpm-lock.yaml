@@ -1602,6 +1602,9 @@ importers:
       isomorphic-base64:
         specifier: 1.0.2
         version: 1.0.2
+      json5:
+        specifier: 2.2.3
+        version: 2.2.3
       lodash.clonedeep:
         specifier: 4.5.0
         version: 4.5.0

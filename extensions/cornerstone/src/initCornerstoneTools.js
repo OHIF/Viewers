@@ -3,6 +3,7 @@ import {
   WindowLevelTool,
   SegmentBidirectionalTool,
   StackScrollTool,
+  PlanarRotateTool,
   VolumeRotateTool,
   ZoomTool,
   MIPJumpToClickTool,
@@ -74,6 +75,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SegmentBidirectionalTool);
   addTool(WindowLevelTool);
   addTool(StackScrollTool);
+  addTool(PlanarRotateTool);
   addTool(VolumeRotateTool);
   addTool(ZoomTool);
   addTool(ProbeTool);
@@ -138,6 +140,7 @@ const toolNames = {
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
   Zoom: ZoomTool.toolName,
+  PlanarRotate: PlanarRotateTool.toolName,
   VolumeRotate: VolumeRotateTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
