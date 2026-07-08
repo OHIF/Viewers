@@ -9,8 +9,6 @@ import colorbarCustomization from './customizations/colorbarCustomization';
 import modalityColorMapCustomization from './customizations/modalityColorMapCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import toolbarButtonsCustomization from './customizations/toolbarButtonsCustomization';
-import segmentationToolbarCustomization from './customizations/segmentationToolbarCustomization';
-import getToolGroupToolsCustomization from './customizations/toolGroupToolsCustomization';
 import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
@@ -36,8 +34,6 @@ function getCustomizationModule({ commandsManager, servicesManager, extensionMan
         ...modalityColorMapCustomization,
         ...windowLevelPresetsCustomization,
         ...toolbarButtonsCustomization,
-        ...segmentationToolbarCustomization,
-        ...getToolGroupToolsCustomization({ commandsManager }),
         ...miscCustomization,
         ...captureViewportModalCustomization,
         ...viewportDownloadWarningCustomization,

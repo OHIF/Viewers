@@ -35,9 +35,7 @@
     "@ohif/extension-default": "workspace:*",
     "@ohif/extension-dicom-pdf": "workspace:*",
     "@ohif/extension-dicom-video": "workspace:*",
-    "@ohif/extension-measurement-tracking": "workspace:*",
-    "@ohif/extension-tmtv": "workspace:*",
-    "@ohif/mode-basic": "workspace:*"
+    "@ohif/extension-measurement-tracking": "workspace:*"
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",

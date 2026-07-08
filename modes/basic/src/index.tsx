@@ -2,11 +2,6 @@ import update from 'immutability-helper';
 import { utils } from '@ohif/core';
 
 import initToolGroups from './initToolGroups';
-import {
-  applyToolGroupAdditions,
-  registerModeToolbar,
-  resolvePanelList,
-} from './modeCustomization';
 import { id } from './id';
 
 const { structuredCloneWithFunctions } = utils;
@@ -133,38 +128,41 @@ export function isValidMode({ modalities }) {
   };
 }
 
-export function onModeEnter({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-  const {
-    measurementService,
-    toolbarService,
-    toolGroupService,
-    customizationService,
-    panelService,
-    segmentationService,
-  } = servicesManager.services;
+export function onModeEnter({
+  servicesManager,
+  extensionManager,
+  commandsManager,
+  panelService,
+  segmentationService,
+}: withAppTypes) {
+  const { measurementService, toolbarService, toolGroupService, customizationService } =
+    servicesManager.services;
 
   measurementService.clearMeasurements();
 
-  // Init the mode's tool groups.  The function is a mode instance property so
-  // extending modes can substitute their own tool group setup.
-  this.initToolGroups?.(extensionManager, toolGroupService, commandsManager);
+  // Init Default and SR ToolGroups
+  initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-  // Toolbar buttons and layout are supplied as customization references
-  // (extensions register the defaults; `?customization=` modules can extend
-  // them) or as literal values for modes that define them inline.
-  registerModeToolbar({ toolbarService, customizationService }, this);
+  // Toolbar buttons and layout may be supplied either as a customization name
+  // (a string, resolved through the customization service so `?customization=`
+  // modules can extend the cornerstone-registered defaults) or as a literal
+  // value (the button array / sections object) for modes that define them inline.
+  const resolveToolbarCustomization = (value: unknown) =>
+    typeof value === 'string' ? customizationService.getCustomization(value) : value;
 
-  // Extra tools (e.g. segmentation editing tools added by a customization)
-  // are layered onto the tool groups created above.
-  applyToolGroupAdditions({ toolGroupService, customizationService }, this.toolGroupAdditions);
+  const toolbarButtons = resolveToolbarCustomization(this.toolbarButtons) as any;
+  const toolbarSections = (resolveToolbarCustomization(this.toolbarSections) ?? {}) as Record<
+    string,
+    string[]
+  >;
 
-  // Segmentation panel editing is disabled by default in this mode, but only
-  // when no global/mode customization has expressed a preference — a site
-  // customization (e.g. `segmentationEditing`) can enable it.
-  if (
-    !this.enableSegmentationEdit &&
-    !customizationService.hasCustomization('panelSegmentation.disableEditing')
-  ) {
+  toolbarService.register(toolbarButtons);
+
+  for (const [key, section] of Object.entries(toolbarSections)) {
+    toolbarService.updateSection(key, section);
+  }
+
+  if (!this.enableSegmentationEdit) {
     customizationService.setCustomizations({
       'panelSegmentation.disableEditing': {
         $set: true,
@@ -228,12 +226,9 @@ export function onModeExit({ servicesManager }: withAppTypes) {
 export const basicLayout = {
   id: ohif.layout,
   props: {
-    // Panel lists are customization names; the cornerstone extension registers
-    // the defaults and `?customization=` modules can replace them (e.g. to
-    // swap in the segmentation panels with editing tools).
-    leftPanels: 'basic.leftPanels',
+    leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: 'basic.rightPanels',
+    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
     rightPanelClosed: true,
     rightPanelResizable: true,
     viewports: [
@@ -270,15 +265,8 @@ export const basicLayout = {
   },
 };
 
-export function layoutTemplate({ servicesManager }: withAppTypes = {} as withAppTypes) {
-  const layout = structuredCloneWithFunctions(this.layoutInstance);
-  const customizationService = servicesManager?.services?.customizationService;
-  if (customizationService) {
-    const { props } = layout;
-    props.leftPanels = resolvePanelList(customizationService, props.leftPanels);
-    props.rightPanels = resolvePanelList(customizationService, props.rightPanels);
-  }
-  return layout;
+export function layoutTemplate() {
+  return structuredCloneWithFunctions(this.layoutInstance);
 }
 
 export const basicRoute = {
@@ -297,14 +285,10 @@ export const modeInstance = {
   hide: false,
   displayName: 'Non-Longitudinal Basic',
   _activatePanelTriggersSubscriptions: [],
-  // Toolbar buttons/layout and tool group additions are referenced by
-  // customization name; the cornerstone extension registers the defaults and
-  // `?customization=` modules can extend them. onModeEnter resolves these
-  // names via the customization service.
-  toolbarSections: 'basic.toolbarSections',
-  toolGroupAdditions: 'basic.toolGroupAdditions',
-  // Tool group setup used by onModeEnter; extending modes can replace it.
-  initToolGroups,
+  // Toolbar buttons and layout are referenced by customization name; the
+  // cornerstone extension registers the defaults and `?customization=` modules
+  // can extend them. onModeEnter resolves these names via the customization service.
+  toolbarSections: 'cornerstone.toolbarSections',
 
   /**
    * Lifecycle hooks
@@ -326,7 +310,7 @@ export const modeInstance = {
   // general handler needs to come last.  For this case, the dicomvideo must
   // come first to remove video transfer syntax before ohif uses images
   sopClassHandlers,
-  toolbarButtons: 'basic.toolbarButtons',
+  toolbarButtons: 'cornerstone.toolbarButtons',
   enableSegmentationEdit: false,
   nonModeModalities: NON_IMAGE_MODALITIES,
 };
@@ -352,9 +336,3 @@ export const mode = {
 
 export default mode;
 export { initToolGroups };
-export {
-  applyToolGroupAdditions,
-  registerModeToolbar,
-  resolveCustomizationList,
-  resolvePanelList,
-} from './modeCustomization';

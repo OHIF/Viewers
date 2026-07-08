@@ -1,38 +1,32 @@
 import { classes } from '@ohif/core';
-import {
-  applyToolGroupAdditions,
-  layoutTemplate,
-  modeFactory,
-  registerModeToolbar,
-} from '@ohif/mode-basic';
-import i18n from 'i18next';
-
+import toolbarButtons from './toolbarButtons';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
 import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
+import i18n from 'i18next';
 
 const { MetadataProvider } = classes;
 
-export const ohif = {
+const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
-export const cs3d = {
+const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
   segPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationNoHeader',
   measurements: '@ohif/extension-cornerstone.panelModule.measurements',
 };
 
-export const tmtv = {
+const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
   tmtv: '@ohif/extension-tmtv.panelModule.tmtv',
 };
 
-export const extensionDependencies = {
+const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
@@ -40,214 +34,234 @@ export const extensionDependencies = {
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
-export function onModeEnter({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-  const {
-    toolbarService,
-    toolGroupService,
-    customizationService,
-    hangingProtocolService,
-    displaySetService,
-  } = servicesManager.services;
-
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
-
-  const { toolNames, Enums } = utilityModule.exports;
-
-  // Init Default and SR ToolGroups
-  this.initToolGroups?.(toolNames, Enums, toolGroupService, commandsManager);
-
-  const { unsubscribe } = toolGroupService.subscribe(
-    toolGroupService.EVENTS.VIEWPORT_ADDED,
-    () => {
-      // For fusion toolGroup we need to add the volumeIds for the crosshairs
-      // since in the fusion viewport we don't want both PT and CT to render MIP
-      // when slabThickness is modified
-      const { displaySetMatchDetails } = hangingProtocolService.getMatchDetails();
-
-      setCrosshairsConfiguration(
-        displaySetMatchDetails,
-        toolNames,
-        toolGroupService,
-        displaySetService
-      );
-
-      setFusionActiveVolume(
-        displaySetMatchDetails,
-        toolNames,
-        toolGroupService,
-        displaySetService
-      );
-    }
-  );
-
-  this._unsubscriptions.push(unsubscribe);
-
-  // Toolbar buttons and layout are supplied as customization references (the
-  // tmtv extension registers the defaults; `?customization=` modules can
-  // extend them) or as literal values for modes that define them inline.
-  registerModeToolbar({ toolbarService, customizationService }, this);
-
-  // Extra tools (e.g. annotation tools added by a customization) are layered
-  // onto the tool groups created above.
-  applyToolGroupAdditions({ toolGroupService, customizationService }, this.toolGroupAdditions);
-
-  customizationService.setCustomizations({
-    'panelSegmentation.tableMode': {
-      $set: 'expanded',
-    },
-    'panelSegmentation.onSegmentationAdd': {
-      $set: () => {
-        commandsManager.run('createNewLabelmapFromPT');
-      },
-    },
-  });
-
-  // For the hanging protocol we need to decide on the window level
-  // based on whether the SUV is corrected or not, hence we can't hard
-  // code the window level in the hanging protocol but we add a custom
-  // attribute to the hanging protocol that will be used to get the
-  // window level based on the metadata
-  hangingProtocolService.addCustomAttribute(
-    'getPTVOIRange',
-    'get PT VOI based on corrected or not',
-    props => {
-      const ptDisplaySet = props.find(imageSet => imageSet.Modality === 'PT');
-
-      if (!ptDisplaySet) {
-        return;
-      }
-
-      const { imageId } = ptDisplaySet.images[0];
-      const imageIdScalingFactor = MetadataProvider.get('scalingModule', imageId);
-
-      const isSUVAvailable = imageIdScalingFactor && imageIdScalingFactor.suvbw;
-
-      if (isSUVAvailable) {
-        return {
-          windowWidth: 5,
-          windowCenter: 2.5,
-        };
-      }
-
-      return;
-    }
-  );
-}
-
-export function onModeExit({ servicesManager }: withAppTypes) {
-  const {
-    toolGroupService,
-    syncGroupService,
-    segmentationService,
-    cornerstoneViewportService,
-    uiDialogService,
-    uiModalService,
-  } = servicesManager.services;
-
-  this._unsubscriptions.forEach(unsubscribe => unsubscribe());
-  this._unsubscriptions.length = 0;
-
-  uiDialogService.hideAll();
-  uiModalService.hide();
-  toolGroupService.destroy();
-  syncGroupService.destroy();
-  segmentationService.destroy();
-  cornerstoneViewportService.destroy();
-}
-
-export function isValidMode({ modalities, study }) {
-  const modalities_list = modalities.split('\\');
-  const invalidModalities = ['SM'];
-
-  const isValid =
-    modalities_list.includes('CT') &&
-    study.mrn !== 'M1' &&
-    modalities_list.includes('PT') &&
-    !invalidModalities.some(modality => modalities_list.includes(modality)) &&
-    // This is study is a 4D study with PT and CT and not a 3D study for the tmtv
-    // mode, until we have a better way to identify 4D studies we will use the
-    // StudyInstanceUID to identify the study
-    // Todo: when we add the 4D mode which comes with a mechanism to identify
-    // 4D studies we can use that
-    study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
-
-  // there should be both CT and PT modalities and the modality should not be SM
+const unsubscriptions = [];
+function modeFactory({ modeConfiguration }) {
   return {
-    valid: isValid,
-    description: 'The mode requires both PT and CT series in the study',
+    // TODO: We're using this as a route segment
+    // We should not be.
+    id,
+    routeName: 'tmtv',
+    displayName: i18n.t('Modes:Total Metabolic Tumor Volume'),
+    /**
+     * Lifecycle hooks
+     */
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+      const {
+        toolbarService,
+        toolGroupService,
+        customizationService,
+        hangingProtocolService,
+        displaySetService,
+      } = servicesManager.services;
+
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.utilityModule.tools'
+      );
+
+      const { toolNames, Enums } = utilityModule.exports;
+
+      // Init Default and SR ToolGroups
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+
+      const { unsubscribe } = toolGroupService.subscribe(
+        toolGroupService.EVENTS.VIEWPORT_ADDED,
+        () => {
+          // For fusion toolGroup we need to add the volumeIds for the crosshairs
+          // since in the fusion viewport we don't want both PT and CT to render MIP
+          // when slabThickness is modified
+          const { displaySetMatchDetails } = hangingProtocolService.getMatchDetails();
+
+          setCrosshairsConfiguration(
+            displaySetMatchDetails,
+            toolNames,
+            toolGroupService,
+            displaySetService
+          );
+
+          setFusionActiveVolume(
+            displaySetMatchDetails,
+            toolNames,
+            toolGroupService,
+            displaySetService
+          );
+        }
+      );
+
+      unsubscriptions.push(unsubscribe);
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection(toolbarService.sections.primary, [
+        'MeasurementTools',
+        'Zoom',
+        'Pan',
+        'WindowLevel',
+        'Crosshairs',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'AdvancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection('AdvancedRenderingControls', [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('MeasurementTools', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+      ]);
+
+      toolbarService.updateSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.updateSection('SegmentationTools', [
+        'RectangleROIStartEndThreshold',
+        'BrushTools',
+      ]);
+
+      toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
+
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
+        },
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
+            commandsManager.run('createNewLabelmapFromPT');
+          },
+        },
+      });
+
+      // For the hanging protocol we need to decide on the window level
+      // based on whether the SUV is corrected or not, hence we can't hard
+      // code the window level in the hanging protocol but we add a custom
+      // attribute to the hanging protocol that will be used to get the
+      // window level based on the metadata
+      hangingProtocolService.addCustomAttribute(
+        'getPTVOIRange',
+        'get PT VOI based on corrected or not',
+        props => {
+          const ptDisplaySet = props.find(imageSet => imageSet.Modality === 'PT');
+
+          if (!ptDisplaySet) {
+            return;
+          }
+
+          const { imageId } = ptDisplaySet.images[0];
+          const imageIdScalingFactor = MetadataProvider.get('scalingModule', imageId);
+
+          const isSUVAvailable = imageIdScalingFactor && imageIdScalingFactor.suvbw;
+
+          if (isSUVAvailable) {
+            return {
+              windowWidth: 5,
+              windowCenter: 2.5,
+            };
+          }
+
+          return;
+        }
+      );
+    },
+    onModeExit: ({ servicesManager }: withAppTypes) => {
+      const {
+        toolGroupService,
+        syncGroupService,
+        segmentationService,
+        cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
+      } = servicesManager.services;
+
+      unsubscriptions.forEach(unsubscribe => unsubscribe());
+      uiDialogService.hideAll();
+      uiModalService.hide();
+      toolGroupService.destroy();
+      syncGroupService.destroy();
+      segmentationService.destroy();
+      cornerstoneViewportService.destroy();
+    },
+    validationTags: {
+      study: [],
+      series: [],
+    },
+    isValidMode: ({ modalities, study }) => {
+      const modalities_list = modalities.split('\\');
+      const invalidModalities = ['SM'];
+
+      const isValid =
+        modalities_list.includes('CT') &&
+        study.mrn !== 'M1' &&
+        modalities_list.includes('PT') &&
+        !invalidModalities.some(modality => modalities_list.includes(modality)) &&
+        // This is study is a 4D study with PT and CT and not a 3D study for the tmtv
+        // mode, until we have a better way to identify 4D studies we will use the
+        // StudyInstanceUID to identify the study
+        // Todo: when we add the 4D mode which comes with a mechanism to identify
+        // 4D studies we can use that
+        study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
+
+      // there should be both CT and PT modalities and the modality should not be SM
+      return {
+        valid: isValid,
+        description: 'The mode requires both PT and CT series in the study',
+      };
+    },
+    routes: [
+      {
+        path: 'tmtv',
+        /*init: ({ servicesManager, extensionManager }) => {
+          //defaultViewerRouteInit
+        },*/
+        layoutTemplate: () => {
+          return {
+            id: ohif.layout,
+            props: {
+              leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
+              leftPanelClosed: true,
+              rightPanels: [tmtv.tmtv, tmtv.petSUV],
+              rightPanelResizable: true,
+              viewports: [
+                {
+                  namespace: cs3d.viewport,
+                  displaySetsToDisplay: [ohif.sopClassHandler],
+                },
+              ],
+            },
+          };
+        },
+      },
+    ],
+    extensions: extensionDependencies,
+    hangingProtocol: tmtv.hangingProtocol,
+    sopClassHandlers: [ohif.sopClassHandler],
+    ...modeConfiguration,
   };
 }
 
-export const tmtvLayout = {
-  id: ohif.layout,
-  props: {
-    // Panel lists are customization names; the tmtv extension registers the
-    // defaults and `?customization=` modules can replace them.
-    leftPanels: 'tmtv.leftPanels',
-    leftPanelResizable: true,
-    leftPanelClosed: true,
-    rightPanels: 'tmtv.rightPanels',
-    rightPanelResizable: true,
-    viewports: [
-      {
-        namespace: cs3d.viewport,
-        displaySetsToDisplay: [ohif.sopClassHandler],
-      },
-    ],
-  },
-};
-
-export const tmtvRoute = {
-  path: 'tmtv',
-  layoutTemplate,
-  layoutInstance: tmtvLayout,
-};
-
-export const modeInstance = {
-  // TODO: We're using this as a route segment
-  // We should not be.
-  id,
-  routeName: 'tmtv',
-  displayName: i18n.t('Modes:Total Metabolic Tumor Volume'),
-  _unsubscriptions: [],
-  // Toolbar buttons/layout and tool group additions are referenced by
-  // customization name; the tmtv extension registers the defaults and
-  // `?customization=` modules can extend them.
-  toolbarButtons: 'tmtv.toolbarButtons',
-  toolbarSections: 'tmtv.toolbarSections',
-  toolGroupAdditions: 'tmtv.toolGroupAdditions',
-  // Tool group setup used by onModeEnter; extending modes can replace it.
-  initToolGroups,
-
-  /**
-   * Lifecycle hooks
-   */
-  onModeEnter,
-  onModeExit,
-  validationTags: {
-    study: [],
-    series: [],
-  },
-  isValidMode,
-  routes: [tmtvRoute],
-  extensions: extensionDependencies,
-  hangingProtocol: tmtv.hangingProtocol,
-  sopClassHandlers: [ohif.sopClassHandler],
-};
-
-/**
- * The mode uses the basic mode's `modeFactory`, which applies
- * immutability-helper commands from `modeConfiguration` onto `modeInstance`,
- * so a site can define a mode that extends this one.
- */
 const mode = {
   id,
   modeFactory,
-  modeInstance,
   extensionDependencies,
 };
 
 export default mode;
-export { initToolGroups };

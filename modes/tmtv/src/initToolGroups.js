@@ -1,8 +1,12 @@
-import { toolGroupIds } from '@ohif/extension-tmtv';
-
 import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
 
-export { toolGroupIds };
+export const toolGroupIds = {
+  CT: 'ctToolGroup',
+  PT: 'ptToolGroup',
+  Fusion: 'fusionToolGroup',
+  MIP: 'mipToolGroup',
+  default: 'default',
+};
 
 function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
