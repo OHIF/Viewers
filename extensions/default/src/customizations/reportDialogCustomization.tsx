@@ -14,6 +14,7 @@ type ReportDialogProps = {
   dataSources: DataSource[];
   modality?: string;
   predecessorImageId?: string;
+  minSeriesNumber?: number;
   hide: () => void;
   onSave: (data: {
     reportName: string;
@@ -24,6 +25,8 @@ type ReportDialogProps = {
   onCancel: () => void;
   enableDownload?: boolean;
 };
+
+type SaveMode = 'existing' | 'new';
 
 function ReportDialog({
   dataSources,
@@ -43,49 +46,65 @@ function ReportDialog({
   );
   const { displaySetService } = servicesManager.services;
 
-  const [selectedSeries, setSelectedSeries] = useState<string | null>(predecessorImageId || null);
-  const [reportName, setReportName] = useState('');
-
-  const seriesOptions = useMemo(() => {
+  const existingSeriesOptions = useMemo(() => {
     const displaySetsMap = displaySetService.getDisplaySetCache();
     const displaySets = Array.from(displaySetsMap.values());
-    const options = displaySets
+    return displaySets
       .filter(ds => ds.Modality === modality)
       .map(ds => ({
         value: ds.predecessorImageId || ds.SeriesInstanceUID,
         seriesNumber: isFinite(ds.SeriesNumber) ? ds.SeriesNumber : minSeriesNumber,
-        description: ds.SeriesDescription,
+        description: ds.SeriesDescription ?? '',
         label: `${ds.SeriesDescription} ${ds.SeriesDate}/${ds.SeriesTime} ${ds.SeriesNumber}`,
       }));
+  }, [displaySetService, modality, minSeriesNumber]);
 
-    return [
-      {
-        value: null,
-        description: null,
-        seriesNumber: minSeriesNumber,
-        label: 'Create new series',
-      },
-      ...options,
-    ];
-  }, [displaySetService, modality]);
+  const hasExistingSeries = existingSeriesOptions.length > 0;
 
-  useEffect(() => {
-    const seriesOption = seriesOptions.find(s => s.value === selectedSeries);
-    const newReportName =
-      selectedSeries && seriesOption?.description ? seriesOption.description : '';
-    setReportName(newReportName);
-  }, [selectedSeries, seriesOptions]);
+  const [saveMode, setSaveMode] = useState<SaveMode>(hasExistingSeries ? 'existing' : 'new');
+  const [selectedSeries, setSelectedSeries] = useState<string | null>(
+    predecessorImageId
+      ? (existingSeriesOptions.find(s => s.value === predecessorImageId)?.value ??
+          existingSeriesOptions[0]?.value ??
+          null)
+      : (existingSeriesOptions[0]?.value ?? null)
+  );
+  const [newSeriesName, setNewSeriesName] = useState('');
+
+  const priorSeriesNumber = useMemo(
+    () => Math.max(minSeriesNumber, ...existingSeriesOptions.map(s => s.seriesNumber)),
+    [existingSeriesOptions, minSeriesNumber]
+  );
+
+  const existingSeriesDesc = useMemo(
+    () => existingSeriesOptions.find(s => s.value === selectedSeries)?.description ?? '',
+    [existingSeriesOptions, selectedSeries]
+  );
+
+  const switchToNew = useCallback(() => {
+    setSaveMode('new');
+    setNewSeriesName(prev => prev || (existingSeriesDesc ? `${existingSeriesDesc} copy` : ''));
+  }, [existingSeriesDesc]);
 
   const handleSave = useCallback(() => {
     actionTakenRef.current = true;
     onSave({
-      reportName,
+      reportName: saveMode === 'existing' ? existingSeriesDesc : newSeriesName,
       dataSource: selectedDataSource,
-      priorSeriesNumber: Math.max(...seriesOptions.map(it => it.seriesNumber)),
-      series: selectedSeries,
+      priorSeriesNumber,
+      series: saveMode === 'existing' ? selectedSeries : null,
     });
     hide();
-  }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
+  }, [
+    saveMode,
+    existingSeriesDesc,
+    newSeriesName,
+    selectedDataSource,
+    priorSeriesNumber,
+    selectedSeries,
+    hide,
+    onSave,
+  ]);
 
   const handleCancel = useCallback(() => {
     actionTakenRef.current = true;
@@ -96,13 +115,21 @@ function ReportDialog({
   const handleDownload = useCallback(() => {
     actionTakenRef.current = true;
     onSave({
-      reportName,
+      reportName: saveMode === 'existing' ? existingSeriesDesc : newSeriesName,
       dataSource: 'download',
-      priorSeriesNumber: Math.max(...seriesOptions.map(it => it.seriesNumber)),
-      series: selectedSeries,
+      priorSeriesNumber,
+      series: saveMode === 'existing' ? selectedSeries : null,
     });
     hide();
-  }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
+  }, [
+    saveMode,
+    existingSeriesDesc,
+    newSeriesName,
+    priorSeriesNumber,
+    selectedSeries,
+    hide,
+    onSave,
+  ]);
 
   // Handles the close dialog button/external close as a cancel
   useEffect(() => {
@@ -114,102 +141,111 @@ function ReportDialog({
   }, [onCancel]);
 
   const showDataSourceSelect = dataSources?.length > 1;
-  const showDownloadButton = enableDownload;
 
   return (
     <div className="text-foreground flex min-w-[400px] max-w-md flex-col">
       <div className="flex flex-col gap-4">
-        <div className="flex gap-4">
-          {showDataSourceSelect && (
-            <>
-              <div className="mt-1 w-1/2">
-                <div className="mb-1 pl-1 text-base">Data source</div>
-                <Select
-                  value={selectedDataSource}
-                  onValueChange={setSelectedDataSource}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a data source" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {dataSources.map(source => (
-                      <SelectItem
-                        key={source.value}
-                        value={source.value}
-                      >
-                        {source.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={showDataSourceSelect ? 'mt-1 w-1/2' : 'mt-1 w-full'}>
-                <div className="mb-1 pl-1 text-base">Series</div>
-                <Select
-                  value={selectedSeries}
-                  onValueChange={setSelectedSeries}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a series" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {seriesOptions.map(series => (
-                      <SelectItem
-                        key={series.value}
-                        value={series.value}
-                      >
-                        {series.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
+        {showDataSourceSelect && (
+          <div>
+            <div className="mb-1 pl-1 text-base">Data source</div>
+            <Select
+              value={selectedDataSource}
+              onValueChange={setSelectedDataSource}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a data source" />
+              </SelectTrigger>
+              <SelectContent>
+                {dataSources.map(source => (
+                  <SelectItem
+                    key={source.value}
+                    value={source.value}
+                  >
+                    {source.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {/* Save to existing series */}
+        <div>
+          <label className="mb-2 flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="save-mode"
+              checked={saveMode === 'existing'}
+              onChange={() => setSaveMode('existing')}
+              disabled={!hasExistingSeries}
+              className="cursor-pointer"
+            />
+            <span className={!hasExistingSeries ? 'text-muted-foreground' : ''}>
+              Save to existing series
+            </span>
+          </label>
+          <div className="pl-6">
+            <Select
+              value={selectedSeries}
+              onValueChange={setSelectedSeries}
+              disabled={saveMode !== 'existing' || !hasExistingSeries}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={hasExistingSeries ? 'Select a series' : 'No existing series'}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {existingSeriesOptions.map(series => (
+                  <SelectItem
+                    key={series.value}
+                    value={series.value}
+                  >
+                    {series.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className="flex items-end gap-4">
-          {!showDataSourceSelect && (
-            <div className="w-1/3">
-              <div className="mb-1 pl-1 text-base">Series</div>
-              <Select
-                value={selectedSeries}
-                onValueChange={setSelectedSeries}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a series" />
-                </SelectTrigger>
-                <SelectContent>
-                  {seriesOptions.map(series => (
-                    <SelectItem
-                      key={series.value}
-                      value={series.value}
-                    >
-                      {series.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          <InputDialog
-            value={reportName}
-            onChange={setReportName}
-            submitOnEnter
-            className="flex-1"
-          >
-            <InputDialog.Field className="mb-0">
-              <InputDialog.Input
-                placeholder="Report name"
-                disabled={!!selectedSeries}
-              />
-            </InputDialog.Field>
-          </InputDialog>
+
+        {/* Create new series — entire section clickable to switch mode */}
+        <div onClick={saveMode === 'existing' ? switchToNew : undefined}>
+          <label className="mb-2 flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="save-mode"
+              checked={saveMode === 'new'}
+              onChange={switchToNew}
+              className="cursor-pointer"
+            />
+            <span>Create new series</span>
+          </label>
+          <div className="pl-6">
+            <InputDialog
+              value={saveMode === 'existing' ? existingSeriesDesc : newSeriesName}
+              onChange={saveMode === 'new' ? setNewSeriesName : undefined}
+              submitOnEnter
+            >
+              <InputDialog.Field className="mb-0">
+                <InputDialog.Input
+                  placeholder="Series name"
+                  disabled={saveMode === 'existing'}
+                />
+              </InputDialog.Field>
+            </InputDialog>
+            {saveMode === 'existing' && (
+              <p className="text-muted-foreground mt-1 pl-1 text-xs">
+                Series name cannot be changed here
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-2">
           <InputDialog>
             <InputDialog.Actions>
-              {showDownloadButton && (
+              {enableDownload && (
                 <InputDialog.ActionsSecondary onClick={handleDownload}>
                   {t('Download')}
                 </InputDialog.ActionsSecondary>
