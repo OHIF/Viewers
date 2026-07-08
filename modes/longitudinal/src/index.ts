@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { id } from './id';
-import { initToolGroups, cornerstone,
+import { initToolGroups,
   ohif,
   dicomsr,
   dicomvideo,
@@ -28,8 +28,10 @@ export const longitudinalInstance = {
   id: ohif.layout,
   props: {
     ...basicLayout.props,
-    leftPanels: [tracked.thumbnailList],
-    rightPanels: [cornerstone.segmentation, tracked.measurements],
+    // Panel lists are customization names; the measurement-tracking extension
+    // registers the defaults and `?customization=` modules can replace them.
+    leftPanels: 'longitudinal.leftPanels',
+    rightPanels: 'longitudinal.rightPanels',
     viewports: [
       {
         namespace: tracked.viewport,

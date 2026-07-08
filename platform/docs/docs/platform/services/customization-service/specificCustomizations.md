@@ -207,6 +207,46 @@ tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 > module applies at the *global* scope, the `$push` **extends** the built-in buttons rather than
 > replacing them. The same pattern works for any tool already in the active tool group.
 
+#### 4. Compose whole capability blocks into a mode
+
+Each shipped mode reads its toolbar, tool-group additions and panel lists through per-mode
+customization keys, and the values are **lists that may reference other customizations by name**.
+Extensions register both the per-mode defaults and reusable "capability blocks", so a JSON module can
+extend a mode by pushing a block's *name* instead of restating its contents.
+
+Per-mode keys (registered by the cornerstone / measurement-tracking / tmtv extensions):
+
+| Mode | Buttons | Sections | Tool group additions | Panels |
+| --- | --- | --- | --- | --- |
+| basic & longitudinal | `basic.toolbarButtons` | `basic.toolbarSections` | `basic.toolGroupAdditions` | `basic.leftPanels` / `basic.rightPanels` (longitudinal: `longitudinal.*`) |
+| segmentation | `segmentation.toolbarButtons` | `segmentation.toolbarSections` | `segmentation.toolGroupAdditions` | `segmentation.leftPanels` / `segmentation.rightPanels` |
+| tmtv | `tmtv.toolbarButtons` | `tmtv.toolbarSections` | `tmtv.toolGroupAdditions` | `tmtv.leftPanels` / `tmtv.rightPanels` |
+
+Capability blocks exported by the cornerstone extension:
+
+- `cornerstone.toolbarButtons` / `cornerstone.toolbarSections` — the general viewer toolbar.
+- `cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections` — the
+  segmentation editing buttons and the toolbox section wiring rendered by the
+  `panelSegmentationWithTools*` panels.
+- `cornerstone.segmentationModeToolbarSections` — the segmentation mode's main toolbar layout.
+- `cornerstone.segmentationToolGroupTools` — the segmentation editing tools (brushes, scissors,
+  contour tools) as a `{ passive: [...] }` block for `toolGroupAdditions`.
+- `cornerstone.annotationToolGroupTools` — the measurement/annotation tools as a
+  `{ passive: [...] }` block for `toolGroupAdditions`.
+
+Two shipped modules demonstrate the pattern:
+
+- [`segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationEditing.jsonc)
+  (`?customization=segmentationEditing`) adds segmentation editing to the basic and longitudinal
+  modes: it pushes the segmentation button/section/tool blocks onto the `basic.*` keys, swaps the
+  right panels to the segmentation panels with tools, and enables editing via
+  `panelSegmentation.disableEditing`.
+- [`segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationAnnotationTools.jsonc)
+  (`?customization=segmentationAnnotationTools`) enables the annotation tools inside the
+  segmentation mode: it adds a `MeasurementTools` section to the primary bar, pushes
+  `cornerstone.annotationToolGroupTools` onto `segmentation.toolGroupAdditions`, and appends the
+  measurement panel.
+
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
 also append to a list or merge into an existing object rather than replacing it wholesale.

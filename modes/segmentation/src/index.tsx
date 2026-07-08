@@ -1,249 +1,138 @@
 import { id } from './id';
-import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
 import setUpAutoTabSwitchHandler from './utils/setUpAutoTabSwitchHandler';
-import { ohif, cornerstone, extensionDependencies, dicomRT, segmentation } from '@ohif/mode-basic';
-export * from './toolbarButtons';
+import {
+  ohif,
+  cornerstone,
+  extensionDependencies,
+  dicomRT,
+  segmentation,
+  onModeEnter as basicOnModeEnter,
+  onModeExit as basicOnModeExit,
+  layoutTemplate,
+  modeFactory,
+} from '@ohif/mode-basic';
 
-function modeFactory({ modeConfiguration }) {
-  const _unsubscriptions = [];
+/**
+ * Indicate this is a valid mode unless the studies ONLY contain modalities
+ * that segmentation cannot be performed on.
+ */
+export function isValidMode({ modalities }) {
+  const modalitiesArray = modalities.split('\\');
   return {
-    /**
-     * Mode ID, which should be unique among modes used by the viewer. This ID
-     * is used to identify the mode in the viewer's state.
-     */
-    id,
-    routeName: 'segmentation',
-    /**
-     * Mode name, which is displayed in the viewer's UI in the workList, for the
-     * user to select the mode.
-     */
-    displayName: 'Segmentation',
-    /**
-     * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
-     * Services and other resources.
-     */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        segmentationService,
-        viewportGridService,
-        panelService,
-      } = servicesManager.services;
-
-      measurementService.clearMeasurements();
-
-      // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
-
-      toolbarService.register(toolbarButtons);
-
-      toolbarService.updateSection(toolbarService.sections.primary, [
-        'WindowLevel',
-        'Pan',
-        'Zoom',
-        'TrackballRotate',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-        'MoreTools',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
-        'orientationMenu',
-        'dataOverlayMenu',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
-        'AdvancedRenderingControls',
-      ]);
-
-      toolbarService.updateSection('AdvancedRenderingControls', [
-        'windowLevelMenuEmbedded',
-        'voiManualControlMenu',
-        'Colorbar',
-        'opacityMenu',
-        'thresholdMenu',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
-        'modalityLoadBadge',
-        'trackingStatus',
-        'navigationComponent',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
-        'windowLevelMenu',
-      ]);
-
-      toolbarService.updateSection('MoreTools', [
-        'Reset',
-        'rotate-right',
-        'flipHorizontal',
-        'ReferenceLines',
-        'ImageOverlayViewer',
-        'StackScroll',
-        'invert',
-        'Cine',
-        'Magnify',
-        'TagBrowser',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
-        'LabelMapTools',
-      ]);
-      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
-        'ContourTools',
-      ]);
-
-      toolbarService.updateSection('LabelMapTools', [
-        'LabelmapSlicePropagation',
-        'BrushTools',
-        'MarkerLabelmap',
-        'RegionSegmentPlus',
-        'Shapes',
-        'LabelMapEditWithContour',
-      ]);
-      toolbarService.updateSection('ContourTools', [
-        'PlanarFreehandContourSegmentationTool',
-        'SculptorTool',
-        'SplineContourSegmentationTool',
-        'LivewireContourSegmentationTool',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationUtilities, [
-        'LabelMapUtilities',
-      ]);
-      toolbarService.updateSection(toolbarService.sections.contourSegmentationUtilities, [
-        'ContourUtilities',
-      ]);
-
-      toolbarService.updateSection('LabelMapUtilities', [
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
-      ]);
-      toolbarService.updateSection('ContourUtilities', [
-        'LogicalContourOperations',
-        'SimplifyContours',
-        'SmoothContours',
-      ]);
-
-      toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
-
-      const { unsubscribeAutoTabSwitchEvents } = setUpAutoTabSwitchHandler({
-        segmentationService,
-        viewportGridService,
-        panelService,
-      });
-
-      _unsubscriptions.push(...unsubscribeAutoTabSwitchEvents);
-    },
-    onModeExit: ({ servicesManager }: withAppTypes) => {
-      const {
-        toolGroupService,
-        syncGroupService,
-        segmentationService,
-        cornerstoneViewportService,
-        uiDialogService,
-        uiModalService,
-      } = servicesManager.services;
-
-      _unsubscriptions.forEach(unsubscribe => unsubscribe());
-      _unsubscriptions.length = 0;
-
-      uiDialogService.hideAll();
-      uiModalService.hide();
-      toolGroupService.destroy();
-      syncGroupService.destroy();
-      segmentationService.destroy();
-      cornerstoneViewportService.destroy();
-    },
-    /** */
-    validationTags: {
-      study: [],
-      series: [],
-    },
-    /**
-     * A boolean return value that indicates whether the mode is valid for the
-     * modalities of the selected studies. Currently we don't have stack viewport
-     * segmentations and we should exclude them
-     */
-    isValidMode: ({ modalities }) => {
-      // Don't show the mode if the selected studies have only one modality
-      // that is not supported by the mode
-      const modalitiesArray = modalities.split('\\');
-      return {
-        valid:
-          modalitiesArray.length === 1
-            ? !['SM', 'ECG', 'OT', 'DOC'].includes(modalitiesArray[0])
-            : true,
-        description:
-          'The mode does not support studies that ONLY include the following modalities: SM, OT, DOC',
-      };
-    },
-    /**
-     * Mode Routes are used to define the mode's behavior. A list of Mode Route
-     * that includes the mode's path and the layout to be used. The layout will
-     * include the components that are used in the layout. For instance, if the
-     * default layoutTemplate is used (id: '@ohif/extension-default.layoutTemplateModule.viewerLayout')
-     * it will include the leftPanels, rightPanels, and viewports. However, if
-     * you define another layoutTemplate that includes a Footer for instance,
-     * you should provide the Footer component here too. Note: We use Strings
-     * to reference the component's ID as they are registered in the internal
-     * ExtensionManager. The template for the string is:
-     * `${extensionId}.{moduleType}.${componentId}`.
-     */
-    routes: [
-      {
-        path: 'template',
-        layoutTemplate: ({ location, servicesManager }) => {
-          return {
-            id: ohif.layout,
-            props: {
-              leftPanels: [ohif.thumbnailList],
-              leftPanelResizable: true,
-              rightPanels: [
-                cornerstone.labelMapSegmentationPanel,
-                cornerstone.contourSegmentationPanel,
-              ],
-              rightPanelResizable: true,
-              // leftPanelClosed: true,
-              viewports: [
-                {
-                  namespace: cornerstone.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
-                },
-                {
-                  namespace: segmentation.viewport,
-                  displaySetsToDisplay: [segmentation.sopClassHandler],
-                },
-                {
-                  namespace: dicomRT.viewport,
-                  displaySetsToDisplay: [dicomRT.sopClassHandler],
-                },
-              ],
-            },
-          };
-        },
-      },
-    ],
-    /** List of extensions that are used by the mode */
-    extensions: extensionDependencies,
-    /** HangingProtocol used by the mode */
-    // Commented out to just use the most applicable registered hanging protocol
-    // The example is used for a grid layout to specify that as a preferred layout
-    hangingProtocol: ['@ohif/mnGrid'],
-    /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
+    valid:
+      modalitiesArray.length === 1 ? !['SM', 'ECG', 'OT', 'DOC'].includes(modalitiesArray[0]) : true,
+    description:
+      'The mode does not support studies that ONLY include the following modalities: SM, OT, DOC',
   };
 }
 
+/**
+ * Extends the basic mode enter with the segmentation panel auto tab switch
+ * handling (switching between labelmap/contour panels as segmentations of the
+ * relevant type become active).
+ */
+export function onModeEnter(ctx: withAppTypes) {
+  basicOnModeEnter.call(this, ctx);
+
+  const { segmentationService, viewportGridService, panelService } =
+    ctx.servicesManager.services;
+
+  const { unsubscribeAutoTabSwitchEvents } = setUpAutoTabSwitchHandler({
+    segmentationService,
+    viewportGridService,
+    panelService,
+  });
+
+  this._unsubscriptions.push(...unsubscribeAutoTabSwitchEvents);
+}
+
+export function onModeExit(ctx: withAppTypes) {
+  this._unsubscriptions.forEach(unsubscribe => unsubscribe());
+  this._unsubscriptions.length = 0;
+
+  basicOnModeExit.call(this, ctx);
+}
+
+export const segmentationLayout = {
+  id: ohif.layout,
+  props: {
+    // Panel lists are customization names; the cornerstone extension registers
+    // the defaults and `?customization=` modules can replace them.
+    leftPanels: 'segmentation.leftPanels',
+    leftPanelResizable: true,
+    rightPanels: 'segmentation.rightPanels',
+    rightPanelResizable: true,
+    viewports: [
+      {
+        namespace: cornerstone.viewport,
+        displaySetsToDisplay: [ohif.sopClassHandler],
+      },
+      {
+        namespace: segmentation.viewport,
+        displaySetsToDisplay: [segmentation.sopClassHandler],
+      },
+      {
+        namespace: dicomRT.viewport,
+        displaySetsToDisplay: [dicomRT.sopClassHandler],
+      },
+    ],
+  },
+};
+
+export const segmentationRoute = {
+  path: 'template',
+  layoutTemplate,
+  layoutInstance: segmentationLayout,
+};
+
+export const modeInstance = {
+  id,
+  routeName: 'segmentation',
+  displayName: 'Segmentation',
+  _activatePanelTriggersSubscriptions: [],
+  _unsubscriptions: [],
+  // Toolbar buttons/layout and tool group additions are referenced by
+  // customization name; the cornerstone extension registers the defaults and
+  // `?customization=` modules can extend them (e.g. add new segmentation
+  // tools, remove defaults, or add the annotation tools).
+  toolbarButtons: 'segmentation.toolbarButtons',
+  toolbarSections: 'segmentation.toolbarSections',
+  toolGroupAdditions: 'segmentation.toolGroupAdditions',
+  // Tool group setup used by onModeEnter; extending modes can replace it.
+  initToolGroups,
+  // The segmentation panel is editable in this mode.
+  enableSegmentationEdit: true,
+
+  /**
+   * Lifecycle hooks
+   */
+  onModeEnter,
+  onModeExit,
+  validationTags: {
+    study: [],
+    series: [],
+  },
+
+  isValidMode,
+  routes: [segmentationRoute],
+  extensions: extensionDependencies,
+  // Prefer the grid layout hanging protocol when applicable.
+  hangingProtocol: ['@ohif/mnGrid'],
+  sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
+};
+
+/**
+ * The mode uses the basic mode's `modeFactory`, which applies
+ * immutability-helper commands from `modeConfiguration` onto `modeInstance`,
+ * so a site can define a `mySegmentation` mode that extends this one.
+ */
 const mode = {
   id,
   modeFactory,
+  modeInstance,
   extensionDependencies,
 };
 
 export default mode;
+export { initToolGroups };

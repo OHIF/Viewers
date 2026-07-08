@@ -1,7 +1,12 @@
-import { toolGroupIds } from './initToolGroups';
+import { ToolbarService } from '@ohif/core';
 import i18n from 'i18next';
 
-import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+import { toolGroupIds } from '../toolGroupIds';
+
+const { TOOLBAR_SECTIONS } = ToolbarService;
+
+export const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
+export const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -10,6 +15,11 @@ const setToolActiveToolbar = {
   },
 };
 
+/**
+ * Default toolbar buttons for the TMTV mode, registered as the
+ * `tmtv.toolbarButtons` customization so `?customization=` modules can extend
+ * or replace them.
+ */
 const toolbarButtons = [
   {
     id: 'MeasurementTools',
@@ -301,7 +311,11 @@ const toolbarButtons = [
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush', 'ThresholdCircularBrushDynamic'],
+          toolNames: [
+            'ThresholdCircularBrush',
+            'ThresholdSphereBrush',
+            'ThresholdCircularBrushDynamic',
+          ],
         },
         {
           name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
@@ -458,4 +472,64 @@ const toolbarButtons = [
   },
 ];
 
-export default toolbarButtons;
+/**
+ * Default toolbar layout for the TMTV mode, registered as the
+ * `tmtv.toolbarSections` customization.
+ */
+export const toolbarSections: Record<string, string[]> = {
+  [TOOLBAR_SECTIONS.primary]: ['MeasurementTools', 'Zoom', 'Pan', 'WindowLevel', 'Crosshairs'],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],
+
+  AdvancedRenderingControls: [
+    'windowLevelMenuEmbedded',
+    'voiManualControlMenu',
+    'Colorbar',
+    'opacityMenu',
+    'thresholdMenu',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: [
+    'modalityLoadBadge',
+    'trackingStatus',
+    'navigationComponent',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
+
+  MeasurementTools: ['Length', 'Bidirectional', 'ArrowAnnotate', 'EllipticalROI'],
+
+  ROIThresholdToolbox: ['SegmentationTools'],
+  SegmentationTools: ['RectangleROIStartEndThreshold', 'BrushTools'],
+  BrushTools: ['Brush', 'Eraser', 'Threshold'],
+};
+
+/**
+ * Customizations registered (at default scope) by the tmtv extension. The
+ * TMTV mode reads these by name so `?customization=` modules can extend the
+ * defaults, and site modes can extend the TMTV mode with different names.
+ */
+const toolbarCustomization = {
+  'tmtv.toolbarButtons': toolbarButtons,
+  'tmtv.toolbarSections': toolbarSections,
+  // Extra tools layered onto the mode's tool groups after creation; entries
+  // reference tool blocks such as `cornerstone.annotationToolGroupTools`.
+  'tmtv.toolGroupAdditions': {
+    [toolGroupIds.CT]: [],
+    [toolGroupIds.PT]: [],
+    [toolGroupIds.Fusion]: [],
+    [toolGroupIds.MIP]: [],
+    [toolGroupIds.default]: [],
+  },
+  // Panel lists resolved by the TMTV mode's layout template.
+  'tmtv.leftPanels': ['@ohif/extension-default.panelModule.seriesList'],
+  'tmtv.rightPanels': [
+    '@ohif/extension-tmtv.panelModule.tmtv',
+    '@ohif/extension-tmtv.panelModule.petSUV',
+  ],
+};
+
+export { toolbarButtons };
+export default toolbarCustomization;
