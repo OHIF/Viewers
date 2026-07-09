@@ -1,5 +1,6 @@
 import {
   test,
+  expect,
   waitForViewportRenderCycle,
   checkForScreenshot,
   screenShotPaths,
@@ -56,6 +57,9 @@ test.describe('Intersect operation', () => {
     await combineContours.apply();
     await viewportRenderCycle;
 
+    await expect(contourSegmentationPanel.panel.rows).toHaveCount(5);
+    await expect(contourSegmentationPanel.panel.nthSegment(4).title).toHaveText(segments.result);
+
     await contourSegmentationPanel.segmentsVisibilityToggle.click();
 
     viewportRenderCycle = waitForViewportRenderCycle(page);
@@ -97,6 +101,9 @@ test.describe('Subtract operation', () => {
     let viewportRenderCycle = waitForViewportRenderCycle(page);
     await combineContours.apply();
     await viewportRenderCycle;
+
+    await expect(contourSegmentationPanel.panel.rows).toHaveCount(5);
+    await expect(contourSegmentationPanel.panel.nthSegment(4).title).toHaveText(segments.result);
 
     await contourSegmentationPanel.segmentsVisibilityToggle.click();
 
