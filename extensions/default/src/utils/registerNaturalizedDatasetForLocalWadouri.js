@@ -36,12 +36,13 @@ export function registerNaturalizedDatasetForLocalWadouri(dataset, options = {})
     dataset.NumberOfFrames = perFrameGroups.length;
   }
 
+  // Local only — never written back to the dataset: single-frame IODs (SR,
+  // RTSTRUCT) must not gain a NumberOfFrames element in their serialized form.
   const numberOfFrames = Math.max(
     Number(dataset.NumberOfFrames) || 0,
     Array.isArray(perFrameGroups) ? perFrameGroups.length : 0,
     1
   );
-  dataset.NumberOfFrames = numberOfFrames;
 
   const frameImageIds = [];
   if (StudyInstanceUID && SeriesInstanceUID && SOPInstanceUID) {

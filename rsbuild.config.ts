@@ -36,6 +36,17 @@ const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
 const WATCH_AGGREGATE_TIMEOUT = Number(process.env.WATCH_AGGREGATE_TIMEOUT || 1500);
 
+// `source-map-loader` is not a project dependency — it only serves the local
+// cs3d-linking workflow (libs/@cornerstonejs, gitignored), so it is resolved
+// opportunistically and the rule is skipped on installs that lack it.
+const SOURCE_MAP_LOADER = (() => {
+  try {
+    return require.resolve('source-map-loader');
+  } catch {
+    return null;
+  }
+})();
+
 export default defineConfig({
   dev: {
     lazyCompilation: false,
@@ -79,12 +90,16 @@ export default defineConfig({
           // packages (libs/@cornerstonejs, via cs3d:link + cs3d:watch) so browser
           // stack traces and breakpoints resolve to the original .ts instead of
           // the bundled dist/esm .js. Scoped to the linked packages only.
-          {
-            test: /\.js$/,
-            enforce: 'pre',
-            use: [require.resolve('source-map-loader')],
-            include: /libs[\\/]@cornerstonejs[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]esm/,
-          },
+          ...(SOURCE_MAP_LOADER
+            ? [
+                {
+                  test: /\.js$/,
+                  enforce: 'pre' as const,
+                  use: [SOURCE_MAP_LOADER],
+                  include: /libs[\\/]@cornerstonejs[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]esm/,
+                },
+              ]
+            : []),
           {
             test: /\.css$/,
             use: [
