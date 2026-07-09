@@ -10,6 +10,17 @@ import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { useWorkflows, type Workflow } from './WorkflowsProvider';
 import { COLUMN_IDS } from '../columns/defaultColumns';
 
+/**
+ * Replaces the built-in double-click action (launch the default workflow,
+ * falling back to the first applicable one). The row is selected before this
+ * is called. `workflows` are the workflows applicable to the study, in menu
+ * order; `defaultWorkflow` is the user's default when it applies to the study.
+ */
+export type OnStudyDoubleClick = (
+  study: StudyRow,
+  context: { defaultWorkflow?: Workflow; workflows: Workflow[] }
+) => void;
+
 export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'> & {
   title?: ReactNode;
   showColumnVisibility?: boolean;
@@ -19,16 +30,7 @@ export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'>
   toolbarRightComponent?: ReactNode;
   isLoading?: boolean;
   loadingComponent?: ReactNode;
-  /**
-   * Replaces the built-in double-click action (launch the default workflow,
-   * falling back to the first applicable one). The row is selected before this
-   * is called. `workflows` are the workflows applicable to the study, in menu
-   * order; `defaultWorkflow` is the user's default when it applies to the study.
-   */
-  onStudyDoubleClick?: (
-    study: StudyRow,
-    context: { defaultWorkflow?: Workflow; workflows: Workflow[] }
-  ) => void;
+  onStudyDoubleClick?: OnStudyDoubleClick;
 };
 
 export function Table({
