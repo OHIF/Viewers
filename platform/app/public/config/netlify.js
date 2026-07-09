@@ -1,10 +1,30 @@
 /** @type {AppTypes.Config} */
 
+// Public demo / Netlify deploy configuration.
+//
+// This is the full-featured config used for the Netlify deploy (build:viewer:ci).
+// Unlike the locked-down config/default.js, it enables every data source and
+// turns the `?customization=` URL feature ON via `customizationUrlPrefixes`.
 window.config = {
+  name: 'config/netlify.js',
   routerBasename: null,
+  // whiteLabeling: {},
   extensions: [],
   modes: [],
+  customizationService: ['@ohif/extension-default.customizationModule.theme'],
+
+  // URL-driven customizations (?customization=). The `default` prefix (no
+  // slashes) is used for values without a leading slash; every other prefix
+  // must start AND end with a slash and matches the leading `/segment/` of the
+  // value. Files are fetched and parsed as JSONC data — never executed.
+  // e.g. ?customization=ctPresets  ->  ./customizations/ctPresets.jsonc
+  customizationUrlPrefixes: {
+    default: './customizations/',
+  },
+
   showStudyList: true,
+  // some windows systems have issues with more than 3 web workers
+  maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
@@ -12,8 +32,83 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
+  allowMultiSelectExport: false,
+  maxNumRequests: {
+    interaction: 100,
+    thumbnail: 5,
+    // Prefetch number is dependent on the http protocol. For http 2 or
+    // above, the number of requests can be go a lot higher.
+    prefetch: 25,
+  },
+  showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
+  // Defines multi-monitor layouts
+  multimonitor: [
+    {
+      id: 'split',
+      test: ({ multimonitor }) => multimonitor === 'split',
+      screens: [
+        {
+          id: 'ohif0',
+          screen: null,
+          location: {
+            screen: 0,
+            width: 0.5,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+        {
+          id: 'ohif1',
+          screen: null,
+          location: {
+            width: 0.5,
+            height: 1,
+            left: 0.5,
+            top: 0,
+          },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+      ],
+    },
+
+    {
+      id: '2',
+      test: ({ multimonitor }) => multimonitor === '2',
+      screens: [
+        {
+          id: 'ohif0',
+          screen: 0,
+          location: {
+            width: 1,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+        {
+          id: 'ohif1',
+          screen: 1,
+          location: {
+            width: 1,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+      ],
+    },
+  ],
   defaultDataSourceName: 'ohif',
+  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
+  // dangerouslyUseDynamicConfig: {
+  //   enabled: true,
+  //   regex: /.*/,
+  // },
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
@@ -26,15 +121,13 @@ window.config = {
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
+        supportsFuzzyMatching: true,
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
@@ -62,9 +155,6 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
@@ -72,7 +162,6 @@ window.config = {
         omitQuotationForMultipartRequest: true,
       },
     },
-
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif3',
@@ -91,9 +180,6 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
@@ -123,6 +209,29 @@ window.config = {
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
+        },
+      },
+    },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'orthanc',
+      configuration: {
+        friendlyName: 'local Orthanc DICOMWeb Server',
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'http://localhost/pacs/dicom-web',
+        qidoRoot: 'http://localhost/pacs/dicom-web',
+        wadoRoot: 'http://localhost/pacs/dicom-web',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        dicomUploadEnabled: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
         },
       },
     },
@@ -159,20 +268,3 @@ window.config = {
     console.warn('test, navigate to https://ohif.org/');
   },
 };
-
-function waitForElement(selector, maxAttempts = 20, interval = 25) {
-  return new Promise(resolve => {
-    let attempts = 0;
-
-    const checkForElement = setInterval(() => {
-      const element = document.querySelector(selector);
-
-      if (element || attempts >= maxAttempts) {
-        clearInterval(checkForElement);
-        resolve();
-      }
-
-      attempts++;
-    }, interval);
-  });
-}

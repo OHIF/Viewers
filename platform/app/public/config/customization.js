@@ -11,11 +11,44 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
 
-  // Add some customizations to the default e2e datasource
-  customizationService: [
-    '@ohif/extension-default.customizationModule.datasources',
-    '@ohif/extension-default.customizationModule.helloPage',
-  ],
+  // Allowlist for the `?customization=` URL parameter and for
+  // `customizationService.requires` below. The `default` prefix (no slashes)
+  // resolves a value to `<publicUrl>/customizations/<value>.jsonc`. Files are
+  // fetched as DATA (JSON with comments) and never executed.
+  customizationUrlPrefixes: {
+    default: './customizations/',
+  },
+
+  // Phase-tagged startup customizations. Each block is applied at a fixed point
+  // in the lifecycle so ordering is deterministic regardless of when extensions
+  // and modes load:
+  //   - requires:     URL customization data files to resolve up front.
+  //   - bootstrap:    applied (Global) BEFORE extensions register.
+  //   - global:       applied (Global) AFTER extensions register.
+  //   - mode:         applied (Mode) on each mode enter — `*` (general) first,
+  //                   then a block keyed by the mode id / routeName.
+  customizationService: {
+    // Pulls in platform/app/public/customizations/patientBirthDate.jsonc, which
+    // adds a "Birth Date" column to the WorkList study list (global phase).
+    requires: ['patientBirthDate'],
+
+    // The previous (legacy-array) customizations, now in the explicit `global`
+    // phase. A `global` block accepts the same input as setCustomizations: an
+    // array mixing string references and inline object maps.
+    global: [
+      '@ohif/extension-default.customizationModule.datasources',
+      '@ohif/extension-default.customizationModule.helloPage',
+    ],
+
+    // Example of mode-scoped customizations (cleared/reapplied per mode):
+    // the `*` block applies to every mode first; a mode-named block (matched
+    // against the mode id or routeName, e.g. 'viewer') applies after it.
+    //
+    // mode: {
+    //   '*': { 'someCustomizationId': { $set: 'applies to all modes' } },
+    //   viewer: { 'someCustomizationId': { $set: 'overrides for the viewer mode' } },
+    // },
+  },
 
   defaultDataSourceName: 'e2e',
   investigationalUseDialog: {

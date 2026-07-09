@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState, ReactElement, useMemo } from '
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { PanelSection, WindowLevel } from '@ohif/ui-next';
-import { BaseVolumeViewport, Enums, eventTarget } from '@cornerstonejs/core';
+import { Enums, eventTarget, utilities as csUtils, Types } from '@cornerstonejs/core';
 import { useActiveViewportDisplaySets } from '@ohif/core';
 import {
   getNodeOpacity,
@@ -27,10 +27,16 @@ const ViewportWindowLevel = ({
   const getViewportsWithVolumeIds = useCallback(
     (volumeIds: string[]) => {
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-      const viewports = renderingEngine.getVolumeViewports();
+      // getVolumeViewports() was removed in the GenericViewport architecture
+      // (a PLANAR_NEXT viewport can be volume-capable without being a VolumeViewport).
+      // Official replacement: getViewports() + the viewportSupportsVolumeCompatibility
+      // capability guard (cornerstone codemod cornerstone3d/5/generic-viewport).
+      const viewports = renderingEngine
+        .getViewports()
+        .filter(csUtils.viewportSupportsVolumeCompatibility);
 
       return viewports.filter(vp => {
-        const viewportVolumeIds = vp instanceof BaseVolumeViewport ? vp.getAllVolumeIds() : [];
+        const viewportVolumeIds = (vp as Types.IVolumeViewport).getAllVolumeIds();
         return (
           volumeIds.length === viewportVolumeIds.length &&
           volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
@@ -124,8 +130,9 @@ const ViewportWindowLevel = ({
         return;
       }
 
-      const viewportVolumeIds =
-        viewport instanceof BaseVolumeViewport ? viewport.getAllVolumeIds() : [];
+      const viewportVolumeIds = csUtils.viewportSupportsVolumeId(viewport)
+        ? (viewport as Types.IVolumeViewport).getAllVolumeIds()
+        : [];
       const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
 
       viewports.forEach(vp => {

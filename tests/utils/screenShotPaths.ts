@@ -228,6 +228,9 @@ const screenShotPaths = {
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
+  wsi: {
+    wsiDisplayedCorrectly: 'wsiDisplayedCorrectly.png',
+  },
 };
 
 export { screenShotPaths };

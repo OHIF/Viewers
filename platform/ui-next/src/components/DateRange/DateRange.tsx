@@ -83,32 +83,36 @@ export function DatePickerWithRange({
       <Popover.Popover>
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="text-foreground absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            {!start && (
+              <CalendarIcon className="text-primary absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            )}
             <input
               id={`${id}-start`}
               type="text"
-              placeholder={t('Start Date', 'Start date')}
+              placeholder={t('Start', 'Start')}
               autoComplete="off"
               value={start}
               onChange={e => handleInputChange(e, 'start')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus hover:text-foreground h-[32px] w-full justify-start rounded border bg-background py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-background',
-                !start && 'text-muted-foreground'
+                'border-input focus:border-ring hover:text-foreground placeholder:text-muted-foreground h-7 w-full justify-start rounded border bg-background pl-1.5 pr-0.5 py-1 text-left text-base font-normal hover:bg-background'
               )}
               data-cy="input-date-range-start"
             />
           </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
-          className="w-auto p-0"
+          className="w-auto overflow-hidden p-0"
           align="start"
         >
           <Calendar
-            initialFocus
+            autoFocus
             mode="single"
+            captionLayout="dropdown"
             defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
             selected={start ? parse(start, 'yyyy-MM-dd', new Date()) : undefined}
             onSelect={handleStartSelect}
+            startMonth={new Date(1900, 0)}
+            endMonth={new Date(new Date().getFullYear() + 1, 11)}
             numberOfMonths={1}
           />
         </Popover.PopoverContent>
@@ -120,32 +124,36 @@ export function DatePickerWithRange({
       >
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="text-foreground absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            {!end && (
+              <CalendarIcon className="text-primary absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            )}
             <input
               id={`${id}-end`}
               type="text"
-              placeholder={t('End Date', 'End date')}
+              placeholder={t('End', 'End')}
               autoComplete="off"
               value={end}
               onChange={e => handleInputChange(e, 'end')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus hover:text-foreground h-full w-full justify-start rounded border bg-background py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-background',
-                !end && 'text-muted-foreground'
+                'border-input focus:border-ring hover:text-foreground placeholder:text-muted-foreground h-7 w-full justify-start rounded border bg-background pl-1.5 pr-0.5 py-1 text-left text-base font-normal hover:bg-background'
               )}
               data-cy="input-date-range-end"
             />
           </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
-          className="w-auto p-0"
+          className="w-auto overflow-hidden p-0"
           align="start"
         >
           <Calendar
-            initialFocus
+            autoFocus
             mode="single"
+            captionLayout="dropdown"
             defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
             selected={end ? parse(end, 'yyyy-MM-dd', new Date()) : undefined}
             onSelect={handleEndSelect}
+            startMonth={new Date(1900, 0)}
+            endMonth={new Date(new Date().getFullYear() + 1, 11)}
             numberOfMonths={1}
           />
         </Popover.PopoverContent>

@@ -74,6 +74,10 @@ export default async function init({
     rendering: {
       ...cornerstone.getConfiguration().rendering,
       strictZSpacingForVolumeViewport: appConfig.strictZSpacingForVolumeViewport,
+      // Opt-in: route legacy viewport types through the new GenericViewport render
+      // paths while keeping the legacy public API via compatibility adapters.
+      // No-op on cornerstone builds that predate the GenericViewport architecture.
+      useGenericViewport: Boolean(appConfig.useGenericViewport),
     },
   });
 

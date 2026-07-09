@@ -2,6 +2,16 @@ import { Locator, Page } from '@playwright/test';
 
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
+/** The segmentation selector (dropdown) returned by the segmentation panels. */
+export type SegmentationSelect = {
+  locator: Locator;
+  selectedValue: Locator;
+  getSegmentationLabels: () => Promise<Locator>;
+  close: () => Promise<void>;
+  nthSegmentation: (n: number) => Promise<Locator>;
+  selectNthSegmentation: (n: number) => Promise<void>;
+};
+
 export class RightPanelPageObject {
   readonly page: Page;
   private readonly DOMOverlayPageObject: DOMOverlayPageObject;
@@ -27,16 +37,34 @@ export class RightPanelPageObject {
         await button.click();
         await page.getByRole('menuitem', { name: 'Delete' }).click();
       },
+      removeFromViewport: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Remove from Viewport' }).click();
+      },
       rename: async (text: string) => {
         await button.click();
         await page.getByRole('menuitem', { name: 'Rename' }).click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
+      },
+      cancelRename: async (newName?: string) => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Rename' }).click();
+        if (newName) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(newName);
+        } else {
+          await this.DOMOverlayPageObject.dialog.input.cancel();
+        }
+      },
+      createNewSegmentation: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Create New Segmentation' }).click();
       },
     };
   }
 
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
+    const lockToggle = this.page.getByTestId('LockToggle');
 
     return {
       button: actionsButton,
@@ -47,13 +75,14 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Delete').click();
       },
+      // Opens the actions menu and returns the lock/unlock menu item locator
+      lockToggleMenuItem: async () => {
+        await actionsButton.click();
+        return lockToggle;
+      },
       toggleLock: async () => {
         await actionsButton.click();
-        await this.page.getByTestId('LockToggle').click();
-      },
-      unlock: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('Unlock').click();
+        await lockToggle.click();
       },
       rename: async (text: string) => {
         await actionsButton.click();
@@ -73,6 +102,26 @@ export class RightPanelPageObject {
         await actionsButton.click();
         await this.page.getByTestId('Duplicate').click();
       },
+      openChangeColor: async () => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+      },
+      changeColor: async (hex: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+        await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndSave(hex);
+      },
+      // This function assumes the user opens the change color dialog,
+      // but then cancels out of it instead of saving a new color.
+      cancelChangeColor: async (hex?: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Change Color').click();
+        if (hex) {
+          await this.DOMOverlayPageObject.dialog.colorPicker.fillHexAndCancel(hex);
+        } else {
+          await this.DOMOverlayPageObject.dialog.colorPicker.cancel();
+        }
+      },
     };
   }
 
@@ -85,6 +134,12 @@ export class RightPanelPageObject {
       },
       get title() {
         return row.getByTestId('data-row-title');
+      },
+      get lockIcon() {
+        return row.locator('g#Lock');
+      },
+      get rowDataColorHex() {
+        return row.getByTestId('data-row-colorhex');
       },
       click: async () => {
         await row.getByTestId('data-row-title').click();
@@ -168,7 +223,7 @@ export class RightPanelPageObject {
     };
   }
 
-  private getSegmentationSelect(type: string) {
+  private getSegmentationSelect(type: string): SegmentationSelect {
     const page = this.page;
     const suffix = type ? `-${type}` : '';
     const locator = page.getByTestId(`segmentation-select${suffix}`);
@@ -184,6 +239,15 @@ export class RightPanelPageObject {
       locator,
       /** The span showing the currently selected segmentation label */
       selectedValue,
+      // Opens the dropdown and returns the option locator; leaves it open, so call close() after.
+      getSegmentationLabels: async () => {
+        await locator.click();
+        return page.getByRole('option');
+      },
+      // Click the selected option to dismiss without changing the active segmentation.
+      close: async () => {
+        await page.getByRole('option', { selected: true }).click();
+      },
       /** Opens the dropdown and returns a locator for the nth option (0-based) */
       nthSegmentation,
       /** Opens the dropdown and clicks the nth segmentation (0-based) */
@@ -195,6 +259,17 @@ export class RightPanelPageObject {
 
   private get addSegmentationButton() {
     const button = this.page.getByTestId('addSegmentation');
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
+  /** The "Add Segment" row button of the active segmentation in the visible panel */
+  private get addSegmentButton() {
+    const button = this.page.getByRole('button', { name: 'Add Segment' });
     return {
       button,
       click: async () => {
@@ -224,8 +299,20 @@ export class RightPanelPageObject {
 
     return {
       moreMenu,
+      // Retrying-friendly locator for `expect(...).toHaveCount(n)` — prefer this
+      // over the one-shot getSegmentCount() when asserting row counts.
+      rows: page.getByTestId('data-row'),
+      /**
+       * @deprecated One-shot count that races the render. Prefer
+       * `expect(panel.rows).toHaveCount(n)` for assertions. Use this only to
+       * capture a stable baseline value (e.g. for a delta).
+       */
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
+      },
+      // get all the segment titles in the panel
+      getSegmentLabels: () => {
+        return page.getByTestId('data-row-title');
       },
       // No data-cy exists in this panel, using Segmentation header button
       locator: page.getByRole('button', { name: 'Segmentations' }),
@@ -241,6 +328,7 @@ export class RightPanelPageObject {
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
     const segmentationSelect = this.getSegmentationSelect('Contour');
@@ -248,12 +336,64 @@ export class RightPanelPageObject {
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       segmentsVisibilityToggle,
       panel,
       segmentationSelect,
       select: async () => {
         await menuButton.click();
+      },
+      // Switches to the contour tab and creates a new Contour-type segmentation,
+      // which enables the contour drawing tools (Spline / Livewire / Freehand).
+      addSegmentation: async () => {
+        await menuButton.click();
+        await addSegmentationButton.click();
+      },
+      tools: {
+        get splineContour() {
+          const button = page.getByTestId('SplineContourSegmentationTool');
+          // Maps a friendly spline name to the underlying cornerstone tool name,
+          // which is also the data-cy of its option in the Spline Type dropdown.
+          const splineTypeToolNames = {
+            catmullRom: 'CatmullRomSplineROI',
+            linear: 'LinearSplineROI',
+            bSpline: 'BSplineROI',
+          } as const;
+          return {
+            button,
+            // Activates the Spline Contour tool, arming the spline variant currently
+            // selected in the Spline Type dropdown. This defaults to Catmull-Rom until
+            // selectType is used to switch it.
+            click: async () => {
+              await button.click();
+            },
+            // Opens the Spline Type dropdown (rendered once the tool is active) and
+            // switches to the requested spline variant.
+            selectType: async (type: keyof typeof splineTypeToolNames) => {
+              await page.getByTestId('splineTypeSelect').getByRole('combobox').click();
+              await page.getByTestId(splineTypeToolNames[type]).click();
+            },
+          };
+        },
+        get livewireContour() {
+          const button = page.getByTestId('LivewireContourSegmentationTool');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
+        get freehandContour() {
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
       },
       get config() {
         const configToggle = page.getByTestId('segmentation-config-toggle-Contour');
@@ -308,12 +448,14 @@ export class RightPanelPageObject {
   get labelMapSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
+    const addSegmentButton = this.addSegmentButton;
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
     const segmentationSelect = this.getSegmentationSelect('Labelmap');
 
     return {
       addSegmentationButton,
+      addSegmentButton,
       menuButton,
       panel,
       segmentationSelect,

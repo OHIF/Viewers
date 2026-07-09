@@ -1,4 +1,4 @@
-import { visitStudy } from './visitStudy';
+import { visitStudy, visitStudyOptions } from './visitStudy';
 import {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
@@ -26,16 +26,20 @@ import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgAttribute } from './getSvgAttribute';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
+import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
+import { visitStudyAndHydrate } from './visitStudyAndHydrate';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 import {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForPaintToSettle,
 } from './waitForViewportsRendered';
 
 export {
   visitStudy,
+  visitStudyOptions,
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,
@@ -59,9 +63,12 @@ export {
   subscribeToMeasurementAdded,
   getSvgAttribute,
   navigateWithViewportArrow,
+  contourShowOnlyNthSegment,
+  visitStudyAndHydrate,
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForPaintToSettle,
   test,
   expect,
 };
