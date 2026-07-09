@@ -203,7 +203,7 @@ export function onModeEnter({ servicesManager, extensionManager, commandsManager
   // phase then layered on top. Reading them here — after that layering — lets
   // `?customization=` modules extend the toolbar without the mode restating it.
   registerModeToolbar(
-    { toolbarService, customizationService },
+    { toolbarService },
     {
       toolbarButtons: customizationService.getCustomization('toolbarButtons'),
       toolbarSections: customizationService.getCustomization('toolbarSections'),
@@ -215,7 +215,7 @@ export function onModeEnter({ servicesManager, extensionManager, commandsManager
   // `toolGroupAdditions` composition (seeded on enter, refined by the `mode`
   // phase).
   applyToolGroupAdditions(
-    { toolGroupService, customizationService },
+    { toolGroupService },
     customizationService.getCustomization('toolGroupAdditions')
   );
 
@@ -257,7 +257,7 @@ export const basicLayout = {
   id: ohif.layout,
   props: {
     // Literal panel lists. The mode route seeds these into the standard
-    // `mode.leftPanels` / `mode.rightPanels` customizations at the bottom of
+    // `leftPanels` / `rightPanels` customizations at the bottom of
     // the mode scope, so `mode` phase blocks and global customizations can
     // modify them (e.g. swap in the segmentation panels with editing tools)
     // before the sidebars resolve.
@@ -319,13 +319,14 @@ export const modeInstance = {
   // instance by default.
   hide: false,
   displayName: 'Non-Longitudinal Basic',
-  // Toolbar/tool-group composition: which capability packs this mode uses.
-  // The mode route seeds these onto the Mode customization scope on enter
-  // (as the plain `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
-  // keys), so `?customization=` modules extend them through the `mode` phase
-  // (e.g. `mode.basic.toolbarButtons: { $push: [...] }`). Pack names in the
-  // lists are resolved to their definitions when the toolbar is registered.
-  toolbarSections: ['cornerstone.toolbarSections'],
+  // Toolbar/tool-group composition: which capability packs this mode uses,
+  // named with `{ $reference }` markers the customization service expands at
+  // read time. The mode route seeds these onto the Mode customization scope on
+  // enter (as the plain `toolbarButtons` / `toolbarSections` /
+  // `toolGroupAdditions` keys), so `?customization=` modules extend them
+  // through the `mode` phase (e.g.
+  // `mode.basic.toolbarButtons: { $push: [{ $reference: '...' }] }`).
+  toolbarSections: [{ $reference: 'cornerstone.toolbarSections' }],
   toolGroupAdditions: {
     default: [],
     mpr: [],
@@ -366,7 +367,7 @@ export const modeInstance = {
   // general handler needs to come last.  For this case, the dicomvideo must
   // come first to remove video transfer syntax before ohif uses images
   sopClassHandlers,
-  toolbarButtons: ['cornerstone.toolbarButtons'],
+  toolbarButtons: [{ $reference: 'cornerstone.toolbarButtons' }],
   nonModeModalities: NON_IMAGE_MODALITIES,
 };
 
@@ -413,5 +414,4 @@ export {
   addActivatePanelTriggers,
   applyToolGroupAdditions,
   registerModeToolbar,
-  resolveCustomizationList,
 } from './modeCustomization';

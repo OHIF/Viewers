@@ -37,7 +37,7 @@ export const segmentationLayout = {
   id: ohif.layout,
   props: {
     // Literal panel lists; the mode route seeds them into the standard
-    // `mode.leftPanels` / `mode.rightPanels` customizations so `mode` phase
+    // `leftPanels` / `rightPanels` customizations so `mode` phase
     // blocks and global customizations can modify them.
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
@@ -75,10 +75,13 @@ export const modeInstance = {
   // `?customization=` modules extend them through the `mode` phase (e.g. add
   // the annotation tools/buttons). Pack names are resolved when the toolbar is
   // registered.
-  toolbarButtons: ['cornerstone.toolbarButtons', 'cornerstone.segmentationToolbarButtons'],
+  toolbarButtons: [
+    { $reference: 'cornerstone.toolbarButtons' },
+    { $reference: 'cornerstone.segmentationToolbarButtons' },
+  ],
   toolbarSections: [
-    'cornerstone.segmentationModeToolbarSections',
-    'cornerstone.segmentationToolbarSections',
+    { $reference: 'cornerstone.segmentationModeToolbarSections' },
+    { $reference: 'cornerstone.segmentationToolbarSections' },
   ],
   toolGroupAdditions: {
     default: [],

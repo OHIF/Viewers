@@ -37,10 +37,10 @@
         }
       },
       "toolGroupAdditions": {
-        "default": { "$push": ["cornerstone.annotationTools"] },
-        "mpr": { "$push": ["cornerstone.annotationTools"] }
+        "default": { "$push": [{ "$reference": "cornerstone.annotationTools" }] },
+        "mpr": { "$push": [{ "$reference": "cornerstone.annotationTools" }] }
       },
-      "mode.rightPanels": {
+      "rightPanels": {
         "$push": ["@ohif/extension-cornerstone.panelModule.panelMeasurement"]
       }
     }

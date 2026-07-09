@@ -21,11 +21,11 @@ On mode enter the mode route layers the mode scope bottom-up and only then
 resolves the sidebars:
 
 1. the mode scope is reset;
-2. the layout's panel arrays are seeded as the standard `mode.leftPanels` /
-   `mode.rightPanels` customizations (the bottom layer of the mode scope);
+2. the layout's panel arrays are seeded as the standard `leftPanels` /
+   `rightPanels` customizations (the bottom layer of the mode scope);
 3. the app config / URL `mode` phase blocks apply — the general `*` block, then
    the block keyed by the entered mode's id / route name;
-4. the sidebars resolve from the final `mode.leftPanels` / `mode.rightPanels`
+4. the sidebars resolve from the final `leftPanels` / `rightPanels`
    values (global-scope customizations, as always, win by scope precedence).
 
 ## Customizing a mode's panels
@@ -40,7 +40,7 @@ immutability-helper commands compose with the mode's own list:
   "mode": {
     // Replace the right sidebar in the longitudinal mode (route name `viewer`)
     "viewer": {
-      "mode.rightPanels": {
+      "rightPanels": {
         "$set": [
           "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
           "@ohif/extension-measurement-tracking.panelModule.trackedMeasurements"
@@ -49,13 +49,13 @@ immutability-helper commands compose with the mode's own list:
     },
     // Append a panel in the segmentation mode
     "segmentation": {
-      "mode.rightPanels": {
+      "rightPanels": {
         "$push": ["@ohif/extension-cornerstone.panelModule.panelMeasurement"]
       }
     },
     // Or change every mode at once with the general block
     "*": {
-      "mode.leftPanels": { "$push": ["@ohif/extension-example.panelModule.myPanel"] }
+      "leftPanels": { "$push": ["@ohif/extension-example.panelModule.myPanel"] }
     }
   }
 }
@@ -74,5 +74,5 @@ modules for complete worked examples.
 - **The per-mode panel-list names from early 3.13 betas are gone.** If you
   wrote a customization against `basic.leftPanels`, `longitudinal.rightPanels`,
   `segmentation.rightPanels`, or `tmtv.leftPanels`, move it to the standard
-  `mode.leftPanels` / `mode.rightPanels` keys inside a `mode` phase block keyed
+  `leftPanels` / `rightPanels` keys inside a `mode` phase block keyed
   by the mode's route name (see above).

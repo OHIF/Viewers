@@ -12,7 +12,7 @@ import {
  *   "mode": {
  *     "basic": {
  *       "toolGroupAdditions": {
- *         "default": { "$push": ["cornerstone.segmentationTools"] }
+ *         "default": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] }
  *       }
  *     }
  *   }

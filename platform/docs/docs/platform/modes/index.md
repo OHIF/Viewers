@@ -239,19 +239,19 @@ export default mode;
       <td align="left">
           toolbarSections
       </td>
-      <td align="left">Toolbar section composition: a list of section-layout packs (by name) and/or literal section objects; seeded onto the Mode scope on enter</td>
+      <td align="left">Toolbar section composition: a list of section-layout packs (as <code>$reference</code> markers) and/or literal section objects; seeded onto the Mode scope on enter</td>
     </tr>
     <tr>
       <td align="left">
           toolbarButtons
       </td>
-      <td align="left">Toolbar button composition: a list of button packs (by name) and/or literal button definitions; seeded onto the Mode scope on enter</td>
+      <td align="left">Toolbar button composition: a list of button packs (as <code>$reference</code> markers) and/or literal button definitions; seeded onto the Mode scope on enter</td>
     </tr>
     <tr>
       <td align="left">
           toolGroupAdditions
       </td>
-      <td align="left">Per-tool-group composition: a map of tool-group id to a list of tool packs (by name) and/or literal tool blocks, layered onto the mode's tool groups after creation</td>
+      <td align="left">Per-tool-group composition: a map of tool-group id to a list of tool packs (as <code>$reference</code> markers) and/or literal tool blocks, layered onto the mode's tool groups after creation</td>
     </tr>
     <tr>
       <td align="left">
@@ -335,12 +335,13 @@ The `tmtv` mode is extended the same way — import `@ohif/mode-tmtv` and its
 
 The `basic`, `longitudinal`, `segmentation`, and `tmtv` modes declare their toolbar
 buttons, toolbar sections, and tool-group additions as plain composition arrays on
-the mode instance that name the capability packs the mode uses (for example
-`toolbarButtons: ['cornerstone.toolbarButtons', 'cornerstone.segmentationToolbarButtons']`).
+the mode instance that name the capability packs the mode uses with `{ $reference }`
+markers (for example
+`toolbarButtons: [{ $reference: 'cornerstone.toolbarButtons' }, { $reference: 'cornerstone.segmentationToolbarButtons' }]`).
 The mode route seeds these onto the Mode customization scope on enter, alongside the
-`mode.leftPanels` / `mode.rightPanels` panel lists. Because the values are lists that
-may reference other customizations by name, a `window.config` entry or a
-`?customization=` JSON module can add a whole capability pack (such as the
+`leftPanels` / `rightPanels` panel lists. Because the values are lists whose
+`{ $reference }` entries the customization service expands at read time, a `window.config`
+entry or a `?customization=` JSON module can add a whole capability pack (such as the
 segmentation editing tools), remove a default, or swap the panels — targeting the mode
 through a `mode` phase block (`mode.basic`, `mode.segmentation`, ...) without building
 a new mode. See [Compose whole capability blocks into a mode][compose-capability-blocks] in the

@@ -79,7 +79,8 @@ const extensionDependencies = {
 
 /**
  * The test mode's toolbar layout, supplied as literal values rather than
- * customization names (the shared `registerModeToolbar` accepts both).
+ * `{ $reference }` capability-pack markers (the composition is resolved the
+ * same way either — literals pass through untouched).
  */
 const toolbarSections = {
   [TOOLBAR_SECTIONS.primary]: [

@@ -213,21 +213,22 @@ Ownership is split into three layers. **Extensions** export reusable *capability
 definitions, section layouts and tool lists — under their own namespace (`cornerstone.*`,
 `tmtv.*`); the packs carry no mode identity. **Modes** own *composition*: each mode declares which
 packs it uses as plain arrays on its instance (`toolbarButtons`, `toolbarSections`,
-`toolGroupAdditions`), and the mode route seeds those onto the **Mode** customization scope on
-enter — exactly like it seeds `mode.leftPanels` / `mode.rightPanels` from the layout. **Config**
-(`?customization=`) re-composes an existing mode through the `mode` phase.
+`toolGroupAdditions`), naming each pack with a `{ $reference: '<name>' }` marker, and the mode route
+seeds those onto the **Mode** customization scope on enter — exactly like it seeds
+`leftPanels` / `rightPanels` from the layout. **Config** (`?customization=`) re-composes an
+existing mode through the `mode` phase.
 
 Because composition is per-mode, a JSON module targets a mode with a `mode` phase block keyed by the
-mode's id or route name and refines the plain concept keys — pushing a pack's *name* instead of
-restating its contents:
+mode's id or route name and refines the plain concept keys — pushing a `{ $reference }` to a pack
+instead of restating its contents:
 
 ```jsonc
 {
   "mode": {
     "basic": {
-      "toolbarButtons": { "$push": ["cornerstone.segmentationToolbarButtons"] },
+      "toolbarButtons": { "$push": [{ "$reference": "cornerstone.segmentationToolbarButtons" }] },
       "toolGroupAdditions": {
-        "default": { "$push": ["cornerstone.segmentationTools"] }
+        "default": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] }
       }
     }
   }
@@ -236,8 +237,26 @@ restating its contents:
 
 There are no `basic.*` / `segmentation.*` / `tmtv.*` keys — `mode.basic` / `mode.viewer` /
 `mode.segmentation` already select the mode, and the key is the concept (`toolbarButtons`), the same
-way `mode.rightPanels` works for the sidebars. Reserve the `global` phase for values that truly apply
+way `rightPanels` works for the sidebars. Reserve the `global` phase for values that truly apply
 to every mode.
+
+**`$reference` — composing customizations by name.** A `{ "$reference": "<name>" }` object resolves,
+when the value is *read*, to the value of the customization `<name>`. References may sit anywhere in a
+value; inside an array a reference to another array is *flattened* in, so a list composes several
+packs by name. Because resolution is at read time (not when customizations merge), a later command
+composes naturally: `$push` adds another `{ $reference }`, and `$set` replaces the whole value —
+with a different `{ $reference }` **or** a hard-coded list:
+
+```jsonc
+{ "mode": { "basic": {
+  // swap the entire toolbar for a different pack …
+  "toolbarButtons": { "$set": [{ "$reference": "myExtension.myToolbarButtons" }] }
+  // … or for a hard-coded list of button definitions
+  // "toolbarButtons": { "$set": [ { "id": "Length", /* … */ } ] }
+} } }
+```
+
+Edits to the referenced pack itself are picked up live, and reference cycles are detected and warned.
 
 Capability packs exported by the cornerstone extension:
 
@@ -260,13 +279,13 @@ Two shipped modules demonstrate the pattern:
   (`?customization=segmentationEditing`) adds segmentation editing to the basic and longitudinal
   modes: in `mode` phase blocks keyed by each mode's route name (`basic`, `viewer`) it `$push`es the
   segmentation button/section/tool packs onto that mode's `toolbarButtons` / `toolbarSections` /
-  `toolGroupAdditions`, swaps the right panels via `mode.rightPanels`, and enables editing via
+  `toolGroupAdditions`, swaps the right panels via `rightPanels`, and enables editing via
   `panelSegmentation.disableEditing`.
 - [`segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationAnnotationTools.jsonc)
   (`?customization=segmentationAnnotationTools`) enables the annotation tools inside the
   segmentation mode: in the `mode.segmentation` block it adds a `MeasurementTools` section to the
-  primary bar, `$push`es `cornerstone.annotationTools` onto `toolGroupAdditions`, and `$push`es the
-  measurement panel onto `mode.rightPanels`.
+  primary bar, `$push`es a `{ $reference }` to `cornerstone.annotationTools` onto
+  `toolGroupAdditions`, and `$push`es the measurement panel onto `rightPanels`.
 
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
@@ -274,7 +293,7 @@ also append to a list or merge into an existing object rather than replacing it 
 
 > **Every mode's panels are customizable with no opt-in.** A mode's layout declares
 > `leftPanels` / `rightPanels` as ordinary **arrays of panel ids** — the standard setup. On mode
-> enter the mode route seeds those arrays into the `mode.leftPanels` / `mode.rightPanels`
+> enter the mode route seeds those arrays into the `leftPanels` / `rightPanels`
 > customizations at the bottom of the mode scope, then applies the `mode` phase blocks, then
 > resolves the sidebars from the final values — so commands compose with the mode's own list and
 > global-scope values win by scope precedence.

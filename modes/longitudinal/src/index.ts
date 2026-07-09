@@ -31,7 +31,7 @@ export const longitudinalInstance = {
   props: {
     ...basicLayout.props,
     // Literal panel lists; the mode route seeds them into the standard
-    // `mode.leftPanels` / `mode.rightPanels` customizations so `mode` phase
+    // `leftPanels` / `rightPanels` customizations so `mode` phase
     // blocks and global customizations can modify them.
     leftPanels: [tracked.thumbnailList],
     rightPanels: [cornerstone.segmentation, tracked.measurements],

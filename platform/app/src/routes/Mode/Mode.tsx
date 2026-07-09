@@ -199,7 +199,7 @@ export default function ModeRoute({
         panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
 
         // Stash the layout lists for setupRouteInit to seed into the
-        // `mode.leftPanels` / `mode.rightPanels` customizations.
+        // `leftPanels` / `rightPanels` customizations.
         layoutData.panels = { leftPanels, rightPanels };
 
         // layoutProps contains all props but leftPanels and rightPanels
@@ -244,7 +244,7 @@ export default function ModeRoute({
       // bottom-up so the final value of every key is decided by scope
       // precedence (global > mode > default) and application order alone:
       //   1. the mode's own values — its layout panel lists, seeded as the
-      //      standard `mode.leftPanels` / `mode.rightPanels` customizations;
+      //      standard `leftPanels` / `rightPanels` customizations;
       //      its toolbar/tool-group composition, seeded as the plain
       //      `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
       //      customizations (resolved to concrete definitions later, when the
@@ -257,8 +257,8 @@ export default function ModeRoute({
       //      block first, then any block keyed by this mode's id / routeName.
       const { leftPanels = [], rightPanels = [] } = layoutTemplateData.current.panels ?? {};
       customizationService.setCustomizations({
-        'mode.leftPanels': leftPanels,
-        'mode.rightPanels': rightPanels,
+        leftPanels,
+        rightPanels,
         toolbarButtons: mode.toolbarButtons ?? [],
         toolbarSections: mode.toolbarSections ?? [],
         toolGroupAdditions: mode.toolGroupAdditions ?? {},
@@ -277,8 +277,8 @@ export default function ModeRoute({
       // match the layout, the panels registered in retrieveLayoutData are left
       // in place so ViewerLayout's ResizablePanelsHook keeps the correct sizes
       // from its one-time initial expand.
-      const resolvedLeftPanels = customizationService.getValue('mode.leftPanels') ?? [];
-      const resolvedRightPanels = customizationService.getValue('mode.rightPanels') ?? [];
+      const resolvedLeftPanels = customizationService.getValue('leftPanels') ?? [];
+      const resolvedRightPanels = customizationService.getValue('rightPanels') ?? [];
       const panelsChanged =
         JSON.stringify(resolvedLeftPanels) !== JSON.stringify(leftPanels) ||
         JSON.stringify(resolvedRightPanels) !== JSON.stringify(rightPanels);

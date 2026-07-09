@@ -27,7 +27,7 @@ application order, with no special cases:
 5. mode instances are created (`modeFactory`) — after bootstrap/global, so they
    see modifications;
 6. on mode enter, the mode scope is reset, then layered bottom-up: the mode's
-   layout panel lists (seeded as `mode.leftPanels` / `mode.rightPanels`) and its
+   layout panel lists (seeded as `leftPanels` / `rightPanels`) and its
    toolbar/tool-group composition (seeded as the plain `toolbarButtons` /
    `toolbarSections` / `toolGroupAdditions`), the mode's `modeCustomizations`
    block, the `mode` phase `*` block, and the mode-specific block;

@@ -789,10 +789,11 @@ export const toolbarSections = {
  *   - `cornerstone.toolbarSections` – the general toolbar layout (section -> button ids)
  *
  * These are pure "what can exist" packs — they carry no mode identity. Modes
- * compose them by name in their own `toolbarButtons` / `toolbarSections`
- * instance arrays, which the mode route seeds into the Mode customization scope
- * on enter; URL `?customization=` modules extend the result through the `mode`
- * phase (e.g. `mode.basic.toolbarButtons: { $push: [...] }`).
+ * compose them with `{ $reference }` markers in their own `toolbarButtons` /
+ * `toolbarSections` instance arrays, which the mode route seeds into the Mode
+ * customization scope on enter; URL `?customization=` modules extend the result
+ * through the `mode` phase (e.g.
+ * `mode.basic.toolbarButtons: { $push: [{ $reference: '...' }] }`).
  */
 const toolbarButtonsCustomization = {
   'cornerstone.toolbarButtons': toolbarButtons,
