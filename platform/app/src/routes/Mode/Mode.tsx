@@ -14,37 +14,6 @@ import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
 
-/**
- * Resolves a layout panel list into the flat array of panel (extension module)
- * ids the panel service expects.
- *
- * A mode may declare `leftPanels` / `rightPanels` in either of two forms and
- * both are supported so existing modes keep working while new modes can opt
- * into customization:
- *   - the legacy form — an array of panel ids — which is used as-is; or
- *   - a customization name (a single string) which is resolved through the
- *     customization service, so `?customization=` modules can extend or replace
- *     the list without the mode restating it.
- *
- * A string that does not resolve to a registered customization yields an empty
- * list (and a warning) rather than leaking the raw name through to the panel
- * service (which would iterate it as characters).
- */
-function resolvePanelList(
-  customizationService: AppTypes.CustomizationService,
-  panels: string | string[]
-): string[] {
-  if (typeof panels !== 'string') {
-    return panels ?? [];
-  }
-  const resolved = customizationService?.getCustomization(panels) as string[] | undefined;
-  if (resolved === undefined) {
-    console.warn(`ModeRoute: no panel-list customization registered for "${panels}"`);
-    return [];
-  }
-  return resolved;
-}
-
 export default function ModeRoute({
   mode,
   dataSourceName,
@@ -278,8 +247,8 @@ export default function ModeRoute({
       //      block first, then any block keyed by this mode's id / routeName.
       const { leftPanels = [], rightPanels = [] } = layoutTemplateData.current.panels ?? {};
       customizationService.setCustomizations({
-        'mode.leftPanels': resolvePanelList(customizationService, leftPanels),
-        'mode.rightPanels': resolvePanelList(customizationService, rightPanels),
+        'mode.leftPanels': leftPanels,
+        'mode.rightPanels': rightPanels,
       });
 
       const modeCustomizations =

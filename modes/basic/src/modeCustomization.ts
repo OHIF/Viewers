@@ -1,6 +1,6 @@
 /**
- * Helpers for resolving mode configuration (toolbar buttons, toolbar sections,
- * tool group additions and panel lists) through the customization service.
+ * Helpers for resolving mode configuration (toolbar buttons, toolbar sections
+ * and tool group additions) through the customization service.
  *
  * The pattern: extensions register the default values as named customizations
  * (at Default scope), modes reference those values by name, and site

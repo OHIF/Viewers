@@ -261,9 +261,7 @@ also append to a list or merge into an existing object rather than replacing it 
 > enter the mode route seeds those arrays into the `mode.leftPanels` / `mode.rightPanels`
 > customizations at the bottom of the mode scope, then applies the `mode` phase blocks, then
 > resolves the sidebars from the final values — so commands compose with the mode's own list and
-> global-scope values win by scope precedence. (A layout may also set the panel value to a
-> customization name registered by one of its extensions; the route resolves the name when it seeds
-> the list.)
+> global-scope values win by scope precedence.
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 

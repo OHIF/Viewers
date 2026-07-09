@@ -313,9 +313,10 @@ export const modeInstance = {
   id,
   routeName: 'mySegmentation',
   displayName: 'My Segmentation',
-  // Override only what you need. Toolbar buttons/sections, tool group
-  // additions, and panels are referenced by customization name (see below),
-  // so most changes can be made there rather than here.
+  // Override only what you need. Toolbar buttons/sections and tool group
+  // additions are referenced by customization name (see below); panel lists
+  // are literal arrays in the layout and are customized via the standard
+  // `mode.leftPanels` / `mode.rightPanels` keys.
 };
 
 const mode = {
@@ -333,13 +334,14 @@ The `tmtv` mode is extended the same way — import `@ohif/mode-tmtv` and its
 #### Customizing a mode at runtime
 
 The `basic`, `longitudinal`, `segmentation`, and `tmtv` modes read their toolbar
-buttons, toolbar sections, tool-group additions, and panel lists through per-mode
-customization keys (for example `segmentation.toolbarButtons`,
-`tmtv.toolGroupAdditions`). Because those values are lists that may reference
-other customizations by name, a `window.config` entry or a `?customization=`
-JSON module can add a whole capability block (such as the segmentation editing
-tools), remove a default, or swap the panels — without building a new mode. See
-[Compose whole capability blocks into a mode][compose-capability-blocks] in the
+buttons, toolbar sections, and tool-group additions through per-mode customization
+keys (for example `segmentation.toolbarButtons`, `tmtv.toolGroupAdditions`). Panel
+lists are literal arrays in each mode's layout and are customized via the standard
+`mode.leftPanels` / `mode.rightPanels` keys. Because toolbar and tool-group values
+are lists that may reference other customizations by name, a `window.config` entry
+or a `?customization=` JSON module can add a whole capability block (such as the
+segmentation editing tools), remove a default, or swap the panels — without building
+a new mode. See [Compose whole capability blocks into a mode][compose-capability-blocks] in the
 Customization Service docs for the full key table, the reusable capability
 blocks, and worked examples (adding segmentation editing to the basic and
 longitudinal modes, and enabling annotation tools inside the segmentation mode).

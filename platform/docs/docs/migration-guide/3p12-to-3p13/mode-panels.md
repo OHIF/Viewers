@@ -76,7 +76,3 @@ modules for complete worked examples.
   `segmentation.rightPanels`, or `tmtv.leftPanels`, move it to the standard
   `mode.leftPanels` / `mode.rightPanels` keys inside a `mode` phase block keyed
   by the mode's route name (see above).
-- A layout may still set a panel value to a customization *name* registered by
-  one of the mode's extensions; the route resolves the name when seeding
-  `mode.leftPanels` / `mode.rightPanels`. This is only needed when several
-  modes should share one registered list.
