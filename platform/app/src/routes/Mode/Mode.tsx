@@ -189,11 +189,17 @@ export default function ModeRoute({
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
-        // The panel lists are not handled here: setupRouteInit (below) seeds
-        // them into the customization service as the standard
-        // `mode.leftPanels` / `mode.rightPanels` customizations AFTER the mode
-        // scope is reset, so mode-phase and global customizations can modify
-        // them before the sidebars resolve. Stash them for that step.
+        // Register panels immediately so ViewerLayout's first render sees them.
+        // ResizablePanelsHook only auto-expands side panels on the initial mount;
+        // if panels are added later, the viewport grid keeps the wrong width.
+        // setupRouteInit (below) resets and re-applies them after customizations
+        // are layered on, so URL/config modules can still modify the lists.
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // Stash the layout lists for setupRouteInit to seed into the
+        // `mode.leftPanels` / `mode.rightPanels` customizations.
         layoutData.panels = { leftPanels, rightPanels };
 
         // layoutProps contains all props but leftPanels and rightPanels
@@ -260,17 +266,21 @@ export default function ModeRoute({
       }
       customizationService.applyModeCustomizations([mode.id, mode.routeName]);
 
-      // The sidebars resolve from the standard customizations now that every
-      // layer has been applied.
-      panelService.reset();
-      panelService.addPanels(
-        panelService.PanelPosition.Left,
-        customizationService.getValue('mode.leftPanels') ?? []
-      );
-      panelService.addPanels(
-        panelService.PanelPosition.Right,
-        customizationService.getValue('mode.rightPanels') ?? []
-      );
+      // Re-apply panels only when customizations changed the lists. When they
+      // match the layout, the panels registered in retrieveLayoutData are left
+      // in place so ViewerLayout's ResizablePanelsHook keeps the correct sizes
+      // from its one-time initial expand.
+      const resolvedLeftPanels = customizationService.getValue('mode.leftPanels') ?? [];
+      const resolvedRightPanels = customizationService.getValue('mode.rightPanels') ?? [];
+      const panelsChanged =
+        JSON.stringify(resolvedLeftPanels) !== JSON.stringify(leftPanels) ||
+        JSON.stringify(resolvedRightPanels) !== JSON.stringify(rightPanels);
+
+      if (panelsChanged) {
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, resolvedLeftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, resolvedRightPanels);
+      }
 
       // use the URL hangingProtocolId if it exists, otherwise use the one
       // defined in the mode configuration
