@@ -1,16 +1,26 @@
 # Full-instance prefetch for segmentation (and multiframe) loading
 
-Status: **Implemented — opt-in (disabled by default)**
+Status: **Implemented — enabled and awaited to completion by default;
+per-frame loading is the explicit opt-out**
 
-Enable per data source by setting `loadMultiframeAsPart10RaceTimeMs` to a positive
-number of milliseconds in the data source `configuration` (this is how the static
-WADO backends in `config/default.js` and `config/e2e.js` turn it on, value
-`3000`). It also falls back to the global customization
-`cornerstone.segmentation.loadMultiframeAsPart10RaceTimeMs`. `0`/unset keeps
-today's per-frame behaviour. The value is the **max ms to wait** for the
-single-instance fetch+parse before proceeding (the load proceeds immediately once
-it completes; on timeout it falls back to per-frame and the registration still
-benefits later frames).
+The boolean `loadMultiframeAsPart10` resolves, in order: the data source
+`configuration`, the global customization
+`cornerstone.segmentation.loadMultiframeAsPart10`, then the built-in default of
+`true` — i.e. by default the SEG load **waits for the whole-instance
+fetch+parse to complete or fail** (deliberately no timeout) and serves every
+frame from the registry. Set `loadMultiframeAsPart10: false` explicitly to
+force per-frame loading — the exception, for back ends that need to fetch the
+individual images instead (e.g. servers that cannot serve a whole-instance
+retrieve, or deployments where holding the full Part 10 object in memory is
+undesirable). A failed or unsupported instance fetch resolves quickly and
+falls back to per-frame regardless of the setting, so it never wedges the load.
+
+Note the per-frame endpoint itself is not inefficient — each frame request is
+cheap — but SEG frames are so small and numerous that one bulk Part 10 fetch
+beats hundreds of tiny requests (see Problem below). This holds even for very
+large SEG objects (hundreds of MB): any finite race cap would simply expire on
+those and storm per-frame anyway while abandoning the bulk fetch's benefit,
+which is why there is no timeout.
 
 Implemented across:
 
@@ -21,7 +31,7 @@ Implemented across:
     `wadors/loadImage.ts` — WADO-RS loads now consult the registry first.
 - `@ohif/extension-default` `DicomWebDataSource` — `retrieve.prefetchInstanceFrames`.
 - `@ohif/extension-cornerstone-dicom-seg` `getSopClassHandlerModule.ts` — call
-  site + race.
+  site (resolves the config and awaits the prefetch).
 
 Related: `@cornerstonejs/adapters` `labelmapImagesFromBuffer.ts`
 (`decodeSegPixelDataFromFrameIds`, bounded by `concurrency`, default 16).
@@ -50,15 +60,14 @@ by the dcmjs async reader) — so the existing per-frame `imageId` fetch path
 transparently hits local data instead of the network, while the **cornerstone
 decode path stays byte-for-byte identical** (same decompressor, same workers).
 
-Crucially this is **best-effort and non-blocking**:
+Crucially this is **best-effort**:
 
-- It is gated by a **race time in ms**, `loadMultiframeAsPart10RaceTimeMs`. We
-  kick off the full-instance fetch and give it up to that long of a head start,
-  then proceed on the **normal per-frame path** regardless. Frames already
-  registered are served locally; frames not yet registered fall through to their
-  normal network fetch.
-- If `loadMultiframeAsPart10RaceTimeMs` is `0` / `undefined`, the capability is
-  **disabled** — no full-instance fetch is attempted.
+- By default (`loadMultiframeAsPart10` unset → `true`) the load **waits for the
+  full-instance fetch+parse to complete or fail** — no timeout — then every
+  frame is served from the registry.
+- If `loadMultiframeAsPart10` resolves to `false` (explicitly configured), the
+  capability is **disabled** — no full-instance fetch is attempted. Per-frame
+  loading is the exception, opted into per deployment.
 - If the full-instance fetch or parse **fails for any reason**, it must **never**
   fail the segmentation decode. We log and fall back to per-frame fetches.
 
@@ -101,7 +110,7 @@ wire.
 
 A generic capability on the data source's `retrieve` namespace (so it works for
 any multiframe instance, not just SEG, and alternate data sources can override
-it), plus the SEG handler call site that races it.
+it), plus the SEG handler call site that awaits it.
 
 `IWebApiDataSource.create` passes `retrieve` through verbatim, so the capability
 is added there (no `@ohif/core` change):
@@ -111,7 +120,6 @@ is added there (no `@ohif/core` change):
 dataSource.retrieve.prefetchInstanceFrames({
   instance,                          // study/series/sop UIDs for retrieveInstance
   imageId,                           // SEG instance imageId (frame qualifiers normalized away)
-  loadMultiframeAsPart10RaceTimeMs,  // 0/undefined => no-op
 }): {
   done: Promise<boolean>;            // resolves true if fetched+registered, false if skipped/failed
   cancel: () => void;
@@ -130,24 +138,22 @@ In `getSopClassHandlerModule.ts`, immediately before
 `createFromDicomSegImageId(...)` (abridged from the actual code):
 
 ```ts
-const loadMultiframeAsPart10RaceTimeMs =
-  (dataSource?.getConfig?.()?.loadMultiframeAsPart10RaceTimeMs as number | undefined) ??
+const loadMultiframeAsPart10 =
+  (dataSource?.getConfig?.()?.loadMultiframeAsPart10 as boolean | undefined) ??
   (customizationService?.getCustomization?.(
-    'cornerstone.segmentation.loadMultiframeAsPart10RaceTimeMs'
-  ) as number | undefined) ??
-  0;
+    'cornerstone.segmentation.loadMultiframeAsPart10'
+  ) as boolean | undefined) ??
+  true;
 
 let prefetch;
-if (loadMultiframeAsPart10RaceTimeMs > 0) {
+if (loadMultiframeAsPart10) {
   prefetch = dataSource.retrieve?.prefetchInstanceFrames?.({
     instance,
     imageId: segImageIdForMetadata,
-    loadMultiframeAsPart10RaceTimeMs,
   });
   if (prefetch?.done) {
-    // Give the bulk fetch a head start, then proceed regardless.
-    const raceTimer = new Promise(r => setTimeout(r, loadMultiframeAsPart10RaceTimeMs));
-    await Promise.race([prefetch.done, raceTimer]);
+    // Wait for the bulk fetch to complete or fail — no timeout.
+    await prefetch.done;
   }
 }
 
@@ -284,33 +290,31 @@ exactly today's per-frame behaviour.
 
 Edge cases that degrade gracefully:
 
-- Race timer expires before the parse completes → frames load over the network
-  meanwhile; once registration completes, remaining frames hit the registry.
 - `cancel()` (viewport closed / segmentation removed mid-load) → the resolver
   throws on its cancelled flag; `done` resolves `false`; any already-registered
   data stays usable.
 - A misbehaving metadata provider → the registry lookup is wrapped in try/catch
   and returns `undefined`, so per-frame loading is never broken.
 
-## Race semantics (the `loadMultiframeAsPart10RaceTimeMs` knob)
+## Semantics (the `loadMultiframeAsPart10` knob)
 
-- `loadMultiframeAsPart10RaceTimeMs == 0 || undefined` → **disabled**. Today's
-  default. No behavior change until we opt in.
-- `loadMultiframeAsPart10RaceTimeMs > 0` → start the full-instance fetch+parse,
-  then `Promise.race([prefetch.done, delay(loadMultiframeAsPart10RaceTimeMs)])`
-  before handing control to the loader. This gives the bulk transfer a head start
-  so frames are already in the registry, while guaranteeing we never stall the
-  load longer than the race time if the server is slow. If the timer wins, the
-  loader proceeds and frames fetch per-frame meanwhile; once registration
-  completes, the remaining frames are served from the registry.
+- Unset (default) or `true` → start the full-instance fetch+parse and **await
+  it to completion or failure** (`await prefetch.done`) — deliberately no
+  timeout; every frame is then served from the registry. Fetch failure resolves
+  `done` quickly, so unsupported servers fall straight through to per-frame.
+- `false` (explicitly configured) → **disabled**; per-frame loading is the
+  exception, opted into per deployment.
 
-> `addDicomPart10Instance` registers the instance atomically (one parse), so in
-> practice registration is all-or-nothing rather than progressive — the race time
-> is "how long to wait for the whole fetch+parse before proceeding." Progressive
-> registration (rollout step 4) would make the head start matter per-frame.
+> `addDicomPart10Instance` registers the instance atomically (one parse), so
+> registration is all-or-nothing rather than progressive. Progressive
+> registration (rollout step 4) would let frames be served as they arrive.
 
-A sensible starting value once enabled is something like 250–750 ms (enough to
-beat per-frame TTFB on most servers), tuned per deployment.
+There is no timeout because a bounded wait loses on exactly the objects where
+the prefetch matters most: a large SEG (hundreds of MB) cannot finish inside
+any small cap, so a capped race expires and storms per-frame anyway while
+abandoning the bulk fetch's benefit. The only failure mode a timeout would
+bound — a fetch that never settles — is already covered by the browser's
+network-level failure surfacing through `done`.
 
 ## Where the generic capability lives
 
@@ -323,7 +327,7 @@ beat per-frame TTFB on most servers), tuned per deployment.
   because it knows how to retrieve a full instance (auth headers, `wadoRoot`,
   WADO-RS instance retrieve via `dicomweb-client`, CORS), and so alternate data
   sources can implement/override it.
-- The SEG handler only **reads the customization and orchestrates the race**.
+- The SEG handler only **reads the configuration and awaits the prefetch**.
 
 This keeps the layering clean: data source = "how to get bytes", image loader =
 "how to register/decode bytes", SEG handler = "when to ask".
@@ -355,10 +359,10 @@ This keeps the layering clean: data source = "how to get bytes", image loader =
    (`wadors/loadImageFromRegistry.ts`) in dicom-image-loader. No behaviour change
    until something registers an instance.
 2. ✅ `retrieve.prefetchInstanceFrames` in DicomWebDataSource (full-buffer v1 via
-   `retrieveInstance`) behind `loadMultiframeAsPart10RaceTimeMs` default `0`.
-3. ✅ SEG handler call site + race. **Next:** enable with a small
-   `loadMultiframeAsPart10RaceTimeMs` in a test deployment and measure 800-frame
-   SEG load time before defaulting it on.
+   `retrieveInstance`); whether to call it is the caller's policy.
+3. ✅ SEG handler call site. Now **enabled and awaited to completion by
+   default** (no timeout); per-frame loading requires an explicit
+   `loadMultiframeAsPart10: false`.
 4. ⏳ Progressive (streaming) parse to register frames as they arrive (handle the
    `multipart/related` unwrap + boundary-straddle directly).
 5. ⏳ Extend to other multiframe loaders (the registry path is generic).

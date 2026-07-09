@@ -1328,11 +1328,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         let settled = false;
         let timeoutId;
 
-        const settle = () => {
-          settled = true;
+        // Final resolution — extra calls are harmless (resolve is a no-op after
+        // the first), which lets the timeout stay armed while a representation
+        // apply is in flight and still bound it.
+        const finish = () => {
           clearTimeout(timeoutId);
-          unsubscribe();
           resolve();
+        };
+
+        // Give up without applying (load failure / timeout before the event).
+        const settleWithoutApply = () => {
+          settled = true;
+          unsubscribe();
+          finish();
         };
 
         const { unsubscribe } = segmentationService.subscribe(
@@ -1342,7 +1350,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
               return;
             }
 
-            settle();
+            // Dedupe immediately, but resolve only after the representation is
+            // applied: awaiters continue into rotation/flip/render and broadcast
+            // VIEWPORT_DATA_CHANGED (hanging-protocol callbacks, toolbar, e2e
+            // readiness), which must not observe a viewport whose overlay
+            // doesn't exist yet. applyRepresentation can be genuinely async
+            // (stack→volume viewport conversion). The timeout is deliberately
+            // NOT cleared here — a hung apply stays bounded.
+            settled = true;
+            unsubscribe();
 
             try {
               await applyRepresentation();
@@ -1351,6 +1367,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
                 `Failed to apply segmentation representation for "${segmentationId}":`,
                 error
               );
+            } finally {
+              finish();
             }
           }
         );
@@ -1368,18 +1386,25 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
             `Segmentation "${segmentationId}" failed to load; skipping representation setup.`,
             error
           );
-          settle();
+          settleWithoutApply();
         });
 
         timeoutId = setTimeout(() => {
           if (settled) {
+            // The load completed but applyRepresentation is hung — resolve so
+            // viewport setup is never blocked past the bound (best-effort
+            // semantics; the apply may still land later).
+            console.warn(
+              `Timed out applying segmentation representation for "${segmentationId}"; resolving viewport readiness anyway.`
+            );
+            resolve();
             return;
           }
 
           console.warn(
             `Timed out waiting for segmentation "${segmentationId}" to load; skipping representation setup.`
           );
-          settle();
+          settleWithoutApply();
         }, SEG_LOADING_TIMEOUT_MS);
       });
     }

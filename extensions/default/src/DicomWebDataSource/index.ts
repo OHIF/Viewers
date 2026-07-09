@@ -320,20 +320,18 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        * one network request per frame (see the "Behaviours" doc
        * segmentation-multiframe-part10-prefetch).
        *
-       * Gated by `loadMultiframeAsPart10RaceTimeMs`: 0/undefined disables it.
+       * Whether to use it at all is the caller's policy (the SEG handler
+       * resolves the `loadMultiframeAsPart10` config/customization, defaulting
+       * it on — per-frame loading is the explicit opt-out there).
        * Never throws into the caller — on any failure it resolves `done` to
        * `false` and the normal per-frame load path is used.
        *
        * @returns `{ done: Promise<boolean>, cancel: () => void }`.
        */
-      prefetchInstanceFrames: ({
-        instance,
-        imageId,
-        loadMultiframeAsPart10RaceTimeMs,
-      }) => {
+      prefetchInstanceFrames: ({ instance, imageId }) => {
         const noop = { done: Promise.resolve(false), cancel: () => {} };
 
-        if (!loadMultiframeAsPart10RaceTimeMs || !instance || !imageId) {
+        if (!instance || !imageId) {
           return noop;
         }
 

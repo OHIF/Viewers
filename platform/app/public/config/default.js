@@ -79,10 +79,11 @@ window.config = {
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         staticWado: true,
-        // Static WADO has no efficient per-frame endpoint, so for multiframe
-        // SEG, fetch the whole instance once and serve frames from the registry.
-        // Value is the max ms to wait for that fetch before proceeding (0 = off).
-        loadMultiframeAsPart10RaceTimeMs: 3000,
+        // Multiframe SEG loads fetch the whole instance as a single Part 10
+        // object by default and wait for it: the per-frame endpoint is
+        // efficient, but SEG frames are so small and numerous that one bulk
+        // fetch beats hundreds of tiny requests. Per-frame loading is the
+        // exception — set loadMultiframeAsPart10: false here to force it.
         singlepart: 'bulkdata,video',
         bulkDataURI: {
           enabled: true,

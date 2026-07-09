@@ -29,10 +29,12 @@ references) so each behaviour doc stays anchored to the code it describes.
 ## Index
 
 - [Segmentation: loading a multiframe SEG as a single Part 10 instance](./segmentation-multiframe-part10-prefetch.md)
-  — _implemented, opt-in_. Prefetch the whole instance in one request and register
-  it into the Cornerstone3D NATURALIZED frame registry so the per-frame load path
-  (WADO-RS and WADO-URI) is served locally, while keeping the standard decode path
-  unchanged. Enable via `cornerstone.segmentation.loadMultiframeAsPart10RaceTimeMs`.
+  — _implemented, enabled by default_. Prefetch the whole instance in one request
+  and register it into the Cornerstone3D NATURALIZED frame registry so the
+  per-frame load path (WADO-RS and WADO-URI) is served locally, while keeping the
+  standard decode path unchanged. Per-frame loading is the exception — disable
+  via `loadMultiframeAsPart10: false` (data source config or the
+  `cornerstone.segmentation.loadMultiframeAsPart10` customization).
 
 ## Writing a new behaviour doc
 

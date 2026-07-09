@@ -508,6 +508,10 @@ class SegmentationService extends PubSubService {
     const derivedImages = labelMapImages?.flat();
     const derivedImageIds = derivedImages.map(image => image.imageId);
 
+    // Note: instance runtime props (frameNumber, imageId, url, ...) are
+    // intentionally non-enumerable, so this spread deliberately does NOT copy
+    // them — frameNumber must not be carried onto these derived image entries.
+    // Read such props off the original instance, never off a copy.
     segDisplaySet.images = derivedImages.map(image => ({
       ...image,
       ...metaData.get('instance', image.referencedImageId),

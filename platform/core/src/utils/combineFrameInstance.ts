@@ -10,6 +10,12 @@ import { dicomSplit } from './dicomSplit';
  * will be ignored.
  * This can be safely called with an undefined frame in order to handle
  * single frame data. (eg frame is undefined is the same as frame===1).
+ *
+ * Note: instances carry non-enumerable runtime props (frameNumber, imageId,
+ * url, wadoRoot, ...). This is intentional: dcmjs serialization skips them and
+ * spreads/copies (including of anything from `metaData.get('instance', ...)`)
+ * deliberately do not carry them — frameNumber in particular must not be
+ * copied onto other objects. Read runtime props off the original instance.
  */
 const combineFrameInstance = (frame, instance) => {
   const {
