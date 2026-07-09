@@ -1,8 +1,6 @@
 import {
-  expect,
   test,
   visitStudy,
-  getSvgPath,
   waitForViewportRenderCycle,
   checkForScreenshot,
   screenShotPaths,
