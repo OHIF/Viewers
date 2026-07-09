@@ -1,43 +1,36 @@
 // URL-loaded customization: segmentationEditing
 //
 // Adds segmentation editing to the basic and longitudinal (viewer) modes by
-// composing the capability blocks the cornerstone extension already exports:
+// composing the capability packs the cornerstone extension already exports:
 //
 //   - the segmentation editing toolbar buttons and toolbox section wiring
 //     (`cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections`),
 //   - the segmentation editing tools for the modes' tool groups
-//     (`cornerstone.segmentationToolGroupTools`),
+//     (`cornerstone.segmentationTools`),
 //   - the segmentation panels that render the editing toolbox
 //     (`panelSegmentationWithToolsLabelMap` / `panelSegmentationWithToolsContour`),
 //   - and enables editing in the segmentation panel.
 //
-// Both modes read the `basic.*` toolbar/tool-group customizations (longitudinal
-// extends the basic mode instance), so a single set of global commands covers
-// both.  The sidebars use the standard `mode.rightPanels` customization, which
-// each mode seeds from its own layout on enter — so the panel swaps go in
-// `mode` phase blocks keyed by the mode's route name and apply on top of the
-// mode's own values.
+// Composition is per-mode, so every patch lives in the `mode` phase keyed by
+// the target mode's route name (`basic`, `viewer`). Each mode seeds its own
+// `toolbarButtons` / `toolbarSections` / `toolGroupAdditions` / `mode.rightPanels`
+// onto the Mode scope on enter; these blocks `$push` / `$set` on top of that,
+// exactly like the panel swaps. No app-wide `global` keys are needed.
 //
 // Load it with `?customization=segmentationEditing`.
 {
-  "global": {
-    "basic.toolbarButtons": {
-      "$push": ["cornerstone.segmentationToolbarButtons"]
-    },
-    "basic.toolbarSections": {
-      "$push": ["cornerstone.segmentationToolbarSections"]
-    },
-    "basic.toolGroupAdditions": {
-      "default": { "$push": ["cornerstone.segmentationToolGroupTools"] },
-      "mpr": { "$push": ["cornerstone.segmentationToolGroupTools"] }
-    },
-    // The basic/longitudinal modes disable segmentation panel editing at mode
-    // scope (via `basic.modeCustomizations`); this global-scope value wins by
-    // scope precedence and enables it.
-    "panelSegmentation.disableEditing": { "$set": false }
-  },
   "mode": {
     "basic": {
+      "toolbarButtons": { "$push": ["cornerstone.segmentationToolbarButtons"] },
+      "toolbarSections": { "$push": ["cornerstone.segmentationToolbarSections"] },
+      "toolGroupAdditions": {
+        "default": { "$push": ["cornerstone.segmentationTools"] },
+        "mpr": { "$push": ["cornerstone.segmentationTools"] }
+      },
+      // The basic/longitudinal modes seed `panelSegmentation.disableEditing: true`
+      // from their own `modeCustomizations`; this `mode` phase value is applied
+      // after that (both Mode scope) and enables editing.
+      "panelSegmentation.disableEditing": { "$set": false },
       "mode.rightPanels": {
         "$set": [
           "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
@@ -47,6 +40,13 @@
       }
     },
     "viewer": {
+      "toolbarButtons": { "$push": ["cornerstone.segmentationToolbarButtons"] },
+      "toolbarSections": { "$push": ["cornerstone.segmentationToolbarSections"] },
+      "toolGroupAdditions": {
+        "default": { "$push": ["cornerstone.segmentationTools"] },
+        "mpr": { "$push": ["cornerstone.segmentationTools"] }
+      },
+      "panelSegmentation.disableEditing": { "$set": false },
       "mode.rightPanels": {
         "$set": [
           "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",

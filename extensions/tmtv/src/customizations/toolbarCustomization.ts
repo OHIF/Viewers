@@ -507,22 +507,15 @@ export const toolbarSections: Record<string, string[]> = {
 };
 
 /**
- * Customizations registered (at default scope) by the tmtv extension. The
- * TMTV mode reads these by name so `?customization=` modules can extend the
- * defaults, and site modes can extend the TMTV mode with different names.
+ * TMTV-specific capability packs registered (at default scope) by the tmtv
+ * extension. These are the TMTV mode's specialized toolbar buttons and layout;
+ * the TMTV mode composes them by name in its own `toolbarButtons` /
+ * `toolbarSections` instance arrays, and `?customization=` modules extend the
+ * result through the `mode` phase.
  */
 const toolbarCustomization = {
   'tmtv.toolbarButtons': toolbarButtons,
   'tmtv.toolbarSections': toolbarSections,
-  // Extra tools layered onto the mode's tool groups after creation; entries
-  // reference tool blocks such as `cornerstone.annotationToolGroupTools`.
-  'tmtv.toolGroupAdditions': {
-    [toolGroupIds.CT]: [],
-    [toolGroupIds.PT]: [],
-    [toolGroupIds.Fusion]: [],
-    [toolGroupIds.MIP]: [],
-    [toolGroupIds.default]: [],
-  },
 };
 
 export { toolbarButtons };

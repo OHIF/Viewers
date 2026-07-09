@@ -27,9 +27,10 @@ application order, with no special cases:
 5. mode instances are created (`modeFactory`) — after bootstrap/global, so they
    see modifications;
 6. on mode enter, the mode scope is reset, then layered bottom-up: the mode's
-   layout panel lists (seeded as `mode.leftPanels` / `mode.rightPanels`), the
-   mode's `modeCustomizations` block, the `mode` phase `*` block, and the
-   mode-specific block;
+   layout panel lists (seeded as `mode.leftPanels` / `mode.rightPanels`) and its
+   toolbar/tool-group composition (seeded as the plain `toolbarButtons` /
+   `toolbarSections` / `toolGroupAdditions`), the mode's `modeCustomizations`
+   block, the `mode` phase `*` block, and the mode-specific block;
 7. only then do the sidebars, toolbar, and `onModeEnter` consume the values.
 
 ## `initToolGroups` takes an options object
@@ -69,13 +70,14 @@ plus application order within the mode scope — with no special-case logic.
 On mode enter the mode route layers the mode scope bottom-up:
 
 1. the mode's `modeCustomizations` block, applied right after the mode scope is
-   reset;
+   reset (e.g. `basic.modeCustomizations` seeds `panelSegmentation.disableEditing: true`);
 2. the app config / URL `mode` phase blocks (the general `*` block, then the
-   mode-specific block);
+   mode-specific block) — e.g. `?customization=segmentationEditing` sets
+   `panelSegmentation.disableEditing: false` in its `mode.basic` / `mode.viewer`
+   blocks, which wins over step 1 by application order.
 
-and global-scope customizations (e.g. `?customization=segmentationEditing`,
-which sets `panelSegmentation.disableEditing` in its `global` phase) override
-all of the mode scope by scope precedence.
+A `global`-scope customization still overrides the whole mode scope by scope
+precedence when a value genuinely needs to apply to every mode.
 
 The block itself is registered with the customization service at default scope
 by the **mode** when it loads — modes carry a `customizations` map on their

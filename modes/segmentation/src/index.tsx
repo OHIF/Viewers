@@ -70,13 +70,21 @@ export const modeInstance = {
   id,
   routeName: 'segmentation',
   displayName: 'Segmentation',
-  // Toolbar buttons/layout and tool group additions are referenced by
-  // customization name; the cornerstone extension registers the defaults and
-  // `?customization=` modules can extend them (e.g. add new segmentation
-  // tools, remove defaults, or add the annotation tools).
-  toolbarButtons: 'segmentation.toolbarButtons',
-  toolbarSections: 'segmentation.toolbarSections',
-  toolGroupAdditions: 'segmentation.toolGroupAdditions',
+  // Toolbar/tool-group composition: which capability packs this mode uses.
+  // The mode route seeds these onto the Mode customization scope on enter, so
+  // `?customization=` modules extend them through the `mode` phase (e.g. add
+  // the annotation tools/buttons). Pack names are resolved when the toolbar is
+  // registered.
+  toolbarButtons: ['cornerstone.toolbarButtons', 'cornerstone.segmentationToolbarButtons'],
+  toolbarSections: [
+    'cornerstone.segmentationModeToolbarSections',
+    'cornerstone.segmentationToolbarSections',
+  ],
+  toolGroupAdditions: {
+    default: [],
+    mpr: [],
+    volume3d: [],
+  },
   // Tool group setup used by onModeEnter; extending modes can replace it.
   initToolGroups,
   // The mode's own customizations, applied by the mode route as the bottom

@@ -937,32 +937,21 @@ export const segmentationModeToolbarSections: Record<string, string[]> = {
 };
 
 /**
- * Customizations registered (at default scope) by the cornerstone extension:
+ * Segmentation capability packs registered (at default scope) by the
+ * cornerstone extension. These are pure "what can exist" packs and carry no
+ * mode identity:
  *   - `cornerstone.segmentationToolbarButtons`  – segmentation editing button definitions
  *   - `cornerstone.segmentationToolbarSections` – toolbox/utilities section wiring
- *   - `cornerstone.segmentationModeToolbarSections` – the segmentation mode's toolbar layout
- *   - `segmentation.*` – what the segmentation mode reads by name; lists may
- *     reference other customizations, so `?customization=` modules can extend
- *     them by pushing names of exported capability blocks.
+ *   - `cornerstone.segmentationModeToolbarSections` – a reusable segmentation-mode toolbar layout
+ *
+ * Modes compose these by name in their own `toolbarButtons` /
+ * `toolbarSections` instance arrays; `?customization=` modules extend the
+ * result through the `mode` phase.
  */
 const segmentationToolbarCustomization = {
   'cornerstone.segmentationToolbarButtons': segmentationToolbarButtons,
   'cornerstone.segmentationToolbarSections': segmentationToolboxSections,
   'cornerstone.segmentationModeToolbarSections': segmentationModeToolbarSections,
-
-  'segmentation.toolbarButtons': [
-    'cornerstone.toolbarButtons',
-    'cornerstone.segmentationToolbarButtons',
-  ],
-  'segmentation.toolbarSections': [
-    'cornerstone.segmentationModeToolbarSections',
-    'cornerstone.segmentationToolbarSections',
-  ],
-  'segmentation.toolGroupAdditions': {
-    default: [],
-    mpr: [],
-    volume3d: [],
-  },
 };
 
 export { segmentationToolbarButtons };

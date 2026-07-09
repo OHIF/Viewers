@@ -197,14 +197,27 @@ export function onModeEnter({ servicesManager, extensionManager, commandsManager
   // extending modes can substitute their own tool group setup.
   this.initToolGroups?.({ extensionManager, toolGroupService, commandsManager, servicesManager });
 
-  // Toolbar buttons and layout are supplied as customization references
-  // (extensions register the defaults; `?customization=` modules can extend
-  // them) or as literal values for modes that define them inline.
-  registerModeToolbar({ toolbarService, customizationService }, this);
+  // Toolbar buttons and layout come from the mode's composition, which the
+  // mode route seeded onto the Mode customization scope on enter (the plain
+  // `toolbarButtons` / `toolbarSections` keys) and the app config / URL `mode`
+  // phase then layered on top. Reading them here — after that layering — lets
+  // `?customization=` modules extend the toolbar without the mode restating it.
+  registerModeToolbar(
+    { toolbarService, customizationService },
+    {
+      toolbarButtons: customizationService.getCustomization('toolbarButtons'),
+      toolbarSections: customizationService.getCustomization('toolbarSections'),
+    }
+  );
 
-  // Extra tools (e.g. segmentation editing tools added by a customization)
-  // are layered onto the tool groups created above.
-  applyToolGroupAdditions({ toolGroupService, customizationService }, this.toolGroupAdditions);
+  // Extra tools (e.g. segmentation editing tools added by a customization) are
+  // layered onto the tool groups created above, from the resolved
+  // `toolGroupAdditions` composition (seeded on enter, refined by the `mode`
+  // phase).
+  applyToolGroupAdditions(
+    { toolGroupService, customizationService },
+    customizationService.getCustomization('toolGroupAdditions')
+  );
 
   // Note: the mode's `modeCustomizations` are NOT applied here — the mode
   // route applies them right after the mode scope is reset, before the app
@@ -306,12 +319,19 @@ export const modeInstance = {
   // instance by default.
   hide: false,
   displayName: 'Non-Longitudinal Basic',
-  // Toolbar buttons/layout and tool group additions are referenced by
-  // customization name; the cornerstone extension registers the defaults and
-  // `?customization=` modules can extend them. onModeEnter resolves these
-  // names via the customization service.
-  toolbarSections: 'basic.toolbarSections',
-  toolGroupAdditions: 'basic.toolGroupAdditions',
+  // Toolbar/tool-group composition: which capability packs this mode uses.
+  // The mode route seeds these onto the Mode customization scope on enter
+  // (as the plain `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
+  // keys), so `?customization=` modules extend them through the `mode` phase
+  // (e.g. `mode.basic.toolbarButtons: { $push: [...] }`). Pack names in the
+  // lists are resolved to their definitions when the toolbar is registered.
+  toolbarSections: ['cornerstone.toolbarSections'],
+  toolGroupAdditions: {
+    default: [],
+    mpr: [],
+    SRToolGroup: [],
+    volume3d: [],
+  },
   // Tool group setup used by onModeEnter; extending modes can replace it.
   initToolGroups,
   // The mode's own customizations, referenced by name: the block is registered
@@ -346,7 +366,7 @@ export const modeInstance = {
   // general handler needs to come last.  For this case, the dicomvideo must
   // come first to remove video transfer syntax before ohif uses images
   sopClassHandlers,
-  toolbarButtons: 'basic.toolbarButtons',
+  toolbarButtons: ['cornerstone.toolbarButtons'],
   nonModeModalities: NON_IMAGE_MODALITIES,
 };
 

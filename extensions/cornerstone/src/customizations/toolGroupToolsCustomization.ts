@@ -9,8 +9,12 @@ import {
  * customizations so modes and `?customization=` JSON modules can add them to
  * a tool group by name via a mode's `toolGroupAdditions` customization, e.g.
  *
- *   "basic.toolGroupAdditions": {
- *     "default": { "$push": ["cornerstone.segmentationToolGroupTools"] }
+ *   "mode": {
+ *     "basic": {
+ *       "toolGroupAdditions": {
+ *         "default": { "$push": ["cornerstone.segmentationTools"] }
+ *       }
+ *     }
  *   }
  *
  * Each block is a `{ active/passive/enabled/disabled }` object suitable for
@@ -139,7 +143,7 @@ function getToolGroupToolsCustomization({ commandsManager }) {
      * segmentation tools), matching the buttons in
      * `cornerstone.segmentationToolbarButtons`.
      */
-    'cornerstone.segmentationToolGroupTools': {
+    'cornerstone.segmentationTools': {
       passive: [
         ...brushInstances,
         { toolName: toolNames.LabelmapSlicePropagation },
@@ -161,7 +165,7 @@ function getToolGroupToolsCustomization({ commandsManager }) {
      * buttons in `cornerstone.toolbarButtons`. Useful for adding annotations
      * to modes (such as segmentation) whose tool groups omit them.
      */
-    'cornerstone.annotationToolGroupTools': {
+    'cornerstone.annotationTools': {
       passive: [
         { toolName: toolNames.Length },
         {

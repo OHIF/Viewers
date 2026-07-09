@@ -239,19 +239,19 @@ export default mode;
       <td align="left">
           toolbarSections
       </td>
-      <td align="left">Toolbar section definitions (section key to button ids), given as a literal object or the name of a customization holding one</td>
+      <td align="left">Toolbar section composition: a list of section-layout packs (by name) and/or literal section objects; seeded onto the Mode scope on enter</td>
     </tr>
     <tr>
       <td align="left">
           toolbarButtons
       </td>
-      <td align="left">Toolbar button definitions to register, given as a literal list or the name of a customization holding one</td>
+      <td align="left">Toolbar button composition: a list of button packs (by name) and/or literal button definitions; seeded onto the Mode scope on enter</td>
     </tr>
     <tr>
       <td align="left">
           toolGroupAdditions
       </td>
-      <td align="left">Extra tools layered onto the mode's tool groups after creation, given as a literal object or a customization name</td>
+      <td align="left">Per-tool-group composition: a map of tool-group id to a list of tool packs (by name) and/or literal tool blocks, layered onto the mode's tool groups after creation</td>
     </tr>
     <tr>
       <td align="left">
@@ -314,9 +314,9 @@ export const modeInstance = {
   routeName: 'mySegmentation',
   displayName: 'My Segmentation',
   // Override only what you need. Toolbar buttons/sections and tool group
-  // additions are referenced by customization name (see below); panel lists
-  // are literal arrays in the layout and are customized via the standard
-  // `mode.leftPanels` / `mode.rightPanels` keys.
+  // additions are plain composition arrays on the instance naming the
+  // capability packs the mode uses (see below); panel lists are literal
+  // arrays in the layout. Both are customized at runtime via the `mode` phase.
 };
 
 const mode = {
@@ -333,14 +333,16 @@ The `tmtv` mode is extended the same way — import `@ohif/mode-tmtv` and its
 
 #### Customizing a mode at runtime
 
-The `basic`, `longitudinal`, `segmentation`, and `tmtv` modes read their toolbar
-buttons, toolbar sections, and tool-group additions through per-mode customization
-keys (for example `segmentation.toolbarButtons`, `tmtv.toolGroupAdditions`). Panel
-lists are literal arrays in each mode's layout and are customized via the standard
-`mode.leftPanels` / `mode.rightPanels` keys. Because toolbar and tool-group values
-are lists that may reference other customizations by name, a `window.config` entry
-or a `?customization=` JSON module can add a whole capability block (such as the
-segmentation editing tools), remove a default, or swap the panels — without building
+The `basic`, `longitudinal`, `segmentation`, and `tmtv` modes declare their toolbar
+buttons, toolbar sections, and tool-group additions as plain composition arrays on
+the mode instance that name the capability packs the mode uses (for example
+`toolbarButtons: ['cornerstone.toolbarButtons', 'cornerstone.segmentationToolbarButtons']`).
+The mode route seeds these onto the Mode customization scope on enter, alongside the
+`mode.leftPanels` / `mode.rightPanels` panel lists. Because the values are lists that
+may reference other customizations by name, a `window.config` entry or a
+`?customization=` JSON module can add a whole capability pack (such as the
+segmentation editing tools), remove a default, or swap the panels — targeting the mode
+through a `mode` phase block (`mode.basic`, `mode.segmentation`, ...) without building
 a new mode. See [Compose whole capability blocks into a mode][compose-capability-blocks] in the
 Customization Service docs for the full key table, the reusable capability
 blocks, and worked examples (adding segmentation editing to the basic and

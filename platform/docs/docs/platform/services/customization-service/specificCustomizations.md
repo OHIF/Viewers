@@ -209,48 +209,64 @@ tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 
 #### 4. Compose whole capability blocks into a mode
 
-Each shipped mode reads its toolbar, tool-group additions and panel lists through per-mode
-customization keys, and the values are **lists that may reference other customizations by name**.
-Extensions register both the per-mode defaults and reusable "capability blocks", so a JSON module can
-extend a mode by pushing a block's *name* instead of restating its contents.
+Ownership is split into three layers. **Extensions** export reusable *capability packs* — button
+definitions, section layouts and tool lists — under their own namespace (`cornerstone.*`,
+`tmtv.*`); the packs carry no mode identity. **Modes** own *composition*: each mode declares which
+packs it uses as plain arrays on its instance (`toolbarButtons`, `toolbarSections`,
+`toolGroupAdditions`), and the mode route seeds those onto the **Mode** customization scope on
+enter — exactly like it seeds `mode.leftPanels` / `mode.rightPanels` from the layout. **Config**
+(`?customization=`) re-composes an existing mode through the `mode` phase.
 
-Per-mode toolbar/tool-group keys (registered by the cornerstone / tmtv extensions):
+Because composition is per-mode, a JSON module targets a mode with a `mode` phase block keyed by the
+mode's id or route name and refines the plain concept keys — pushing a pack's *name* instead of
+restating its contents:
 
-| Mode | Buttons | Sections | Tool group additions |
-| --- | --- | --- | --- |
-| basic & longitudinal | `basic.toolbarButtons` | `basic.toolbarSections` | `basic.toolGroupAdditions` |
-| segmentation | `segmentation.toolbarButtons` | `segmentation.toolbarSections` | `segmentation.toolGroupAdditions` |
-| tmtv | `tmtv.toolbarButtons` | `tmtv.toolbarSections` | `tmtv.toolGroupAdditions` |
+```jsonc
+{
+  "mode": {
+    "basic": {
+      "toolbarButtons": { "$push": ["cornerstone.segmentationToolbarButtons"] },
+      "toolGroupAdditions": {
+        "default": { "$push": ["cornerstone.segmentationTools"] }
+      }
+    }
+  }
+}
+```
 
-The sidebars use the **standard** `mode.leftPanels` / `mode.rightPanels` customizations instead of
-per-mode names: every mode's route seeds them from the mode's literal layout right after the mode
-scope resets, so a `mode` phase block (keyed by the mode's id or route name) or a global
-customization can `$set`/`$push` them before the sidebars resolve.
+There are no `basic.*` / `segmentation.*` / `tmtv.*` keys — `mode.basic` / `mode.viewer` /
+`mode.segmentation` already select the mode, and the key is the concept (`toolbarButtons`), the same
+way `mode.rightPanels` works for the sidebars. Reserve the `global` phase for values that truly apply
+to every mode.
 
-Capability blocks exported by the cornerstone extension:
+Capability packs exported by the cornerstone extension:
 
 - `cornerstone.toolbarButtons` / `cornerstone.toolbarSections` — the general viewer toolbar.
 - `cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections` — the
   segmentation editing buttons and the toolbox section wiring rendered by the
   `panelSegmentationWithTools*` panels.
-- `cornerstone.segmentationModeToolbarSections` — the segmentation mode's main toolbar layout.
-- `cornerstone.segmentationToolGroupTools` — the segmentation editing tools (brushes, scissors,
+- `cornerstone.segmentationModeToolbarSections` — a reusable segmentation-mode main toolbar layout.
+- `cornerstone.segmentationTools` — the segmentation editing tools (brushes, scissors,
   contour tools) as a `{ passive: [...] }` block for `toolGroupAdditions`.
-- `cornerstone.annotationToolGroupTools` — the measurement/annotation tools as a
+- `cornerstone.annotationTools` — the measurement/annotation tools as a
   `{ passive: [...] }` block for `toolGroupAdditions`.
+
+The tmtv extension exports its TMTV-specific `tmtv.toolbarButtons` / `tmtv.toolbarSections` packs the
+same way.
 
 Two shipped modules demonstrate the pattern:
 
 - [`segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationEditing.jsonc)
   (`?customization=segmentationEditing`) adds segmentation editing to the basic and longitudinal
-  modes: it pushes the segmentation button/section/tool blocks onto the `basic.*` keys (global
-  phase), swaps the right panels via `mode.rightPanels` in `mode` phase blocks keyed by each mode's
-  route name, and enables editing via `panelSegmentation.disableEditing`.
+  modes: in `mode` phase blocks keyed by each mode's route name (`basic`, `viewer`) it `$push`es the
+  segmentation button/section/tool packs onto that mode's `toolbarButtons` / `toolbarSections` /
+  `toolGroupAdditions`, swaps the right panels via `mode.rightPanels`, and enables editing via
+  `panelSegmentation.disableEditing`.
 - [`segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationAnnotationTools.jsonc)
   (`?customization=segmentationAnnotationTools`) enables the annotation tools inside the
-  segmentation mode: it adds a `MeasurementTools` section to the primary bar, pushes
-  `cornerstone.annotationToolGroupTools` onto `segmentation.toolGroupAdditions`, and `$push`es the
-  measurement panel onto `mode.rightPanels` in a `mode` phase block.
+  segmentation mode: in the `mode.segmentation` block it adds a `MeasurementTools` section to the
+  primary bar, `$push`es `cornerstone.annotationTools` onto `toolGroupAdditions`, and `$push`es the
+  measurement panel onto `mode.rightPanels`.
 
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can

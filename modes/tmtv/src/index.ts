@@ -9,7 +9,7 @@ import {
 import i18n from 'i18next';
 
 import { id } from './id.js';
-import initToolGroups from './initToolGroups.js';
+import initToolGroups, { toolGroupIds } from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
 import setFusionActiveVolume from './utils/setFusionActiveVolume.js';
 
@@ -153,12 +153,19 @@ export const modeInstance = {
   id,
   routeName: 'tmtv',
   displayName: i18n.t('Modes:Total Metabolic Tumor Volume'),
-  // Toolbar buttons/layout and tool group additions are referenced by
-  // customization name; the tmtv extension registers the defaults and
-  // `?customization=` modules can extend them.
-  toolbarButtons: 'tmtv.toolbarButtons',
-  toolbarSections: 'tmtv.toolbarSections',
-  toolGroupAdditions: 'tmtv.toolGroupAdditions',
+  // Toolbar/tool-group composition: which capability packs this mode uses.
+  // The mode route seeds these onto the Mode customization scope on enter, so
+  // `?customization=` modules extend them through the `mode` phase. The tmtv
+  // extension supplies the TMTV-specific button/section packs.
+  toolbarButtons: ['tmtv.toolbarButtons'],
+  toolbarSections: ['tmtv.toolbarSections'],
+  toolGroupAdditions: {
+    [toolGroupIds.CT]: [],
+    [toolGroupIds.PT]: [],
+    [toolGroupIds.Fusion]: [],
+    [toolGroupIds.MIP]: [],
+    [toolGroupIds.default]: [],
+  },
   // Tool group setup used by onModeEnter; extending modes can replace it.
   initToolGroups,
   // The mode's own customizations, referenced by name: the block is registered

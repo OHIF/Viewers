@@ -244,8 +244,12 @@ export default function ModeRoute({
       // bottom-up so the final value of every key is decided by scope
       // precedence (global > mode > default) and application order alone:
       //   1. the mode's own values — its layout panel lists, seeded as the
-      //      standard `mode.leftPanels` / `mode.rightPanels` customizations,
-      //      and its `modeCustomizations` block (declared as data on the mode
+      //      standard `mode.leftPanels` / `mode.rightPanels` customizations;
+      //      its toolbar/tool-group composition, seeded as the plain
+      //      `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
+      //      customizations (resolved to concrete definitions later, when the
+      //      mode's `onModeEnter` registers the toolbar); and its
+      //      `modeCustomizations` block (declared as data on the mode
       //      instance, usually as a customization name registered at default
       //      scope when the mode loaded, so bootstrap/global customizations
       //      can modify the block itself before it is applied);
@@ -255,6 +259,9 @@ export default function ModeRoute({
       customizationService.setCustomizations({
         'mode.leftPanels': leftPanels,
         'mode.rightPanels': rightPanels,
+        toolbarButtons: mode.toolbarButtons ?? [],
+        toolbarSections: mode.toolbarSections ?? [],
+        toolGroupAdditions: mode.toolGroupAdditions ?? {},
       });
 
       const modeCustomizations =

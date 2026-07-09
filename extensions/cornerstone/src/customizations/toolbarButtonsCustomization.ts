@@ -784,31 +784,19 @@ export const toolbarSections = {
 };
 
 /**
- * Customizations registered (at default scope) by the cornerstone extension:
- *   - `cornerstone.toolbarButtons`  – the default toolbar button definitions
- *   - `cornerstone.toolbarSections` – the default toolbar layout (section -> button ids)
+ * Capability packs registered (at default scope) by the cornerstone extension:
+ *   - `cornerstone.toolbarButtons`  – the general toolbar button definitions
+ *   - `cornerstone.toolbarSections` – the general toolbar layout (section -> button ids)
  *
- * Modes read these by name in `onModeEnter`; URL `?customization=` modules can
- * extend them with immutability-helper commands (e.g. `$push` a new button).
+ * These are pure "what can exist" packs — they carry no mode identity. Modes
+ * compose them by name in their own `toolbarButtons` / `toolbarSections`
+ * instance arrays, which the mode route seeds into the Mode customization scope
+ * on enter; URL `?customization=` modules extend the result through the `mode`
+ * phase (e.g. `mode.basic.toolbarButtons: { $push: [...] }`).
  */
 const toolbarButtonsCustomization = {
   'cornerstone.toolbarButtons': toolbarButtons,
   'cornerstone.toolbarSections': toolbarSections,
-
-  // What the basic (and longitudinal) mode reads by name. The list values may
-  // reference other customizations, so a `?customization=` module can extend a
-  // mode with an exported capability block by pushing its name, e.g.
-  // `"basic.toolbarButtons": { "$push": ["cornerstone.segmentationToolbarButtons"] }`.
-  'basic.toolbarButtons': ['cornerstone.toolbarButtons'],
-  'basic.toolbarSections': ['cornerstone.toolbarSections'],
-  // Extra tools layered onto the mode's tool groups after creation; entries
-  // reference tool blocks such as `cornerstone.segmentationToolGroupTools`.
-  'basic.toolGroupAdditions': {
-    default: [],
-    mpr: [],
-    SRToolGroup: [],
-    volume3d: [],
-  },
 };
 
 export { toolbarButtons };

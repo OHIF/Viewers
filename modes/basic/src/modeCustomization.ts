@@ -80,7 +80,7 @@ export function registerModeToolbar(
  * `toolGroupAdditions` is (the name of) an object mapping a tool group id to a
  * list of tool blocks; each block is either a literal
  * `{ active/passive/enabled/disabled }` object or the name of a customization
- * holding one (for example `cornerstone.segmentationToolGroupTools`).  Tool
+ * holding one (for example `cornerstone.segmentationTools`).  Tool
  * groups the mode did not create are skipped, so a single additions object can
  * be shared between modes with different tool group sets.
  */
