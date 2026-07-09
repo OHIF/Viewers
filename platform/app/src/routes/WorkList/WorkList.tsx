@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppConfig } from '@state';
+import type { RunInput } from '@ohif/core/src/classes/CommandsManager';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
@@ -32,6 +33,7 @@ export default function WorkList({
   onRefresh,
   servicesManager,
   extensionManager,
+  commandsManager,
 }: Props) {
   const [appConfig] = useAppConfig();
   const { customizationService } = servicesManager.services;
@@ -53,11 +55,21 @@ export default function WorkList({
   const [selected, setSelected] = useState<StudyRow | null>(null);
   const [isPreviewOpen, setPreviewOpen] = useState(true);
 
-  // `workList.onStudyDoubleClick` replaces the built-in double-click action
-  // (launch the default workflow, falling back to the first applicable one).
-  const customOnStudyDoubleClick = customizationService.getCustomization(
+  // `workList.onStudyDoubleClick` is the command (or command list) run when a
+  // study row is double-clicked — by default `launchDefaultMode`, which
+  // launches the default workflow, falling back to the first applicable one.
+  // The study and its applicable workflows are merged into the command options
+  // at call time, so an override only needs to name a command and any static
+  // options (e.g. a specific `workflowId`).
+  const studyDoubleClickCommand = customizationService.getCustomization(
     'workList.onStudyDoubleClick'
-  ) as OnStudyDoubleClick | undefined;
+  ) as RunInput;
+  const onStudyDoubleClick = useCallback<OnStudyDoubleClick>(
+    (study, { defaultWorkflow, workflows }) => {
+      commandsManager.run(studyDoubleClickCommand, { study, defaultWorkflow, workflows });
+    },
+    [commandsManager, studyDoubleClickCommand]
+  );
 
   const columns = useMemo(() => {
     // `workList.columns` is registered as a value (StudyList.defaultColumns) and
@@ -134,11 +146,7 @@ export default function WorkList({
                 )
               }
               title={'Study List'}
-              onStudyDoubleClick={
-                typeof customOnStudyDoubleClick === 'function'
-                  ? customOnStudyDoubleClick
-                  : undefined
-              }
+              onStudyDoubleClick={studyDoubleClickCommand ? onStudyDoubleClick : undefined}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
               toolbarRightActionsComponent={toolbarActions}

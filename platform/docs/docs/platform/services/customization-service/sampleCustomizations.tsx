@@ -528,29 +528,33 @@ window.config = {
     id: 'workList.onStudyDoubleClick',
     description: (
       <>
-        Replaces the built-in double-click action on a study row. By default, double-clicking a
-        row selects it and launches the default workflow (mode), falling back to the first
-        workflow applicable to the study when no default is set. When a function is provided it
-        is called instead (the row is still selected first) with:
+        The command run when a study row is double-clicked (the row is selected first). Accepts
+        anything <code>commandsManager.run</code> does: a command name string,{' '}
+        <code>{"{ commandName, commandOptions, context }"}</code>, an array of those, or a plain
+        function. At call time the following are merged into the command options (a plain
+        function receives them as its single argument):
         <ul>
           <li>
             <code>study</code>: the double-clicked <code>StudyRow</code>.
           </li>
           <li>
-            <code>context.workflows</code>: the workflows applicable to the study, in the same
-            order as the row's Launch Workflow menu. Each has <code>id</code>,{' '}
-            <code>displayName</code>, <code>isDefault</code>, and{' '}
-            <code>launchWithStudy(study)</code>.
+            <code>workflows</code>: the workflows applicable to the study, in the same order as
+            the row's Launch Workflow menu. Each has <code>id</code>, <code>displayName</code>,{' '}
+            <code>isDefault</code>, and <code>launchWithStudy(study)</code>.
           </li>
           <li>
-            <code>context.defaultWorkflow</code>: the user's default workflow when it applies to
-            the study, else <code>undefined</code>.
+            <code>defaultWorkflow</code>: the user's default workflow when it applies to the
+            study, else <code>undefined</code>.
           </li>
         </ul>
+        The default <code>launchDefaultMode</code> command launches the default workflow, falling
+        back to the first applicable one. Modes can contribute their own commands via a{' '}
+        <code>getCommandsModule</code> export on the mode definition — these are registered at
+        app init in the <code>WORKLIST</code> context, before any mode route is entered.
         Currently only applies when <code>workList.variant</code> is <code>'default'</code>.
       </>
     ),
-    default: 'undefined',
+    default: "{ commandName: 'launchDefaultMode' }",
     configuration: `
 window.config = {
   // rest of window config
@@ -558,9 +562,9 @@ window.config = {
     {
       'workList.onStudyDoubleClick': {
         // Always launch a specific mode on double click, regardless of the default.
-        $set: (study, { workflows }) => {
-          const viewer = workflows.find((w) => w.id === '@ohif/mode-longitudinal');
-          (viewer ?? workflows[0])?.launchWithStudy(study);
+        $set: {
+          commandName: 'launchDefaultMode',
+          commandOptions: { workflowId: '@ohif/mode-longitudinal' },
         },
       },
     },

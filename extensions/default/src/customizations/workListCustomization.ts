@@ -67,18 +67,27 @@ import { StudyList } from '@ohif/ui-next';
  *   `<StudyList.PreviewContainer>` layout is used.
  *   Currently only applies when `workList.variant` is `'default'`.
  *
- * - `workList.onStudyDoubleClick`: `(study, context) => void` (default: undefined)
- *   Replaces the built-in double-click action on a study row. By default a
- *   double click selects the row and launches the default workflow (mode), or
- *   the first workflow applicable to the study when no default is set. When a
- *   function is provided it is called instead (the row is still selected
- *   first) with:
+ * - `workList.onStudyDoubleClick`: command run input (default:
+ *   `{ commandName: 'launchDefaultMode' }`)
+ *   The command(s) run when a study row is double-clicked (the row is selected
+ *   first). Accepts anything `commandsManager.run` does: a command name string,
+ *   `{ commandName, commandOptions, context }`, an array of those, or a plain
+ *   function. At call time these are merged into the command options (a plain
+ *   function receives them as its single argument):
  *   - `study`: the double-clicked `StudyRow`.
- *   - `context.workflows`: the workflows applicable to the study, in the same
- *     order as the row's Launch Workflow menu. Each has `id`, `displayName`,
+ *   - `workflows`: the workflows applicable to the study, in the same order as
+ *     the row's Launch Workflow menu. Each has `id`, `displayName`,
  *     `isDefault`, and `launchWithStudy(study)`.
- *   - `context.defaultWorkflow`: the user's default workflow when it applies
- *     to the study, else `undefined`.
+ *   - `defaultWorkflow`: the user's default workflow when it applies to the
+ *     study, else `undefined`.
+ *   The default `launchDefaultMode` command launches `defaultWorkflow`,
+ *   falling back to the first applicable workflow. Override the options to
+ *   always launch a specific mode:
+ *   `{ commandName: 'launchDefaultMode', commandOptions: { workflowId: 'segmentation' } }`.
+ *   Modes can contribute their own commands for this via a `getCommandsModule`
+ *   export on the mode definition, registered at app init in the 'WORKLIST'
+ *   context — before any mode route is entered. When set to a falsy value the
+ *   built-in StudyList.Table double-click behavior applies.
  *   Currently only applies when `workList.variant` is `'default'`.
  *
  * - `workList.settingsMenuItems`: `(defaults) => SettingsMenuItem[]` (default: identity)
@@ -96,7 +105,7 @@ export default function getWorkListCustomization() {
     'workList.previewSeriesView': 'all',
     'workList.columns': StudyList.defaultColumns,
     'workList.renderPreviewContent': undefined,
-    'workList.onStudyDoubleClick': undefined,
+    'workList.onStudyDoubleClick': { commandName: 'launchDefaultMode' },
     'workList.settingsMenuItems': (defaults: unknown) => defaults,
   };
 }

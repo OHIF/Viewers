@@ -833,6 +833,33 @@ const commandsModule = ({
         }
       };
     },
+
+    /**
+     * Launches a workflow (mode) for a study from the worklist. This is the
+     * default `workList.onStudyDoubleClick` command.
+     *
+     * @param study - the StudyRow the action applies to
+     * @param workflows - the workflows applicable to the study, in menu order;
+     *   each has `id`, `displayName`, `isDefault` and `launchWithStudy(study)`
+     * @param defaultWorkflow - the user's default workflow when it applies to
+     *   the study
+     * @param workflowId - command option to force a specific workflow (mode id)
+     *   instead of the default/first applicable one
+     */
+    launchDefaultMode: ({ study, workflows = [], defaultWorkflow, workflowId }) => {
+      const workflow = workflowId
+        ? workflows.find(w => w.id === workflowId)
+        : (defaultWorkflow ?? workflows[0]);
+      if (!workflow) {
+        console.warn(
+          workflowId
+            ? `launchDefaultMode: workflow '${workflowId}' is not applicable to the study`
+            : 'launchDefaultMode: no workflow is applicable to the study'
+        );
+        return;
+      }
+      workflow.launchWithStudy(study);
+    },
   };
 
   const definitions = {
@@ -862,6 +889,10 @@ const commandsModule = ({
     addDisplaySetAsLayer: actions.addDisplaySetAsLayer,
     removeDisplaySetLayer: actions.removeDisplaySetLayer,
     createStoreFunction: actions.createStoreFunction,
+    launchDefaultMode: {
+      commandFn: actions.launchDefaultMode,
+      context: 'WORKLIST',
+    },
   };
 
   return {
