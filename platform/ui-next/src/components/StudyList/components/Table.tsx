@@ -7,7 +7,7 @@ import { DatePickerWithRange } from '../../DateRange';
 import { InputMultiSelect } from '../../InputMultiSelect';
 import type { StudyDateRangeFilter, StudyRow } from '../types/types';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
-import { useWorkflows } from './WorkflowsProvider';
+import { useWorkflows, type Workflow } from './WorkflowsProvider';
 import { COLUMN_IDS } from '../columns/defaultColumns';
 
 export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'> & {
@@ -19,6 +19,16 @@ export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'>
   toolbarRightComponent?: ReactNode;
   isLoading?: boolean;
   loadingComponent?: ReactNode;
+  /**
+   * Replaces the built-in double-click action (launch the default workflow,
+   * falling back to the first applicable one). The row is selected before this
+   * is called. `workflows` are the workflows applicable to the study, in menu
+   * order; `defaultWorkflow` is the user's default when it applies to the study.
+   */
+  onStudyDoubleClick?: (
+    study: StudyRow,
+    context: { defaultWorkflow?: Workflow; workflows: Workflow[] }
+  ) => void;
 };
 
 export function Table({
@@ -42,6 +52,7 @@ export function Table({
   isLoading,
   loadingComponent,
   manualFiltering,
+  onStudyDoubleClick,
 }: TableProps) {
   return (
     <DataTable<StudyRow>
@@ -68,6 +79,7 @@ export function Table({
         toolbarRightComponent={toolbarRightComponent}
         isLoading={isLoading}
         loadingComponent={loadingComponent}
+        onStudyDoubleClick={onStudyDoubleClick}
       />
     </DataTable>
   );
@@ -82,6 +94,7 @@ function TableContent({
   toolbarRightComponent,
   isLoading,
   loadingComponent,
+  onStudyDoubleClick,
 }: {
   title?: ReactNode;
   showColumnVisibility?: boolean;
@@ -91,6 +104,7 @@ function TableContent({
   toolbarRightComponent?: ReactNode;
   isLoading?: boolean;
   loadingComponent?: ReactNode;
+  onStudyDoubleClick?: TableProps['onStudyDoubleClick'];
 }) {
   const { t } = useTranslation('StudyList');
   const { table } = useDataTable<StudyRow>();
@@ -102,7 +116,7 @@ function TableContent({
     return Array.from(new Set(tokens)).sort();
   }, [table.options?.data]);
   // Access workflow provider for default workflow + launch
-  const { getDefaultWorkflowForStudy } = useWorkflows();
+  const { getDefaultWorkflowForStudy, getWorkflowsForStudy } = useWorkflows();
 
   return (
     <div className="flex h-full flex-col">
@@ -198,10 +212,12 @@ function TableContent({
             className: 'group cursor-pointer',
             onClick: row => {
               const original = row.original as StudyRow;
-              const defaultWorkflow = getDefaultWorkflowForStudy(original);
-              // When a default workflow is set, do not allow a second click to unselect.
-              // Always select on click; otherwise toggle selection.
-              if (defaultWorkflow) {
+              const canDoubleClickLaunch =
+                Boolean(onStudyDoubleClick) ||
+                getWorkflowsForStudy(original).length > 0;
+              // When a double click can launch, the second click must not read
+              // as an unselect — clicking only ever selects. Otherwise toggle.
+              if (canDoubleClickLaunch) {
                 if (!row.getIsSelected()) {
                   row.toggleSelected(true);
                 }
@@ -211,15 +227,20 @@ function TableContent({
             },
             onDoubleClick: row => {
               const original = row.original as StudyRow;
+              const workflows = getWorkflowsForStudy(original);
               const defaultWorkflow = getDefaultWorkflowForStudy(original);
-              if (!defaultWorkflow) {
-                return;
-              }
-              // Ensure the row is selected, then launch with the default workflow
+              // Ensure the row is selected before launching
               if (!row.getIsSelected()) {
                 row.toggleSelected(true);
               }
-              defaultWorkflow.launchWithStudy(original);
+              if (onStudyDoubleClick) {
+                onStudyDoubleClick(original, { defaultWorkflow, workflows });
+                return;
+              }
+              // Launch the default workflow, or fall back to the first
+              // applicable one (the top entry of the row's workflow menu).
+              const workflow = defaultWorkflow ?? workflows[0];
+              workflow?.launchWithStudy(original);
             },
           }}
         />

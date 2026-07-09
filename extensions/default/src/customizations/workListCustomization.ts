@@ -67,6 +67,20 @@ import { StudyList } from '@ohif/ui-next';
  *   `<StudyList.PreviewContainer>` layout is used.
  *   Currently only applies when `workList.variant` is `'default'`.
  *
+ * - `workList.onStudyDoubleClick`: `(study, context) => void` (default: undefined)
+ *   Replaces the built-in double-click action on a study row. By default a
+ *   double click selects the row and launches the default workflow (mode), or
+ *   the first workflow applicable to the study when no default is set. When a
+ *   function is provided it is called instead (the row is still selected
+ *   first) with:
+ *   - `study`: the double-clicked `StudyRow`.
+ *   - `context.workflows`: the workflows applicable to the study, in the same
+ *     order as the row's Launch Workflow menu. Each has `id`, `displayName`,
+ *     `isDefault`, and `launchWithStudy(study)`.
+ *   - `context.defaultWorkflow`: the user's default workflow when it applies
+ *     to the study, else `undefined`.
+ *   Currently only applies when `workList.variant` is `'default'`.
+ *
  * - `workList.settingsMenuItems`: `(defaults) => SettingsMenuItem[]` (default: identity)
  *   Builds the items in the WorkList settings popover. Receives the default
  *   items (`about`, `userPreferences`, and `logout` when OIDC is configured)
@@ -82,6 +96,7 @@ export default function getWorkListCustomization() {
     'workList.previewSeriesView': 'all',
     'workList.columns': StudyList.defaultColumns,
     'workList.renderPreviewContent': undefined,
+    'workList.onStudyDoubleClick': undefined,
     'workList.settingsMenuItems': (defaults: unknown) => defaults,
   };
 }

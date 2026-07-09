@@ -525,6 +525,50 @@ window.config = {
   `,
   },
   {
+    id: 'workList.onStudyDoubleClick',
+    description: (
+      <>
+        Replaces the built-in double-click action on a study row. By default, double-clicking a
+        row selects it and launches the default workflow (mode), falling back to the first
+        workflow applicable to the study when no default is set. When a function is provided it
+        is called instead (the row is still selected first) with:
+        <ul>
+          <li>
+            <code>study</code>: the double-clicked <code>StudyRow</code>.
+          </li>
+          <li>
+            <code>context.workflows</code>: the workflows applicable to the study, in the same
+            order as the row's Launch Workflow menu. Each has <code>id</code>,{' '}
+            <code>displayName</code>, <code>isDefault</code>, and{' '}
+            <code>launchWithStudy(study)</code>.
+          </li>
+          <li>
+            <code>context.defaultWorkflow</code>: the user's default workflow when it applies to
+            the study, else <code>undefined</code>.
+          </li>
+        </ul>
+        Currently only applies when <code>workList.variant</code> is <code>'default'</code>.
+      </>
+    ),
+    default: 'undefined',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.onStudyDoubleClick': {
+        // Always launch a specific mode on double click, regardless of the default.
+        $set: (study, { workflows }) => {
+          const viewer = workflows.find((w) => w.id === '@ohif/mode-longitudinal');
+          (viewer ?? workflows[0])?.launchWithStudy(study);
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
     id: 'workList.settingsMenuItems',
     description: (
       <>

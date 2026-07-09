@@ -4,7 +4,13 @@ import { useAppConfig } from '@state';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
-import { StudyList, Icons, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
+import {
+  StudyList,
+  Icons,
+  InvestigationalUseDialog,
+  type StudyRow,
+  type Workflow,
+} from '@ohif/ui-next';
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 import { SidePanelPreview } from './SidePanelPreview';
 
@@ -46,6 +52,14 @@ export default function WorkList({
 
   const [selected, setSelected] = useState<StudyRow | null>(null);
   const [isPreviewOpen, setPreviewOpen] = useState(true);
+
+  // `workList.onStudyDoubleClick` replaces the built-in double-click action
+  // (launch the default workflow, falling back to the first applicable one).
+  const customOnStudyDoubleClick = customizationService.getCustomization(
+    'workList.onStudyDoubleClick'
+  ) as
+    | ((study: StudyRow, context: { defaultWorkflow?: Workflow; workflows: Workflow[] }) => void)
+    | undefined;
 
   const columns = useMemo(() => {
     // `workList.columns` is registered as a value (StudyList.defaultColumns) and
@@ -122,6 +136,11 @@ export default function WorkList({
                 )
               }
               title={'Study List'}
+              onStudyDoubleClick={
+                typeof customOnStudyDoubleClick === 'function'
+                  ? customOnStudyDoubleClick
+                  : undefined
+              }
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
               toolbarRightActionsComponent={toolbarActions}
