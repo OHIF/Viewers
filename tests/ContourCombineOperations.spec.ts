@@ -1,9 +1,9 @@
 import {
   test,
-  visitStudy,
   waitForViewportRenderCycle,
   checkForScreenshot,
   screenShotPaths,
+  visitStudyAndHydrate,
 } from './utils';
 
 const segments = {
@@ -15,12 +15,15 @@ const segments = {
 test.beforeEach(
   async ({ page, leftPanelPageObject, DOMOverlayPageObject, rightPanelPageObject }) => {
     const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-    await visitStudy(page, studyInstanceUID, 'segmentation', 2000);
-    await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-    const viewportRenderCycle = waitForViewportRenderCycle(page);
-    await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-    await viewportRenderCycle;
+    await visitStudyAndHydrate({
+      page,
+      leftPanelPageObject,
+      DOMOverlayPageObject,
+      studyInstanceUID,
+      modality: 'RTSTRUCT',
+    });
+
     await rightPanelPageObject.contourSegmentationPanel.select();
   }
 );
