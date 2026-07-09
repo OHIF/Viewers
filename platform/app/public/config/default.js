@@ -22,13 +22,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {
-    // SEG store encoding. Labelmap + RLE Lossless is the intended default;
-    // the bitmap modes and the uncompressed Explicit VR Little Endian transfer
-    // syntax exist mainly for testing and are configured per-deployment when needed.
-    'segmentation.store.defaultMode': 'labelmap',
-    'segmentation.store.transferSyntaxUID': '1.2.840.10008.1.2.5',
-  },
+  customizationService: {},
 
   // --- URL-driven customizations (?customization=) ----------------------------
   // OFF by default. To allow loading customization data files from the URL, set

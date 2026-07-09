@@ -108,7 +108,18 @@ const commandsModule = ({
       const { imageIds } = segmentation.representationData.Labelmap;
 
       const segImages = imageIds.map(imageId => cache.getImage(imageId));
-      const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
+      const referencedImages = segImages.map((segImage, sliceIndex) => {
+        const referencedImage = cache.getImage(segImage.referencedImageId);
+
+        if (!referencedImage) {
+          throw new Error(
+            `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+              `(referencedImageId: ${segImage.referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+          );
+        }
+
+        return referencedImage;
+      });
 
       const labelmaps2D = [];
 

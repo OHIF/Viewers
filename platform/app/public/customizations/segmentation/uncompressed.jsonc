@@ -5,10 +5,10 @@
 // (1.2.840.10008.1.2.5). Use this for back ends that reject compressed SEG
 // PixelData.
 //
-// Applied in the `global` phase. With this key left unset OHIF passes no
-// transfer syntax and the adapter falls back to RLE Lossless; setting it here
-// forces uncompressed instead. A data source may still override this per back
-// end via `configuration.segmentation.store.transferSyntaxUID`.
+// Applied in the `global` phase. OHIF already defaults to RLE Lossless; this
+// customization opts into uncompressed Explicit VR Little Endian instead. A data
+// source may still override per back end via
+// `configuration.segmentation.store.transferSyntaxUID`.
 //
 // Load it with `?customization=segmentation/uncompressed` (combine with
 // `&customization=segmentation/binary` to also switch the SOP class).

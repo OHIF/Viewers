@@ -242,23 +242,25 @@ generated.
 | Key | Values | Default | Controls |
 | --- | --- | --- | --- |
 | `segmentation.store.defaultMode` | `'labelmap'` \| `'bitmap'` | `'labelmap'` | SEG SOP Class |
-| `segmentation.store.transferSyntaxUID` | a transfer-syntax UID string | unset → RLE Lossless | PixelData encoding |
+| `segmentation.store.transferSyntaxUID` | a transfer-syntax UID string | RLE Lossless (`1.2.840.10008.1.2.5`) | PixelData encoding |
 
 - **`segmentation.store.defaultMode`**
   - `'labelmap'` → Label Map Segmentation Storage (`1.2.840.10008.5.1.4.1.1.66.7`). One
     multi-valued frame per slice. Added to DICOM in 2024, so many PACS/viewers do not
-    accept it yet.
+    accept it yet. **This is the OHIF default.**
   - `'bitmap'` → (binary) Segmentation Storage (`1.2.840.10008.5.1.4.1.1.66.4`). One frame
-    per segment; broadly compatible with existing back ends and viewers.
+    per segment; broadly compatible with existing back ends and viewers. Opt in via
+    customization when needed.
 - **`segmentation.store.transferSyntaxUID`**
-  - Unset (the default) → the adapter encodes as RLE Lossless (`1.2.840.10008.1.2.5`,
-    compressed).
-  - `1.2.840.10008.1.2.1` → Explicit VR Little Endian (**uncompressed**). Use this for back
-    ends that reject compressed SEG PixelData.
+  - Default → RLE Lossless (`1.2.840.10008.1.2.5`, compressed). Set by
+    `getSegmentationSaveOptions` in `@ohif/extension-cornerstone-dicom-seg` and registered
+    as an extension customization — no app config required.
+  - `1.2.840.10008.1.2.1` → Explicit VR Little Endian (**uncompressed**). Opt in via
+    customization for back ends that reject compressed SEG PixelData.
 
-> OHIF's effective default is **Label Map + RLE Lossless (compressed)**: `defaultMode` is
-> `'labelmap'` and, with `transferSyntaxUID` left unset, the adapter falls back to RLE
-> Lossless.
+> OHIF's effective default is **Label Map + RLE Lossless (compressed)**. Customizations
+> (or per-data-source `configuration.segmentation.store`) are only needed to switch to
+> bitmap and/or uncompressed.
 
 ### URL-loaded files (recommended)
 

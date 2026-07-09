@@ -1,5 +1,9 @@
 export const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.7';
 export const BITMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.4';
+/** RLE Lossless — OHIF default SEG store transfer syntax. */
+export const DEFAULT_SEG_STORE_TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.5';
+/** OHIF default SEG store mode (Label Map Segmentation SOP Class). */
+export const DEFAULT_SEG_STORE_MODE = 'labelmap' as const;
 
 export type SegmentationMode = 'labelmap' | 'bitmap';
 
@@ -23,12 +27,12 @@ function getStoreDefaultMode(
   customizationService?: SegmentationCustomizationReader,
   override?: SegmentationStoreOverride
 ): SegmentationMode {
-  // Data-source override wins over the customization default.
   const mode =
     override?.defaultMode ??
     (customizationService?.getCustomization('segmentation.store.defaultMode') as
       | SegmentationMode
-      | undefined);
+      | undefined) ??
+    DEFAULT_SEG_STORE_MODE;
 
   return mode === 'bitmap' ? 'bitmap' : 'labelmap';
 }
@@ -36,15 +40,14 @@ function getStoreDefaultMode(
 function getStoreTransferSyntaxUID(
   customizationService?: SegmentationCustomizationReader,
   override?: SegmentationStoreOverride
-): string | undefined {
-  // Data-source override wins over the customization default.
-  const transferSyntaxUID =
+): string {
+  return (
     override?.transferSyntaxUID ??
-    (customizationService?.getCustomization('segmentation.store.transferSyntaxUID') as
-      | string
-      | undefined);
-
-  return transferSyntaxUID || undefined;
+    (customizationService?.getCustomization(
+      'segmentation.store.transferSyntaxUID'
+    ) as string | undefined) ??
+    DEFAULT_SEG_STORE_TRANSFER_SYNTAX_UID
+  );
 }
 
 /**
@@ -63,38 +66,35 @@ export function getSegmentationParserType(
     return 'bitmap';
   }
 
-  return getStoreDefaultMode(customizationService) === 'labelmap' ? 'labelmap' : 'bitmap';
+  return getStoreDefaultMode(customizationService);
 }
 
 /**
  * Options passed to @cornerstonejs/adapters generateSegmentation when exporting or storing SEG.
  *
- * @param customizationService - reads the app-wide `segmentation.store.*` defaults.
- * @param override - optional per-data-source override (e.g.
- *   `configuration.segmentation.store`) that takes precedence over the customization.
+ * Defaults to **Label Map + RLE Lossless**. Customizations (or per-data-source
+ * `configuration.segmentation.store`) are only needed to opt into bitmap and/or
+ * uncompressed Explicit VR Little Endian.
  */
 export function getSegmentationSaveOptions(
   customizationService?: SegmentationCustomizationReader,
   override?: SegmentationStoreOverride
 ): {
   sopClassUID: string;
-  transferSyntaxUID?: string;
+  transferSyntaxUID: string;
+  transferSyntaxUid: string;
 } {
   const defaultMode = getStoreDefaultMode(customizationService, override);
   const sopClassUID =
     defaultMode === 'bitmap' ? BITMAP_SEG_SOP_CLASS_UID : LABELMAP_SEG_SOP_CLASS_UID;
-  const transferSyntaxUID = getStoreTransferSyntaxUID(customizationService, override);
+  const transferSyntaxUID = getStoreTransferSyntaxUID(
+    customizationService,
+    override
+  );
 
-  const options: {
-    sopClassUID: string;
-    transferSyntaxUID?: string;
-    transferSyntaxUid?: string;
-  } = { sopClassUID };
-
-  if (transferSyntaxUID) {
-    options.transferSyntaxUID = transferSyntaxUID;
-    options.transferSyntaxUid = transferSyntaxUID;
-  }
-
-  return options;
+  return {
+    sopClassUID,
+    transferSyntaxUID,
+    transferSyntaxUid: transferSyntaxUID,
+  };
 }
