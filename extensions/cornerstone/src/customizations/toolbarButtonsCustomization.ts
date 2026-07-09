@@ -809,12 +809,6 @@ const toolbarButtonsCustomization = {
     SRToolGroup: [],
     volume3d: [],
   },
-  // Panel lists resolved by the basic mode's layout template.
-  'basic.leftPanels': ['@ohif/extension-default.panelModule.seriesList'],
-  'basic.rightPanels': [
-    '@ohif/extension-cornerstone.panelModule.panelSegmentation',
-    '@ohif/extension-cornerstone.panelModule.panelMeasurement',
-  ],
 };
 
 export { toolbarButtons };

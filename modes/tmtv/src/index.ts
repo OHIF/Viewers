@@ -1,9 +1,10 @@
 import { classes } from '@ohif/core';
 import {
-  applyToolGroupAdditions,
+  isValidMode,
   layoutTemplate,
   modeFactory,
-  registerModeToolbar,
+  onModeEnter as basicOnModeEnter,
+  onModeExit,
 } from '@ohif/mode-basic';
 import i18n from 'i18next';
 
@@ -40,63 +41,47 @@ export const extensionDependencies = {
   '@ohif/extension-tmtv': '^3.0.0',
 };
 
-export function onModeEnter({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-  const {
-    toolbarService,
-    toolGroupService,
-    customizationService,
-    hangingProtocolService,
-    displaySetService,
-  } = servicesManager.services;
+/**
+ * Extends the basic mode enter (tool groups, toolbar, tool group additions)
+ * with the TMTV specifics: the fusion viewport crosshairs/active-volume
+ * configuration and the PT VOI hanging protocol attribute.
+ */
+export function onModeEnter(ctx: withAppTypes) {
+  basicOnModeEnter.call(this, ctx);
+
+  const { servicesManager, extensionManager, commandsManager } = ctx;
+  const { toolGroupService, customizationService, hangingProtocolService, displaySetService } =
+    servicesManager.services;
 
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
-  const { toolNames, Enums } = utilityModule.exports;
+  const { toolNames } = utilityModule.exports;
 
-  // Init Default and SR ToolGroups
-  this.initToolGroups?.(toolNames, Enums, toolGroupService, commandsManager);
+  const { unsubscribe } = toolGroupService.subscribe(toolGroupService.EVENTS.VIEWPORT_ADDED, () => {
+    // For fusion toolGroup we need to add the volumeIds for the crosshairs
+    // since in the fusion viewport we don't want both PT and CT to render MIP
+    // when slabThickness is modified
+    const { displaySetMatchDetails } = hangingProtocolService.getMatchDetails();
 
-  const { unsubscribe } = toolGroupService.subscribe(
-    toolGroupService.EVENTS.VIEWPORT_ADDED,
-    () => {
-      // For fusion toolGroup we need to add the volumeIds for the crosshairs
-      // since in the fusion viewport we don't want both PT and CT to render MIP
-      // when slabThickness is modified
-      const { displaySetMatchDetails } = hangingProtocolService.getMatchDetails();
+    setCrosshairsConfiguration(
+      displaySetMatchDetails,
+      toolNames,
+      toolGroupService,
+      displaySetService
+    );
 
-      setCrosshairsConfiguration(
-        displaySetMatchDetails,
-        toolNames,
-        toolGroupService,
-        displaySetService
-      );
-
-      setFusionActiveVolume(
-        displaySetMatchDetails,
-        toolNames,
-        toolGroupService,
-        displaySetService
-      );
-    }
-  );
+    setFusionActiveVolume(displaySetMatchDetails, toolNames, toolGroupService, displaySetService);
+  });
 
   this._unsubscriptions.push(unsubscribe);
 
-  // Toolbar buttons and layout are supplied as customization references (the
-  // tmtv extension registers the defaults; `?customization=` modules can
-  // extend them) or as literal values for modes that define them inline.
-  registerModeToolbar({ toolbarService, customizationService }, this);
-
-  // Extra tools (e.g. annotation tools added by a customization) are layered
-  // onto the tool groups created above.
-  applyToolGroupAdditions({ toolGroupService, customizationService }, this.toolGroupAdditions);
-
+  // Function-valued customization; kept out of the registered
+  // `tmtv.modeCustomizations` block because it needs the mode's
+  // commandsManager.  Written at mode scope, so a global-scope customization
+  // still overrides it by scope precedence.
   customizationService.setCustomizations({
-    'panelSegmentation.tableMode': {
-      $set: 'expanded',
-    },
     'panelSegmentation.onSegmentationAdd': {
       $set: () => {
         commandsManager.run('createNewLabelmapFromPT');
@@ -136,59 +121,16 @@ export function onModeEnter({ servicesManager, extensionManager, commandsManager
   );
 }
 
-export function onModeExit({ servicesManager }: withAppTypes) {
-  const {
-    toolGroupService,
-    syncGroupService,
-    segmentationService,
-    cornerstoneViewportService,
-    uiDialogService,
-    uiModalService,
-  } = servicesManager.services;
-
-  this._unsubscriptions.forEach(unsubscribe => unsubscribe());
-  this._unsubscriptions.length = 0;
-
-  uiDialogService.hideAll();
-  uiModalService.hide();
-  toolGroupService.destroy();
-  syncGroupService.destroy();
-  segmentationService.destroy();
-  cornerstoneViewportService.destroy();
-}
-
-export function isValidMode({ modalities, study }) {
-  const modalities_list = modalities.split('\\');
-  const invalidModalities = ['SM'];
-
-  const isValid =
-    modalities_list.includes('CT') &&
-    study.mrn !== 'M1' &&
-    modalities_list.includes('PT') &&
-    !invalidModalities.some(modality => modalities_list.includes(modality)) &&
-    // This is study is a 4D study with PT and CT and not a 3D study for the tmtv
-    // mode, until we have a better way to identify 4D studies we will use the
-    // StudyInstanceUID to identify the study
-    // Todo: when we add the 4D mode which comes with a mechanism to identify
-    // 4D studies we can use that
-    study.studyInstanceUid !== '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849';
-
-  // there should be both CT and PT modalities and the modality should not be SM
-  return {
-    valid: isValid,
-    description: 'The mode requires both PT and CT series in the study',
-  };
-}
-
 export const tmtvLayout = {
   id: ohif.layout,
   props: {
-    // Panel lists are customization names; the tmtv extension registers the
-    // defaults and `?customization=` modules can replace them.
-    leftPanels: 'tmtv.leftPanels',
+    // Literal panel lists; the mode route seeds them into the standard
+    // `mode.leftPanels` / `mode.rightPanels` customizations so `mode` phase
+    // blocks and global customizations can modify them.
+    leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
     leftPanelClosed: true,
-    rightPanels: 'tmtv.rightPanels',
+    rightPanels: [tmtv.tmtv, tmtv.petSUV],
     rightPanelResizable: true,
     viewports: [
       {
@@ -211,7 +153,6 @@ export const modeInstance = {
   id,
   routeName: 'tmtv',
   displayName: i18n.t('Modes:Total Metabolic Tumor Volume'),
-  _unsubscriptions: [],
   // Toolbar buttons/layout and tool group additions are referenced by
   // customization name; the tmtv extension registers the defaults and
   // `?customization=` modules can extend them.
@@ -220,6 +161,11 @@ export const modeInstance = {
   toolGroupAdditions: 'tmtv.toolGroupAdditions',
   // Tool group setup used by onModeEnter; extending modes can replace it.
   initToolGroups,
+  // The mode's own customizations, referenced by name: the block is registered
+  // at default scope when the mode loads (see `customizations` below), and the
+  // mode route applies it as the bottom layer of the mode scope on enter.
+  modeCustomizations: 'tmtv.modeCustomizations',
+  activatePanelTriggers: [],
 
   /**
    * Lifecycle hooks
@@ -230,11 +176,31 @@ export const modeInstance = {
     study: [],
     series: [],
   },
+  // Data-driven validity: requires both PT and CT, rejects SM, and excludes
+  // the demo studies that belong to the preclinical 4D mode.  Until we have a
+  // better way to identify 4D studies we use the mrn/StudyInstanceUID.
   isValidMode,
+  modeModalities: [['PT', 'CT']],
+  excludedModalities: ['SM'],
+  excludedStudies: [
+    { mrn: 'M1' },
+    { studyInstanceUid: '1.3.6.1.4.1.12842.1.1.14.3.20220915.105557.468.2963630849' },
+  ],
   routes: [tmtvRoute],
   extensions: extensionDependencies,
   hangingProtocol: tmtv.hangingProtocol,
   sopClassHandlers: [ohif.sopClassHandler],
+};
+
+/**
+ * Customizations the mode registers (Default scope) when it loads — before
+ * the bootstrap phase applies, so bootstrap / `?customization=` modules can
+ * modify them before anything reads them.  Values are plain data.
+ */
+export const customizations = {
+  'tmtv.modeCustomizations': {
+    'panelSegmentation.tableMode': 'expanded',
+  },
 };
 
 /**
@@ -247,6 +213,7 @@ const mode = {
   modeFactory,
   modeInstance,
   extensionDependencies,
+  customizations,
 };
 
 export default mode;

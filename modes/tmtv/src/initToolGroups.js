@@ -185,7 +185,16 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+/**
+ * Mode tool group setup, sharing the options-object signature used by all
+ * modes so implementations are interchangeable via the `initToolGroups` mode
+ * instance property.
+ */
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+  const { toolNames, Enums } = utilityModule.exports;
   _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 

@@ -214,13 +214,18 @@ customization keys, and the values are **lists that may reference other customiz
 Extensions register both the per-mode defaults and reusable "capability blocks", so a JSON module can
 extend a mode by pushing a block's *name* instead of restating its contents.
 
-Per-mode keys (registered by the cornerstone / measurement-tracking / tmtv extensions):
+Per-mode toolbar/tool-group keys (registered by the cornerstone / tmtv extensions):
 
-| Mode | Buttons | Sections | Tool group additions | Panels |
-| --- | --- | --- | --- | --- |
-| basic & longitudinal | `basic.toolbarButtons` | `basic.toolbarSections` | `basic.toolGroupAdditions` | `basic.leftPanels` / `basic.rightPanels` (longitudinal: `longitudinal.*`) |
-| segmentation | `segmentation.toolbarButtons` | `segmentation.toolbarSections` | `segmentation.toolGroupAdditions` | `segmentation.leftPanels` / `segmentation.rightPanels` |
-| tmtv | `tmtv.toolbarButtons` | `tmtv.toolbarSections` | `tmtv.toolGroupAdditions` | `tmtv.leftPanels` / `tmtv.rightPanels` |
+| Mode | Buttons | Sections | Tool group additions |
+| --- | --- | --- | --- |
+| basic & longitudinal | `basic.toolbarButtons` | `basic.toolbarSections` | `basic.toolGroupAdditions` |
+| segmentation | `segmentation.toolbarButtons` | `segmentation.toolbarSections` | `segmentation.toolGroupAdditions` |
+| tmtv | `tmtv.toolbarButtons` | `tmtv.toolbarSections` | `tmtv.toolGroupAdditions` |
+
+The sidebars use the **standard** `mode.leftPanels` / `mode.rightPanels` customizations instead of
+per-mode names: every mode's route seeds them from the mode's literal layout right after the mode
+scope resets, so a `mode` phase block (keyed by the mode's id or route name) or a global
+customization can `$set`/`$push` them before the sidebars resolve.
 
 Capability blocks exported by the cornerstone extension:
 
@@ -238,18 +243,27 @@ Two shipped modules demonstrate the pattern:
 
 - [`segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationEditing.jsonc)
   (`?customization=segmentationEditing`) adds segmentation editing to the basic and longitudinal
-  modes: it pushes the segmentation button/section/tool blocks onto the `basic.*` keys, swaps the
-  right panels to the segmentation panels with tools, and enables editing via
-  `panelSegmentation.disableEditing`.
+  modes: it pushes the segmentation button/section/tool blocks onto the `basic.*` keys (global
+  phase), swaps the right panels via `mode.rightPanels` in `mode` phase blocks keyed by each mode's
+  route name, and enables editing via `panelSegmentation.disableEditing`.
 - [`segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationAnnotationTools.jsonc)
   (`?customization=segmentationAnnotationTools`) enables the annotation tools inside the
   segmentation mode: it adds a `MeasurementTools` section to the primary bar, pushes
-  `cornerstone.annotationToolGroupTools` onto `segmentation.toolGroupAdditions`, and appends the
-  measurement panel.
+  `cornerstone.annotationToolGroupTools` onto `segmentation.toolGroupAdditions`, and `$push`es the
+  measurement panel onto `mode.rightPanels` in a `mode` phase block.
 
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
 also append to a list or merge into an existing object rather than replacing it wholesale.
+
+> **Every mode's panels are customizable with no opt-in.** A mode's layout declares
+> `leftPanels` / `rightPanels` as ordinary **arrays of panel ids** — the standard setup. On mode
+> enter the mode route seeds those arrays into the `mode.leftPanels` / `mode.rightPanels`
+> customizations at the bottom of the mode scope, then applies the `mode` phase blocks, then
+> resolves the sidebars from the final values — so commands compose with the mode's own list and
+> global-scope values win by scope precedence. (A layout may also set the panel value to a
+> customization name registered by one of its extensions; the route resolves the name when it seeds
+> the list.)
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 

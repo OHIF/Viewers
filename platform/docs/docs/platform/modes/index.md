@@ -225,15 +225,51 @@ export default mode;
     </tr>
     <tr>
       <td align="left">
-          enableSegmentationEdit
+          excludedModalities
       </td>
-      <td align="left">Boolean to skip the segmentation edit capabilities</td>
+      <td align="left">The default isValidMode returns false when the modalities list contains ANY of these</td>
+    </tr>
+    <tr>
+      <td align="left">
+          excludedStudies
+      </td>
+      <td align="left">A list of study attribute objects; the default isValidMode returns false for a study matching every attribute of any entry, e.g. <code>[&#123; mrn: 'M1' &#125;]</code></td>
     </tr>
     <tr>
       <td align="left">
           toolbarSections
       </td>
-      <td align="left">An object containing toolbar section definitions to register</td>
+      <td align="left">Toolbar section definitions (section key to button ids), given as a literal object or the name of a customization holding one</td>
+    </tr>
+    <tr>
+      <td align="left">
+          toolbarButtons
+      </td>
+      <td align="left">Toolbar button definitions to register, given as a literal list or the name of a customization holding one</td>
+    </tr>
+    <tr>
+      <td align="left">
+          toolGroupAdditions
+      </td>
+      <td align="left">Extra tools layered onto the mode's tool groups after creation, given as a literal object or a customization name</td>
+    </tr>
+    <tr>
+      <td align="left">
+          initToolGroups
+      </td>
+      <td align="left">Tool group setup function called by the shared onModeEnter as <code>initToolGroups(&#123; extensionManager, toolGroupService, commandsManager, servicesManager &#125;)</code>; extending modes can substitute their own</td>
+    </tr>
+    <tr>
+      <td align="left">
+          modeCustomizations
+      </td>
+      <td align="left">The mode's own customizations, applied by the mode route as the bottom layer of the mode scope on enter — before the app config / URL <code>mode</code> phase blocks, and below global-scope customizations, so final values are decided purely by scope precedence and application order. Usually the name of a block the extension registers at default scope (e.g. <code>basic.modeCustomizations</code>, which sets <code>panelSegmentation.disableEditing</code>); may also be a literal object of immutability-helper commands or an array mixing those with customization module reference strings</td>
+    </tr>
+    <tr>
+      <td align="left">
+          activatePanelTriggers
+      </td>
+      <td align="left">Data-driven ActivatePanel event triggers: a list of <code>&#123; panelId, sourceServiceName, sourceEvents, forceActive? &#125;</code> entries wired up on mode enter (e.g. activating the segmentation panel when a segmentation is added). Empty by default; see <code>defaultActivatePanelTriggers</code> in the basic mode</td>
     </tr>
 
 
@@ -248,6 +284,68 @@ mode that builds on top of the basic mode.  Also see `basic/src/index.tsx` for
 some default functions which can be used to create your own modes.  Doing a mode
 this way makes the definition of new modes based on your existing mode much easier,
 and the upgrade to new versions of modes tends to be more consistent.
+
+The **`segmentation`** and **`tmtv`** modes now follow this same pattern. Like
+`longitudinal`, each one exports a `modeInstance` object and reuses the `basic`
+mode's `modeFactory`, so they are extensible in two complementary ways:
+
+1. **Build a derived mode** — create a new mode package (for example
+   `mySegmentation`) that imports the shipped mode and overrides only the parts
+   you need, exactly like `longitudinal` builds on `basic`.
+2. **Customize an existing mode at runtime** — change a shipped mode's toolbar,
+   tools, or panels through per-mode customization keys, with no new package.
+
+#### Building a derived mode
+
+A derived mode imports the shipped mode's default export (which carries the
+`modeFactory`) and its `modeInstance`, then spreads and overrides. Because the
+default `modeFactory` applies [immutability-helper][immutability-helper]
+commands from `modeConfiguration` onto `modeInstance`, you can also override
+via `modeConfiguration` rather than editing the instance directly.
+
+```js title="modes/my-segmentation/src/index.tsx"
+import segmentationMode, { modeInstance as segModeInstance } from '@ohif/mode-segmentation';
+
+const id = 'mySegmentation';
+
+export const modeInstance = {
+  ...segModeInstance,
+  id,
+  routeName: 'mySegmentation',
+  displayName: 'My Segmentation',
+  // Override only what you need. Toolbar buttons/sections, tool group
+  // additions, and panels are referenced by customization name (see below),
+  // so most changes can be made there rather than here.
+};
+
+const mode = {
+  ...segmentationMode, // carries modeFactory + extensionDependencies
+  id,
+  modeInstance,
+};
+
+export default mode;
+```
+
+The `tmtv` mode is extended the same way — import `@ohif/mode-tmtv` and its
+`modeInstance`, then override.
+
+#### Customizing a mode at runtime
+
+The `basic`, `longitudinal`, `segmentation`, and `tmtv` modes read their toolbar
+buttons, toolbar sections, tool-group additions, and panel lists through per-mode
+customization keys (for example `segmentation.toolbarButtons`,
+`tmtv.toolGroupAdditions`). Because those values are lists that may reference
+other customizations by name, a `window.config` entry or a `?customization=`
+JSON module can add a whole capability block (such as the segmentation editing
+tools), remove a default, or swap the panels — without building a new mode. See
+[Compose whole capability blocks into a mode][compose-capability-blocks] in the
+Customization Service docs for the full key table, the reusable capability
+blocks, and worked examples (adding segmentation editing to the basic and
+longitudinal modes, and enabling annotation tools inside the segmentation mode).
+
+[immutability-helper]: https://github.com/kolodny/immutability-helper
+[compose-capability-blocks]: ../services/customization-service/specificCustomizations.md#4-compose-whole-capability-blocks-into-a-mode
 
 ### Consuming Extensions
 

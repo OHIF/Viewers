@@ -104,21 +104,40 @@ export function applyToolGroupAdditions(
 }
 
 /**
- * Resolves a layout panel list.  Panel lists hold extension module ids (which
- * are themselves strings), so unlike the list helpers above only the top-level
- * value may be a customization name.
+ * Wires up a mode's ActivatePanel event triggers from data.
+ *
+ * `activatePanelTriggers` is a list of
+ * `{ panelId, sourceServiceName, sourceEvents, forceActive? }` entries;
+ * `sourceEvents` names are looked up in the source service's `EVENTS` map
+ * (falling back to the raw value) so the whole entry is JSON-serializable and
+ * can be supplied by a `?customization=` module or an extending mode.
+ *
+ * Returns the unsubscribe functions for the subscriptions created.
  */
-export function resolvePanelList(
-  customizationService: AppTypes.CustomizationService,
-  panels: string | string[]
-): string[] {
-  if (typeof panels !== 'string') {
-    return panels;
+export function addActivatePanelTriggers(
+  { servicesManager },
+  activatePanelTriggers
+): (() => void)[] {
+  const { panelService } = servicesManager.services;
+  const unsubscriptions: (() => void)[] = [];
+  for (const trigger of activatePanelTriggers ?? []) {
+    const { panelId, sourceServiceName, sourceEvents, forceActive = true } = trigger;
+    const sourcePubSubService = servicesManager.services[sourceServiceName];
+    if (!sourcePubSubService) {
+      console.warn(`addActivatePanelTriggers: no service registered for "${sourceServiceName}"`);
+      continue;
+    }
+    const subscriptions = panelService.addActivatePanelTriggers(
+      panelId,
+      [
+        {
+          sourcePubSubService,
+          sourceEvents: sourceEvents.map(name => sourcePubSubService.EVENTS?.[name] ?? name),
+        },
+      ],
+      forceActive
+    );
+    unsubscriptions.push(...subscriptions.map(subscription => () => subscription.unsubscribe()));
   }
-  const resolved = customizationService.getCustomization(panels);
-  if (resolved === undefined) {
-    console.warn(`resolvePanelList: no customization registered for "${panels}"`);
-    return [];
-  }
-  return resolved as string[];
+  return unsubscriptions;
 }

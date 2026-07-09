@@ -963,11 +963,6 @@ const segmentationToolbarCustomization = {
     mpr: [],
     volume3d: [],
   },
-  'segmentation.leftPanels': ['@ohif/extension-default.panelModule.seriesList'],
-  'segmentation.rightPanels': [
-    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
-    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
-  ],
 };
 
 export { segmentationToolbarButtons };

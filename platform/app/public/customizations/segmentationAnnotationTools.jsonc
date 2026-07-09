@@ -9,6 +9,10 @@
 //   - the annotation tools themselves are added to the mode's tool groups via
 //     `cornerstone.annotationToolGroupTools`,
 //   - and the measurement panel is appended so annotations can be reviewed.
+//     The sidebars use the standard `mode.rightPanels` customization the mode
+//     seeds from its layout on enter, so the panel `$push` goes in a `mode`
+//     phase block keyed by the mode's route name and composes with the mode's
+//     own list.
 //
 // Load it with `?customization=segmentationAnnotationTools`.
 {
@@ -32,9 +36,13 @@
     "segmentation.toolGroupAdditions": {
       "default": { "$push": ["cornerstone.annotationToolGroupTools"] },
       "mpr": { "$push": ["cornerstone.annotationToolGroupTools"] }
-    },
-    "segmentation.rightPanels": {
-      "$push": ["@ohif/extension-cornerstone.panelModule.panelMeasurement"]
+    }
+  },
+  "mode": {
+    "segmentation": {
+      "mode.rightPanels": {
+        "$push": ["@ohif/extension-cornerstone.panelModule.panelMeasurement"]
+      }
     }
   }
 }

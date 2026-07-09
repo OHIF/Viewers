@@ -7,25 +7,12 @@ import {
   extensionDependencies,
   dicomRT,
   segmentation,
+  isValidMode,
   onModeEnter as basicOnModeEnter,
-  onModeExit as basicOnModeExit,
+  onModeExit,
   layoutTemplate,
   modeFactory,
 } from '@ohif/mode-basic';
-
-/**
- * Indicate this is a valid mode unless the studies ONLY contain modalities
- * that segmentation cannot be performed on.
- */
-export function isValidMode({ modalities }) {
-  const modalitiesArray = modalities.split('\\');
-  return {
-    valid:
-      modalitiesArray.length === 1 ? !['SM', 'ECG', 'OT', 'DOC'].includes(modalitiesArray[0]) : true,
-    description:
-      'The mode does not support studies that ONLY include the following modalities: SM, OT, DOC',
-  };
-}
 
 /**
  * Extends the basic mode enter with the segmentation panel auto tab switch
@@ -35,8 +22,7 @@ export function isValidMode({ modalities }) {
 export function onModeEnter(ctx: withAppTypes) {
   basicOnModeEnter.call(this, ctx);
 
-  const { segmentationService, viewportGridService, panelService } =
-    ctx.servicesManager.services;
+  const { segmentationService, viewportGridService, panelService } = ctx.servicesManager.services;
 
   const { unsubscribeAutoTabSwitchEvents } = setUpAutoTabSwitchHandler({
     segmentationService,
@@ -47,21 +33,15 @@ export function onModeEnter(ctx: withAppTypes) {
   this._unsubscriptions.push(...unsubscribeAutoTabSwitchEvents);
 }
 
-export function onModeExit(ctx: withAppTypes) {
-  this._unsubscriptions.forEach(unsubscribe => unsubscribe());
-  this._unsubscriptions.length = 0;
-
-  basicOnModeExit.call(this, ctx);
-}
-
 export const segmentationLayout = {
   id: ohif.layout,
   props: {
-    // Panel lists are customization names; the cornerstone extension registers
-    // the defaults and `?customization=` modules can replace them.
-    leftPanels: 'segmentation.leftPanels',
+    // Literal panel lists; the mode route seeds them into the standard
+    // `mode.leftPanels` / `mode.rightPanels` customizations so `mode` phase
+    // blocks and global customizations can modify them.
+    leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: 'segmentation.rightPanels',
+    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.contourSegmentationPanel],
     rightPanelResizable: true,
     viewports: [
       {
@@ -90,8 +70,6 @@ export const modeInstance = {
   id,
   routeName: 'segmentation',
   displayName: 'Segmentation',
-  _activatePanelTriggersSubscriptions: [],
-  _unsubscriptions: [],
   // Toolbar buttons/layout and tool group additions are referenced by
   // customization name; the cornerstone extension registers the defaults and
   // `?customization=` modules can extend them (e.g. add new segmentation
@@ -101,8 +79,11 @@ export const modeInstance = {
   toolGroupAdditions: 'segmentation.toolGroupAdditions',
   // Tool group setup used by onModeEnter; extending modes can replace it.
   initToolGroups,
-  // The segmentation panel is editable in this mode.
-  enableSegmentationEdit: true,
+  // The mode's own customizations, applied by the mode route as the bottom
+  // layer of the mode scope.  Unlike basic, the registered block is empty (no
+  // `panelSegmentation.disableEditing`): the segmentation panel is editable.
+  modeCustomizations: 'segmentation.modeCustomizations',
+  activatePanelTriggers: [],
 
   /**
    * Lifecycle hooks
@@ -114,12 +95,25 @@ export const modeInstance = {
     series: [],
   },
 
+  // Data-driven validity: valid unless the study ONLY contains modalities that
+  // segmentation cannot be performed on.
   isValidMode,
+  nonModeModalities: ['SM', 'ECG', 'OT', 'DOC'],
   routes: [segmentationRoute],
   extensions: extensionDependencies,
   // Prefer the grid layout hanging protocol when applicable.
   hangingProtocol: ['@ohif/mnGrid'],
   sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
+};
+
+/**
+ * Customizations the mode registers (Default scope) when it loads.  The mode's
+ * own block is empty — the segmentation panel is editable in this mode — but
+ * it is registered so bootstrap / `?customization=` modules can add
+ * mode-scoped values to it.
+ */
+export const customizations = {
+  'segmentation.modeCustomizations': {},
 };
 
 /**
@@ -132,6 +126,7 @@ const mode = {
   modeFactory,
   modeInstance,
   extensionDependencies,
+  customizations,
 };
 
 export default mode;

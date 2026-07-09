@@ -523,12 +523,6 @@ const toolbarCustomization = {
     [toolGroupIds.MIP]: [],
     [toolGroupIds.default]: [],
   },
-  // Panel lists resolved by the TMTV mode's layout template.
-  'tmtv.leftPanels': ['@ohif/extension-default.panelModule.seriesList'],
-  'tmtv.rightPanels': [
-    '@ohif/extension-tmtv.panelModule.tmtv',
-    '@ohif/extension-tmtv.panelModule.petSUV',
-  ],
 };
 
 export { toolbarButtons };

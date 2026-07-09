@@ -93,13 +93,31 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
 
   const { customizationService } = servicesManager.services;
+
+  if (!appConfig.modes) {
+    throw new Error('No modes are defined! Check your app-config.js');
+  }
+
+  // Load the mode modules and register the customizations they carry (plain
+  // `customizationId -> value` maps on the mode definition) at Default scope
+  // BEFORE the bootstrap phase applies, so bootstrap / `?customization=`
+  // modules can modify a mode's registered values before anything reads them.
+  // The mode *instances* are only created after the global phase (below), so
+  // they too see any modifications.
+  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
+  for (const mode of loadedModes) {
+    if (mode?.customizations) {
+      customizationService.addReferences(mode.customizations, customizationService.Scope.Default);
+    }
+  }
+
   // Resolve every customization module up front — from
   // `appConfig.customizationService.requires` and the `?customization=` URL
-  // parameter — long before any mode loads, then apply the `bootstrap` phase
-  // BEFORE extensions register so it is in place while they initialize. Modules
-  // are only loaded when `appConfig.customizationUrlPrefixes` allows their
-  // prefix; the feature is off by default, and a value with an unconfigured
-  // prefix throws here (aborting startup) rather than being silently ignored.
+  // parameter — then apply the `bootstrap` phase BEFORE extensions register so
+  // it is in place while they initialize. Modules are only loaded when
+  // `appConfig.customizationUrlPrefixes` allows their prefix; the feature is
+  // off by default, and a value with an unconfigured prefix throws here
+  // (aborting startup) rather than being silently ignored.
   await customizationService.loadAndApplyBootstrapCustomizations(extensionManager);
 
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
@@ -113,12 +131,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level
   // TODO: We no longer init the user Manager
-
-  if (!appConfig.modes) {
-    throw new Error('No modes are defined! Check your app-config.js');
-  }
-
-  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
 
   // This is the name for the loaded instance object
   appConfig.loadedModes = [];

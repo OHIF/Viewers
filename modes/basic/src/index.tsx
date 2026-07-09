@@ -3,9 +3,9 @@ import { utils } from '@ohif/core';
 
 import initToolGroups from './initToolGroups';
 import {
+  addActivatePanelTriggers,
   applyToolGroupAdditions,
   registerModeToolbar,
-  resolvePanelList,
 } from './modeCustomization';
 import { id } from './id';
 
@@ -104,20 +104,48 @@ export const sopClassHandlers = [
 ];
 
 /**
- * Indicate this is a valid mode if:
- *   - it contains at least one of the modeModalities
- *   - it contains all of the array value in modeModalities
- * Otherwise, if modeModalities is not defined:
- *   - it contains at least one modality other than the nonModeMOdalities.
+ * Data-driven mode validity check, using these mode instance properties:
+ *   - `excludedStudies`: a list of `{ attribute: value }` objects; a study
+ *     matching every attribute of any entry is invalid.
+ *   - `excludedModalities`: the study is invalid when it contains ANY of these.
+ *   - `modeModalities`: the study is valid when it contains at least one entry;
+ *     an array entry requires all of its modalities to be present (e.g.
+ *     `[['PT', 'CT']]` requires both PT and CT).
+ *   - otherwise `nonModeModalities`: the study is valid when it contains at
+ *     least one modality NOT in this list.
  */
-export function isValidMode({ modalities }) {
+export function isValidMode({ modalities, study }) {
   const modalities_list = modalities.split('\\');
+
+  if (study && this.excludedStudies?.length) {
+    const excluded = this.excludedStudies.find(exclusion =>
+      Object.entries(exclusion).every(([key, value]) => study[key] === value)
+    );
+    if (excluded) {
+      return {
+        valid: false,
+        description: `The mode excludes studies matching: ${JSON.stringify(excluded)}`,
+      };
+    }
+  }
+
+  if (this.excludedModalities?.length) {
+    const excluded = this.excludedModalities.find(modality => modalities_list.includes(modality));
+    if (excluded) {
+      return {
+        valid: false,
+        description: `The mode does not support studies containing the ${excluded} modality`,
+      };
+    }
+  }
 
   if (this.modeModalities?.length) {
     for (const modeModality of this.modeModalities) {
-      if (Array.isArray(modeModality) && modeModality.every(m => modalities.indexOf(m) !== -1)) {
-        return { valid: true, description: `Matches ${modeModality.join(', ')}` };
-      } else if (modalities.indexOf(modeModality)) {
+      if (Array.isArray(modeModality)) {
+        if (modeModality.every(m => modalities_list.includes(m))) {
+          return { valid: true, description: `Matches ${modeModality.join(', ')}` };
+        }
+      } else if (modalities_list.includes(modeModality)) {
         return { valid: true, description: `Matches ${modeModality}` };
       }
     }
@@ -127,27 +155,47 @@ export function isValidMode({ modalities }) {
     };
   }
 
+  const nonModeModalities = this.nonModeModalities ?? [];
   return {
-    valid: !!modalities_list.find(modality => this.nonModeModalities.indexOf(modality) === -1),
-    description: `The mode does not support studies that ONLY include the following modalities: ${this.nonModeModalities.join(', ')}`,
+    valid: !!modalities_list.find(modality => !nonModeModalities.includes(modality)),
+    description: `The mode does not support studies that ONLY include the following modalities: ${nonModeModalities.join(', ')}`,
   };
 }
 
+/**
+ * The panel activation triggers the basic family of modes historically shipped
+ * (commented out): activate the segmentation/measurement panel when a
+ * segmentation/measurement is added.  Not enabled by default; a mode or
+ * customization can set them via the `activatePanelTriggers` instance
+ * property.
+ */
+export const defaultActivatePanelTriggers = [
+  {
+    panelId: cornerstone.segmentation,
+    sourceServiceName: 'segmentationService',
+    sourceEvents: ['SEGMENTATION_ADDED'],
+  },
+  {
+    panelId: cornerstone.measurements,
+    sourceServiceName: 'measurementService',
+    sourceEvents: ['MEASUREMENT_ADDED', 'RAW_MEASUREMENT_ADDED'],
+  },
+];
+
 export function onModeEnter({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-  const {
-    measurementService,
-    toolbarService,
-    toolGroupService,
-    customizationService,
-    panelService,
-    segmentationService,
-  } = servicesManager.services;
+  const { measurementService, toolbarService, toolGroupService, customizationService } =
+    servicesManager.services;
 
   measurementService.clearMeasurements();
 
+  // Subscriptions the mode creates are tracked as unsubscribe functions on the
+  // instance; the shared onModeExit cleans them up.  Extending modes push
+  // their own unsubscribe functions here after calling this function.
+  this._unsubscriptions = [];
+
   // Init the mode's tool groups.  The function is a mode instance property so
   // extending modes can substitute their own tool group setup.
-  this.initToolGroups?.(extensionManager, toolGroupService, commandsManager);
+  this.initToolGroups?.({ extensionManager, toolGroupService, commandsManager, servicesManager });
 
   // Toolbar buttons and layout are supplied as customization references
   // (extensions register the defaults; `?customization=` modules can extend
@@ -158,50 +206,17 @@ export function onModeEnter({ servicesManager, extensionManager, commandsManager
   // are layered onto the tool groups created above.
   applyToolGroupAdditions({ toolGroupService, customizationService }, this.toolGroupAdditions);
 
-  // Segmentation panel editing is disabled by default in this mode, but only
-  // when no global/mode customization has expressed a preference — a site
-  // customization (e.g. `segmentationEditing`) can enable it.
-  if (
-    !this.enableSegmentationEdit &&
-    !customizationService.hasCustomization('panelSegmentation.disableEditing')
-  ) {
-    customizationService.setCustomizations({
-      'panelSegmentation.disableEditing': {
-        $set: true,
-      },
-    });
-  }
+  // Note: the mode's `modeCustomizations` are NOT applied here — the mode
+  // route applies them right after the mode scope is reset, before the app
+  // config / URL `mode` phase blocks, so the final value of every key is
+  // decided purely by customization scope precedence and application order.
 
-  // // ActivatePanel event trigger for when a segmentation or measurement is added.
-  // // Do not force activation so as to respect the state the user may have left the UI in.
-  if (this.activatePanelTrigger) {
-    this._activatePanelTriggersSubscriptions = [
-      ...panelService.addActivatePanelTriggers(
-        cornerstone.segmentation,
-        [
-          {
-            sourcePubSubService: segmentationService,
-            sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
-          },
-        ],
-        true
-      ),
-      ...panelService.addActivatePanelTriggers(
-        cornerstone.measurements,
-        [
-          {
-            sourcePubSubService: measurementService,
-            sourceEvents: [
-              measurementService.EVENTS.MEASUREMENT_ADDED,
-              measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-            ],
-          },
-        ],
-        true
-      ),
-      true,
-    ];
-  }
+  // ActivatePanel event triggers (e.g. activating the segmentation panel when
+  // a segmentation is added).  Off by default; supplied as data so extending
+  // modes and customizations can point at their own panels.
+  this._unsubscriptions.push(
+    ...addActivatePanelTriggers({ servicesManager }, this.activatePanelTriggers)
+  );
 }
 
 export function onModeExit({ servicesManager }: withAppTypes) {
@@ -214,8 +229,8 @@ export function onModeExit({ servicesManager }: withAppTypes) {
     uiModalService,
   } = servicesManager.services;
 
-  this._activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
-  this._activatePanelTriggersSubscriptions.length = 0;
+  this._unsubscriptions?.forEach(unsubscribe => unsubscribe());
+  this._unsubscriptions = [];
 
   uiDialogService.hideAll();
   uiModalService.hide();
@@ -228,12 +243,14 @@ export function onModeExit({ servicesManager }: withAppTypes) {
 export const basicLayout = {
   id: ohif.layout,
   props: {
-    // Panel lists are customization names; the cornerstone extension registers
-    // the defaults and `?customization=` modules can replace them (e.g. to
-    // swap in the segmentation panels with editing tools).
-    leftPanels: 'basic.leftPanels',
+    // Literal panel lists. The mode route seeds these into the standard
+    // `mode.leftPanels` / `mode.rightPanels` customizations at the bottom of
+    // the mode scope, so `mode` phase blocks and global customizations can
+    // modify them (e.g. swap in the segmentation panels with editing tools)
+    // before the sidebars resolve.
+    leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: 'basic.rightPanels',
+    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
     rightPanelClosed: true,
     rightPanelResizable: true,
     viewports: [
@@ -270,15 +287,8 @@ export const basicLayout = {
   },
 };
 
-export function layoutTemplate({ servicesManager }: withAppTypes = {} as withAppTypes) {
-  const layout = structuredCloneWithFunctions(this.layoutInstance);
-  const customizationService = servicesManager?.services?.customizationService;
-  if (customizationService) {
-    const { props } = layout;
-    props.leftPanels = resolvePanelList(customizationService, props.leftPanels);
-    props.rightPanels = resolvePanelList(customizationService, props.rightPanels);
-  }
-  return layout;
+export function layoutTemplate() {
+  return structuredCloneWithFunctions(this.layoutInstance);
 }
 
 export const basicRoute = {
@@ -296,7 +306,6 @@ export const modeInstance = {
   // instance by default.
   hide: false,
   displayName: 'Non-Longitudinal Basic',
-  _activatePanelTriggersSubscriptions: [],
   // Toolbar buttons/layout and tool group additions are referenced by
   // customization name; the cornerstone extension registers the defaults and
   // `?customization=` modules can extend them. onModeEnter resolves these
@@ -305,6 +314,17 @@ export const modeInstance = {
   toolGroupAdditions: 'basic.toolGroupAdditions',
   // Tool group setup used by onModeEnter; extending modes can replace it.
   initToolGroups,
+  // The mode's own customizations, referenced by name: the block is registered
+  // at default scope when the mode loads (see `customizations` below), and the
+  // mode route applies it as the bottom layer of the mode scope on enter.
+  // Later layers — the app config / URL `mode` phase blocks and any global
+  // customization (e.g. `segmentationEditing`) — override it purely by
+  // application order and scope precedence.
+  modeCustomizations: 'basic.modeCustomizations',
+  // ActivatePanel event triggers, applied on mode enter.  Empty by default so
+  // the state the user left the UI in is respected; extending modes or
+  // customizations can push `defaultActivatePanelTriggers` entries.
+  activatePanelTriggers: [],
 
   /**
    * Lifecycle hooks
@@ -327,7 +347,6 @@ export const modeInstance = {
   // come first to remove video transfer syntax before ohif uses images
   sopClassHandlers,
   toolbarButtons: 'basic.toolbarButtons',
-  enableSegmentationEdit: false,
   nonModeModalities: NON_IMAGE_MODALITIES,
 };
 
@@ -343,18 +362,36 @@ export function modeFactory({ modeConfiguration }) {
   return modeInstance;
 }
 
+/**
+ * Customizations the mode registers with the customization service (Default
+ * scope) when it loads — before the bootstrap phase applies, so bootstrap and
+ * `?customization=` modules can modify them before anything reads them.
+ * Values are plain data (registered customization values never carry `$`
+ * commands — commands are how later customizations modify them).
+ */
+export const customizations = {
+  // The mode's own mode-scope block, applied by the mode route as the bottom
+  // layer of the mode scope on mode enter (see `modeCustomizations` above).
+  'basic.modeCustomizations': {
+    // Segmentation panel editing is off in the basic modes; e.g. the
+    // `segmentationEditing` customization overrides this at global scope.
+    'panelSegmentation.disableEditing': true,
+  },
+};
+
 export const mode = {
   id,
   modeFactory,
   modeInstance: { ...modeInstance, hide: true },
   extensionDependencies,
+  customizations,
 };
 
 export default mode;
 export { initToolGroups };
 export {
+  addActivatePanelTriggers,
   applyToolGroupAdditions,
   registerModeToolbar,
   resolveCustomizationList,
-  resolvePanelList,
 } from './modeCustomization';

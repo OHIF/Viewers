@@ -14,6 +14,37 @@ import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
 
+/**
+ * Resolves a layout panel list into the flat array of panel (extension module)
+ * ids the panel service expects.
+ *
+ * A mode may declare `leftPanels` / `rightPanels` in either of two forms and
+ * both are supported so existing modes keep working while new modes can opt
+ * into customization:
+ *   - the legacy form — an array of panel ids — which is used as-is; or
+ *   - a customization name (a single string) which is resolved through the
+ *     customization service, so `?customization=` modules can extend or replace
+ *     the list without the mode restating it.
+ *
+ * A string that does not resolve to a registered customization yields an empty
+ * list (and a warning) rather than leaking the raw name through to the panel
+ * service (which would iterate it as characters).
+ */
+function resolvePanelList(
+  customizationService: AppTypes.CustomizationService,
+  panels: string | string[]
+): string[] {
+  if (typeof panels !== 'string') {
+    return panels ?? [];
+  }
+  const resolved = customizationService?.getCustomization(panels) as string[] | undefined;
+  if (resolved === undefined) {
+    console.warn(`ModeRoute: no panel-list customization registered for "${panels}"`);
+    return [];
+  }
+  return resolved;
+}
+
 export default function ModeRoute({
   mode,
   dataSourceName,
@@ -96,6 +127,15 @@ export default function ModeRoute({
           await extensionManager.registerExtension(extension);
         }
       }
+
+      // Mode dependency extensions register their customization modules here,
+      // but `registerExtension` does not merge them into the customization
+      // service — that otherwise only happens later in
+      // `extensionManager.onModeEnter`. Merge them now so anything that runs
+      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+      // the defaults these extensions provide.
+      // `init` is idempotent — each extension module is merged at most once.
+      customizationService.init(extensionManager);
 
       if (isMounted.current) {
         setExtensionDependenciesLoaded(true);
@@ -180,9 +220,12 @@ export default function ModeRoute({
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
-        panelService.reset();
-        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
-        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+        // The panel lists are not handled here: setupRouteInit (below) seeds
+        // them into the customization service as the standard
+        // `mode.leftPanels` / `mode.rightPanels` customizations AFTER the mode
+        // scope is reset, so mode-phase and global customizations can modify
+        // them before the sidebars resolve. Stash them for that step.
+        layoutData.panels = { leftPanels, rightPanels };
 
         // layoutProps contains all props but leftPanels and rightPanels
         layoutData.props = layoutProps;
@@ -222,10 +265,43 @@ export default function ModeRoute({
       });
 
       // `extensionManager.onModeEnter` resets the customization mode scope via
-      // `customizationService.onModeEnter`; now layer on the `mode` phase blocks
-      // for this mode — the general (`*`) block first, then any block keyed by
-      // this mode's id / routeName so a single mode can override the general one.
+      // `customizationService.onModeEnter`; the mode scope is then layered
+      // bottom-up so the final value of every key is decided by scope
+      // precedence (global > mode > default) and application order alone:
+      //   1. the mode's own values — its layout panel lists, seeded as the
+      //      standard `mode.leftPanels` / `mode.rightPanels` customizations,
+      //      and its `modeCustomizations` block (declared as data on the mode
+      //      instance, usually as a customization name registered at default
+      //      scope when the mode loaded, so bootstrap/global customizations
+      //      can modify the block itself before it is applied);
+      //   2. the app config / URL `mode` phase blocks — the general (`*`)
+      //      block first, then any block keyed by this mode's id / routeName.
+      const { leftPanels = [], rightPanels = [] } = layoutTemplateData.current.panels ?? {};
+      customizationService.setCustomizations({
+        'mode.leftPanels': resolvePanelList(customizationService, leftPanels),
+        'mode.rightPanels': resolvePanelList(customizationService, rightPanels),
+      });
+
+      const modeCustomizations =
+        typeof mode.modeCustomizations === 'string'
+          ? customizationService.getCustomization(mode.modeCustomizations)
+          : mode.modeCustomizations;
+      if (modeCustomizations) {
+        customizationService.setCustomizations(modeCustomizations);
+      }
       customizationService.applyModeCustomizations([mode.id, mode.routeName]);
+
+      // The sidebars resolve from the standard customizations now that every
+      // layer has been applied.
+      panelService.reset();
+      panelService.addPanels(
+        panelService.PanelPosition.Left,
+        customizationService.getValue('mode.leftPanels') ?? []
+      );
+      panelService.addPanels(
+        panelService.PanelPosition.Right,
+        customizationService.getValue('mode.rightPanels') ?? []
+      );
 
       // use the URL hangingProtocolId if it exists, otherwise use the one
       // defined in the mode configuration

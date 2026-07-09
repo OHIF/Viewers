@@ -12,8 +12,11 @@
 //   - and enables editing in the segmentation panel.
 //
 // Both modes read the `basic.*` toolbar/tool-group customizations (longitudinal
-// extends the basic mode instance), so a single set of commands covers both;
-// only the right-panel lists are mode specific.
+// extends the basic mode instance), so a single set of global commands covers
+// both.  The sidebars use the standard `mode.rightPanels` customization, which
+// each mode seeds from its own layout on enter — so the panel swaps go in
+// `mode` phase blocks keyed by the mode's route name and apply on top of the
+// mode's own values.
 //
 // Load it with `?customization=segmentationEditing`.
 {
@@ -28,22 +31,29 @@
       "default": { "$push": ["cornerstone.segmentationToolGroupTools"] },
       "mpr": { "$push": ["cornerstone.segmentationToolGroupTools"] }
     },
-    "basic.rightPanels": {
-      "$set": [
-        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
-        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
-        "@ohif/extension-cornerstone.panelModule.panelMeasurement"
-      ]
-    },
-    "longitudinal.rightPanels": {
-      "$set": [
-        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
-        "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
-        "@ohif/extension-measurement-tracking.panelModule.trackedMeasurements"
-      ]
-    },
-    // The basic/longitudinal modes disable segmentation panel editing only
-    // when no customization has expressed a preference, so this enables it.
+    // The basic/longitudinal modes disable segmentation panel editing at mode
+    // scope (via `basic.modeCustomizations`); this global-scope value wins by
+    // scope precedence and enables it.
     "panelSegmentation.disableEditing": { "$set": false }
+  },
+  "mode": {
+    "basic": {
+      "mode.rightPanels": {
+        "$set": [
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
+          "@ohif/extension-cornerstone.panelModule.panelMeasurement"
+        ]
+      }
+    },
+    "viewer": {
+      "mode.rightPanels": {
+        "$set": [
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
+          "@ohif/extension-measurement-tracking.panelModule.trackedMeasurements"
+        ]
+      }
+    }
   }
 }
