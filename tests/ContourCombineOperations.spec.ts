@@ -24,8 +24,6 @@ test.beforeEach(
       studyInstanceUID,
       modality: 'RTSTRUCT',
     });
-
-    await rightPanelPageObject.contourSegmentationPanel.select();
   }
 );
 
