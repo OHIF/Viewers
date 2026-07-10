@@ -232,3 +232,122 @@ integration must trigger loading explicitly (for example by calling
 `customizationService.applyCustomizationUrlSearchParams` or `customizationService.requires` with
 the new list). New module keys not seen before can still be loaded that way; unloading or
 replacing an already-loaded pack is not supported out of the box.
+
+## `segmentation.store.*` (DICOM SEG export encoding)
+
+These customizations control how the `@ohif/extension-cornerstone-dicom-seg` extension
+encodes a DICOM SEG when it is **stored or downloaded**, and are read when a SEG is
+generated.
+
+| Key | Values | Default | Controls |
+| --- | --- | --- | --- |
+| `segmentation.store.defaultMode` | `'labelmap'` \| `'bitmap'` | `'labelmap'` | SEG SOP Class |
+| `segmentation.store.transferSyntaxUID` | a transfer-syntax UID string | RLE Lossless (`1.2.840.10008.1.2.5`) | PixelData encoding |
+
+- **`segmentation.store.defaultMode`**
+  - `'labelmap'` → Label Map Segmentation Storage (`1.2.840.10008.5.1.4.1.1.66.7`). One
+    multi-valued frame per slice. Added to DICOM in 2024, so many PACS/viewers do not
+    accept it yet. **This is the OHIF default.**
+  - `'bitmap'` → (binary) Segmentation Storage (`1.2.840.10008.5.1.4.1.1.66.4`). One frame
+    per segment; broadly compatible with existing back ends and viewers. Opt in via
+    customization when needed.
+- **`segmentation.store.transferSyntaxUID`**
+  - Default → RLE Lossless (`1.2.840.10008.1.2.5`, compressed). Set by
+    `getSegmentationSaveOptions` in `@ohif/extension-cornerstone-dicom-seg` and registered
+    as an extension customization — no app config required.
+  - `1.2.840.10008.1.2.1` → Explicit VR Little Endian (**uncompressed**). Opt in via
+    customization for back ends that reject compressed SEG PixelData.
+
+> OHIF's effective default is **Label Map + RLE Lossless (compressed)**. Customizations
+> (or per-data-source `configuration.segmentation.store`) are only needed to switch to
+> bitmap and/or uncompressed.
+
+### URL-loaded files (recommended)
+
+Two ready-made public customization files ship under
+`platform/app/public/customizations/segmentation/`, so a user can flip either default
+straight from the URL (requires `customizationUrlPrefixes.default` to be configured — it
+is in the `dev` / `netlify` configs):
+
+| File | `?customization=` value | Effect |
+| --- | --- | --- |
+| `segmentation/uncompressed.jsonc` | `segmentation/uncompressed` | Explicit VR Little Endian instead of RLE |
+| `segmentation/binary.jsonc` | `segmentation/binary` | Binary SEG (66.4) instead of Label Map (66.7) |
+
+They are independent and combine, so you can apply both at once:
+
+```
+http://host/viewer?customization=segmentation/uncompressed&customization=segmentation/binary
+```
+
+Each file just `$set`s one key in the `global` phase, e.g. `segmentation/binary.jsonc`:
+
+```jsonc
+{
+  "global": {
+    "segmentation.store.defaultMode": { "$set": "bitmap" }
+  }
+}
+```
+
+The remaining forms below set the same keys directly in `window.config` instead of via the
+URL.
+
+### Store an uncompressed SEG instead of the compressed default
+
+```js
+window.config = {
+  customizationService: [
+    {
+      'segmentation.store.transferSyntaxUID': {
+        $set: '1.2.840.10008.1.2.1', // Explicit VR Little Endian (uncompressed)
+      },
+    },
+  ],
+};
+```
+
+### Store a binary SEG (66.4) instead of the default Label Map (66.7)
+
+```js
+window.config = {
+  customizationService: [
+    {
+      'segmentation.store.defaultMode': { $set: 'bitmap' },
+    },
+  ],
+};
+```
+
+### Per data source override
+
+A data source may override the app-wide default for one back end only, under
+`configuration.segmentation.store`. **The data source value wins over the customization
+default**, so different back ends can pick the SEG encoding they support:
+
+```js
+window.config = {
+  // App-wide default (optional): Label Map + RLE unless set here.
+  customizationService: [
+    { 'segmentation.store.defaultMode': { $set: 'labelmap' } },
+  ],
+  dataSources: [
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'myPacs',
+      configuration: {
+        // ...wado/qido/stow roots...
+        segmentation: {
+          store: {
+            defaultMode: 'bitmap', // this PACS only accepts binary SEG
+            transferSyntaxUID: '1.2.840.10008.1.2.1', // and only uncompressed
+          },
+        },
+      },
+    },
+  ],
+};
+```
+
+When storing, the override is resolved against the data source being written to; for
+download (no target data source) the active data source's override applies.

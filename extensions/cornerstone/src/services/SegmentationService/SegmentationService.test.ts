@@ -1799,6 +1799,10 @@ describe('SegmentationService', () => {
       const segmentationId = 'segmentationId';
       const segmentationData = {
         segmentationId,
+        representation: {
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          data: {},
+        },
         config: {
           label: 'Segmentation 1',
         },

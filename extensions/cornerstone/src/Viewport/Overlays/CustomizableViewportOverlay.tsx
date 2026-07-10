@@ -350,7 +350,10 @@ function _getInstanceNumberFromVolume(
     const imageId = imageIds[imageIndex];
 
     if (!imageId) {
-      return {};
+      // No image at this index (e.g. a single-image volume scrolled out of
+      // range). Return undefined so the overlay falls back to the slice count
+      // instead of rendering an empty object as "[object Object]".
+      return;
     }
 
     const { instanceNumber } = metaData.get('generalImageModule', imageId) || {};
