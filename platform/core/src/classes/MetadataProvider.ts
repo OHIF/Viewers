@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import { utilities } from '@cornerstonejs/core';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
@@ -8,12 +9,7 @@ import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
-
-const FRAME_QUERY_PARAM = /[?&]frame=([^&#]*)/;
-
-function getFrameNumberFromImageURI(imageURI: string): string | undefined {
-  return imageURI.match(FRAME_QUERY_PARAM)?.[1];
-}
+const { getUriModule } = csMetadataUtilities;
 
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
@@ -71,8 +67,15 @@ class MetadataProvider {
     // We reassign the imageId on the instance because multiframe images processed
     // through combineFrameInstance will mistakenly get the first imageId.
     // This happens because the DICOM web data store only keeps the first instance.
+    // Defined non-enumerable so spreading the instance into another object does
+    // not carry the imageId over (it belongs to this frame only).
     if (result) {
-      result.imageId = imageId;
+      Object.defineProperty(result, 'imageId', {
+        value: imageId,
+        writable: true,
+        enumerable: false,
+        configurable: true,
+      });
     }
     return result;
   }
@@ -467,7 +470,7 @@ class MetadataProvider {
       return;
     }
 
-    const frameNumber = getFrameNumberFromImageURI(imageId) || uids.frameNumber || '1';
+    const frameNumber = getUriModule(imageId)?.framesString || uids.frameNumber || '1';
 
     return { ...uids, frameNumber };
   }
