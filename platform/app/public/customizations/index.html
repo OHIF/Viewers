@@ -310,18 +310,37 @@
       // viewer's built-in look and needs no param). Returns null when there is
       // nothing to launch.
       function buildUrl(base, values, theme) {
-        const params = [];
-        if (values.length) {
-          params.push('customization=' + values.join(','));
-        }
-        if (theme && theme !== 'default') {
-          params.push('theme=' + theme);
-        }
-        if (!params.length) {
+        // Sanitize the DOM-derived inputs before they reach the launch href.
+        // Customization tokens are `folder/name` segments, so allow word chars,
+        // dot, dash and slash only; the theme is a plain preset id. Anything with
+        // query metacharacters or a URL scheme (e.g. `javascript:`) is dropped.
+        const TOKEN = /^[\w.-]+(?:\/[\w.-]+)*$/;
+        const safeValues = values.filter(v => TOKEN.test(v));
+        const safeTheme = /^[\w.-]+$/.test(theme || '') ? theme : 'default';
+        if (!safeValues.length && (!safeTheme || safeTheme === 'default')) {
           return null;
         }
-        const sep = base.includes('?') ? (base.endsWith('?') || base.endsWith('&') ? '' : '&') : '?';
-        return base + sep + params.join('&');
+
+        // Resolve the (hand-typed) base against the current page and require an
+        // http(s) target, so the base can never turn the href into a
+        // javascript:/data: URL. searchParams.set() encodes the values safely.
+        let parsed;
+        try {
+          parsed = new URL(base, window.location.href);
+        } catch (_) {
+          return null;
+        }
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          return null;
+        }
+
+        if (safeValues.length) {
+          parsed.searchParams.set('customization', safeValues.join(','));
+        }
+        if (safeTheme && safeTheme !== 'default') {
+          parsed.searchParams.set('theme', safeTheme);
+        }
+        return parsed.toString();
       }
 
       function refresh() {
