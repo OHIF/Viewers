@@ -107,10 +107,13 @@ A URL-loaded file applies its `global` payload as **global customizations** — 
 `window.config`'s `customizationService` entries, but loaded at runtime from `?customization=`. Any
 customization key that is read through `customizationService.getCustomization(...)` can therefore be
 set this way. The examples below are complete files; drop one under `platform/app/public/customizations/`
-(the `default` prefix) and load it with `?customization=<fileName>`. Because the files are JSONC, you
-can keep `//` comments and trailing commas in them.
+(the `default` prefix) and load it with `?customization=<path>`. The shipped examples are grouped into
+subfolders by area (e.g. `tools/`, `worklist/`, `segmentation/`, `veterinary/`), and a nested path is
+just part of the name under the `default` prefix — `?customization=tools/ctPresets` resolves to
+`./customizations/tools/ctPresets.jsonc`. Because the files are JSONC, you can keep `//` comments
+and trailing commas in them.
 
-The shipped [`veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinaryOverlay.jsonc)
+The shipped [`veterinary/veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinary/veterinaryOverlay.jsonc)
 demonstrates a fourth scenario — replacing the viewport overlay layout via `viewportOverlay.topLeft` /
 `viewportOverlay.topRight`.
 
@@ -120,7 +123,7 @@ Override the CT presets offered in the window-level menu (key: `cornerstone.wind
 `$merge` replaces only the `CT` entry, so presets for other modalities (PT, etc.) are kept.
 
 ```jsonc
-// platform/app/public/customizations/ctPresets.jsonc  ->  ?customization=ctPresets
+// platform/app/public/customizations/tools/ctPresets.jsonc  ->  ?customization=tools/ctPresets
 {
   "global": {
     "cornerstone.windowLevelPresets": {
@@ -143,7 +146,7 @@ Make the viewer prompt for a label from a fixed list whenever a measurement is c
 (key: `measurementLabels`).
 
 ```jsonc
-// platform/app/public/customizations/measurementLabels.jsonc  ->  ?customization=measurementLabels
+// platform/app/public/customizations/tools/measurementLabels.jsonc  ->  ?customization=tools/measurementLabels
 {
   "global": {
     "measurementLabels": {
@@ -169,12 +172,12 @@ The basic and longitudinal viewers register their toolbar as customizations
 layout that maps each section to a list of button ids). A module can therefore add a button by
 `$push`-ing a definition onto `cornerstone.toolbarButtons` and the button's id onto a section.
 
-The shipped [`smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/smoothRotate.jsonc)
+The shipped [`tools/smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/tools/smoothRotate.jsonc)
 adds a **Smooth Rotate** button to the *More Tools* menu that activates the cornerstone `PlanarRotate`
 tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 
 ```jsonc
-// platform/app/public/customizations/smoothRotate.jsonc  ->  ?customization=smoothRotate
+// platform/app/public/customizations/tools/smoothRotate.jsonc  ->  ?customization=tools/smoothRotate
 {
   "global": {
     "cornerstone.toolbarButtons": {
@@ -207,9 +210,96 @@ tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 > module applies at the *global* scope, the `$push` **extends** the built-in buttons rather than
 > replacing them. The same pattern works for any tool already in the active tool group.
 
+#### 4. Compose whole capability blocks into a mode
+
+Ownership is split into three layers. **Extensions** export reusable *capability packs* — button
+definitions, section layouts and tool lists — under their own namespace (`cornerstone.*`,
+`tmtv.*`); the packs carry no mode identity. **Modes** own *composition*: each mode declares which
+packs it uses as plain arrays on its instance (`toolbarButtons`, `toolbarSections`,
+`toolGroupAdditions`), naming each pack with a `{ $reference: '<name>' }` marker, and the mode route
+seeds those onto the **Mode** customization scope on enter — exactly like it seeds
+`leftPanels` / `rightPanels` from the layout. **Config** (`?customization=`) re-composes an
+existing mode through the `mode` phase.
+
+Because composition is per-mode, a JSON module targets a mode with a `mode` phase block keyed by the
+mode's id or route name and refines the plain concept keys — pushing a `{ $reference }` to a pack
+instead of restating its contents:
+
+```jsonc
+{
+  "mode": {
+    "basic": {
+      "toolbarButtons": { "$push": [{ "$reference": "cornerstone.segmentationToolbarButtons" }] },
+      "toolGroupAdditions": {
+        "default": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] }
+      }
+    }
+  }
+}
+```
+
+There are no `basic.*` / `segmentation.*` / `tmtv.*` keys — `mode.basic` / `mode.viewer` /
+`mode.segmentation` already select the mode, and the key is the concept (`toolbarButtons`), the same
+way `rightPanels` works for the sidebars. Reserve the `global` phase for values that truly apply
+to every mode.
+
+**`$reference` — composing customizations by name.** A `{ "$reference": "<name>" }` object resolves,
+when the value is *read*, to the value of the customization `<name>`. References may sit anywhere in a
+value; inside an array a reference to another array is *flattened* in, so a list composes several
+packs by name. Because resolution is at read time (not when customizations merge), a later command
+composes naturally: `$push` adds another `{ $reference }`, and `$set` replaces the whole value —
+with a different `{ $reference }` **or** a hard-coded list:
+
+```jsonc
+{ "mode": { "basic": {
+  // swap the entire toolbar for a different pack …
+  "toolbarButtons": { "$set": [{ "$reference": "myExtension.myToolbarButtons" }] }
+  // … or for a hard-coded list of button definitions
+  // "toolbarButtons": { "$set": [ { "id": "Length", /* … */ } ] }
+} } }
+```
+
+Edits to the referenced pack itself are picked up live, and reference cycles are detected and warned.
+
+Capability packs exported by the cornerstone extension:
+
+- `cornerstone.toolbarButtons` / `cornerstone.toolbarSections` — the general viewer toolbar.
+- `cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections` — the
+  segmentation editing buttons and the toolbox section wiring rendered by the
+  `panelSegmentationWithTools*` panels.
+- `cornerstone.segmentationModeToolbarSections` — a reusable segmentation-mode main toolbar layout.
+- `cornerstone.segmentationTools` — the segmentation editing tools (brushes, scissors,
+  contour tools) as a `{ passive: [...] }` block for `toolGroupAdditions`.
+- `cornerstone.annotationTools` — the measurement/annotation tools as a
+  `{ passive: [...] }` block for `toolGroupAdditions`.
+
+The tmtv extension exports its TMTV-specific `tmtv.toolbarButtons` / `tmtv.toolbarSections` packs the
+same way.
+
+Two shipped modules demonstrate the pattern:
+
+- [`segmentation/segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationEditing.jsonc)
+  (`?customization=segmentation/segmentationEditing`) adds segmentation editing to the basic and longitudinal
+  modes: in `mode` phase blocks keyed by each mode's route name (`basic`, `viewer`) it `$push`es the
+  segmentation button/section/tool packs onto that mode's `toolbarButtons` / `toolbarSections` /
+  `toolGroupAdditions`, swaps the right panels via `rightPanels`, and enables editing via
+  `panelSegmentation.disableEditing`.
+- [`segmentation/segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationAnnotationTools.jsonc)
+  (`?customization=segmentation/segmentationAnnotationTools`) enables the annotation tools inside the
+  segmentation mode: in the `mode.segmentation` block it adds a `MeasurementTools` section to the
+  primary bar, `$push`es a `{ $reference }` to `cornerstone.annotationTools` onto
+  `toolGroupAdditions`, and `$push`es the measurement panel onto `rightPanels`.
+
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
 also append to a list or merge into an existing object rather than replacing it wholesale.
+
+> **Every mode's panels are customizable with no opt-in.** A mode's layout declares
+> `leftPanels` / `rightPanels` as ordinary **arrays of panel ids** — the standard setup. On mode
+> enter the mode route seeds those arrays into the `leftPanels` / `rightPanels`
+> customizations at the bottom of the mode scope, then applies the `mode` phase blocks, then
+> resolves the sidebars from the final values — so commands compose with the mode's own list and
+> global-scope values win by scope precedence.
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 

@@ -83,10 +83,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
     ],
-    enabled: [
-      { toolName: toolNames.ImageOverlayViewer },
-      { toolName: toolNames.ReferenceLines },
-    ],
+    enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
     disabled: [
       {
         toolName: toolNames.AdvancedMagnify,
@@ -306,7 +303,12 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
+/**
+ * Mode tool group setup.  All modes share this options-object signature so a
+ * mode (or a `modeConfiguration`) can substitute any other mode's
+ * implementation via the `initToolGroups` instance property.
+ */
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);

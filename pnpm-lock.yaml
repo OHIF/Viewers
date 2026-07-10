@@ -1030,6 +1030,9 @@ importers:
       '@ohif/extension-test':
         specifier: workspace:*
         version: link:../../extensions/test-extension
+      '@ohif/mode-basic':
+        specifier: workspace:*
+        version: link:../basic
       i18next:
         specifier: 17.3.1
         version: 17.3.1
@@ -1254,6 +1257,12 @@ importers:
       '@ohif/extension-measurement-tracking':
         specifier: workspace:*
         version: link:../../extensions/measurement-tracking
+      '@ohif/extension-tmtv':
+        specifier: workspace:*
+        version: link:../../extensions/tmtv
+      '@ohif/mode-basic':
+        specifier: workspace:*
+        version: link:../basic
       i18next:
         specifier: 17.3.1
         version: 17.3.1
