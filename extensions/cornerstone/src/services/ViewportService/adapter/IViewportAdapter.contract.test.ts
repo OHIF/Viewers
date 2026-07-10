@@ -360,9 +360,13 @@ describe('data addressing', () => {
 
   it('getVoxelManagerForDisplaySet: native resolves from the cornerstone cache', () => {
     const voxelManager = { getRange: () => [0, 100] as [number, number] };
-    const spy = jest
-      .spyOn(cache, 'getVolumes')
-      .mockReturnValue([{ volumeId: 'volumeId-ds-1', voxelManager }] as never);
+    const derivedVoxelManager = { getRange: () => [0, 1] as [number, number] };
+    const spy = jest.spyOn(cache, 'getVolumes').mockReturnValue([
+      // A derived id that merely EMBEDS the UID must not match (anchored lookup);
+      // real volumeIds are `${volumeLoaderSchema}:${displaySetInstanceUID}`.
+      { volumeId: 'derived-ds-1-labelmap', voxelManager: derivedVoxelManager },
+      { volumeId: 'cornerstoneStreamingImageVolume:ds-1', voxelManager },
+    ] as never);
     try {
       expect(getViewportAdapter(makeNextViewport()).getVoxelManagerForDisplaySet('ds-1')).toBe(
         voxelManager
