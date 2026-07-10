@@ -9,6 +9,7 @@ import {
   StudyList,
   Icons,
   InvestigationalUseDialog,
+  useSessionStorage,
   type StudyRow,
   type OnStudyDoubleClick,
 } from '@ohif/ui-next';
@@ -53,7 +54,19 @@ export default function WorkList({
   const defaultSorting = useMemo(() => [{ id: 'studyDateTime', desc: true }], []);
 
   const [selected, setSelected] = useState<StudyRow | null>(null);
-  const [isPreviewOpen, setPreviewOpen] = useState(true);
+
+  // Persist the preview panel open/closed state so it survives navigating
+  // into a study and back. The hook only handles objects, hence the wrapper.
+  const [previewState, updatePreviewState] = useSessionStorage({
+    key: 'studyList.previewOpen',
+    defaultValue: { open: true },
+    clearOnUnload: false,
+  });
+  const isPreviewOpen = previewState.open !== false;
+  const setPreviewOpen = useCallback(
+    (open: boolean) => updatePreviewState({ open }),
+    [updatePreviewState]
+  );
 
   // `workList.onStudyDoubleClick` is the command (or command list) run when a
   // study row is double-clicked — by default `launchDefaultMode`, which
