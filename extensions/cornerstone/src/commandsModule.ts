@@ -1982,8 +1982,15 @@ function commandsModule({
      * Use it before initializing the toolGroup with the tools.
      */
     initializeSegmentLabelTool: ({ tools }) => {
-      const appConfig = extensionManager.appConfig;
-      const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
+      const { customizationService } = servicesManager.services;
+      const segmentLabelConfig = customizationService.getCustomization(
+        'segmentation.segmentLabel'
+      ) as {
+        enabledByDefault?: boolean;
+        labelColor?: number[];
+        hoverTimeout?: number;
+        background?: string;
+      };
 
       if (segmentLabelConfig?.enabledByDefault) {
         const activeTools = tools?.active ?? [];

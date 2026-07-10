@@ -6,6 +6,7 @@ import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
+import { getSegmentationSaveOptions } from './utils/segmentationConfig';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -34,7 +35,7 @@ const commandsModule = ({
   extensionManager,
   commandsManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const { segmentationService, displaySetService, viewportGridService } =
+  const { segmentationService, displaySetService, viewportGridService, customizationService } =
     servicesManager.services as AppTypes.Services;
 
   const actions = {
@@ -88,13 +89,37 @@ const commandsModule = ({
      * @returns Returns the generated segmentation data.
      */
     generateSegmentation: ({ segmentationId, options = {} }) => {
+      // `dataSource` (a data source name) is consumed here to resolve the store
+      // overrides; it must not be forwarded to the adapter's generateSegmentation.
+      const { dataSource: dataSourceName, ...generateOptions } = options;
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
-      const predecessorImageId = options.predecessorImageId ?? segmentation.predecessorImageId;
+      const predecessorImageId =
+        generateOptions.predecessorImageId ?? segmentation.predecessorImageId;
+
+      // A data source may override the app-wide `segmentation.store.*` defaults
+      // via `configuration.segmentation.store` (different back ends support
+      // different SEG encodings). Use the named target data source when storing,
+      // otherwise the active one (e.g. download).
+      const dataSourceDefinition = dataSourceName
+        ? extensionManager.getDataSourceDefinition(dataSourceName)
+        : extensionManager.getActiveDataSourceDefinition();
+      const dataSourceStoreOverride = dataSourceDefinition?.configuration?.segmentation?.store;
 
       const { imageIds } = segmentation.representationData.Labelmap;
 
       const segImages = imageIds.map(imageId => cache.getImage(imageId));
-      const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
+      const referencedImages = segImages.map((segImage, sliceIndex) => {
+        const referencedImage = cache.getImage(segImage.referencedImageId);
+
+        if (!referencedImage) {
+          throw new Error(
+            `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+              `(referencedImageId: ${segImage.referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+          );
+        }
+
+        return referencedImage;
+      });
 
       const labelmaps2D = [];
 
@@ -173,7 +198,8 @@ const commandsModule = ({
 
       const generatedSegmentation = generateSegmentation(referencedImages, labelmap3D, metaData, {
         predecessorImageId,
-        ...options,
+        ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
+        ...generateOptions,
       });
 
       return generatedSegmentation;
@@ -257,6 +283,8 @@ const commandsModule = ({
         const args = {
           segmentationId,
           options: {
+            // Resolve store overrides against the data source we are storing into.
+            dataSource: dataSourceName,
             SeriesDescription: series ? undefined : reportName || label || 'Contour Series',
             SeriesNumber: series ? undefined : 1 + priorSeriesNumber,
             predecessorImageId: series,
@@ -289,6 +317,8 @@ const commandsModule = ({
 
     generateContour: async args => {
       const { segmentationId, options } = args;
+      // `dataSource` is only used by the SEG store path; keep it out of the RTSS options.
+      const { dataSource: _dataSource, ...contourOptions } = options ?? {};
       const segmentations = segmentationService.getSegmentation(segmentationId);
 
       // inject colors to the segmentIndex
@@ -301,10 +331,11 @@ const commandsModule = ({
           Number(segmentIndex)
         );
       });
-      const predecessorImageId = options?.predecessorImageId ?? segmentations.predecessorImageId;
+      const predecessorImageId =
+        contourOptions.predecessorImageId ?? segmentations.predecessorImageId;
       const dataset = await generateRTSSFromRepresentation(segmentations, {
         predecessorImageId,
-        ...options,
+        ...contourOptions,
       });
       return { dataset };
     },

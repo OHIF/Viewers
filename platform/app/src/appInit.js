@@ -142,19 +142,39 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     }
     const { id } = mode;
 
-    if (mode.modeFactory) {
-      // If the appConfig contains configuration for this mode, use it.
-      const modeConfiguration =
-        appConfig.modesConfiguration && appConfig.modesConfiguration[id]
-          ? appConfig.modesConfiguration[id]
-          : {};
-
-      mode = await mode.modeFactory({ modeConfiguration, loadModules });
-    }
-
     if (modesById.has(id)) {
       continue;
     }
+
+    // If the appConfig contains configuration for this mode, use it.
+    const modeConfiguration =
+      appConfig.modesConfiguration && appConfig.modesConfiguration[id]
+        ? appConfig.modesConfiguration[id]
+        : {};
+
+    // Mirrors the extension commands path for modes, but registers before the
+    // mode is instantiated so the commands are usable on the worklist, ahead
+    // of any mode route being entered. Definitions land in the 'WORKLIST'
+    // context unless the module (or an individual command) declares its own.
+    if (typeof mode.getCommandsModule === 'function') {
+      extensionManager.registerCommandsModule(
+        mode.getCommandsModule({
+          appConfig,
+          commandsManager,
+          servicesManager,
+          serviceProvidersManager,
+          hotkeysManager,
+          extensionManager,
+          modeConfiguration,
+        }),
+        'WORKLIST'
+      );
+    }
+
+    if (mode.modeFactory) {
+      mode = await mode.modeFactory({ modeConfiguration, loadModules });
+    }
+
     // Prevent duplication
     modesById.add(id);
     if (!mode || typeof mode !== 'object') {
