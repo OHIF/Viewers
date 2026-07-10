@@ -2,17 +2,17 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
-import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
-// Module-resolution rules shared with the webpack/rspack build (webpack.base.js)
+import writePluginImportsFile from './platform/app/.rspack/writePluginImportsFile';
+// Module-resolution rules shared with the webpack/rspack build (rspack.base.js)
 // so the two pipelines resolve identically.
-import resolveConfig from './.webpack/resolveConfig';
+import resolveConfig from './.rspack/resolveConfig';
 import fs from 'fs';
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
 const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
 const PUBLIC_DIR = path.resolve(__dirname, './platform/app/public');
 
-// Environment variables (similar to webpack.pwa.js)
+// Environment variables (similar to rspack.pwa.js)
 // rsbuild is used only by the dev server (`dev:fast`), so default to the
 // full-featured `config/dev.js` while still honoring an explicit APP_CONFIG.
 const APP_CONFIG = process.env.APP_CONFIG || 'config/dev.js';
@@ -128,7 +128,7 @@ export default defineConfig({
         // resolve.alias above), so their imports of shared OHIF packages
         // (@ohif/ui-next, @ohif/core, ...) must resolve against platform/app's
         // installed dependencies rather than only the importer-relative
-        // node_modules. Shared with webpack.base.js via ./.webpack/resolveConfig.
+        // node_modules. Shared with rspack.base.js via ./.rspack/resolveConfig.
         modules: resolveConfig.getModules(SRC_DIR),
         fallback: {
           buffer: require.resolve('buffer'),
@@ -149,7 +149,7 @@ export default defineConfig({
       // platform/app. Merged in separately since it depends on pluginConfig.json.
       ...writePluginImportsFile.getPluginResolveAliases(),
       // App-level aliases (@ohif/app, @, @components, ...) shared with the
-      // webpack/rspack build via ./.webpack/resolveConfig.
+      // webpack/rspack build via ./.rspack/resolveConfig.
       ...resolveConfig.alias,
     },
   },

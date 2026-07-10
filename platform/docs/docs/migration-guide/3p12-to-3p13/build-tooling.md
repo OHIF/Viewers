@@ -11,15 +11,14 @@ OHIF 3.13 replaces Webpack with [Rspack](https://rspack.dev) v2 as the
 default bundler for the app, every extension, every mode, and the
 `@ohif/ui-next` / `@ohif/ui` / `@ohif/i18n` / `@ohif/core` packages.
 
-:::caution The `.webpack/` files are now Rspack configs
-The directory layout and filenames are unchanged — you will still find
-`.webpack/webpack.base.js`, `.webpack/webpack.pwa.js`, and a
-`.webpack/webpack.prod.js` in each package. **Despite the `webpack` name,
-these files now configure Rspack.** They `require('@rspack/core')` (aliased
-to a local `webpack` variable so the rest of the config reads the same) and
-are run by the `rspack` CLI. The names were kept to minimize churn and keep
-custom-extension forks merging cleanly — do not assume a file called
-`webpack.*.js` runs Webpack.
+:::caution The `.webpack/` configs are now `.rspack/` Rspack configs
+The config directory and filenames were renamed along with the bundler —
+what was `.webpack/webpack.base.js`, `.webpack/webpack.pwa.js`, and a
+`.webpack/webpack.prod.js` in each package is now `.rspack/rspack.base.js`,
+`.rspack/rspack.pwa.js`, and `.rspack/rspack.prod.js`. **These files
+configure Rspack.** They `require('@rspack/core')` (aliased to a local
+`webpack` variable so the rest of the config reads the same) and are run by
+the `rspack` CLI.
 :::
 
 There is no Webpack fallback. Webpack and all of its plugins have been
@@ -44,11 +43,11 @@ but written in Rust. For the OHIF tree the practical wins are:
 
 ```diff
 - "build": "node --max_old_space_size=8096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
-+ "build": "cross-env NODE_OPTIONS=--max-old-space-size=24576 rspack build --config .webpack/webpack.pwa.js",
++ "build": "cross-env NODE_OPTIONS=--max-old-space-size=24576 rspack build --config .rspack/rspack.pwa.js",
 - "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.pwa.js",
-+ "dev": "cross-env NODE_ENV=development rspack serve --config .webpack/webpack.pwa.js",
++ "dev": "cross-env NODE_ENV=development rspack serve --config .rspack/rspack.pwa.js",
 - "dev:orthanc": "… webpack serve --config .webpack/webpack.pwa.js",
-+ "dev:orthanc": "… rspack serve --config .webpack/webpack.pwa.js"
++ "dev:orthanc": "… rspack serve --config .rspack/rspack.pwa.js"
 ```
 
 Notes:
@@ -69,7 +68,7 @@ Notes:
 ## Dependency changes
 
 `platform/app/package.json` (and every other workspace package that ships a
-`.webpack/webpack.prod.js`) **adds**:
+`.rspack/rspack.prod.js`) **adds**:
 
 ```json
 {
@@ -103,9 +102,9 @@ and per-package configs.)
 The root `rsbuild.config.ts` path additionally depends on `@rsbuild/core`,
 `@rsbuild/plugin-react`, and `@rsbuild/plugin-node-polyfill`.
 
-## Shared base config (`.webpack/webpack.base.js`)
+## Shared base config (`.rspack/rspack.base.js`)
 
-`webpack.base.js` is the file most consumers extend in their own
+`rspack.base.js` is the file most consumers extend in their own
 extensions. It now requires `@rspack/core` instead of `webpack`:
 
 ```diff
@@ -127,15 +126,15 @@ is unchanged — which is why the local variable is still called `webpack`.
 | `html-webpack-plugin`                   | `require('@rspack/core').HtmlRspackPlugin`                    |
 | `@pmmmwh/react-refresh-webpack-plugin`  | `require('@rspack/plugin-react-refresh')`                     |
 | `terser-webpack-plugin`                 | Built-in `SwcJsMinimizerRspackPlugin` (no config needed)      |
-| `workbox-webpack-plugin` (`InjectManifest`) | Custom `InjectServiceWorkerManifestPlugin` in `webpack.pwa.js` |
+| `workbox-webpack-plugin` (`InjectManifest`) | Custom `InjectServiceWorkerManifestPlugin` in `rspack.pwa.js` |
 | `dotenv-webpack`                        | Plain `require('dotenv').config()`                            |
 
 `InjectServiceWorkerManifestPlugin` is a small inline plugin that
 re-implements what `workbox-webpack-plugin`'s `InjectManifest` did, but
 on top of Rspack's compilation hooks (`thisCompilation` →
 `processAssets`, emitting a `RawSource`). It is defined locally in
-`platform/app/.webpack/webpack.pwa.js` — copy it into your own
-`webpack.pwa.js` derivative if you forked that file.
+`platform/app/.rspack/rspack.pwa.js` — copy it into your own
+`rspack.pwa.js` derivative if you forked that file.
 
 The React Refresh plugin is loaded defensively (`try/require`) and is
 skipped when it is unavailable, in production, or during e2e coverage
@@ -144,7 +143,7 @@ interferes with Playwright/Cypress pointer events.
 
 ### Library output
 
-Every package-level `webpack.prod.js` switched from the legacy library
+Every package-level `rspack.prod.js` switched from the legacy library
 flags to the structured `output.library` form:
 
 ```diff
@@ -223,7 +222,7 @@ new webpack.IgnorePlugin({
 }),
 ```
 
-If you removed this when forking `webpack.base.js`, add it back —
+If you removed this when forking `rspack.base.js`, add it back —
 without it the prod bundle will try to require `fs` at runtime.
 
 ### Node globals (`__filename` / `__dirname`)
@@ -248,7 +247,7 @@ silences the warnings. The same `node` block is mirrored in
 
 ### Workspace package transpile
 
-`.webpack/rules/transpileJavaScript.js` no longer treats `@ohif/*`
+`.rspack/rules/transpileJavaScript.js` no longer treats `@ohif/*`
 packages as opaque `node_modules`:
 
 ```diff
@@ -269,8 +268,8 @@ under a different scope should add their own scope here.
 ### Module resolution for pnpm
 
 Two resolution changes were needed for pnpm's isolated (non-hoisted)
-`node_modules` layout. Both live in `resolve` in `webpack.base.js` (and
-`webpack.pwa.js`):
+`node_modules` layout. Both live in `resolve` in `rspack.base.js` (and
+`rspack.pwa.js`):
 
 - `resolve.modules` now **leads with a bare `'node_modules'`** before the
   absolute paths. This preserves the default importer-relative walk-up so
@@ -310,7 +309,7 @@ packages present in those workspaces but not listed in `pluginConfig.json`
 are ignored. The resulting map is exposed two ways:
 
 - `getPluginResolveAliases()` returns a `resolve.alias` map (one exact-match
-  `"<pkg>$"` entry per plugin in `pluginConfig.json`) that `webpack.pwa.js`
+  `"<pkg>$"` entry per plugin in `pluginConfig.json`) that `rspack.pwa.js`
   merges into `resolve.alias`, so the generated `pluginImports.js`
   `import()`s link to the plugin source without the plugin being a
   dependency.
@@ -339,7 +338,7 @@ A plugin can be included three ways, all declared as an entry in
 If you maintain a fork that injects extensions a different way, this is the
 seam to update.
 
-## Per-package webpack.prod.js
+## Per-package rspack.prod.js
 
 For every workspace package that previously had a `webpack.prod.js`,
 update the top of the file:
@@ -380,7 +379,7 @@ template, do the following:
 
 ## Known migration notes
 
-- **`@million/lint`** integration is removed from `webpack.pwa.js`
+- **`@million/lint`** integration is removed from `rspack.pwa.js`
   (it was already commented out in 3.12).
 - **`Dotenv` plugin** is replaced by a top-level `dotenv.config()`
   call. If you relied on the plugin's `safe: true` behavior, move

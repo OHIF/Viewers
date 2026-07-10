@@ -151,10 +151,10 @@ were updated:
 +   "pnpm": "11.1.1"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .rspack/rspack.dev.js --watch --output-pathinfo",
 -   "dev:my-extension": "yarn run dev",
 +   "dev:my-extension": "pnpm rundev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config .rspack/rspack.prod.js",
 -   "build:package": "yarn run build",
 -   "start": "yarn run dev"
 +   "build:package": "pnpm runbuild",

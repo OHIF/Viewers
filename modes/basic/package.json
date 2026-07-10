@@ -16,9 +16,9 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:cornerstone": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev",
     "test:unit": "jest --watchAll",

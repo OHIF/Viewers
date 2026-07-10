@@ -9,7 +9,7 @@ summary: Reference for platform/app/pluginConfig.json — the extensions, modes,
 
 `platform/app/pluginConfig.json` declares which extensions, modes, and
 third-party public assets are compiled into the viewer build. The build step
-([`writePluginImportsFile.js`](https://github.com/OHIF/Viewers/blob/master/platform/app/.webpack/writePluginImportsFile.js))
+([`writePluginImportsFile.js`](https://github.com/OHIF/Viewers/blob/master/platform/app/.rspack/writePluginImportsFile.js))
 reads it, resolves each entry to a source directory, generates the (untracked)
 `pluginImports.js`, and copies each plugin's static assets into `dist`.
 

@@ -105,7 +105,7 @@ We have removed the Polyfill.io script from the Viewer. If you require polyfills
 We previously were copying dicom-image-loader wasm files to the public folder via
 
 ```js
-// platform/app/.webpack/webpack.pwa.js
+// platform/app/.rspack/rspack.pwa.js
 {
   from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
   to: DIST_DIR,
