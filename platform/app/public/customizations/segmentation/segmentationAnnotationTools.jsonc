@@ -16,7 +16,7 @@
 // layout pack at Mode scope (reset on mode exit), and the tools/panels `$push`
 // onto the values the mode seeds on enter.
 //
-// Load it with `?customization=segmentationAnnotationTools`.
+// Load it with `?customization=segmentation/segmentationAnnotationTools`.
 {
   "mode": {
     "segmentation": {

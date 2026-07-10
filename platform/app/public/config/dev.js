@@ -22,7 +22,7 @@ window.config = {
   // slashes) is used for values without a leading slash; every other prefix
   // must start AND end with a slash and matches the leading `/segment/` of the
   // value. Files are fetched and parsed as JSONC data — never executed.
-  // e.g. ?customization=ctPresets  ->  ./customizations/ctPresets.jsonc
+  // e.g. ?customization=tools/ctPresets  ->  ./customizations/tools/ctPresets.jsonc
   customizationUrlPrefixes: {
     default: './customizations/',
   },

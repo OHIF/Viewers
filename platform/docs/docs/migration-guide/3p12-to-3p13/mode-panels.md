@@ -62,9 +62,9 @@ immutability-helper commands compose with the mode's own list:
 ```
 
 See the shipped
-[`segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationEditing.jsonc)
+[`segmentation/segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationEditing.jsonc)
 and
-[`segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationAnnotationTools.jsonc)
+[`segmentation/segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationAnnotationTools.jsonc)
 modules for complete worked examples.
 
 ## Migration notes

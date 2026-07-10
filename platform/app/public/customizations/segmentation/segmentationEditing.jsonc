@@ -17,7 +17,7 @@
 // onto the Mode scope on enter; these blocks `$push` / `$set` on top of that,
 // exactly like the panel swaps. No app-wide `global` keys are needed.
 //
-// Load it with `?customization=segmentationEditing`.
+// Load it with `?customization=segmentation/segmentationEditing`.
 {
   "mode": {
     "basic": {

@@ -107,10 +107,13 @@ A URL-loaded file applies its `global` payload as **global customizations** — 
 `window.config`'s `customizationService` entries, but loaded at runtime from `?customization=`. Any
 customization key that is read through `customizationService.getCustomization(...)` can therefore be
 set this way. The examples below are complete files; drop one under `platform/app/public/customizations/`
-(the `default` prefix) and load it with `?customization=<fileName>`. Because the files are JSONC, you
-can keep `//` comments and trailing commas in them.
+(the `default` prefix) and load it with `?customization=<path>`. The shipped examples are grouped into
+subfolders by area (e.g. `tools/`, `worklist/`, `segmentation/`, `veterinary/`), and a nested path is
+just part of the name under the `default` prefix — `?customization=tools/ctPresets` resolves to
+`./customizations/tools/ctPresets.jsonc`. Because the files are JSONC, you can keep `//` comments
+and trailing commas in them.
 
-The shipped [`veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinaryOverlay.jsonc)
+The shipped [`veterinary/veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinary/veterinaryOverlay.jsonc)
 demonstrates a fourth scenario — replacing the viewport overlay layout via `viewportOverlay.topLeft` /
 `viewportOverlay.topRight`.
 
@@ -120,7 +123,7 @@ Override the CT presets offered in the window-level menu (key: `cornerstone.wind
 `$merge` replaces only the `CT` entry, so presets for other modalities (PT, etc.) are kept.
 
 ```jsonc
-// platform/app/public/customizations/ctPresets.jsonc  ->  ?customization=ctPresets
+// platform/app/public/customizations/tools/ctPresets.jsonc  ->  ?customization=tools/ctPresets
 {
   "global": {
     "cornerstone.windowLevelPresets": {
@@ -143,7 +146,7 @@ Make the viewer prompt for a label from a fixed list whenever a measurement is c
 (key: `measurementLabels`).
 
 ```jsonc
-// platform/app/public/customizations/measurementLabels.jsonc  ->  ?customization=measurementLabels
+// platform/app/public/customizations/tools/measurementLabels.jsonc  ->  ?customization=tools/measurementLabels
 {
   "global": {
     "measurementLabels": {
@@ -169,12 +172,12 @@ The basic and longitudinal viewers register their toolbar as customizations
 layout that maps each section to a list of button ids). A module can therefore add a button by
 `$push`-ing a definition onto `cornerstone.toolbarButtons` and the button's id onto a section.
 
-The shipped [`smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/smoothRotate.jsonc)
+The shipped [`tools/smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/tools/smoothRotate.jsonc)
 adds a **Smooth Rotate** button to the *More Tools* menu that activates the cornerstone `PlanarRotate`
 tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 
 ```jsonc
-// platform/app/public/customizations/smoothRotate.jsonc  ->  ?customization=smoothRotate
+// platform/app/public/customizations/tools/smoothRotate.jsonc  ->  ?customization=tools/smoothRotate
 {
   "global": {
     "cornerstone.toolbarButtons": {
@@ -275,14 +278,14 @@ same way.
 
 Two shipped modules demonstrate the pattern:
 
-- [`segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationEditing.jsonc)
-  (`?customization=segmentationEditing`) adds segmentation editing to the basic and longitudinal
+- [`segmentation/segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationEditing.jsonc)
+  (`?customization=segmentation/segmentationEditing`) adds segmentation editing to the basic and longitudinal
   modes: in `mode` phase blocks keyed by each mode's route name (`basic`, `viewer`) it `$push`es the
   segmentation button/section/tool packs onto that mode's `toolbarButtons` / `toolbarSections` /
   `toolGroupAdditions`, swaps the right panels via `rightPanels`, and enables editing via
   `panelSegmentation.disableEditing`.
-- [`segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentationAnnotationTools.jsonc)
-  (`?customization=segmentationAnnotationTools`) enables the annotation tools inside the
+- [`segmentation/segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationAnnotationTools.jsonc)
+  (`?customization=segmentation/segmentationAnnotationTools`) enables the annotation tools inside the
   segmentation mode: in the `mode.segmentation` block it adds a `MeasurementTools` section to the
   primary bar, `$push`es a `{ $reference }` to `cornerstone.annotationTools` onto
   `toolGroupAdditions`, and `$push`es the measurement panel onto `rightPanels`.

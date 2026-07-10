@@ -33,7 +33,7 @@ window.config = {
   // are never executed. Example (left disabled here on purpose):
   //
   // customizationUrlPrefixes: {
-  //   default: './customizations/',                       // ?customization=ctPresets
+  //   default: './customizations/',                       // ?customization=tools/ctPresets
   //   '/remote/': 'https://cdn.example.com/ohif-custom/', // ?customization=/remote/siteA
   // },
   // ----------------------------------------------------------------------------

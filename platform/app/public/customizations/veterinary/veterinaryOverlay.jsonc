@@ -2,7 +2,7 @@
 //
 // Demonstrates a runtime-loaded customization that overrides the default
 // viewport overlay with a veterinary-style demographics layout. Loaded via
-// `?customization=veterinaryOverlay` (see CustomizationService URL handling).
+// `?customization=veterinary/veterinaryOverlay` (see CustomizationService URL handling).
 //
 // Uses the same `global`-at-top-level shape as the cornerstone overlay samples
 // and `inheritsFrom: 'ohif.overlayItem'` on each row, matching

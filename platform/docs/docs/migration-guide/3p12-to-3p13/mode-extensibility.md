@@ -72,7 +72,7 @@ On mode enter the mode route layers the mode scope bottom-up:
 1. the mode's `modeCustomizations` block, applied right after the mode scope is
    reset (e.g. `basic.modeCustomizations` seeds `panelSegmentation.disableEditing: true`);
 2. the app config / URL `mode` phase blocks (the general `*` block, then the
-   mode-specific block) — e.g. `?customization=segmentationEditing` sets
+   mode-specific block) — e.g. `?customization=segmentation/segmentationEditing` sets
    `panelSegmentation.disableEditing: false` in its `mode.basic` / `mode.viewer`
    blocks, which wins over step 1 by application order.
 
