@@ -64,6 +64,35 @@ declare global {
       extensionManager?: ExtensionManager;
     }
 
+    /**
+     * Registry mapping customization ids to their resolved value types.
+     *
+     * Seeded empty here; each extension (in-tree or third-party) merges the
+     * keys it owns via declaration merging, the same way `AppTypes.Services`
+     * is extended:
+     *
+     * ```ts
+     * declare global {
+     *   namespace AppTypes {
+     *     interface Customizations {
+     *       'viewportOverlay.topLeft': OverlayItem[];
+     *       'panelSegmentation.disableEditing': boolean;
+     *     }
+     *   }
+     * }
+     * ```
+     *
+     * Keys registered here get autocomplete and a precise return type on
+     * `customizationService.getCustomization` / value checking on
+     * `setCustomizations`. Ids not in the registry (e.g. dynamic, computed
+     * keys) still work through the plain-string fallback overloads.
+     *
+     * Declare a key's type with `| undefined` when no default is shipped for
+     * it, so consumers are forced to handle its absence.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
+    export interface Customizations {}
+
     export interface Services {
       hangingProtocolService?: HangingProtocolServiceType;
       customizationService?: CustomizationServiceType;
