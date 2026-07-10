@@ -81,6 +81,10 @@ export default async function init({
 
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
 
+  // All native ("next") Generic Viewport settings live under one config object:
+  // appConfig.genericViewports = { enabled, viewportRendering }.
+  const genericViewportsConfig = appConfig.genericViewports ?? {};
+
   // viewportRendering selects the render backend per-session:
   // `?viewportRendering=cpu|webgl|webgpu|auto` for all viewports, plus
   // `?<viewportType>.viewportRendering=<backend>` (e.g.
@@ -90,7 +94,7 @@ export default async function init({
   // useCPURendering flag so pre-generic viewports follow the same selection
   // (letting a session force GPU when the deployed config defaults to CPU).
   const { renderBackend, renderBackendByViewportType } = resolveViewportRendering(
-    appConfig.viewportRendering
+    genericViewportsConfig.viewportRendering
   );
   if (renderBackend) {
     if (renderBackend === 'cpu') {
@@ -127,8 +131,8 @@ export default async function init({
   // and the CornerstoneViewportService backend split. Distinct from
   // useGenericViewport above (which only enables cornerstone's compat remap).
   // resolveNextViewportsEnabled lets a `?useNextViewports=true` URL param opt in
-  // per-session; when the param is absent, appConfig.useNextViewports wins.
-  setNextViewportsEnabled(resolveNextViewportsEnabled(appConfig.useNextViewports));
+  // per-session; when the param is absent, appConfig.genericViewports.enabled wins.
+  setNextViewportsEnabled(resolveNextViewportsEnabled(genericViewportsConfig.enabled));
 
   // For debugging large datasets, otherwise prefer the defaults
   const { maxCacheSize } = appConfig;

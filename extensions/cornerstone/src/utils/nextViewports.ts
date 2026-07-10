@@ -1,5 +1,5 @@
 /**
- * Module-level accessor for the `appConfig.useNextViewports` opt-in flag.
+ * Module-level accessor for the `appConfig.genericViewports.enabled` opt-in flag.
  *
  * The flag is captured once at extension init (from the `useNextViewports` URL
  * query param, else appConfig) and read by the
@@ -71,8 +71,8 @@ export interface ViewportRenderingSelection {
  * all viewports per-session, and `?<viewportType>.viewportRendering=<backend>`
  * (e.g. `?orthographic.viewportRendering=cpu`) overrides it for a single
  * viewport type via the per-mount `renderBackend` option. URL params take
- * precedence over `appConfig.viewportRendering`, which accepts either a
- * backend string or `{ default?, stack?, orthographic? }`.
+ * precedence over `appConfig.genericViewports.viewportRendering`, which accepts
+ * either a backend string or `{ default?, stack?, orthographic? }`.
  *
  * 'webgl' is an alias for cornerstone's 'gpu' (VTK/WebGL) backend; 'cpu' and
  * 'auto' map to the same-named backends; any other value is passed through as

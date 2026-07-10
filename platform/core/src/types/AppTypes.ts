@@ -145,20 +145,26 @@ declare global {
        * the community is not force-migrated.
        * Requires @cornerstonejs/core >= 5.0.x with the GenericViewport "next" APIs.
        */
-      useNextViewports?: boolean;
-      /**
-       * Render backend selection for viewports. Either a backend for all
-       * viewports ('cpu' | 'webgl' | 'auto' | a wire id registered via
-       * cornerstone's `registerRenderBackend`, e.g. a webgpu backend) or a map
-       * of per-viewport-type overrides plus an optional 'default', e.g.
-       * `{ default: 'webgl', orthographic: 'cpu' }`. The matching URL params
-       * (`?viewportRendering=cpu`, `?orthographic.viewportRendering=cpu`) take
-       * precedence per-session. 'webgl' aliases cornerstone's 'gpu' backend.
-       * The default/global value also drives the legacy useCPURendering flag
-       * ('cpu' → true, 'webgl' → false) so legacy viewports follow the same
-       * selection.
-       */
-      viewportRendering?: string | Record<string, string>;
+      genericViewports?: {
+        /**
+         * Opt-in for the native path described above. Equivalent to (and
+         * overridable by) the `?useNextViewports=true` URL param.
+         */
+        enabled?: boolean;
+        /**
+         * Render backend selection for viewports. Either a backend for all
+         * viewports ('cpu' | 'webgl' | 'auto' | a wire id registered via
+         * cornerstone's `registerRenderBackend`, e.g. a webgpu backend) or a map
+         * of per-viewport-type overrides plus an optional 'default', e.g.
+         * `{ default: 'webgl', orthographic: 'cpu' }`. The matching URL params
+         * (`?viewportRendering=cpu`, `?orthographic.viewportRendering=cpu`) take
+         * precedence per-session. 'webgl' aliases cornerstone's 'gpu' backend.
+         * The default/global value also drives the legacy useCPURendering flag
+         * ('cpu' → true, 'webgl' → false) so legacy viewports follow the same
+         * selection.
+         */
+        viewportRendering?: string | Record<string, string>;
+      };
       useCursors?: boolean;
       maxCacheSize?: number;
       max3DTextureSize?: number;
