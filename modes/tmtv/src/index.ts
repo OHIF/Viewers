@@ -78,7 +78,7 @@ export function onModeEnter(ctx: withAppTypes) {
   this._unsubscriptions.push(unsubscribe);
 
   // Function-valued customization; kept out of the registered
-  // `tmtv.modeCustomizations` block because it needs the mode's
+  // `tmtvModeCustomizations` block because it needs the mode's
   // commandsManager.  Written at mode scope, so a global-scope customization
   // still overrides it by scope precedence.
   customizationService.setCustomizations({
@@ -171,7 +171,7 @@ export const modeInstance = {
   // The mode's own customizations, referenced by name: the block is registered
   // at default scope when the mode loads (see `customizations` below), and the
   // mode route applies it as the bottom layer of the mode scope on enter.
-  modeCustomizations: 'tmtv.modeCustomizations',
+  modeCustomizations: 'tmtvModeCustomizations',
   activatePanelTriggers: [],
 
   /**
@@ -205,7 +205,7 @@ export const modeInstance = {
  * modify them before anything reads them.  Values are plain data.
  */
 export const customizations = {
-  'tmtv.modeCustomizations': {
+  tmtvModeCustomizations: {
     'panelSegmentation.tableMode': 'expanded',
   },
 };

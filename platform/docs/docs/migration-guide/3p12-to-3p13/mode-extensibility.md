@@ -70,7 +70,7 @@ plus application order within the mode scope — with no special-case logic.
 On mode enter the mode route layers the mode scope bottom-up:
 
 1. the mode's `modeCustomizations` block, applied right after the mode scope is
-   reset (e.g. `basic.modeCustomizations` seeds `panelSegmentation.disableEditing: true`);
+   reset (e.g. `basicModeCustomizations` seeds `panelSegmentation.disableEditing: true`);
 2. the app config / URL `mode` phase blocks (the general `*` block, then the
    mode-specific block) — e.g. `?customization=segmentation/segmentationEditing` sets
    `panelSegmentation.disableEditing: false` in its `mode.basic` / `mode.viewer`
@@ -95,7 +95,7 @@ export const modeInstance = {
 // key -> value data; registered customization values never carry `$`
 // commands — commands are how later customizations modify them):
 export const customizations = {
-  'basic.modeCustomizations': {
+  basicModeCustomizations: {
     'panelSegmentation.disableEditing': true,
   },
 };
@@ -110,7 +110,7 @@ export const mode = {
 
 // and the mode instance references it:
 export const modeInstance = {
-  modeCustomizations: 'basic.modeCustomizations',
+  modeCustomizations: 'basicModeCustomizations',
 };
 ```
 

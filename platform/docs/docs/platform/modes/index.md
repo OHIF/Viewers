@@ -263,7 +263,7 @@ export default mode;
       <td align="left">
           modeCustomizations
       </td>
-      <td align="left">The mode's own customizations, applied by the mode route as the bottom layer of the mode scope on enter — before the app config / URL <code>mode</code> phase blocks, and below global-scope customizations, so final values are decided purely by scope precedence and application order. Usually the name of a block the extension registers at default scope (e.g. <code>basic.modeCustomizations</code>, which sets <code>panelSegmentation.disableEditing</code>); may also be a literal object of immutability-helper commands or an array mixing those with customization module reference strings</td>
+      <td align="left">The mode's own customizations, applied by the mode route as the bottom layer of the mode scope on enter — before the app config / URL <code>mode</code> phase blocks, and below global-scope customizations, so final values are decided purely by scope precedence and application order. Usually the name of a block the extension registers at default scope (e.g. <code>basicModeCustomizations</code>, which sets <code>panelSegmentation.disableEditing</code>); may also be a literal object of immutability-helper commands or an array mixing those with customization module reference strings</td>
     </tr>
     <tr>
       <td align="left">

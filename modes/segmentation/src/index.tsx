@@ -93,7 +93,7 @@ export const modeInstance = {
   // The mode's own customizations, applied by the mode route as the bottom
   // layer of the mode scope.  Unlike basic, the registered block is empty (no
   // `panelSegmentation.disableEditing`): the segmentation panel is editable.
-  modeCustomizations: 'segmentation.modeCustomizations',
+  modeCustomizations: 'segmentationModeCustomizations',
   activatePanelTriggers: [],
 
   /**
@@ -124,7 +124,7 @@ export const modeInstance = {
  * mode-scoped values to it.
  */
 export const customizations = {
-  'segmentation.modeCustomizations': {},
+  segmentationModeCustomizations: {},
 };
 
 /**

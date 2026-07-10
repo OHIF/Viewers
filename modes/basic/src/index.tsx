@@ -341,7 +341,7 @@ export const modeInstance = {
   // Later layers — the app config / URL `mode` phase blocks and any global
   // customization (e.g. `segmentationEditing`) — override it purely by
   // application order and scope precedence.
-  modeCustomizations: 'basic.modeCustomizations',
+  modeCustomizations: 'basicModeCustomizations',
   // ActivatePanel event triggers, applied on mode enter.  Empty by default so
   // the state the user left the UI in is respected; extending modes or
   // customizations can push `defaultActivatePanelTriggers` entries.
@@ -393,7 +393,7 @@ export function modeFactory({ modeConfiguration }) {
 export const customizations = {
   // The mode's own mode-scope block, applied by the mode route as the bottom
   // layer of the mode scope on mode enter (see `modeCustomizations` above).
-  'basic.modeCustomizations': {
+  basicModeCustomizations: {
     // Segmentation panel editing is off in the basic modes; e.g. the
     // `segmentationEditing` customization overrides this at global scope.
     'panelSegmentation.disableEditing': true,

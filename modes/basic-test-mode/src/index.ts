@@ -207,7 +207,7 @@ export const modeInstance = {
   // The mode's own customizations, applied by the mode route as the bottom
   // layer of the mode scope: the test extension's custom context menu, plus
   // the undo hotkey used by the E2E tests.  Given as a literal here; modes may
-  // also reference a registered block by name (see `basic.modeCustomizations`).
+  // also reference a registered block by name (see `basicModeCustomizations`).
   modeCustomizations: [
     '@ohif/extension-test.customizationModule.custom-context-menu',
     {
