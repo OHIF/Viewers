@@ -4,7 +4,7 @@ test('should apply customization from URL query parameter', async ({ page }) => 
   const studyInstanceUID = '2.25.96975534054447904995905761963464388233';
 
   await visitStudyOptions(page, studyInstanceUID, {
-    customization: 'veterinaryOverlay',
+    customization: 'veterinary/veterinaryOverlay',
   });
 
   const patientNameOverlayItem = page

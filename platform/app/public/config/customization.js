@@ -28,9 +28,9 @@ window.config = {
   //   - mode:         applied (Mode) on each mode enter — `*` (general) first,
   //                   then a block keyed by the mode id / routeName.
   customizationService: {
-    // Pulls in platform/app/public/customizations/patientBirthDate.jsonc, which
-    // adds a "Birth Date" column to the WorkList study list (global phase).
-    requires: ['patientBirthDate'],
+    // Pulls in platform/app/public/customizations/worklist/patientBirthDate.jsonc,
+    // which adds a "Birth Date" column to the WorkList study list (global phase).
+    requires: ['worklist/patientBirthDate'],
 
     // The previous (legacy-array) customizations, now in the explicit `global`
     // phase. A `global` block accepts the same input as setCustomizations: an

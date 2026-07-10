@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import { utilities } from '@cornerstonejs/core';
-import { imageIdToURI } from '../utils';
+import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
@@ -10,21 +10,9 @@ import combineFrameInstance from '../utils/combineFrameInstance';
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
 
 const FRAME_QUERY_PARAM = /[?&]frame=([^&#]*)/;
-const FRAME_QUERY_PARAM_WITH_SEPARATOR = /([?&])frame=[^&#]*(&)?/;
 
 function getFrameNumberFromImageURI(imageURI: string): string | undefined {
   return imageURI.match(FRAME_QUERY_PARAM)?.[1];
-}
-
-function removeFrameNumberFromImageURI(imageURI: string): string {
-  return imageURI
-    .replace(
-      FRAME_QUERY_PARAM_WITH_SEPARATOR,
-      (_, separator: string, trailingSeparator?: string) => {
-        return trailingSeparator ? separator : '';
-      }
-    )
-    .replace(/[?&]$/, '');
 }
 
 class MetadataProvider {
@@ -42,12 +30,12 @@ class MetadataProvider {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
-    const imageURI = imageIdToURI(imageId);
+    const imageURI = baseImageURIForMetadata(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
-    const imageURI = imageIdToURI(imageId);
+    const imageURI = baseImageURIForMetadata(imageId);
     if (!this.customMetadata.has(type)) {
       this.customMetadata.set(type, {});
     }
@@ -102,7 +90,7 @@ class MetadataProvider {
     // check inside custom metadata
     if (this.customMetadata.has(query)) {
       const customMetadata = this.customMetadata.get(query);
-      const imageURI = imageIdToURI(imageId);
+      const imageURI = baseImageURIForMetadata(imageId);
       if (customMetadata[imageURI]) {
         return customMetadata[imageURI];
       }
@@ -472,35 +460,14 @@ class MetadataProvider {
       };
     }
 
-    // Maybe its a non-standard imageId
-    // check if the imageId starts with http:// or https:// using regex
-    // Todo: handle non http imageIds
-    let imageURI;
-    const urlRegex = /^(http|https|dicomfile):\/\//;
-    if (urlRegex.test(imageId)) {
-      imageURI = imageId;
-    } else {
-      imageURI = imageIdToURI(imageId);
-    }
-
-    const frameNumberFromImageId = getFrameNumberFromImageURI(imageURI);
-    const exactUIDs = this.imageURIToUIDs.get(imageURI);
-
-    if (exactUIDs) {
-      const frameNumber = frameNumberFromImageId || exactUIDs.frameNumber || '1';
-      return { ...exactUIDs, frameNumber };
-    }
-
-    // remove frame=number from imageId
-    imageURI = removeFrameNumberFromImageURI(imageURI);
-
+    const imageURI = baseImageURIForMetadata(imageId);
     const uids = this.imageURIToUIDs.get(imageURI);
 
     if (!uids) {
       return;
     }
 
-    const frameNumber = frameNumberFromImageId || uids.frameNumber || '1';
+    const frameNumber = getFrameNumberFromImageURI(imageId) || uids.frameNumber || '1';
 
     return { ...uids, frameNumber };
   }

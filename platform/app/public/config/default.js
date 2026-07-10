@@ -33,11 +33,10 @@ window.config = {
   // are never executed. Example (left disabled here on purpose):
   //
   // customizationUrlPrefixes: {
-  //   default: './customizations/',                       // ?customization=ctPresets
+  //   default: './customizations/',                       // ?customization=tools/ctPresets
   //   '/remote/': 'https://cdn.example.com/ohif-custom/', // ?customization=/remote/siteA
   // },
   // ----------------------------------------------------------------------------
-
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -80,6 +79,11 @@ window.config = {
         supportsFuzzyMatching: true,
         supportsWildcard: true,
         staticWado: true,
+        // Multiframe SEG loads fetch the whole instance as a single Part 10
+        // object by default and wait for it: the per-frame endpoint is
+        // efficient, but SEG frames are so small and numerous that one bulk
+        // fetch beats hundreds of tiny requests. Per-frame loading is the
+        // exception — set loadMultiframeAsPart10: false here to force it.
         singlepart: 'bulkdata,video',
         bulkDataURI: {
           enabled: true,

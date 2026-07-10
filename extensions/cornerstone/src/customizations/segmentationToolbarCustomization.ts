@@ -1,8 +1,11 @@
 import type { Button } from '@ohif/core/types';
-import { ViewportGridService } from '@ohif/core';
+import { ViewportGridService, ToolbarService } from '@ohif/core';
 import i18n from 'i18next';
 
-import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+const { TOOLBAR_SECTIONS } = ToolbarService;
+
+export const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
+export const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -20,155 +23,16 @@ const callbacks = (toolName: string) => [
   },
 ];
 
-export const toolbarButtons: Button[] = [
-  {
-    id: 'AdvancedRenderingControls',
-    uiType: 'ohif.advancedRenderingControls',
-    props: {
-      buttonSection: true,
-    },
-  },
-  {
-    id: 'modalityLoadBadge',
-    uiType: 'ohif.modalityLoadBadge',
-    props: {
-      icon: 'Status',
-      label: i18n.t('Buttons:Status'),
-      tooltip: i18n.t('Buttons:Status'),
-      evaluate: {
-        name: 'evaluate.modalityLoadBadge',
-        hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'navigationComponent',
-    uiType: 'ohif.navigationComponent',
-    props: {
-      icon: 'Navigation',
-      label: i18n.t('Buttons:Navigation'),
-      tooltip: i18n.t('Buttons:Navigate between segments/measurements and manage their visibility'),
-      evaluate: {
-        name: 'evaluate.navigationComponent',
-        hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'trackingStatus',
-    uiType: 'ohif.trackingStatus',
-    props: {
-      icon: 'TrackingStatus',
-      label: i18n.t('Buttons:Tracking Status'),
-      tooltip: i18n.t('Buttons:View and manage tracking status of measurements and annotations'),
-      evaluate: {
-        name: 'evaluate.trackingStatus',
-        hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'dataOverlayMenu',
-    uiType: 'ohif.dataOverlayMenu',
-    props: {
-      icon: 'ViewportViews',
-      label: i18n.t('Buttons:Data Overlay'),
-      tooltip: i18n.t(
-        'Buttons:Configure data overlay options and manage foreground/background display sets'
-      ),
-      evaluate: 'evaluate.dataOverlayMenu',
-    },
-  },
-  {
-    id: 'orientationMenu',
-    uiType: 'ohif.orientationMenu',
-    props: {
-      icon: 'OrientationSwitch',
-      label: i18n.t('Buttons:Orientation'),
-      tooltip: i18n.t(
-        'Buttons:Change viewport orientation between axial, sagittal, coronal and reformat planes'
-      ),
-      evaluate: {
-        name: 'evaluate.orientationMenu',
-        // hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'windowLevelMenuEmbedded',
-    uiType: 'ohif.windowLevelMenuEmbedded',
-    props: {
-      icon: 'WindowLevel',
-      label: i18n.t('Buttons:Window Level'),
-      tooltip: i18n.t('Buttons:Adjust window/level presets and customize image contrast settings'),
-      evaluate: {
-        name: 'evaluate.windowLevelMenuEmbedded',
-        hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'windowLevelMenu',
-    uiType: 'ohif.windowLevelMenu',
-    props: {
-      icon: 'WindowLevel',
-      label: i18n.t('Buttons:Window Level'),
-      tooltip: i18n.t('Buttons:Adjust window/level presets and customize image contrast settings'),
-      evaluate: 'evaluate.windowLevelMenu',
-    },
-  },
-  {
-    id: 'voiManualControlMenu',
-    uiType: 'ohif.voiManualControlMenu',
-    props: {
-      icon: 'WindowLevelAdvanced',
-      label: i18n.t('Buttons:Advanced Window Level'),
-      tooltip: i18n.t('Buttons:Advanced window/level settings with manual controls and presets'),
-      evaluate: 'evaluate.voiManualControlMenu',
-    },
-  },
-  {
-    id: 'thresholdMenu',
-    uiType: 'ohif.thresholdMenu',
-    props: {
-      icon: 'Threshold',
-      label: i18n.t('Buttons:Threshold'),
-      tooltip: i18n.t('Buttons:Image threshold settings'),
-      evaluate: {
-        name: 'evaluate.thresholdMenu',
-        hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'opacityMenu',
-    uiType: 'ohif.opacityMenu',
-    props: {
-      icon: 'Opacity',
-      label: i18n.t('Buttons:Opacity'),
-      tooltip: i18n.t('Buttons:Image opacity settings'),
-      evaluate: {
-        name: 'evaluate.opacityMenu',
-        hideWhenDisabled: true,
-      },
-    },
-  },
-  {
-    id: 'Colorbar',
-    uiType: 'ohif.colorbar',
-    props: {
-      type: 'tool',
-      label: i18n.t('Buttons:Colorbar'),
-    },
-  },
-  // sections
-  {
-    id: 'MoreTools',
-    uiType: 'ohif.toolButtonList',
-    props: {
-      buttonSection: true,
-    },
-  },
+/**
+ * Segmentation editing toolbar buttons: the toolbox section containers plus
+ * the labelmap / contour editing tools and utilities. These complement the
+ * general buttons in `cornerstone.toolbarButtons`; together they are the
+ * default button set for the segmentation mode, and modes such as basic /
+ * longitudinal can pull them in via a customization (see
+ * `segmentationEditing.jsonc`).
+ */
+const segmentationToolbarButtons: Button[] = [
+  // section containers for the nested toolboxes and toolbars
   {
     id: 'BrushTools',
     uiType: 'ohif.toolBoxButtonGroup',
@@ -176,7 +40,6 @@ export const toolbarButtons: Button[] = [
       buttonSection: true,
     },
   },
-  // Section containers for the nested toolboxes and toolbars.
   {
     id: 'LabelMapUtilities',
     uiType: 'ohif.Toolbar',
@@ -206,215 +69,6 @@ export const toolbarButtons: Button[] = [
     },
   },
   // tool defs
-  {
-    id: 'Zoom',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-zoom',
-      label: i18n.t('Buttons:Zoom'),
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'WindowLevel',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-window-level',
-      label: i18n.t('Buttons:Window Level'),
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'Pan',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-move',
-      label: i18n.t('Buttons:Pan'),
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'TrackballRotate',
-    uiType: 'ohif.toolButton',
-    props: {
-      type: 'tool',
-      icon: 'tool-3d-rotate',
-      label: i18n.t('Buttons:3D Rotate'),
-      commands: setToolActiveToolbar,
-      evaluate: {
-        name: 'evaluate.cornerstoneTool',
-        disabledText: i18n.t('Buttons:Select a 3D viewport to enable this tool'),
-      },
-    },
-  },
-  {
-    id: 'Capture',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-capture',
-      label: i18n.t('Buttons:Capture'),
-      commands: 'showDownloadViewportModal',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'wholeSlide'],
-        },
-      ],
-    },
-  },
-  {
-    id: 'Layout',
-    uiType: 'ohif.layoutSelector',
-    props: {
-      rows: 3,
-      columns: 4,
-      evaluate: 'evaluate.action',
-      commands: 'setViewportGridLayout',
-    },
-  },
-  {
-    id: 'Crosshairs',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-crosshair',
-      label: i18n.t('Buttons:Crosshairs'),
-      commands: {
-        commandName: 'setToolActiveToolbar',
-        commandOptions: {
-          toolGroupIds: ['mpr'],
-        },
-      },
-      evaluate: {
-        name: 'evaluate.cornerstoneTool',
-        disabledText: i18n.t('Buttons:Select an MPR viewport to enable this tool'),
-      },
-    },
-  },
-  {
-    id: 'Reset',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-reset',
-      label: i18n.t('Buttons:Reset View'),
-      tooltip: i18n.t('Buttons:Reset View'),
-      commands: 'resetViewport',
-      evaluate: 'evaluate.action',
-    },
-  },
-  {
-    id: 'rotate-right',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-rotate-right',
-      label: i18n.t('Buttons:Rotate Right'),
-      tooltip: i18n.t('Buttons:Rotate +90'),
-      commands: 'rotateViewportCW',
-      evaluate: 'evaluate.action',
-    },
-  },
-  {
-    id: 'flipHorizontal',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-flip-horizontal',
-      label: i18n.t('Buttons:Flip Horizontal'),
-      tooltip: i18n.t('Buttons:Flip Horizontally'),
-      commands: 'flipViewportHorizontal',
-      evaluate: [
-        'evaluate.viewportProperties.toggle',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['volume3d'],
-        },
-      ],
-    },
-  },
-  {
-    id: 'ReferenceLines',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-referenceLines',
-      label: i18n.t('Buttons:Reference Lines'),
-      tooltip: i18n.t('Buttons:Show Reference Lines'),
-      commands: 'toggleEnabledDisabledToolbar',
-      evaluate: 'evaluate.cornerstoneTool.toggle',
-    },
-  },
-  {
-    id: 'ImageOverlayViewer',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'toggle-dicom-overlay',
-      label: i18n.t('Buttons:Image Overlay'),
-      tooltip: i18n.t('Buttons:Toggle Image Overlay'),
-      commands: 'toggleEnabledDisabledToolbar',
-      evaluate: 'evaluate.cornerstoneTool.toggle',
-    },
-  },
-  {
-    id: 'StackScroll',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-stack-scroll',
-      label: i18n.t('Buttons:Stack Scroll'),
-      tooltip: i18n.t('Buttons:Stack Scroll'),
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'invert',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-invert',
-      label: i18n.t('Buttons:Invert'),
-      tooltip: i18n.t('Buttons:Invert Colors'),
-      commands: 'invertViewport',
-      evaluate: 'evaluate.viewportProperties.toggle',
-    },
-  },
-  {
-    id: 'Cine',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-cine',
-      label: i18n.t('Buttons:Cine'),
-      tooltip: i18n.t('Buttons:Cine'),
-      commands: 'toggleCine',
-      evaluate: [
-        'evaluate.cine',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['volume3d'],
-        },
-      ],
-    },
-  },
-  {
-    id: 'Magnify',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-magnify',
-      label: i18n.t('Buttons:Zoom-in'),
-      tooltip: i18n.t('Buttons:Zoom-in'),
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'TagBrowser',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'dicom-tag-browser',
-      label: i18n.t('Buttons:Dicom Tag Browser'),
-      tooltip: i18n.t('Buttons:Dicom Tag Browser'),
-      commands: 'openDICOMTagViewer',
-    },
-  },
   {
     id: 'PlanarFreehandContourSegmentationTool',
     uiType: 'ohif.toolBoxButton',
@@ -559,7 +213,11 @@ export const toolbarButtons: Button[] = [
               value: 'CatmullRomSplineROI',
               label: i18n.t('Buttons:Catmull Rom Spline'),
             },
-            { id: 'LinearSplineROI', value: 'LinearSplineROI', label: i18n.t('Buttons:Linear Spline') },
+            {
+              id: 'LinearSplineROI',
+              value: 'LinearSplineROI',
+              label: i18n.t('Buttons:Linear Spline'),
+            },
             { id: 'BSplineROI', value: 'BSplineROI', label: i18n.t('Buttons:B-Spline') },
           ],
           commands: {
@@ -1195,4 +853,106 @@ export const toolbarButtons: Button[] = [
   },
 ];
 
-export default toolbarButtons;
+/**
+ * The toolbox / utilities section wiring for segmentation editing. These are
+ * the sections rendered by the `panelSegmentationWithTools*` panels, so any
+ * mode that shows those panels can merge this block into its toolbar sections.
+ */
+export const segmentationToolboxSections: Record<string, string[]> = {
+  [TOOLBAR_SECTIONS.labelMapSegmentationToolbox]: ['LabelMapTools'],
+  [TOOLBAR_SECTIONS.contourSegmentationToolbox]: ['ContourTools'],
+  [TOOLBAR_SECTIONS.labelMapSegmentationUtilities]: ['LabelMapUtilities'],
+  [TOOLBAR_SECTIONS.contourSegmentationUtilities]: ['ContourUtilities'],
+
+  LabelMapTools: [
+    'LabelmapSlicePropagation',
+    'BrushTools',
+    'MarkerLabelmap',
+    'RegionSegmentPlus',
+    'Shapes',
+    'LabelMapEditWithContour',
+  ],
+  ContourTools: [
+    'PlanarFreehandContourSegmentationTool',
+    'SculptorTool',
+    'SplineContourSegmentationTool',
+    'LivewireContourSegmentationTool',
+  ],
+
+  LabelMapUtilities: ['InterpolateLabelmap', 'SegmentBidirectional'],
+  ContourUtilities: ['LogicalContourOperations', 'SimplifyContours', 'SmoothContours'],
+
+  BrushTools: ['Brush', 'Eraser', 'Threshold'],
+};
+
+/**
+ * The segmentation mode's main toolbar layout (primary bar and viewport
+ * action corners). Kept separate from the toolbox wiring above so other modes
+ * can adopt segmentation editing without adopting this mode layout.
+ */
+export const segmentationModeToolbarSections: Record<string, string[]> = {
+  [TOOLBAR_SECTIONS.primary]: [
+    'WindowLevel',
+    'Pan',
+    'Zoom',
+    'TrackballRotate',
+    'Capture',
+    'Layout',
+    'Crosshairs',
+    'MoreTools',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],
+
+  AdvancedRenderingControls: [
+    'windowLevelMenuEmbedded',
+    'voiManualControlMenu',
+    'Colorbar',
+    'opacityMenu',
+    'thresholdMenu',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: [
+    'modalityLoadBadge',
+    'trackingStatus',
+    'navigationComponent',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
+
+  MoreTools: [
+    'Reset',
+    'rotate-right',
+    'flipHorizontal',
+    'ReferenceLines',
+    'ImageOverlayViewer',
+    'StackScroll',
+    'invert',
+    'Cine',
+    'Magnify',
+    'TagBrowser',
+  ],
+};
+
+/**
+ * Segmentation capability packs registered (at default scope) by the
+ * cornerstone extension. These are pure "what can exist" packs and carry no
+ * mode identity:
+ *   - `cornerstone.segmentationToolbarButtons`  – segmentation editing button definitions
+ *   - `cornerstone.segmentationToolbarSections` – toolbox/utilities section wiring
+ *   - `cornerstone.segmentationModeToolbarSections` – a reusable segmentation-mode toolbar layout
+ *
+ * Modes compose these by name in their own `toolbarButtons` /
+ * `toolbarSections` instance arrays; `?customization=` modules extend the
+ * result through the `mode` phase.
+ */
+const segmentationToolbarCustomization = {
+  'cornerstone.segmentationToolbarButtons': segmentationToolbarButtons,
+  'cornerstone.segmentationToolbarSections': segmentationToolboxSections,
+  'cornerstone.segmentationModeToolbarSections': segmentationModeToolbarSections,
+};
+
+export { segmentationToolbarButtons };
+export default segmentationToolbarCustomization;

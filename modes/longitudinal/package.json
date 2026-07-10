@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-longitudinal",
-  "version": "3.13.0-beta.114",
+  "version": "3.13.0-beta.118",
   "description": "Longitudinal Workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -45,6 +45,7 @@
     "i18next": "17.3.1"
   },
   "devDependencies": {
+    "cross-env": "7.0.3",
     "webpack-merge": "5.10.0"
   },
   "keywords": [

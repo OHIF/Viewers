@@ -26,7 +26,7 @@ allowlist.
 window.config = {
   customizationUrlPrefixes: {
     // The `default` prefix (no slashes) handles values with no leading slash.
-    default: './customizations/', // ?customization=ctPresets -> ./customizations/ctPresets.jsonc
+    default: './customizations/', // ?customization=tools/ctPresets -> ./customizations/tools/ctPresets.jsonc
     // Every other prefix MUST start and end with a slash and is matched against
     // the leading `/segment/` of the value.
     '/remote/': 'https://cdn.example.com/ohif-customizations/', // ?customization=/remote/siteA
@@ -36,7 +36,7 @@ window.config = {
 
 Resolution rules:
 
-- `?customization=ctPresets` → `default` prefix → `./customizations/ctPresets.jsonc`
+- `?customization=tools/ctPresets` → `default` prefix → `./customizations/tools/ctPresets.jsonc`
 - `?customization=/remote/siteA` → `/remote/` prefix → `https://cdn.example.com/ohif-customizations/siteA.jsonc`
 - **A value whose prefix is not configured throws and aborts startup** rather than
   being silently ignored. With no `customizationUrlPrefixes` configured, *any*
@@ -106,7 +106,7 @@ window.config = {
   // in the global config, which is not itself updatable by any customization.
   customizationUrlPrefixes: { default: './customizations/' },
   customizationService: {
-    requires: ['patientBirthDate'],            // resolves ./customizations/patientBirthDate.jsonc
+    requires: ['worklist/patientBirthDate'],   // resolves ./customizations/worklist/patientBirthDate.jsonc
     global: [                                  // mixes string references and inline maps
       '@ohif/extension-default.customizationModule.datasources',
       { 'workList.variant': 'default' },
@@ -179,13 +179,23 @@ or the full demo source list, you have two options:
 
 ## New `config/dev.js`; dev server no longer uses `default.js`
 
+`config/default.js` is now **only** the default for a full production build. The
+dev server gets a full-featured config instead, so `?customization=` and the
+complete data-source list are available while developing without editing
+`default.js`.
+
 - **`config/dev.js`** (new) is the full-featured local-development config: every
   data source enabled and `?customization=` turned on. The dev-server scripts
-  (`pnpm run dev`, `dev:fast`, `start`) now default to `config/dev.js`.
-- **`config/netlify.js`** is the public demo / Netlify deploy config: the full
-  data source set plus `customizationUrlPrefixes: { default: './customizations/' }`.
-- **`config/default.js`** remains the fallback for a real production build
-  (`pnpm run build` with no `APP_CONFIG`).
+  (`pnpm run dev`, `dev:fast`, `start`) now default to `config/dev.js`. It is
+  kept at **parity with `config/netlify.js`** — including the startup
+  `customizationService` modules (e.g. the appearance/theme customization) — so
+  customizations behave locally exactly as they do on the public demo.
+- **`config/netlify.js`** is the public demo / Netlify deploy config
+  (`build:viewer:ci`): the full data source set plus
+  `customizationUrlPrefixes: { default: './customizations/' }` and the same
+  `customizationService` modules.
+- **`config/default.js`** is the locked-down baseline and is the default **only**
+  for a real production build (`pnpm run build` with no `APP_CONFIG`).
 
 ### `APP_CONFIG` is honored, not clobbered
 

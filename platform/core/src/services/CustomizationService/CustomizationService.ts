@@ -484,11 +484,96 @@ export default class CustomizationService extends PubSubService {
       this.globalCustomizations.get(customizationId) ??
       this.modeCustomizations.get(customizationId) ??
       this.defaultCustomizations.get(customizationId);
-    const newTransformed = this.transform(customization);
+    // Apply `inheritsFrom` / `$transform`, then expand any `$reference`
+    // markers (see `_resolveReferences`). `seen` starts with the id being read
+    // so a value that references itself is caught as a cycle.
+    const newTransformed = this._resolveReferences(
+      this.transform(customization),
+      new Set([customizationId])
+    );
     if (newTransformed !== undefined) {
       this.transformedCustomizations.set(customizationId, newTransformed);
     }
     return newTransformed;
+  }
+
+  /**
+   * Expands `$reference` markers inside a resolved customization value.
+   *
+   * A `{ $reference: '<name>' }` object is replaced by the value of the
+   * customization `<name>` (itself resolved recursively, so references can
+   * chain). References may appear anywhere in a value:
+   *   - as the whole value — an alias for another customization;
+   *   - as an item in an **array** — if the referenced value is itself an
+   *     array it is spread (flattened) into the parent, so a list can compose
+   *     several capability packs by name (e.g. a mode's `toolbarButtons`);
+   *   - as a property value of a **plain object** (e.g. each list under a
+   *     `toolGroupAdditions` map).
+   *
+   * Because expansion happens at read time (not when customizations are
+   * merged), a later `$set` replaces the reference wholesale — with a different
+   * `{ $reference }` or a hard-coded value — and edits to the referenced target
+   * are picked up live. Only plain arrays/objects are walked; class instances,
+   * functions and React elements are returned untouched, and unchanged values
+   * are returned by identity so non-referencing customizations are not cloned.
+   * Cycles are broken and warned via `seen`.
+   */
+  private _resolveReferences(value: any, seen: Set<string>): any {
+    if (!value || typeof value !== 'object' || value.$$typeof) {
+      return value;
+    }
+    if (typeof value.$reference === 'string') {
+      return this._resolveReferenceName(value.$reference, seen);
+    }
+    if (Array.isArray(value)) {
+      let changed = false;
+      const result: any[] = [];
+      for (const item of value) {
+        if (item && typeof item === 'object' && !item.$$typeof && typeof item.$reference === 'string') {
+          changed = true;
+          const resolved = this._resolveReferenceName(item.$reference, seen);
+          if (Array.isArray(resolved)) {
+            result.push(...resolved);
+          } else if (resolved !== undefined) {
+            result.push(resolved);
+          }
+        } else {
+          const resolved = this._resolveReferences(item, seen);
+          changed ||= resolved !== item;
+          result.push(resolved);
+        }
+      }
+      return changed ? result : value;
+    }
+    if (!isPlainObject(value)) {
+      return value;
+    }
+    let changed = false;
+    const result: Record<string, any> = {};
+    for (const [key, val] of Object.entries(value)) {
+      const resolved = this._resolveReferences(val, seen);
+      changed ||= resolved !== val;
+      result[key] = resolved;
+    }
+    return changed ? result : value;
+  }
+
+  /** Resolves a single `$reference` target name, guarding against cycles. */
+  private _resolveReferenceName(name: string, seen: Set<string>): any {
+    if (seen.has(name)) {
+      console.warn(`CustomizationService: $reference cycle detected at "${name}"`);
+      return undefined;
+    }
+    const raw =
+      this.globalCustomizations.get(name) ??
+      this.modeCustomizations.get(name) ??
+      this.defaultCustomizations.get(name);
+    if (raw === undefined) {
+      console.warn(`CustomizationService: no customization registered for $reference "${name}"`);
+      return undefined;
+    }
+    const nextSeen = new Set(seen).add(name);
+    return this._resolveReferences(this.transform(raw), nextSeen);
   }
 
   /**
@@ -1112,6 +1197,15 @@ export function normalizeCustomizationConfig(configuration: unknown): {
   return {};
 }
 
+/** True for `{}`-literal / null-prototype objects (not arrays or class instances). */
+function isPlainObject(value: any): boolean {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
 function hasDollarKey(value) {
   if (Array.isArray(value)) {
     for (const item of value) {
@@ -1128,7 +1222,11 @@ function hasDollarKey(value) {
       return false;
     }
     for (const key of Object.keys(value)) {
-      if (key.startsWith('$') && key !== '$transform') {
+      // `$transform` and `$reference` are read-time markers resolved by the
+      // service (in `transform` / `_resolveReferences`), not immutability-helper
+      // merge commands — so a value carrying them is stored verbatim rather than
+      // being run through `update()`.
+      if (key.startsWith('$') && key !== '$transform' && key !== '$reference') {
         return true;
       }
       if (hasDollarKey(value[key])) {
