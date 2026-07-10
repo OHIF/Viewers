@@ -2,13 +2,32 @@
 sidebar_position: 5
 sidebar_label: Installation
 title: Extension Installation
-summary: Instructions for installing external OHIF extensions using the OHIF CLI tool, which allows adding both local and published extensions from NPM to the viewer application.
+summary: How to install external OHIF extensions by declaring them in pluginConfig.json — from npm, from an out-of-tree checkout, or in-tree.
 ---
 
 # Extension: Installation
 
-OHIF-v3 provides the ability to utilize external extensions.
+Extensions are declared in
+[`platform/app/pluginConfig.json`](./pluginConfig.md) and compiled into the
+viewer at build time.
 
+- **From npm** — install to the workspace root, then declare the package:
 
-You can use ohif `cli` tool to install both local and publicly published
-extensions on NPM. You can read more [here](../../development/ohif-cli.md)
+  ```bash
+  pnpm add -w @acme/extension-foo
+  ```
+
+  ```jsonc title="platform/app/pluginConfig.json"
+  { "extensions": [ { "packageName": "@acme/extension-foo" } ] }
+  ```
+
+- **From a local checkout** — add a `directory` entry; see
+  [Plugin locations](./pluginConfig.md#plugin-locations).
+- **In-tree** — place the package under `extensions/` and declare it by
+  `packageName` (the workspace glob already covers it).
+
+:::warning Deprecated
+The former [OHIF CLI](../../development/ohif-cli.md) (`add-extension`,
+`link-extension`, …) is deprecated and scheduled for removal; its `link`
+commands no longer work under pnpm.
+:::

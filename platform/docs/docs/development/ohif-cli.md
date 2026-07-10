@@ -7,6 +7,24 @@ summary: Comprehensive guide to the OHIF CLI tool for managing extensions and mo
 
 # OHIF Command Line Interface
 
+:::danger Deprecated
+The OHIF CLI is deprecated and will be removed from the repository and this
+documentation. It is replaced by standard tooling:
+
+- **Add / remove / list extensions and modes** — edit
+  [`platform/app/pluginConfig.json`](../platform/extensions/pluginConfig.md)
+  directly; every field is documented in the reference.
+- **Develop against a local checkout** — add a
+  [`directory` entry](../platform/extensions/pluginConfig.md#plugin-locations)
+  to `pluginConfig.json` instead of `link-extension` / `link-mode`.
+- **Create an extension or mode** — the `create-ohif` scaffolder
+  (`pnpm create ohif@beta`) replaces `create-extension` / `create-mode`.
+- **Publish** — `pnpm publish` from your package; no CLI involved.
+
+The `link-*` / `unlink-*` commands below are **already broken** under the
+pnpm-only repository — see the warnings on each command.
+:::
+
 OHIF-v3 architecture has been re-designed to enable building applications that
 are easily extensible to various use cases (Modes) that behind the scene would
 utilize desired functionalities (Extensions) to reach the goal of the use case.
@@ -15,14 +33,6 @@ mode?_
 
 You can use the `cli` script that comes with the OHIF monorepo to achieve these
 goals.
-
-:::note Info
-In the long-term, we envision our `cli` tool to be a separate installable
-package that you can invoke anywhere on your local system to achieve the same
-goals. In the meantime, `cli` will remain as part of the OHIF monorepo and needs
-to be invoked using the `yarn` command.
-:::
-
 
 ## CLI Installation
 
@@ -131,6 +141,13 @@ the extension to the Viewer in order to use it. See the
 
 ### link-extension
 
+:::warning Broken under pnpm — do not use
+This command shells out to `yarn link` / `yarn unlink`, but the repository is
+pnpm-only since 3.13 and no longer installs yarn, so it fails with a
+`yarn ENOENT` spawn error. Use a `directory` entry in `pluginConfig.json`
+instead ([reference](../platform/extensions/pluginConfig.md#plugin-locations)).
+:::
+
 `link-extension` command will link a local OHIF extension to the Viewer. This
 command will utilize `yarn link` to achieve so.
 
@@ -139,6 +156,13 @@ yarn run cli link-extension <extensionDir>
 ```
 
 ### unlink-extension
+
+:::warning Broken under pnpm — do not use
+This command shells out to `yarn link` / `yarn unlink`, but the repository is
+pnpm-only since 3.13 and no longer installs yarn, so it fails with a
+`yarn ENOENT` spawn error. Use a `directory` entry in `pluginConfig.json`
+instead ([reference](../platform/extensions/pluginConfig.md#plugin-locations)).
+:::
 
 There might be situations where you want to unlink an extension from the Viewer
 after some developments. `unlink-extension` command will do so.
@@ -151,6 +175,13 @@ ohif-cli unlink-extension <extensionName>
 
 ### link-mode
 
+:::warning Broken under pnpm — do not use
+This command shells out to `yarn link` / `yarn unlink`, but the repository is
+pnpm-only since 3.13 and no longer installs yarn, so it fails with a
+`yarn ENOENT` spawn error. Use a `directory` entry in `pluginConfig.json`
+instead ([reference](../platform/extensions/pluginConfig.md#plugin-locations)).
+:::
+
 Similar to the `link-extension` command, `link-mode` command will link a local
 OHIF mode to the Viewer.
 
@@ -159,6 +190,13 @@ yarn run cli link-mode <modeDir>
 ```
 
 ### unlink-mode
+
+:::warning Broken under pnpm — do not use
+This command shells out to `yarn link` / `yarn unlink`, but the repository is
+pnpm-only since 3.13 and no longer installs yarn, so it fails with a
+`yarn ENOENT` spawn error. Use a `directory` entry in `pluginConfig.json`
+instead ([reference](../platform/extensions/pluginConfig.md#plugin-locations)).
+:::
 
 Similar to the `unlink-extension` command, `unlink-mode` command will unlink a
 local OHIF mode from the Viewer.
