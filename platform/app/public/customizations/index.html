@@ -19,11 +19,9 @@
         --tag-text: #2952cc;
         --bar-bg: #ffffff;
       }
-      /* Dark values, shared by the system-preference default and the explicit
-         `data-theme="dark"` override. `:not([data-theme='light'])` lets the
-         pull-down force light even when the OS prefers dark. */
+      /* This catalog page follows the OS light/dark preference automatically. */
       @media (prefers-color-scheme: dark) {
-        :root:not([data-theme='light']) {
+        :root {
           --bg: #0e1116;
           --card: #171b22;
           --card-border: #2a3038;
@@ -36,19 +34,6 @@
           --tag-text: #8fb2ff;
           --bar-bg: #12161c;
         }
-      }
-      :root[data-theme='dark'] {
-        --bg: #0e1116;
-        --card: #171b22;
-        --card-border: #2a3038;
-        --text: #e6e9ee;
-        --muted: #99a3b0;
-        --accent: #4f8cff;
-        --accent-contrast: #0e1116;
-        --code-bg: #0b0e13;
-        --tag-bg: #1c2740;
-        --tag-text: #8fb2ff;
-        --bar-bg: #12161c;
       }
       * { box-sizing: border-box; }
       body {
@@ -141,11 +126,19 @@
             <h1>URL Customizations</h1>
           </div>
           <div class="theme-picker">
-            <label for="theme">Theme</label>
-            <select id="theme" title="Page theme">
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+            <label for="viewer-theme">Viewer theme</label>
+            <select id="viewer-theme" title="OHIF viewer theme — added as ?theme= to the launch URL">
+              <optgroup label="Tonal (surfaces carry the theme hue)">
+                <option value="default">OHIF Blue (default)</option>
+                <option value="orchid">Orchid</option>
+                <option value="arctic">Arctic</option>
+                <option value="verdant">Verdant</option>
+              </optgroup>
+              <optgroup label="Neutral (desaturated + one accent)">
+                <option value="midnight">Midnight</option>
+                <option value="slate">Slate</option>
+                <option value="deep">Deep</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -153,8 +146,9 @@
           These are the example <code>?customization=</code> profiles shipped under
           <code>platform/app/public/customizations/</code>, grouped by area. Each file is fetched as
           JSONC <strong>data</strong> (never executed) and applied at startup. Tick the ones you want,
-          then launch the viewer or copy the generated query string onto any viewer URL. Multiple
-          profiles are comma-separated and applied in order.
+          optionally pick a viewer theme (added as <code>?theme=</code>), then launch the viewer or copy
+          the generated query string onto any viewer URL. Multiple profiles are comma-separated and
+          applied in order.
         </p>
         <p style="font-size: 0.85rem">
           See the
@@ -276,6 +270,7 @@
       const launchEl = document.getElementById('launch');
       const countEl = document.getElementById('count');
       const baseEl = document.getElementById('base');
+      const viewerThemeEl = document.getElementById('viewer-theme');
 
       CATALOG.forEach((group, gi) => {
         const section = document.createElement('section');
@@ -310,22 +305,35 @@
         return Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value);
       }
 
-      function buildUrl(base, values) {
-        const query = 'customization=' + values.join(',');
+      // Builds the launch URL from the selected profiles and viewer theme. The
+      // `theme=` param is only added for a non-default preset (default is the
+      // viewer's built-in look and needs no param). Returns null when there is
+      // nothing to launch.
+      function buildUrl(base, values, theme) {
+        const params = [];
+        if (values.length) {
+          params.push('customization=' + values.join(','));
+        }
+        if (theme && theme !== 'default') {
+          params.push('theme=' + theme);
+        }
+        if (!params.length) {
+          return null;
+        }
         const sep = base.includes('?') ? (base.endsWith('?') || base.endsWith('&') ? '' : '&') : '?';
-        return base + sep + query;
+        return base + sep + params.join('&');
       }
 
       function refresh() {
         const values = selectedValues();
         countEl.textContent = values.length + ' selected';
-        if (!values.length) {
-          urlEl.textContent = 'Select one or more profiles above…';
+        const url = buildUrl(baseEl.value.trim() || '../', values, viewerThemeEl.value);
+        if (!url) {
+          urlEl.textContent = 'Select one or more profiles, or a viewer theme, above…';
           launchEl.setAttribute('aria-disabled', 'true');
           launchEl.removeAttribute('href');
           return;
         }
-        const url = buildUrl(baseEl.value.trim() || '../', values);
         urlEl.textContent = url;
         launchEl.href = url;
         launchEl.setAttribute('aria-disabled', 'false');
@@ -333,6 +341,7 @@
 
       groupsEl.addEventListener('change', refresh);
       baseEl.addEventListener('input', refresh);
+      viewerThemeEl.addEventListener('change', refresh);
 
       groupsEl.addEventListener('click', e => {
         const btn = e.target.closest('.toggle');
@@ -353,9 +362,8 @@
       });
 
       document.getElementById('copy').addEventListener('click', async () => {
-        const values = selectedValues();
-        if (!values.length) return;
-        const text = buildUrl(baseEl.value.trim() || '../', values);
+        const text = buildUrl(baseEl.value.trim() || '../', selectedValues(), viewerThemeEl.value);
+        if (!text) return;
         try {
           await navigator.clipboard.writeText(text);
           const b = document.getElementById('copy');
@@ -364,37 +372,6 @@
           setTimeout(() => (b.textContent = prev), 1200);
         } catch (_) {
           /* clipboard unavailable — the URL is visible in the box to copy manually */
-        }
-      });
-
-      // Theme pull-down: "system" defers to prefers-color-scheme (no attribute),
-      // "light"/"dark" force the theme via the data-theme attribute. Persisted.
-      const themeEl = document.getElementById('theme');
-      const THEME_KEY = 'ohif-customizations-theme';
-
-      function applyTheme(value) {
-        if (value === 'light' || value === 'dark') {
-          document.documentElement.setAttribute('data-theme', value);
-        } else {
-          document.documentElement.removeAttribute('data-theme');
-        }
-      }
-
-      let savedTheme = 'system';
-      try {
-        savedTheme = localStorage.getItem(THEME_KEY) || 'system';
-      } catch (_) {
-        /* storage unavailable — fall back to system */
-      }
-      themeEl.value = savedTheme;
-      applyTheme(savedTheme);
-
-      themeEl.addEventListener('change', () => {
-        applyTheme(themeEl.value);
-        try {
-          localStorage.setItem(THEME_KEY, themeEl.value);
-        } catch (_) {
-          /* storage unavailable — theme still applies for this session */
         }
       });
 

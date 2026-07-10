@@ -13,6 +13,14 @@ describe('preserveQueryParameters', () => {
     expect(out.getAll('configUrl')).toEqual(['foo.js']);
   });
 
+  it('preserves the theme key across mode navigation', () => {
+    const current = new URLSearchParams();
+    current.append('theme', 'arctic');
+    const out = new URLSearchParams();
+    preserveQueryParameters(out, undefined, current);
+    expect(out.get('theme')).toBe('arctic');
+  });
+
   it('preserves all repeated values for the customization key', () => {
     const current = new URLSearchParams();
     current.append('customization', 'a');

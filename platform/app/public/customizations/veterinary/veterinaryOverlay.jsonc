@@ -39,14 +39,14 @@
         {
           "id": "PatientSpecies",
           "inheritsFrom": "ohif.overlayItem",
-          "attribute": "PatientSpecies",
+          "attribute": "PatientSpeciesDescription",
           "label": "Species",
           "title": "Patient species"
         },
         {
           "id": "PatientBreed",
           "inheritsFrom": "ohif.overlayItem",
-          "attribute": "PatientBreed",
+          "attribute": "PatientBreedDescription",
           "label": "Breed",
           "title": "Patient breed"
         }
