@@ -184,7 +184,7 @@ module.exports = (env, argv) => {
               swDest: 'sw.js',
               swSrc: path.join(SRC_DIR, 'service-worker.js'),
               publicPath: PUBLIC_URL,
-              exclude: [/theme/],
+              exclude: [/theme/, /^plugins\//],
               maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
             }),
           ]),
