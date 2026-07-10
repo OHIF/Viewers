@@ -39,7 +39,10 @@ export class LegacySegmentationBackend implements ISegmentationBackend {
     _representationType: csToolsEnums.SegmentationRepresentations
   ): Promise<LabelmapAddClassification> {
     const isVolumeViewport = isVolumeViewportType(csViewport);
-    const isVolumeSegmentation = 'volumeId' in segmentation.representationData[LABELMAP];
+    // A missing labelmap representation (stale/partial segmentation state) must not
+    // throw on the `'volumeId' in ...` probe; treat it as a non-volume segmentation.
+    const labelmapData = segmentation?.representationData?.[LABELMAP];
+    const isVolumeSegmentation = !!labelmapData && 'volumeId' in labelmapData;
 
     return isVolumeViewport
       ? this.handleVolumeViewportCase(csViewport, segmentation, isVolumeSegmentation)

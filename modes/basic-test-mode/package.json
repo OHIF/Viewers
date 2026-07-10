@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-test",
-  "version": "3.13.0-beta.110",
+  "version": "3.13.0-beta.118",
   "description": "Basic mode for testing",
   "author": "OHIF",
   "license": "MIT",
@@ -40,9 +40,11 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
+    "@ohif/mode-basic": "workspace:*",
     "i18next": "17.3.1"
   },
   "devDependencies": {
+    "cross-env": "7.0.3",
     "webpack-merge": "5.10.0"
   },
   "keywords": [

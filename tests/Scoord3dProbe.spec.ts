@@ -211,8 +211,12 @@ test('should display SCOORD3D probe measurements correctly', async ({
     }
   });
 
-  // Wait for rendering to complete before taking screenshot
-  await page.waitForTimeout(2000);
+  // Wait for the zoom re-render to actually settle before capturing. A fixed
+  // delay can capture a partially rendered viewport on a slow/loaded runner,
+  // which shows up as a near-total screenshot diff.
+  await waitForViewportsRendered(page);
+  await waitForPaintToSettle(page);
+  await page.waitForTimeout(3000);
 
   const activeViewport = await viewportPageObject.active;
 

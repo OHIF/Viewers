@@ -1,10 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppConfig } from '@state';
+import type { RunInput } from '@ohif/core/src/classes/CommandsManager';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
-import { StudyList, Icons, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
+import {
+  StudyList,
+  Icons,
+  InvestigationalUseDialog,
+  type StudyRow,
+  type OnStudyDoubleClick,
+} from '@ohif/ui-next';
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 import { SidePanelPreview } from './SidePanelPreview';
 
@@ -26,6 +33,7 @@ export default function WorkList({
   onRefresh,
   servicesManager,
   extensionManager,
+  commandsManager,
 }: Props) {
   const [appConfig] = useAppConfig();
   const { customizationService } = servicesManager.services;
@@ -47,11 +55,36 @@ export default function WorkList({
   const [selected, setSelected] = useState<StudyRow | null>(null);
   const [isPreviewOpen, setPreviewOpen] = useState(true);
 
+  // `workList.onStudyDoubleClick` is the command (or command list) run when a
+  // study row is double-clicked — by default `launchDefaultMode`, which
+  // launches the default workflow, falling back to the first applicable one.
+  // The study and its applicable workflows are merged into the command options
+  // at call time, so an override only needs to name a command and any static
+  // options (e.g. a specific `workflowId`).
+  const studyDoubleClickCommand = customizationService.getCustomization(
+    'workList.onStudyDoubleClick'
+  ) as RunInput;
+  const onStudyDoubleClick = useCallback<OnStudyDoubleClick>(
+    (study, { defaultWorkflow, workflows }) => {
+      commandsManager.run(studyDoubleClickCommand, { study, defaultWorkflow, workflows });
+    },
+    [commandsManager, studyDoubleClickCommand]
+  );
+
   const columns = useMemo(() => {
     // `workList.columns` is registered as a value (StudyList.defaultColumns) and
     // merged via customization commands, so we read the result directly.
     const customized = customizationService.getCustomization('workList.columns');
-    return Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    const resolved = Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    // Expand data-only column specs. A `?customization=` JSONC file (or any
+    // serializable source) cannot carry render functions, so an entry that has
+    // an `id` but no `accessorFn`/`cell` is turned into a display-only text
+    // column that reads `row[id]` — matching `StudyList.textColumn`.
+    return resolved.map((col: any) =>
+      col && typeof col === 'object' && col.id && !col.accessorFn && !col.cell
+        ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
+        : col
+    );
   }, [customizationService]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
@@ -113,6 +146,7 @@ export default function WorkList({
                 )
               }
               title={'Study List'}
+              onStudyDoubleClick={studyDoubleClickCommand ? onStudyDoubleClick : undefined}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
               toolbarRightActionsComponent={toolbarActions}

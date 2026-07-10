@@ -110,7 +110,6 @@ function App({
     cineService,
     userAuthenticationService,
     uiNotificationService,
-    customizationService,
   } = servicesManager.services;
 
   const providers = [
@@ -142,8 +141,8 @@ function App({
 
   let authRoutes = null;
 
-  // Should there be a generic call to init on the extension manager?
-  customizationService.init(extensionManager);
+  // customizationService.init(extensionManager) runs in appInit after extensions register;
+  // do not call init again here — repeated init would duplicate-merge unless guarded (see CustomizationService.init).
 
   // Use config to create routes
   const appRoutes = createRoutes({

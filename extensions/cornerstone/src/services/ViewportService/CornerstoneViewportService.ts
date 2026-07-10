@@ -1345,24 +1345,122 @@ class CornerstoneViewportService
         ? csToolsEnums.SegmentationRepresentations.Labelmap
         : csToolsEnums.SegmentationRepresentations.Contour;
 
-    const { predecessorImageId } = displaySet;
-    const segmentationRepresentationPromise = segmentationService.addSegmentationRepresentation(
-      viewport.id,
-      {
-        segmentationId,
-        predecessorImageId,
-        type: representationType,
-        config: {
-          blendMode:
-            viewport?.getBlendMode?.() === 1
-              ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
-              : undefined,
-        },
+    const applyRepresentation = () => {
+      const { predecessorImageId } = displaySet;
+      const segmentationRepresentationPromise =
+        segmentationService.addSegmentationRepresentation(viewport.id, {
+          segmentationId,
+          predecessorImageId,
+          type: representationType,
+          config: {
+            blendMode:
+              viewport?.getBlendMode?.() === 1
+                ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+                : undefined,
+          },
+        });
+      this.storePresentation({ viewportId: viewport.id });
+      return segmentationRepresentationPromise;
+    };
+
+    // SEG overlay is registered during stack setup, but cornerstone segmentation state
+    // is created in displaySet.load() (async). Wait until it exists before adding representation.
+    if (displaySet.Modality === 'SEG') {
+      if (segmentationService.getSegmentation(segmentationId)) {
+        return applyRepresentation();
       }
-    );
-    // store the segmentation presentation id in the viewport info
-    this.storePresentation({ viewportId: viewport.id });
-    return segmentationRepresentationPromise;
+
+      // Bound the wait so a failed/aborted SEG load (where SEGMENTATION_LOADING_COMPLETE
+      // never fires) cannot leave this promise — and the viewport setup awaiting it —
+      // hanging indefinitely.
+      const SEG_LOADING_TIMEOUT_MS = 120000;
+
+      return new Promise<void>(resolve => {
+        let settled = false;
+        let timeoutId;
+
+        // Final resolution — extra calls are harmless (resolve is a no-op after
+        // the first), which lets the timeout stay armed while a representation
+        // apply is in flight and still bound it.
+        const finish = () => {
+          clearTimeout(timeoutId);
+          resolve();
+        };
+
+        // Give up without applying (load failure / timeout before the event).
+        const settleWithoutApply = () => {
+          settled = true;
+          unsubscribe();
+          finish();
+        };
+
+        const { unsubscribe } = segmentationService.subscribe(
+          segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+          async (evt: { segDisplaySet?: OhifTypes.DisplaySet }) => {
+            if (settled || evt.segDisplaySet?.displaySetInstanceUID !== segmentationId) {
+              return;
+            }
+
+            // Dedupe immediately, but resolve only after the representation is
+            // applied: awaiters continue into rotation/flip/render and broadcast
+            // VIEWPORT_DATA_CHANGED (hanging-protocol callbacks, toolbar, e2e
+            // readiness), which must not observe a viewport whose overlay
+            // doesn't exist yet. applyRepresentation can be genuinely async
+            // (stack→volume viewport conversion). The timeout is deliberately
+            // NOT cleared here — a hung apply stays bounded.
+            settled = true;
+            unsubscribe();
+
+            try {
+              await applyRepresentation();
+            } catch (error) {
+              console.warn(
+                `Failed to apply segmentation representation for "${segmentationId}":`,
+                error
+              );
+            } finally {
+              finish();
+            }
+          }
+        );
+
+        // Stop waiting immediately if the SEG load itself fails — otherwise the
+        // loading-complete event never fires and we would idle until the timeout.
+        const loadingPromise = (displaySet as { loadingPromise?: Promise<unknown> })
+          .loadingPromise;
+        loadingPromise?.catch(error => {
+          if (settled) {
+            return;
+          }
+
+          console.warn(
+            `Segmentation "${segmentationId}" failed to load; skipping representation setup.`,
+            error
+          );
+          settleWithoutApply();
+        });
+
+        timeoutId = setTimeout(() => {
+          if (settled) {
+            // The load completed but applyRepresentation is hung — resolve so
+            // viewport setup is never blocked past the bound (best-effort
+            // semantics; the apply may still land later).
+            console.warn(
+              `Timed out applying segmentation representation for "${segmentationId}"; resolving viewport readiness anyway.`
+            );
+            resolve();
+            return;
+          }
+
+          console.warn(
+            `Timed out waiting for segmentation "${segmentationId}" to load; skipping representation setup.`
+          );
+          settleWithoutApply();
+        }, SEG_LOADING_TIMEOUT_MS);
+      });
+    }
+
+    return applyRepresentation();
   }
 
   // Public so the viewport backends (IViewportServiceInternals) can run the
