@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ohif.org/schemas/pluginConfig.schema.json",
+  "title": "OHIF pluginConfig.json",
+  "description": "Build-time plugin declaration for platform/app. Every extension/mode bundled into the viewer must be declared here; presence in the extensions/ or modes/ workspace folders alone does nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["extensions", "modes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "extensions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/plugin" }
+    },
+    "modes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/plugin" }
+    },
+    "public": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/publicEntry" }
+    }
+  },
+  "definitions": {
+    "plugin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packageName"],
+      "properties": {
+        "packageName": {
+          "type": "string",
+          "description": "npm package name of the extension or mode (also its OHIF id).",
+          "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?[a-z0-9-~][a-z0-9-._~]*$"
+        },
+        "default": {
+          "type": "boolean",
+          "description": "false keeps the plugin resolvable/bundled but not auto-registered at startup."
+        },
+        "directory": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Out-of-tree package root. Leading './' is repo-root-relative, leading '~' is home-relative, anything else is absolute. Use forward slashes."
+        }
+      }
+    },
+    "publicEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["directory"] }, { "required": ["packageName"] }],
+      "properties": {
+        "directory": { "type": "string", "minLength": 1, "description": "Asset folder copied verbatim into dist. Same path grammar as plugin.directory." },
+        "packageName": { "type": "string", "minLength": 1 },
+        "importPath": { "type": "string", "minLength": 1, "description": "URL/path passed to window.browserImportFunction for runtime import." },
+        "globalName": { "type": "string", "minLength": 1, "description": "window global to read after importPath loads (UMD-style)." },
+        "importName": { "type": "string", "minLength": 1, "description": "Named export to use instead of default when globalName is not set." },
+        "to": { "type": "string", "pattern": "^/", "description": "Sub-path under dist to copy directory into, e.g. /dicom-microscopy-viewer/." }
+      }
+    }
+  }
+}
