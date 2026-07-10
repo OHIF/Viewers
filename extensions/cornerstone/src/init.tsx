@@ -30,7 +30,8 @@ import initStudyPrefetcherService from './initStudyPrefetcherService';
 import {
   setNextViewportsEnabled,
   resolveNextViewportsEnabled,
-  resolveUseCPURendering,
+  resolveViewportRendering,
+  setViewportRenderingOverrides,
 } from './utils/nextViewports';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
@@ -78,10 +79,36 @@ export default async function init({
     debug: { statsOverlay },
   });
 
-  // resolveUseCPURendering lets a `?cpu=true` URL param force the CPU render
-  // path per-session; when the param is absent, appConfig.useCPURendering wins.
-  // Under useNextViewports this drives the native GenericViewport onto CPU.
-  cornerstone.setUseCPURendering(resolveUseCPURendering(appConfig.useCPURendering));
+  cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+
+  // viewportRendering selects the render backend per-session:
+  // `?viewportRendering=cpu|webgl|webgpu|auto` for all viewports, plus
+  // `?<viewportType>.viewportRendering=<backend>` (e.g.
+  // `?orthographic.viewportRendering=cpu`) to override a single viewport type
+  // via the per-mount renderBackend option. The global value maps to
+  // cornerstone's setRenderBackend; 'cpu'/'gpu' additionally drive the legacy
+  // useCPURendering flag so pre-generic viewports follow the same selection
+  // (letting a session force GPU when the deployed config defaults to CPU).
+  const { renderBackend, renderBackendByViewportType } = resolveViewportRendering(
+    appConfig.viewportRendering
+  );
+  if (renderBackend) {
+    if (renderBackend === 'cpu') {
+      cornerstone.setUseCPURendering(true);
+    } else if (renderBackend === 'gpu') {
+      cornerstone.setUseCPURendering(false);
+    }
+    try {
+      cornerstone.setRenderBackend(renderBackend as cornerstone.RenderBackendValue);
+    } catch (error) {
+      console.warn(
+        `viewportRendering: "${renderBackend}" is not a registered render backend; ` +
+          `keeping "${cornerstone.getRenderBackend()}".`,
+        error
+      );
+    }
+  }
+  setViewportRenderingOverrides(renderBackendByViewportType);
 
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
