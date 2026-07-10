@@ -45,7 +45,7 @@ function createTools({ utilityModule, commandsManager }) {
         toolName: toolNames.MarkerLabelmap,
       },
       {
-        toolName: toolNames.RegionSegmentPlus,
+        toolName: toolNames.ClickSegment,
       },
       {
         toolName: 'CircularEraser',
