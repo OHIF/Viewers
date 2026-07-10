@@ -1,108 +1,26 @@
+const webpack = require('@rspack/core');
+const { merge } = require('webpack-merge');
 const path = require('path');
-const pkg = require('../package.json');
 
-const outputFile = 'index.umd.js';
-const rootDir = path.resolve(__dirname, '../');
-const outputFolder = path.join(__dirname, `../dist/umd/${pkg.name}/`);
+const pkg = require('./../package.json');
+const webpackCommon = require('./../../../.rspack/rspack.base.js');
+const pluginExternals = require('./../../../.rspack/pluginExternals.js');
 
-// Todo: add ESM build for the mode in addition to umd build
-const config = {
-  mode: 'production',
-  entry: rootDir + '/' + pkg.module,
-  devtool: 'source-map',
-  output: {
-    library: {
-      name: pkg.name,
-      type: 'umd',
-      umdNamedDefine: true,
+const ROOT_DIR = path.join(__dirname, './../');
+const SRC_DIR = path.join(__dirname, '../src');
+const DIST_DIR = path.join(__dirname, '../dist');
+const ENTRY = { app: `${SRC_DIR}/index.tsx` };
+
+module.exports = (env, argv) => {
+  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
+  return merge(commonConfig, {
+    optimization: { minimize: true, sideEffects: false },
+    output: {
+      library: { name: 'ohif-mode-segmentation', type: 'umd', export: 'default' },
+      path: ROOT_DIR,
+      filename: pkg.main,
     },
-    path: outputFolder,
-    filename: outputFile,
-    chunkFilename: '[name].chunk.js',
-    globalObject: "typeof self !== 'undefined' ? self : this",
-  },
-  externals: [
-    {
-      react: {
-        root: 'React',
-        commonjs2: 'react',
-        commonjs: 'react',
-        amd: 'react',
-      },
-      '@ohif/core': {
-        commonjs2: '@ohif/core',
-        commonjs: '@ohif/core',
-        amd: '@ohif/core',
-        root: '@ohif/core',
-      },
-      '@ohif/mode-basic': {
-        commonjs2: '@ohif/mode-basic',
-        commonjs: '@ohif/mode-basic',
-        amd: '@ohif/mode-basic',
-        root: '@ohif/mode-basic',
-      },
-      '@ohif/ui': {
-        commonjs2: '@ohif/ui',
-        commonjs: '@ohif/ui',
-        amd: '@ohif/ui',
-        root: '@ohif/ui',
-      },
-      i18next: {
-        commonjs2: 'i18next',
-        commonjs: 'i18next',
-        amd: 'i18next',
-        root: 'i18next',
-      },
-    },
-  ],
-  module: {
-    rules: [
-      {
-        test: /(\.jsx|\.js|\.tsx|\.ts)$/,
-        loader: 'babel-loader',
-        exclude: /(node_modules|bower_components)/,
-        resolve: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        },
-      },
-      {
-        test: /\.svg?$/,
-        oneOf: [
-          {
-            use: [
-              {
-                loader: '@svgr/webpack',
-                options: {
-                  svgoConfig: {
-                    plugins: [
-                      {
-                        name: 'preset-default',
-                        params: {
-                          overrides: {
-                            removeViewBox: false,
-                          },
-                        },
-                      },
-                    ],
-                  },
-                  prettier: false,
-                  svgo: true,
-                  titleProp: true,
-                },
-              },
-            ],
-            issuer: {
-              and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
-            },
-          },
-        ],
-      },
-    ],
-  },
-  resolve: {
-    modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.json', '.js', '.jsx', '.tsx', '.ts'],
-  },
+    externals: pluginExternals,
+    plugins: [new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 })],
+  });
 };
-
-module.exports = config;

@@ -5,7 +5,7 @@
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/ohif-mode-longitudinal.js",
+  "main": "dist/ohif-mode-longitudinal.umd.js",
   "module": "src/index.ts",
   "engines": {
     "node": ">=24"

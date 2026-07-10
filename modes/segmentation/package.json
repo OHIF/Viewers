@@ -5,7 +5,7 @@
   "author": "@ohif",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/umd/@ohif/mode-segmentation/index.umd.js",
+  "main": "dist/ohif-mode-segmentation.umd.js",
   "module": "src/index.tsx",
   "engines": {
     "node": ">=24"

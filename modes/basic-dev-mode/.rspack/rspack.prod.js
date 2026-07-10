@@ -2,6 +2,7 @@ const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.rspack/rspack.base.js');
+const pluginExternals = require('./../../../.rspack/pluginExternals.js');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -39,7 +40,7 @@ module.exports = (env, argv) => {
       path: ROOT_DIR,
       filename: pkg.main,
     },
-    externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
+    externals: pluginExternals,
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,

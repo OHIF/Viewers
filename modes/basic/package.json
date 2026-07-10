@@ -5,7 +5,7 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/ohif-mode-basic.js",
+  "main": "dist/ohif-mode-basic.umd.js",
   "module": "src/index.tsx",
   "engines": {
     "node": ">=24"

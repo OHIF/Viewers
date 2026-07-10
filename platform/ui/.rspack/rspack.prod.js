@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = rspack.CssExtractRspackPlugin;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const webpackCommon = require('./../../../.rspack/rspack.base.js');
+const pluginExternals = require('./../../../.rspack/pluginExternals.js');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -44,14 +45,7 @@ module.exports = (env, argv) => {
       path: ROOT_DIR,
       filename: pkg.main,
     },
-    externals: [
-      /\b(dcmjs)/,
-      /\b(gl-matrix)/,
-      {
-        react: 'React',
-        'react-dom': 'ReactDOM',
-      },
-    ],
+    externals: pluginExternals,
     plugins: [
       new MiniCssExtractPlugin({
         filename: `./dist/${outputName}.css`,

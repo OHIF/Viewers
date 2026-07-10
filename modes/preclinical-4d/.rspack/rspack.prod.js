@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = webpack.CssExtractRspackPlugin;
 
 const pkg = require('./../package.json');
 const webpackCommon = require('./../../../.rspack/rspack.base.js');
+const pluginExternals = require('./../../../.rspack/pluginExternals.js');
 
 const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
@@ -41,7 +42,7 @@ module.exports = (env, argv) => {
       path: ROOT_DIR,
       filename: pkg.main,
     },
-    externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],
+    externals: pluginExternals,
     plugins: [
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
