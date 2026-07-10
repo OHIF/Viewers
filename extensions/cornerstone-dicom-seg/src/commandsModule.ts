@@ -6,7 +6,11 @@ import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
-import { getSegmentationSaveOptions } from './utils/segmentationConfig';
+import {
+  getSegmentationSaveOptions,
+  LABELMAP_SEG_SOP_CLASS_UID,
+  BITMAP_SEG_SOP_CLASS_UID,
+} from './utils/segmentationConfig';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -247,11 +251,33 @@ const commandsModule = ({
         labelmaps3D = buildLabelmap3D(imageIds, metadata);
       }
 
-      const generatedSegmentation = generateSegmentation(referencedImages, labelmaps3D, metaData, {
+      const saveOptions = {
         predecessorImageId,
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,
-      });
+      };
+
+      // A LABELMAP SEG frame stores a single label per voxel, so the labelmap
+      // encoder cannot represent overlapping segments — it keeps only the last
+      // layer written to each voxel. Overlapping segmentations arrive here as
+      // multiple layers, so switch those to the binary SEG encoding, which
+      // writes overlapping segments as separate frames referencing the same
+      // source slice.
+      const hasOverlappingLayers = Boolean(layers && layers.length > 1);
+      if (hasOverlappingLayers && saveOptions.sopClassUID === LABELMAP_SEG_SOP_CLASS_UID) {
+        console.warn(
+          'generateSegmentation: overlapping segments cannot be stored as a LABELMAP SEG; ' +
+            'switching to the binary SEG encoding for this store.'
+        );
+        saveOptions.sopClassUID = BITMAP_SEG_SOP_CLASS_UID;
+      }
+
+      const generatedSegmentation = generateSegmentation(
+        referencedImages,
+        labelmaps3D,
+        metaData,
+        saveOptions
+      );
 
       return generatedSegmentation;
     },
