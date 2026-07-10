@@ -421,18 +421,23 @@ const segmentationToolbarButtons: Button[] = [
     },
   },
   {
-    id: 'RegionSegmentPlus',
+    id: 'ClickSegment',
     uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-click-segment',
-      label: i18n.t('Buttons:One Click Segment'),
+      label: i18n.t('Buttons:Click to Segment'),
       tooltip: i18n.t(
-        'Buttons:Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.'
+        'Buttons:PET only. Click-to-segment lesions with no configuration. Hover for visual feedback—click when a plus sign appears to segment the lesion.'
       ),
       evaluate: [
         {
+          name: 'evaluate.modality.supported',
+          supportedModalities: ['PT'],
+          disabledText: i18n.t('Buttons:Tool not available for this modality'),
+        },
+        {
           name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['RegionSegmentPlus'],
+          toolNames: ['ClickSegment'],
           disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
         },
         {
@@ -868,7 +873,7 @@ export const segmentationToolboxSections: Record<string, string[]> = {
     'LabelmapSlicePropagation',
     'BrushTools',
     'MarkerLabelmap',
-    'RegionSegmentPlus',
+    'ClickSegment',
     'Shapes',
     'LabelMapEditWithContour',
   ],

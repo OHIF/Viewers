@@ -148,7 +148,7 @@ function getToolGroupToolsCustomization({ commandsManager }) {
         ...brushInstances,
         { toolName: toolNames.LabelmapSlicePropagation },
         { toolName: toolNames.MarkerLabelmap },
-        { toolName: toolNames.RegionSegmentPlus },
+        { toolName: toolNames.ClickSegment },
         { toolName: toolNames.LabelMapEditWithContourTool },
         { toolName: toolNames.SegmentSelect },
         { toolName: toolNames.CircleScissors },
