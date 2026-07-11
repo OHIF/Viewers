@@ -19,7 +19,10 @@ no CSS — components come from extensions).
 1. `src/id.ts` derives `id` from package.json `name`. Never hardcode a different id.
 2. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`,
    `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. They are externals
-   (see `.rspack/pluginExternals.js`); the host provides them.
+   (see `.rspack/pluginExternals.js`); the host provides all of them as runtime
+   globals EXCEPT `vtk.js`, which is externalized with no host global — a known v1
+   gap. A runtime-loaded plugin that imports `vtk.js` resolves it to `undefined`
+   at load and breaks, so do not depend on `vtk.js` in a runtime plugin.
 3. Never import `@ohif/ui` — it is legacy and the host does not provide it to runtime plugins.
    Use `@ohif/ui-next`.
 4. Do not edit `output.library` / `externals` in `.rspack/` — that is the host contract.

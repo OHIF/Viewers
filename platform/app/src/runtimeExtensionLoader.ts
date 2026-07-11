@@ -15,7 +15,7 @@ export interface RuntimeExtensionDescriptor {
   importPath: string;
   /**
    * Format discriminator (strict, per the loader behavior matrix in
-   * .rspack/CONTRACT.md): UMD builds MUST set globalName (normally equal to
+   * platform/app/.rspack/CONTRACT.md): UMD builds MUST set globalName (normally equal to
    * packageName, matching the plugin build's output.library name) and the
    * loader returns window[globalName]; ESM builds MUST omit it and the loader
    * returns the import() namespace's default export. There is no fallback
@@ -256,7 +256,7 @@ export async function loadRuntimeDescriptor(
       // same-origin skip: no integrity verification; direct dynamic import
       imported = await (window as any).browserImportFunction(url.href);
     }
-    // STRICT format discriminator (loader behavior matrix, .rspack/CONTRACT.md):
+    // STRICT format discriminator (loader behavior matrix, platform/app/.rspack/CONTRACT.md):
     // UMD (globalName set): the wrapper sees no exports/define and assigns
     // self[library.name]; with output.library = { name, export: 'default' }
     // the global IS the default export — return window[globalName], nothing else.

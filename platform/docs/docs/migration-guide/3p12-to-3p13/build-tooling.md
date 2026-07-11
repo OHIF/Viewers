@@ -11,14 +11,18 @@ OHIF 3.13 replaces Webpack with [Rspack](https://rspack.dev) v2 as the
 default bundler for the app, every extension, every mode, and the
 `@ohif/ui-next` / `@ohif/ui` / `@ohif/i18n` / `@ohif/core` packages.
 
-:::caution The `.webpack/` configs are now `.rspack/` Rspack configs
+:::caution The `.webpack/` configs are now `.rspack/` Rspack configs, and the app's pwa config is gone
 The config directory and filenames were renamed along with the bundler —
-what was `.webpack/webpack.base.js`, `.webpack/webpack.pwa.js`, and a
-`.webpack/webpack.prod.js` in each package is now `.rspack/rspack.base.js`,
-`.rspack/rspack.pwa.js`, and `.rspack/rspack.prod.js`. **These files
-configure Rspack.** They `require('@rspack/core')` (aliased to a local
-`webpack` variable so the rest of the config reads the same) and are run by
-the `rspack` CLI.
+`.webpack/webpack.base.js` and each package's `.webpack/webpack.prod.js` are now
+`.rspack/rspack.base.js` and `.rspack/rspack.prod.js`. **These files configure
+Rspack.** They `require('@rspack/core')` (aliased to a local `webpack` variable
+so the rest of the config reads the same) and are run by the `rspack` CLI for the
+per-package UMD library builds.
+
+The app itself (`platform/app`) no longer has a pwa bundler config: the former
+`.webpack/webpack.pwa.js` was **removed**, and the app now builds and serves
+through **Rsbuild** via the root `rsbuild.config.ts` (see "New scripts" below).
+There is no `.rspack/rspack.pwa.js`.
 :::
 
 There is no Webpack fallback. Webpack and all of its plugins have been
@@ -38,16 +42,17 @@ but written in Rust. For the OHIF tree the practical wins are:
 
 ## New scripts
 
-`platform/app/package.json` was rewritten to invoke `rspack` instead of
-`webpack`:
+`platform/app/package.json` was rewritten so the app builds and serves through
+**Rsbuild** (the higher-level toolchain built on Rspack) via the root
+`rsbuild.config.ts`, instead of Webpack:
 
 ```diff
 - "build": "node --max_old_space_size=8096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
-+ "build": "cross-env NODE_OPTIONS=--max-old-space-size=24576 rspack build --config .rspack/rspack.pwa.js",
++ "build": "cross-env NODE_OPTIONS=--max-old-space-size=24576 rsbuild build --config ../../rsbuild.config.ts",
 - "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.pwa.js",
-+ "dev": "cross-env NODE_ENV=development rspack serve --config .rspack/rspack.pwa.js",
++ "dev": "cross-env NODE_ENV=development rsbuild dev --config ../../rsbuild.config.ts",
 - "dev:orthanc": "… webpack serve --config .webpack/webpack.pwa.js",
-+ "dev:orthanc": "… rspack serve --config .rspack/rspack.pwa.js"
++ "dev:orthanc": "… rsbuild dev --config ../../rsbuild.config.ts"
 ```
 
 Notes:
@@ -55,15 +60,15 @@ Notes:
 - The build now requests `--max-old-space-size=24576` (24 GB) via
   `NODE_OPTIONS`. The previous 8 GB limit is no longer enough for full
   prod builds.
-- `webpack serve` is replaced by `rspack serve`. All `dev:*` variants
-  (`dev:orthanc`, `dev:dcm4chee`, `dev:static`, …) were updated the same way.
-- `dev:no:cache` no longer passes `--no-cache` (Rspack's CLI does not
-  expose it). It is now identical to `dev`; production caching is disabled
-  unconditionally in the config instead (see "Caching" below).
-- `dev:fast` runs **Rsbuild** rather than Rspack directly
-  (`rsbuild dev --config ../../rsbuild.config.ts`). Rsbuild is the
-  higher-level toolchain built on Rspack; it is used only for the fast
-  dev-server path and is configured separately in `rsbuild.config.ts`.
+- Both the production build (`rsbuild build`) and every dev variant
+  (`dev`, `dev:orthanc`, `dev:dcm4chee`, `dev:static`, `dev:fast`, …) now run
+  through **one** config: the root `rsbuild.config.ts`. The former
+  `webpack.pwa.js` app config no longer exists (there is no `rspack.pwa.js`).
+- `dev:fast` is simply an alias of `dev` — there is a single Rsbuild dev path.
+- `dev:no:cache` no longer passes `--no-cache`; it is identical to `dev`.
+- The per-package UMD library builds (extensions, modes, `@ohif/core`,
+  `@ohif/ui-next`, …) still run raw **Rspack** against `.rspack/rspack.base.js`
+  (see below) — only the app moved to Rsbuild.
 
 ## Dependency changes
 
@@ -126,15 +131,15 @@ is unchanged — which is why the local variable is still called `webpack`.
 | `html-webpack-plugin`                   | `require('@rspack/core').HtmlRspackPlugin`                    |
 | `@pmmmwh/react-refresh-webpack-plugin`  | `require('@rspack/plugin-react-refresh')`                     |
 | `terser-webpack-plugin`                 | Built-in `SwcJsMinimizerRspackPlugin` (no config needed)      |
-| `workbox-webpack-plugin` (`InjectManifest`) | Custom `InjectServiceWorkerManifestPlugin` in `rspack.pwa.js` |
+| `workbox-webpack-plugin` (`InjectManifest`) | Custom `InjectServiceWorkerManifestPlugin` in `rsbuild.config.ts` |
 | `dotenv-webpack`                        | Plain `require('dotenv').config()`                            |
 
 `InjectServiceWorkerManifestPlugin` is a small inline plugin that
 re-implements what `workbox-webpack-plugin`'s `InjectManifest` did, but
 on top of Rspack's compilation hooks (`thisCompilation` →
-`processAssets`, emitting a `RawSource`). It is defined locally in
-`platform/app/.rspack/rspack.pwa.js` — copy it into your own
-`rspack.pwa.js` derivative if you forked that file.
+`processAssets`, emitting a `RawSource`). It lives in the app's build config,
+the root `rsbuild.config.ts` (registered through `tools.rspack.plugins`) — copy
+it from there if your own app build needs a service-worker manifest.
 
 The React Refresh plugin is loaded defensively (`try/require`) and is
 skipped when it is unavailable, in production, or during e2e coverage
@@ -268,8 +273,8 @@ under a different scope should add their own scope here.
 ### Module resolution for pnpm
 
 Two resolution changes were needed for pnpm's isolated (non-hoisted)
-`node_modules` layout. Both live in `resolve` in `rspack.base.js` (and
-`rspack.pwa.js`):
+`node_modules` layout. Both live in `resolve` in `rspack.base.js` (for the
+per-package UMD builds) and are mirrored in the app's `rsbuild.config.ts`:
 
 - `resolve.modules` now **leads with a bare `'node_modules'`** before the
   absolute paths. This preserves the default importer-relative walk-up so
@@ -309,8 +314,8 @@ packages present in those workspaces but not listed in `pluginConfig.json`
 are ignored. The resulting map is exposed two ways:
 
 - `getPluginResolveAliases()` returns a `resolve.alias` map (one exact-match
-  `"<pkg>$"` entry per plugin in `pluginConfig.json`) that `rspack.pwa.js`
-  merges into `resolve.alias`, so the generated `pluginImports.js`
+  `"<pkg>$"` entry per plugin in `pluginConfig.json`) that the app's
+  `rsbuild.config.ts` merges into `resolve.alias`, so the generated `pluginImports.js`
   `import()`s link to the plugin source without the plugin being a
   dependency.
 - `createCopyPluginToDist(...)` copies each plugin's `public/` and `dist/`
@@ -379,8 +384,8 @@ template, do the following:
 
 ## Known migration notes
 
-- **`@million/lint`** integration is removed from `rspack.pwa.js`
-  (it was already commented out in 3.12).
+- **`@million/lint`** integration is removed from the app build config
+  (it was already commented out in the former `webpack.pwa.js` in 3.12).
 - **`Dotenv` plugin** is replaced by a top-level `dotenv.config()`
   call. If you relied on the plugin's `safe: true` behavior, move
   that check into your config loader.

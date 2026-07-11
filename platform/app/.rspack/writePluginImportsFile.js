@@ -399,8 +399,8 @@ const createCopyPluginToDist = (distDir, plugins, folderName, { literalDirectory
     .filter(Boolean);
 };
 
-// `config` is injectable for tests; both real callers (rspack.pwa.js and
-// rsbuild.config.ts) pass two args, so the default preserves behavior exactly.
+// `config` is injectable for tests; the only real caller (rsbuild.config.ts)
+// passes two args, so the default preserves behavior exactly.
 function writePluginImportsFile(SRC_DIR, DIST_DIR, config = pluginConfig) {
   let pluginImportsJsContent = autogenerationDisclaimer;
 

@@ -2,9 +2,9 @@ const path = require('path');
 
 // Shared module-resolution rules (alias + module search paths) used by BOTH
 // build pipelines so they cannot drift apart:
-//   - the webpack/rspack build: rspack.base.js -> rspack.pwa.js, plus every
-//     per-package rspack.prod.js / rspack.dev.js that merges rspack.base.js
-//   - the rsbuild build: rsbuild.config.ts (dev:fast)
+//   - the rsbuild build (app dev:fast + production): rsbuild.config.ts
+//   - the raw-rspack per-package UMD builds: every rspack.prod.js /
+//     rspack.dev.js that merges rspack.base.js
 //
 // Plugin aliases (writePluginImportsFile.getPluginResolveAliases) are NOT
 // included here: they depend on pluginConfig.json and are merged in separately

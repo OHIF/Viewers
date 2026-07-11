@@ -136,8 +136,9 @@ A v1 plugin is a UMD bundle. The build sets `output.library` to:
 so the bundle assigns the extension's default export to
 `window['@scope/name']` (the global keyed by the full package name).
 
-The following are **externals** — the host provides them as globals; a plugin
-must never bundle or import its own copy:
+The following are **externals** — the host provides them as globals (with one
+exception, `vtk.js`, noted below); a plugin must never bundle or import its own
+copy:
 
 ```js
 [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/, 'react', 'react-dom', 'react/jsx-runtime']
@@ -153,6 +154,11 @@ The complete shared set is (`platform/app/src/runtimeShared.ts`):
 `@ohif/i18n` is shared because runtime extensions dereference it during module
 evaluation. `@ohif/ui` is intentionally **not** shared: it is legacy and a
 forbidden import for runtime plugins — use `@ohif/ui-next`.
+
+`vtk.js` is externalized (never bundle it) but is **not** in the shared set
+above — it has no host global, a known v1 gap. A runtime-loaded plugin that
+imports `vtk.js` resolves it to `undefined` at load and breaks, so do not depend
+on `vtk.js` in a runtime plugin.
 
 Do not edit `output.library` or `externals` in the build config (`.rspack/`) —
 that is the host contract, not plugin-tunable.

@@ -9,7 +9,7 @@ What the recipe exercises:
   - '~' path form            platform/app/.rspack/writePluginImportsFile.js:213 (homedir expansion);
                              a `directory` field wins over the in-tree workspace lookup (:276-283)
   - watch                    the external dir is outside WATCH_IGNORED
-                             (platform/app/.rspack/rspack.pwa.js:14,263 and rsbuild.config.ts:36,138)
+                             (rsbuild.config.ts:52 definition, applied at rsbuild.config.ts:248)
   - fast refresh             react-refresh dev rules exclude node_modules by path substring,
                              so the copy must NOT live under any folder named node_modules
   - out-of-repo transpile    project-wide babel config (rootMode 'upward' + platform/app/babel.config.js)
@@ -80,10 +80,11 @@ function Confirm-Gate([string]$Name, [string]$Question) {
 }
 
 function Get-DupHitCount {
-  # Dev server writes dist to disk (devMiddleware.writeToDisk: true, rspack.pwa.js:234),
-  # so the bundle and its source maps are grep-able while the server runs.
+  # rsbuild's dev server serves from memory, so run a production build first
+  # (pnpm --filter @ohif/app run build) to get grep-able bundles + source maps
+  # under platform\app\dist.
   if (-not (Get-ChildItem -Path $DistGlobs -ErrorAction SilentlyContinue)) {
-    throw "no bundles found under platform\app\dist - start the dev server (writeToDisk) or run a build first"
+    throw "no bundles found under platform\app\dist - run a production build first (pnpm --filter @ohif/app run build)"
   }
   $hits = Select-String -Path $DistGlobs -Pattern $DupPattern -ErrorAction SilentlyContinue
   return ($hits | Measure-Object).Count

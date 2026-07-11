@@ -16,7 +16,7 @@ workbox.core.clientsClaim();
 // app build; never serve them from SW caches. ORDER IS LOAD-BEARING: workbox
 // uses first-registered-match, so this must stay ABOVE the 'static-resources'
 // route below. The precache manifest also excludes plugins/ (see
-// InjectServiceWorkerManifestPlugin `exclude` in rspack.pwa.js).
+// InjectServiceWorkerManifestPlugin `exclude` in rsbuild.config.ts).
 workbox.routing.registerRoute(
   ({ url }) => url.pathname.includes('/plugins/'),
   new workbox.strategies.NetworkOnly()
