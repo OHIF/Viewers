@@ -126,6 +126,45 @@ declare global {
        * Requires @cornerstonejs/core >= 5.0.0-beta (GenericViewport architecture).
        */
       useGenericViewport?: boolean;
+      /**
+       * Opt-in: drive viewports through the DIRECT native GenericViewport ("next")
+       * API surface — `PLANAR_NEXT` / `VOLUME_3D_NEXT` / etc. created natively and
+       * driven with `setDisplaySets`, `setDisplaySetPresentation`, `setViewState`
+       * and view references — rather than the legacy `setStack` / `setVolumes` /
+       * `setProperties` / `getCamera` / `setCamera` methods.
+       *
+       * This is distinct from (and overrides) `useGenericViewport`: that flag only
+       * routes legacy viewport types through cornerstone's compatibility adapters
+       * (`rendering.useGenericViewport`), keeping the legacy method surface. This
+       * flag instead selects native viewport types in `getCornerstoneViewportType`
+       * and the native data/presentation/view-state APIs inside
+       * `CornerstoneViewportService` (the `nextBackend`). It does NOT set
+       * cornerstone's `rendering.useGenericViewport`.
+       *
+       * Defaults to false (the legacy path, byte-identical to today). Opt-in only;
+       * the community is not force-migrated.
+       * Requires @cornerstonejs/core >= 5.0.x with the GenericViewport "next" APIs.
+       */
+      genericViewports?: {
+        /**
+         * Opt-in for the native path described above. Equivalent to (and
+         * overridable by) the `?useNextViewports=true` URL param.
+         */
+        enabled?: boolean;
+        /**
+         * Render backend selection for viewports. Either a backend for all
+         * viewports ('cpu' | 'webgl' | 'auto' | a wire id registered via
+         * cornerstone's `registerRenderBackend`, e.g. a webgpu backend) or a map
+         * of per-viewport-type overrides plus an optional 'default', e.g.
+         * `{ default: 'webgl', orthographic: 'cpu' }`. The matching URL params
+         * (`?viewportRendering=cpu`, `?orthographic.viewportRendering=cpu`) take
+         * precedence per-session. 'webgl' aliases cornerstone's 'gpu' backend.
+         * The default/global value also drives the legacy useCPURendering flag
+         * ('cpu' → true, 'webgl' → false) so legacy viewports follow the same
+         * selection.
+         */
+        viewportRendering?: string | Record<string, string>;
+      };
       useCursors?: boolean;
       maxCacheSize?: number;
       max3DTextureSize?: number;

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
-import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
+import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
@@ -9,6 +9,8 @@ import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { getViewportAdapter } from '../../services/ViewportService/adapter';
+import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 
 import './CustomizableViewportOverlay.css';
 import { useViewportRendering } from '../../hooks';
@@ -269,7 +271,7 @@ function getDisplaySets(viewportData, displaySetService) {
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
   let instanceNumber;
 
-  switch (viewportData.viewportType) {
+  switch (getViewportDataShapeType(viewportData)) {
     case Enums.ViewportType.STACK:
       instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
       break;
@@ -336,8 +338,11 @@ function _getInstanceNumberFromVolume(
     return;
   }
 
-  const camera = cornerstoneViewport.getCamera();
-  const { viewPlaneNormal } = camera;
+  const viewPlaneNormal = getViewportAdapter(cornerstoneViewport).getViewPlaneNormal();
+
+  if (!viewPlaneNormal) {
+    return;
+  }
   // checking if camera is looking at the acquisition plane (defined by the direction on the volume)
 
   const scanAxisNormal = direction.slice(6, 9);

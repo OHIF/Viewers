@@ -142,15 +142,22 @@ export default function hydrateStructuredReport(
     hydratableMeasurementsInSR,
     sopInstanceUIDToImageId
   );
+  const displaySetsByFrameOfReferenceUID = new Map();
 
   for (const FrameOfReferenceUID of frameOfReferenceUIDs) {
     const displaySetsFOR = displaySetService.getDisplaySetsBy(
       ds => ds.FrameOfReferenceUID === FrameOfReferenceUID && !ds.isDerivedDisplaySet
     );
-    const ds = chooseDisplaySet(displaySetsFOR, FrameOfReferenceUID);
+    const ds = getReferencedDisplaySet(
+      displaySet,
+      displaySetsFOR,
+      FrameOfReferenceUID,
+      displaySetService
+    );
     if (!ds) {
       continue;
     }
+    displaySetsByFrameOfReferenceUID.set(FrameOfReferenceUID, ds);
     if (!SeriesInstanceUIDs.includes(ds.SeriesInstanceUID)) {
       SeriesInstanceUIDs.push(ds.SeriesInstanceUID);
     }
@@ -174,7 +181,7 @@ export default function hydrateStructuredReport(
     const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
 
     if (!imageId) {
-      return getReferenceData3D(toolData, servicesManager);
+      return getReferenceData3D(toolData, servicesManager, displaySetsByFrameOfReferenceUID);
     }
 
     const instance = metaData.get('instance', imageId);
@@ -316,21 +323,60 @@ function chooseDisplaySet(displaySets, reference) {
     console.warn('No display set found for', reference);
     return;
   }
-  if (displaySets.length === 1) {
-    return displaySets[0];
+  const sortedDisplaySets = OHIF.utils.sortDisplaySetsCopy(displaySets);
+  if (sortedDisplaySets.length === 1) {
+    return sortedDisplaySets[0];
   }
-  const volumeDs = displaySets.find(ds => ds.isReconstructable);
+  const volumeDs = sortedDisplaySets.find(ds => ds.isReconstructable);
   if (volumeDs) {
     return volumeDs;
   }
-  return displaySets[0];
+  return sortedDisplaySets[0];
+}
+
+/**
+ * SCOORD3D only identifies a frame of reference, so many series can be valid
+ * candidates. The SR loader has already selected and recorded a stable display
+ * set for each measurement. Reuse that selection during hydration so the
+ * viewport series and annotation volume cannot depend on display-set load order.
+ */
+function getReferencedDisplaySet(
+  srDisplaySet,
+  displaySets,
+  FrameOfReferenceUID,
+  displaySetService
+) {
+  const referencedDisplaySetInstanceUID = srDisplaySet.measurements?.find(measurement =>
+    measurement.coords?.some(
+      coord =>
+        coord.ValueType === 'SCOORD3D' &&
+        coord.ReferencedFrameOfReferenceSequence === FrameOfReferenceUID
+    )
+  )?.displaySetInstanceUID;
+
+  const referencedDisplaySet = referencedDisplaySetInstanceUID
+    ? displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID)
+    : undefined;
+
+  if (
+    referencedDisplaySet?.FrameOfReferenceUID === FrameOfReferenceUID &&
+    !referencedDisplaySet.isDerivedDisplaySet
+  ) {
+    return referencedDisplaySet;
+  }
+
+  return chooseDisplaySet(displaySets, FrameOfReferenceUID);
 }
 
 /**
  * Gets the additional reference data appropriate for a 3d reference.
  * This will choose a volume id, frame of reference and a plane restriction.
  */
-function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
+function getReferenceData3D(
+  toolData,
+  servicesManager: Types.ServicesManager,
+  displaySetsByFrameOfReferenceUID = new Map()
+) {
   const { FrameOfReferenceUID } = toolData.annotation.metadata;
   const { points } = toolData.annotation.data.handles;
   const { displaySetService } = servicesManager.services;
@@ -342,7 +388,9 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
       FrameOfReferenceUID,
     };
   }
-  const ds = chooseDisplaySet(displaySetsFOR, toolData.annotation);
+  const ds =
+    displaySetsByFrameOfReferenceUID.get(FrameOfReferenceUID) ||
+    chooseDisplaySet(displaySetsFOR, toolData.annotation);
   const cameraView = chooseCameraView(ds, points);
 
   const viewReference = {
