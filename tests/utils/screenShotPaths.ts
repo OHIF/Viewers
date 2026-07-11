@@ -221,6 +221,9 @@ const screenShotPaths = {
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
+  overlappingSegmentationRendering: {
+    overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
+  },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
