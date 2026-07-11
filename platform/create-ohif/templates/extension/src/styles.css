@@ -1,0 +1,12 @@
+/*
+ * Self-contained CSS rule for runtime plugins: everything this extension needs
+ * is compiled into dist/index.css (Tailwind scans only this package's src/;
+ * preflight is off so nothing resets host styles). Never rely on classes the
+ * host may or may not ship.
+ */
+@tailwind components;
+@tailwind utilities;
+
+.{{dirName}}-example {
+  padding: 0.5rem;
+}

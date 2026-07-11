@@ -31,9 +31,10 @@ async function run() {
     // may be consumed as a prebuilt-viewer artifact by existing deployments,
     // so keep publishing it unchanged until that is verified.
     'platform/app',
-    // create-ohif scaffolder (WS6): does not exist yet. Listed now so its
-    // later addition to the publish surface is this single entry; glob.sync
-    // returns no match (and we skip) until the directory lands.
+    // create-ohif scaffolder: published tooling alongside the SDK set (the
+    // "plus tooling" half of B6). Ships raw .mjs + templates, no dist UMD, so
+    // verify-tarballs.mjs lists it under PUBLISHED_TOOLING (allowed
+    // non-private, exempt from the SDK tarball assertions).
     'platform/create-ohif',
   ];
 

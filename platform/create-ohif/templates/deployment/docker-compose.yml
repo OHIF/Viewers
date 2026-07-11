@@ -1,0 +1,20 @@
+# Stock OHIF viewer image + your app-config.js. Config only -- no build step.
+#
+# Start it with the config passed through the image's APP_CONFIG entrypoint
+# (the variable holds the full JS text of app-config.js):
+#
+#   APP_CONFIG="$(cat app-config.js)" docker compose up
+#
+services:
+  viewer:
+    image: ohif/app:latest
+    ports:
+      - '3000:80'
+    environment:
+      # Passed through from the shell (see the command above); the image's
+      # entrypoint writes it to app-config.js before nginx starts.
+      - APP_CONFIG
+    # Optional: serve runtime-loaded plugin bundles (index.umd.js + css) at
+    # /plugins/ and reference them from app-config.js descriptors.
+    # volumes:
+    #   - ./plugins:/usr/share/nginx/html/plugins:ro
