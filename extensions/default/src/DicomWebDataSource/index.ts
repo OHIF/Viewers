@@ -696,18 +696,44 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
+      let completedSeriesCount = 0;
       const seriesDeliveredPromises = seriesPromises.map(promise => {
-        if (!returnPromises) {
-          promise?.start();
-        }
-        return promise.then(instances => storeInstances(instances));
+        let deliveredPromise;
+
+        return {
+          metadata: promise.metadata,
+          start: () => {
+            if (!deliveredPromise) {
+              deliveredPromise = promise.start().then(async instances => {
+                await storeInstances(instances);
+
+                completedSeriesCount++;
+                if (returnPromises && completedSeriesCount === seriesPromises.length) {
+                  setSuccessFlag();
+                }
+
+                return instances;
+              });
+            }
+
+            return deliveredPromise;
+          },
+        };
       });
 
       if (returnPromises) {
-        Promise.all(seriesDeliveredPromises).then(() => setSuccessFlag());
-        return seriesPromises;
+        if (!seriesDeliveredPromises.length) {
+          setSuccessFlag();
+        }
+
+        // The route starts only the series required by the hanging protocol,
+        // then starts the remainder in the background. Return wrappers whose
+        // start() resolves after async metadata post-processing has stored the
+        // instances and fired INSTANCES_ADDED; resolving the raw retrieval here
+        // races hanging-protocol application against display-set creation.
+        return seriesDeliveredPromises;
       } else {
-        await Promise.all(seriesDeliveredPromises);
+        await Promise.all(seriesDeliveredPromises.map(promise => promise.start()));
         setSuccessFlag();
       }
 
