@@ -198,16 +198,17 @@ if auth headers are used, a preflight request is required.
 - `autoPlayCine`: (default to false), if set to true, data sets with the DICOM frame time tag (i.e. (0018,1063)) will auto play when displayed
 - `addWindowLevelActionMenu`: (default to true), if set to false, the window level action menu item is NOT added to the viewport action corners
 - `showErrorDetails`: determines which runtime environments can display exception and error details caught at the `ErrorBoundary`; acceptable values include: `always`, `dev`, and `production`
+- `runtimeExtensionOrigins`: (default `[]`) array of origins allowed to serve runtime-loaded extension/mode code referenced by URL in `extensions`/`modes` (e.g. `['https://cdn.example.com']`). Same-origin URLs and relative paths are always allowed. Any other origin is refused unless listed here.
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
-  - Regex helps to avoid easy exploit. Default is `/.*/`. Setup your own regex to choose a specific source of configuration only.
+  - `regex` is **required** when `enabled: true`. There is no default: if `regex` is omitted, OHIF refuses to load any `configUrl`, logs a console error, and starts with the built-in configuration. Set a regex that pins the exact configuration sources you trust. To knowingly accept any URL (strongly discouraged), set `regex: /.*/` explicitly.
   - System administrators can return `cross-origin: same-origin` with OHIF files to disallow any loading from other origin. It will block read access to resources loaded from a different origin to avoid potential attack vector.
   - Example config:
     ```js
     dangerouslyUseDynamicConfig: {
-      enabled: false,
-      regex: /.*/
+      enabled: true,
+      regex: /^https:\/\/config\.your-hospital\.org\//
     }
     ```
   > Example 1, to allow numbers and letters in an absolute or sub-path only.<br/>
