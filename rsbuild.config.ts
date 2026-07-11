@@ -196,6 +196,35 @@ export default defineConfig({
       },
       module: {
         rules: [
+          // e2e coverage instrumentation. The playwright webServer launches THIS
+          // config with COVERAGE=true wrapped in `nyc`, and the fixtures
+          // (tests/utils/fixture.ts via playwright-test-coverage) only HARVEST
+          // window.__coverage__ — the bundle must be instrumented at build time
+          // for that global to exist. Ported from the former rspack.pwa.js ->
+          // rspack.base.js IS_COVERAGE rule (babel-loader + babel-plugin-istanbul).
+          // Runs as a post-loader over rsbuild's SWC output; source maps thread the
+          // coverage back to the original .ts/.tsx. Empty in every non-coverage
+          // build, so dev:fast and the production build are untouched.
+          ...(IS_COVERAGE
+            ? [
+                {
+                  test: /\.[jt]sx?$/,
+                  exclude: /node_modules/,
+                  enforce: 'post' as const,
+                  use: [
+                    {
+                      loader: 'babel-loader',
+                      options: {
+                        babelrc: false,
+                        configFile: false,
+                        sourceMaps: true,
+                        plugins: ['babel-plugin-istanbul'],
+                      },
+                    },
+                  ],
+                },
+              ]
+            : []),
           // Consume the source maps emitted by the linked local Cornerstone
           // packages (libs/@cornerstonejs, via cs3d:link + cs3d:watch) so browser
           // stack traces and breakpoints resolve to the original .ts instead of
