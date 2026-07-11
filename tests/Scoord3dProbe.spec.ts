@@ -5,7 +5,8 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForPaintToSettle, waitForViewportRenderCycle,
+  waitForPaintToSettle,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -35,7 +36,7 @@ test.beforeEach(async ({ page }) => {
     }
   });
 });
-test.describe.configure({ retries: 1 });
+
 test('should hydrate SCOORD3D probe measurements correctly', async ({
   page,
   DOMOverlayPageObject,
@@ -43,19 +44,17 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  // Wait for the side panel to be visible and clickable
-  await page.waitForTimeout(3000);
-
   // Navigate to the tracked measurements panel
   await rightPanelPageObject.toggle();
   await rightPanelPageObject.measurementsPanel.select();
 
   // Double-click on the study browser thumbnail to load the SR
   await leftPanelPageObject.loadSeriesByModality('SR');
-  await page.waitForTimeout(2000);
 
-  // Wait for the SR to load and stabilize before taking screenshot
-  await page.waitForTimeout(1000);
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
+    state: 'visible',
+    timeout: 15000,
+  });
 
   const activeViewport = await viewportPageObject.active;
 
@@ -85,25 +84,22 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
       viewport.render();
     }
   });
-
-  // Wait for rendering to complete
-  await page.waitForTimeout(1000);
-
-  // Wait for the hydrate button to be visible and clickable
-  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
-    state: 'visible',
-    timeout: 15000,
-  });
+  await waitForViewportsRendered(page);
 
   // Click the hydrate button to load the SCOORD3D probe measurements
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-  // Wait for hydration to complete and rendering to stabilize. SCOORD3D
-  // hydration can swap the displayed series (referenced vs. current volume),
-  // so we must wait for the new image set to render before screenshotting.
-  await waitForViewportsRendered(page);
-  await page.waitForTimeout(3000);
-  await waitForPaintToSettle(page);
+  // SR hydration runs through the tracking state machine after the button click.
+  // Waiting for "rendered" immediately can resolve on the old viewport before
+  // that async work starts, so first wait for the hydrated measurements and
+  // target series to be observable, then wait for rendering to complete.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0, {
+    timeout: 30000,
+  });
+  await expect(activeViewport.overlayText.topLeft.locator).toContainText('t2_tse_sag', {
+    timeout: 30000,
+  });
+  await waitForViewportsRendered(page, { timeout: 30000 });
 
   // Take screenshot after hydration showing the probe measurements - use viewport locator
   await checkForScreenshot(
@@ -152,19 +148,10 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   await jumpRenderCycle;
   await waitForPaintToSettle(page);
 
-  // The jump path intentionally does not wait for the full volume to load
-  // (waitVolumeLoad: false above), so on slower CI the dynamic series
-  // (tfl_dyn_fast_tra) may still be progressively loading when this screenshot
-  // is taken, yielding a partially-loaded probe value. Extend the screenshot
-  // retry window (attempts x delay) to give the volume time to settle before
-  // failing. TODO: revisit whether the baseline should be regenerated if the
-  // post-load rendering has legitimately changed.
   await checkForScreenshot(
     page,
     activeViewport.pane,
-    screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement,
-    20,
-    2000
+    screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
   );
 });
 
@@ -175,14 +162,10 @@ test('should display SCOORD3D probe measurements correctly', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  // Wait for the side panel to be visible and clickable
-  await page.waitForTimeout(3000);
-
   // First hydrate the SR to load the measurements
   await rightPanelPageObject.toggle();
   await rightPanelPageObject.measurementsPanel.select();
   await leftPanelPageObject.loadSeriesByModality('SR');
-  await page.waitForTimeout(2000);
 
   // Wait for the hydrate button to be visible and clickable
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
@@ -190,7 +173,15 @@ test('should display SCOORD3D probe measurements correctly', async ({
     timeout: 15000,
   });
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-  await page.waitForTimeout(2000);
+
+  const activeViewport = await viewportPageObject.active;
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0, {
+    timeout: 30000,
+  });
+  await expect(activeViewport.overlayText.topLeft.locator).toContainText('t2_tse_sag', {
+    timeout: 30000,
+  });
+  await waitForViewportsRendered(page, { timeout: 30000 });
 
   // Zoom to show the probe measurements clearly
   await page.evaluate(() => {
@@ -210,15 +201,7 @@ test('should display SCOORD3D probe measurements correctly', async ({
       viewport.render();
     }
   });
-
-  // Wait for the zoom re-render to actually settle before capturing. A fixed
-  // delay can capture a partially rendered viewport on a slow/loaded runner,
-  // which shows up as a near-total screenshot diff.
   await waitForViewportsRendered(page);
-  await waitForPaintToSettle(page);
-  await page.waitForTimeout(3000);
-
-  const activeViewport = await viewportPageObject.active;
 
   // Take screenshot showing the SCOORD3D probe measurements rendered correctly - use viewport locator
   await checkForScreenshot(
