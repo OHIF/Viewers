@@ -25,6 +25,7 @@ import {
 } from '../utils/dicomWriter';
 import { getGetThumbnailSrc, ThumbnailContext } from './retrieveThumbnail';
 import { getRenderedURL } from './retrieveRendered';
+import retrieveBulkData from './retrieveBulkData';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -801,36 +802,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   }
 
   return IWebApiDataSource.create(implementation);
-}
-
-/**
- * A bindable function that retrieves the bulk data against this as the
- * dicomweb client, and on the given value element.
- *
- * @param value - a bind value that stores the retrieve value to short circuit the
- *    next retrieve instance.
- * @param options - to allow specifying the content type.
- */
-function retrieveBulkData(value, options = {}) {
-  const { mediaType } = options;
-  const useOptions = {
-    // The bulkdata fetches work with either multipart or
-    // singlepart, so set multipart to false to let the server
-    // decide which type to respond with.
-    multipart: false,
-    BulkDataURI: value.BulkDataURI,
-    mediaTypes: mediaType ? [{ mediaType }, { mediaType: 'application/octet-stream' }] : undefined,
-    ...options,
-  };
-  return this.retrieveBulkData(useOptions).then(val => {
-    // There are DICOM PDF cases where the first ArrayBuffer in the array is
-    // the bulk data and DICOM video cases where the second ArrayBuffer is
-    // the bulk data. Here we play it safe and do a find.
-    const ret =
-      (val instanceof Array && val.find(arrayBuffer => arrayBuffer?.byteLength)) || undefined;
-    value.Value = ret;
-    return ret;
-  });
 }
 
 export { createDicomWebApi };
