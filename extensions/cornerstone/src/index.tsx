@@ -7,6 +7,7 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 import { Types } from '@ohif/core';
 import Enums from './enums';
 
@@ -168,6 +169,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       imageLoadPoolManager.clearRequestStack(type);
       imageRetrievalPoolManager.clearRequestStack(type);
     });
+
+    // Release the typed metadata registry (NATURALIZED instances registered via
+    // prefetchPart10Instance hold full compressed Part 10 buffers that live
+    // outside the size-capped cornerstone image cache)
+    csMetadataUtilities.clearCacheData();
 
     cineService.setIsCineEnabled(false);
 

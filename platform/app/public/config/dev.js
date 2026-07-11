@@ -3,23 +3,26 @@
 // Local development configuration.
 //
 // This is the default config for the dev server (`pnpm run dev`, `dev:fast`,
-// `start`). Like config/netlify.js it is full-featured — every data source is
-// enabled and the `?customization=` URL feature is ON via
-// `customizationUrlPrefixes` — so the whole app can be exercised locally. The
-// locked-down config/default.js is what a plain production build emits instead.
+// `start`). It is intentionally kept at parity with config/netlify.js (the
+// public demo deploy): every data source is enabled, the `?customization=` URL
+// feature is ON via `customizationUrlPrefixes`, and the same startup
+// `customizationService` modules are loaded — so the whole app, including
+// customizations, can be exercised locally exactly as it runs on the demo.
+// The locked-down config/default.js is what a plain production build emits
+// instead.
 window.config = {
   name: 'config/dev.js',
   routerBasename: null,
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: ['@ohif/extension-default.customizationModule.theme'],
 
   // URL-driven customizations (?customization=). The `default` prefix (no
   // slashes) is used for values without a leading slash; every other prefix
   // must start AND end with a slash and matches the leading `/segment/` of the
   // value. Files are fetched and parsed as JSONC data — never executed.
-  // e.g. ?customization=ctPresets  ->  ./customizations/ctPresets.jsonc
+  // e.g. ?customization=tools/ctPresets  ->  ./customizations/tools/ctPresets.jsonc
   customizationUrlPrefixes: {
     default: './customizations/',
   },

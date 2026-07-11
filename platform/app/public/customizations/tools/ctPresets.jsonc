@@ -4,7 +4,7 @@
 // site-specific set (key: `cornerstone.windowLevelPresets`). Other modalities
 // keep their defaults because only the `CT` entry is overridden.
 //
-// Load it with `?customization=ctPresets`.
+// Load it with `?customization=tools/ctPresets`.
 {
   "global": {
     "cornerstone.windowLevelPresets": {

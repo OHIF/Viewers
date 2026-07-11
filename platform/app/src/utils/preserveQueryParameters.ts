@@ -12,6 +12,7 @@ export const preserveKeys = [
   'screenNumber',
   'hangingProtocolId',
   'customization',
+  'theme',
 ];
 
 function preserveKey(query: URLSearchParams, current: URLSearchParams, key: string) {
