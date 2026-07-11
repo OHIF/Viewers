@@ -784,12 +784,16 @@ export const toolbarSections = {
 };
 
 /**
- * Customizations registered (at default scope) by the cornerstone extension:
- *   - `cornerstone.toolbarButtons`  – the default toolbar button definitions
- *   - `cornerstone.toolbarSections` – the default toolbar layout (section -> button ids)
+ * Capability packs registered (at default scope) by the cornerstone extension:
+ *   - `cornerstone.toolbarButtons`  – the general toolbar button definitions
+ *   - `cornerstone.toolbarSections` – the general toolbar layout (section -> button ids)
  *
- * Modes read these by name in `onModeEnter`; URL `?customization=` modules can
- * extend them with immutability-helper commands (e.g. `$push` a new button).
+ * These are pure "what can exist" packs — they carry no mode identity. Modes
+ * compose them with `{ $reference }` markers in their own `toolbarButtons` /
+ * `toolbarSections` instance arrays, which the mode route seeds into the Mode
+ * customization scope on enter; URL `?customization=` modules extend the result
+ * through the `mode` phase (e.g.
+ * `mode.basic.toolbarButtons: { $push: [{ $reference: '...' }] }`).
  */
 const toolbarButtonsCustomization = {
   'cornerstone.toolbarButtons': toolbarButtons,

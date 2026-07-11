@@ -8,8 +8,8 @@
 // tag 00100030).
 //
 // This applies in the `global` phase, so it is in place before the WorkList
-// renders. Load it with `?customization=patientBirthDate`, or pull it in from
-// `appConfig.customizationService.requires`.
+// renders. Load it with `?customization=worklist/patientBirthDate`, or pull it in
+// from `appConfig.customizationService.requires`.
 {
   "global": {
     "workList.columns": {
