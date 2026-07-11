@@ -2,35 +2,40 @@
 sidebar_position: 5
 sidebar_label: Installation
 title: Mode Installation
-summary: How to install external OHIF modes by declaring them in pluginConfig.json — from npm, from an out-of-tree checkout, or in-tree.
+summary: How to install external OHIF modes by declaring them in pluginConfig.json — from npm, from an out-of-tree checkout, or in-tree — with the pnpm run plugin helper.
 ---
 
 # Modes: Installation
 
-Modes are declared in
-[`platform/app/pluginConfig.json`](../extensions/pluginConfig.md) and compiled
-into the viewer at build time.
+Every installed mode is an entry in
+[`platform/app/pluginConfig.json`](../extensions/pluginConfig.md) and is
+compiled into the viewer at build time.
 
-- **From npm** — install to the workspace root, then declare the package:
+## From npm
 
-  ```bash
-  pnpm add -w @acme/mode-bar
-  ```
+```bash
+pnpm add -w @acme/mode-bar
+```
 
-  ```jsonc title="platform/app/pluginConfig.json"
-  { "modes": [ { "packageName": "@acme/mode-bar" } ] }
-  ```
+```jsonc title="platform/app/pluginConfig.json"
+{ "modes": [ { "packageName": "@acme/mode-bar" } ] }
+```
 
-- **From a local checkout** — add a `directory` entry; see
-  [Plugin locations](../extensions/pluginConfig.md#plugin-locations).
-- **In-tree** — place the package under `modes/` and declare it by
-  `packageName` (the workspace glob already covers it).
+Or do both in one step with the helper:
 
-Also declare the extensions the mode lists in its `peerDependencies` — the
-build does not add them automatically.
+```bash
+pnpm run plugin add @acme/mode-bar
+```
 
-:::warning Deprecated
-The former [OHIF CLI](../../development/ohif-cli.md) (`add-mode`,
-`link-mode`, …) is deprecated and scheduled for removal; its `link`
-commands no longer work under pnpm.
-:::
+## Declare the mode's extensions
+
+The extensions a mode lists in its `peerDependencies` must also be installed
+and declared in the `extensions` array — the build does not add them
+automatically. `pnpm run plugin doctor` flags missing ones.
+
+---
+
+The procedure is otherwise identical to
+[extension installation](../extensions/installation.md): the same
+`pnpm run plugin` commands (`add`, `remove`, `link`, `unlink`, `list`,
+`doctor`) apply, and out-of-tree and in-tree placement work the same way.

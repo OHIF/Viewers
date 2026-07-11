@@ -15,7 +15,6 @@
     "build:qa": "pnpm --filter @ohif/app run build:viewer:qa",
     "clean": "pnpm -r run clean",
     "clean:deep": "pnpm -r run clean:deep",
-    "cli": "node ./platform/cli/src/index.js",
     "plugin": "node ./scripts/ohif-plugin.mjs",
     "build:demo": "pnpm --filter @ohif/app run build:viewer:demo",
     "build:package-all": "pnpm -r run build:package",

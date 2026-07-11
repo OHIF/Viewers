@@ -10,16 +10,16 @@ This is **OHIF** v3  (Open Health Imaging Foundation) - a medical imaging viewer
 ### Main Development
 ```bash
 # Start development server for all packages
-yarn dev
+pnpm run dev
 ```
 
 ### Building
 ```bash
 # Build all packages for production
-yarn build
+pnpm run build
 
-# Build specific packages
-cd platform/app && yarn build    # Main viewer app
+# Build the main viewer app
+pnpm --filter @ohif/app run build:viewer
 ```
 
 ## Architecture Overview
@@ -88,9 +88,9 @@ Aggregates and exposes extension modules throughout the OHIF application, manage
 
 ### Build System
 
-**Yarn Workspaces**: Optimized monorepo builds with dependency caching
-**Webpack 5**: Module federation for dynamic extension loading
-**Plugin Import System**: Extensions auto-register via `writePluginImportsFile.js`
+**pnpm Workspaces**: monorepo management (`pnpm-workspace.yaml`: `platform/*`, `extensions/*`, `modes/*`)
+**Rspack (webpack-compatible)**: two build pipelines that must stay in parity — `platform/app/.rspack/rspack.pwa.js` (authoritative) and repo-root `rsbuild.config.ts` (`pnpm run dev:fast`)
+**Plugin Import System**: there is NO module federation. Extensions and modes declared in `platform/app/pluginConfig.json` are statically compiled into the app bundle: `platform/app/.rspack/writePluginImportsFile.js` generates `pluginImports.js` at build time. Runtime (no-rebuild) extensions are prebuilt UMD bundles declared in `window.config.extensions[]` and loaded by the same generated loader — also not module federation.
 
 ### Key Technologies
 
@@ -183,7 +183,17 @@ The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/ski
 ## Configuration
 
 ### Plugin Configuration
-Extensions are auto-discovered via `pluginConfig.json` and dynamically imported during build.
+Extensions and modes are explicitly declared in `platform/app/pluginConfig.json` (validated against a JSON Schema at config load — no auto-discovery) and statically imported at build time via the generated `pluginImports.js`.
+
+### Extension Contract (v1 summary)
+
+- An extension/mode is an npm package whose **`id` equals its package name**; `src/index.tsx` default-exports `{ id, preRegistration?, get*Module…, onModeEnter?, onModeExit? }`.
+- Third-party packages build a **single UMD bundle**: `output.library = { name: pkg.name, type: 'umd', export: 'default' }` → runtime global `window['@scope/name']`.
+- **Never bundle host-provided packages.** The canonical externals list is `.rspack/pluginExternals.js`: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`, `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. The host exposes these as globals via `platform/app/src/runtimeShared.ts`.
+- Working-tree `package.json` entries point at `src/*`; `publishConfig` rewrites them to `dist/*` in the tarball — **publish with `pnpm publish` only** (the npm CLI ignores the rewrites).
+- Keywords `ohif-extension` / `ohif-mode` are the discovery convention.
+- Scaffold with `pnpm create ohif`; manage `platform/app/pluginConfig.json` by hand or with `pnpm run plugin add|remove|list|link|unlink|doctor`.
+- Register at build time via `pluginConfig.json`, or at runtime via a `window.config.extensions[]` descriptor (`{ packageName, importPath, globalName?, coreVersionRange?, integrity?, styles? }`).
 
 ## Medical Imaging Specifics
 

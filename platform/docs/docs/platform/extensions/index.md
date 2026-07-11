@@ -178,10 +178,10 @@ the top level [`extensions/`][ext-source] directory.
 ```
 
 :::note
-You can register extensions by editing the `pluginConfig.json` file directly.
-The provided `cli` can also add/remove/install/uninstall extensions
-([read more](../../development/ohif-cli.md)), but it is being phased out in
-favour of generating extensions with an agent.
+You can register extensions by editing the `pluginConfig.json` file directly,
+or with the `pnpm run plugin add/remove/link/unlink` helper. Scaffold a new
+extension with [`create-ohif`](../../development/create-ohif.md). The former
+OHIF CLI has been removed — see [OHIF CLI removal](../../migration-guide/3p12-to-3p13/cli-removal.md).
 :::
 
 For the full set of fields (`packageName`, `version`, `default`, `directory`,
