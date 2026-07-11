@@ -14,10 +14,20 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "src",
+    "public",
+    "README.md",
+    "tailwind.config.js"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "module": "dist/ohif-ui-next.umd.js",
+    "exports": {
+      ".": "./dist/ohif-ui-next.umd.js",
+      "./tailwind.config": "./tailwind.config.js",
+      "./lib/*": "./src/lib/*.ts",
+      "./components/*": "./src/components/*.tsx"
+    }
   },
   "scripts": {
     "clean": "shx rm -rf dist",

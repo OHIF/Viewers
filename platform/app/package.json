@@ -55,7 +55,6 @@
     "@emotion/serialize": "1.3.3",
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
-    "@ohif/ui": "workspace:*",
     "@ohif/ui-next": "workspace:*",
     "@svgr/webpack": "8.1.0",
     "@types/react": "18.3.23",
@@ -88,6 +87,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-private-methods": "7.29.7",
+    "@ohif/ui": "workspace:*",
     "@rspack/cli": "^2.0.0",
     "@rspack/core": "^2.0.0",
     "@rspack/dev-server": "^2.0.0",

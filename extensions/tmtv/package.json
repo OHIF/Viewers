@@ -1,6 +1,7 @@
 {
   "name": "@ohif/extension-tmtv",
   "version": "3.13.0-beta.134",
+  "private": true,
   "description": "OHIF extension for Total Metabolic Tumor Volume",
   "author": "OHIF",
   "license": "MIT",

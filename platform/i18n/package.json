@@ -12,10 +12,13 @@
   },
   "files": [
     "dist",
+    "src",
+    "public",
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "module": "dist/ohif-i18n.umd.js"
   },
   "scripts": {
     "clean": "shx rm -rf dist",

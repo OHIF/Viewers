@@ -13,10 +13,13 @@
   },
   "files": [
     "dist",
+    "src",
+    "public",
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "module": "dist/ohif-core.umd.js"
   },
   "sideEffects": "false",
   "scripts": {

@@ -12,10 +12,13 @@
   },
   "files": [
     "dist",
+    "src",
+    "public",
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "module": "dist/ohif-extension-default.umd.js"
   },
   "scripts": {
     "clean": "shx rm -rf dist",
@@ -31,6 +34,7 @@
   "peerDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
+    "@ohif/ui-next": "workspace:*",
     "dcmjs": "0.52.0",
     "dicomweb-client": "0.10.4",
     "prop-types": "15.8.1",

@@ -242,9 +242,9 @@ importers:
       '@ohif/extension-default':
         specifier: workspace:*
         version: link:../default
-      '@ohif/ui':
+      '@ohif/ui-next':
         specifier: workspace:*
-        version: link:../../platform/ui
+        version: link:../../platform/ui-next
       dcmjs:
         specifier: 0.52.0
         version: 0.52.0
@@ -542,6 +542,9 @@ importers:
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../../platform/i18n
+      '@ohif/ui-next':
+        specifier: workspace:*
+        version: link:../../platform/ui-next
       dcmjs:
         specifier: 0.52.0
         version: 0.52.0
@@ -1381,9 +1384,6 @@ importers:
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../i18n
-      '@ohif/ui':
-        specifier: workspace:*
-        version: link:../ui
       '@ohif/ui-next':
         specifier: workspace:*
         version: link:../ui-next
@@ -1475,6 +1475,9 @@ importers:
       '@babel/plugin-transform-private-methods':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7)
+      '@ohif/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@rspack/cli':
         specifier: ^2.0.0
         version: 2.0.3(@rspack/core@2.0.3(@swc/helpers@0.5.21))(@rspack/dev-server@2.0.1(@rspack/core@2.0.3(@swc/helpers@0.5.21))(selfsigned@5.5.0))

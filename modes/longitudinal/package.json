@@ -1,6 +1,7 @@
 {
   "name": "@ohif/mode-longitudinal",
   "version": "3.13.0-beta.134",
+  "private": true,
   "description": "Longitudinal Workflow",
   "author": "OHIF",
   "license": "MIT",
