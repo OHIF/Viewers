@@ -1,6 +1,10 @@
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
+// `sources`/`Compilation` power the ported service-worker manifest plugin
+// below; rsbuild runs rspack under the hood, so the same custom rspack plugin
+// registered via tools.rspack.plugins behaves identically to rspack.pwa.js.
+import { sources, Compilation } from '@rspack/core';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.rspack/writePluginImportsFile';
 // Module-resolution rules shared with the webpack/rspack build (rspack.base.js)
@@ -13,13 +17,25 @@ const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
 const PUBLIC_DIR = path.resolve(__dirname, './platform/app/public');
 
 // Environment variables (similar to rspack.pwa.js)
-// rsbuild is used only by the dev server (`dev:fast`), so default to the
-// full-featured `config/dev.js` while still honoring an explicit APP_CONFIG.
-const APP_CONFIG = process.env.APP_CONFIG || 'config/dev.js';
+const NODE_ENV = process.env.NODE_ENV;
+// Production parity path: this config now serves BOTH `dev:fast` (dev server)
+// and the production `rsbuild build` (gated on NODE_ENV=production). The prod
+// path reproduces rspack.pwa.js's production behavior; see below.
+const isProdBuild = NODE_ENV === 'production';
+// e2e runs launch this same config (playwright webServer + `test:e2e`) with
+// COVERAGE=true; used to disable the dev-server error overlay below, whose
+// injected iframe intercepts pointer events and makes Playwright clicks miss.
+const IS_COVERAGE = process.env.COVERAGE === 'true';
+// Honor an explicit APP_CONFIG; otherwise mirror rspack.pwa.js — a production
+// build gets the locked-down `config/default.js`, the dev server the
+// full-featured `config/dev.js`.
+const APP_CONFIG =
+  process.env.APP_CONFIG || (isProdBuild ? 'config/default.js' : 'config/dev.js');
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
+// Matches rspack.pwa.js: allow an alternate html template (e.g. rollbar.html).
+const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 
 // Add these constants
-const NODE_ENV = process.env.NODE_ENV;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, './version.txt'), 'utf8') || '';
 const COMMIT_HASH = fs.readFileSync(path.join(__dirname, './commit.txt'), 'utf8') || '';
@@ -47,9 +63,87 @@ const SOURCE_MAP_LOADER = (() => {
   }
 })();
 
+// Ported verbatim from rspack.pwa.js so the production build emits the same
+// `sw.js` with a populated `self.__WB_MANIFEST` and the SAME exclude list
+// (`/theme/`, `/^plugins\//`). Registered through tools.rspack.plugins below.
+class InjectServiceWorkerManifestPlugin {
+  swSrc: string;
+  swDest: string;
+  publicPath: string;
+  exclude: RegExp[];
+  maximumFileSizeToCacheInBytes: number;
+
+  constructor({ swSrc, swDest, publicPath, exclude, maximumFileSizeToCacheInBytes }) {
+    this.swSrc = swSrc;
+    this.swDest = swDest;
+    this.publicPath = publicPath;
+    this.exclude = exclude;
+    this.maximumFileSizeToCacheInBytes = maximumFileSizeToCacheInBytes;
+  }
+
+  apply(compiler) {
+    const pluginName = 'InjectServiceWorkerManifestPlugin';
+    const publicPath = this.publicPath.endsWith('/') ? this.publicPath : `${this.publicPath}/`;
+
+    compiler.hooks.thisCompilation.tap(pluginName, compilation => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: pluginName,
+          stage: Compilation.PROCESS_ASSETS_STAGE_REPORT,
+        },
+        () => {
+          const manifest = compilation
+            .getAssets()
+            .filter(asset => {
+              if (asset.name === this.swDest || asset.name.endsWith('.map')) {
+                return false;
+              }
+              if (this.exclude.some(pattern => pattern.test(asset.name))) {
+                return false;
+              }
+              return asset.source.size() <= this.maximumFileSizeToCacheInBytes;
+            })
+            .map(asset => ({
+              url: `${publicPath}${asset.name}`,
+              revision: asset.info.contenthash ? null : compilation.hash,
+            }));
+
+          const source = fs
+            .readFileSync(this.swSrc, 'utf8')
+            .replace('self.__WB_MANIFEST', JSON.stringify(manifest));
+
+          compilation.emitAsset(this.swDest, new sources.RawSource(source));
+        }
+      );
+    });
+  }
+}
+
+// The service worker is a production-only concern (dev:fast serves in memory);
+// register it only for the prod build, matching rspack.pwa.js's IS_COVERAGE-
+// gated push into `plugins`.
+const rspackProdPlugins = isProdBuild
+  ? [
+      new InjectServiceWorkerManifestPlugin({
+        swDest: 'sw.js',
+        swSrc: path.join(SRC_DIR, 'service-worker.js'),
+        publicPath: PUBLIC_URL,
+        exclude: [/theme/, /^plugins\//],
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
+      }),
+    ]
+  : [];
+
 export default defineConfig({
   dev: {
     lazyCompilation: false,
+    // During e2e (COVERAGE=true) disable the dev-server error overlay: its
+    // injected iframe/web component intercepts pointer events and breaks
+    // Playwright/Cypress clicks. Keep it for normal local dev. Ported from
+    // rspack.pwa.js devServer.client.overlay (IS_COVERAGE ? false : ...).
+    client: {
+      overlay: !IS_COVERAGE,
+    },
   },
   source: {
     entry: {
@@ -67,11 +161,27 @@ export default defineConfig({
       'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
       'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
       'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+      // Sole build-time definer for e2e determinism hooks (`test:e2e` sets
+      // TEST_ENV=true via cross-env; playwright's webServer runs this config).
+      // Ported from rspack.base.js:58 — without it process.env.TEST_ENV stays
+      // {} in the browser bundle and the stable series-sort / notification-
+      // suppression e2e stabilizations silently disable.
+      'process.env.TEST_ENV': JSON.stringify(process.env.TEST_ENV || ''),
     },
   },
   plugins: [pluginReact(), pluginNodePolyfill()],
   tools: {
+    // Keep the two index.html inline scripts (window.PUBLIC_URL bootstrap +
+    // browserImportFunction) byte-faithful: rspack's html plugin minifies HTML
+    // in production, which would rewrite the inline script bodies and change
+    // the C13 CSP hashes. Disable html minification to preserve them.
+    htmlPlugin: (config: Record<string, unknown>) => ({
+      ...config,
+      minify: false,
+    }),
     rspack: {
+      // Production-only rspack plugins (service worker); empty in dev.
+      plugins: rspackProdPlugins,
       experiments: {
         asyncWebAssembly: true,
       },
@@ -154,6 +264,15 @@ export default defineConfig({
     },
   },
   output: {
+    // Write the production build into platform/app/dist (same target as
+    // rspack.pwa.js). In dev the bundle is served from memory, but keeping the
+    // root consistent means the relative copy `to` paths below (google.js,
+    // app-config.js) land next to the JS/HTML in both modes.
+    distPath: {
+      root: DIST_DIR,
+    },
+    // publicPath equivalent — rspack.pwa.js sets output.publicPath = PUBLIC_URL.
+    assetPrefix: PUBLIC_URL,
     copy: [
       // Copy plugin files (handled by writePluginImportsFile)
       ...(writePluginImportsFile(SRC_DIR, DIST_DIR) || []),
@@ -183,7 +302,7 @@ export default defineConfig({
     ],
   },
   html: {
-    template: path.resolve(PUBLIC_DIR, 'html-templates/index.html'),
+    template: path.resolve(PUBLIC_DIR, `html-templates/${HTML_TEMPLATE}`),
     templateParameters: {
       PUBLIC_URL,
     },

@@ -89,7 +89,7 @@ Aggregates and exposes extension modules throughout the OHIF application, manage
 ### Build System
 
 **pnpm Workspaces**: monorepo management (`pnpm-workspace.yaml`: `platform/*`, `extensions/*`, `modes/*`)
-**Rspack (webpack-compatible)**: two build pipelines that must stay in parity — `platform/app/.rspack/rspack.pwa.js` (authoritative) and repo-root `rsbuild.config.ts` (`pnpm run dev:fast`)
+**Rsbuild (rspack-based)**: a single app build pipeline — repo-root `rsbuild.config.ts` — serves both production (`pnpm run build`) and dev (`pnpm run dev:fast`), gated on `NODE_ENV`. Custom rspack plugins (e.g. the service-worker manifest injector) are registered through `tools.rspack`.
 **Plugin Import System**: there is NO module federation. Extensions and modes declared in `platform/app/pluginConfig.json` are statically compiled into the app bundle: `platform/app/.rspack/writePluginImportsFile.js` generates `pluginImports.js` at build time. Runtime (no-rebuild) extensions are prebuilt UMD bundles declared in `window.config.extensions[]` and loaded by the same generated loader — also not module federation.
 
 ### Key Technologies
