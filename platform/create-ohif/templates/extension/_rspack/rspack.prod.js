@@ -44,8 +44,13 @@ module.exports = {
       },
       {
         test: /\.css$/,
+        // style-loader injects the compiled CSS as a <style> tag when this
+        // bundle evaluates, so the styles load in every consumption mode:
+        // bundled into the host build, loaded at runtime, or compiled from
+        // source. Extracting to a separate index.css instead would leave the
+        // stylesheet unloaded whenever the host bundles the prebuilt UMD.
         use: [
-          rspack.CssExtractRspackPlugin.loader,
+          'style-loader',
           { loader: 'css-loader', options: { importLoaders: 1 } },
           {
             loader: 'postcss-loader',
@@ -59,8 +64,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new rspack.CssExtractRspackPlugin({ filename: 'index.css' }),
-    new rspack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
-  ],
+  plugins: [new rspack.optimize.LimitChunkCountPlugin({ maxChunks: 1 })],
 };

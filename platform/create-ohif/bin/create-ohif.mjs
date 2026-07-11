@@ -333,8 +333,7 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
       `    "packageName": "${name}",`,
       `    "importPath": "/plugins/${dirName}/index.umd.js",`,
       `    "globalName": "${name}",`,
-      `    "coreVersionRange": "${hostPeerRange(selfPkg.version)}"${template === 'extension' ? ',' : ''}`,
-      ...(template === 'extension' ? [`    "styles": ["/plugins/${dirName}/index.css"]`] : []),
+      `    "coreVersionRange": "${hostPeerRange(selfPkg.version)}"`,
       '  }',
     ];
     lines.push(

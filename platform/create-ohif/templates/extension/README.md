@@ -2,8 +2,9 @@
 
 {{description}}
 
-An OHIF Viewer extension (UMD plugin Contract v1). The deployable artifacts are
-`dist/index.umd.js` and `dist/index.css`.
+An OHIF Viewer extension (UMD plugin Contract v1). The deployable artifact is
+`dist/index.umd.js` (styles are injected by the bundle at runtime, so there is no
+separate stylesheet to serve).
 
 ## Quickstart
 
@@ -28,7 +29,6 @@ Host the built `dist/` at `/plugins/{{dirName}}/` next to the viewer and add a d
   importPath: '/plugins/{{dirName}}/index.umd.js',
   globalName: '{{name}}', // UMD contract: the global equals the package name
   coreVersionRange: '{{coreRange}}',
-  styles: ['/plugins/{{dirName}}/index.css'],
 }
 ```
 
@@ -57,5 +57,5 @@ pnpm publish
 ```
 
 Use pnpm, not npm: `publishConfig` rewrites `main`/`module` to `dist/index.umd.js` at pack time,
-which the npm CLI does not support. `dist/index.umd.js` and `dist/index.css` are the artifacts a
-deployment serves.
+which the npm CLI does not support. `dist/index.umd.js` is the single artifact a deployment serves;
+the extension's CSS is injected by that bundle at runtime.

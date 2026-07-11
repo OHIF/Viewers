@@ -4,7 +4,7 @@
 
 An OHIF v3 extension built as a UMD bundle (plugin Contract v1). The default export of
 `src/index.tsx` is the extension object; its `id` MUST equal package.json `name`. The deployable
-artifacts are `dist/index.umd.js` and `dist/index.css`.
+artifact is `dist/index.umd.js` (the extension's CSS is injected by that bundle at runtime).
 
 ## Commands
 
@@ -31,8 +31,8 @@ artifacts are `dist/index.umd.js` and `dist/index.css`.
    host refuses to load on range mismatch.
 7. Keep package.json `module` pointing at `src/index.tsx` — directory-mode loading
    (pluginConfig `directory`) resolves the package through that field.
-8. CSS must be compiled into `dist/index.css`, self-contained (Tailwind scans only this package;
-   preflight stays off). Never rely on host stylesheets.
+8. CSS is injected at runtime by the bundle (style-loader), self-contained (Tailwind scans only
+   this package; preflight stays off). Never rely on host stylesheets.
 9. Publish with `pnpm publish` (publishConfig field rewrites do not work with the npm CLI).
 
 ## Module map
