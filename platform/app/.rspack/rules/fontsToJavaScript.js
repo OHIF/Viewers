@@ -5,16 +5,13 @@
  * PWA will grab these externally to reduce bundle size (think code split),
  * and cache the grab using service-worker.
  */
+// Fonts now use rspack native asset modules (asset/resource) instead of file-loader.
 const fontsToJavaScript = {
   test: /\.(ttf|eot|woff|woff2)$/i,
-  use: [
-    {
-      loader: 'file-loader',
-      options: {
-        name: '[name].[ext]',
-      },
-    },
-  ],
+  type: 'asset/resource',
+  generator: {
+    filename: '[name][ext]',
+  },
 };
 
 module.exports = fontsToJavaScript;
