@@ -18,3 +18,30 @@ module.exports = [
   'react-dom',
   'react/jsx-runtime',
 ];
+
+// v1 host-globals sharing contract: the packages platform/app/src/runtimeShared.ts
+// assigns to window, keyed by full package name. Exported here so the parity
+// test (platform/app/src/runtimeShared.test.js) compares both sides from one
+// require(), and so scripts/verify-tarballs.mjs derives the published @ohif
+// SDK set from the same list (B6 machine-checked invariant).
+// @ohif/i18n is shared (GAP-1): runtime extensions dereference it during
+// module evaluation. @ohif/ui is intentionally absent — it is legacy and a
+// forbidden import for runtime plugins.
+// Regex externals above (/^@ohif/, /^@cornerstonejs/, vtk.js) intentionally
+// match MORE than this list; vtk.js is externalized with no host global — a
+// known v1 gap.
+const hostSharedPackages = [
+  'react',
+  'react-dom',
+  'react/jsx-runtime',
+  '@ohif/core',
+  '@ohif/ui-next',
+  '@ohif/i18n',
+  '@ohif/extension-default',
+  '@ohif/extension-cornerstone',
+  '@cornerstonejs/core',
+  '@cornerstonejs/tools',
+  'dcmjs',
+  'gl-matrix',
+];
+module.exports.hostSharedPackages = hostSharedPackages;

@@ -102,11 +102,17 @@ const extractName = val => (typeof val === 'string' ? val : val.packageName);
 const publicURL = process.env.PUBLIC_URL || '/';
 
 // Emitted at the top of the generated pluginImports.js. All runtime-loading
-// gate logic (URL detection, deny-by-default origin allowlist, descriptive
-// unknown-name error) lives in platform/app/src/runtimeExtensionLoader.ts so
-// it is directly unit-testable; the codegen only emits this import and the
-// gated fallthrough inside loadModule.
-const RUNTIME_LOADER_IMPORT = "import { loadExternalModule } from './runtimeExtensionLoader';\n\n";
+// logic (descriptor detection/loading, the runtimeModules cache consulted by
+// the string branch, URL detection, deny-by-default origin allowlist,
+// descriptive unknown-name error, semver gate against the DefinePlugin-injected
+// process.env.VERSION_NUMBER) lives in platform/app/src/runtimeExtensionLoader.ts
+// so it is directly unit-testable; the codegen only emits this import, the
+// descriptor branches, the cache lookup, and the gated fallthrough inside
+// loadModule.
+const RUNTIME_LOADER_IMPORT =
+  'import {\n' +
+  '  isRuntimeDescriptor,\n  loadRuntimeDescriptor,\n  resolveRuntimeModule,\n  loadExternalModule,\n' +
+  "} from './runtimeExtensionLoader';\n\n";
 
 function isAbsolutePath(path) {
   return path.startsWith('http') || path.startsWith('/');
@@ -162,9 +168,21 @@ function getFormattedWindowBlock(addToWindowLines) {
 
 function getRuntimeLoadModesExtensions(modules) {
   const dynamicLoad = [];
+  // Branch ORDER is load-bearing: (1) the descriptor branch must come BEFORE the
+  // `typeof module !== 'string'` passthrough (descriptors are objects and would
+  // otherwise be handed to ExtensionManager raw); (2) the static per-package
+  // branches come before the cache so bundled packages can never be shadowed by
+  // a runtime descriptor reusing their name; (3) the cache comes before the
+  // gated fallthrough so Mode.tsx bare names hit the cache instead of a 404
+  // import.
   dynamicLoad.push(
     '\n\n// Add a dynamic runtime loader',
     'async function loadModule(module) {',
+    '  // Track B: app-config runtime descriptors ({ packageName, importPath, ... })',
+    '  if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module);',
+    '  if (Array.isArray(module) && isRuntimeDescriptor(module[0])) {',
+    '    return [await loadRuntimeDescriptor(module[0]), module[1]];',
+    '  }',
     "  if (typeof module !== 'string') return module;"
   );
   modules.forEach(module => {
@@ -193,6 +211,9 @@ function getRuntimeLoadModesExtensions(modules) {
   });
   // TODO - handle more cases for import than just default
   dynamicLoad.push(
+    '  // Track B: bare-name resolution for runtime-loaded packages (Mode.tsx dependencies)',
+    '  const runtimeModule = resolveRuntimeModule(module);',
+    '  if (runtimeModule !== undefined) return runtimeModule;',
     '  // WS2: gated fallthrough — deny-by-default origin allowlist; unknown bare',
     '  // names throw a descriptive error (see runtimeExtensionLoader.ts).',
     '  return loadExternalModule(module);',
@@ -323,6 +344,29 @@ function getPluginResolveAliases() {
   return alias;
 }
 
+// Tailwind content globs for declared plugins that are NOT in-tree workspace
+// packages (those are covered by the static globs in
+// platform/app/tailwind.config.js). Covers out-of-tree `directory` plugins
+// and third-party plugins installed into node_modules (published tarballs
+// ship src/ — see the publish workstream's `files` field). fast-glob needs
+// forward slashes and rejects '..' segments, hence resolve + replace.
+function getPluginContentGlobs() {
+  const inTree = getWorkspacePluginDirs();
+  const globs = [];
+  for (const entry of [...(pluginConfig.extensions || []), ...(pluginConfig.modes || [])]) {
+    const name = extractName(entry);
+    if (!entry.directory && inTree[name]) {
+      continue; // in-tree workspace plugin: already covered
+    }
+    const dir = pluginAssetDir(entry);
+    if (!dir || !fs.existsSync(path.join(dir, 'src'))) {
+      continue; // absent checkout / dist-only package: nothing to scan
+    }
+    globs.push(`${path.resolve(dir).replace(/\\/g, '/')}/src/**/*.{jsx,js,ts,tsx,css}`);
+  }
+  return globs;
+}
+
 // Build CopyPlugin patterns for a set of plugins.
 //
 // For `public`-section entries (literalDirectory=true) a `directory` is the
@@ -418,4 +462,5 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR, config = pluginConfig) {
 
 module.exports = writePluginImportsFile;
 module.exports.getPluginResolveAliases = getPluginResolveAliases;
+module.exports.getPluginContentGlobs = getPluginContentGlobs;
 module.exports.validatePluginConfig = validatePluginConfig;

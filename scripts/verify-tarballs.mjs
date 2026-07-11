@@ -18,25 +18,32 @@
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
+const require = createRequire(import.meta.url);
+
 // The published SDK: the contract surface third-party plugin authors compile
-// and run against (B6). This must stay equal to the @ohif/* members of the
-// host shared/singleton surface.
-// TODO(WS7.5): once .rspack/pluginExternals.js exports hostSharedPackages,
-// derive this list from its @ohif/* members instead of hardcoding, so the
+// and run against (B6). Derived (WS7.5) from the @ohif/* members of
+// .rspack/pluginExternals.js hostSharedPackages -- the same list that drives
+// the externals contract and the runtimeShared window globals -- so the
 // externals list, the window-global list, and the npm publish set cannot
-// drift (B6 machine-checked invariant).
-const SDK_PUBLISHED = [
-  '@ohif/core',
-  '@ohif/ui-next',
-  '@ohif/i18n',
-  '@ohif/extension-default',
-  '@ohif/extension-cornerstone',
-];
+// drift (B6 machine-checked invariant). @ohif/ui is filtered defensively:
+// it is a forbidden runtime-plugin import and must never be published as
+// part of the SDK even if it ever leaks into hostSharedPackages.
+const { hostSharedPackages } = require('../.rspack/pluginExternals.js');
+const SDK_PUBLISHED = hostSharedPackages.filter(
+  name => name.startsWith('@ohif/') && name !== '@ohif/ui'
+);
+
+// Published tooling outside the SDK contract surface (the "plus tooling" half
+// of B6, mirrored in publish-package.mjs). create-ohif ships raw .mjs +
+// templates with no dist UMD bundle, so it is allowed to be non-private and
+// listed in publish-package.mjs but exempt from the SDK tarball assertions.
+const PUBLISHED_TOOLING = ['create-ohif'];
 
 // platform/app is the host application, out of the plugin contract (WS1.6
 // step 1). B6 leaves @ohif/app's publish status flagged-not-decided (its npm
@@ -94,6 +101,10 @@ function checkPublishTier(packages) {
       if (isPrivate) {
         fail(name, `is in the published SDK set but marked private:true (${pkg.relDir})`);
       }
+    } else if (PUBLISHED_TOOLING.includes(name)) {
+      if (isPrivate) {
+        fail(name, `is published tooling but marked private:true (${pkg.relDir})`);
+      }
     } else if (!isPrivate) {
       fail(
         name,
@@ -139,11 +150,14 @@ function checkPublishListParity(packages) {
     }
     const pkg = byDir.get(dir);
     if (!pkg) {
-      // Forward-declared directory that does not exist yet (platform/create-ohif);
+      // Forward-declared directory that does not exist yet;
       // publish-package.mjs's glob likewise matches nothing and skips it.
       continue;
     }
     const name = pkg.manifest.name || dir;
+    if (PUBLISHED_TOOLING.includes(name)) {
+      continue; // published tooling (create-ohif), outside the SDK parity set
+    }
     publishedNames.add(name);
     if (!SDK_PUBLISHED.includes(name)) {
       fail(name, `listed in publish-package.mjs (${dir}) but not in SDK_PUBLISHED`);

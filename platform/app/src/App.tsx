@@ -33,6 +33,7 @@ import {
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
+import { surfaceRuntimeExtensionFailures } from './runtimeExtensionLoader';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 import './App.css';
 
@@ -76,6 +77,16 @@ function App({
 
     run();
   }, []);
+
+  // Drain the runtime-extension audit queue once the providers have mounted.
+  // React fires effects child-first, so NotificationProvider has already bound
+  // the real show() implementation by the time this runs.
+  useEffect(() => {
+    if (!init) {
+      return;
+    }
+    surfaceRuntimeExtensionFailures(init.servicesManager.services.uiNotificationService);
+  }, [init]);
 
   if (!init) {
     return null;

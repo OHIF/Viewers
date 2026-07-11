@@ -326,6 +326,156 @@ configuration: {
 }
 ```
 
+## Runtime Extensions and Modes (Track B)
+
+:::note Normative reference
+This section is the normative reference for the runtime extension descriptor
+and the `runtimeExtensionOrigins` allowlist. Other pages (the Runtime
+Extensions page, deployment docs, plugin author guides) link here; if wording
+differs, this section wins.
+:::
+
+Besides bundled (build-time) plugins declared in `pluginConfig.json`, the
+viewer can load prebuilt extension and mode bundles at runtime — no viewer
+rebuild. Entries in `window.config.extensions` and `window.config.modes` may
+be **descriptor objects** instead of plain strings:
+
+```js title="app-config.js"
+window.config = {
+  // ...
+  runtimeExtensionOrigins: ['https://plugins.example.com'],
+  extensions: [
+    // Same-origin UMD bundle (UMD builds MUST set globalName):
+    {
+      packageName: '@acme/ohif-extension-ai',
+      importPath: '/plugins/acme-ai/index.umd.js',
+      globalName: '@acme/ohif-extension-ai',
+      coreVersionRange: '^3.13.0',
+      styles: ['/plugins/acme-ai/index.css'],
+    },
+    // Cross-origin ESM bundle (globalName omitted; integrity REQUIRED):
+    {
+      packageName: '@acme/ohif-extension-cloud',
+      importPath: 'https://plugins.example.com/cloud/index.mjs',
+      integrity: 'sha384-...',
+    },
+  ],
+};
+```
+
+A bundled mode may list a runtime-loaded extension's `packageName` in its
+`extensionDependencies`; the dependency is resolved through the runtime
+loader's cache.
+
+### Descriptor fields
+
+| Field              | Required           | Description                                                                                                                                                                                                                                                                                                                     |
+| ------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packageName`      | yes                | MUST equal the extension/mode `id` exported by the package. The loader refuses modules whose id differs.                                                                                                                                                                                                                        |
+| `importPath`       | yes                | Where to fetch the bundle: an absolute `http(s)` URL, a `/rooted` path, or a path relative to `PUBLIC_URL`.                                                                                                                                                                                                                     |
+| `globalName`       | UMD bundles only   | Strict format discriminator — see below. UMD builds MUST set it (normally equal to `packageName`, matching the bundle's `output.library` name); ESM builds MUST omit it.                                                                                                                                                        |
+| `coreVersionRange` | no                 | semver range checked against the host version (the build's `version.txt` value, exposed as `VERSION_NUMBER`), prereleases included. Fail-closed: if the host version does not satisfy the range, the load is refused with status `version-mismatch` BEFORE any network import. Note `version.txt` can lag `package.json`; target the value shown as `hostVersion` in the audit records. |
+| `integrity`        | cross-origin loads | `sha256-`, `sha384-`, or `sha512-` prefix plus the base64 digest of the bundle. REQUIRED when `importPath` resolves to a different origin; same-origin loads skip integrity verification.                                                                                                                                        |
+| `styles`           | no                 | Stylesheet URLs appended to the document head as `link rel="stylesheet"` tags. Resolved and origin-checked with the same rules as `importPath`.                                                                                                                                                                                  |
+
+### globalName is a strict format discriminator
+
+The presence or absence of `globalName` tells the loader how the bundle was
+built. There is **no fallback chain** and the loader never defaults
+`globalName` to `packageName`:
+
+- `globalName` **present** = UMD: after the script evaluates, the loader
+  returns `window[globalName]` — nothing else. If that global is undefined,
+  the load fails with `import-error`.
+- `globalName` **absent** = ESM: the loader dynamically imports the module and
+  returns the namespace's `default` export — never a window global. A missing
+  default export fails with `import-error`.
+
+The audit record's `format` field (`'umd'` or `'esm'`) derives from this
+discriminator.
+
+### Origin allowlist: runtimeExtensionOrigins
+
+Runtime plugin code (and stylesheets) may only be served from allowlisted
+origins. The allowlist is **deny-by-default**:
+
+- The viewer's own origin is always implicitly allowed.
+- Every other origin must be listed in
+  `window.config.runtimeExtensionOrigins` (an array of origin strings, e.g.
+  `['https://plugins.example.com']`). Ports are part of the origin. Full-URL
+  entries allowlist that URL's origin; malformed entries are skipped, never
+  fatal.
+- Non-allowlisted origins are refused with status `refused-origin` before any
+  code is fetched.
+
+Function-style app configs are supported: at init the viewer stashes
+`appConfig.runtimeExtensionOrigins` onto
+`window.__ohif.runtimeExtensionOrigins`, which takes precedence over
+`window.config.runtimeExtensionOrigins` when both exist.
+
+### Audit surface: `window.__ohif.runtimeExtensions`
+
+Every runtime load attempt — success AND failure — appends a record to
+`window.__ohif.runtimeExtensions`:
+
+```js
+{
+  packageName: '@acme/ohif-extension-ai',
+  importPath: '/plugins/acme-ai/index.umd.js',
+  resolvedUrl: 'https://viewer.example.com/plugins/acme-ai/index.umd.js',
+  status: 'loaded',        // see the status enum below
+  hostVersion: '3.13.0-beta.116',   // the host build's version.txt value
+  requiredRange: '^3.13.0',         // the descriptor's coreVersionRange
+  format: 'umd',           // derived from the globalName discriminator
+  error: undefined,        // failure message when status is not 'loaded'
+  durationMs: 142,
+  timestamp: '2026-07-11T00:00:00.000Z',
+}
+```
+
+`status` is one of `'loaded'`, `'refused-origin'`, `'integrity-failed'`,
+`'version-mismatch'`, `'import-error'`, `'registration-error'`. Records carry
+both the host version and the descriptor's required range so version skew is
+diagnosable from the console. Failures additionally surface one error toast
+each once the UI mounts (toasts are suppressed in test environments — assert
+on the audit array instead).
+
+### CSP and CORS requirements
+
+The deployment docs describe an optional `CSP_HEADER` for the official
+Docker/nginx image with this baseline value:
+
+```
+default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'
+```
+
+Two caveats for runtime plugins:
+
+1. **Cross-origin loads need `blob:`.** Cross-origin integrity loads execute
+   through a `blob:` URL (the loader fetches the bundle, verifies the digest,
+   then imports a blob URL), so a deployment CSP needs `script-src blob:` —
+   the baseline above does not include it. The plugin's origin must also send
+   CORS headers (the integrity fetch uses `mode: 'cors'`). Same-origin plugins
+   work without either.
+2. **Interim `'unsafe-inline'` note.** As written, the baseline's
+   `script-src 'self' 'wasm-unsafe-eval'` also blocks the viewer's own two
+   inline bootstrap scripts in `index.html` (the `window.PUBLIC_URL` bootstrap
+   and `browserImportFunction`), so the app itself cannot boot under it. Until
+   the automated inline-script-hash handshake ships, deployments enabling
+   `CSP_HEADER` must interim-add `'unsafe-inline'` to `script-src` (or add the
+   per-deployment `sha256-...` hashes of those two inline scripts — the hashes
+   vary with `PUBLIC_URL`).
+
+### Shared host packages
+
+The host assigns its singleton copies of 12 packages to `window`, keyed by
+full package name; runtime plugin builds externalize them instead of bundling
+their own copies: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/core`,
+`@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
+`@ohif/extension-cornerstone`, `@cornerstonejs/core`, `@cornerstonejs/tools`,
+`dcmjs`, `gl-matrix`. `@ohif/ui` is NOT shared: it is legacy and a forbidden
+import for runtime plugins (use `@ohif/ui-next`).
+
 ## Environment Variables
 
 We use environment variables at build and dev time to change the Viewer's
