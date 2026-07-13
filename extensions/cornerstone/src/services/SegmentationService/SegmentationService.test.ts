@@ -1352,6 +1352,30 @@ describe('SegmentationService', () => {
       expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledWith([[0, 0, 0, 0]]);
       expect(service['_segmentationIdToColorLUTIndexMap'].get(segmentationId)).toBe(7);
     });
+
+    it('should keep the existing color LUT when called again with the same segmentation id', async () => {
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+      } as unknown as AppTypes.DisplaySet;
+
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest.spyOn(cstSegmentation.state, 'getSegmentations').mockReturnValue([]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      jest.mocked(cstSegmentation.state.addColorLUT).mockReturnValueOnce(7).mockReturnValueOnce(8);
+
+      const segmentationId = await service.createLabelmapForDisplaySet(displaySet);
+      await service.createLabelmapForDisplaySet(displaySet, { segmentationId });
+
+      // Updating an existing segmentation must not strand the representations
+      // already rendering it on the previous LUT.
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledTimes(1);
+      expect(service['_segmentationIdToColorLUTIndexMap'].get(segmentationId)).toBe(7);
+    });
   });
 
   describe('createSegmentationForSEGDisplaySet', () => {
