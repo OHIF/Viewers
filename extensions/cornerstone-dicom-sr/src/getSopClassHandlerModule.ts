@@ -106,8 +106,18 @@ function _getDisplaySetsFromSeries(
 
   const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 
-  const isImagingMeasurementReport =
+  const conceptIsImagingMeasurementReport =
     ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurementReport;
+
+  // A report flagged as an Imaging Measurement Report but stored without its
+  // report body (no ContentSequence / (0040,A730)) cannot be parsed or rendered
+  // as one. Treat it as a plain SR so neither the loader nor the SR viewport
+  // takes the measurement path (which calls `.find` on the missing content and
+  // assumes at least one measurement exists), both of which would crash.
+  const isContentlessImagingMeasurementReport =
+    conceptIsImagingMeasurementReport && !instance.ContentSequence;
+  const isImagingMeasurementReport =
+    conceptIsImagingMeasurementReport && !isContentlessImagingMeasurementReport;
 
   const displaySet = {
     Modality: 'SR',
@@ -127,6 +137,7 @@ function _getDisplaySetsFromSeries(
     isDerivedDisplaySet: true,
     isLoaded: false,
     isImagingMeasurementReport,
+    isContentlessImagingMeasurementReport,
     sopClassUids,
     instance,
     predecessorImageId,
