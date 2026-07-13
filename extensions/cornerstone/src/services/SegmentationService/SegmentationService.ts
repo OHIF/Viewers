@@ -512,6 +512,14 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       },
     };
 
+    // Create a dedicated color LUT up front and remember its index so that every
+    // representation of this segmentation (one per viewport) reuses the same LUT.
+    // Otherwise each viewport would get its own default LUT copy and editing a
+    // segment color on one viewport would not be reflected on the others (the
+    // segment color appears to revert to the default when interacting elsewhere).
+    const colorLUTIndex = addColorLUT([[0, 0, 0, 0]] as csTypes.ColorLUT);
+    this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
+
     this.addOrUpdateSegmentation(segmentationPublicInput);
     return segmentationId;
   }

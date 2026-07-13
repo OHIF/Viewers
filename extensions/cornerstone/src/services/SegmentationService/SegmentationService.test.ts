@@ -1331,6 +1331,27 @@ describe('SegmentationService', () => {
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
     });
+
+    it('should create a dedicated color LUT and remember its index so every viewport representation reuses it', async () => {
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+      } as unknown as AppTypes.DisplaySet;
+
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest.spyOn(cstSegmentation.state, 'getSegmentations').mockReturnValue([]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      jest.mocked(cstSegmentation.state.addColorLUT).mockReturnValue(7);
+
+      const segmentationId = await service.createLabelmapForDisplaySet(displaySet);
+
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledWith([[0, 0, 0, 0]]);
+      expect(service['_segmentationIdToColorLUTIndexMap'].get(segmentationId)).toBe(7);
+    });
   });
 
   describe('createSegmentationForSEGDisplaySet', () => {
