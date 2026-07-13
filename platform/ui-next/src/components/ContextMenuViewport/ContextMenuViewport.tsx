@@ -28,6 +28,7 @@ const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
           key={index}
           data-cy="context-menu-item"
           onClick={() => item.action(item, props)}
+          onMouseEnter={e => e.currentTarget.focus({ preventScroll: true })}
           className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex w-full cursor-default select-none items-center justify-between rounded-sm px-2 py-1.5 text-base outline-none"
         >
           <span>{item.label}</span>
