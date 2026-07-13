@@ -1,7 +1,8 @@
 ---
+sidebar_label: Work List
 title: Work List Customization
 summary: Documentation for configuring the OHIF WorkList study-list route — selecting between the new (default) and legacy variants, the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Work List

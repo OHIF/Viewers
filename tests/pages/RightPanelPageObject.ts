@@ -344,6 +344,105 @@ export class RightPanelPageObject {
       select: async () => {
         await menuButton.click();
       },
+      // Switches to the contour tab and creates a new Contour-type segmentation,
+      // which enables the contour drawing tools (Spline / Livewire / Freehand).
+      addSegmentation: async () => {
+        await menuButton.click();
+        await addSegmentationButton.click();
+      },
+      tools: {
+        get splineContour() {
+          const button = page.getByTestId('SplineContourSegmentationTool');
+          // Maps a friendly spline name to the underlying cornerstone tool name,
+          // which is also the data-cy of its option in the Spline Type dropdown.
+          const splineTypeToolNames = {
+            catmullRom: 'CatmullRomSplineROI',
+            linear: 'LinearSplineROI',
+            bSpline: 'BSplineROI',
+          } as const;
+          return {
+            button,
+            // Activates the Spline Contour tool, arming the spline variant currently
+            // selected in the Spline Type dropdown. This defaults to Catmull-Rom until
+            // selectType is used to switch it.
+            click: async () => {
+              await button.click();
+            },
+            // Opens the Spline Type dropdown (rendered once the tool is active) and
+            // switches to the requested spline variant.
+            selectType: async (type: keyof typeof splineTypeToolNames) => {
+              await page.getByTestId('splineTypeSelect').getByRole('combobox').click();
+              await page.getByTestId(splineTypeToolNames[type]).click();
+            },
+          };
+        },
+        get livewireContour() {
+          const button = page.getByTestId('LivewireContourSegmentationTool');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
+        get freehandContour() {
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
+          return {
+            button,
+            click: async () => {
+              await button.click();
+            },
+          };
+        },
+      },
+      get config() {
+        const configToggle = page.getByTestId('segmentation-config-toggle-Contour');
+        return {
+          toggle: {
+            locator: configToggle,
+            click: async () => {
+              await configToggle.click();
+            },
+          },
+          display: {
+            fillAndOutline: async () => {
+              await page
+                .getByTestId(`segmentation-config-display-fill-and-outline-Contour`)
+                .click();
+            },
+            outline: async () => {
+              await page.getByTestId(`segmentation-config-display-outline-Contour`).click();
+            },
+            fill: async () => {
+              await page.getByTestId(`segmentation-config-display-fill-Contour`).click();
+            },
+          },
+        };
+      },
+      get combineContours() {
+        return {
+          open: async () => {
+            await page.getByTestId('LogicalContourOperations').click();
+          },
+          selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
+            await page.getByTestId(`logical-contour-operation-${operation}`).click();
+          },
+          selectSegmentA: async (label: string) => {
+            await page.getByTestId('logical-contour-segment-a-trigger').click();
+            await page.getByRole('option', { name: label }).click();
+          },
+          selectSegmentB: async (label: string) => {
+            await page.getByTestId('logical-contour-segment-b-trigger').click();
+            await page.getByRole('option', { name: label }).click();
+          },
+          apply: async () => {
+            await page.getByTestId('apply-logical-contour-operation').click();
+          },
+          enableCreateNewSegment: async () => {
+            await page.getByTestId('logical-contour-create-new-segment-switch').click();
+          },
+        };
+      },
     };
   }
   get labelMapSegmentationPanel() {
