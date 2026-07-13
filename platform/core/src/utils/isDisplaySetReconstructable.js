@@ -4,6 +4,10 @@ import sortInstancesByPosition from './sortInstancesByPosition';
 // TODO: Is 10% a reasonable spacingTolerance for spacing?
 const spacingTolerance = 0.2;
 const iopTolerance = 0.01;
+// Real slice spacing is on the order of millimetres; a set of frames whose
+// positions all fall within this distance occupies a single location and has no
+// through-plane extent to reconstruct (e.g. a cine / multi-time series).
+const zeroExtentTolerance = 0.01;
 
 /**
  * Checks if a series is reconstructable to a 3D volume.
@@ -114,6 +118,15 @@ function processMultiframe(multiFrameInstance) {
     return { value: false };
   }
 
+  // A multi-frame cine / multi-time series is many frames acquired at a single
+  // location (every frame shares one ImagePositionPatient), so it has no
+  // through-plane extent: building a volume yields zero slice spacing that
+  // renders black in every MPR plane. Treat it as non-reconstructable rather
+  // than a degenerate volume.
+  if (hasSingleSpatialLocation(getPerFramePositions(multiFrameInstance))) {
+    return { value: false };
+  }
+
   // TODO - check spacing consistency
   return { value: true };
 }
@@ -144,6 +157,16 @@ function processSingleframe(instances) {
     ) {
       return { value: false };
     }
+  }
+
+  // Many single-frame instances acquired at one location (a cine / multi-time
+  // series) share one ImagePositionPatient and have no through-plane extent, so
+  // they can't form a volume. Guard it explicitly instead of relying on the
+  // degenerate zero-spacing path below.
+  if (
+    hasSingleSpatialLocation(instances.map(instance => toNumber(instance.ImagePositionPatient)))
+  ) {
+    return { value: false };
   }
 
   let missingFrames = 0;
@@ -245,6 +268,65 @@ function _getPerpendicularDistance(a, b) {
   return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2));
 }
 
+function isValidImagePosition(position) {
+  return Array.isArray(position) && position.length === 3 && position.every(Number.isFinite);
+}
+
+/**
+ * True when two or more frame positions are known and all collapse to one
+ * spatial location, so the series has no through-plane extent to reconstruct.
+ * Returns false whenever this can't be determined confidently (fewer than two
+ * valid positions), so a genuine volume is never wrongly blocked.
+ *
+ * @param {Array} positions The `ImagePositionPatient` of each frame.
+ */
+function hasSingleSpatialLocation(positions) {
+  const validPositions = positions.filter(isValidImagePosition);
+  if (validPositions.length < 2) {
+    return false;
+  }
+  const origin = validPositions[0];
+  return validPositions.every(
+    position => _getPerpendicularDistance(position, origin) < zeroExtentTolerance
+  );
+}
+
+/**
+ * The `ImagePositionPatient` of every frame of a multi-frame instance.
+ *
+ * Prefers the per-frame functional groups. When those carry no position, falls
+ * back to the *shared* functional group broadcast to the frame count: a
+ * single-location cine has one constant position, which the more common DICOM
+ * encoding stores in `SharedFunctionalGroupsSequence` rather than repeating it
+ * per frame. Without this fallback the per-frame read returns `[]`, so the
+ * single-location check never fires and the degenerate volume is wrongly
+ * reported reconstructable. Empty when neither source carries a position (an
+ * object we can't inspect confidently).
+ *
+ * @param {Object} multiFrameInstance
+ */
+function getPerFramePositions(multiFrameInstance) {
+  const perFrameSequence = multiFrameInstance.PerFrameFunctionalGroupsSequence;
+  if (Array.isArray(perFrameSequence)) {
+    const perFramePositions = perFrameSequence.map(group =>
+      toNumber(group?.PlanePositionSequence?.[0]?.ImagePositionPatient)
+    );
+    if (perFramePositions.some(isValidImagePosition)) {
+      return perFramePositions;
+    }
+  }
+
+  const sharedPosition = toNumber(
+    multiFrameInstance.SharedFunctionalGroupsSequence?.[0]?.PlanePositionSequence?.[0]
+      ?.ImagePositionPatient
+  );
+  if (!isValidImagePosition(sharedPosition)) {
+    return [];
+  }
+  const frameCount = Number(multiFrameInstance.NumberOfFrames) || perFrameSequence?.length || 0;
+  return new Array(frameCount).fill(sharedPosition);
+}
+
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
 const reconstructionIssues = {
   MISSING_FRAMES: 'missingframes',
@@ -259,6 +341,8 @@ export {
   _isSameOrientation,
   _getSpacingIssue,
   _getPerpendicularDistance,
+  hasSingleSpatialLocation,
+  getPerFramePositions,
   reconstructionIssues,
   constructableModalities,
 };
