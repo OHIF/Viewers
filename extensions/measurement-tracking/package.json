@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.13.0-beta.115",
+  "version": "3.13.0-beta.123",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -27,8 +27,8 @@
     "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "5.4.12",
-    "@cornerstonejs/tools": "5.4.12",
+    "@cornerstonejs/core": "5.4.17",
+    "@cornerstonejs/tools": "5.4.17",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
     "@ohif/extension-default": "workspace:*",

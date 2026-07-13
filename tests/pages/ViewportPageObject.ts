@@ -24,12 +24,14 @@ type NormalizedPathDragParams = {
 };
 
 export interface IOverlayText {
+  locator: Locator;
   get windowLevel(): Locator;
   get instanceNumber(): Locator;
 }
 function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
   const locator = viewport.getByTestId(id);
   return {
+    locator,
     get windowLevel() {
       return locator.getByTitle('Window Level');
     },

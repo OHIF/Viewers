@@ -8,7 +8,7 @@
 // extension (`cornerstone.toolbarButtons` / `cornerstone.toolbarSections`) using
 // immutability-helper `$push` commands, so the built-in buttons are preserved.
 //
-// Load it with `?customization=smoothRotate`.
+// Load it with `?customization=tools/smoothRotate`.
 {
   "global": {
     "cornerstone.toolbarButtons": {

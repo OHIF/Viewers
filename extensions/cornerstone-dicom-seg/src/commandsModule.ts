@@ -6,7 +6,11 @@ import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
-import { getSegmentationSaveOptions } from './utils/segmentationConfig';
+import {
+  getSegmentationSaveOptions,
+  LABELMAP_SEG_SOP_CLASS_UID,
+  BITMAP_SEG_SOP_CLASS_UID,
+} from './utils/segmentationConfig';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -28,7 +32,6 @@ const {
     RTSS: { generateRTSSFromRepresentation },
   },
 } = adaptersRT;
-
 
 const commandsModule = ({
   servicesManager,
@@ -105,57 +108,69 @@ const commandsModule = ({
         : extensionManager.getActiveDataSourceDefinition();
       const dataSourceStoreOverride = dataSourceDefinition?.configuration?.segmentation?.store;
 
-      const { imageIds } = segmentation.representationData.Labelmap;
+      const labelmapData = segmentation.representationData.Labelmap;
 
-      const segImages = imageIds.map(imageId => cache.getImage(imageId));
-      const referencedImages = segImages.map((segImage, sliceIndex) => {
-        const referencedImage = cache.getImage(segImage.referencedImageId);
+      // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
+      // derived labelmap image ids. When `referencedImageIds` is supplied (the
+      // multi-layer/overlap path) each frame is indexed by its source slice so the
+      // layers align to the same frames; otherwise frames are sequential (the legacy
+      // single-layer behavior, kept byte-identical).
+      const buildLabelmap3D = (segImageIds: string[], metadata, referencedImageIds?: string[]) => {
+        const segImages = segImageIds.map(imageId => cache.getImage(imageId));
+        const labelmaps2D = [];
 
-        if (!referencedImage) {
-          throw new Error(
-            `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
-              `(referencedImageId: ${segImage.referencedImageId}). Ensure the referenced series is fully loaded before storing.`
-          );
-        }
+        // Map each source imageId to its frame index once (O(n)) so the per-slice lookup
+        // below is O(1) — avoids the O(slices^2) indexOf scan on the multi-layer path.
+        const referencedFrameIndexById = referencedImageIds
+          ? new Map(referencedImageIds.map((imageId, index) => [imageId, index]))
+          : undefined;
 
-        return referencedImage;
-      });
+        let z = 0;
 
-      const labelmaps2D = [];
+        for (const segImage of segImages) {
+          const segmentsOnLabelmap = new Set();
+          const pixelData = segImage.getPixelData();
+          const { rows, columns } = segImage;
 
-      let z = 0;
-
-      for (const segImage of segImages) {
-        const segmentsOnLabelmap = new Set();
-        const pixelData = segImage.getPixelData();
-        const { rows, columns } = segImage;
-
-        // Use a single pass through the pixel data
-        for (let i = 0; i < pixelData.length; i++) {
-          const segment = pixelData[i];
-          if (segment !== 0) {
-            segmentsOnLabelmap.add(segment);
+          // Use a single pass through the pixel data
+          for (let i = 0; i < pixelData.length; i++) {
+            const segment = pixelData[i];
+            if (segment !== 0) {
+              segmentsOnLabelmap.add(segment);
+            }
           }
+
+          const frameIndex = referencedFrameIndexById
+            ? referencedFrameIndexById.get(segImage.referencedImageId) ?? -1
+            : z++;
+
+          if (frameIndex < 0) {
+            continue;
+          }
+
+          labelmaps2D[frameIndex] = {
+            segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
+            pixelData,
+            rows,
+            columns,
+          };
         }
 
-        labelmaps2D[z++] = {
-          segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
-          pixelData,
-          rows,
-          columns,
+        const allSegmentsOnLabelmap = labelmaps2D
+          .filter(Boolean)
+          .map(labelmap => labelmap.segmentsOnLabelmap);
+
+        return {
+          segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+          metadata,
+          labelmaps2D,
         };
-      }
-
-      const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
-
-      const labelmap3D = {
-        segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
-        metadata: [],
-        labelmaps2D,
       };
 
+      // Segment metadata (shared across all layers).
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       const representations = segmentationService.getRepresentationsForSegmentation(segmentationId);
+      const metadata = [];
 
       Object.entries(segmentationInOHIF.segments).forEach(([segmentIndex, segment]) => {
         // segmentation service already has a color for each segment
@@ -176,7 +191,7 @@ const commandsModule = ({
           color.slice(0, 3).map(value => value / 255)
         ).map(value => Math.round(value));
 
-        const segmentMetadata = {
+        metadata[segmentIndex] = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
           SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
@@ -193,14 +208,76 @@ const commandsModule = ({
             CodeMeaning: 'Tissue',
           },
         };
-        labelmap3D.metadata[segmentIndex] = segmentMetadata;
       });
 
-      const generatedSegmentation = generateSegmentation(referencedImages, labelmap3D, metaData, {
+      // Multi-layer (overlapping) SEGs register one labelmap layer per conflict-free
+      // group. Export each layer as its own labelmap3D against the UNIQUE referenced
+      // source series, so cornerstone writes overlapping segments as separate frames
+      // that reference the same source slice (the DICOM SEG overlap encoding). The
+      // cs3D adapter's fillSegmentation accepts an array of labelmap3D for exactly
+      // this. Single-layer SEGs keep the original single-labelmap3D path unchanged.
+      const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
+
+      // The referenced source images must be fully loaded (in cache) before we can
+      // build the SEG dataset against them; fail loudly rather than passing undefined
+      // frames to the adapter.
+      const resolveReferencedImage = (referencedImageId: string, sliceIndex: number) => {
+        const referencedImage = cache.getImage(referencedImageId);
+        if (!referencedImage) {
+          throw new Error(
+            `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+              `(referencedImageId: ${referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+          );
+        }
+        return referencedImage;
+      };
+
+      let referencedImages;
+      let labelmaps3D;
+
+      if (layers && layers.length > 1) {
+        const referencedImageIds =
+          layers[0].referencedImageIds ?? labelmapData.referencedImageIds ?? [];
+        referencedImages = referencedImageIds.map(resolveReferencedImage);
+        labelmaps3D = layers.map(layer =>
+          buildLabelmap3D(layer.imageIds ?? [], metadata, referencedImageIds)
+        );
+      } else {
+        const { imageIds } = labelmapData;
+        const segImages = imageIds.map(imageId => cache.getImage(imageId));
+        referencedImages = segImages.map((image, sliceIndex) =>
+          resolveReferencedImage(image.referencedImageId, sliceIndex)
+        );
+        labelmaps3D = buildLabelmap3D(imageIds, metadata);
+      }
+
+      const saveOptions = {
         predecessorImageId,
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,
-      });
+      };
+
+      // A LABELMAP SEG frame stores a single label per voxel, so the labelmap
+      // encoder cannot represent overlapping segments — it keeps only the last
+      // layer written to each voxel. Overlapping segmentations arrive here as
+      // multiple layers, so switch those to the binary SEG encoding, which
+      // writes overlapping segments as separate frames referencing the same
+      // source slice.
+      const hasOverlappingLayers = Boolean(layers && layers.length > 1);
+      if (hasOverlappingLayers && saveOptions.sopClassUID === LABELMAP_SEG_SOP_CLASS_UID) {
+        console.warn(
+          'generateSegmentation: overlapping segments cannot be stored as a LABELMAP SEG; ' +
+            'switching to the binary SEG encoding for this store.'
+        );
+        saveOptions.sopClassUID = BITMAP_SEG_SOP_CLASS_UID;
+      }
+
+      const generatedSegmentation = generateSegmentation(
+        referencedImages,
+        labelmaps3D,
+        metaData,
+        saveOptions
+      );
 
       return generatedSegmentation;
     },
@@ -266,9 +343,7 @@ const commandsModule = ({
       }
 
       const defaultFileName =
-        modality === 'RTSTRUCT'
-          ? `rtss-${segmentationId}.dcm`
-          : `${label || 'segmentation'}.dcm`;
+        modality === 'RTSTRUCT' ? `rtss-${segmentationId}.dcm` : `${label || 'segmentation'}.dcm`;
 
       const storeFn = commandsManager.runCommand('createStoreFunction', {
         dataSource: dataSourceName,

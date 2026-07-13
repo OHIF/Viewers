@@ -10,10 +10,7 @@ import {
   metaData,
 } from '@cornerstonejs/core';
 import { ViewportType } from '@cornerstonejs/core/enums';
-import {
-  isVolume3DViewportType,
-  isVolumeViewportType,
-} from '../../utils/getLegacyViewportType';
+import { isVolume3DViewportType } from '../../utils/getLegacyViewportType';
 
 import {
   Enums as csToolsEnums,
@@ -30,6 +27,17 @@ import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStruc
 import { SegmentationPresentation, SegmentationPresentationItem } from '../../types/Presentation';
 import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import { ViewReference } from '@cornerstonejs/core/types';
+import {
+  LegacySegmentationBackend,
+  NextSegmentationBackend,
+  type ISegmentationBackend,
+  type ISegmentationServiceInternals,
+} from './backends';
+// Sanctioned flag read: the SEG data shape (single- vs multi-layer) is fixed at
+// load time, before any target viewport exists, so this one seg-backend dispatch
+// cannot use a per-viewport capability check and reads the session flag instead.
+import { isNextViewportsEnabled } from '../../utils/nextViewports';
+import { isNextViewport } from '../ViewportService/adapter';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 
@@ -42,7 +50,7 @@ const {
 const {
   getLabelmapImageIds,
   helpers: { convertStackToVolumeLabelmap },
-  state: { addColorLUT, updateLabelmapSegmentationImageReferences },
+  state: { addColorLUT },
   triggerSegmentationEvents: { triggerSegmentationRepresentationModified },
 } = cstSegmentation;
 
@@ -98,7 +106,7 @@ const EVENTS = {
 
 const VALUE_TYPES = {};
 
-class SegmentationService extends PubSubService {
+class SegmentationService extends PubSubService implements ISegmentationServiceInternals {
   static REGISTRATION = {
     name: 'segmentationService',
     altName: 'SegmentationService',
@@ -109,6 +117,8 @@ class SegmentationService extends PubSubService {
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
   private _segmentationGroupStatsMap: Map<string, any>;
+  private readonly _legacySegBackend: ISegmentationBackend;
+  private readonly _nextSegBackend: ISegmentationBackend;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
@@ -121,6 +131,24 @@ class SegmentationService extends PubSubService {
     this.servicesManager = servicesManager;
 
     this._segmentationGroupStatsMap = new Map();
+
+    // Segmentation backend twins (mirror the viewport backend family). Routed PER
+    // VIEWPORT via _segBackend() using the adapter's isNextViewport predicate,
+    // because a flag-on session can mix native and legacy viewports. Both are
+    // constructed eagerly:
+    // per-viewport dispatch has no per-session flag to defer on, and the twins read
+    // state at call time (post-init), not at construction.
+    this._legacySegBackend = new LegacySegmentationBackend(this);
+    this._nextSegBackend = new NextSegmentationBackend();
+  }
+
+  /**
+   * Picks the segmentation backend lane for a specific viewport: the native
+   * ("next") twin for a raw GenericViewport (PlanarViewport), the legacy twin
+   * otherwise. Mirrors viewportOperations' per-viewport dispatch.
+   */
+  private _segBackend(viewport: csTypes.IViewport): ISegmentationBackend {
+    return isNextViewport(viewport) ? this._nextSegBackend : this._legacySegBackend;
   }
 
   public onModeEnter(): void {
@@ -297,6 +325,7 @@ class SegmentationService extends PubSubService {
       type?: csToolsEnums.SegmentationRepresentations;
       config?: {
         blendMode?: csEnums.BlendModes;
+        useSliceRendering?: boolean;
       };
       suppressEvents?: boolean;
     }
@@ -319,6 +348,15 @@ class SegmentationService extends PubSubService {
       return;
     }
 
+    // A stale/invalid segmentationId yields no segmentation; fail fast with a clear
+    // message instead of dereferencing representationData deep inside the backend
+    // classification below.
+    if (!segmentation) {
+      throw new Error(
+        `SegmentationService: cannot add representation - segmentation "${segmentationId}" not found.`
+      );
+    }
+
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
     let isConverted = false;
@@ -328,20 +366,35 @@ class SegmentationService extends PubSubService {
     let representationTypeToUse = type || defaultRepresentationType;
 
     if (representationTypeToUse === LABELMAP) {
-      const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
-        csViewport,
-        segmentation
-      ) || { isVolumeViewport: false, isVolumeSegmentation: false };
-
-      ({ representationTypeToUse, isConverted } = await this.handleViewportConversion(
-        isVolumeViewport,
-        isVolumeSegmentation,
+      ({ representationTypeToUse, isConverted } = await this._segBackend(
+        csViewport
+      ).classifyAndPrepareLabelmapAdd(
         csViewport,
         segmentation,
         viewportId,
         segmentationId,
         representationTypeToUse
       ));
+
+      // Overlap precondition: an overlapping SEG is registered as multiple labelmap
+      // layers, but cornerstone only stacks them (slice rendering) when the viewport
+      // renders as a volume slice (VTK_VOLUME_SLICE) — i.e. an MPR/volume viewport. On
+      // a stack/acquisition viewport the render plan falls back to a single layer, so
+      // only the primary group is visible. Warn rather than fail silently.
+      const labelmapLayers = segmentation?.representationData?.[LABELMAP]?.labelmaps;
+      const isOverlapping = labelmapLayers && Object.keys(labelmapLayers).length > 1;
+      if (
+        isOverlapping &&
+        isNextViewport(csViewport) &&
+        !csUtils.viewportIsInVolumeMode(csViewport)
+      ) {
+        console.warn(
+          `Overlapping segmentation ${segmentationId} has multiple labelmap layers, but ` +
+            `viewport ${viewportId} does not render as a volume slice (VTK_VOLUME_SLICE); ` +
+            `only the primary layer will be visible. Display the segmentation in an ` +
+            `MPR/volume layout to see all overlapping segments.`
+        );
+      }
     }
 
     await this._addSegmentationRepresentation(
@@ -592,22 +645,21 @@ class SegmentationService extends PubSubService {
     const colorLUTIndex = addColorLUT(colorLUT);
     this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
 
-    const seg: cstTypes.SegmentationPublicInput = {
+    // Build the segmentation input via the backend twin. At SEG-load there is no
+    // target viewport yet, so the lane is chosen by the session flag (the one
+    // viewport-less seg-backend dispatch): the next twin registers overlapping SEGs
+    // as multiple labelmap layers (slice rendering); the legacy twin keeps the single
+    // flattened layer (byte-identical).
+    const segBackend = isNextViewportsEnabled() ? this._nextSegBackend : this._legacySegBackend;
+    const seg = segBackend.assembleSegmentationDataForSEG({
       segmentationId,
-      representation: {
-        type: LABELMAP,
-        data: {
-          imageIds: derivedImageIds,
-          // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
-          referencedImageIds: imageIds as string[],
-        },
-      },
-      config: {
-        label: segDisplaySet.SeriesDescription,
-        fallbackLabel: `S:${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
-        segments,
-      },
-    };
+      segDisplaySet,
+      derivedImageIds,
+      referencedImageIds: imageIds as string[],
+      label: segDisplaySet.SeriesDescription,
+      fallbackLabel: `S:${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
+      segments,
+    });
 
     segDisplaySet.isLoaded = true;
 
@@ -1515,13 +1567,17 @@ class SegmentationService extends PubSubService {
 
     viewportIds.forEach(viewportId => {
       const { viewport } = getEnabledElementByViewportId(viewportId);
-      if (!viewport?.jumpToWorld) {
+      if (!viewport) {
         return;
       }
 
-      viewport.jumpToWorld(world);
+      // Recenter via the backend twin: legacy jumpToWorld, or native setViewReference
+      // (a native PlanarViewport has no jumpToWorld). Skip the highlight when the
+      // recenter did not happen, matching the previous guarded behavior.
+      const didJump = this._segBackend(viewport).jumpToSegmentCenter(viewport, world);
 
-      highlightSegment &&
+      didJump &&
+        highlightSegment &&
         this.highlightSegment(
           segmentationId,
           segmentIndex,
@@ -1626,87 +1682,11 @@ class SegmentationService extends PubSubService {
     );
   }
 
-  private determineViewportAndSegmentationType(csViewport, segmentation) {
-    const isVolumeViewport = isVolumeViewportType(csViewport);
-    const labelmapData = segmentation?.representationData?.[LABELMAP];
-
-    if (!labelmapData) {
-      return { isVolumeViewport, isVolumeSegmentation: false };
-    }
-
-    const isVolumeSegmentation = 'volumeId' in labelmapData;
-    return { isVolumeViewport, isVolumeSegmentation };
-  }
-
-  private async handleViewportConversion(
-    isVolumeViewport: boolean,
-    isVolumeSegmentation: boolean,
-    csViewport: csTypes.IViewport,
-    segmentation: cstTypes.Segmentation,
-    viewportId: string,
-    segmentationId: string,
-    representationType: csToolsEnums.SegmentationRepresentations
-  ) {
-    let representationTypeToUse = representationType;
-    let isConverted = false;
-
-    const handler = isVolumeViewport ? this.handleVolumeViewportCase : this.handleStackViewportCase;
-
-    ({ representationTypeToUse, isConverted } = await handler.apply(this, [
-      csViewport,
-      segmentation,
-      isVolumeSegmentation,
-      viewportId,
-      segmentationId,
-    ]));
-
-    return { representationTypeToUse, isConverted };
-  }
-
-  private async handleVolumeViewportCase(csViewport, segmentation, isVolumeSegmentation) {
-    if (isVolume3DViewportType(csViewport)) {
-      return {
-        representationTypeToUse: SURFACE,
-        isConverted: false,
-      };
-    } else {
-      await this.handleVolumeViewport(
-        csViewport as csTypes.IVolumeViewport,
-        segmentation,
-        isVolumeSegmentation
-      );
-      return { representationTypeToUse: LABELMAP, isConverted: false };
-    }
-  }
-
-  private async handleStackViewportCase(
-    csViewport: csTypes.IViewport,
-    segmentation: cstTypes.Segmentation,
-    isVolumeSegmentation: boolean,
-    viewportId: string,
-    segmentationId: string
-  ): Promise<{
-    representationTypeToUse: csToolsEnums.SegmentationRepresentations;
-    isConverted: boolean;
-  }> {
-    if (isVolumeSegmentation) {
-      const isConverted = await this.convertStackToVolumeViewport(csViewport);
-      return { representationTypeToUse: LABELMAP, isConverted };
-    }
-
-    if (updateLabelmapSegmentationImageReferences(viewportId, segmentationId)) {
-      return { representationTypeToUse: LABELMAP, isConverted: false };
-    }
-
-    const isConverted = await this.attemptStackToVolumeConversion(
-      csViewport as csTypes.IStackViewport,
-      segmentation,
-      viewportId,
-      segmentationId
-    );
-
-    return { representationTypeToUse: LABELMAP, isConverted };
-  }
+  // Labelmap-add classification (determineViewportAndSegmentationType +
+  // handleViewportConversion + the stack/volume case handlers) now lives in the
+  // segmentation backend twins (backends/{Legacy,Next}SegmentationBackend), routed
+  // per viewport via _segBackend(). The legacy twin reaches the viewport-recreation
+  // and data-volume-conversion helpers below through ISegmentationServiceInternals.
 
   private async _addSegmentationRepresentation(
     viewportId: string,
@@ -1716,6 +1696,7 @@ class SegmentationService extends PubSubService {
     isConverted: boolean,
     config?: {
       blendMode?: csEnums.BlendModes;
+      useSliceRendering?: boolean;
     }
   ): Promise<void> {
     const representation = {
@@ -1743,7 +1724,7 @@ class SegmentationService extends PubSubService {
       addRepresentation();
     }
   }
-  private async handleVolumeViewport(
+  public async handleVolumeViewport(
     viewport: csTypes.IVolumeViewport,
     segmentation: SegmentationData,
     isVolumeSegmentation: boolean
@@ -1761,7 +1742,7 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  private async convertStackToVolumeViewport(viewport: csTypes.IViewport): Promise<boolean> {
+  public async convertStackToVolumeViewport(viewport: csTypes.IViewport): Promise<boolean> {
     const { viewportGridService, cornerstoneViewportService } = this.servicesManager.services;
     const state = viewportGridService.getState();
     const gridViewport = state.viewports.get(viewport.id);
@@ -1800,7 +1781,7 @@ class SegmentationService extends PubSubService {
     return true;
   }
 
-  private async attemptStackToVolumeConversion(
+  public async attemptStackToVolumeConversion(
     viewport: csTypes.IStackViewport,
     segmentation: SegmentationData,
     viewportId: string,
@@ -1820,6 +1801,10 @@ class SegmentationService extends PubSubService {
 
       return isConverted;
     }
+
+    // Frame-of-reference mismatch (or missing): no conversion happened. Return an
+    // explicit boolean so the Promise<boolean> contract holds for callers.
+    return false;
   }
 
   private addSegmentationToSource(segmentationPublicInput: cstTypes.SegmentationPublicInput) {
