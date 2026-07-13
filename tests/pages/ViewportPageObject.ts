@@ -106,6 +106,12 @@ export interface IViewportPageObject {
     scrollBy: (delta: number) => Promise<void>;
   };
   magnifyGlass: MagnifyGlassPageObject;
+  hideDemographicOverlayText: () => Promise<void>;
+  hideViewportOverlayText: () => Promise<void>;
+  hideAnnotationText: () => Promise<void>;
+  hideLateralityText: () => Promise<void>;
+  hideOrientationMarkerText: () => Promise<void>;
+  hideAllText: () => Promise<void>;
 }
 
 export class ViewportPageObject {
@@ -164,6 +170,63 @@ export class ViewportPageObject {
       bottomLeft: overlayTextFactory(viewport, 'viewport-overlay-bottom-left'),
       bottomRight: overlayTextFactory(viewport, 'viewport-overlay-bottom-right'),
     };
+  }
+
+  /**
+   * Hides matching elements from view by applying Tailwind's `hidden` class.
+   * No-op when the locator resolves to zero elements.
+   */
+  private async hideLocatorElements(locator: Locator): Promise<void> {
+    const count = await locator.count();
+    if (count === 0) {
+      return;
+    }
+
+    await locator.evaluateAll(elements => {
+      elements.forEach(element => element.classList.add('hidden'));
+    });
+  }
+
+  private getHideTextMethods(viewport: Locator) {
+    const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
+
+    const demographicOverlaySelector = [
+      `${viewportOverlaySelector} .overlay-item[title="Study date"]`,
+      `${viewportOverlaySelector} .overlay-item[title="Series description"]`,
+    ].join(', ');
+
+    const annotationTextSelector = 'g[data-annotation-uid] text, g[data-annotation-uid] tspan';
+
+    const hideTextMethods = {
+      hideDemographicOverlayText: async () => {
+        await this.hideLocatorElements(viewport.locator(demographicOverlaySelector));
+      },
+
+      hideViewportOverlayText: async () => {
+        await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
+      },
+      hideAnnotationText: async () => {
+        await this.hideLocatorElements(viewport.locator(annotationTextSelector));
+      },
+      // Laterality is not part of the default OHIF overlay customization.
+      // This is a no-op unless the active mode explicitly adds an overlay item
+      // with title="Laterality" via viewportOverlay customization.
+      hideLateralityText: async () => {
+        await this.hideLocatorElements(
+          viewport.locator(`${viewportOverlaySelector} .overlay-item[title="Laterality"]`)
+        );
+      },
+      hideOrientationMarkerText: async () => {
+        await this.hideLocatorElements(viewport.locator('.orientation-marker'));
+      },
+      hideAllText: async () => {
+        await hideTextMethods.hideViewportOverlayText();
+        await hideTextMethods.hideAnnotationText();
+        await hideTextMethods.hideOrientationMarkerText();
+      },
+    };
+
+    return hideTextMethods;
   }
 
   private async getOverlayMenu(viewport: Locator) {
@@ -321,13 +384,12 @@ export class ViewportPageObject {
         return this.getSvg(viewport, innerElement);
       },
       getSvgAnnotationStatTextLines: (uid: string) => {
-        return this.getSvg(viewport)
-          .locator(`g[data-annotation-uid="${uid}"]`)
-          .locator('tspan');
+        return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
       },
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
       magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),
+      ...this.getHideTextMethods(viewport),
     };
   }
 

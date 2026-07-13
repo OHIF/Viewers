@@ -3,7 +3,7 @@ import { Locator, Page } from 'playwright';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-type CheckForScreenshotProps = {
+export type CheckForScreenshotProps = {
   page: Page;
   locator?: Locator | Page;
   screenshotPath: string;
@@ -18,6 +18,8 @@ type CheckForScreenshotProps = {
     height: number;
   };
   fullPage?: boolean;
+  /** Runs at the start of each screenshot attempt (including the first), before capture. */
+  beforeAttempt?: () => void | Promise<void>;
 };
 
 const _isIntermediateScreenshotArtifact = (filename: string, screenshotPath: string) => {
@@ -87,6 +89,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     threshold = 0.05,
     normalizedClip,
     fullPage = false,
+    beforeAttempt,
   } = props;
 
   let { locator = page } = props;
@@ -96,6 +99,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
 
   for (let i = 0; i < attempts; i++) {
     try {
+      await beforeAttempt?.();
       let clip;
       if (normalizedClip) {
         let boundingBox;
