@@ -12,7 +12,7 @@ interface ContextMenuViewportProps {
 }
 
 const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
-  if (!items) {
+  if (!items?.length) {
     return null;
   }
 
@@ -23,11 +23,12 @@ const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
       onContextMenu={e => e.preventDefault()}
     >
       {items.map((item, index) => (
-        <div
+        <button
+          type="button"
           key={index}
           data-cy="context-menu-item"
           onClick={() => item.action(item, props)}
-          className="hover:bg-accent hover:text-accent-foreground flex cursor-default select-none items-center justify-between rounded-sm px-2 py-1.5 text-base outline-none"
+          className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex w-full cursor-default select-none items-center justify-between rounded-sm px-2 py-1.5 text-base outline-none"
         >
           <span>{item.label}</span>
           {item.iconRight && (
@@ -36,7 +37,7 @@ const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
               className="inline"
             />
           )}
-        </div>
+        </button>
       ))}
     </div>
   );
