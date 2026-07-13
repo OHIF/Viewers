@@ -31,8 +31,8 @@ function DataSourceSelector() {
                     {ds.configuration?.friendlyName || ds.friendlyName}
                   </h1>
                   <Button
-                    variant="default"
-                    className={classnames('ml-2')}
+                    variant="secondary"
+                    className={classnames('ml-2', 'mt-1')}
                     onClick={() => {
                       navigate({
                         pathname: '/',
