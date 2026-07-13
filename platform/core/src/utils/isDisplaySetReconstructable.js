@@ -294,14 +294,16 @@ function hasSingleSpatialLocation(positions) {
 /**
  * The `ImagePositionPatient` of every frame of a multi-frame instance.
  *
- * Prefers the per-frame functional groups. When those carry no position, falls
- * back to the *shared* functional group broadcast to the frame count: a
- * single-location cine has one constant position, which the more common DICOM
- * encoding stores in `SharedFunctionalGroupsSequence` rather than repeating it
- * per frame. Without this fallback the per-frame read returns `[]`, so the
- * single-location check never fires and the degenerate volume is wrongly
- * reported reconstructable. Empty when neither source carries a position (an
- * object we can't inspect confidently).
+ * Prefers the per-frame functional groups, but only once they carry the two
+ * valid positions `hasSingleSpatialLocation` needs to decide anything. Below
+ * that, falls back to the *shared* functional group broadcast to the frame
+ * count: a single-location cine has one constant position, which the more
+ * common DICOM encoding stores in `SharedFunctionalGroupsSequence` rather than
+ * repeating it per frame. Without this fallback a per-frame sequence that is
+ * absent — or present but too sparse to judge — would hide the constant
+ * position, so the single-location check would never fire and the degenerate
+ * volume would be wrongly reported reconstructable. Empty when neither source
+ * carries enough to inspect confidently.
  *
  * @param {Object} multiFrameInstance
  */
@@ -311,7 +313,7 @@ function getPerFramePositions(multiFrameInstance) {
     const perFramePositions = perFrameSequence.map(group =>
       toNumber(group?.PlanePositionSequence?.[0]?.ImagePositionPatient)
     );
-    if (perFramePositions.some(isValidImagePosition)) {
+    if (perFramePositions.filter(isValidImagePosition).length >= 2) {
       return perFramePositions;
     }
   }

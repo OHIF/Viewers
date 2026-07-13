@@ -90,6 +90,27 @@ describe('isDisplaySetReconstructable — single spatial location (cine / multi-
     test('empty when neither per-frame nor shared groups carry a position', () => {
       expect(getPerFramePositions({ PerFrameFunctionalGroupsSequence: [{}, {}] })).toEqual([]);
     });
+
+    test('falls back to the shared group when the per-frame groups are too sparse to judge', () => {
+      // A lone per-frame position can't establish an extent either way, so it
+      // must not shadow a shared position that shows the frames are co-located.
+      const sparsePerFrameCine = {
+        NumberOfFrames: 3,
+        SharedFunctionalGroupsSequence: [
+          { PlanePositionSequence: [{ ImagePositionPatient: [0, 0, 0] }] },
+        ],
+        PerFrameFunctionalGroupsSequence: [
+          { PlanePositionSequence: [{ ImagePositionPatient: [0, 0, 0] }] },
+          {},
+          {},
+        ],
+      };
+      expect(getPerFramePositions(sparsePerFrameCine)).toEqual([
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+      ]);
+    });
   });
 
   describe('multi-frame instances', () => {
@@ -145,6 +166,13 @@ describe('isDisplaySetReconstructable — single spatial location (cine / multi-
         singleFrameInstance([0, 0, 4]),
       ];
       expect(isDisplaySetReconstructable(instances).value).toBe(true);
+    });
+
+    test('not reconstructable when exactly two instances share one location', () => {
+      // The spacing check only runs for more than two instances, so this pair is
+      // caught by the single-location guard alone.
+      const instances = [singleFrameInstance([0, 0, 0]), singleFrameInstance([0, 0, 0])];
+      expect(isDisplaySetReconstructable(instances).value).toBe(false);
     });
   });
 });
