@@ -45,7 +45,7 @@ function createTools({ utilityModule, commandsManager }) {
         toolName: toolNames.MarkerLabelmap,
       },
       {
-        toolName: toolNames.RegionSegmentPlus,
+        toolName: toolNames.ClickSegment,
       },
       {
         toolName: 'CircularEraser',
@@ -258,7 +258,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);

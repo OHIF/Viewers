@@ -1,18 +1,23 @@
-import { expect, test, visitStudy, waitForViewportsRendered, getSvgAttribute } from './utils';
+import {
+  contourShowOnlyNthSegment,
+  expect,
+  getSvgAttribute,
+  test,
+  visitStudyAndHydrate,
+} from './utils';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defaultSegment0Name = 'Threshold';
 const defaultSegment1Name = 'Big Sphere';
 
 test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
-
-  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
-  await waitForViewportsRendered(page);
-  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
-
-  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+  await visitStudyAndHydrate({
+    page,
+    leftPanelPageObject,
+    DOMOverlayPageObject,
+    studyInstanceUID,
+    modality: 'RTSTRUCT',
+  });
 });
 
 test('should duplicate a contour segment and add a new row to the panel', async ({
@@ -20,19 +25,20 @@ test('should duplicate a contour segment and add a new row to the panel', async 
 }) => {
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
-  const initialCount = await panel.getSegmentCount();
-  expect(initialCount, 'Expected to load with 4 segments').toBe(4);
+  await expect(panel.rows, 'Expected to load with 4 segments').toHaveCount(4);
 
   const segment0 = panel.nthSegment(0);
   await expect(segment0.title).toHaveText(defaultSegment0Name);
 
   await segment0.actions.duplicate();
 
-  const countAfterDuplicate = await panel.getSegmentCount();
-  expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').toBe(5);
+  await expect(
+    panel.rows,
+    'Expected one additional segment row after duplicating'
+  ).toHaveCount(5);
 
   //New segment's default name is formatted as "Segment {segmentCount}"
-  const newSegmentLocator = panel.nthSegment(initialCount).title;
+  const newSegmentLocator = panel.nthSegment(4).title;
   await expect(newSegmentLocator, 'Expected correct title for duplicated segment').toHaveText(
     `Segment 5`
   );
@@ -48,10 +54,10 @@ test('should duplicate the same segment multiple times', async ({ rightPanelPage
   const segment0 = panel.nthSegment(0);
 
   await segment0.actions.duplicate();
-  expect(
-    await panel.getSegmentCount(),
+  await expect(
+    panel.rows,
     'Expected one additional segment row after duplicating'
-  ).toBe(5);
+  ).toHaveCount(5);
 
   const firstDuplicateTitleLocator = panel.nthSegment(4).title;
   await expect(
@@ -60,10 +66,10 @@ test('should duplicate the same segment multiple times', async ({ rightPanelPage
   ).toHaveText(`Segment 5`);
 
   await segment0.actions.duplicate();
-  expect(
-    await panel.getSegmentCount(),
+  await expect(
+    panel.rows,
     'Expected another segment row after duplicating the same segment again'
-  ).toBe(6);
+  ).toHaveCount(6);
 
   const secondDuplicateTitleLocator = panel.nthSegment(5).title;
   await expect(
@@ -79,10 +85,9 @@ test('should render the duplicated contour on the viewport', async ({
   const panel = rightPanelPageObject.contourSegmentationPanel.panel;
 
   // Hide everything, to be able to grab only the SVG path of the segment to duplicate
-  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
-  const segment0 = panel.nthSegment(0);
-  await segment0.toggleVisibility();
-  await segment0.click();
+  const segment0 = await contourShowOnlyNthSegment({
+    segmentationPanel: rightPanelPageObject.contourSegmentationPanel,
+  });
 
   const sourceSvgPath = await getSvgAttribute({
     viewportPageObject,
@@ -175,9 +180,9 @@ test('should navigate to the correct instance number when a duplicated contour s
   ).toHaveText('I:46 (46/47)');
 
   //verify the svg paths are the same for the original and duplicated segments
-  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
-  await originalSegment.toggleVisibility();
-  await originalSegment.click();
+  await contourShowOnlyNthSegment({
+    segmentationPanel: rightPanelPageObject.contourSegmentationPanel,
+  });
   const originalSegmentSvgPath = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',

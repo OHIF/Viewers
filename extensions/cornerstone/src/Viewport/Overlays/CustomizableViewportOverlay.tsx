@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
-import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
+import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
@@ -9,12 +9,14 @@ import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { getViewportAdapter } from '../../services/ViewportService/adapter';
+import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 
 import './CustomizableViewportOverlay.css';
 import { useViewportRendering } from '../../hooks';
 
 const EPSILON = 1e-4;
-const { formatPN } = utils;
+const { formatPN, formatValue } = utils;
 
 type ViewportData = StackViewportData | VolumeViewportData;
 
@@ -184,7 +186,12 @@ function CustomizableViewportOverlay({
       } else {
         const renderItem = customizationService.transform(item);
 
-        if (typeof renderItem.contentF === 'function') {
+        if (
+          renderItem &&
+          typeof renderItem === 'object' &&
+          'contentF' in renderItem &&
+          typeof renderItem.contentF === 'function'
+        ) {
           return renderItem.contentF(overlayItemProps);
         }
       }
@@ -264,7 +271,7 @@ function getDisplaySets(viewportData, displaySetService) {
 const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
   let instanceNumber;
 
-  switch (viewportData.viewportType) {
+  switch (getViewportDataShapeType(viewportData)) {
     case Enums.ViewportType.STACK:
       instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
       break;
@@ -331,8 +338,11 @@ function _getInstanceNumberFromVolume(
     return;
   }
 
-  const camera = cornerstoneViewport.getCamera();
-  const { viewPlaneNormal } = camera;
+  const viewPlaneNormal = getViewportAdapter(cornerstoneViewport).getViewPlaneNormal();
+
+  if (!viewPlaneNormal) {
+    return;
+  }
   // checking if camera is looking at the acquisition plane (defined by the direction on the volume)
 
   const scanAxisNormal = direction.slice(6, 9);
@@ -345,7 +355,10 @@ function _getInstanceNumberFromVolume(
     const imageId = imageIds[imageIndex];
 
     if (!imageId) {
-      return {};
+      // No image at this index (e.g. a single-image volume scrolled out of
+      // range). Return undefined so the overlay falls back to the slice count
+      // instead of rendering an empty object as "[object Object]".
+      return;
     }
 
     const { instanceNumber } = metaData.get('generalImageModule', imageId) || {};
@@ -357,7 +370,8 @@ function OverlayItem(props) {
   const { instance, customization = {} } = props;
   const { color, attribute, title, label, background } = customization;
   const value = customization.contentF?.(props, customization) ?? instance?.[attribute];
-  if (value === undefined || value === null) {
+  const displayValue = formatValue(value);
+  if (displayValue === null || displayValue === '') {
     return null;
   }
   return (
@@ -367,7 +381,7 @@ function OverlayItem(props) {
       title={title}
     >
       {label ? <span className="mr-1 shrink-0">{label}</span> : null}
-      <span className="ml-0 shrink-0">{value}</span>
+      <span className="ml-0 shrink-0">{displayValue}</span>
     </div>
   );
 }

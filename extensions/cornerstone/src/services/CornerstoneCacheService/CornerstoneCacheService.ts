@@ -41,12 +41,39 @@ class CornerstoneCacheService {
     const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
 
+    // Native Generic ("next") viewport types (e.g. PLANAR_NEXT) intentionally
+    // collapse the stack/volume distinction into a single type, so they cannot
+    // drive the stack-vs-volume data-builder decision below. Resolve the data
+    // shape from the legacy mapping (which preserves that distinction) and keep
+    // the resolved native type as the produced viewportData's viewportType.
+    let dataShapeType = getCornerstoneViewportType(viewportType, displaySets, false);
+
+    // A data overlay (fusion) of two or more reconstructable image display sets
+    // must render as a volume viewport so the source and overlay share one
+    // representation (volume slice). Without this, a next (PLANAR_NEXT) viewport
+    // keeps the source in vtkImage (stack) mode while the added overlay is a
+    // vtkVolumeSlice, producing the broken/unstable fusion. SEG/RT overlays are
+    // non-reconstructable, so they are not affected.
+    //
+    // Scoped to the native (PLANAR_NEXT) path via cs3DViewportType — NOT the flag, and
+    // NOT the legacy lane: a legacy stack-shaped reconstructable overlay must keep its
+    // existing stack build so the flag-off path stays byte-identical.
+    const isReconstructableFusion =
+      displaySets.length > 1 && displaySets.every(ds => ds.isReconstructable);
     if (
-      cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
-      cs3DViewportType === Enums.ViewportType.VOLUME_3D
+      isReconstructableFusion &&
+      dataShapeType === Enums.ViewportType.STACK &&
+      cs3DViewportType === Enums.ViewportType.PLANAR_NEXT
+    ) {
+      dataShapeType = Enums.ViewportType.ORTHOGRAPHIC;
+    }
+
+    if (
+      dataShapeType === Enums.ViewportType.ORTHOGRAPHIC ||
+      dataShapeType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
-    } else if (cs3DViewportType === Enums.ViewportType.STACK) {
+    } else if (dataShapeType === Enums.ViewportType.STACK) {
       // Everything else looks like a stack
       viewportData = await this._getStackViewportData(
         dataSource,
@@ -64,6 +91,9 @@ class CornerstoneCacheService {
     }
 
     viewportData.viewportType = cs3DViewportType;
+    // Persist the legacy stack/volume shape so consumers can distinguish stack from
+    // volume content even when viewportType is a native Generic type (PLANAR_NEXT).
+    viewportData.dataShapeType = dataShapeType;
 
     return viewportData;
   }
@@ -74,7 +104,13 @@ class CornerstoneCacheService {
     dataSource,
     displaySetService
   ): Promise<VolumeViewportData | StackViewportData> {
-    if (viewportData.viewportType === Enums.ViewportType.STACK) {
+    // Decide stack-vs-volume rebuild from the persisted data shape, NOT viewportType:
+    // native viewports collapse both onto PLANAR_NEXT, so a native stack would
+    // otherwise fall through to the volume rebuild and re-mount as volume data.
+    // Falls back to viewportType for legacy/older viewportData (byte-identical off-path).
+    const dataShapeType = viewportData.dataShapeType ?? viewportData.viewportType;
+
+    if (dataShapeType === Enums.ViewportType.STACK) {
       const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
       const imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
 
@@ -86,7 +122,10 @@ class CornerstoneCacheService {
       });
 
       return {
-        viewportType: Enums.ViewportType.STACK,
+        // Preserve the original viewportType (legacy STACK or native PLANAR_NEXT);
+        // the rebuilt data shape, not this field, drives the native re-mount dispatch.
+        viewportType: viewportData.viewportType,
+        dataShapeType: Enums.ViewportType.STACK,
         data: {
           StudyInstanceUID: displaySet.StudyInstanceUID,
           displaySetInstanceUID: invalidatedDisplaySetInstanceUID,
@@ -128,6 +167,7 @@ class CornerstoneCacheService {
       displaySets,
       viewportData.viewportType
     );
+    newViewportData.dataShapeType = dataShapeType;
 
     return newViewportData;
   }
