@@ -127,6 +127,18 @@ export default function ModeRoute({
       return;
     }
 
+    // A data source registered by an extension (e.g. one entered via a SMART
+    // on FHIR launch) may not be active yet on the render where extension
+    // dependencies finish loading. Bail out and re-run once it appears —
+    // `dataSource` is in the dependency array below.
+    if (!dataSource) {
+      console.warn(
+        '[ModeRoute] Data source not available after extension dependencies loaded. Active:',
+        extensionManager.activeDataSourceName
+      );
+      return;
+    }
+
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
       await dataSource.initialize({
@@ -140,7 +152,7 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location, ExtensionDependenciesLoaded]);
+  }, [location, ExtensionDependenciesLoaded, dataSource]);
 
   /**
    * Validates study existence before loading the viewer.
