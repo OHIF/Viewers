@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-video",
-  "version": "3.13.0-beta.104",
+  "version": "3.13.0-beta.124",
   "description": "OHIF extension for video display",
   "author": "OHIF",
   "license": "MIT",
@@ -30,7 +30,7 @@
   "peerDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/ui": "workspace:*",
-    "dcmjs": "0.49.4",
+    "dcmjs": "0.52.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",

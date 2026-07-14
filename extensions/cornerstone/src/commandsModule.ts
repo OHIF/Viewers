@@ -11,6 +11,7 @@ import {
   annotation,
   Types as ToolTypes,
   SplineContourSegmentationTool,
+  cancelActiveManipulations,
 } from '@cornerstonejs/tools';
 import {
   SegmentInfo,
@@ -28,8 +29,10 @@ import {
   colorPickerDialog,
   callInputDialog,
 } from '@ohif/extension-default';
-import { vec3, mat4 } from 'gl-matrix';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
+// Sanctioned flag read: RTSTRUCT contour hydration pins the referenced image to
+// stack mode on the native ("next") path, a decision made before a target viewport exists.
+import { getHydrationViewportTypeForModality } from './utils/nextViewportPolicies';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -40,6 +43,8 @@ import {
   isVolume3DViewportType,
   isVolumeViewportType,
 } from './utils/getLegacyViewportType';
+import { viewportOperations as ops } from './services/ViewportService/backends/viewportOperations';
+import { getViewportAdapter } from './services/ViewportService/adapter';
 import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
@@ -51,8 +56,6 @@ import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
-import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
-import { getCenterExtent } from './utils/getCenterExtent';
 import { EasingFunctionEnum } from './utils/transitions';
 import { createSegmentationForViewport } from './utils/createSegmentationForViewport';
 import { utilities as segmentationUtilities } from '@cornerstonejs/tools/segmentation';
@@ -143,6 +146,15 @@ function commandsModule({
 
   function _getViewportEnabledElement(viewportId: string) {
     return getViewportEnabledElement(viewportId);
+  }
+
+  // Resolves the cornerstone viewport for a command: the given viewport id, else the
+  // active one. Returns undefined when nothing is enabled.
+  function _resolveViewport(viewportId?: string) {
+    const enabledElement = viewportId
+      ? _getViewportEnabledElement(viewportId)
+      : _getActiveViewportEnabledElement();
+    return enabledElement?.viewport;
   }
 
   function _getActiveViewportToolGroupId() {
@@ -237,23 +249,11 @@ function commandsModule({
         viewport.setViewReference(metadata);
         viewport.render();
 
-        /**
-         * If the measurement is not visible inside the current viewport,
-         * we need to move the camera to the measurement.
-         */
-        if (!isMeasurementWithinViewport(viewport, measurement)) {
-          const camera = viewport.getCamera();
-          const { focalPoint: cameraFocalPoint, position: cameraPosition } = camera;
-          const { center, extent } = getCenterExtent(measurement);
-          const position = vec3.sub(vec3.create(), cameraPosition, cameraFocalPoint);
-          vec3.add(position, position, center);
-          viewport.setCamera({ focalPoint: center, position: position as any });
-          /** Zoom out if the measurement is too large */
-          const measurementSize = vec3.dist(extent.min, extent.max);
-          if (measurementSize > camera.parallelScale) {
-            const scaleFactor = measurementSize / camera.parallelScale;
-            viewport.setZoom(viewport.getZoom() / scaleFactor);
-          }
+        // If the measurement is not visible inside the current viewport, move the
+        // camera to it. The operations backend handles the lane: legacy re-centers
+        // in-plane (getCamera/setCamera), native skips it (no in-plane pan yet, CS-14)
+        // since setViewReference above already navigated to the measurement's slice.
+        if (ops.centerOnMeasurement(viewport, measurement)) {
           viewport.render();
         }
 
@@ -304,6 +304,20 @@ function commandsModule({
       });
 
       commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
+    },
+
+    /**
+     * Cancels any in-progress annotation manipulation (e.g. drawing a Spline,
+     * Livewire or PlanarFreehand contour) on the active viewport. Reached on
+     * Escape via the `cancelActiveOperation` command. `cancelActiveManipulations`
+     * invokes the `cancel` method of each active/passive tool that has an
+     * in-progress annotation, so it is a no-op when nothing is being drawn.
+     */
+    cancelMeasurement: () => {
+      const element = _getActiveViewportEnabledElement()?.viewport?.element;
+      if (element) {
+        cancelActiveManipulations(element);
+      }
     },
 
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
@@ -357,6 +371,9 @@ function commandsModule({
         const results = commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+          // RTSTRUCT-on-next pins the referenced image to stack mode on hydrate;
+          // see the policy's rationale in utils/nextViewportPolicies.
+          viewportType: getHydrationViewportTypeForModality(displaySet.Modality),
         });
 
         const disableEditing = customizationService.getCustomization(
@@ -906,34 +923,28 @@ function commandsModule({
       const windowWidthNum = Number(windowWidth);
       const windowCenterNum = Number(windowCenter);
 
-      // get actor from the viewport
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
-      const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
-
-      if (isVolumeViewportType(viewport)) {
-        const volumeId = actions.getVolumeIdForDisplaySet({
-          viewportId,
-          displaySetInstanceUID,
-        });
-        viewport.setProperties(
-          {
-            voiRange: {
-              upper,
-              lower,
-            },
-          },
-          volumeId
-        );
-      } else {
-        viewport.setProperties({
-          voiRange: {
-            upper,
-            lower,
-          },
-        });
+      // Stale/invalid viewport ids resolve to undefined; bail out before the VOI
+      // apply + render below would throw.
+      if (!viewport) {
+        return;
       }
+
+      // Legacy volume viewports target a specific volume; the command owns that
+      // resolution (it needs the service). The operations backend applies the VOI
+      // (legacy setProperties vs native setDisplaySetPresentation on the active binding).
+      const volumeId = isVolumeViewportType(viewport)
+        ? actions.getVolumeIdForDisplaySet({ viewportId, displaySetInstanceUID })
+        : undefined;
+
+      ops.setWindowLevel(viewport, {
+        windowWidth: windowWidthNum,
+        windowCenter: windowCenterNum,
+        volumeId,
+        displaySetInstanceUID,
+      });
       viewport.render();
     },
     toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
@@ -1172,25 +1183,11 @@ function commandsModule({
       viewportId?: string;
       newValue?: 'toggle' | boolean;
     }) => {
-      const enabledElement = viewportId
-        ? _getViewportEnabledElement(viewportId)
-        : _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
+      const viewport = _resolveViewport(viewportId);
+      if (!viewport) {
         return;
       }
-
-      const { viewport } = enabledElement;
-
-      let flipHorizontal: boolean;
-      if (newValue === 'toggle') {
-        const { flipHorizontal: currentHorizontalFlip } = viewport.getCamera();
-        flipHorizontal = !currentHorizontalFlip;
-      } else {
-        flipHorizontal = newValue;
-      }
-
-      viewport.setCamera({ flipHorizontal });
+      ops.flipHorizontal(viewport, newValue);
       viewport.render();
     },
     flipViewportVertical: ({
@@ -1200,78 +1197,36 @@ function commandsModule({
       viewportId?: string;
       newValue?: 'toggle' | boolean;
     }) => {
-      const enabledElement = viewportId
-        ? _getViewportEnabledElement(viewportId)
-        : _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
+      const viewport = _resolveViewport(viewportId);
+      if (!viewport) {
         return;
       }
-
-      const { viewport } = enabledElement;
-
-      let flipVertical: boolean;
-      if (newValue === 'toggle') {
-        const { flipVertical: currentVerticalFlip } = viewport.getCamera();
-        flipVertical = !currentVerticalFlip;
-      } else {
-        flipVertical = newValue;
-      }
-      viewport.setCamera({ flipVertical });
+      ops.flipVertical(viewport, newValue);
       viewport.render();
     },
     invertViewport: ({ element }) => {
-      let enabledElement;
-
-      if (element === undefined) {
-        enabledElement = _getActiveViewportEnabledElement();
-      } else {
-        enabledElement = element;
-      }
-
-      if (!enabledElement) {
+      const viewport = element === undefined ? _resolveViewport() : element.viewport;
+      if (!viewport) {
         return;
       }
-
-      const { viewport } = enabledElement;
-
-      const { invert } = viewport.getProperties();
-      viewport.setProperties({ invert: !invert });
+      ops.invert(viewport);
       viewport.render();
     },
     resetViewport: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
+      const viewport = _resolveViewport();
+      if (!viewport) {
         return;
       }
-
-      const { viewport } = enabledElement;
-
-      viewport.resetProperties?.();
-      viewport.resetCamera();
-
+      ops.reset(viewport);
       viewport.render();
     },
     scaleViewport: ({ direction }) => {
-      const enabledElement = _getActiveViewportEnabledElement();
-      const scaleFactor = direction > 0 ? 0.9 : 1.1;
-
-      if (!enabledElement) {
+      const viewport = _resolveViewport();
+      if (!viewport) {
         return;
       }
-      const { viewport } = enabledElement;
-
-      if (isStackViewportType(viewport)) {
-        if (direction) {
-          const { parallelScale } = viewport.getCamera();
-          viewport.setCamera({ parallelScale: parallelScale * scaleFactor });
-          viewport.render();
-        } else {
-          viewport.resetCamera();
-          viewport.render();
-        }
-      }
+      ops.scaleBy(viewport, direction);
+      viewport.render();
     },
 
     /** Jumps the active viewport or the specified one to the given slice index */
@@ -1350,24 +1305,15 @@ function commandsModule({
       // HP takes priority over the default opacity
       colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      if (isStackViewportType(viewport)) {
-        viewport.setProperties({ colormap });
+      // The legacy orthographic branch resolves the volumeId from the display set;
+      // fall back to the viewport's first display set (needs viewportGridService, so
+      // it is resolved here in the command rather than in the operations backend).
+      if (isOrthographicViewportType(viewport) && !displaySetInstanceUID) {
+        const { viewports } = viewportGridService.getState();
+        displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
       }
 
-      if (isOrthographicViewportType(viewport)) {
-        if (!displaySetInstanceUID) {
-          const { viewports } = viewportGridService.getState();
-          displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
-        }
-
-        // ToDo: Find a better way of obtaining the volumeId that corresponds to the displaySetInstanceUID
-        const volumeId =
-          viewport
-            .getAllVolumeIds()
-            .find((_volumeId: string) => _volumeId.includes(displaySetInstanceUID)) ??
-          viewport.getVolumeId();
-        viewport.setProperties({ colormap }, volumeId);
-      }
+      ops.setColormap(viewport, { colormap, displaySetInstanceUID });
 
       if (immediate) {
         viewport.render();
@@ -1473,9 +1419,7 @@ function commandsModule({
       if (!viewport) {
         return;
       }
-      viewport.setProperties({
-        preset,
-      });
+      ops.setPreset(viewport, preset);
       viewport.render();
     },
 
@@ -1487,20 +1431,10 @@ function commandsModule({
 
     setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      const mapper = actor.getMapper();
-      const image = mapper.getInputData();
-      const dims = image.getDimensions();
-      const spacing = image.getSpacing();
-      const spatialDiagonal = vec3.length(
-        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
-      );
-
-      let sampleDistance = spacing.reduce((a, b) => a + b) / 3.0;
-      sampleDistance /= volumeQuality > 1 ? 0.5 * volumeQuality ** 2 : 1.0;
-      const samplesPerRay = spatialDiagonal / sampleDistance + 1;
-      mapper.setMaximumSamplesPerRay(samplesPerRay);
-      mapper.setSampleDistance(sampleDistance);
+      if (!viewport) {
+        return;
+      }
+      ops.setVolumeRenderingQuality(viewport, volumeQuality);
       viewport.render();
     },
 
@@ -1511,27 +1445,10 @@ function commandsModule({
      */
     shiftVolumeOpacityPoints: ({ viewportId, shift }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      const ofun = actor.getProperty().getScalarOpacity(0);
-
-      const opacityPointValues = []; // Array to hold values
-      // Gather Existing Values
-      const size = ofun.getSize();
-      for (let pointIdx = 0; pointIdx < size; pointIdx++) {
-        const opacityPointValue = [0, 0, 0, 0];
-        ofun.getNodeValue(pointIdx, opacityPointValue);
-        // opacityPointValue now holds [xLocation, opacity, midpoint, sharpness]
-        opacityPointValues.push(opacityPointValue);
+      if (!viewport) {
+        return;
       }
-      // Add offset
-      opacityPointValues.forEach(opacityPointValue => {
-        opacityPointValue[0] += shift; // Change the location value
-      });
-      // Set new values
-      ofun.removeAllPoints();
-      opacityPointValues.forEach(opacityPointValue => {
-        ofun.addPoint(...opacityPointValue);
-      });
+      ops.shiftVolumeOpacityPoints(viewport, shift);
       viewport.render();
     },
 
@@ -1547,25 +1464,10 @@ function commandsModule({
 
     setVolumeLighting: ({ viewportId, options }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      const property = actor.getProperty();
-
-      if (options.shade !== undefined) {
-        property.setShade(options.shade);
+      if (!viewport) {
+        return;
       }
-
-      if (options.ambient !== undefined) {
-        property.setAmbient(options.ambient);
-      }
-
-      if (options.diffuse !== undefined) {
-        property.setDiffuse(options.diffuse);
-      }
-
-      if (options.specular !== undefined) {
-        property.setSpecular(options.specular);
-      }
-
+      ops.setVolumeLighting(viewport, options);
       viewport.render();
     },
     resetCrosshairs: ({ viewportId }) => {
@@ -1573,7 +1475,13 @@ function commandsModule({
 
       const getCrosshairInstances = toolGroupId => {
         const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        crosshairInstances.push(toolGroup.getToolInstance('Crosshairs'));
+        // Only fetch the instance when Crosshairs is registered in this tool
+        // group. getToolInstance logs a warning for an unregistered tool, and a
+        // viewport's default tool group does not always include Crosshairs (e.g.
+        // next viewports), which made Reset Viewport log a spurious warning.
+        if (toolGroup?.hasTool('Crosshairs')) {
+          crosshairInstances.push(toolGroup.getToolInstance('Crosshairs'));
+        }
       };
 
       if (!viewportId) {
@@ -1581,7 +1489,9 @@ function commandsModule({
         toolGroupIds.forEach(getCrosshairInstances);
       } else {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-        getCrosshairInstances(toolGroup.id);
+        if (toolGroup) {
+          getCrosshairInstances(toolGroup.id);
+        }
       }
 
       crosshairInstances.forEach(ins => {
@@ -1967,8 +1877,15 @@ function commandsModule({
      * Use it before initializing the toolGroup with the tools.
      */
     initializeSegmentLabelTool: ({ tools }) => {
-      const appConfig = extensionManager.appConfig;
-      const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
+      const { customizationService } = servicesManager.services;
+      const segmentLabelConfig = customizationService.getCustomization(
+        'segmentation.segmentLabel'
+      ) as {
+        enabledByDefault?: boolean;
+        labelColor?: number[];
+        hoverTimeout?: number;
+        background?: string;
+      };
 
       if (segmentLabelConfig?.enabledByDefault) {
         const activeTools = tools?.active ?? [];
@@ -2027,6 +1944,24 @@ function commandsModule({
     },
     rejectPreview: () => {
       actions._handlePreviewAction('reject');
+    },
+    /**
+     * Generic Escape handler. A single Escape press should discard whatever the
+     * user has in progress, but that can be one of two unrelated things: a
+     * provisional segmentation preview, or an annotation being drawn. Rather
+     * than bind both `rejectPreview` and `cancelMeasurement` to `esc` (Mousetrap
+     * keeps only one handler per key, so the second silently shadows the first),
+     * this command orchestrates both single-purpose commands. Each is a no-op
+     * when its state is not active, so running both is safe and order-independent.
+     */
+    cancelActiveOperation: () => {
+      try {
+        actions.rejectPreview();
+      } catch (error) {
+        console.debug('Error rejecting active preview', error);
+      } finally {
+        actions.cancelMeasurement();
+      }
     },
     clearMarkersForMarkerLabelmap: () => {
       const { viewport } = _getActiveViewportEnabledElement();
@@ -2125,7 +2060,11 @@ function commandsModule({
       }
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
-    loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
+    loadSegmentationDisplaySetsForViewport: ({
+      viewportId,
+      displaySetInstanceUIDs,
+      viewportType,
+    }) => {
       const updatedViewports = getUpdatedViewportsForSegmentation({
         viewportId,
         servicesManager,
@@ -2145,13 +2084,21 @@ function commandsModule({
         viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
           displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
+          // When the caller pins a viewportType (RTSTRUCT contour hydration on a
+          // native "next" viewport requests 'stack'), force it so the referenced
+          // image stays in that render mode instead of resolving to a volume slice.
+          ...(viewportType
+            ? { viewportOptions: { ...viewport.viewportOptions, viewportType } }
+            : {}),
         })),
       });
     },
     setViewportOrientation: ({ viewportId, orientation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport || !isOrthographicViewportType(viewport)) {
+      // Accept any viewport already rendering volume content (legacy ORTHOGRAPHIC
+      // or a native viewport in volume mode) — both expose setOrientation().
+      if (!viewport || !getViewportAdapter(viewport).canReorientInPlace()) {
         console.warn('Orientation can only be set on volume viewports');
         return;
       }
@@ -2223,50 +2170,12 @@ function commandsModule({
       viewportId?: string;
       rotationMode?: 'apply' | 'set';
     }) => {
-      const enabledElement = viewportId
-        ? _getViewportEnabledElement(viewportId)
-        : _getActiveViewportEnabledElement();
-
-      if (!enabledElement) {
+      const viewport = _resolveViewport(viewportId);
+      if (!viewport) {
         return;
       }
-
-      const { viewport } = enabledElement;
-
-      if (isVolumeViewportType(viewport)) {
-        const camera = viewport.getCamera();
-        const rotAngle = (rotation * Math.PI) / 180;
-        const rotMat = mat4.identity(new Float32Array(16));
-        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
-        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
-        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
-        viewport.render();
-        return;
-      }
-
-      if (viewport.getRotation !== undefined) {
-        const { rotation: currentRotation } = viewport.getViewPresentation();
-        const newRotation =
-          rotationMode === 'apply'
-            ? (currentRotation + rotation + 360) % 360
-            : (() => {
-                // In 'set' mode, account for the effect horizontal/vertical flips
-                // have on the perceived rotation direction. A single flip mirrors
-                // the image and inverses rotation direction, while two flips
-                // restore the original parity. We therefore invert the rotation
-                // angle when an odd number of flips are applied so that the
-                // requested absolute rotation matches the user expectation.
-                const { flipHorizontal = false, flipVertical = false } =
-                  viewport.getViewPresentation();
-
-                const flipsParity = (flipHorizontal ? 1 : 0) + (flipVertical ? 1 : 0);
-                const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
-
-                return (effectiveRotation + 360) % 360;
-              })();
-        viewport.setViewPresentation({ rotation: newRotation });
-        viewport.render();
-      }
+      ops.rotate(viewport, rotation, rotationMode);
+      viewport.render();
     },
     startRecordingForAnnotationGroup: () => {
       cornerstoneTools.AnnotationTool.startGroupRecording();
@@ -2550,6 +2459,9 @@ function commandsModule({
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
+    cancelMeasurement: {
+      commandFn: actions.cancelMeasurement,
+    },
     toggleLockMeasurement: {
       commandFn: actions.toggleLockMeasurement,
     },
@@ -2798,6 +2710,7 @@ function commandsModule({
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
+    cancelActiveOperation: actions.cancelActiveOperation,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
     interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,

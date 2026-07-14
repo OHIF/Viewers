@@ -6,9 +6,9 @@ Before debugging, classify. Most OHIF test failures are timing or hydration — 
 |----------|---------|-----|
 | Timing | Element not visible, action timeout | Add / increase the `delay` param of `visitStudy`; for actions that re-render viewports, use `waitForViewportRenderCycle(page)` (started before the action) instead of `waitForTimeout`; wrap the assertion in `expect.toPass({ timeout })` |
 | Selector | Element not found | Verify `data-cy` on the target; confirm the panel is open (`toggle()` / `select()` before interacting); check for capital `D` in `DOMOverlayPageObject` when destructuring |
-| Hydration | Segmentation/RT not interactive | Ensure the `segmentationHydration.yes.click()` fired; add `waitForTimeout(3000)` after `loadSeriesByModality('SEG'\|'RTSTRUCT'\|'SR')` |
+| Hydration | Segmentation/RT/SR not interactive | Ensure the `segmentationHydration.yes.click()` fired; wait for an observable hydrated state such as measurement/segment rows or the target series overlay, then wait for the resulting viewport render |
 | Data | Study not found, empty viewport | Confirm the UID is in the canonical list (see [patterns-by-feature.md](patterns-by-feature.md)); confirm the mode supports the feature (segmentation tools aren't in `viewer` mode) |
-| Visual drift | Screenshot mismatch but feature works | Have a human review the diff, then regenerate the baseline with `yarn playwright test --update-snapshots`. Do not adjust `maxDiffPixelRatio` or `threshold` to make a failing screenshot pass. |
+| Visual drift | Screenshot mismatch but feature works | Have a human review the diff, then regenerate the baseline with `TEST_ENV=true pnpm exec playwright test --update-snapshots`. Do not adjust `maxDiffPixelRatio` or `threshold` to make a failing screenshot pass. |
 | Real regression | Feature is actually broken | Report as a bug — this is the test doing its job |
 
 ## Prefer render-cycle waits over sleeps
@@ -32,6 +32,8 @@ Symptom: the test fails inside `waitForAnyViewportNeedsRender` after 5s, with th
 - **RTSTRUCT / contour segmentation hydration confirm.** SEG (labelmap) hydration does fire `needsRender`; contour does not. The fix is to gate on the actual end-state — for hydration in `beforeEach`, `await expect(page.getByTestId('data-row')).toHaveCount(N)` is the right wait.
 
 Don't react by raising the cycle's timeout — the transition isn't coming. Replace the cycle wrapper with an auto-retrying DOM/SVG assertion, or `expect.toPass({ timeout })` around the assertion block.
+
+An immediate `waitForViewportsRendered(page)` can also return too early when a click dispatches work through an asynchronous state machine: the old viewport is already `rendered` before the new series or annotations are applied. In that case, first wait for the target state (for example, hydrated measurement rows or the expected series overlay), then call `waitForViewportsRendered(page)` to settle that state's render.
 
 ## The `toPass` pattern
 
@@ -64,7 +66,7 @@ await press({ page, key: 'ArrowDown', nTimes: 50 }); // object param, not (page,
 Screenshots live under `tests/screenshots/chromium/<testFilePath>/`. To accept new output as the baseline:
 
 ```sh
-yarn playwright test tests/YourSpec.spec.ts --update-snapshots
+TEST_ENV=true pnpm exec playwright test tests/YourSpec.spec.ts --update-snapshots
 ```
 
 Review the resulting PNGs carefully — an agent-accepted baseline that's subtly wrong is worse than a failing test.

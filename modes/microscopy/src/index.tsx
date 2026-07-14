@@ -17,7 +17,6 @@ export const cornerstone = {
 
 const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
 const dicompdf = {
@@ -107,7 +106,7 @@ function modeFactory({ modeConfiguration }) {
                   ],
                 },
                 {
-                  namespace: dicomvideo.viewport,
+                  namespace: cornerstone.viewport,
                   displaySetsToDisplay: [dicomvideo.sopClassHandler],
                 },
                 {

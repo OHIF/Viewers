@@ -8,7 +8,11 @@ import { buildEcgModule } from './utils/ecgMetadata';
 const { MetadataModules } = csEnums;
 const { utils } = OHIF;
 const { denaturalizeDataset } = dcmjs.data.DicomMetaDictionary;
-const { transferDenaturalizedDataset, fixMultiValueKeys } = dicomWebUtils;
+// NOTE: access transferDenaturalizedDataset / fixMultiValueKeys lazily (at call
+// time) rather than destructuring here. This module and @ohif/extension-default
+// form a circular import, so dicomWebUtils can be undefined at module-eval time
+// depending on bundler eval order; a top-level destructure then throws and
+// crashes app boot.
 
 const SOP_CLASS_UIDS = {
   VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.6',
@@ -139,8 +143,8 @@ function getDICOMwebMetadata(instanceMap, imageId) {
     console.warn('Metadata not already found for', imageId, 'in', instanceMap);
     return this.super.getDICOMwebMetadata(imageId);
   }
-  return transferDenaturalizedDataset(
-    denaturalizeDataset(fixMultiValueKeys(instanceMap.get(imageId)))
+  return dicomWebUtils.transferDenaturalizedDataset(
+    denaturalizeDataset(dicomWebUtils.fixMultiValueKeys(instanceMap.get(imageId)))
   );
 }
 
