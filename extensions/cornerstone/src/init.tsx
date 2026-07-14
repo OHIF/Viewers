@@ -140,6 +140,13 @@ export default async function init({
     cornerstone.cache.setMaxCacheSize(maxCacheSize);
   }
 
+  // Limit the undo/redo history size. Segmentation memos hold full labelmap
+  // buffers, so a large history can cause out-of-memory / buffer allocation
+  // issues. Configurable via appConfig.maxUndoRedoCacheSize.
+  if (appConfig.maxUndoRedoCacheSize != null) {
+    csUtilities.HistoryMemo.DefaultHistoryMemo.size = appConfig.maxUndoRedoCacheSize;
+  }
+
   initCornerstoneTools();
 
   Settings.getRuntimeSettings().set('useCursors', Boolean(appConfig.useCursors));
