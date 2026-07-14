@@ -1,3 +1,5 @@
+import { isNextViewport, NEXT_OVERLAY_OPACITY } from '@ohif/extension-cornerstone';
+
 export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 export const DEFAULT_COLORMAP = 'hsv';
 export const DEFAULT_OPACITY = 0.9;
@@ -93,6 +95,11 @@ export function configureViewportForLayerAddition(params: {
     }
   }
 
+  // Native ("next") viewports need the legacy-equivalent initial overlay opacity
+  // (see the NEXT_OVERLAY_OPACITY policy in @ohif/extension-cornerstone).
+  const liveCsViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const isLiveViewportNext = !!liveCsViewport && isNextViewport(liveCsViewport);
+
   // create same amount of display set options as the number of display set UIDs
   const displaySetOptions = allDisplaySetInstanceUIDs.map((uid, index) => {
     // There is already a display set option for this display set, so return it.
@@ -106,7 +113,17 @@ export function configureViewportForLayerAddition(params: {
     }
 
     const displaySet = displaySetService.getDisplaySetByUID(uid);
-    return createColormapOverlayDisplaySetOptions(displaySet, 90, customizationService);
+    const overlayOptions = createColormapOverlayDisplaySetOptions(
+      displaySet,
+      90,
+      customizationService
+    );
+
+    if (isLiveViewportNext && typeof overlayOptions.colormap?.opacity === 'number') {
+      overlayOptions.colormap.opacity = NEXT_OVERLAY_OPACITY;
+    }
+
+    return overlayOptions;
   });
 
   viewport.displaySetOptions = displaySetOptions;

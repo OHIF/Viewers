@@ -8,7 +8,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:24.0.0
+    - image: cimg/node:24.15.0
       environment:
         TERM: xterm
         QUICK_BUILD: true
@@ -421,7 +421,7 @@ jobs:
               -o Acquire::Retries=3 \
               -o Acquire::http::Timeout=20 \
               -o Acquire::https::Timeout=20
-            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
+            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6
       - run:
           name: Start Xvfb
           command: Xvfb :99 -screen 0 1920x1080x24 &

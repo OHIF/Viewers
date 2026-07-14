@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import { getEnabledElement } from '@cornerstonejs/core';
 import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
-import { isStackViewportType, isVolumeViewportType } from './getLegacyViewportType';
+import { getViewportAdapter } from '../services/ViewportService/adapter';
 import { useSystem } from '@ohif/core/src';
 
 const { downloadUrl } = utils;
@@ -119,35 +119,12 @@ const CornerstoneViewportDownloadForm = ({
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
     try {
-      // Capture current viewport state
-      // - properties: VOI, colormap, interpolation, etc.
-      // - viewPresentation: flip/rotate/zoom presentation state added for
-      //   saving flip and rotation for capture
-      // - viewReference: image/volume reference
-      const properties = viewport.getProperties();
-      const viewPresentation = viewport.getViewPresentation?.();
-      const viewRef = viewport.getViewReference?.();
-
-      if (isStackViewportType(downloadViewport)) {
-        const imageId = viewport.getCurrentImageId();
-        await downloadViewport.setStack([imageId]);
-      } else if (isVolumeViewportType(downloadViewport)) {
-        const volumeIds = viewport.getAllVolumeIds();
-        await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
-      }
-
-      // Apply presentation state so captured image preserves flip/rotate
-      if (viewPresentation && downloadViewport.setViewPresentation) {
-        downloadViewport.setViewPresentation(viewPresentation);
-      }
-
-      // Apply viewport display properties
-      downloadViewport.setProperties(properties);
-
-      // Ensure correct image/volume reference
-      if (viewRef && downloadViewport.setViewReference) {
-        downloadViewport.setViewReference(viewRef);
-      }
+      // Capture current viewport state. The download (capture) viewport is created
+      // with the SAME type as the source (see handleEnableViewport), so source and
+      // capture are both legacy or both native, and the source's adapter can mount
+      // its displayed content (data + appearance + view state) onto the capture
+      // viewport directly.
+      await getViewportAdapter(viewport).copyDisplayedContentTo(downloadViewport);
 
       downloadViewport.render();
 

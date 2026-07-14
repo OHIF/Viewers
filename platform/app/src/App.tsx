@@ -110,7 +110,6 @@ function App({
     cineService,
     userAuthenticationService,
     uiNotificationService,
-    customizationService,
   } = servicesManager.services;
 
   const providers = [
@@ -130,20 +129,25 @@ function App({
     [ShepherdJourneyProvider],
   ];
 
-  // Loop through and register each of the service providers registered with the ServiceProvidersManager.
-  const providersFromManager = Object.entries(serviceProvidersManager.providers);
+  // Providers registered with the ServiceProvidersManager are inserted ahead of
+  // the dialog/modal providers: dialog and modal content renders at those
+  // providers' own level (as a sibling of their children, not inside the route
+  // tree), so any context a registered provider supplies must already be in
+  // scope there.
+  const providersFromManager = Object.entries(serviceProvidersManager.providers).map(
+    ([serviceName, provider]) => [provider, { service: servicesManager.services[serviceName] }]
+  );
   if (providersFromManager.length > 0) {
-    providersFromManager.forEach(([serviceName, provider]) => {
-      providers.push([provider, { service: servicesManager.services[serviceName] }]);
-    });
+    const dialogIndex = providers.findIndex(([component]) => component === DialogProvider);
+    providers.splice(dialogIndex, 0, ...providersFromManager);
   }
 
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 
   let authRoutes = null;
 
-  // Should there be a generic call to init on the extension manager?
-  customizationService.init(extensionManager);
+  // customizationService.init(extensionManager) runs in appInit after extensions register;
+  // do not call init again here — repeated init would duplicate-merge unless guarded (see CustomizationService.init).
 
   // Use config to create routes
   const appRoutes = createRoutes({

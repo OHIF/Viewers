@@ -24,12 +24,14 @@ type NormalizedPathDragParams = {
 };
 
 export interface IOverlayText {
+  locator: Locator;
   get windowLevel(): Locator;
   get instanceNumber(): Locator;
 }
 function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
   const locator = viewport.getByTestId(id);
   return {
+    locator,
     get windowLevel() {
       return locator.getByTitle('Window Level');
     },
@@ -321,9 +323,7 @@ export class ViewportPageObject {
         return this.getSvg(viewport, innerElement);
       },
       getSvgAnnotationStatTextLines: (uid: string) => {
-        return this.getSvg(viewport)
-          .locator(`g[data-annotation-uid="${uid}"]`)
-          .locator('tspan');
+        return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
       },
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
