@@ -65,10 +65,6 @@
     {
       "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/fhir-viewer",
-      "version": "0.0.1"
     }
   ],
   "modes": [
