@@ -9,10 +9,12 @@ const linkPackage = async (packageName, options, removeFromConfig) => {
   // make sure pnpm is installed
   await validatePnpm();
 
-  // change directory to the OHIF Platform root, where the package was linked
+  // change directory to the OHIF Platform root, where the package was linked.
+  // Unlinking mutates the lockfile, so disable the workspace's frozen-lockfile
+  // default for this call (pnpm unlink rejects --no-frozen-lockfile).
   process.chdir(`${viewerDirectory}/../..`);
 
-  const results = await execa('pnpm', ['unlink', packageName]);
+  const results = await execa('pnpm', ['unlink', packageName, '--config.frozen-lockfile=false']);
   console.log(results.stdout);
 
   const webpackPwaPath = path.join(viewerDirectory, '.webpack', 'webpack.pwa.js');
