@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execa } from 'execa';
 import { keywords } from './enums/index.js';
-import { validateYarn, addExtensionToConfig, addModeToConfig } from './utils/index.js';
+import { validatePnpm, addExtensionToConfig, addModeToConfig } from './utils/index.js';
 
 async function linkPackage(packageDir, options, addToConfig, keyword) {
   const { viewerDirectory } = options;
@@ -22,19 +22,18 @@ async function linkPackage(packageDir, options, addToConfig, keyword) {
 
   const version = packageJSON.version;
 
-  // make sure yarn is installed
-  await validateYarn();
+  // make sure pnpm is installed
+  await validatePnpm();
 
-  // change directory to packageDir and execute yarn link
-  process.chdir(packageDir);
+  // resolve the package directory before changing the working directory
+  const resolvedPackageDir = path.resolve(packageDir);
 
-  let results;
-  results = await execa(`yarn`, ['link']);
-
-  // change directory to OHIF Platform root and execute yarn link
+  // change directory to the OHIF Platform root and link the local package there.
+  // Linking mutates the lockfile, so disable the workspace's frozen-lockfile
+  // default for this call (pnpm link rejects --no-frozen-lockfile).
   process.chdir(`${viewerDirectory}/../..`);
 
-  results = await execa(`yarn`, ['link', packageName]);
+  let results = await execa('pnpm', ['link', resolvedPackageDir, '--config.frozen-lockfile=false']);
   console.log(results.stdout);
 
   // Add the node_modules of the linked package so that webpack
@@ -63,7 +62,7 @@ async function linkPackage(packageDir, options, addToConfig, keyword) {
   });
 
   // run prettier on the webpack config
-  results = await execa(`yarn`, ['prettier', '--write', webpackPwaPath]);
+  results = await execa('pnpm', ['exec', 'prettier', '--write', webpackPwaPath]);
 }
 
 function linkExtension(packageDir, options) {
