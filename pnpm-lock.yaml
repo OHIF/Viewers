@@ -534,6 +534,9 @@ importers:
       '@cornerstonejs/calculate-suv':
         specifier: 1.1.0
         version: 1.1.0
+      '@cornerstonejs/metadata':
+        specifier: 5.4.17
+        version: 5.4.17
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
