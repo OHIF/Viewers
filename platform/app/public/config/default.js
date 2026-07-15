@@ -62,10 +62,6 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
-  // Number of undo/redo history items to keep. Segmentation memos hold full
-  // labelmap buffers, so a large history can cause out-of-memory / buffer
-  // allocation issues.
-  maxUndoRedoCacheSize: 5,
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
   maxNumRequests: {

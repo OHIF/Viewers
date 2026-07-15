@@ -170,7 +170,8 @@ declare global {
       /**
        * Maximum number of undo/redo history items to keep. Segmentation memos
        * hold full labelmap buffers, so a large history can cause out-of-memory
-       * or buffer allocation issues. Defaults to 5.
+       * or buffer allocation issues. When unset, the Cornerstone default is
+       * used.
        */
       maxUndoRedoCacheSize?: number;
       max3DTextureSize?: number;
