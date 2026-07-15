@@ -134,6 +134,7 @@ Here are a list of some options available:
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type. For `thumbnail`, a small pool (around `5`) is recommended: the study list preview panel fetches a thumbnail per series in parallel, and a larger pool yields little throughput benefit while risking server overload and contention with `interaction`/`prefetch` requests.
+- `maxUndoRedoCacheSize`: The maximum number of undo/redo history items to keep. Segmentation edits record undo memos that hold full labelmap buffers, so a large history can cause memory pressure or out-of-memory errors when working with large data. When unset, the Cornerstone default is used.
 - `modesConfiguration`: Allows overriding modes configuration.
   - Example config:
   ```js
