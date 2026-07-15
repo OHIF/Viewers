@@ -58,7 +58,7 @@ function getDisplaySetsFromSeries(instances) {
 
     let displaySet;
     if (isMultiFrame(instance)) {
-      displaySet = makeDisplaySet([instance], instanceIndex);
+      displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
         numImageFrames: instance.NumberOfFrames,
@@ -67,7 +67,7 @@ function getDisplaySetsFromSeries(instances) {
       });
       displaySets.push(displaySet);
     } else if (isSingleImageModality(instance.Modality)) {
-      displaySet = makeDisplaySet([instance], instanceIndex);
+      displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
         instanceNumber: instance.InstanceNumber,
@@ -80,7 +80,7 @@ function getDisplaySetsFromSeries(instances) {
   });
 
   if (stackableInstances.length) {
-    const displaySet = makeDisplaySet(stackableInstances, displaySets.length);
+    const displaySet = makeDisplaySet(stackableInstances);
     displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
     displaySet.setAttributes({
       sopClassUids,

@@ -134,13 +134,11 @@ describe('compileExpression', () => {
       expect(() => compileExpression('`unterminated')).toThrow(ExpressionSyntaxError);
     });
 
-    it('returns undefined (with a single warning) on runtime errors', () => {
+    it('resolves null/undefined property access in templates to an empty string without throwing', () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
       try {
-        // Forcing a runtime error requires a helper throwing internally;
-        // min() of a spread over undefined is NaN, not a throw, so exercise
-        // the guard through a null template part instead - which must NOT
-        // throw at all.
+        // Accessing `a.b.c` when `a` is undefined must NOT throw; `safeGet`
+        // handles the null chain gracefully and the template renders as ''.
         const fn = compileExpression('`${a.b.c}`');
         expect(fn({})).toBe('');
       } finally {

@@ -36,6 +36,13 @@ function getDynamicVolumeInfo(imageIds, context: ImageSetFactoryContext) {
   const volumeLoaderUtility = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.volumeLoader'
   );
+
+  if (!volumeLoaderUtility?.exports) {
+    throw new Error(
+      'The @ohif/extension-cornerstone volumeLoader utility module is not available'
+    );
+  }
+
   const { getDynamicVolumeInfo: csGetDynamicVolumeInfo } = volumeLoaderUtility.exports;
 
   return csGetDynamicVolumeInfo(imageIds);
