@@ -89,3 +89,7 @@ overrides:
   'minimatch@>=10.0.0 <10.2.3': 10.2.5
   'picomatch@<2.3.2': 2.3.2
   'picomatch@>=4.0.0 <4.0.4': 4.0.4
+  # websocket-driver <0.7.5 reaches the tree only via platform/docs
+  # (@docusaurus/core > webpack-dev-server > sockjs > faye-websocket). 0.7.5
+  # patches GHSA-xv26-6w52-cph6 (message corruption via protocol length headers).
+  'websocket-driver@<0.7.5': 0.7.5
