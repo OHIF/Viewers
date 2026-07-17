@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-pmap",
-  "version": "3.13.0-beta.130",
+  "version": "3.13.0-beta.132",
   "description": "DICOM Parametric Map read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -41,8 +41,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@cornerstonejs/adapters": "5.6.4",
-    "@cornerstonejs/core": "5.6.4",
+    "@cornerstonejs/adapters": "5.6.7",
+    "@cornerstonejs/core": "5.6.7",
     "@kitware/vtk.js": "36.4.1"
   },
   "devDependencies": {
