@@ -168,7 +168,8 @@
     "form-data": "4.0.6",
     "ws": "8.21.0",
     "shell-quote": "1.8.4",
-    "sigstore": "4.1.1"
+    "sigstore": "4.1.1",
+    "websocket-driver": "0.7.5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
