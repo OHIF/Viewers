@@ -36,7 +36,6 @@
     "@ohif/extension-cornerstone": "workspace:*",
     "@ohif/extension-default": "workspace:*",
     "@ohif/i18n": "workspace:*",
-    "@ohif/ui": "workspace:*",
     "dcmjs": "0.52.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",

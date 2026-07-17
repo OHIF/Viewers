@@ -1,7 +1,11 @@
 // https://babeljs.io/docs/en/options#babelrcroots
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
-  presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
+  presets: [
+    '@babel/preset-env',
+    ['@babel/preset-react', { runtime: 'automatic' }],
+    '@babel/preset-typescript',
+  ],
   plugins: [
     ['@babel/plugin-transform-class-properties', { loose: true }],
     '@babel/plugin-transform-typescript',
@@ -22,7 +26,7 @@ module.exports = {
             bugfixes: true,
           },
         ],
-        '@babel/preset-react',
+        ['@babel/preset-react', { runtime: 'automatic' }],
         '@babel/preset-typescript',
       ],
       plugins: [
@@ -44,7 +48,7 @@ module.exports = {
       presets: [
         // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
-        '@babel/preset-react',
+        ['@babel/preset-react', { runtime: 'automatic' }],
         '@babel/preset-typescript',
       ],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
@@ -53,7 +57,7 @@ module.exports = {
       presets: [
         // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
-        '@babel/preset-react',
+        ['@babel/preset-react', { runtime: 'automatic' }],
         '@babel/preset-typescript',
       ],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],

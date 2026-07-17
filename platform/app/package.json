@@ -55,7 +55,6 @@
     "@emotion/serialize": "1.3.3",
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
-    "@ohif/ui": "workspace:*",
     "@ohif/ui-next": "workspace:*",
     "@svgr/webpack": "8.1.0",
     "@types/react": "18.3.23",

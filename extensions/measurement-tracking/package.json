@@ -32,7 +32,6 @@
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
     "@ohif/extension-default": "workspace:*",
-    "@ohif/ui": "workspace:*",
     "classnames": "2.5.1",
     "dcmjs": "0.52.0",
     "lodash.debounce": "4.0.8",
@@ -43,7 +42,6 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@ohif/ui": "workspace:*",
     "@xstate/react": "3.2.2",
     "xstate": "4.38.3"
   },
