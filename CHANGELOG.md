@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.7](https://github.com/OHIF/Viewers/compare/v3.12.6...v3.12.7) (2026-07-17)
+
+
+### Bug Fixes
+
+* **security:** update websocket-driver to 0.7.5 ([#6158](https://github.com/OHIF/Viewers/issues/6158)) ([e8fff26](https://github.com/OHIF/Viewers/commit/e8fff26067ddf1fed5b6be8d3e6b3ca93f1857be))
+
+
+
+
+
 ## [3.12.6](https://github.com/OHIF/Viewers/compare/v3.12.5...v3.12.6) (2026-07-07)
 
 **Note:** Version bump only for package ohif-monorepo-root
