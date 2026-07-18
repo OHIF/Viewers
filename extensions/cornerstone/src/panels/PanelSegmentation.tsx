@@ -8,7 +8,7 @@ import {
   ToolSettings,
 } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
-import { useActiveToolOptions, useSystem } from '@ohif/core/src';
+import { useActiveToolOptions, useCustomization, useSystem } from '@ohif/core/src';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { Toolbar, useUIStateStore } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
@@ -31,13 +31,8 @@ export default function PanelSegmentation({
   segmentationRepresentationTypes,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const {
-    customizationService,
-    displaySetService,
-    viewportGridService,
-    toolbarService,
-    segmentationService,
-  } = servicesManager.services;
+  const { displaySetService, viewportGridService, toolbarService, segmentationService } =
+    servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
 
   const utilitiesSectionMap = {
@@ -94,20 +89,21 @@ export default function PanelSegmentation({
     }
   };
 
-  // Extract customization options
-  const segmentationTableMode = customizationService.getCustomization(
+  // Extract customization options. Read through useCustomization (not
+  // customizationService.getCustomization) so the panel re-renders when a
+  // mode registers its customizations after this panel first mounted -
+  // e.g. TMTV replaces panelSegmentation.onSegmentationAdd in onModeEnter.
+  const segmentationTableMode = useCustomization(
     'panelSegmentation.tableMode'
   ) as unknown as string;
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
-  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
-  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = customizationService.getCustomization(
+  const onSegmentationAdd = useCustomization('panelSegmentation.onSegmentationAdd');
+  const disableEditing = useCustomization('panelSegmentation.disableEditing');
+  const showAddSegment = useCustomization('panelSegmentation.showAddSegment');
+  const CustomDropdownMenuContent = useCustomization(
     'panelSegmentation.customDropdownMenuContent'
   );
 
-  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
+  const CustomSegmentStatisticsHeader = useCustomization(
     'panelSegmentation.customSegmentStatisticsHeader'
   );
 
