@@ -22,7 +22,7 @@
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
     "dev:i18n": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
     "build:package": "pnpm run build",
     "pullTranslations": "./pullTranslations.sh",
     "test:unit": "echo 'platform/i18n: missing unit tests'",

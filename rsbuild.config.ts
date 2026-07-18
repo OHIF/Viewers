@@ -1,6 +1,7 @@
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
+import { pluginBabel } from '@rsbuild/plugin-babel';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
 // Module-resolution rules shared with the webpack/rspack build (webpack.base.js)
@@ -28,6 +29,12 @@ const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 const QUICK_BUILD = process.env.QUICK_BUILD === 'true';
+const ENABLE_REACT_COMPILER = process.env.REACT_COMPILER !== 'off';
+
+// Workspace source only (including plain .ts — hooks live there too), so the
+// babel pass stays off node_modules and dev rebuilds stay fast. Legacy
+// platform/ui is excluded: it is frozen and outside the app graph.
+const REACT_COMPILER_INCLUDE = /(platform|extensions|modes)[\\/](?!ui[\\/])[^\\/]+[\\/]src[\\/].*\.[jt]sx?$/;
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
@@ -85,7 +92,34 @@ export default defineConfig(({ env }) => {
         ...(process.env.APP_CONFIG ? {} : { 'process.env.APP_CONFIG': "''" }),
       },
     },
-    plugins: [pluginReact(), pluginNodePolyfill()],
+    plugins: [
+      pluginReact(),
+      // React Compiler runs as a scoped babel pass on top of SWC (SWC has no
+      // compiler transform). REACT_COMPILER=off is the kill switch, matching
+      // the babel.config.js gate used by the rspack/jest pipelines.
+      ...(ENABLE_REACT_COMPILER
+        ? [
+            pluginBabel({
+              include: REACT_COMPILER_INCLUDE,
+              exclude: /node_modules/,
+              babelLoaderOptions(opts) {
+                opts.plugins ??= [];
+                opts.plugins.unshift(['babel-plugin-react-compiler', { target: '19' }]);
+                // The plugin forces preset-typescript to parse every file as
+                // TSX (allExtensions + isTSX), which rejects legal plain-.ts
+                // syntax (angle-bracket casts, generic arrows). Let the preset
+                // infer TS vs TSX from the file extension instead.
+                opts.presets = opts.presets?.map(preset =>
+                  Array.isArray(preset) && String(preset[0]).includes('preset-typescript')
+                    ? [preset[0], {}]
+                    : preset
+                );
+              },
+            }),
+          ]
+        : []),
+      pluginNodePolyfill(),
+    ],
     tools: {
       rspack: {
         experiments: {
