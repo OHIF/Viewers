@@ -34,14 +34,17 @@ export function useCustomization<T = unknown>(customizationId: string): T {
     // Catch registrations that happened between render and effect.
     update();
 
-    const subscriptions = [
+    // Mode-scope registrations are the ones that race component mounting
+    // (they run in mode.onModeEnter); global and default customizations are
+    // registered before the app renders, so re-reading on the mode event is
+    // sufficient and keeps the re-render surface small.
+    const subscription = customizationService.subscribe(
       customizationService.EVENTS.MODE_CUSTOMIZATION_MODIFIED,
-      customizationService.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED,
-      customizationService.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED,
-    ].map(event => customizationService.subscribe(event, update));
+      update
+    );
 
     return () => {
-      subscriptions.forEach(subscription => subscription.unsubscribe());
+      subscription.unsubscribe();
     };
   }, [customizationService, customizationId]);
 

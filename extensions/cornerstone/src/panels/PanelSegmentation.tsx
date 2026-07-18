@@ -31,8 +31,13 @@ export default function PanelSegmentation({
   segmentationRepresentationTypes,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const { displaySetService, viewportGridService, toolbarService, segmentationService } =
-    servicesManager.services;
+  const {
+    customizationService,
+    displaySetService,
+    viewportGridService,
+    toolbarService,
+    segmentationService,
+  } = servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
 
   const utilitiesSectionMap = {
@@ -89,21 +94,23 @@ export default function PanelSegmentation({
     }
   };
 
-  // Extract customization options. Read through useCustomization (not
-  // customizationService.getCustomization) so the panel re-renders when a
-  // mode registers its customizations after this panel first mounted -
-  // e.g. TMTV replaces panelSegmentation.onSegmentationAdd in onModeEnter.
-  const segmentationTableMode = useCustomization(
+  // Extract customization options
+  const segmentationTableMode = customizationService.getCustomization(
     'panelSegmentation.tableMode'
   ) as unknown as string;
+  // onSegmentationAdd is read through useCustomization (not a direct
+  // getCustomization call) so the panel re-renders when a mode registers its
+  // handler after this panel first mounted - e.g. TMTV replaces it with its
+  // create-labelmap-from-PT command in onModeEnter, and a render-time read
+  // (memoized by the React Compiler) would keep serving the stale default.
   const onSegmentationAdd = useCustomization('panelSegmentation.onSegmentationAdd');
-  const disableEditing = useCustomization('panelSegmentation.disableEditing');
-  const showAddSegment = useCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = useCustomization(
+  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
+  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
+  const CustomDropdownMenuContent = customizationService.getCustomization(
     'panelSegmentation.customDropdownMenuContent'
   );
 
-  const CustomSegmentStatisticsHeader = useCustomization(
+  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
     'panelSegmentation.customSegmentStatisticsHeader'
   );
 
