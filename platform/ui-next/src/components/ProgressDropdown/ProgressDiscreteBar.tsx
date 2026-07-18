@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
+import { ProgressDropdownOption } from './types';
 
 const ProgressDiscreteBar = ({ options }: { options: ProgressDropdownOption[] }): ReactElement<any> => {
   return (
@@ -20,8 +19,6 @@ const ProgressDiscreteBar = ({ options }: { options: ProgressDropdownOption[] })
   );
 };
 
-ProgressDiscreteBar.propTypes = {
-  options: PropTypes.arrayOf(ProgressDropdownOptionPropType).isRequired,
-};
+
 
 export default ProgressDiscreteBar;

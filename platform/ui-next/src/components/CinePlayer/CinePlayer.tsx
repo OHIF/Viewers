@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import { Icons } from '@ohif/ui-next';
@@ -183,25 +182,6 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   );
 };
 
-CinePlayer.propTypes = {
-  /** Minimum value for range slider */
-  minFrameRate: PropTypes.number,
-  /** Maximum value for range slider */
-  maxFrameRate: PropTypes.number,
-  /** Increment range slider can "step" in either direction */
-  stepFrameRate: PropTypes.number,
-  frameRate: PropTypes.number,
-  /** 'true' if playing, 'false' if paused */
-  isPlaying: PropTypes.bool.isRequired,
-  onPlayPauseChange: PropTypes.func,
-  onFrameRateChange: PropTypes.func,
-  onClose: PropTypes.func,
-  isDynamic: PropTypes.bool,
-  dynamicInfo: PropTypes.shape({
-    dimensionGroupNumber: PropTypes.number,
-    numDimensionGroups: PropTypes.number,
-    label: PropTypes.string,
-  }),
-};
+
 
 export default CinePlayer;

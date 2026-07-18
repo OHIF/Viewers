@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import ProgressItemDetail from './ProgressItemDetail';
-import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
+import { ProgressDropdownOption } from './types';
 
 const ProgressItem = ({
   option,
@@ -23,9 +22,6 @@ const ProgressItem = ({
   );
 };
 
-ProgressItem.propTypes = {
-  option: ProgressDropdownOptionPropType.isRequired,
-  onSelect: PropTypes.func,
-};
+
 
 export default ProgressItem;

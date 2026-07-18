@@ -40,4 +40,43 @@ export default [
       'react-hooks/preserve-manual-memoization': 'error',
     },
   },
+  {
+    // ui-next is compiler-first: React 19 idioms are enforced so the removed
+    // patterns do not creep back in. Widen to the whole workspace after the
+    // app/extensions cleanup wave.
+    files: ['platform/ui-next/src/**/*.{js,jsx,ts,tsx}'],
+    ignores: ['**/*.test.*'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'prop-types',
+              message: 'propTypes were removed from ui-next; use TypeScript types.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'React',
+          property: 'forwardRef',
+          message: 'React 19: accept ref as a regular prop instead of forwardRef.',
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='forwardRef']",
+          message: 'React 19: accept ref as a regular prop instead of forwardRef.',
+        },
+        {
+          selector: "AssignmentExpression[left.property.name='propTypes']",
+          message: 'propTypes were removed from ui-next; use TypeScript types.',
+        },
+      ],
+    },
+  },
 ];

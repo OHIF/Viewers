@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input';
@@ -57,30 +57,24 @@ function Root({
     return () => debouncedOnChange?.cancel();
   }, [debouncedOnChange]);
 
-  const setValue = useCallback(
-    (newValue: string) => {
-      if (!isControlled) {
-        setUncontrolledValue(newValue);
-      }
+  const setValue = (newValue: string) => {
+    if (!isControlled) {
+      setUncontrolledValue(newValue);
+    }
 
-      if (debouncedOnChange) {
-        debouncedOnChange(newValue);
-      }
-    },
-    [isControlled, debouncedOnChange]
-  );
+    if (debouncedOnChange) {
+      debouncedOnChange(newValue);
+    }
+  };
 
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(event.target.value);
-    },
-    [setValue]
-  );
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
 
-  const clearValue = useCallback(() => {
+  const clearValue = () => {
     setValue('');
     inputRef.current?.focus();
-  }, [setValue]);
+  };
 
   return (
     <InputFilterContext.Provider value={{ value, setValue, handleChange, clearValue, inputRef }}>

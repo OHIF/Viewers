@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Thumbnail } from '../Thumbnail';
 import { useDynamicMaxHeight } from '../../hooks/useDynamicMaxHeight';
@@ -90,37 +89,6 @@ const ThumbnailList = ({
   );
 };
 
-ThumbnailList.propTypes = {
-  thumbnails: PropTypes.arrayOf(
-    PropTypes.shape({
-      displaySetInstanceUID: PropTypes.string.isRequired,
-      imageSrc: PropTypes.string,
-      imageAltText: PropTypes.string,
-      seriesDate: PropTypes.string,
-      seriesNumber: PropTypes.any,
-      numInstances: PropTypes.number,
-      description: PropTypes.string,
-      componentType: PropTypes.any,
-      isTracked: PropTypes.bool,
-      /**
-       * Data the thumbnail should expose to a receiving drop target. Use a matching
-       * `dragData.type` to identify which targets can receive this draggable item.
-       * If this is not set, drag-n-drop will be disabled for this thumbnail.
-       *
-       * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-       */
-      dragData: PropTypes.shape({
-        /** Must match the "type" a dropTarget expects */
-        type: PropTypes.string.isRequired,
-      }),
-    })
-  ),
-  activeDisplaySetInstanceUIDs: PropTypes.arrayOf(PropTypes.string),
-  onThumbnailClick: PropTypes.func.isRequired,
-  onThumbnailDoubleClick: PropTypes.func.isRequired,
-  onClickUntrack: PropTypes.func.isRequired,
-  viewPreset: PropTypes.string,
-  ThumbnailMenuItems: PropTypes.any,
-};
+
 
 export { ThumbnailList };
