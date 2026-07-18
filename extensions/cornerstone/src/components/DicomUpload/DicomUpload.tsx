@@ -14,7 +14,7 @@ type DicomUploadProps = {
   onStarted: () => void;
 };
 
-function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
+function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement<any> {
   const baseClassNames =
     'min-h-[375px] flex flex-col bg-background select-none rounded-lg overflow-hidden';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
@@ -24,7 +24,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
     setDicomFileUploaderArr(acceptedFiles.map(file => new DicomFileUploader(file, dataSource)));
   }, []);
 
-  const getDropZoneComponent = (): ReactElement => {
+  const getDropZoneComponent = (): ReactElement<any> => {
     return (
       <Dropzone
         onDrop={acceptedFiles => {

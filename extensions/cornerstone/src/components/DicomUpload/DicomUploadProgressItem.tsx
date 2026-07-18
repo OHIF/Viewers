@@ -14,7 +14,7 @@ type DicomUploadProgressItemProps = {
 
 // eslint-disable-next-line react/display-name
 const DicomUploadProgressItem = memo(
-  ({ dicomFileUploader }: DicomUploadProgressItemProps): ReactElement => {
+  ({ dicomFileUploader }: DicomUploadProgressItemProps): ReactElement<any> => {
     const [percentComplete, setPercentComplete] = useState(dicomFileUploader.getPercentComplete());
     const [failedReason, setFailedReason] = useState('');
     const [status, setStatus] = useState(dicomFileUploader.getStatus());
@@ -50,7 +50,7 @@ const DicomUploadProgressItem = memo(
       dicomFileUploader.cancel();
     }, []);
 
-    const getStatusIcon = (): ReactElement => {
+    const getStatusIcon = (): ReactElement<any> => {
       switch (dicomFileUploader.getStatus()) {
         case UploadStatus.Success:
           return (

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  type JSX,
 } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +21,7 @@ type ViewportActionBarProps = {
   studyData: any;
   onArrowsClick: (arrow: string) => void;
   onDoubleClick: MouseEventHandler;
-  getStatusComponent: () => ReactElement;
+  getStatusComponent: () => ReactElement<any>;
 };
 
 function ViewportActionBar({

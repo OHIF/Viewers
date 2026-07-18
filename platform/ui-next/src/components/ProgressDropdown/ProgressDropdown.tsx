@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef } from 'react';
+import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef, type JSX } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';

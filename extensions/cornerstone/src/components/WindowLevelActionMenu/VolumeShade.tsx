@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 export function VolumeShade({
   viewportId,
   onClickShade = bool => {},
-}: VolumeShadeProps): ReactElement {
+}: VolumeShadeProps): ReactElement<any> {
   const { t } = useTranslation('WindowLevelActionMenu');
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;

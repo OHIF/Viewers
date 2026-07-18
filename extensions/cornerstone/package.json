@@ -45,8 +45,8 @@
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-resize-detector": "10.0.1"
   },
   "dependencies": {
@@ -68,7 +68,8 @@
     "lodash.flatten": "4.4.0",
     "lodash.zip": "4.2.0",
     "shader-loader": "1.3.1",
-    "worker-loader": "3.0.8"
+    "worker-loader": "3.0.8",
+    "react-resize-detector": "12.3.0"
   },
   "devDependencies": {
     "cross-env": "7.0.3"

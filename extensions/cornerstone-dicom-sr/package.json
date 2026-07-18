@@ -35,7 +35,7 @@
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",
-    "react": "18.3.1"
+    "react": "19.2.7"
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",

@@ -18,7 +18,7 @@ const ViewportWindowLevel = ({
   viewportId,
 }: withAppTypes<{
   viewportId: string;
-}>): ReactElement => {
+}>): ReactElement<any> => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);

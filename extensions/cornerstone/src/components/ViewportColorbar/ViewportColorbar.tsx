@@ -23,7 +23,7 @@ type ColorbarProps = {
   tickPosition: TickPositionType;
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
-  viewportElementRef?: React.RefObject<HTMLDivElement>;
+  viewportElementRef?: React.RefObject<HTMLDivElement | null>;
   numColorbars: number;
 };
 

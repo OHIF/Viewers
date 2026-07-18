@@ -36,6 +36,10 @@ allowBuilds:
   protobufjs: true
   sharp: true
 overrides:
+  # React 19 singleton: legacy transitive peers must not create a nested react copy.
+  react: 19.2.7
+  react-dom: 19.2.7
+  '@types/react': 19.2.17
   # Synced from origin/master's package.json `resolutions` block during the
   # merge. Keep this list aligned with master so security/version pins from
   # upstream PRs land here too.

@@ -29,8 +29,8 @@
     "@ohif/extension-default": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "prop-types": "15.8.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1",
     "react-router": "6.30.3",
     "react-router-dom": "6.30.3"
@@ -43,7 +43,8 @@
     "colormap": "2.3.2",
     "dicom-microscopy-viewer": "0.48.6",
     "lodash.debounce": "4.0.8",
-    "mathjs": "12.4.3"
+    "mathjs": "12.4.3",
+    "react-resize-detector": "12.3.0"
   },
   "devDependencies": {
     "cross-env": "7.0.3"

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useState, useRef, type JSX } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import * as d3Selection from 'd3-selection';

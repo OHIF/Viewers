@@ -3,7 +3,7 @@ import { Switch } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useTranslation } from 'react-i18next';
 
-export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
   const { t } = useTranslation('WindowLevelActionMenu');
 

@@ -9,7 +9,7 @@ const ProgressItem = ({
 }: {
   option: ProgressDropdownOption;
   onSelect: (option: ProgressDropdownOption) => void;
-}): ReactElement => {
+}): ReactElement<any> => {
   const { value } = option;
 
   return (
