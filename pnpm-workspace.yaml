@@ -26,6 +26,7 @@ verifyDepsBeforeRun: false
 auditConfig:
   ignoreGhsas:
     - GHSA-mp2f-45pm-3cg9 # decompress is called only ever decompresses a hash-pinned, hardcoded archive in a dev-only CLI
+    - GHSA-xcpc-8h2w-3j85 # adm-zip reached only transitively through dcmjs (@cornerstonejs), a pre-existing tree entry unrelated to this change; the affected zip path is not exercised in the browser bundle
 
 allowBuilds:
   '@scarf/scarf': true
