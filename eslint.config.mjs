@@ -41,10 +41,17 @@ export default [
     },
   },
   {
-    // ui-next is compiler-first: React 19 idioms are enforced so the removed
-    // patterns do not creep back in. Widen to the whole workspace after the
-    // app/extensions cleanup wave.
-    files: ['platform/ui-next/src/**/*.{js,jsx,ts,tsx}'],
+    // The workspace is compiler-first: React 19 idioms are enforced so the
+    // removed patterns (forwardRef wrappers, runtime propTypes) do not creep
+    // back in. Legacy platform/ui is exempt (frozen, outside the app graph).
+    files: [
+      'platform/app/src/**/*.{js,jsx,ts,tsx}',
+      'platform/core/src/**/*.{js,jsx,ts,tsx}',
+      'platform/i18n/src/**/*.{js,jsx,ts,tsx}',
+      'platform/ui-next/src/**/*.{js,jsx,ts,tsx}',
+      'extensions/*/src/**/*.{js,jsx,ts,tsx}',
+      'modes/*/src/**/*.{js,jsx,ts,tsx}',
+    ],
     ignores: ['**/*.test.*'],
     rules: {
       'no-restricted-imports': [
@@ -53,7 +60,7 @@ export default [
           paths: [
             {
               name: 'prop-types',
-              message: 'propTypes were removed from ui-next; use TypeScript types.',
+              message: 'propTypes were removed; use TypeScript types.',
             },
           ],
         },
@@ -74,7 +81,7 @@ export default [
         },
         {
           selector: "AssignmentExpression[left.property.name='propTypes']",
-          message: 'propTypes were removed from ui-next; use TypeScript types.',
+          message: 'propTypes were removed; use TypeScript types.',
         },
       ],
     },

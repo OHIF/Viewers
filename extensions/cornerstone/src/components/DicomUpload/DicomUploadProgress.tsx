@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
 import { Button } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
@@ -392,9 +391,6 @@ function DicomUploadProgress({
   );
 }
 
-DicomUploadProgress.propTypes = {
-  dicomFileUploaderArr: PropTypes.arrayOf(PropTypes.instanceOf(DicomFileUploader)).isRequired,
-  onComplete: PropTypes.func.isRequired,
-};
+
 
 export default DicomUploadProgress;

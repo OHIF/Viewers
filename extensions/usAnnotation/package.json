@@ -19,14 +19,13 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env REACT_COMPILER=off NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
     "dev:my-extension": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "prop-types": "15.8.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-i18next": "12.3.1",

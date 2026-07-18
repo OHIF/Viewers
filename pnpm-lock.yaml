@@ -120,7 +120,7 @@ importers:
         version: 1.4.5(@rsbuild/core@1.7.3)
       '@rsdoctor/rspack-plugin':
         specifier: 1.6.0
-        version: 1.6.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@rsbuild/core@1.7.3)(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
+        version: 1.6.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@rsbuild/core@1.7.3)(@rspack/core@1.7.11(@swc/helpers@0.5.21))(supports-color@8.1.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@testing-library/dom':
         specifier: 10.4.1
         version: 10.4.1
@@ -129,7 +129,7 @@ importers:
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@typescript-eslint/parser':
         specifier: 8.64.0
-        version: 8.64.0(eslint@10.7.0(jiti@2.7.0))(typescript@5.5.4)
+        version: 8.64.0(eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.5.4)
       babel-jest:
         specifier: 29.7.0
         version: 29.7.0(@babel/core@7.29.7(supports-color@8.1.1))
@@ -159,10 +159,10 @@ importers:
         version: 5.0.8(cypress@14.5.2)
       eslint:
         specifier: 10.7.0
-        version: 10.7.0(jiti@2.7.0)
+        version: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
       eslint-plugin-react-hooks:
         specifier: 7.1.1
-        version: 7.1.1(eslint@10.7.0(jiti@2.7.0))
+        version: 7.1.1(eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1))
       file-loader:
         specifier: 6.2.0
         version: 6.2.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
@@ -299,9 +299,6 @@ importers:
       lodash.zip:
         specifier: 4.2.0
         version: 4.2.0
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -348,9 +345,6 @@ importers:
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../../platform/i18n
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -388,9 +382,6 @@ importers:
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../../platform/i18n
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -437,9 +428,6 @@ importers:
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../../platform/i18n
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -495,9 +483,6 @@ importers:
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -544,9 +529,6 @@ importers:
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -581,9 +563,6 @@ importers:
       lodash.uniqby:
         specifier: 4.7.0
         version: 4.7.0
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -645,9 +624,6 @@ importers:
       mathjs:
         specifier: 12.4.3
         version: 12.4.3
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -694,9 +670,6 @@ importers:
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -728,9 +701,6 @@ importers:
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -774,9 +744,6 @@ importers:
       lodash.debounce:
         specifier: 4.0.8
         version: 4.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -817,9 +784,6 @@ importers:
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -851,9 +815,6 @@ importers:
       hammerjs:
         specifier: 2.0.8
         version: 2.0.8
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -888,9 +849,6 @@ importers:
       '@ohif/ui-next':
         specifier: workspace:*
         version: link:../../platform/ui-next
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -1420,9 +1378,6 @@ importers:
       '@svgr/webpack':
         specifier: 8.1.0
         version: 8.1.0(typescript@5.5.4)
-      '@types/react':
-        specifier: 19.2.17
-        version: 19.2.17
       classnames:
         specifier: 2.5.1
         version: 2.5.1
@@ -1465,9 +1420,6 @@ importers:
       oidc-client-ts:
         specifier: 3.3.0
         version: 3.3.0
-      prop-types:
-        specifier: 15.8.1
-        version: 15.8.1
       query-string:
         specifier: 6.14.1
         version: 6.14.1
@@ -1520,6 +1472,9 @@ importers:
       '@types/node':
         specifier: 20.19.9
         version: 20.19.9
+      '@types/react':
+        specifier: 19.2.17
+        version: 19.2.17
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.17)
@@ -18437,14 +18392,14 @@ snapshots:
 
   '@emotion/weak-memoize@0.4.0': {}
 
-  '@eslint-community/eslint-utils@4.9.1(eslint@10.7.0(jiti@2.7.0))':
+  '@eslint-community/eslint-utils@4.9.1(eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1))':
     dependencies:
-      eslint: 10.7.0(jiti@2.7.0)
+      eslint: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
 
-  '@eslint/config-array@0.23.5':
+  '@eslint/config-array@0.23.5(supports-color@8.1.1)':
     dependencies:
       '@eslint/object-schema': 3.0.5
       debug: 4.4.3(supports-color@8.1.1)
@@ -20005,7 +19960,7 @@ snapshots:
     dependencies:
       '@rsbuild/plugin-check-syntax': 1.6.1(@rsbuild/core@1.7.3)
       '@rsdoctor/graph': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-      '@rsdoctor/sdk': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
+      '@rsdoctor/sdk': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(supports-color@8.1.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rsdoctor/types': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rsdoctor/utils': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rspack/resolver': 0.2.8(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
@@ -20036,11 +19991,11 @@ snapshots:
       - '@rspack/core'
       - webpack
 
-  '@rsdoctor/rspack-plugin@1.6.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@rsbuild/core@1.7.3)(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))':
+  '@rsdoctor/rspack-plugin@1.6.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@rsbuild/core@1.7.3)(@rspack/core@1.7.11(@swc/helpers@0.5.21))(supports-color@8.1.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))':
     dependencies:
       '@rsdoctor/core': 1.6.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@rsbuild/core@1.7.3)(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rsdoctor/graph': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
-      '@rsdoctor/sdk': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
+      '@rsdoctor/sdk': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(supports-color@8.1.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rsdoctor/types': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       '@rsdoctor/utils': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
     optionalDependencies:
@@ -20054,7 +20009,7 @@ snapshots:
       - utf-8-validate
       - webpack
 
-  '@rsdoctor/sdk@1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))':
+  '@rsdoctor/sdk@1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(supports-color@8.1.1)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))':
     dependencies:
       '@rsdoctor/client': 1.6.0
       '@rsdoctor/graph': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
@@ -20062,7 +20017,7 @@ snapshots:
       '@rsdoctor/utils': 1.6.0(@rspack/core@1.7.11(@swc/helpers@0.5.21))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.21)))
       launch-editor: 2.14.1
       safer-buffer: 2.1.2
-      socket.io: 4.8.1
+      socket.io: 4.8.1(supports-color@8.1.1)
       tapable: 2.2.2
     transitivePeerDependencies:
       - '@rspack/core'
@@ -20893,19 +20848,19 @@ snapshots:
       '@types/node': 20.19.9
     optional: true
 
-  '@typescript-eslint/parser@8.64.0(eslint@10.7.0(jiti@2.7.0))(typescript@5.5.4)':
+  '@typescript-eslint/parser@8.64.0(eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.64.0
       '@typescript-eslint/types': 8.64.0
-      '@typescript-eslint/typescript-estree': 8.64.0(typescript@5.5.4)
+      '@typescript-eslint/typescript-estree': 8.64.0(supports-color@8.1.1)(typescript@5.5.4)
       '@typescript-eslint/visitor-keys': 8.64.0
       debug: 4.4.3(supports-color@8.1.1)
-      eslint: 10.7.0(jiti@2.7.0)
+      eslint: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
       typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.64.0(typescript@5.5.4)':
+  '@typescript-eslint/project-service@8.64.0(supports-color@8.1.1)(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@5.5.4)
       '@typescript-eslint/types': 8.64.0
@@ -20925,9 +20880,9 @@ snapshots:
 
   '@typescript-eslint/types@8.64.0': {}
 
-  '@typescript-eslint/typescript-estree@8.64.0(typescript@5.5.4)':
+  '@typescript-eslint/typescript-estree@8.64.0(supports-color@8.1.1)(typescript@5.5.4)':
     dependencies:
-      '@typescript-eslint/project-service': 8.64.0(typescript@5.5.4)
+      '@typescript-eslint/project-service': 8.64.0(supports-color@8.1.1)(typescript@5.5.4)
       '@typescript-eslint/tsconfig-utils': 8.64.0(typescript@5.5.4)
       '@typescript-eslint/types': 8.64.0
       '@typescript-eslint/visitor-keys': 8.64.0
@@ -23065,7 +23020,7 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.9:
+  engine.io@6.6.9(supports-color@8.1.1):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 20.19.9
@@ -23239,11 +23194,11 @@ snapshots:
     optionalDependencies:
       source-map: 0.6.1
 
-  eslint-plugin-react-hooks@7.1.1(eslint@10.7.0(jiti@2.7.0)):
+  eslint-plugin-react-hooks@7.1.1(eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1)):
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/parser': 7.29.7
-      eslint: 10.7.0(jiti@2.7.0)
+      eslint: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)
       hermes-parser: 0.25.1
       zod: 4.4.3
       zod-validation-error: 4.0.2(zod@4.4.3)
@@ -23266,11 +23221,11 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint@10.7.0(jiti@2.7.0):
+  eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.1(eslint@10.7.0(jiti@2.7.0))
+      '@eslint-community/eslint-utils': 4.9.1(eslint@10.7.0(jiti@2.7.0)(supports-color@8.1.1))
       '@eslint-community/regexpp': 4.12.2
-      '@eslint/config-array': 0.23.5
+      '@eslint/config-array': 0.23.5(supports-color@8.1.1)
       '@eslint/config-helpers': 0.6.0
       '@eslint/core': 1.2.1
       '@eslint/plugin-kit': 0.7.2
@@ -29248,7 +29203,7 @@ snapshots:
       dot-case: 3.0.4
       tslib: 2.8.1
 
-  socket.io-adapter@2.5.8:
+  socket.io-adapter@2.5.8(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.21.0
@@ -29257,22 +29212,22 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  socket.io-parser@4.2.7:
+  socket.io-parser@4.2.7(supports-color@8.1.1):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.1:
+  socket.io@4.8.1(supports-color@8.1.1):
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.6
       debug: 4.3.7
-      engine.io: 6.6.9
-      socket.io-adapter: 2.5.8
-      socket.io-parser: 4.2.7
+      engine.io: 6.6.9(supports-color@8.1.1)
+      socket.io-adapter: 2.5.8(supports-color@8.1.1)
+      socket.io-parser: 4.2.7(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color

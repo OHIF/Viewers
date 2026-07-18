@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback, useState, ReactElement, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { PanelSection, WindowLevel } from '@ohif/ui-next';
 import { Enums, eventTarget, utilities as csUtils, Types } from '@cornerstonejs/core';
@@ -24,29 +23,26 @@ const ViewportWindowLevel = ({
   const [isLoading, setIsLoading] = useState(true);
   const displaySets = useActiveViewportDisplaySets();
 
-  const getViewportsWithVolumeIds = useCallback(
-    (volumeIds: string[]) => {
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-      // getVolumeViewports() was removed in the GenericViewport architecture
-      // (a PLANAR_NEXT viewport can be volume-capable without being a VolumeViewport).
-      // Official replacement: getViewports() + the viewportSupportsVolumeCompatibility
-      // capability guard (cornerstone codemod cornerstone3d/5/generic-viewport).
-      const viewports = renderingEngine
-        .getViewports()
-        .filter(csUtils.viewportSupportsVolumeCompatibility);
+  const getViewportsWithVolumeIds = (volumeIds: string[]) => {
+    const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+    // getVolumeViewports() was removed in the GenericViewport architecture
+    // (a PLANAR_NEXT viewport can be volume-capable without being a VolumeViewport).
+    // Official replacement: getViewports() + the viewportSupportsVolumeCompatibility
+    // capability guard (cornerstone codemod cornerstone3d/5/generic-viewport).
+    const viewports = renderingEngine
+      .getViewports()
+      .filter(csUtils.viewportSupportsVolumeCompatibility);
 
-      return viewports.filter(vp => {
-        const viewportVolumeIds = (vp as Types.IVolumeViewport).getAllVolumeIds();
-        return (
-          volumeIds.length === viewportVolumeIds.length &&
-          volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
-        );
-      });
-    },
-    [cornerstoneViewportService]
-  );
+    return viewports.filter(vp => {
+      const viewportVolumeIds = (vp as Types.IVolumeViewport).getAllVolumeIds();
+      return (
+        volumeIds.length === viewportVolumeIds.length &&
+        volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
+      );
+    });
+  };
 
-  const getVolumeOpacity = useCallback((viewport, volumeId) => {
+  const getVolumeOpacity = (viewport, volumeId) => {
     const volumeActor = viewport.getActors().find(actor => actor.referencedId === volumeId)?.actor;
 
     if (isPetVolumeWithDefaultOpacity(volumeId, volumeActor)) {
@@ -56,16 +52,16 @@ const ViewportWindowLevel = ({
     }
 
     return undefined;
-  }, []);
+  };
 
-  const updateViewportHistograms = useCallback(() => {
+  const updateViewportHistograms = () => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
     getWindowLevelsData(viewport, viewportInfo, getVolumeOpacity).then(data => {
       setWindowLevels(data);
     });
-  }, [viewportId, cornerstoneViewportService, getVolumeOpacity]);
+  };
 
   const handleCornerstoneVOIModified = useCallback(
     e => {
@@ -107,47 +103,41 @@ const ViewportWindowLevel = ({
     [handleCornerstoneVOIModified]
   );
 
-  const handleVOIChange = useCallback(
-    (volumeId, voi) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const handleVOIChange = (volumeId, voi) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      const newRange = {
-        lower: voi.windowCenter - voi.windowWidth / 2,
-        upper: voi.windowCenter + voi.windowWidth / 2,
-      };
+    const newRange = {
+      lower: voi.windowCenter - voi.windowWidth / 2,
+      upper: voi.windowCenter + voi.windowWidth / 2,
+    };
 
-      viewport.setProperties({ voiRange: newRange }, volumeId);
-      viewport.render();
-    },
-    [cornerstoneViewportService, viewportId]
-  );
+    viewport.setProperties({ voiRange: newRange }, volumeId);
+    viewport.render();
+  };
 
-  const handleOpacityChange = useCallback(
-    (viewportId, _volumeIndex, volumeId, opacity) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const handleOpacityChange = (viewportId, _volumeIndex, volumeId, opacity) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport) {
-        return;
-      }
+    if (!viewport) {
+      return;
+    }
 
-      const viewportVolumeIds = csUtils.viewportSupportsVolumeId(viewport)
-        ? (viewport as Types.IVolumeViewport).getAllVolumeIds()
-        : [];
-      const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
+    const viewportVolumeIds = csUtils.viewportSupportsVolumeId(viewport)
+      ? (viewport as Types.IVolumeViewport).getAllVolumeIds()
+      : [];
+    const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
 
-      viewports.forEach(vp => {
-        vp.setProperties({ colormap: { opacity } }, volumeId);
-        vp.render();
-      });
-    },
-    [getViewportsWithVolumeIds, cornerstoneViewportService]
-  );
+    viewports.forEach(vp => {
+      vp.setProperties({ colormap: { opacity } }, volumeId);
+      vp.render();
+    });
+  };
 
   // New function to handle image volume loading completion
-  const handleImageVolumeLoadingCompleted = useCallback(() => {
+  const handleImageVolumeLoadingCompleted = () => {
     setIsLoading(false);
     updateViewportHistograms();
-  }, [updateViewportHistograms]);
+  };
 
   // Listen to cornerstone events and set up interval for histogram updates
   useEffect(() => {
@@ -183,9 +173,7 @@ const ViewportWindowLevel = ({
   ]);
 
   // Create a memoized version of displaySet IDs for comparison
-  const displaySetIds = useMemo(() => {
-    return displaySets?.map(ds => ds.displaySetInstanceUID).sort() || [];
-  }, [displaySets]);
+  const displaySetIds = displaySets?.map(ds => ds.displaySetInstanceUID).sort() || [];
 
   useEffect(() => {
     const { unsubscribe } = cornerstoneViewportService.subscribe(
@@ -242,9 +230,6 @@ const ViewportWindowLevel = ({
   );
 };
 
-ViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
-  viewportId: PropTypes.string.isRequired,
-};
+
 
 export default ViewportWindowLevel;

@@ -63,7 +63,8 @@
     "cs3d:install": "cd libs/@cornerstonejs && pnpm install",
     "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
     "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs .",
-    "lint:compiler": "eslint --config eslint.config.mjs --no-config-lookup ."
+    "lint:compiler": "eslint --config eslint.config.mjs --no-config-lookup .",
+    "lint:compiler:ci": "node scripts/reactCompilerLintBudget.mjs"
   },
   "dependencies": {
     "execa": "8.0.1"

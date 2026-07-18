@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import {
@@ -50,17 +49,14 @@ function ViewportSliceProgressScrollbar({
 
   const { numberOfSlices, imageIndex } = imageSliceData;
 
-  const imageIds = useMemo(() => getViewportImageIds(viewportData), [viewportData]);
-  const imageIdToIndex = useMemo(() => {
-    const map = new Map<string, number>();
-    for (let i = 0; i < imageIds.length; i++) {
-      const imageId = imageIds[i];
-      if (imageId) {
-        map.set(imageId, i);
-      }
+  const imageIds = getViewportImageIds(viewportData);
+  const imageIdToIndex = new Map<string, number>();
+  for (let i = 0; i < imageIds.length; i++) {
+    const imageId = imageIds[i];
+    if (imageId) {
+      imageIdToIndex.set(imageId, i);
     }
-    return map;
-  }, [imageIds]);
+  }
 
   const isFullMode = useProgressScrollbarMode({
     viewportData,
@@ -189,13 +185,6 @@ function ViewportSliceProgressScrollbar({
   );
 }
 
-ViewportSliceProgressScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
+
 
 export default ViewportSliceProgressScrollbar;

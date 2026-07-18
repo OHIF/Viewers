@@ -1,6 +1,5 @@
 // Updated ToolbarLayoutSelector.tsx
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { CommandsManager } from '@ohif/core';
 
 import { LayoutSelector } from '@ohif/ui-next';
@@ -109,24 +108,21 @@ function ToolbarLayoutSelectorWithServices({
       ];
 
   // Unified selection handler that dispatches to the appropriate command
-  const handleSelectionChange = useCallback(
-    (commandOptions, isPreset) => {
-      if (isPreset) {
-        // Advanced preset selection
-        commandsManager.run({
-          commandName: 'setHangingProtocol',
-          commandOptions,
-        });
-      } else {
-        // Common preset or custom grid selection
-        commandsManager.run({
-          commandName: 'setViewportGridLayout',
-          commandOptions,
-        });
-      }
-    },
-    [commandsManager]
-  );
+  const handleSelectionChange = (commandOptions, isPreset) => {
+    if (isPreset) {
+      // Advanced preset selection
+      commandsManager.run({
+        commandName: 'setHangingProtocol',
+        commandOptions,
+      });
+    } else {
+      // Common preset or custom grid selection
+      commandsManager.run({
+        commandName: 'setViewportGridLayout',
+        commandOptions,
+      });
+    }
+  };
 
   return (
     <div
@@ -194,11 +190,6 @@ function ToolbarLayoutSelectorWithServices({
   );
 }
 
-ToolbarLayoutSelectorWithServices.propTypes = {
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object,
-  rows: PropTypes.number,
-  columns: PropTypes.number,
-};
+
 
 export default ToolbarLayoutSelectorWithServices;

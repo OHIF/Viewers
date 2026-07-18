@@ -10,7 +10,6 @@ import Debug from './Debug';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
-import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
@@ -27,9 +26,7 @@ const NotFoundServer = ({
   );
 };
 
-NotFoundServer.propTypes = {
-  message: PropTypes.string,
-};
+
 
 const NotFoundStudy = () => {
   const [appConfig] = useAppConfig();
@@ -61,9 +58,7 @@ const NotFoundStudy = () => {
   );
 };
 
-NotFoundStudy.propTypes = {
-  message: PropTypes.string,
-};
+
 
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [

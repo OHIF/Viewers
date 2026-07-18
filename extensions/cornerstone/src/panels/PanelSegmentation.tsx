@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   IconPresentationProvider,
   Popover,
@@ -87,15 +87,12 @@ export default function PanelSegmentation({
   // The Popover is made visible whenever the options associated with the
   // activeSegmentationUtility exist. Thus clearing the activeSegmentationUtility
   // clears the associated options and will keep the Popover closed.
-  const handlePopoverOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        setUIState('activeSegmentationUtility', null);
-        toolbarService.refreshToolbarState({ viewportId: activeViewportId });
-      }
-    },
-    [activeViewportId, setUIState, toolbarService]
-  );
+  const handlePopoverOpenChange = (open: boolean) => {
+    if (!open) {
+      setUIState('activeSegmentationUtility', null);
+      toolbarService.refreshToolbarState({ viewportId: activeViewportId });
+    }
+  };
 
   // Extract customization options
   const segmentationTableMode = customizationService.getCustomization(

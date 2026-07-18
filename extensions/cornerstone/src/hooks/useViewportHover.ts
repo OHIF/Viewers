@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useViewportGrid } from '@ohif/ui-next';
 
 /**
@@ -15,7 +15,7 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
 
   const isActive = activeViewportId === viewportId;
 
-  const setupListeners = useCallback(() => {
+  const setupListeners = () => {
     const viewportElement = document.querySelector(`[data-viewportid="${viewportId}"]`);
     const element = viewportElement?.closest('.viewport-wrapper') || viewportElement;
 
@@ -65,7 +65,7 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
       document.removeEventListener('mousemove', handleMouseMove);
       clearTimeout(resizeTimeout);
     };
-  }, [viewportId]);
+  };
 
   useEffect(() => {
     const cleanup = setupListeners();
@@ -73,5 +73,5 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
   }, [setupListeners]);
 
   // Memoize the return value to prevent unnecessary re-renders
-  return useMemo(() => ({ isHovered, isActive }), [isHovered, isActive]);
+  return { isHovered, isActive };
 }
