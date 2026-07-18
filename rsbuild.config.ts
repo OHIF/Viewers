@@ -101,7 +101,13 @@ export default defineConfig(({ env }) => {
         ? [
             pluginBabel({
               include: REACT_COMPILER_INCLUDE,
-              exclude: /node_modules/,
+              // Skip the cornerstone viewport components: they read/mutate
+              // external cornerstone3D state (enabled element, camera, GL
+              // actors) during render and in imperative event handlers, which
+              // the compiler's memoization miscompiles (e.g. orientation
+              // markers stop updating on rotate/flip/reset). Mirror of the
+              // babel.config.js override for the rspack pipeline.
+              exclude: /node_modules|extensions[\\/]cornerstone[\\/]src[\\/]Viewport[\\/]/,
               babelLoaderOptions(opts) {
                 opts.plugins ??= [];
                 opts.plugins.unshift(['babel-plugin-react-compiler', { target: '19' }]);
