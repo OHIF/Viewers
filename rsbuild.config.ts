@@ -69,9 +69,10 @@ export default defineConfig(({ env }) => {
     },
     source: {
       entry: {
-        // Keep the legacy entry name so emitted bundle filenames match the
-        // rspack build (`app.bundle.<hash>.js`).
-        app: ENTRY_TARGET,
+        // `index` is the only entry name rsbuild routes to `/` (any other
+        // name is served and printed as /<entryName>). The emitted bundles
+        // keep the rspack build's legacy `app` naming via output.filename.
+        index: ENTRY_TARGET,
       },
       define: {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -260,12 +261,20 @@ export default defineConfig(({ env }) => {
         css: '',
         cssAsync: '',
       },
+      // The entry chunk is named `index` (for the root route) but must keep
+      // emitting `app.*` files like the rspack build, so the two outputs stay
+      // diffable and downstream tooling sees familiar paths. The HTML needs no
+      // override anymore: `[name].html` now already yields index.html.
       filename: {
-        js: isProd ? '[name].bundle.[contenthash:8].js' : '[name].js',
-        css: isProd ? '[name].bundle.css' : '[name].css',
-        // rsbuild derives the HTML name from the entry name (`app`); the app
-        // must be served from index.html like the rspack build.
-        html: 'index.html',
+        js: isProd
+          ? pathData =>
+              pathData.chunk?.name === 'index'
+                ? 'app.bundle.[contenthash:8].js'
+                : '[name].bundle.[contenthash:8].js'
+          : pathData => (pathData.chunk?.name === 'index' ? 'app.js' : '[name].js'),
+        css: isProd
+          ? pathData => (pathData.chunk?.name === 'index' ? 'app.bundle.css' : '[name].bundle.css')
+          : pathData => (pathData.chunk?.name === 'index' ? 'app.css' : '[name].css'),
       },
       // JS/CSS are minified in prod by default. HTML is not: rsbuild 1.x
       // dropped built-in HTML minification (needs plugin-html-minifier-terser;
@@ -319,6 +328,9 @@ export default defineConfig(({ env }) => {
       },
     },
     server: {
+      // rsbuild 2 changed the default host from 0.0.0.0 to localhost; keep
+      // binding all interfaces so the LAN (Network) URL works like before.
+      host: '0.0.0.0',
       port: OHIF_PORT,
       open: OHIF_OPEN,
       // Disable rsbuild's built-in public-dir handling: it copies ALL of
