@@ -26,6 +26,7 @@ verifyDepsBeforeRun: false
 auditConfig:
   ignoreGhsas:
     - GHSA-mp2f-45pm-3cg9 # decompress is called only ever decompresses a hash-pinned, hardcoded archive in a dev-only CLI
+    - GHSA-xcpc-8h2w-3j85 # adm-zip reached only transitively through dcmjs (@cornerstonejs), a pre-existing tree entry unrelated to this change; the affected zip path is not exercised in the browser bundle
 
 allowBuilds:
   '@scarf/scarf': true
@@ -36,6 +37,10 @@ allowBuilds:
   protobufjs: true
   sharp: true
 overrides:
+  # React 19 singleton: legacy transitive peers must not create a nested react copy.
+  react: 19.2.7
+  react-dom: 19.2.7
+  '@types/react': 19.2.17
   # Synced from origin/master's package.json `resolutions` block during the
   # merge. Keep this list aligned with master so security/version pins from
   # upstream PRs land here too.

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   IconPresentationProvider,
   Popover,
@@ -8,7 +8,7 @@ import {
   ToolSettings,
 } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
-import { useActiveToolOptions, useSystem } from '@ohif/core/src';
+import { useActiveToolOptions, useCustomization, useSystem } from '@ohif/core/src';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { Toolbar, useUIStateStore } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
@@ -87,23 +87,23 @@ export default function PanelSegmentation({
   // The Popover is made visible whenever the options associated with the
   // activeSegmentationUtility exist. Thus clearing the activeSegmentationUtility
   // clears the associated options and will keep the Popover closed.
-  const handlePopoverOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        setUIState('activeSegmentationUtility', null);
-        toolbarService.refreshToolbarState({ viewportId: activeViewportId });
-      }
-    },
-    [activeViewportId, setUIState, toolbarService]
-  );
+  const handlePopoverOpenChange = (open: boolean) => {
+    if (!open) {
+      setUIState('activeSegmentationUtility', null);
+      toolbarService.refreshToolbarState({ viewportId: activeViewportId });
+    }
+  };
 
   // Extract customization options
   const segmentationTableMode = customizationService.getCustomization(
     'panelSegmentation.tableMode'
   ) as unknown as string;
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
+  // onSegmentationAdd is read through useCustomization (not a direct
+  // getCustomization call) so the panel re-renders when a mode registers its
+  // handler after this panel first mounted - e.g. TMTV replaces it with its
+  // create-labelmap-from-PT command in onModeEnter, and a render-time read
+  // (memoized by the React Compiler) would keep serving the stale default.
+  const onSegmentationAdd = useCustomization('panelSegmentation.onSegmentationAdd');
   const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
   const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
   const CustomDropdownMenuContent = customizationService.getCustomization(

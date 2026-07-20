@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
@@ -221,14 +220,7 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   );
 }
 
-OHIFCornerstoneSRMeasurementViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-  viewportLabel: PropTypes.string,
-  viewportOptions: PropTypes.object,
-};
+
 
 async function _getViewportReferencedDisplaySetData(
   displaySet,

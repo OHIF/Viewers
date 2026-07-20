@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Icons } from '@ohif/ui-next';
 import { Button } from '../Button';
 import { useTranslation } from 'react-i18next';
@@ -94,11 +93,6 @@ const InvestigationalUseDialog = ({
   );
 };
 
-InvestigationalUseDialog.propTypes = {
-  dialogConfiguration: PropTypes.shape({
-    option: PropTypes.oneOf(Object.values(showDialogOption)).isRequired,
-    days: PropTypes.number,
-  }),
-};
+
 
 export default InvestigationalUseDialog;

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 function SignoutCallbackComponent({ userManager }) {
   const navigate = useNavigate();
@@ -27,8 +26,6 @@ function SignoutCallbackComponent({ userManager }) {
   return null;
 }
 
-SignoutCallbackComponent.propTypes = {
-  userManager: PropTypes.object.isRequired,
-};
+
 
 export default SignoutCallbackComponent;

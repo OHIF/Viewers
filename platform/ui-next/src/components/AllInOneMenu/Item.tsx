@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { MenuContext } from './Menu';
 
 type ItemProps = {
@@ -24,10 +24,10 @@ const Item = ({
 }: ItemProps) => {
   const { hideMenu } = useContext(MenuContext);
 
-  const onClickHandler = useCallback(() => {
+  const onClickHandler = () => {
     hideMenu();
     onClick?.();
-  }, [hideMenu, onClick]);
+  };
 
   return (
     <div

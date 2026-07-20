@@ -1,11 +1,10 @@
-import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef, type JSX } from 'react';
 import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';
 import ProgressItemDetail from './ProgressItemDetail';
 import ProgressItem from './ProgressItem';
 import { Icons } from '../Icons';
-import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
+import { ProgressDropdownOption } from './types';
 
 const ProgressDropdown = ({
   options: optionsProps,
@@ -154,12 +153,6 @@ const ProgressDropdown = ({
   );
 };
 
-ProgressDropdown.propTypes = {
-  options: PropTypes.arrayOf(ProgressDropdownOptionPropType).isRequired,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  children: PropTypes.node,
-  dropDownWidth: PropTypes.string,
-};
+
 
 export default ProgressDropdown;

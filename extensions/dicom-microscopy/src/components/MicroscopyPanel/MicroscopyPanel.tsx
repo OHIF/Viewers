@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { callInputDialog } from '@ohif/extension-default';
 import { ExtensionManager, CommandsManager, DicomMetadataStore, utils } from '@ohif/core';
 import { DataRow } from '@ohif/ui-next';
@@ -46,12 +45,12 @@ const formatLength = (length, unit) => {
 };
 
 interface IMicroscopyPanelProps extends WithTranslation {
-  viewports: PropTypes.array;
-  activeViewportId: PropTypes.string;
+  viewports: unknown[];
+  activeViewportId: string;
 
   //
-  onSaveComplete?: PropTypes.func; // callback when successfully saved annotations
-  onRejectComplete?: PropTypes.func; // callback when rejected annotations
+  onSaveComplete?: (...args: unknown[]) => void; // callback when successfully saved annotations
+  onRejectComplete?: (...args: unknown[]) => void; // callback when rejected annotations
 
   //
   servicesManager: AppTypes.ServicesManager;

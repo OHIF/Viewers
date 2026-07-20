@@ -1,5 +1,5 @@
 // query-string is the stringifier used by the worklist navigation callers
-// (useStudyListStateSync, LegacyWorkList); test against it, not the `qs` library.
+// (useStudyListStateSync); test against it, not the `qs` library.
 import qs from 'query-string';
 
 import { preserveQueryParameters, preserveQueryStrings } from './preserveQueryParameters';

@@ -7,7 +7,6 @@ import React, {
   useState,
   useRef,
 } from 'react';
-import PropTypes from 'prop-types';
 import { Toaster, toast } from '../components';
 
 const NotificationContext = createContext(null);
@@ -226,11 +225,7 @@ const NotificationProvider = ({
   );
 };
 
-NotificationProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  service: PropTypes.object,
-  deduplicationInterval: PropTypes.number,
-};
+
 
 export const withNotification = Component => {
   return function WrappedComponent(props) {

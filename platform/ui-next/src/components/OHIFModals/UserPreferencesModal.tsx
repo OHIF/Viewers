@@ -179,11 +179,8 @@ interface HotkeyProps {
 function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: HotkeyProps) {
   const [isRecording, setIsRecording] = React.useState(false);
   const { t } = useTranslation('UserPreferencesModal');
-  const translatedValue = React.useMemo(() => translateHotkeyValue(value, t), [value, t]);
-  const translatedPlaceholder = React.useMemo(
-    () => translateHotkeyValue(placeholder, t),
-    [placeholder, t]
-  );
+  const translatedValue = translateHotkeyValue(value, t);
+  const translatedPlaceholder = translateHotkeyValue(placeholder, t);
 
   const onInputKeyDown = (event: React.KeyboardEvent) => {
     event.preventDefault();

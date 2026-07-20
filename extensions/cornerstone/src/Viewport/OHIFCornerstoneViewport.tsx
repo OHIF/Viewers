@@ -80,7 +80,7 @@ const OHIFCornerstoneViewport = React.memo(
 
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
-    const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+    const elementRef = useRef(undefined) as React.MutableRefObject<HTMLDivElement>;
     const viewportRef = useViewportRef(viewportId);
 
     const {

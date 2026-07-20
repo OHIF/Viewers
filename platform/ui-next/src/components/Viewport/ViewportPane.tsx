@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useDrop } from 'react-dnd';
 
@@ -77,15 +76,6 @@ function ViewportPane({
   );
 }
 
-ViewportPane.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  isActive: PropTypes.bool.isRequired,
-  acceptDropsFor: PropTypes.string.isRequired,
-  onDrop: PropTypes.func.isRequired,
-  onInteraction: PropTypes.func.isRequired,
-  onDoubleClick: PropTypes.func,
-  customStyle: PropTypes.object,
-};
+
 
 export { ViewportPane };

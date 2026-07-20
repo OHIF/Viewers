@@ -3,7 +3,7 @@ import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useTranslation } from 'react-i18next';
 
-export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { viewportDisplaySets } = useViewportRendering(viewportId);
   const { t } = useTranslation('WindowLevelActionMenu');
 

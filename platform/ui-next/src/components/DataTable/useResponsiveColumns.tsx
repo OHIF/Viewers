@@ -1,9 +1,7 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -46,7 +44,7 @@ function useResponsiveColumnsContext(): ResponsiveColumnsContextValue {
  */
 export function ResponsiveColumnsProvider({ children }: { children: ReactNode }) {
   const [unfitColumnIds, setUnfitColumnIds] = useState<Set<string>>(() => new Set());
-  const value = useMemo(() => ({ unfitColumnIds, setUnfitColumnIds }), [unfitColumnIds]);
+  const value = { unfitColumnIds, setUnfitColumnIds };
   return (
     <ResponsiveColumnsContext.Provider value={value}>{children}</ResponsiveColumnsContext.Provider>
   );
@@ -189,121 +187,112 @@ export function useResponsiveColumns<TData>(
   // getAllLeafColumns() internally, so the array reference is stable across
   // renders until the column definitions themselves change.
   const leafColumns = table.getAllLeafColumns();
-  const columnSizings = useMemo<ColumnSizing[]>(() => {
-    return leafColumns.map(col => {
-      const meta = (col.columnDef.meta as ColumnMeta | undefined) ?? undefined;
-      const minWidth = typeof meta?.minWidth === 'number' ? meta.minWidth : 0;
-      const enableHiding = col.columnDef.enableHiding !== false;
-      const hasPriority = typeof meta?.priority === 'number';
-      return {
-        id: col.id,
-        minWidth,
-        priority: hasPriority ? (meta!.priority as number) : 0,
-        // Setting meta.priority opts a column in to responsive hiding;
-        // enableHiding: false opts it out. Columns without a priority are
-        // treated as always-visible and consume their minWidth from the budget.
-        alwaysVisible: !enableHiding || !hasPriority,
-      };
-    });
-  }, [leafColumns]);
+  const columnSizings: ColumnSizing[] = leafColumns.map(col => {
+    const meta = (col.columnDef.meta as ColumnMeta | undefined) ?? undefined;
+    const minWidth = typeof meta?.minWidth === 'number' ? meta.minWidth : 0;
+    const enableHiding = col.columnDef.enableHiding !== false;
+    const hasPriority = typeof meta?.priority === 'number';
+    return {
+      id: col.id,
+      minWidth,
+      priority: hasPriority ? (meta!.priority as number) : 0,
+      // Setting meta.priority opts a column in to responsive hiding;
+      // enableHiding: false opts it out. Columns without a priority are
+      // treated as always-visible and consume their minWidth from the budget.
+      alwaysVisible: !enableHiding || !hasPriority,
+    };
+  });
 
   // Droppable columns sorted in strict priority order (highest first), with
   // minWidth ascending as a tiebreaker. computeColumnVisibility walks this list.
-  const droppableColumns = useMemo<ColumnSizing[]>(
-    () =>
-      columnSizings
-        .filter(s => !s.alwaysVisible)
-        .sort((a, b) => b.priority - a.priority || a.minWidth - b.minWidth),
-    [columnSizings]
-  );
+  const droppableColumns: ColumnSizing[] = columnSizings
+    .filter(s => !s.alwaysVisible)
+    .sort((a, b) => b.priority - a.priority || a.minWidth - b.minWidth);
 
   // Guards the first algorithm invocation so we don't mistake the table's
   // initial visibility for a user override.
   const isFirstRunRef = useRef(true);
 
-  const runAlgorithm = useCallback(
-    (containerWidth: number) => {
-      if (droppableColumns.length === 0) {
-        return;
-      }
+  const runAlgorithm = (containerWidth: number) => {
+    if (droppableColumns.length === 0) {
+      return;
+    }
 
-      if (isFirstRunRef.current) {
-        // Seed the "last applied" snapshot with the table's current state so
-        // any initialVisibility from the consumer is treated as the algorithm's
-        // baseline, not as a user override.
-        lastColumnVisibilityRef.current = { ...table.getState().columnVisibility };
-        isFirstRunRef.current = false;
-      } else {
-        // Diff the table's current visibility against what we last applied;
-        // any divergence is a user toggle (via DataTable.ViewOptions).
-        const current = table.getState().columnVisibility;
-        const last = lastColumnVisibilityRef.current;
-        for (const sizing of droppableColumns) {
-          // Default visibility when a key is absent from VisibilityState is true.
-          const currentVisible = current[sizing.id] !== false;
-          const lastVisible = last[sizing.id] !== false;
-          if (currentVisible === lastVisible) {
-            continue;
-          }
-          if (currentVisible) {
-            // User re-showed a column: clear stickiness so the algorithm
-            // can manage it again. May still be dropped on the next shrink.
-            userHiddenRef.current.delete(sizing.id);
-          } else {
-            // User hid a column: remember so we don't auto-restore on grow.
-            userHiddenRef.current.add(sizing.id);
-          }
-        }
-      }
-
-      // Always-visible columns consume budget unconditionally; the walk
-      // operates on what remains.
-      let budget = containerWidth;
-      for (const sizing of columnSizings) {
-        if (sizing.alwaysVisible) {
-          budget -= sizing.minWidth;
-        }
-      }
-
-      // Single walk produces both the applied visibility (honoring user-
-      // hidden columns) and the unfit set (columns whose View-menu toggle
-      // would have no effect because the algorithm would immediately re-hide
-      // them).
-      const lastVisibility = lastColumnVisibilityRef.current;
-      const { hiddenIds: appliedHidden, unfitIds: nextUnfit } = computeColumnVisibility(
-        droppableColumns,
-        budget,
-        (id: string) => userHiddenRef.current.has(id),
-        (id: string) => lastVisibility[id] === false
-      );
-
-      // Build and apply the visibility map.
-      const nextVisibility: VisibilityState = {};
+    if (isFirstRunRef.current) {
+      // Seed the "last applied" snapshot with the table's current state so
+      // any initialVisibility from the consumer is treated as the algorithm's
+      // baseline, not as a user override.
+      lastColumnVisibilityRef.current = { ...table.getState().columnVisibility };
+      isFirstRunRef.current = false;
+    } else {
+      // Diff the table's current visibility against what we last applied;
+      // any divergence is a user toggle (via DataTable.ViewOptions).
+      const current = table.getState().columnVisibility;
+      const last = lastColumnVisibilityRef.current;
       for (const sizing of droppableColumns) {
-        nextVisibility[sizing.id] = !appliedHidden.has(sizing.id);
-      }
-      const currentVisibility = table.getState().columnVisibility;
-      let appliedChanged = false;
-      for (const key of Object.keys(nextVisibility)) {
-        if ((currentVisibility[key] !== false) !== (nextVisibility[key] !== false)) {
-          appliedChanged = true;
-          break;
+        // Default visibility when a key is absent from VisibilityState is true.
+        const currentVisible = current[sizing.id] !== false;
+        const lastVisible = last[sizing.id] !== false;
+        if (currentVisible === lastVisible) {
+          continue;
+        }
+        if (currentVisible) {
+          // User re-showed a column: clear stickiness so the algorithm
+          // can manage it again. May still be dropped on the next shrink.
+          userHiddenRef.current.delete(sizing.id);
+        } else {
+          // User hid a column: remember so we don't auto-restore on grow.
+          userHiddenRef.current.add(sizing.id);
         }
       }
-      lastColumnVisibilityRef.current = nextVisibility;
-      if (appliedChanged) {
-        table.setColumnVisibility(prev => ({ ...prev, ...nextVisibility }));
-      }
+    }
 
-      // Publish the unfit set if it changed.
-      const lastUnfit = lastUnfitColumnIdsRef.current;
-      lastUnfitColumnIdsRef.current = nextUnfit;
-      if (!idSetsEqual(lastUnfit, nextUnfit)) {
-        setUnfitColumnIds(nextUnfit);
+    // Always-visible columns consume budget unconditionally; the walk
+    // operates on what remains.
+    let budget = containerWidth;
+    for (const sizing of columnSizings) {
+      if (sizing.alwaysVisible) {
+        budget -= sizing.minWidth;
       }
-    },
-    [table, columnSizings, droppableColumns, setUnfitColumnIds]
-  );
+    }
+
+    // Single walk produces both the applied visibility (honoring user-
+    // hidden columns) and the unfit set (columns whose View-menu toggle
+    // would have no effect because the algorithm would immediately re-hide
+    // them).
+    const lastVisibility = lastColumnVisibilityRef.current;
+    const { hiddenIds: appliedHidden, unfitIds: nextUnfit } = computeColumnVisibility(
+      droppableColumns,
+      budget,
+      (id: string) => userHiddenRef.current.has(id),
+      (id: string) => lastVisibility[id] === false
+    );
+
+    // Build and apply the visibility map.
+    const nextVisibility: VisibilityState = {};
+    for (const sizing of droppableColumns) {
+      nextVisibility[sizing.id] = !appliedHidden.has(sizing.id);
+    }
+    const currentVisibility = table.getState().columnVisibility;
+    let appliedChanged = false;
+    for (const key of Object.keys(nextVisibility)) {
+      if ((currentVisibility[key] !== false) !== (nextVisibility[key] !== false)) {
+        appliedChanged = true;
+        break;
+      }
+    }
+    lastColumnVisibilityRef.current = nextVisibility;
+    if (appliedChanged) {
+      table.setColumnVisibility(prev => ({ ...prev, ...nextVisibility }));
+    }
+
+    // Publish the unfit set if it changed.
+    const lastUnfit = lastUnfitColumnIdsRef.current;
+    lastUnfitColumnIdsRef.current = nextUnfit;
+    if (!idSetsEqual(lastUnfit, nextUnfit)) {
+      setUnfitColumnIds(nextUnfit);
+    }
+  };
 
   // Track and react to the table's width.
   useEffect(() => {

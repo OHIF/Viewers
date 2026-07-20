@@ -53,7 +53,7 @@ function Local({ modePath }: LocalProps) {
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
   const navigate = useNavigate();
-  const dropzoneRef = useRef();
+  const dropzoneRef = useRef(undefined);
   const [dropInitiated, setDropInitiated] = React.useState(false);
 
   const LoadingIndicatorProgress = customizationService.getCustomization(

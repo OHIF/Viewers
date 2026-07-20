@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
 import { Button } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
@@ -40,7 +39,7 @@ const NO_WRAP_ELLIPSIS_CLASS_NAMES = 'text-ellipsis whitespace-nowrap overflow-h
 function DicomUploadProgress({
   dicomFileUploaderArr,
   onComplete,
-}: DicomUploadProgressProps): ReactElement {
+}: DicomUploadProgressProps): ReactElement<any> {
   const { servicesManager } = useSystem();
 
   const ProgressLoadingBar =
@@ -64,7 +63,7 @@ function DicomUploadProgress({
 
   const [showFailedOnly, setShowFailedOnly] = useState(false);
 
-  const progressBarContainerRef = useRef<HTMLElement>();
+  const progressBarContainerRef = useRef<HTMLElement>(undefined);
 
   /**
    * The effect for measuring and setting the current upload rate. This is
@@ -274,7 +273,7 @@ function DicomUploadProgress({
     return { width: `${numChars}ch` };
   }, [numFilesCompleted]);
 
-  const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
+  const getNumCompletedAndTimeRemainingComponent = (): ReactElement<any> => {
     return (
       <div className="bg-muted text-foreground flex h-14 items-center px-1 pb-4 text-lg">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
@@ -320,7 +319,7 @@ function DicomUploadProgress({
     );
   };
 
-  const getShowFailedOnlyIconComponent = (): ReactElement => {
+  const getShowFailedOnlyIconComponent = (): ReactElement<any> => {
     return (
       <div className="ml-auto flex w-6 justify-center">
         {numFails > 0 && (
@@ -335,7 +334,7 @@ function DicomUploadProgress({
     );
   };
 
-  const getPercentCompleteComponent = (): ReactElement => {
+  const getPercentCompleteComponent = (): ReactElement<any> => {
     return (
       <div className="ohif-scrollbar border-input overflow-y-scroll border-b px-2">
         <div className="min-h-14 flex w-full items-center p-2.5">
@@ -392,9 +391,6 @@ function DicomUploadProgress({
   );
 }
 
-DicomUploadProgress.propTypes = {
-  dicomFileUploaderArr: PropTypes.arrayOf(PropTypes.instanceOf(DicomFileUploader)).isRequired,
-  onComplete: PropTypes.func.isRequired,
-};
+
 
 export default DicomUploadProgress;

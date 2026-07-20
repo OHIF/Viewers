@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
 function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
@@ -77,9 +76,6 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   return null;
 }
 
-ViewportImageSliceLoadingIndicator.propTypes = {
-  error: PropTypes.object,
-  element: PropTypes.object,
-};
+
 
 export default ViewportImageSliceLoadingIndicator;
