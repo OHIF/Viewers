@@ -41,7 +41,6 @@
     "@cornerstonejs/core": "5.6.8",
     "@cornerstonejs/dicom-image-loader": "5.6.8",
     "@cornerstonejs/metadata": "5.6.8",
-    "@ohif/ui": "workspace:*",
     "cornerstone-math": "0.1.10",
     "dicom-parser": "1.8.21"
   },
