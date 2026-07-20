@@ -13,7 +13,6 @@ const webpack = require('@rspack/core');
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js')['webpack'].core
 //   .rules;
 // ~~ RULES
-// const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
@@ -169,7 +168,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         },
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
-        // loadShadersRule,
         {
           test: /\.m?js/,
           resolve: {
