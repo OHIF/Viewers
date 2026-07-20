@@ -1,0 +1,4 @@
+# Machine-managed OHIF harness (recreate with: node scripts/ohif.mjs harness ensure)
+.ohif/
+node_modules/
+dist/

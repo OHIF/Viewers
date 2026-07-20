@@ -1,70 +1,58 @@
 {
+  "$schema": "./pluginConfig.schema.json",
   "extensions": [
     {
       "packageName": "@ohif/extension-default"
     },
     {
-      "packageName": "@ohif/extension-cornerstone",
-      "version": "3.0.0"
+      "packageName": "@ohif/extension-cornerstone"
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-sr",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-seg",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-pmap",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dynamic-volume",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-dicom-microscopy",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-dicom-pdf",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-dicom-video",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-tmtv",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-test",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
-      "packageName": "@ohif/extension-ultrasound-pleura-bline",
-      "version": "3.0.0"
+      "packageName": "@ohif/extension-ultrasound-pleura-bline"
     }
   ],
   "modes": [
@@ -88,17 +76,14 @@
     },
     {
       "packageName": "@ohif/mode-test",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
       "packageName": "@ohif/mode-basic-dev-mode",
-      "default": false,
-      "version": "3.0.0"
+      "default": false
     },
     {
-      "packageName": "@ohif/mode-ultrasound-pleura-bline",
-      "version": "3.0.0"
+      "packageName": "@ohif/mode-ultrasound-pleura-bline"
     }
   ],
   "public": [

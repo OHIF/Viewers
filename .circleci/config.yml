@@ -172,7 +172,7 @@ jobs:
           name: Authenticate with NPM registry
           # Write the auth token to npm's per-user config (~/.npmrc), not the
           # repo root. publish-package.mjs chdir's into each package dir to run
-          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # `pnpm publish`, and npm only reads the project .npmrc from that dir
           # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
           # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
           # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
@@ -185,6 +185,12 @@ jobs:
           name: build the other half of the packages
           command: |
             pnpm run build:package-all-1
+      # Same tarball-contract gate as NPM_PUBLISH, so PRs that regress the
+      # published-package contract fail here instead of on release day.
+      - run:
+          name: Verify published-package contract (pack dry-run)
+          command: |
+            node scripts/verify-tarballs.mjs
 
   NPM_PUBLISH:
     <<: *defaults
@@ -210,7 +216,7 @@ jobs:
           name: Authenticate with NPM registry
           # Write the auth token to npm's per-user config (~/.npmrc), not the
           # repo root. publish-package.mjs chdir's into each package dir to run
-          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # `pnpm publish`, and npm only reads the project .npmrc from that dir
           # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
           # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
           # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
@@ -223,6 +229,18 @@ jobs:
           name: build the other half of the packages
           command: |
             pnpm run build:package-all-1
+      # Fail-fast gate: verify every published SDK tarball honors the package
+      # contract before any version bump or upload happens. The extra
+      # `pnpm publish --dry-run` exercises the real publish code path (tarball
+      # staging without upload) under the exact flags publish-package.mjs uses,
+      # on one representative package from the published SDK set (B6: the
+      # app-only extensions such as dicom-pdf are private and no longer
+      # publishable, so the probe runs in extensions/default).
+      - run:
+          name: Verify published-package contract (pack dry-run)
+          command: |
+            node scripts/verify-tarballs.mjs
+            cd extensions/default && pnpm publish --dry-run --no-git-checks --tag beta
       - run:
           name: increase min time out
           command: |
@@ -239,7 +257,7 @@ jobs:
           name: Re-assert the NPM auth token before publishing
           # Write the auth token to npm's per-user config (~/.npmrc), not the
           # repo root. publish-package.mjs chdir's into each package dir to run
-          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # `pnpm publish`, and npm only reads the project .npmrc from that dir
           # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
           # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
           # clobbering the committed workspace-config .npmrc (node-linker=hoisted).

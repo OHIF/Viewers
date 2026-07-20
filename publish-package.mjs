@@ -9,7 +9,34 @@ const RETRY_DELAY = 10000; // 10 seconds
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 
-  const packages = ['extensions/*', 'platform/*', 'modes/*'];
+  // Tiered publish surface (B6): only the published SDK packages -- the
+  // @ohif/* contract surface third-party plugin authors compile and run
+  // against (the @ohif/* members of the host shared-singleton set) -- plus
+  // tooling are published to npm. App-only extensions/modes/platform packages
+  // are private:true and are consumed via the git checkout / workspace
+  // template instead. Note the asymmetry with publish-version.mjs, which
+  // deliberately keeps stamping EVERY workspace package (private ones
+  // included) so lockstep versioning is preserved; only the publish set is
+  // narrowed here. This list must stay equal to SDK_PUBLISHED in
+  // scripts/verify-tarballs.mjs, whose checkPublishListParity parses this
+  // array (in CI, before this script runs) and fails the build when the two
+  // lists drift in either direction.
+  const packages = [
+    'platform/core',
+    'platform/i18n',
+    'platform/ui-next',
+    'extensions/default',
+    'extensions/cornerstone',
+    // @ohif/app: publish status flagged-not-decided (B6) -- its npm tarball
+    // may be consumed as a prebuilt-viewer artifact by existing deployments,
+    // so keep publishing it unchanged until that is verified.
+    'platform/app',
+    // create-ohif scaffolder: published tooling alongside the SDK set (the
+    // "plus tooling" half of B6). Ships raw .mjs + templates, no dist UMD, so
+    // verify-tarballs.mjs lists it under PUBLISHED_TOOLING (allowed
+    // non-private, exempt from the SDK tarball assertions).
+    'platform/create-ohif',
+  ];
 
   const rootDir = process.cwd();
 
@@ -42,6 +69,9 @@ async function run() {
             // published tarball. npm would publish the literal "workspace:*",
             // which npm/yarn consumers cannot resolve. --no-git-checks because
             // the bump commit/tag is created in CI on a possibly-detached ref.
+            // pnpm is also required because publishConfig field overrides
+            // (main/module/types/exports) are a pnpm-only feature; npm publish
+            // would ship the src-pointing dev manifest.
             const publishArgs = ['publish', '--no-git-checks'];
 
             if (branchName === 'master') {

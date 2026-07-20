@@ -1,11 +1,12 @@
 {
   "name": "@ohif/mode-longitudinal",
   "version": "3.13.0-beta.134",
+  "private": true,
   "description": "Longitudinal Workflow",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/ohif-mode-longitudinal.js",
+  "main": "dist/ohif-mode-longitudinal.umd.js",
   "module": "src/index.ts",
   "engines": {
     "node": ">=24"
@@ -20,9 +21,9 @@
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:cornerstone": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev",
     "test:unit": "jest --watchAll",

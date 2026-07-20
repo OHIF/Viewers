@@ -1,11 +1,12 @@
 {
   "name": "@ohif/mode-basic",
   "version": "3.13.0-beta.134",
+  "private": true,
   "description": "A basic mode used to build other modes on top of",
   "author": "OHIF Contributors",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/ohif-mode-basic.js",
+  "main": "dist/ohif-mode-basic.umd.js",
   "module": "src/index.tsx",
   "engines": {
     "node": ">=24"
@@ -16,9 +17,9 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:cornerstone": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev",
     "test:unit": "jest --watchAll",

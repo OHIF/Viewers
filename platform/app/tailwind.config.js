@@ -1,3 +1,5 @@
+const { getPluginContentGlobs } = require('./.rspack/writePluginImportsFile.js');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // Note: in Tailwind 3.0, JIT will purge unused styles by default
@@ -17,6 +19,9 @@ module.exports = {
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/ui-next/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,ts,tsx,css}',
+    // Declared out-of-tree `directory` plugins and non-@ohif installed plugins
+    // (absolute forward-slash globs; empty when none are declared).
+    ...getPluginContentGlobs(),
   ],
   theme: {
     fontFamily: {

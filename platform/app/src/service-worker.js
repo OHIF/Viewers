@@ -12,6 +12,16 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/
 workbox.core.skipWaiting();
 workbox.core.clientsClaim();
 
+// Runtime plugins under /plugins/ are deployed/updated independently of the
+// app build; never serve them from SW caches. ORDER IS LOAD-BEARING: workbox
+// uses first-registered-match, so this must stay ABOVE the 'static-resources'
+// route below. The precache manifest also excludes plugins/ (see
+// InjectServiceWorkerManifestPlugin `exclude` in rsbuild.config.ts).
+workbox.routing.registerRoute(
+  ({ url }) => url.pathname.includes('/plugins/'),
+  new workbox.strategies.NetworkOnly()
+);
+
 // Cache static assets that aren't precached
 workbox.routing.registerRoute(
   /\.(?:js|css|json5|jsonc)$/,

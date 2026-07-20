@@ -9,6 +9,10 @@ import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import loadModules from '../../pluginImports';
+import {
+  recordRegistrationError,
+  surfaceRuntimeExtensionFailures,
+} from '../../runtimeExtensionLoader';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
@@ -89,25 +93,36 @@ export default function ModeRoute({
 
   useEffect(() => {
     const loadExtensions = async () => {
-      const loadedExtensions = await loadModules(Object.keys(extensions));
-      for (const extension of loadedExtensions) {
-        const { id: extensionId } = extension;
-        if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
-          await extensionManager.registerExtension(extension);
+      try {
+        const loadedExtensions = await loadModules(Object.keys(extensions));
+        for (const extension of loadedExtensions) {
+          if (!extension) {
+            continue; // runtime load failure — already audited by the loader
+          }
+          const { id: extensionId } = extension;
+          if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
+            try {
+              await extensionManager.registerExtension(extension);
+            } catch (error) {
+              recordRegistrationError(extensionId, error);
+            }
+          }
         }
-      }
 
-      // Mode dependency extensions register their customization modules here,
-      // but `registerExtension` does not merge them into the customization
-      // service — that otherwise only happens later in
-      // `extensionManager.onModeEnter`. Merge them now so anything that runs
-      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
-      // the defaults these extensions provide.
-      // `init` is idempotent — each extension module is merged at most once.
-      customizationService.init(extensionManager);
+        // Mode dependency extensions register their customization modules here,
+        // but `registerExtension` does not merge them into the customization
+        // service — that otherwise only happens later in
+        // `extensionManager.onModeEnter`. Merge them now so anything that runs
+        // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+        // the defaults these extensions provide.
+        // `init` is idempotent — each extension module is merged at most once.
+        customizationService.init(extensionManager);
 
-      if (isMounted.current) {
-        setExtensionDependenciesLoaded(true);
+        if (isMounted.current) {
+          setExtensionDependenciesLoaded(true);
+        }
+      } finally {
+        surfaceRuntimeExtensionFailures(servicesManager.services.uiNotificationService);
       }
     };
 
