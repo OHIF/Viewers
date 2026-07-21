@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useSystem } from '@ohif/core';
+import { Enums } from '@cornerstonejs/core';
 import {
   AllInOneMenu,
   Button,
@@ -32,7 +33,7 @@ export function VolumeOptionsMenuWrapper(
   const viewportIdToUse = viewportId || gridState.activeViewportId;
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
-  const { toolbarService } = servicesManager.services;
+  const { toolbarService, cornerstoneViewportService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
   const handleOpenChange = (openState: boolean) => {
@@ -45,8 +46,13 @@ export function VolumeOptionsMenuWrapper(
 
   const { align, side } = toolbarService.getAlignAndSide(location);
 
+  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportIdToUse);
+  const viewportType = viewportInfo?.getViewportType?.();
+  const isVolume3D =
+    viewportType === Enums.ViewportType.VOLUME_3D || viewportType === 'volume3d';
+
   const isVolumeViewport = displaySets.some(ds => ds?.isReconstructable);
-  if (!isVolumeViewport || displaySets.length === 0) {
+  if (!isVolumeViewport || !isVolume3D || displaySets.length === 0) {
     return null;
   }
 
