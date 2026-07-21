@@ -51,7 +51,7 @@ overrides:
   package-json: 8.1.1
   rollup: 2.80.0
   body-parser: 1.20.3
-  axios: 1.17.0
+  axios: 1.18.1
   core-js: 3.45.1
   '@babel/runtime-corejs2': 7.26.10
   tapable: 2.2.2
@@ -62,14 +62,14 @@ overrides:
   lodash-es: 4.18.1
   diff: 5.2.2
   webpack: 5.105.0
-  tar: 7.5.11
+  tar: 7.5.20
   serialize-javascript: 7.0.4
   svgo: 3.3.3
   flatted: 3.4.2
   handlebars: 4.7.9
   protobufjs: 7.6.1
   tmp: 0.2.7
-  shell-quote: 1.8.4
+  shell-quote: 1.10.0
   # fast-uri <=3.1.1 reaches the tree only via platform/docs
   # (@docusaurus/plugin-pwa > workbox-build > ajv). 3.1.2 patches both
   # GHSA-q3j6-qgpj-74h6 (path traversal) and GHSA-v39h-62p7-jpjc (host confusion).
@@ -97,3 +97,8 @@ overrides:
   # not import it in its runtime code. 0.6.0 patches GHSA-xcpc-8h2w-3j85
   # (crafted ZIP triggers a 4GB memory allocation).
   'adm-zip@<0.6.0': 0.6.0
+  'brace-expansion@<5.0.7': 5.0.7
+  'brace-expansion@<1.1.6': 1.1.6
+  'brace-expansion@<2.1.2': 2.1.2
+  'js-yaml@<3.15.0': 3.15.0
+  'js-yaml@<4.3.0': 4.3.0
