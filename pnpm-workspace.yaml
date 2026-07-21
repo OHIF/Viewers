@@ -97,8 +97,8 @@ overrides:
   # not import it in its runtime code. 0.6.0 patches GHSA-xcpc-8h2w-3j85
   # (crafted ZIP triggers a 4GB memory allocation).
   'adm-zip@<0.6.0': 0.6.0
-  'brace-expansion@<5.0.7': 5.0.7
-  'brace-expansion@<1.1.6': 1.1.6
-  'brace-expansion@<2.1.2': 2.1.2
+  'brace-expansion@<1.1.16': 1.1.16
+  'brace-expansion@>=2.0.0 <2.1.2': 2.1.2
+  'brace-expansion@>=3.0.0 <5.0.7': 5.0.7
   'js-yaml@<3.15.0': 3.15.0
-  'js-yaml@<4.3.0': 4.3.0
+  'js-yaml@>=4.0.0 <4.3.0': 4.3.0
