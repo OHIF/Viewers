@@ -146,7 +146,7 @@
     "package-json": "8.1.1",
     "rollup": "2.80.0",
     "body-parser": "1.20.3",
-    "axios": "1.17.0",
+    "axios": "1.18.1",
     "core-js": "3.45.1",
     "@babel/runtime-corejs2": "7.26.10",
     "tapable": "2.2.2",
@@ -157,7 +157,7 @@
     "lodash-es": "4.18.1",
     "diff": "5.2.2",
     "webpack": "5.105.0",
-    "tar": "7.5.11",
+    "tar": "7.5.20",
     "serialize-javascript": "7.0.4",
     "svgo": "3.3.3",
     "flatted": "3.4.2",
@@ -167,9 +167,12 @@
     "tmp": "0.2.7",
     "form-data": "4.0.6",
     "ws": "8.21.0",
-    "shell-quote": "1.8.4",
+    "shell-quote": "1.10.0",
     "sigstore": "4.1.1",
-    "websocket-driver": "0.7.5"
+    "websocket-driver": "0.7.5",
+    "brace-expansion": "5.0.7",
+    "adm-zip": "0.6.0",
+    "js-yaml": "3.15.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
