@@ -1882,9 +1882,6 @@ function commandsModule({
       // other UI can reflect the current decimation immediately.
       const isManualDecimated =
         decimationValues[0] !== 1 || decimationValues[1] !== 1 || decimationValues[2] !== 1;
-      const manualDecimationInfo = isManualDecimated
-        ? { message: `Volume reduced` }
-        : undefined;
 
       affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
         try {
@@ -1895,7 +1892,7 @@ function commandsModule({
           viewportInfo?.setViewportOptions?.({
             ...(prevOptions as any),
             ijkDecimation: decimationValues,
-            autoDecimationInfo: manualDecimationInfo,
+            autoDecimationInfo: isManualDecimated ? { applied: true } : undefined,
           });
         } catch (err) {
           console.warn('Failed to update viewport options after decimation reload', vp.id, err);

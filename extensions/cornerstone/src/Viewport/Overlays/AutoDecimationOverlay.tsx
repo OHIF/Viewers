@@ -1,8 +1,9 @@
 import React from 'react';
 import { useViewportRendering } from '../../hooks';
+import { DECIMATION_OVERLAY_MESSAGE } from '../../utils/decimation/constants';
 
 /**
- * Renders the auto-decimation message in the viewport top-right, same style as
+ * Renders the decimation label in the viewport top-right, same style as
  * demographic overlay items (Study Date, Series Description).
  */
 function AutoDecimationOverlay({
@@ -22,7 +23,7 @@ function AutoDecimationOverlay({
     viewportType === 'orthographic' ||
     viewportType === 'volume3d';
 
-  if (!info?.message || !isVolume) {
+  if (!info?.applied || !isVolume) {
     return null;
   }
 
@@ -33,11 +34,11 @@ function AutoDecimationOverlay({
     <div
       className={`absolute viewport-overlay auto-decimation-overlay pointer-events-none ${colorClass} ${shadowClass} text-base leading-5 text-right`}
       style={{ top: '0.5rem', right: '3.5rem', maxWidth: 'calc(100% - 4rem)' }}
-      title="Volume auto-decimated"
+      title={DECIMATION_OVERLAY_MESSAGE}
       data-cy="auto-decimation-overlay"
     >
       <div className="overlay-item">
-        <span className="break-words whitespace-pre-line">{info.message}</span>
+        <span className="break-words whitespace-pre-line">{DECIMATION_OVERLAY_MESSAGE}</span>
       </div>
     </div>
   );

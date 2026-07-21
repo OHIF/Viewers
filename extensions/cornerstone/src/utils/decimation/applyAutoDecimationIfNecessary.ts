@@ -120,7 +120,8 @@ function decimationEquals(
 }
 
 /**
- * Builds the message and metadata for the viewport overlay when auto-decimation is applied.
+ * Logs auto-decimation details and returns the overlay presence flag.
+ * Overlay copy lives in DECIMATION_OVERLAY_MESSAGE / AutoDecimationOverlay.
  */
 function buildAutoDecimationInfo(
   decimation: Point3,
@@ -128,7 +129,7 @@ function buildAutoDecimationInfo(
   originalVoxelCount: number,
   threshold: number,
   servicesManager: AppTypes.ServicesManager
-): { message: string } {
+): { applied: true } {
   const { displaySetService } = servicesManager.services;
 
   const labels =
@@ -165,11 +166,8 @@ function buildAutoDecimationInfo(
     messageParts.push(`Display sets: ${labels}.`);
   }
 
-  // \n renders as a line break because AutoDecimationOverlay uses whitespace-pre-line.
-  const message = 'Volume\nreduced';
-
   console.warn(messageParts.join(' '));
-  return { message };
+  return { applied: true };
 }
 
 /**

@@ -2,3 +2,4 @@ import { Point3 } from '@cornerstonejs/core/types';
 
 export const AUTO_DECIMATION_VIEWPORT_TYPES = new Set(['volume3d', 'volume']);
 export const DEFAULT_IJK_DECIMATION: Point3 = [1, 1, 1];
+export const DECIMATION_OVERLAY_MESSAGE = 'Lossy';
