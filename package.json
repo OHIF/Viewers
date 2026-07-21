@@ -170,7 +170,6 @@
     "shell-quote": "1.10.0",
     "sigstore": "4.1.1",
     "websocket-driver": "0.7.5",
-    "brace-expansion": "5.0.7",
     "adm-zip": "0.6.0",
     "js-yaml": "3.15.0"
   },
