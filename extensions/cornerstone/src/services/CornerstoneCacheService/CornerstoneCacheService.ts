@@ -182,7 +182,7 @@ class CornerstoneCacheService {
     // the 1st display set is the one of interest
     const [displaySet] = displaySets;
     if (!displaySet.imageIds) {
-      displaySet.imagesIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+      displaySet.imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
     }
     const { imageIds: data, viewportType: dsViewportType } = displaySet;
     return {
