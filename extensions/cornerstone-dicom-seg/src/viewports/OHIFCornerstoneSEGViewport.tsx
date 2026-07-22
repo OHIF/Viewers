@@ -304,7 +304,7 @@ function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
 
   const PixelMeasures = Array.isArray(PixelMeasuresSequence)
     ? PixelMeasuresSequence[0]
-    : PixelMeasuresSequence;
+    : PixelMeasuresSequence || {};
 
   const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
 
