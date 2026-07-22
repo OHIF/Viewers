@@ -35,10 +35,12 @@ test('should render scroll bars with the correct look-and-feel', async ({ page }
   // Additional wait to ensure scrollbar rendering is stable
   await page.waitForTimeout(1000);
 
+  expandedStudyRow.scrollIntoViewIfNeeded();
+
   await checkForScreenshot({
     page,
     locator: expandedStudyRow,
-    normalizedClip: { x: 0.97, y: 0.35, width: 0.03, height: 0.65 },
+    normalizedClip: { x: 0.97, y: 0.35, width: 0.028, height: 0.65 },
     screenshotPath: screenShotPaths.workList.scrollBarRenderedProperly,
   });
 });

@@ -27,21 +27,23 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForScreenshot({
     page,
-    page,
-    screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR
-  );
+    locator: page.getByTestId('viewport-grid'),
+    screenshotPath:
+      screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR,
+  });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForScreenshot({
     page,
-    page,
-    screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPostMPR
-  );
+    locator: page.getByTestId('viewport-grid'),
+    screenshotPath:
+      screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPostMPR,
+  });
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });

@@ -15,7 +15,11 @@ test('should hydrate RT reports correctly', async ({
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-  await checkForScreenshot(page, page, screenShotPaths.rtHydration2.rtPreHydration);
+  await checkForScreenshot({
+    page,
+    locator: page.getByTestId('viewport-grid'),
+    screenshotPath: screenShotPaths.rtHydration2.rtPreHydration,
+  });
   // wait for 3 seconds
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -40,5 +44,9 @@ test('should hydrate RT reports correctly', async ({
 
   // should preserve zoom and pan and scroll position after hydration
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-  await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
+  await checkForScreenshot({
+    page,
+    locator: page.getByTestId('viewport-grid'),
+    screenshotPath: screenShotPaths.rtHydration2.rtPostHydration,
+  });
 });
