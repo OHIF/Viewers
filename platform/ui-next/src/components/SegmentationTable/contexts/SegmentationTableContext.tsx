@@ -70,6 +70,13 @@ export interface SegmentationTableContextType {
   // The first element is the primary type. Additional elements are secondary types.
   segmentationRepresentationTypes?: string[];
 
+  // Overrides segmentationRepresentationTypes for the purpose of filtering which
+  // segmentations are listed (Collapsed/Expanded views only). Lets multiple tabs share a
+  // single segmentation list without affecting the "Add segmentation" default type or the
+  // utility toolbar, which still key off segmentationRepresentationTypes. Falls back to
+  // segmentationRepresentationTypes when undefined.
+  listSegmentationRepresentationTypes?: string[];
+
   // The (last) selected segmentation ID for the representation types above.
   // If the representation types above is undefined, then it will store the last active segmentation ID.
   selectedSegmentationIdForType?: string;

@@ -157,6 +157,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 key={segmentIndex}
                 number={showSegmentIndex ? segmentIndex : null}
                 title={label}
+                hasStats={!!hasStats}
                 // details={displayText}
                 description={displayText}
                 colorHex={cssColor}
@@ -166,6 +167,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 isSecondarySelected={isSecondarySelected}
                 isVisible={visible}
                 isLocked={locked}
+                onClickDisplay={index => {
+                  setHoverIndex(prev => (prev === index ? null : index));
+                }}
                 disableEditing={disableEditing}
                 className={!isActiveSegmentation ? 'opacity-80' : ''}
                 onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
@@ -190,10 +194,11 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               />
             );
 
-            return hasStats ? (
+            return hasStats && hoverIndex === segmentIndex ? (
               <HoverCard
-                key={`hover-${segmentIndex}`}
-                openDelay={300}
+                open={hoverIndex === segmentIndex}
+                key={`hover-${hoverIndex ?? segmentIndex}`}
+                openDelay={100}
               >
                 <HoverCardTrigger asChild>
                   <div>{DataRowComponent}</div>

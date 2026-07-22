@@ -89,6 +89,7 @@ interface DataRowProps {
   details?: { primary: string[]; secondary: string[] };
   //
   hasStats?: boolean;
+  /** Primary selection: selected and in the active segmentation */
   isSelected?: boolean;
   /** Secondary selection: selected but in an inactive segmentation */
   isSecondarySelected?: boolean;
@@ -120,6 +121,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
       title,
       colorHex,
       details,
+      hasStats,
       onSelect,
       isLocked,
       onToggleVisibility,
@@ -128,6 +130,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
       onDelete,
       onColor,
       onCopy,
+      onClickDisplay,
       isSelected = false,
       isSecondarySelected = false,
       isVisible = true,
@@ -183,6 +186,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
           <div
             key={`empty-${indent}`}
             className="h-2"
+            data-cy="data-row-detail-line-empty"
           ></div>
         );
       }
@@ -191,6 +195,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
         <div
           key={cleanText}
           className="whitespace-pre-wrap"
+          data-cy="data-row-detail-line"
         >
           {indentation}
           <span className="font-medium">{cleanText}</span>
@@ -198,14 +203,17 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
       );
     };
 
-    const renderDetails = (details: string[]) => {
+    const renderDetails = (details: string[], variant: 'primary' | 'secondary') => {
       const visibleLines = details.slice(0, 4);
       const hiddenLines = details.slice(4);
 
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="cursor-help">
+            <div
+              className="cursor-help"
+              data-cy={`data-row-details-${variant}`}
+            >
               <div className="flex flex-col space-y-1">
                 {visibleLines.map((line, lineIndex) =>
                   renderDetailText(line, line.startsWith('  ') ? 1 : 0)
@@ -236,14 +244,12 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
 
     return (
       <div
-        className={`flex items-center ${isSelected ? 'bg-popover' : 'bg-muted'
-          } group relative cursor-pointer`}
-        onClick={onSelect}
-        data-cy="data-row"
+        ref={ref}
+        className={cn('flex flex-col', !isVisible && 'opacity-60', className)}
       >
         <div
-          className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
-            } overflow-hidden`}
+          className={`flex items-center ${isSelected ? 'bg-popover' : 'bg-muted'
+            } group relative cursor-pointer`}
           onClick={onSelect}
           data-cy="data-row"
         >
@@ -257,7 +263,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
           {/* Number Box */}
           {number !== null && (
             <div
-              className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
+              className={`border-background flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r text-base ${isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
                 } overflow-hidden`}
             >
               {number}
@@ -271,6 +277,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               <span
                 className="ml-2 h-2 w-2 rounded-full"
                 style={{ backgroundColor: colorHex }}
+                data-cy="data-row-colorhex"
               ></span>
             </div>
           )}
@@ -281,6 +288,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span
+                    data-cy="data-row-title"
                     className={`cursor-default text-base ${isSelected ? 'text-highlight' : 'text-muted-foreground'
                       } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
                   >
@@ -296,11 +304,47 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               </Tooltip>
             ) : (
               <span
+                data-cy="data-row-title"
                 className={`text-base ${isSelected ? 'text-highlight' : 'text-muted-foreground'
                   } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
               >
                 {title}
               </span>
+            )}
+          </div>
+          <div className="relative ml-2 flex items-center space-x-1">
+            {!hasStats ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className={`h-6 w-6 opacity-30 transition-opacity`}
+                    aria-label="ListView"
+                  >
+                    <Icons.ListView className="h-6 w-6" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="top"
+                  align="center"
+                >
+                  Segmentation statistics are being computed...
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <Button
+                size="icon"
+                variant="ghost"
+                className={`h-6 w-6 opacity-100 transition-opacity`}
+                aria-label="ListView"
+                onClick={e => {
+                  e.stopPropagation();
+                  onClickDisplay(number);
+                }}
+              >
+                <Icons.ListView className="h-6 w-6" />
+              </Button>
             )}
           </div>
 
@@ -413,12 +457,15 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
 
         {/* Details Section */}
         {details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
-          <div className="ml-7 px-2 py-2">
+          <div
+            className="ml-7 px-2 py-2"
+            data-cy="data-row-details"
+          >
             <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
-              {details.primary?.length > 0 && renderDetails(details.primary)}
+              {details.primary?.length > 0 && renderDetails(details.primary, 'primary')}
               {details.secondary?.length > 0 && (
                 <div className="text-muted-foreground ml-auto text-sm">
-                  {renderDetails(details.secondary)}
+                  {renderDetails(details.secondary, 'secondary')}
                 </div>
               )}
             </div>
@@ -498,7 +545,7 @@ const StatusError: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
 const StatusInfo: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
   <StatusIndicator
     tooltip={tooltip}
-    icon={<Icons.Info className="h-4 w-4 text-blue-500" />}
+    icon={<Icons.Info className="text-primary h-4 w-4" />}
     defaultTooltip="Info"
   />
 );

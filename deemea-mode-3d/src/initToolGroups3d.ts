@@ -107,6 +107,44 @@ function createTools(utilityModule) {
       { toolName: toolNames.RectangleScissors },
       { toolName: toolNames.SphereScissors },
       { toolName: toolNames.WindowLevelRegion },
+      {
+        toolName: toolNames.LabelMapEditWithContourTool,
+      },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+      },
+      { toolName: toolNames.LivewireContourSegmentation },
+      { toolName: toolNames.SculptorTool },
+      {
+        toolName: 'CatmullRomSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: 'CATMULLROM',
+            enableTwoPointPreview: true,
+          },
+        },
+      },
+      {
+        toolName: 'LinearSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: 'LINEAR',
+            enableTwoPointPreview: true,
+          },
+        },
+      },
+      {
+        toolName: 'BSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: 'BSPLINE',
+            enableTwoPointPreview: true,
+          },
+        },
+      },
     ],
     disabled: [],
   };

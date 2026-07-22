@@ -116,15 +116,12 @@
   "Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.": "Activer l'assistance IA pour segmenter les coupes voisines. Après avoir dessiné sur une coupe, faites défiler pour prévisualiser les prédictions. Appuyez sur Entrée pour accepter ou Échap pour ignorer.",
   "Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.": "Détecte automatiquement la plus grande longueur et la plus grande largeur à travers les coupes pour le segment sélectionné et affiche une mesure bidirectionnelle.",
   "Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.": "Détecte les régions segmentables en un clic. Survolez pour un retour visuel — cliquez lorsque le signe plus apparaît pour segmenter automatiquement la lésion.",
-  "Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.": "Utilisez des marqueurs d'inclusion/exclusion pour guider la segmentation IA (SAM). Cliquez pour placer des marqueurs, Entrée pour accepter les résultats, Échap pour rejeter, et N pour passer à la coupe suivante en conservant les marqueurs."
-  ,
-  "Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.": "Remplit automatiquement les coupes manquantes entre les segments dessinés. Utilisez les outils brosse ou seuillage sur au moins deux coupes, puis cliquez pour interpoler entre les coupes. Fonctionne dans toutes les directions. Le volume doit être reconstruisible."
-  ,
+  "Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.": "Utilisez des marqueurs d'inclusion/exclusion pour guider la segmentation IA (SAM). Cliquez pour placer des marqueurs, Entrée pour accepter les résultats, Échap pour rejeter, et N pour passer à la coupe suivante en conservant les marqueurs.",
+  "Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.": "Remplit automatiquement les coupes manquantes entre les segments dessinés. Utilisez les outils brosse ou seuillage sur au moins deux coupes, puis cliquez pour interpoler entre les coupes. Fonctionne dans toutes les directions. Le volume doit être reconstruisible.",
   "Marker Mode": "Mode marqueur",
   "Include": "Inclure",
   "Exclude": "Exclure",
-  "Clear Markers": "Effacer les marqueurs"
-  ,
+  "Clear Markers": "Effacer les marqueurs",
   "Radius (mm)": "Rayon (mm)",
   "Dynamic": "Dynamique",
   "Range": "Plage"

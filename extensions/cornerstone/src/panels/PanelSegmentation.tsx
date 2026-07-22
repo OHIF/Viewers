@@ -117,6 +117,9 @@ export default function PanelSegmentation({
       CustomSegmentStatisticsHeader: customizationService.getCustomization(
         'panelSegmentation.customSegmentStatisticsHeader'
       ),
+      sharedSegmentationTypes: customizationService.getCustomization(
+        'panelSegmentation.sharedSegmentationTypes'
+      ),
     };
   }, [customizationService]);
 
@@ -155,7 +158,15 @@ export default function PanelSegmentation({
     disableAddSegmentation,
     CustomDropdownMenuContent,
     CustomSegmentStatisticsHeader,
+    sharedSegmentationTypes,
   } = customizations;
+
+  // Widens which segmentations are *listed* to include other tabs' shared types, without
+  // changing this tab's own primary type (used for the "Add segmentation" default and the
+  // utility toolbar selection above).
+  const listSegmentationRepresentationTypes = sharedSegmentationTypes
+    ? [...new Set([segmentationRepresentationTypes?.[0], ...sharedSegmentationTypes])]
+    : segmentationRepresentationTypes;
 
   // Create handlers object for all command runs
   const handlers = {
@@ -288,6 +299,7 @@ export default function PanelSegmentation({
     disableAddSegmentation,
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
     segmentationRepresentationTypes,
+    listSegmentationRepresentationTypes,
     selectedSegmentationIdForType,
     ...handlers,
   };

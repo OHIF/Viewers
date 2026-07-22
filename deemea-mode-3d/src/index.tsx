@@ -2,6 +2,7 @@ import { id } from './id';
 import toolbarButtons from './toolbarButtons3d';
 import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups3d';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -13,6 +14,7 @@ const ohif = {
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
   panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
+  contourPanelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -51,8 +53,13 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: async ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService, cornerstoneViewportService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        cornerstoneViewportService,
+        customizationService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
       // Initialiser le CornerstoneViewportService si nécessaire
@@ -62,6 +69,18 @@ function modeFactory({ modeConfiguration }) {
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
+
+      // Share a single segmentation list between the Labelmap and Contour tabs instead of
+      // each tab only showing segmentations of its own representation type.
+      customizationService.setCustomizations({
+        'panelSegmentation.sharedSegmentationTypes': {
+          $set: [
+            SegmentationRepresentations.Labelmap,
+            SegmentationRepresentations.Contour,
+            SegmentationRepresentations.Surface,
+          ],
+        },
+      });
 
       toolbarService.register(toolbarButtons);
       toolbarService?.register(segmentationButtons);
@@ -98,20 +117,42 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.updateSection('segmentationToolbox', [
-        'SegmentationUtilities',
-        'SegmentationTools',
+      // toolbarService.updateSection('segmentationToolbox', [
+      //   'SegmentationUtilities',
+      //   'SegmentationTools',
+      // ]);
+      // toolbarService.updateSection('segmentationToolboxUtilitySection', [
+      //   'LabelmapSlicePropagation',
+      //   'InterpolateLabelmap',
+      //   'SegmentBidirectional',
+      // ]);
+      // toolbarService.updateSection('segmentationToolboxToolsSection', [
+      //   'BrushTools',
+      // 'MarkerLabelmap',
+      // 'RegionSegmentPlus',
+      // 'Shapes',
+      // ]);
+
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
+        'LabelMapTools',
       ]);
-      toolbarService.updateSection('segmentationToolboxUtilitySection', [
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
+        'ContourTools',
+      ]);
+
+      toolbarService.updateSection('LabelMapTools', [
         'LabelmapSlicePropagation',
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
-      ]);
-      toolbarService.updateSection('segmentationToolboxToolsSection', [
         'BrushTools',
         // 'MarkerLabelmap',
         // 'RegionSegmentPlus',
         // 'Shapes',
+        'LabelMapEditWithContour',
+      ]);
+      toolbarService.updateSection('ContourTools', [
+        'PlanarFreehandContourSegmentationTool',
+        'SculptorTool',
+        'SplineContourSegmentationTool',
+        'LivewireContourSegmentationTool',
       ]);
       toolbarService.updateSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
@@ -175,7 +216,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [cornerstone.panelTool],
+              rightPanels: [cornerstone.panelTool, cornerstone.contourPanelTool],
               rightPanelClosed: false,
               rightPanelResizable: true,
               viewports: [

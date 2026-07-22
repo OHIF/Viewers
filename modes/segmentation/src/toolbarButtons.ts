@@ -559,7 +559,11 @@ export const toolbarButtons: Button[] = [
               value: 'CatmullRomSplineROI',
               label: i18n.t('Buttons:Catmull Rom Spline'),
             },
-            { id: 'LinearSplineROI', value: 'LinearSplineROI', label: i18n.t('Buttons:Linear Spline') },
+            {
+              id: 'LinearSplineROI',
+              value: 'LinearSplineROI',
+              label: i18n.t('Buttons:Linear Spline'),
+            },
             { id: 'BSplineROI', value: 'BSplineROI', label: i18n.t('Buttons:B-Spline') },
           ],
           commands: {

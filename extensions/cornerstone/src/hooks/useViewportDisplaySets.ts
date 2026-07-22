@@ -154,10 +154,9 @@ export function useViewportDisplaySets(
     if (!includeOverlay) {
       return [];
     }
-    return segmentationRepresentations.map(repr => {
-      const displaySet = displaySetService.getDisplaySetByUID(repr.segmentationId);
-      return displaySet;
-    });
+    return segmentationRepresentations
+      .map(repr => displaySetService.getDisplaySetByUID(repr.segmentationId))
+      .filter(Boolean);
   }, [includeOverlay, segmentationRepresentations, displaySetService]);
 
   const overlayDisplaySetUIDs = useMemo(() => {
