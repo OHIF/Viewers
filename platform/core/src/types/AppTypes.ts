@@ -167,6 +167,13 @@ declare global {
       };
       useCursors?: boolean;
       maxCacheSize?: number;
+      /**
+       * Maximum number of undo/redo history items to keep. Segmentation memos
+       * hold full labelmap buffers, so a large history can cause out-of-memory
+       * or buffer allocation issues. When unset, the Cornerstone default is
+       * used.
+       */
+      maxUndoRedoCacheSize?: number;
       max3DTextureSize?: number;
       showWarningMessageForCrossOrigin?: boolean;
       showCPUFallbackMessage?: boolean;

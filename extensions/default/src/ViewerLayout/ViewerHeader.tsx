@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Header, Icons, useModal } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
+import { useUndoRedoState } from './useUndoRedoState';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
 import { preserveQueryParameters } from '@ohif/app';
@@ -38,6 +39,8 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
 
   const { t } = useTranslation();
   const { show } = useModal();
+
+  const { canUndo, canRedo } = useUndoRedoState();
 
   const AboutModal = customizationService.getCustomization(
     'ohif.aboutModal'
@@ -114,11 +117,13 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         )
       }
       UndoRedo={
-        <div className="text-primary flex cursor-pointer items-center">
+        <div className="text-primary flex items-center">
           <Button
             variant="ghost"
-            className="hover:bg-muted"
+            className="hover:bg-muted cursor-pointer"
             data-cy="undo-btn"
+            disabled={!canUndo}
+            aria-label={t('Header:Undo')}
             onClick={() => {
               commandsManager.run('undo');
             }}
@@ -127,8 +132,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           </Button>
           <Button
             variant="ghost"
-            className="hover:bg-muted"
+            className="hover:bg-muted cursor-pointer"
             data-cy="redo-btn"
+            disabled={!canRedo}
+            aria-label={t('Header:Redo')}
             onClick={() => {
               commandsManager.run('redo');
             }}
