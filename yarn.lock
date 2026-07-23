@@ -6440,20 +6440,6 @@ brace-expansion@^1.1.7:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
 
-brace-expansion@^2.0.1, brace-expansion@^2.0.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-2.1.2.tgz#0bba2271feb7d458b0d31ad13625aaa4754431e2"
-  integrity sha512-w5JZcKgdhDOgOwm8H+KgbosopHMuGcl6qbulwjtz3SM7I7P3yW1eAjzMPLrIE+NQ9vjgANKHWeMHnrT0OXW1oA==
-  dependencies:
-    balanced-match "^1.0.0"
-
-brace-expansion@^5.0.5:
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-5.0.8.tgz#135ad0d8d808eb18eb5e0ec9a21f3a0b92ef18cf"
-  integrity sha512-JZyDyq3D4AUifKTPOB7DELf6XsB3WdPuNxCtob1vFXPsSXhdAiHBWJ/tJ8HAc9aH84BK+5JFZLNkJKx3G9kzQg==
-  dependencies:
-    balanced-match "^4.0.2"
-
 braces@^3.0.3, braces@~3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/braces/-/braces-3.0.3.tgz#490332f40919452272d55a8480adc0c441358789"
@@ -13869,47 +13855,12 @@ minimalistic-crypto-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
   integrity sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==
 
-minimatch@*, minimatch@10.2.5, minimatch@^10.0.3, minimatch@^10.1.1, minimatch@^10.2.2:
-  version "10.2.5"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-10.2.5.tgz#bd48687a0be38ed2961399105600f832095861d1"
-  integrity sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==
-  dependencies:
-    brace-expansion "^5.0.5"
-
-minimatch@3.0.5:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.5.tgz#4da8f1290ee0f0f8e83d60ca69f8f134068604a3"
-  integrity sha512-tUpxzX0VAzJHjLu0xUfFv1gwVp9ba3IOuRAVH2EGuRW8a5emA2FlACLqiT/lDVtS1W+TGNwqz3sWaNyLgDJWuw==
+minimatch@*, minimatch@10.2.5, minimatch@3.0.5, minimatch@3.1.2, minimatch@3.1.4, minimatch@^10.0.3, minimatch@^10.1.1, minimatch@^10.2.2, minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2, minimatch@^3.1.5, minimatch@^5.0.1, minimatch@^9.0.5:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.1.4.tgz#89d910ea3970a77ac8edfd30340ccd038b758079"
+  integrity sha512-twmL+S8+7yIsE9wsqgzU3E8/LumN3M3QELrBZ20OdmQ9jB2JvW5oZtBEmft84k/Gs5CG9mqtWc6Y9vW+JEzGxw==
   dependencies:
     brace-expansion "^1.1.7"
-
-minimatch@3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.1.2.tgz#19cd194bfd3e428f049a70817c038d89ab4be35b"
-  integrity sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==
-  dependencies:
-    brace-expansion "^1.1.7"
-
-minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2, minimatch@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.1.5.tgz#580c88f8d5445f2bd6aa8f3cadefa0de79fbd69e"
-  integrity sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==
-  dependencies:
-    brace-expansion "^1.1.7"
-
-minimatch@^5.0.1:
-  version "5.1.9"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.9.tgz#1293ef15db0098b394540e8f9f744f9fda8dee4b"
-  integrity sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==
-  dependencies:
-    brace-expansion "^2.0.1"
-
-minimatch@^9.0.5:
-  version "9.0.9"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.9.tgz#9b0cb9fcb78087f6fd7eababe2511c4d3d60574e"
-  integrity sha512-OBwBN9AL4dqmETlpS2zasx+vTeWclWzkblfZk7KTA5j3jeOONz/tRCnZomUyvNg83wL5Zv9Ss6HMJXAgL8R2Yg==
-  dependencies:
-    brace-expansion "^2.0.2"
 
 minimist-options@4.1.0:
   version "4.1.0"
@@ -14099,7 +14050,7 @@ mute-stream@^2.0.0:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-2.0.0.tgz#a5446fc0c512b71c83c44d908d5c7b7b4c493b2b"
   integrity sha512-WWdIxpyjEn+FhQJQQv9aQAYlHoNVdzIzUySNV1gHUPDSdZJ3yZn7pAAbQcV7B56Mvu881q9FZV+0Vx2xC44VWA==
 
-nanoid@^3.3.11, nanoid@^3.3.16:
+nanoid@^3.3.16:
   version "3.3.16"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.16.tgz#a04d8ec4b1f10009d2d533947aefe4293737816c"
   integrity sha512-bzlKTyNJ7+LdGIIwy8ijFpIqEQIvafahV7eYykJ8Cvh42EdJeODoJ6gUJXpQJvej1BddH8OqTXZNE/KfbWAu8Q==
@@ -15347,15 +15298,10 @@ picocolors@1.1.1, picocolors@^1.0.0, picocolors@^1.1.1:
   resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.1.1.tgz#3d321af3eab939b083c8f929a1d12cda81c26b6b"
   integrity sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==
 
-picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.2, picomatch@^2.2.3, picomatch@^2.3.1:
+picomatch@2.3.2, picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.2, picomatch@^2.2.3, picomatch@^2.3.1, picomatch@^4.0.2, picomatch@^4.0.4:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.2.tgz#5a942915e26b372dc0f0e6753149a16e6b1c5601"
   integrity sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==
-
-picomatch@^4.0.2, picomatch@^4.0.4:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.5.tgz#51ea57a17d86f605f81039595fbc40ed06a55fab"
-  integrity sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==
 
 pify@5.0.0:
   version "5.0.0"
@@ -15989,16 +15935,7 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.1.0, postcss-value-parser@^
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@8.5.6:
-  version "8.5.6"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.5.6.tgz#2825006615a619b4f62a9e7426cc120b349a8f3c"
-  integrity sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==
-  dependencies:
-    nanoid "^3.3.11"
-    picocolors "^1.1.1"
-    source-map-js "^1.2.1"
-
-postcss@^8.2.1, postcss@^8.4.18, postcss@^8.4.33:
+postcss@8.5.22, postcss@8.5.6, postcss@^8.2.1, postcss@^8.4.18, postcss@^8.4.33:
   version "8.5.22"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.5.22.tgz#086a0d5685a715acf5950ebbcb1538faf3051697"
   integrity sha512-KBDEIpLrvpv16pp3K0Fw+UCoZfopFjjgeB+0tA/aaThfEE74kKDLrgg603YvOWJyg3+WYtyq3xYsQWsIyZlPqQ==
