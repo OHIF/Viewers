@@ -132,6 +132,12 @@ jobs:
 
             # Define ignored vulnerabilities with comments
             IGNORED_VULNS=(
+              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - minimatch via itk-wasm and glob is safe because it does NOT use the CLI
+                                     # CVE-2026-26996 - minimatch via other packages are strictly for building and CI/CD purposes; no user supplied expressions are passed to minimatch
+              "GHSA-7r86-cg39-jmmj"  # CVE-2026-27903 - minimatch same as above
+              "GHSA-23c5-xmqv-rm74"  # CVE-2026-27904 - minimatch same as above
+              "GHSA-c2c7-rcm5-vvqj"  # CVE-2026-33671 - picomatch is generally used for development and CI/CD purposes
+              "GHSA-6g55-p6wh-862q"  # PostCSS remains vulnerable at the reverted lockfile version
             )
 
             # Build ignore flags
