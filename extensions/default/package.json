@@ -29,6 +29,7 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
+    "@cornerstonejs/metadata": "5.4.17",
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "dcmjs": "0.52.0",

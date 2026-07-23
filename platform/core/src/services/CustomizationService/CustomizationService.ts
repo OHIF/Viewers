@@ -1,16 +1,15 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { compileExpression } from './expression';
+import type { CompiledExpression } from './expression';
 import type { Customization } from './types';
 import type { CommandsManager } from '../../classes';
 import type ExtensionManager from '../../extensions/ExtensionManager';
 import { getCustomizationUrlPolicy } from './customizationUrl';
 import { getUrlCustomizationModulePayload } from './getUrlCustomizationModulePayload';
 import { resolveCustomizationUrl } from './resolve';
-import {
-  parseCustomizationParams,
-  validateCustomizationRequests,
-} from './validate';
+import { parseCustomizationParams, validateCustomizationRequests } from './validate';
 import type { ValidatedCustomization } from './validate';
 import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
 import type {
@@ -228,7 +227,10 @@ export default class CustomizationService extends PubSubService {
    * phase-tagged form (any of `requires` / `bootstrap` / `global` / `mode`)
    * and otherwise treats the value as legacy Global references.
    */
-  private _getCustomizationConfig(): { phased?: PhasedCustomizationConfig; legacyReferences?: unknown } {
+  private _getCustomizationConfig(): {
+    phased?: PhasedCustomizationConfig;
+    legacyReferences?: unknown;
+  } {
     if (!this._customizationConfig) {
       this._customizationConfig = normalizeCustomizationConfig(this.configuration);
     }
@@ -525,11 +527,19 @@ export default class CustomizationService extends PubSubService {
     if (typeof value.$reference === 'string') {
       return this._resolveReferenceName(value.$reference, seen);
     }
+    if (value.$function !== undefined) {
+      return this._resolveFunctionMarker(value.$function);
+    }
     if (Array.isArray(value)) {
       let changed = false;
       const result: any[] = [];
       for (const item of value) {
-        if (item && typeof item === 'object' && !item.$$typeof && typeof item.$reference === 'string') {
+        if (
+          item &&
+          typeof item === 'object' &&
+          !item.$$typeof &&
+          typeof item.$reference === 'string'
+        ) {
           changed = true;
           const resolved = this._resolveReferenceName(item.$reference, seen);
           if (Array.isArray(resolved)) {
@@ -556,6 +566,35 @@ export default class CustomizationService extends PubSubService {
       result[key] = resolved;
     }
     return changed ? result : value;
+  }
+
+  /**
+   * Compiles a `{ $function: ... }` marker into a plain closure.
+   *
+   * `$function` lets data-only customizations (JSONC URL modules, app config)
+   * declare behavior with a safe, CSP-compatible expression language — see
+   * {@link compileExpression} for the grammar.  Accepted forms:
+   *   - `{ $function: '<expression>' }` — default params `['instance', 'context']`;
+   *   - `{ $function: { expr: '<expression>', params?: string[] } }`.
+   *
+   * Like `$reference`, resolution happens at read time and the compiled
+   * closure is memoized with the transformed customization; a parse error
+   * warns and resolves to `undefined` rather than breaking the whole
+   * customization read.
+   */
+  private _resolveFunctionMarker(definition: any): CompiledExpression | undefined {
+    const expr = typeof definition === 'string' ? definition : definition?.expr;
+    if (typeof expr !== 'string' || !expr.trim()) {
+      console.warn('CustomizationService: invalid $function definition', definition);
+      return undefined;
+    }
+    const params = typeof definition === 'object' ? definition.params : undefined;
+    try {
+      return compileExpression(expr, { params });
+    } catch (error) {
+      console.warn(`CustomizationService: failed to compile $function "${expr}"`, error);
+      return undefined;
+    }
   }
 
   /** Resolves a single `$reference` target name, guarding against cycles. */
@@ -1187,7 +1226,9 @@ export function normalizeCustomizationConfig(configuration: unknown): {
       const phased: PhasedCustomizationConfig = {};
       for (const key of PHASE_CONFIG_KEYS) {
         if (key in (configuration as object)) {
-          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[key];
+          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[
+            key
+          ];
         }
       }
       return { phased };
@@ -1222,11 +1263,16 @@ function hasDollarKey(value) {
       return false;
     }
     for (const key of Object.keys(value)) {
-      // `$transform` and `$reference` are read-time markers resolved by the
-      // service (in `transform` / `_resolveReferences`), not immutability-helper
-      // merge commands — so a value carrying them is stored verbatim rather than
-      // being run through `update()`.
-      if (key.startsWith('$') && key !== '$transform' && key !== '$reference') {
+      // `$transform`, `$reference` and `$function` are read-time markers
+      // resolved by the service (in `transform` / `_resolveReferences`), not
+      // immutability-helper merge commands — so a value carrying them is
+      // stored verbatim rather than being run through `update()`.
+      if (
+        key.startsWith('$') &&
+        key !== '$transform' &&
+        key !== '$reference' &&
+        key !== '$function'
+      ) {
         return true;
       }
       if (hasDollarKey(value[key])) {

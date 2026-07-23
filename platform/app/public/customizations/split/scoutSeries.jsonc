@@ -1,0 +1,57 @@
+// URL-loaded customization: scoutSeries
+//
+// Example of a declarative ($function-based) split rule for the
+// metadata-driven display set splitter.
+//
+// Splits the first image (lowest InstanceNumber) of every CT series into its
+// own display set labelled "SCOUT" - but only when the series has at least
+// 10 frames (small series are left intact).  The remaining images of the
+// series still match the default volume/stack rules and form their own
+// display set.
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `$unshift` PREPENDS the rule to the default rules: rules are evaluated
+//    in order with first-match-wins per instance, so the scout rule must run
+//    before the generic `volume3d` rule claims the whole CT series.
+//  - `series` facts are computed once per series: expressions run with the
+//    series context, so `instances` is in scope and aggregate helpers
+//    (`sumOf`, `minOf`, ...) can fold over it.
+//  - `matches` runs per instance: bare identifiers (Modality,
+//    InstanceNumber, ...) read the instance's DICOM tags; the series facts
+//    are available on `context.series`.
+//  - `customAttributes` values may be literals or expressions; template
+//    literals produce strings (used for the SeriesDescription overlay text).
+//
+// Load it with `?customization=split/scoutSeries`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$unshift": [
+          {
+            "id": "ctScout",
+            "viewportTypes": ["stack"],
+            "series": {
+              // Total frame count of the series (multiframe-aware).
+              "frameCount": {
+                "$function": "sumOf(instances, defined(NumberOfFrames) ? NumberOfFrames : 1)"
+              },
+              // The scout is the instance with the lowest InstanceNumber.
+              "firstInstanceNumber": { "$function": "minOf(instances, InstanceNumber)" }
+            },
+            "matches": {
+              "$function": "Modality === 'CT' && context.series.frameCount >= 10 && InstanceNumber == context.series.firstInstanceNumber"
+            },
+            "groupBy": ["SeriesInstanceUID"],
+            "customAttributes": {
+              "label": "SCOUT",
+              "SeriesDescription": { "$function": "`SCOUT ${SeriesDescription}`" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

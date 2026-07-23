@@ -1,165 +1,18 @@
-import { utils, classes } from '@ohif/core';
-import i18n from '@ohif/i18n';
-import { id } from './id';
-import getDisplaySetMessages from './getDisplaySetMessages';
+import { utils } from '@ohif/core';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
-import { metaData } from '@cornerstonejs/core';
+import { makeImageSetDisplaySet } from './displaySetSplitting/makeImageSetDisplaySet';
 
-const { isImage, sortStudyInstances, sopClassDictionary, isDisplaySetReconstructable } = utils;
-const { ImageSet } = classes;
+const { isImage, sopClassDictionary } = utils;
 
-const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
-const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
 let appContext = {};
-
-const getDynamicVolumeInfo = imageIds => {
-  const { extensionManager } = appContext;
-
-  if (!extensionManager) {
-    throw new Error('extensionManager is not available');
-  }
-
-  const volumeLoaderUtility = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.volumeLoader'
-  );
-  const { getDynamicVolumeInfo: csGetDynamicVolumeInfo } = volumeLoaderUtility.exports;
-
-  return csGetDynamicVolumeInfo(imageIds);
-};
 
 const isMultiFrame = instance => {
   return instance.NumberOfFrames > 1;
 };
 
-function getDisplaySetInfo(instances, imageIds) {
-  const dynamicVolumeInfo = getDynamicVolumeInfo(imageIds);
-  const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
-  let displaySetInfo;
-
-  const { appConfig } = appContext;
-
-  if (isDynamicVolume) {
-    const timePoint = timePoints[0];
-    const instancesMap = new Map();
-
-    let firstTimePointInstances;
-
-    if (instances[0].NumberOfFrames > 1 && timePoints.length > 1) {
-      // Handle multiframe dynamic volumes. Local file frame imageIds do not
-      // always resolve to a frame-level instance object, so keep resolved
-      // entries and fall back to the source multiframe instance when needed.
-      firstTimePointInstances = timePoints[0]
-        .map(imageId => metaData.get('instance', imageId))
-        .filter(Boolean);
-
-      if (!firstTimePointInstances.length) {
-        firstTimePointInstances = [instances[0]];
-      }
-    } else {
-      // O(n) to convert it into a map and O(1) to find each instance
-      instances.forEach(instance => instancesMap.set(instance.imageId, instance));
-      firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId)).filter(Boolean);
-    }
-    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances, appConfig);
-  } else {
-    displaySetInfo = isDisplaySetReconstructable(instances, appConfig);
-  }
-
-  return {
-    isDynamicVolume,
-    ...displaySetInfo,
-    dynamicVolumeInfo,
-  };
-}
-
-const makeDisplaySet = (instances, index) => {
-  // Need to sort the instances in order to get a consistent instance/thumbnail
-  sortStudyInstances(instances);
-  const instance = instances[0];
-  const imageSet = new ImageSet(instances);
-  const { extensionManager } = appContext;
-  const dataSource = extensionManager.getActiveDataSource()[0];
-  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
-  const {
-    isDynamicVolume,
-    value: isReconstructable,
-    averageSpacingBetweenFrames,
-    dynamicVolumeInfo,
-  } = getDisplaySetInfo(instances, imageIds);
-
-  const volumeLoaderSchema = isDynamicVolume
-    ? DYNAMIC_VOLUME_LOADER_SCHEME
-    : DEFAULT_VOLUME_LOADER_SCHEME;
-
-  // set appropriate attributes to image set...
-  const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
-
-  imageSet.setAttributes({
-    volumeLoaderSchema,
-    displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
-    SeriesDate: instance.SeriesDate,
-    SeriesTime: instance.SeriesTime,
-    SeriesInstanceUID: instance.SeriesInstanceUID,
-    StudyInstanceUID: instance.StudyInstanceUID,
-    SeriesNumber: instance.SeriesNumber || 0,
-    FrameRate: instance.FrameTime,
-    SOPClassUID: instance.SOPClassUID,
-    SeriesDescription: instance.SeriesDescription || '',
-    Modality: instance.Modality,
-    isMultiFrame: isMultiFrame(instance),
-    countIcon: isReconstructable ? 'icon-mpr' : undefined,
-    numImageFrames: instances.length,
-    SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    isReconstructable,
-    messages,
-    averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
-    isDynamicVolume,
-    dynamicVolumeInfo,
-    supportsWindowLevel: true,
-    label:
-      instance.SeriesDescription ||
-      `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
-    FrameOfReferenceUID: instance.FrameOfReferenceUID,
-  });
-
-  let imageId = imageIds[Math.floor(imageIds.length / 2)];
-  let thumbnailInstance = instances[Math.floor(instances.length / 2)];
-  if (isDynamicVolume) {
-    const timePoints = dynamicVolumeInfo.timePoints;
-    const middleIndex = Math.floor(timePoints.length / 2);
-    const middleTimePointImageIds = timePoints[middleIndex];
-    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
-  }
-
-  imageSet.setAttributes({
-    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
-  });
-
-  const { servicesManager } = appContext;
-  const { customizationService } = servicesManager.services;
-
-  imageSet.sort(customizationService);
-
-  // Include the first image instance number (after sorted)
-  /*imageSet.setAttribute(
-    'instanceNumber',
-    imageSet.getImage(0).InstanceNumber
-  );*/
-
-  /*const isReconstructable = isDisplaySetReconstructable(series, instances);
-
-  imageSet.isReconstructable = isReconstructable.value;
-
-  if (isReconstructable.missingFrames) {
-    // TODO -> This is currently unused, but may be used for reconstructing
-    // Volumes with gaps later on.
-    imageSet.missingFrames = isReconstructable.missingFrames;
-  }*/
-
-  return imageSet;
-};
+const makeDisplaySet = instances => makeImageSetDisplaySet(instances, appContext);
 
 const isSingleImageModality = modality => {
   return modality === 'CR' || modality === 'MG' || modality === 'DX';
@@ -205,7 +58,7 @@ function getDisplaySetsFromSeries(instances) {
 
     let displaySet;
     if (isMultiFrame(instance)) {
-      displaySet = makeDisplaySet([instance], instanceIndex);
+      displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
         numImageFrames: instance.NumberOfFrames,
@@ -214,7 +67,7 @@ function getDisplaySetsFromSeries(instances) {
       });
       displaySets.push(displaySet);
     } else if (isSingleImageModality(instance.Modality)) {
-      displaySet = makeDisplaySet([instance], instanceIndex);
+      displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
         instanceNumber: instance.InstanceNumber,
@@ -227,7 +80,7 @@ function getDisplaySetsFromSeries(instances) {
   });
 
   if (stackableInstances.length) {
-    const displaySet = makeDisplaySet(stackableInstances, displaySets.length);
+    const displaySet = makeDisplaySet(stackableInstances);
     displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
     displaySet.setAttributes({
       sopClassUids,

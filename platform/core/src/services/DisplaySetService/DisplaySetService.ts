@@ -1,9 +1,33 @@
+import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
+import type { InstanceGroup, NaturalizedInstance, SplitRule } from '@cornerstonejs/metadata';
 import { ExtensionManager } from '../../extensions';
 import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
+import * as displaySetStore from './displaySetStore';
+import { normalizeSplitRules } from './normalizeSplitRules';
 
-const displaySetCache = new Map<string, DisplaySet>();
+/** Memoizes normalized split-rule arrays by identity (rules change rarely). */
+const normalizedSplitRulesCache = new WeakMap<SplitRule[], SplitRule[]>();
+
+/**
+ * Value shape of the `useMetadataDisplaySet` customization.  When `enabled`,
+ * series instances are split into display sets by the
+ * `@cornerstonejs/metadata` split-rules engine before (instead of, for the
+ * instances the rules match) the registered SOP class handlers.  Instances
+ * not matched by any rule fall through to the legacy handler loop unchanged.
+ */
+export type UseMetadataDisplaySetCustomization = {
+  /** Default false — the legacy SOP class handler path is used exclusively. */
+  enabled?: boolean;
+  /** Rules for `groupInstancesBySplitRules`; first matching rule wins per instance. */
+  splitRules?: SplitRule[];
+  /** Factory converting a matched instance group into an OHIF display set. */
+  createDisplaySetFromGroup?: (
+    group: InstanceGroup,
+    context: { splitNumber: number }
+  ) => DisplaySet | undefined;
+};
 
 /**
  * Filters the instances set by instances not in
@@ -30,14 +54,15 @@ export default class DisplaySetService extends PubSubService {
   public static REGISTRATION = {
     altName: 'DisplaySetService',
     name: 'displaySetService',
-    create: ({ configuration = {} }) => {
-      return new DisplaySetService();
+    create: ({ servicesManager }) => {
+      return new DisplaySetService({ servicesManager });
     },
   };
 
   public activeDisplaySets = [];
   public unsupportedSOPClassHandler;
   extensionManager: ExtensionManager;
+  protected servicesManager?: AppTypes.ServicesManager;
 
   protected activeDisplaySetsMap = new Map<string, DisplaySet>();
 
@@ -45,8 +70,9 @@ export default class DisplaySetService extends PubSubService {
   // that fewer events need to be fired when creating multiple display sets
   protected activeDisplaySetsChanged = false;
 
-  constructor() {
+  constructor({ servicesManager }: { servicesManager?: AppTypes.ServicesManager } = {}) {
     super(EVENTS);
+    this.servicesManager = servicesManager;
     this.unsupportedSOPClassHandler =
       '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
   }
@@ -60,7 +86,7 @@ export default class DisplaySetService extends PubSubService {
 
   _addDisplaySetsToCache(displaySets: DisplaySet[]) {
     displaySets.forEach(displaySet => {
-      displaySetCache.set(displaySet.displaySetInstanceUID, displaySet);
+      displaySetStore.setDisplaySet(displaySet);
     });
   }
 
@@ -103,8 +129,15 @@ export default class DisplaySetService extends PubSubService {
     return displaySets;
   }
 
+  /**
+   * @deprecated Returns a read-only snapshot of the display set store —
+   * mutating the returned map has no effect.  Display sets are stored in the
+   * `@cornerstonejs/metadata` DISPLAY_SET typed metadata module; use
+   * `getDisplaySetByUID`, `getActiveDisplaySets` or `getDisplaySetsBy`
+   * instead.
+   */
   public getDisplaySetCache(): Map<string, DisplaySet> {
-    return displaySetCache;
+    return displaySetStore.getDisplaySetSnapshot();
   }
 
   public getMostRecentDisplaySet(): DisplaySet {
@@ -123,9 +156,9 @@ export default class DisplaySetService extends PubSubService {
    * to get those with the correct sop instances in them.</b>
    */
   public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
-    return [...displaySetCache.values()].filter(
-      displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID
-    );
+    return displaySetStore
+      .getAllDisplaySets()
+      .filter(displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID);
   };
 
   /**
@@ -148,7 +181,7 @@ export default class DisplaySetService extends PubSubService {
       }
     }
 
-    return [...displaySetCache.values()].filter(displaySet => {
+    return displaySetStore.getAllDisplaySets().filter(displaySet => {
       const sopReferences = mapSeriesReferences.get(displaySet.SeriesInstanceUID);
       if (!sopReferences || !displaySet.instances) {
         return;
@@ -164,7 +197,7 @@ export default class DisplaySetService extends PubSubService {
   ): DisplaySet {
     const displaySets = seriesInstanceUID
       ? this.getDisplaySetsForSeries(seriesInstanceUID)
-      : [...this.getDisplaySetCache().values()];
+      : displaySetStore.getAllDisplaySets();
 
     const displaySet = displaySets.find(ds => {
       return ds.instances?.some(i => i.SOPInstanceUID === sopInstanceUID);
@@ -200,8 +233,10 @@ export default class DisplaySetService extends PubSubService {
       ds => ds.displaySetInstanceUID === displaySetInstanceUID
     );
 
-    displaySetCache.delete(displaySetInstanceUID);
-    activeDisplaySets.splice(activeDisplaySetsIndex, 1);
+    displaySetStore.deleteDisplaySet(displaySetInstanceUID);
+    if (activeDisplaySetsIndex !== -1) {
+      activeDisplaySets.splice(activeDisplaySetsIndex, 1);
+    }
     activeDisplaySetsMap.delete(displaySetInstanceUID);
 
     this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
@@ -221,7 +256,7 @@ export default class DisplaySetService extends PubSubService {
       );
     }
 
-    return displaySetCache.get(displaySetInstanceUid);
+    return displaySetStore.getDisplaySet(displaySetInstanceUid);
   };
 
   /**
@@ -284,7 +319,7 @@ export default class DisplaySetService extends PubSubService {
    * store the active display sets and the cached data.
    */
   public onModeExit(): void {
-    this.getDisplaySetCache().clear();
+    displaySetStore.clearDisplaySets();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
   }
@@ -300,9 +335,32 @@ export default class DisplaySetService extends PubSubService {
    * @returns
    */
   public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
+    let remaining = instancesSrc;
+    let allDisplaySets = [];
+
+    // When the `useMetadataDisplaySet` customization is enabled, split the
+    // series with the `@cornerstonejs/metadata` split-rules engine first.
+    // The splitter sees the whole series across SOP classes (rules may
+    // aggregate series-level facts); instances not matched by any rule fall
+    // through to the legacy SOP class handler loop below unchanged.
+    const splitConfig = this._getMetadataSplitCustomization();
+    if (splitConfig?.enabled && splitConfig.splitRules?.length) {
+      const { displaySets, unmatched } = this._makeDisplaySetsWithSplitRules(
+        instancesSrc,
+        splitConfig,
+        settings
+      );
+      allDisplaySets.push(...displaySets);
+      remaining = unmatched;
+    }
+
+    if (!remaining.length) {
+      return allDisplaySets;
+    }
+
     // creating a sopClassUID list and for each sopClass associate its respective
     // instance list
-    const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
+    const instancesForSetSOPClasses = remaining.reduce((sopClassList, instance) => {
       if (!(instance.SOPClassUID in sopClassList)) {
         sopClassList[instance.SOPClassUID] = [];
       }
@@ -313,7 +371,6 @@ export default class DisplaySetService extends PubSubService {
     // instance list composed only by instances with the same sopClassUID and
     // accumulate the displaySets in the variable allDisplaySets
     const sopClasses = Object.keys(instancesForSetSOPClasses);
-    let allDisplaySets = [];
     sopClasses.forEach(sopClass => {
       const displaySets = this._makeDisplaySetForInstances(
         instancesForSetSOPClasses[sopClass],
@@ -322,6 +379,127 @@ export default class DisplaySetService extends PubSubService {
       allDisplaySets = [...allDisplaySets, ...displaySets];
     });
     return allDisplaySets;
+  }
+
+  /**
+   * Reads the `useMetadataDisplaySet` customization, when available, with
+   * its split rules normalized from any declarative (JSONC / `$function`)
+   * form into `@cornerstonejs/metadata` engine shape.
+   */
+  private _getMetadataSplitCustomization(): UseMetadataDisplaySetCustomization | undefined {
+    const config = this.servicesManager?.services?.customizationService?.getCustomization(
+      'useMetadataDisplaySet'
+    ) as UseMetadataDisplaySetCustomization | undefined;
+    if (!config?.enabled || !Array.isArray(config.splitRules)) {
+      return config;
+    }
+    let splitRules = normalizedSplitRulesCache.get(config.splitRules);
+    if (!splitRules) {
+      splitRules = normalizeSplitRules(config.splitRules);
+      normalizedSplitRulesCache.set(config.splitRules, splitRules);
+    }
+    return { ...config, splitRules };
+  }
+
+  /**
+   * Splits `instancesSrc` into display sets using the customization-provided
+   * split rules, reconciling with display sets created by earlier calls for
+   * the same series (keyed by the deterministic, rule-namespaced `splitKey`).
+   *
+   * Mirrors the idempotency semantics of `_makeDisplaySetForInstances`:
+   * repeated calls with the same instances add nothing; calls with new
+   * instances update existing display sets (via their `updateInstances`
+   * attribute) and fire the invalidation event; regrouped display sets whose
+   * split key disappears are deleted.
+   *
+   * @returns the newly created display sets and the instances not matched by
+   * any split rule (which must flow to the legacy SOP class handler loop).
+   */
+  private _makeDisplaySetsWithSplitRules(
+    instancesSrc: InstanceMetadata[],
+    config: UseMetadataDisplaySetCustomization,
+    settings
+  ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
+    const unmatched: InstanceMetadata[] = [];
+    const groups = groupInstancesBySplitRules(
+      instancesSrc as unknown as NaturalizedInstance[],
+      config.splitRules,
+      instance => unmatched.push(instance as unknown as InstanceMetadata)
+    );
+
+    if (!groups.length) {
+      return { displaySets: [], unmatched };
+    }
+
+    const seriesInstanceUID = instancesSrc[0].SeriesInstanceUID;
+    const existingByKey = new Map<string, DisplaySet>();
+    for (const displaySet of this.getDisplaySetsForSeries(seriesInstanceUID)) {
+      if (displaySet.splitKey) {
+        existingByKey.set(displaySet.splitKey, displaySet);
+      }
+    }
+
+    const added: DisplaySet[] = [];
+    const seenKeys = new Set<string>();
+
+    groups.forEach((group, splitNumber) => {
+      seenKeys.add(group.splitKey);
+      const existing = existingByKey.get(group.splitKey);
+      if (existing) {
+        const newInstances = filterInstances(group.instances as unknown as InstanceMetadata[], [
+          existing,
+        ]);
+        if (!newInstances.length) {
+          // Idempotent re-run - everything is already present.
+          this._addActiveDisplaySets([existing]);
+          return;
+        }
+        const updated = existing.updateInstances?.(newInstances, this);
+        if (updated) {
+          this.activeDisplaySetsChanged = true;
+          this._addDisplaySetsToCache([updated]);
+          this._addActiveDisplaySets([updated]);
+          this.setDisplaySetMetadataInvalidated(updated.displaySetInstanceUID);
+          return;
+        }
+        // No updateInstances support - fall through and recreate the display
+        // set under a new UID; the stale one is removed below.
+        existingByKey.delete(group.splitKey);
+        this.deleteDisplaySet(existing.displaySetInstanceUID);
+      }
+
+      const displaySet = config.createDisplaySetFromGroup?.(group, { splitNumber });
+      if (!displaySet) {
+        return;
+      }
+      // applying hp-defined viewport settings to the displaysets
+      Object.keys(settings).forEach(key => {
+        displaySet[key] = settings[key];
+      });
+      this._addDisplaySetsToCache([displaySet]);
+      this._addActiveDisplaySets([displaySet]);
+      added.push(displaySet);
+    });
+
+    // Regrouping across batches (e.g. a mixed-b-value split only detectable
+    // once a later batch arrives) can retire previous split keys.  Only
+    // delete a stale display set when all of its instances are present in
+    // this call - i.e. they were genuinely regrouped - so partial-list
+    // callers never delete display sets they cannot see.
+    const incomingSOPInstanceUIDs = new Set(instancesSrc.map(instance => instance.SOPInstanceUID));
+    for (const [splitKey, displaySet] of existingByKey) {
+      if (seenKeys.has(splitKey)) {
+        continue;
+      }
+      const covered = displaySet.instances?.every(instance =>
+        incomingSOPInstanceUIDs.has(instance.SOPInstanceUID)
+      );
+      if (covered) {
+        this.deleteDisplaySet(displaySet.displaySetInstanceUID);
+      }
+    }
+
+    return { displaySets: added, unmatched };
   }
 
   /**
@@ -373,6 +551,9 @@ export default class DisplaySetService extends PubSubService {
             if (addedDs) {
               this.activeDisplaySetsChanged = true;
               instances = filterInstances(instances, [addedDs]);
+              // Refresh the stored value so the metadata store reflects the
+              // merged display set (a pure overwrite).
+              this._addDisplaySetsToCache([addedDs]);
               this._addActiveDisplaySets([addedDs]);
               this.setDisplaySetMetadataInvalidated(addedDs.displaySetInstanceUID);
             }
