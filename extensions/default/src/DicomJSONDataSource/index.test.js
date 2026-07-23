@@ -1,13 +1,9 @@
-import {
-  getDicomJSONImageId,
-  getDicomJSONImageIdsForDisplaySet,
-  getInstanceMetadata,
-} from './index';
+import { getDicomJSONImageId, getDicomJSONImageIdsForDisplaySet, getInstanceMetadata } from './index';
 
 jest.mock('@ohif/core', () => ({
   DicomMetadataStore: {},
   IWebApiDataSource: {
-    create: jest.fn(implementation => implementation),
+    create: jest.fn((implementation) => implementation),
   },
   classes: {
     MetadataProvider: {
@@ -15,7 +11,7 @@ jest.mock('@ohif/core', () => ({
     },
   },
   utils: {
-    addAccessors: jest.fn(sequence => sequence),
+    addAccessors: jest.fn((sequence) => sequence),
   },
 }));
 

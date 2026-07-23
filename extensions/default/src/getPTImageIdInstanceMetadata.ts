@@ -1,6 +1,6 @@
-import OHIF from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 
-import type { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv/src/types';
+import type { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -11,21 +11,25 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     throw new Error('dicom metadata are required');
   }
 
+  const radiopharmaceuticalInfo = firstSequenceItem<Record<string, unknown>>(
+    dicomMetaData.RadiopharmaceuticalInformationSequence
+  );
+  const radionuclideHalfLife = coerceNumber(radiopharmaceuticalInfo?.RadionuclideHalfLife);
+  const radionuclideTotalDose = coerceNumber(radiopharmaceuticalInfo?.RadionuclideTotalDose);
+
   if (
     dicomMetaData.SeriesDate === undefined ||
     dicomMetaData.SeriesTime === undefined ||
     dicomMetaData.CorrectedImage === undefined ||
     dicomMetaData.Units === undefined ||
-    !dicomMetaData.RadiopharmaceuticalInformationSequence ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife === undefined ||
-    dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose === undefined ||
+    !radiopharmaceuticalInfo ||
+    radionuclideHalfLife === undefined ||
+    radionuclideTotalDose === undefined ||
     dicomMetaData.DecayCorrection === undefined ||
     dicomMetaData.AcquisitionDate === undefined ||
     dicomMetaData.AcquisitionTime === undefined ||
-    (dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartDateTime ===
-      undefined &&
-      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime ===
-        undefined)
+    (radiopharmaceuticalInfo.RadiopharmaceuticalStartDateTime === undefined &&
+      radiopharmaceuticalInfo.RadiopharmaceuticalStartTime === undefined)
   ) {
     throw new Error('required metadata are missing');
   }
@@ -37,73 +41,84 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   const instanceMetadata: InstanceMetadata = {
     CorrectedImage: dicomMetaData.CorrectedImage,
     Units: dicomMetaData.Units,
-    RadionuclideHalfLife: dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife,
-    RadionuclideTotalDose:
-      dicomMetaData.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose,
-    RadiopharmaceuticalStartDateTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartDateTime,
-    RadiopharmaceuticalStartTime:
-      dicomMetaData.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime,
+    RadionuclideHalfLife: radionuclideHalfLife,
+    RadionuclideTotalDose: radionuclideTotalDose,
+    RadiopharmaceuticalStartDateTime: radiopharmaceuticalInfo.RadiopharmaceuticalStartDateTime,
+    RadiopharmaceuticalStartTime: radiopharmaceuticalInfo.RadiopharmaceuticalStartTime,
     DecayCorrection: dicomMetaData.DecayCorrection,
-    PatientWeight: dicomMetaData.PatientWeight,
+    PatientWeight: coerceNumber(dicomMetaData.PatientWeight),
     SeriesDate: dicomMetaData.SeriesDate,
     SeriesTime: dicomMetaData.SeriesTime,
     AcquisitionDate: dicomMetaData.AcquisitionDate,
     AcquisitionTime: dicomMetaData.AcquisitionTime,
   };
 
-  if (
-    dicomMetaData['70531000'] ||
-    dicomMetaData['70531000'] !== undefined ||
-    dicomMetaData['70531009'] ||
-    dicomMetaData['70531009'] !== undefined
-  ) {
+  // Philips PET private group. Only populated with values that coerce to real
+  // numbers; an unresolved bulkdata object yields undefined and is dropped so it
+  // can never corrupt the SUV calculation. SUVScaleFactor is (7053,1000) and
+  // ActivityConcentrationScaleFactor is (7053,1009). These are resolved from
+  // bulkdata upstream during ingestion (utils.resolveBulkDataTags).
+  const suvScaleFactor = coerceNumber(dicomMetaData['70531000']);
+  const activityConcentrationScaleFactor = coerceNumber(dicomMetaData['70531009']);
+  if (suvScaleFactor !== undefined || activityConcentrationScaleFactor !== undefined) {
     const philipsPETPrivateGroup: PhilipsPETPrivateGroup = {
-      SUVScaleFactor: dicomMetaData['70531000'],
-      ActivityConcentrationScaleFactor: dicomMetaData['70531009'],
+      SUVScaleFactor: suvScaleFactor,
+      ActivityConcentrationScaleFactor: activityConcentrationScaleFactor,
     };
     instanceMetadata.PhilipsPETPrivateGroup = philipsPETPrivateGroup;
   }
 
-  if (dicomMetaData['0009100d'] && dicomMetaData['0009100d'] !== undefined) {
+  if (dicomMetaData['0009100d'] !== undefined) {
     instanceMetadata.GEPrivatePostInjectionDateTime = dicomMetaData['0009100d'];
   }
 
-  if (dicomMetaData.FrameReferenceTime && dicomMetaData.FrameReferenceTime !== undefined) {
-    instanceMetadata.FrameReferenceTime = dicomMetaData.FrameReferenceTime;
+  const frameReferenceTime = coerceNumber(dicomMetaData.FrameReferenceTime);
+  if (frameReferenceTime !== undefined) {
+    instanceMetadata.FrameReferenceTime = frameReferenceTime;
   }
 
-  if (dicomMetaData.ActualFrameDuration && dicomMetaData.ActualFrameDuration !== undefined) {
-    instanceMetadata.ActualFrameDuration = dicomMetaData.ActualFrameDuration;
+  const actualFrameDuration = coerceNumber(dicomMetaData.ActualFrameDuration);
+  if (actualFrameDuration !== undefined) {
+    instanceMetadata.ActualFrameDuration = actualFrameDuration;
   }
 
-  if (dicomMetaData.PatientSex && dicomMetaData.PatientSex !== undefined) {
+  if (dicomMetaData.PatientSex !== undefined) {
     instanceMetadata.PatientSex = dicomMetaData.PatientSex;
   }
 
-  if (dicomMetaData.PatientSize && dicomMetaData.PatientSize !== undefined) {
-    instanceMetadata.PatientSize = dicomMetaData.PatientSize;
+  const patientSize = coerceNumber(dicomMetaData.PatientSize);
+  if (patientSize !== undefined) {
+    instanceMetadata.PatientSize = patientSize;
   }
 
   return instanceMetadata;
 }
 
-function convertInterfaceTimeToString(time): string {
-  const hours = `${time.hours || '00'}`.padStart(2, '0');
-  const minutes = `${time.minutes || '00'}`.padStart(2, '0');
-  const seconds = `${time.seconds || '00'}`.padStart(2, '0');
-
-  const fractionalSeconds = `${time.fractionalSeconds || '000000'}`.padEnd(6, '0');
-
-  const timeString = `${hours}${minutes}${seconds}.${fractionalSeconds}`;
-  return timeString;
-}
-
-function convertInterfaceDateToString(date): string {
-  const month = `${date.month}`.padStart(2, '0');
-  const day = `${date.day}`.padStart(2, '0');
-  const dateString = `${date.year}${month}${day}`;
-  return dateString;
-}
-
 export { getPTImageIdInstanceMetadata };
+
+/**
+ * Coerces a naturalized DICOM value into a finite number, or returns undefined.
+ *
+ * Delegates to OHIF's `utils.toNumber` and then requires a finite scalar, so an
+ * object value - such as an unresolved bulkdata reference `{ BulkDataURI }` or
+ * an array - becomes undefined. This is the final backstop ensuring such a value
+ * can never reach calculate-suv (which treats it as truthy and silently corrupts
+ * the SUV factors). Bulkdata is meant to be resolved upstream during ingestion
+ * (see utils.resolveBulkDataTags); this guard catches anything that slips
+ * through.
+ */
+function coerceNumber(value: unknown): number | undefined {
+  const n = utils.toNumber(value);
+  return typeof n === 'number' && Number.isFinite(n) ? n : undefined;
+}
+
+/**
+ * Returns the first item of a DICOM sequence, tolerating either the dcmjs
+ * naturalized array shape or an already-flattened single-object shape.
+ */
+function firstSequenceItem<T = Record<string, unknown>>(seq: unknown): T | undefined {
+  if (seq == null || typeof seq !== 'object') {
+    return undefined;
+  }
+  return (Array.isArray(seq) ? seq[0] : seq) as T;
+}
