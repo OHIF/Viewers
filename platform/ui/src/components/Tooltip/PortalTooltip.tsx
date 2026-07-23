@@ -39,8 +39,8 @@ export default class PortalTooltip extends React.Component {
     if (!portalNodes[this.props.group]) {
       this.createPortal();
     }
-    let { parent, ...other } = props;
-    let parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent;
+    const { parent, ...other } = props;
+    const parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent;
     ReactDOM.render(
       <Card
         parentEl={parentEl}
@@ -66,8 +66,8 @@ export default class PortalTooltip extends React.Component {
       return;
     }
 
-    let props = { ...nextProps };
-    let newProps = { ...nextProps };
+    const props = { ...nextProps };
+    const newProps = { ...nextProps };
 
     if (portalNodes[this.props.group] && portalNodes[this.props.group].timeout) {
       clearTimeout(portalNodes[this.props.group].timeout);
@@ -86,6 +86,7 @@ export default class PortalTooltip extends React.Component {
 
   componentWillUnmount() {
     if (portalNodes[this.props.group]) {
+      // Todo: move this to root.unmount
       ReactDOM.unmountComponentAtNode(portalNodes[this.props.group].node);
       clearTimeout(portalNodes[this.props.group].timeout);
 

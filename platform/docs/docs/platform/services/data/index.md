@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Overview
+title: Data Services Overview
+summary: Overview of OHIF's data services architecture, which replaced the Redux store with a more modular approach using service-specific state management and a pub/sub pattern for communication between components.
 ---
 
 # Overview
@@ -19,16 +21,16 @@ We maintain the following non-ui Services:
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
 - [Toolbar Service](./ToolbarService.md)
 - [Measurement Service](../data/MeasurementService.md)
-- [Customization Service](./../ui/customization-service.md)
-- [State Sync Service](../data/StateSyncService.md)
+- [Customization Service](./../customization-service/customizationService.md)
 - [Panel Service](../data/PanelService.md)
+- [Viewed Data Service](../data/ViewedDataService.md)
 
 ## Service Architecture
 
 ![services-data](../../../assets/img/services-data.png)
 
 > We have explained services and how to create a custom service in the
-> [`ServiceManager`](../../managers/service.md) section of the docs
+> [`ServicesManager`](../../managers/service.md) section of the docs
 
 To recap: The simplest service return a new object that has a `name` property,
 and `Create` method which instantiate the service class. The "Factory Function"
@@ -39,11 +41,11 @@ different for UI Services).
 // extensions/customExtension/src/services/backEndService/index.js
 import backEndService from './backEndService';
 
-export default function WrappedBackEndService(serviceManager) {
+export default function WrappedBackEndService(servicesManager) {
   return {
     name: 'myService',
     create: ({ configuration = {} }) => {
-      return new backEndService(serviceManager);
+      return new backEndService(servicesManager);
     },
   };
 }

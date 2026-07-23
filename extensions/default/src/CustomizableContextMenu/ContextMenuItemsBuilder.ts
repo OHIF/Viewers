@@ -1,4 +1,4 @@
-import { Types } from '@ohif/ui';
+import { Types } from '@ohif/ui-next';
 import { Menu, SelectorProps, MenuItem, ContextMenuProps } from './types';
 
 type ContextMenuItem = Types.ContextMenuItem;
@@ -154,7 +154,7 @@ export function adaptItem(item: MenuItem, subProps: ContextMenuProps): ContextMe
   };
 
   if (item.actionType === 'ShowSubMenu' && !newItem.iconRight) {
-    newItem.iconRight = 'chevron-menu';
+    newItem.iconRight = 'chevron-down';
   }
   if (!item.action) {
     newItem.action = (itemRef, componentProps) => {

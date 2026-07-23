@@ -1,0 +1,20 @@
+{
+  "AccessionNumber": "رقم التسجيل",
+  "ClearFilters": "مسح الفلاتر",
+  "Description": "الوصف",
+  "Empty": "فارغ",
+  "Filter list to 100 studies or less to enable sorting": "قم بتصفية القائمة إلى 100 دراسة أو أقل لتمكين الفرز",
+  "Instances": "الصور",
+  "Modality": "جهاز التصوير",
+  "MRN": "رقم السجل الطبي",
+  "Next": "التالي >",
+  "No studies available": "لا توجد دراسات متاحة",
+  "Number of studies": "عدد الدراسات",
+  "Page": "الصفحة",
+  "PatientName": "اسم المريض",
+  "Previous": "< رجوع",
+  "Results per page": "النتائج لكل الصفحة",
+  "StudyDate": "تاريخ الدراسة",
+  "StudyList": "قائمة الدراسات",
+  "Upload": "رفع"
+}

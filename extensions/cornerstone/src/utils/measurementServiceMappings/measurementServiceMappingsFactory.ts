@@ -8,11 +8,18 @@ import CobbAngle from './CobbAngle';
 import Angle from './Angle';
 import PlanarFreehandROI from './PlanarFreehandROI';
 import RectangleROI from './RectangleROI';
+import SplineROI from './SplineROI';
+import LivewireContour from './LivewireContour';
+import Probe from './Probe';
+import UltrasoundDirectional from './UltrasoundDirectional';
+import SegmentBidirectional from './SegmentBidirectional';
+import UltrasoundPleuraBLine from './UltrasoundPleuraBLine';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
   displaySetService,
-  cornerstoneViewportService
+  cornerstoneViewportService,
+  customizationService
 ) => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
@@ -39,6 +46,11 @@ const measurementServiceMappingsFactory = (
       ArrowAnnotate: POINT,
       CobbAngle: ANGLE,
       Angle: ANGLE,
+      SplineROI: POLYLINE,
+      LivewireContour: POLYLINE,
+      Probe: POINT,
+      UltrasoundDirectional: POLYLINE,
+      SegmentBidirectional: BIDIRECTIONAL,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -52,7 +64,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -68,7 +81,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         // TODO -> We should eventually do something like shortAxis + longAxis,
@@ -83,7 +97,27 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
+    SegmentBidirectional: {
+      toAnnotation: SegmentBidirectional.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        SegmentBidirectional.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+      ],
+    },
     EllipticalROI: {
       toAnnotation: EllipticalROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -91,7 +125,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -99,7 +134,6 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
     CircleROI: {
       toAnnotation: CircleROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -107,7 +141,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -115,7 +150,6 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
     RectangleROI: {
       toAnnotation: RectangleROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -123,7 +157,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -131,7 +166,6 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
     PlanarFreehandROI: {
       toAnnotation: PlanarFreehandROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -139,7 +173,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -147,7 +182,38 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
+    SplineROI: {
+      toAnnotation: SplineROI.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        SplineROI.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+        },
+      ],
+    },
+    LivewireContour: {
+      toAnnotation: LivewireContour.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        LivewireContour.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+        },
+      ],
+    },
     ArrowAnnotate: {
       toAnnotation: ArrowAnnotate.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -155,7 +221,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -164,7 +231,23 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
+    Probe: {
+      toAnnotation: Probe.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        Probe.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POINT,
+          points: 1,
+        },
+      ],
+    },
     CobbAngle: {
       toAnnotation: CobbAngle.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -172,7 +255,8 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
@@ -180,7 +264,6 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-
     Angle: {
       toAnnotation: Angle.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -188,11 +271,46 @@ const measurementServiceMappingsFactory = (
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,
-          _getValueTypeFromToolType
+          _getValueTypeFromToolType,
+          customizationService
         ),
       matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.ANGLE,
+        },
+      ],
+    },
+    UltrasoundDirectional: {
+      toAnnotation: UltrasoundDirectional.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        UltrasoundDirectional.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+      ],
+    },
+    UltrasoundPleuraBLine: {
+      toAnnotation: UltrasoundPleuraBLine.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        UltrasoundPleuraBLine.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
         },
       ],
     },

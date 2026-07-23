@@ -45,10 +45,11 @@ export type UIMenuItem = {
  */
 export interface MenuItem {
   id?: string;
-  /** The customization type is used to apply preset values to this item
+  /**
+   * The customization type is used to apply preset values to this item
    * when registered with the customization service.
    */
-  customizationType?: string;
+  inheritsFrom?: string;
 
   // The label is the value to show in the menu for this item
   label?: string;
@@ -91,7 +92,7 @@ export interface Menu {
   /** The customization type is used to apply preset values to this item
    * when registered with the customization service.
    */
-  customizationType?: string;
+  inheritsFrom?: string;
 
   // Choose whether this menu applies.
   selector?: Types.Predicate;

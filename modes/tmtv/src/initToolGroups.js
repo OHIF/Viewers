@@ -1,11 +1,8 @@
-export const toolGroupIds = {
-  CT: 'ctToolGroup',
-  PT: 'ptToolGroup',
-  Fusion: 'fusionToolGroup',
-  MIP: 'mipToolGroup',
-  default: 'default',
-  // MPR: 'mpr',
-};
+import { toolGroupIds } from '@ohif/extension-tmtv';
+
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
+export { toolGroupIds };
 
 function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
@@ -20,12 +17,16 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
@@ -35,13 +36,13 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
               eventDetails,
             });
           },
-
-          changeTextCallback: (data, eventDetails, callback) =>
+          changeTextCallback: (data, eventDetails, callback) => {
             commandsManager.runCommand('arrowTextCallback', {
               callback,
               data,
               eventDetails,
-            }),
+            });
+          },
         },
       },
       { toolName: toolNames.Bidirectional },
@@ -53,13 +54,85 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary, modifierKey: Enums.KeyboardBindings.Shift },
+        ],
         configuration: {
-          viewportIndicators: false,
           disableOnPassive: true,
           autoPan: {
             enabled: false,
@@ -83,7 +156,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const mipTools = {
     active: [
       {
-        toolName: toolNames.VolumeRotateMouseWheel,
+        toolName: toolNames.VolumeRotate,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
         configuration: {
           rotateIncrementDegrees: 5,
         },
@@ -96,13 +170,31 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [
+      {
+        toolName: toolNames.OrientationMarker,
+        configuration: {
+          orientationWidget: {
+            viewportCorner: 'BOTTOM_LEFT',
+          },
+        },
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+/**
+ * Mode tool group setup, sharing the options-object signature used by all
+ * modes so implementations are interchangeable via the `initToolGroups` mode
+ * instance property.
+ */
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+  const { toolNames, Enums } = utilityModule.exports;
   _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 

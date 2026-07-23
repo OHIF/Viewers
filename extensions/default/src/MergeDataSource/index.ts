@@ -1,5 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
-import { get, uniqBy } from 'lodash';
+import get from 'lodash.get';
+import uniqBy from 'lodash.uniqby';
 import {
   MergeConfig,
   CallForAllDataSourcesAsyncOptions,
@@ -167,7 +168,7 @@ export const callByRetrieveAETitle = ({
 
 function createMergeDataSourceApi(
   mergeConfig: MergeConfig,
-  servicesManager: unknown,
+  servicesManager: AppTypes.ServicesManager,
   extensionManager
 ) {
   const { seriesMerge } = mergeConfig;
@@ -218,6 +219,13 @@ function createMergeDataSourceApi(
       },
     },
     retrieve: {
+      getGetThumbnailSrc: (...args: unknown[]) =>
+        callForDefaultDataSource({
+          path: 'retrieve.getGetThumbnailSrc',
+          args,
+          defaultDataSourceName,
+          extensionManager,
+        }),
       bulkDataURI: (...args: unknown[]) =>
         callForAllDataSourcesAsync({
           mergeMap,
@@ -234,6 +242,24 @@ function createMergeDataSourceApi(
           defaultDataSourceName,
           extensionManager,
         }),
+      renderedURL: (...args: unknown[]) => {
+        const [dataSource] = extensionManager.getDataSources(defaultDataSourceName);
+        const renderedURL = get(dataSource, 'retrieve.renderedURL');
+
+        if (renderedURL) {
+          return renderedURL.apply(dataSource, args);
+        }
+
+        const directURL = get(dataSource, 'retrieve.directURL');
+
+        if (!directURL) {
+          return Promise.resolve({ url: null });
+        }
+
+        return Promise.resolve(directURL.apply(dataSource, [args[0]])).then(url => ({
+          url: (url as string | undefined | null) || null,
+        }));
+      },
       series: {
         metadata: (...args: unknown[]) =>
           callForAllDataSourcesAsync({

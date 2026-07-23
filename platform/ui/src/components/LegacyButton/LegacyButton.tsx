@@ -137,7 +137,7 @@ const fullWidthClasses = {
 };
 
 const LegacyButton = ({
-  children,
+  children = '',
   variant = defaults.variant,
   color = defaults.color,
   border = defaults.border,
@@ -151,7 +151,7 @@ const LegacyButton = ({
   endIcon: endIconProp,
   name,
   className,
-  onClick,
+  onClick = () => {},
   /** TODO: All possible props should be explicitly defined -- avoid spreading props  */
   ...rest
 }) => {
@@ -204,13 +204,6 @@ const LegacyButton = ({
       {endIcon}
     </button>
   );
-};
-
-LegacyButton.defaultProps = {
-  color: defaults.color,
-  disabled: false,
-  children: '',
-  onClick: () => {},
 };
 
 LegacyButton.propTypes = {

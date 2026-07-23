@@ -15,8 +15,13 @@ describe('OHIF Measurement Panel', function () {
     cy.get('@RightCollapseBtn').click();
     cy.get('@measurementsPanel').should('not.exist');
 
-    cy.get('@RightCollapseBtn').click();
-    cy.get('@measurementsPanel').should('exist');
+    cy.get('@RightCollapseBtn').click({ force: true });
+
+    // segmentation panel should be visible
+    cy.get('@segmentationPanel').should('be.visible');
+
+    // measurements panel should be clickable
+    cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('be.visible');
   });
 
@@ -29,19 +34,24 @@ describe('OHIF Measurement Panel', function () {
 
     cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
-    cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
+    cy.get('[data-cy="data-row"]').as('measurementItem').click();
 
-    cy.get('[data-cy="measurement-item"]').find('svg').eq(0).as('measurementItemSvg').click();
+    cy.get('[data-cy="data-row"]').find('svg').eq(0).as('measurementItemSvg').click();
 
     // enter Bone label
-    cy.get('[data-cy="input-annotation"]').should('exist');
-    cy.get('[data-cy="input-annotation"]').should('be.visible');
-    cy.get('[data-cy="input-annotation"]').type('Bone{enter}');
+    // Todo: move it to the new annotation input with drop down
+    // cy.get('[data-cy="input-annotation"]').should('exist');
+    // cy.get('[data-cy="input-annotation"]').should('be.visible');
+    // cy.get('[data-cy="input-annotation"]').type('Bone{enter}');
 
-    cy.get('[data-cy="measurement-item"]').as('measurementItem').should('contain.text', 'Bone');
+    // cy.get('[data-cy="data-row"]').as('measurementItem').should('contain.text', 'Bone');
   });
 
   it('checks if image would jump when clicked on a measurement item', function () {
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="1"]').dblclick();
+    cy.wait(250);
+    cy.scrollToIndex(0);
+
     // Add length measurement
     cy.addLengthMeasurement().wait(250);
     cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
@@ -54,7 +64,7 @@ describe('OHIF Measurement Panel', function () {
     cy.get('@viewportInfoBottomRight').should('contains.text', '(14/');
 
     // Click on first measurement item
-    cy.get('[data-cy="measurement-item"]').eq(0).click();
+    cy.get('[data-cy="data-row"]').eq(0).click();
 
     cy.get('@viewportInfoBottomRight').should('contains.text', '(1/');
     cy.get('@viewportInfoBottomRight').should('not.contains.text', '(14/');

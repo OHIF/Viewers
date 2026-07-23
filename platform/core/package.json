@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "3.8.0-beta.67",
+  "version": "3.14.0-beta.0",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -8,54 +8,57 @@
   "main": "dist/ohif-core.umd.js",
   "module": "src/index.ts",
   "types": "src/types/index.ts",
-  "sideEffects": "false",
-  "publishConfig": {
-    "access": "public"
+  "engines": {
+    "node": ">=24"
   },
   "files": [
     "dist",
     "README.md"
   ],
-  "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+  "publishConfig": {
+    "access": "public"
   },
+  "sideEffects": "false",
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "jest --watchAll",
-    "dev:core": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev",
+    "dev:core": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
   "peerDependencies": {
-    "@cornerstonejs/codec-charls": "^1.2.3",
-    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
-    "@cornerstonejs/codec-openjpeg": "^1.2.2",
-    "@cornerstonejs/codec-openjph": "^2.4.2",
-    "@cornerstonejs/dicom-image-loader": "^1.67.0",
-    "@ohif/ui": "3.8.0-beta.67",
-    "cornerstone-math": "0.1.9",
-    "dicom-parser": "^1.8.21"
+    "@cornerstonejs/codec-charls": "1.2.3",
+    "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
+    "@cornerstonejs/codec-openjpeg": "1.3.0",
+    "@cornerstonejs/codec-openjph": "2.4.7",
+    "@cornerstonejs/core": "5.6.8",
+    "@cornerstonejs/dicom-image-loader": "5.6.8",
+    "@cornerstonejs/metadata": "5.6.8",
+    "@ohif/ui": "workspace:*",
+    "cornerstone-math": "0.1.10",
+    "dicom-parser": "1.8.21"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "dcmjs": "^0.29.12",
-    "dicomweb-client": "^0.10.4",
-    "gl-matrix": "^3.4.3",
-    "isomorphic-base64": "^1.0.2",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.merge": "^4.6.1",
-    "moment": "^2.24.0",
+    "@babel/runtime": "7.29.7",
+    "dcmjs": "0.52.0",
+    "dicomweb-client": "0.10.4",
+    "gl-matrix": "3.4.3",
+    "immutability-helper": "3.1.1",
+    "isomorphic-base64": "1.0.2",
+    "json5": "2.2.3",
+    "lodash.clonedeep": "4.5.0",
+    "lodash.isequal": "4.5.0",
+    "moment": "2.30.1",
     "object-hash": "2.1.1",
-    "query-string": "^6.14.0",
-    "validate.js": "^0.12.0"
+    "query-string": "6.14.1",
+    "shepherd.js": "15.2.2",
+    "validate.js": "0.12.0"
   },
   "devDependencies": {
-    "webpack-merge": "5.7.3"
+    "webpack-merge": "5.10.0"
   }
 }

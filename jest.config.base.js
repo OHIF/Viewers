@@ -6,14 +6,25 @@
 module.exports = {
   verbose: true,
   // roots: ['<rootDir>/src'],
-  testMatch: ['<rootDir>/src/**/*.test.js'],
+  testMatch: ['<rootDir>/src/**/*.test.js', '<rootDir>/src/**/*.test.ts'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testEnvironment: 'jsdom',
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  transform: {
+    '^.+\\.[jt]sx?$': 'babel-jest',
+  },
+  transformIgnorePatterns: [],
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/src/__mocks__/fileMock.js',
     '\\.(css|less)$': 'identity-obj-proxy',
+    // calculate-suv publishes under dist/ (not dist/esm), so map it explicitly
+    // before package-specific catch-all @cornerstonejs mappings.
+    '^@cornerstonejs/calculate-suv$': '<rootDir>/../../node_modules/@cornerstonejs/calculate-suv',
+    '^@cornerstonejs/calculate-suv/(.*)$':
+      '<rootDir>/../../node_modules/@cornerstonejs/calculate-suv/$1',
+    '^@cornerstonejs/([^/]+)/(.*)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm/$2',
+    '^@cornerstonejs/([^/]+)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm',
   },
   // Setup
   // setupFiles: ["jest-canvas-mock/lib/index.js"],

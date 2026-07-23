@@ -1,204 +1,204 @@
-import React, { useEffect, useState, useCallback } from 'react';
+// Updated ToolbarLayoutSelector.tsx
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { LayoutSelector as OHIFLayoutSelector, ToolbarButton, LayoutPreset } from '@ohif/ui';
-import { ServicesManager } from '@ohif/core';
+import { CommandsManager } from '@ohif/core';
 
-const defaultCommonPresets = [
-  {
-    icon: 'layout-common-1x1',
-    commandOptions: {
-      numRows: 1,
-      numCols: 1,
-    },
-  },
-  {
-    icon: 'layout-common-1x2',
-    commandOptions: {
-      numRows: 1,
-      numCols: 2,
-    },
-  },
-  {
-    icon: 'layout-common-2x2',
-    commandOptions: {
-      numRows: 2,
-      numCols: 2,
-    },
-  },
-  {
-    icon: 'layout-common-2x3',
-    commandOptions: {
-      numRows: 2,
-      numCols: 3,
-    },
-  },
-];
+import { LayoutSelector } from '@ohif/ui-next';
+import { useTranslation } from 'react-i18next';
 
-const generateAdvancedPresets = hangingProtocolService => {
-  const hangingProtocols = Array.from(hangingProtocolService.protocols.values());
-  return hangingProtocols
-    .map(hp => {
-      if (!hp.isPreset) {
-        return null;
-      }
-      return {
-        icon: hp.icon,
-        title: hp.name,
-        commandOptions: {
-          protocolId: hp.id,
+function ToolbarLayoutSelectorWithServices({
+  commandsManager,
+  servicesManager,
+  rows = 3,
+  columns = 4,
+  ...props
+}) {
+  const { customizationService } = servicesManager.services;
+  const { t } = useTranslation('ToolbarLayoutSelector');
+
+  // Get the presets from the customization service
+  const commonPresets = customizationService?.getCustomization('layoutSelector.commonPresets') || [
+    {
+      icon: 'layout-single',
+      commandOptions: {
+        numRows: 1,
+        numCols: 1,
+      },
+    },
+    {
+      icon: 'layout-side-by-side',
+      commandOptions: {
+        numRows: 1,
+        numCols: 2,
+      },
+    },
+    {
+      icon: 'layout-four-up',
+      commandOptions: {
+        numRows: 2,
+        numCols: 2,
+      },
+    },
+    {
+      icon: 'layout-three-row',
+      commandOptions: {
+        numRows: 3,
+        numCols: 1,
+      },
+    },
+  ];
+
+  // Get the advanced presets generator from the customization service
+  const advancedPresetsGenerator = customizationService?.getCustomization(
+    'layoutSelector.advancedPresetGenerator'
+  );
+
+  // Generate the advanced presets
+  const advancedPresets = advancedPresetsGenerator
+    ? advancedPresetsGenerator({ servicesManager })
+    : [
+        {
+          title: 'MPR',
+          icon: 'layout-three-col',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
         },
-      };
-    })
-    .filter(preset => preset !== null);
-};
+        {
+          title: '3D four up',
+          icon: 'layout-four-up',
+          commandOptions: {
+            protocolId: '3d-four-up',
+          },
+        },
+        {
+          title: '3D main',
+          icon: 'layout-three-row',
+          commandOptions: {
+            protocolId: '3d-main',
+          },
+        },
+        {
+          title: 'Axial Primary',
+          icon: 'layout-side-by-side',
+          commandOptions: {
+            protocolId: 'axial-primary',
+          },
+        },
+        {
+          title: '3D only',
+          icon: 'layout-single',
+          commandOptions: {
+            protocolId: '3d-only',
+          },
+        },
+        {
+          title: '3D primary',
+          icon: 'layout-side-by-side',
+          commandOptions: {
+            protocolId: '3d-primary',
+          },
+        },
+        {
+          title: 'Frame View',
+          icon: 'icon-stack',
+          commandOptions: {
+            protocolId: 'frame-view',
+          },
+        },
+      ];
 
-function ToolbarLayoutSelectorWithServices({ commandsManager, servicesManager, ...props }) {
-  const [isDisabled, setIsDisabled] = useState(false);
-
-  const handleMouseEnter = () => {
-    setIsDisabled(false);
-  };
-
-  const onSelection = useCallback(props => {
-    commandsManager.run({
-      commandName: 'setViewportGridLayout',
-      commandOptions: { ...props },
-    });
-    setIsDisabled(true);
-  }, []);
-
-  const onSelectionPreset = useCallback(props => {
-    commandsManager.run({
-      commandName: 'setHangingProtocol',
-      commandOptions: { ...props },
-    });
-    setIsDisabled(true);
-  }, []);
+  // Unified selection handler that dispatches to the appropriate command
+  const handleSelectionChange = useCallback(
+    (commandOptions, isPreset) => {
+      if (isPreset) {
+        // Advanced preset selection
+        commandsManager.run({
+          commandName: 'setHangingProtocol',
+          commandOptions,
+        });
+      } else {
+        // Common preset or custom grid selection
+        commandsManager.run({
+          commandName: 'setViewportGridLayout',
+          commandOptions,
+        });
+      }
+    },
+    [commandsManager]
+  );
 
   return (
-    <div onMouseEnter={handleMouseEnter}>
+    <div
+      id="Layout"
+      data-cy="Layout"
+    >
       <LayoutSelector
+        onSelectionChange={handleSelectionChange}
         {...props}
-        onSelection={onSelection}
-        onSelectionPreset={onSelectionPreset}
-        servicesManager={servicesManager}
-        tooltipDisabled={isDisabled}
-      />
+      >
+        <LayoutSelector.Trigger tooltip={t('Change layout')} />
+        <LayoutSelector.Content>
+          {/* Left side - Presets */}
+          {(commonPresets.length > 0 || advancedPresets.length > 0) && (
+            <div className="bg-popover flex flex-col gap-2.5 rounded-lg p-2">
+              {commonPresets.length > 0 && (
+                <>
+                  <LayoutSelector.PresetSection title={t('Common')}>
+                    {commonPresets.map((preset, index) => (
+                      <LayoutSelector.Preset
+                        key={`common-preset-${index}`}
+                        icon={preset.icon}
+                        commandOptions={preset.commandOptions}
+                        isPreset={false}
+                      />
+                    ))}
+                  </LayoutSelector.PresetSection>
+                  <LayoutSelector.Divider />
+                </>
+              )}
+
+              {advancedPresets.length > 0 && (
+                <LayoutSelector.PresetSection title={t('Advanced')}>
+                  {advancedPresets.map((preset, index) => (
+                    <LayoutSelector.Preset
+                      key={`advanced-preset-${index}`}
+                      title={preset.title}
+                      icon={preset.icon}
+                      commandOptions={preset.commandOptions}
+                      disabled={preset.disabled}
+                      isPreset={true}
+                    />
+                  ))}
+                </LayoutSelector.PresetSection>
+              )}
+            </div>
+          )}
+
+          {/* Right Side - Grid Layout */}
+          <div className="bg-muted flex flex-col gap-2.5 border-l-2 border-solid border-background p-2">
+            <div className="text-muted-foreground text-xs">{t('Custom')}</div>
+            <LayoutSelector.GridSelector
+              rows={rows}
+              columns={columns}
+            />
+            <LayoutSelector.HelpText>
+              {t('Hover to select')} <br />
+              {t('rows and columns')} <br />
+              {t('Click to apply')}
+            </LayoutSelector.HelpText>
+          </div>
+        </LayoutSelector.Content>
+      </LayoutSelector>
     </div>
   );
 }
 
-function LayoutSelector({
-  rows,
-  columns,
-  className,
-  onSelection,
-  onSelectionPreset,
-  servicesManager,
-  tooltipDisabled,
-  ...rest
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { customizationService, hangingProtocolService } = servicesManager.services;
-  const commonPresets = customizationService.get('commonPresets') || defaultCommonPresets;
-  const advancedPresets =
-    customizationService.get('advancedPresets') || generateAdvancedPresets(hangingProtocolService);
-
-  const closeOnOutsideClick = () => {
-    if (isOpen) {
-      setIsOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('click', closeOnOutsideClick);
-    return () => {
-      window.removeEventListener('click', closeOnOutsideClick);
-    };
-  }, [isOpen]);
-
-  const onInteractionHandler = () => {
-    setIsOpen(!isOpen);
-  };
-  const DropdownContent = isOpen ? OHIFLayoutSelector : null;
-
-  return (
-    <ToolbarButton
-      id="Layout"
-      label="Layout"
-      icon="tool-layout"
-      onInteraction={onInteractionHandler}
-      className={className}
-      rounded={rest.rounded}
-      disableToolTip={tooltipDisabled}
-      dropdownContent={
-        DropdownContent !== null && (
-          <div className="flex ">
-            <div className="bg-secondary-dark flex flex-col gap-2.5 p-2">
-              <div className="text-aqua-pale text-xs">Common</div>
-
-              <div className="flex gap-4">
-                {commonPresets.map((preset, index) => (
-                  <LayoutPreset
-                    key={index}
-                    classNames="hover:bg-primary-dark group p-1 cursor-pointer"
-                    icon={preset.icon}
-                    commandOptions={preset.commandOptions}
-                    onSelection={onSelection}
-                  />
-                ))}
-              </div>
-
-              <div className="h-[2px] bg-black"></div>
-
-              <div className="text-aqua-pale text-xs">Advanced</div>
-
-              <div className="flex flex-col gap-2.5">
-                {advancedPresets.map((preset, index) => (
-                  <LayoutPreset
-                    key={index + commonPresets.length}
-                    classNames="hover:bg-primary-dark group flex gap-2 p-1 cursor-pointer"
-                    icon={preset.icon}
-                    title={preset.title}
-                    commandOptions={preset.commandOptions}
-                    onSelection={onSelectionPreset}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-primary-dark flex flex-col gap-2.5 border-l-2 border-solid border-black  p-2">
-              <div className="text-aqua-pale text-xs">Custom</div>
-              <DropdownContent
-                rows={rows}
-                columns={columns}
-                onSelection={onSelection}
-              />
-              <p className="text-aqua-pale text-xs leading-tight">
-                Hover to select <br></br>rows and columns <br></br> Click to apply
-              </p>
-            </div>
-          </div>
-        )
-      }
-      isActive={isOpen}
-      type="toggle"
-    />
-  );
-}
-
-LayoutSelector.propTypes = {
+ToolbarLayoutSelectorWithServices.propTypes = {
+  commandsManager: PropTypes.instanceOf(CommandsManager),
+  servicesManager: PropTypes.object,
   rows: PropTypes.number,
   columns: PropTypes.number,
-  onLayoutChange: PropTypes.func,
-  servicesManager: PropTypes.instanceOf(ServicesManager),
-};
-
-LayoutSelector.defaultProps = {
-  columns: 4,
-  rows: 3,
-  onLayoutChange: () => {},
 };
 
 export default ToolbarLayoutSelectorWithServices;

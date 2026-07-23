@@ -1,9 +1,11 @@
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
-import getUserManagerForOpenIdConnectClient from './getUserManagerForOpenIdConnectClient.js';
+import LegacyClient from './legacyOIDCClient';
+import NextClient from './nextOIDCClient';
+import { sanitizeSameOriginRedirect } from './sanitizeRedirect';
 
 function _isAbsoluteUrl(url) {
   return url.includes('http://') || url.includes('https://');
@@ -43,7 +45,9 @@ const initUserManager = (oidc, routerBasename) => {
     post_logout_redirect_uri: _makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
   });
 
-  return getUserManagerForOpenIdConnectClient(openIdConnectConfiguration);
+  const client = firstOpenIdClient.response_type === 'code' ? NextClient : LegacyClient;
+
+  return client(openIdConnectConfiguration);
 };
 
 function LogoutComponent(props) {
@@ -52,7 +56,10 @@ function LogoutComponent(props) {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   userManager.signoutRedirect({
-    post_logout_redirect_uri: query.get('redirect_uri'),
+    post_logout_redirect_uri: sanitizeSameOriginRedirect(
+      query.get('redirect_uri'),
+      window.location.origin
+    ),
   });
   return null;
 }
@@ -91,7 +98,7 @@ function LoginComponent(userManager) {
 }
 
 function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }) {
-  const userManager = initUserManager(oidc, routerBasename);
+  const userManager = useMemo(() => initUserManager(oidc, routerBasename), [oidc, routerBasename]);
 
   const getAuthorizationHeader = () => {
     const user = userAuthenticationService.getUser();
@@ -107,8 +114,10 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     };
   };
 
-  const handleUnauthenticated = async () => {
-    await userManager.signinRedirect();
+  const handleUnauthenticated = () => {
+    // Note: Don't await the redirect. If you make this component async it
+    // causes a react error before redirect as it returns a promise of a component rather than a component.
+    userManager.signinRedirect();
 
     // return null because this is used in a react component
     return null;
@@ -142,17 +151,36 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     });
   }, []);
 
+  useEffect(() => {
+    const userLoadedHandler = user => {
+      userAuthenticationService.setUser(user);
+    };
+
+    userManager.events.addUserLoaded(userLoadedHandler);
+
+    // Cleanup on component unmount.
+    return () => {
+      userManager.events.removeUserLoaded(userLoadedHandler);
+    };
+  }, []);
+
   const oidcAuthority = oidc[0].authority;
 
   const location = useLocation();
   const { pathname, search } = location;
 
-  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname.replace(
+  const redirectURI = userManager.settings._redirect_uri ?? userManager.settings.redirect_uri;
+  const silentRedirectURI =
+    userManager.settings._silent_redirect_uri ?? userManager.settings.silent_redirect_uri;
+  const postLogoutRedirectURI =
+    userManager.settings._post_logout_redirect_uri ?? userManager.settings.post_logout_redirect_uri;
+
+  const redirect_uri = new URL(redirectURI).pathname.replace(
     routerBasename !== '/' ? routerBasename : '',
     ''
   );
-  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname; //.replace(routerBasename,'')
-  const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri).pathname; //.replace(routerBasename,'');
+  const silent_refresh_uri = new URL(silentRedirectURI).pathname; //.replace(routerBasename,'')
+  const post_logout_redirect_uri = new URL(postLogoutRedirectURI).pathname; //.replace(routerBasename,'');
 
   // const pathnameRelative = pathname.replace(routerBasename,'');
 

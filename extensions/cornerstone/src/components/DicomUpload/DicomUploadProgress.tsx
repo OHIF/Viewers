@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Icon, ProgressLoadingBar } from '@ohif/ui';
+import { useSystem } from '@ohif/core';
+import { Button } from '@ohif/ui-next';
+import { Icons } from '@ohif/ui-next';
 import DicomFileUploader, {
   EVENTS,
   UploadStatus,
@@ -39,6 +41,11 @@ function DicomUploadProgress({
   dicomFileUploaderArr,
   onComplete,
 }: DicomUploadProgressProps): ReactElement {
+  const { servicesManager } = useSystem();
+
+  const ProgressLoadingBar =
+    servicesManager.services.customizationService.getCustomization('ui.progressLoadingBar');
+
   const [totalUploadSize] = useState(
     dicomFileUploaderArr.reduce((acc, fileUploader) => acc + fileUploader.getFileSize(), 0)
   );
@@ -252,22 +259,24 @@ function DicomUploadProgress({
   }, [getPercentCompleteRounded, percentComplete]);
 
   /**
-   * Gets the css style for the 'n of m' (files completed) text. The only css attribute
-   * of the style is width such that the 'n of m' is always a fixed width and thus
-   * as each file completes uploading the text on screen does not constantly shift
-   * left and right.
+   * Gets the CSS style for the 'n of m' (files completed) text.
+   * The width changes according to numFilesCompleted and can vary,
+   * e.g. "1 of 200", "10 of 200", "100 of 200" all have differents width.
    */
   const getNofMFilesStyle = useCallback(() => {
     // the number of digits accounts for the digits being on each side of the ' of '
-    const numDigits = 2 * dicomFileUploaderArr.length.toString().length;
-    // the number of digits + 2 spaces and 2 characters for ' of '
-    const numChars = numDigits + 4;
+    const numDigits =
+      numFilesCompleted.toString().length + dicomFileUploaderArr.length.toString().length;
+    // The number of digits + 3 additional characters (accounts for ' of ').
+    // Even though intuitively 4 should be better, this is the most accurate width.
+    // The font may play a part in this discrepancy.
+    const numChars = numDigits + 3;
     return { width: `${numChars}ch` };
-  }, []);
+  }, [numFilesCompleted]);
 
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
     return (
-      <div className="bg-primary-dark flex h-14 items-center px-1 pb-4 text-lg">
+      <div className="bg-muted text-foreground flex h-14 items-center px-1 pb-4 text-lg">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
           <>
             <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${dicomFileUploaderArr.length} ${
@@ -283,21 +292,24 @@ function DicomUploadProgress({
           </>
         ) : (
           <>
+            <div className="flex flex-wrap">
+              <span
+                style={getNofMFilesStyle()}
+                className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES, 'text-right')}
+              >
+                {`${numFilesCompleted} of ${dicomFileUploaderArr.length}`}&nbsp;
+              </span>
+              <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{' files completed.'}</span>
+              <br />
+              <span>
+                {timeRemaining ? `Less than ${getFormattedTimeRemaining()} remaining. ` : ''}
+              </span>
+            </div>
+
             <span
-              style={getNofMFilesStyle()}
-              className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES, 'text-end')}
-            >
-              {`${numFilesCompleted} of ${dicomFileUploaderArr.length}`}&nbsp;
-            </span>
-            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{' files completed.'}&nbsp;</span>
-            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>
-              {timeRemaining ? `Less than ${getFormattedTimeRemaining()} remaining. ` : ''}
-            </span>
-            <span
-              className={classNames(
-                NO_WRAP_ELLIPSIS_CLASS_NAMES,
-                'text-primary-active hover:text-primary-light active:text-aqua-pale ml-auto cursor-pointer'
-              )}
+              className={
+                'text-primary hover:text-highlight active:text-muted-foreground ml-auto cursor-pointer whitespace-nowrap'
+              }
               onClick={cancelAllUploads}
             >
               Cancel All Uploads
@@ -313,10 +325,10 @@ function DicomUploadProgress({
       <div className="ml-auto flex w-6 justify-center">
         {numFails > 0 && (
           <div onClick={() => setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)}>
-            <Icon
+            <Icons.ByName
               className="cursor-pointer"
               name="icon-status-alert"
-            ></Icon>
+            ></Icons.ByName>
           </div>
         )}
       </div>
@@ -325,11 +337,11 @@ function DicomUploadProgress({
 
   const getPercentCompleteComponent = (): ReactElement => {
     return (
-      <div className="ohif-scrollbar border-secondary-light overflow-y-scroll border-b px-2">
+      <div className="ohif-scrollbar border-input overflow-y-scroll border-b px-2">
         <div className="min-h-14 flex w-full items-center p-2.5">
           {numFilesCompleted === dicomFileUploaderArr.length ? (
             <>
-              <div className="text-primary-light text-xl">
+              <div className="text-highlight text-xl">
                 {numFails > 0
                   ? `Completed with ${numFails} ${numFails > 1 ? 'errors' : 'error'}!`
                   : 'Completed!'}
@@ -347,7 +359,7 @@ function DicomUploadProgress({
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
-                <div className="w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
+                <div className="text-foreground w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
             </>
@@ -360,7 +372,7 @@ function DicomUploadProgress({
   return (
     <div className="flex grow flex-col">
       {getNumCompletedAndTimeRemainingComponent()}
-      <div className="flex grow flex-col overflow-hidden bg-black text-lg">
+      <div className="flex grow flex-col overflow-hidden bg-background text-lg">
         {getPercentCompleteComponent()}
         <div className="ohif-scrollbar h-1 grow overflow-y-scroll px-2">
           {dicomFileUploaderArr

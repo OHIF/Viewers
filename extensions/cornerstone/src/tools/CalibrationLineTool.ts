@@ -1,6 +1,5 @@
-import { metaData } from '@cornerstonejs/core';
 import { LengthTool, utilities } from '@cornerstonejs/tools';
-import callInputDialog from '../utils/callInputDialog';
+import { callInputDialog } from '@ohif/extension-default';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
 
 const { calibrateImageSpacing } = utilities;
@@ -49,7 +48,10 @@ function calculateLength3(pos1, pos2) {
 
 export default CalibrationLineTool;
 
-export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
+export function onCompletedCalibrationLine(
+  servicesManager: AppTypes.ServicesManager,
+  csToolsEvent
+) {
   const { uiDialogService, viewportGridService } = servicesManager.services;
 
   // calculate length (mm) with the current Pixel Spacing
@@ -82,35 +84,14 @@ export function onCompletedCalibrationLine(servicesManager, csToolsEvent) {
       return;
     }
 
-    callInputDialog(
+    callInputDialog({
       uiDialogService,
-      {
-        text: '',
-        label: `${length}`,
-      },
-      (value, id) => {
-        if (id === 'save') {
-          adjustCalibration(Number.parseFloat(value));
-          resolve(true);
-        } else {
-          reject('cancel');
-        }
-      },
-      false,
-      {
-        dialogTitle: 'Calibration',
-        inputLabel: 'Actual Physical distance (mm)',
-
-        // the input value must be a number
-        validateFunc: val => {
-          try {
-            const v = Number.parseFloat(val);
-            return !isNaN(v) && v !== 0.0;
-          } catch {
-            return false;
-          }
-        },
-      }
-    );
+      title: 'Calibration',
+      placeholder: 'Actual Physical distance (mm)',
+      defaultValue: `${length}`,
+    }).then(newValue => {
+      adjustCalibration(Number.parseFloat(newValue));
+      resolve(true);
+    });
   });
 }

@@ -1,0 +1,18 @@
+{
+  "Criteria nonconformities": "معايير عدم المطابقة",
+  "Delete": "حذف",
+  "Description": "الوصف",
+  "MAX": "الحد الأقصى",
+  "Measurements": "القياسات",
+  "No, do not ask again": "لا، لا تسأل مرة أخرى",
+  "NonTargets": "غير مستهدفة",
+  "Relabel": "إعادة تسمية",
+  "Targets": "أهداف",
+  "Track measurements for this series?": "هل تريد تتبع القياسات لهذه السلسلة؟",
+  "Do you want to add this measurement to the existing report?": "هل تريد إضافة هذا القياس إلى التقرير الحالي؟",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "لديك قياسات متتبعة موجودة. ماذا تريد أن تفعل بها؟",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "لا يمكن أن تمتد القياسات عبر دراسات متعددة. هل تريد حفظ القياسات المتتبعة؟",
+  "Do you want to continue tracking measurements for this study?": "هل تريد متابعة تتبع القياسات لهذه الدراسة؟",
+  "Do you want to open this Segmentation?": "هل تريد فتح هذا التجزئة؟",
+  "There are unsaved measurements. Do you want to save it?": "هناك قياسات غير محفوظة. هل تريد حفظها؟"
+}

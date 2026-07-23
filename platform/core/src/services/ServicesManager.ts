@@ -1,21 +1,21 @@
 import log from './../log.js';
-import Services from '../types/Services';
 import CommandsManager from '../classes/CommandsManager';
 import ExtensionManager from '../extensions/ExtensionManager';
 
 export default class ServicesManager {
-  public services: Services = {};
+  public services: AppTypes.Services = {};
   public registeredServiceNames: string[] = [];
   private _commandsManager: CommandsManager;
   private _extensionManager: ExtensionManager;
 
   constructor(commandsManager: CommandsManager) {
     this._commandsManager = commandsManager;
+    this._extensionManager = null;
     this.services = {};
     this.registeredServiceNames = [];
   }
 
-  setExtensionManager(extensionManager) {
+  public setExtensionManager(extensionManager) {
     this._extensionManager = extensionManager;
   }
 
@@ -25,7 +25,7 @@ export default class ServicesManager {
    * @param {Object} service
    * @param {Object} configuration
    */
-  registerService(service, configuration = {}) {
+  public registerService(service, configuration = {}) {
     if (!service) {
       log.warn('Attempting to register a null/undefined service. Exiting early.');
       return;
@@ -46,12 +46,12 @@ export default class ServicesManager {
     if (service.create) {
       this.services[service.name] = service.create({
         configuration,
+        extensionManager: this._extensionManager,
         commandsManager: this._commandsManager,
         servicesManager: this,
-        extensionManager: this._extensionManager,
       });
       if (service.altName) {
-        console.log('Registering old name', service.altName);
+        // TODO - remove this registration
         this.services[service.altName] = this.services[service.name];
       }
     } else {
@@ -69,7 +69,7 @@ export default class ServicesManager {
    *
    * @param {Object[]} services - Array of services
    */
-  registerServices(services) {
+  public registerServices(services) {
     services.forEach(service => {
       const hasConfiguration = Array.isArray(service);
 

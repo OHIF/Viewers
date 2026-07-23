@@ -1,6 +1,7 @@
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { DicomMetadataStore } from '../DicomMetadataStore/DicomMetadataStore';
 
 /**
  * Measurement source schema
@@ -32,6 +33,7 @@ import { PubSubService } from '../_shared/pubSubServiceInterface';
 /* Measurement schema keys for object validation. */
 const MEASUREMENT_SCHEMA_KEYS = [
   'uid',
+  'color',
   'data',
   'getReport',
   'displayText',
@@ -42,6 +44,8 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'frameNumber',
   'displaySetInstanceUID',
   'label',
+  'isLocked',
+  'isVisible',
   'description',
   'type',
   'unit',
@@ -53,12 +57,15 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'area', // TODO: Add concept names instead (descriptor)
   'mean',
   'stdDev',
+  'perimeter',
   'length',
   'shortestDiameter',
   'longestDiameter',
   'cachedStats',
-  'selected',
+  'isSelected',
   'textBox',
+  'referencedImageId',
+  'isDirty',
 ];
 
 const EVENTS = {
@@ -68,10 +75,11 @@ const EVENTS = {
   RAW_MEASUREMENT_ADDED: 'event::raw_measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
-  // Give the viewport a chance to jump to the measurement
-  JUMP_TO_MEASUREMENT_VIEWPORT: 'event:jump_to_measurement_viewport',
-  // Give the layout a chance to jump to the measurement
-  JUMP_TO_MEASUREMENT_LAYOUT: 'event:jump_to_measurement_layout',
+  /**
+   *  Indicate some viewport should be jumped to.  This will have to be implemented
+   * by a single handler that can look at all viewports to decide who should handle it.
+   */
+  JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
 };
 
 const VALUE_TYPES = {
@@ -86,6 +94,15 @@ const VALUE_TYPES = {
   ROI_THRESHOLD: 'value_type::roiThreshold',
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
+
+enum MeasurementChangeType {
+  HandlesUpdated = 'HandlesUpdated',
+  LabelChange = 'LabelChange',
+}
+
+export type MeasurementFilter = (measurement) => boolean;
+
+const sourceMissing = new Set();
 
 /**
  * MeasurementService class that supports source management and measurement management.
@@ -103,7 +120,7 @@ class MeasurementService extends PubSubService {
   public static REGISTRATION = {
     name: 'measurementService',
     altName: 'MeasurementService',
-    create: ({ configuration = {} }) => {
+    create: _options => {
       return new MeasurementService();
     },
   };
@@ -113,12 +130,13 @@ class MeasurementService extends PubSubService {
   public readonly VALUE_TYPES = VALUE_TYPES;
 
   private measurements = new Map();
-  private unmappedMeasurements = new Map();
+  private isMeasurementDeletedIndividually: boolean;
+
+  private sources = {};
+  private mappings = {};
 
   constructor() {
     super(EVENTS);
-    this.sources = {};
-    this.mappings = {};
   }
 
   /**
@@ -159,12 +177,16 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * Get all measurements.
+   * Gets measurements, optionally filtered by the filter
+   * function.
    *
    * @return {Measurement[]} Array of measurements
    */
-  getMeasurements() {
-    return [...this.measurements.values()];
+  public getMeasurements(filter?: MeasurementFilter) {
+    const measurements = [...this.measurements.values()];
+    return filter
+      ? measurements.filter(measurement => filter.call(this, measurement))
+      : measurements;
   }
 
   /**
@@ -183,7 +205,7 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    measurement.selected = selected;
+    measurement.isSelected = selected;
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -302,7 +324,7 @@ class MeasurementService extends PubSubService {
       this.mappings[source.uid] = [mapping];
     }
 
-    log.info(`New measurement mapping added to source '${this._getSourceToString(source)}'.`);
+    // log.info(`New measurement mapping added to source '${this._getSourceToString(source)}'.`);
   }
 
   /**
@@ -393,11 +415,14 @@ class MeasurementService extends PubSubService {
     let measurement = {};
     try {
       measurement = toMeasurementSchema(data);
+      if (!measurement) {
+        return;
+      }
       measurement.source = source;
     } catch (error) {
       log.warn(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
-        error.message
+        error
       );
       return;
     }
@@ -409,16 +434,15 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    let internalUID = data.id;
-    if (!internalUID) {
-      internalUID = guid();
-      log.warn(`Measurement ID not found. Generating UID: ${internalUID}`);
-    }
+    const internalUID = data.uid || guid();
 
-    const annotationData = data.annotation.data;
+    const {
+      annotation: { predecessorImageId, data: annotationData },
+    } = data;
 
     const newMeasurement = {
       finding: annotationData.finding,
+      predecessorImageId,
       findingSites: annotationData.findingSites,
       site: annotationData.findingSites?.[0],
       ...measurement,
@@ -464,7 +488,6 @@ class MeasurementService extends PubSubService {
     }
 
     const sourceInfo = this._getSourceToString(source);
-
     if (!this._sourceHasMappings(source)) {
       throw new Error(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
     }
@@ -476,25 +499,24 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source);
+        if (!sourceMissing.has(source.uid)) {
+          console.log('No source mapping', source.uid, annotationType, source);
+          sourceMissing.add(source.uid);
+        }
+        this.addUnmappedMeasurement(sourceAnnotationDetail, source);
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
 
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
+      if (!measurement) {
+        return;
+      }
+
       measurement.source = source;
     } catch (error) {
-      // Todo: handle other
-      this.unmappedMeasurements.set(sourceAnnotationDetail.uid, {
-        ...sourceAnnotationDetail,
-        source: {
-          name: source.name,
-          version: source.version,
-          uid: source.uid,
-        },
-      });
-
+      this.addUnmappedMeasurement(sourceAnnotationDetail, source);
       console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
@@ -525,6 +547,11 @@ class MeasurementService extends PubSubService {
       uid: internalUID,
     };
 
+    newMeasurement.isDirty =
+      sourceAnnotationDetail.changeType === MeasurementChangeType.HandlesUpdated ||
+      sourceAnnotationDetail.changeType === MeasurementChangeType.LabelChange ||
+      oldMeasurement?.isDirty;
+
     if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the source.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
@@ -551,35 +578,150 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * Removes a measurement and broadcasts the removed event.
-   *
-   * @param {string} measurementUID The measurement uid
-   * @param {MeasurementSource} source The measurement source instance
+   * Recursively searches for any attribute at any level in the object
+   * @param {any} obj The object to search
+   * @param {string} attributeName The name of the attribute to find
+   * @returns {any} The attribute value if found, undefined otherwise
    */
-  remove(measurementUID, source, eventDetails) {
-    if (
-      !measurementUID ||
-      (!this.measurements.has(measurementUID) && !this.unmappedMeasurements.has(measurementUID))
-    ) {
-      log.warn(`No uid provided, or unable to find measurement by uid.`);
+  private findAttributeRecursively(obj: any, attributeName: string): any {
+    if (!obj || typeof obj !== 'object') {
+      return undefined;
+    }
+    if (obj[attributeName]) {
+      return obj[attributeName];
+    }
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const result = this.findAttributeRecursively(obj[key], attributeName);
+        if (result) {
+          return result;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Adds an unmapped measurement to the measurement service.
+   *
+   * @param {any} sourceAnnotationDetail The source annotation detail
+   * @param {any} source The source
+   */
+  private addUnmappedMeasurement(sourceAnnotationDetail: any, source: any) {
+    if (sourceAnnotationDetail.annotation?.invalidated === true) {
+      console.log('Measurement is invalidated, skipping...', sourceAnnotationDetail);
       return;
     }
 
-    this.unmappedMeasurements.delete(measurementUID);
+    if (sourceAnnotationDetail.annotation?.isPreview === true) {
+      console.log('Measurement is preview, skipping...', sourceAnnotationDetail);
+      return;
+    }
+
+    const metadata = this.findAttributeRecursively(sourceAnnotationDetail, 'metadata');
+    const label = this.findAttributeRecursively(sourceAnnotationDetail, 'label');
+    const referencedImageId = this.findAttributeRecursively(
+      sourceAnnotationDetail,
+      'referencedImageId'
+    );
+    const displaySetInstanceUID = this.findAttributeRecursively(
+      sourceAnnotationDetail,
+      'displaySetInstanceUID'
+    );
+
+    const measurement = {
+      ...sourceAnnotationDetail,
+      isUnmapped: true,
+      statusTooltip: 'This measurement is not compatible with this application',
+      source: {
+        name: source.name,
+        version: source.version,
+        uid: source.uid,
+      },
+    };
+
+    if (metadata) {
+      measurement.metadata = metadata;
+    }
+
+    if (label) {
+      measurement.label = label;
+    }
+
+    if (referencedImageId) {
+      measurement.referencedImageId = referencedImageId;
+      const instance = DicomMetadataStore.getInstanceByImageId(referencedImageId);
+      if (!instance) {
+        console.warn("Didn't find instance for", referencedImageId);
+      } else {
+        measurement.referenceStudyUID = instance.StudyInstanceUID;
+        measurement.referenceSeriesUID = instance.SeriesInstanceUID;
+      }
+    }
+
+    if (displaySetInstanceUID) {
+      measurement.displaySetInstanceUID = displaySetInstanceUID;
+    }
+
+    this.measurements.set(sourceAnnotationDetail.uid, measurement);
+  }
+
+  /**
+   * Removes a measurement and broadcasts the removed event.
+   *
+   * @param {string} measurementUID The measurement uid
+   */
+  remove(measurementUID: string): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurementUID || !measurement) {
+      console.debug(`No uid provided, or unable to find measurement by uid.`);
+      return;
+    }
+
+    const source = measurement.source;
+
     this.measurements.delete(measurementUID);
+    this.isMeasurementDeletedIndividually = true;
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
-      ...eventDetails,
     });
   }
 
-  clearMeasurements() {
-    // Make a copy of the measurements
-    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
-    this.unmappedMeasurements.clear();
-    this.measurements.clear();
+  /**
+   * Remove multiple measurements at once.
+   */
+  removeMany(measurementUIDs: string[]): void {
+    const measurements = [];
+    for (const measurementUID of measurementUIDs) {
+      const measurement = this.measurements.get(measurementUID);
+
+      if (!measurementUID || !measurement) {
+        console.debug(`No uid provided, or unable to find measurement by uid.`);
+        continue;
+      }
+
+      this.measurements.delete(measurementUID);
+      measurements.push(measurement);
+    }
+    if (!measurements.length) {
+      return;
+    }
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+  }
+
+  /**
+   * Clears measurements that match the filter, defaulting to all of them.
+   * That allows, for example, clearing all of a single studies measurements
+   * without needing to clear other measurements.
+   */
+  public clearMeasurements(filter?: MeasurementFilter, metadata?: Record<string, unknown>) {
+    // Make a copy of the measurements
+    const toClear = this.getMeasurements(filter);
+    const measurements = [...toClear];
+    toClear.forEach(measurement => this.measurements.delete(measurement.uid));
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements, ...metadata });
   }
 
   /**
@@ -592,19 +734,7 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * This method calls the subscriptions for JUMP_TO_MEASUREMENT_VIEWPORT
-   * and JUMP_TO_MEASUREMENT_LAYOUT.  There are two events which are
-   * fired because there are two different items which might want to handle
-   * the event.  First, there might already be a viewport which can handle
-   * the event.  If so, then the layout doesn't need to necessarily change.
-   * This is communicated by the isConsumed value on the event itself.
-   * Otherwise, the layout itself may need to be navigated to in order
-   * to provide a viewport which can show the given measurement.
-   *
-   * When a viewport decides to apply the event, it should call the consume()
-   * method on the event, so that other listeners know they do not need to
-   * navigate.  This does NOT affect whether the layout event is fired, and
-   * merely causes it to fire the event with the isConsumed set to true.
+   * This method calls the subscription for JUMP_TO_MEASUREMENT
    */
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
@@ -614,13 +744,14 @@ class MeasurementService extends PubSubService {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
-    const consumableEvent = this.createConsumableEvent({
+    const event = {
       viewportId,
       measurement,
-    });
+    };
 
-    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
-    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
+    // A single handler will decide on which window to jump to, previously
+    // this was handled by a consumable event
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT, event);
   }
 
   _getSourceUID(name, version) {
@@ -726,6 +857,72 @@ class MeasurementService extends PubSubService {
    */
   _arrayOfObjects = obj => {
     return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
+  };
+
+  public toggleLockMeasurement(measurementUID: string): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurement) {
+      console.debug(`No measurement found for uid: ${measurementUID}`);
+      return;
+    }
+
+    measurement.isLocked = !measurement.isLocked;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+      notYetUpdatedAtSource: true,
+    });
+  }
+
+  public toggleVisibilityMeasurement(measurementUID: string, visibility?: boolean): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurement) {
+      console.debug(`No measurement found for uid: ${measurementUID}`);
+      return;
+    }
+
+    if (measurement.isVisible === visibility && visibility !== undefined) {
+      return;
+    }
+    measurement.isVisible = visibility !== undefined ? visibility : !measurement.isVisible;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+      notYetUpdatedAtSource: true,
+    });
+  }
+
+  public toggleVisibilityMeasurementMany(measurementUIDs: string[], visibility?: boolean): void {
+    return measurementUIDs.forEach(uid => this.toggleVisibilityMeasurement(uid, visibility));
+  }
+
+  public updateColorMeasurement(measurementUID: string, color: number[]): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurement) {
+      console.debug(`No measurement found for uid: ${measurementUID}`);
+      return;
+    }
+
+    measurement.color = color;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+      notYetUpdatedAtSource: true,
+    });
+  }
+
+  public setIsMeasurementDeletedIndividually = isDeletedIndividually => {
+    this.isMeasurementDeletedIndividually = isDeletedIndividually;
+  };
+
+  public getIsMeasurementDeletedIndividually = () => {
+    return this.isMeasurementDeletedIndividually;
   };
 }
 

@@ -1,7 +1,10 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
+import { ActiveThemeProvider } from '@ohif/ui-next';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
+import { registerHangingProtocolAttributes } from './hangingprotocols';
+import { HotkeysManager } from '@ohif/core';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -10,53 +13,44 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, configuration = {}, commandsManager }): void {
-  const { stateSyncService, toolbarService, cineService, viewportGridService } =
-    servicesManager.services;
+export default function init({
+  servicesManager,
+  commandsManager,
+  hotkeysManager,
+  serviceProvidersManager,
+  appConfig,
+}: withAppTypes): void {
+  const hasThemeModule =
+    Array.isArray(appConfig.customizationService) &&
+    appConfig.customizationService.some(
+      ref => typeof ref === 'string' && ref.includes('customizationModule.theme')
+    );
+
+  if (hasThemeModule) {
+    serviceProvidersManager.registerProvider('activeTheme', ActiveThemeProvider);
+  }
+  const { toolbarService, cineService, viewportGridService } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
   ]);
+
+  toolbarService.registerEventForToolbarUpdate(hotkeysManager, [
+    HotkeysManager.EVENTS.HOTKEY_PRESSED,
+  ]);
+
   // Add
-  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handlePETImageMetadata);
+  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handleScalingModules);
 
   // If the metadata for PET has changed by the user (e.g. manually changing the PatientWeight)
   // we need to recalculate the SUV Scaling Factors
-  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.SERIES_UPDATED, handlePETImageMetadata);
+  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.SERIES_UPDATED, handleScalingModules);
 
-  // viewportGridStore is a sync state which stores the entire
-  // ViewportGridService getState, by the keys `<activeStudyUID>:<protocolId>:<stageIndex>`
-  // Used to recover manual changes to the layout of a stage.
-  stateSyncService.register('viewportGridStore', { clearOnModeExit: true });
-
-  // uiStateStore is a sync state which stores the relevant
-  // UI state for the viewer
-  stateSyncService.register('uiStateStore', { clearOnModeExit: true });
-
-  // displaySetSelectorMap stores a map from
-  // `<activeStudyUID>:<displaySetSelectorId>:<matchOffset>` to
-  // a displaySetInstanceUID, used to display named display sets in
-  // specific spots within a hanging protocol and be able to remember what the
-  // user did with those named spots between stages and protocols.
-  stateSyncService.register('displaySetSelectorMap', { clearOnModeExit: true });
-
-  // Stores a map from `<activeStudyUID>:${protocolId}` to the getHPInfo results
-  // in order to recover the correct stage when returning to a Hanging Protocol.
-  stateSyncService.register('hangingProtocolStageIndexMap', {
-    clearOnModeExit: true,
-  });
-
-  // Stores a map from the to be applied hanging protocols `<activeStudyUID>:<protocolId>`
-  // to the previously applied hanging protocolStageIndexMap key, in order to toggle
-  // off the applied protocol and remember the old state.
-  stateSyncService.register('toggleHangingProtocol', { clearOnModeExit: true });
-
-  // Stores the viewports by `rows-cols` position so that when the layout
-  // changes numRows and numCols, the viewports can be remembers and then replaced
-  // afterwards.
-  stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+  // Adds extra custom attributes for use by hanging protocols
+  registerHangingProtocolAttributes({ servicesManager });
 
   // Function to process and subscribe to events for a given set of commands and listeners
+  const eventSubscriptions = [];
   const subscribeToEvents = listeners => {
     Object.entries(listeners).forEach(([event, commands]) => {
       const supportedEvents = [
@@ -65,11 +59,19 @@ export default function init({ servicesManager, configuration = {}, commandsMana
       ];
 
       if (supportedEvents.includes(event)) {
+        const subscriptionKey = `${event}_${JSON.stringify(commands)}`;
+
+        if (eventSubscriptions.includes(subscriptionKey)) {
+          return;
+        }
+
         viewportGridService.subscribe(event, eventData => {
           const viewportId = eventData?.viewportId ?? viewportGridService.getActiveViewportId();
 
           commandsManager.run(commands, { viewportId });
         });
+
+        eventSubscriptions.push(subscriptionKey);
       }
     });
   };
@@ -77,10 +79,10 @@ export default function init({ servicesManager, configuration = {}, commandsMana
   toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, state => {
     const { buttons } = state;
     for (const [id, button] of Object.entries(buttons)) {
-      const { groupId, items, listeners } = button.props;
+      const { buttonSection, items, listeners } = button.props || {};
 
       // Handle group items' listeners
-      if (groupId && items) {
+      if (buttonSection && items) {
         items.forEach(item => {
           if (item.listeners) {
             subscribeToEvents(item.listeners);
@@ -96,7 +98,7 @@ export default function init({ servicesManager, configuration = {}, commandsMana
   });
 }
 
-const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
+const handleScalingModules = ({ SeriesInstanceUID, StudyInstanceUID }) => {
   const { instances } = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
   if (!instances?.length) {
@@ -105,12 +107,40 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
 
   const modality = instances[0].Modality;
 
-  if (!modality || modality !== 'PT') {
+  const allowedModality = ['PT', 'RTDOSE'];
+
+  if (!allowedModality.includes(modality)) {
     return;
   }
 
   const imageIds = instances.map(instance => instance.imageId);
   const instanceMetadataArray = [];
+
+  if (modality === 'RTDOSE') {
+    const DoseGridScaling = instances[0].DoseGridScaling;
+    const DoseSummation = instances[0].DoseSummation;
+    const DoseType = instances[0].DoseType;
+    const DoseUnit = instances[0].DoseUnit;
+    const NumberOfFrames = instances[0].NumberOfFrames;
+    const imageId = imageIds[0];
+
+    // add scaling module to the metadata
+    // since RTDOSE is always a multiframe we should add the scaling module to each frame
+    for (let i = 0; i < NumberOfFrames; i++) {
+      const frameIndex = i + 1;
+
+      // Todo: we should support other things like wadouri, local etc
+      const newImageId = `${imageId.replace(/\/frames\/\d+$/, '')}/frames/${frameIndex}`;
+      metadataProvider.addCustomMetadata(newImageId, 'scalingModule', {
+        DoseGridScaling,
+        DoseSummation,
+        DoseType,
+        DoseUnit,
+      });
+    }
+
+    return;
+  }
 
   // try except block to prevent errors when the metadata is not correct
   try {

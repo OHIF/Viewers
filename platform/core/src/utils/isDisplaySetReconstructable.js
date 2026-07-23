@@ -10,28 +10,38 @@ const iopTolerance = 0.01;
  *
  * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
  */
-export default function isDisplaySetReconstructable(instances) {
-  if (!instances.length) {
+export default function isDisplaySetReconstructable(instances, appConfig) {
+  const definedInstances = instances?.filter(Boolean) || [];
+
+  if (!definedInstances.length) {
     return { value: false };
   }
-  const firstInstance = instances[0];
+  const firstInstance = definedInstances[0];
 
-  const isMultiframe = firstInstance.NumberOfFrames > 1;
+  const isMultiframe = (firstInstance.NumberOfFrames || 0) > 1;
 
+  if (appConfig) {
+    const rows = toNumber(firstInstance.Rows);
+    const columns = toNumber(firstInstance.Columns);
+
+    if (rows > appConfig.max3DTextureSize || columns > appConfig.max3DTextureSize) {
+      return { value: false };
+    }
+  }
   // We used to check is reconstructable modalities here, but the logic is removed
   // in favor of the calculation by metadata (orientation and positions)
 
   // Can't reconstruct if we only have one image.
-  if (!isMultiframe && instances.length === 1) {
+  if (!isMultiframe && definedInstances.length === 1) {
     return { value: false };
   }
 
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
-  if (!isMultiframe && !instances.every(instance => instance.ImagePositionPatient)) {
+  if (!isMultiframe && !definedInstances.every(instance => instance.ImagePositionPatient)) {
     return { value: false };
   }
 
-  const sortedInstances = sortInstancesByPosition(instances);
+  const sortedInstances = sortInstancesByPosition(definedInstances);
 
   return isMultiframe ? processMultiframe(sortedInstances[0]) : processSingleframe(sortedInstances);
 }

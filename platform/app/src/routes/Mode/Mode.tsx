@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef, useContext, createContext } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router';
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams, useLocation } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { ServicesManager, utils } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-import { useSearchParams } from '@hooks';
+import { utils } from '@ohif/core';
+import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
+import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
@@ -21,7 +21,7 @@ export default function ModeRoute({
   servicesManager,
   commandsManager,
   hotkeysManager,
-}) {
+}: withAppTypes) {
   const [appConfig] = useAppConfig();
 
   // Parse route params/querystring
@@ -31,6 +31,8 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  const navigate = useNavigate();
 
   mode?.onModeInit?.({
     servicesManager,
@@ -52,40 +54,38 @@ export default function ModeRoute({
   const locationRef = useRef(null);
   const isMounted = useRef(false);
 
-  // Expose the react router dom navigation.
-  history.navigate = useNavigate();
-
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
     locationRef.current = location;
   }
 
-  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const {
+    displaySetService,
+    panelService,
+    hangingProtocolService,
+    userAuthenticationService,
+    customizationService,
+  } = servicesManager.services;
 
-  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
+  const { extensions, sopClassHandlers, hangingProtocol } = mode;
 
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
+  const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {
     updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
   }
 
-  // Preserve the old array interface for hotkeys
-  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
-
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
     extensionManager.setActiveDataSource(dataSourceName);
   }
 
-  const dataSource = extensionManager.getActiveDataSource()[0];
+  const dataSource = extensionManager.getActiveDataSourceOrNull();
 
   // Only handling one route per mode for now
-  const route = mode.routes[0];
+  const route = mode.routes?.[0] ?? null;
 
   useEffect(() => {
     const loadExtensions = async () => {
@@ -96,7 +96,19 @@ export default function ModeRoute({
           await extensionManager.registerExtension(extension);
         }
       }
-      setExtensionDependenciesLoaded(true);
+
+      // Mode dependency extensions register their customization modules here,
+      // but `registerExtension` does not merge them into the customization
+      // service — that otherwise only happens later in
+      // `extensionManager.onModeEnter`. Merge them now so anything that runs
+      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+      // the defaults these extensions provide.
+      // `init` is idempotent — each extension module is merged at most once.
+      customizationService.init(extensionManager);
+
+      if (isMounted.current) {
+        setExtensionDependenciesLoaded(true);
+      }
     };
 
     loadExtensions();
@@ -130,6 +142,38 @@ export default function ModeRoute({
     };
   }, [location, ExtensionDependenciesLoaded]);
 
+  /**
+   * Validates study existence before loading the viewer.
+   * Moved from PanelStudyBrowser.tsx to ensure validation runs in all modes
+   */
+  useEffect(() => {
+    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length || !dataSource) {
+      return;
+    }
+
+    const validateStudies = async () => {
+      for (const studyInstanceUID of studyInstanceUIDs) {
+        try {
+          const qidoForStudyUID = await dataSource.query.studies.search({
+            studyInstanceUid: studyInstanceUID,
+          });
+
+          if (!qidoForStudyUID?.length) {
+            console.warn('Study not found:', studyInstanceUID);
+            navigate('/notfoundstudy');
+            return;
+          }
+        } catch (error) {
+          console.error('Error validating study:', studyInstanceUID, error);
+          navigate('/notfoundstudy');
+          return;
+        }
+      }
+    };
+
+    validateStudies();
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, dataSource, navigate]);
+
   useEffect(() => {
     if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       return;
@@ -141,7 +185,26 @@ export default function ModeRoute({
         servicesManager,
         studyInstanceUIDs,
       });
+
       if (isMounted.current) {
+        const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
+
+        // Register panels immediately so ViewerLayout's first render sees them.
+        // ResizablePanelsHook only auto-expands side panels on the initial mount;
+        // if panels are added later, the viewport grid keeps the wrong width.
+        // setupRouteInit (below) resets and re-applies them after customizations
+        // are layered on, so URL/config modules can still modify the lists.
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // Stash the layout lists for setupRouteInit to seed into the
+        // `leftPanels` / `rightPanels` customizations.
+        layoutData.panels = { leftPanels, rightPanels };
+
+        // layoutProps contains all props but leftPanels and rightPanels
+        layoutData.props = layoutProps;
+
         layoutTemplateData.current = layoutData;
         setRefresh(!refresh);
       }
@@ -153,26 +216,6 @@ export default function ModeRoute({
       layoutTemplateData.current = null;
     };
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
-
-  useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
-      return;
-    }
-
-    hotkeysManager.setDefaultHotKeys(hotkeys);
-
-    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
-
-    if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
-    } else {
-      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
-    }
-
-    return () => {
-      hotkeysManager.destroy();
-    };
-  }, [ExtensionDependenciesLoaded, hotkeys, studyInstanceUIDs]);
 
   useEffect(() => {
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
@@ -196,6 +239,56 @@ export default function ModeRoute({
         appConfig,
       });
 
+      // `extensionManager.onModeEnter` resets the customization mode scope via
+      // `customizationService.onModeEnter`; the mode scope is then layered
+      // bottom-up so the final value of every key is decided by scope
+      // precedence (global > mode > default) and application order alone:
+      //   1. the mode's own values — its layout panel lists, seeded as the
+      //      standard `leftPanels` / `rightPanels` customizations;
+      //      its toolbar/tool-group composition, seeded as the plain
+      //      `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
+      //      customizations (resolved to concrete definitions later, when the
+      //      mode's `onModeEnter` registers the toolbar); and its
+      //      `modeCustomizations` block (declared as data on the mode
+      //      instance, usually as a customization name registered at default
+      //      scope when the mode loaded, so bootstrap/global customizations
+      //      can modify the block itself before it is applied);
+      //   2. the app config / URL `mode` phase blocks — the general (`*`)
+      //      block first, then any block keyed by this mode's id / routeName.
+      const { leftPanels = [], rightPanels = [] } = layoutTemplateData.current.panels ?? {};
+      customizationService.setCustomizations({
+        leftPanels,
+        rightPanels,
+        toolbarButtons: mode.toolbarButtons ?? [],
+        toolbarSections: mode.toolbarSections ?? [],
+        toolGroupAdditions: mode.toolGroupAdditions ?? {},
+      });
+
+      const modeCustomizations =
+        typeof mode.modeCustomizations === 'string'
+          ? customizationService.getCustomization(mode.modeCustomizations)
+          : mode.modeCustomizations;
+      if (modeCustomizations) {
+        customizationService.setCustomizations(modeCustomizations);
+      }
+      customizationService.applyModeCustomizations([mode.id, mode.routeName]);
+
+      // Re-apply panels only when customizations changed the lists. When they
+      // match the layout, the panels registered in retrieveLayoutData are left
+      // in place so ViewerLayout's ResizablePanelsHook keeps the correct sizes
+      // from its one-time initial expand.
+      const resolvedLeftPanels = customizationService.getValue('leftPanels') ?? [];
+      const resolvedRightPanels = customizationService.getValue('rightPanels') ?? [];
+      const panelsChanged =
+        JSON.stringify(resolvedLeftPanels) !== JSON.stringify(leftPanels) ||
+        JSON.stringify(resolvedRightPanels) !== JSON.stringify(rightPanels);
+
+      if (panelsChanged) {
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, resolvedLeftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, resolvedRightPanels);
+      }
+
       // use the URL hangingProtocolId if it exists, otherwise use the one
       // defined in the mode configuration
       const hangingProtocolIdToUse = hangingProtocolService.getProtocolById(
@@ -203,6 +296,16 @@ export default function ModeRoute({
       )
         ? runTimeHangingProtocolId
         : hangingProtocol;
+
+      // Determine the index of the stageId if the hangingProtocolIdToUse is defined
+      const stageIndex = Array.isArray(hangingProtocolIdToUse)
+        ? -1
+        : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
+            stageId: runTimeStageId || undefined,
+          });
+      // Ensure that the stage index is never negative
+      // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
+      const stageIndexToUse = Math.max(0, stageIndex);
 
       // Sets the active hanging protocols - if hangingProtocol is undefined,
       // resets to default.  Done before the onModeEnter to allow the onModeEnter
@@ -215,6 +318,10 @@ export default function ModeRoute({
         commandsManager,
         appConfig,
       });
+
+      // Move hotkeys setup here, after onModeEnter
+      const hotkeys = customizationService.getCustomization('ohif.hotkeyBindings');
+      hotkeysManager.setDefaultHotKeys(hotkeys);
 
       /**
        * The next line should get all the query parameters provided by the URL
@@ -230,22 +337,21 @@ export default function ModeRoute({
       const filters =
         Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
           const lowerVal = val.toLowerCase();
-          if (lowerVal !== 'studyinstanceuids') {
-            // Not sure why the case matters here - it doesn't in the URL
-            if (lowerVal === 'seriesinstanceuid') {
-              const seriesUIDs = getSplitParam(lowerVal, query);
-              return {
-                ...acc,
-                seriesInstanceUID: seriesUIDs,
-              };
-            }
-
-            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          // Not sure why the case matters here - it doesn't in the URL
+          if (lowerVal === 'seriesinstanceuids' || lowerVal === 'seriesinstanceuid') {
+            const seriesUIDs = getSplitParam(lowerVal, query);
+            return {
+              ...acc,
+              seriesInstanceUID: seriesUIDs,
+            };
           }
+          return { ...acc, [val]: getSplitParam(lowerVal, query) };
         }, {}) ?? {};
 
+      let unsubs;
+
       if (route.init) {
-        return await route.init(
+        unsubs = await route.init(
           {
             servicesManager,
             extensionManager,
@@ -254,7 +360,8 @@ export default function ModeRoute({
             dataSource,
             filters,
           },
-          hangingProtocolIdToUse
+          hangingProtocolIdToUse,
+          stageIndexToUse
         );
       }
 
@@ -266,13 +373,20 @@ export default function ModeRoute({
           filters,
           appConfig,
         },
-        hangingProtocolIdToUse
+        hangingProtocolIdToUse,
+        stageIndexToUse
       );
     };
 
     let unsubscriptions;
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
+
+      mode?.onSetupRouteComplete?.({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
     });
 
     return () => {
@@ -288,11 +402,16 @@ export default function ModeRoute({
       } catch (e) {
         console.warn('mode exit failure', e);
       }
+      // Clean up hotkeys
+      hotkeysManager.destroy();
+
       // The unsubscriptions must occur before the extension onModeExit
       // in order to prevent exceptions during cleanup caused by spurious events
-      unsubscriptions.forEach(unsub => {
-        unsub();
-      });
+      if (unsubscriptions) {
+        unsubscriptions.forEach(unsub => {
+          unsub();
+        });
+      }
       // The extension manager must be called after the mode, this is
       // expected to cleanup the state to a standard setup.
       extensionManager.onModeExit();

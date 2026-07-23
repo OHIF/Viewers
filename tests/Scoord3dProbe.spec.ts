@@ -1,0 +1,223 @@
+import { Locator } from '@playwright/test';
+import {
+  checkForScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
+
+async function expectNonEmptyDetailLines(lines: Locator) {
+  const lineCount = await lines.count();
+  expect(lineCount).toBeGreaterThan(0);
+  for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+    await expect(lines.nth(lineIndex)).not.toBeEmpty();
+  }
+}
+
+test.beforeEach(async ({ page }) => {
+  const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
+  const mode = 'viewer';
+
+  await visitStudy(page, studyInstanceUID, mode, 5000);
+
+  // Log the actual URL that was loaded
+  const currentUrl = page.url();
+  console.log(`✅ Actual page URL: ${currentUrl}\n`);
+
+  // Remove any webpack dev server overlays that might be blocking interactions
+  await page.evaluate(() => {
+    const overlay = document.getElementById('webpack-dev-server-client-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  });
+});
+
+test('should hydrate SCOORD3D probe measurements correctly', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  // Navigate to the tracked measurements panel
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
+
+  // Double-click on the study browser thumbnail to load the SR
+  await leftPanelPageObject.loadSeriesByModality('SR');
+
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
+    state: 'visible',
+    timeout: 15000,
+  });
+
+  const activeViewport = await viewportPageObject.active;
+
+  // Take screenshot before hydration - use viewport locator instead of full page
+  await checkForScreenshot(
+    page,
+    activeViewport.pane,
+    screenShotPaths.scoord3dProbe.scoord3dProbePreHydration
+  );
+
+  // Zoom in to better see the measurements
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = (window as any).cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setZoom(4);
+      viewport.render();
+    }
+  });
+  await waitForViewportsRendered(page);
+
+  // Click the hydrate button to load the SCOORD3D probe measurements
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+
+  // SR hydration runs through the tracking state machine after the button click.
+  // Waiting for "rendered" immediately can resolve on the old viewport before
+  // that async work starts, so first wait for the hydrated measurements and
+  // target series to be observable, then wait for rendering to complete.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0, {
+    timeout: 30000,
+  });
+  await expect(activeViewport.overlayText.topLeft.locator).toContainText('t2_tse_sag', {
+    timeout: 30000,
+  });
+  await waitForViewportsRendered(page, { timeout: 30000 });
+
+  // Take screenshot after hydration showing the probe measurements - use viewport locator
+  await checkForScreenshot(
+    page,
+    activeViewport.pane,
+    screenShotPaths.scoord3dProbe.scoord3dProbePostHydration
+  );
+
+  // Verify the measurements list has the correct probe measurements
+  expect(await rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0);
+  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+
+  for (let i = 0; i < rowCount; i++) {
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
+  }
+
+  // Test jumping to a specific measurement by scrolling and clicking
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = (window as any).cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.scroll(20);
+      viewport.render();
+    }
+  });
+  await waitForViewportsRendered(page, { waitVolumeLoad: false });
+
+  // Click on a data row to jump to the measurement
+  const jumpRenderCycle = waitForViewportRenderCycle(page, {
+    renderedTimeout: 30000,
+    waitVolumeLoad: false,
+  });
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
+  await jumpRenderCycle;
+  await waitForPaintToSettle(page);
+
+  await checkForScreenshot(
+    page,
+    activeViewport.pane,
+    screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
+  );
+});
+
+test('should display SCOORD3D probe measurements correctly', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  // First hydrate the SR to load the measurements
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
+  await leftPanelPageObject.loadSeriesByModality('SR');
+
+  // Wait for the hydrate button to be visible and clickable
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
+    state: 'visible',
+    timeout: 15000,
+  });
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+
+  const activeViewport = await viewportPageObject.active;
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0, {
+    timeout: 30000,
+  });
+  await expect(activeViewport.overlayText.topLeft.locator).toContainText('t2_tse_sag', {
+    timeout: 30000,
+  });
+  await waitForViewportsRendered(page, { timeout: 30000 });
+
+  // Zoom to show the probe measurements clearly
+  await page.evaluate(() => {
+    const cornerstone = (window as any).cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setZoom(3);
+      viewport.render();
+    }
+  });
+  await waitForViewportsRendered(page);
+
+  // Take screenshot showing the SCOORD3D probe measurements rendered correctly - use viewport locator
+  await checkForScreenshot(
+    page,
+    activeViewport.pane,
+    screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly
+  );
+
+  // Verify the measurements list has the correct probe measurements and not others
+  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+  expect(rowCount).toBeGreaterThan(0);
+
+  // Verify that the measurements are probe measurements (not other types like rectangle)
+  for (let i = 0; i < rowCount; i++) {
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).not.toBeEmpty();
+    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
+  }
+});

@@ -1,5 +1,12 @@
 {
   "Primary": "Primary",
   "Recent": "Recent",
-  "All": "All"
+  "All": "All",
+  "Tracked Series": "Tracked Series",
+  "Tag Browser": "Tag Browser",
+  "Add as Layer": "Add as Layer",
+  "Series Number": "Series Number",
+  "Series Date": "Series Date",
+  "Thumbnail Double Click": "Thumbnail Double Click",
+  "The selected display sets could not be added to the viewport.": "The selected display sets could not be added to the viewport."
 }

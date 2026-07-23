@@ -1,0 +1,20 @@
+{
+  "AccessionNumber": "Учётный номер",
+  "ClearFilters": "Сбросить фильтры",
+  "Description": "Описание",
+  "Empty": "Пусто",
+  "Filter list to 100 studies or less to enable sorting": "Отфильтруйте список до 100 исследований или меньше для включения сортировки",
+  "Instances": "Экземпляры",
+  "Modality": "Модальность",
+  "MRN": "Мед. карта #",
+  "Next": "Далее >",
+  "No studies available": "Исследований не найдено",
+  "Number of studies": "Количество исследований",
+  "Page": "Страница",
+  "PatientName": "Пациент",
+  "Previous": "< Назад",
+  "Results per page": "Строк на странице",
+  "StudyDate": "Дата исследования",
+  "StudyList": "Список исследований",
+  "Upload": "Загрузить"
+}

@@ -1,19 +1,19 @@
 import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
-import { AppConfig } from '../types/AppConfig';
-import { PubSubService, ServiceProvidersManager, ServicesManager } from '../services';
+import { PubSubService, ServiceProvidersManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
-import { DataSourceDefinition } from '../types';
+import type { DataSourceDefinition } from '../types';
+import type AppTypes from '../types/AppTypes';
 
 /**
  * This is the arguments given to create the extension.
  */
 export interface ExtensionConstructor {
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   commandsManager: CommandsManager;
   hotkeysManager: HotkeysManager;
-  appConfig: AppConfig;
+  appConfig: AppTypes.Config;
 }
 
 /**
@@ -28,9 +28,10 @@ export type ExtensionConfiguration = Record<string, unknown>;
  */
 export interface ExtensionParams extends ExtensionConstructor {
   extensionManager: ExtensionManager;
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   configuration?: ExtensionConfiguration;
+  peerImport: (moduleId: string) => Promise<any>;
 }
 
 /**
@@ -48,8 +49,9 @@ export interface Extension {
   getCustomizationModule?: (p: ExtensionParams) => unknown;
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
   getToolbarModule?: (p: ExtensionParams) => unknown;
-  onModeEnter?: () => void;
-  onModeExit?: () => void;
+  getPanelModule?: (p: ExtensionParams) => unknown;
+  onModeEnter?: (p: AppTypes) => void;
+  onModeExit?: (p: AppTypes) => void;
 }
 
 export type ExtensionRegister = {
@@ -71,7 +73,7 @@ export default class ExtensionManager extends PubSubService {
   public static readonly MODULE_TYPES = MODULE_TYPES;
 
   private _commandsManager: CommandsManager;
-  private _servicesManager: ServicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
   private _hotkeysManager: HotkeysManager;
   private _serviceProvidersManager: ServiceProvidersManager;
   private modulesMap: Record<string, unknown>;
@@ -85,8 +87,7 @@ export default class ExtensionManager extends PubSubService {
   };
   private dataSourceMap: Record<string, any>;
   private dataSourceDefs: Record<string, any>;
-  private defaultDataSourceName: string;
-  private activeDataSource: string;
+  private _activeDataSourceName: string;
 
   constructor({
     commandsManager,
@@ -114,20 +115,31 @@ export default class ExtensionManager extends PubSubService {
     this.dataSourceMap = {};
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
-    this.activeDataSource = appConfig.defaultDataSourceName;
+    this._activeDataSourceName = appConfig.defaultDataSourceName;
+    this.peerImport = appConfig.peerImport;
   }
 
   public setActiveDataSource(dataSource: string): void {
-    if (this.activeDataSource === dataSource) {
+    if (this._activeDataSourceName === dataSource) {
       return;
     }
 
-    this.activeDataSource = dataSource;
+    this._activeDataSourceName = dataSource;
 
     this._broadcastEvent(
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-      this.dataSourceDefs[this.activeDataSource]
+      this.dataSourceDefs[this._activeDataSourceName]
     );
+  }
+
+  public getRegisteredExtensionIds() {
+    return [...this.registeredExtensionIds];
+  }
+
+  private getUniqueServicesList(servicesManager: AppTypes.ServicesManager) {
+    // Make sure only one service instance is returned because almost all services are
+    // registered with different keys (eg: StudyPrefetcherService and studyPrefetcherService)
+    return Array.from(new Set(Object.values(servicesManager.services)));
   }
 
   /**
@@ -144,11 +156,12 @@ export default class ExtensionManager extends PubSubService {
       _hotkeysManager,
       _extensionLifeCycleHooks,
     } = this;
+    const services = this.getUniqueServicesList(_servicesManager);
 
     // The onModeEnter of the service must occur BEFORE the extension
     // onModeEnter in order to reset the state to a standard state
     // before the extension restores and cached data.
-    for (const service of Object.values(_servicesManager.services)) {
+    for (const service of services) {
       service?.onModeEnter?.();
     }
 
@@ -160,6 +173,7 @@ export default class ExtensionManager extends PubSubService {
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
           hotkeysManager: _hotkeysManager,
+          extensionManager: this,
         });
       }
     });
@@ -168,6 +182,7 @@ export default class ExtensionManager extends PubSubService {
   public onModeExit(): void {
     const { registeredExtensionIds, _servicesManager, _commandsManager, _extensionLifeCycleHooks } =
       this;
+    const services = this.getUniqueServicesList(_servicesManager);
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -182,7 +197,7 @@ export default class ExtensionManager extends PubSubService {
 
     // The service onModeExit calls must occur after the extension ones
     // so that extension ones can store/restore data.
-    for (const service of Object.values(_servicesManager.services)) {
+    for (const service of services) {
       try {
         service?.onModeExit?.();
       } catch (e) {
@@ -356,17 +371,25 @@ export default class ExtensionManager extends PubSubService {
   };
 
   getDataSources = dataSourceName => {
-    if (dataSourceName === undefined) {
+    if (!dataSourceName) {
       // Default to the activeDataSource
-      dataSourceName = this.activeDataSource;
+      dataSourceName = this._activeDataSourceName;
     }
 
     // Note: this currently uses the data source name, which feels weird...
     return this.dataSourceMap[dataSourceName];
   };
 
+  getDataSourceInstance = dataSourceName => {
+    return this.dataSourceMap[dataSourceName][0];
+  };
+
   getActiveDataSource = () => {
-    return this.dataSourceMap[this.activeDataSource];
+    return this.dataSourceMap[this._activeDataSourceName];
+  };
+
+  getActiveDataSourceOrNull = () => {
+    return this.dataSourceMap[this._activeDataSourceName]?.[0] ?? null;
   };
 
   /**
@@ -379,7 +402,7 @@ export default class ExtensionManager extends PubSubService {
   getDataSourceDefinition = dataSourceName => {
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
-      dataSourceName = this.activeDataSource;
+      dataSourceName = this._activeDataSourceName;
     }
 
     return this.dataSourceDefs[dataSourceName];
@@ -389,7 +412,37 @@ export default class ExtensionManager extends PubSubService {
    * Gets the data source definition for the active data source.
    */
   getActiveDataSourceDefinition = () => {
-    return this.getDataSourceDefinition(this.activeDataSource);
+    return this.getDataSourceDefinition(this._activeDataSourceName);
+  };
+
+  /**
+   * Gets a formatted list of data sources suitable for UI display/selection.
+   * Only returns data sources that support STOW or have a WADO root.
+   * @returns Array of data source options with value, label, and placeholder
+   */
+  getDataSourcesForUI = () => {
+    // If multi-select export is not allowed, return empty list
+    if (this._appConfig?.allowMultiSelectExport === false) {
+      return [];
+    }
+
+    const inactiveDataSourceNames = Object.keys(this.dataSourceMap).filter(ds => {
+      const configuration = this.dataSourceDefs[ds]?.configuration;
+      const isNotActiveDataSource =
+        this.dataSourceDefs[ds].sourceName !== this._activeDataSourceName;
+      const supportsStowOrWado = configuration?.supportsStow ?? configuration?.wadoRoot;
+      return supportsStowOrWado && isNotActiveDataSource;
+    });
+
+    const allDatasourcesForUI = [this._activeDataSourceName, ...inactiveDataSourceNames].map(
+      ds => ({
+        value: ds,
+        label: ds,
+        placeHolder: ds,
+      })
+    );
+
+    return allDatasourcesForUI;
   };
 
   /**
@@ -424,7 +477,7 @@ export default class ExtensionManager extends PubSubService {
 
       return extensionModule;
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
       throw new Error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
@@ -511,7 +564,7 @@ export default class ExtensionManager extends PubSubService {
     dataSourceDef.configuration = dataSourceConfiguration;
     this._createDataSourceInstance(dataSourceDef);
 
-    if (this.activeDataSource === dataSourceName) {
+    if (this._activeDataSourceName === dataSourceName) {
       // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
       this._broadcastEvent(ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED, dataSourceDef);
     }
@@ -562,6 +615,24 @@ export default class ExtensionManager extends PubSubService {
   }
 
   /**
+   * Registers a commands module produced outside the extension registration
+   * path — e.g. a mode's `getCommandsModule`, registered at app init so its
+   * commands are available before any mode route is entered (worklist time).
+   *
+   * @param commandsModule - as returned by a `getCommandsModule` function
+   * @param defaultContext - context used when the module does not declare one
+   */
+  public registerCommandsModule(
+    commandsModule: CommandsModule,
+    defaultContext: string = 'VIEWER'
+  ): void {
+    this._initCommandsModule({
+      ...commandsModule,
+      defaultContext: commandsModule.defaultContext || defaultContext,
+    });
+  }
+
+  /**
    *
    * @private
    * @param {Object[]} commandDefinitions
@@ -580,7 +651,10 @@ export default class ExtensionManager extends PubSubService {
     }
 
     Object.keys(definitions).forEach(commandName => {
-      const commandDefinition = definitions[commandName];
+      let commandDefinition = definitions[commandName];
+      if (typeof commandDefinition === 'function') {
+        commandDefinition = { commandFn: commandDefinition };
+      }
       const commandHasContextThatDoesNotExist =
         commandDefinition.context && !this._commandsManager.getContext(commandDefinition.context);
 
@@ -595,6 +669,14 @@ export default class ExtensionManager extends PubSubService {
       );
     });
   };
+
+  public get appConfig() {
+    return this._appConfig;
+  }
+
+  public get activeDataSourceName() {
+    return this._activeDataSourceName;
+  }
 }
 
 /**

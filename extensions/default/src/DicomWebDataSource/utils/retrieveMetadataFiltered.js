@@ -8,7 +8,6 @@ import RetrieveMetadata from '../wado/retrieveMetadata';
  * @param {*} enableStudyLazyLoad Whether the study metadata should be loaded asynchronously
  * @param {object} filters Object containing filters to be applied on retrieve metadata process
  * @param {string} [filters.seriesInstanceUID] Series instance uid to filter results against
- * @param {array} [filters.SeriesInstanceUIDs] Series instance uids to filter results against
  * @param {function} [sortCriteria] Sort criteria function
  * @param {function} [sortFunction] Sort function
  *
@@ -22,10 +21,10 @@ function retrieveMetadataFiltered(
   sortCriteria,
   sortFunction
 ) {
-  const { SeriesInstanceUIDs } = filters;
+  const { seriesInstanceUID } = filters;
 
   return new Promise((resolve, reject) => {
-    const promises = SeriesInstanceUIDs.map(uid => {
+    const promises = seriesInstanceUID.map(uid => {
       const seriesSpecificFilters = Object.assign({}, filters, {
         seriesInstanceUID: uid,
       });
@@ -40,16 +39,22 @@ function retrieveMetadataFiltered(
       );
     });
 
-    Promise.all(promises).then(results => {
-      const aggregatedResult = { preLoadData: [], promises: [] };
+    if (enableStudyLazyLoad === true) {
+      Promise.all(promises).then(results => {
+        const aggregatedResult = { preLoadData: [], promises: [] };
 
-      results.forEach(({ preLoadData, promises }) => {
-        aggregatedResult.preLoadData = aggregatedResult.preLoadData.concat(preLoadData);
-        aggregatedResult.promises = aggregatedResult.promises.concat(promises);
-      });
+        results.forEach(({ preLoadData, promises }) => {
+          aggregatedResult.preLoadData = aggregatedResult.preLoadData.concat(preLoadData);
+          aggregatedResult.promises = aggregatedResult.promises.concat(promises);
+        });
 
-      resolve(aggregatedResult);
-    }, reject);
+        resolve(aggregatedResult);
+      }, reject);
+    } else {
+      Promise.all(promises).then(results => {
+        resolve(results.flat());
+      }, reject);
+    }
   });
 }
 

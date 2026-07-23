@@ -1,15 +1,18 @@
 import React, { ReactElement, useCallback, useState, useEffect } from 'react';
 import { VolumeRenderingQualityProps } from '../../types/ViewportPresets';
+import { Numeric } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeRenderingQuality({
   volumeRenderingQualityRange,
-  commandsManager,
-  serviceManager,
   viewportId,
 }: VolumeRenderingQualityProps): ReactElement {
-  const { cornerstoneViewportService } = serviceManager.services;
+  const { servicesManager, commandsManager } = useSystem();
+  const { cornerstoneViewportService } = servicesManager.services;
   const { min, max, step } = volumeRenderingQualityRange;
   const [quality, setQuality] = useState(null);
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   const onChange = useCallback(
     (value: number) => {
@@ -21,11 +24,6 @@ export function VolumeRenderingQuality({
     },
     [commandsManager, viewportId]
   );
-
-  const calculateBackground = value => {
-    const percentage = ((value - 0) / (1 - 0)) * 100;
-    return `linear-gradient(to right, #5acce6 0%, #5acce6 ${percentage}%, #3a3f99 ${percentage}%, #3a3f99 100%)`;
-  };
 
   useEffect(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -41,29 +39,26 @@ export function VolumeRenderingQuality({
       setQuality(Math.sqrt(averageSpacing / (sampleDistance * 0.5)));
     }
   }, [cornerstoneViewportService, viewportId]);
+
   return (
-    <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
-        <label
-          className="block text-white"
-          htmlFor="volume"
-        >
-          Quality
-        </label>
-        {quality !== null && (
-          <input
-            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
-            value={quality}
-            id="volume"
-            max={max}
+    <div className="my-1 mt-2 flex flex-col space-y-2">
+      {quality !== null && (
+        <div className="w-full pl-2 pr-1">
+          <Numeric.Container
+            mode="singleRange"
             min={min}
-            type="range"
+            max={max}
             step={step}
-            onChange={e => onChange(parseInt(e.target.value, 10))}
-            style={{ background: calculateBackground((quality - min) / (max - min)) }}
-          />
-        )}
-      </div>
-    </>
+            value={quality}
+            onChange={onChange}
+          >
+            <div className="flex flex-row items-center">
+              <Numeric.Label className="w-16">{t('Quality')}</Numeric.Label>
+              <Numeric.SingleRange sliderClassName="mx-2 flex-grow" />
+            </div>
+          </Numeric.Container>
+        </div>
+      )}
+    </div>
   );
 }

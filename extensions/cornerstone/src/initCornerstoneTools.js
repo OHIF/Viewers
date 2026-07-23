@@ -1,13 +1,15 @@
 import {
   PanTool,
   WindowLevelTool,
+  SegmentBidirectionalTool,
   StackScrollTool,
-  StackScrollMouseWheelTool,
+  PlanarRotateTool,
+  VolumeRotateTool,
   ZoomTool,
-  VolumeRotateMouseWheelTool,
   MIPJumpToClickTool,
   LengthTool,
   RectangleROITool,
+  RectangleROIThresholdTool,
   EllipticalROITool,
   CircleROITool,
   BidirectionalTool,
@@ -16,38 +18,71 @@ import {
   ProbeTool,
   AngleTool,
   CobbAngleTool,
-  PlanarFreehandROITool,
   MagnifyTool,
   CrosshairsTool,
-  SegmentationDisplayTool,
+  RectangleScissorsTool,
+  SphereScissorsTool,
+  CircleScissorsTool,
+  BrushTool,
+  PaintFillTool,
   init,
   addTool,
   annotation,
   ReferenceLinesTool,
   TrackballRotateTool,
-  CircleScissorsTool,
-  RectangleScissorsTool,
-  SphereScissorsTool,
+  AdvancedMagnifyTool,
+  UltrasoundDirectionalTool,
+  UltrasoundPleuraBLineTool,
+  PlanarFreehandROITool,
+  PlanarFreehandContourSegmentationTool,
+  SplineROITool,
+  LivewireContourTool,
+  OrientationMarkerTool,
+  WindowLevelRegionTool,
+  SegmentSelectTool,
+  ClickSegmentTool,
+  SegmentLabelTool,
+  LivewireContourSegmentationTool,
+  SculptorTool,
+  SplineContourSegmentationTool,
+  LabelMapEditWithContourTool,
 } from '@cornerstonejs/tools';
+import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
+import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
+  LabelmapSlicePropagationTool.isAnnotation = false;
+  MarkerLabelmapTool.isAnnotation = false;
   ReferenceLinesTool.isAnnotation = false;
+  AdvancedMagnifyTool.isAnnotation = false;
+  PlanarFreehandContourSegmentationTool.isAnnotation = false;
 
-  init(configuration);
+  init({
+    addons: {
+      polySeg,
+    },
+    computeWorker: {
+      autoTerminateOnIdle: {
+        enabled: false,
+      },
+    },
+  });
   addTool(PanTool);
+  addTool(SegmentBidirectionalTool);
   addTool(WindowLevelTool);
-  addTool(StackScrollMouseWheelTool);
   addTool(StackScrollTool);
+  addTool(PlanarRotateTool);
+  addTool(VolumeRotateTool);
   addTool(ZoomTool);
   addTool(ProbeTool);
-  addTool(VolumeRotateMouseWheelTool);
   addTool(MIPJumpToClickTool);
   addTool(LengthTool);
   addTool(RectangleROITool);
+  addTool(RectangleROIThresholdTool);
   addTool(EllipticalROITool);
   addTool(CircleROITool);
   addTool(BidirectionalTool);
@@ -55,18 +90,35 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(DragProbeTool);
   addTool(AngleTool);
   addTool(CobbAngleTool);
-  addTool(PlanarFreehandROITool);
   addTool(MagnifyTool);
   addTool(CrosshairsTool);
-  addTool(SegmentationDisplayTool);
+  addTool(RectangleScissorsTool);
+  addTool(SphereScissorsTool);
+  addTool(CircleScissorsTool);
+  addTool(BrushTool);
+  addTool(PaintFillTool);
   addTool(ReferenceLinesTool);
   addTool(CalibrationLineTool);
   addTool(TrackballRotateTool);
-  addTool(CircleScissorsTool);
-  addTool(RectangleScissorsTool);
-  addTool(SphereScissorsTool);
   addTool(ImageOverlayViewerTool);
-
+  addTool(AdvancedMagnifyTool);
+  addTool(UltrasoundDirectionalTool);
+  addTool(UltrasoundPleuraBLineTool);
+  addTool(PlanarFreehandROITool);
+  addTool(SplineROITool);
+  addTool(LivewireContourTool);
+  addTool(OrientationMarkerTool);
+  addTool(WindowLevelRegionTool);
+  addTool(PlanarFreehandContourSegmentationTool);
+  addTool(SegmentSelectTool);
+  addTool(SegmentLabelTool);
+  addTool(LabelmapSlicePropagationTool);
+  addTool(MarkerLabelmapTool);
+  addTool(ClickSegmentTool);
+  addTool(LivewireContourSegmentationTool);
+  addTool(SculptorTool);
+  addTool(SplineContourSegmentationTool);
+  addTool(LabelMapEditWithContourTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -87,23 +139,24 @@ const toolNames = {
   ArrowAnnotate: ArrowAnnotateTool.toolName,
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
-  StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,
   Zoom: ZoomTool.toolName,
-  VolumeRotateMouseWheel: VolumeRotateMouseWheelTool.toolName,
+  PlanarRotate: PlanarRotateTool.toolName,
+  VolumeRotate: VolumeRotateTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
   DragProbe: DragProbeTool.toolName,
   Probe: ProbeTool.toolName,
   RectangleROI: RectangleROITool.toolName,
+  RectangleROIThreshold: RectangleROIThresholdTool.toolName,
   EllipticalROI: EllipticalROITool.toolName,
   CircleROI: CircleROITool.toolName,
   Bidirectional: BidirectionalTool.toolName,
   Angle: AngleTool.toolName,
   CobbAngle: CobbAngleTool.toolName,
-  PlanarFreehandROI: PlanarFreehandROITool.toolName,
   Magnify: MagnifyTool.toolName,
   Crosshairs: CrosshairsTool.toolName,
-  SegmentationDisplay: SegmentationDisplayTool.toolName,
+  Brush: BrushTool.toolName,
+  PaintFill: PaintFillTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
   CalibrationLine: CalibrationLineTool.toolName,
   TrackballRotateTool: TrackballRotateTool.toolName,
@@ -111,6 +164,25 @@ const toolNames = {
   RectangleScissors: RectangleScissorsTool.toolName,
   SphereScissors: SphereScissorsTool.toolName,
   ImageOverlayViewer: ImageOverlayViewerTool.toolName,
+  AdvancedMagnify: AdvancedMagnifyTool.toolName,
+  UltrasoundDirectional: UltrasoundDirectionalTool.toolName,
+  UltrasoundAnnotation: UltrasoundPleuraBLineTool.toolName,
+  SplineROI: SplineROITool.toolName,
+  LivewireContour: LivewireContourTool.toolName,
+  PlanarFreehandROI: PlanarFreehandROITool.toolName,
+  OrientationMarker: OrientationMarkerTool.toolName,
+  WindowLevelRegion: WindowLevelRegionTool.toolName,
+  PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
+  SegmentBidirectional: SegmentBidirectionalTool.toolName,
+  SegmentSelect: SegmentSelectTool.toolName,
+  SegmentLabel: SegmentLabelTool.toolName,
+  LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
+  MarkerLabelmap: MarkerLabelmapTool.toolName,
+  ClickSegment: ClickSegmentTool.toolName,
+  LivewireContourSegmentation: LivewireContourSegmentationTool.toolName,
+  SculptorTool: SculptorTool.toolName,
+  SplineContourSegmentation: SplineContourSegmentationTool.toolName,
+  LabelMapEditWithContourTool: LabelMapEditWithContourTool.toolName,
 };
 
 export { toolNames };

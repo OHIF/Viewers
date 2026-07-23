@@ -1,5 +1,5 @@
 .tooltip {
-  @apply absolute z-10;
+  @apply absolute z-20;
 }
 
 /* TOOLTIP WORKAROUND FOR ARROW UP */

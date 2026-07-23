@@ -1,0 +1,44 @@
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import { press } from './utils/keyboardUtils';
+import { assertNumberOfModalityLoadBadges } from './utils/assertions';
+
+test.beforeEach(async ({ page }) => {
+  const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
+  const mode = 'segmentation';
+  await visitStudy(page, studyInstanceUID, mode, 2000);
+});
+
+test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT does NOT reference', async ({
+  page,
+  viewportPageObject,
+}) => {
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
+    .dataOverlay;
+  await dataOverlayPageObject.toggle();
+  await dataOverlayPageObject.addSegmentation('Contours on PET');
+
+  // Adding an overlay should not show the LOAD button.
+  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+
+  // Hide the overlay menu.
+  await dataOverlayPageObject.toggle();
+
+  await page.waitForTimeout(5000);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage
+  );
+
+  // Navigate to the middle image of the default viewport.
+  await press({ page, key: 'ArrowDown', nTimes: 23 });
+
+  await page.waitForTimeout(5000);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage
+  );
+});

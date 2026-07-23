@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "Le nom du fichier ne peut pas être vide.",
+  "fileType": "Type de fichier",
+  "filename": "Nom du fichier",
+  "formTitle": "Veuillez préciser les dimensions, le nom de fichier et le type souhaité pour l'image exportée.",
+  "imageHeight": "Hauteur de l'image (px)",
+  "imagePreview": "Aperçu de l'image",
+  "imageWidth": "Largeur de l'image (px)",
+  "keepAspectRatio": "Conserver les proportions",
+  "loadingPreview": "Chargement de l'aperçu de l'image...",
+  "minHeightError": "La hauteur minimale autorisée est de 100 px.",
+  "minWidthError": "La largeur minimale autorisée est de 100 px.",
+  "showAnnotations": "Afficher les annotations"
+}

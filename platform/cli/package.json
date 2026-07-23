@@ -1,6 +1,6 @@
 {
   "name": "@ohif/cli",
-  "version": "3.8.0-beta.67",
+  "version": "3.14.0-beta.0",
   "description": "A CLI to bootstrap new OHIF extension or mode",
   "type": "module",
   "main": "src/index.js",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -20,21 +20,20 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.23.2",
-    "axios": "^0.26.1",
-    "chalk": "^5.0.0",
-    "execa": "^6.0.0",
-    "gitignore": "^0.7.0",
-    "inquirer": "^8.2.0",
-    "listr": "^0.14.3",
-    "mustache": "^4.2.0",
-    "ncp": "^2.0.0",
-    "node-fetch": "^3.1.1",
-    "pkg-install": "^1.0.0",
-    "registry-url": "^6.0.0",
-    "spdx-license-list": "^6.4.0",
-    "util": "^0.12.4",
-    "yarn-programmatic": "^0.1.2"
+    "@babel/core": "7.29.7",
+    "axios": "1.13.5",
+    "chalk": "5.4.1",
+    "execa": "8.0.1",
+    "gitignore": "0.7.0",
+    "inquirer": "8.2.6",
+    "listr": "0.14.3",
+    "mustache": "4.2.0",
+    "ncp": "2.0.0",
+    "node-fetch": "3.3.2",
+    "pkg-install": "1.0.0",
+    "registry-url": "6.0.1",
+    "spdx-license-list": "6.10.0",
+    "util": "0.12.5"
   },
   "files": [
     "bin/",

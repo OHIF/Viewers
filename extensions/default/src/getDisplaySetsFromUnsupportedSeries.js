@@ -6,8 +6,20 @@ import { DisplaySetMessage, DisplaySetMessageList } from '@ohif/core';
 export default function getDisplaySetsFromUnsupportedSeries(instances) {
   const imageSet = new ImageSet(instances);
   const messages = new DisplaySetMessageList();
-  messages.addMessage(DisplaySetMessage.CODES.UNSUPPORTED_DISPLAYSET);
   const instance = instances[0];
+
+  if (!instances.length) {
+    messages.addMessage(DisplaySetMessage.CODES.NO_VALID_INSTANCES);
+  } else {
+    const sopClassUid = instance.SOPClassUID;
+    if (sopClassUid) {
+      messages.addMessage(DisplaySetMessage.CODES.UNSUPPORTED_SOP_CLASS_UID, {
+        sopClassUid,
+      });
+    } else {
+      messages.addMessage(DisplaySetMessage.CODES.MISSING_SOP_CLASS_UID);
+    }
+  }
 
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
@@ -20,7 +32,8 @@ export default function getDisplaySetsFromUnsupportedSeries(instances) {
     SOPClassUID: instance.SOPClassUID,
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
-    numImageFrames: instances.length,
+    instances,
+    instance: instances[instance.length - 1],
     unsupported: true,
     SOPClassHandlerId: 'unsupported',
     isReconstructable: false,

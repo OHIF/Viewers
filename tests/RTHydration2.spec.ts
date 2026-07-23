@@ -1,0 +1,53 @@
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+
+test.beforeEach(async ({ page }) => {
+  const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
+  const mode = 'viewer';
+  await visitStudy(page, studyInstanceUID, mode, 2000);
+});
+
+test('should hydrate RT reports correctly', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydration2.rtPreHydration
+  );
+  // wait for 3 seconds
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setZoom(4);
+      viewport.render();
+    }
+  });
+
+  await page.waitForTimeout(3000);
+
+  // should preserve zoom and pan and scroll position after hydration
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydration.rtPostHydration
+  );
+});

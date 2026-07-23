@@ -8,7 +8,7 @@ import { Presentations } from '../../types/Presentation';
  * updating the viewport.
  */
 export interface IViewportService {
-  servicesManager: unknown;
+  servicesManager: AppTypes.ServicesManager;
   hangingProtocolService: unknown;
   renderingEngine: unknown;
   viewportGridResizeObserver: unknown;
@@ -35,9 +35,8 @@ export interface IViewportService {
   /**
    * It creates  a resize observer for the viewport element, and observes
    * the element for resizing events
-   * @param {*} elementRef
    */
-  resize(isGridResize: boolean): void;
+  resize(): void;
   /**
    * Removes the viewport from cornerstone, and destroys the rendering engine
    */

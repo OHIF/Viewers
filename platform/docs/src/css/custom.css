@@ -1,3 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* OHIF Theme */
+
+@layer base {
+  :root {
+    --highlight: 191 74% 63%;
+    --neutral: 213 22% 59%;
+    --neutral-light: 214 69% 81%;
+    --neutral-dark: 214 16% 21%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 234 64% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 219 90% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 214 98% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 214 65% 36%;
+    --secondary-foreground: 200 50% 84%;
+    --muted: 234 64% 10%;
+    --muted-foreground: 200 46% 65%;
+    --accent: 217 79% 24%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 236 52% 30%;
+    --ring: 214 98% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+    --success-bg: hsl(143, 85%, 96%);
+    --success-border: hsl(145, 92%, 91%);
+    --success-text: hsl(140, 100%, 27%);
+    --info-bg: hsl(208, 100%, 97%);
+    --info-border: hsl(221, 91%, 91%);
+    --info-text: hsl(210, 92%, 45%);
+    --warning-bg: hsl(49, 100%, 97%);
+    --warning-border: hsl(49, 91%, 91%);
+    --warning-text: hsl(31, 92%, 45%);
+    --error-bg: hsl(359, 100%, 97%);
+    --error-border: hsl(359, 100%, 94%);
+    --error-text: hsl(360, 100%, 45%);
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
+  }
+}
+
+h2.section-header {
+  @apply py-4 text-2xl font-normal text-white;
+}
+
+h3.section-header {
+  @apply py-3 text-xl text-white;
+}
+
+.playground-row {
+  @apply bg-card mb-6 flex flex-row flex-wrap rounded-md border py-10;
+}
+
+.example {
+  @apply flex-initial px-6;
+}
+
+.example2 {
+  @apply flex-initial px-4;
+}
+
+/* Additional CSS edits to components */
+
+/* Tooltip */
+
+.TooltipContent[data-side='bottom'] {
+  animation-name: slideDown;
+}
+
+/* Custom CSS to hide default number input arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  @apply appearance-none;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* For Firefox */
+}
+
+.navbar__item svg {
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 /* stylelint-disable docusaurus/copyright-header */
 /**
  * Any CSS included here will be global. The classic template
@@ -98,8 +199,6 @@ html[data-theme='dark'] {
 
 /* Typography updates */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
 html {
   font-size: 1em;
 }
@@ -108,31 +207,40 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.theme-doc-markdown h1,
+.theme-doc-markdown h2,
+.theme-doc-markdown h3,
+.theme-doc-markdown h4,
+.theme-doc-markdown h5 {
   color: var(--ifm-color-primary);
   font-weight: 400;
   font-family: 'Inter', sans-serif;
 }
 
-blockquote {
+.markdown blockquote,
+.theme-doc-markdown blockquote {
   border-left: 3px solid #4042af;
 }
 
 /* Temporary Type Size Changes */
 
-article header h1 {
+.markdown article header h1,
+.theme-doc-markdown article header h1 {
   font-size: 2.6rem !important;
 }
 
-article h2 {
+.markdown article h2,
+.theme-doc-markdown article h2 {
   font-size: 1.85rem !important;
 }
 
-article header h3 {
+.markdown article header h3,
+.theme-doc-markdown article header h3 {
   font-size: 1.5rem !important;
 }
 
@@ -156,6 +264,17 @@ article header h3 {
 .footer a:hover {
   color: #ffffff;
   text-decoration: none;
+}
+
+.mit-license-link {
+  color: rgba(255, 255, 255, 0.5) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  text-decoration: none !important;
+}
+
+.mit-license-link:hover {
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.7);
 }
 
 .menu {
@@ -243,21 +362,6 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   display: none;
 } */
 
-/* Footer logo MGH */
-
-@media (max-width: 1200px) {
-  #mgh-logo {
-    margin-right: 100px;
-    width: 300px;
-  }
-}
-
-@media (max-width: 480px) {
-  #mgh-logo {
-    margin-right: 10px;
-    width: 300px;
-  }
-}
 
 .dropdown-separator {
   margin: 0.3rem 0;
@@ -284,7 +388,7 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 }
 
 .new-badge::after {
-  content: ' (NEW)';
+  content: '';
   @apply bg-red-300 text-red-500;
   @apply dark:bg-blue-900 dark:text-blue-100;
 }
@@ -300,4 +404,245 @@ div[class^='announcementBar_'] {
     var(--site-announcement-bar-stripe-color2) 40px
   );
   font-weight: 700;
+}
+
+/* #__docusaurus {
+  height: 100%;
+} */
+
+.dropdown-separator {
+  border-top: 1px solid #808080;
+}
+
+/* flex items , center */
+.dropdown__link {
+  display: flex;
+  align-items: center;
+}
+
+.footer__link-item {
+  display: flex;
+  align-items: center;
+}
+
+
+/* List styling — scoped to doc content areas only */
+.markdown ul,
+.theme-doc-markdown ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.markdown ul li,
+.theme-doc-markdown ul li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown ol,
+.theme-doc-markdown ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.markdown ol li,
+.theme-doc-markdown ol li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown ul ul,
+.theme-doc-markdown ul ul {
+  list-style-type: circle;
+  margin: 0.5rem 0;
+}
+
+/* Markdown link styling */
+.markdown a {
+  color: #0066cc;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.markdown a:hover {
+  color: #0051a3;
+  text-decoration: underline;
+}
+
+/* Dark mode link styling */
+html[data-theme='dark'] .markdown a {
+  color: #66b3ff;
+}
+
+html[data-theme='dark'] .markdown a:hover {
+  color: #99ccff;
+}
+
+/* Component sidebar — reset preflight borders that leak from .showcase-isolated */
+.component-sidebar,
+.component-sidebar * {
+  border-width: 0;
+}
+
+/* Horizontal rule styling */
+.markdown hr {
+  height: 1px;
+  border: none;
+  background: linear-gradient(to right, #0066cc, #66b3ff);
+  margin: 2rem 0;
+  opacity: 0.6;
+}
+
+/* Dark mode horizontal rule */
+html[data-theme='dark'] .markdown hr {
+  background: linear-gradient(to right, #66b3ff, #99ccff);
+}
+
+/* Markdown code block styling */
+.markdown pre {
+  font-size: 0.9rem;
+  margin-top: 1em;
+}
+
+.theme-code-block {
+  font-size: 0.9rem;
+}
+
+/* Target both light and dark themes */
+[data-theme='light'] .theme-code-block,
+[data-theme='dark'] .theme-code-block {
+  font-size: 0.9rem;
+}
+
+/* Dropdown menu positioning and interaction fixes */
+.dropdown {
+  position: relative;
+}
+
+.dropdown__menu {
+  top: 100%;
+  margin-top: 0;
+  padding-top: 0.5rem;
+}
+
+/* Add a hover area to prevent menu from disappearing */
+.dropdown__menu::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+/* Ensure menu stays visible while hovering */
+.dropdown:hover .dropdown__menu,
+.dropdown__menu:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.theme-doc-version-banner {
+  display: none;
+}
+
+/* New badge styling */
+/* New Badge Styling */
+a.navbar__item.navbar__link.navbar__link--active[href='/migration-guide/3p8-to-3p9/'][aria-current='page']::after {
+  content: ' NEW';
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: var(--badge-new-color);
+  background: var(--badge-new-background);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  /* Shiny Effect */
+  background-size: 200% 200%;
+  animation: shine 2s linear infinite;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Shiny Animation */
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* "(latest stable)" Text Styling */
+a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
+  content: ' (latest stable)';
+  color: var(--badge-latest-stable-color);
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+.markdown li:first-child,
+.theme-doc-markdown li:first-child {
+  margin-top: 0.5em;
+}
+
+/* Isolate component showcases from Infima/Docusaurus styles.
+   Requires v4.useCssCascadeLayers: true in docusaurus.config.js */
+.showcase-isolated:not(#a#b) {
+  &,
+  * {
+    @layer docusaurus.infima {
+      all: revert-layer;
+    }
+  }
+}
+
+/* Extend isolation to the showcase demos' portal content. Radix and Sonner
+   render floating UI (Dialog, Popover, Select, DropdownMenu, Tooltip, toasts)
+   as direct body children — outside #__docusaurus and .showcase-isolated — so
+   it misses both the revert-layer and the scoped preflight.
+
+   Scoped to the demos' OWN portal roots, NOT every body child:
+     - [data-radix-popper-content-wrapper]  Popover, Combobox, DropdownMenu,
+                                             Select, Tooltip (all popper-based)
+     - .showcase-portal                      explicit hook on Dialog demo content
+                                             (Radix Dialog isn't popper-based)
+     - [data-sonner-toaster]                 Sonner toast container
+   This deliberately leaves third-party body portals (medium-zoom image overlay,
+   Algolia DocSearch modal) untouched, which the previous catch-all reset broke.
+   :where() keeps specificity at zero so Tailwind utility classes always win. */
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]) {
+  font-family: Inter, sans-serif;
+
+  &,
+  * {
+    @layer docusaurus.infima {
+      all: revert-layer;
+    }
+  }
+}
+
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]),
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]) * {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+:where([data-radix-popper-content-wrapper], .showcase-portal, [data-sonner-toaster]) :where(button, input, select, textarea) {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  background-image: none;
 }

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: Validity
+title: Mode Validity
+summary: Documentation for OHIF Mode validity checks, which determine when specific modes should be available for particular studies based on modalities, tags, or custom logic to ensure appropriate workflows for different types of imaging studies.
 ---
 # Mode: Validity
 
@@ -9,6 +11,8 @@ sidebar_label: Validity
 There are two mechanism for checking the validity of a mode for a study.
 
 - `isValidMode`: which is called on a selected study in the workList.
+   - The basic mode exports an `isValidMode` function which selects
+     validity based on the modalities in the study.
 - `validTags`
 
 
@@ -20,15 +24,16 @@ validity of the mode based on `StudyInstanceUID` and `modalities` that are in th
 For instance, for pet-ct mode, both `PT` and 'CT' modalities should be available inside the study.
 
 ```js
+import { isValidMode } from '@ohif/mode-basic';
+
 function modeFactory() {
   return {
     id: '',
     displayName: '',
-    isValidMode: ({ modalities, StudyInstanceUID }) => {
-      const modalities_list = modalities.split('\\');
-      const validMode = ['CT', 'PT'].every(modality => modalities_list.includes(modality));
-      return validMode;
-    },
+    // Select either `CT & PT | MR & PT`
+    modeModalities: [ ['CT', 'PT'], ['MR', 'PT'] ],
+    // Just re-use the existing function
+    isValidMode,
     /*
     ...
     */

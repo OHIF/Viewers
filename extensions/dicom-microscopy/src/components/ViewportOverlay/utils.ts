@@ -1,5 +1,7 @@
 import moment from 'moment';
+import i18n from 'i18next';
 import * as cornerstone from '@cornerstonejs/core';
+import { formatDICOMDate } from '@ohif/ui-next';
 
 /**
  * Checks if value is valid.
@@ -25,17 +27,6 @@ export function formatNumberPrecision(number, precision) {
 }
 
 /**
- * Formats DICOM date.
- *
- * @param {string} date
- * @param {string} strFormat
- * @returns {string} formatted date.
- */
-export function formatDICOMDate(date, strFormat = 'MMM D, YYYY') {
-  return moment(date, 'YYYYMMDD').format(strFormat);
-}
-
-/**
  *    DICOM Time is stored as HHmmss.SSS, where:
  *      HH 24 hour time:
  *        m mm        0..59   Minutes
@@ -50,28 +41,6 @@ export function formatDICOMDate(date, strFormat = 'MMM D, YYYY') {
  */
 export function formatDICOMTime(time, strFormat = 'HH:mm:ss') {
   return moment(time, 'HH:mm:ss').format(strFormat);
-}
-
-/**
- * Formats a patient name for display purposes
- *
- * @param {string} name
- * @returns {string} formatted name.
- */
-export function formatPN(name) {
-  if (!name) {
-    return;
-  }
-
-  // Convert the first ^ to a ', '. String.replace() only affects
-  // the first appearance of the character.
-  const commaBetweenFirstAndLast = name.replace('^', ', ');
-
-  // Replace any remaining '^' characters with spaces
-  const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
-
-  // Trim any extraneous whitespace
-  return cleaned.trim();
 }
 
 /**
@@ -93,3 +62,5 @@ export function getCompression(imageId) {
 
   return 'Lossless / Uncompressed';
 }
+
+export { formatDICOMDate };

@@ -1,52 +1,151 @@
+/** @type {AppTypes.Config} */
+
+// Public demo / Netlify deploy configuration.
+//
+// This is the full-featured config used for the Netlify deploy (build:viewer:ci).
+// Unlike the locked-down config/default.js, it enables every data source and
+// turns the `?customization=` URL feature ON via `customizationUrlPrefixes`.
 window.config = {
-  routerBasename: '/',
+  name: 'config/netlify.js',
+  routerBasename: null,
+  // whiteLabeling: {},
   extensions: [],
   modes: [],
+  customizationService: ['@ohif/extension-default.customizationModule.theme'],
+
+  // URL-driven customizations (?customization=). The `default` prefix (no
+  // slashes) is used for values without a leading slash; every other prefix
+  // must start AND end with a slash and matches the leading `/segment/` of the
+  // value. Files are fetched and parsed as JSONC data — never executed.
+  // e.g. ?customization=tools/ctPresets  ->  ./customizations/tools/ctPresets.jsonc
+  customizationUrlPrefixes: {
+    default: './customizations/',
+  },
+
   showStudyList: true,
+  // some windows systems have issues with more than 3 web workers
+  maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  groupEnabledModesFirst: true,
+  allowMultiSelectExport: false,
+  maxNumRequests: {
+    interaction: 100,
+    thumbnail: 5,
+    // Prefetch number is dependent on the http protocol. For http 2 or
+    // above, the number of requests can be go a lot higher.
+    prefetch: 25,
+  },
+  showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
-  defaultDataSourceName: 'dicomweb',
+  // Defines multi-monitor layouts
+  multimonitor: [
+    {
+      id: 'split',
+      test: ({ multimonitor }) => multimonitor === 'split',
+      screens: [
+        {
+          id: 'ohif0',
+          screen: null,
+          location: {
+            screen: 0,
+            width: 0.5,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+        {
+          id: 'ohif1',
+          screen: null,
+          location: {
+            width: 0.5,
+            height: 1,
+            left: 0.5,
+            top: 0,
+          },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+      ],
+    },
+
+    {
+      id: '2',
+      test: ({ multimonitor }) => multimonitor === '2',
+      screens: [
+        {
+          id: 'ohif0',
+          screen: 0,
+          location: {
+            width: 1,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+        {
+          id: 'ohif1',
+          screen: 1,
+          location: {
+            width: 1,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+      ],
+    },
+  ],
+  defaultDataSourceName: 'ohif',
+  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
+  // dangerouslyUseDynamicConfig: {
+  //   enabled: true,
+  //   regex: /.*/,
+  // },
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb',
+      sourceName: 'ohif',
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
+          transform: url => url.replace('/pixeldata.mp4', '/rendered'),
         },
         omitQuotationForMultipartRequest: true,
       },
     },
+
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb2',
+      sourceName: 'ohif2',
       configuration: {
         friendlyName: 'AWS S3 Static wado secondary server',
         name: 'aws',
-        wadoUriRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
@@ -56,14 +155,93 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
         },
         omitQuotationForMultipartRequest: true,
+      },
+    },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'ohif3',
+      configuration: {
+        friendlyName: 'AWS S3 Static wado secondary server',
+        name: 'aws',
+        wadoUriRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+        omitQuotationForMultipartRequest: true,
+      },
+    },
+
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'local5000',
+      configuration: {
+        friendlyName: 'Static WADO Local Data',
+        name: 'DCM4CHEE',
+        qidoRoot: 'http://localhost:5000/dicomweb',
+        wadoRoot: 'http://localhost:5000/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: true,
+        supportsStow: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'video',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+      },
+    },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'orthanc',
+      configuration: {
+        friendlyName: 'local Orthanc DICOMWeb Server',
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'http://localhost/pacs/dicom-web',
+        qidoRoot: 'http://localhost/pacs/dicom-web',
+        wadoRoot: 'http://localhost/pacs/dicom-web',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        dicomUploadEnabled: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+        },
+      },
+    },
+
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
+      sourceName: 'dicomwebproxy',
+      configuration: {
+        friendlyName: 'dicomweb delegating proxy',
+        name: 'dicomwebproxy',
       },
     },
     {
@@ -89,92 +267,4 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
-  hotkeys: [
-    {
-      commandName: 'incrementActiveViewport',
-      label: 'Next Viewport',
-      keys: ['right'],
-    },
-    {
-      commandName: 'decrementActiveViewport',
-      label: 'Previous Viewport',
-      keys: ['left'],
-    },
-    { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
-    { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
-    { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
-    {
-      commandName: 'flipViewportHorizontal',
-      label: 'Flip Horizontally',
-      keys: ['h'],
-    },
-    {
-      commandName: 'flipViewportVertical',
-      label: 'Flip Vertically',
-      keys: ['v'],
-    },
-    { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
-    { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
-    { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
-    { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
-    { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
-    { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-    // {
-    //   commandName: 'previousViewportDisplaySet',
-    //   label: 'Previous Series',
-    //   keys: ['pagedown'],
-    // },
-    // {
-    //   commandName: 'nextViewportDisplaySet',
-    //   label: 'Next Series',
-    //   keys: ['pageup'],
-    // },
-    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
-    // ~ Window level presets
-    {
-      commandName: 'windowLevelPreset1',
-      label: 'W/L Preset 1',
-      keys: ['1'],
-    },
-    {
-      commandName: 'windowLevelPreset2',
-      label: 'W/L Preset 2',
-      keys: ['2'],
-    },
-    {
-      commandName: 'windowLevelPreset3',
-      label: 'W/L Preset 3',
-      keys: ['3'],
-    },
-    {
-      commandName: 'windowLevelPreset4',
-      label: 'W/L Preset 4',
-      keys: ['4'],
-    },
-    {
-      commandName: 'windowLevelPreset5',
-      label: 'W/L Preset 5',
-      keys: ['5'],
-    },
-    {
-      commandName: 'windowLevelPreset6',
-      label: 'W/L Preset 6',
-      keys: ['6'],
-    },
-    {
-      commandName: 'windowLevelPreset7',
-      label: 'W/L Preset 7',
-      keys: ['7'],
-    },
-    {
-      commandName: 'windowLevelPreset8',
-      label: 'W/L Preset 8',
-      keys: ['8'],
-    },
-    {
-      commandName: 'windowLevelPreset9',
-      label: 'W/L Preset 9',
-      keys: ['9'],
-    },
-  ],
 };

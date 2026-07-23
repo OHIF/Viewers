@@ -5,6 +5,7 @@ import Common from './Common.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
 import MeasurementTable from './MeasurementTable.json';
+import DataRow from './DataRow.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
@@ -18,9 +19,14 @@ import Dialog from './Dialog.json';
 import Modals from './Modals.json';
 import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
+import WindowLevelActionMenu from './WindowLevelActionMenu.json';
+import CaptureViewportModal from './CaptureViewportModal.json';
+import Hps from './Hps.json';
+import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import Tools from './Tools.json';
 
 export default {
-  'zh': {
+  zh: {
     AboutModal,
     Buttons,
     CineDialog,
@@ -28,6 +34,7 @@ export default {
     DatePicker,
     Header,
     MeasurementTable,
+    DataRow,
     StudyList,
     UserPreferencesModal,
     ViewportDownloadForm,
@@ -41,5 +48,10 @@ export default {
     Modals,
     Local,
     ErrorBoundary,
+    WindowLevelActionMenu,
+    CaptureViewportModal,
+    Hps,
+    ToolbarLayoutSelector,
+    Tools,
   },
 };

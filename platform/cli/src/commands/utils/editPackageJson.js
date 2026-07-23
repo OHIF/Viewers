@@ -4,7 +4,7 @@ import path from 'path';
 async function editPackageJson(options) {
   const { name, version, description, author, license, targetDir } = options;
 
-  const ohifVersion = fs.readFileSync('./version.txt', 'utf8');
+  const ohifVersion = fs.readFileSync('./version.txt', 'utf8').trim();
 
   // read package.json from targetDir
   const dependenciesPath = path.join(targetDir, 'dependencies.json');

@@ -1,12 +1,44 @@
 import React from 'react';
-import { Tooltip } from '@ohif/ui';
-import classnames from 'classnames';
 import { useToolbar } from '@ohif/core';
 
-export function Toolbar({ servicesManager }) {
-  const { toolbarButtons, onInteraction } = useToolbar({
-    servicesManager,
-    buttonSection: 'primary',
+/**
+ * Props for the Toolbar component that renders a collection of toolbar buttons and/or button sections.
+ *
+ * @interface ToolbarProps
+ */
+interface ToolbarProps {
+  /**
+   * The section of buttons to display in the toolbar.
+   * Common values include 'primary', 'secondary', 'tertiary', etc.
+   * Defaults to 'primary' if not specified.
+   *
+   * @default 'primary'
+   */
+  buttonSection?: string;
+
+  /**
+   * The unique identifier of the viewport this toolbar is associated with.
+   */
+  viewportId?: string;
+
+  /**
+   * The numeric position or location of the toolbar.
+   * Used for ordering and layout purposes in the UI.
+   */
+  location?: number;
+}
+
+export function Toolbar({ buttonSection = 'primary', viewportId, location }: ToolbarProps) {
+  const {
+    toolbarButtons,
+    onInteraction,
+    isItemOpen,
+    isItemLocked,
+    openItem,
+    closeItem,
+    toggleLock,
+  } = useToolbar({
+    buttonSection,
   });
 
   if (!toolbarButtons.length) {
@@ -15,37 +47,47 @@ export function Toolbar({ servicesManager }) {
 
   return (
     <>
-      {toolbarButtons.map(toolDef => {
+      {toolbarButtons?.map(toolDef => {
         if (!toolDef) {
           return null;
         }
 
         const { id, Component, componentProps } = toolDef;
-        const { disabled } = componentProps;
+
+        // Enhanced props with state and actions - respecting viewport specificity
+        const enhancedProps = {
+          ...componentProps,
+          isOpen: isItemOpen(id, viewportId),
+          isLocked: isItemLocked(id, viewportId),
+          onOpen: () => openItem(id, viewportId),
+          onClose: () => closeItem(id, viewportId),
+          onToggleLock: () => toggleLock(id, viewportId),
+          viewportId,
+        };
 
         const tool = (
           <Component
             key={id}
             id={id}
-            onInteraction={onInteraction}
-            servicesManager={servicesManager}
-            {...componentProps}
+            location={location}
+            onInteraction={args => {
+              onInteraction({
+                ...args,
+                itemId: id,
+                viewportId,
+              });
+            }}
+            {...enhancedProps}
           />
         );
 
-        return disabled ? (
-          <Tooltip
-            key={id}
-            position="bottom"
-            content={componentProps.label}
-            secondaryContent={'Not available on the current viewport'}
-          >
-            <div className={classnames('mr-1')}>{tool}</div>
-          </Tooltip>
-        ) : (
+        return (
           <div
             key={id}
-            className="mr-1"
+            // This wrapper div exists solely for React's key prop requirement during reconciliation.
+            // We use display:contents to make it transparent to the layout engine (children appear
+            // as direct children of the parent) while keeping it in the DOM for React's virtual DOM.
+            className="contents"
           >
             {tool}
           </div>

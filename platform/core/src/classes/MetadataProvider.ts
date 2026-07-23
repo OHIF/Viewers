@@ -1,49 +1,37 @@
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
-import { imageIdToURI } from '../utils';
-import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
+import { utilities } from '@cornerstonejs/core';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
+import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
+const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
+const { getUriModule } = csMetadataUtilities;
+
 class MetadataProvider {
-  constructor() {
-    // Define the main "metadataLookup" private property as an immutable property.
-    Object.defineProperty(this, 'studies', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    Object.defineProperty(this, 'imageURIToUIDs', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    // Can be used to store custom metadata for a specific type.
-    // For instance, the scaling metadata for PET can be stored here
-    // as type "scalingModule"
-    //
-    Object.defineProperty(this, 'customMetadata', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-  }
+  private readonly imageURIToUIDs: Map<string, any> = new Map();
+  // Can be used to store custom metadata for a specific type.
+  // For instance, the scaling metadata for PET can be stored here
+  // as type "scalingModule"
+  private readonly customMetadata: Map<string, any> = new Map();
 
   addImageIdToUIDs(imageId, uids) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
-    const imageURI = imageIdToURI(imageId);
+    const imageURI = baseImageURIForMetadata(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
-    const imageURI = imageIdToURI(imageId);
+    const imageURI = baseImageURIForMetadata(imageId);
     if (!this.customMetadata.has(type)) {
       this.customMetadata.set(type, {});
     }
@@ -52,6 +40,10 @@ class MetadataProvider {
   }
 
   _getInstance(imageId) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+
     const uids = this.getUIDsFromImageID(imageId);
 
     if (!uids) {
@@ -70,7 +62,22 @@ class MetadataProvider {
       return;
     }
 
-    return (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
+    const result = (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
+
+    // We reassign the imageId on the instance because multiframe images processed
+    // through combineFrameInstance will mistakenly get the first imageId.
+    // This happens because the DICOM web data store only keeps the first instance.
+    // Defined non-enumerable so spreading the instance into another object does
+    // not carry the imageId over (it belongs to this frame only).
+    if (result) {
+      Object.defineProperty(result, 'imageId', {
+        value: imageId,
+        writable: true,
+        enumerable: false,
+        configurable: true,
+      });
+    }
+    return result;
   }
 
   get(query, imageId, options = { fallback: false }) {
@@ -86,7 +93,7 @@ class MetadataProvider {
     // check inside custom metadata
     if (this.customMetadata.has(query)) {
       const customMetadata = this.customMetadata.get(query);
-      const imageURI = imageIdToURI(imageId);
+      const imageURI = baseImageURIForMetadata(imageId);
       if (customMetadata[imageURI]) {
         return customMetadata[imageURI];
       }
@@ -133,33 +140,21 @@ class MetadataProvider {
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
-        const { SeriesDate, SeriesTime } = instance;
-
-        let seriesDate;
-        let seriesTime;
-
-        if (SeriesDate) {
-          seriesDate = dicomParser.parseDA(SeriesDate);
-        }
-
-        if (SeriesTime) {
-          seriesTime = dicomParser.parseTM(SeriesTime);
-        }
-
         metadata = {
           modality: instance.Modality,
           seriesInstanceUID: instance.SeriesInstanceUID,
           seriesNumber: toNumber(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
-          seriesDate,
-          seriesTime,
+          seriesDescription: instance.SeriesDescription,
+          seriesDate: instance.SeriesDate,
+          seriesTime: instance.SeriesTime,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:
         metadata = {
-          patientAge: toNumber(instance.PatientAge),
-          patientSize: toNumber(instance.PatientSize),
-          patientWeight: toNumber(instance.PatientWeight),
+          patientAge: instance.PatientAge,
+          patientSize: instance.PatientSize,
+          patientWeight: instance.PatientWeight,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_DEMOGRAPHIC_MODULE:
@@ -210,7 +205,7 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
         const { WindowCenter, WindowWidth, VOILUTFunction } = instance;
-        if (WindowCenter === undefined || WindowWidth === undefined) {
+        if (WindowCenter == null || WindowWidth == null) {
           return;
         }
         const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
@@ -225,7 +220,10 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.MODALITY_LUT_MODULE:
         const { RescaleIntercept, RescaleSlope } = instance;
-        if (RescaleIntercept === undefined || RescaleSlope === undefined) {
+        // Early return if RescaleIntercept or RescaleSlope are not
+        // present (undefined) or explicitly set to null. We use loose
+        // equality in this case to check for *null* or *undefined*.
+        if (RescaleIntercept == null || RescaleSlope == null) {
           return;
         }
 
@@ -239,6 +237,12 @@ class MetadataProvider {
         metadata = {
           sopClassUID: instance.SOPClassUID,
           sopInstanceUID: instance.SOPInstanceUID,
+        };
+        break;
+      case WADO_IMAGE_LOADER_TAGS.PET_IMAGE_MODULE:
+        metadata = {
+          frameReferenceTime: instance.FrameReferenceTime,
+          actualFrameDuration: instance.ActualFrameDuration,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PET_ISOTOPE_MODULE:
@@ -347,23 +351,20 @@ class MetadataProvider {
         break;
 
       case WADO_IMAGE_LOADER_TAGS.PATIENT_MODULE:
-        const { PatientName } = instance;
-
-        let patientName;
-        if (PatientName) {
-          patientName = PatientName.Alphabetic;
-        }
-
         metadata = {
-          patientName,
+          patientName: instance.PatientName,
           patientId: instance.PatientID,
+          patientSex: instance.PatientSex,
+          patientBirthDate: instance.PatientBirthDate,
+          issuerOfPatientId: instance.IssuerOfPatientID,
+          otherPatientIDsSequence: instance.OtherPatientIDsSequence,
         };
 
         break;
 
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
-          sopInstanceUid: instance.SOPInstanceUID,
+          sopInstanceUID: instance.SOPInstanceUID,
           instanceNumber: toNumber(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
@@ -374,23 +375,61 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_STUDY_MODULE:
         metadata = {
           studyDescription: instance.StudyDescription,
+          studyInstanceUID: instance.StudyInstanceUID,
           studyDate: instance.StudyDate,
           studyTime: instance.StudyTime,
           accessionNumber: instance.AccessionNumber,
+          studyId: instance.StudyID,
         };
 
         break;
       case WADO_IMAGE_LOADER_TAGS.CINE_MODULE:
         metadata = {
           frameTime: instance.FrameTime,
+          numberOfFrames: instance.NumberOfFrames ? Number(instance.NumberOfFrames) : 1,
         };
 
         break;
-      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+      case WADO_IMAGE_LOADER_TAGS.PET_SERIES_MODULE:
         metadata = {
           correctedImage: instance.CorrectedImage,
           units: instance.Units,
           decayCorrection: instance.DecayCorrection,
+        };
+        break;
+      case WADO_IMAGE_LOADER_TAGS.CALIBRATION_MODULE:
+        // map the DICOM tags to the cornerstone tags since cornerstone tags
+        // are camelCase and instance tags are all caps
+        metadata = {
+          sequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions?.map(region => {
+            return {
+              regionSpatialFormat: region.RegionSpatialFormat,
+              regionDataType: region.RegionDataType,
+              regionFlags: region.RegionFlags,
+              regionLocationMinX0: region.RegionLocationMinX0,
+              regionLocationMinY0: region.RegionLocationMinY0,
+              regionLocationMaxX1: region.RegionLocationMaxX1,
+              regionLocationMaxY1: region.RegionLocationMaxY1,
+              referencePixelX0: region.ReferencePixelX0,
+              referencePixelY0: region.ReferencePixelY0,
+              referencePixelPhysicalValueX: region.ReferencePixelPhysicalValueX,
+              referencePixelPhysicalValueY: region.ReferencePixelPhysicalValueY,
+              physicalUnitsXDirection: region.PhysicalUnitsXDirection,
+              physicalUnitsYDirection: region.PhysicalUnitsYDirection,
+              physicalDeltaX: region.PhysicalDeltaX,
+              physicalDeltaY: region.PhysicalDeltaY,
+            };
+          }),
+        };
+        break;
+
+      /**
+       * Below are the tags and not the modules since they are not really
+       * consistent with the modules above
+       */
+      case 'temporalPositionIdentifier':
+        metadata = {
+          temporalPositionIdentifier: instance.TemporalPositionIdentifier,
         };
         break;
 
@@ -401,45 +440,7 @@ class MetadataProvider {
     return metadata;
   }
 
-  /**
-   * Retrieves the frameNumber information, depending on the url style
-   * wadors /frames/1
-   * wadouri &frame=1
-   * @param {*} imageId
-   * @returns
-   */
-  getFrameInformationFromURL(imageId) {
-    function getInformationFromURL(informationString, separator) {
-      let result = '';
-      const splittedStr = imageId.split(informationString)[1];
-      if (splittedStr.includes(separator)) {
-        result = splittedStr.split(separator)[0];
-      } else {
-        result = splittedStr;
-      }
-      return result;
-    }
-
-    if (imageId.includes('/frames')) {
-      return getInformationFromURL('/frames', '/');
-    }
-    if (imageId.includes('&frame=')) {
-      return getInformationFromURL('&frame=', '&');
-    }
-    return;
-  }
-
   getUIDsFromImageID(imageId) {
-    if (!imageId) {
-      throw new Error('MetadataProvider::Empty imageId');
-    }
-    // TODO: adding csiv here is not really correct. Probably need to use
-    // metadataProvider.addImageIdToUIDs(imageId, {
-    //   StudyInstanceUID,
-    //   SeriesInstanceUID,
-    //   SOPInstanceUID,
-    // })
-    // somewhere else
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
@@ -452,84 +453,34 @@ class MetadataProvider {
       };
     } else if (imageId.includes('?requestType=WADO')) {
       const qs = queryString.parse(imageId);
+      const frameNumber = qs.frameNumber || qs.frame;
 
       return {
         StudyInstanceUID: qs.studyUID,
         SeriesInstanceUID: qs.seriesUID,
         SOPInstanceUID: qs.objectUID,
-        frameNumber: qs.frameNumber,
+        frameNumber,
       };
     }
 
-    // Maybe its a non-standard imageId
-    // check if the imageId starts with http:// or https:// using regex
-    // Todo: handle non http imageIds
-    let imageURI;
-    const urlRegex = /^(http|https|dicomfile):\/\//;
-    if (urlRegex.test(imageId)) {
-      imageURI = imageId;
-    } else {
-      imageURI = imageIdToURI(imageId);
-    }
-
-    // remove &frame=number from imageId
-    imageURI = imageURI.split('&frame=')[0];
-
+    const imageURI = baseImageURIForMetadata(imageId);
     const uids = this.imageURIToUIDs.get(imageURI);
-    const frameNumber = this.getFrameInformationFromURL(imageId) || '1';
 
-    if (uids && frameNumber !== undefined) {
-      return { ...uids, frameNumber };
+    if (!uids) {
+      return;
     }
-    return uids;
+
+    const frameNumber = getUriModule(imageId)?.framesString || uids.frameNumber || '1';
+
+    return { ...uids, frameNumber };
   }
 }
 
 const metadataProvider = new MetadataProvider();
 
+DicomMetadataStore.setMetaDataProvider(metadataProvider);
+
 export default metadataProvider;
-
-const WADO_IMAGE_LOADER = {
-  imagePlaneModule: instance => {
-    const { ImageOrientationPatient } = instance;
-
-    // Fallback for DX images.
-    // TODO: We should use the rest of the results of this function
-    // to update the UI somehow
-    const { PixelSpacing } = getPixelSpacingInformation(instance);
-
-    let rowPixelSpacing;
-    let columnPixelSpacing;
-
-    let rowCosines;
-    let columnCosines;
-
-    if (PixelSpacing) {
-      rowPixelSpacing = PixelSpacing[0];
-      columnPixelSpacing = PixelSpacing[1];
-    }
-
-    if (ImageOrientationPatient) {
-      rowCosines = ImageOrientationPatient.slice(0, 3);
-      columnCosines = ImageOrientationPatient.slice(3, 6);
-    }
-
-    return {
-      frameOfReferenceUID: instance.FrameOfReferenceUID,
-      rows: toNumber(instance.Rows),
-      columns: toNumber(instance.Columns),
-      imageOrientationPatient: toNumber(ImageOrientationPatient),
-      rowCosines: toNumber(rowCosines || [0, 1, 0]),
-      columnCosines: toNumber(columnCosines || [0, 0, -1]),
-      imagePositionPatient: toNumber(instance.ImagePositionPatient || [0, 0, 0]),
-      sliceThickness: toNumber(instance.SliceThickness),
-      sliceLocation: toNumber(instance.SliceLocation),
-      pixelSpacing: toNumber(PixelSpacing || 1),
-      rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
-      columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
-    };
-  },
-};
 
 const WADO_IMAGE_LOADER_TAGS = {
   // dicomImageLoader specific
@@ -539,8 +490,9 @@ const WADO_IMAGE_LOADER_TAGS = {
   VOI_LUT_MODULE: 'voiLutModule',
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
+  PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
-  PER_SERIES_MODULE: 'petSeriesModule',
+  PET_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
@@ -549,6 +501,107 @@ const WADO_IMAGE_LOADER_TAGS = {
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',
   CINE_MODULE: 'cineModule',
+  CALIBRATION_MODULE: 'calibrationModule',
+
+  // Computed tags for new data
+  // Note these get returned in naturalized format
+  IMAGE_SOP_INSTANCE_REFERENCE: 'ImageSopInstanceReference',
+};
+
+const WADO_IMAGE_LOADER = {
+  /** Returns information on the current frame reference */
+  frameModule: instance => {
+    const {
+      frameNumber = 1,
+      numberOfFrames = 1,
+      SOPClassUID: sopClassUID,
+      SOPInstanceUID: sopInstanceUID,
+      SeriesInstanceUID: seriesInstanceUID,
+      StudyInstanceUID: studyInstanceUID,
+    } = instance;
+    return {
+      frameNumber,
+      numberOfFrames,
+      sopClassUID,
+      sopInstanceUID,
+      seriesInstanceUID,
+      studyInstanceUID,
+    };
+  },
+
+  imagePlaneModule: instance => {
+    const { ImageOrientationPatient, ImagePositionPatient } = instance;
+
+    // Fallback for DX images.
+    // TODO: We should use the rest of the results of this function
+    // to update the UI somehow
+    const { PixelSpacing, type } = getPixelSpacingInformation(instance) || {};
+
+    let rowPixelSpacing;
+    let columnPixelSpacing;
+
+    let rowCosines;
+    let columnCosines;
+
+    let usingDefaultValues = false;
+    let isDefaultValueSetForRowCosine = false;
+    let isDefaultValueSetForColumnCosine = false;
+    let imageOrientationPatient;
+    if (PixelSpacing) {
+      [rowPixelSpacing, columnPixelSpacing] = PixelSpacing;
+      const calibratedPixelSpacing = utilities.calibratedPixelSpacingMetadataProvider.get(
+        'calibratedPixelSpacing',
+        instance.imageId
+      );
+      if (!calibratedPixelSpacing) {
+        calibratedPixelSpacingMetadataProvider.add(instance.imageId, {
+          rowPixelSpacing: parseFloat(PixelSpacing[0]),
+          columnPixelSpacing: parseFloat(PixelSpacing[1]),
+          type,
+        });
+      }
+    } else {
+      rowPixelSpacing = columnPixelSpacing = 1;
+      usingDefaultValues = true;
+    }
+
+    if (ImageOrientationPatient) {
+      rowCosines = toNumber(ImageOrientationPatient.slice(0, 3));
+      columnCosines = toNumber(ImageOrientationPatient.slice(3, 6));
+      imageOrientationPatient = toNumber(ImageOrientationPatient);
+    } else {
+      rowCosines = [1, 0, 0];
+      columnCosines = [0, 1, 0];
+      imageOrientationPatient = [1, 0, 0, 0, 1, 0];
+      usingDefaultValues = true;
+      isDefaultValueSetForRowCosine = true;
+      isDefaultValueSetForColumnCosine = true;
+    }
+
+    const imagePositionPatient = toNumber(ImagePositionPatient) || [0, 0, 0];
+    if (!ImagePositionPatient) {
+      usingDefaultValues = true;
+    }
+
+    return {
+      frameOfReferenceUID: instance.FrameOfReferenceUID,
+      rows: toNumber(instance.Rows),
+      columns: toNumber(instance.Columns),
+      spacingBetweenSlices: toNumber(instance.SpacingBetweenSlices),
+      imageOrientationPatient,
+      rowCosines,
+      isDefaultValueSetForRowCosine,
+      columnCosines,
+      isDefaultValueSetForColumnCosine,
+      imagePositionPatient,
+      sliceThickness: toNumber(instance.SliceThickness),
+      sliceLocation: toNumber(instance.SliceLocation),
+      pixelSpacing: toNumber(PixelSpacing || 1),
+      rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
+      columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
+      usingDefaultValues,
+    };
+  },
 };
 
 const INSTANCE = 'instance';

@@ -1,30 +1,84 @@
 // https://developers.google.com/web/tools/workbox/guides/codelabs/webpack
 // ~~ WebPack
 const path = require('path');
+const fs = require('fs');
 const { merge } = require('webpack-merge');
-const webpack = require('webpack');
+const rspack = require('@rspack/core');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
-// ~~ Plugins
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { InjectManifest } = require('workbox-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // ~~ Directories
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
+
+// Ignore node_modules except @cornerstonejs (symlinked local development).
+const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
 // ~~ Env Vars
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
-const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+
+// proxy settings
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
+const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
+const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
+const IS_COVERAGE = process.env.COVERAGE === 'true';
+
+const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
-const Dotenv = require('dotenv-webpack');
+const dotenv = require('dotenv');
+dotenv.config();
 const writePluginImportFile = require('./writePluginImportsFile.js');
+// const MillionLint = require('@million/lint');
+const open = process.env.OHIF_OPEN !== 'false';
 
 const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
+
+class InjectServiceWorkerManifestPlugin {
+  constructor({ swSrc, swDest, publicPath, exclude, maximumFileSizeToCacheInBytes }) {
+    this.swSrc = swSrc;
+    this.swDest = swDest;
+    this.publicPath = publicPath;
+    this.exclude = exclude;
+    this.maximumFileSizeToCacheInBytes = maximumFileSizeToCacheInBytes;
+  }
+
+  apply(compiler) {
+    const pluginName = 'InjectServiceWorkerManifestPlugin';
+    const publicPath = this.publicPath.endsWith('/') ? this.publicPath : `${this.publicPath}/`;
+
+    compiler.hooks.thisCompilation.tap(pluginName, compilation => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: pluginName,
+          stage: rspack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+        },
+        () => {
+          const manifest = compilation
+            .getAssets()
+            .filter(asset => {
+              if (asset.name === this.swDest || asset.name.endsWith('.map')) {
+                return false;
+              }
+              if (this.exclude.some(pattern => pattern.test(asset.name))) {
+                return false;
+              }
+              return asset.source.size() <= this.maximumFileSizeToCacheInBytes;
+            })
+            .map(asset => ({
+              url: `${publicPath}${asset.name}`,
+              revision: asset.info.contenthash ? null : compilation.hash,
+            }));
+
+          const source = fs
+            .readFileSync(this.swSrc, 'utf8')
+            .replace('self.__WB_MANIFEST', JSON.stringify(manifest));
+
+          compilation.emitAsset(this.swDest, new rspack.sources.RawSource(source));
+        }
+      );
+    });
+  }
+}
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
@@ -32,8 +86,12 @@ const setHeaders = (res, path) => {
   } else if (path.indexOf('.br') !== -1) {
     res.setHeader('Content-Encoding', 'br');
   }
-  if (path.indexOf('.pdf') !== -1) {
+  if (path.indexOf('thumbnail') !== -1) {
+    res.setHeader('Content-Type', 'image/jpeg');
+  } else if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
+  } else if (path.indexOf('mp4') !== -1) {
+    res.setHeader('Content-Type', 'video/mp4');
   } else if (path.indexOf('frames') !== -1) {
     res.setHeader('Content-Type', 'multipart/related');
   } else {
@@ -44,6 +102,12 @@ const setHeaders = (res, path) => {
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
+  // Honor an explicit APP_CONFIG; otherwise the dev server gets the
+  // full-featured `config/dev.js` and a production build the locked-down
+  // `config/default.js`. This lets `APP_CONFIG=config/foo.js pnpm run dev`
+  // override the default instead of being clobbered by the script.
+  const APP_CONFIG =
+    process.env.APP_CONFIG || (isProdBuild ? 'config/default.js' : 'config/dev.js');
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
 
   const mergedConfig = merge(baseConfig, {
@@ -51,6 +115,7 @@ module.exports = (env, argv) => {
       app: ENTRY_TARGET,
     },
     output: {
+      clean: true,
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
@@ -63,20 +128,22 @@ module.exports = (env, argv) => {
       },
     },
     resolve: {
+      // Resolve every extension/mode declared in pluginConfig.json to its
+      // workspace source, so the dynamic import()s in pluginImports.js link
+      // without the plugins being dependencies of platform/app. Merged with the
+      // base aliases (webpack-merge deep-merges resolve.alias).
+      alias: writePluginImportFile.getPluginResolveAliases(),
       modules: [
-        // Modules specific to this package
+        // Preserve importer-relative node_modules walk-up for pnpm.
+        'node_modules',
         path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
       ],
     },
     plugins: [
-      new Dotenv(),
-      // Clean output.path
-      new CleanWebpackPlugin(),
-      // Copy "Public" Folder to Dist
-      new CopyWebpackPlugin({
+      // Copy "Public" Folder to Dist (rspack built-in)
+      new rspack.CopyRspackPlugin({
         patterns: [
           ...copyPluginFromExtensions,
           {
@@ -84,56 +151,43 @@ module.exports = (env, argv) => {
             to: DIST_DIR,
             toType: 'dir',
             globOptions: {
-              // Ignore our HtmlWebpackPlugin template file
-              // Ignore our configuration files
               ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
-          // Short term solution to make sure GCloud config is available in output
-          // for our docker implementation
+          {
+            from: '../../../node_modules/onnxruntime-web/dist',
+            to: `${DIST_DIR}/ort`,
+          },
           {
             from: `${PUBLIC_DIR}/config/google.js`,
             to: `${DIST_DIR}/google.js`,
           },
-          // Copy over and rename our target app config file
           {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
-          // Copy Dicom Microscopy Viewer build files
-          {
-            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
-            to: DIST_DIR,
-            globOptions: {
-              ignore: ['**/*.min.js.map'],
-            },
-          },
-          // Copy dicom-image-loader build files
-          {
-            from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
         ],
       }),
-      // Generate "index.html" w/ correct includes/imports
-      new HtmlWebpackPlugin({
+      // Generate "index.html" w/ correct includes/imports (rspack built-in)
+      new rspack.HtmlRspackPlugin({
         template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
         filename: 'index.html',
         templateParameters: {
           PUBLIC_URL: PUBLIC_URL,
         },
       }),
-      // Generate a service worker for fast local loads
-      new InjectManifest({
-        swDest: 'sw.js',
-        swSrc: path.join(SRC_DIR, 'service-worker.js'),
-        // Increase the limit to 4mb:
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        // Need to exclude the theme as it is updated independently
-        exclude: [/theme/],
-        // Cache large files for the manifests to avoid warning messages
-        maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
-      }),
+      // Generate a service worker for fast local loads.
+      ...(IS_COVERAGE
+        ? []
+        : [
+            new InjectServiceWorkerManifestPlugin({
+              swDest: 'sw.js',
+              swSrc: path.join(SRC_DIR, 'service-worker.js'),
+              publicPath: PUBLIC_URL,
+              exclude: [/theme/],
+              maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
+            }),
+          ]),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
@@ -142,14 +196,20 @@ module.exports = (env, argv) => {
       // compress: true,
       // http2: true,
       // https: true,
-      open: true,
-      port: 3000,
+      open,
+      port: OHIF_PORT,
       client: {
-        overlay: { errors: true, warnings: false },
+        // During e2e (COVERAGE=true) disable the dev-server overlay: its
+        // injected iframe intercepts pointer events and breaks Playwright/Cypress
+        // clicks. Keep it for normal local dev.
+        overlay: IS_COVERAGE ? false : { errors: true, warnings: false },
       },
-      proxy: {
-        '/dicomweb': 'http://localhost:5000',
-      },
+      proxy: [
+        {
+          context: ['/dicomweb'],
+          target: 'http://localhost:5000',
+        },
+      ],
       static: [
         {
           directory: '../../testdata',
@@ -160,34 +220,49 @@ module.exports = (env, argv) => {
             setHeaders,
           },
           publicPath: '/viewer-testdata',
+          watch: false,
         },
       ],
       //public: 'http://localhost:' + 3000,
       //writeToDisk: true,
       historyApiFallback: {
-        disableDotRule: true,
+        disableDotRule: !IS_COVERAGE,
         index: PUBLIC_URL + 'index.html',
+        htmlAcceptHeaders: ['text/html'],
       },
-      headers: {
-        'Cross-Origin-Embedder-Policy': 'require-corp',
-        'Cross-Origin-Opener-Policy': 'same-origin',
+      devMiddleware: {
+        writeToDisk: true,
       },
     },
   });
 
   if (hasProxy) {
     mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy[PROXY_TARGET] = PROXY_DOMAIN;
+    mergedConfig.devServer.proxy = [
+      {
+        context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
+        target: PROXY_DOMAIN,
+        changeOrigin: true,
+        pathRewrite: {
+          [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
+        },
+      },
+    ];
   }
 
   if (isProdBuild) {
     mergedConfig.plugins.push(
-      new MiniCssExtractPlugin({
+      new rspack.CssExtractRspackPlugin({
         filename: '[name].bundle.css',
         chunkFilename: '[id].css',
       })
     );
   }
+
+  mergedConfig.watchOptions = {
+    ignored: WATCH_IGNORED,
+    followSymlinks: true,
+  };
 
   return mergedConfig;
 };

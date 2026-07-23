@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Toolbar
+title: Toolbar Module
+summary: Documentation for OHIF Toolbar Module, which provides UI components and evaluators for the application's toolbar, supporting custom button types, advanced state management, and conditional rendering based on viewport and modality requirements.
 ---
 
 # Module: Toolbar
@@ -91,12 +93,13 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
       return;
     }
 
-    const toolName = getToolNameForButton(button);
+    const toolName =  toolbarService.getToolNameForButton(button);
 
     if (!toolGroup || !toolGroup.hasTool(toolName)) {
       return {
         disabled: true,
         className: '!text-common-bright ohif-disabled',
+        disabledText: 'Tool not available',
       };
     }
 
@@ -114,6 +117,13 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
 
 as you can see the job of this evaluator is to determine if the button should be disabled or not. It does so by checking the `toolGroup` and the `toolName` and then returns an object with `disabled` and `className` properties.
 
+Various information can be returned by an evaluator. In particular...
+- `disabled`: flag indicating if the tool should be disabled or not
+- `disabledText`: the text or tooltip to show if the `disabled` flag above is set to `true`
+- `visible`: flag indicating if the tool show be visible or not; this is a convenient way to force a tool to hide based on some custom (evaluator) logic
+- `isActive`: flag to indicating where the tool is currently active or not
+- `className`: custom CSS class names to add to the tool's component
+
 The following evaluators are provided by us:
 
 - `evaluate.cornerstoneTool`: If assigned to a button (see next), it will make the button react to the active viewport state based on its toolGroup.
@@ -124,7 +134,7 @@ The following evaluators are provided by us:
 
 
 Sometime you want to use the same `evaluator` for different purposes, in that case you can use an object
-with `name` and `options` properties. For example, in `'evaluate.cornerstone.segmentation'` we use
+with `name` and other properties. For example, in `'evaluate.cornerstone.segmentation'` we use
 this pattern, where multiple toolbar buttons are using the same evaluator but with different options (
   in this case `toolNames`
 )
@@ -132,11 +142,90 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 ```js
 {
   name: 'evaluate.cornerstone.segmentation',
-  options: {
-    toolNames: ['CircleBrush' , 'SphereBrush']
-  },
+  toolNames: ['CircleBrush' , 'SphereBrush']
 },
 ```
+
+
+#### Viewport and Modality Support Evaluation
+
+The toolbar system now uses a more robust approach for evaluating button states based on viewport types and modalities:
+
+**Viewport Type Support**:
+
+Use `evaluate.viewport.supported` to disable buttons for specific viewport types:
+
+```js
+{
+  name: 'evaluate.viewport.supported',
+  unsupportedViewportTypes: ['volume3d', 'video', 'sm']
+}
+```
+
+**Modality Support**:
+Use `evaluate.modality.supported` to control button state based on modalities:
+
+```js
+{
+  name: 'evaluate.modality.supported',
+  supportedModalities: ['CT', 'MR'],  // Enable only for these modalities
+  // OR
+  unsupportedModalities: ['US']       // Disable for these modalities
+}
+```
+
+#### Composing evaluators
+Multiple evaluators can be combined to create complex conditions:
+
+```js
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d']
+  },
+  {
+    name: 'evaluate.modality.supported',
+    supportedModalities: ['CT']
+  }
+]
+```
+
+This evaluation system provides more precise control over when toolbar buttons are enabled or disabled based on the active viewport's characteristics.
+
+You can choose to set up multiple evaluators for a single button. This comes in handy when you need to assess the button according to various conditions. For example, we aim to prevent the Cine player from showing up on the 3D viewport, so we have:
+
+```js
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d'],
+  },
+],
+```
+
+You can even come up with advanced evaluators such as:
+
+```js
+evaluate: [
+  'evaluate.cornerstone.segmentation',
+  // need to put the disabled text last, since each evaluator will
+  // merge the result text into the final result
+  {
+    name: 'evaluate.cornerstoneTool',
+    disabledText: 'Select the PT Axial to enable this tool',
+  },
+],
+```
+
+that we use for our RectangleROIStartEndThreshold tool in tmtv mode.
+
+As you see this evaluator is composed of two evaluators, one is `evaluate.cornerstone.segmentation` which makes sure (in the implementation), that
+there is a segmentation created, and the second one is `evaluate.cornerstoneTool` which makes sure that the tool is available in the viewport.
+
+Since we are using multiple evaluators, the `disabledText` of each evaluator will be merged into the final result, so you need to
+put the `disabledText` in the last evaluator.
 
 #### Group evaluators
 Split buttons (see in [ToolbarService](../../services/data/ToolbarService.md) on how to define one) may feature a group evaluator, we provide two of them and you can write your own.
@@ -370,6 +459,107 @@ state will get synchronized with the toolbar service automatically.
 
 
 ![alt text](../../../assets/img/toolbox-modal.png)
+
+## Toolbox With Options
+
+Your toolbox toolbar buttons can have options, this is really useful
+for advanced tools that require to change some parameters. For example, the brush tool that requires the brush size to change or the mode (2D or 3D).
+
+:::note
+Toolbox with options will run the options commands
+on the mount of the toolbox component. This is useful for setting the initial state of the toolbox.
+:::
+
+Currently we support three types of options.
+
+### Radio option
+
+We use this in segmentation shapes to let the user choose between
+three different modes
+
+```js
+{
+  id: 'Shapes',
+  uiType: 'ohif.radioGroup',
+  props: {
+    label: 'Shapes',
+    evaluate: {
+      name: 'evaluate.cornerstone.segmentation',
+      toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+    },
+    icon: 'icon-tool-shape',
+    options: [
+      {
+        name: 'Shape',
+        type: 'radio',
+        value: 'CircleScissor',
+        id: 'shape-mode',
+        values: [
+          { value: 'CircleScissor', label: 'Circle' },
+          { value: 'SphereScissor', label: 'Sphere' },
+          { value: 'RectangleScissor', label: 'Rectangle' },
+        ],
+        commands: 'setToolActiveToolbar',
+      },
+    ],
+  },
+},
+```
+
+### Range option
+
+We use this for brush radius change
+
+```js
+{
+  id: 'Brush',
+  icon: 'icon-tool-brush',
+  label: 'Brush',
+  evaluate: {
+    name: 'evaluate.cornerstone.segmentation',
+    toolNames: ['CircularBrush', 'SphereBrush'],
+    disabledText: 'Create new segmentation to enable this tool.',
+  },
+  options: [
+    {
+      name: 'Radius (mm)',
+      id: 'brush-radius',
+      type: 'range',
+      min: 0.5,
+      max: 99.5,
+      step: 0.5,
+      value: 25,
+      commands: {
+        commandName: 'setBrushSize',
+        commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+      },
+    },
+  ],
+},
+```
+
+### Custom option
+
+We use this pattern inside `tmtv` mode for `RectangleROIThreshold`
+
+```js
+{
+  id: 'RectangleROIStartEndThreshold',
+  uiType: 'ohif.radioGroup',
+  props: {
+    icon: 'tool-create-threshold',
+    label: 'Rectangle ROI Threshold',
+    commands: setToolActiveToolbar,
+    evaluate: {
+      name: 'evaluate.cornerstoneTool',
+      disabledText: 'Select the PT Axial to enable this tool',
+    },
+    options: 'tmtv.RectangleROIThresholdOptions',
+  },
+},
+```
+
+Note that it is your job to provide the `tmvt.RectangleROIThresholdOptions` in the getToolbarModule of your extension
 
 
 

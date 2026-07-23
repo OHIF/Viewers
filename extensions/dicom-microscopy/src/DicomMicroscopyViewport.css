@@ -3,6 +3,12 @@
   --ol-foreground-color: #000000;
   --ol-subtle-foreground-color: #000;
   --ol-subtle-background-color: rgba(78, 78, 78, 0.5);
+  
+  /* Prevent text selection on the entire viewer to avoid interference with annotations */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .DicomMicroscopyViewer .ol-box {

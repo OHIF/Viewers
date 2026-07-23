@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+title: OHIF Extensions Introduction
+summary: Comprehensive introduction to the OHIF viewer extension system, explaining how extensions provide modular functionality through different module types, and how they're configured and accessed in modes to build customized viewer experiences.
 ---
 
 # Introduction
@@ -175,10 +177,17 @@ the top level [`extensions/`][ext-source] directory.
 }
 ```
 
-:::note Important
-You SHOULD NOT directly register extensions in the `pluginConfig.json` file.
-Use the provided `cli` to add/remove/install/uninstall extensions. Read more [here](../../development/ohif-cli.md)
+:::note
+You can register extensions by editing the `pluginConfig.json` file directly.
+The provided `cli` can also add/remove/install/uninstall extensions
+([read more](../../development/ohif-cli.md)), but it is being phased out in
+favour of generating extensions with an agent.
 :::
+
+For the full set of fields (`packageName`, `version`, `default`, `directory`,
+the `public` section) and the three ways a plugin can be located (in-tree,
+out-of-tree `directory`, or installed dependency), see the
+[pluginConfig.json reference](./pluginConfig.md).
 
 The final registration and import of the extensions happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
 
@@ -233,7 +242,7 @@ differently.
     <tr>
       <td align="left">
         <a href="./modules/layout-template">
-          LayoutTemplate (NEW)
+          LayoutTemplate
         </a>
       </td>
       <td align="left">Control Layout of a route</td>
@@ -241,7 +250,7 @@ differently.
     <tr>
       <td align="left">
         <a href="./modules/data-source">
-          DataSource (NEW)
+          DataSource
         </a>
       </td>
       <td align="left">Control the mapping from DICOM metadata to OHIF-metadata</td>

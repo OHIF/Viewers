@@ -1,26 +1,25 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
 
-import { ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
-import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
-import { useAppConfig } from '@state';
+import { Button, Header, Icons, useModal } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
+import HeaderPatientInfo from './HeaderPatientInfo';
+import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
+import { preserveQueryParameters } from '@ohif/app';
+import { Types } from '@ohif/core';
 
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
+  const { servicesManager, extensionManager, commandsManager } = useSystem();
+  const { customizationService } = servicesManager.services;
 
-function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
-  const [appConfig] = useAppConfig();
   const navigate = useNavigate();
   const location = useLocation();
 
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
 
     const dataSourceName = pathname.substring(dataSourceIdx + 1);
     const existingDataSource = extensionManager.getDataSources(dataSourceName);
@@ -29,10 +28,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
+    preserveQueryParameters(searchQuery, customizationService);
 
     navigate({
       pathname: '/',
@@ -41,53 +37,56 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
   };
 
   const { t } = useTranslation();
-  const { show, hide } = useModal();
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
+  const { show } = useModal();
+
+  const AboutModal = customizationService.getCustomization(
+    'ohif.aboutModal'
+  ) as Types.MenuComponentCustomization;
+
+  const AppearanceModal = customizationService.getCustomization(
+    'ohif.appearanceModal'
+  ) as Types.MenuComponentCustomization;
+
+  const UserPreferencesModal = customizationService.getCustomization(
+    'ohif.userPreferencesModal'
+  ) as Types.MenuComponentCustomization;
 
   const menuOptions = [
     {
-      title: t('Header:About'),
+      title: AboutModal?.menuTitle ?? t('Header:About'),
       icon: 'info',
       onClick: () =>
         show({
           content: AboutModal,
-          title: t('AboutModal:About OHIF Viewer'),
-          contentProps: { versionNumber, commitHash },
+          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+          containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
         }),
     },
     {
-      title: t('Header:Preferences'),
+      title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              if (language.value !== currentLanguage().value) {
-                i18n.changeLanguage(language.value);
-              }
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
+          content: UserPreferencesModal,
+          title: UserPreferencesModal.title ?? t('UserPreferencesModal:User preferences'),
+          containerClassName:
+            UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
   ];
+
+  if (AppearanceModal) {
+    menuOptions.splice(1, 0, {
+      title: AppearanceModal.menuTitle ?? t('Header:Appearance'),
+      icon: 'ColorChange',
+      onClick: () =>
+        show({
+          content: AppearanceModal,
+          title: AppearanceModal.title ?? t('AppearanceModal:Appearance'),
+          containerClassName: AppearanceModal.containerClassName ?? 'max-w-md',
+        }),
+    });
+  }
 
   if (appConfig.oidc) {
     menuOptions.push({
@@ -105,14 +104,43 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
-      showPatientInfo={appConfig.showPatientInfo}
-      servicesManager={servicesManager}
-    >
-      <ErrorBoundary context="Primary Toolbar">
-        <div className="relative flex justify-center">
-          <Toolbar servicesManager={servicesManager} />
+      Secondary={<Toolbar buttonSection="secondary" />}
+      PatientInfo={
+        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
+          <HeaderPatientInfo
+            servicesManager={servicesManager}
+            appConfig={appConfig}
+          />
+        )
+      }
+      UndoRedo={
+        <div className="text-primary flex cursor-pointer items-center">
+          <Button
+            variant="ghost"
+            className="hover:bg-muted"
+            data-cy="undo-btn"
+            onClick={() => {
+              commandsManager.run('undo');
+            }}
+          >
+            <Icons.Undo className="" />
+          </Button>
+          <Button
+            variant="ghost"
+            className="hover:bg-muted"
+            data-cy="redo-btn"
+            onClick={() => {
+              commandsManager.run('redo');
+            }}
+          >
+            <Icons.Redo className="" />
+          </Button>
         </div>
-      </ErrorBoundary>
+      }
+    >
+      <div className="relative flex justify-center gap-[4px]">
+        <Toolbar buttonSection="primary" />
+      </div>
     </Header>
   );
 }

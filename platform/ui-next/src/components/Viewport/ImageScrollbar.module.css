@@ -1,0 +1,89 @@
+/* Scrollbar container */
+.scrollbarContainer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 5px 5px 0 5px;
+  z-index: 10;
+}
+
+.scrollbarInner {
+  position: relative;
+  height: 100%;
+  width: 11px;
+}
+
+/* Apply these styles to any range input inside our component */
+.scrollbarInput {
+  position: absolute;
+  left: 12px;
+  top: 0;
+  height: 12px;
+  transform: rotate(90deg);
+  transform-origin: top left;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Thumb styles for WebKit browsers - more specific selector */
+input[type='range'].scrollbarInput::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  background-color: hsl(var(--neutral));
+  opacity: 50%;
+  border: none;
+  border-radius: 57px;
+  cursor: -webkit-grab;
+  height: 8px;
+  margin-top: -4px;
+  width: 32px;
+}
+
+input[type='range'].scrollbarInput::-webkit-slider-thumb:active,
+input[type='range'].scrollbarInput::-webkit-slider-thumb:hover {
+  background-color: hsl(var(--primary));
+  opacity: 60%;
+  cursor: -webkit-grabbing;
+}
+
+/* Thumb styles for Firefox - more specific selector */
+input[type='range'].scrollbarInput::-moz-range-thumb {
+  background-color: hsl(var(--neutral));
+  opacity: 50%;
+  border: none;
+  border-radius: 57px;
+  cursor: -moz-grab;
+  height: 12px;
+  width: 39px;
+}
+
+input[type='range'].scrollbarInput::-moz-range-thumb:active,
+input[type='range'].scrollbarInput::-moz-range-thumb:hover {
+  background-color: hsl(var(--primary));
+  opacity: 50%;
+  cursor: -moz-grabbing;
+}
+
+/* Track styles for WebKit browsers - more specific selector */
+input[type='range'].scrollbarInput::-webkit-slider-runnable-track {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  height: 5px;
+}
+
+/* Track styles for Firefox - more specific selector */
+input[type='range'].scrollbarInput::-moz-range-track {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  height: 2px;
+}
+
+/* Ensure focus doesn't show an outline */
+.scrollbarInput:focus {
+  outline: none;
+}

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: DICOMweb
+title: DICOMweb
+summary: Comprehensive guide to configuring DICOMweb data sources in OHIF, including setting up local DICOM servers (Orthanc, DCM4CHEE), configurations for PDF, video, and bulkdata handling, and detailed instructions for development environments.
 ---
 
 # DICOMweb
@@ -65,11 +67,9 @@ yarn run orthanc:up
 _Upload your first Study:_
 
 1. Navigate to
-   [Orthanc's web interface](http://localhost:8042/app/explorer.html) at
-   `http://localhost:8042/app/explorer.html` in a web browser.
-2. In the top right corner, click "Upload"
-3. Click "Select files to upload..." and select one or more DICOM files
-4. Click "Start the upload"
+   [Orthanc's web interface](http://localhost:8042/ui/app/index.html#/) at
+   `http://localhost:8042/ui/app/index.html#/` in a web browser.
+2. In the left you can see the upload button where you can drag and drop your DICOM files
 
 #### Orthanc: Learn More
 
@@ -88,7 +88,7 @@ this repository's root directory, and run:
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Run our dev command, but with the local orthanc config
 yarn run dev:orthanc
@@ -97,20 +97,20 @@ yarn run dev:orthanc
 #### Configuration: Learn More
 
 > For more configuration fun, check out the
-> [Essentials Configuration](../index.md) guide.
+> [Essentials Configuration](../configurationFiles.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
 is running the `dev:orthanc` script in our project's `package.json` (inside
 `platform/app`). That script is:
 
 ```js
-cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
+cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker-nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
 ```
 
 - `cross-env` sets three environment variables
   - PROXY_TARGET: `/dicom-web`
   - PROXY_DOMAIN: `http://localhost:8042`
-  - APP_CONFIG: `config/docker_nginx-orthanc.js`
+  - APP_CONFIG: `config/docker-nginx-orthanc.js`
 - `webpack-dev-server` runs using the `.webpack/webpack.pwa.js` configuration
   file. It will watch for changes and update as we develop.
 
@@ -125,7 +125,7 @@ configuration looks like:
 
 ```js
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
   modes: [],
   showStudyList: true,
@@ -169,16 +169,61 @@ then consider switching to using [DICOMweb instead](https://book.orthanc-server.
 
 ![toolbarModule-layout](../../assets/img/uploader.gif)
 
+Don't forget to add the customization to the config as well
+
+```js
+customizationService: {
+  dicomUploadComponent:
+    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+},
+```
+
+
 #### `singlepart`
 A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`.
 
 For DICOM video and PDF it has been found that Orthanc delivers multipart, while DCM4CHEE delivers single part. Consult the DICOM conformance statement for your particular data source to determine which payload types it delivers.
 
 To learn more about how you can configure the OHIF Viewer, check out our
-[Configuration Guide](../index.md).
+[Configuration Guide](../configurationFiles.md).
 
-### DICOM Upload
-See the [`dicomUploadEnabled`](#dicomuploadenabled) data source configuration option.
+#### `thumbnailRendering`
+
+Optional. Controls how thumbnail images are requested.
+
+| Value | Behavior |
+| ----- | -------- |
+| `wadors` (default) | Uses WADO-RS retrieval for thumbnail image content |
+| `thumbnailDirect` | Uses the thumbnail URL directly as the image source. Use this only when the archive serves that URL without auth headers |
+| `thumbnail` | Uses the WADO-RS `.../thumbnail` endpoint |
+| `rendered` | Uses the WADO-RS `.../rendered` endpoint |
+
+Use `thumbnail` or `rendered` when the archive supports dedicated thumbnail/rendered responses. If either is selected, `thumbnailRequestStrategy` controls how the image data is fetched.
+
+#### `thumbnailRequestStrategy`
+
+Optional. Controls how the app retrieves the data for various thumbnails (e.g. side study panel study browser and study list preview panel) when
+`thumbnailRendering` is `thumbnail` or `rendered`. It does not apply to `wadors` or `thumbnailDirect`.
+
+| Value | Behavior |
+| ----- | -------- |
+| `bulkDataRetrieve` (default) | Uses the DICOMweb client's bulk data retrieve API, consistent with other bulk data reads |
+| `fetch` | Performs an authenticated HTTP `GET` to the WADO-RS `.../thumbnail` or `.../rendered` URL and builds a blob URL from the JPEG response. Prefer this when the archive serves a plain image body and bulk data retrieve is incompatible or unreliable. |
+
+Example (Orthanc-style plain fetch for thumbnails):
+
+```js
+thumbnailRendering: 'rendered',
+thumbnailRequestStrategy: 'fetch',
+```
+
+#### `queryLimit`
+
+Optional. The maximum number of studies requested from the server for the study list, passed as the `limit` query parameter to data sources that honor it. Paging is handled in the OHIF client, so this value caps how many studies a single search returns. When not specified, it defaults to `101`.
+
+```js
+queryLimit: 101,
+```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
@@ -188,13 +233,14 @@ See the [`singlepart`](#singlepart) data source configuration option.
 
 ### BulkDataURI
 
-The `bulkDataURI` configuration option allows the datasource to use the
-bulkdata end points for retrieving metadata if originally was not included in the
+The `bulkDataURI` configuration option alters how the datasource uses the
+bulkdata end points for retrieving metadata if the data was originally not included in the
 response from the server. This is useful for the metadata information that
 are big and can/should be retrieved in a separate request. In case the bulkData URI
 is relative (instead of absolute) the `relativeResolution` option can be used to
-specify the resolution of the relative URI. The possible values are `studies`, `series` and `instances`.
-Certainly the knowledge of how the server is configured is required to use this option.
+specify the resolution of the relative URI. The possible values are `studies`, `series`.
+
+The default value is shown below (this will be added if not included in the config).
 
 ```js
 bulkDataURI: {
@@ -203,6 +249,12 @@ bulkDataURI: {
 },
 ```
 
+The other options allowed are:
+
+* transform - to take the string and return an updated string
+* startsWith and prefixWith - to remove a standard prefix and add an optional prefix
+  * Used primarily for a reverse proxy or change in URL naming
+* relativeResolution - used to set bulkdata paths to studies resolution for incorrect bulkdata paths
 
 ### Running DCM4CHEE
 

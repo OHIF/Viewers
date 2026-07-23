@@ -1,1 +1,0 @@
-# Hanging Protocols

@@ -10,9 +10,9 @@ const InputMultiSelect = ({
   isSortable,
   sortDirection,
   onLabelClick,
-  value,
-  placeholder,
-  options,
+  value = [],
+  placeholder = '',
+  options = [],
   onChange,
 }) => {
   return (
@@ -30,7 +30,7 @@ const InputMultiSelect = ({
         value={value}
         isMulti={true}
         isClearable={false}
-        isSearchable={false}
+        isSearchable={true}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         onChange={(selectedOptions, action) => {
@@ -48,12 +48,6 @@ const InputMultiSelect = ({
       />
     </InputLabelWrapper>
   );
-};
-
-InputMultiSelect.defaultProps = {
-  value: [],
-  placeholder: '',
-  options: [],
 };
 
 InputMultiSelect.propTypes = {

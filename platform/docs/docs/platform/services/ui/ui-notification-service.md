@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: UI Notification Service
+title: UI Notification Service
+summary: Documentation for OHIF's UI Notification Service, which provides a standardized way to display non-intrusive, contextual notifications for timely and relevant information to users throughout the application.
 ---
 # UI Notification Service
 
@@ -32,12 +34,14 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | ---------- | --------------------------------------- |
 | `hide()`   | Hides the specified notification        |
 | `show()`   | Creates and displays a new notification |
+| `customComponent()`   | Overrides the default Notification component |
 
 ## Implementations
 
 | Implementation                           | Consumer                                  |
 | ---------------------------------------- | ----------------------------------------- |
 | [Snackbar Provider][snackbar-provider]\* | [SnackbarContainer][snackbar-container]\* |
+| customComponent | user extensions via `setServiceImplementation({customComponent: Snackbar})` |
 
 `*` - Denotes maintained by OHIF
 

@@ -1,18 +1,32 @@
-import { hotkeys } from '@ohif/core';
+import i18n from 'i18next';
+import { ToolbarService } from '@ohif/core';
+import {
+  isValidMode,
+  layoutTemplate,
+  modeFactory,
+  modeInstance as basicModeInstance,
+} from '@ohif/mode-basic';
+
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
-import moreTools from './moreTools';
-import i18n from 'i18next';
+
+const { TOOLBAR_SECTIONS } = ToolbarService;
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
+const NON_IMAGE_MODALITIES = ['ECG', 'SR', 'SEG', 'RTSTRUCT'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  wsiSopClassHandler:
+    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+};
+
+const testExtension = {
+  measurements: '@ohif/extension-test.panelModule.panelMeasurementSeries',
 };
 
 const tracked = {
@@ -23,12 +37,12 @@ const tracked = {
 
 const dicomsr = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
 const dicompdf = {
@@ -39,158 +53,202 @@ const dicompdf = {
 const dicomSeg = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+};
+
+const cornerstone = {
+  panel: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+};
+
+const dicomPmap = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
 };
 
 const extensionDependencies = {
-  // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-test': '^0.0.1',
 };
 
-function modeFactory() {
-  return {
-    // TODO: We're using this as a route segment
-    // We should not be.
-    id,
-    routeName: 'basic-test',
-    displayName: i18n.t('Modes:Basic Test Mode'),
-    /**
-     * Lifecycle hooks
-     */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+/**
+ * The test mode's toolbar layout, supplied as literal values rather than
+ * `{ $reference }` capability-pack markers (the composition is resolved the
+ * same way either — literals pass through untouched).
+ */
+const toolbarSections = {
+  [TOOLBAR_SECTIONS.primary]: [
+    'MeasurementTools',
+    'Zoom',
+    'WindowLevelGroup',
+    'Pan',
+    'Capture',
+    'Layout',
+    'MPR',
+    'Crosshairs',
+    'MoreTools',
+  ],
 
-      measurementService.clearMeasurements();
+  WindowLevelGroup: ['WindowLevel', 'Soft tissue', 'Lung', 'Liver', 'Bone', 'Brain'],
 
-      // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
 
-      // init customizations
-      customizationService.addModeCustomizations([
-        '@ohif/extension-test.customizationModule.custom-context-menu',
-      ]);
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],
 
-      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Capture',
-        'Layout',
-        'MPR',
-        'Crosshairs',
-        'MoreTools',
-      ]);
-    },
-    onModeExit: ({ servicesManager }) => {
-      const {
-        toolGroupService,
-        syncGroupService,
-        segmentationService,
-        cornerstoneViewportService,
-        uiDialogService,
-        uiModalService,
-      } = servicesManager.services;
+  AdvancedRenderingControls: ['voiManualControlMenu', 'Colorbar', 'opacityMenu', 'thresholdMenu'],
 
-      uiDialogService.dismissAll();
-      uiModalService.hide();
-      toolGroupService.destroy();
-      syncGroupService.destroy();
-      segmentationService.destroy();
-      cornerstoneViewportService.destroy();
-    },
-    validationTags: {
-      study: [],
-      series: [],
-    },
+  [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: [
+    'modalityLoadBadge',
+    'trackingStatus',
+    'navigationComponent',
+  ],
 
-    isValidMode: function ({ modalities }) {
-      const modalities_list = modalities.split('\\');
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
 
-      // Exclude non-image modalities
-      return {
-        valid: !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
-          .length,
-        description:
-          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SR, SEG',
-      };
-    },
-    routes: [
+  MeasurementTools: [
+    'Length',
+    'Bidirectional',
+    'ArrowAnnotate',
+    'EllipticalROI',
+    'CircleROI',
+    'PlanarFreehandROI',
+    'SplineROI',
+    'LivewireContour',
+  ],
+
+  MoreTools: [
+    'Reset',
+    'rotate-right',
+    'flipHorizontal',
+    'ImageSliceSync',
+    'ReferenceLines',
+    'ImageOverlayViewer',
+    'StackScroll',
+    'invert',
+    'Probe',
+    'Cine',
+    'Angle',
+    'CobbAngle',
+    'Magnify',
+    'RectangleROI',
+    'CalibrationLine',
+    'TagBrowser',
+    'AdvancedMagnify',
+    'UltrasoundDirectionalTool',
+    'WindowLevelRegion',
+  ],
+};
+
+export const basicTestLayout = {
+  id: ohif.layout,
+  props: {
+    // Literal panel lists; the shared layout template also accepts
+    // customization names here.
+    leftPanels: [tracked.thumbnailList],
+    leftPanelResizable: true,
+    rightPanels: [cornerstone.panel, tracked.measurements, testExtension.measurements],
+    rightPanelResizable: true,
+    viewports: [
       {
-        path: 'basic-test',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
-        layoutTemplate: () => {
-          return {
-            id: ohif.layout,
-            props: {
-              leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
-              // rightPanelDefaultClosed: true, // optional prop to start with collapse panels
-              viewports: [
-                {
-                  namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
-                },
-                {
-                  namespace: dicomsr.viewport,
-                  displaySetsToDisplay: [dicomsr.sopClassHandler],
-                },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                },
-                {
-                  namespace: dicompdf.viewport,
-                  displaySetsToDisplay: [dicompdf.sopClassHandler],
-                },
-                {
-                  namespace: dicomSeg.viewport,
-                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
-                },
-              ],
-            },
-          };
-        },
+        namespace: tracked.viewport,
+        displaySetsToDisplay: [
+          ohif.sopClassHandler,
+          dicomvideo.sopClassHandler,
+          ohif.wsiSopClassHandler,
+        ],
+      },
+      {
+        namespace: dicomsr.viewport,
+        displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
+      },
+      {
+        namespace: dicompdf.viewport,
+        displaySetsToDisplay: [dicompdf.sopClassHandler],
+      },
+      {
+        namespace: dicomSeg.viewport,
+        displaySetsToDisplay: [dicomSeg.sopClassHandler],
+      },
+      {
+        namespace: dicomPmap.viewport,
+        displaySetsToDisplay: [dicomPmap.sopClassHandler],
       },
     ],
-    extensions: extensionDependencies,
-    // Default protocol gets self-registered by default in the init
-    hangingProtocol: 'default',
-    // Order is important in sop class handlers when two handlers both use
-    // the same sop class under different situations.  In that case, the more
-    // general handler needs to come last.  For this case, the dicomvideo must
-    // come first to remove video transfer syntax before ohif uses images
-    sopClassHandlers: [
-      dicomvideo.sopClassHandler,
-      dicomSeg.sopClassHandler,
-      ohif.sopClassHandler,
-      dicompdf.sopClassHandler,
-      dicomsr.sopClassHandler,
-    ],
-    hotkeys: {
-      // Don't store the hotkeys for basic-test-mode under the same key
-      // because they get customized by tests
-      name: 'basic-test-hotkeys',
-      hotkeys: [...hotkeys.defaults.hotkeyBindings],
+  },
+};
+
+export const basicTestRoute = {
+  path: 'basic-test',
+  layoutTemplate,
+  layoutInstance: basicTestLayout,
+};
+
+/**
+ * Extends the basic mode instance: the shared onModeEnter/onModeExit are
+ * inherited, and the test specifics (toolbar layout, tool groups, test
+ * customizations) are supplied as instance data.
+ */
+export const modeInstance = {
+  ...basicModeInstance,
+  id,
+  routeName: 'basic-test',
+  displayName: i18n.t('Modes:Basic Test Mode'),
+  // Literal toolbar values instead of the basic mode's customization names.
+  toolbarButtons,
+  toolbarSections,
+  // Tool group setup used by the shared onModeEnter.
+  initToolGroups,
+  // The mode's own customizations, applied by the mode route as the bottom
+  // layer of the mode scope: the test extension's custom context menu, plus
+  // the undo hotkey used by the E2E tests.  Given as a literal here; modes may
+  // also reference a registered block by name (see `basicModeCustomizations`).
+  modeCustomizations: [
+    '@ohif/extension-test.customizationModule.custom-context-menu',
+    {
+      'ohif.hotkeyBindings': {
+        $push: [
+          {
+            commandName: 'undo',
+            label: 'Undo',
+            keys: ['ctrl+z'],
+            isEditable: true,
+          },
+        ],
+      },
     },
-  };
-}
+  ],
+
+  isValidMode,
+  nonModeModalities: NON_IMAGE_MODALITIES,
+  routes: [basicTestRoute],
+  extensions: extensionDependencies,
+  hangingProtocol: 'default',
+  sopClassHandlers: [
+    dicomvideo.sopClassHandler,
+    dicomSeg.sopClassHandler,
+    ohif.wsiSopClassHandler,
+    ohif.sopClassHandler,
+    dicompdf.sopClassHandler,
+    dicomsr.sopClassHandler,
+    dicomsr.sopClassHandler3D,
+  ],
+  hotkeys: {
+    name: 'basic-test-hotkeys',
+  },
+};
 
 const mode = {
   id,
   modeFactory,
+  modeInstance,
   extensionDependencies,
 };
 
 export default mode;
+export { initToolGroups };

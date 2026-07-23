@@ -1,3 +1,3 @@
-import PanelROIThresholdSegmentation from './PanelROIThresholdSegmentation';
+import PanelROIThresholdExport from './PanelROIThresholdExport';
 
-export default PanelROIThresholdSegmentation;
+export default PanelROIThresholdExport;

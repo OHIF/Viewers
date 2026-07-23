@@ -1,173 +1,144 @@
-import { hotkeys } from '@ohif/core';
 import { id } from './id';
-import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
+import setUpAutoTabSwitchHandler from './utils/setUpAutoTabSwitchHandler';
+import {
+  ohif,
+  cornerstone,
+  extensionDependencies,
+  dicomRT,
+  segmentation,
+  isValidMode,
+  onModeEnter as basicOnModeEnter,
+  onModeExit,
+  layoutTemplate,
+  modeFactory,
+} from '@ohif/mode-basic';
 
-const DEFAULT_TOOL_GROUP_ID = 'default';
-const VOLUME3D_TOOL_GROUP_ID = 'volume3d';
+/**
+ * Extends the basic mode enter with the segmentation panel auto tab switch
+ * handling (switching between labelmap/contour panels as segmentations of the
+ * relevant type become active).
+ */
+export function onModeEnter(ctx: withAppTypes) {
+  basicOnModeEnter.call(this, ctx);
 
-const ohif = {
-  layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
-  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
-  leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  const { segmentationService, viewportGridService, panelService } = ctx.servicesManager.services;
+
+  const { unsubscribeAutoTabSwitchEvents } = setUpAutoTabSwitchHandler({
+    segmentationService,
+    viewportGridService,
+    panelService,
+  });
+
+  this._unsubscriptions.push(...unsubscribeAutoTabSwitchEvents);
+}
+
+export const segmentationLayout = {
+  id: ohif.layout,
+  props: {
+    // Literal panel lists; the mode route seeds them into the standard
+    // `leftPanels` / `rightPanels` customizations so `mode` phase
+    // blocks and global customizations can modify them.
+    leftPanels: [ohif.thumbnailList],
+    leftPanelResizable: true,
+    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.contourSegmentationPanel],
+    rightPanelResizable: true,
+    viewports: [
+      {
+        namespace: cornerstone.viewport,
+        displaySetsToDisplay: [ohif.sopClassHandler],
+      },
+      {
+        namespace: segmentation.viewport,
+        displaySetsToDisplay: [segmentation.sopClassHandler],
+      },
+      {
+        namespace: dicomRT.viewport,
+        displaySetsToDisplay: [dicomRT.sopClassHandler],
+      },
+    ],
+  },
 };
 
-const cornerstone = {
-  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+export const segmentationRoute = {
+  path: 'template',
+  layoutTemplate,
+  layoutInstance: segmentationLayout,
 };
 
-const segmentation = {
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-  panelTool: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+export const modeInstance = {
+  id,
+  routeName: 'segmentation',
+  displayName: 'Segmentation',
+  // Toolbar/tool-group composition: which capability packs this mode uses.
+  // The mode route seeds these onto the Mode customization scope on enter, so
+  // `?customization=` modules extend them through the `mode` phase (e.g. add
+  // the annotation tools/buttons). Pack names are resolved when the toolbar is
+  // registered.
+  toolbarButtons: [
+    { $reference: 'cornerstone.toolbarButtons' },
+    { $reference: 'cornerstone.segmentationToolbarButtons' },
+  ],
+  toolbarSections: [
+    { $reference: 'cornerstone.segmentationModeToolbarSections' },
+    { $reference: 'cornerstone.segmentationToolbarSections' },
+  ],
+  toolGroupAdditions: {
+    default: [],
+    mpr: [],
+    volume3d: [],
+  },
+  // Tool group setup used by onModeEnter; extending modes can replace it.
+  initToolGroups,
+  // The mode's own customizations, applied by the mode route as the bottom
+  // layer of the mode scope.  Unlike basic, the registered block is empty (no
+  // `panelSegmentation.disableEditing`): the segmentation panel is editable.
+  modeCustomizations: 'segmentationModeCustomizations',
+  activatePanelTriggers: [],
+
+  /**
+   * Lifecycle hooks
+   */
+  onModeEnter,
+  onModeExit,
+  validationTags: {
+    study: [],
+    series: [],
+  },
+
+  // Data-driven validity: valid unless the study ONLY contains modalities that
+  // segmentation cannot be performed on.
+  isValidMode,
+  nonModeModalities: ['SM', 'ECG', 'OT', 'DOC'],
+  routes: [segmentationRoute],
+  extensions: extensionDependencies,
+  // Prefer the grid layout hanging protocol when applicable.
+  hangingProtocol: ['@ohif/mnGrid'],
+  sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
 };
 
 /**
- * Just two dependencies to be able to render a viewport with panels in order
- * to make sure that the mode is working.
+ * Customizations the mode registers (Default scope) when it loads.  The mode's
+ * own block is empty — the segmentation panel is editable in this mode — but
+ * it is registered so bootstrap / `?customization=` modules can add
+ * mode-scoped values to it.
  */
-const extensionDependencies = {
-  '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+export const customizations = {
+  segmentationModeCustomizations: {},
 };
 
-function modeFactory({ modeConfiguration }) {
-  return {
-    /**
-     * Mode ID, which should be unique among modes used by the viewer. This ID
-     * is used to identify the mode in the viewer's state.
-     */
-    id,
-    routeName: 'segmentation',
-    /**
-     * Mode name, which is displayed in the viewer's UI in the workList, for the
-     * user to select the mode.
-     */
-    displayName: 'Segmentation',
-    /**
-     * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
-     * Services and other resources.
-     */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
-
-      measurementService.clearMeasurements();
-
-      // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
-
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.addButtons(segmentationButtons);
-
-      toolbarService.createButtonSection('primary', [
-        'WindowLevel',
-        'Pan',
-        'Zoom',
-        'TrackballRotate',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-        'MoreTools',
-      ]);
-      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
-    },
-    onModeExit: ({ servicesManager }) => {
-      const {
-        toolGroupService,
-        syncGroupService,
-        toolbarService,
-        segmentationService,
-        cornerstoneViewportService,
-        uiDialogService,
-        uiModalService,
-      } = servicesManager.services;
-
-      uiDialogService.dismissAll();
-      uiModalService.hide();
-      toolGroupService.destroy();
-      syncGroupService.destroy();
-      segmentationService.destroy();
-      cornerstoneViewportService.destroy();
-    },
-    /** */
-    validationTags: {
-      study: [],
-      series: [],
-    },
-    /**
-     * A boolean return value that indicates whether the mode is valid for the
-     * modalities of the selected studies. Currently we don't have stack viewport
-     * segmentations and we should exclude them
-     */
-    isValidMode: ({ modalities }) => {
-      // Don't show the mode if the selected studies have only one modality
-      // that is not supported by the mode
-      const modalitiesArray = modalities.split('\\');
-      return {
-        valid:
-          modalitiesArray.length === 1
-            ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0])
-            : true,
-        description:
-          'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
-      };
-    },
-    /**
-     * Mode Routes are used to define the mode's behavior. A list of Mode Route
-     * that includes the mode's path and the layout to be used. The layout will
-     * include the components that are used in the layout. For instance, if the
-     * default layoutTemplate is used (id: '@ohif/extension-default.layoutTemplateModule.viewerLayout')
-     * it will include the leftPanels, rightPanels, and viewports. However, if
-     * you define another layoutTemplate that includes a Footer for instance,
-     * you should provide the Footer component here too. Note: We use Strings
-     * to reference the component's ID as they are registered in the internal
-     * ExtensionManager. The template for the string is:
-     * `${extensionId}.{moduleType}.${componentId}`.
-     */
-    routes: [
-      {
-        path: 'template',
-        layoutTemplate: ({ location, servicesManager }) => {
-          return {
-            id: ohif.layout,
-            props: {
-              leftPanels: [ohif.leftPanel],
-              rightPanels: [segmentation.panelTool],
-              viewports: [
-                {
-                  namespace: cornerstone.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
-                },
-                {
-                  namespace: segmentation.viewport,
-                  displaySetsToDisplay: [segmentation.sopClassHandler],
-                },
-              ],
-            },
-          };
-        },
-      },
-    ],
-    /** List of extensions that are used by the mode */
-    extensions: extensionDependencies,
-    /** HangingProtocol used by the mode */
-    // hangingProtocol: [''],
-    /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
-    /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
-  };
-}
-
+/**
+ * The mode uses the basic mode's `modeFactory`, which applies
+ * immutability-helper commands from `modeConfiguration` onto `modeInstance`,
+ * so a site can define a `mySegmentation` mode that extends this one.
+ */
 const mode = {
   id,
   modeFactory,
+  modeInstance,
   extensionDependencies,
+  customizations,
 };
 
 export default mode;
+export { initToolGroups };

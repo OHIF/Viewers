@@ -6,7 +6,7 @@ import DicomFileUploader, {
   UploadRejection,
   UploadStatus,
 } from '../../utils/DicomFileUploader';
-import { Icon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 type DicomUploadProgressItemProps = {
   dicomFileUploader: DicomFileUploader;
@@ -54,28 +54,28 @@ const DicomUploadProgressItem = memo(
       switch (dicomFileUploader.getStatus()) {
         case UploadStatus.Success:
           return (
-            <Icon
+            <Icons.ByName
               name="status-tracked"
-              className="text-primary-light"
-            ></Icon>
+              className="text-highlight"
+            />
           );
         case UploadStatus.InProgress:
-          return <Icon name="icon-transferring"></Icon>;
+          return <Icons.ByName name="icon-transferring" className="text-highlight" />;
         case UploadStatus.Failed:
-          return <Icon name="icon-alert-small"></Icon>;
+          return <Icons.ByName name="icon-alert-small" className="text-destructive" />;
         case UploadStatus.Cancelled:
-          return <Icon name="icon-alert-outline"></Icon>;
+          return <Icons.ByName name="icon-alert-outline" className="text-highlight" />;
         default:
           return <></>;
       }
     };
 
     return (
-      <div className="min-h-14 border-secondary-light flex w-full items-center overflow-hidden border-b p-2.5 text-lg">
+      <div className="min-h-14 border-input flex w-full items-center overflow-hidden border-b p-2.5 text-lg">
         <div className="self-top flex w-0 shrink grow flex-col gap-1">
           <div className="flex gap-4">
             <div className="flex w-6 shrink-0 items-center justify-center">{getStatusIcon()}</div>
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className="text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
               {dicomFileUploader.getFileName()}
             </div>
           </div>
@@ -88,9 +88,8 @@ const DicomUploadProgressItem = memo(
                 <div className="w-10 text-right">{percentComplete}%</div>
               )}
               <div className="ml-auto flex cursor-pointer">
-                <Icon
-                  className="text-primary-active self-center"
-                  name="close"
+                <Icons.Close
+                  className="text-primary self-center"
                   onClick={cancelUpload}
                 />
               </div>

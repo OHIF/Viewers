@@ -12,5 +12,7 @@
   "10": "Display set has frames with inconsistent number of components.",
   "11": "Display set has frames with inconsistent orientations.",
   "12": "Display set has inconsistent position information.",
-  "13": "Unsupported display set."
+  "13": "Unsupported display set.",
+  "14": "SOP Class UID {{ sopClassUid }} is not supported.",
+  "15": "Display Set is missing a SOP Class UID. Please check the file."
 }

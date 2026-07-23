@@ -7,7 +7,9 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { ServicesManager, Types } from '@ohif/core';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
+import { Types } from '@ohif/core';
+import Enums from './enums';
 
 import init from './init';
 import getCustomizationModule from './getCustomizationModule';
@@ -20,19 +22,61 @@ import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import ColorbarService from './services/ColorbarService';
+import ViewedDataService from './services/ViewedDataService';
 import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
-import { getEnabledElement, reset as enabledElementReset } from './state';
+import { getEnabledElement, reset as enabledElementReset, setEnabledElement } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
 import { id } from './id';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
+import PlanarFreehandROI from './utils/measurementServiceMappings/PlanarFreehandROI';
+import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
-import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
-import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
+import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+import {
+  getViewportAdapter,
+  getViewportFocalPoint,
+  isNextViewport,
+  isVolumeRenderingViewport,
+} from './services/ViewportService/adapter';
+import { isNextViewportsEnabled } from './utils/nextViewports';
+import {
+  NEXT_FUSION_PT_OPACITY,
+  NEXT_OVERLAY_OPACITY,
+  getHydrationViewportTypeForModality,
+} from './utils/nextViewportPolicies';
+import { findNearbyToolData } from './utils/findNearbyToolData';
+import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
+import { getSopClassHandlerModule } from './getSopClassHandlerModule';
+import { getDynamicVolumeInfo } from '@cornerstonejs/core/utilities';
+import {
+  useLutPresentationStore,
+  usePositionPresentationStore,
+  useSegmentationPresentationStore,
+  useSynchronizersStore,
+  useSelectedSegmentationsForViewportStore,
+} from './stores';
+import { useToggleOneUpViewportGridStore } from '@ohif/extension-default';
+import { useActiveViewportSegmentationRepresentations } from './hooks/useActiveViewportSegmentationRepresentations';
+import { useMeasurements } from './hooks/useMeasurements';
+import getPanelModule from './getPanelModule';
+import PanelSegmentation from './panels/PanelSegmentation';
+import PanelMeasurement from './panels/PanelMeasurement';
+import { useSegmentations } from './hooks/useSegmentations';
+import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import utils from './utils';
+import { useMeasurementTracking } from './hooks/useMeasurementTracking';
+import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
+import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
+import update from 'immutability-helper';
+export * from './components';
+
+const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -46,6 +90,22 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
+const DEFAULT_STACK_RETRIEVE_OPTIONS = {
+  retrieveOptions: {
+    single: {
+      streaming: true,
+      decodeLevel: 1,
+    },
+  },
+};
+
+/** Normalize to immutability-helper spec: plain object → $merge, otherwise use as-is. */
+const toUpdateSpec = (obj: object) =>
+  obj != null && typeof obj === 'object' && Object.keys(obj).some(k => k.startsWith('$'))
+    ? obj
+    : { $merge: (obj ?? {}) as object };
+
+const unsubscriptions = [];
 /**
  *
  */
@@ -55,7 +115,65 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeExit: (): void => {
+  onModeEnter: ({ servicesManager, commandsManager, extensionManager }: withAppTypes): void => {
+    const { cornerstoneViewportService, toolbarService, segmentationService } =
+      servicesManager.services;
+
+    const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
+      servicesManager,
+      commandsManager,
+    });
+    unsubscriptions.push(...segmentationUnsubscriptions);
+
+    const annotationUnsubscriptions = setUpAnnotationEventHandlers();
+    unsubscriptions.push(...annotationUnsubscriptions);
+
+    toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    ]);
+
+    toolbarService.registerEventForToolbarUpdate(segmentationService, [
+      segmentationService.EVENTS.SEGMENTATION_REMOVED,
+      segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+      segmentationService.EVENTS.SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
+    ]);
+
+    toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
+      cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
+    ]);
+
+    // Configure the interleaved/HTJ2K loader
+    imageRetrieveMetadataProvider.clear();
+    // The default volume interleaved options are to interleave the
+    // image retrieve, but don't perform progressive loading per image
+    // This interleaves images and replicates them for low-resolution depth volume
+    // reconstruction, which progressively improves
+    imageRetrieveMetadataProvider.add(
+      'volume',
+      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+    );
+
+    /**
+     * Stack retrieve options: read from active data source configuration.
+     * Pass an immutability-helper spec (e.g. { $merge: {...} } or { $set: {...} }) in
+     * stackRetrieveOptions to customize. Plain object is treated as $merge for backward compat.
+     * Set streaming: false for uncompressed DICOM that requires full file before decode.
+     */
+    const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
+    const config = sourceConfig.stackRetrieveOptions ?? {};
+    const stackOptions = update(
+      DEFAULT_STACK_RETRIEVE_OPTIONS,
+      toUpdateSpec(config)
+    ) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
+    imageRetrieveMetadataProvider.add('stack', stackOptions);
+  },
+  getPanelModule,
+  onModeExit: ({ servicesManager }: withAppTypes): void => {
+    unsubscriptions.forEach(unsubscribe => unsubscribe());
+    // Clear the unsubscriptions
+    unsubscriptions.length = 0;
+
+    const { cineService, segmentationService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
@@ -63,7 +181,25 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       imageRetrievalPoolManager.clearRequestStack(type);
     });
 
+    // Release the typed metadata registry (NATURALIZED instances registered via
+    // prefetchPart10Instance hold full compressed Part 10 buffers that live
+    // outside the size-capped cornerstone image cache)
+    csMetadataUtilities.clearCacheData();
+
+    cineService.setIsCineEnabled(false);
+
     enabledElementReset();
+
+    useLutPresentationStore.getState().clearLutPresentationStore();
+    usePositionPresentationStore.getState().clearPositionPresentationStore();
+    useSynchronizersStore.getState().clearSynchronizersStore();
+    useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
+    useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
+    useSelectedSegmentationsForViewportStore
+      .getState()
+      .clearSelectedSegmentationsForViewportStore();
+    servicesManager.services.viewedDataService?.clearViewedData();
+    segmentationService.removeAllSegmentations();
   },
 
   /**
@@ -71,31 +207,26 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    *
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
-  preRegistration: function (props: Types.Extensions.ExtensionParams): Promise<void> {
-    const { servicesManager, serviceProvidersManager } = props;
+  preRegistration: async function (props: Types.Extensions.ExtensionParams): Promise<void> {
+    const { servicesManager } = props;
     servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
     servicesManager.registerService(ToolGroupService.REGISTRATION);
     servicesManager.registerService(SyncGroupService.REGISTRATION);
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
-    servicesManager.registerService(ViewportActionCornersService.REGISTRATION);
     servicesManager.registerService(ColorbarService.REGISTRATION);
+    servicesManager.registerService(ViewedDataService.REGISTRATION);
 
-    serviceProvidersManager.registerProvider(
-      ViewportActionCornersService.REGISTRATION.name,
-      ViewportActionCornersProvider
-    );
-    return init.call(this, props);
+    const { syncGroupService } = servicesManager.services;
+    syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
+
+    await init.call(this, props);
   },
-
   getToolbarModule,
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
-      // const onNewImageHandler = jumpData => {
-      //   commandsManager.runCommand('jumpToImage', jumpData);
-      // };
-      const { toolbarService } = (servicesManager as ServicesManager).services;
+      const { toolbarService } = servicesManager.services;
 
       return (
         <OHIFCornerstoneViewport
@@ -111,6 +242,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       {
         name: 'cornerstone',
         component: ExtendedOHIFCornerstoneViewport,
+        isReferenceViewable: utils.isReferenceViewable.bind(null, servicesManager),
       },
     ];
   },
@@ -141,16 +273,58 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           Enums: cs3DToolsEnums,
         },
       },
+      {
+        name: 'volumeLoader',
+        exports: {
+          getDynamicVolumeInfo,
+        },
+      },
     ];
   },
+  getSopClassHandlerModule,
 };
 
 export type { PublicViewportOptions };
 export {
   measurementMappingUtils,
+  PlanarFreehandROI,
+  RectangleROI,
   CornerstoneExtensionTypes as Types,
   toolNames,
   getActiveViewportEnabledElement,
+  setEnabledElement,
+  findNearbyToolData,
+  getEnabledElement,
   ImageOverlayViewerTool,
+  getSOPInstanceAttributes,
+  getViewportAdapter,
+  getViewportFocalPoint,
+  isNextViewport,
+  isVolumeRenderingViewport,
+  isNextViewportsEnabled,
+  NEXT_FUSION_PT_OPACITY,
+  NEXT_OVERLAY_OPACITY,
+  getHydrationViewportTypeForModality,
+  dicomLoaderService,
+  // Export all stores
+  useLutPresentationStore,
+  usePositionPresentationStore,
+  useSegmentationPresentationStore,
+  useSynchronizersStore,
+  useSelectedSegmentationsForViewportStore,
+  Enums,
+  useMeasurements,
+  useActiveViewportSegmentationRepresentations,
+  useSegmentations,
+  PanelSegmentation,
+  PanelMeasurement,
+  StudySummaryFromMetadata,
+  CornerstoneViewportDownloadForm,
+  utils,
+  OHIFCornerstoneViewport,
+  useMeasurementTracking,
 };
+
+// Export constants
+export { VOLUME_LOADER_SCHEME, DYNAMIC_VOLUME_LOADER_SCHEME } from './constants';
 export default cornerstoneExtension;

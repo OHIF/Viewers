@@ -1,11 +1,15 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-rt",
-  "version": "3.8.0-beta.67",
+  "version": "3.14.0-beta.0",
   "description": "DICOM RT read workflow",
   "author": "OHIF",
   "license": "MIT",
+  "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-cornerstone-dicom-rt.umd.js",
   "module": "src/index.tsx",
+  "engines": {
+    "node": ">=24"
+  },
   "files": [
     "dist/**",
     "public/**",
@@ -14,38 +18,34 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": "OHIF/Viewers",
-  "keywords": [
-    "ohif-extension"
-  ],
-  "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
-  },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:dicom-seg": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev:dicom-seg": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.0-beta.67",
-    "@ohif/extension-cornerstone": "3.8.0-beta.67",
-    "@ohif/extension-default": "3.8.0-beta.67",
-    "@ohif/i18n": "3.8.0-beta.67",
-    "prop-types": "^15.6.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-i18next": "^10.11.0",
-    "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0"
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-cornerstone": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/i18n": "workspace:*",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "12.3.1",
+    "react-router": "6.30.3",
+    "react-router-dom": "6.30.3"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "react-color": "^2.19.3"
-  }
+    "@babel/runtime": "7.29.7"
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3"
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }

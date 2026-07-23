@@ -1,5 +1,4 @@
 <!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
 <div align="center">
   <h1>OHIF Medical Imaging Viewer</h1>
   <p><strong>The OHIF Viewer</strong> is a zero-footprint medical image viewer
@@ -41,18 +40,21 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 
 |     |  | |
 | :-: | :---  | :--- |
-| <img src="platform/docs/docs/assets/img/demo-measurements.jpg" alt="Measurement tracking" width="350"/> | Measurement Tracking | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5) |
-| <img src="platform/docs/docs/assets/img/demo-segmentation.png" alt="Segmentations" width="350"/> | Labelmap Segmentations  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046) |
-| <img src="platform/docs/docs/assets/img/demo-ptct.png" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  | [Demo](https://viewer.ohif.org/tmtv?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.7009.2403.334240657131972136850343327463) |
-| <img src="platform/docs/docs/assets/img/demo-microscopy.png" alt="Microscopy" width="350"/> | Slide Microscopy  | [Demo](https://viewer.ohif.org/microscopy?StudyInstanceUIDs=2.25.275741864483510678566144889372061815320) |
-| <img src="platform/docs/docs/assets/img/demo-volumeRendering.png" alt="Volume Rendering" width="350"/> | Volume Rendering  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingprotocolId=mprAnd3DVolumeViewport) |
-
-
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-measurements.webp?raw=true" alt="Measurement tracking" width="350"/> | Measurement Tracking | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-segmentation.webp?raw=true" alt="Segmentations" width="350"/> | Labelmap Segmentations  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-ptct.webp?raw=true" alt="Hanging Protocols" width="350"/> | Fusion and Custom Hanging protocols  | [Demo](https://viewer.ohif.org/tmtv?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.7009.2403.334240657131972136850343327463) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-volume-rendering.webp?raw=true" alt="Volume Rendering" width="350"/> | Volume Rendering  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&hangingprotocolId=mprAnd3DVolumeViewport) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-pdf.webp?raw=true" alt="PDF" width="350"/> | PDF  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=2.25.317377619501274872606137091638706705333) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-rtstruct.webp?raw=true" alt="RTSTRUCT" width="350"/> | RT STRUCT  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-4d.webp?raw=true" alt="4D" width="350"/> | 4D  | [Demo](https://viewer.ohif.org/dynamic-volume?StudyInstanceUIDs=2.25.232704420736447710317909004159492840763) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-video.webp?raw=true" alt="VIDEO" width="350"/> | Video  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=2.25.96975534054447904995905761963464388233) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/microscopy.webp?raw=true" alt="microscopy" width="350"/> | Slide Microscopy  | [Demo](https://viewer.ohif.org/microscopy?StudyInstanceUIDs=2.25.141277760791347900862109212450152067508) |
+| <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-ecg.webp?raw=true" alt="ECG" width="350"/> | ECG Waveform  | [Demo](https://viewer-dev.ohif.org/viewer?StudyInstanceUIDs=2.25.209974489360710696739324151261716440238) |
 
 ## About
 
-The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve
-and load images from most sources and formats; render sets in 2D, 3D, and
+The OHIF Viewer can retrieve
+and load images from most sources and formats, render sets in 2D, 3D, and
 reconstructed representations; allows for the manipulation, annotation, and
 serialization of observations; supports internationalization, OpenID Connect,
 offline use, hotkeys, and many more features.
@@ -75,7 +77,7 @@ contributions of individuals, research groups, and commercial organizations.
 After more than 8-years of integrating with many companies and organizations,
 The OHIF Viewer has been rebuilt from the ground up to better address the
 varying workflow and configuration needs of its many users. All of the Viewer's
-core features are built using it's own extension system. The same extensibility
+core features are built using its own extension system. The same extensibility
 that allows us to offer:
 
 - 2D and 3D medical image viewing
@@ -103,7 +105,6 @@ For commercial support, academic collaborations, and answers to common
 questions; please use [Get Support](https://ohif.org/get-support/) to contact
 us.
 
-
 ## Developing
 
 ### Branches
@@ -116,19 +117,16 @@ This is typically where the latest development happens. Code that is in the mast
 
 Each package is tagged with beta version numbers, and published to npm such as `@ohif/ui@3.6.0-beta.1`
 
-### `release` branch - The latest stable release
+### `release/*` branches - The latest stable releases
+Once the `master` branch code reaches a stable, release-ready state, we conduct a comprehensive code review and QA testing. Upon approval, we create a new release branch from `master`. These branches represent the latest stable version considered ready for production.
 
-This branch represents the latest stable version of the project that is considered ready for production. The code in this branch should be fully tested and vetted for release. Once the code in the master branch reaches a state where it's stable and ready to be released to users,
-we do a comprehensive code review and QA testing. Once the code is approved,
-we merge it into the release branch and tag a new release.
+For example, `release/3.5` is the branch for version 3.5.0, and `release/3.6` is for version 3.6.0. After each release, we wait a few days to ensure no critical bugs. If any are found, we fix them in the release branch and create a new release with a minor version bump, e.g., 3.5.1 in the `release/3.5` branch.
 
-Each package is tagged with version numbers, and published to npm such as `@ohif/ui@3.5.0`
-
-Note: `master` is always ahead of `release` branch. We publish both docker builds for beta and stable releases.
+Each package is tagged with version numbers and published to npm, such as `@ohif/ui@3.5.0`. Note that `master` is always ahead of the `release` branch. We publish docker builds for both beta and stable releases.
 
 Here is a schematic representation of our development workflow:
 
-![Alt text](platform/docs/docs/assets/img/github-readme-branches.png)
+![alt text](platform/docs/docs/assets/img/github-readme-branches-Jun2024.png)
 
 
 
@@ -136,8 +134,8 @@ Here is a schematic representation of our development workflow:
 
 ### Requirements
 
-- [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
-- [Node 16+](https://nodejs.org/en/)
+- [Yarn 1.20.0+](https://yarnpkg.com/en/docs/install)
+- [Node 18+](https://nodejs.org/en/)
 - Yarn Workspaces should be enabled on your machine:
   - `yarn config set workspaces-experimental true`
 
@@ -149,7 +147,14 @@ Here is a schematic representation of our development workflow:
 3. Navigate to the cloned project's directory
 4. Add this repo as a `remote` named `upstream`
    - `git remote add upstream https://github.com/OHIF/Viewers.git`
-5. `yarn install` to restore dependencies and link projects
+5. `yarn install --frozen-lockfile` to restore dependencies and link projects
+
+:::danger
+In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
+supply chain attacks by enforcing reproducible dependencies. That is, if the
+`yarn.lock` file is clean and does NOT reference compromised packages, then
+no compromised packages should land on your machine by using this flag.
+:::
 
 #### To Develop
 
@@ -160,8 +165,66 @@ _From this repository's root directory:_
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 ```
+
+### Cornerstone3D Integration Testing
+
+OHIF's Playwright end-to-end tests can run against a **CS3D branch** or a
+**published CS3D version**, allowing changes that span both repositories to be
+validated together before merging.
+
+#### Setting up an integration build
+
+1. Add the **`ohif-integration`** label to your OHIF pull request.
+2. In the PR body, add a line specifying the CS3D ref:
+   ```
+   CS3D_REF: feat/my-feature
+   ```
+   - **Version ref** (e.g. `4.19+`, `4.18.2`) — the workflow resolves it to an
+     exact published version and swaps the CS3D dependency via npm.
+   - **Branch ref** (e.g. `main`, `cornerstonejs:feat/foo`) — the workflow
+     clones the branch, builds CS3D from source with `bun run build:esm`, and
+     symlinks the built packages into OHIF's `node_modules`.
+   - For forks, use the `<owner>:<branch>` format
+     (e.g. `myGithubUser:feat/foo`).
+   - If no `CS3D_REF` is specified, the default is `4.19+`.
+3. The workflow can also be triggered manually via **workflow_dispatch** with a
+   `cs3d_ref` input.
+
+#### What happens in CI
+
+The [Playwright workflow](.github/workflows/playwright.yml) runs two jobs:
+
+| Job | Purpose |
+|-----|---------|
+| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, uploads test results and coverage, and deploys a Netlify preview when `ohif-integration` is active. |
+| **CS3D Branch Merge Guard** | A lightweight check that **fails** when the `ohif-integration` label is present and `CS3D_REF` points to a branch (not a version). This prevents merging while still letting the Playwright tests show green so you can see whether the code actually works. |
+
+#### Testing changes that span both repos
+
+If a feature requires changes in both Cornerstone3D and OHIF:
+
+1. Create your feature branch in CS3D and push it.
+2. Create a matching branch in OHIF.
+3. Add the `ohif-integration` label to the OHIF pull request.
+4. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
+5. Playwright tests will build CS3D from source, link it, and run the full
+   suite. The merge guard will block merge until you switch to a published
+   version — but you can see the test results and the preview deploy while
+   iterating.
+6. Once the CS3D side is merged and published, update the PR body to reference
+   the published version (e.g. `CS3D_REF: 4.19+`). The tests will run against
+   the registry version and the merge guard will pass.
+
+#### Preview deploys
+
+When `ohif-integration` is active, the Playwright workflow also builds the OHIF
+viewer and deploys it to Netlify as a preview. This gives you a live URL to
+manually test the combined CS3D + OHIF changes without running anything locally.
+
+For details on linking CS3D locally for development, see the
+[Cornerstone3D README](libs/@cornerstonejs/README.md#local-development-linking--unlinking).
 
 ## Commands
 
@@ -172,13 +235,40 @@ also supports a number of commands that can be found in their respective
 | Yarn Commands                | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |
 | **Develop**                  |                                                               |
-| `dev` or `start`             | Default development experience for Viewer                     |
+| `dev`              | Default development experience for Viewer                     |
+| `dev:fast`             | Our experimental fast dev mode that uses rsbuild instead of webpack                     |
 | `test:unit`                  | Jest multi-project test runner; overall coverage              |
 | **Deploy**                   |                                                               |
 | `build`\*                    | Builds production output for our PWA Viewer                   |  |
 
-\* - For more information on our different builds, check out our [Deploy
+\* - For more information on different builds, check out our [Deploy
 Docs][deployment-docs]
+
+### Which config each command uses
+
+The dev server and the production build select a different default
+[configuration file][config-file] when `APP_CONFIG` is not set explicitly:
+
+| Command                         | Default config       | Data sources | `?customization=` |
+| ------------------------------- | -------------------- | ------------ | ----------------- |
+| `dev`, `dev:fast`, `start`      | `config/dev.js`      | Full set     | Enabled           |
+| `build`                         | `config/default.js`  | One demo source | Disabled       |
+
+- **`config/dev.js`** is the full-featured local-development config: every data
+  source is enabled, the `?customization=` URL feature is turned on (via
+  `customizationUrlPrefixes`), and it is kept at parity with the public demo
+  (`config/netlify.js`) so customizations behave locally the same way they do on
+  the demo.
+- **`config/netlify.js`** is the public demo / Netlify deploy config
+  (`build:viewer:ci`), with the same full data-source set and `?customization=`
+  enabled.
+- **`config/default.js`** is a locked-down baseline and is now **only** the
+  default for a plain production build (`build` with no `APP_CONFIG`): a single
+  read-only demo data source and `?customization=` off.
+
+Any explicit `APP_CONFIG` overrides the default, e.g.
+`APP_CONFIG=config/default.js pnpm run dev` or
+`APP_CONFIG=config/netlify.js pnpm run build`.
 
 ## Project
 
@@ -307,6 +397,7 @@ MIT © [OHIF](https://github.com/OHIF)
 [ohif-architecture]: https://docs.ohif.org/architecture/index.html
 [ohif-extensions]: https://docs.ohif.org/architecture/index.html
 [deployment-docs]: https://docs.ohif.org/deployment/
+[config-file]: https://docs.ohif.org/configuration/configurationFiles
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/@ohif/app
@@ -334,4 +425,4 @@ MIT © [OHIF](https://github.com/OHIF)
 [vtk-npm]: https://www.npmjs.com/package/@ohif/extension-vtk
 <!-- prettier-ignore-end -->
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large&issueType=license)

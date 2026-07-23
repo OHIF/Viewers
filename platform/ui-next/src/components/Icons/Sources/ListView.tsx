@@ -1,0 +1,79 @@
+import React from 'react';
+import type { IconProps } from '../types';
+
+export const ListView = (props: IconProps) => (
+  <svg
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="icon-list-view"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      ></rect>
+      <line
+        x1="10.5"
+        y1="8"
+        x2="18.5"
+        y2="8"
+        id="Line-2"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="10.5"
+        y1="12"
+        x2="18.5"
+        y2="12"
+        id="Line-2"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="10.5"
+        y1="16"
+        x2="18.5"
+        y2="16"
+        id="Line-2"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <circle
+        id="Oval"
+        fill="currentColor"
+        cx="7"
+        cy="8"
+        r="1"
+      ></circle>
+      <circle
+        id="Oval"
+        fill="currentColor"
+        cx="7"
+        cy="12"
+        r="1"
+      ></circle>
+      <circle
+        id="Oval"
+        fill="currentColor"
+        cx="7"
+        cy="16"
+        r="1"
+      ></circle>
+    </g>
+  </svg>
+);
+
+export default ListView;

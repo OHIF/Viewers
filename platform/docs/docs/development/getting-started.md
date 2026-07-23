@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Getting Started
+title: Getting Started with OHIF Development
+summary: Quick start guide for OHIF development, covering repository setup options, branch organization, development environment requirements, project initialization, and steps for building production-ready assets.
 ---
 
 # Getting Started
@@ -40,6 +42,7 @@ aren't as concerned with syncing updates, then follow these steps:
 
 ## Developing
 
+
 ### Branches
 
 #### `master` branch - The latest dev (beta) release
@@ -50,19 +53,17 @@ This is typically where the latest development happens. Code that is in the mast
 
 Each package is tagged with beta version numbers, and published to npm such as `@ohif/ui@3.6.0-beta.1`
 
-### `release` branch - The latest stable release
+### `release/*` branches - The latest stable releases
+Once the `master` branch code reaches a stable, release-ready state, we conduct a comprehensive code review and QA testing. Upon approval, we create a new release branch from `master`. These branches represent the latest stable version considered ready for production.
 
-This branch represents the latest stable version of the project that is considered ready for production. The code in this branch should be fully tested and vetted for release. Once the code in the master branch reaches a state where it's stable and ready to be released to users,
-we do a comprehensive code review and QA testing. Once the code is approved,
-we merge it into the release branch and tag a new release.
+For example, `release/3.5` is the branch for version 3.5.0, and `release/3.6` is for version 3.6.0. After each release, we wait a few days to ensure no critical bugs. If any are found, we fix them in the release branch and create a new release with a minor version bump, e.g., 3.5.1 in the `release/3.5` branch.
 
-Each package is tagged with version numbers, and published to npm such as `@ohif/ui@3.5.0`
-
-Note: `master` is always ahead of `release` branch. We publish both docker builds for beta and stable releases.
+Each package is tagged with version numbers and published to npm, such as `@ohif/ui@3.5.0`. Note that `master` is always ahead of the `release` branch. We publish docker builds for both beta and stable releases.
 
 Here is a schematic representation of our development workflow:
 
-![Alt text](../../docs/assets/img/github-readme-branches.png)
+![alt text](../assets/img/github-readme-branches-Jun2024.png)
+
 
 
 ### Requirements
@@ -79,11 +80,17 @@ following commands:
 
 ```bash
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Start local development server
 yarn run dev
 ```
+:::danger
+In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
+supply chain attacks by enforcing reproducible dependencies. That is, if the
+`yarn.lock` file is clean and does NOT reference compromised packages, then
+no compromised packages should land on your machine by using this flag.
+:::
 
 You should see the following output:
 
@@ -111,6 +118,31 @@ You should see the following output:
 # Build static assets to host a PWA
 yarn run build
 ```
+
+### Updating Dependencies
+In general you will typically not be updating the various `package.json` files.
+But for the case when you do, you will have to also update the various OHIF lock files
+and as such you will have to do both a `yarn` and `bun` `install` without
+the `--frozen-lockfile` flag.
+
+:::danger
+Updating the package.json must be done with care so as to avoid incorporating
+vulnerable, third-party packages and/or versions. Please research the added
+packages and/or versions for vulnerabilities.
+
+Here is what you should do when adding new packages and/or versions prior to
+committing and pushing your code:
+1. Do your due diligence researching the added packages and/or versions for vulnerabilities.
+2. Update the `package.json` files.
+3. Execute `yarn run install:update-lockfile`. This updates both the `yarn.lock` and
+the `bun.lock` files.
+4. Execute `yarn run audit` for a last security check. This runs both `yarn audit` and
+`bun audit`.
+6. Include both the `yarn.lock` and `bun.lock` files as part of your commit.
+
+If any of your research or auditing for vulnerabilities find HIGH risk vulnerabilities
+do NOT commit or push your changes! Low and moderate risk vulnerabilities are acceptable.
+:::
 
 ## Troubleshooting
 

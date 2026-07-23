@@ -1,8 +1,10 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
+import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
+import { resolveConfigFetchPolicy, fetchConfigJson } from '../utils/secureConfigFetch';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -58,15 +60,18 @@ const findStudies = (key, value) => {
   return studies;
 };
 
-function createDicomJSONApi(dicomJsonConfig) {
-  const { wadoRoot } = dicomJsonConfig;
-
+function createDicomJSONApi(dicomJsonConfig, servicesManager) {
+  const { userAuthenticationService } = servicesManager.services;
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
         url = query.get('url');
       }
-      let metaData = getMetaDataByURL(url);
+      const evaluatedUrl = resolveConfigFetchPolicy(url, {
+        allowedOrigins: dicomJsonConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+        userAuthenticationService,
+      });
+      let metaData = getMetaDataByURL(evaluatedUrl.normalizedUrl);
 
       // if we have already cached the data from this specific url
       // We are only handling one StudyInstanceUID to run; however,
@@ -77,8 +82,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         });
       }
 
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = await fetchConfigJson(evaluatedUrl);
 
       let StudyInstanceUID;
       let SeriesInstanceUID;
@@ -89,24 +93,28 @@ function createDicomJSONApi(dicomJsonConfig) {
           SeriesInstanceUID = series.SeriesInstanceUID;
 
           series.instances.forEach(instance => {
-            const { url: imageId, metadata: naturalizedDicom } = instance;
+            const { metadata: naturalizedDicom } = instance;
+            const imageId = getImageId({ instance, config: dicomJsonConfig });
 
-            // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
+            const { query } = qs.parseUrl(instance.url);
+
+            // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
               StudyInstanceUID,
               SeriesInstanceUID,
               SOPInstanceUID: naturalizedDicom.SOPInstanceUID,
+              frameNumber: query.frame ? parseInt(query.frame) : undefined,
             });
           });
         });
       });
 
       _store.urls.push({
-        url,
+        url: evaluatedUrl.normalizedUrl,
         studies: [...data.studies],
       });
       _store.studyInstanceUIDMap.set(
-        url,
+        evaluatedUrl.normalizedUrl,
         data.studies.map(study => study.StudyInstanceUID)
       );
     },
@@ -166,10 +174,10 @@ function createDicomJSONApi(dicomJsonConfig) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
       directURL: params => {
-        return getDirectURL(wadoRoot, params);
+        return getDirectURL(dicomJsonConfig, params);
       },
       series: {
-        metadata: async ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
+        metadata: async ({ filters, StudyInstanceUID, madeInClient = false, customSort } = {}) => {
           if (!StudyInstanceUID) {
             throw new Error('Unable to query for SeriesMetadata without StudyInstanceUID');
           }
@@ -181,6 +189,18 @@ function createDicomJSONApi(dicomJsonConfig) {
             series = customSort(study.series);
           } else {
             series = study.series;
+          }
+
+          const seriesKeys = [
+            'SeriesInstanceUID',
+            'SeriesInstanceUIDs',
+            'seriesInstanceUID',
+            'seriesInstanceUIDs',
+          ];
+          const seriesFilter = seriesKeys.find(key => filters[key]);
+          if (seriesFilter) {
+            const seriesUIDs = filters[seriesFilter];
+            series = series.filter(s => seriesUIDs.includes(s.SeriesInstanceUID));
           }
 
           const seriesSummaryMetadata = series.map(series => {
@@ -216,7 +236,7 @@ function createDicomJSONApi(dicomJsonConfig) {
               const obj = {
                 ...modifiedMetadata,
                 url: instance.url,
-                imageId: instance.url,
+                imageId: getImageId({ instance, config: dicomJsonConfig }),
                 ...series,
                 ...study,
               };
@@ -237,6 +257,8 @@ function createDicomJSONApi(dicomJsonConfig) {
         console.warn(' DICOMJson store dicom not implemented');
       },
     },
+    reject: {},
+    deleteStudyMetadataPromise: () => {},
     getImageIdsForDisplaySet(displaySet) {
       const images = displaySet.images;
       const imageIds = [];
@@ -245,20 +267,31 @@ function createDicomJSONApi(dicomJsonConfig) {
         return imageIds;
       }
 
-      displaySet.images.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames;
+      const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
+      const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
+      const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID) || {};
 
-        if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
-            const imageId = getImageId({
-              instance,
-              frame: i,
-              config: dicomJsonConfig,
-            });
-            imageIds.push(imageId);
+      const instanceMap = new Map();
+      if (series.instances) {
+        series.instances.forEach(instance => {
+          if (instance?.metadata?.SOPInstanceUID) {
+            const { metadata, url } = instance;
+            const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
+            existingInstances.push({ ...metadata, url });
+            instanceMap.set(metadata.SOPInstanceUID, existingInstances);
           }
-        } else {
-          const imageId = getImageId({ instance, config: dicomJsonConfig });
+        });
+      }
+
+      displaySet.images.forEach(instance => {
+        const NumberOfFrames = instance.NumberOfFrames || 1;
+        const instances = instanceMap.get(instance.SOPInstanceUID) || [instance];
+        for (let i = 0; i < NumberOfFrames; i++) {
+          const imageId = getImageId({
+            instance: instances[Math.min(i, instances.length - 1)],
+            frame: NumberOfFrames > 1 ? i : undefined,
+            config: dicomJsonConfig,
+          });
           imageIds.push(imageId);
         }
       });
@@ -271,8 +304,21 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     getStudyInstanceUIDs: ({ params, query }) => {
       const url = query.get('url');
-      return _store.studyInstanceUIDMap.get(url);
+      if (!url) {
+        return;
+      }
+
+      try {
+        const evaluatedUrl = resolveConfigFetchPolicy(url, {
+          allowedOrigins: dicomJsonConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+          userAuthenticationService,
+        });
+        return _store.studyInstanceUIDMap.get(evaluatedUrl.normalizedUrl);
+      } catch {
+        return;
+      }
     },
+    getConfig: () => dicomJsonConfig,
   };
   return IWebApiDataSource.create(implementation);
 }

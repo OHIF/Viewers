@@ -1,0 +1,13 @@
+{
+  "Segmentation": "Segmentation",
+  "Segment": "Segment",
+  "Download High Quality Image": "Télécharger une image",
+  "Edit Segment Label": "Modifier l'étiquette de segment",
+  "Enter new label": "Saisir une nouvelle étiquette",
+  "Segment Color": "Couleur du segment",
+  "Edit Measurement Label": "Modifier l'étiquette de mesure",
+  "Edit Arrow Text": "Modifier le texte de la flèche",
+  "Enter new text": "Saisir un nouveau texte",
+  "Download Image": "Télécharger l'image",
+  "Image cannot be downloaded": "Impossible de télécharger l'image"
+}

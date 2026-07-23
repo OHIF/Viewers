@@ -1,43 +1,73 @@
 // External
+
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, type BrowserRouterProps } from 'react-router-dom';
+
 import Compose from './routes/Mode/Compose';
 import {
-  ServicesManager,
   ExtensionManager,
   CommandsManager,
   HotkeysManager,
   ServiceProvidersManager,
+  SystemContextProvider,
+  ViewportRefsProvider,
 } from '@ohif/core';
 import {
-  DialogProvider,
-  Modal,
-  ModalProvider,
-  SnackbarProvider,
-  ThemeWrapper,
-  ViewportDialogProvider,
+  ThemeWrapper as ThemeWrapperNext,
+  NotificationProvider,
   ViewportGridProvider,
+  DialogProvider,
   CineProvider,
+  TooltipProvider,
+  Modal as ModalNext,
+  ManagedDialog,
+  ModalProvider,
+  ViewportDialogProvider,
   UserAuthenticationProvider,
-  ToolboxProvider,
-} from '@ohif/ui';
+} from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import './App.css';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
-  servicesManager: ServicesManager,
+  servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 
-function App({ config, defaultExtensions, defaultModes }) {
+const routerFutureFlags: BrowserRouterProps['future'] = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
+
+function App({
+  config = {
+    /**
+     * Relative route from domain root that OHIF instance is installed at.
+     * For example:
+     *
+     * Hosted at: https://ohif.org/where-i-host-the/viewer/
+     * Value: `/where-i-host-the/viewer/`
+     * */
+    routerBasename: '/',
+    /**
+     *
+     */
+    showLoadingIndicator: true,
+    showStudyList: true,
+    oidc: [],
+    extensions: [],
+  },
+  defaultExtensions = [],
+  defaultModes = [],
+}) {
   const [init, setInit] = useState(null);
   useEffect(() => {
     const run = async () => {
@@ -62,45 +92,60 @@ function App({ config, defaultExtensions, defaultModes }) {
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
 
+  // get the maximum 3D texture size
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2');
+
+  if (gl) {
+    const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+    appConfigState.max3DTextureSize = max3DTextureSize;
+  }
+
   const {
     uiDialogService,
     uiModalService,
-    uiNotificationService,
     uiViewportDialogService,
     viewportGridService,
     cineService,
     userAuthenticationService,
-    customizationService,
+    uiNotificationService,
   } = servicesManager.services;
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
-    [ThemeWrapper],
-    [ToolboxProvider],
+    [ThemeWrapperNext],
+    [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
+    [ViewportRefsProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
-    [SnackbarProvider, { service: uiNotificationService }],
-    [DialogProvider, { service: uiDialogService }],
-    [ModalProvider, { service: uiModalService, modal: Modal }],
+    [NotificationProvider, { service: uiNotificationService }],
+    [TooltipProvider],
+    [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
+    [ModalProvider, { service: uiModalService, modal: ModalNext }],
   ];
 
-  // Loop through and register each of the service providers registered with the ServiceProvidersManager.
-  const providersFromManager = Object.entries(serviceProvidersManager.providers);
+  // Providers registered with the ServiceProvidersManager are inserted ahead of
+  // the dialog/modal providers: dialog and modal content renders at those
+  // providers' own level (as a sibling of their children, not inside the route
+  // tree), so any context a registered provider supplies must already be in
+  // scope there.
+  const providersFromManager = Object.entries(serviceProvidersManager.providers).map(
+    ([serviceName, provider]) => [provider, { service: servicesManager.services[serviceName] }]
+  );
   if (providersFromManager.length > 0) {
-    providersFromManager.forEach(([serviceName, provider]) => {
-      providers.push([provider, { service: servicesManager.services[serviceName] }]);
-    });
+    const dialogIndex = providers.findIndex(([component]) => component === DialogProvider);
+    providers.splice(dialogIndex, 0, ...providersFromManager);
   }
 
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 
   let authRoutes = null;
 
-  // Should there be a generic call to init on the extension manager?
-  customizationService.init(extensionManager);
+  // customizationService.init(extensionManager) runs in appInit after extensions register;
+  // do not call init again here — repeated init would duplicate-merge unless guarded (see CustomizationService.init).
 
   // Use config to create routes
   const appRoutes = createRoutes({
@@ -126,7 +171,10 @@ function App({ config, defaultExtensions, defaultModes }) {
 
   return (
     <CombinedProviders>
-      <BrowserRouter basename={routerBasename}>
+      <BrowserRouter
+        basename={routerBasename}
+        future={routerFutureFlags}
+      >
         {authRoutes}
         {appRoutes}
       </BrowserRouter>
@@ -138,36 +186,22 @@ App.propTypes = {
   config: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({
-      routerBasename: PropTypes.string.isRequired,
+      routerBasename: PropTypes.string,
       oidc: PropTypes.array,
       whiteLabeling: PropTypes.object,
       extensions: PropTypes.array,
+      showLoadingIndicator: PropTypes.bool,
+      showStudyList: PropTypes.bool,
+      modes: PropTypes.array,
+      dataSources: PropTypes.array,
     }),
-  ]).isRequired,
+  ]),
   /* Extensions that are "bundled" or "baked-in" to the application.
    * These would be provided at build time as part of they entry point. */
   defaultExtensions: PropTypes.array,
-};
-
-App.defaultProps = {
-  config: {
-    /**
-     * Relative route from domain root that OHIF instance is installed at.
-     * For example:
-     *
-     * Hosted at: https://ohif.org/where-i-host-the/viewer/
-     * Value: `/where-i-host-the/viewer/`
-     * */
-    routerBaseName: '/',
-    /**
-     *
-     */
-    showLoadingIndicator: true,
-    showStudyList: true,
-    oidc: [],
-    extensions: [],
-  },
-  defaultExtensions: [],
+  /* Modes that are "bundled" or "baked-in" to the application.
+   * These would be provided at build time as part of they entry point. */
+  defaultModes: PropTypes.array,
 };
 
 export default App;

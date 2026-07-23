@@ -1,3 +1,5 @@
+import { DisplaySetService, ViewportGridService } from '@ohif/core';
+
 const VOI_SYNC_NAME = 'VOI_SYNC';
 
 const getSyncId = modality => `${VOI_SYNC_NAME}_${modality}`;
@@ -6,7 +8,7 @@ export default function toggleVOISliceSync({
   servicesManager,
   viewports: providedViewports,
   syncId,
-}) {
+}: withAppTypes) {
   const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
     servicesManager.services;
 
@@ -44,7 +46,7 @@ export default function toggleVOISliceSync({
       }
       syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
         type: 'voi',
-        id: syncIdToUse,
+        id: syncIdToUse as string,
         source: true,
         target: true,
       });
@@ -52,7 +54,7 @@ export default function toggleVOISliceSync({
   }
 }
 
-function disableSync(modalityViewports, syncId, servicesManager) {
+function disableSync(modalityViewports, syncId, servicesManager: AppTypes.ServicesManager) {
   const { syncGroupService, cornerstoneViewportService } = servicesManager.services;
 
   const viewports = modalityViewports;
@@ -70,15 +72,22 @@ function disableSync(modalityViewports, syncId, servicesManager) {
   });
 }
 
-function groupViewportsByModality(viewportGridService, displaySetService) {
-  let { viewports } = viewportGridService.getState();
+function groupViewportsByModality(
+  viewportGridService: ViewportGridService,
+  displaySetService: DisplaySetService
+) {
+  const { viewports } = viewportGridService.getState();
 
-  viewports = [...viewports.values()];
+  const viewportsArray = [...viewports.values()];
 
   // group the viewports by modality
-  return viewports.reduce((acc, viewport) => {
+  return viewportsArray.reduce((acc, viewport) => {
     const { displaySetInstanceUIDs } = viewport;
     // Todo: add proper fusion support
+    // Fix: Skip processing if the viewport is empty.
+    if (!displaySetInstanceUIDs?.length) {
+      return acc;
+    }
     const displaySetInstanceUID = displaySetInstanceUIDs[0];
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 

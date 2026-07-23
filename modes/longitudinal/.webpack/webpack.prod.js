@@ -1,7 +1,6 @@
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const pkg = require('./../package.json');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
@@ -10,7 +9,7 @@ const ROOT_DIR = path.join(__dirname, './../');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const ENTRY = {
-  app: `${SRC_DIR}/index.js`,
+  app: `${SRC_DIR}/index.ts`,
 };
 
 module.exports = (env, argv) => {
@@ -33,10 +32,12 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-mode-longitudinal',
+        type: 'umd',
+        export: 'default',
+      },
       path: ROOT_DIR,
-      library: 'ohif-mode-longitudinal',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ServicesManager, ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
-import { MeasurementTable, Icon, ButtonGroup, Button } from '@ohif/ui';
+import { callInputDialog } from '@ohif/extension-default';
+import { ExtensionManager, CommandsManager, DicomMetadataStore, utils } from '@ohif/core';
+import { DataRow } from '@ohif/ui-next';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
-import styles from '../../utils/styles';
-import callInputDialog from '../../utils/callInputDialog';
 import constructSR from '../../utils/constructSR';
-import { saveByteArray } from '../../utils/saveByteArray';
+
+const { downloadDicom } = utils;
 
 let saving = false;
 const { datasetToBuffer } = dcmjs.data;
@@ -54,7 +54,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
   onRejectComplete?: PropTypes.func; // callback when rejected annotations
 
   //
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   extensionManager: ExtensionManager;
   commandsManager: CommandsManager;
 }
@@ -140,12 +140,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       uiDialogService,
       title: 'Enter description of the Series',
       defaultValue: '',
-      callback: (value: string, action: string) => {
-        switch (action) {
-          case 'save': {
-            saveFunction(value);
-          }
-        }
+      onSave: (value: string) => {
+        saveFunction(value);
       },
     });
   };
@@ -202,7 +198,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         if (dataSource.wadoRoot == 'saveDicom') {
           // download as DICOM file
           const part10Buffer = datasetToBuffer(dataset);
-          saveByteArray(part10Buffer, `sr-microscopy.dcm`);
+          downloadDicom(part10Buffer, { filename: `sr-microscopy.dcm` });
         } else {
           // Save into Web Data source
           const { StudyInstanceUID } = dataset;
@@ -282,8 +278,13 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * Handler for "Edit" action of an annotation item
    * @param param0
    */
-  const onMeasurementItemEditHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
+  const onMeasurementItemEditHandler = ({ uid }: { uid: string; isActive: boolean }) => {
     props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
+  };
+
+  const onMeasurementDeleteHandler = ({ uid }: { uid: string; isActive: boolean }) => {
+    const roiAnnotation = microscopyService.getAnnotation(uid);
+    microscopyService.removeAnnotation(roiAnnotation);
   };
 
   // Convert ROI annotations managed by microscopyService into our
@@ -322,21 +323,40 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     };
   });
 
-  const disabled = data.length === 0;
-
   return (
     <>
       <div
         className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
-        <MeasurementTable
-          title="Measurements"
-          servicesManager={props.servicesManager}
-          data={data}
-          onClick={onMeasurementItemClickHandler}
-          onEdit={onMeasurementItemEditHandler}
-        />
+        <div className="flex flex-col">
+          {data.map(item => (
+            <DataRow
+              key={item.uid}
+              number={item.index + 1}
+              title={item.label}
+              isSelected={item.isActive}
+              onSelect={() => onMeasurementItemClickHandler({ uid: item.uid })}
+              details={{
+                primary: item.displayText,
+                secondary: [],
+              }}
+              isVisible={true}
+              onToggleVisibility={() => {}}
+              isLocked={false}
+              onToggleLocked={() => {}}
+              onRename={() =>
+                onMeasurementItemEditHandler({ uid: item.uid, isActive: item.isActive })
+              }
+              onDelete={() =>
+                onMeasurementDeleteHandler({ uid: item.uid, isActive: item.isActive })
+              }
+              onColor={() => {}}
+              disableEditing={false}
+              description={item.displayText.join(', ')}
+            />
+          ))}
+        </div>
       </div>
     </>
   );

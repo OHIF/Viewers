@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "3.8.0-beta.67",
+  "version": "3.14.0-beta.0",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -13,9 +13,7 @@
     "./types": "./src/types/index.ts"
   },
   "engines": {
-    "node": ">=10",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "node": ">=24"
   },
   "files": [
     "dist",
@@ -26,44 +24,54 @@
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:cornerstone": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --progress --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev:cornerstone": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@cornerstonejs/codec-charls": "^1.2.3",
-    "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
-    "@cornerstonejs/codec-openjpeg": "^1.2.2",
-    "@cornerstonejs/codec-openjph": "^2.4.2",
-    "@cornerstonejs/dicom-image-loader": "^1.67.0",
-    "@icr/polyseg-wasm": "^0.4.0",
-    "@ohif/core": "3.8.0-beta.67",
-    "@ohif/ui": "3.8.0-beta.67",
-    "dcmjs": "^0.29.12",
-    "dicom-parser": "^1.8.21",
-    "hammerjs": "^2.0.8",
-    "prop-types": "^15.6.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-resize-detector": "^6.7.6"
-  },
-  "devDependencies": {
-    "lodash": "^4.17.21"
+    "@cornerstonejs/codec-charls": "1.2.3",
+    "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
+    "@cornerstonejs/codec-openjpeg": "1.3.0",
+    "@cornerstonejs/codec-openjph": "2.4.7",
+    "@cornerstonejs/dicom-image-loader": "5.6.8",
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/ui": "workspace:*",
+    "dcmjs": "0.52.0",
+    "dicom-parser": "1.8.21",
+    "hammerjs": "2.0.8",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-resize-detector": "10.0.1"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^1.67.0",
-    "@cornerstonejs/core": "^1.67.0",
-    "@cornerstonejs/streaming-image-volume-loader": "^1.67.0",
-    "@cornerstonejs/tools": "^1.67.0",
-    "@kitware/vtk.js": "29.7.0",
-    "html2canvas": "^1.4.1",
+    "@babel/runtime": "7.29.7",
+    "@cornerstonejs/adapters": "5.6.8",
+    "@cornerstonejs/ai": "5.6.8",
+    "@cornerstonejs/core": "5.6.8",
+    "@cornerstonejs/labelmap-interpolation": "5.6.8",
+    "@cornerstonejs/metadata": "5.6.8",
+    "@cornerstonejs/polymorphic-segmentation": "5.6.8",
+    "@cornerstonejs/tools": "5.6.8",
+    "@icr/polyseg-wasm": "0.4.0",
+    "@itk-wasm/morphological-contour-interpolation": "1.1.0",
+    "@kitware/vtk.js": "36.4.1",
+    "html2canvas": "1.4.1",
+    "immutability-helper": "3.1.1",
+    "lodash.compact": "3.0.1",
     "lodash.debounce": "4.0.8",
-    "lodash.merge": "^4.6.2",
-    "shader-loader": "^1.3.1",
-    "worker-loader": "^3.0.8"
+    "lodash.flatten": "4.4.0",
+    "lodash.zip": "4.2.0",
+    "shader-loader": "1.3.1",
+    "worker-loader": "3.0.8"
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3"
   }
 }

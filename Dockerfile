@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7-labs
 # This dockerfile is used to publish the `ohif/app` image on dockerhub.
 #
 # It's a good example of how to build our static application and package it
@@ -21,59 +22,68 @@
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:18.16.1-slim as json-copier
-
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
-
-COPY ["package.json", "yarn.lock", "preinstall.js", "./"]
-COPY extensions /usr/src/app/extensions
-COPY modes /usr/src/app/modes
-COPY platform /usr/src/app/platform
-
-# Find and remove non-package.json files
-#RUN find extensions \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find modes \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find platform \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-
 # Copy Files
-FROM node:18.16.1-slim as builder
-RUN apt-get update && apt-get install -y build-essential python3
+FROM node:24.15.0-slim as builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@11
+
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
-COPY --from=json-copier /usr/src/app .
+# Copy package manifests for install caching. preinstall.js is included because
+# the root package.json's "preinstall" lifecycle script (node preinstall.js)
+# runs during `pnpm install` below -- before the full source is copied -- so the
+# script file must already be present or install fails with MODULE_NOT_FOUND.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
+COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
+# Run the install before copying the rest of the files.
+# Keep --no-frozen-lockfile here (unlike CI): .dockerignore excludes
+# platform/docs, so the lockfile's docs importer has no manifest in the build
+# context and a frozen install would fail. pnpm reconciles (drops docs) instead.
+RUN pnpm install --no-frozen-lockfile
+# Copy the local directory
+COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
-# Run the install before copying the rest of the files
-RUN yarn config set workspaces-experimental true
-RUN yarn install --frozen-lockfile --verbose
-
-COPY . .
-
-# To restore workspaces symlinks
-RUN yarn install --frozen-lockfile --verbose
-
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Build here
+# After install it should hopefully be stable until the local directory changes
 ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
-# ENV REACT_APP_CONFIG=config/default.js
+ARG APP_CONFIG=config/default.js
+ARG PUBLIC_URL=/
+ENV PUBLIC_URL=${PUBLIC_URL}
 
-RUN yarn run build
+RUN pnpm run show:config
+RUN pnpm run build
 
-# Stage 3: Bundle the built application into a Docker container
+# Precompress files
+RUN chmod u+x .docker/compressDist.sh
+RUN ./.docker/compressDist.sh
+
+# Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginxinc/nginx-unprivileged:1.25-alpine as final
+FROM nginxinc/nginx-unprivileged:1.27-alpine as final
 #RUN apk add --no-cache bash
-ENV PORT=80
+ARG PUBLIC_URL=/
+ENV PUBLIC_URL=${PUBLIC_URL}
+ARG PORT=80
+ENV PORT=${PORT}
 RUN rm /etc/nginx/conf.d/default.conf
 USER nginx
 COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
 RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
+COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html${PUBLIC_URL}
+# Copy paths that are renamed/redirected generally
+# Microscopy libraries depend on root level include, so must be copied
+COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/share/nginx/html/dicom-microscopy-viewer
+
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root
-RUN chmod 666 /usr/share/nginx/html/app-config.js
+RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

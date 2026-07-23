@@ -1,0 +1,13 @@
+version: 2
+enable-beta-ecosystems: true
+updates:
+  - package-ecosystem: 'npm'
+    # Disable all pull requests for npm/pnpm version updates.
+    open-pull-requests-limit: 0
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    labels: ['dependencies']
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'

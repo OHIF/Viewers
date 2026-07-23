@@ -1,45 +1,37 @@
-import React, { ReactElement } from 'react';
-import { AllInOneMenu } from '@ohif/ui';
-import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
+import React, { ReactElement, useState } from 'react';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { VolumeRenderingQuality } from './VolumeRenderingQuality';
 import { VolumeShift } from './VolumeShift';
 import { VolumeLighting } from './VolumeLighting';
 import { VolumeShade } from './VolumeShade';
-export function VolumeRenderingOptions({
-  viewportId,
-  commandsManager,
-  volumeRenderingQualityRange,
-  serviceManager,
-}: VolumeRenderingOptionsProps): ReactElement {
+import { useViewportRendering } from '../../hooks/useViewportRendering';
+import { useTranslation } from 'react-i18next';
+
+export function VolumeRenderingOptions({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { volumeRenderingQualityRange } = useViewportRendering(viewportId);
+  const [hasShade, setShade] = useState(false);
+  const { t } = useTranslation('WindowLevelActionMenu');
+
   return (
     <AllInOneMenu.ItemPanel>
       <VolumeRenderingQuality
         viewportId={viewportId}
-        commandsManager={commandsManager}
-        serviceManager={serviceManager}
         volumeRenderingQualityRange={volumeRenderingQualityRange}
       />
-
-      <VolumeShift
-        viewportId={viewportId}
-        commandsManager={commandsManager}
-        serviceManager={serviceManager}
-      />
-      <div className="all-in-one-menu-item flex w-full justify-start">
-        <div className="text-aqua-pale text-[13px]">LIGHTING</div>
+      <VolumeShift viewportId={viewportId} />
+      <div className="mt-2 flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-start px-2 text-base">
+        <div className="text-muted-foreground text-sm">{t('Lighting')}</div>
       </div>
-      <AllInOneMenu.DividerItem />
-      <div className="all-in-one-menu-item flex w-full justify-center">
+      <div className="bg-background mt-1 mb-1 h-px w-full"></div>
+      <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
         <VolumeShade
-          commandsManager={commandsManager}
-          serviceManager={serviceManager}
           viewportId={viewportId}
+          onClickShade={setShade}
         />
       </div>
       <VolumeLighting
         viewportId={viewportId}
-        commandsManager={commandsManager}
-        serviceManager={serviceManager}
+        hasShade={hasShade}
       />
     </AllInOneMenu.ItemPanel>
   );

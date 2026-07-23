@@ -1,205 +1,102 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
-import { CommandsManager, ServicesManager } from '@ohif/core';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
-import { setViewportColorbar } from './Colorbar';
-import { WindowLevelPreset } from '../../types/WindowLevel';
-import { ColorbarProperties } from '../../types/Colorbar';
-import { VolumeRenderingQualityRange } from '../../types/ViewportPresets';
 import { WindowLevel } from './WindowLevel';
 import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
-import { ViewportPreset } from '../../types/ViewportPresets';
-import { VolumeViewport3D } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/core';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
+import i18n from 'i18next';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
-  element: HTMLElement;
-  presets: Record<string, Array<WindowLevelPreset>>;
-  verticalDirection: AllInOneMenu.VerticalDirection;
-  horizontalDirection: AllInOneMenu.HorizontalDirection;
-  commandsManager: CommandsManager;
-  serviceManager: ServicesManager;
-  colorbarProperties: ColorbarProperties;
-  displaySets: Array<any>;
-  volumeRenderingPresets: Array<ViewportPreset>;
-  volumeRenderingQualityRange: VolumeRenderingQualityRange;
+  align?: 'start' | 'end' | 'center';
+  side?: 'top' | 'bottom' | 'left' | 'right';
+  onVisibilityChange?: (isVisible: boolean) => void;
 };
 
 export function WindowLevelActionMenu({
   viewportId,
-  element,
-  presets,
-  verticalDirection,
-  horizontalDirection,
-  commandsManager,
-  serviceManager,
-  colorbarProperties,
-  displaySets,
-  volumeRenderingPresets,
-  volumeRenderingQualityRange,
+  align,
+  side,
+  onVisibilityChange,
 }: WindowLevelActionMenuProps): ReactElement {
-  const {
-    colormaps,
-    colorbarContainerPosition,
-    colorbarInitialColormap,
-    colorbarTickPosition,
-    width: colorbarWidth,
-  } = colorbarProperties;
-  const { colorbarService, cornerstoneViewportService } = serviceManager.services;
-  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-  const backgroundColor = viewportInfo.getViewportOptions().background;
-  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
+  return (
+    <WindowLevelActionMenuContent
+      viewportId={viewportId}
+      align={align}
+      side={side}
+      onVisibilityChange={onVisibilityChange}
+    />
+  );
+}
 
-  const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
-
+export function WindowLevelActionMenuContent({
+  viewportId,
+  align,
+  side,
+  onVisibilityChange,
+}: {
+  viewportId: string;
+  align?: string;
+  side?: string;
+  onVisibilityChange?: (isVisible: boolean) => void;
+}): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
+  // Use a stable key for the menu to avoid infinite re-renders
+  const menuKey = useMemo(() => `${viewportId}`, [viewportId]);
 
-  const [viewportGrid] = useViewportGrid();
-  const { activeViewportId } = viewportGrid;
-
-  const [vpHeight, setVpHeight] = useState(element?.clientHeight);
-  const [menuKey, setMenuKey] = useState(0);
-  const [is3DVolume, setIs3DVolume] = useState(false);
-
-  const onSetColorbar = useCallback(() => {
-    setViewportColorbar(viewportId, displaySets, commandsManager, serviceManager, {
-      colormaps,
-      ticks: {
-        position: colorbarTickPosition,
-      },
-      width: colorbarWidth,
-      position: colorbarContainerPosition,
-      activeColormapName: colorbarInitialColormap,
-    });
-  }, [commandsManager]);
-
-  useEffect(() => {
-    const newVpHeight = element?.clientHeight;
-    if (vpHeight !== newVpHeight) {
-      setVpHeight(newVpHeight);
-    }
-  }, [element, vpHeight]);
-
-  useEffect(() => {
-    if (!colorbarService.hasColorbar(viewportId)) {
-      return;
-    }
-    window.setTimeout(() => {
-      colorbarService.removeColorbar(viewportId);
-      onSetColorbar();
-    }, 0);
-  }, [viewportId]);
-
-  useEffect(() => {
-    if (colorbarService.hasColorbar(viewportId)) {
-      colorbarService.removeColorbar(viewportId);
-    }
-  }, [displaySets]);
-
-  useEffect(() => {
-    setMenuKey(menuKey + 1);
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    if (viewport instanceof VolumeViewport3D) {
-      setIs3DVolume(true);
-    } else {
-      setIs3DVolume(false);
-    }
-  }, [
-    displaySets,
-    viewportId,
-    presets,
-    volumeRenderingQualityRange,
-    volumeRenderingPresets,
+  const {
+    is3DVolume,
     colorbarProperties,
-    activeViewportId,
-    viewportGrid,
-  ]);
+    windowLevelPresets,
+    volumeRenderingPresets,
+    volumeRenderingQualityRange,
+  } = useViewportRendering(viewportId);
 
   return (
-    <AllInOneMenu.IconMenu
-      icon="viewport-window-level"
-      verticalDirection={verticalDirection}
-      horizontalDirection={horizontalDirection}
-      iconClassName={classNames(
-        // Visible on hover and for the active viewport
-        activeViewportId === viewportId ? 'visible' : 'invisible group-hover:visible',
-        'flex shrink-0 cursor-pointer rounded active:text-white',
-        isLight
-          ? 'text-aqua-pale hover:bg-secondary-dark'
-          : 'text-primary-light hover:bg-secondary-light/60'
-      )}
-      menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
-      onVisibilityChange={() => {
-        setVpHeight(element.clientHeight);
-      }}
-      menuKey={menuKey}
+    <AllInOneMenu.Menu
+      key={menuKey}
+      // the visibility is handled by the parent component
+      isVisible={true}
+      align={align}
+      side={side}
+      backLabel={i18n.t('WindowLevelActionMenu:Back to Display Options')}
+      onVisibilityChange={onVisibilityChange}
     >
       <AllInOneMenu.ItemPanel>
-        {!is3DVolume && (
-          <Colorbar
-            viewportId={viewportId}
-            displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
-            commandsManager={commandsManager}
-            serviceManager={serviceManager}
-            colorbarProperties={colorbarProperties}
-          />
-        )}
+        {!is3DVolume && <Colorbar viewportId={viewportId} />}
 
-        {colormaps && !is3DVolume && (
+        {colorbarProperties?.colormaps && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
-            itemLabel="Color LUT"
+            itemLabel={t('Color LUT')}
             itemIcon="icon-color-lut"
+            className="flex h-[calc(100%-32px)] flex-col"
           >
-            <Colormap
-              colormaps={colormaps}
-              viewportId={viewportId}
-              displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
-              commandsManager={commandsManager}
-              serviceManager={serviceManager}
-            />
+            <Colormap viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
 
-        {presets && !is3DVolume && (
+        {windowLevelPresets?.length > 0 && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
-            itemLabel={t('Modality Window Presets', { modality: Object.keys(presets)[0] })}
+            itemLabel={t('Modality Window Presets')}
             itemIcon="viewport-window-level"
           >
-            <WindowLevel
-              viewportId={viewportId}
-              commandsManager={commandsManager}
-              presets={presets}
-            />
+            <WindowLevel viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
 
-        {volumeRenderingPresets && is3DVolume && (
-          <VolumeRenderingPresets
-            serviceManager={serviceManager}
-            viewportId={viewportId}
-            commandsManager={commandsManager}
-            volumeRenderingPresets={volumeRenderingPresets}
-          />
-        )}
+        {volumeRenderingPresets && is3DVolume && <VolumeRenderingPresets viewportId={viewportId} />}
 
         {volumeRenderingQualityRange && is3DVolume && (
-          <AllInOneMenu.SubMenu itemLabel="Rendering Options">
-            <VolumeRenderingOptions
-              viewportId={viewportId}
-              commandsManager={commandsManager}
-              volumeRenderingQualityRange={volumeRenderingQualityRange}
-              serviceManager={serviceManager}
-            />
+          <AllInOneMenu.SubMenu itemLabel={t('Rendering Options')}>
+            <VolumeRenderingOptions viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
-    </AllInOneMenu.IconMenu>
+    </AllInOneMenu.Menu>
   );
 }

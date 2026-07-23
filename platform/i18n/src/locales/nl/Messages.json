@@ -1,0 +1,18 @@
+{
+  "Display Set Messages": "Weergave set berichten",
+  "1": "Geen geldige instanties gevonden in serie.",
+  "2": "Weergave set heeft ontbrekende positie-informatie.",
+  "3": "Weergave set is geen reconstrueerbaar 3D volume.",
+  "4": "Multi-frame weergave sets hebben geen pixelmeting informatie.",
+  "5": "Multi-frame weergave sets hebben geen oriëntatie-informatie.",
+  "6": "Multi-frame weergave sets hebben geen positie-informatie.",
+  "7": "Weergave set heeft ontbrekende frames.",
+  "8": "Weergave set heeft onregelmatige afstand.",
+  "9": "Weergave set heeft inconsistente afmetingen tussen frames.",
+  "10": "Weergave set heeft frames met inconsistente aantal componenten.",
+  "11": "Weergave set heeft frames met inconsistente oriëntaties.",
+  "12": "Weergave set heeft inconsistente positie-informatie.",
+  "13": "Niet-ondersteunde weergave set.",
+  "14": "SOP Class UID {{ sopClassUid }} wordt niet ondersteund.",
+  "15": "Weergave set mist een SOP Class UID. Controleer het bestand."
+}
