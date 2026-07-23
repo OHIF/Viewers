@@ -244,6 +244,32 @@ also supports a number of commands that can be found in their respective
 \* - For more information on different builds, check out our [Deploy
 Docs][deployment-docs]
 
+### Which config each command uses
+
+The dev server and the production build select a different default
+[configuration file][config-file] when `APP_CONFIG` is not set explicitly:
+
+| Command                         | Default config       | Data sources | `?customization=` |
+| ------------------------------- | -------------------- | ------------ | ----------------- |
+| `dev`, `dev:fast`, `start`      | `config/dev.js`      | Full set     | Enabled           |
+| `build`                         | `config/default.js`  | One demo source | Disabled       |
+
+- **`config/dev.js`** is the full-featured local-development config: every data
+  source is enabled, the `?customization=` URL feature is turned on (via
+  `customizationUrlPrefixes`), and it is kept at parity with the public demo
+  (`config/netlify.js`) so customizations behave locally the same way they do on
+  the demo.
+- **`config/netlify.js`** is the public demo / Netlify deploy config
+  (`build:viewer:ci`), with the same full data-source set and `?customization=`
+  enabled.
+- **`config/default.js`** is a locked-down baseline and is now **only** the
+  default for a plain production build (`build` with no `APP_CONFIG`): a single
+  read-only demo data source and `?customization=` off.
+
+Any explicit `APP_CONFIG` overrides the default, e.g.
+`APP_CONFIG=config/default.js pnpm run dev` or
+`APP_CONFIG=config/netlify.js pnpm run build`.
+
 ## Project
 
 The OHIF Medical Image Viewing Platform is maintained as a
@@ -371,6 +397,7 @@ MIT © [OHIF](https://github.com/OHIF)
 [ohif-architecture]: https://docs.ohif.org/architecture/index.html
 [ohif-extensions]: https://docs.ohif.org/architecture/index.html
 [deployment-docs]: https://docs.ohif.org/deployment/
+[config-file]: https://docs.ohif.org/configuration/configurationFiles
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/@ohif/app

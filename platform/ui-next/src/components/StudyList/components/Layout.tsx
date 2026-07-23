@@ -135,6 +135,7 @@ function Table({
   toolbarRightActionsComponent,
   isLoading,
   loadingComponent,
+  onStudyDoubleClick,
   children,
 }: TableProps) {
   const { defaultPreviewSizePercent } = useLayout();
@@ -168,6 +169,7 @@ function Table({
             filters={filters}
             isLoading={isLoading}
             loadingComponent={loadingComponent}
+            onStudyDoubleClick={onStudyDoubleClick}
           />
         </div>
       </div>

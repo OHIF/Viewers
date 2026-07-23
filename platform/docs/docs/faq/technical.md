@@ -6,8 +6,7 @@ summary: Technical explanations and solutions for OHIF Viewer implementation cha
 
 # Technical FAQ
 
-* [How to add a custom icon to the viewport corners](./add-viewport-icon.md)
-
+- [How to add a custom icon to the viewport corners](./add-viewport-icon.md)
 
 ## Viewer opens but does not show any thumbnails
 
@@ -34,8 +33,6 @@ For each filter in filters:
         Add "metadataField = ?" to query
 ```
 
-
-
 ## What are the list of required metadata for the OHIF Viewer to work?
 
 When using the DICOM JSON data source, the viewer does not query a DICOMweb
@@ -50,13 +47,13 @@ metadata instead of removing tags aggressively.
 
 ### Baseline Image Metadata
 
-| Scope | Include these tags | Why |
-| --- | --- | --- |
-| Identity and routing | `StudyInstanceUID`, `SeriesInstanceUID`, `SOPInstanceUID`, `SOPClassUID`, `Modality` | Used to group instances into studies, series, display sets, and SOP class handlers. |
-| Pixel description | `Rows`, `Columns`, `SamplesPerPixel`, `PhotometricInterpretation`, `BitsAllocated`, `BitsStored`, `HighBit`, `PixelRepresentation` | Used by the metadata provider and image loader to interpret the pixel data correctly. |
-| Color pixel data | `PlanarConfiguration` when `SamplesPerPixel` is greater than `1` | Required for RGB and some color ultrasound instances so the pixel samples are decoded in the correct order. |
-| Geometry and measurements | `PixelSpacing`, `PixelAspectRatio`, `ImagePositionPatient`, `ImageOrientationPatient`, `FrameOfReferenceUID` | Needed for calibrated measurements, stack geometry, MPR, segmentation overlays, and cross-series spatial alignment. |
-| Sorting and user context | `InstanceNumber`, `SeriesNumber`, `SeriesDate`, `SeriesTime`, `StudyDescription`, `SeriesDescription` | Recommended for stable ordering and useful labels in the study browser. |
+| Scope                     | Include these tags                                                                                                                 | Why                                                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Identity and routing      | `StudyInstanceUID`, `SeriesInstanceUID`, `SOPInstanceUID`, `SOPClassUID`, `Modality`                                               | Used to group instances into studies, series, display sets, and SOP class handlers.                                 |
+| Pixel description         | `Rows`, `Columns`, `SamplesPerPixel`, `PhotometricInterpretation`, `BitsAllocated`, `BitsStored`, `HighBit`, `PixelRepresentation` | Used by the metadata provider and image loader to interpret the pixel data correctly.                               |
+| Color pixel data          | `PlanarConfiguration` when `SamplesPerPixel` is greater than `1`                                                                   | Required for RGB and some color ultrasound instances so the pixel samples are decoded in the correct order.         |
+| Geometry and measurements | `PixelSpacing`, `PixelAspectRatio`, `ImagePositionPatient`, `ImageOrientationPatient`, `FrameOfReferenceUID`                       | Needed for calibrated measurements, stack geometry, MPR, segmentation overlays, and cross-series spatial alignment. |
+| Sorting and user context  | `InstanceNumber`, `SeriesNumber`, `SeriesDate`, `SeriesTime`, `StudyDescription`, `SeriesDescription`                              | Recommended for stable ordering and useful labels in the study browser.                                             |
 
 ### Rendering Metadata
 
@@ -72,20 +69,20 @@ value, omit it rather than sending an empty value.
 
 ### Feature and Modality Metadata
 
-| Feature or modality | Additional tags and sequences | Notes |
-| --- | --- | --- |
-| CT, MR, DX, CR, MG | `PixelSpacing`, `RescaleIntercept`, `RescaleSlope`, `WindowCenter`, `WindowWidth` | These are the common tags needed for calibrated grayscale display and measurements. |
-| MPR and volume tools | `ImagePositionPatient`, `ImageOrientationPatient`, `PixelSpacing`, `FrameOfReferenceUID` | Without patient-space geometry, MPR and spatial tools may not behave correctly. |
-| Any multi-frame image object | `NumberOfFrames` | Used to create one image ID per frame when a single SOP instance contains multiple frames. |
-| US, including cine | `NumberOfFrames`, `FrameTime`, `SequenceOfUltrasoundRegions` | `SequenceOfUltrasoundRegions` is used for calibrated ultrasound measurements. |
-| Color US or RGB images | `SamplesPerPixel`, `PhotometricInterpretation`, `PlanarConfiguration` | `PlanarConfiguration` is required when the pixel data contains multiple samples per pixel. |
-| PT with SUV correction | `RadiopharmaceuticalInformationSequence`, `SeriesDate`, `SeriesTime`, `CorrectedImage`, `Units`, `DecayCorrection`, `AcquisitionDate`, `AcquisitionTime`, `PatientWeight` | The radiopharmaceutical sequence should include `RadionuclideHalfLife`, `RadionuclideTotalDose`, and either `RadiopharmaceuticalStartDateTime` or `RadiopharmaceuticalStartTime`. |
-| Dynamic or multi-frame PT | `FrameReferenceTime`, `ActualFrameDuration` when available | These improve frame-specific PET timing metadata. |
-| SEG | `FrameOfReferenceUID`, `ReferencedSeriesSequence`, `SharedFunctionalGroupsSequence`, `PerFrameFunctionalGroupsSequence` | Required to place segmentation frames on their referenced images. |
-| RTSTRUCT | `FrameOfReferenceUID`, `ROIContourSequence`, `StructureSetROISequence`, `ReferencedFrameOfReferenceSequence` | Required to map contours to the referenced image geometry. |
-| SR | `ConceptNameCodeSequence`, `ContentSequence`, `ContentTemplateSequence`, `CurrentRequestedProcedureEvidenceSequence`, `CodingSchemeIdentificationSequence` | Required for structured report content and measurement references. |
-| PDF | `EncapsulatedDocument` | Contains the PDF document payload. |
-| Video | `NumberOfFrames` | Used as the video frame count. |
+| Feature or modality          | Additional tags and sequences                                                                                                                                             | Notes                                                                                                                                                                             |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CT, MR, DX, CR, MG           | `PixelSpacing`, `RescaleIntercept`, `RescaleSlope`, `WindowCenter`, `WindowWidth`                                                                                         | These are the common tags needed for calibrated grayscale display and measurements.                                                                                               |
+| MPR and volume tools         | `ImagePositionPatient`, `ImageOrientationPatient`, `PixelSpacing`, `FrameOfReferenceUID`                                                                                  | Without patient-space geometry, MPR and spatial tools may not behave correctly.                                                                                                   |
+| Any multi-frame image object | `NumberOfFrames`                                                                                                                                                          | Used to create one image ID per frame when a single SOP instance contains multiple frames.                                                                                        |
+| US, including cine           | `NumberOfFrames`, `FrameTime`, `SequenceOfUltrasoundRegions`                                                                                                              | `SequenceOfUltrasoundRegions` is used for calibrated ultrasound measurements.                                                                                                     |
+| Color US or RGB images       | `SamplesPerPixel`, `PhotometricInterpretation`, `PlanarConfiguration`                                                                                                     | `PlanarConfiguration` is required when the pixel data contains multiple samples per pixel.                                                                                        |
+| PT with SUV correction       | `RadiopharmaceuticalInformationSequence`, `SeriesDate`, `SeriesTime`, `CorrectedImage`, `Units`, `DecayCorrection`, `AcquisitionDate`, `AcquisitionTime`, `PatientWeight` | The radiopharmaceutical sequence should include `RadionuclideHalfLife`, `RadionuclideTotalDose`, and either `RadiopharmaceuticalStartDateTime` or `RadiopharmaceuticalStartTime`. |
+| Dynamic or multi-frame PT    | `FrameReferenceTime`, `ActualFrameDuration` when available                                                                                                                | These improve frame-specific PET timing metadata.                                                                                                                                 |
+| SEG                          | `FrameOfReferenceUID`, `ReferencedSeriesSequence`, `SharedFunctionalGroupsSequence`, `PerFrameFunctionalGroupsSequence`                                                   | Required to place segmentation frames on their referenced images.                                                                                                                 |
+| RTSTRUCT                     | `FrameOfReferenceUID`, `ROIContourSequence`, `StructureSetROISequence`, `ReferencedFrameOfReferenceSequence`                                                              | Required to map contours to the referenced image geometry.                                                                                                                        |
+| SR                           | `ConceptNameCodeSequence`, `ContentSequence`, `ContentTemplateSequence`, `CurrentRequestedProcedureEvidenceSequence`, `CodingSchemeIdentificationSequence`                | Required for structured report content and measurement references.                                                                                                                |
+| PDF                          | `EncapsulatedDocument`                                                                                                                                                    | Contains the PDF document payload.                                                                                                                                                |
+| Video                        | `NumberOfFrames`                                                                                                                                                          | Used as the video frame count.                                                                                                                                                    |
 
 ### DICOM JSON Specific Notes
 
@@ -107,7 +104,6 @@ Other DICOM attributes are not required for basic rendering but improve the
 viewer experience. These include patient demographics, study information, series
 information, instance information, acquisition details, and frame information.
 
-
 ## How do I handle large volumes for MPR and Volume Rendering
 
 Currently there are two ways to handle large volumes for MPR and Volume Rendering if that does not
@@ -122,9 +118,7 @@ for most images. You can look into the [webgl report](https://webglreport.com/?v
 
 ![](../assets/img/webgl-report-norm16.png)
 
-
 This is a flag that you can set in your [configuration file](../configuration/configurationFiles.md) to force usage of 16 bit data type for the volume rendering and MPR. This will reduce the memory usage by half.
-
 
 For instance for a large pt/ct study
 
@@ -134,9 +128,7 @@ Before (without the flag) the app shows 399 MB of memory usage
 
 ![](../assets/img/memory-profiling-regular.png)
 
-
 After (with flag, running locally) the app shows 249 MB of memory usage
-
 
 ![](../assets/img/webgl-int16.png)
 
@@ -145,11 +137,10 @@ Using the 16 bit texture (if supported) will not have any effect in the renderin
 would be exactly shown as it is. For datasets that cannot be represented with 16 bit data type, the flag will be ignored
 and the 32 bit data type will be used.
 
-
 Read more about these discussions in our PRs
-- https://github.com/Kitware/vtk-js/pull/2058
-:::
 
+- https://github.com/Kitware/vtk-js/pull/2058
+  :::
 
 :::warning
 Although the support for 16 bit data type is available in WebGL, in some settings (e.g., Intel-based Macos) there seems
@@ -157,7 +148,7 @@ to be still some issues with it. You can read and track bugs below.
 
 - https://bugs.chromium.org/p/chromium/issues/detail?id=1246379
 - https://bugs.chromium.org/p/chromium/issues/detail?id=1408247
-:::
+  :::
 
 ### `preferSizeOverAccuracy`
 
@@ -178,7 +169,6 @@ Memory snapshot after enabling `preferSizeOverAccuracy` for the same study as ab
 
 ![](../assets/img/preferSizeOverAccuracy.png)
 
-
 ## How to dynamically load a measurement
 
 You can dynamically load a measurement by using a combination of `MeasurementService` and `CornerstoneTools` Annotation API. Here, we will demonstrate this with an example of loading a `Rectangle` measurement.
@@ -197,25 +187,19 @@ we can call the `cornerstoneTools` api to grab the raw annotation data with the 
 
 ![alt text](faq-measure3.png)
 
-
-
-
 :::note
 Note: There is a `pointsInShape` attribute inside the data that stores the points within the annotation for some tools like `Rectangle` and `EllipticalRoi`. However, you can remove that attribute as well.
 :::
 
 For the sake of this example, I have extracted those keys and uploaded them to our server for fetching.
 
-`
-https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json
-`
+`https://ohif-assets.s3.us-east-2.amazonaws.com/ohif-faq/rectangle-roi.json`
 
 Now, let's discuss how to load this measurement dynamically and programmatically.
 
 There are numerous places in OHIF where you can add annotations, but we always recommend having your own extensions and modes to maintain full control over your custom API.
 
 For this example, I will add the logic in the `longitudinal` mode. However, as mentioned, you can create your own extension and mode, and either use `onModeEnter` or other lifecycle hooks to add annotations. Learn more about lifecycle hooks [here](../platform/extensions/lifecycle.md).
-
 
 Of course, you need to load the appropriate measurement for each study. However, for simplicity's sake, I will hardcode the URL in this example.
 
@@ -253,11 +237,9 @@ which then it will look like
 
 ![alt text](faq-measure-5.png)
 
-
 :::info
 There is also dedicated example for this in the [cornerstone3D examples](https://www.cornerstonejs.org/live-examples/dynamicallyaddannotations).
 :::
-
 
 ## How do I sort the series in the study panel by a specific value
 
@@ -269,6 +251,7 @@ since we are re-deigning the study panel and it might change in the future, but 
   experimentalStudyBrowserSort: true,
 }
 ```
+
 The component will appear in the study panel and will allow you to sort the series by a specific value. It comes with 3 default sorting functions, Series Number, Series Image Count, and Series Date.
 
 You can sort the series in the study panel by a specific value by adding a custom sorting function in the customizationModule, you can use the existing customizationModule in `extensions/default/src/getCustomizationModule.tsx` or create your own in your extension.
@@ -283,7 +266,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     {
       name: 'default',
       value: [
-
         {
           id: 'studyBrowser.sortFunctions',
           values: [
@@ -303,11 +285,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
 ```
 
 ### Explanation
+
 This function will be retrieved by the StudyBrowserSort component and will be used to sort all displaySets, it will reflect in all parts of the app since it works at the displaySetService level, which means the thumbnails in the study panel will also be sorted by the desired value.
 You can define multiple functions and pick which sort to use via the dropdown in the StudyBrowserSort component that appears in the study panel.
 
-
 ## How can i change the sorting of the thumbnail / study panel / study browser
+
 We are currently redesigning the study panel and the study browser. During this process, you can enable our undesigned component via the `experimentalStudyBrowserSort` flag. This will look like:
 
 ![alt text](study-sorting.png)
@@ -331,7 +314,6 @@ customizationService.addModeCustomizations([
 :::note
 Notice the arrays and objects, the values are arrays
 :::
-
 
 ## How do I change the cine auto mount behavior
 
