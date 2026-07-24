@@ -44,6 +44,48 @@ test('opens the color edit popup when "Change Color" is clicked', async ({
   );
 });
 
+test('keeps the Hex field available after saving and reopening the color dialog', async ({
+  page,
+  rightPanelPageObject,
+  DOMOverlayPageObject,
+}) => {
+  const segment = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
+  const colorPicker = DOMOverlayPageObject.dialog.colorPicker;
+
+  await page.evaluate(() => {
+    const { segmentationService, viewportGridService } = (window as any).services;
+    const segmentation = segmentationService.getSegmentations()[0];
+    const segmentIndex = Number(
+      Object.keys(segmentation.segments).find(index => Number(index) > 0)
+    );
+    const viewportId = viewportGridService.getActiveViewportId();
+    const [r, g, b] = segmentationService.getSegmentColor(
+      viewportId,
+      segmentation.segmentationId,
+      segmentIndex
+    );
+
+    segmentationService.setSegmentColor(viewportId, segmentation.segmentationId, segmentIndex, [
+      r,
+      g,
+      b,
+      127.5,
+    ]);
+  });
+
+  await segment.actions.openChangeColor();
+  await expect(colorPicker.hexInput).toHaveValue(THRESHOLD_CONTOUR_DEFAULT_HEX);
+
+  await colorPicker.fillHex(NEW_HEX);
+  await expect(colorPicker.alphaInput).toHaveValue('0.5');
+  await colorPicker.save();
+
+  await segment.actions.openChangeColor();
+
+  await expect(colorPicker.hexInput).toHaveValue(NEW_HEX);
+  await expect(colorPicker.alphaInput).toHaveValue('0.5');
+});
+
 test('changes the contour color when the user saves the edits', async ({
   viewportPageObject,
   rightPanelPageObject,
