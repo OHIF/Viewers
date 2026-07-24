@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.10](https://github.com/OHIF/Viewers/compare/v3.12.9...v3.12.10) (2026-07-24)
+
+
+### Bug Fixes
+
+* **security:** update postcss to 8.5.22 and release 3.12.10 ([#6182](https://github.com/OHIF/Viewers/issues/6182)) ([6c696e0](https://github.com/OHIF/Viewers/commit/6c696e0def2b5fddc3c11f3d49656466d368d754))
+
+
+
+
+
 ## [3.12.9](https://github.com/OHIF/Viewers/compare/v3.12.8...v3.12.9) (2026-07-23)
 
 
