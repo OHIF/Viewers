@@ -10,6 +10,8 @@ const rgbToHex = ({ r, g, b }) =>
     .join('')
     .toUpperCase()}`;
 
+const isValidHex = value => /^#?[0-9a-f]{6}$/i.test(value);
+
 function ColorPickerDialog({ value, hide, onSave }) {
   const [color, setColor] = useState(value);
   const [hex, setHex] = useState(() => rgbToHex(value));
@@ -73,6 +75,7 @@ function ColorPickerDialog({ value, hide, onSave }) {
           </FooterAction.Secondary>
           <FooterAction.Primary
             dataCY="color-picker-save-btn"
+            disabled={!isValidHex(hex)}
             onClick={() => {
               hide();
               onSave(color);

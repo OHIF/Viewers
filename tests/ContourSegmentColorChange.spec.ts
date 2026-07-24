@@ -76,8 +76,22 @@ test('keeps the Hex field available after saving and reopening the color dialog'
   await segment.actions.openChangeColor();
   await expect(colorPicker.hexInput).toHaveValue(THRESHOLD_CONTOUR_DEFAULT_HEX);
 
+  await colorPicker.hexInput.fill('#12');
+  await expect(colorPicker.hexInput).toHaveValue('#12');
+  await expect(colorPicker.saveButton).toBeDisabled();
+
+  await colorPicker.fillHex(THRESHOLD_CONTOUR_DEFAULT_HEX);
+  await expect(colorPicker.saveButton).toBeEnabled();
+
   await colorPicker.fillHex(NEW_HEX);
   await expect(colorPicker.alphaInput).toHaveValue('0.5');
+  await colorPicker.cancel();
+
+  await segment.actions.openChangeColor();
+  await expect(colorPicker.hexInput).toHaveValue(THRESHOLD_CONTOUR_DEFAULT_HEX);
+  await expect(colorPicker.alphaInput).toHaveValue('0.5');
+
+  await colorPicker.fillHex(NEW_HEX);
   await colorPicker.save();
 
   await segment.actions.openChangeColor();
