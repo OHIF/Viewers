@@ -4,7 +4,10 @@ import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import getThresholdValues from './utils/getThresholdValue';
-import clearSegmentFromLabelmap from './utils/clearSegmentFromLabelmap';
+import clearSegmentFromLabelmap, {
+  normalizeSegmentIndex,
+  restoreSegmentToLabelmap,
+} from './utils/clearSegmentFromLabelmap';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
@@ -218,18 +221,27 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       // other segment in the segmentation - including ones drawn with the brush or
       // shape tools. Clear only the segment being recomputed, then write additively so
       // re-running the tool stays idempotent without destroying the user's other work.
-      const targetSegmentIndex = segmentIndex ?? 1;
-      clearSegmentFromLabelmap(labelmapVolume.voxelManager, targetSegmentIndex);
+      const targetSegmentIndex = normalizeSegmentIndex(segmentIndex);
+      const { voxelManager } = labelmapVolume;
+      const clearedIndices = clearSegmentFromLabelmap(voxelManager, targetSegmentIndex);
 
-      return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
-        annotationUIDs,
-        labelmapVolume,
-        [
-          { volume: ptVolume, lower: ptLower, upper: ptUpper },
-          { volume: ctVolume, lower: ctLower, upper: ctUpper },
-        ],
-        { overwrite: false, segmentIndex: targetSegmentIndex, segmentationId }
-      );
+      try {
+        return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
+          annotationUIDs,
+          labelmapVolume,
+          [
+            { volume: ptVolume, lower: ptLower, upper: ptUpper },
+            { volume: ctVolume, lower: ctLower, upper: ctUpper },
+          ],
+          { overwrite: false, segmentIndex: targetSegmentIndex, segmentationId }
+        );
+      } catch (error) {
+        // Cornerstone validates the annotation tool names *inside* this call, and
+        // ROI_THRESHOLD_MANUAL_TOOL_IDS includes CircleROIStartEndThreshold, which it
+        // rejects. Without a rollback that throw would leave the segment erased.
+        restoreSegmentToLabelmap(voxelManager, clearedIndices, targetSegmentIndex);
+        throw error;
+      }
     },
     calculateTMTV: async ({ segmentations }) => {
       const segmentationIds = segmentations.map(segmentation => segmentation.segmentationId);
