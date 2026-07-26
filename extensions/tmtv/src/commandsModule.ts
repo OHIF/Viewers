@@ -4,6 +4,7 @@ import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import getThresholdValues from './utils/getThresholdValue';
+import clearSegmentFromLabelmap from './utils/clearSegmentFromLabelmap';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
@@ -213,6 +214,13 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const ptVolume = ptVolumeInfo.volume;
       const ctVolume = ctVolumeInfo.volume;
 
+      // `overwrite: true` zeroes the entire labelmap before writing, which wipes every
+      // other segment in the segmentation - including ones drawn with the brush or
+      // shape tools. Clear only the segment being recomputed, then write additively so
+      // re-running the tool stays idempotent without destroying the user's other work.
+      const targetSegmentIndex = segmentIndex ?? 1;
+      clearSegmentFromLabelmap(labelmapVolume.voxelManager, targetSegmentIndex);
+
       return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
@@ -220,7 +228,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           { volume: ptVolume, lower: ptLower, upper: ptUpper },
           { volume: ctVolume, lower: ctLower, upper: ctUpper },
         ],
-        { overwrite: true, segmentIndex, segmentationId }
+        { overwrite: false, segmentIndex: targetSegmentIndex, segmentationId }
       );
     },
     calculateTMTV: async ({ segmentations }) => {
