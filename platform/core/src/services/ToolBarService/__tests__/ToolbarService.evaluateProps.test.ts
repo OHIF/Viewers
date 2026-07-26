@@ -88,3 +88,89 @@ describe('ToolbarService.handleEvaluate — evaluateProps', () => {
     expect(props.evaluateProps.hideWhenDisabled).toBe(true);
   });
 });
+
+/**
+ * The suite above pins how `evaluateProps` is derived. This one covers the effect the
+ * issue actually reports: a button with `hideWhenDisabled` on an array evaluator must
+ * disappear from the toolbar once it evaluates as disabled.
+ */
+describe('ToolbarService.refreshToolbarState — hideWhenDisabled visibility', () => {
+  const US_ONLY_EVALUATORS = {
+    'evaluate.cornerstoneTool': () => ({ disabled: false }),
+    // Stands in for evaluate.modality.supported: disabled unless the study is US.
+    'evaluate.modality.supported': ({ modality, supportedModalities }) =>
+      supportedModalities?.includes(modality)
+        ? undefined
+        : { disabled: true, disabledText: 'Not supported for this modality' },
+  };
+
+  const usDirectionalButton = (extra = {}) => ({
+    id: 'UltrasoundDirectionalTool',
+    props: {
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.modality.supported',
+          supportedModalities: ['US'],
+          hideWhenDisabled: true,
+        },
+      ],
+      ...extra,
+    },
+  });
+
+  const build = button => {
+    const service = new ToolbarService(undefined as never, undefined as never, undefined as never);
+    // @ts-expect-error private registry, so the test needs no extension manager
+    service._evaluateFunction = US_ONLY_EVALUATORS;
+    service.register([button] as never);
+    return service;
+  };
+
+  it('hides the button on a non-US study', () => {
+    const service = build(usDirectionalButton());
+
+    service.refreshToolbarState({ modality: 'CT' });
+
+    const props = service.getButtonProps('UltrasoundDirectionalTool');
+    expect(props.disabled).toBe(true);
+    expect(props.visible).toBe(false);
+  });
+
+  it('shows the button on a US study', () => {
+    const service = build(usDirectionalButton());
+
+    service.refreshToolbarState({ modality: 'US' });
+
+    const props = service.getButtonProps('UltrasoundDirectionalTool');
+    expect(props.disabled).toBe(false);
+    expect(props.visible).toBe(true);
+  });
+
+  it('leaves a disabled button visible when the flag is absent', () => {
+    const service = build({
+      id: 'UltrasoundDirectionalTool',
+      props: {
+        evaluate: [
+          'evaluate.cornerstoneTool',
+          { name: 'evaluate.modality.supported', supportedModalities: ['US'] },
+        ],
+      },
+    });
+
+    service.refreshToolbarState({ modality: 'CT' });
+
+    const props = service.getButtonProps('UltrasoundDirectionalTool');
+    expect(props.disabled).toBe(true);
+    expect(props.visible).toBe(true);
+  });
+
+  it('still honours the flag when set at the props level', () => {
+    // The pre-existing escape hatch must keep working.
+    const service = build(usDirectionalButton({ hideWhenDisabled: true }));
+
+    service.refreshToolbarState({ modality: 'CT' });
+
+    expect(service.getButtonProps('UltrasoundDirectionalTool').visible).toBe(false);
+  });
+});
