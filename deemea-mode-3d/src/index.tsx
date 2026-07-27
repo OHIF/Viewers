@@ -2,7 +2,6 @@ import { id } from './id';
 import toolbarButtons from './toolbarButtons3d';
 import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups3d';
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -14,7 +13,6 @@ const ohif = {
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
   panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
-  contourPanelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -70,16 +68,9 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      // Share a single segmentation list between the Labelmap and Contour tabs instead of
-      // each tab only showing segmentations of its own representation type.
+      // Hide the segmentation selector row (dropdown menu + name selector + info icon)
+      // in the collapsed segmentation panel.
       customizationService.setCustomizations({
-        'panelSegmentation.sharedSegmentationTypes': {
-          $set: [
-            SegmentationRepresentations.Labelmap,
-            SegmentationRepresentations.Contour,
-            SegmentationRepresentations.Surface,
-          ],
-        },
       });
 
       toolbarService.register(toolbarButtons);
@@ -136,9 +127,6 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
         'LabelMapTools',
       ]);
-      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
-        'ContourTools',
-      ]);
 
       toolbarService.updateSection('LabelMapTools', [
         'LabelmapSlicePropagation',
@@ -146,13 +134,9 @@ function modeFactory({ modeConfiguration }) {
         // 'MarkerLabelmap',
         // 'RegionSegmentPlus',
         // 'Shapes',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
         'LabelMapEditWithContour',
-      ]);
-      toolbarService.updateSection('ContourTools', [
-        'PlanarFreehandContourSegmentationTool',
-        'SculptorTool',
-        'SplineContourSegmentationTool',
-        'LivewireContourSegmentationTool',
       ]);
       toolbarService.updateSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
@@ -216,7 +200,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [cornerstone.panelTool, cornerstone.contourPanelTool],
+              rightPanels: [cornerstone.panelTool],
               rightPanelClosed: false,
               rightPanelResizable: true,
               viewports: [

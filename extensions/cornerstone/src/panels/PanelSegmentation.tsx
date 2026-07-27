@@ -120,6 +120,9 @@ export default function PanelSegmentation({
       sharedSegmentationTypes: customizationService.getCustomization(
         'panelSegmentation.sharedSegmentationTypes'
       ),
+      hideCollapsedHeader: customizationService.getCustomization(
+        'panelSegmentation.hideCollapsedHeader'
+      ),
     };
   }, [customizationService]);
 
@@ -159,6 +162,7 @@ export default function PanelSegmentation({
     CustomDropdownMenuContent,
     CustomSegmentStatisticsHeader,
     sharedSegmentationTypes,
+    hideCollapsedHeader,
   } = customizations;
 
   // Widens which segmentations are *listed* to include other tabs' shared types, without
@@ -338,13 +342,13 @@ export default function PanelSegmentation({
       return (
         <SegmentationTable.Collapsed>
           {renderUtilitiesToolbar()}
-          <SegmentationTable.Collapsed.Header>
+          {/* <SegmentationTable.Collapsed.Header>
             <SegmentationTable.Collapsed.DropdownMenu>
               <CustomDropdownMenuContent />
             </SegmentationTable.Collapsed.DropdownMenu>
             <SegmentationTable.Collapsed.Selector />
             <SegmentationTable.Collapsed.Info />
-          </SegmentationTable.Collapsed.Header>
+          </SegmentationTable.Collapsed.Header> */}
           <SegmentationTable.Collapsed.Content>
             <SegmentationTable.AddSegmentRow />
             {renderSegments()}
