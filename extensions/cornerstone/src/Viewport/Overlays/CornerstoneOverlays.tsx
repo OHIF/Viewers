@@ -5,7 +5,6 @@ import ViewportSliceProgressScrollbar from './ViewportSliceProgressScrollbar/Vie
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
-import AutoDecimationOverlay from './AutoDecimationOverlay';
 
 function CornerstoneOverlays(props: withAppTypes) {
   const { viewportId, element, scrollbarHeight, servicesManager } = props;
@@ -41,11 +40,7 @@ function CornerstoneOverlays(props: withAppTypes) {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
     if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
-      return (
-        <div className="noselect">
-          <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
-        </div>
-      );
+      return null;
     }
   }
 
@@ -84,8 +79,6 @@ function CornerstoneOverlays(props: withAppTypes) {
         servicesManager={servicesManager}
         element={element}
       />
-
-      <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
 
       <ViewportImageSliceLoadingIndicator
         viewportData={viewportData}

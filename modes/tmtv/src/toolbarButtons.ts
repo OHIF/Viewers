@@ -40,6 +40,16 @@ const toolbarButtons = [
     },
   },
   {
+    id: 'autoDecimationBadge',
+    uiType: 'ohif.autoDecimationBadge',
+    props: {
+      evaluate: {
+        name: 'evaluate.autoDecimationBadge',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'modalityLoadBadge',
     uiType: 'ohif.modalityLoadBadge',
     props: {

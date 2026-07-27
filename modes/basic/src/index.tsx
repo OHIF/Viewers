@@ -239,6 +239,7 @@ export const toolbarSections = {
   ],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: [
+    'autoDecimationBadge',
     'modalityLoadBadge',
     'trackingStatus',
     'navigationComponent',

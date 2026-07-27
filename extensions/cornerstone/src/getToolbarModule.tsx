@@ -11,6 +11,7 @@ import { OpacityMenuWrapper } from './components/OpacityMenu/OpacityMenuWrapper'
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
+import AutoDecimationBadge from './components/AutoDecimationBadge/AutoDecimationBadge';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
 import AdvancedRenderingControls from './components/AdvancedRenderingControls';
 
@@ -67,6 +68,33 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
         if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        return {
+          disabled: false,
+        };
+      },
+    },
+    // AutoDecimationBadge
+    {
+      name: 'ohif.autoDecimationBadge',
+      defaultComponent: AutoDecimationBadge,
+    },
+    {
+      name: 'evaluate.autoDecimationBadge',
+      evaluate: ({ viewportId }) => {
+        const options = cornerstoneViewportService
+          ?.getViewportInfo(viewportId)
+          ?.getViewportOptions?.();
+        const info = options?.autoDecimationInfo;
+        const viewportType = options?.viewportType;
+        const isVolume =
+          viewportType === 'orthographic' || viewportType === 'volume3d';
+
+        if (!info?.applied || !isVolume) {
           return {
             disabled: true,
           };

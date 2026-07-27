@@ -120,8 +120,8 @@ function decimationEquals(
 }
 
 /**
- * Logs auto-decimation details and returns the overlay presence flag.
- * Overlay copy lives in DECIMATION_OVERLAY_MESSAGE / AutoDecimationOverlay.
+ * Logs auto-decimation details and returns the badge presence flag.
+ * Badge copy lives in DECIMATION_OVERLAY_MESSAGE / AutoDecimationBadge.
  */
 function buildAutoDecimationInfo(
   decimation: Point3,

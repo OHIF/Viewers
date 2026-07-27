@@ -69,6 +69,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'autoDecimationBadge',
         'modalityLoadBadge',
         'trackingStatus',
         'navigationComponent',
