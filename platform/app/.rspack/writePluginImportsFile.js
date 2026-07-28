@@ -1,10 +1,18 @@
 const pluginConfig = require('../pluginConfig.json');
+const pluginConfigSchema = require('../pluginConfig.schema.json');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
 // --- pluginConfig.json structural validation (mirrors pluginConfig.schema.json).
 // Hand-rolled on purpose: the build must not gain a runtime dependency for this.
+//
+// STRUCTURE (which keys exist, which are required, their types) is hand-rolled
+// below. VALUE constraints (`pattern`, `minLength`) are read straight out of
+// pluginConfig.schema.json instead of being retyped, so the two cannot drift —
+// the previous version type-checked strings only and silently accepted a
+// packageName that violated the schema's npm-name pattern. Parity is pinned by
+// platform/app/src/__tests__/pluginConfigSchemaParity.test.js.
 const PLUGIN_FIELDS = { packageName: 'string', default: 'boolean', directory: 'string' };
 const PUBLIC_FIELDS = {
   directory: 'string',
@@ -16,7 +24,37 @@ const PUBLIC_FIELDS = {
 };
 const ROOT_KEYS = ['$schema', 'extensions', 'modes', 'public'];
 
-function checkEntry(errors, where, entry, allowed, required) {
+function constraintsFor(definition) {
+  const properties = (pluginConfigSchema.definitions[definition] || {}).properties || {};
+  const constraints = {};
+  for (const [field, spec] of Object.entries(properties)) {
+    const constraint = {};
+    if (typeof spec.pattern === 'string') {
+      constraint.pattern = new RegExp(spec.pattern);
+    }
+    if (typeof spec.minLength === 'number') {
+      constraint.minLength = spec.minLength;
+    }
+    if (Object.keys(constraint).length) {
+      constraints[field] = constraint;
+    }
+  }
+  return constraints;
+}
+
+const PLUGIN_CONSTRAINTS = constraintsFor('plugin');
+const PUBLIC_CONSTRAINTS = constraintsFor('publicEntry');
+
+// Fields the codegen interpolates into generated JS string literals (see
+// getRuntimeLoadModesExtensions): packageName/globalName/importName land inside
+// "double quotes", importPath inside 'single quotes'. A quote, backslash, or
+// newline in any of them injects code into pluginImports.js, so reject those
+// characters unconditionally — independently of whatever the schema patterns
+// happen to allow.
+const INTERPOLATED_FIELDS = ['packageName', 'globalName', 'importName', 'importPath'];
+const UNSAFE_INTERPOLATION = /["'\\\r\n]/;
+
+function checkEntry(errors, where, entry, allowed, required, constraints = {}) {
   if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
     errors.push(
       `${where}: expected an object ({ "packageName": ... }), got ${JSON.stringify(entry)}`
@@ -36,8 +74,36 @@ function checkEntry(errors, where, entry, allowed, required) {
           ? `${label}: the "version" field is dead — nothing reads it; delete the line`
           : `${label}: unknown field "${key}" (allowed: ${Object.keys(allowed).join(', ')})`
       );
-    } else if (typeof value !== allowed[key]) {
+      continue;
+    }
+    if (typeof value !== allowed[key]) {
       errors.push(`${label}: "${key}" must be a ${allowed[key]}, got ${typeof value}`);
+      continue;
+    }
+    if (typeof value !== 'string') {
+      continue;
+    }
+    if (INTERPOLATED_FIELDS.includes(key) && UNSAFE_INTERPOLATION.test(value)) {
+      errors.push(
+        `${label}: "${key}" value ${JSON.stringify(value)} contains a quote, backslash, or ` +
+          'newline; those characters would be injected verbatim into the generated pluginImports.js'
+      );
+      continue;
+    }
+    const constraint = constraints[key];
+    if (!constraint) {
+      continue;
+    }
+    if (constraint.minLength !== undefined && value.length < constraint.minLength) {
+      errors.push(
+        `${label}: "${key}" must be at least ${constraint.minLength} character(s) long ` +
+          '(pluginConfig.schema.json)'
+      );
+    } else if (constraint.pattern && !constraint.pattern.test(value)) {
+      errors.push(
+        `${label}: "${key}" value ${JSON.stringify(value)} does not match the schema pattern ` +
+          `/${constraint.pattern.source}/ (pluginConfig.schema.json)`
+      );
     }
   }
 }
@@ -59,7 +125,14 @@ function validatePluginConfig(config) {
     }
     const seen = new Set();
     config[section].forEach((entry, i) => {
-      checkEntry(errors, `${section}[${i}]`, entry, PLUGIN_FIELDS, ['packageName']);
+      checkEntry(
+        errors,
+        `${section}[${i}]`,
+        entry,
+        PLUGIN_FIELDS,
+        ['packageName'],
+        PLUGIN_CONSTRAINTS
+      );
       const name = entry && entry.packageName;
       if (name && seen.has(name)) {
         errors.push(`${section}[${i}]: duplicate packageName "${name}"`);
@@ -74,7 +147,7 @@ function validatePluginConfig(config) {
       errors.push('root: "public" must be an array');
     } else {
       config.public.forEach((entry, i) => {
-        checkEntry(errors, `public[${i}]`, entry, PUBLIC_FIELDS, []);
+        checkEntry(errors, `public[${i}]`, entry, PUBLIC_FIELDS, [], PUBLIC_CONSTRAINTS);
         if (entry && typeof entry === 'object' && !entry.directory && !entry.packageName) {
           errors.push(`public[${i}]: needs at least one of "directory" or "packageName"`);
         }
@@ -472,3 +545,13 @@ module.exports = writePluginImportsFile;
 module.exports.getPluginResolveAliases = getPluginResolveAliases;
 module.exports.getPluginContentGlobs = getPluginContentGlobs;
 module.exports.validatePluginConfig = validatePluginConfig;
+// Exposed for pluginConfigSchemaParity.test.js only: the field/constraint
+// tables above must stay in lockstep with pluginConfig.schema.json.
+module.exports.validatorTables = {
+  PLUGIN_FIELDS,
+  PUBLIC_FIELDS,
+  ROOT_KEYS,
+  PLUGIN_CONSTRAINTS,
+  PUBLIC_CONSTRAINTS,
+  INTERPOLATED_FIELDS,
+};

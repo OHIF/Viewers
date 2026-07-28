@@ -48,12 +48,40 @@
       "additionalProperties": false,
       "anyOf": [{ "required": ["directory"] }, { "required": ["packageName"] }],
       "properties": {
-        "directory": { "type": "string", "minLength": 1, "description": "Asset folder copied verbatim into dist. Same path grammar as plugin.directory." },
-        "packageName": { "type": "string", "minLength": 1 },
-        "importPath": { "type": "string", "minLength": 1, "description": "URL/path passed to window.browserImportFunction for runtime import." },
-        "globalName": { "type": "string", "minLength": 1, "description": "window global to read after importPath loads (UMD-style)." },
-        "importName": { "type": "string", "minLength": 1, "description": "Named export to use instead of default when globalName is not set." },
-        "to": { "type": "string", "pattern": "^/", "description": "Sub-path under dist to copy directory into, e.g. /dicom-microscopy-viewer/." }
+        "directory": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Asset folder copied verbatim into dist. Same path grammar as plugin.directory."
+        },
+        "packageName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "npm package name of the third-party package. Interpolated into the generated pluginImports.js, hence the same name grammar as plugin.packageName.",
+          "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?[a-z0-9-~][a-z0-9-._~]*$"
+        },
+        "importPath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "URL/path passed to window.browserImportFunction for runtime import. Interpolated into a single-quoted JS string literal by the codegen, so the charset excludes quotes, backslashes, and newlines.",
+          "pattern": "^[A-Za-z0-9@._~/:?=&%+#-]+$"
+        },
+        "globalName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "window global to read after importPath loads (UMD-style). Interpolated into generated JS, so the charset excludes quotes, backslashes, and newlines.",
+          "pattern": "^[A-Za-z_$@][A-Za-z0-9_$@./-]*$"
+        },
+        "importName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Named export to use instead of default when globalName is not set. Interpolated into generated JS, so it must be a plain JS identifier.",
+          "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+        },
+        "to": {
+          "type": "string",
+          "pattern": "^/",
+          "description": "Sub-path under dist to copy directory into, e.g. /dicom-microscopy-viewer/."
+        }
       }
     }
   }

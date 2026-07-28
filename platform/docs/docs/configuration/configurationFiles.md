@@ -202,19 +202,27 @@ if auth headers are used, a preflight request is required.
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
-  - `regex` is **required** when `enabled: true`. There is no default: if `regex` is omitted, OHIF refuses to load any `configUrl`, logs a console error, and starts with the built-in configuration. Set a regex that pins the exact configuration sources you trust. To knowingly accept any URL (strongly discouraged), set `regex: /.*/` explicitly.
+  - **At least one gate is required** when `enabled: true` — `origins`, `regex`, or both. If neither is configured, OHIF refuses to load any `configUrl`, logs a console error, and starts with the built-in configuration. Whichever you set, remember the fetched document controls `dataSources`, `runtimeExtensionOrigins`, and the `extensions`/`modes` descriptors, so it is as trusted as the viewer's own build.
+  - `origins` (**preferred**): an array of origins allowed to serve the config document, compared for **equality** against `new URL(configUrl).origin`. Ports are part of the origin; a full-URL entry allowlists that URL's origin; malformed entries are skipped. There is no pattern subtlety to get wrong.
+  - `regex`: matched against the **resolved absolute URL** (not the raw query-string value, so a relative or protocol-relative `configUrl` cannot dodge it). It **must be anchored** — start the pattern with `^` — because matching is unanchored: a pattern like `config\.example\.com` also accepts `https://evil.example/?x=config.example.com`. An unanchored pattern (including the old `/.*/` catch-all) is refused with a console error rather than honored. The `m` flag is rejected for the same reason. To knowingly accept any URL (strongly discouraged), use the anchored `regex: /^/`.
+  - Non-`http(s)` schemes (e.g. `javascript:`) are always refused.
+  - When both `origins` and `regex` are set, **both** must pass.
   - System administrators can return `cross-origin: same-origin` with OHIF files to disallow any loading from other origin. It will block read access to resources loaded from a different origin to avoid potential attack vector.
   - Example config:
     ```js
     dangerouslyUseDynamicConfig: {
       enabled: true,
-      regex: /^https:\/\/config\.your-hospital\.org\//
+      // Preferred: exact origin comparison.
+      origins: ['https://config.your-hospital.org'],
+      // Optional extra narrowing, on top of the origin check.
+      regex: /^https:\/\/config\.your-hospital\.org\/viewer\//
     }
     ```
-  > Example 1, to allow numbers and letters in an absolute or sub-path only.<br/>
-`regex: /(0-9A-Za-z.]+)(\/[0-9A-Za-z.]+)*/`<br/>
-Example 2, to restricts to either hosptial.com or othersite.com.<br/>
-`regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/` <br/>
+  > Example 1, one origin, any path under `/configs/`:<br/>
+`regex: /^https:\/\/hospital\.com\/configs\//`<br/>
+Example 2, either hospital.com or othersite.com — anchor **every** alternative:<br/>
+`regex: /^(https:\/\/hospital\.com|https:\/\/othersite\.com)\//`<br/>
+(or simply `origins: ['https://hospital.com', 'https://othersite.com']`)<br/>
 Example usage:<br/>
 `http://localhost:3000/?configUrl=http://localhost:3000/config/example.json`<br/>
 - `onConfiguration`: Currently only available for DicomWebDataSource, this option allows the interception of the data source configuration for dynamic values e.g. values coming from url params or query params. Here is an example of building the dicomweb datasource configuration object with values that are based on the route url params:

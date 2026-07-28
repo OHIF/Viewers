@@ -22,6 +22,7 @@ import { execFileSync } from 'node:child_process';
 
 export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const CONFIG_PATH = path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig.json');
+export const SCHEMA_PATH = path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig.schema.json');
 const APP_SRC_DIR = path.join(REPO_ROOT, 'platform', 'app', 'src');
 const WRITE_PLUGIN_IMPORTS = path.join(REPO_ROOT, 'platform', 'app', '.rspack', 'writePluginImportsFile.js');
 
@@ -54,6 +55,37 @@ export function splitSpec(spec) {
     return { name: spec.slice(0, at), range: spec.slice(at + 1) };
   }
   return { name: spec, range: undefined };
+}
+
+// The npm-name grammar, read from the same schema the build validates
+// pluginConfig.json against rather than retyped here (see
+// platform/app/src/__tests__/pluginConfigSchemaParity.test.js).
+export const PACKAGE_NAME_PATTERN = new RegExp(
+  JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8')).definitions.plugin.properties.packageName.pattern
+);
+
+// cmd.exe metacharacters lose their special meaning inside double quotes —
+// except `"` itself and `%` (variable expansion). No legitimate package spec
+// needs either, nor a newline.
+const CMD_UNQUOTABLE = /["%\r\n]/;
+
+// Gate for anything that reaches an argv we hand to pnpm. The package name is
+// held to the npm grammar (it is also what lands in pluginConfig.json); the
+// range is only checked for characters that survive quoting, so ordinary
+// ranges ('^1.0.0', '>=1 <2', 'file:../x') pass untouched.
+export function assertSafeSpec(spec) {
+  const { name, range } = splitSpec(spec);
+  if (!PACKAGE_NAME_PATTERN.test(name)) {
+    die(
+      2,
+      `"${name}" is not a valid npm package name (${PACKAGE_NAME_PATTERN.source}) — ` +
+        'refusing to pass it to pnpm'
+    );
+  }
+  if (CMD_UNQUOTABLE.test(spec)) {
+    die(2, `"${spec}" contains a quote, percent sign, or newline — refusing to pass it to a shell`);
+  }
+  return { name, range };
 }
 
 // Section detection: the CLI's keyword convention. In-tree modes carry
@@ -158,12 +190,34 @@ export function directoryValueFor(absPath) {
 }
 
 function runPnpm(args) {
-  // .cmd shims on win32 need a shell under current Node versions.
-  execFileSync('pnpm', args, {
-    cwd: REPO_ROOT,
-    stdio: 'inherit',
-    shell: process.platform === 'win32',
-  });
+  // Invocation shape matters on Windows. `execFileSync('pnpm', …)` needs a shell
+  // there (Node has refused to spawn .cmd/.bat shims without one since
+  // 18.20/20.12, CVE-2024-27980), and a shell then re-parses the joined argv:
+  // `^` — cmd's escape character and an extremely common semver range prefix —
+  // is silently eaten, so `pkg@^1.0.0` reaches pnpm as `pkg@1.0.0`, and `&`,
+  // `|`, `<`, `>` would be honored as operators rather than passed through.
+  //
+  // Fast path: under a pnpm script (`pnpm plugin …`, the documented entry point)
+  // npm_execpath points at pnpm's own JS entry. Run it with the current node
+  // binary and NO shell — argv is passed through verbatim, nothing to escape.
+  const execpath = process.env.npm_execpath;
+  if (execpath && /\.[cm]?js$/.test(execpath) && fs.existsSync(execpath)) {
+    execFileSync(process.execPath, [execpath, ...args], { cwd: REPO_ROOT, stdio: 'inherit' });
+    return;
+  }
+  if (process.platform !== 'win32') {
+    execFileSync('pnpm', args, { cwd: REPO_ROOT, stdio: 'inherit' });
+    return;
+  }
+  // Standalone `node scripts/ohif-plugin.mjs …` on win32: cmd.exe is
+  // unavoidable, so quote every argument to keep metacharacters literal.
+  // Callers pass argv through assertSafeSpec first, so no argument can contain
+  // a `"`, `%`, or newline — the three things quoting cannot neutralize.
+  execFileSync(
+    'pnpm',
+    args.map(arg => `"${arg}"`),
+    { cwd: REPO_ROOT, stdio: 'inherit', shell: true }
+  );
 }
 
 const defaultCtx = () => ({
@@ -194,7 +248,8 @@ export function cmdAdd(args, ctx = defaultCtx()) {
   const spec = args.find(a => !a.startsWith('--'));
   if (!spec) die(2, 'usage: plugin add <pkg>[@range] [--extension|--mode]');
   const flagSection = sectionFromFlags(args);
-  const { name } = splitSpec(spec);
+  // Validate before anything reaches pnpm's argv (see assertSafeSpec/runPnpm).
+  const { name } = assertSafeSpec(spec);
 
   // One-command form: install to the root workspace (where the build's
   // node_modules fallback resolves from) only when not already a root dep.
@@ -227,8 +282,10 @@ export function cmdAdd(args, ctx = defaultCtx()) {
 }
 
 export function cmdRemove(args, ctx = defaultCtx()) {
-  const name = args.find(a => !a.startsWith('--'));
-  if (!name) die(2, 'usage: plugin remove <pkg>');
+  const arg = args.find(a => !a.startsWith('--'));
+  if (!arg) die(2, 'usage: plugin remove <pkg>');
+  // `remove` takes a bare name (no @range), and it too reaches pnpm's argv.
+  const { name } = assertSafeSpec(arg);
 
   const config = readConfig(ctx.configPath);
   let removed = false;

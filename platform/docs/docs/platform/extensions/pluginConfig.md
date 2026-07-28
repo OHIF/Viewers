@@ -85,6 +85,13 @@ It has been deleted from the repo config; remove it from yours
 `public` entries are not extensions or modes — they describe third-party assets
 that are copied into `dist` and (optionally) imported at runtime via a global.
 
+`packageName`, `importPath`, `globalName`, and `importName` are interpolated
+into the generated `pluginImports.js` as JS string literals, so each is
+constrained to a character set that excludes quotes, backslashes, and newlines
+(the `pattern` values in `pluginConfig.schema.json`). The build validator
+enforces the same patterns and fails fast with the offending value, so a typo
+surfaces as a config error rather than as broken generated code.
+
 | Field | Type | Description |
 | --- | --- | --- |
 | `packageName` | string | Package name, used to resolve the asset directory from `node_modules` when `directory` is not given. |
