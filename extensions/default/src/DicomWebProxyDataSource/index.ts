@@ -50,7 +50,9 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       },
     },
     retrieve: {
+      getGetThumbnailSrc: (...args) => dicomWebDelegate.retrieve.getGetThumbnailSrc(...args),
       directURL: (...args) => dicomWebDelegate.retrieve.directURL(...args),
+      renderedURL: (...args) => dicomWebDelegate.retrieve.renderedURL(...args),
       series: {
         metadata: async (...args) => dicomWebDelegate.retrieve.series.metadata(...args),
       },
@@ -61,7 +63,8 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
     reject: {
       series: (...args) => dicomWebDelegate?.reject?.series?.(...args),
     },
-    deleteStudyMetadataPromise: (...args) => dicomWebDelegate?.deleteStudyMetadataPromise?.(...args),
+    deleteStudyMetadataPromise: (...args) =>
+      dicomWebDelegate?.deleteStudyMetadataPromise?.(...args),
     getImageIdsForDisplaySet: (...args) => dicomWebDelegate?.getImageIdsForDisplaySet?.(...args),
     getImageIdsForInstance: (...args) => dicomWebDelegate?.getImageIdsForInstance?.(...args),
     getConfig: (...args) =>

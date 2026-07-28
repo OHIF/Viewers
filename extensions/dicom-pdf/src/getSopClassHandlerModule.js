@@ -14,12 +14,17 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
     const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
-    const renderedUrl = dataSource.retrieve.directURL({
+    const renderedUrlParams = {
       instance,
       tag: 'EncapsulatedDocument',
       defaultType: MIMETypeOfEncapsulatedDocument || 'application/pdf',
       singlepart: 'pdf',
-    });
+    };
+    const renderedUrl = dataSource.retrieve.directURL(renderedUrlParams);
+    const getRenderedUrl = dataSource.retrieve.renderedURL
+      ? options =>
+          dataSource.retrieve.renderedURL({ ...renderedUrlParams, url: renderedUrl }, options)
+      : undefined;
 
     const displaySet = {
       //plugin: id,
@@ -36,6 +41,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       referencedImages: null,
       measurements: null,
       renderedUrl: renderedUrl,
+      getRenderedUrl,
       instances: [instance],
       thumbnailSrc: null,
       isDerivedDisplaySet: true,

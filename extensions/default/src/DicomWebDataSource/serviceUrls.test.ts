@@ -1,5 +1,13 @@
 import { createDicomWebApi } from './index';
 
+// The data source imports the image loader for its multiframe Part 10 prefetch
+// path, and that module's codec wasm entrypoints are not resolvable under jest.
+// These tests only assert URLs, so a bare stub is enough.
+jest.mock('@cornerstonejs/dicom-image-loader', () => ({
+  __esModule: true,
+  default: { prefetchPart10Instance: jest.fn() },
+}));
+
 // Only the pieces the module graph destructures at import time, plus enough to
 // let a QIDO search return an empty result set. These tests assert URLs, so no
 // DICOM value parsing is exercised.
