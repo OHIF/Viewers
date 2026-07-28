@@ -1,3 +1,14 @@
+// An OHIF_ENV build profile supplies the defaults for PLUGIN_CONFIG /
+// APP_CONFIG / PUBLIC_URL / HTML_TEMPLATE / proxy vars; anything already set in
+// the environment wins. Applied here, above the module-scope constants below,
+// because those capture process.env at import time. Call order relative to the
+// other imports does not matter: applyBuildProfile() is memoized and
+// writePluginImportsFile invokes it itself before reading PLUGIN_CONFIG (it is
+// also loaded directly by platform/app/tailwind.config.js, which never goes
+// through this file). See platform/app/ohif.schema.json and CUSTOMIZING.md.
+import { applyBuildProfile } from './.rspack/loadBuildProfile';
+applyBuildProfile();
+
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
@@ -371,9 +382,12 @@ export default defineConfig(({ env }) => {
           from: path.resolve(PUBLIC_DIR, 'config/google.js'),
           to: 'google.js',
         },
-        // Copy app config
+        // Copy app config. APP_CONFIG is normally relative to
+        // platform/app/public; an absolute path is honored so a deployment can
+        // keep its app config in its own repo (an OHIF_ENV profile turns a
+        // './'-prefixed appConfig into exactly that — see loadBuildProfile.js).
         {
-          from: path.resolve(PUBLIC_DIR, APP_CONFIG),
+          from: path.isAbsolute(APP_CONFIG) ? APP_CONFIG : path.resolve(PUBLIC_DIR, APP_CONFIG),
           to: 'app-config.js',
         },
       ],

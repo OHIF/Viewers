@@ -54,13 +54,15 @@ my-ohif-workspace/
 ├── scripts/ohif.mjs       # harness manager (dev / build / doctor / plugin / harness)
 ├── Dockerfile             # nginx + built dist + APP_CONFIG entrypoint
 ├── package.json           # private; dev/build/doctor/plugin scripts
-└── .gitignore             # ignores the machine-managed .ohif/ harness
+└── .gitignore             # ignores .ohif/ and pluginConfig.generated.json
 ```
 
-`ohif.config.json` is authoritative — it pins the OHIF version and lists the
-plugins the workspace owns. The `.ohif/` directory is a machine-managed,
-gitignored, disposable shallow checkout of the pinned OHIF tag; nothing
-user-owned lives inside it, and it can be deleted and recreated at any time.
+`ohif.config.json` is authoritative — it pins the OHIF version, lists the
+plugins the workspace owns, and doubles as the [build
+profile](../configuration/build-profiles.md) the harness passes as `OHIF_ENV`.
+The `.ohif/` directory is a machine-managed, gitignored, disposable shallow
+checkout of the pinned OHIF tag; **nothing is ever written inside it**, so it can
+be deleted and recreated at any time.
 
 ```bash
 cd my-ohif-workspace
@@ -69,10 +71,13 @@ pnpm dev
 ```
 
 `pnpm dev` runs `harness ensure` (shallow-clone the pinned tag into `.ohif/`,
-install, link every manifest plugin, and sync your `config/app-config.js`) and
-then starts the harness dev server with your workspace plugins source-compiled
-under HMR. `pnpm run harness upgrade <tag>` re-pins the manifest, re-clones, and
-re-links.
+install, and regenerate `pluginConfig.generated.json` from your manifest) and
+then starts the harness dev server with `OHIF_ENV=ohif.config.json`, so your
+workspace plugins are source-compiled under HMR and your `config/app-config.js`
+is served as `app-config.js` without being copied anywhere. `pnpm run harness
+upgrade <tag>` re-pins the manifest, re-clones, and regenerates — the plugin set
+is rebuilt on top of whatever the new version ships, so its new defaults come
+along for free.
 
 Running `pnpm create ohif@beta` **inside** a workspace folder scaffolds the new
 extension or mode into `extensions/` or `modes/`, appends it to

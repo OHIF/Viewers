@@ -523,9 +523,11 @@ alternative data source (or even specify different default hotkeys).
 
 | Environment Variable | Description                                                                                        | Default             |
 | -------------------- | -------------------------------------------------------------------------------------------------- | ------------------- |
+| `OHIF_ENV`           | Path to a [build profile](build-profiles.md) supplying defaults for every variable in this table. An already-set variable wins over the profile. | `undefined`         |
+| `PLUGIN_CONFIG`      | Path to the `pluginConfig.json` to compile from — how a deployment selects its own plugin set without editing the OHIF checkout. See [Build Profiles](build-profiles.md). | `platform/app/pluginConfig.json` |
 | `HTML_TEMPLATE`      | Which [HTML template][html-templates] to use as our web app's entry point. Specific to PWA builds. | `index.html`        |
 | `PUBLIC_URL`         | The route relative to the host that the app will be served from. Specific to PWA builds.           | `/`                 |
-| `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
+| `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`. Relative to `platform/app/public`, or an absolute path. | `config/default.js` |
 | `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
 | `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
 | `OHIF_PORT`          | The port to run the webpack server on for PWA builds.                                              | `3000`              |

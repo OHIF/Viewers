@@ -304,7 +304,17 @@ test('workspace scaffold emits the committed manifest and the managed-harness la
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'ohif.config.json'), 'utf8'));
   assert.equal(manifest.ohifVersion, selfPkg.version);
   assert.deepEqual(manifest.plugins, []);
-  assert.equal(manifest.appConfig, 'config/app-config.js');
+  // './'-prefixed so the build resolves it against the workspace (the profile
+  // hands it to APP_CONFIG as an absolute path) instead of looking inside the
+  // harness checkout's public/ dir.
+  assert.equal(manifest.appConfig, './config/app-config.js');
+
+  // The generated pluginConfig is machine-managed and must be ignored, never
+  // scaffolded; the checkout's own copy is never written to.
+  assert.ok(
+    fs.readFileSync(path.join(dir, '.gitignore'), 'utf8').includes('pluginConfig.generated.json')
+  );
+  assert.ok(!exists(dir, 'pluginConfig.generated.json'));
 
   // .ohif/ is machine-managed and must be ignored, never scaffolded.
   assert.ok(fs.readFileSync(path.join(dir, '.gitignore'), 'utf8').includes('.ohif/'));

@@ -13,7 +13,9 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "ohif.schema.json",
+    "pluginConfig.schema.json"
   ],
   "publishConfig": {
     "access": "public"
