@@ -36,6 +36,10 @@ window.config = {
   the module's default export). It is never defaulted to `packageName`.
 - Every attempt (success and failure) is recorded on
   `window.__ohif.runtimeExtensions`.
+- `integrity` is enforced on **this** (descriptor) path only. Build-time
+  `pluginConfig.json` `importPath` entries are trusted outright, and the URL
+  fallthrough / `peerImport` path is gated by the origin allowlist alone — see
+  [Where integrity is enforced](../../configuration/configurationFiles.md#where-integrity-is-enforced).
 - **CSP:** the viewer's two inline bootstrap scripts mean a deployment
   `CSP_HEADER` must interim-add `'unsafe-inline'` to `script-src` (until the
   inline-script hash handshake ships), and cross-origin integrity loads run

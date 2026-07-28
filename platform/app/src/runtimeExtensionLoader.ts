@@ -322,6 +322,29 @@ export async function loadRuntimeDescriptor(
  * error instead of reaching import('@typo/name') and dying with the browser's
  * cryptic "Failed to resolve module specifier"; data:/blob: URIs are not
  * URL-like here and are refused by the same throw.
+ *
+ * TRUST MODEL — DELIBERATE ASYMMETRY WITH loadRuntimeDescriptor. There are
+ * three tiers, and only the third enforces integrity:
+ *   1. Build-time pluginConfig.json `importPath` (a static branch emitted by
+ *      the codegen, above this call in the generated loadModule): TRUSTED
+ *      outright. No allowlist, no integrity — it is baked into the bundle by
+ *      whoever built the viewer, so changing it means a rebuild.
+ *   2. This function (the URL fallthrough / appConfig.peerImport): the origin
+ *      allowlist IS the trust decision. An allowlisted origin is treated as
+ *      trusted to serve code, so there is deliberately no integrity check, no
+ *      coreVersionRange gate, no id check, and no runtimeModules cache write.
+ *      Callers here pass bare library specifiers or URLs the deployment chose
+ *      (e.g. peerImport('dicom-microscopy-viewer')), with no descriptor to
+ *      carry a digest.
+ *   3. loadRuntimeDescriptor: additionally REQUIRES integrity for cross-origin,
+ *      because a descriptor has somewhere to put the digest and the loaded
+ *      module is registered as an extension/mode. That requirement does not
+ *      generalize backwards to tier 2.
+ * Deployment consequence: allowlisting an origin in runtimeExtensionOrigins
+ * grants it unverified script execution through this path, even though the
+ * descriptor path would demand a digest from the same origin. Documented in
+ * platform/docs/docs/configuration/configurationFiles.md ("Where integrity is
+ * enforced") — keep the two in sync.
  */
 export async function loadExternalModule(specifier: string): Promise<unknown> {
   const record: RuntimeExtensionAuditRecord = {

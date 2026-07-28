@@ -65,7 +65,10 @@ extensions: [{
 `/plugins/` URLs need no `integrity` and no entry in `runtimeExtensionOrigins`;
 cross-origin bundles require both — see the
 [descriptor fields](../configuration/configurationFiles.md#descriptor-fields)
-reference.
+reference. That `integrity` requirement applies to descriptors specifically;
+build-time `pluginConfig.json` `importPath` entries and the `peerImport` URL
+fallthrough are treated differently, per
+[Where integrity is enforced](../configuration/configurationFiles.md#where-integrity-is-enforced).
 
 ## docker-compose example
 

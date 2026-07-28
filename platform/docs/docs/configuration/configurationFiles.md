@@ -413,6 +413,36 @@ Function-style app configs are supported: at init the viewer stashes
 `window.__ohif.runtimeExtensionOrigins`, which takes precedence over
 `window.config.runtimeExtensionOrigins` when both exist.
 
+### Where integrity is enforced
+
+`integrity` is enforced on the **descriptor** path only. Three paths can load
+plugin code, and they sit at deliberately different trust levels:
+
+| Path | Origin allowlist | `integrity` |
+| --- | --- | --- |
+| Build-time `importPath` in [`pluginConfig.json`](../platform/extensions/pluginConfig.md) (`public` entries) | not applied | not applied |
+| URL fallthrough / `appConfig.peerImport` (a URL or bare specifier passed to `loadModule` that no descriptor and no build-time entry declares) | **enforced** | not applied |
+| Runtime descriptor in `extensions` / `modes` (this section) | **enforced** | **required cross-origin** |
+
+The rationale:
+
+- A build-time `importPath` is compiled into the bundle by whoever built the
+  viewer. Changing it requires editing `pluginConfig.json` and rebuilding — the
+  same trust level as editing the app's own source — so it is trusted outright
+  and imported directly, even when the URL is absolute and cross-origin.
+- On the fallthrough path the **allowlist is the trust decision**: an
+  allowlisted origin is trusted to serve code. There is no descriptor to carry a
+  digest, and callers pass library specifiers rather than pinned bundles, so no
+  integrity, `coreVersionRange`, or `id` check applies.
+- A descriptor has somewhere to put a digest and the result is registered as an
+  extension/mode, so it gets the strictest treatment.
+
+**Deployment consequence:** adding an origin to `runtimeExtensionOrigins` grants
+it unverified script execution through the fallthrough path, even though a
+descriptor pointing at that same origin would be refused without an `integrity`
+value. Allowlist only origins you control or otherwise trust to serve code, and
+keep the list as small as the deployment needs.
+
 ### Audit surface: `window.__ohif.runtimeExtensions`
 
 Every runtime load attempt — success AND failure — appends a record to

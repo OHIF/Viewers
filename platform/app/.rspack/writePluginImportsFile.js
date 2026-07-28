@@ -191,6 +191,14 @@ function getRuntimeLoadModesExtensions(modules) {
       return;
     }
     if (module.importPath) {
+      // TRUST MODEL: a pluginConfig.json `importPath` is build-time
+      // configuration, baked into the bundle by whoever built the viewer, so it
+      // is trusted and imported directly — no origin allowlist and no
+      // integrity/SRI check, even when the URL is absolute and cross-origin.
+      // Changing one requires editing pluginConfig.json and rebuilding, which
+      // is the same trust level as editing the app's source. Runtime-supplied
+      // URLs are NOT trusted this way: see the tiers documented on
+      // loadExternalModule in platform/app/src/runtimeExtensionLoader.ts.
       dynamicLoad.push(
         `  if( module==="${packageName}") {`,
         `    const imported = await window.browserImportFunction('${isAbsolutePath(module.importPath) ? '' : publicURL}${module.importPath}');`,

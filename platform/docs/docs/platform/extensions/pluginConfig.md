@@ -89,10 +89,26 @@ that are copied into `dist` and (optionally) imported at runtime via a global.
 | --- | --- | --- |
 | `packageName` | string | Package name, used to resolve the asset directory from `node_modules` when `directory` is not given. |
 | `directory` | string | Source directory of the assets to copy. Resolved like the extension `directory` field (absolute, `~`-relative, or `.`-relative to the repo root). |
-| `importPath` | string | Path/URL the runtime loader `import()`s. Absolute (`http…` or `/…`) paths are used as-is; otherwise it is prefixed with `PUBLIC_URL`. |
+| `importPath` | string | Path/URL the runtime loader `import()`s. Absolute (`http…` or `/…`) paths are used as-is; otherwise it is prefixed with `PUBLIC_URL`. **Trusted, unverified** — see the note below. |
 | `globalName` | string | If set, after importing `importPath` the loader returns `window[globalName]` (for UMD/global bundles). |
 | `importName` | string | Named export to return from the imported module. Defaults to `default`. Ignored when `globalName` is set. |
 | `to` | string | Destination subpath under `dist` for the copied assets. |
+
+:::warning `importPath` is trusted build-time configuration
+An `importPath` is compiled into the bundle by the codegen as a direct
+`import()` of that URL. It is **not** subject to the
+[`runtimeExtensionOrigins` allowlist](../../configuration/configurationFiles.md#origin-allowlist-runtimeextensionorigins)
+and gets **no `integrity`/SRI check**, even when the URL is absolute and
+cross-origin — changing it requires editing this file and rebuilding, which is
+the same trust level as editing the app's source, so the build-time value is
+trusted outright.
+
+Runtime-supplied URLs are held to stricter rules: see
+[Where integrity is enforced](../../configuration/configurationFiles.md#where-integrity-is-enforced).
+Point `importPath` at an origin you control — prefer a relative path or a
+`PUBLIC_URL`-served copy of the asset (the `directory` + `to` fields exist to
+copy third-party bundles into `dist` for exactly this reason).
+:::
 
 ```jsonc
 {
