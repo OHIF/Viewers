@@ -1,7 +1,7 @@
 import type { InstanceGroup } from '@cornerstonejs/metadata';
-import getDisplaySetMessages from '../getDisplaySetMessages';
 import {
-  getDisplaySetInfo,
+  applyImageListAttributes,
+  applyThumbnailSrc,
   makeImageSetDisplaySet,
   type ImageSetFactoryContext,
 } from './makeImageSetDisplaySet';
@@ -12,6 +12,7 @@ import {
  */
 const RESERVED_ATTRIBUTES = new Set([
   'instances',
+  'instance',
   'images',
   'uid',
   'displaySetInstanceUID',
@@ -46,22 +47,31 @@ export function makeDisplaySetFromInstanceGroup(
     viewportTypes,
   });
 
-  const customAttributes = matchedRule.customAttributes?.(
-    {
-      instance: instances[0],
-      isMultiFrame: Number(instances[0]?.NumberOfFrames) > 1,
-      sopClassUids: sopClassUids as string[],
-      viewportTypes: matchedRule.viewportTypes,
-    },
-    { instances: [...instances], splitNumber }
-  );
-  if (customAttributes) {
+  // Applied from the CURRENT image list, so re-running it after a merge keeps
+  // instance-derived attributes (e.g. `instanceNumber`) in step with the new
+  // sort order instead of describing the instances of the first batch.
+  const applyCustomAttributes = () => {
+    const currentInstances = imageSet.images;
+    const customAttributes = matchedRule.customAttributes?.(
+      {
+        instance: currentInstances[0],
+        isMultiFrame: Number(currentInstances[0]?.NumberOfFrames) > 1,
+        sopClassUids: sopClassUids as string[],
+        viewportTypes: matchedRule.viewportTypes,
+      },
+      { instances: [...currentInstances], splitNumber }
+    );
+    if (!customAttributes) {
+      return;
+    }
     imageSet.setAttributes(
       Object.fromEntries(
         Object.entries(customAttributes).filter(([key]) => !RESERVED_ATTRIBUTES.has(key))
       )
     );
-  }
+  };
+
+  applyCustomAttributes();
 
   // Incremental-merge hook used by DisplaySetService when new instances of an
   // existing split group arrive.  Intentionally NOT named `addInstances` (the
@@ -83,27 +93,14 @@ export function makeDisplaySetFromInstanceGroup(
     imageSet.images.push(...instancesToAdd);
     imageSet.sort(context.servicesManager.services.customizationService);
 
-    // Recompute reconstructability and validation messages exactly like the
-    // initial build.
-    const dataSource = context.extensionManager.getActiveDataSource()[0];
-    const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
-    const {
-      isDynamicVolume,
-      value: isReconstructable,
-      averageSpacingBetweenFrames,
-      dynamicVolumeInfo,
-    } = getDisplaySetInfo(imageSet.images, imageIds, context);
-    const messages = getDisplaySetMessages(imageSet.images, isReconstructable, isDynamicVolume);
-
-    imageSet.setAttributes({
-      numImageFrames: imageSet.images.length,
-      countIcon: isReconstructable ? 'icon-mpr' : undefined,
-      isReconstructable,
-      messages,
-      averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
-      isDynamicVolume,
-      dynamicVolumeInfo,
-    });
+    // Recompute every image-list-derived attribute through the same helper the
+    // initial build uses (reconstructability, messages, volumeLoaderSchema,
+    // frame count, and the `instance`/thumbnail the new sort order implies).
+    const derived = applyImageListAttributes(imageSet, context);
+    applyThumbnailSrc(imageSet, context, derived);
+    // Last, so a rule's custom attributes still win over the recomputed
+    // defaults - the same precedence as the initial build.
+    applyCustomAttributes();
 
     return imageSet;
   });

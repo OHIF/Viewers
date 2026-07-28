@@ -83,15 +83,28 @@ const multiFramePerInstanceRule: SplitRule = {
 /** Upstream rules reused as-is (behind the specialized-instance guard). */
 const REUSED_UPSTREAM_RULE_IDS = ['mixedDimensionalityBValue', 'volume3d', 'defaultImageRule'];
 
+/**
+ * Resolves the reused upstream rules by id.
+ *
+ * A missing id means `@cornerstonejs/metadata` renamed a default rule.  This
+ * warns and skips rather than throwing: this module is imported by
+ * `getCustomizationModule`, so a top-level throw would take down the whole
+ * `@ohif/extension-default` customization module — and with it the app — over
+ * a feature that is OFF by default.  Degrading to a shorter rule list only
+ * affects deployments that opted in, and `ohifDefaultSplitRules.test.ts`
+ * fails loudly on the drift in CI, which is where a hard failure belongs.
+ */
 const reusedUpstreamRules = REUSED_UPSTREAM_RULE_IDS.map(ruleId => {
   const rule = defaultDisplaySetSplitRules.find(candidate => candidate.id === ruleId);
   if (!rule) {
-    throw new Error(
-      `@cornerstonejs/metadata default split rule '${ruleId}' not found - the upstream rule ids changed`
+    console.warn(
+      `ohifDefaultSplitRules: @cornerstonejs/metadata default split rule '${ruleId}' not found - ` +
+        `the upstream rule ids changed. Skipping it; display set splitting will be less specific.`
     );
+    return undefined;
   }
   return withSpecializedGuard(rule);
-});
+}).filter((rule): rule is SplitRule => rule !== undefined);
 
 /**
  * The OHIF default split rules for the `useMetadataDisplaySet` customization.

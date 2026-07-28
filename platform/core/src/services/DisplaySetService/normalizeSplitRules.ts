@@ -27,12 +27,72 @@ import { compileExpression } from '../CustomizationService/expression';
  *   `{ instances, splitNumber, sopClassUids, viewportTypes }`.
  *
  * Engine-native rules (all-function fields) pass through unchanged.
+ *
+ * Rules whose `matches` or `groupBy` was authored but did not resolve to
+ * something the engine can call are DROPPED — see {@link isUsableRule} for
+ * why silently keeping them is the dangerous option.
  */
 export function normalizeSplitRules(rules: SplitRule[]): SplitRule[] {
   if (!Array.isArray(rules)) {
     return [];
   }
-  return rules.map(normalizeSplitRule);
+  return rules.filter(isUsableRule).map(normalizeSplitRule);
+}
+
+/** Was `key` written by the rule author (as opposed to simply absent)? */
+const isAuthored = (rule: SplitRule, key: string) =>
+  Object.prototype.hasOwnProperty.call(rule, key);
+
+/**
+ * Rejects rules the split engine would misinterpret.
+ *
+ * A `{ $function: ... }` marker that fails to compile resolves to `undefined`
+ * (CustomizationService warns and keeps reading the rest of the
+ * customization).  For most fields that fails closed, but `matches` and
+ * `groupBy` fail catastrophically OPEN:
+ *
+ * - `groupInstancesBySplitRules` treats a rule with no `matches` as matching
+ *   EVERY instance, so one typo in a `$unshift`-ed rule would silently claim
+ *   the whole study instead of doing nothing.
+ * - a `groupBy` entry that is neither a tag name nor a function reads
+ *   `instance[undefined]` for every instance, collapsing them into one group.
+ *
+ * Dropping the rule keeps the remaining (usually default) rules intact, which
+ * degrades to "my custom rule did nothing" — diagnosable — rather than
+ * "every series is grouped wrong".
+ */
+function isUsableRule(rule: SplitRule): boolean {
+  if (!rule || typeof rule !== 'object') {
+    return false;
+  }
+  const ruleId = (rule as { id?: string }).id ?? '<unnamed>';
+
+  const { matches, groupBy } = rule as Record<string, unknown> & SplitRule;
+
+  if (isAuthored(rule, 'matches') && typeof matches !== 'function' && typeof matches !== 'string') {
+    console.warn(
+      `normalizeSplitRules: dropping split rule '${ruleId}' - its 'matches' did not resolve to a function ` +
+        `(a $function expression that failed to compile?). Keeping it would make the rule match every instance.`,
+      matches
+    );
+    return false;
+  }
+
+  if (isAuthored(rule, 'groupBy')) {
+    const invalid =
+      !Array.isArray(groupBy) ||
+      groupBy.some(key => typeof key !== 'string' && typeof key !== 'function');
+    if (invalid) {
+      console.warn(
+        `normalizeSplitRules: dropping split rule '${ruleId}' - its 'groupBy' must be an array of tag names ` +
+          `or functions. Keeping it would collapse every instance into one group.`,
+        groupBy
+      );
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function normalizeSplitRule(rule: SplitRule): SplitRule {
@@ -56,6 +116,18 @@ function normalizeSplitRule(rule: SplitRule): SplitRule {
 
   if (series && typeof series === 'object') {
     const factEntries = Object.entries(series as Record<string, unknown>);
+    // An undefined fact is almost always a $function that failed to compile.
+    // This one fails closed (`matches` reads the fact and the comparison is
+    // false, so the rule simply never fires), so warn rather than drop - but
+    // do warn, because "my rule never matches" is otherwise a silent mystery.
+    for (const [factName, factValue] of factEntries) {
+      if (factValue === undefined) {
+        console.warn(
+          `normalizeSplitRules: split rule '${(rule as { id?: string }).id ?? '<unnamed>'}' has an undefined ` +
+            `series fact '${factName}' - the rule will never match. Check its $function expression.`
+        );
+      }
+    }
     assign('series', (context: { instances: unknown[] }) => {
       const facts: Record<string, unknown> = {};
       for (const [factName, factValue] of factEntries) {

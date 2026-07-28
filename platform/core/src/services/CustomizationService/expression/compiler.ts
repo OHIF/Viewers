@@ -79,8 +79,11 @@ const HELPERS: Record<string, (...args: unknown[]) => unknown> = {
   startsWith: (value, prefix) => typeof value === 'string' && value.startsWith(String(prefix)),
   endsWith: (value, suffix) => typeof value === 'string' && value.endsWith(String(suffix)),
   abs: value => Math.abs(Number(value)),
-  min: (...values) => Math.min(...values.map(Number)),
-  max: (...values) => Math.max(...values.map(Number)),
+  // `Math.min()`/`Math.max()` answer ∓Infinity with no arguments, which would
+  // silently poison a comparison; an argument-less min/max has no value to
+  // report, so it reads as "unknown" like a missing tag does.
+  min: (...values) => (values.length ? Math.min(...values.map(Number)) : undefined),
+  max: (...values) => (values.length ? Math.max(...values.map(Number)) : undefined),
   round: value => Math.round(Number(value)),
   floor: value => Math.floor(Number(value)),
   ceil: value => Math.ceil(Number(value)),

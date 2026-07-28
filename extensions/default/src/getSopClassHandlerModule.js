@@ -1,11 +1,16 @@
 import { utils } from '@ohif/core';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
-import { makeImageSetDisplaySet } from './displaySetSplitting/makeImageSetDisplaySet';
+import {
+  makeImageSetDisplaySet,
+  STACK_SOP_CLASS_HANDLER_NAME,
+} from './displaySetSplitting/makeImageSetDisplaySet';
 
 const { isImage, sopClassDictionary } = utils;
 
-const sopClassHandlerName = 'stack';
+// Shared with the STACK_SOP_CLASS_HANDLER_ID the display set factory stamps
+// onto every display set it builds, so the two cannot drift.
+const sopClassHandlerName = STACK_SOP_CLASS_HANDLER_NAME;
 let appContext = {};
 
 const isMultiFrame = instance => {

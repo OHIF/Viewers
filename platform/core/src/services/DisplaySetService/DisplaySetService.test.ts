@@ -244,6 +244,27 @@ describe('DisplaySetService', () => {
       expect(stackHandler.getDisplaySetsFromSeries).not.toHaveBeenCalled();
     });
 
+    it('splits each series independently when a call mixes series', () => {
+      // Series-level facts (and the reconciliation key) are per series, so a
+      // mixed call must be partitioned rather than have series 1's facts
+      // applied to series 2. Here only series-1 has mixed b-values.
+      const mixed = makeMixedBValueSeries();
+      const uniform = [1, 2, 3].map(() =>
+        makeInstance({ SeriesInstanceUID: 'series-2', DiffusionBValue: 800 })
+      );
+      const added = service.makeDisplaySets([...mixed, ...uniform]);
+
+      const bySeries = uid => added.filter(ds => ds.SeriesInstanceUID === uid);
+      expect(bySeries('series-1')).toHaveLength(2);
+      expect(bySeries('series-1').every(ds => ds.splitRuleId === 'mixedDimensionalityBValue')).toBe(
+        true
+      );
+      // series-2 is uniform, so it must NOT inherit the mixed-b-value split.
+      expect(bySeries('series-2')).toHaveLength(1);
+      expect(bySeries('series-2')[0].splitRuleId).toBe('volume3d');
+      expect(bySeries('series-2')[0].instances).toHaveLength(3);
+    });
+
     it('is idempotent for repeated calls with the same instances', () => {
       const instances = makeMixedBValueSeries();
       const added = service.makeDisplaySets(instances);

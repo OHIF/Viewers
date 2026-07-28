@@ -340,11 +340,11 @@ export default class DisplaySetService extends PubSubService {
 
     // When the `useMetadataDisplaySet` customization is enabled, split the
     // series with the `@cornerstonejs/metadata` split-rules engine first.
-    // The splitter sees the whole series across SOP classes (rules may
+    // The splitter sees a whole series across SOP classes (rules may
     // aggregate series-level facts); instances not matched by any rule fall
     // through to the legacy SOP class handler loop below unchanged.
     const splitConfig = this._getMetadataSplitCustomization();
-    if (splitConfig?.enabled && splitConfig.splitRules?.length) {
+    if (instancesSrc?.length && splitConfig?.enabled && splitConfig.splitRules?.length) {
       const { displaySets, unmatched } = this._makeDisplaySetsWithSplitRules(
         instancesSrc,
         splitConfig,
@@ -412,10 +412,58 @@ export default class DisplaySetService extends PubSubService {
    * attribute) and fire the invalidation event; regrouped display sets whose
    * split key disappears are deleted.
    *
+   * Splitting is performed one series at a time: unlike the legacy loop (which
+   * partitions by SOP class first), the splitter is handed a whole series so
+   * rules can aggregate series-level facts, and both the reconciliation key and
+   * the rules' `series()` facts are series-scoped (the upstream defaults read
+   * `instances[0].Modality`).  Mixed-series input is therefore partitioned
+   * rather than assumed away.
+   *
+   * ### `splitKey` / `splitNumber` stability
+   *
+   * `splitKey` is namespaced with the rule's INDEX in the rules array, so it is
+   * stable only while that array is.  Changing the rules mid-session (a mode
+   * `$unshift`-ing a rule after a first batch has been split) retires every
+   * previous key, and the reconciliation below recreates those display sets
+   * under fresh UIDs — losing viewport state.  Configure split rules before
+   * loading studies.  `splitNumber` is likewise only an index into the
+   * engine's key-sorted group list and shifts when a new group appears, so it
+   * must not be used as a stable identity in `customAttributes`.
+   *
    * @returns the newly created display sets and the instances not matched by
    * any split rule (which must flow to the legacy SOP class handler loop).
    */
   private _makeDisplaySetsWithSplitRules(
+    instancesSrc: InstanceMetadata[],
+    config: UseMetadataDisplaySetCustomization,
+    settings
+  ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
+    const bySeries = new Map<string, InstanceMetadata[]>();
+    for (const instance of instancesSrc) {
+      const seriesInstanceUID = instance.SeriesInstanceUID;
+      const series = bySeries.get(seriesInstanceUID);
+      if (series) {
+        series.push(instance);
+      } else {
+        bySeries.set(seriesInstanceUID, [instance]);
+      }
+    }
+
+    const displaySets: DisplaySet[] = [];
+    const unmatched: InstanceMetadata[] = [];
+    for (const seriesInstances of bySeries.values()) {
+      const result = this._splitSeriesIntoDisplaySets(seriesInstances, config, settings);
+      displaySets.push(...result.displaySets);
+      unmatched.push(...result.unmatched);
+    }
+    return { displaySets, unmatched };
+  }
+
+  /**
+   * Splits the instances of a SINGLE series. See
+   * {@link _makeDisplaySetsWithSplitRules} for the reconciliation semantics.
+   */
+  private _splitSeriesIntoDisplaySets(
     instancesSrc: InstanceMetadata[],
     config: UseMetadataDisplaySetCustomization,
     settings

@@ -11,11 +11,9 @@ import DocCardList from '@theme/DocCardList';
 
 This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 
-- **[WorkList](./work-list.md)** — the `workList.variant` customization and the
-  `LegacyWorkList` route are removed. The ui-next WorkList is always mounted
-  at `/`.
-- **[OHIF CLI](./ohif-cli.md)** — `ohif-cli` is deprecated and will be removed
-  in the following release. `link-extension` and `link-mode` no longer affect
-  the default production build.
+- **[Display set storage](./display-set-store.md)** — display sets now live in
+  the `@cornerstonejs/metadata` typed metadata cache.
+  `DisplaySetService.getDisplaySetCache()` is deprecated and returns a
+  read-only snapshot.
 
 <DocCardList />

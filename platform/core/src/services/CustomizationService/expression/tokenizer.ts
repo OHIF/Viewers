@@ -151,6 +151,22 @@ export function tokenize(source: string, expression = source): Token[] {
       while (j < source.length && /[0-9.]/.test(source[j])) {
         j++;
       }
+      // Exponent notation: consume `e`/`E` with an optional sign only when at
+      // least one digit follows, so `1e5` and `2.5E-3` are numbers while the
+      // `e` of an identifier like `1 e` is left to the identifier scanner.
+      if (source[j] === 'e' || source[j] === 'E') {
+        let k = j + 1;
+        if (source[k] === '+' || source[k] === '-') {
+          k++;
+        }
+        if (isDigit(source[k])) {
+          k++;
+          while (k < source.length && isDigit(source[k])) {
+            k++;
+          }
+          j = k;
+        }
+      }
       const raw = source.slice(i, j);
       const value = Number(raw);
       if (Number.isNaN(value)) {

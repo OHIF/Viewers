@@ -10,7 +10,17 @@ const { ImageSet } = classes;
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 
-export const STACK_SOP_CLASS_HANDLER_ID = `${id}.sopClassHandlerModule.stack`;
+/**
+ * The registered module name of the stack SOP class handler, and the resulting
+ * fully-qualified `SOPClassHandlerId`.
+ *
+ * Both live here rather than in `getSopClassHandlerModule` because that module
+ * imports this one (the reverse would be a cycle).  The handler imports the
+ * name back for its registration so the id and the registration can never
+ * disagree about what the handler is called.
+ */
+export const STACK_SOP_CLASS_HANDLER_NAME = 'stack';
+export const STACK_SOP_CLASS_HANDLER_ID = `${id}.sopClassHandlerModule.${STACK_SOP_CLASS_HANDLER_NAME}`;
 
 /**
  * The application context required to build an ImageSet display set.  This is
@@ -38,9 +48,7 @@ function getDynamicVolumeInfo(imageIds, context: ImageSetFactoryContext) {
   );
 
   if (!volumeLoaderUtility?.exports) {
-    throw new Error(
-      'The @ohif/extension-cornerstone volumeLoader utility module is not available'
-    );
+    throw new Error('The @ohif/extension-cornerstone volumeLoader utility module is not available');
   }
 
   const { getDynamicVolumeInfo: csGetDynamicVolumeInfo } = volumeLoaderUtility.exports;
@@ -50,10 +58,10 @@ function getDynamicVolumeInfo(imageIds, context: ImageSetFactoryContext) {
 
 /**
  * Computes reconstructability / dynamic-volume information for a set of
- * instances.  Exported so incremental updates (`updateInstances`) can re-run
- * the exact computation used at creation time.
+ * instances.  Callers go through {@link applyImageListAttributes} so creation
+ * and incremental updates share one computation.
  */
-export function getDisplaySetInfo(instances, imageIds, context: ImageSetFactoryContext) {
+function getDisplaySetInfo(instances, imageIds, context: ImageSetFactoryContext) {
   const dynamicVolumeInfo = getDynamicVolumeInfo(imageIds, context);
   const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
   let displaySetInfo;
@@ -108,25 +116,10 @@ export function makeImageSetDisplaySet(instances, context: ImageSetFactoryContex
   sortStudyInstances(instances);
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
-  const { extensionManager } = context;
-  const dataSource = extensionManager.getActiveDataSource()[0];
-  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
-  const {
-    isDynamicVolume,
-    value: isReconstructable,
-    averageSpacingBetweenFrames,
-    dynamicVolumeInfo,
-  } = getDisplaySetInfo(instances, imageIds, context);
 
-  const volumeLoaderSchema = isDynamicVolume
-    ? DYNAMIC_VOLUME_LOADER_SCHEME
-    : DEFAULT_VOLUME_LOADER_SCHEME;
-
-  // set appropriate attributes to image set...
-  const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
-
+  // Series-level identity: fixed for the lifetime of the display set, because
+  // adding more instances of the SAME series cannot change any of it.
   imageSet.setAttributes({
-    volumeLoaderSchema,
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
     SeriesTime: instance.SeriesTime,
@@ -137,15 +130,7 @@ export function makeImageSetDisplaySet(instances, context: ImageSetFactoryContex
     SOPClassUID: instance.SOPClassUID,
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
-    isMultiFrame: isMultiFrame(instance),
-    countIcon: isReconstructable ? 'icon-mpr' : undefined,
-    numImageFrames: instances.length,
     SOPClassHandlerId: STACK_SOP_CLASS_HANDLER_ID,
-    isReconstructable,
-    messages,
-    averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
-    isDynamicVolume,
-    dynamicVolumeInfo,
     supportsWindowLevel: true,
     label:
       instance.SeriesDescription ||
@@ -153,8 +138,78 @@ export function makeImageSetDisplaySet(instances, context: ImageSetFactoryContex
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
+  // Everything derived from the image list. `imageSet.sort` reads
+  // `isReconstructable`, so this must run before it.
+  const derived = applyImageListAttributes(imageSet, context);
+  applyThumbnailSrc(imageSet, context, derived);
+
+  const { servicesManager } = context;
+  const { customizationService } = servicesManager.services;
+
+  imageSet.sort(customizationService);
+
+  return imageSet;
+}
+
+/**
+ * Applies every attribute derived from an ImageSet's current image list.
+ *
+ * Shared by the initial build and the split-rule `updateInstances` merge hook
+ * so the two cannot drift: whatever is recomputed here is, by construction,
+ * recomputed identically when instances arrive later.
+ *
+ * Series-level identity (`label`, `SeriesDescription`, `Modality`, ...) is
+ * deliberately NOT touched — it cannot change by adding instances to the same
+ * series, and a split rule's `customAttributes` may have overridden it (e.g.
+ * the SCOUT example relabels `SeriesDescription`).
+ *
+ * @returns the intermediate values a caller needs for the thumbnail.
+ */
+export function applyImageListAttributes(imageSet, context: ImageSetFactoryContext) {
+  const dataSource = context.extensionManager.getActiveDataSource()[0];
+  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
+  const {
+    isDynamicVolume,
+    value: isReconstructable,
+    averageSpacingBetweenFrames,
+    dynamicVolumeInfo,
+  } = getDisplaySetInfo(imageSet.images, imageIds, context);
+
+  // `ImageSet` snapshots `instance = images[0]` in its constructor and `sort()`
+  // does not refresh it, so an instance that sorts to the front would otherwise
+  // leave `instance` pointing at the wrong image.
+  const instance = imageSet.images[0];
+  const multiFrame = isMultiFrame(instance);
+
+  imageSet.setAttributes({
+    instance,
+    isMultiFrame: multiFrame,
+    volumeLoaderSchema: isDynamicVolume
+      ? DYNAMIC_VOLUME_LOADER_SCHEME
+      : DEFAULT_VOLUME_LOADER_SCHEME,
+    // A multiframe display set holds one instance whose frames are the content;
+    // a stack counts images.
+    numImageFrames: multiFrame ? Number(instance.NumberOfFrames) : imageSet.images.length,
+    countIcon: isReconstructable ? 'icon-mpr' : undefined,
+    isReconstructable,
+    messages: getDisplaySetMessages(imageSet.images, isReconstructable, isDynamicVolume),
+    averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
+    isDynamicVolume,
+    dynamicVolumeInfo,
+  });
+
+  return { imageIds, isDynamicVolume, dynamicVolumeInfo };
+}
+
+/** Picks the middle image (middle time point when dynamic) as the thumbnail. */
+export function applyThumbnailSrc(
+  imageSet,
+  context: ImageSetFactoryContext,
+  { imageIds, isDynamicVolume, dynamicVolumeInfo }
+) {
+  const dataSource = context.extensionManager.getActiveDataSource()[0];
   let imageId = imageIds[Math.floor(imageIds.length / 2)];
-  const thumbnailInstance = instances[Math.floor(instances.length / 2)];
+  const thumbnailInstance = imageSet.images[Math.floor(imageSet.images.length / 2)];
   if (isDynamicVolume) {
     const timePoints = dynamicVolumeInfo.timePoints;
     const middleIndex = Math.floor(timePoints.length / 2);
@@ -165,11 +220,4 @@ export function makeImageSetDisplaySet(instances, context: ImageSetFactoryContex
   imageSet.setAttributes({
     getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
   });
-
-  const { servicesManager } = context;
-  const { customizationService } = servicesManager.services;
-
-  imageSet.sort(customizationService);
-
-  return imageSet;
 }

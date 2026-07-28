@@ -110,8 +110,9 @@ at parse time).
 
 Supported syntax:
 
-- literals: numbers, `'strings'`, arrays, `true/false/null/undefined`, and
-  template literals for building strings: `` `${SeriesDescription} #${InstanceNumber}` ``
+- literals: numbers (including exponent notation, `1e3`, `2.5E-3`),
+  `'strings'`, arrays, `true/false/null/undefined`, and template literals for
+  building strings: `` `${SeriesDescription} #${InstanceNumber}` ``
 - member/index access: `context.series.frameCount`, `instances[0]`
 - comparison: `== != === !== < <= > >=` (`==`/`!=` treat `null` and
   `undefined` as equal and compare numeric strings numerically)
@@ -119,7 +120,8 @@ Supported syntax:
 - membership: `Modality in ['CR', 'DX', 'MG']`
 - helper functions: `defined(x)`, `includes(listOrString, v)`,
   `startsWith(s, p)`, `endsWith(s, p)`, `abs`, `min`, `max`, `round`,
-  `floor`, `ceil`, `Number`, `String`
+  `floor`, `ceil`, `Number`, `String` (`min()`/`max()` with no arguments
+  evaluate to `undefined` rather than `±Infinity`)
 - aggregates over a list, evaluating the second argument once per element:
   `some(instances, DiffusionBValue != undefined)`,
   `every(list, expr)`, `count(list, expr)`, `minOf(list, expr)`,
@@ -146,6 +148,31 @@ Where each rule field runs:
 
 Parse errors are reported at customization-read time with the offending
 expression; runtime errors warn once and evaluate to `undefined`.
+
+:::caution
+A `$function` that fails to compile resolves to `undefined`. For `matches` and
+`groupBy` that would be dangerous — the engine treats a rule with no `matches`
+as matching **every** instance — so a rule whose `matches` or `groupBy` did not
+resolve to something callable is **dropped** with a console warning. The
+remaining rules stay in charge, so a typo degrades to "my rule did nothing"
+rather than "every series is grouped wrong".
+
+An undefined `series` fact fails closed instead (the rule simply never
+matches); that also warns, since it is otherwise a silent mystery.
+:::
+
+### Identity is not stable across rule changes
+
+`splitKey` — the key used to reconcile a re-split series against the display
+sets already created for it — is namespaced with the rule's **index** in the
+rules array. Changing the rules after studies have loaded (a mode
+`$unshift`-ing a rule mid-session) retires every previous key, so those display
+sets are recreated under fresh `displaySetInstanceUID`s and lose viewport
+state. Configure split rules before loading studies.
+
+`splitNumber` is likewise only an index into the engine's key-sorted group
+list, and shifts when a new group appears. Do not use it as a stable identity
+in `customAttributes`.
 
 ## Worked example: splitting a CT SCOUT image
 

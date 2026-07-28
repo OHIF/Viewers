@@ -9,6 +9,19 @@ describe('compileExpression', () => {
       expect(compileExpression('-4 + 1')()).toBe(-3);
     });
 
+    it('parses exponent notation', () => {
+      expect(compileExpression('1e3')()).toBe(1000);
+      expect(compileExpression('2.5E-3')()).toBe(0.0025);
+      expect(compileExpression('1e+2 + 1')()).toBe(101);
+      // A bare `e` after a number is not an exponent, so it stays a separate
+      // identifier token and the expression is rejected as trailing input.
+      expect(() => compileExpression('1 e')).toThrow(ExpressionSyntaxError);
+    });
+
+    it('rejects malformed numbers', () => {
+      expect(() => compileExpression('1.2.3')).toThrow(/Invalid number/);
+    });
+
     it('evaluates comparisons and logic', () => {
       expect(compileExpression('1 < 2 && 3 >= 3')()).toBe(true);
       expect(compileExpression('1 === 1 || false')()).toBe(true);
@@ -81,6 +94,14 @@ describe('compileExpression', () => {
       expect(
         compileExpression("startsWith(SeriesDescription, 'AX')")({ SeriesDescription: 'AX T1' })
       ).toBe(true);
+    });
+
+    it('returns undefined for min/max with no arguments', () => {
+      // Math.min()/Math.max() would answer ∓Infinity and poison a comparison.
+      expect(compileExpression('min()')()).toBeUndefined();
+      expect(compileExpression('max()')()).toBeUndefined();
+      expect(compileExpression('min(3, 1, 2)')()).toBe(1);
+      expect(compileExpression('max(3, 1, 2)')()).toBe(3);
     });
 
     it('evaluates aggregates with per-element scope', () => {
