@@ -21,8 +21,28 @@ import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 
 export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const CONFIG_PATH = path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig.json');
 export const SCHEMA_PATH = path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig.schema.json');
+
+// Which pluginConfig.json this invocation reads and writes. PLUGIN_CONFIG (or an
+// OHIF_ENV profile that sets it) redirects every subcommand at the config the
+// build will actually compile from — the same resolver the build uses, so
+// `plugin add` can never edit a file the build ignores.
+const buildProfile = createRequire(import.meta.url)('../.rspack/loadBuildProfile.js');
+export const CONFIG_PATH = buildProfile.resolvePluginConfigPath();
+// Base for './'-relative `directory` values in that config: its own `root` key
+// when it declares one (resolved against the config file), else the repo root.
+// Mirrors CONFIG_ROOT in platform/app/.rspack/writePluginImportsFile.js.
+export const CONFIG_ROOT = (() => {
+  try {
+    const { root } = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
+    return root ? path.resolve(path.dirname(CONFIG_PATH), root) : REPO_ROOT;
+  } catch {
+    return REPO_ROOT;
+  }
+})();
+// Trees searched for workspace plugins and installed dependencies, nearest
+// first. Identical to [REPO_ROOT] unless an external config set `root`.
+const SEARCH_ROOTS = CONFIG_ROOT === REPO_ROOT ? [REPO_ROOT] : [CONFIG_ROOT, REPO_ROOT];
 const APP_SRC_DIR = path.join(REPO_ROOT, 'platform', 'app', 'src');
 const WRITE_PLUGIN_IMPORTS = path.join(REPO_ROOT, 'platform', 'app', '.rspack', 'writePluginImportsFile.js');
 
@@ -122,10 +142,10 @@ function requireSection(pkgName, keywords, flagSection) {
 }
 
 // Mirrors the build's directory grammar (writePluginImportsFile.js):
-// './x' -> repo root, '~/x' -> home dir, anything else is used verbatim.
+// './x' -> CONFIG_ROOT, '~/x' -> home dir, anything else is used verbatim.
 export function fromDirectory(dirPath) {
   if (!dirPath) return undefined;
-  if (dirPath[0] === '.') return path.join(APP_SRC_DIR, '../../..') + dirPath.substring(1);
+  if (dirPath[0] === '.') return path.join(CONFIG_ROOT, dirPath.substring(1));
   if (dirPath[0] === '~') return os.homedir() + dirPath.substring(1);
   return dirPath;
 }
@@ -138,16 +158,20 @@ function readJsonSafe(file) {
   }
 }
 
-// In-tree workspace scan: package name -> 'extensions/<dir>' | 'modes/<dir>'.
+// Workspace scan: package name -> 'extensions/<dir>' | 'modes/<dir>', relative
+// to the root it was found under. Searches CONFIG_ROOT before REPO_ROOT so a
+// downstream workspace's own plugins shadow same-named ones in the harness.
 export function getWorkspacePluginDirs() {
   const map = {};
-  for (const group of ['extensions', 'modes']) {
-    const root = path.join(REPO_ROOT, group);
-    if (!fs.existsSync(root)) continue;
-    for (const dir of fs.readdirSync(root)) {
-      const pkg = readJsonSafe(path.join(root, dir, 'package.json'));
-      if (pkg && pkg.name) {
-        map[pkg.name] = `${group}/${dir}`;
+  for (const searchRoot of SEARCH_ROOTS) {
+    for (const group of ['extensions', 'modes']) {
+      const root = path.join(searchRoot, group);
+      if (!fs.existsSync(root)) continue;
+      for (const dir of fs.readdirSync(root)) {
+        const pkg = readJsonSafe(path.join(root, dir, 'package.json'));
+        if (pkg && pkg.name && !map[pkg.name]) {
+          map[pkg.name] = { rel: `${group}/${dir}`, dir: path.join(root, dir) };
+        }
       }
     }
   }
@@ -163,26 +187,25 @@ export function classifySource(entry, workspaceDirs = getWorkspacePluginDirs()) 
     const ok = abs && fs.existsSync(path.join(abs, 'package.json'));
     return { kind: 'directory', label: `directory: ${entry.directory}`, dir: ok ? abs : undefined };
   }
-  const workspaceRel = name && workspaceDirs[name];
-  if (workspaceRel) {
-    return {
-      kind: 'workspace',
-      label: `workspace: ${workspaceRel}`,
-      dir: path.join(REPO_ROOT, workspaceRel),
-    };
+  const workspace = name && workspaceDirs[name];
+  if (workspace) {
+    return { kind: 'workspace', label: `workspace: ${workspace.rel}`, dir: workspace.dir };
   }
-  const nm = name && path.join(REPO_ROOT, 'node_modules', name);
-  if (nm && fs.existsSync(path.join(nm, 'package.json'))) {
-    return { kind: 'node_modules', label: 'node_modules', dir: nm };
+  for (const searchRoot of name ? SEARCH_ROOTS : []) {
+    const nm = path.join(searchRoot, 'node_modules', name);
+    if (fs.existsSync(path.join(nm, 'package.json'))) {
+      return { kind: 'node_modules', label: 'node_modules', dir: nm };
+    }
   }
   return { kind: 'missing', label: 'MISSING', dir: undefined };
 }
 
 // Stored `directory` values always use forward slashes so they round-trip
-// through the build's fromDirectory grammar on every platform.
+// through the build's fromDirectory grammar on every platform. './'-relative
+// values are written against CONFIG_ROOT, matching how the build reads them.
 export function directoryValueFor(absPath) {
   const abs = path.resolve(absPath);
-  const rel = path.relative(REPO_ROOT, abs);
+  const rel = path.relative(CONFIG_ROOT, abs);
   if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) {
     return './' + rel.split(path.sep).join('/');
   }
@@ -422,6 +445,15 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
     console.log(`[FAIL] ${msg}`);
   };
 
+  // (a0) which config — silent for the default, explicit once redirected, so a
+  // doctor run can never be read as describing the wrong file.
+  if (process.env.OHIF_ENV) {
+    ok(`profile: OHIF_ENV=${process.env.OHIF_ENV}`);
+  }
+  if (ctx.configPath !== path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig.json')) {
+    ok(`config: ${ctx.configPath} (root: ${CONFIG_ROOT})`);
+  }
+
   // (a) parse
   let config;
   try {
@@ -609,7 +641,7 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
   }
   // In-tree workspaces are only discovered through explicit entries, so an
   // undeclared extensions/* or modes/* checkout silently never loads.
-  for (const [name, rel] of Object.entries(workspaceDirs)) {
+  for (const [name, { rel }] of Object.entries(workspaceDirs)) {
     if (declared.has(name)) continue;
     const target = rel.startsWith('modes/') ? 'modes' : 'extensions';
     warn(

@@ -79,7 +79,9 @@ OHIF_ENV=./ohif.config.json pnpm run build
 An environment variable that is already set always wins over the profile, so one
 CI job can override a single key. Reference:
 [Build Profiles](platform/docs/docs/configuration/build-profiles.md) ·
-schema: [`ohif.schema.json`](ohif.schema.json).
+schema: [`platform/app/ohif.schema.json`](platform/app/ohif.schema.json), also
+published in `@ohif/app` — point `$schema` at
+`./node_modules/@ohif/app/ohif.schema.json`.
 
 ### Out-of-tree plugin folders
 
@@ -140,7 +142,8 @@ Serve prebuilt bundles next to the viewer and declare descriptors in
 - If the request seems to need a change inside this repo, re-read rows 1–8 first;
   state explicitly which extension point is missing before proposing a core edit.
 - Validate configuration you generate against the schemas
-  (`ohif.schema.json`, `platform/app/pluginConfig.schema.json`) — the build
+  (`platform/app/ohif.schema.json`, `platform/app/pluginConfig.schema.json`;
+  both ship in `@ohif/app`) — the build
   enforces them and fails with the offending key.
 - `pnpm run plugin doctor` is the health check for anything plugin-declaration
   related; it reports which config and profile it used.

@@ -1,5 +1,5 @@
 {
-  "$schema": "./.ohif/ohif.schema.json",
+  "$schema": "./.ohif/platform/app/ohif.schema.json",
   "ohifVersion": "{{ohifVersion}}",
   "plugins": [],
   "appConfig": "./config/app-config.js"

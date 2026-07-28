@@ -38,9 +38,17 @@ ignored, so a workspace's manifest and its build profile are one artifact.
 ## Keys
 
 The normative shape — every key, with descriptions — is
-[`ohif.schema.json`](https://github.com/OHIF/Viewers/blob/master/ohif.schema.json)
-at the repo root. Point your editor's `$schema` at it for completion and
-validation.
+[`platform/app/ohif.schema.json`](https://github.com/OHIF/Viewers/blob/master/platform/app/ohif.schema.json).
+It ships in the `@ohif/app` package, so point your editor's `$schema` at
+whichever copy you have for completion and validation:
+
+```json
+{ "$schema": "./node_modules/@ohif/app/ohif.schema.json" }
+```
+
+In a `create-ohif` workspace the harness checkout is the copy:
+`./.ohif/platform/app/ohif.schema.json` (present after the first
+`harness ensure`).
 
 | Key | Environment variable | Notes |
 | --- | --- | --- |

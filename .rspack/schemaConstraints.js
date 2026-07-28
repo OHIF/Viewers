@@ -1,6 +1,6 @@
 // Shared, dependency-free reader for the value constraints declared in this
 // repo's hand-written JSON Schemas (platform/app/pluginConfig.schema.json,
-// ohif.schema.json).
+// platform/app/ohif.schema.json).
 //
 // The build validates configuration against those schemas WITHOUT a JSON-Schema
 // library — it must not gain a runtime dependency for config validation — so

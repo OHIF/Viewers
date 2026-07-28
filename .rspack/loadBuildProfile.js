@@ -13,10 +13,12 @@
 //
 //   OHIF_ENV=./profiles/hospital.json PUBLIC_URL=/staging/ pnpm run build
 //
-// Shape and per-key documentation: ohif.schema.json (repo root). It is the same
-// file the `pnpm create ohif` workspace template commits, so a workspace
-// manifest and a build profile are one artifact — keys the build does not use
-// (ohifVersion, plugins) are accepted and ignored.
+// Shape and per-key documentation: platform/app/ohif.schema.json, alongside
+// pluginConfig.schema.json and published with @ohif/app so a deployment can
+// point its editor's $schema at node_modules/@ohif/app/ohif.schema.json. It is
+// the same file the `pnpm create ohif` workspace template commits, so a
+// workspace manifest and a build profile are one artifact — keys the build does
+// not use (ohifVersion, plugins) are accepted and ignored.
 //
 // Dependency-free and CJS on purpose: this is imported by rsbuild.config.ts,
 // by platform/app/.rspack/writePluginImportsFile.js (which tailwind.config.js
@@ -28,7 +30,7 @@ const path = require('path');
 const schemaConstraints = require('./schemaConstraints');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
-const SCHEMA_PATH = path.join(REPO_ROOT, 'ohif.schema.json');
+const SCHEMA_PATH = path.join(REPO_ROOT, 'platform', 'app', 'ohif.schema.json');
 const DEFAULT_PLUGIN_CONFIG = path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig.json');
 
 // Profile key -> environment variable.
