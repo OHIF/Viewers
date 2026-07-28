@@ -161,13 +161,23 @@ const DefaultFallback = ({
 
   const { errorTitle, code, firstFilename } = parseErrorStack(error);
 
-  const copyErrorToClipboard = () => {
-    if (code) {
-      navigator.clipboard.writeText(code);
+  const copyErrorToClipboard = async () => {
+    if (!code) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(code);
       show({
         title: t('Success'),
         message: t('Error copied to clipboard'),
         type: 'success',
+        duration: 3000,
+      });
+    } catch {
+      show({
+        title: t('Error'),
+        message: t('Unable to copy to clipboard'),
+        type: 'error',
         duration: 3000,
       });
     }

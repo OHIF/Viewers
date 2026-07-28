@@ -112,6 +112,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
       servicesManager,
       commandsManager,
+      extensionManager,
     });
     unsubscriptions.push(...segmentationUnsubscriptions);
 

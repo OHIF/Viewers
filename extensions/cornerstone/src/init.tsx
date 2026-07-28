@@ -39,10 +39,6 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
-import {
-  setupSegmentationDataModifiedHandler,
-  setupSegmentationModifiedHandler,
-} from './utils/segmentationHandlers';
 import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgressHandler';
 
 const { registerColormap } = csUtilities.colormap;
@@ -219,22 +215,6 @@ export default async function init({
     cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
   });
 
-  // Setup segmentation event handlers
-  const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
-    setupSegmentationDataModifiedHandler({
-      segmentationService,
-      customizationService,
-      displaySetService,
-      uiNotificationService,
-      userAuthenticationService,
-      commandsManager,
-      extensionManager,
-    });
-
-  const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
-    segmentationService,
-  });
-
   measurementService.subscribe(measurementService.EVENTS.JUMP_TO_MEASUREMENT, evt => {
     const { measurement } = evt;
     const { uid: annotationUID } = measurement;
@@ -347,13 +327,6 @@ export default async function init({
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
-
-  const unsubscriptions = [
-    unsubscribeSegmentationDataModifiedHandler,
-    unsubscribeSegmentationModifiedHandler,
-  ];
-
-  return { unsubscriptions };
 }
 
 /**

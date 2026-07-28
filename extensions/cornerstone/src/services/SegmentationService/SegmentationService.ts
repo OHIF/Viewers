@@ -342,12 +342,18 @@ class SegmentationService extends PubSubService {
         'panelSegmentation.readableText'
       );
 
-      const activeSegmentation = segmentation;
-      segmentation = await updateSegmentationStats({
-        segmentation: activeSegmentation,
-        segmentationId: segmentationId,
+      const updatedSegmentation = await updateSegmentationStats({
+        segmentation,
+        segmentationId,
         readableText,
       });
+
+      if (updatedSegmentation?.segments) {
+        this.addOrUpdateSegmentation({
+          segmentationId,
+          segments: updatedSegmentation.segments,
+        });
+      }
     }, 1000);
 
     await this._addSegmentationRepresentation(

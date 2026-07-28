@@ -376,15 +376,27 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
 
             {/* Actions Dropdown Menu */}
             {disableEditing && <div className="h-6 w-6"></div>}
-            {!disableEditing && (
+            {!disableEditing && !hasStats && (
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled
+                className={`h-6 w-6 opacity-30 transition-opacity disabled:opacity-30`}
+                aria-label="Actions"
+                dataCY="actionsMenuTrigger"
+              >
+                <Icons.More className="h-6 w-6" />
+              </Button>
+            )}
+            {!disableEditing && hasStats && (
               <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     size="icon"
                     variant="ghost"
                     className={`h-6 w-6 transition-opacity ${isSelected || isDropdownOpen
-                        ? 'opacity-100'
-                        : 'opacity-0 group-hover:opacity-100'
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
                       }`}
                     aria-label="Actions"
                     dataCY="actionsMenuTrigger"
