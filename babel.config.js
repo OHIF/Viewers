@@ -7,14 +7,11 @@
 const enableReactCompiler = process.env.REACT_COMPILER !== 'off';
 const reactCompilerPlugin = ['babel-plugin-react-compiler', { target: '19' }];
 
-// The cornerstone viewport components read and mutate external, non-React
-// state during render and through imperative cornerstone3D event handlers
-// (the enabled element, camera, GL actors). The compiler's memoization assumes
-// referential purity, so compiling these silently drops updates - e.g. the
-// orientation markers stop reflecting rotate/flip/reset. Skip the compiler for
-// this directory; the rest of the workspace keeps it. Mirrored in
-// rsbuild.config.ts for the dev:fast / rsbuild production pipeline.
-const COMPILER_EXCLUDE = /extensions[\\/]cornerstone[\\/]src[\\/]Viewport[\\/]/;
+// Files that must not be compiled carry a `'use no memo'` directive at the top
+// of the file, next to the code and the reason - see the components under
+// extensions/cornerstone/src/Viewport/, which read and mutate external
+// cornerstone3D state during render. A path-based exclusion here would have to
+// be mirrored in rsbuild.config.ts, and the two copies drift silently.
 
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
@@ -30,14 +27,7 @@ module.exports = {
     ['@babel/plugin-transform-private-methods', { loose: true }],
     '@babel/plugin-transform-class-static-block',
   ],
-  overrides: enableReactCompiler
-    ? [
-        {
-          exclude: COMPILER_EXCLUDE,
-          plugins: [reactCompilerPlugin],
-        },
-      ]
-    : [],
+  overrides: enableReactCompiler ? [{ plugins: [reactCompilerPlugin] }] : [],
   env: {
     test: {
       presets: [

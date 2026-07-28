@@ -40,6 +40,22 @@ try {
   process.exit(1);
 }
 
+function printDeprecationNotice() {
+  console.log(
+    [
+      '',
+      chalk.yellow.bold('ohif-cli is deprecated.'),
+      chalk.yellow('It will be removed in the release after 3.14.'),
+      '',
+      'To scaffold a new extension or mode, point an AI coding agent at an',
+      'existing one in extensions/ or modes/ and have it generate the new',
+      'package. Those are always current, whereas the templates bundled with',
+      'this CLI are a snapshot and drift out of date between releases.',
+      '',
+    ].join('\n')
+  );
+}
+
 function _createPackage(packageType) {
   const pathQuestions = getPathQuestions(packageType);
   const repoQuestions = getRepoQuestions(packageType);
@@ -82,7 +98,7 @@ const program = new Command('pnpm run cli');
 // Todo: inject with webpack
 program
   .version('2.0.7')
-  .description('OHIF CLI')
+  .description('OHIF CLI (deprecated - removed in the release after 3.14)')
   .configureHelp({ sortOptions: true, sortSubcommands: true })
   .showHelpAfterError('(add --help for additional information)');
 
@@ -199,5 +215,7 @@ program
   .action(options => {
     searchPlugins(options);
   });
+
+printDeprecationNotice();
 
 program.parse(process.argv);

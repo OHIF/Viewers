@@ -26,25 +26,35 @@ export function useCustomization<T = unknown>(customizationId: string): T {
 
   useEffect(() => {
     const update = () => {
-      // getCustomization caches the transformed value, so an unchanged
-      // customization returns the same reference and setState bails out.
+      // getCustomization caches the transformed value in
+      // `transformedCustomizations`, so as long as nothing has invalidated that
+      // cache an unchanged customization returns the same reference and
+      // setState bails out. Every setter clears the cache before broadcasting,
+      // so the read right after an event does re-run transform/reference
+      // resolution - values that resolve by identity (functions, plain values,
+      // anything without `$transform`/`$reference`) still bail out, which
+      // covers the common case.
       setValue(() => customizationService.getCustomization(customizationId) as T);
     };
 
     // Catch registrations that happened between render and effect.
     update();
 
-    // Mode-scope registrations are the ones that race component mounting
-    // (they run in mode.onModeEnter); global and default customizations are
-    // registered before the app renders, so re-reading on the mode event is
-    // sufficient and keeps the re-render surface small.
-    const subscription = customizationService.subscribe(
+    // Mode-scope registrations are the ones that race component mounting (they
+    // run in mode.onModeEnter), but all three scopes can be written at runtime
+    // - global by URL-driven overrides and by any consumer calling
+    // setCustomizations with an explicit scope, default by a second init pass.
+    // Since getCustomization resolves across all three by priority, a hook that
+    // only watched one scope would serve a stale value after a write to either
+    // of the others. The bail-out above keeps the extra events cheap.
+    const subscriptions = [
       customizationService.EVENTS.MODE_CUSTOMIZATION_MODIFIED,
-      update
-    );
+      customizationService.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED,
+      customizationService.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED,
+    ].map(event => customizationService.subscribe(event, update));
 
     return () => {
-      subscription.unsubscribe();
+      subscriptions.forEach(subscription => subscription.unsubscribe());
     };
   }, [customizationService, customizationId]);
 
