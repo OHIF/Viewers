@@ -129,7 +129,7 @@ window.config = {
         thumbnailRendering: 'thumbnail',
         thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
+        supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'bulkdata,video',
