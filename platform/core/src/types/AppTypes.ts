@@ -91,7 +91,20 @@ declare global {
      * it, so consumers are forced to handle its absence.
      */
     // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
-    export interface Customizations {}
+    export interface Customizations {
+      /**
+       * Orders display sets within a study. Consumed by `createStudyBrowserTabs`
+       * here in core and by the viewer's `defaultRouteInit`; the default is
+       * registered by `extension-default`.
+       */
+      sortingCriteria: (a: DisplaySet, b: DisplaySet) => number;
+
+      /** Orders the instances of an image set. Consumed by `ImageSet.sort`. */
+      instanceSortingCriteria: {
+        defaultSortFunctionName?: string;
+        sortFunctions?: Record<string, (a: unknown, b: unknown) => number>;
+      };
+    }
 
     export interface Services {
       hangingProtocolService?: HangingProtocolServiceType;
