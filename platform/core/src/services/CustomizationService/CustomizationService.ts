@@ -221,6 +221,17 @@ export default class CustomizationService extends PubSubService {
       this.addReferences(config.legacyReferences);
       Object.defineProperty(this.configuration, '_hasBeenAdded', { value: true, writable: false });
     }
+
+    // The mode customizations cleared above are a mutation like any other, but
+    // unlike the setters this path had no broadcast, so a consumer holding a
+    // mode-scoped value (e.g. via the useCustomization hook) kept serving the
+    // outgoing mode's value when the incoming mode does not re-register it.
+    // The extension module blocks above are applied once, so re-entry emits
+    // nothing else to converge on.
+    this._broadcastEvent(this.EVENTS.MODE_CUSTOMIZATION_MODIFIED, {
+      buttons: this.modeCustomizations,
+      button: undefined,
+    });
   }
 
   /**

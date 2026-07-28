@@ -109,7 +109,7 @@ window.config = {
     requires: ['worklist/patientBirthDate'],   // resolves ./customizations/worklist/patientBirthDate.jsonc
     global: [                                  // mixes string references and inline maps
       '@ohif/extension-default.customizationModule.datasources',
-      { 'workList.variant': 'default' },
+      { 'workList.previewSeriesView': 'all' },
     ],
     mode: {
       '*': { 'someId': { $set: 'all modes' } },

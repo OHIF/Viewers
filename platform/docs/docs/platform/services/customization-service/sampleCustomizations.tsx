@@ -358,31 +358,6 @@ window.config = {
 
 export const workListCustomizations = [
   {
-    id: 'workList.variant',
-    description: (
-      <>
-        Selects which study-list route is mounted at <code>/</code>. Use <code>'default'</code>{' '}
-        (default customization value) for the new ui-next WorkList introduced in 3.13. Use{' '}
-        <code>'legacy'</code> to mount the pre-3.13 WorkList (internally{' '}
-        <code>LegacyWorkList</code>) as an opt-out while migrating. The customization is read once
-        during route registration, so changing it requires a reload.
-      </>
-    ),
-    default: 'default',
-    configuration: `
-window.config = {
-  // rest of window config
-  customizationService: [
-    {
-      'workList.variant': {
-        $set: 'legacy',
-      },
-    },
-  ],
-};
-  `,
-  },
-  {
     id: 'workList.previewSeriesView',
     description: (
       <>
@@ -393,8 +368,7 @@ window.config = {
         <code>'list'</code> when the active data source declares <code>thumbnailRendering</code> as{' '}
         <code>'wadors'</code> or <code>'thumbnailDirect'</code>, or declares{' '}
         <code>thumbnailRequestStrategy</code> as <code>'bulkDataRetrieve'</code> (its default
-        value), regardless of this setting. Currently only applies when <code>workList.variant</code> is{' '}
-        <code>'default'</code>.
+        value), regardless of this setting.
       </>
     ),
     default: 'all',
@@ -429,8 +403,7 @@ window.config = {
         <em>before</em> it with <code>$splice</code> rather than <code>$push</code>; and
         index-based edits are position-fragile (prefer <code>$apply</code>{' '}
         for id-based changes). If the merged value is not an array, WorkList falls back to the
-        defaults. Currently only applies when <code>workList.variant</code> is{' '}
-        <code>'default'</code>.
+        defaults.
       </>
     ),
     default: 'StudyList.defaultColumns',
@@ -488,8 +461,7 @@ window.config = {
         </ul>
         Use this to change the preview layout while keeping the fetch, abort, and thumbnail
         worker-pool logic intact. When unset, the built-in{' '}
-        <code>{'<StudyList.PreviewContainer>'}</code> layout is used. Currently only applies when{' '}
-        <code>workList.variant</code> is <code>'default'</code>.
+        <code>{'<StudyList.PreviewContainer>'}</code> layout is used.
       </>
     ),
     default: 'undefined',
@@ -551,7 +523,6 @@ window.config = {
         back to the first applicable one. Modes can contribute their own commands via a{' '}
         <code>getCommandsModule</code> export on the mode definition — these are registered at
         app init in the <code>WORKLIST</code> context, before any mode route is entered.
-        Currently only applies when <code>workList.variant</code> is <code>'default'</code>.
       </>
     ),
     default: "{ commandName: 'launchDefaultMode' }",
@@ -582,8 +553,7 @@ window.config = {
         defaults are <code>about</code>, <code>userPreferences</code>, and (when{' '}
         <code>appConfig.oidc</code> is configured) <code>logout</code>. Use it to reorder, remove,
         or insert items without rebuilding the popover shell. If the customization returns a
-        non-array value, WorkList falls back to the defaults. Currently only applies when{' '}
-        <code>workList.variant</code> is <code>'default'</code>.
+        non-array value, WorkList falls back to the defaults.
       </>
     ),
     default: '(defaults) => defaults',

@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useImperativeHandle, useCallback, useLayoutEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/Dialog/Dialog';
 import { cn } from '../lib/utils';
 
@@ -73,13 +73,22 @@ const ManagedDialog = ({
   ref,
 }: ManagedDialogProps) => {
   const [currentPosition, setCurrentPosition] = useState(defaultPosition);
+  // The node is held in both state and a ref because the two consumers need
+  // different things: the layout effect below has to re-run when the node
+  // arrives (state), while the imperative handle needs to read the current node
+  // without being rebuilt (ref).
   const [contentNode, setContentNode] = useState<HTMLElement | null>(null);
+  const contentNodeRef = useRef<HTMLElement | null>(null);
 
   useImperativeHandle(
     ref,
     () => ({
       updatePosition: (position: Position) => {
-        _updatePosition(contentNode, position, setCurrentPosition);
+        // Read through the ref, not the state captured when this handle was
+        // built: the handle is created once (empty deps) and at that point the
+        // node is always null, so closing over it made updatePosition a no-op
+        // for the lifetime of the dialog.
+        _updatePosition(contentNodeRef.current, position, setCurrentPosition);
       },
     }),
     []
@@ -102,6 +111,7 @@ const ManagedDialog = ({
   // bails to the previous reference in that case, so no render is scheduled.
   const contentRef = useCallback(node => {
     if (node) {
+      contentNodeRef.current = node;
       setContentNode(prev => (prev === node ? prev : node));
     }
   }, []);
