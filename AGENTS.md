@@ -182,8 +182,13 @@ The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/ski
 
 ## Configuration
 
+### Customizing OHIF — read this before editing anything in this repo
+**[CUSTOMIZING.md](CUSTOMIZING.md)** indexes every supported customization mechanism (app config, `configUrl`, Customization Service, runtime extensions, build profiles, your own `pluginConfig.json`, managed workspace, new extensions) against the build procedure each implies, plus a "files you should not edit, and what to do instead" table. A customized viewer should never require modifying a file in this repo; pick the lowest-cost row that fits and say which one you chose.
+
 ### Plugin Configuration
 Extensions and modes are explicitly declared in `platform/app/pluginConfig.json` (validated against a JSON Schema at config load — no auto-discovery) and statically imported at build time via the generated `pluginImports.js`.
+
+The path is not hard-wired: `PLUGIN_CONFIG=<path>` — or a build profile (`OHIF_ENV=<ohif.config.json>`, schema `ohif.schema.json`) that sets `pluginConfig` — points the build, Tailwind's content globs, and `pnpm run plugin *` at a config owned by a downstream deployment. A config outside this repo declares `"root"` so its `./`-relative `directory` values and its own `extensions/`/`modes/` folders resolve against its own tree, while OHIF's in-tree plugins still resolve here. Profile keys supply defaults for `PLUGIN_CONFIG`, `APP_CONFIG`, `PUBLIC_URL`, `HTML_TEMPLATE`, `ENTRY_TARGET`, and the proxy vars; an already-set environment variable always wins.
 
 ### Extension Contract (v1 summary)
 

@@ -1,8 +1,16 @@
-const pluginConfig = require('../pluginConfig.json');
 const pluginConfigSchema = require('../pluginConfig.schema.json');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const schemaConstraints = require('../../../.rspack/schemaConstraints');
+// Importing this applies an OHIF_ENV profile (if any) before we read
+// PLUGIN_CONFIG, so a downstream deployment can point the build at a
+// pluginConfig.json it owns instead of editing this repo. tailwind.config.js and
+// scripts/ohif-plugin.mjs come through here too, so all three agree.
+const { resolvePluginConfigPath } = require('../../../.rspack/loadBuildProfile');
+
+const PLUGIN_CONFIG_PATH = resolvePluginConfigPath();
+const pluginConfig = JSON.parse(fs.readFileSync(PLUGIN_CONFIG_PATH, 'utf8'));
 
 // --- pluginConfig.json structural validation (mirrors pluginConfig.schema.json).
 // Hand-rolled on purpose: the build must not gain a runtime dependency for this.
@@ -22,28 +30,10 @@ const PUBLIC_FIELDS = {
   importName: 'string',
   to: 'string',
 };
-const ROOT_KEYS = ['$schema', 'extensions', 'modes', 'public'];
+const ROOT_KEYS = ['$schema', 'root', 'extensions', 'modes', 'public'];
 
-function constraintsFor(definition) {
-  const properties = (pluginConfigSchema.definitions[definition] || {}).properties || {};
-  const constraints = {};
-  for (const [field, spec] of Object.entries(properties)) {
-    const constraint = {};
-    if (typeof spec.pattern === 'string') {
-      constraint.pattern = new RegExp(spec.pattern);
-    }
-    if (typeof spec.minLength === 'number') {
-      constraint.minLength = spec.minLength;
-    }
-    if (Object.keys(constraint).length) {
-      constraints[field] = constraint;
-    }
-  }
-  return constraints;
-}
-
-const PLUGIN_CONSTRAINTS = constraintsFor('plugin');
-const PUBLIC_CONSTRAINTS = constraintsFor('publicEntry');
+const PLUGIN_CONSTRAINTS = schemaConstraints(pluginConfigSchema.definitions.plugin.properties);
+const PUBLIC_CONSTRAINTS = schemaConstraints(pluginConfigSchema.definitions.publicEntry.properties);
 
 // Fields the codegen interpolates into generated JS string literals (see
 // getRuntimeLoadModesExtensions): packageName/globalName/importName land inside
@@ -118,6 +108,9 @@ function validatePluginConfig(config) {
       errors.push(`root: unknown section "${key}" (allowed: ${ROOT_KEYS.join(', ')})`);
     }
   }
+  if (config.root !== undefined && (typeof config.root !== 'string' || !config.root)) {
+    errors.push('root: "root" must be a non-empty string (a path relative to this config file)');
+  }
   for (const section of ['extensions', 'modes']) {
     if (!Array.isArray(config[section])) {
       errors.push(`root: "${section}" must be an array`);
@@ -160,7 +153,7 @@ function validatePluginConfig(config) {
 const configErrors = validatePluginConfig(pluginConfig);
 if (configErrors.length) {
   throw new Error(
-    `Invalid platform/app/pluginConfig.json (${configErrors.length} error${configErrors.length === 1 ? '' : 's'}):\n` +
+    `Invalid ${PLUGIN_CONFIG_PATH} (${configErrors.length} error${configErrors.length === 1 ? '' : 's'}):\n` +
       configErrors.map(e => `  - ${e}`).join('\n') +
       '\nExpected shape: platform/app/pluginConfig.schema.json'
   );
@@ -309,15 +302,31 @@ function getRuntimeLoadModesExtensions(modules) {
   return dynamicLoad.join('\n');
 }
 
-const fromDirectory = (srcDir, dirPath) => {
+const REPO_ROOT = path.resolve(__dirname, '../../../');
+
+// Base for `./`-relative `directory` values, and the tree scanned for in-tree
+// extensions/ and modes/ workspaces.
+//
+// Default: the OHIF repo root, which is what the shipped config's values mean
+// ("./platform/public"). A config that lives outside this repo — selected with
+// PLUGIN_CONFIG / an OHIF_ENV profile — declares its own `"root"`, resolved
+// against the config file's directory, so it can use short relative paths for
+// the plugins it owns. Omitting `root` keeps the historical meaning exactly, so
+// no existing config changes behavior.
+const CONFIG_DIR = path.dirname(PLUGIN_CONFIG_PATH);
+const CONFIG_ROOT = pluginConfig.root
+  ? path.resolve(CONFIG_DIR, pluginConfig.root)
+  : REPO_ROOT;
+// Trees searched for workspace plugins and installed dependencies, nearest
+// first. Identical to [REPO_ROOT] unless an external config set `root`.
+const SEARCH_ROOTS = CONFIG_ROOT === REPO_ROOT ? [REPO_ROOT] : [CONFIG_ROOT, REPO_ROOT];
+
+const fromDirectory = dirPath => {
   if (!dirPath) return;
-  if (dirPath[0] === '.') return srcDir + '/../../..' + dirPath.substring(1);
+  if (dirPath[0] === '.') return path.join(CONFIG_ROOT, dirPath.substring(1));
   if (dirPath[0] === '~') return os.homedir() + dirPath.substring(1);
   return dirPath;
 };
-
-const APP_SRC_DIR = path.resolve(__dirname, '../src');
-const REPO_ROOT = path.resolve(__dirname, '../../../');
 
 // The set of plugin package names declared in pluginConfig.json. Resolution and
 // asset copying are driven entirely by this list — a package present in the
@@ -351,23 +360,28 @@ function getWorkspacePluginDirs() {
   }
   const declared = getDeclaredPluginNames();
   const map = {};
-  for (const group of ['extensions', 'modes']) {
-    const root = path.join(REPO_ROOT, group);
-    if (!fs.existsSync(root)) {
-      continue;
-    }
-    for (const dir of fs.readdirSync(root)) {
-      const pkgJsonPath = path.join(root, dir, 'package.json');
-      if (!fs.existsSync(pkgJsonPath)) {
+  // Nearest root first, and an earlier hit is never overwritten, so a
+  // workspace's own extensions/<name> shadows a same-named one in the harness
+  // checkout.
+  for (const searchRoot of SEARCH_ROOTS) {
+    for (const group of ['extensions', 'modes']) {
+      const root = path.join(searchRoot, group);
+      if (!fs.existsSync(root)) {
         continue;
       }
-      try {
-        const { name } = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-        if (name && declared.has(name)) {
-          map[name] = path.join(root, dir);
+      for (const dir of fs.readdirSync(root)) {
+        const pkgJsonPath = path.join(root, dir, 'package.json');
+        if (!fs.existsSync(pkgJsonPath)) {
+          continue;
         }
-      } catch {
-        // ignore an unparseable package.json
+        try {
+          const { name } = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+          if (name && declared.has(name) && !map[name]) {
+            map[name] = path.join(root, dir);
+          }
+        } catch {
+          // ignore an unparseable package.json
+        }
       }
     }
   }
@@ -382,7 +396,7 @@ function getWorkspacePluginDirs() {
 // pluginAssetDir and getPluginResolveAliases).
 function workspacePluginDir(plugin) {
   if (plugin.directory) {
-    return fromDirectory(APP_SRC_DIR, plugin.directory);
+    return fromDirectory(plugin.directory);
   }
   return getWorkspacePluginDirs()[extractName(plugin)];
 }
@@ -398,8 +412,16 @@ function pluginAssetDir(plugin) {
     return dir;
   }
   const name = extractName(plugin);
-  const inNodeModules = name && path.join(REPO_ROOT, 'node_modules', name);
-  return inNodeModules && fs.existsSync(inNodeModules) ? inNodeModules : undefined;
+  if (!name) {
+    return undefined;
+  }
+  for (const searchRoot of SEARCH_ROOTS) {
+    const inNodeModules = path.join(searchRoot, 'node_modules', name);
+    if (fs.existsSync(inNodeModules)) {
+      return inNodeModules;
+    }
+  }
+  return undefined;
 }
 
 // Alias map fed into webpack `resolve.alias`. The trailing `$` makes each alias
@@ -432,12 +454,15 @@ function getPluginResolveAliases() {
 // ship src/ — see the publish workstream's `files` field). fast-glob needs
 // forward slashes and rejects '..' segments, hence resolve + replace.
 function getPluginContentGlobs() {
-  const inTree = getWorkspacePluginDirs();
+  const workspaceDirs = getWorkspacePluginDirs();
   const globs = [];
   for (const entry of [...(pluginConfig.extensions || []), ...(pluginConfig.modes || [])]) {
     const name = extractName(entry);
-    if (!entry.directory && inTree[name]) {
-      continue; // in-tree workspace plugin: already covered
+    const workspaceDir = !entry.directory && workspaceDirs[name];
+    // Only THIS repo's extensions/ and modes/ are covered by the static globs.
+    // A workspace plugin found under an external CONFIG_ROOT still needs one.
+    if (workspaceDir && workspaceDir.startsWith(REPO_ROOT + path.sep)) {
+      continue;
     }
     const dir = pluginAssetDir(entry);
     if (!dir || !fs.existsSync(path.join(dir, 'src'))) {
@@ -464,7 +489,7 @@ const createCopyPluginToDist = (distDir, plugins, folderName, { literalDirectory
     .map(plugin => {
       let from;
       if (literalDirectory && plugin.directory) {
-        from = fromDirectory(APP_SRC_DIR, plugin.directory);
+        from = fromDirectory(plugin.directory);
       } else {
         const dir = pluginAssetDir(plugin);
         from = dir && path.join(dir, folderName);
@@ -545,6 +570,11 @@ module.exports = writePluginImportsFile;
 module.exports.getPluginResolveAliases = getPluginResolveAliases;
 module.exports.getPluginContentGlobs = getPluginContentGlobs;
 module.exports.validatePluginConfig = validatePluginConfig;
+// Which config this process is building from, and the base its relative
+// `directory` values resolve against. Reported by `pnpm plugin doctor` and
+// asserted by the build-profile tests.
+module.exports.PLUGIN_CONFIG_PATH = PLUGIN_CONFIG_PATH;
+module.exports.CONFIG_ROOT = CONFIG_ROOT;
 // Exposed for pluginConfigSchemaParity.test.js only: the field/constraint
 // tables above must stay in lockstep with pluginConfig.schema.json.
 module.exports.validatorTables = {

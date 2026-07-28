@@ -1,4 +1,6 @@
 # Machine-managed OHIF harness (recreate with: node scripts/ohif.mjs harness ensure)
 .ohif/
+# Derived from ohif.config.json on every `harness ensure` — never hand-edit
+pluginConfig.generated.json
 node_modules/
 dist/
