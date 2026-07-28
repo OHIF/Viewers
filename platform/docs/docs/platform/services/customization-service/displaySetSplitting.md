@@ -68,8 +68,17 @@ The default `splitRules` (from `@ohif/extension-default`) are, in order:
 | `singleImageModality` | CR/DX/MG — one display set **per image** (preserves multi-view mammography) |
 | `multiFrame` | any image with `NumberOfFrames > 1` — one display set per instance (including US clips) |
 | `mixedDimensionalityBValue` | MR series mixing instances with and without `DiffusionBValue` — split into separate display sets (fixes mixed-b-value DWI window leveling) |
-| `volume3d` | CT/MR/PT/NM series with more than one instance — a single reconstructable display set |
-| `defaultImageRule` | catch-all for remaining image instances |
+| `volume3d` | CT/MR/PT series with more than one instance — a single reconstructable display set |
+| `defaultImageRule` | catch-all: one display set per series for every remaining stack-owned instance |
+
+Every default rule is gated on the same ownership test: **the instance's SOP
+class must be one the stack SOP class handler is registered for.** Split rules
+run before any SOP class routing, so without that gate a rule matching on pixel
+data alone would claim instances that belong elsewhere — SEG, RT Dose and
+Parametric Map are multiframe image objects with `Rows` like any other. The
+gate reproduces the legacy routing exactly, and covers the image SOP classes
+(Ultrasound, NM, RT Image, Enhanced US Volume, ophthalmic) that a generic
+"is this an image?" list tends to miss.
 
 The default display set factory (`createDisplaySetFromGroup`) builds the same
 `ImageSet` the stack handler builds — same `label`, `supportsWindowLevel`,
@@ -252,8 +261,14 @@ precedence over the defaults must be `$unshift`-ed (or the array replaced).
 :::
 
 :::caution
-The OHIF default rules deliberately claim only image instances.  A custom
-rule that matches video/whole-slide/ECG or non-image SOP classes takes those
-instances away from their dedicated extensions — the resulting display sets
-will not work with those extensions' viewports.
+The OHIF default rules deliberately claim only the instances the stack SOP
+class handler owns.  A custom rule that matches video, whole-slide, ECG, SEG,
+RT Structure Set, Parametric Map or any other SOP class with a dedicated
+extension takes those instances away from that extension — the resulting
+display sets will not work with its viewports.
+
+Note that "has `Rows`" is not a safe test for this: SEG, RT Dose and Parametric
+Map are all multiframe image objects.  A custom rule should check
+`SOPClassUID` explicitly, or reuse `isStackHandledInstance` from
+`@ohif/extension-default`.
 :::

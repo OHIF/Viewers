@@ -5,8 +5,9 @@ import {
   makeImageSetDisplaySet,
   STACK_SOP_CLASS_HANDLER_NAME,
 } from './displaySetSplitting/makeImageSetDisplaySet';
+import { STACK_SOP_CLASS_UIDS } from './displaySetSplitting/stackSopClassUids';
 
-const { isImage, sopClassDictionary } = utils;
+const { isImage } = utils;
 
 // Shared with the STACK_SOP_CLASS_HANDLER_ID the display set factory stamps
 // onto every display set it builds, so the two cannot drift.
@@ -96,61 +97,9 @@ function getDisplaySetsFromSeries(instances) {
   return displaySets;
 }
 
-const sopClassUids = [
-  sopClassDictionary.ComputedRadiographyImageStorage,
-  sopClassDictionary.DigitalXRayImageStorageForPresentation,
-  sopClassDictionary.DigitalXRayImageStorageForProcessing,
-  sopClassDictionary.DigitalMammographyXRayImageStorageForPresentation,
-  sopClassDictionary.DigitalMammographyXRayImageStorageForProcessing,
-  sopClassDictionary.DigitalIntraOralXRayImageStorageForPresentation,
-  sopClassDictionary.DigitalIntraOralXRayImageStorageForProcessing,
-  sopClassDictionary.CTImageStorage,
-  sopClassDictionary.EnhancedCTImageStorage,
-  sopClassDictionary.LegacyConvertedEnhancedCTImageStorage,
-  sopClassDictionary.UltrasoundMultiframeImageStorage,
-  sopClassDictionary.MRImageStorage,
-  sopClassDictionary.EnhancedMRImageStorage,
-  sopClassDictionary.EnhancedMRColorImageStorage,
-  sopClassDictionary.LegacyConvertedEnhancedMRImageStorage,
-  sopClassDictionary.UltrasoundImageStorage,
-  sopClassDictionary.UltrasoundImageStorageRET,
-  sopClassDictionary.SecondaryCaptureImageStorage,
-  sopClassDictionary.MultiframeSingleBitSecondaryCaptureImageStorage,
-  sopClassDictionary.MultiframeGrayscaleByteSecondaryCaptureImageStorage,
-  sopClassDictionary.MultiframeGrayscaleWordSecondaryCaptureImageStorage,
-  sopClassDictionary.MultiframeTrueColorSecondaryCaptureImageStorage,
-  sopClassDictionary.XRayAngiographicImageStorage,
-  sopClassDictionary.EnhancedXAImageStorage,
-  sopClassDictionary.XRayRadiofluoroscopicImageStorage,
-  sopClassDictionary.EnhancedXRFImageStorage,
-  sopClassDictionary.XRay3DAngiographicImageStorage,
-  sopClassDictionary.XRay3DCraniofacialImageStorage,
-  sopClassDictionary.BreastTomosynthesisImageStorage,
-  sopClassDictionary.CornealTopographyMapStorage,
-  sopClassDictionary.BreastProjectionXRayImageStorageForPresentation,
-  sopClassDictionary.BreastProjectionXRayImageStorageForProcessing,
-  sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForPresentation,
-  sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForProcessing,
-  sopClassDictionary.NuclearMedicineImageStorage,
-  sopClassDictionary.VLEndoscopicImageStorage,
-  sopClassDictionary.VideoEndoscopicImageStorage,
-  sopClassDictionary.VLMicroscopicImageStorage,
-  sopClassDictionary.VideoMicroscopicImageStorage,
-  sopClassDictionary.VLSlideCoordinatesMicroscopicImageStorage,
-  sopClassDictionary.VLPhotographicImageStorage,
-  sopClassDictionary.VideoPhotographicImageStorage,
-  sopClassDictionary.OphthalmicPhotography8BitImageStorage,
-  sopClassDictionary.OphthalmicPhotography16BitImageStorage,
-  sopClassDictionary.OphthalmicTomographyImageStorage,
-  // Handled by another sop class module
-  // sopClassDictionary.VLWholeSlideMicroscopyImageStorage,
-  sopClassDictionary.PositronEmissionTomographyImageStorage,
-  sopClassDictionary.EnhancedPETImageStorage,
-  sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,
-  sopClassDictionary.RTImageStorage,
-  sopClassDictionary.EnhancedUSVolumeStorage,
-  sopClassDictionary.RTDoseStorage,
-];
+// The registration list lives in `stackSopClassUids` so the split rules can
+// use the same list to decide which instances the stack path owns.
+const sopClassUids = STACK_SOP_CLASS_UIDS;
 
 function getSopClassHandlerModule(appContextParam) {
   appContext = appContextParam;

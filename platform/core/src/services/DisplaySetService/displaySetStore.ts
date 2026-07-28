@@ -22,6 +22,26 @@ const DISPLAY_SET_MODULE = Enums.MetadataModules.DISPLAY_SET;
  * `metaData.addTyped` ingest path warns and keeps the OLD value on duplicate
  * adds, which would break the re-add flows (invalidation, `addInstances`
  * merges, SR re-hydration).
+ *
+ * ### Lifetime
+ *
+ * Display sets live for the duration of a mode and are discarded on mode exit.
+ * Two things clear them, and both are intended:
+ *
+ * - `DisplaySetService.onModeExit()` calls {@link clearDisplaySets}, which
+ *   removes this store's own UIDs;
+ * - `@ohif/extension-cornerstone`'s `onModeExit` calls
+ *   `utilities.clearCacheData()`, releasing the whole typed metadata registry
+ *   (naturalized instances hold Part 10 buffers outside the size-capped image
+ *   cache). That takes the DISPLAY_SET module with it.
+ *
+ * The ordering is safe by construction: `mode.onModeExit` runs before either,
+ * so a mode that wants to carry display sets across a mode change snapshots
+ * them there and re-adds them with `addDisplaySets` on re-entry.
+ *
+ * A display set is therefore never expected to outlive its mode. Code that
+ * needs one later must hold its own reference — not a `displaySetInstanceUID`
+ * to look up afterwards.
  */
 const displaySetUIDs = new Set<string>();
 
@@ -56,8 +76,10 @@ export function setDisplaySet(displaySet: DisplaySet): void {
 
 /**
  * Retrieves a display set by UID.  Prunes the UID index when the underlying
- * typed cache entry has been cleared externally (e.g. by a
- * `utilities.clearCacheData()` from a loader re-initialization).
+ * typed cache entry has been cleared externally — by the cornerstone
+ * extension's mode-exit `utilities.clearCacheData()`, or by a loader
+ * re-initialization — so a wiped entry reads as absent rather than as a stale
+ * UID this store still believes in.
  */
 export function getDisplaySet(uid: string): DisplaySet | undefined {
   const value = csMetadataUtilities.getCacheData(DISPLAY_SET_MODULE, uid) as DisplaySet | undefined;
@@ -82,6 +104,10 @@ export function deleteDisplaySet(uid: string): boolean {
  * Removes every display set owned by this store.  Clears per-UID rather than
  * clearing the whole DISPLAY_SET module so cornerstone-native entries written
  * by other code survive.
+ *
+ * Called from `DisplaySetService.onModeExit()`.  The cornerstone extension's
+ * own mode-exit `clearCacheData()` is broader and may get there first; either
+ * order leaves the store empty, which is the intent.
  */
 export function clearDisplaySets(): void {
   for (const uid of displaySetUIDs) {

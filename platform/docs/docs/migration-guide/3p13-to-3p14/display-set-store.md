@@ -58,8 +58,44 @@ and the events in step:
 `onModeExit()` removes only the display sets this service created, per UID,
 rather than clearing the whole `DISPLAY_SET` module. Entries written directly
 by cornerstone code (keyed by image id rather than by `displaySetInstanceUID`)
-survive a mode exit.
+survive that call.
 
-If a loader re-initialization calls `utilities.clearCacheData()` out from under
-the service, the store notices the missing entries on the next read and prunes
-its own index instead of returning stale UIDs.
+## Display sets do not survive a mode exit
+
+This is unchanged from 3.13 in effect, but the mechanism is now shared with
+cornerstone, so it is worth stating explicitly: **display sets last for the
+duration of a mode.** Two separate things clear them on the way out, and both
+are intended:
+
+| Step | What it clears |
+| --- | --- |
+| `mode.onModeExit` | nothing — runs first, so a mode can snapshot what it wants to keep |
+| `@ohif/extension-cornerstone` `onModeExit` | `utilities.clearCacheData()` — the whole typed metadata registry, including the `DISPLAY_SET` module |
+| `DisplaySetService.onModeExit()` | this service's own display sets, per UID |
+
+The cornerstone extension releases the typed registry because naturalized
+instances hold full Part 10 buffers that live outside the size-capped image
+cache; dropping display sets along with them is deliberate, not collateral.
+Because `mode.onModeExit` runs before either clear, the existing
+snapshot-and-restore pattern still works:
+
+```js
+// In your mode
+onModeExit({ servicesManager }) {
+  const { displaySetService } = servicesManager.services;
+  this.saved = displaySetService.getActiveDisplaySets().filter(isWorthKeeping);
+},
+
+onModeEnter({ servicesManager }) {
+  const { displaySetService } = servicesManager.services;
+  this.saved?.forEach(ds => displaySetService.addDisplaySets(ds));
+},
+```
+
+What does **not** work is stashing a `displaySetInstanceUID` across a mode
+change and looking it up afterwards — `getDisplaySetByUID` will return
+`undefined`. Hold the display set object itself.
+
+If `utilities.clearCacheData()` is called mid-mode (a loader
+re-initialization, say), the store notices the missing entries on the next read
+and prunes its own index instead of returning stale UIDs.

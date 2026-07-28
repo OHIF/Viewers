@@ -27,6 +27,11 @@ import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolSt
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import { callInputDialogAutoComplete, callInputDialog } from './utils/callInputDialog';
+import {
+  isStackHandledInstance,
+  isStackSopClass,
+  STACK_SOP_CLASS_UIDS,
+} from './displaySetSplitting/stackSopClassUids';
 import { releaseLocalWadouriRegistrations } from './utils/registerNaturalizedDatasetForLocalWadouri';
 import colorPickerDialog from './utils/colorPickerDialog';
 
@@ -110,4 +115,9 @@ export {
   callInputDialog,
   createReportDialogPrompt,
   Toolbar,
+  // Ownership test shared by the stack SOP class handler and the default split
+  // rules; custom split rules should reuse it rather than testing for `Rows`.
+  isStackHandledInstance,
+  isStackSopClass,
+  STACK_SOP_CLASS_UIDS,
 };
