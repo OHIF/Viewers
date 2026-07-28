@@ -1,0 +1,36 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "license": "MIT",
+  "keywords": ["ohif-mode"],
+  "main": "dist/index.umd.js",
+  "module": "src/index.ts",
+  "engines": { "node": ">=24" },
+  "files": ["dist", "src", "README.md"],
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.umd.js",
+    "module": "dist/index.umd.js"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.prod.js --watch",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build:package": "pnpm run build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit:ci": "vitest run --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@ohif/core": "{{peerRange}}",
+    "@ohif/extension-cornerstone": "{{peerRange}}",
+    "@ohif/extension-default": "{{peerRange}}"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^2.0.0",
+    "@rspack/core": "^2.0.0",
+    "cross-env": "^7.0.3",
+    "typescript": "^5.5.0",
+    "vitest": "^3.2.0"
+  }
+}

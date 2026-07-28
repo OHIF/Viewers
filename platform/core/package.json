@@ -13,10 +13,13 @@
   },
   "files": [
     "dist",
+    "src",
+    "public",
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "module": "dist/ohif-core.umd.js"
   },
   "sideEffects": "false",
   "scripts": {
@@ -24,7 +27,7 @@
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "jest --watchAll",
     "dev:core": "pnpm run dev",
-    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev",
     "test:unit": "jest --watchAll",

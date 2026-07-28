@@ -24,13 +24,15 @@
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
 
-    # Report-Only CSP: observational only, enforces nothing. Watch browser
-    # consoles for violation reports before ever promoting this to an
-    # enforcing Content-Security-Policy header. cdnjs.cloudflare.com is for
-    # the Rollbar snippet in html-templates/rollbar.html (demo builds);
-    # connect-src stays broad because deployments point the viewer at
-    # arbitrary DICOMweb origins.
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https: blob:; worker-src 'self' blob:; object-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    # Report-only baseline CSP: observational only, enforces nothing.
+    # Violations against the demo PACS origin (connect-src) are expected on
+    # previews; the header exists to catch NEW script-src/worker-src
+    # regressions before they hit CSP-enabled Docker deployments.
+    # 'unsafe-inline' in script-src is an interim allowance for the two
+    # inline scripts in index.html (window.PUBLIC_URL and
+    # browserImportFunction); a hash-based replacement is the planned
+    # fast-follow.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'"
 
     cache-control = '''
     max-age=0,

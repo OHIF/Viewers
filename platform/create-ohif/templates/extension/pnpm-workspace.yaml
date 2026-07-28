@@ -1,0 +1,12 @@
+# Standalone plugin package. This file exists only to carry pnpm settings
+# (a package with no `packages:` field is not treated as a multi-package
+# workspace). pnpm 11 refuses to run a dependency's install scripts unless it
+# is listed here, and errors the whole install if any are pending approval.
+# These are the build scripts pulled in by the dev/test toolchain (esbuild via
+# vitest, protobufjs, core-js); approving them keeps `pnpm install` green.
+allowBuilds:
+  esbuild: true
+  core-js: true
+  core-js-pure: true
+  protobufjs: true
+  '@scarf/scarf': true

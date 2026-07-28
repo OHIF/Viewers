@@ -199,7 +199,7 @@ complete data-source list are available while developing without editing
 
 ### `APP_CONFIG` is honored, not clobbered
 
-The default config is selected by the build (`webpack.pwa.js` / `rsbuild.config.ts`),
+The default config is selected by the build (`rspack.pwa.js` / `rsbuild.config.ts`),
 **not** hard-coded into the npm scripts, so an explicit `APP_CONFIG` always wins:
 
 - `pnpm run dev` (no `APP_CONFIG`) → `config/dev.js`

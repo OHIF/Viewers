@@ -555,10 +555,10 @@ find the `modes` to register.
 ```
 
 :::note
-You can register modes by editing the `pluginConfig.json` file directly.
-The provided `cli` can also add/remove/install/uninstall modes
-([read more](../../development/ohif-cli.md)), but it is being phased out in
-favour of generating modes with an agent.
+You can register modes by editing the `pluginConfig.json` file directly,
+or with the `pnpm run plugin add/remove/link/unlink` helper. Scaffold a new
+mode with [`create-ohif`](../../development/create-ohif.md). The former
+OHIF CLI has been removed — see [OHIF CLI removal](../../migration-guide/3p12-to-3p13/cli-removal.md).
 :::
 
 For the full set of entry fields and the three ways a plugin can be located

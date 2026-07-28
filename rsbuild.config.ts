@@ -3,12 +3,14 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import { pluginBabel } from '@rsbuild/plugin-babel';
 import path from 'path';
-import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
-// Module-resolution rules shared with the webpack/rspack build (webpack.base.js)
-// so the two pipelines resolve identically.
-import resolveConfig from './.webpack/resolveConfig';
-// Service-worker manifest injection shared with the rspack build (webpack.pwa.js).
-import InjectServiceWorkerManifestPlugin from './platform/app/.webpack/InjectServiceWorkerManifestPlugin';
+import writePluginImportsFile from './platform/app/.rspack/writePluginImportsFile';
+// Module-resolution rules shared with the per-package rspack builds
+// (.rspack/rspack.base.js) so the two pipelines resolve identically.
+import resolveConfig from './.rspack/resolveConfig';
+// Service-worker manifest injection. Kept in its own module rather than inline
+// so it stays bundler-version agnostic: it takes every rspack API off
+// `compiler.webpack` inside apply() instead of importing @rspack/core.
+import InjectServiceWorkerManifestPlugin from './platform/app/.rspack/InjectServiceWorkerManifestPlugin';
 import fs from 'fs';
 
 const APP_ROOT = path.resolve(__dirname, './platform/app');
@@ -27,6 +29,10 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
+// e2e runs launch this same config (playwright webServer + `test:e2e`) with
+// COVERAGE=true. It both instruments the bundle (see the babel-plugin-istanbul
+// rule below) and disables the dev-server error overlay, whose injected iframe
+// intercepts pointer events and makes Playwright clicks miss.
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 const QUICK_BUILD = process.env.QUICK_BUILD === 'true';
 const ENABLE_REACT_COMPILER = process.env.REACT_COMPILER !== 'off';
@@ -58,7 +64,7 @@ export default defineConfig(({ env }) => {
   const isProd = env === 'production';
   // Honor an explicit APP_CONFIG; otherwise the dev server gets the
   // full-featured `config/dev.js` and a production build the locked-down
-  // `config/default.js` (same policy as webpack.pwa.js).
+  // `config/default.js` (same policy as the former webpack.pwa.js).
   const APP_CONFIG = process.env.APP_CONFIG || (isProd ? 'config/default.js' : 'config/dev.js');
 
   return {
@@ -66,6 +72,12 @@ export default defineConfig(({ env }) => {
     dev: {
       lazyCompilation: false,
       assetPrefix: PUBLIC_URL,
+      // Under e2e (COVERAGE=true) disable the dev-server error overlay: its
+      // injected iframe/web component intercepts pointer events and breaks
+      // Playwright/Cypress clicks. Keep it for normal local dev.
+      client: {
+        overlay: !IS_COVERAGE,
+      },
     },
     source: {
       entry: {
@@ -86,8 +98,13 @@ export default defineConfig(({ env }) => {
         'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
         'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
         'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+        // Sole build-time definer for e2e determinism hooks (`test:e2e` sets
+        // TEST_ENV=true via cross-env; playwright's webServer runs this config).
+        // Ported from rspack.base.js — without it process.env.TEST_ENV stays
+        // {} in the browser bundle and the stable series-sort / notification-
+        // suppression e2e stabilizations silently disable.
         'process.env.TEST_ENV': JSON.stringify(process.env.TEST_ENV || ''),
-        // Only redefine when unset, mirroring webpack.base.js (app-config.js is
+        // Only redefine when unset, mirroring rspack.base.js (app-config.js is
         // loaded at runtime via a script tag; this define only silences the
         // process.env.APP_CONFIG references).
         ...(process.env.APP_CONFIG ? {} : { 'process.env.APP_CONFIG': "''" }),
@@ -126,6 +143,14 @@ export default defineConfig(({ env }) => {
       pluginNodePolyfill(),
     ],
     tools: {
+      // Keep the two index.html inline scripts (window.PUBLIC_URL bootstrap +
+      // browserImportFunction) byte-faithful: rspack's html plugin minifies HTML
+      // in production, which would rewrite the inline script bodies and change
+      // the C13 CSP hashes. Disable html minification to preserve them.
+      htmlPlugin: (config: Record<string, unknown>) => ({
+        ...config,
+        minify: false,
+      }),
       rspack: {
         experiments: {
           asyncWebAssembly: true,
@@ -142,6 +167,34 @@ export default defineConfig(({ env }) => {
         module: {
           noParse: [/(dicomicc)/],
           rules: [
+            // e2e coverage instrumentation. The playwright webServer launches
+            // THIS config with COVERAGE=true wrapped in `nyc`, and the fixtures
+            // (tests/utils/fixture.ts via playwright-test-coverage) only HARVEST
+            // window.__coverage__ — the bundle must be instrumented at build
+            // time for that global to exist. Runs as a post-loader over
+            // rsbuild's SWC output; source maps thread the coverage back to the
+            // original .ts/.tsx. Empty in every non-coverage build, so dev and
+            // the production build are untouched.
+            ...(IS_COVERAGE
+              ? [
+                  {
+                    test: /\.[jt]sx?$/,
+                    exclude: /node_modules/,
+                    enforce: 'post' as const,
+                    use: [
+                      {
+                        loader: 'babel-loader',
+                        options: {
+                          babelrc: false,
+                          configFile: false,
+                          sourceMaps: true,
+                          plugins: ['babel-plugin-istanbul'],
+                        },
+                      },
+                    ],
+                  },
+                ]
+              : []),
             // Consume the source maps emitted by the linked local Cornerstone
             // packages (libs/@cornerstonejs, via cs3d:link + cs3d:watch) so browser
             // stack traces and breakpoints resolve to the original .ts instead of
@@ -178,7 +231,7 @@ export default defineConfig(({ env }) => {
               type: 'asset/resource',
             },
             // Some ESM deps use extensionless relative imports; do not require
-            // fully-specified paths for them (parity with webpack.base.js).
+            // fully-specified paths for them (parity with rspack.base.js).
             {
               test: /\.m?js/,
               resolve: {
@@ -188,20 +241,20 @@ export default defineConfig(({ env }) => {
           ],
         },
         resolve: {
-          // Prefer ESM entry points in the same order as webpack.base.js.
+          // Prefer ESM entry points in the same order as rspack.base.js.
           mainFields: ['module', 'browser', 'main'],
           // Extensions/modes are resolved from their source dirs (see the
           // resolve.alias above), so their imports of shared OHIF packages
           // (@ohif/ui-next, @ohif/core, ...) must resolve against platform/app's
           // installed dependencies rather than only the importer-relative
-          // node_modules. Shared with webpack.base.js via ./.webpack/resolveConfig.
+          // node_modules. Shared with rspack.base.js via ./.rspack/resolveConfig.
           modules: resolveConfig.getModules(SRC_DIR),
           fallback: {
             buffer: require.resolve('buffer'),
           },
         },
         optimization: {
-          // Parity with webpack.base.js: several workspace/vendored packages
+          // Parity with rspack.base.js: several workspace/vendored packages
           // rely on side-effectful imports (global CSS, polyfills) without
           // declaring `sideEffects` in their package.json, so full
           // tree-shaking would silently drop them in production.
@@ -215,6 +268,9 @@ export default defineConfig(({ env }) => {
               },
             }
           : {}),
+        // The service worker is a production-only concern (the dev server serves
+        // in memory), and is skipped under coverage so the instrumented bundle
+        // never gets precached.
         plugins:
           isProd && !IS_COVERAGE
             ? [
@@ -222,7 +278,10 @@ export default defineConfig(({ env }) => {
                   swDest: 'sw.js',
                   swSrc: path.join(SRC_DIR, 'service-worker.js'),
                   publicPath: PUBLIC_URL,
-                  exclude: [/theme/],
+                  // `plugins/` holds the runtime-loaded UMD extension bundles,
+                  // resolved through window.config at boot rather than through
+                  // the app graph, so they stay out of the precache.
+                  exclude: [/theme/, /^plugins\//],
                   maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
                 }),
               ]
@@ -242,7 +301,7 @@ export default defineConfig(({ env }) => {
         // platform/app. Merged in separately since it depends on pluginConfig.json.
         ...writePluginImportsFile.getPluginResolveAliases(),
         // App-level aliases (@ohif/app, @, @components, ...) shared with the
-        // webpack/rspack build via ./.webpack/resolveConfig.
+        // per-package rspack builds via ./.rspack/resolveConfig.
         ...resolveConfig.alias,
       },
     },

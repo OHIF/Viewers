@@ -306,7 +306,7 @@ export NPM_TOKEN=<your readonly token>
 ## External dependencies
 The ohif-cli will add the path to the external dependencies to the webpack config,
 so that you can install them in your project and use them in your custom
-extensions and modes. To achieve this ohif-cli will update the webpack.pwa.js
+extensions and modes. To achieve this ohif-cli will update the rspack.pwa.js
 file in the platform/app directory.
 
 ## Video tutorials
