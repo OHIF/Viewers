@@ -139,6 +139,10 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
 
             const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
 
+            if (hasStats)  {
+              sendMessageToFront()
+            }
+
             const segmentRowRef = (element: HTMLElement) => {
               if (!active) {
                 return;
