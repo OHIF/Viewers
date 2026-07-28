@@ -35,8 +35,8 @@ export function ActionOverlayCell<TData>({ cell, children }: ActionOverlayCellPr
 
   // Extract Value and Overlay components from children
   // Only Value and Overlay sub-components are recognized; other children are ignored
-  let valueElement: React.ReactElement | null = null;
-  let overlayElement: React.ReactElement | null = null;
+  let valueElement: React.ReactElement<any> | null = null;
+  let overlayElement: React.ReactElement<any> | null = null;
 
   React.Children.forEach(children, child => {
     if (React.isValidElement(child)) {

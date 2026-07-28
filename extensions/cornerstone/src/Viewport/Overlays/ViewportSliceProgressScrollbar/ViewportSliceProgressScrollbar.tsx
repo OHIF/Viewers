@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import {
@@ -50,17 +49,22 @@ function ViewportSliceProgressScrollbar({
 
   const { numberOfSlices, imageIndex } = imageSliceData;
 
-  const imageIds = useMemo(() => getViewportImageIds(viewportData), [viewportData]);
-  const imageIdToIndex = useMemo(() => {
-    const map = new Map<string, number>();
-    for (let i = 0; i < imageIds.length; i++) {
-      const imageId = imageIds[i];
+  // Manual memoization is load-bearing here: this component is excluded from
+  // the React Compiler (see rsbuild.config.ts / babel.config.js), and the
+  // byte-array hooks below list these in their effect deps — fresh identities
+  // every render re-run the seeding effects, whose version bump re-renders
+  // this component in an infinite setState loop.
+  const { imageIds, imageIdToIndex } = useMemo(() => {
+    const ids = getViewportImageIds(viewportData);
+    const idToIndex = new Map<string, number>();
+    for (let i = 0; i < ids.length; i++) {
+      const imageId = ids[i];
       if (imageId) {
-        map.set(imageId, i);
+        idToIndex.set(imageId, i);
       }
     }
-    return map;
-  }, [imageIds]);
+    return { imageIds: ids, imageIdToIndex: idToIndex };
+  }, [viewportData]);
 
   const isFullMode = useProgressScrollbarMode({
     viewportData,
@@ -189,13 +193,6 @@ function ViewportSliceProgressScrollbar({
   );
 }
 
-ViewportSliceProgressScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
+
 
 export default ViewportSliceProgressScrollbar;

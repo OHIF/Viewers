@@ -18,7 +18,7 @@ import DataSourceConfigurationModalComponent from './DataSourceConfigurationModa
 function DataSourceConfigurationComponent({
   servicesManager,
   extensionManager,
-}: withAppTypes): ReactElement {
+}: withAppTypes): ReactElement<any> {
   const { t } = useTranslation('DataSourceConfiguration');
   const { show, hide } = useModal();
 

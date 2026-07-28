@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.13.0-beta.134",
+  "version": "3.14.0-beta.3",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:i18n": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "pullTranslations": "./pullTranslations.sh",
     "test:unit": "echo 'platform/i18n: missing unit tests'",
@@ -34,8 +34,8 @@
   "peerDependencies": {
     "i18next": "17.3.1",
     "i18next-browser-languagedetector": "3.1.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1"
   },
   "dependencies": {
@@ -48,8 +48,8 @@
     "cross-env": "7.0.3",
     "i18next": "17.3.1",
     "i18next-browser-languagedetector": "3.1.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1",
     "webpack-merge": "5.10.0"
   }

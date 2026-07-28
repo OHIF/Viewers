@@ -1,5 +1,4 @@
 import React, { Component, useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useViewportGrid } from '@ohif/ui-next';
 import {
   utils,
@@ -236,12 +235,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   );
 }
 
-OHIFCornerstoneRTViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
+
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   const image0 = referencedDisplaySet.images[0];

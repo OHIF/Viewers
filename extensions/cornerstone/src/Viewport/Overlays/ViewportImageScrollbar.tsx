@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui-next';
 import { isVolume3DViewportType } from '../../utils/getLegacyViewportType';
@@ -96,14 +95,6 @@ function CornerstoneImageScrollbar({
   );
 }
 
-CornerstoneImageScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  scrollbarHeight: PropTypes.string,
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
+
 
 export default CornerstoneImageScrollbar;

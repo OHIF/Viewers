@@ -1,5 +1,5 @@
 import { id } from './id';
-import React, { Suspense, useCallback, useMemo } from 'react';
+import React, { Suspense } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
 import getCustomizationModule from './getCustomizationModule';
@@ -62,9 +62,7 @@ const extension: Types.Extensions.Extension = {
       const [viewportGrid, viewportGridService] = useViewportGrid();
       const { activeViewportId } = viewportGrid;
 
-      const displaySetsKey = useMemo(() => {
-        return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
-      }, [props.displaySets]);
+      const displaySetsKey = props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
 
       const onResize = debounce(() => {
         const { microscopyService } = servicesManager.services;
@@ -81,12 +79,9 @@ const extension: Types.Extensions.Extension = {
         handleWidth: true,
       });
 
-      const setViewportActive = useCallback(
-        (viewportId: string) => {
-          viewportGridService.setActiveViewportId(viewportId);
-        },
-        [viewportGridService]
-      );
+      const setViewportActive = (viewportId: string) => {
+        viewportGridService.setActiveViewportId(viewportId);
+      };
 
       return (
         <MicroscopyViewport

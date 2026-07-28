@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useMemo } from 'react';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 import type { Locale } from 'react-day-picker';
@@ -61,13 +60,8 @@ function Calendar({
   const { i18n } = useTranslation('DatePicker');
   const defaultClassNames = getDefaultClassNames();
 
-  const locale = useMemo(() => {
-    if (localeProp) {
-      return localeProp;
-    }
-    const lang = i18n.language || 'en';
-    return LOCALE_MAP[lang] ?? enUS;
-  }, [i18n.language, localeProp]);
+  const lang = i18n.language || 'en';
+  const locale = localeProp || (LOCALE_MAP[lang] ?? enUS);
 
   return (
     <DayPicker

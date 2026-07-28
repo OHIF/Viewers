@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "3.13.0-beta.134",
+  "version": "3.14.0-beta.3",
   "private": true,
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
@@ -19,9 +19,9 @@
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
+    "dev": "cross-env REACT_COMPILER=off NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:dicom-pdf": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package-1": "pnpm run build",
     "start": "pnpm run dev"
   },
@@ -31,9 +31,8 @@
     "@ohif/i18n": "workspace:*",
     "@ohif/ui": "workspace:*",
     "@ohif/ui-next": "workspace:*",
-    "prop-types": "15.8.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1",
     "react-router": "6.30.3",
     "react-router-dom": "6.30.3"
@@ -46,7 +45,8 @@
     "colormap": "2.3.2",
     "dicom-microscopy-viewer": "0.48.6",
     "lodash.debounce": "4.0.8",
-    "mathjs": "12.4.3"
+    "mathjs": "12.4.3",
+    "react-resize-detector": "12.3.0"
   },
   "devDependencies": {
     "cross-env": "7.0.3"

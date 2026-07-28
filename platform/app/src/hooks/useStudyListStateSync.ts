@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { SortingState, PaginationState, ColumnFiltersState } from '@tanstack/react-table';
 import qs from 'query-string';
@@ -54,10 +54,7 @@ export function useStudyListStateSync() {
 
   const dataSources = sessionState.dataSources || getUrlParam(searchParams, URL_KEYS.dataSources);
 
-  const state = useMemo(
-    () => ({ sorting, pagination, filters, dataSources }),
-    [sorting, pagination, filters, dataSources]
-  );
+  const state = { sorting, pagination, filters, dataSources };
 
   // Debounce state for URL updates
   const debouncedState = useDebounce(state, 200);

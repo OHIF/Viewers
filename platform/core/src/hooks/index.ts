@@ -5,3 +5,4 @@ export * from './useViewportSize';
 export * from './useViewportMousePosition';
 export * from './useActiveToolOptions';
 export * from './useRunCommand';
+export * from './useCustomization';

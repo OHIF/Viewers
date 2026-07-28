@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '../Popover/Popover';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons';
-import * as PropTypes from 'prop-types';
 
 // Types
 type LayoutCommandOptions = {
@@ -65,27 +64,21 @@ const LayoutSelector = ({
   const isOpen = isControlled ? open : isOpenInternal;
   const setIsOpen = isControlled ? onOpenChange! : setIsOpenInternal;
 
-  const handleSelection = useCallback(
-    (commandOptions: LayoutCommandOptions) => {
-      onSelection(commandOptions);
-      if (onSelectionChange) {
-        onSelectionChange(commandOptions, false);
-      }
-      setIsOpen(false);
-    },
-    [onSelection, onSelectionChange, setIsOpen]
-  );
+  const handleSelection = (commandOptions: LayoutCommandOptions) => {
+    onSelection(commandOptions);
+    if (onSelectionChange) {
+      onSelectionChange(commandOptions, false);
+    }
+    setIsOpen(false);
+  };
 
-  const handlePresetSelection = useCallback(
-    (commandOptions: LayoutCommandOptions) => {
-      onSelectionPreset(commandOptions);
-      if (onSelectionChange) {
-        onSelectionChange(commandOptions, true);
-      }
-      setIsOpen(false);
-    },
-    [onSelectionPreset, onSelectionChange, setIsOpen]
-  );
+  const handlePresetSelection = (commandOptions: LayoutCommandOptions) => {
+    onSelectionPreset(commandOptions);
+    if (onSelectionChange) {
+      onSelectionChange(commandOptions, true);
+    }
+    setIsOpen(false);
+  };
 
   return (
     <LayoutSelectorContext.Provider
@@ -347,17 +340,6 @@ LayoutSelector.Preset = Preset;
 LayoutSelector.GridSelector = GridSelector;
 LayoutSelector.Divider = Divider;
 LayoutSelector.HelpText = HelpText;
-
-// PropTypes
-LayoutSelector.propTypes = {
-  onSelectionChange: PropTypes.func,
-  onSelection: PropTypes.func,
-  onSelectionPreset: PropTypes.func,
-  children: PropTypes.node.isRequired,
-  open: PropTypes.bool,
-  onOpenChange: PropTypes.func,
-  tooltipDisabled: PropTypes.bool,
-};
 
 export { LayoutSelector };
 export default LayoutSelector;

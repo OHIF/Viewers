@@ -17,21 +17,20 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
  */
 interface ToolButtonListProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const ToolButtonList = React.forwardRef<HTMLDivElement, ToolButtonListProps>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn('flex items-center', className)}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+const ToolButtonList = ({ className, children, ref, ...props }: ToolButtonListProps) => {
+  return (
+    <div
+      ref={ref}
+      className={cn('flex items-center', className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 ToolButtonList.displayName = 'ToolButtonList';
 
 /**
@@ -44,39 +43,46 @@ interface ToolButtonListDefaultProps extends React.HTMLAttributes<HTMLDivElement
   tooltip?: string;
   disabledText?: string;
   disabled?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const ToolButtonListDefault = React.forwardRef<HTMLDivElement, ToolButtonListDefaultProps>(
-  ({ className, children, tooltip, disabledText, disabled, ...props }, ref) => {
-    const hasTooltip = tooltip || disabledText;
+const ToolButtonListDefault = ({
+  className,
+  children,
+  tooltip,
+  disabledText,
+  disabled,
+  ref,
+  ...props
+}: ToolButtonListDefaultProps) => {
+  const hasTooltip = tooltip || disabledText;
 
-    const defaultContent = (
-      <div
-        ref={ref}
-        className={cn('flex items-center', className)}
-        {...props}
-      >
-        {children}
-      </div>
-    );
+  const defaultContent = (
+    <div
+      ref={ref}
+      className={cn('flex items-center', className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 
-    if (!hasTooltip) {
-      return defaultContent;
-    }
-
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span>{defaultContent}</span>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          {tooltip && <div>{tooltip}</div>}
-          {disabledText && disabled && <div className="text-muted-foreground">{disabledText}</div>}
-        </TooltipContent>
-      </Tooltip>
-    );
+  if (!hasTooltip) {
+    return defaultContent;
   }
-);
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span>{defaultContent}</span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        {tooltip && <div>{tooltip}</div>}
+        {disabledText && disabled && <div className="text-muted-foreground">{disabledText}</div>}
+      </TooltipContent>
+    </Tooltip>
+  );
+};
 ToolButtonListDefault.displayName = 'ToolButtonListDefault';
 
 /**
@@ -87,39 +93,43 @@ ToolButtonListDefault.displayName = 'ToolButtonListDefault';
 interface ToolButtonListDropDownProps {
   children: React.ReactNode;
   className?: string;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const ToolButtonListDropDown = React.forwardRef<HTMLDivElement, ToolButtonListDropDownProps>(
-  ({ children, className, ...props }, ref) => (
-    <DropdownMenu {...props}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            'text-foreground/80 hover:bg-background hover:text-highlight border-primary',
-            'inline-flex h-10 w-5 items-center justify-center',
-            '!rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none',
-            'bg-transparent',
-            className
-          )}
-        >
-          <Icons.ByName
-            name="chevron-down"
-            className="text-primary h-5 w-5"
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        ref={ref}
-        side="bottom"
-        align="start"
-        alignOffset={-40}
+const ToolButtonListDropDown = ({
+  children,
+  className,
+  ref,
+  ...props
+}: ToolButtonListDropDownProps) => (
+  <DropdownMenu {...props}>
+    <DropdownMenuTrigger asChild>
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn(
+          'text-foreground/80 hover:bg-background hover:text-highlight border-primary',
+          'inline-flex h-10 w-5 items-center justify-center',
+          '!rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none',
+          'bg-transparent',
+          className
+        )}
       >
-        {children}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+        <Icons.ByName
+          name="chevron-down"
+          className="text-primary h-5 w-5"
+        />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent
+      ref={ref}
+      side="bottom"
+      align="start"
+      alignOffset={-40}
+    >
+      {children}
+    </DropdownMenuContent>
+  </DropdownMenu>
 );
 ToolButtonListDropDown.displayName = 'ToolButtonListDropDown';
 
@@ -136,10 +146,16 @@ interface ToolButtonListItemProps extends React.ComponentProps<typeof DropdownMe
   tooltip?: string;
 }
 
-const ToolButtonListItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuItem>,
-  ToolButtonListItemProps
->(({ className, children, icon, disabledText, tooltip, disabled, ...props }, ref) => {
+const ToolButtonListItem = ({
+  className,
+  children,
+  icon,
+  disabledText,
+  tooltip,
+  disabled,
+  ref,
+  ...props
+}: ToolButtonListItemProps) => {
   const defaultTooltip = tooltip || (typeof children === 'string' ? children : undefined);
 
   const menuItem = (
@@ -177,7 +193,7 @@ const ToolButtonListItem = React.forwardRef<
       </TooltipContent>
     </Tooltip>
   );
-});
+};
 ToolButtonListItem.displayName = 'ToolButtonListItem';
 
 /**
@@ -185,16 +201,17 @@ ToolButtonListItem.displayName = 'ToolButtonListItem';
  * Divider between items in the dropdown menu
  * -----------------------------------------------
  */
-const ToolButtonListDivider = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+const ToolButtonListDivider = ({
+  className,
+  ref,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) => (
   <div
     ref={ref}
     className={cn('bg-primary h-5 w-px self-center', className)}
     {...props}
   />
-));
+);
 ToolButtonListDivider.displayName = 'ToolButtonListDivider';
 
 export {
