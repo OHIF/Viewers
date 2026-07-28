@@ -17,6 +17,7 @@ import {
   hasExportableLabelMapData,
   hasExportableContourData,
 } from '../utils/segmentationExportUtils';
+import { OHIFMessageType } from 'deemea-extension/src/utils/enums';
 
 type PanelSegmentationProps = {
   children?: React.ReactNode;
@@ -72,6 +73,36 @@ export default function PanelSegmentation({
     useActiveViewportSegmentationRepresentations();
 
   const setUIState = useUIStateStore(store => store.setUIState);
+
+  const noSegmentationMessageRef = React.useRef(false);
+
+  // The hook above starts with an empty array and updates asynchronously
+  // (waiting for the displaySet / segmentations to be resolved). So we can't
+  // trust an empty array on the very first renders: we debounce the "no
+  // segmentation" check so we only send the message once the state has been
+  // stable (still empty) for a little while, avoiding false positives while
+  // segmentations are still loading.
+  useEffect(() => {
+    if (segmentationsWithRepresentations.length > 0) {
+      // Reset so the message can be sent again if segmentations are later removed
+      noSegmentationMessageRef.current = false;
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (!noSegmentationMessageRef.current) {
+        window.parent.postMessage(
+          {
+            type: OHIFMessageType.EXPORT_AVAILABLE,
+          },
+          '*'
+        );
+        noSegmentationMessageRef.current = true;
+      }
+    }, 3000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [segmentationsWithRepresentations]);
 
   // useEffect for handling clicks on any of the non-active viewports.
   // The ViewportGrid stops the propagation of pointer/mouse events
