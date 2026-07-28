@@ -1,4 +1,4 @@
-import { Enums as csEnums, Types, metaData, utilities as csUtils } from '@cornerstonejs/core';
+import { Enums as csEnums, Types, metaData } from '@cornerstonejs/core';
 import {
   getLegacyViewportType,
   isStackViewportType,
@@ -14,6 +14,7 @@ import type {
 import type { StackViewportData, VolumeViewportData } from '../../../types/CornerstoneCacheService';
 import type { IViewportBackend, StackMountContext, VolumeMountContext } from './IViewportBackend';
 import type { IViewportServiceInternals } from './IViewportServiceInternals';
+import { DataIdRegistry } from './dataIdRegistry';
 
 // Mirrors WITH_ORIENTATION in CornerstoneViewportService (inlined to avoid a
 // value import that would create a backend -> service circular dependency).
@@ -24,10 +25,14 @@ const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
  * is off. Routing mirrors today's CornerstoneViewportService._setDisplaySets legacy
  * branch exactly (dispatch by runtime cornerstone viewport type) and delegates the
  * per-family mount to the unchanged service methods, so the off path stays
- * byte-identical. The native dataId lifecycle hooks are no-ops here — legacy never
- * registers anything with the GenericViewport metadata provider.
+ * byte-identical. The one legacy family that touches the GenericViewport metadata
+ * provider is WSI (mountOther); those registrations go through the same
+ * ref-counted registry as the native backend so they are released on viewport
+ * disable/destroy instead of leaking across viewport reuse.
  */
 export class LegacyViewportBackend implements IViewportBackend {
+  private readonly registry = new DataIdRegistry();
+
   constructor(private readonly service: IViewportServiceInternals) {}
 
   dispatchMount(
@@ -135,9 +140,11 @@ export class LegacyViewportBackend implements IViewportBackend {
     // without this entry setDisplaySets throws "No registered WSI dataset" and
     // the viewport renders gray.
     const webClient = metaData.get(csEnums.MetadataModules.WADO_WEB_CLIENT, displaySetId);
-    csUtils.genericViewportDisplaySetMetadataProvider.add(displaySetId, {
-      imageIds: displaySet.imageIds,
+    // Ref-counted registration so the provider entry is removed when the last
+    // viewport showing this WSI display set is disabled (or on service destroy).
+    this.registry.register(viewport.id, displaySetId, {
       kind: 'wsi',
+      imageIds: displaySet.imageIds,
       options: { webClient },
     });
     await (
@@ -243,14 +250,15 @@ export class LegacyViewportBackend implements IViewportBackend {
   }
 
   registerDataId(): void {
-    // Legacy viewports do not use the GenericViewport metadata provider.
+    // Legacy mounts do not register dataIds through the backend interface; the
+    // one provider-backed family (WSI) registers inline in mountOther.
   }
 
-  onViewportDisabled(): void {
-    // No native registrations to release.
+  onViewportDisabled(viewportId: string): void {
+    this.registry.releaseViewport(viewportId);
   }
 
   destroy(): void {
-    // No native registrations to flush.
+    this.registry.destroy();
   }
 }

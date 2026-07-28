@@ -221,6 +221,13 @@ const screenShotPaths = {
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
+  overlappingSegmentationRendering: {
+    overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
+  },
+  contourCombineOperations: {
+    subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
+    intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
+  },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },

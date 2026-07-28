@@ -13,7 +13,9 @@ const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
 const PUBLIC_DIR = path.resolve(__dirname, './platform/app/public');
 
 // Environment variables (similar to webpack.pwa.js)
-const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+// rsbuild is used only by the dev server (`dev:fast`), so default to the
+// full-featured `config/dev.js` while still honoring an explicit APP_CONFIG.
+const APP_CONFIG = process.env.APP_CONFIG || 'config/dev.js';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 
 // Add these constants
@@ -33,6 +35,17 @@ const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 // Ignore node_modules except @cornerstonejs (symlinked local development).
 const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
 const WATCH_AGGREGATE_TIMEOUT = Number(process.env.WATCH_AGGREGATE_TIMEOUT || 1500);
+
+// `source-map-loader` is not a project dependency — it only serves the local
+// cs3d-linking workflow (libs/@cornerstonejs, gitignored), so it is resolved
+// opportunistically and the rule is skipped on installs that lack it.
+const SOURCE_MAP_LOADER = (() => {
+  try {
+    return require.resolve('source-map-loader');
+  } catch {
+    return null;
+  }
+})();
 
 export default defineConfig({
   dev: {
@@ -73,6 +86,20 @@ export default defineConfig({
       },
       module: {
         rules: [
+          // Consume the source maps emitted by the linked local Cornerstone
+          // packages (libs/@cornerstonejs, via cs3d:link + cs3d:watch) so browser
+          // stack traces and breakpoints resolve to the original .ts instead of
+          // the bundled dist/esm .js. Scoped to the linked packages only.
+          ...(SOURCE_MAP_LOADER
+            ? [
+                {
+                  test: /\.js$/,
+                  enforce: 'pre' as const,
+                  use: [SOURCE_MAP_LOADER],
+                  include: /libs[\\/]@cornerstonejs[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]esm/,
+                },
+              ]
+            : []),
           {
             test: /\.css$/,
             use: [

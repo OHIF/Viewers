@@ -1,8 +1,10 @@
 import type { Button } from '@ohif/core/types';
 
 import { EVENTS } from '@cornerstonejs/core';
-import { ViewportGridService } from '@ohif/core';
+import { ViewportGridService, ToolbarService } from '@ohif/core';
 import i18n from 'i18next';
+
+const { TOOLBAR_SECTIONS } = ToolbarService;
 
 const callbacks = (toolName: string) => [
   {
@@ -708,4 +710,95 @@ const toolbarButtons: Button[] = [
   // },
 ];
 
-export default toolbarButtons;
+/**
+ * Default toolbar layout: which buttons appear in each toolbar section.
+ * Registered as a customization so modes (and `?customization=` modules) can
+ * append/replace entries without rebuilding.
+ */
+export const toolbarSections = {
+  [TOOLBAR_SECTIONS.primary]: [
+    'MeasurementTools',
+    'Zoom',
+    'Pan',
+    'TrackballRotate',
+    'WindowLevel',
+    'Capture',
+    'Layout',
+    'Crosshairs',
+    'MoreTools',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],
+
+  AdvancedRenderingControls: [
+    'windowLevelMenuEmbedded',
+    'voiManualControlMenu',
+    'Colorbar',
+    'opacityMenu',
+    'thresholdMenu',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: [
+    'modalityLoadBadge',
+    'trackingStatus',
+    'navigationComponent',
+  ],
+
+  [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
+
+  MeasurementTools: [
+    'Length',
+    'Bidirectional',
+    'ArrowAnnotate',
+    'EllipticalROI',
+    'RectangleROI',
+    'CircleROI',
+    'PlanarFreehandROI',
+    'SplineROI',
+    'LivewireContour',
+  ],
+
+  MoreTools: [
+    'Reset',
+    'rotate-right',
+    'flipHorizontal',
+    'ImageSliceSync',
+    'ReferenceLines',
+    'ImageOverlayViewer',
+    'StackScroll',
+    'invert',
+    'Probe',
+    'Cine',
+    'Angle',
+    'CobbAngle',
+    'Magnify',
+    'CalibrationLine',
+    'TagBrowser',
+    'AdvancedMagnify',
+    'UltrasoundDirectionalTool',
+    'WindowLevelRegion',
+    'SegmentLabelTool',
+  ],
+};
+
+/**
+ * Capability packs registered (at default scope) by the cornerstone extension:
+ *   - `cornerstone.toolbarButtons`  – the general toolbar button definitions
+ *   - `cornerstone.toolbarSections` – the general toolbar layout (section -> button ids)
+ *
+ * These are pure "what can exist" packs — they carry no mode identity. Modes
+ * compose them with `{ $reference }` markers in their own `toolbarButtons` /
+ * `toolbarSections` instance arrays, which the mode route seeds into the Mode
+ * customization scope on enter; URL `?customization=` modules extend the result
+ * through the `mode` phase (e.g.
+ * `mode.basic.toolbarButtons: { $push: [{ $reference: '...' }] }`).
+ */
+const toolbarButtonsCustomization = {
+  'cornerstone.toolbarButtons': toolbarButtons,
+  'cornerstone.toolbarSections': toolbarSections,
+};
+
+export { toolbarButtons };
+export default toolbarButtonsCustomization;

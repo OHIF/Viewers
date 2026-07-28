@@ -4,9 +4,12 @@ import {
   metaData,
   utilities as csUtils,
   CONSTANTS as csConstants,
+  isRegisteredRenderBackend,
 } from '@cornerstonejs/core';
+import type { RenderBackendValue } from '@cornerstonejs/core';
 import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
+import { getViewportRenderingOverride } from '../../../utils/nextViewports';
 import type ViewportInfo from '../Viewport';
 import type {
   Presentations,
@@ -21,6 +24,28 @@ import { DataIdRegistry, type DataIdPayload } from './dataIdRegistry';
 // Mirrors WITH_ORIENTATION in CornerstoneViewportService (inlined to avoid a
 // value import that would create a backend -> service circular dependency).
 const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
+
+/**
+ * Per-mount render backend override for a planar mount, resolved from the
+ * `<viewportType>.viewportRendering` URL param / appConfig captured at init
+ * (e.g. `?orthographic.viewportRendering=cpu`). Validated at mount time (not
+ * init) because extension backends may call registerRenderBackend after the
+ * cornerstone extension initializes; an unregistered value is dropped with a
+ * warning rather than failing the mount.
+ */
+function getMountRenderBackend(viewportTypeKey: string): RenderBackendValue | undefined {
+  const backend = getViewportRenderingOverride(viewportTypeKey);
+  if (!backend) {
+    return undefined;
+  }
+  if (backend !== 'auto' && !isRegisteredRenderBackend(backend)) {
+    console.warn(
+      `${viewportTypeKey}.viewportRendering: "${backend}" is not a registered render backend; ignoring.`
+    );
+    return undefined;
+  }
+  return backend as RenderBackendValue;
+}
 
 // The PlanarViewState fields that encode pan/zoom/rotation/flip. Slice and
 // orientation are deliberately EXCLUDED — they are restored via the view reference,
@@ -205,11 +230,13 @@ export class NextViewportBackend implements IViewportBackend {
       initialImageIdIndex: initialImageIndex,
     });
 
+    const stackRenderBackend = getMountRenderBackend('stack');
     await vp.setDisplaySets({
       displaySetId: dataId,
       options: {
         orientation: csEnums.OrientationAxis.ACQUISITION,
         role: 'source',
+        ...(stackRenderBackend ? { renderBackend: stackRenderBackend } : {}),
       },
     });
 
@@ -440,6 +467,7 @@ export class NextViewportBackend implements IViewportBackend {
       displaySetId: string;
       options: Record<string, unknown>;
     }> = [];
+    const volumeRenderBackend = is3D ? undefined : getMountRenderBackend('orthographic');
 
     // First pass: register each dataId and build the COMPLETE entry set. The native
     // PlanarViewport.setDisplaySets has replace semantics (removeReplaceableData), so
@@ -469,6 +497,9 @@ export class NextViewportBackend implements IViewportBackend {
           : {
               orientation,
               role: index === 0 ? 'source' : 'overlay',
+              // Volume/MPR panes are 'orthographic' viewports at the OHIF level;
+              // renderBackend is a planar mount option, so the 3D branch is exempt.
+              ...(volumeRenderBackend ? { renderBackend: volumeRenderBackend } : {}),
             },
       });
     }

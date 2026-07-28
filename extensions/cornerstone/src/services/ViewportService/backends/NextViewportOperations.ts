@@ -84,7 +84,7 @@ export const nextViewportOperations: IViewportOperations = {
     const vp = viewport as unknown as {
       getZoom?: () => number;
       setZoom?: (zoom: number) => void;
-      resetViewState?: () => void;
+      resetViewState?: (options?: { resetOrientation?: boolean }) => void;
     };
     if (direction) {
       // Zoom is only meaningful on planar (stack / volume-slice / MPR) native viewports.
@@ -95,7 +95,11 @@ export const nextViewportOperations: IViewportOperations = {
         vp.setZoom(vp.getZoom() / scaleFactor);
       }
     } else {
-      vp.resetViewState?.();
+      // direction === 0 is the fitViewportToWindow command. Legacy resetCamera()
+      // resets pan/zoom/rotation/flip but never the viewing orientation, while a
+      // full native resetViewState() would also snap an MPR back to its requested
+      // axis — so keep the orientation.
+      vp.resetViewState?.({ resetOrientation: false });
     }
   },
 

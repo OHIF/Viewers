@@ -187,8 +187,16 @@ export class NextViewportAdapter implements IViewportAdapter {
     displaySetInstanceUID: string
   ): { getRange?: () => [number, number]; [key: string]: unknown } | undefined {
     // No getAllVolumeIds/getImageData(volumeId); resolve the display set's volume
-    // from the cornerstone cache instead.
-    const volume = cache.getVolumes().find(v => v.volumeId?.includes(displaySetInstanceUID));
+    // from the cornerstone cache instead. Anchored match: volumeIds are built as
+    // `${loaderSchema}:${displaySetInstanceUID}`, and an unanchored includes()
+    // could resolve a different cached volume whose id merely embeds the same
+    // UID (e.g. a derived labelmap id).
+    const volume = cache
+      .getVolumes()
+      .find(
+        v =>
+          v.volumeId === displaySetInstanceUID || v.volumeId?.endsWith(`:${displaySetInstanceUID}`)
+      );
     return volume?.voxelManager as unknown as
       | { getRange?: () => [number, number]; [key: string]: unknown }
       | undefined;
