@@ -50,7 +50,7 @@ function Header({
       onClickReturnButton();
     }
   };
-
+  const showSettingsKeyboard = (process.env.SHOW_SETTINGS_KEYBOARD || '').toString();
   return (
     <IconPresentationProvider
       size="large"
@@ -86,18 +86,19 @@ function Header({
             {PatientInfo}
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             <div className="flex-shrink-0">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-primary hover:bg-primary-dark mt-2 h-full w-full"
-                    onClick={() => menuOptions[0].onClick()}
-                  >
-                    <Icons.GearSettings />
-                  </Button>
-                </DropdownMenuTrigger>
-                {/* <DropdownMenuContent align="end">
+              {showSettingsKeyboard === 'true' && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-primary hover:bg-primary-dark mt-2 h-full w-full"
+                      onClick={() => menuOptions[0].onClick()}
+                    >
+                      <Icons.GearSettings />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  {/* <DropdownMenuContent align="end">
                   {menuOptions.map((option, index) => {
                     const IconComponent = option.icon
                       ? Icons[option.icon as keyof typeof Icons]
@@ -118,7 +119,8 @@ function Header({
                     );
                   })}
                 </DropdownMenuContent> */}
-              </DropdownMenu>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </div>

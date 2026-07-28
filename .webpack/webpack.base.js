@@ -52,6 +52,8 @@ const defineValues = {
   'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
   // Error Boundary toggle
   'process.env.SHOW_ERROR_BOUNDARY': JSON.stringify(process.env.SHOW_ERROR_BOUNDARY || ''),
+  // Settings keyboard toggle
+  'process.env.SHOW_SETTINGS_KEYBOARD': JSON.stringify(process.env.SHOW_SETTINGS_KEYBOARD || ''),
   'process.env.TEST_ENV': JSON.stringify(process.env.TEST_ENV || ''),
 };
 

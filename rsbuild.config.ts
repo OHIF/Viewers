@@ -48,6 +48,8 @@ export default defineConfig({
       'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
       // Expose Error Boundary toggle to the client
       'process.env.SHOW_ERROR_BOUNDARY': JSON.stringify(process.env.SHOW_ERROR_BOUNDARY || ''),
+      // Expose Settings Keyboard toggle to the client
+      'process.env.SHOW_SETTINGS_KEYBOARD': JSON.stringify(process.env.SHOW_SETTINGS_KEYBOARD || ''),
     },
   },
   plugins: [pluginReact(), pluginNodePolyfill()],

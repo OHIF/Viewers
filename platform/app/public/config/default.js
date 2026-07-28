@@ -16,6 +16,7 @@ window.config = {
   },
   dataSources: createDataSources({
     SANDBOX: 'http://localhost:5020/v1/didier',
+    DICOMWEB: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
   }),
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
