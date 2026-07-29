@@ -47,10 +47,7 @@ export function createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    const sortCriteria = customizationService.getCustomization('sortingCriteria') as (
-      a,
-      b
-    ) => number;
+    const sortCriteria = customizationService.getCustomization('sortingCriteria');
     const sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
       const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
       const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);

@@ -1,4 +1,11 @@
-import { utils, classes, DisplaySetService, Types as OhifTypes } from '@ohif/core';
+import {
+  utils,
+  classes,
+  DisplaySetService,
+  DisplaySetMessage,
+  DisplaySetMessageList,
+  Types as OhifTypes,
+} from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -106,8 +113,23 @@ function _getDisplaySetsFromSeries(
 
   const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 
-  const isImagingMeasurementReport =
+  const conceptIsImagingMeasurementReport =
     ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurementReport;
+
+  // A report flagged as an Imaging Measurement Report but stored without its
+  // report body (no ContentSequence / (0040,A730)) cannot be parsed or rendered
+  // as one. Treat it as a plain SR so neither the loader nor the SR viewport
+  // takes the measurement path (which calls `.find` on the missing content and
+  // assumes at least one measurement exists), both of which would crash.
+  const hasReportContent = !!instance.ContentSequence;
+  const isImagingMeasurementReport = conceptIsImagingMeasurementReport && hasReportContent;
+
+  // Surface the empty report through the standard display set message list, so
+  // it is reported in the display set tray like any other display set problem.
+  const messages = new DisplaySetMessageList();
+  if (!hasReportContent) {
+    messages.addMessage(DisplaySetMessage.CODES.MISSING_REPORT_CONTENT);
+  }
 
   const displaySet = {
     Modality: 'SR',
@@ -127,6 +149,7 @@ function _getDisplaySetsFromSeries(
     isDerivedDisplaySet: true,
     isLoaded: false,
     isImagingMeasurementReport,
+    messages,
     sopClassUids,
     instance,
     predecessorImageId,
