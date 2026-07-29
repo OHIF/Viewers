@@ -234,9 +234,9 @@ function Table<TData>({ children, className, tableClassName }: TableProps) {
     [table]
   );
 
-  let headerChild: ReactElement | null = null;
-  let filterRowChild: ReactElement | null = null;
-  let bodyChild: ReactElement | null = null;
+  let headerChild: ReactElement<any> | null = null;
+  let filterRowChild: ReactElement<any> | null = null;
+  let bodyChild: ReactElement<any> | null = null;
 
   Children.forEach(children, child => {
     if (!isValidElement(child)) {

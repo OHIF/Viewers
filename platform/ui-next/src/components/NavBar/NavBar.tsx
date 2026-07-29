@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const stickyClasses = 'sticky top-0';
@@ -28,10 +27,6 @@ const NavBar = ({
   );
 };
 
-NavBar.propTypes = {
-  className: PropTypes.string,
-  children: PropTypes.node,
-  isSticky: PropTypes.bool,
-};
+
 
 export default NavBar;

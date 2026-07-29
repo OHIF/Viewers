@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
 //
 import { extensionManager } from '../App';
@@ -140,9 +139,6 @@ function DataSourceWrapper(props: withAppTypes) {
   );
 }
 
-DataSourceWrapper.propTypes = {
-  /** Layout Component to wrap with a Data Source */
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
-};
+
 
 export default DataSourceWrapper;

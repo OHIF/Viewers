@@ -25,32 +25,38 @@ export type InputDialogRootProps = {
   children: React.ReactNode;
 };
 
-const InputDialogRoot = React.forwardRef<HTMLDivElement, InputDialogRootProps>(
-  ({ value, defaultValue = '', onChange, className, submitOnEnter, children }, ref) => {
-    const [internalValue, setInternalValue] = useControllableState({
-      prop: value,
-      defaultProp: defaultValue,
-      onChange,
-    });
+const InputDialogRoot = ({
+  value,
+  defaultValue = '',
+  onChange,
+  className,
+  submitOnEnter,
+  children,
+  ref,
+}: InputDialogRootProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  const [internalValue, setInternalValue] = useControllableState({
+    prop: value,
+    defaultProp: defaultValue,
+    onChange,
+  });
 
-    return (
-      <InputDialogContext.Provider
-        value={{
-          value: internalValue,
-          setValue: setInternalValue,
-          submitOnEnter,
-        }}
+  return (
+    <InputDialogContext.Provider
+      value={{
+        value: internalValue,
+        setValue: setInternalValue,
+        submitOnEnter,
+      }}
+    >
+      <div
+        ref={ref}
+        className={cn('flex flex-col', className)}
       >
-        <div
-          ref={ref}
-          className={cn('flex flex-col', className)}
-        >
-          {children}
-        </div>
-      </InputDialogContext.Provider>
-    );
-  }
-);
+        {children}
+      </div>
+    </InputDialogContext.Provider>
+  );
+};
 
 InputDialogRoot.displayName = 'InputDialog';
 
@@ -60,19 +66,22 @@ export interface InputDialogFieldProps extends React.HTMLAttributes<HTMLDivEleme
   children: React.ReactNode;
 }
 
-const Field = React.forwardRef<HTMLDivElement, InputDialogFieldProps>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn('mb-4 flex flex-col space-y-2', className)}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+const Field = ({
+  className,
+  children,
+  ref,
+  ...props
+}: InputDialogFieldProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  return (
+    <div
+      ref={ref}
+      className={cn('mb-4 flex flex-col space-y-2', className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
 Field.displayName = 'InputDialog.Field';
 
@@ -88,53 +97,57 @@ export interface InputDialogInputProps
   placeholder?: string;
 }
 
-const InputDialogInput = React.forwardRef<HTMLInputElement, InputDialogInputProps>(
-  ({ id = 'dialog-input', className, onSave, ...props }, ref) => {
-    const context = useContext(InputDialogContext);
-    if (!context) {
-      throw new Error('InputDialog.Input must be used within an InputDialog');
-    }
-
-    const { value, setValue } = context;
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    // Combine the forwarded ref with our local ref
-    React.useImperativeHandle(ref, () => inputRef.current);
-
-    // Focus the input when it mounts
-    useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, []);
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (context.submitOnEnter && e.key === 'Enter') {
-        e.preventDefault();
-        const saveButton = document.querySelector(
-          '[data-cy="input-dialog-save-button"]'
-        ) as HTMLButtonElement;
-        if (saveButton) {
-          saveButton.click();
-        }
-      }
-    };
-
-    return (
-      <div className={cn('w-full', className)}>
-        <InputComponent
-          ref={inputRef}
-          id={id}
-          data-cy={id}
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          {...props}
-        />
-      </div>
-    );
+const InputDialogInput = ({
+  id = 'dialog-input',
+  className,
+  onSave,
+  ref,
+  ...props
+}: InputDialogInputProps & { ref?: React.Ref<HTMLInputElement> }) => {
+  const context = useContext(InputDialogContext);
+  if (!context) {
+    throw new Error('InputDialog.Input must be used within an InputDialog');
   }
-);
+
+  const { value, setValue } = context;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Combine the forwarded ref with our local ref
+  React.useImperativeHandle(ref, () => inputRef.current);
+
+  // Focus the input when it mounts
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (context.submitOnEnter && e.key === 'Enter') {
+      e.preventDefault();
+      const saveButton = document.querySelector(
+        '[data-cy="input-dialog-save-button"]'
+      ) as HTMLButtonElement;
+      if (saveButton) {
+        saveButton.click();
+      }
+    }
+  };
+
+  return (
+    <div className={cn('w-full', className)}>
+      <InputComponent
+        ref={inputRef}
+        id={id}
+        data-cy={id}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    </div>
+  );
+};
 
 InputDialogInput.displayName = 'InputDialog.Input';
 
@@ -146,20 +159,24 @@ export interface InputDialogLabelProps extends React.LabelHTMLAttributes<HTMLLab
   children: React.ReactNode;
 }
 
-const InputDialogLabel = React.forwardRef<HTMLLabelElement, InputDialogLabelProps>(
-  ({ className, htmlFor = 'dialog-input', children, ...props }, ref) => {
-    return (
-      <Label
-        ref={ref}
-        className={cn(className)}
-        htmlFor={htmlFor}
-        {...props}
-      >
-        {children}
-      </Label>
-    );
-  }
-);
+const InputDialogLabel = ({
+  className,
+  htmlFor = 'dialog-input',
+  children,
+  ref,
+  ...props
+}: InputDialogLabelProps & { ref?: React.Ref<HTMLLabelElement> }) => {
+  return (
+    <Label
+      ref={ref}
+      className={cn(className)}
+      htmlFor={htmlFor}
+      {...props}
+    >
+      {children}
+    </Label>
+  );
+};
 
 InputDialogLabel.displayName = 'InputDialog.Label';
 
@@ -169,20 +186,23 @@ export interface InputDialogActionsProps extends React.HTMLAttributes<HTMLDivEle
   children: React.ReactNode;
 }
 
-const Actions = React.forwardRef<HTMLDivElement, InputDialogActionsProps>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        {...props}
-      >
-        <FooterAction className={cn(className)}>
-          <FooterAction.Right>{children}</FooterAction.Right>
-        </FooterAction>
-      </div>
-    );
-  }
-);
+const Actions = ({
+  className,
+  children,
+  ref,
+  ...props
+}: InputDialogActionsProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  return (
+    <div
+      ref={ref}
+      {...props}
+    >
+      <FooterAction className={cn(className)}>
+        <FooterAction.Right>{children}</FooterAction.Right>
+      </FooterAction>
+    </div>
+  );
+};
 
 Actions.displayName = 'InputDialog.Actions';
 
@@ -194,59 +214,67 @@ export interface InputDialogActionButtonProps {
   children: React.ReactNode;
 }
 
-const ActionsSecondary = React.forwardRef<HTMLDivElement, InputDialogActionButtonProps>(
-  ({ className, onClick, children, ...props }, ref) => {
-    const context = useContext(InputDialogContext);
-    if (!context) {
-      throw new Error('InputDialog.ActionsSecondary must be used within an InputDialog');
-    }
-
-    const { value } = context;
-
-    return (
-      <div
-        ref={ref}
-        data-cy="input-dialog-cancel-button"
-        {...props}
-      >
-        <FooterAction.Secondary
-          onClick={() => onClick(value)}
-          className={cn(className)}
-        >
-          {children}
-        </FooterAction.Secondary>
-      </div>
-    );
+const ActionsSecondary = ({
+  className,
+  onClick,
+  children,
+  ref,
+  ...props
+}: InputDialogActionButtonProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  const context = useContext(InputDialogContext);
+  if (!context) {
+    throw new Error('InputDialog.ActionsSecondary must be used within an InputDialog');
   }
-);
+
+  const { value } = context;
+
+  return (
+    <div
+      ref={ref}
+      data-cy="input-dialog-cancel-button"
+      {...props}
+    >
+      <FooterAction.Secondary
+        onClick={() => onClick(value)}
+        className={cn(className)}
+      >
+        {children}
+      </FooterAction.Secondary>
+    </div>
+  );
+};
 
 ActionsSecondary.displayName = 'InputDialog.ActionsSecondary';
 
-const ActionsPrimary = React.forwardRef<HTMLDivElement, InputDialogActionButtonProps>(
-  ({ className, onClick, children, ...props }, ref) => {
-    const context = useContext(InputDialogContext);
-    if (!context) {
-      throw new Error('InputDialog.ActionsPrimary must be used within an InputDialog');
-    }
-
-    const { value } = context;
-    return (
-      <div
-        ref={ref}
-        {...props}
-        data-cy="input-dialog-save-button"
-        onClick={() => onClick(value)}
-      >
-        <FooterAction.Primary
-          onClick={() => onClick(value)}
-          className={cn(className)}
-        >
-          {children}
-        </FooterAction.Primary>
-      </div>
-    );
+const ActionsPrimary = ({
+  className,
+  onClick,
+  children,
+  ref,
+  ...props
+}: InputDialogActionButtonProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  const context = useContext(InputDialogContext);
+  if (!context) {
+    throw new Error('InputDialog.ActionsPrimary must be used within an InputDialog');
   }
-);
+
+  const { value } = context;
+  return (
+    <div
+      ref={ref}
+      {...props}
+      data-cy="input-dialog-save-button"
+      onClick={() => onClick(value)}
+    >
+      <FooterAction.Primary
+        onClick={() => onClick(value)}
+        className={cn(className)}
+      >
+        {children}
+      </FooterAction.Primary>
+    </div>
+  );
+};
 
 ActionsPrimary.displayName = 'InputDialog.ActionsPrimary';
 

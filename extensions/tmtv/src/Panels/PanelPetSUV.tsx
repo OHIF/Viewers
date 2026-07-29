@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Label, PanelSection } from '@ohif/ui-next';
@@ -267,15 +266,4 @@ export default function PanelPetSUV() {
   );
 }
 
-PanelPetSUV.propTypes = {
-  servicesManager: PropTypes.shape({
-    services: PropTypes.shape({
-      measurementService: PropTypes.shape({
-        getMeasurements: PropTypes.func.isRequired,
-        subscribe: PropTypes.func.isRequired,
-        EVENTS: PropTypes.object.isRequired,
-        VALUE_TYPES: PropTypes.object.isRequired,
-      }).isRequired,
-    }).isRequired,
-  }).isRequired,
-};
+

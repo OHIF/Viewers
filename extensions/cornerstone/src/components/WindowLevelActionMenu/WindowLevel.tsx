@@ -5,7 +5,7 @@ import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { useTranslation } from 'react-i18next';
 
-export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { t } = useTranslation('WindowLevelActionMenu');
   const { viewportDisplaySets, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
   // Default the active tab to the foreground layer (e.g. the PT in a PET/CT

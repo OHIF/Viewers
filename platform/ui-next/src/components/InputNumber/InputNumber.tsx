@@ -51,131 +51,134 @@ export interface InputNumberProps {
 }
 
 // The single top-level InputNumber component - much simpler now
-const InputNumber = React.forwardRef<HTMLDivElement, InputNumberProps>(
-  ({ value, onChange, className, children, ...props }, ref) => {
-    const [inputValue, setInputValue] = React.useState<number | string>(value);
+const InputNumber = ({
+  value,
+  onChange,
+  className,
+  children,
+  ref,
+  ...props
+}: InputNumberProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  const [inputValue, setInputValue] = React.useState<number | string>(value);
 
-    // Update internal state when prop changes
-    React.useEffect(() => {
-      setInputValue(value);
-    }, [value]);
+  // Update internal state when prop changes
+  React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
-    // Context value - only core state
-    const contextValue = React.useMemo(
-      () => ({
-        value: inputValue,
-        setValue: setInputValue,
-        onChange,
-      }),
-      [inputValue, onChange]
-    );
+  // Context value - only core state
+  const contextValue = React.useMemo(
+    () => ({
+      value: inputValue,
+      setValue: setInputValue,
+      onChange,
+    }),
+    [inputValue, onChange]
+  );
 
-    return (
-      <InputNumberContext.Provider value={contextValue}>
-        <div
-          ref={ref}
-          className={cn('flex', className)}
-          {...props}
-        >
-          {children}
-        </div>
-      </InputNumberContext.Provider>
-    );
-  }
-);
+  return (
+    <InputNumberContext.Provider value={contextValue}>
+      <div
+        ref={ref}
+        className={cn('flex', className)}
+        {...props}
+      >
+        {children}
+      </div>
+    </InputNumberContext.Provider>
+  );
+};
 
 InputNumber.displayName = 'InputNumber';
 
 // Input component with its own constraints
 export interface InputNumberInputProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Input>, 'onChange'> {
+  extends Omit<React.ComponentProps<typeof Input>, 'onChange'> {
   min?: number;
   max?: number;
   step?: number;
 }
 
-const InputNumberInput = React.forwardRef<HTMLInputElement, InputNumberInputProps>(
-  ({ className, min, max, step, ...props }, ref) => {
-    // Get context which may include constraints from parent
-    const { value, setValue, onChange, constraints = {} } = useInputNumber();
+const InputNumberInput = ({ className, min, max, step, ref, ...props }: InputNumberInputProps) => {
+  // Get context which may include constraints from parent
+  const { value, setValue, onChange, constraints = {} } = useInputNumber();
 
-    // Use provided props or fall back to parent constraints or defaults
-    const effectiveMin = min ?? constraints.min ?? 0;
-    const effectiveMax = max ?? constraints.max ?? 100;
-    const effectiveStep = step ?? constraints.step ?? 1;
-    const decimalPlaces = getDecimalPlaces(effectiveStep);
+  // Use provided props or fall back to parent constraints or defaults
+  const effectiveMin = min ?? constraints.min ?? 0;
+  const effectiveMax = max ?? constraints.max ?? 100;
+  const effectiveStep = step ?? constraints.step ?? 1;
+  const decimalPlaces = getDecimalPlaces(effectiveStep);
 
-    // Format displayed value with proper decimal places
-    const displayValue = React.useMemo(() => {
-      if (typeof value === 'string') {
-        return value;
+  // Format displayed value with proper decimal places
+  const displayValue = React.useMemo(() => {
+    if (typeof value === 'string') {
+      return value;
+    }
+    return decimalPlaces > 0 ? value.toFixed(decimalPlaces) : value.toString();
+  }, [value, decimalPlaces]);
+
+  // Handle input change with constraint awareness
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+
+      // Allow empty string, minus sign, or decimal point for flexibility
+      if (val === '' || val === '-' || val === '.') {
+        setValue(val);
+        return;
       }
-      return decimalPlaces > 0 ? value.toFixed(decimalPlaces) : value.toString();
-    }, [value, decimalPlaces]);
 
-    // Handle input change with constraint awareness
-    const handleInputChange = React.useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-
-        // Allow empty string, minus sign, or decimal point for flexibility
-        if (val === '' || val === '-' || val === '.') {
-          setValue(val);
-          return;
+      const numValue = Number(val);
+      if (!isNaN(numValue)) {
+        setValue(numValue);
+        // Only call onChange if value is within boundaries
+        if (numValue >= effectiveMin && numValue <= effectiveMax) {
+          onChange(numValue);
         }
-
-        const numValue = Number(val);
-        if (!isNaN(numValue)) {
-          setValue(numValue);
-          // Only call onChange if value is within boundaries
-          if (numValue >= effectiveMin && numValue <= effectiveMax) {
-            onChange(numValue);
-          }
-        }
-      },
-      [effectiveMin, effectiveMax, onChange, setValue]
-    );
-
-    // Handle blur to format and validate
-    const handleBlur = React.useCallback(() => {
-      if (typeof value === 'string') {
-        // Handle empty or partial inputs
-        if (value === '' || value === '-' || value === '.') {
-          setValue(effectiveMin);
-          onChange(effectiveMin);
-          return;
-        }
-
-        const numValue = parseFloat(value);
-        if (isNaN(numValue)) {
-          setValue(effectiveMin);
-          onChange(effectiveMin);
-          return;
-        }
-
-        // Constrain value to min/max
-        const boundedValue = Math.max(effectiveMin, Math.min(effectiveMax, numValue));
-        setValue(boundedValue);
-        onChange(boundedValue);
       }
-    }, [value, effectiveMin, effectiveMax, onChange, setValue]);
+    },
+    [effectiveMin, effectiveMax, onChange, setValue]
+  );
 
-    return (
-      <Input
-        ref={ref}
-        type="text"
-        value={displayValue}
-        onChange={handleInputChange}
-        onBlur={handleBlur}
-        className={cn(
-          'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
+  // Handle blur to format and validate
+  const handleBlur = React.useCallback(() => {
+    if (typeof value === 'string') {
+      // Handle empty or partial inputs
+      if (value === '' || value === '-' || value === '.') {
+        setValue(effectiveMin);
+        onChange(effectiveMin);
+        return;
+      }
+
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) {
+        setValue(effectiveMin);
+        onChange(effectiveMin);
+        return;
+      }
+
+      // Constrain value to min/max
+      const boundedValue = Math.max(effectiveMin, Math.min(effectiveMax, numValue));
+      setValue(boundedValue);
+      onChange(boundedValue);
+    }
+  }, [value, effectiveMin, effectiveMax, onChange, setValue]);
+
+  return (
+    <Input
+      ref={ref}
+      type="text"
+      value={displayValue}
+      onChange={handleInputChange}
+      onBlur={handleBlur}
+      className={cn(
+        'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+        className
+      )}
+      {...props}
+    />
+  );
+};
 
 InputNumberInput.displayName = 'InputNumber.Input';
 
@@ -184,26 +187,30 @@ export interface InputNumberLabelProps extends React.HTMLAttributes<HTMLLabelEle
   position?: 'left' | 'right' | 'top' | 'bottom';
 }
 
-const InputNumberLabel = React.forwardRef<HTMLLabelElement, InputNumberLabelProps>(
-  ({ className, position = 'left', children, ...props }, ref) => {
-    const positionClasses = {
-      left: 'mr-2',
-      right: 'ml-2',
-      top: 'mb-1',
-      bottom: 'mt-1',
-    };
+const InputNumberLabel = ({
+  className,
+  position = 'left',
+  children,
+  ref,
+  ...props
+}: InputNumberLabelProps & { ref?: React.Ref<HTMLLabelElement> }) => {
+  const positionClasses = {
+    left: 'mr-2',
+    right: 'ml-2',
+    top: 'mb-1',
+    bottom: 'mt-1',
+  };
 
-    return (
-      <label
-        ref={ref}
-        className={cn('text-muted-foreground text-xs', positionClasses[position], className)}
-        {...props}
-      >
-        {children}
-      </label>
-    );
-  }
-);
+  return (
+    <label
+      ref={ref}
+      className={cn('text-muted-foreground text-xs', positionClasses[position], className)}
+      {...props}
+    >
+      {children}
+    </label>
+  );
+};
 
 InputNumberLabel.displayName = 'InputNumber.Label';
 
@@ -215,10 +222,16 @@ export interface InputNumberHorizontalControlsProps extends React.HTMLAttributes
   disabled?: boolean;
 }
 
-const InputNumberHorizontalControls = React.forwardRef<
-  HTMLDivElement,
-  InputNumberHorizontalControlsProps
->(({ className, children, min = 0, max = 100, step = 1, disabled = false, ...props }, ref) => {
+const InputNumberHorizontalControls = ({
+  className,
+  children,
+  min = 0,
+  max = 100,
+  step = 1,
+  disabled = false,
+  ref,
+  ...props
+}: InputNumberHorizontalControlsProps & { ref?: React.Ref<HTMLDivElement> }) => {
   // Get existing context and enhance it with constraints
   const context = useInputNumber();
   const { value, onChange } = context;
@@ -279,7 +292,7 @@ const InputNumberHorizontalControls = React.forwardRef<
       </Button>
     </div>
   );
-});
+};
 
 InputNumberHorizontalControls.displayName = 'InputNumber.HorizontalControls';
 
@@ -291,10 +304,16 @@ export interface InputNumberVerticalControlsProps extends React.HTMLAttributes<H
   disabled?: boolean;
 }
 
-const InputNumberVerticalControls = React.forwardRef<
-  HTMLDivElement,
-  InputNumberVerticalControlsProps
->(({ className, children, min = 0, max = 100, step = 1, disabled = false, ...props }, ref) => {
+const InputNumberVerticalControls = ({
+  className,
+  children,
+  min = 0,
+  max = 100,
+  step = 1,
+  disabled = false,
+  ref,
+  ...props
+}: InputNumberVerticalControlsProps & { ref?: React.Ref<HTMLDivElement> }) => {
   // Get existing context and enhance it with constraints
   const context = useInputNumber();
   const { value, onChange } = context;
@@ -355,7 +374,7 @@ const InputNumberVerticalControls = React.forwardRef<
       </div>
     </div>
   );
-});
+};
 
 InputNumberVerticalControls.displayName = 'InputNumber.VerticalControls';
 
@@ -371,25 +390,30 @@ export interface InputNumberContainerProps extends React.HTMLAttributes<HTMLDivE
   sizeClassName?: string;
 }
 
-const InputNumberContainer = React.forwardRef<HTMLDivElement, InputNumberContainerProps>(
-  ({ className, size = 'md', sizeClassName, children, ...props }, ref) => {
-    const sizeToUse = sizeClassName || sizesClasses[size];
+const InputNumberContainer = ({
+  className,
+  size = 'md',
+  sizeClassName,
+  children,
+  ref,
+  ...props
+}: InputNumberContainerProps & { ref?: React.Ref<HTMLDivElement> }) => {
+  const sizeToUse = sizeClassName || sizesClasses[size];
 
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'bg-background border-input flex items-center rounded-md border',
-          sizeToUse,
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'bg-background border-input flex items-center rounded-md border',
+        sizeToUse,
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
 InputNumberContainer.displayName = 'InputNumber.Container';
 

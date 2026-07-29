@@ -130,7 +130,7 @@ export function useViewportRendering(
     options?.location ? getPosition(options.location) : 'bottom'
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
-  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
+  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>(undefined);
   // Viewport from service; kept in state so we can subscribe to VIEWPORT_DATA_CHANGED when null and re-run effects when it becomes available
   const [viewport, setViewport] = useState<Types.IViewport | null>(() =>
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null

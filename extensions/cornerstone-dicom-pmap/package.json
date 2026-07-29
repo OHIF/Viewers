@@ -21,9 +21,9 @@
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env REACT_COMPILER=off NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
     "dev:dicom-pmap": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
     "build:package-1": "pnpm run build",
     "start": "pnpm run dev"
   },
@@ -32,9 +32,8 @@
     "@ohif/extension-cornerstone": "workspace:*",
     "@ohif/extension-default": "workspace:*",
     "@ohif/i18n": "workspace:*",
-    "prop-types": "15.8.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1",
     "react-router": "6.30.3",
     "react-router-dom": "6.30.3"

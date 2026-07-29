@@ -13,14 +13,17 @@ export function useWorkListToolbarActions(
   const { customizationService } = servicesManager.services;
 
   const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent') as any;
-  const dataSourceConfigurationComponent = customizationService.getCustomization(
+  // A component type: it must be rendered (<DataSourceConfigurationComponent />
+  // below), never invoked as a plain function — a direct call splices its hooks
+  // (useTranslation, useModal, useState/useEffect) into the caller's hook list
+  // and breaks the Rules of Hooks, crashing the WorkList route.
+  const DataSourceConfigurationComponent = customizationService.getCustomization(
     'ohif.dataSourceConfigurationComponent'
-  ) as any;
+  ) as React.ComponentType | undefined;
 
   const uploadEnabled = DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled;
-  const dataSourceConfigElement = dataSourceConfigurationComponent?.();
 
-  if (!uploadEnabled && !dataSourceConfigElement) {
+  if (!uploadEnabled && !DataSourceConfigurationComponent) {
     return undefined;
   }
 
@@ -60,7 +63,7 @@ export function useWorkListToolbarActions(
           {t('Upload')}
         </Button>
       )}
-      {dataSourceConfigElement}
+      {DataSourceConfigurationComponent ? <DataSourceConfigurationComponent /> : null}
     </div>
   );
 }

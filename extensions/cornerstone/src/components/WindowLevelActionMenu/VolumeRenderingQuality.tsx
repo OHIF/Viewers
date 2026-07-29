@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 export function VolumeRenderingQuality({
   volumeRenderingQualityRange,
   viewportId,
-}: VolumeRenderingQualityProps): ReactElement {
+}: VolumeRenderingQualityProps): ReactElement<any> {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const { min, max, step } = volumeRenderingQualityRange;

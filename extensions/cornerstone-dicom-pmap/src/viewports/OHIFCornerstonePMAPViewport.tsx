@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useViewportGrid } from '@ohif/ui-next';
 import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
@@ -159,12 +158,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
   );
 }
 
-OHIFCornerstonePMAPViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
+
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, pmapDisplaySet) {
   const { SharedFunctionalGroupsSequence } = pmapDisplaySet.instance;
