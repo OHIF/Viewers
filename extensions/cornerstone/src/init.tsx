@@ -143,7 +143,7 @@ export default async function init({
   // Limit the undo/redo history size. Segmentation memos hold full labelmap
   // buffers, so a large history can cause out-of-memory / buffer allocation
   // issues. Configurable via appConfig.maxUndoRedoCacheSize.
-  if (appConfig.maxUndoRedoCacheSize != null) {
+  if (appConfig.maxUndoRedoCacheSize >= 0) {
     csUtilities.HistoryMemo.DefaultHistoryMemo.size = appConfig.maxUndoRedoCacheSize;
   }
 
