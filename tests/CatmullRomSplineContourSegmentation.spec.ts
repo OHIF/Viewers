@@ -45,3 +45,42 @@ test('should cancel an in-progress Catmull-Rom spline contour segmentation via E
   ]);
   await expect(activeViewport.svg('circle')).toHaveCount(3);
 });
+
+test('should keep the first spline contour visible after drawing a second one on the same slice', async ({
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+  await contourPanel.addSegmentation();
+  await expect(contourPanel.panel.rows).toHaveCount(1);
+
+  await contourPanel.tools.splineContour.click();
+  await contourPanel.tools.splineContour.selectType('catmullRom');
+
+  const activeViewport = await viewportPageObject.active;
+  const svgPaths = activeViewport.svg('path');
+
+  await activeViewport.clickAt([
+    { x: 250, y: 250 },
+    { x: 320, y: 220 },
+    { x: 290, y: 310 },
+    { x: 252, y: 252 },
+  ]);
+
+  // After first contour completes, there should be no circles and one path
+  await expect(activeViewport.svg('circle')).toHaveCount(0);
+
+  await expect(svgPaths).toHaveCount(1);
+
+  await activeViewport.clickAt([
+    { x: 420, y: 320 },
+    { x: 500, y: 290 },
+    { x: 460, y: 390 },
+    { x: 422, y: 322 },
+  ]);
+
+  await expect(activeViewport.svg('circle')).toHaveCount(0);
+
+  // both completed contours must remain in the SVG overlay
+  await expect(svgPaths).toHaveCount(2);
+});
