@@ -166,7 +166,7 @@ export default async function init({
   const maxUndoRedoCacheSize = customizationService.getCustomization(
     'cornerstone.maxUndoRedoCacheSize'
   );
-  if (typeof maxUndoRedoCacheSize === 'number' && maxUndoRedoCacheSize >= 0) {
+  if (Number.isFinite(maxUndoRedoCacheSize) && maxUndoRedoCacheSize >= 0) {
     csUtilities.HistoryMemo.DefaultHistoryMemo.size = maxUndoRedoCacheSize;
   }
 
