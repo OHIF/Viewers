@@ -22,6 +22,23 @@ export function setupSegmentationDataModifiedHandler({
   // the debounced callback does an await and in that period of time the event may have
   // been unsubscribed.
   let isUnsubscribed = false;
+  const storedSeriesBySegmentationId = new Map();
+
+  const deleteSegmentationSeries = async (
+    defaultDataSource,
+    study,
+    series,
+    displaySetInstanceUIDs = []
+  ) => {
+    const deleteUrl = `${defaultDataSource[0].getConfig().wadoRoot}/studies/${study}/series/${series}`;
+    await axios.delete(deleteUrl, {
+      headers: {
+        ...userAuthenticationService.getAuthorizationHeader(),
+      },
+    });
+    displaySetInstanceUIDs.filter(Boolean).forEach(uid => displaySetService.deleteDisplaySet(uid));
+  };
+
   const { unsubscribe: debouncedUnsubscribe } = segmentationService.subscribeDebounced(
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
     async ({ segmentationId, action }) => {
@@ -31,111 +48,145 @@ export function setupSegmentationDataModifiedHandler({
         duration: 5000,
       });
 
-      const disableUpdateSegmentationStats = customizationService.getCustomization(
-        'panelSegmentation.disableUpdateSegmentationStats'
-      );
+      try {
+        const disableUpdateSegmentationStats = customizationService.getCustomization(
+          'panelSegmentation.disableUpdateSegmentationStats'
+        );
 
-      const segmentation = segmentationService.getSegmentation(segmentationId);
+        const segmentation = segmentationService.getSegmentation(segmentationId);
 
-      if (!segmentation || disableUpdateSegmentationStats) {
-        return;
-      }
-
-      const readableText = customizationService.getCustomization('panelSegmentation.readableText');
-
-      // Check for segments with bidirectional measurements and update them
-      const segmentIndices = Object.keys(segmentation.segments)
-        .map(index => parseInt(index))
-        .filter(index => index > 0);
-
-      for (const segmentIndex of segmentIndices) {
-        const segment = segmentation.segments[segmentIndex];
-        if (segment?.cachedStats?.namedStats?.bidirectional) {
-          // Run the command to update the bidirectional measurement
-          commandsManager.runCommand('runSegmentBidirectional', {
-            segmentationId,
-            segmentIndex,
-          });
+        if (!segmentation || disableUpdateSegmentationStats) {
+          return;
         }
-      }
 
-      const updatedSegmentation = await updateSegmentationStats({
-        segmentation,
-        segmentationId,
-        readableText,
-      });
+        const readableText = customizationService.getCustomization(
+          'panelSegmentation.readableText'
+        );
 
-      if (updatedSegmentation || action === 'RENAME' || action === 'REMOVE') {
-        if (!updatedSegmentation?.segments) {
+        const segmentIndices = Object.keys(segmentation.segments)
+          .map(index => parseInt(index))
+          .filter(index => index > 0);
+
+        for (const segmentIndex of segmentIndices) {
+          const segment = segmentation.segments[segmentIndex];
+          if (segment?.cachedStats?.namedStats?.bidirectional) {
+            commandsManager.runCommand('runSegmentBidirectional', {
+              segmentationId,
+              segmentIndex,
+            });
+          }
+        }
+
+        const updatedSegmentation = await updateSegmentationStats({
+          segmentation,
+          segmentationId,
+          readableText,
+        });
+
+        if (!updatedSegmentation && action !== 'RENAME' && action !== 'REMOVE') {
+          return;
+        }
+
+        const segDisplaySets = displaySetService
+          .getActiveDisplaySets()
+          .filter(ds => ds.Modality === 'SEG');
+
+        const segDisplaySet = segDisplaySets.find(
+          ds => ds.displaySetInstanceUID === segmentationId
+        );
+        const defaultDataSource = extensionManager.getActiveDataSource();
+
+        const storedSeries = storedSeriesBySegmentationId.get(segmentationId);
+        const series = segDisplaySet?.SeriesInstanceUID ?? storedSeries?.SeriesInstanceUID;
+        const study = segDisplaySet?.StudyInstanceUID ?? storedSeries?.StudyInstanceUID;
+
+        if (action === 'REMOVE' && segmentIndices.length === 0) {
+          if (study && series) {
+            const displaySetInstanceUIDs = segDisplaySets
+              .filter(
+                ds => ds.displaySetInstanceUID === segmentationId || ds.SeriesInstanceUID === series
+              )
+              .map(ds => ds.displaySetInstanceUID);
+            await deleteSegmentationSeries(
+              defaultDataSource,
+              study,
+              series,
+              displaySetInstanceUIDs
+            );
+            storedSeriesBySegmentationId.delete(segmentationId);
+          }
+          return;
+        }
+        if (action === 'RENAME' && !updatedSegmentation?.segments) {
           uiNotificationService.show({
             title: 'Browse all the slices to update the segmentation name',
             type: 'warning',
             duration: 8000,
           });
-
           return;
         }
-      if (!isUnsubscribed && updatedSegmentation) {
-        segmentationService.addOrUpdateSegmentation({
-          segmentationId,
-          segments: updatedSegmentation.segments,
-        });
-        // SAVE AUTO SEGMENTATION
-        try {
-          const displaySets = displaySetService.getActiveDisplaySets();
-          const segDisplaySets = displaySets.filter(ds => ds.Modality === 'SEG');
 
-          const defaultDataSource = extensionManager.getActiveDataSource();
-          const generatedData = await commandsManager.run('generateSegmentation', {
-            segmentationId,
-          });
-
-          if (!generatedData || !generatedData.dataset) {
-            throw new Error('Error during segmentation generation');
-          }
-
-          const { dataset: naturalizedReport } = generatedData;
-          naturalizedReport.SeriesDescription = 'Deemea segmentation';
-
-          await defaultDataSource[0].store.dicom(naturalizedReport);
-          naturalizedReport.wadoRoot = defaultDataSource[0].getConfig().wadoRoot;
-          DicomMetadataStore.addInstances([naturalizedReport], true);
-
-          window.parent.postMessage(
-            {
-              type: OHIFMessageType.SAVE_SEGMENTATION,
-              message: {
-                seriesInstanceUID: naturalizedReport.SeriesInstanceUID,
-              },
-            },
-            '*'
-          );
-
-          if (segDisplaySets.length === 1) {
-            const series = segDisplaySets[0].SeriesInstanceUID;
-            const study = segDisplaySets[0].StudyInstanceUID;
-            const deleteUrl = `${defaultDataSource[0].getConfig().wadoRoot}/studies/${study}/series/${series}`;
-            await axios.delete(deleteUrl, {
-              headers: {
-                ...userAuthenticationService.getAuthorizationHeader(),
-              },
-            });
-            displaySetService.deleteDisplaySet(segDisplaySets[0].displaySetInstanceUID);
-          }
-          uiNotificationService.hide(waitingMessage);
-          uiNotificationService.show({
-            title: segDisplaySets.length === 1 ? 'Segmentation updated' : 'Segmentation created',
-            type: 'success',
-            duration: 4000,
-          });
-
-          return naturalizedReport;
-        } catch (error) {
-          uiNotificationService.hide(waitingMessage);
-          console.debug('Error storing segmentation:', error);
-          throw error;
+        if (isUnsubscribed) {
+          return;
         }
-      }
+        if (updatedSegmentation?.segments) {
+          segmentationService.addOrUpdateSegmentation({
+            segmentationId,
+            segments: updatedSegmentation.segments,
+          });
+        }
+
+        // SAVE AUTO SEGMENTATION
+        const generatedData = await commandsManager.run('generateSegmentation', {
+          segmentationId,
+        });
+
+        if (!generatedData || !generatedData.dataset) {
+          throw new Error('Error during segmentation generation');
+        }
+
+        const { dataset: naturalizedReport } = generatedData;
+        naturalizedReport.SeriesDescription = 'Deemea segmentation';
+
+        await defaultDataSource[0].store.dicom(naturalizedReport);
+        naturalizedReport.wadoRoot = defaultDataSource[0].getConfig().wadoRoot;
+        DicomMetadataStore.addInstances([naturalizedReport], true);
+
+        storedSeriesBySegmentationId.set(segmentationId, {
+          StudyInstanceUID: naturalizedReport.StudyInstanceUID,
+          SeriesInstanceUID: naturalizedReport.SeriesInstanceUID,
+        });
+
+        window.parent.postMessage(
+          {
+            type: OHIFMessageType.SAVE_SEGMENTATION,
+            message: {
+              seriesInstanceUID: naturalizedReport.SeriesInstanceUID,
+            },
+          },
+          '*'
+        );
+
+        const isUpdate = !!(study && series);
+        if (isUpdate && series !== naturalizedReport.SeriesInstanceUID) {
+          const displaySetInstanceUIDs = segDisplaySets
+            .filter(ds => ds.SeriesInstanceUID === series)
+            .map(ds => ds.displaySetInstanceUID);
+          await deleteSegmentationSeries(defaultDataSource, study, series, displaySetInstanceUIDs);
+        }
+
+        uiNotificationService.show({
+          title: isUpdate ? 'Segmentation updated' : 'Segmentation created',
+          type: 'success',
+          duration: 4000,
+        });
+
+        return naturalizedReport;
+      } catch (error) {
+        console.debug('Error storing segmentation:', error);
+        throw error;
+      } finally {
+        uiNotificationService.hide(waitingMessage);
       }
     },
     500
