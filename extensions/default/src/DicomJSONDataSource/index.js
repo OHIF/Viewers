@@ -122,6 +122,14 @@ function getDicomJSONImageIdsForDisplaySet({ displaySet, seriesInstances, config
   return imageIds;
 }
 
+function getDicomJSONDisplaySetUIDs(displaySet) {
+  const firstInstance = displaySet.instance || displaySet.instances?.[0] || displaySet.images?.[0];
+  return {
+    StudyInstanceUID: displaySet.StudyInstanceUID || firstInstance?.StudyInstanceUID,
+    SeriesInstanceUID: displaySet.SeriesInstanceUID || firstInstance?.SeriesInstanceUID,
+  };
+}
+
 const getMetaDataByURL = (url) => {
   return _store.urls.find((metaData) => metaData.url === url);
 };
@@ -323,9 +331,9 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
     reject: {},
     deleteStudyMetadataPromise: () => {},
     getImageIdsForDisplaySet(displaySet) {
-      const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
+      const { StudyInstanceUID, SeriesInstanceUID } = getDicomJSONDisplaySetUIDs(displaySet);
       const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
-      const series = study.series.find((s) => s.SeriesInstanceUID === SeriesInstanceUID) || {};
+      const series = study?.series.find((s) => s.SeriesInstanceUID === SeriesInstanceUID) || {};
 
       return getDicomJSONImageIdsForDisplaySet({
         displaySet,
@@ -358,4 +366,10 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
   return IWebApiDataSource.create(implementation);
 }
 
-export { createDicomJSONApi, getDicomJSONImageId, getDicomJSONImageIdsForDisplaySet, getInstanceMetadata };
+export {
+  createDicomJSONApi,
+  getDicomJSONDisplaySetUIDs,
+  getDicomJSONImageId,
+  getDicomJSONImageIdsForDisplaySet,
+  getInstanceMetadata,
+};

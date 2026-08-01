@@ -1,4 +1,9 @@
-import { getDicomJSONImageId, getDicomJSONImageIdsForDisplaySet, getInstanceMetadata } from './index';
+import {
+  getDicomJSONDisplaySetUIDs,
+  getDicomJSONImageId,
+  getDicomJSONImageIdsForDisplaySet,
+  getInstanceMetadata,
+} from './index';
 
 jest.mock('@ohif/core', () => ({
   DicomMetadataStore: {},
@@ -35,6 +40,19 @@ describe('DicomJSONDataSource helpers', () => {
     Rows: 512,
     Columns: 512,
   };
+
+  it('derives display set UIDs before ImageSet attributes are populated', () => {
+    const displaySet = {
+      StudyInstanceUID: 'study-uid',
+      instance: baseMetadata,
+      images: [baseMetadata],
+    };
+
+    expect(getDicomJSONDisplaySetUIDs(displaySet)).toEqual({
+      StudyInstanceUID: 'study-uid',
+      SeriesInstanceUID: 'series-uid',
+    });
+  });
 
   it('keeps per-frame DICOM JSON instances as single-frame instances', () => {
     const instances = [
