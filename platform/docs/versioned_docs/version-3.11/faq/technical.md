@@ -143,7 +143,7 @@ Read more about these discussions in our PRs
   :::
 
 :::warning
-Although the support for 16 bit data type is available in WebGL, in some settings (e.g., Intel-based Macos) there seems
+Although the support for 16-bit data type is available in WebGL, in some settings (e.g., Intel-based macOS) there seems
 to be still some issues with it. You can read and track bugs below.
 
 - https://bugs.chromium.org/p/chromium/issues/detail?id=1246379
@@ -238,7 +238,7 @@ which then it will look like
 ![alt text](faq-measure-5.png)
 
 :::info
-There is also dedicated example for this in the [cornerstone3D examples](https://www.cornerstonejs.org/live-examples/dynamicallyaddannotations).
+There is also a dedicated example in the [Cornerstone3D examples](https://www.cornerstonejs.org/live-examples/dynamicallyaddannotations).
 :::
 
 ## How do I sort the series in the study panel by a specific value
