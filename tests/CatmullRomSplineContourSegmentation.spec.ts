@@ -67,7 +67,8 @@ test('should keep the first spline contour visible after drawing a second one on
     { x: 252, y: 252 },
   ]);
 
-  // After first contour completes, there should be no circles and one path
+  // After first contour completes, there should be no circles and one path.
+  // Circles represent the spline fit points and are only visible while the spline is being edited.
   await expect(activeViewport.svg('circle')).toHaveCount(0);
 
   await expect(svgPaths).toHaveCount(1);
