@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.11](https://github.com/OHIF/Viewers/compare/v3.12.10...v3.12.11) (2026-08-03)
+
+
+### Bug Fixes
+
+* **security:** update dependencies to fix brace-expansion vulnerabilities and release 3.12.11 ([#6203](https://github.com/OHIF/Viewers/issues/6203)) ([b8c90b6](https://github.com/OHIF/Viewers/commit/b8c90b6c493ad09268d403b17ac97534c65d5c99))
+
+
+
+
+
 ## [3.12.10](https://github.com/OHIF/Viewers/compare/v3.12.9...v3.12.10) (2026-07-24)
 
 
