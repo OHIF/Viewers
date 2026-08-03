@@ -16,6 +16,8 @@ import { WorkflowsProvider } from './components/WorkflowsProvider';
 
 // Types
 export * from './types/types';
+export type { Workflow } from './components/WorkflowsProvider';
+export type { OnStudyDoubleClick } from './components/Table';
 
 // Column ID constants
 export { COLUMN_IDS, FILTERABLE_COLUMN_IDS, TEXT_FILTER_COLUMN_IDS };
