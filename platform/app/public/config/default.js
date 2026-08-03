@@ -92,7 +92,7 @@ window.config = {
         thumbnailRendering: 'thumbnail',
         thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
+        supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
         // Multiframe SEG loads fetch the whole instance as a single Part 10
