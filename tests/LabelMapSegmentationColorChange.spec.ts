@@ -69,8 +69,11 @@ test('changes the labelmap segment color when the user saves', async ({
     screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorBeforeChange
   });
 
+  await segment.actions.openChangeColor();
+  await DOMOverlayPageObject.dialog.colorPicker.fillHex(NEW_LABELMAP_SEGMENT_HEX);
+
   const colorChangeCycle = waitForViewportRenderCycle(page);
-  await segment.actions.changeColor(NEW_LABELMAP_SEGMENT_HEX);
+  await DOMOverlayPageObject.dialog.colorPicker.save();
   await colorChangeCycle;
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.locator).toBeHidden();
