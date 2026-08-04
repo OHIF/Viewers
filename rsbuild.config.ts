@@ -3,6 +3,9 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
+// Module-resolution rules shared with the webpack/rspack build (webpack.base.js)
+// so the two pipelines resolve identically.
+import resolveConfig from './.webpack/resolveConfig';
 import fs from 'fs';
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
@@ -10,7 +13,9 @@ const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
 const PUBLIC_DIR = path.resolve(__dirname, './platform/app/public');
 
 // Environment variables (similar to webpack.pwa.js)
-const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+// rsbuild is used only by the dev server (`dev:fast`), so default to the
+// full-featured `config/dev.js` while still honoring an explicit APP_CONFIG.
+const APP_CONFIG = process.env.APP_CONFIG || 'config/dev.js';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 
 // Add these constants
@@ -29,6 +34,18 @@ const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
 // Ignore node_modules except @cornerstonejs (symlinked local development).
 const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
+const WATCH_AGGREGATE_TIMEOUT = Number(process.env.WATCH_AGGREGATE_TIMEOUT || 1500);
+
+// `source-map-loader` is not a project dependency — it only serves the local
+// cs3d-linking workflow (libs/@cornerstonejs, gitignored), so it is resolved
+// opportunistically and the rule is skipped on installs that lack it.
+const SOURCE_MAP_LOADER = (() => {
+  try {
+    return require.resolve('source-map-loader');
+  } catch {
+    return null;
+  }
+})();
 
 export default defineConfig({
   dev: {
@@ -58,8 +75,31 @@ export default defineConfig({
       experiments: {
         asyncWebAssembly: true,
       },
+      // Leave __filename / __dirname references alone. rsbuild's default
+      // ('warn-mock') noisily warns whenever bundled deps reference them
+      // (e.g. Emscripten-compiled cornerstone codecs). Those references sit
+      // inside `if (ENVIRONMENT_IS_NODE)` branches that never execute in the
+      // browser, so leaving them un-substituted is harmless at runtime.
+      node: {
+        __filename: false,
+        __dirname: false,
+      },
       module: {
         rules: [
+          // Consume the source maps emitted by the linked local Cornerstone
+          // packages (libs/@cornerstonejs, via cs3d:link + cs3d:watch) so browser
+          // stack traces and breakpoints resolve to the original .ts instead of
+          // the bundled dist/esm .js. Scoped to the linked packages only.
+          ...(SOURCE_MAP_LOADER
+            ? [
+                {
+                  test: /\.js$/,
+                  enforce: 'pre' as const,
+                  use: [SOURCE_MAP_LOADER],
+                  include: /libs[\\/]@cornerstonejs[\\/]packages[\\/][^\\/]+[\\/]dist[\\/]esm/,
+                },
+              ]
+            : []),
           {
             test: /\.css$/,
             use: [
@@ -84,6 +124,12 @@ export default defineConfig({
         ],
       },
       resolve: {
+        // Extensions/modes are resolved from their source dirs (see the
+        // resolve.alias above), so their imports of shared OHIF packages
+        // (@ohif/ui-next, @ohif/core, ...) must resolve against platform/app's
+        // installed dependencies rather than only the importer-relative
+        // node_modules. Shared with webpack.base.js via ./.webpack/resolveConfig.
+        modules: resolveConfig.getModules(SRC_DIR),
         fallback: {
           buffer: require.resolve('buffer'),
         },
@@ -91,16 +137,20 @@ export default defineConfig({
       watchOptions: {
         ignored: WATCH_IGNORED,
         followSymlinks: true,
+        aggregateTimeout: WATCH_AGGREGATE_TIMEOUT,
       },
     },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './platform/app/src'),
-      '@components': path.resolve(__dirname, './platform/app/src/components'),
-      '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
-      '@routes': path.resolve(__dirname, './platform/app/src/routes'),
-      '@state': path.resolve(__dirname, './platform/app/src/state'),
+      // Resolve every extension/mode declared in pluginConfig.json to its
+      // source directory, so the dynamic import()s in the generated
+      // pluginImports.js link without the plugins being dependencies of
+      // platform/app. Merged in separately since it depends on pluginConfig.json.
+      ...writePluginImportsFile.getPluginResolveAliases(),
+      // App-level aliases (@ohif/app, @, @components, ...) shared with the
+      // webpack/rspack build via ./.webpack/resolveConfig.
+      ...resolveConfig.alias,
     },
   },
   output: {

@@ -7,6 +7,8 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForPaintToSettle,
+  waitForViewportsRendered,
 } from './utils';
 
 async function expectNonEmptyDetailLines(lines: Locator) {
@@ -53,10 +55,13 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
 
   // Double-click on the study browser thumbnail to load the SR
   await leftPanelPageObject.loadSeriesByModality('SR');
-  await page.waitForTimeout(2000);
-
-  // Wait for the SR to load and stabilize before taking screenshot
-  await page.waitForTimeout(1000);
+  // The DICOMSRDisplayTool only draws the SCOORD rectangle once the
+  // underlying image has been rendered (it bails out when the viewport
+  // has no actors). Wait for the image to render before checking the
+  // overlay, otherwise the screenshot captures a blank canvas.
+  await waitForViewportsRendered(page);
+  await page.waitForTimeout(3000);
+  await waitForPaintToSettle(page);
 
   const activeViewport = await viewportPageObject.active;
 

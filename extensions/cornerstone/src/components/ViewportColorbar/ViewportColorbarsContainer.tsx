@@ -83,10 +83,16 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
         const { displaySetInstanceUID: dsUID } =
           displaySetService.getDisplaySetByUID(displaySetInstanceUID) ?? {};
 
+        // Default the fused (horizontal) colorbar to the foreground (e.g. the PT
+        // in a PET/CT fusion), which is the meaningful layer. Only fall back to
+        // the background (CT) colorbar when the foreground has been explicitly
+        // faded to zero opacity. Previously a null/undefined opacity (e.g. before
+        // the hook resolved it) also fell through to the background, so the
+        // colorbar would flicker between CT and PT depending on timing.
         const targetUID =
-          opacity === 0 || opacity == null
+          opacity === 0
             ? backgroundDisplaySet?.displaySetInstanceUID
-            : foregroundDisplaySets[0].displaySetInstanceUID;
+            : foregroundDisplaySets[0]?.displaySetInstanceUID;
 
         return dsUID === targetUID;
       });

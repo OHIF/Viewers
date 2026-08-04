@@ -686,7 +686,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "2Xtlde7aozdkzzYHdIxQNfPDr0wNPTgg",
+      "secret": "REPLACE_WITH_A_GENERATED_CLIENT_SECRET",
       "redirectUris": [
         "http://127.0.0.1/oauth2/callback"
       ],

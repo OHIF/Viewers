@@ -20,7 +20,7 @@ export const ContentPrev = (props: IconProps) => (
       <g
         id="Artboard"
         transform="translate(-435, -343)"
-        fill="#FFFFFF"
+        fill="currentColor"
       >
         <polygon
           id="chevron-prev"

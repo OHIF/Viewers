@@ -70,7 +70,10 @@ function SegmentSelector({
         onValueChange={onValueChange}
         value={value}
       >
-        <SelectTrigger className="overflow-hidden">
+        <SelectTrigger
+          className="overflow-hidden"
+          data-cy={`logical-contour-segment-${label.toLowerCase()}-trigger`}
+        >
           <SelectValue placeholder={t(placeholder)} />
         </SelectTrigger>
         <SelectContent>
@@ -180,6 +183,7 @@ function LogicalContourOperationOptions() {
                     value={value}
                     key={`logical-contour-operation-${value}`}
                     onClick={() => setOperation(option)}
+                    data-cy={`logical-contour-operation-${value}`}
                   >
                     <Icons.ByName name={icon}></Icons.ByName>
                   </TabsTrigger>
@@ -207,6 +211,7 @@ function LogicalContourOperationOptions() {
       />
       <div className="flex justify-end pl-[34px]">
         <Button
+          data-cy="apply-logical-contour-operation"
           className="border-primary/60 grow border"
           variant="ghost"
           onClick={() => {
@@ -221,6 +226,7 @@ function LogicalContourOperationOptions() {
         <div className="flex items-center justify-start gap-2">
           <Switch
             id="logical-contour-operations-create-new-segment-switch"
+            data-cy="logical-contour-create-new-segment-switch"
             onCheckedChange={setCreateNewSegment}
           ></Switch>
           <Label htmlFor="logical-contour-operations-create-new-segment-switch">

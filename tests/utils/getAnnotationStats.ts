@@ -5,6 +5,8 @@ type AnnotationStats = {
   toolName: string;
   referencedImageId?: string;
   FrameOfReferenceUID?: string;
+  label?: string;
+  text?: string;
   cachedStats: Record<string, TargetStats>;
   targetIds: string[];
   firstTargetStats: TargetStats | undefined;
@@ -14,10 +16,17 @@ type Options = {
   toolName?: string | string[];
   attempts?: number;
   intervalMs?: number;
+  /**
+   * When true (default), only resolves once at least one matching annotation has
+   * populated `cachedStats`. Set to false for tools whose source of truth is
+   * `data.label`/`data.text` rather than computed stats (e.g. `ArrowAnnotate`),
+   * in which case any matching annotation is returned.
+   */
+  requireStats?: boolean;
 };
 
 const getAnnotationStats = async (page, options: Options = {}): Promise<AnnotationStats[]> => {
-  const { toolName, attempts = 20, intervalMs = 500 } = options;
+  const { toolName, attempts = 20, intervalMs = 500, requireStats = true } = options;
 
   const toolNames =
     toolName === undefined ? undefined : Array.isArray(toolName) ? toolName : [toolName];
@@ -38,6 +47,8 @@ const getAnnotationStats = async (page, options: Options = {}): Promise<Annotati
               toolName: a.metadata?.toolName,
               referencedImageId: a.metadata?.referencedImageId,
               FrameOfReferenceUID: a.metadata?.FrameOfReferenceUID,
+              label: a?.data?.label,
+              text: a?.data?.text,
               cachedStats,
               targetIds,
               firstTargetStats: targetIds.length ? cachedStats[targetIds[0]] : undefined,
@@ -47,16 +58,18 @@ const getAnnotationStats = async (page, options: Options = {}): Promise<Annotati
       { toolNames }
     );
 
-    const populated = results.filter(r => r.targetIds.length > 0);
-    if (populated.length > 0) {
-      return populated;
+    const matching = requireStats ? results.filter(r => r.targetIds.length > 0) : results;
+    if (matching.length > 0) {
+      return matching;
     }
 
     await new Promise(resolve => setTimeout(resolve, intervalMs));
   }
 
   throw new Error(
-    `No annotations${toolNames ? ` for tool(s) ${toolNames.join(',')}` : ''} with populated cachedStats found`
+    `No annotations${toolNames ? ` for tool(s) ${toolNames.join(',')}` : ''}${
+      requireStats ? ' with populated cachedStats' : ''
+    } found`
   );
 };
 

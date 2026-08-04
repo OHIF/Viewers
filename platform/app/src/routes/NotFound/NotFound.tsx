@@ -15,7 +15,7 @@ const NotFound = ({
   return (
     <div className="absolute flex h-full w-full items-center justify-center bg-background">
       <div className="flex flex-col">
-        <div className="bg-background flex items-center justify-center rounded-t-2xl p-6">
+        <div className="bg-background flex items-center justify-center rounded-t-2xl p-6 text-primary">
           <Icons.IllustrationNotFound />
         </div>
         <div className="bg-input h-px" />
