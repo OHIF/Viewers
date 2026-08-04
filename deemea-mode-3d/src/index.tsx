@@ -129,12 +129,12 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection('LabelMapTools', [
-        'LabelmapSlicePropagation',
+        // 'LabelmapSlicePropagation',
         'BrushTools',
         // 'MarkerLabelmap',
         // 'RegionSegmentPlus',
         // 'Shapes',
-        'InterpolateLabelmap',
+        // 'InterpolateLabelmap',
         'SegmentBidirectional',
         'LabelMapEditWithContour',
       ]);

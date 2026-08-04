@@ -31,9 +31,9 @@ function createTools(utilityModule) {
           activeStrategy: 'FILL_INSIDE_CIRCLE',
         },
       },
-      {
-        toolName: toolNames.LabelmapSlicePropagation,
-      },
+      // {
+      //   toolName: toolNames.LabelmapSlicePropagation,
+      // },
       // {
       //   toolName: toolNames.MarkerLabelmap,
       // },

@@ -92,22 +92,22 @@ const segmentationButtonsValidated: Button[] = [
       ],
     },
   },
-  {
-    id: 'InterpolateLabelmap',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-tool-interpolation',
-      label: 'Interpolate Labelmap',
-      tooltip:
-        'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-      commands: 'interpolateLabelmap',
-    },
-  },
+  // {
+  //   id: 'InterpolateLabelmap',
+  //   uiType: 'ohif.toolBoxButton',
+  //   props: {
+  //     icon: 'icon-tool-interpolation',
+  //     label: 'Interpolate Labelmap',
+  //     tooltip:
+  //       'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
+  //     evaluate: () => {
+  //       return {
+  //         disabled: true,
+  //       };
+  //     },
+  //     commands: 'interpolateLabelmap',
+  //   },
+  // },
   {
     id: 'SegmentBidirectional',
     uiType: 'ohif.toolBoxButton',
@@ -124,28 +124,28 @@ const segmentationButtonsValidated: Button[] = [
       commands: 'runSegmentBidirectional',
     },
   },
-  {
-    id: 'LabelmapSlicePropagation',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-labelmap-slice-propagation',
-      label: 'Labelmap Assist',
-      tooltip:
-        'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-      listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
-          'LabelmapSlicePropagation'
-        ),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
-      },
-      commands: 'toggleEnabledDisabledToolbar',
-    },
-  },
+  // {
+  //   id: 'LabelmapSlicePropagation',
+  //   uiType: 'ohif.toolBoxButton',
+  //   props: {
+  //     icon: 'icon-labelmap-slice-propagation',
+  //     label: 'Labelmap Assist',
+  //     tooltip:
+  //       'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
+  //     evaluate: () => {
+  //       return {
+  //         disabled: true,
+  //       };
+  //     },
+  //     listeners: {
+  //       [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
+  //         'LabelmapSlicePropagation'
+  //       ),
+  //       [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
+  //     },
+  //     commands: 'toggleEnabledDisabledToolbar',
+  //   },
+  // },
   {
     id: 'Eraser',
     uiType: 'ohif.toolBoxButton',

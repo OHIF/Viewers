@@ -88,24 +88,24 @@ const segmentationButtons: Button[] = [
       ],
     },
   },
-  {
-    id: 'InterpolateLabelmap',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-tool-interpolation',
-      label: 'Interpolate Labelmap',
-      tooltip:
-        'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
-      evaluate: [
-        'evaluate.cornerstone.segmentation',
-        {
-          name: 'evaluate.displaySetIsReconstructable',
-          disabledText: 'The current viewport cannot handle interpolation.',
-        },
-      ],
-      commands: 'interpolateLabelmap',
-    },
-  },
+  // {
+  //   id: 'InterpolateLabelmap',
+  //   uiType: 'ohif.toolBoxButton',
+  //   props: {
+  //     icon: 'icon-tool-interpolation',
+  //     label: 'Interpolate Labelmap',
+  //     tooltip:
+  //       'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
+  //     evaluate: [
+  //       'evaluate.cornerstone.segmentation',
+  //       {
+  //         name: 'evaluate.displaySetIsReconstructable',
+  //         disabledText: 'The current viewport cannot handle interpolation.',
+  //       },
+  //     ],
+  //     commands: 'interpolateLabelmap',
+  //   },
+  // },
   {
     id: 'SegmentBidirectional',
     uiType: 'ohif.toolBoxButton',
@@ -137,29 +137,29 @@ const segmentationButtons: Button[] = [
   //     commands: 'setToolActiveToolbar',
   //   },
   // },
-  {
-    id: 'LabelmapSlicePropagation',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-labelmap-slice-propagation',
-      label: 'Labelmap Assist',
-      tooltip:
-        'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle',
-        {
-          name: 'evaluate.cornerstone.hasSegmentation',
-        },
-      ],
-      listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
-          'LabelmapSlicePropagation'
-        ),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
-      },
-      commands: 'toggleEnabledDisabledToolbar',
-    },
-  },
+  // {
+  //   id: 'LabelmapSlicePropagation',
+  //   uiType: 'ohif.toolBoxButton',
+  //   props: {
+  //     icon: 'icon-labelmap-slice-propagation',
+  //     label: 'Labelmap Assist',
+  //     tooltip:
+  //       'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
+  //     evaluate: [
+  //       'evaluate.cornerstoneTool.toggle',
+  //       {
+  //         name: 'evaluate.cornerstone.hasSegmentation',
+  //       },
+  //     ],
+  //     listeners: {
+  //       [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
+  //         'LabelmapSlicePropagation'
+  //       ),
+  //       [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
+  //     },
+  //     commands: 'toggleEnabledDisabledToolbar',
+  //   },
+  // },
   // {
   //   id: 'MarkerLabelmap',
   //   uiType: 'ohif.toolBoxButton',
