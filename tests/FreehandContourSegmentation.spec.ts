@@ -40,6 +40,10 @@ test('should keep a freehand contour drawn on slice 1 (no segment pre-selected) 
   await rightPanelPageObject.contourSegmentationPanel.tools.freehandContour.click();
   await defaultViewport.normalizedPathDragAt({ path: dragShape });
   await expect(paths, 'Expected the freehand contour to be added on slice 1').toHaveCount(2);
+  await expect(
+    paths.nth(1),
+    'Expected the drawn freehand contour to be visible on slice 1'
+  ).toBeVisible();
 
   const drawnPathD = await getSvgAttribute({
     viewportPageObject,
@@ -58,6 +62,10 @@ test('should keep a freehand contour drawn on slice 1 (no segment pre-selected) 
   await defaultViewport.sliceNavigation.toFirstSlice();
   await expect(sliceIndicator, 'Expected to scroll back to slice 1').toHaveText(FIRST_SLICE_OVERLAY);
   await expect(paths, 'Expected the freehand contour to re-render on slice 1').toHaveCount(2);
+  await expect(
+    paths.nth(1),
+    'Expected the persisted freehand contour to be visible on slice 1'
+  ).toBeVisible();
 
   const persistedPathD = await getSvgAttribute({
     viewportPageObject,
@@ -94,6 +102,10 @@ test('should keep a freehand contour drawn into an added segment after switching
   await rightPanelPageObject.contourSegmentationPanel.tools.freehandContour.click();
   await defaultViewport.normalizedPathDragAt({ path: dragShape });
   await expect(paths, 'Expected the freehand contour to be added to the new segment').toHaveCount(2);
+  await expect(
+    paths.nth(1),
+    'Expected the freehand contour drawn into the added segment to be visible'
+  ).toBeVisible();
 
   const drawnPathD = await getSvgAttribute({
     viewportPageObject,
@@ -110,6 +122,10 @@ test('should keep a freehand contour drawn into an added segment after switching
     'Expected returning to the added segment to land back on slice 1'
   ).toHaveText(FIRST_SLICE_OVERLAY);
   await expect(paths, 'Expected the freehand contour to re-render on slice 1').toHaveCount(2);
+  await expect(
+    paths.nth(1),
+    'Expected the persisted freehand contour to be visible in the added segment'
+  ).toBeVisible();
 
   const persistedPathD = await getSvgAttribute({
     viewportPageObject,
