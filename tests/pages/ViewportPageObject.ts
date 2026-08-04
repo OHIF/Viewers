@@ -112,6 +112,10 @@ export interface IViewportPageObject {
   hideAnnotationText: () => Promise<void>;
   hideOrientationMarkerText: () => Promise<void>;
   hideAllText: () => Promise<void>;
+  showViewportOverlayText: () => Promise<void>;
+  showAnnotationText: () => Promise<void>;
+  showOrientationMarkerText: () => Promise<void>;
+  showAllText: () => Promise<void>;
 }
 
 export class ViewportPageObject {
@@ -173,26 +177,31 @@ export class ViewportPageObject {
   }
 
   /**
-   * Hides matching elements from view by applying Tailwind's `hidden` class.
-   * No-op when the locator resolves to zero elements.
+   * Hides matching elements by adding Tailwind's `hidden` class.
+   * Safe when the locator matches nothing (`evaluateAll` is a no-op on an empty set).
    */
   private async hideLocatorElements(locator: Locator): Promise<void> {
-    const count = await locator.count();
-    if (count === 0) {
-      return;
-    }
-
     await locator.evaluateAll(elements => {
       elements.forEach(element => element.classList.add('hidden'));
     });
   }
 
-  private getHideTextMethods(viewport: Locator) {
+  /**
+   * Shows matching elements by removing Tailwind's `hidden` class.
+   * Safe when the locator matches nothing.
+   */
+  private async showLocatorElements(locator: Locator): Promise<void> {
+    await locator.evaluateAll(elements => {
+      elements.forEach(element => element.classList.remove('hidden'));
+    });
+  }
+
+  private getTextVisibilityMethods(viewport: Locator) {
     const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
 
-    const annotationTextSelector = 'g[data-annotation-uid] text, g[data-annotation-uid] tspan';
+    const annotationTextSelector = 'g[data-annotation-uid] text';
 
-    const hideTextMethods = {
+    const textVisibilityMethods = {
       hideViewportOverlayText: async () => {
         await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
       },
@@ -203,13 +212,28 @@ export class ViewportPageObject {
         await this.hideLocatorElements(viewport.locator('.ViewportOrientationMarkers'));
       },
       hideAllText: async () => {
-        await hideTextMethods.hideViewportOverlayText();
-        await hideTextMethods.hideAnnotationText();
-        await hideTextMethods.hideOrientationMarkerText();
+        await textVisibilityMethods.hideViewportOverlayText();
+        await textVisibilityMethods.hideAnnotationText();
+        await textVisibilityMethods.hideOrientationMarkerText();
+      },
+
+      showViewportOverlayText: async () => {
+        await this.showLocatorElements(viewport.locator(viewportOverlaySelector));
+      },
+      showAnnotationText: async () => {
+        await this.showLocatorElements(viewport.locator(annotationTextSelector));
+      },
+      showOrientationMarkerText: async () => {
+        await this.showLocatorElements(viewport.locator('.ViewportOrientationMarkers'));
+      },
+      showAllText: async () => {
+        await textVisibilityMethods.showViewportOverlayText();
+        await textVisibilityMethods.showAnnotationText();
+        await textVisibilityMethods.showOrientationMarkerText();
       },
     };
 
-    return hideTextMethods;
+    return textVisibilityMethods;
   }
 
   private async getOverlayMenu(viewport: Locator) {
@@ -372,7 +396,7 @@ export class ViewportPageObject {
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
       magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),
-      ...this.getHideTextMethods(viewport),
+      ...this.getTextVisibilityMethods(viewport),
     };
   }
 
