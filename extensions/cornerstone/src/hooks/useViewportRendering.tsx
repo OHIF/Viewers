@@ -1,13 +1,9 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
-import { Types, utilities, Enums, cache } from '@cornerstonejs/core';
-import { getDataIdForViewport } from '../utils/getDataIdForViewport';
-import {
-  isStackViewportType,
-  isVolumeViewportType,
-  isVolume3DViewportType,
-} from '../utils/getLegacyViewportType';
+import { Types, utilities, Enums } from '@cornerstonejs/core';
+import { isVolume3DViewportType } from '../utils/getLegacyViewportType';
+import { getViewportAdapter, LEGACY_OPACITY_GAMMA } from '../services/ViewportService/adapter';
 import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
@@ -92,14 +88,26 @@ const getPosition = (location: number): ColorbarPositionType => {
   }
 };
 
-const GAMMA = 1 / 5;
+/**
+ * Normalizes a colormap opacity value to a single 0..1 scalar for the opacity
+ * slider. `colormap.opacity` may be a plain number or an array of
+ * `{ value, opacity }` points (e.g. the HP fusion opacity ramp); for the array
+ * case we represent it by its maximum opacity. (A prior reduce ran over the point
+ * objects directly, producing NaN and a mispositioned slider.)
+ */
+const resolveOpacityScalar = (opacityVal: unknown): number | undefined => {
+  if (opacityVal === undefined || opacityVal === null) {
+    return undefined;
+  }
 
-const linearToOpacity = (linearValue: number): number => {
-  return Math.pow(linearValue, GAMMA);
-};
+  if (Array.isArray(opacityVal)) {
+    return opacityVal.reduce((max: number, point) => {
+      const value = typeof point === 'number' ? point : (point?.opacity ?? 0);
+      return Math.max(max, value);
+    }, 0);
+  }
 
-const opacityToLinear = (opacityValue: number): number => {
-  return Math.pow(opacityValue, 1.0 / GAMMA);
+  return opacityVal as number;
 };
 
 /**
@@ -128,12 +136,28 @@ export function useViewportRendering(
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
   );
   const [is3DVolume, setIs3DVolume] = useState(isVolume3DViewportType(viewport));
+
+  // The opacity slider gamma follows the rendering path (linear on native,
+  // the historical 1/5 curve on legacy), so the slider feel and its initial
+  // position match what is rendered.
+  const opacityGamma = viewport
+    ? getViewportAdapter(viewport).getOpacityGamma()
+    : LEGACY_OPACITY_GAMMA;
+  const linearToOpacity = useCallback(
+    (linearValue: number): number => Math.pow(linearValue, opacityGamma),
+    [opacityGamma]
+  );
+  const opacityToLinear = useCallback(
+    (opacityValue: number): number => Math.pow(opacityValue, 1.0 / opacityGamma),
+    [opacityGamma]
+  );
+
   const [opacity, setOpacityState] = useState<number | undefined>();
   const [opacityLinear, setOpacityLinearState] = useState<number | undefined>();
   const [threshold, setThresholdState] = useState<number | undefined>();
   const [pixelValueRange, setPixelValueRange] = useState<PixelValueRange>({ min: 0, max: 255 });
 
-  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+  const { viewportDisplaySets, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
   const { displaySetService } = servicesManager.services;
 
   // Determine the active display set instance UID (internal only, not exposed)
@@ -142,12 +166,21 @@ export function useViewportRendering(
       return options.displaySetInstanceUID;
     }
 
+    // Window-level / colormap / threshold controls operate on the foreground
+    // layer (e.g. the PT in a PET/CT fusion), not the grayscale background (CT).
+    // Use the topmost foreground display set when present; otherwise fall back to
+    // the (single) primary display set. SEG/derived overlays are already excluded
+    // from foregroundDisplaySets.
+    if (foregroundDisplaySets && foregroundDisplaySets.length > 0) {
+      return foregroundDisplaySets[foregroundDisplaySets.length - 1].displaySetInstanceUID;
+    }
+
     if (viewportDisplaySets && viewportDisplaySets.length > 0) {
       return viewportDisplaySets[0].displaySetInstanceUID;
     }
 
     return undefined;
-  }, [options?.displaySetInstanceUID, viewportDisplaySets]);
+  }, [options?.displaySetInstanceUID, viewportDisplaySets, foregroundDisplaySets]);
 
   const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
 
@@ -216,27 +249,13 @@ export function useViewportRendering(
       return;
     }
 
-    if (!isVolumeViewportType(viewport)) {
+    const voxelManager = getViewportAdapter(viewport).getVoxelManagerForDisplaySet(
+      activeDisplaySetInstanceUID
+    );
+
+    if (!voxelManager?.getRange) {
       return;
     }
-
-    const volumeIds = viewport.getAllVolumeIds();
-    const volumeId = volumeIds.find(id => id.includes(activeDisplaySetInstanceUID));
-
-    if (!volumeId) {
-      return;
-    }
-
-    // only handle volume viewports for now
-    const imageData = viewport.getImageData(volumeId);
-
-    if (!imageData) {
-      return;
-    }
-
-    const imageDataVtk = imageData.imageData;
-
-    const { voxelManager } = imageDataVtk.get('voxelManager');
 
     const range = voxelManager.getRange();
 
@@ -267,12 +286,9 @@ export function useViewportRendering(
       return;
     }
     try {
-      const dataId = getDataIdForViewport(viewport as unknown, activeDisplaySetInstanceUID);
-
-      const properties =
-        dataId != null
-          ? (viewport as Types.IBaseVolumeViewport).getProperties(dataId)
-          : viewport.getProperties();
+      const adapter = getViewportAdapter(viewport);
+      const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
+      const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
 
       if (!properties) {
         return;
@@ -281,18 +297,26 @@ export function useViewportRendering(
       if (properties.voiRange) {
         setVoiRange(properties.voiRange);
         voiRangeRef.current = properties.voiRange;
+      } else {
+        // Native ("next") viewports store only explicit VOI overrides in the
+        // per-display-set presentation; a freshly shown series has none, so fall
+        // back to its computed default VOI (undefined on legacy, whose
+        // getProperties always returns the applied VOI). Without this, changing
+        // the series left the overlay showing the previous series' window level.
+        const defaultVOIRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
+
+        if (defaultVOIRange) {
+          setVoiRange(defaultVOIRange);
+          voiRangeRef.current = defaultVOIRange;
+        }
       }
 
       if (properties.colormap?.opacity !== undefined) {
-        const opacityVal = properties.colormap.opacity;
-        const opacity = Array.isArray(opacityVal)
-          ? (opacityVal as unknown as number[]).reduce(
-              (max, current) => Math.max(max, current),
-              0
-            )
-          : opacityVal;
-        setOpacityState(opacity);
-        setOpacityLinearState(opacityToLinear(opacity));
+        const opacity = resolveOpacityScalar(properties.colormap.opacity);
+        if (opacity !== undefined) {
+          setOpacityState(opacity);
+          setOpacityLinearState(opacityToLinear(opacity));
+        }
       }
 
       if (properties.colormap?.threshold !== undefined) {
@@ -362,8 +386,11 @@ export function useViewportRendering(
       }
 
       if (colormap.opacity !== undefined) {
-        setOpacityState(colormap.opacity);
-        setOpacityLinearState(opacityToLinear(colormap.opacity));
+        const opacity = resolveOpacityScalar(colormap.opacity);
+        if (opacity !== undefined) {
+          setOpacityState(opacity);
+          setOpacityLinearState(opacityToLinear(opacity));
+        }
       }
     };
 
@@ -570,7 +597,7 @@ export function useViewportRendering(
 
   const setOpacity = useCallback(
     (opacityValue: number) => {
-      if (!viewport || !isVolumeViewportType(viewport)) {
+      if (!viewport) {
         return;
       }
 
@@ -580,32 +607,10 @@ export function useViewportRendering(
       setOpacityLinearState(opacityToLinear(opacityValue));
 
       const displaySetInstanceUID = validateActiveDisplaySet();
-      const volumeIds = viewport.getAllVolumeIds();
-      const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
 
-      if (!volumeId) {
-        return;
+      if (getViewportAdapter(viewport).setLayerOpacity(displaySetInstanceUID, opacityValue)) {
+        viewport.render();
       }
-
-      // Get current properties including colormap
-      const properties = viewport.getProperties(volumeId);
-      const currentColormap = properties.colormap || {};
-
-      // Update colormap with new opacity
-      const updatedColormap = {
-        ...currentColormap,
-        opacity: opacityValue,
-      };
-
-      // Apply updated colormap
-      viewport.setProperties(
-        {
-          colormap: updatedColormap,
-        },
-        volumeId
-      );
-
-      viewport.render();
     },
     [validateActiveDisplaySet, opacityToLinear, viewport]
   );
@@ -621,32 +626,16 @@ export function useViewportRendering(
 
   const setThreshold = useCallback(
     (thresholdValue: number) => {
-      if (!viewport || !isVolumeViewportType(viewport)) {
+      if (!viewport) {
         return;
       }
-
-      setThresholdState(thresholdValue);
 
       const displaySetInstanceUID = validateActiveDisplaySet();
-      const volumeIds = viewport.getAllVolumeIds();
-      const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
+      setThresholdState(thresholdValue);
 
-      if (!volumeId) {
-        return;
+      if (getViewportAdapter(viewport).setLayerThreshold(displaySetInstanceUID, thresholdValue)) {
+        viewport.render();
       }
-
-      console.debug('🚀 ~ thresholdValue:', thresholdValue);
-
-      viewport.setProperties(
-        {
-          colormap: {
-            threshold: thresholdValue,
-          },
-        },
-        volumeId
-      );
-
-      viewport.render();
     },
     [validateActiveDisplaySet, viewport]
   );
@@ -662,41 +651,13 @@ export function useViewportRendering(
         return null;
       }
 
-      if (isStackViewportType(viewport)) {
-        const { colormap } = viewport.getProperties();
-        if (!colormap) {
-          return (
-            colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-            colorbarProperties?.colormaps?.[0]
-          );
-        }
-        return colormap;
-      }
+      const colormap = getViewportAdapter(viewport).getColormap(activeDisplaySetInstanceUID);
 
-      const actorEntries = viewport.getActors();
-      const actorEntry = actorEntries?.find(entry =>
-        entry.referencedId?.includes(activeDisplaySetInstanceUID)
+      return (
+        colormap ||
+        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+        colorbarProperties?.colormaps?.[0]
       );
-
-      if (!actorEntry) {
-        return (
-          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-          colorbarProperties?.colormaps?.[0]
-        );
-      }
-
-      const { colormap } = (viewport as Types.IVolumeViewport).getProperties(
-        actorEntry.referencedId
-      );
-
-      if (!colormap) {
-        return (
-          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-          colorbarProperties?.colormaps?.[0]
-        );
-      }
-
-      return colormap;
     } catch (error) {
       console.error('Error getting viewport colormap:', error);
       return (

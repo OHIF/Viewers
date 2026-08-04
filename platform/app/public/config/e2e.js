@@ -21,7 +21,7 @@ window.config = {
   extensions: [],
   modes: ['@ohif/mode-test'],
   // Allow the `default` prefix so e2e specs can exercise `?customization=` (e.g.
-  // Customization.spec.ts loads `?customization=veterinaryOverlay`).
+  // Customization.spec.ts loads `?customization=veterinary/veterinaryOverlay`).
   customizationUrlPrefixes: {
     default: './customizations/',
   },

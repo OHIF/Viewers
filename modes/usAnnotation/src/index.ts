@@ -178,93 +178,90 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevelRegion',
       ]);
 
-      customizationService.setCustomizations(
-        {
-          'panelSegmentation.disableEditing': {
-            $set: true,
-          },
-          autoCineModalities: {
-            $set: [],
-          },
-          'ohif.hotkeyBindings': {
-            $push: [
-              {
-                commandName: 'switchUSAnnotationToPleuraLine',
-                label: 'Add new pleura line',
-                keys: ['W'],
-              },
-              {
-                commandName: 'switchUSAnnotationToBLine',
-                label: 'Add new B-line',
-                keys: ['S'],
-              },
-              {
-                commandName: 'deleteLastPleuraAnnotation',
-                label: 'Delete last pleura line',
-                keys: ['E'],
-              },
-              {
-                commandName: 'deleteLastBLineAnnotation',
-                label: 'Delete last B-line',
-                keys: ['D'],
-              },
-              {
-                commandName: 'toggleDisplayFanAnnotation',
-                label: 'Toggle overlay',
-                keys: ['O'],
-              },
-            ],
-          },
-          measurementsContextMenu: {
-            inheritsFrom: 'ohif.contextMenu',
-            menus: [
-              // Get the items from the UI Customization for the menu name (and have a custom name)
-              {
-                id: 'forExistingMeasurement',
-                selector: ({ nearbyToolData }) => !!nearbyToolData,
-                items: [
-                  {
-                    label: 'Delete annotation',
-                    commands: 'removeMeasurement',
-                  },
-                ],
-              },
-            ],
-          },
-          'viewportOverlay.topLeft': [
+      customizationService.setCustomizations({
+        'panelSegmentation.disableEditing': {
+          $set: true,
+        },
+        autoCineModalities: {
+          $set: [],
+        },
+        'ohif.hotkeyBindings': {
+          $push: [
             {
-              id: 'BLinePleuraPercentage',
-              inheritsFrom: 'ohif.overlayItem',
-              label: '',
-              title: 'BLinePleuraPercentage',
-              condition: ({ referenceInstance }) =>
-                referenceInstance?.Modality.includes('US') && showPercentage,
-              contentF: () => {
-                const { viewportGridService, toolGroupService, cornerstoneViewportService } =
-                  servicesManager.services;
-                const activeViewportId = viewportGridService.getActiveViewportId();
-                const toolGroup = toolGroupService.getToolGroupForViewport(activeViewportId);
-                if (!toolGroup) {
-                  return 'B-Line/Pleura : N/A';
-                }
-                const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
-                if (usAnnotation) {
-                  const viewport =
-                    cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
-                  const percentage = usAnnotation.calculateBLinePleuraPercentage(viewport);
-                  if (percentage !== undefined) {
-                    return `B-Line/Pleura : ${percentage.toFixed(2)} %`;
-                  } else {
-                    return 'B-Line/Pleura : N/A';
-                  }
-                }
-                return 'B-Line/Pleura : N/A';
-              },
+              commandName: 'switchUSAnnotationToPleuraLine',
+              label: 'Add new pleura line',
+              keys: ['W'],
+            },
+            {
+              commandName: 'switchUSAnnotationToBLine',
+              label: 'Add new B-line',
+              keys: ['S'],
+            },
+            {
+              commandName: 'deleteLastPleuraAnnotation',
+              label: 'Delete last pleura line',
+              keys: ['E'],
+            },
+            {
+              commandName: 'deleteLastBLineAnnotation',
+              label: 'Delete last B-line',
+              keys: ['D'],
+            },
+            {
+              commandName: 'toggleDisplayFanAnnotation',
+              label: 'Toggle overlay',
+              keys: ['O'],
             },
           ],
         },
-        'mode'
-      );
+        measurementsContextMenu: {
+          inheritsFrom: 'ohif.contextMenu',
+          menus: [
+            // Get the items from the UI Customization for the menu name (and have a custom name)
+            {
+              id: 'forExistingMeasurement',
+              selector: ({ nearbyToolData }) => !!nearbyToolData,
+              items: [
+                {
+                  label: 'Delete annotation',
+                  commands: 'removeMeasurement',
+                },
+              ],
+            },
+          ],
+        },
+        'viewportOverlay.topLeft': [
+          {
+            id: 'BLinePleuraPercentage',
+            inheritsFrom: 'ohif.overlayItem',
+            label: '',
+            title: 'BLinePleuraPercentage',
+            condition: ({ referenceInstance }) =>
+              referenceInstance?.Modality.includes('US') && showPercentage,
+            contentF: () => {
+              const { viewportGridService, toolGroupService, cornerstoneViewportService } =
+                servicesManager.services;
+              const activeViewportId = viewportGridService.getActiveViewportId();
+              const toolGroup = toolGroupService.getToolGroupForViewport(activeViewportId);
+              if (!toolGroup) {
+                return 'B-Line/Pleura : N/A';
+              }
+              const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
+              if (usAnnotation) {
+                const viewport =
+                  cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
+                const percentage = usAnnotation.calculateBLinePleuraPercentage(viewport);
+                if (percentage !== undefined) {
+                  return `B-Line/Pleura : ${percentage.toFixed(2)} %`;
+                } else {
+                  return 'B-Line/Pleura : N/A';
+                }
+              }
+              return 'B-Line/Pleura : N/A';
+            },
+          },
+        ],
+      });
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       appConfig.disableConfirmationPrompts = settingsSaved.disableConfirmationPrompts;

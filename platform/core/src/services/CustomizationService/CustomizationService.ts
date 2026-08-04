@@ -1,16 +1,13 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import type { Customization } from './types';
+import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
 import type ExtensionManager from '../../extensions/ExtensionManager';
 import { getCustomizationUrlPolicy } from './customizationUrl';
 import { getUrlCustomizationModulePayload } from './getUrlCustomizationModulePayload';
 import { resolveCustomizationUrl } from './resolve';
-import {
-  parseCustomizationParams,
-  validateCustomizationRequests,
-} from './validate';
+import { parseCustomizationParams, validateCustomizationRequests } from './validate';
 import type { ValidatedCustomization } from './validate';
 import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
 import type {
@@ -228,7 +225,10 @@ export default class CustomizationService extends PubSubService {
    * phase-tagged form (any of `requires` / `bootstrap` / `global` / `mode`)
    * and otherwise treats the value as legacy Global references.
    */
-  private _getCustomizationConfig(): { phased?: PhasedCustomizationConfig; legacyReferences?: unknown } {
+  private _getCustomizationConfig(): {
+    phased?: PhasedCustomizationConfig;
+    legacyReferences?: unknown;
+  } {
     if (!this._customizationConfig) {
       this._customizationConfig = normalizeCustomizationConfig(this.configuration);
     }
@@ -469,11 +469,19 @@ export default class CustomizationService extends PubSubService {
   /**
    * Unified getter for customizations.
    *
+   * Ids registered in `AppTypes.Customizations` (via declaration merging, see
+   * that interface) return their declared value type; any other string id
+   * falls back to the loose `Customization` union.
+   *
    * @param customizationId - The ID of the customization to retrieve.
    * @param scope - (Optional) The scope to retrieve from: 'global', 'mode', or 'default'.
    *                 If not specified, it retrieves based on priority: global > mode > default.
    * @returns The requested customization, or undefined if not found
    */
+  public getCustomization<K extends keyof AppTypes.Customizations>(
+    customizationId: K
+  ): AppTypes.Customizations[K];
+  public getCustomization(customizationId: string): Customization | undefined;
   public getCustomization(customizationId: string): Customization | undefined {
     const transformed = this.transformedCustomizations.get(customizationId);
 
@@ -484,7 +492,13 @@ export default class CustomizationService extends PubSubService {
       this.globalCustomizations.get(customizationId) ??
       this.modeCustomizations.get(customizationId) ??
       this.defaultCustomizations.get(customizationId);
-    const newTransformed = this.transform(customization);
+    // Apply `inheritsFrom` / `$transform`, then expand any `$reference`
+    // markers (see `_resolveReferences`). `seen` starts with the id being read
+    // so a value that references itself is caught as a cycle.
+    const newTransformed = this._resolveReferences(
+      this.transform(customization),
+      new Set([customizationId])
+    );
     if (newTransformed !== undefined) {
       this.transformedCustomizations.set(customizationId, newTransformed);
     }
@@ -492,11 +506,95 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
+   * Expands `$reference` markers inside a resolved customization value.
+   *
+   * A `{ $reference: '<name>' }` object is replaced by the value of the
+   * customization `<name>` (itself resolved recursively, so references can
+   * chain). References may appear anywhere in a value:
+   *   - as the whole value — an alias for another customization;
+   *   - as an item in an **array** — if the referenced value is itself an
+   *     array it is spread (flattened) into the parent, so a list can compose
+   *     several capability packs by name (e.g. a mode's `toolbarButtons`);
+   *   - as a property value of a **plain object** (e.g. each list under a
+   *     `toolGroupAdditions` map).
+   *
+   * Because expansion happens at read time (not when customizations are
+   * merged), a later `$set` replaces the reference wholesale — with a different
+   * `{ $reference }` or a hard-coded value — and edits to the referenced target
+   * are picked up live. Only plain arrays/objects are walked; class instances,
+   * functions and React elements are returned untouched, and unchanged values
+   * are returned by identity so non-referencing customizations are not cloned.
+   * Cycles are broken and warned via `seen`.
+   */
+  private _resolveReferences(value: any, seen: Set<string>): any {
+    if (!value || typeof value !== 'object' || value.$$typeof) {
+      return value;
+    }
+    if (typeof value.$reference === 'string') {
+      return this._resolveReferenceName(value.$reference, seen);
+    }
+    if (Array.isArray(value)) {
+      let changed = false;
+      const result: any[] = [];
+      for (const item of value) {
+        if (item && typeof item === 'object' && !item.$$typeof && typeof item.$reference === 'string') {
+          changed = true;
+          const resolved = this._resolveReferenceName(item.$reference, seen);
+          if (Array.isArray(resolved)) {
+            result.push(...resolved);
+          } else if (resolved !== undefined) {
+            result.push(resolved);
+          }
+        } else {
+          const resolved = this._resolveReferences(item, seen);
+          changed ||= resolved !== item;
+          result.push(resolved);
+        }
+      }
+      return changed ? result : value;
+    }
+    if (!isPlainObject(value)) {
+      return value;
+    }
+    let changed = false;
+    const result: Record<string, any> = {};
+    for (const [key, val] of Object.entries(value)) {
+      const resolved = this._resolveReferences(val, seen);
+      changed ||= resolved !== val;
+      result[key] = resolved;
+    }
+    return changed ? result : value;
+  }
+
+  /** Resolves a single `$reference` target name, guarding against cycles. */
+  private _resolveReferenceName(name: string, seen: Set<string>): any {
+    if (seen.has(name)) {
+      console.warn(`CustomizationService: $reference cycle detected at "${name}"`);
+      return undefined;
+    }
+    const raw =
+      this.globalCustomizations.get(name) ??
+      this.modeCustomizations.get(name) ??
+      this.defaultCustomizations.get(name);
+    if (raw === undefined) {
+      console.warn(`CustomizationService: no customization registered for $reference "${name}"`);
+      return undefined;
+    }
+    const nextSeen = new Set(seen).add(name);
+    return this._resolveReferences(this.transform(raw), nextSeen);
+  }
+
+  /**
    * Returns a customization value, or the provided fallback when unset.
    */
-  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined {
+  public getValue<K extends keyof AppTypes.Customizations>(
+    customizationId: K,
+    fallbackValue?: AppTypes.Customizations[K]
+  ): AppTypes.Customizations[K];
+  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined;
+  public getValue(customizationId: string, fallbackValue?: unknown): unknown {
     const value = this.getCustomization(customizationId);
-    return (value === undefined ? fallbackValue : (value as T)) as T | undefined;
+    return value === undefined ? fallbackValue : value;
   }
 
   /**
@@ -516,7 +614,7 @@ export default class CustomizationService extends PubSubService {
    *   customizationService.setCustomizations(['@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts'], CustomizationScope.Mode)
    */
   public setCustomizations(
-    customizations: string[] | Record<string, Customization>,
+    customizations: string[] | CustomizationEntries,
     scope: CustomizationScope = CustomizationScope.Mode
   ): void {
     if (Array.isArray(customizations)) {
@@ -525,7 +623,7 @@ export default class CustomizationService extends PubSubService {
       });
     } else {
       Object.entries(customizations).forEach(([key, value]) => {
-        this._setCustomization(key, value, scope);
+        this._setCustomization(key, value as Customization, scope);
       });
     }
   }
@@ -564,6 +662,8 @@ export default class CustomizationService extends PubSubService {
    *  Returns true if there is a mode customization.  Doesn't include defaults, but
    * does return global overrides.
    */
+  public hasCustomization<K extends keyof AppTypes.Customizations>(customizationId: K): boolean;
+  public hasCustomization(customizationId: string): boolean;
   public hasCustomization(customizationId: string) {
     return (
       this.globalCustomizations.has(customizationId) || this.modeCustomizations.has(customizationId)
@@ -1102,7 +1202,9 @@ export function normalizeCustomizationConfig(configuration: unknown): {
       const phased: PhasedCustomizationConfig = {};
       for (const key of PHASE_CONFIG_KEYS) {
         if (key in (configuration as object)) {
-          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[key];
+          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[
+            key
+          ];
         }
       }
       return { phased };
@@ -1110,6 +1212,15 @@ export function normalizeCustomizationConfig(configuration: unknown): {
     return { legacyReferences: configuration };
   }
   return {};
+}
+
+/** True for `{}`-literal / null-prototype objects (not arrays or class instances). */
+function isPlainObject(value: any): boolean {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
 }
 
 function hasDollarKey(value) {
@@ -1128,7 +1239,11 @@ function hasDollarKey(value) {
       return false;
     }
     for (const key of Object.keys(value)) {
-      if (key.startsWith('$') && key !== '$transform') {
+      // `$transform` and `$reference` are read-time markers resolved by the
+      // service (in `transform` / `_resolveReferences`), not immutability-helper
+      // merge commands — so a value carrying them is stored verbatim rather than
+      // being run through `update()`.
+      if (key.startsWith('$') && key !== '$transform' && key !== '$reference') {
         return true;
       }
       if (hasDollarKey(value[key])) {

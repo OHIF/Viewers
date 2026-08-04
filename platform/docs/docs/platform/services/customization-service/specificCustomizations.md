@@ -107,10 +107,13 @@ A URL-loaded file applies its `global` payload as **global customizations** — 
 `window.config`'s `customizationService` entries, but loaded at runtime from `?customization=`. Any
 customization key that is read through `customizationService.getCustomization(...)` can therefore be
 set this way. The examples below are complete files; drop one under `platform/app/public/customizations/`
-(the `default` prefix) and load it with `?customization=<fileName>`. Because the files are JSONC, you
-can keep `//` comments and trailing commas in them.
+(the `default` prefix) and load it with `?customization=<path>`. The shipped examples are grouped into
+subfolders by area (e.g. `tools/`, `worklist/`, `segmentation/`, `veterinary/`), and a nested path is
+just part of the name under the `default` prefix — `?customization=tools/ctPresets` resolves to
+`./customizations/tools/ctPresets.jsonc`. Because the files are JSONC, you can keep `//` comments
+and trailing commas in them.
 
-The shipped [`veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinaryOverlay.jsonc)
+The shipped [`veterinary/veterinaryOverlay.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/veterinary/veterinaryOverlay.jsonc)
 demonstrates a fourth scenario — replacing the viewport overlay layout via `viewportOverlay.topLeft` /
 `viewportOverlay.topRight`.
 
@@ -120,7 +123,7 @@ Override the CT presets offered in the window-level menu (key: `cornerstone.wind
 `$merge` replaces only the `CT` entry, so presets for other modalities (PT, etc.) are kept.
 
 ```jsonc
-// platform/app/public/customizations/ctPresets.jsonc  ->  ?customization=ctPresets
+// platform/app/public/customizations/tools/ctPresets.jsonc  ->  ?customization=tools/ctPresets
 {
   "global": {
     "cornerstone.windowLevelPresets": {
@@ -143,7 +146,7 @@ Make the viewer prompt for a label from a fixed list whenever a measurement is c
 (key: `measurementLabels`).
 
 ```jsonc
-// platform/app/public/customizations/measurementLabels.jsonc  ->  ?customization=measurementLabels
+// platform/app/public/customizations/tools/measurementLabels.jsonc  ->  ?customization=tools/measurementLabels
 {
   "global": {
     "measurementLabels": {
@@ -169,12 +172,12 @@ The basic and longitudinal viewers register their toolbar as customizations
 layout that maps each section to a list of button ids). A module can therefore add a button by
 `$push`-ing a definition onto `cornerstone.toolbarButtons` and the button's id onto a section.
 
-The shipped [`smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/smoothRotate.jsonc)
+The shipped [`tools/smoothRotate.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/tools/smoothRotate.jsonc)
 adds a **Smooth Rotate** button to the *More Tools* menu that activates the cornerstone `PlanarRotate`
 tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 
 ```jsonc
-// platform/app/public/customizations/smoothRotate.jsonc  ->  ?customization=smoothRotate
+// platform/app/public/customizations/tools/smoothRotate.jsonc  ->  ?customization=tools/smoothRotate
 {
   "global": {
     "cornerstone.toolbarButtons": {
@@ -207,9 +210,96 @@ tool (drag to rotate the image freely, unlike the fixed 90° *Rotate Right*):
 > module applies at the *global* scope, the `$push` **extends** the built-in buttons rather than
 > replacing them. The same pattern works for any tool already in the active tool group.
 
+#### 4. Compose whole capability blocks into a mode
+
+Ownership is split into three layers. **Extensions** export reusable *capability packs* — button
+definitions, section layouts and tool lists — under their own namespace (`cornerstone.*`,
+`tmtv.*`); the packs carry no mode identity. **Modes** own *composition*: each mode declares which
+packs it uses as plain arrays on its instance (`toolbarButtons`, `toolbarSections`,
+`toolGroupAdditions`), naming each pack with a `{ $reference: '<name>' }` marker, and the mode route
+seeds those onto the **Mode** customization scope on enter — exactly like it seeds
+`leftPanels` / `rightPanels` from the layout. **Config** (`?customization=`) re-composes an
+existing mode through the `mode` phase.
+
+Because composition is per-mode, a JSON module targets a mode with a `mode` phase block keyed by the
+mode's id or route name and refines the plain concept keys — pushing a `{ $reference }` to a pack
+instead of restating its contents:
+
+```jsonc
+{
+  "mode": {
+    "basic": {
+      "toolbarButtons": { "$push": [{ "$reference": "cornerstone.segmentationToolbarButtons" }] },
+      "toolGroupAdditions": {
+        "default": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] }
+      }
+    }
+  }
+}
+```
+
+There are no `basic.*` / `segmentation.*` / `tmtv.*` keys — `mode.basic` / `mode.viewer` /
+`mode.segmentation` already select the mode, and the key is the concept (`toolbarButtons`), the same
+way `rightPanels` works for the sidebars. Reserve the `global` phase for values that truly apply
+to every mode.
+
+**`$reference` — composing customizations by name.** A `{ "$reference": "<name>" }` object resolves,
+when the value is *read*, to the value of the customization `<name>`. References may sit anywhere in a
+value; inside an array a reference to another array is *flattened* in, so a list composes several
+packs by name. Because resolution is at read time (not when customizations merge), a later command
+composes naturally: `$push` adds another `{ $reference }`, and `$set` replaces the whole value —
+with a different `{ $reference }` **or** a hard-coded list:
+
+```jsonc
+{ "mode": { "basic": {
+  // swap the entire toolbar for a different pack …
+  "toolbarButtons": { "$set": [{ "$reference": "myExtension.myToolbarButtons" }] }
+  // … or for a hard-coded list of button definitions
+  // "toolbarButtons": { "$set": [ { "id": "Length", /* … */ } ] }
+} } }
+```
+
+Edits to the referenced pack itself are picked up live, and reference cycles are detected and warned.
+
+Capability packs exported by the cornerstone extension:
+
+- `cornerstone.toolbarButtons` / `cornerstone.toolbarSections` — the general viewer toolbar.
+- `cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections` — the
+  segmentation editing buttons and the toolbox section wiring rendered by the
+  `panelSegmentationWithTools*` panels.
+- `cornerstone.segmentationModeToolbarSections` — a reusable segmentation-mode main toolbar layout.
+- `cornerstone.segmentationTools` — the segmentation editing tools (brushes, scissors,
+  contour tools) as a `{ passive: [...] }` block for `toolGroupAdditions`.
+- `cornerstone.annotationTools` — the measurement/annotation tools as a
+  `{ passive: [...] }` block for `toolGroupAdditions`.
+
+The tmtv extension exports its TMTV-specific `tmtv.toolbarButtons` / `tmtv.toolbarSections` packs the
+same way.
+
+Two shipped modules demonstrate the pattern:
+
+- [`segmentation/segmentationEditing.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationEditing.jsonc)
+  (`?customization=segmentation/segmentationEditing`) adds segmentation editing to the basic and longitudinal
+  modes: in `mode` phase blocks keyed by each mode's route name (`basic`, `viewer`) it `$push`es the
+  segmentation button/section/tool packs onto that mode's `toolbarButtons` / `toolbarSections` /
+  `toolGroupAdditions`, swaps the right panels via `rightPanels`, and enables editing via
+  `panelSegmentation.disableEditing`.
+- [`segmentation/segmentationAnnotationTools.jsonc`](https://github.com/OHIF/Viewers/blob/master/platform/app/public/customizations/segmentation/segmentationAnnotationTools.jsonc)
+  (`?customization=segmentation/segmentationAnnotationTools`) enables the annotation tools inside the
+  segmentation mode: in the `mode.segmentation` block it adds a `MeasurementTools` section to the
+  primary bar, `$push`es a `{ $reference }` to `cornerstone.annotationTools` onto
+  `toolGroupAdditions`, and `$push`es the measurement panel onto `rightPanels`.
+
 Each payload value uses [immutability-helper](https://github.com/kolodny/immutability-helper)
 commands (`$set`, `$push`, `$merge`, ...) exactly like `window.config` customizations, so a module can
 also append to a list or merge into an existing object rather than replacing it wholesale.
+
+> **Every mode's panels are customizable with no opt-in.** A mode's layout declares
+> `leftPanels` / `rightPanels` as ordinary **arrays of panel ids** — the standard setup. On mode
+> enter the mode route seeds those arrays into the `leftPanels` / `rightPanels`
+> customizations at the bottom of the mode scope, then applies the `mode` phase blocks, then
+> resolves the sidebars from the final values — so commands compose with the mode's own list and
+> global-scope values win by scope precedence.
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 
@@ -232,3 +322,122 @@ integration must trigger loading explicitly (for example by calling
 `customizationService.applyCustomizationUrlSearchParams` or `customizationService.requires` with
 the new list). New module keys not seen before can still be loaded that way; unloading or
 replacing an already-loaded pack is not supported out of the box.
+
+## `segmentation.store.*` (DICOM SEG export encoding)
+
+These customizations control how the `@ohif/extension-cornerstone-dicom-seg` extension
+encodes a DICOM SEG when it is **stored or downloaded**, and are read when a SEG is
+generated.
+
+| Key | Values | Default | Controls |
+| --- | --- | --- | --- |
+| `segmentation.store.defaultMode` | `'labelmap'` \| `'bitmap'` | `'labelmap'` | SEG SOP Class |
+| `segmentation.store.transferSyntaxUID` | a transfer-syntax UID string | RLE Lossless (`1.2.840.10008.1.2.5`) | PixelData encoding |
+
+- **`segmentation.store.defaultMode`**
+  - `'labelmap'` → Label Map Segmentation Storage (`1.2.840.10008.5.1.4.1.1.66.7`). One
+    multi-valued frame per slice. Added to DICOM in 2024, so many PACS/viewers do not
+    accept it yet. **This is the OHIF default.**
+  - `'bitmap'` → (binary) Segmentation Storage (`1.2.840.10008.5.1.4.1.1.66.4`). One frame
+    per segment; broadly compatible with existing back ends and viewers. Opt in via
+    customization when needed.
+- **`segmentation.store.transferSyntaxUID`**
+  - Default → RLE Lossless (`1.2.840.10008.1.2.5`, compressed). Set by
+    `getSegmentationSaveOptions` in `@ohif/extension-cornerstone-dicom-seg` and registered
+    as an extension customization — no app config required.
+  - `1.2.840.10008.1.2.1` → Explicit VR Little Endian (**uncompressed**). Opt in via
+    customization for back ends that reject compressed SEG PixelData.
+
+> OHIF's effective default is **Label Map + RLE Lossless (compressed)**. Customizations
+> (or per-data-source `configuration.segmentation.store`) are only needed to switch to
+> bitmap and/or uncompressed.
+
+### URL-loaded files (recommended)
+
+Two ready-made public customization files ship under
+`platform/app/public/customizations/segmentation/`, so a user can flip either default
+straight from the URL (requires `customizationUrlPrefixes.default` to be configured — it
+is in the `dev` / `netlify` configs):
+
+| File | `?customization=` value | Effect |
+| --- | --- | --- |
+| `segmentation/uncompressed.jsonc` | `segmentation/uncompressed` | Explicit VR Little Endian instead of RLE |
+| `segmentation/binary.jsonc` | `segmentation/binary` | Binary SEG (66.4) instead of Label Map (66.7) |
+
+They are independent and combine, so you can apply both at once:
+
+```
+http://host/viewer?customization=segmentation/uncompressed&customization=segmentation/binary
+```
+
+Each file just `$set`s one key in the `global` phase, e.g. `segmentation/binary.jsonc`:
+
+```jsonc
+{
+  "global": {
+    "segmentation.store.defaultMode": { "$set": "bitmap" }
+  }
+}
+```
+
+The remaining forms below set the same keys directly in `window.config` instead of via the
+URL.
+
+### Store an uncompressed SEG instead of the compressed default
+
+```js
+window.config = {
+  customizationService: [
+    {
+      'segmentation.store.transferSyntaxUID': {
+        $set: '1.2.840.10008.1.2.1', // Explicit VR Little Endian (uncompressed)
+      },
+    },
+  ],
+};
+```
+
+### Store a binary SEG (66.4) instead of the default Label Map (66.7)
+
+```js
+window.config = {
+  customizationService: [
+    {
+      'segmentation.store.defaultMode': { $set: 'bitmap' },
+    },
+  ],
+};
+```
+
+### Per data source override
+
+A data source may override the app-wide default for one back end only, under
+`configuration.segmentation.store`. **The data source value wins over the customization
+default**, so different back ends can pick the SEG encoding they support:
+
+```js
+window.config = {
+  // App-wide default (optional): Label Map + RLE unless set here.
+  customizationService: [
+    { 'segmentation.store.defaultMode': { $set: 'labelmap' } },
+  ],
+  dataSources: [
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'myPacs',
+      configuration: {
+        // ...wado/qido/stow roots...
+        segmentation: {
+          store: {
+            defaultMode: 'bitmap', // this PACS only accepts binary SEG
+            transferSyntaxUID: '1.2.840.10008.1.2.1', // and only uncompressed
+          },
+        },
+      },
+    },
+  ],
+};
+```
+
+When storing, the override is resolved against the data source being written to; for
+download (no target data source) the active data source's override applies.

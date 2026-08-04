@@ -77,9 +77,19 @@ function InputMultiSelectRoot({ options, value, onChange, children }: InputMulti
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return normalized;
-    return normalized.filter(
-      opt => opt.label.toLowerCase().includes(q) || opt.value.toLowerCase().includes(q)
-    );
+    // Prefix matches rank above substring matches (typing "PT" lists PT before CTPT).
+    const prefixMatches: NormalizedOption[] = [];
+    const substringMatches: NormalizedOption[] = [];
+    for (const opt of normalized) {
+      const label = opt.label.toLowerCase();
+      const value = opt.value.toLowerCase();
+      if (label.startsWith(q) || value.startsWith(q)) {
+        prefixMatches.push(opt);
+      } else if (label.includes(q) || value.includes(q)) {
+        substringMatches.push(opt);
+      }
+    }
+    return [...prefixMatches, ...substringMatches];
   }, [normalized, query]);
 
   React.useEffect(() => {
