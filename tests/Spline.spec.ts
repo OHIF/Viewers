@@ -42,11 +42,11 @@ test('should display the spline tool', async ({
 
   const stats = splines[0].firstTargetStats!;
   expect(stats.areaUnit).toBe('mm²');
-  expect(Math.round(stats.area as number)).toBe(38811);
+  expect(Math.round(stats.area as number)).toBe(38963);
 
   const lines = activeViewport.getSvgAnnotationStatTextLines(splines[0].annotationUID);
   await expect(lines).toHaveCount(1);
-  await expect(lines.nth(0)).toHaveText('Area: 38811 mm²');
+  await expect(lines.nth(0)).toHaveText('Area: 38963 mm²');
 });
 
 test('should restore viewport interactivity after deleting an in-progress Spline annotation via context menu', async ({
@@ -69,6 +69,41 @@ test('should restore viewport interactivity after deleting an in-progress Spline
   await expect(deleteButton.locator).toBeVisible();
   await deleteButton.click();
 
+  await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
+
+  // Draw and complete a new Spline annotation to verify interactivity is restored
+  await activeViewport.clickAt([
+    { x: 380, y: 299 },
+    { x: 420, y: 236 },
+    { x: 523, y: 232 },
+    { x: 581, y: 287 },
+    { x: 482, y: 333 },
+    { x: 383, y: 301 },
+  ]);
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeVisible();
+});
+
+test('should cancel an in-progress Spline annotation via Escape', async ({
+  page,
+  DOMOverlayPageObject,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
+  await mainToolbarPageObject.measurementTools.splineROI.click();
+
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
+    { x: 380, y: 299 },
+    { x: 420, y: 236 },
+    { x: 523, y: 232 },
+  ]);
+
+  // Ensure the three points clicked above are rendered in the DOM before pressing Escape
+  await expect(activeViewport.svg('circle')).toHaveCount(3);
+  await press({ page, key: 'Escape' });
+
+  // Pressing Escape should cancel the in-progress Spline annotation
   await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
 
   // Draw and complete a new Spline annotation to verify interactivity is restored

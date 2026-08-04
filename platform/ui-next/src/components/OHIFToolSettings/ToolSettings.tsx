@@ -217,7 +217,10 @@ const renderSelectSetting = option => {
       key={option.id}
     >
       <div className="w-1/3 text-[13px]">{renderLabelWithTooltip(option.name, option.tooltip)}</div>
-      <div className="w-2/3">
+      <div
+        className="w-2/3"
+        data-cy={option.id}
+      >
         <Select
           onValueChange={value => option.onChange?.(value)}
           value={option.value}
@@ -230,6 +233,7 @@ const renderSelectSetting = option => {
               <SelectItem
                 key={value.id}
                 value={value.id}
+                data-cy={value.id}
               >
                 {value.label}
               </SelectItem>

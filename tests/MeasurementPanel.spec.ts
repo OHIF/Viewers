@@ -168,14 +168,14 @@ test('checks if measurement item can be deleted under Measurements panel', async
 
   // Open measurement panel, confirm 3 measurements
   await rightPanelPageObject.measurementsPanel.select();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(3);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(3);
 
   // Delete from measurement
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.delete();
   await page.waitForTimeout(200);
 
   // Confirm one measurement is gone
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
 
   // Delete all measurements via main Measurement Panel delete button and untrack
   await rightPanelPageObject.measurementsPanel.panel.deleteAll();
@@ -189,7 +189,7 @@ test('checks if measurement item can be deleted under Measurements panel', async
 
   // Check dialog closed and measurements gone
   await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
 
   const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
   await expect(measurementsPanel).toContainText('No tracked measurements');
@@ -219,7 +219,7 @@ test('checks if measurement item can be deleted through the context menu on the 
   // Open measurement panel and confirm measurement is gone
   await rightPanelPageObject.measurementsPanel.select();
   await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
 });
 
 test('checks that undo after delete-all restores measurements as tracked', async ({
@@ -243,13 +243,13 @@ test('checks that undo after delete-all restores measurements as tracked', async
   });
 
   await rightPanelPageObject.measurementsPanel.select();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
 
   await rightPanelPageObject.measurementsPanel.panel.deleteAll();
   await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
   await DOMOverlayPageObject.dialog.confirmation.confirm.click();
   await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
 
   await mainToolbarPageObject.undo.click();
 
@@ -326,14 +326,14 @@ test.describe('simplified tracking mode', () => {
     });
 
     await rightPanelPageObject.measurementsPanel.select();
-    expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
 
     await rightPanelPageObject.measurementsPanel.panel.deleteAll();
     await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
     await DOMOverlayPageObject.dialog.confirmation.confirm.click();
     await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
 
-    expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
 
     await mainToolbarPageObject.undo.click();
 

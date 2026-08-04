@@ -32,4 +32,11 @@ export class LeftPanelPageObject {
       .nth(nth);
     await matchingThumbnail.dblclick();
   }
+
+  async loadSeriesBySeriesNumber(seriesNumber: string | number) {
+    const matchingThumbnail = this.page.locator(
+      `[data-cy^="study-browser-thumbnail"][data-series="${seriesNumber}"]`
+    );
+    await matchingThumbnail.dblclick();
+  }
 }

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OHIF URL Customizations</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f5f6f8;
+        --card: #ffffff;
+        --card-border: #e3e6ea;
+        --text: #1a1f27;
+        --muted: #5c6774;
+        --accent: #2563eb;
+        --accent-contrast: #ffffff;
+        --code-bg: #eef1f5;
+        --tag-bg: #e6edff;
+        --tag-text: #2952cc;
+        --bar-bg: #ffffff;
+      }
+      /* This catalog page follows the OS light/dark preference automatically. */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0e1116;
+          --card: #171b22;
+          --card-border: #2a3038;
+          --text: #e6e9ee;
+          --muted: #99a3b0;
+          --accent: #4f8cff;
+          --accent-contrast: #0e1116;
+          --code-bg: #0b0e13;
+          --tag-bg: #1c2740;
+          --tag-text: #8fb2ff;
+          --bar-bg: #12161c;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        padding-bottom: 160px;
+      }
+      .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px 20px; }
+      .topbar { display: flex; align-items: flex-start; gap: 16px; }
+      .topbar .titles { flex: 1; min-width: 0; }
+      .theme-picker { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .theme-picker label { font-size: 0.8rem; color: var(--muted); }
+      .theme-picker select {
+        background: var(--card); border: 1px solid var(--card-border); border-radius: 8px;
+        padding: 7px 10px; color: var(--text); font-size: 0.85rem; cursor: pointer;
+      }
+      header h1 { font-size: 1.7rem; margin: 0 0 6px; }
+      header p { color: var(--muted); margin: 0 0 8px; max-width: 62ch; }
+      code {
+        background: var(--code-bg);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.85em;
+      }
+      .group { margin-top: 28px; }
+      .group-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+      .group-head h2 { font-size: 1.15rem; margin: 0; }
+      .group-head .dir { color: var(--muted); font-size: 0.85rem; }
+      .group-head .toggle {
+        margin-left: auto; background: none; border: none; color: var(--accent);
+        cursor: pointer; font-size: 0.82rem; padding: 2px 4px;
+      }
+      .group-desc { color: var(--muted); font-size: 0.9rem; margin: 0 0 12px; }
+      .card {
+        display: flex; gap: 12px; align-items: flex-start;
+        background: var(--card); border: 1px solid var(--card-border);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+        cursor: pointer; transition: border-color .12s ease;
+      }
+      .card:hover { border-color: var(--accent); }
+      .card input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer; }
+      .card .body { flex: 1; min-width: 0; }
+      .card .title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+      .card .name { font-weight: 600; }
+      .card .param { color: var(--muted); font-size: 0.8rem; }
+      .card .desc { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; }
+      .tag {
+        font-size: 0.7rem; font-weight: 600; letter-spacing: .02em;
+        background: var(--tag-bg); color: var(--tag-text);
+        padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
+      }
+      .launch {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--bar-bg); border-top: 1px solid var(--card-border);
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+      }
+      .launch-inner { max-width: 900px; margin: 0 auto; padding: 14px 20px; }
+      .launch-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .launch-label { font-size: 0.8rem; color: var(--muted); }
+      .url-box {
+        flex: 1; min-width: 240px;
+        background: var(--code-bg); border: 1px solid var(--card-border); border-radius: 8px;
+        padding: 9px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.82rem; color: var(--text); overflow-x: auto; white-space: nowrap;
+      }
+      .base-input {
+        background: var(--card); border: 1px solid var(--card-border); border-radius: 8px;
+        padding: 8px 10px; color: var(--text); font-size: 0.85rem; width: 130px;
+      }
+      button.btn {
+        border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.88rem; font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary { background: var(--accent); color: var(--accent-contrast); }
+      .btn-primary[aria-disabled='true'] { opacity: .45; pointer-events: none; }
+      .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--card-border); }
+      .count { font-size: 0.8rem; color: var(--muted); }
+      a { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="topbar">
+          <div class="titles">
+            <h1>URL Customizations</h1>
+          </div>
+          <div class="theme-picker">
+            <label for="viewer-theme">Viewer theme</label>
+            <select id="viewer-theme" title="OHIF viewer theme — added as ?theme= to the launch URL">
+              <optgroup label="Tonal (surfaces carry the theme hue)">
+                <option value="default">OHIF Blue (default)</option>
+                <option value="orchid">Orchid</option>
+                <option value="arctic">Arctic</option>
+                <option value="verdant">Verdant</option>
+              </optgroup>
+              <optgroup label="Neutral (desaturated + one accent)">
+                <option value="midnight">Midnight</option>
+                <option value="slate">Slate</option>
+                <option value="deep">Deep</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <p>
+          These are the example <code>?customization=</code> profiles shipped under
+          <code>platform/app/public/customizations/</code>, grouped by area. Each file is fetched as
+          JSONC <strong>data</strong> (never executed) and applied at startup. Tick the ones you want,
+          optionally pick a viewer theme (added as <code>?theme=</code>), then launch the viewer or copy
+          the generated query string onto any viewer URL. Multiple profiles are comma-separated and
+          applied in order.
+        </p>
+        <p style="font-size: 0.85rem">
+          See the
+          <a href="https://docs.ohif.org/platform/services/customization-service/specificCustomizations">
+            customization docs</a>
+          for how to author your own. The prefix allowlist is set by
+          <code>customizationUrlPrefixes</code> in the app config.
+        </p>
+      </header>
+
+      <main id="groups"></main>
+    </div>
+
+    <div class="launch">
+      <div class="launch-inner">
+        <div class="launch-row" style="margin-bottom: 10px">
+          <span class="launch-label">Viewer base</span>
+          <input
+            id="base"
+            class="base-input"
+            value="../"
+            title="Base viewer URL the customization query is appended to (relative to this page)"
+          />
+          <span class="count" id="count">0 selected</span>
+          <button class="btn btn-ghost" id="clear" type="button">Clear all</button>
+          <button class="btn btn-ghost" id="copy" type="button">Copy URL</button>
+          <a class="btn btn-primary" id="launch" href="#" aria-disabled="true">Launch viewer &rarr;</a>
+        </div>
+        <div class="launch-row">
+          <div class="url-box" id="url">Select one or more profiles above&hellip;</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Catalog of shipped URL customizations, grouped by area/folder. The
+      // `value` is the `?customization=` token (folder-relative path, no `.jsonc`).
+      const CATALOG = [
+        {
+          dir: 'tools/',
+          title: 'Tools & presets',
+          desc: 'General viewport tools and presets. These apply globally (every mode).',
+          items: [
+            {
+              value: 'tools/ctPresets',
+              name: 'CT window/level presets',
+              scope: 'global',
+              desc: 'Replaces the CT presets in the window-level menu with a site-specific set (soft tissue, lung, angio, bone). Other modalities keep their defaults.',
+            },
+            {
+              value: 'tools/smoothRotate',
+              name: 'Smooth Rotate button',
+              scope: 'global',
+              desc: 'Adds a "Smooth Rotate" button to the More Tools menu that activates the PlanarRotate tool — drag to rotate the image freely (unlike the fixed 90° Rotate Right).',
+            },
+            {
+              value: 'tools/measurementLabels',
+              name: 'Predefined measurement labels',
+              scope: 'global',
+              desc: 'Prompts for a label from a fixed, exclusive list (Head, Shoulder, Knee, Toe) whenever a measurement is created.',
+            },
+          ],
+        },
+        {
+          dir: 'worklist/',
+          title: 'Study list',
+          desc: 'Customizations for the WorkList / study browser.',
+          items: [
+            {
+              value: 'worklist/patientBirthDate',
+              name: 'Birth Date column',
+              scope: 'global',
+              desc: 'Adds a "Birth Date" column to the study list, immediately after the Patient column. Shipped configs load this by default via customizationService.requires.',
+            },
+          ],
+        },
+        {
+          dir: 'segmentation/',
+          title: 'Segmentation',
+          desc: 'Per-mode composition of the segmentation capability packs.',
+          items: [
+            {
+              value: 'segmentation/segmentationEditing',
+              name: 'Segmentation editing',
+              scope: 'basic / longitudinal',
+              desc: 'Adds the segmentation editing toolbar, tools, and panels to the basic and longitudinal (viewer) modes, and enables editing in the segmentation panel.',
+            },
+            {
+              value: 'segmentation/segmentationAnnotationTools',
+              name: 'Annotation tools in segmentation mode',
+              scope: 'segmentation',
+              desc: 'Enables the measurement/annotation tools (Length, Bidirectional, ROIs, freehand, spline, livewire) inside the segmentation mode and adds the measurement panel.',
+            },
+          ],
+        },
+        {
+          dir: 'veterinary/',
+          title: 'Veterinary',
+          desc: 'Veterinary-oriented overlay and a chaining profile that pulls it in.',
+          items: [
+            {
+              value: 'veterinary/veterinary',
+              name: 'Veterinary profile',
+              scope: 'global',
+              desc: 'Chaining profile — declares requires: ["veterinary/veterinaryOverlay"], so selecting this one alone pulls in and applies the overlay first.',
+            },
+            {
+              value: 'veterinary/veterinaryOverlay',
+              name: 'Veterinary viewport overlay',
+              scope: 'global',
+              desc: 'Overrides the viewport overlay with a veterinary-style demographics layout (patient/ID/date on the left, species/breed on the right).',
+            },
+          ],
+        },
+      ];
+
+      const groupsEl = document.getElementById('groups');
+      const urlEl = document.getElementById('url');
+      const launchEl = document.getElementById('launch');
+      const countEl = document.getElementById('count');
+      const baseEl = document.getElementById('base');
+      const viewerThemeEl = document.getElementById('viewer-theme');
+
+      CATALOG.forEach((group, gi) => {
+        const section = document.createElement('section');
+        section.className = 'group';
+        section.innerHTML =
+          '<div class="group-head">' +
+          '<h2>' + group.title + '</h2>' +
+          '<span class="dir"><code>' + group.dir + '</code></span>' +
+          '<button class="toggle" type="button" data-group="' + gi + '">Select all</button>' +
+          '</div>' +
+          '<p class="group-desc">' + group.desc + '</p>';
+
+        group.items.forEach(item => {
+          const label = document.createElement('label');
+          label.className = 'card';
+          label.innerHTML =
+            '<input type="checkbox" value="' + item.value + '" />' +
+            '<span class="body">' +
+            '<span class="title-row">' +
+            '<span class="name">' + item.name + '</span>' +
+            '<span class="tag">' + item.scope + '</span>' +
+            '<span class="param"><code>?customization=' + item.value + '</code></span>' +
+            '</span>' +
+            '<span class="desc">' + item.desc + '</span>' +
+            '</span>';
+          section.appendChild(label);
+        });
+        groupsEl.appendChild(section);
+      });
+
+      function selectedValues() {
+        return Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value);
+      }
+
+      // Builds the launch URL from the selected profiles and viewer theme. The
+      // `theme=` param is only added for a non-default preset (default is the
+      // viewer's built-in look and needs no param). Returns null when there is
+      // nothing to launch.
+      function buildUrl(base, values, theme) {
+        // Sanitize the DOM-derived inputs before they reach the launch href.
+        // Customization tokens are `folder/name` segments, so allow word chars,
+        // dot, dash and slash only; the theme is a plain preset id. Anything with
+        // query metacharacters or a URL scheme (e.g. `javascript:`) is dropped.
+        const TOKEN = /^[\w.-]+(?:\/[\w.-]+)*$/;
+        const safeValues = values.filter(v => TOKEN.test(v));
+        const safeTheme = /^[\w.-]+$/.test(theme || '') ? theme : 'default';
+        if (!safeValues.length && (!safeTheme || safeTheme === 'default')) {
+          return null;
+        }
+
+        // Resolve the (hand-typed) base against the current page and require an
+        // http(s) target, so the base can never turn the href into a
+        // javascript:/data: URL. searchParams.set() encodes the values safely.
+        let parsed;
+        try {
+          parsed = new URL(base, window.location.href);
+        } catch (_) {
+          return null;
+        }
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          return null;
+        }
+
+        if (safeValues.length) {
+          parsed.searchParams.set('customization', safeValues.join(','));
+        }
+        if (safeTheme && safeTheme !== 'default') {
+          parsed.searchParams.set('theme', safeTheme);
+        }
+        return parsed.toString();
+      }
+
+      function refresh() {
+        const values = selectedValues();
+        countEl.textContent = values.length + ' selected';
+        const url = buildUrl(baseEl.value.trim() || '../', values, viewerThemeEl.value);
+        if (!url) {
+          urlEl.textContent = 'Select one or more profiles, or a viewer theme, above…';
+          launchEl.setAttribute('aria-disabled', 'true');
+          launchEl.removeAttribute('href');
+          return;
+        }
+        urlEl.textContent = url;
+        launchEl.href = url;
+        launchEl.setAttribute('aria-disabled', 'false');
+      }
+
+      groupsEl.addEventListener('change', refresh);
+      baseEl.addEventListener('input', refresh);
+      viewerThemeEl.addEventListener('change', refresh);
+
+      groupsEl.addEventListener('click', e => {
+        const btn = e.target.closest('.toggle');
+        if (!btn) return;
+        e.preventDefault();
+        const section = btn.closest('.group');
+        const boxes = section.querySelectorAll('input[type=checkbox]');
+        const allChecked = Array.from(boxes).every(b => b.checked);
+        boxes.forEach(b => (b.checked = !allChecked));
+        btn.textContent = allChecked ? 'Select all' : 'Clear';
+        refresh();
+      });
+
+      document.getElementById('clear').addEventListener('click', () => {
+        document.querySelectorAll('input[type=checkbox]').forEach(b => (b.checked = false));
+        document.querySelectorAll('.toggle').forEach(t => (t.textContent = 'Select all'));
+        refresh();
+      });
+
+      document.getElementById('copy').addEventListener('click', async () => {
+        const text = buildUrl(baseEl.value.trim() || '../', selectedValues(), viewerThemeEl.value);
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          const b = document.getElementById('copy');
+          const prev = b.textContent;
+          b.textContent = 'Copied!';
+          setTimeout(() => (b.textContent = prev), 1200);
+        } catch (_) {
+          /* clipboard unavailable — the URL is visible in the box to copy manually */
+        }
+      });
+
+      refresh();
+    </script>
+  </body>
+</html>

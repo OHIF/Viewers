@@ -69,7 +69,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tool
 import { ToolboxUI } from './OHIFToolbox';
 import Numeric from './Numeric';
 import { InputDialog, PresetDialog } from './OHIFDialogs';
-import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
+import { AboutModal, ImageModal, UserPreferencesModal, AppearanceModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
 import { InputFilter } from './InputFilter';
@@ -142,6 +142,7 @@ import {
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
+import { ContextMenuViewport } from './ContextMenuViewport';
 export * from './StudyList';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
@@ -296,6 +297,7 @@ export {
   AboutModal,
   ImageModal,
   UserPreferencesModal,
+  AppearanceModal,
   FooterAction,
   ToolSettings,
   InputFilter,
@@ -308,6 +310,7 @@ export {
   ViewportDialog,
   CinePlayer,
   LayoutSelector,
+  ContextMenuViewport,
   SmartScrollbar,
   useSmartScrollbarLayoutContext,
   useSmartScrollbarScrollContext,

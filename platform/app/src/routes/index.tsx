@@ -131,7 +131,7 @@ const createRoutes = ({
     path: '/',
     children: DataSourceWrapper,
     private: true,
-    props: { children: WorkListComponent, servicesManager, extensionManager },
+    props: { children: WorkListComponent, servicesManager, extensionManager, commandsManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');

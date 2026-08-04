@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums, VolumeViewport3D, utilities as csUtils } from '@cornerstonejs/core';
+import { utilities as csUtils } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui-next';
+import { isVolume3DViewportType } from '../../utils/getLegacyViewportType';
+import { getSliceEventName, getViewportSliceCount } from '../../utils/viewportDataShape';
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -40,16 +42,16 @@ function CornerstoneImageScrollbar({
 
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-    if (!viewport || viewport instanceof VolumeViewport3D) {
+    if (!viewport || isVolume3DViewportType(viewport)) {
       return;
     }
 
     try {
       const imageIndex = viewport.getCurrentImageIdIndex();
-      const numberOfSlices = viewport.getNumberOfSlices();
+      const numberOfSlices = getViewportSliceCount(viewportData, viewport);
 
       setImageSliceData({
-        imageIndex: imageIndex,
+        imageIndex,
         numberOfSlices,
       });
     } catch (error) {
@@ -61,15 +63,11 @@ function CornerstoneImageScrollbar({
     if (!viewportData) {
       return;
     }
-    const { viewportType } = viewportData;
-    const eventId =
-      (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_NEW_IMAGE) ||
-      (viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE) ||
-      Enums.Events.IMAGE_RENDERED;
+    const eventId = getSliceEventName(viewportData);
 
     const updateIndex = event => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (!viewport || viewport instanceof VolumeViewport3D) {
+      if (!viewport || isVolume3DViewportType(viewport)) {
         return;
       }
       const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;

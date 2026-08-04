@@ -11,6 +11,12 @@ type WaitForViewportsRenderedOptions = {
    * viewports to report loaded.
    */
   waitVolumeLoad?: boolean;
+  /**
+   * If true (default), inserts a post-rendered "settle" step that waits two
+   * animation frames and a short idle window so the GPU has presented the
+   * final paint before screenshots are taken.
+   */
+  settle?: boolean;
 };
 
 type WaitForRenderCycleToCompleteOptions = {
@@ -28,6 +34,10 @@ type WaitForRenderCycleToCompleteOptions = {
    * viewports to report loaded during the rendered phase.
    */
   waitVolumeLoad?: boolean;
+  /**
+   * If true (default), inserts a post-rendered "settle" step before resolving.
+   */
+  settle?: boolean;
 };
 
 /**
@@ -39,9 +49,14 @@ const waitForViewportRenderCycle = async (
   page: Page,
   options: WaitForRenderCycleToCompleteOptions = {}
 ) => {
-  const { needsRenderTimeout = 5000, renderedTimeout = 15000, waitVolumeLoad = true } = options;
+  const {
+    needsRenderTimeout = 5000,
+    renderedTimeout = 15000,
+    waitVolumeLoad = true,
+    settle = true,
+  } = options;
   await waitForAnyViewportNeedsRender(page, { timeout: needsRenderTimeout });
-  await waitForViewportsRendered(page, { timeout: renderedTimeout, waitVolumeLoad });
+  await waitForViewportsRendered(page, { timeout: renderedTimeout, waitVolumeLoad, settle });
 };
 
 /**
@@ -93,7 +108,7 @@ const waitForViewportsRendered = async (
   page: Page,
   options: WaitForViewportsRenderedOptions = {}
 ) => {
-  const { timeout = 15000, waitVolumeLoad = true } = options;
+  const { timeout = 15000, waitVolumeLoad = true, settle = true } = options;
 
   await page.waitForFunction(
     ({ waitVolumeLoad }) => {
@@ -158,6 +173,45 @@ const waitForViewportsRendered = async (
     { waitVolumeLoad },
     { timeout }
   );
+
+  if (settle) {
+    await waitForPaintToSettle(page);
+  }
 };
 
-export { waitForViewportsRendered, waitForAnyViewportNeedsRender, waitForViewportRenderCycle };
+/**
+ * After the render-cycle predicate has resolved, give the browser two animation
+ * frames (RAF fires *before* the paint commits, so we wait for two consecutive
+ * frames plus a microtask) followed by a short idle window. This drains the
+ * tail of any progressive texture uploads that landed in the same tick the
+ * `loadStatus.loaded` flag was flipped, so screenshots capture the final paint
+ * rather than a mid-stream frame. Mirrors the `scheduleAfterPaint` deferral in
+ * BaseStreamingImageVolume on the cs3d side.
+ */
+const waitForPaintToSettle = async (page: Page) => {
+  await page.evaluate(
+    () =>
+      new Promise<void>(resolve => {
+        const raf = (cb: FrameRequestCallback) =>
+          typeof requestAnimationFrame === 'function'
+            ? requestAnimationFrame(cb)
+            : (setTimeout(cb, 16) as unknown as number);
+        raf(() =>
+          raf(() => {
+            Promise.resolve().then(resolve);
+          })
+        );
+      })
+  );
+  // Final guard against stragglers (e.g. label-outline edge detection that
+  // queues an extra render via requestAnimationFrame from inside an event
+  // handler).
+  await page.waitForTimeout(150);
+};
+
+export {
+  waitForViewportsRendered,
+  waitForAnyViewportNeedsRender,
+  waitForViewportRenderCycle,
+  waitForPaintToSettle,
+};
