@@ -5,19 +5,11 @@ import { checkForScreenshot, type CheckForScreenshotProps } from './checkForScre
  * The category of text to hide before taking a viewport screenshot.
  *
  * - `'all'`              — hides overlay, annotation, and orientation marker text.
- * - `'overlay'`          — hides all four viewport overlay corners. (all text in those corners).
- * - `'demographic'`      — hides Study date and Series description overlay items.
+ * - `'overlay'`          — hides all four viewport overlay corners.
  * - `'annotation'`       — hides SVG annotation text boxes.
- * - `'laterality'`       — hides the Laterality overlay item (no-op in default OHIF config).
  * - `'orientationMarker'`— hides orientation marker labels (e.g. A/P/L/R/H/F).
  */
-export type HideTextOption =
-  | 'all'
-  | 'overlay'
-  | 'demographic'
-  | 'annotation'
-  | 'laterality'
-  | 'orientationMarker';
+export type HideTextOption = 'all' | 'overlay' | 'annotation' | 'orientationMarker';
 
 export type HideTextInput = HideTextOption | HideTextOption[];
 
@@ -34,9 +26,7 @@ type CheckForViewportScreenshotProps = Omit<CheckForScreenshotProps, 'beforeAtte
 const hideTextHandlers: Record<HideTextOption, (vp: IViewportPageObject) => Promise<void>> = {
   all: vp => vp.hideAllText(),
   overlay: vp => vp.hideViewportOverlayText(),
-  demographic: vp => vp.hideDemographicOverlayText(),
   annotation: vp => vp.hideAnnotationText(),
-  laterality: vp => vp.hideLateralityText(),
   orientationMarker: vp => vp.hideOrientationMarkerText(),
 };
 

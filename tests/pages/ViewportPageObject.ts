@@ -108,10 +108,8 @@ export interface IViewportPageObject {
     scrollBy: (delta: number) => Promise<void>;
   };
   magnifyGlass: MagnifyGlassPageObject;
-  hideDemographicOverlayText: () => Promise<void>;
   hideViewportOverlayText: () => Promise<void>;
   hideAnnotationText: () => Promise<void>;
-  hideLateralityText: () => Promise<void>;
   hideOrientationMarkerText: () => Promise<void>;
   hideAllText: () => Promise<void>;
 }
@@ -192,34 +190,17 @@ export class ViewportPageObject {
   private getHideTextMethods(viewport: Locator) {
     const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
 
-    const demographicOverlaySelector = [
-      `${viewportOverlaySelector} .overlay-item[title="Study date"]`,
-      `${viewportOverlaySelector} .overlay-item[title="Series description"]`,
-    ].join(', ');
-
     const annotationTextSelector = 'g[data-annotation-uid] text, g[data-annotation-uid] tspan';
 
     const hideTextMethods = {
-      hideDemographicOverlayText: async () => {
-        await this.hideLocatorElements(viewport.locator(demographicOverlaySelector));
-      },
-
       hideViewportOverlayText: async () => {
         await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
       },
       hideAnnotationText: async () => {
         await this.hideLocatorElements(viewport.locator(annotationTextSelector));
       },
-      // Laterality is not part of the default OHIF overlay customization.
-      // This is a no-op unless the active mode explicitly adds an overlay item
-      // with title="Laterality" via viewportOverlay customization.
-      hideLateralityText: async () => {
-        await this.hideLocatorElements(
-          viewport.locator(`${viewportOverlaySelector} .overlay-item[title="Laterality"]`)
-        );
-      },
       hideOrientationMarkerText: async () => {
-        await this.hideLocatorElements(viewport.locator('.orientation-marker'));
+        await this.hideLocatorElements(viewport.locator('.ViewportOrientationMarkers'));
       },
       hideAllText: async () => {
         await hideTextMethods.hideViewportOverlayText();
