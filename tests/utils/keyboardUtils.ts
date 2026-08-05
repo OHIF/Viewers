@@ -24,3 +24,18 @@ export const press = async (params: PressParams) => {
     await page.keyboard.press(key, options);
   }
 };
+
+/**
+ * Holds a key down until a matching keyUp. Held modifier keys (e.g. 'Shift')
+ * apply to the mouse events performed while the key is down.
+ */
+export const keyDown = async ({ page, key }: { page: Page; key: string }) => {
+  await page.keyboard.down(key);
+};
+
+/**
+ * Releases a key previously held via keyDown.
+ */
+export const keyUp = async ({ page, key }: { page: Page; key: string }) => {
+  await page.keyboard.up(key);
+};
