@@ -8,9 +8,7 @@ window.config = {
   name: 'config/qa.js',
   defaultDataSourceName: 'CLOUD_QA',
   dangerouslyUseDynamicConfig: {
-    enabled: true,
-    regex:
-      /https:\/\/[a-zA-Z0-9-]+\.deemea\.com(\/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]*)*/,
+    enabled: false,
   },
   dataSources: getDynamicDataSources({
     CLOUD_QA: 'https://cloud-qa.deemea.com/api/v1/didier',
