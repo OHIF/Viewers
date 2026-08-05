@@ -26,16 +26,27 @@ export const press = async (params: PressParams) => {
 };
 
 /**
- * Holds a key down until a matching keyUp. Held modifier keys (e.g. 'Shift')
- * apply to the mouse events performed while the key is down.
+ * WithKeyHeldParams defines the parameters for the withKeyHeld function.
+ * @property {Page} page - The Playwright page on which to hold the key.
+ * @property {string} key - The key to hold for the duration of the action.
+ * @property {() => Promise<void>} action - The steps to perform while the key is held.
  */
-export const keyDown = async ({ page, key }: { page: Page; key: string }) => {
-  await page.keyboard.down(key);
+type WithKeyHeldParams = {
+  page: Page;
+  key: string;
+  action: () => Promise<void>;
 };
 
 /**
- * Releases a key previously held via keyDown.
+ * Runs an action with a key held down, releasing it afterwards even if the action
+ * throws. A held modifier (e.g. 'Shift') applies to the mouse events the action
+ * performs, which is how modifier-dependent tools are driven from a test.
  */
-export const keyUp = async ({ page, key }: { page: Page; key: string }) => {
-  await page.keyboard.up(key);
+export const withKeyHeld = async ({ page, key, action }: WithKeyHeldParams) => {
+  await page.keyboard.down(key);
+  try {
+    await action();
+  } finally {
+    await page.keyboard.up(key);
+  }
 };

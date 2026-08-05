@@ -383,7 +383,7 @@ export class RightPanelPageObject {
             // The data-cy element above is a span wrapper, so its tooltip still
             // fires while the tool is unavailable. The inner button is what
             // carries the disabled state, so assert enablement against this.
-            livewireToolButton: page.getByTestId('LivewireContourSegmentationTool-btn'),
+            toolButton: page.getByTestId('LivewireContourSegmentationTool-btn'),
             click: async () => {
               await button.click();
             },

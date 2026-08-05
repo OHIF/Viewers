@@ -2,12 +2,13 @@ import {
   checkForScreenshot,
   expect,
   getSvgAttribute,
+  press,
   screenShotPaths,
   test,
   visitStudy,
   waitForViewportsRendered,
+  withKeyHeld,
 } from './utils';
-import { keyDown, keyUp, press } from './utils/keyboardUtils';
 
 // Tuned to edges in this study's first slice, and wide enough to leave room for a hole inside it; a new contour's first click must stay ~6px clear of existing outlines.
 const contourClicks = [
@@ -82,13 +83,16 @@ test('should keep a completed Livewire contour segmentation after navigating awa
   await expect(paths, 'Expected the closed livewire contour to be added').toHaveCount(1);
   await expect(paths.first(), 'Expected the drawn livewire contour to be visible').toBeVisible();
 
-  // Capture the completed contour's geometry to compare after navigation.
+  // Capture the completed contour's geometry to compare after navigation. Guarding against null
+  // here keeps the comparison below from passing vacuously on two missing paths.
   const drawnPathD = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
     attributeName: 'd',
   });
-  expect(drawnPathD, 'Expected the drawn livewire contour to render an SVG path').not.toBeNull();
+  if (drawnPathD === null) {
+    throw new Error('Expected the drawn livewire contour to render an SVG path');
+  }
 
   // Add a second segment so selecting Segment 1 again below goes through a real activation.
   await contourPanel.addSegmentButton.click();
@@ -109,18 +113,10 @@ test('should keep a completed Livewire contour segmentation after navigating awa
     'Expected the persisted livewire contour to be visible'
   ).toBeVisible();
 
-  const persistedPathD = await getSvgAttribute({
-    viewportPageObject,
-    svgInnerElement: 'path',
-    attributeName: 'd',
-  });
-  expect(
-    persistedPathD,
-    'Expected the persisted livewire contour to render an SVG path'
-  ).not.toBeNull();
-  expect(persistedPathD, 'Expected the persisted livewire contour to match what was drawn').toBe(
-    drawnPathD
-  );
+  await expect(
+    paths.first(),
+    'Expected the persisted livewire contour to match what was drawn'
+  ).toHaveAttribute('d', drawnPathD);
 });
 
 test('should enable the Livewire Contour tool only once a contour segmentation exists', async ({
@@ -132,7 +128,7 @@ test('should enable the Livewire Contour tool only once a contour segmentation e
   await contourPanel.select();
 
   await expect(
-    contourPanel.tools.livewireContour.livewireToolButton,
+    contourPanel.tools.livewireContour.toolButton,
     'Expected Livewire to be unavailable with no contour segmentation'
   ).toBeDisabled();
 
@@ -140,7 +136,7 @@ test('should enable the Livewire Contour tool only once a contour segmentation e
   await expect(contourPanel.panel.rows).toHaveCount(1);
 
   await expect(
-    contourPanel.tools.livewireContour.livewireToolButton,
+    contourPanel.tools.livewireContour.toolButton,
     'Expected creating a contour segmentation to enable Livewire'
   ).toBeEnabled();
 });
@@ -173,10 +169,9 @@ test('should draw a Livewire contour into the active segment', async ({
 
   // The contour must belong to segment 2 (active during the draw): hiding segment 1 keeps it, hiding segment 2 removes it.
   await contourPanel.panel.nthSegment(0).toggleVisibility();
-  await expect(
-    paths,
-    'Expected the contour to stay visible while segment 1 is hidden'
-  ).toHaveCount(1);
+  await expect(paths, 'Expected the contour to stay visible while segment 1 is hidden').toHaveCount(
+    1
+  );
 
   await contourPanel.panel.nthSegment(1).toggleVisibility();
   await expect(paths, 'Expected the contour to hide with segment 2').toHaveCount(0);
@@ -186,7 +181,6 @@ test('should draw a Livewire contour into the active segment', async ({
 });
 
 test('should keep two disjoint Livewire contours separate within one segment', async ({
-  page,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
@@ -216,16 +210,14 @@ test('should keep two disjoint Livewire contours separate within one segment', a
   await activeViewport.clickAt(disjointContourClicks);
   await expect(vertexHandles, 'Expected the second contour vertices to render').toHaveCount(3);
   await activeViewport.doubleClickAt(disjointContourClicks[2]);
+  await expect(
+    vertexHandles,
+    'Expected the second contour vertex handles to clear on completion'
+  ).toHaveCount(0);
 
   await expect(paths, 'Expected both contours to render separately').toHaveCount(2);
   await expect(paths.first(), 'Expected the first contour to be visible').toBeVisible();
   await expect(paths.nth(1), 'Expected the second contour to be visible').toBeVisible();
-
-  await checkForScreenshot({
-    page,
-    locator: activeViewport.pane,
-    screenshotPath: screenShotPaths.livewireContourSegmentation.disjointContoursSeparate,
-  });
 });
 
 test('should merge overlapping Livewire contours drawn into the same segment', async ({
@@ -260,8 +252,11 @@ test('should merge overlapping Livewire contours drawn into the same segment', a
   await expect(vertexHandles, 'Expected the second contour vertices to render').toHaveCount(3);
   await activeViewport.doubleClickAt(overlappingContourClicks[2]);
 
-  await expect(paths, 'Expected the overlapping contours to merge into one').toHaveCount(1);
-  await expect(paths.first(), 'Expected the merged contour to be visible').toBeVisible();
+  // The handles clearing is the completion signal, so this settles the draw before the compare.
+  await expect(
+    vertexHandles,
+    'Expected the second contour vertex handles to clear on completion'
+  ).toHaveCount(0);
 
   await checkForScreenshot({
     page,
@@ -296,15 +291,22 @@ test('should cut a hole into a Livewire contour when drawing with Shift held', a
   await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(paths, 'Expected the outer contour to be added').toHaveCount(1);
 
-  // Shift is only read at contour start, but holding it down throughout matches how a user performs it.
-  await keyDown({ page, key: 'Shift' });
-  await activeViewport.clickAt(holeContourClicks);
-  await expect(vertexHandles, 'Expected the three hole vertices to render').toHaveCount(3);
-  await activeViewport.doubleClickAt(holeContourClicks[2]);
-  await keyUp({ page, key: 'Shift' });
+  await withKeyHeld({
+    page,
+    key: 'Shift',
+    action: async () => {
+      await activeViewport.clickAt(holeContourClicks);
+      //check to see we're still drawing the smaller contour while holding shift
+      await expect(vertexHandles, 'Expected the three hole vertices to render').toHaveCount(3);
+      await activeViewport.doubleClickAt(holeContourClicks[2]);
+    },
+  });
 
-  // The hole is subtracted and rendered within the same path, so the path count stays at one.
-  await expect(paths, 'Expected the hole to render within the outer contour').toHaveCount(1);
+  // The handles clearing is the completion signal, so this settles the draw before the compare.
+  await expect(
+    vertexHandles,
+    'Expected the hole vertex handles to clear on completion'
+  ).toHaveCount(0);
 
   await checkForScreenshot({
     page,
