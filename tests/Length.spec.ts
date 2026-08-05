@@ -42,8 +42,8 @@ test('should display the length tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'Length',
-    formatPanelPrimaryLines: [measurementTextFormatters.lengthLine],
-    formatSvgLines: [measurementTextFormatters.lengthLine],
+    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine('278')],
+    expectedSvgLines: [measurementTextFormatters.lengthLine('278')],
     assertStats: stats => {
       expect(stats.unit).toBe('mm');
       expect(Math.round(stats.length as number)).toBe(278);

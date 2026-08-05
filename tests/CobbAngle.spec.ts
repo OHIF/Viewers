@@ -39,15 +39,13 @@ test('should display the cobb angle tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
-  // CobbAngle panel uses roundNumber (angleLine), but its SVG uses
-  // angle.toFixed(2) directly (cobbAngleSvgLine).
   await expectAnnotationStatsText({
     page,
     activeViewport,
     rightPanelPageObject,
     toolName: 'CobbAngle',
-    formatPanelPrimaryLines: [measurementTextFormatters.angleLine],
-    formatSvgLines: [measurementTextFormatters.cobbAngleSvgLine],
+    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine('1.66')],
+    expectedSvgLines: [measurementTextFormatters.angleLine('1.66')],
     assertStats: stats => {
       expect(stats.angle as number).toBeCloseTo(1.66, 2);
     },

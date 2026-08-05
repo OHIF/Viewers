@@ -44,16 +44,16 @@ test('should display the ellipse tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'EllipticalROI',
-    formatPanelPrimaryLines: [
-      measurementTextFormatters.areaPanelLine,
-      measurementTextFormatters.maxLine,
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.areaPanelLine('16778'),
+      measurementTextFormatters.maxLine('296'),
     ],
-    formatSvgLines: [
-      measurementTextFormatters.areaSvgLine,
-      measurementTextFormatters.meanSvgLine,
-      measurementTextFormatters.maxLine,
-      measurementTextFormatters.minSvgLine,
-      measurementTextFormatters.stdDevSvgLine,
+    expectedSvgLines: [
+      measurementTextFormatters.areaSvgLine('16778'),
+      measurementTextFormatters.meanSvgLine('83.1'),
+      measurementTextFormatters.maxLine('296'),
+      measurementTextFormatters.minSvgLine('-64.0'),
+      measurementTextFormatters.stdDevSvgLine('46.3'),
     ],
     assertStats: stats => {
       expect(stats.areaUnit).toBe('mm²');
@@ -61,7 +61,7 @@ test('should display the ellipse tool', async ({
       expect(stats.modalityUnit).toBe('HU');
       expect(stats.mean as number).toBeCloseTo(83.1, 1);
       expect(Math.round(stats.max as number)).toBe(296);
-      expect(Math.round(stats.min as number)).toBe(-64.0);
+      expect(Math.round(stats.min as number)).toBe(-64);
       expect(stats.stdDev as number).toBeCloseTo(46.3, 1);
     },
   });

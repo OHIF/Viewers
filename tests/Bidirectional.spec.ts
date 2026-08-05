@@ -42,13 +42,13 @@ test('should display the bidirectional tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'Bidirectional',
-    formatPanelPrimaryLines: [
-      measurementTextFormatters.bidirectionalLengthLine,
-      measurementTextFormatters.bidirectionalWidthLine,
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.bidirectionalLengthLine('195'),
+      measurementTextFormatters.bidirectionalWidthLine('130'),
     ],
-    formatSvgLines: [
-      measurementTextFormatters.bidirectionalLengthLine,
-      measurementTextFormatters.bidirectionalWidthLine,
+    expectedSvgLines: [
+      measurementTextFormatters.bidirectionalLengthLine('195'),
+      measurementTextFormatters.bidirectionalWidthLine('130'),
     ],
     assertStats: stats => {
       expect(stats.unit).toBe('mm');

@@ -41,15 +41,15 @@ test('should display the probe tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'Probe',
-    formatPanelPrimaryLines: [measurementTextFormatters.probePanelLine],
-    formatSvgLines: [
-      measurementTextFormatters.probeIndexSvgLine,
-      measurementTextFormatters.probePanelLine,
+    expectedPanelPrimaryLines: [measurementTextFormatters.probeValueLine('98.0')],
+    expectedSvgLines: [
+      measurementTextFormatters.probeIndexSvgLine([312, 154, 0]),
+      measurementTextFormatters.probeValueLine('98.0'),
     ],
     assertStats: stats => {
       expect(stats.modalityUnit).toBe('HU');
-      expect(typeof stats.value).toBe('number');
-      expect(Array.isArray(stats.index)).toBe(true);
+      expect(stats.value as number).toBeCloseTo(98.0, 1);
+      expect(stats.index as number[]).toEqual([312, 154, 0]);
     },
   });
 });

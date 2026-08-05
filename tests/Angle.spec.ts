@@ -38,14 +38,13 @@ test('should display the angle tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
-  // AngleTool: panel and SVG both use roundNumber – format is identical.
   await expectAnnotationStatsText({
     page,
     activeViewport,
     rightPanelPageObject,
     toolName: 'Angle',
-    formatPanelPrimaryLines: [measurementTextFormatters.angleLine],
-    formatSvgLines: [measurementTextFormatters.angleLine],
+    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine('53.1')],
+    expectedSvgLines: [measurementTextFormatters.angleLine('53.1')],
     assertStats: stats => {
       expect(stats.angle as number).toBeCloseTo(53.1, 1);
     },

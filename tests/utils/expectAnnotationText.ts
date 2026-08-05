@@ -4,8 +4,6 @@ import type { IViewportPageObject } from '../pages/ViewportPageObject';
 import type { RightPanelPageObject } from '../pages/RightPanelPageObject';
 import { getAnnotationStats, type AnnotationStats, type TargetStats } from './getAnnotationStats';
 
-type FormatLine = (stats: TargetStats) => string;
-
 type ExpectAnnotationStatsTextOptions = {
   page: Page;
   activeViewport: IViewportPageObject;
@@ -22,59 +20,24 @@ type ExpectAnnotationStatsTextOptions = {
    */
   annotationUID?: string;
   /**
-   * Build expected panel primary detail lines from cachedStats.
+   * Expected panel primary detail lines.
    * Order must match the panel's `stats.primary.lines`.
    */
-  formatPanelPrimaryLines: FormatLine[];
+  expectedPanelPrimaryLines: string[];
   /**
-   * Build expected SVG tspan lines from cachedStats.
+   * Expected SVG tspan lines.
    * Order must match `getSvgAnnotationStatTextLines`.
    */
-  formatSvgLines: FormatLine[];
+  expectedSvgLines: string[];
   /**
-   * Optional panel secondary detail lines (e.g. series/instance info).
+   * Expected optional panel secondary detail lines (e.g. series/instance info).
    */
-  formatPanelSecondaryLines?: FormatLine[];
+  expectedPanelSecondaryLines?: string[];
   /**
    * Extra assertions on the raw cachedStats / annotation state.
    */
   assertStats?: (stats: TargetStats, annotation: AnnotationStats) => void;
 };
-
-/**
- * Vendored copy of `roundNumber` from `platform/core/src/utils/roundNumber.js`
- * (identical to `@cornerstonejs/core`’s implementation).
- *
- * The Playwright E2E harness runs in Node and does not resolve `@ohif/core`
- * workspace imports, so we cannot import this helper directly. Keep this copy
- * in sync with core if the algorithm changes.
- */
-function roundNumber(value, precision = 2) {
-  if (Array.isArray(value)) {
-    return (value as unknown[]).map(v => roundNumber(v, precision)).join(', ');
-  }
-  if (value === undefined || value === null || value === '') return 'NaN';
-  value = Number(value);
-  const absValue = Math.abs(value);
-  if (absValue < 0.0001) {
-    return `${value}`;
-  }
-  const fixedPrecision =
-    absValue >= 100
-      ? precision - 2
-      : absValue >= 10
-        ? precision - 1
-        : absValue >= 1
-          ? precision
-          : absValue >= 0.1
-            ? precision + 1
-            : absValue >= 0.01
-              ? precision + 2
-              : absValue >= 0.001
-                ? precision + 3
-                : precision + 4;
-  return value.toFixed(fixedPrecision);
-}
 
 function resolveAnnotation(
   annotations: AnnotationStats[],
@@ -103,7 +66,6 @@ function resolveAnnotation(
  *  - the tracked measurements side panel row title,
  *  - the DOM SVG linked text box rendered in the viewport, and
  *  - the source-of-truth cornerstone annotation state (`data.label`).
- *
  *
  * Caller must open the measurements panel before calling this helper:
  *   await rightPanelPageObject.measurementsPanel.select();
@@ -158,9 +120,9 @@ export async function expectAnnotationStatsText({
   toolName,
   measurementIndex = 0,
   annotationUID,
-  formatPanelPrimaryLines,
-  formatSvgLines,
-  formatPanelSecondaryLines,
+  expectedPanelPrimaryLines,
+  expectedSvgLines,
+  expectedPanelSecondaryLines,
   assertStats,
 }: ExpectAnnotationStatsTextOptions): Promise<AnnotationStats> {
   const annotations = await getAnnotationStats(page, { toolName });
@@ -178,29 +140,29 @@ export async function expectAnnotationStatsText({
   const svgLines = activeViewport.getSvgAnnotationStatTextLines(annotation.annotationUID);
 
   // 1. Side panel primary lines
-  await expect(measurementRow.stats.primary.lines).toHaveCount(formatPanelPrimaryLines.length);
-  for (let i = 0; i < formatPanelPrimaryLines.length; i++) {
+  await expect(measurementRow.stats.primary.lines).toHaveCount(expectedPanelPrimaryLines.length);
+  for (let i = 0; i < expectedPanelPrimaryLines.length; i++) {
     await expect(measurementRow.stats.primary.lines.nth(i)).toHaveText(
-      formatPanelPrimaryLines[i](stats!)
+      expectedPanelPrimaryLines[i]
     );
   }
 
   // 2. Optional side panel secondary lines
-  if (formatPanelSecondaryLines) {
+  if (expectedPanelSecondaryLines) {
     await expect(measurementRow.stats.secondary.lines).toHaveCount(
-      formatPanelSecondaryLines.length
+      expectedPanelSecondaryLines.length
     );
-    for (let i = 0; i < formatPanelSecondaryLines.length; i++) {
+    for (let i = 0; i < expectedPanelSecondaryLines.length; i++) {
       await expect(measurementRow.stats.secondary.lines.nth(i)).toHaveText(
-        formatPanelSecondaryLines[i](stats!)
+        expectedPanelSecondaryLines[i]
       );
     }
   }
 
   // 3. Viewport SVG text lines
-  await expect(svgLines).toHaveCount(formatSvgLines.length);
-  for (let i = 0; i < formatSvgLines.length; i++) {
-    await expect(svgLines.nth(i)).toHaveText(formatSvgLines[i](stats!));
+  await expect(svgLines).toHaveCount(expectedSvgLines.length);
+  for (let i = 0; i < expectedSvgLines.length; i++) {
+    await expect(svgLines.nth(i)).toHaveText(expectedSvgLines[i]);
   }
 
   // 4. Optional extra assertions on raw stats
@@ -213,65 +175,42 @@ export async function expectAnnotationStatsText({
 
 /**
  * Reusable formatters for common measurement tools.
- * Each formatter mirrors exactly the text that production code renders so
- * that specs can assert both the panel detail lines and the SVG tspans
- * without hardcoding numbers.
+ * Each formatter adds labels and units around a display-ready value string (as shown in the UI).
+ * Pass exact UI tokens — e.g. `'-68.0'`, not `-68.0` — so trailing zeros and decimal places are preserved.
+ * These formatters do not round and do not read `cachedStats`.
  *
  * Naming convention:
- *   - No suffix  → identical format in both panel and SVG (e.g. lengthLine)
- *   - PanelLine  → panel-only format (no label prefix, e.g. areaPanelLine)
- *   - SvgLine    → SVG-only format  (with label prefix, e.g. areaSvgLine)
- *
- * CobbAngle is a notable exception: its SVG uses `angle.toFixed(2)` instead
- * of `roundNumber`, so `cobbAngleSvgLine` differs from `angleLine`.
+ *   - No suffix  → identical format in both panel and SVG (e.g. `lengthLine`)
+ *   - PanelLine  → panel-only format (no label prefix, e.g. `areaPanelLine`)
+ *   - SvgLine    → SVG-only format  (with label prefix, e.g. `areaSvgLine`)
  */
 export const measurementTextFormatters = {
-  lengthLine: (stats: TargetStats) =>
-    `${roundNumber(stats.length as number, 2)} ${stats.unit as string}`,
+  lengthLine: (value: string, unit = 'mm') => `${value} ${unit}`,
 
-  bidirectionalLengthLine: (stats: TargetStats) =>
-    `L: ${roundNumber(stats.length as number, 2)} ${stats.unit as string}`,
-  bidirectionalWidthLine: (stats: TargetStats) =>
-    `W: ${roundNumber(stats.width as number, 2)} ${stats.unit as string}`,
+  bidirectionalLengthLine: (value: string, unit = 'mm') => `L: ${value} ${unit}`,
+  bidirectionalWidthLine: (value: string, unit = 'mm') => `W: ${value} ${unit}`,
 
-  angleLine: (stats: TargetStats) => `${roundNumber(stats.angle as number, 2)} \u00B0`,
+  angleLine: (value: string) => `${value} \u00B0`,
 
-  /**
-   * CobbAngle SVG uses `angle.toFixed(2)` (always 2 d.p.) instead of
-   * roundNumber, so the SVG text can differ from the panel for angles
-   * outside the 1–9.9° range. Use angleLine for the CobbAngle panel line.
-   */
-  cobbAngleSvgLine: (stats: TargetStats) => `${(stats.angle as number).toFixed(2)} \u00B0`,
-
-  // ROI area
   /** Panel primary line for area-based tools (no "Area:" prefix). */
-  areaPanelLine: (stats: TargetStats) =>
-    `${roundNumber(stats.area as number, 2)} ${stats.areaUnit as string}`,
+  areaPanelLine: (value: string, unit = 'mm\u00B2') => `${value} ${unit}`,
   /** SVG line for area-based tools (includes "Area:" prefix). */
-  areaSvgLine: (stats: TargetStats) =>
-    `Area: ${roundNumber(stats.area as number, 2)} ${stats.areaUnit as string}`,
+  areaSvgLine: (value: string, unit = 'mm\u00B2') => `Area: ${value} ${unit}`,
 
-  // ROI statistics
   /**
    * "Max: X unit" – rendered by getStatisticDisplayString on the panel and
    * directly by cornerstone-tools in the SVG; format is identical for both.
    */
-  maxLine: (stats: TargetStats) =>
-    `Max: ${roundNumber(stats.max as number, 2)} ${stats.modalityUnit as string}`,
-  meanSvgLine: (stats: TargetStats) =>
-    `Mean: ${roundNumber(stats.mean as number, 2)} ${stats.modalityUnit as string}`,
-  minSvgLine: (stats: TargetStats) =>
-    `Min: ${roundNumber(stats.min as number, 2)} ${stats.modalityUnit as string}`,
-  stdDevSvgLine: (stats: TargetStats) =>
-    `Std Dev: ${roundNumber(stats.stdDev as number, 2)} ${stats.modalityUnit as string}`,
+  maxLine: (value: string, unit = 'HU') => `Max: ${value} ${unit}`,
+  meanSvgLine: (value: string, unit = 'HU') => `Mean: ${value} ${unit}`,
+  minSvgLine: (value: string, unit = 'HU') => `Min: ${value} ${unit}`,
+  stdDevSvgLine: (value: string, unit = 'HU') => `Std Dev: ${value} ${unit}`,
 
   /** CircleROI SVG line 0: computed circle radius. */
-  circleRadiusSvgLine: (stats: TargetStats) =>
-    `Radius: ${roundNumber(stats.radius as number, 2)} ${stats.radiusUnit as string}`,
+  circleRadiusSvgLine: (value: string, unit = 'mm') => `Radius: ${value} ${unit}`,
 
   /** Panel primary line and SVG value line for Probe. */
-  probePanelLine: (stats: TargetStats) =>
-    `${roundNumber(stats.value as number, 2)} ${stats.modalityUnit as string}`,
+  probeValueLine: (value: string, unit = 'HU') => `${value} ${unit}`,
   /** Probe SVG line 0: the voxel index coordinates "(i, j, k)". */
-  probeIndexSvgLine: (stats: TargetStats) => `(${(stats.index as number[]).join(', ')})`,
+  probeIndexSvgLine: (index: number[]) => `(${index.join(', ')})`,
 };

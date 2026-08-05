@@ -43,24 +43,28 @@ test('should display the circle tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'CircleROI',
-    formatPanelPrimaryLines: [
-      measurementTextFormatters.areaPanelLine,
-      measurementTextFormatters.maxLine,
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.areaPanelLine('13741'),
+      measurementTextFormatters.maxLine('263'),
     ],
-    formatSvgLines: [
-      measurementTextFormatters.circleRadiusSvgLine,
-      measurementTextFormatters.areaSvgLine,
-      measurementTextFormatters.meanSvgLine,
-      measurementTextFormatters.maxLine,
-      measurementTextFormatters.minSvgLine,
-      measurementTextFormatters.stdDevSvgLine,
+    expectedSvgLines: [
+      measurementTextFormatters.circleRadiusSvgLine('66.1'),
+      measurementTextFormatters.areaSvgLine('13741'),
+      measurementTextFormatters.meanSvgLine('94.4'),
+      measurementTextFormatters.maxLine('263'),
+      measurementTextFormatters.minSvgLine('-68.0'),
+      measurementTextFormatters.stdDevSvgLine('44.9'),
     ],
     assertStats: stats => {
       expect(stats.areaUnit).toBe('mm²');
-      expect(stats.area as number).toBeGreaterThan(0);
+      expect(Math.round(stats.area as number)).toBe(13741);
       expect(stats.radiusUnit).toBe('mm');
-      expect(stats.radius as number).toBeGreaterThan(0);
+      expect(stats.radius as number).toBeCloseTo(66.1, 1);
       expect(stats.modalityUnit).toBe('HU');
+      expect(stats.mean as number).toBeCloseTo(94.4, 1);
+      expect(Math.round(stats.max as number)).toBe(263);
+      expect(stats.min as number).toBeCloseTo(-68.0, 1);
+      expect(stats.stdDev as number).toBeCloseTo(44.9, 1);
     },
   });
 });

@@ -44,22 +44,25 @@ test('should display the rectangle tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'RectangleROI',
-    formatPanelPrimaryLines: [
-      measurementTextFormatters.areaPanelLine,
-      measurementTextFormatters.maxLine,
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.areaPanelLine('15959'),
+      measurementTextFormatters.maxLine('295'),
     ],
-    formatSvgLines: [
-      measurementTextFormatters.areaSvgLine,
-      measurementTextFormatters.meanSvgLine,
-      measurementTextFormatters.maxLine,
-      measurementTextFormatters.minSvgLine,
-      measurementTextFormatters.stdDevSvgLine,
+    expectedSvgLines: [
+      measurementTextFormatters.areaSvgLine('15959'),
+      measurementTextFormatters.meanSvgLine('80.4'),
+      measurementTextFormatters.maxLine('295'),
+      measurementTextFormatters.minSvgLine('-77.0'),
+      measurementTextFormatters.stdDevSvgLine('38.2'),
     ],
     assertStats: stats => {
       expect(stats.areaUnit).toBe('mm²');
-      expect(stats.area as number).toBeGreaterThan(0);
+      expect(Math.round(stats.area as number)).toBe(15959);
       expect(stats.modalityUnit).toBe('HU');
-      expect(typeof stats.max).toBe('number');
+      expect(stats.mean as number).toBeCloseTo(80.4, 1);
+      expect(Math.round(stats.max as number)).toBe(295);
+      expect(Math.round(stats.min as number)).toBe(-77);
+      expect(stats.stdDev as number).toBeCloseTo(38.2, 1);
     },
   });
 });
