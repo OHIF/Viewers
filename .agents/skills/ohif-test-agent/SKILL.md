@@ -251,9 +251,12 @@ Reach for the cheapest *faithful* signal, in this order:
    assert it — this is the right tool, not a last resort, whenever what you're verifying is
    the rendered canvas itself.
 3. **Never substitute a service/state read for a render assertion.** Reading a service's
-   state (any `window.services...`) asserts the *data model*, not the pixels the user sees —
+   state (any `window.services...`, and equally cornerstone state via `window.cornerstone...`
+   or `window.cornerstoneTools...`) asserts the *data model*, not the pixels the user sees —
    it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
-   escape hatch for *setup*, not for *appearance* assertions.
+   escape hatch for *setup*, not for *appearance* assertions. When no DOM/SVG signal
+   captures what you're verifying (e.g. contour geometry, merge results, holes), default
+   to a viewport-scoped screenshot compare.
 
 For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport or the viewport grid:
 
@@ -305,7 +308,7 @@ Full mapping in [references/patterns-by-feature.md](references/patterns-by-featu
 3. Use normalized coordinates (0–1) for viewport interactions.
 4. Use `visitStudy` with a real UID, correct mode, and a non-zero delay (2000 is conventional).
 5. Handle hydration and measurement-tracking prompts where applicable.
-6. Choose the faithful signal: DOM/SVG assertions where the rendered result has one (panels, dialogs, overlay text, SVG/vector overlays), a viewport-scoped screenshot when what you're verifying is canvas-only raster output, and never a `window.services` state read standing in for a render check. Screenshots use the object form, scoped via a `locator` — never the full app.
+6. Choose the faithful signal: DOM/SVG assertions where the rendered result has one (panels, dialogs, overlay text, SVG/vector overlays), a viewport-scoped screenshot when what you're verifying is canvas-only raster output, and never an in-page state read (`window.services`, `window.cornerstone`, `window.cornerstoneTools`) standing in for a render check — when no DOM/SVG signal fits, default to the screenshot. Screenshots use the object form, scoped via a `locator` — never the full app.
 7. Use `data-cy` selectors (already wired via `testIdAttribute`).
 8. When an assertion needs retry tolerance, wrap it in `expect.toPass({ timeout })`.
 9. Test in the correct mode — segmentation tools aren't available in `viewer` mode.
@@ -323,7 +326,7 @@ Before returning a generated OHIF test, confirm all items:
 3. Uses normalized viewport interactions (`normalizedClickAt` / `normalizedDragAt`) unless there is a strong reason otherwise.
 4. Uses a valid canonical StudyInstanceUID and compatible mode.
 5. Handles hydration or measurement tracking prompts when the workflow requires them.
-6. Uses the faithful signal for each assertion — DOM/SVG where the result has a DOM representation, a viewport-scoped screenshot when what's verified is canvas-only raster output, and never a `window.services` state read in place of a render check. Any `checkForScreenshot` call uses the object form, scoped via a `locator` (viewport pane or grid) — no full-app screenshots.
+6. Uses the faithful signal for each assertion — DOM/SVG where the result has a DOM representation, a viewport-scoped screenshot when what's verified is canvas-only raster output, and never an in-page state read (`window.services`, `window.cornerstone`, `window.cornerstoneTools`) in place of a render check; where no DOM/SVG signal fits, the screenshot is the default. Any `checkForScreenshot` call uses the object form, scoped via a `locator` (viewport pane or grid) — no full-app screenshots.
 7. Replaces `page.waitForTimeout(...)` after viewport-rendering actions with `waitForViewportRenderCycle(page)` (started before the action) — keeps `waitForTimeout` only for non-render waits like the hydration prompt in `beforeEach`.
 8. If execution was skipped, states that explicitly and provides concrete run commands.
 9. Every application control is reached through a page object — no raw `getByTestId`/`getByRole` in the spec for buttons, menus, dialogs, or fields. Any control not already covered was added to the right page object (or a new one), with a source `data-cy` if it lacked one.
