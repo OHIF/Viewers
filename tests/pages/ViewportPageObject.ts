@@ -226,7 +226,7 @@ export class ViewportPageObject {
         await this.showLocatorElements(viewport.locator(annotationTextSelector));
       },
       showOrientationMarkerText: async () => {
-        await this.showLocatorElements(viewport.locator('.ViewportOrientationMarkers'));
+        await this.showLocatorElements(viewport.locator(orientationMarkerTextSelector));
       },
       showAllText: async () => {
         await textVisibilityMethods.showViewportOverlayText();
