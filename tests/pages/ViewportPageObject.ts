@@ -201,6 +201,8 @@ export class ViewportPageObject {
 
     const annotationTextSelector = 'g[data-annotation-uid] text';
 
+    const orientationMarkerTextSelector = '.ViewportOrientationMarkers';
+
     const textVisibilityMethods = {
       hideViewportOverlayText: async () => {
         await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
@@ -209,7 +211,7 @@ export class ViewportPageObject {
         await this.hideLocatorElements(viewport.locator(annotationTextSelector));
       },
       hideOrientationMarkerText: async () => {
-        await this.hideLocatorElements(viewport.locator('.ViewportOrientationMarkers'));
+        await this.hideLocatorElements(viewport.locator(orientationMarkerTextSelector));
       },
       hideAllText: async () => {
         await textVisibilityMethods.hideViewportOverlayText();
