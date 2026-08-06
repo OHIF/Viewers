@@ -300,7 +300,7 @@ code change.
 Every sidebar shall satisfy the sidebar contract of
 [result sets §5.3](../result-sets/requirements.md#53-the-general-sidebar-contract--sb).
 
-**EM-SID-6** *(proposed)*
+**EM-SID-6** *(proposed — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md))*
 A side panel region shall not host tool selection.
 
 **EM-SID-7**

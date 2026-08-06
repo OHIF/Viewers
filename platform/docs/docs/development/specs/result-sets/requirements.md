@@ -830,7 +830,7 @@ active viewport's applicable result types and active result set.
 
 **RS-TOOL-1**
 The system shall make every tool that creates or edits results selectable from the standard OHIF
-toolbar and tool menus, in conformance with `SB-TOOL-1`.
+toolbar and tool menus, in conformance with `EM-TOP-1`.
 
 **RS-TOOL-2**
 The system shall not require a sidebar to be open, or a result set to exist, in order for such a
@@ -932,21 +932,32 @@ sidebar that presents it, without requiring the user to reopen or refresh the si
 
 #### 5.3.3 Tools versus actions — `SB-TOOL`
 
+The tool-versus-action distinction, and the placement each implies, are specified by
+[Extensions and modes (`EM`)](../extensions-and-modes/requirements.md). They are not restated
+here, because they are not sidebar-specific: the same rule decides what may appear in a viewport
+action menu or in the header.
+
+| Concern | Requirement |
+| --- | --- |
+| Tool selection appears in the top menu bar | `EM-TOP-1`, `EM-TOP-2` |
+| A side panel region does not host tool selection | `EM-SID-6` |
+| A sidebar does not host per-viewport display options | `EM-SID-7` |
+| What counts as a tool rather than an action on a selection | `EM-PLC-4` |
+| Actions on a sidebar's current selection belong in that sidebar | `EM-PLC-1` |
+| A capability is defined once and referenced, not duplicated per region | `EM-PLC-2` |
+| Moving a capability between regions does not require reimplementing it | `EM-PLC-5` |
+
 **SB-TOOL-1**
-The system shall place tool selection in the standard OHIF toolbar and tool menus, and shall not
-place tool selection in a sidebar.
+Every sidebar shall satisfy `EM-PLC-1`..`EM-PLC-5`, `EM-SID-6`, and `EM-SID-7`.
 
 **SB-TOOL-2**
-WHERE an action operates on an item already selected in a sidebar rather than changing which tool
-is active, the system shall be permitted to present that action in the sidebar.
+WHEN an action offered by a sidebar requires a tool to become active, the system shall activate
+that tool through the standard tool activation path rather than through a sidebar-private
+mechanism.
 
-**SB-TOOL-3**
-WHEN a sidebar action requires a tool to become active, the system shall activate that tool through
-the standard tool activation path rather than through a sidebar-private mechanism.
-
-> **Note:** `SB-TOOL-1` and `SB-TOOL-2` together draw the line the source issue asks for. "Brush",
-> "circle scissors", and "spline ROI" are tools and belong in the toolbar. "Interpolate", "smooth",
-> "delete", and "copy" are actions on a selection and may stay in the sidebar.
+> **Note (SB-TOOL-2):** This is the one part of the distinction that is genuinely sidebar-specific,
+> and it is what makes `EM-PLC-5` hold in practice — a sidebar that activates tools its own way
+> becomes a second tool system the top menu bar does not know about.
 
 #### 5.3.4 Selection and navigation — `SB-SEL`
 
@@ -1125,10 +1136,11 @@ Today the labelmap and contour toolboxes render inside the segmentation panel. T
 produces two of the symptoms in the source issue: a tool cannot be used until the panel is open,
 and the tool's target is whatever the panel happens to have selected.
 
-`SB-TOOL-1` moves tool selection to the toolbar and `RS-UI-2` puts the applicable result types
-there; `SB-OWN-3` requires the capability to remain available with the sidebar closed. The target
-is then resolved from viewport applicability rather than panel state, which is what `RS-TOOL-3`
-through `RS-TOOL-12` specify.
+`EM-SID-6` moves tool selection out of the panel, `EM-TOP-1` puts it in the top menu bar, and
+`RS-UI-2` puts the applicable result types there; `SB-OWN-3` requires the capability to remain
+available with the sidebar closed. The target is then resolved from viewport applicability rather
+than panel state, which is what `RS-TOOL-3` through `RS-TOOL-12` specify. The concrete move is
+[CP-SEGTOOL](../changes/segmentation-tool-submenu.md).
 
 ---
 
@@ -1192,7 +1204,7 @@ conformance with `RS-MEM-6`.
 | Representation | `RS-DEF-3`, `RS-MEM-6`, `RS-OPS-*` |
 | Result-set view and sub-tabs | `SB-COMP-*`, `SB-OWN-*`, `RS-VIEW-*` |
 | Segment coverage view | `RS-COV-*` |
-| 1. Tool selection in the standard tool UI | `SB-TOOL-1`, `SB-TOOL-2`, `SB-OWN-3`, `RS-UI-2`, `RS-TOOL-1`, `RS-TOOL-2`, `RS-VIEW-2` |
+| 1. Tool selection in the standard tool UI | `EM-TOP-1`, `EM-SID-6`, `EM-PLC-4`, `SB-TOOL-1`, `SB-TOOL-2`, `SB-OWN-3`, `RS-UI-2`, `RS-TOOL-1`, `RS-TOOL-2`, `RS-VIEW-2` |
 | 2. Create results on first use | `RS-TOOL-3`..`RS-TOOL-12` |
 | 3. Load result sets as logical units | `RS-IMP-*`, `RS-DS-*` |
 | 4. Control result-set visibility per viewport | `RS-VP-*`, `RS-APP-*`, `SB-VP-2` |

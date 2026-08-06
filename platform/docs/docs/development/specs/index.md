@@ -51,6 +51,20 @@ reserved requirement-ID prefix so that specifications can cite one another witho
 Add a row to the table above before writing the specification. A prefix is two uppercase
 letters, unique across this section, and never reused after retirement.
 
+### 1.2 Change proposals
+
+A component specification records the current decision. A **change proposal** records a specific,
+scoped change to one — what moves, why, what it satisfies, and what it does not touch. It carries
+its own requirements so the change can be reviewed and tested as a unit, and it is retired once the
+change lands and the specification it amends has been updated.
+
+Change proposals use the prefix `CP-<NAME>`, where `<NAME>` identifies the proposal. They are the
+usual reason a requirement elsewhere is marked *(proposed)*.
+
+| Proposal | Changes | Status |
+| --- | --- | --- |
+| [CP-SEGTOOL](./changes/segmentation-tool-submenu.md) — segmentation and contour tools into a toolbar sub-menu | `EM`, `RS` | Proposed |
+
 ---
 
 ## 2. Requirement identifiers
