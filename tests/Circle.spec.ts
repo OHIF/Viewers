@@ -36,6 +36,13 @@ test('should display the circle tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedArea = 13741;
+  const expectedMax = 263;
+  const expectedRadius = 66.1;
+  const expectedMean = 94.4;
+  const expectedMin = -68.0;
+  const expectedStdDev = 44.9;
+
   // CircleROI panel: area (no prefix) + Max (with prefix).
   // CircleROI SVG: Radius, Area, Mean, Max, Min, Std Dev (6 lines for CT modality).
   await expectAnnotationStatsText({
@@ -44,27 +51,27 @@ test('should display the circle tool', async ({
     rightPanelPageObject,
     toolName: 'CircleROI',
     expectedPanelPrimaryLines: [
-      measurementTextFormatters.areaPanelLine('13741'),
-      measurementTextFormatters.maxLine('263'),
+      measurementTextFormatters.areaPanelLine(`${expectedArea}`),
+      measurementTextFormatters.maxLine(`${expectedMax}`),
     ],
     expectedSvgLines: [
-      measurementTextFormatters.circleRadiusSvgLine('66.1'),
-      measurementTextFormatters.areaSvgLine('13741'),
-      measurementTextFormatters.meanSvgLine('94.4'),
-      measurementTextFormatters.maxLine('263'),
-      measurementTextFormatters.minSvgLine('-68.0'),
-      measurementTextFormatters.stdDevSvgLine('44.9'),
+      measurementTextFormatters.circleRadiusSvgLine(`${expectedRadius}`),
+      measurementTextFormatters.areaSvgLine(`${expectedArea}`),
+      measurementTextFormatters.meanSvgLine(`${expectedMean}`),
+      measurementTextFormatters.maxLine(`${expectedMax}`),
+      measurementTextFormatters.minSvgLine(expectedMin.toFixed(1)),
+      measurementTextFormatters.stdDevSvgLine(`${expectedStdDev}`),
     ],
     assertStats: stats => {
       expect(stats.areaUnit).toBe('mm²');
-      expect(Math.round(stats.area as number)).toBe(13741);
+      expect(Math.round(stats.area as number)).toBe(expectedArea);
       expect(stats.radiusUnit).toBe('mm');
-      expect(stats.radius as number).toBeCloseTo(66.1, 1);
+      expect(stats.radius as number).toBeCloseTo(expectedRadius, 1);
       expect(stats.modalityUnit).toBe('HU');
-      expect(stats.mean as number).toBeCloseTo(94.4, 1);
-      expect(Math.round(stats.max as number)).toBe(263);
-      expect(stats.min as number).toBeCloseTo(-68.0, 1);
-      expect(stats.stdDev as number).toBeCloseTo(44.9, 1);
+      expect(stats.mean as number).toBeCloseTo(expectedMean, 1);
+      expect(Math.round(stats.max as number)).toBe(expectedMax);
+      expect(stats.min as number).toBeCloseTo(expectedMin, 1);
+      expect(stats.stdDev as number).toBeCloseTo(expectedStdDev, 1);
     },
   });
 });

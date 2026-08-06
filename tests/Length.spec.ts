@@ -37,16 +37,18 @@ test('should display the length tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedValue = 278;
+
   await expectAnnotationStatsText({
     page,
     activeViewport,
     rightPanelPageObject,
     toolName: 'Length',
-    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine('278')],
-    expectedSvgLines: [measurementTextFormatters.lengthLine('278')],
+    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine(`${expectedValue}`)],
+    expectedSvgLines: [measurementTextFormatters.lengthLine(`${expectedValue}`)],
     assertStats: stats => {
       expect(stats.unit).toBe('mm');
-      expect(Math.round(stats.length as number)).toBe(278);
+      expect(Math.round(stats.length as number)).toBe(expectedValue);
     },
   });
 });

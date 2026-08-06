@@ -39,15 +39,17 @@ test('should display the cobb angle tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedCobbAngle = 1.66;
+
   await expectAnnotationStatsText({
     page,
     activeViewport,
     rightPanelPageObject,
     toolName: 'CobbAngle',
-    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine('1.66')],
-    expectedSvgLines: [measurementTextFormatters.angleLine('1.66')],
+    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine(`${expectedCobbAngle}`)],
+    expectedSvgLines: [measurementTextFormatters.angleLine(`${expectedCobbAngle}`)],
     assertStats: stats => {
-      expect(stats.angle as number).toBeCloseTo(1.66, 2);
+      expect(stats.angle as number).toBeCloseTo(expectedCobbAngle, 2);
     },
   });
 });

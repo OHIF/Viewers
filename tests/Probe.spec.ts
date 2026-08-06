@@ -34,6 +34,9 @@ test('should display the probe tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedValue = 98.0;
+  const expectedIndex = [312, 154, 0];
+
   // Probe panel: single value line (no index coordinates).
   // Probe SVG: 2 lines – voxel index "(i, j, k)" then the HU value.
   await expectAnnotationStatsText({
@@ -41,15 +44,15 @@ test('should display the probe tool', async ({
     activeViewport,
     rightPanelPageObject,
     toolName: 'Probe',
-    expectedPanelPrimaryLines: [measurementTextFormatters.probeValueLine('98.0')],
+    expectedPanelPrimaryLines: [measurementTextFormatters.probeValueLine(expectedValue.toFixed(1))],
     expectedSvgLines: [
-      measurementTextFormatters.probeIndexSvgLine([312, 154, 0]),
-      measurementTextFormatters.probeValueLine('98.0'),
+      measurementTextFormatters.probeIndexSvgLine(expectedIndex),
+      measurementTextFormatters.probeValueLine(expectedValue.toFixed(1)),
     ],
     assertStats: stats => {
       expect(stats.modalityUnit).toBe('HU');
-      expect(stats.value as number).toBeCloseTo(98.0, 1);
-      expect(stats.index as number[]).toEqual([312, 154, 0]);
+      expect(stats.value as number).toBeCloseTo(expectedValue, 1);
+      expect(stats.index as number[]).toEqual(expectedIndex);
     },
   });
 });

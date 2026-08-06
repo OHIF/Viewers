@@ -38,15 +38,17 @@ test('should display the angle tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedAngle = 53.1;
+
   await expectAnnotationStatsText({
     page,
     activeViewport,
     rightPanelPageObject,
     toolName: 'Angle',
-    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine('53.1')],
-    expectedSvgLines: [measurementTextFormatters.angleLine('53.1')],
+    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine(`${expectedAngle}`)],
+    expectedSvgLines: [measurementTextFormatters.angleLine(`${expectedAngle}`)],
     assertStats: stats => {
-      expect(stats.angle as number).toBeCloseTo(53.1, 1);
+      expect(stats.angle as number).toBeCloseTo(expectedAngle, 1);
     },
   });
 });

@@ -37,23 +37,26 @@ test('should display the bidirectional tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedLength = 195;
+  const expectedWidth = 130;
+
   await expectAnnotationStatsText({
     page,
     activeViewport,
     rightPanelPageObject,
     toolName: 'Bidirectional',
     expectedPanelPrimaryLines: [
-      measurementTextFormatters.bidirectionalLengthLine('195'),
-      measurementTextFormatters.bidirectionalWidthLine('130'),
+      measurementTextFormatters.bidirectionalLengthLine(`${expectedLength}`),
+      measurementTextFormatters.bidirectionalWidthLine(`${expectedWidth}`),
     ],
     expectedSvgLines: [
-      measurementTextFormatters.bidirectionalLengthLine('195'),
-      measurementTextFormatters.bidirectionalWidthLine('130'),
+      measurementTextFormatters.bidirectionalLengthLine(`${expectedLength}`),
+      measurementTextFormatters.bidirectionalWidthLine(`${expectedWidth}`),
     ],
     assertStats: stats => {
       expect(stats.unit).toBe('mm');
-      expect(Math.round(stats.length as number)).toBe(195);
-      expect(Math.round(stats.width as number)).toBe(130);
+      expect(Math.round(stats.length as number)).toBe(expectedLength);
+      expect(Math.round(stats.width as number)).toBe(expectedWidth);
     },
   });
 });

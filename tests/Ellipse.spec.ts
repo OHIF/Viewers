@@ -37,6 +37,12 @@ test('should display the ellipse tool', async ({
 
   await rightPanelPageObject.measurementsPanel.select();
 
+  const expectedArea = 16778;
+  const expectedMax = 296;
+  const expectedMean = 83.1;
+  const expectedMin = -64.0;
+  const expectedStdDev = 46.3;
+
   // EllipticalROI panel: area (no prefix) + Max (with prefix).
   // EllipticalROI SVG: Area, Mean, Max, Min, Std Dev (5 lines for CT modality).
   await expectAnnotationStatsText({
@@ -45,24 +51,24 @@ test('should display the ellipse tool', async ({
     rightPanelPageObject,
     toolName: 'EllipticalROI',
     expectedPanelPrimaryLines: [
-      measurementTextFormatters.areaPanelLine('16778'),
-      measurementTextFormatters.maxLine('296'),
+      measurementTextFormatters.areaPanelLine(`${expectedArea}`),
+      measurementTextFormatters.maxLine(`${expectedMax}`),
     ],
     expectedSvgLines: [
-      measurementTextFormatters.areaSvgLine('16778'),
-      measurementTextFormatters.meanSvgLine('83.1'),
-      measurementTextFormatters.maxLine('296'),
-      measurementTextFormatters.minSvgLine('-64.0'),
-      measurementTextFormatters.stdDevSvgLine('46.3'),
+      measurementTextFormatters.areaSvgLine(`${expectedArea}`),
+      measurementTextFormatters.meanSvgLine(`${expectedMean}`),
+      measurementTextFormatters.maxLine(`${expectedMax}`),
+      measurementTextFormatters.minSvgLine(expectedMin.toFixed(1)),
+      measurementTextFormatters.stdDevSvgLine(`${expectedStdDev}`),
     ],
     assertStats: stats => {
       expect(stats.areaUnit).toBe('mm²');
-      expect(Math.round(stats.area as number)).toBe(16778);
+      expect(Math.round(stats.area as number)).toBe(expectedArea);
       expect(stats.modalityUnit).toBe('HU');
-      expect(stats.mean as number).toBeCloseTo(83.1, 1);
-      expect(Math.round(stats.max as number)).toBe(296);
-      expect(Math.round(stats.min as number)).toBe(-64);
-      expect(stats.stdDev as number).toBeCloseTo(46.3, 1);
+      expect(stats.mean as number).toBeCloseTo(expectedMean, 1);
+      expect(Math.round(stats.max as number)).toBe(expectedMax);
+      expect(Math.round(stats.min as number)).toBe(expectedMin);
+      expect(stats.stdDev as number).toBeCloseTo(expectedStdDev, 1);
     },
   });
 });
