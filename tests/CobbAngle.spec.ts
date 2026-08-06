@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -31,11 +31,11 @@ test('should display the cobb angle tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.cobbangle.cobbangleDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.cobbangle.cobbangleDisplayedCorrectly,
+  });
 
   await rightPanelPageObject.measurementsPanel.select();
 

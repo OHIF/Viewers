@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -30,11 +30,11 @@ test('should display the angle tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.angle.angleDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.angle.angleDisplayedCorrectly,
+  });
 
   await rightPanelPageObject.measurementsPanel.select();
 

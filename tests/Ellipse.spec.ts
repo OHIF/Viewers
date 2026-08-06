@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -29,11 +29,11 @@ test('should display the ellipse tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.ellipse.ellipseDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.ellipse.ellipseDisplayedCorrectly,
+  });
 
   await rightPanelPageObject.measurementsPanel.select();
 

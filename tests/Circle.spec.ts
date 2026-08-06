@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -28,11 +28,11 @@ test('should display the circle tool', async ({
     { x: 488, y: 247 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.circle.circleDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.circle.circleDisplayedCorrectly,
+  });
 
   await rightPanelPageObject.measurementsPanel.select();
 

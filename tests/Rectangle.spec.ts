@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -29,11 +29,11 @@ test('should display the rectangle tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.rectangle.rectangleDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.rectangle.rectangleDisplayedCorrectly,
+  });
 
   await rightPanelPageObject.measurementsPanel.select();
 

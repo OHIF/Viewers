@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -26,11 +26,11 @@ test('should display the probe tool', async ({
   await activeViewport.clickAt([{ x: 550, y: 200 }]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.probe.probeDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.probe.probeDisplayedCorrectly,
+  });
 
   await rightPanelPageObject.measurementsPanel.select();
 

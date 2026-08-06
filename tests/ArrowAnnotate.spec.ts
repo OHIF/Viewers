@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   expectAnnotationLabelText,
   getAnnotationStats,
@@ -42,8 +42,9 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await viewportRenderCycle;
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
   });
 
@@ -72,8 +73,9 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await DOMOverlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
   });
 
@@ -93,8 +95,9 @@ test('should display the arrow tool and allow free-form text to be entered', asy
     .nthMeasurement(0)
     .actions.rename('Drummer annotation arrow');
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
   });
 
