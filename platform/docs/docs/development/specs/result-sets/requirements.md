@@ -96,9 +96,9 @@ absence of a marker says nothing about priority.
 | 1 | Tool selection moves to the top menu bar — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
 | 2 | Named result sets, applied to the segmentation, contour, and annotation sidebars |
 
-**Phase 2** is deliberately narrow. A result set is identified by its **name** and nothing else
-(`RS-ID-11`); the name defaults to the `SeriesDescription` the object was saved under
-(`RS-ID-10`); a set carries an applicability rule (`RS-APP-15`, `RS-APP-16`); a viewport names the
+**Phase 2** is deliberately narrow. A result set is grouped by its **name** unless something has deliberately
+set an identity (`RS-ID-11`); the name defaults to the `SeriesDescription` the object was saved
+under (`RS-ID-10`); a set carries an applicability rule (`RS-APP-15`, `RS-APP-16`); a viewport names the
 sets it shows (`RS-VP-14`, `RS-VP-15`); a save writes the whole set and stamps the name into every
 `SeriesDescription` (`RS-SAVE-18`, `RS-SAVE-9a`); and tools that create results share one default
 name so the user ends up with one set rather than three (`RS-TOOL-14`).
@@ -229,6 +229,30 @@ pair their members manually.
 WHEN a member is added to or removed from a result set, the system shall not alter any other
 result set.
 
+**RS-GRP-10** *(phase 2)*
+The system shall allow the whole of a result set to be turned on and off in a single action.
+
+**RS-GRP-11** *(phase 2)*
+WHEN a result set is turned off, the system shall hide every member of that set without altering
+the individual visibility of those members.
+
+**RS-GRP-12** *(phase 2)*
+WHEN a result set is turned back on, the system shall restore the member visibility that was in
+effect before it was turned off.
+
+**RS-GRP-13** *(phase 2)*
+The system shall allow each displayed result set to be turned on and off independently of the
+others.
+
+**RS-GRP-14** *(phase 2)*
+The system shall show the on/off state of a result set wherever that set is listed.
+
+> **Note (RS-GRP-11, RS-GRP-12):** A group toggle is a group-level override, not a bulk edit of its
+> members. A user who has hidden one segment inside a set, turned the set off to look at the
+> images, and turned it back on expects that segment still hidden — not everything switched on.
+>
+> Where the control lives, and how far the toggle reaches, is not settled. See §10 item 8.
+
 ### 4.3 Identity and lifecycle — `RS-ID`
 
 **RS-ID-1**
@@ -272,17 +296,42 @@ WHEN a result set is created from imported results, the system shall default its
 the imported object carries — its `SeriesDescription`, or the equivalent for its type.
 
 **RS-ID-11** *(phase 2)*
-The system shall treat the result-set name as the result set's identity, and shall treat results
-carrying the same name as belonging to the same result set.
+The system shall determine which result set a result belongs to from an explicit result-set
+identity where one has been set, and from the result-set name otherwise.
 
 **RS-ID-12** *(phase 2)*
+WHERE no explicit identity distinguishes them, the system shall treat results carrying the same
+name as belonging to the same result set.
+
+**RS-ID-13** *(phase 2)*
+The system shall not require an explicit result-set identity to be present.
+
+**RS-ID-14** *(phase 2)*
+WHERE a result carries an explicit result-set identity, the system shall preserve its grouping
+when the result set is renamed.
+
+**RS-ID-15** *(phase 2)*
 The system shall not require results carrying different names to be reconciled into one result
 set.
 
-> **Note (RS-ID-11, RS-ID-12):** Name-only identity is the whole of phase 2. Nothing has to infer
-> that two differently named objects are one piece of work — the DICOM-level grouping of
-> `RS-IMP-1`..`RS-IMP-3` is a later refinement, and a deployment needing it sooner can add it as
-> custom code. What phase 2 must deliver is that a name is enough to group, display, and save.
+**RS-ID-16** *(phase 2)*
+The system shall make it inspectable whether a result set is grouped by explicit identity or by
+name.
+
+> **Note (RS-ID-11):** The name is the **default** grouping key, not the identity. Where something
+> has deliberately set an identity — a workflow, an importer, or custom deployment code — that
+> identity wins, and `RS-ID-14` keeps the grouping stable when the user renames the set. Only when
+> nothing has been set does the name decide, which is the common case and the whole of what phase 2
+> has to deliver.
+>
+> The distinction matters in two places. Two unrelated result sets that happen to share a
+> `SeriesDescription` can be kept apart by identity rather than forcing the user to rename one. And
+> a set with an identity can be renamed freely, because the rename is a label change rather than a
+> regrouping.
+
+> **Note (RS-ID-15):** Nothing has to infer that two differently named objects are one piece of
+> work. The DICOM-level grouping of `RS-IMP-1`..`RS-IMP-3` is a later refinement, and a deployment
+> needing it sooner can add it as custom code.
 
 ### 4.4 Membership and provenance — `RS-MEM`
 
@@ -515,8 +564,8 @@ The system shall complete import grouping without requiring any viewport to be d
 imported data.
 
 **RS-IMP-11** *(phase 2)*
-The system shall group imported results by result-set name alone, and shall not require the
-grouping rules of `RS-IMP-1`..`RS-IMP-3` in order to do so.
+The system shall group imported results by explicit identity where present and by result-set name
+otherwise, and shall not require the grouping rules of `RS-IMP-1`..`RS-IMP-3` in order to do so.
 
 **RS-IMP-12** *(phase 2)*
 WHERE two imported objects carry the same name within the scope the deployment groups over, the
@@ -695,8 +744,8 @@ those series the same `SeriesDescription` and the same `SeriesNumber`.
 WHEN a result set is saved, the system shall write the result-set name as the `SeriesDescription`
 of every output series it produces.
 
-> **Note (RS-SAVE-9a):** The name is the identity (`RS-ID-11`) and `SeriesDescription` is what a
-> reader sees in any other viewer, so they have to be the same string. It is also what makes
+> **Note (RS-SAVE-9a):** The name is what groups a set by default (`RS-ID-11`) and
+> `SeriesDescription` is what a reader sees in any other viewer, so they have to be the same string. It is also what makes
 > `RS-ID-10` work on reload: the name the set comes back with is the name it was saved under.
 
 **RS-SAVE-10**
@@ -1019,7 +1068,7 @@ name.
 WHEN tools of different result types create results and no result-set name has been chosen, the
 system shall use the same default name for all of them.
 
-> **Note (RS-TOOL-14):** Because `RS-ID-11` makes the name the identity, one shared default name
+> **Note (RS-TOOL-14):** Because the name groups by default (`RS-ID-11`), one shared default name
 > means a user who draws a segmentation, a contour, and an annotation without naming anything ends
 > up with one result set holding all three, rather than three sets that happen to have been made in
 > the same sitting. That is the behaviour the user expects and it costs nothing to get right at
@@ -1306,6 +1355,23 @@ These are unresolved and must be settled before or during design.
    what happens to unpaired members, is unspecified.
 6. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
    cannot serve.
-7. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
+7. **Group on/off: reach and surface.** `RS-GRP-10` requires a result set to be turnable on and
+   off in one action but does not say where the control lives or how far the toggle reaches.
+   Three things need deciding together:
+
+   - **Reach.** Does the toggle affect the active viewport only, every viewport the set applies to,
+     or a viewport group? `RS-VP-3` makes per-viewport the model for everything else, which argues
+     for the active viewport — but a user thinking "hide Reader B" probably means everywhere.
+   - **Surface.** A visibility control on each set's row in the sidebar sits next to the list the
+     user is already reading and matches how per-member visibility works today. A named-set
+     selector in the viewport action menu (`EM-VPA-1`, `RS-VP-14`) makes the per-viewport reach
+     obvious but is further from that list. They are not exclusive.
+   - **Mixed state.** If reach is per-viewport, a set can be on in one viewport and off in another.
+     What the sidebar shows then, and what clicking it does, is undefined.
+
+   Worth prototyping rather than specifying: the requirement fixes the capability, and the shape can
+   be settled against something a user can try.
+
+8. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
    configured, but not yet the noun for a member, which reads differently for a segmentation
    than for a key object.
