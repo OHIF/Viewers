@@ -376,11 +376,21 @@ WHEN DICOM objects carrying results are loaded, the system shall assemble them i
 by applying the configured grouping rules in priority order.
 
 **RS-IMP-2**
-WHERE a positive related-series identifier is present on a loaded object, the system shall use
-that identifier in preference to any heuristic rule when assigning the object to a result set.
+WHERE a loaded object's series carries a `RelatedSeriesSequence` item marking result-set
+membership, the system shall use that relationship in preference to any heuristic rule when
+assigning the object to a result set.
+
+**RS-IMP-2a**
+WHEN the system assigns an object by `RelatedSeriesSequence`, it shall also assign every other
+series related to the same result set, including series of other modalities and, where present,
+series in other studies.
+
+> **Note (RS-IMP-2a):** This is the read side of `RS-SAVE-10`. Loading the SEG series of a
+> segmentation-plus-annotations result set has to bring in the SR series too, or the set the user
+> saved is not the set they get back.
 
 **RS-IMP-3**
-WHERE no positive related-series identifier is present, the system shall apply the configured
+WHERE no result-set membership relationship is present, the system shall apply the configured
 fallback matching rules, which shall be able to consider result-set name, `SeriesDescription`,
 `SeriesNumber`, modality, referenced series and instances, `ContentCreatorName`, and study
 context.
@@ -568,9 +578,45 @@ WHEN a result set produces more than one output series within one study, the sys
 those series the same `SeriesDescription` and the same `SeriesNumber`.
 
 **RS-SAVE-10**
-WHERE a related-series identifier is available, the system shall record it on every output series
-of the result set so that those series can be positively identified as belonging to the same
-logical result set on reload.
+WHEN a result set produces more than one output series, the system shall relate those series to
+one another using `RelatedSeriesSequence` (0008,1250).
+
+> **Note (RS-SAVE-10):** This is the mechanism that holds a combined result set together across
+> the modality boundaries `RS-SAVE-8` creates. A result set containing a segmentation and the
+> annotations that describe it is written as a SEG series and an SR series; nothing in either
+> object otherwise states that they are one piece of work.
+
+**RS-SAVE-10a**
+Each `RelatedSeriesSequence` item the system writes shall carry the referenced
+`StudyInstanceUID`, the referenced `SeriesInstanceUID`, and a `PurposeOfReferenceCodeSequence`
+identifying the relationship as result-set membership.
+
+**RS-SAVE-10b**
+The system shall write the relationship so that the full membership of a result set is
+determinable from the series-level metadata of the studies it spans, without requiring any
+particular series to be retrieved first.
+
+**RS-SAVE-10c**
+WHEN a result set is saved again and produces an output series it did not previously produce, the
+system shall relate the new series to the existing ones without modifying any previously written
+instance.
+
+> **Note (RS-SAVE-10b, RS-SAVE-10c):** Stored instances are immutable, so a scheme in which every
+> series references every other cannot survive a later save that adds a modality — the existing
+> series would have to be rewritten. A single anchor series referenced by every member satisfies
+> both requirements and is what the design is expected to adopt.
+
+**RS-SAVE-10d**
+WHERE a result set spans more than one study, the system shall relate the output series of each
+study to the output series of the others.
+
+> **Note (RS-SAVE-10d):** `RS-SAVE-12` forbids a single DICOM object from spanning studies, so
+> cross-study relation is the only mechanism by which a cross-study result set can be recovered on
+> reload. `RelatedSeriesSequence` items carry a `StudyInstanceUID`, so they can express it.
+
+**RS-SAVE-10e**
+The system shall distinguish result-set membership from any other relationship recorded in
+`RelatedSeriesSequence`, and shall not treat an unrelated item as membership.
 
 **RS-SAVE-11**
 WHEN saving a new version of a member that was previously persisted, the system shall create a new
@@ -1127,7 +1173,7 @@ conformance with `RS-MEM-6`.
 
 | # | Question | Resolution in this phase |
 | --- | --- | --- |
-| 1 | Which metadata carries a positive related-series identifier? | `RelatedSeriesSequence` (0008,1250) on each output series, referencing an anchor series for the set. The purpose code is OHIF-private until a standard one exists — see §10. |
+| 1 | Which metadata carries a positive related-series identifier? | `RelatedSeriesSequence` (0008,1250), relating the output series of a result set to one another across modality and study boundaries — `RS-SAVE-10`..`RS-SAVE-10e`. The purpose code marking membership is OHIF-private until a standard one exists — see §10 item 2. |
 | 2 | Which fallback matching rules when no positive identifier is present? | `RS-IMP-3` fixes the inputs a rule may consider and `RS-CFG-1` makes the chain configurable. The default chain is a design decision. |
 | 3 | Default viewport visibility when a result set is first loaded? | `allApplicableViewports`, configurable — `RS-VP-6`, `RS-VP-7`, resolved through `RS-APP-10`. |
 | 4 | When should drawing reuse the active result set vs. ask? | `RS-TOOL-4` reuse when unambiguous, `RS-TOOL-5` reuse the active one, `RS-TOOL-6` ask only when genuinely ambiguous. |
@@ -1179,6 +1225,8 @@ conformance with `RS-MEM-6`.
 | `RS-VP`, `RS-UI`, `RS-TOOL`, `RS-VIEW`, `RS-COV` | Playwright end-to-end tests using the OHIF fixture system, per the `ohif-test-agent` skill. |
 | `SB-COMP`, `SB-OWN`, `SB-TOOL`, `SB-SEL`, `SB-STAT`, `SB-VP` | Playwright tests against the result-set sidebar, written so they can be re-pointed at a second sidebar when the `SG` and `CT` specifications land. |
 | `RS-SAVE`, `RS-STATE` | Unit tests on the export partitioner over synthetic result sets, plus end-to-end store-and-reload round trips asserting `RS-SAVE-13` and `RS-SAVE-17`. |
+| `RS-SAVE-10`..`RS-SAVE-10e` | Save a result set producing a SEG series and an SR series; assert every output series carries a membership item, that the set is recoverable from series-level metadata alone (`RS-SAVE-10b`), and that a later save adding a third modality relates it without rewriting the first two (`RS-SAVE-10c`). Cross-study variant for `RS-SAVE-10d`. |
+| `RS-IMP-2`, `RS-IMP-2a` | Load only the SEG series of that set and assert the SR series is brought in with it. |
 | `RS-SAVE-11`, `RS-SAVE-11a` | Save a member three times and assert each output instance's `PredecessorDocumentsSequence` references exactly its immediate predecessor, and that reloading reconstructs the version order. |
 | `RS-OPS` | Unit tests on the operation registry and conversion adapters. |
 | `RS-COMPAT` | Existing segmentation unit and end-to-end suites must pass unchanged with the feature enabled. |
