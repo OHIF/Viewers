@@ -159,6 +159,17 @@ export default async function init({
     toolbarService,
   } = servicesManager.services;
 
+  // Limit the undo/redo history size. Segmentation memos hold full labelmap
+  // buffers, so a large history can cause out-of-memory / buffer allocation
+  // issues. Configurable via the `cornerstone.maxUndoRedoCacheSize`
+  // customization (e.g. in `appConfig.customizationService`).
+  const maxUndoRedoCacheSize = customizationService.getCustomization(
+    'cornerstone.maxUndoRedoCacheSize'
+  );
+  if (Number.isFinite(maxUndoRedoCacheSize) && maxUndoRedoCacheSize >= 0) {
+    csUtilities.HistoryMemo.DefaultHistoryMemo.size = maxUndoRedoCacheSize;
+  }
+
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
     colorbarService.EVENTS.STATE_CHANGED,
   ]);
