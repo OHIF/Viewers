@@ -65,17 +65,38 @@ implement. Each is named so the contract can be checked against it.
 | --- | --- |
 | Measurements and annotations | Instance- and frame-scoped applicability (`RS-APP-5`, `RS-APP-6`) exists specifically for these. |
 | DICOM Key Object Selection | Non-renderable members (`RS-DEF-5`) and study-scoped applicability (`RS-APP-7`). |
-| Key images and key series | Study- and series-scoped members, plus the coverage grouping axis reserved by `RS-COV-7`. |
+| Key images and key series | Study- and series-scoped members (`RS-APP-2`), and a coverage model able to group by them when it is specified. |
 | Registrations, statistics, and other non-visual results | `RS-DEF-5`. |
 | SR and KO export | Export partitioning (`RS-SAVE-7`..`RS-SAVE-13`) is written per modality, not per result type. |
 | Writing a single DICOM object across studies | `RS-SAVE-12`. |
 | Concurrent editing and external-update reconciliation | Only single-session change tracking is required. |
-| Rewriting the sidebars catalogued in §5.6 other than the result-set sidebar | `SB-CFG-3`. |
+| Rewriting the sidebars catalogued in §5.5 other than the result-set sidebar | `EM-SID-4`, `EM-CFG` equivalents in `EM`. |
 
 ### 2.3 Terminology decision
 
 The user-facing and API term is **result set**. This resolves open question 8 of the source
 issue. Modes may override the displayed noun per workflow (`RS-CFG-4`).
+
+### 2.4 Phases
+
+This specification is larger than any one change. Requirements are delivered in phases, and a
+requirement carries a **phase marker** naming the phase that delivers it:
+
+```
+**RS-TOOL-1** *(phase 1)*
+```
+
+A phase is a set of requirements that can be delivered and verified together and that leaves the
+viewer coherent when it lands. An unmarked requirement is **not yet assigned to a phase**; the
+absence of a marker says nothing about priority.
+
+| Phase | Delivers |
+| --- | --- |
+| 1 | Tool selection moves to the top menu bar — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
+
+Phases beyond the first are not yet assigned. If the phase set grows enough that markers become
+hard to read across the document, it is split into per-phase documents; until then the markers
+are the record.
 
 ## 3. Definitions
 
@@ -480,7 +501,7 @@ result layers from presentation state.
 
 **RS-VP-11**
 WHERE a sidebar offers result visibility controls, the system shall have those controls update the
-result-layer model, in conformance with `SB-VP-2`.
+result-layer model, and shall not maintain a sidebar-private visibility mechanism.
 
 **RS-VP-12**
 The system shall allow the same result set to be visible in more than one viewport simultaneously.
@@ -780,7 +801,7 @@ in a result set so that no result exists outside the result-set model.
 
 **RS-COMPAT-3**
 WHERE a mode has not adopted the result-set sidebar, the system shall preserve that mode's existing
-panel behaviour, in conformance with `SB-CFG-3`.
+panel behaviour, in conformance with `EM-SID-4` and `EM-LAY-8`.
 
 **RS-COMPAT-4**
 The system shall not change the DICOM output produced for a single-member result set relative to
@@ -799,11 +820,11 @@ The §4 contract is not a panel feature. It surfaces in four places.
 The system shall make the active result set and the active member of the active viewport available
 to toolbar buttons for enablement and for state display.
 
-**RS-UI-2**
+**RS-UI-2** *(phase 1)*
 The system shall present in the top menu bar the tool sections of every result type applicable to
 the active viewport.
 
-**RS-UI-3**
+**RS-UI-3** *(phase 1)*
 WHERE more than one result type is applicable to the active viewport, the system shall indicate for
 each tool which result type it creates or edits.
 
@@ -828,11 +849,11 @@ active viewport's applicable result types and active result set.
 
 ### 5.2 Tool activation and create-on-first-use — `RS-TOOL`
 
-**RS-TOOL-1**
+**RS-TOOL-1** *(phase 1)*
 The system shall make every tool that creates or edits results selectable from the standard OHIF
 toolbar and tool menus, in conformance with `EM-TOP-1`.
 
-**RS-TOOL-2**
+**RS-TOOL-2** *(phase 1)*
 The system shall not require a sidebar to be open, or a result set to exist, in order for such a
 tool to be selectable.
 
@@ -947,10 +968,10 @@ action menu or in the header.
 | A capability is defined once and referenced, not duplicated per region | `EM-PLC-2` |
 | Moving a capability between regions does not require reimplementing it | `EM-PLC-5` |
 
-**SB-TOOL-1**
+**SB-TOOL-1** *(phase 1)*
 Every sidebar shall satisfy `EM-PLC-1`..`EM-PLC-5`, `EM-SID-6`, and `EM-SID-7`.
 
-**SB-TOOL-2**
+**SB-TOOL-2** *(phase 1)*
 WHEN an action offered by a sidebar requires a tool to become active, the system shall activate
 that tool through the standard tool activation path rather than through a sidebar-private
 mechanism.
@@ -959,178 +980,52 @@ mechanism.
 > and it is what makes `EM-PLC-5` hold in practice — a sidebar that activates tools its own way
 > becomes a second tool system the top menu bar does not know about.
 
-#### 5.3.4 Selection and navigation — `SB-SEL`
+### 5.4 Deferred to a lower-level specification
 
-**SB-SEL-1**
-The system shall maintain at most one active item per sidebar.
+The detailed behaviour of a sidebar — selection and navigation, status display, its relationship
+to the active viewport, its update performance, and its configuration — was drafted here and has
+been removed. So were the result-set sidebar's own requirements and the coverage view.
 
-**SB-SEL-2**
-WHEN the user selects an item in one sub-tab, the system shall reflect that selection in every other
-sub-tab of the same sidebar.
+They were too specific for this document. This specification says which surfaces the result-set
+contract appears on and what each is responsible for; it does not specify how a list behaves. A
+lower-level specification will carry them.
 
-**SB-SEL-3**
-WHEN the user activates an item in a sidebar, the system shall navigate the appropriate viewport to
-a representative location for that item.
+| Withdrawn group | Covered | Identifiers |
+| --- | --- | --- |
+| `SB-SEL` | Active item, cross-sub-tab selection, navigation to a representative location | `SB-SEL-1`..`SB-SEL-5` |
+| `SB-STAT` | Visibility and change indicators, empty states, load failures | `SB-STAT-1`..`SB-STAT-4` |
+| `SB-VP` | Reflecting the active viewport, shared visibility model | `SB-VP-1`..`SB-VP-3` |
+| `SB-PERF` | Targeted updates, per-row resolution cost | `SB-PERF-1`, `SB-PERF-2` |
+| `SB-CFG` | Sidebar and sub-tab labels, panel positions, non-adopting modes | `SB-CFG-1`..`SB-CFG-3` |
+| `RS-VIEW` | The result-set sidebar's own content and built-in sub-tabs | `RS-VIEW-1`..`RS-VIEW-8` |
+| `RS-COV` | The coverage view: where a result has content, and navigating to it | `RS-COV-1`..`RS-COV-7` |
 
-**SB-SEL-4**
-IF no representative location can be resolved for an item, THEN the system shall present that item
-as non-navigable and shall state why.
+These identifiers are retired. Per the [register's stability rule](../index.md#2-requirement-identifiers)
+they are not reused, so a lower-level specification restating this behaviour takes its own prefix.
 
-**SB-SEL-5**
-WHEN the active item changes for any reason, the system shall keep the active item visible within
-the sidebar's scroll region.
-
-#### 5.3.5 Status display — `SB-STAT`
-
-**SB-STAT-1**
-The system shall show, for every item a sidebar lists, its visibility state where visibility applies
-to that item.
-
-**SB-STAT-2**
-The system shall show, for every item a sidebar lists, its change state where the item can be
-edited.
-
-**SB-STAT-3**
-WHEN a configured sub-tab has no content, the system shall keep that sub-tab present and shall show
-an explicit empty state naming what would appear there.
-
-**SB-STAT-4**
-IF data behind a sidebar fails to load, THEN the system shall show what failed and why, and shall
-continue to show what did load.
-
-#### 5.3.6 Relationship to viewports — `SB-VP`
-
-**SB-VP-1**
-The system shall have a sidebar reflect the active viewport's context, and shall not have the
-sidebar be the owner of that context.
-
-**SB-VP-2**
-WHERE a sidebar offers visibility controls, the system shall have those controls update the shared
-per-viewport visibility model, and shall not maintain a sidebar-private visibility mechanism.
-
-**SB-VP-3**
-WHEN the active viewport changes, the system shall update the sidebar to reflect the newly active
-viewport without altering state belonging to any other viewport.
-
-#### 5.3.7 Performance — `SB-PERF`
-
-**SB-PERF-1**
-WHEN a single item changes, the system shall update the sidebar in response to an event identifying
-that item, and shall not re-derive the sidebar's full content.
-
-**SB-PERF-2**
-The system shall resolve the content of one sidebar row in time independent of the total number of
-loaded items.
-
-#### 5.3.8 Configuration — `SB-CFG`
-
-**SB-CFG-1**
-The system shall allow the displayed label of a sidebar and of each of its sub-tabs to be configured
-per mode.
-
-**SB-CFG-2**
-The system shall allow a mode to select which sidebars appear in each panel position.
-
-**SB-CFG-3**
-WHERE a mode has not adopted a sidebar that conforms to this section, the system shall preserve that
-mode's existing panel behaviour.
-
-### 5.4 The result-set sidebar — `RS-VIEW`
-
-**RS-VIEW-1**
-The result-set sidebar shall satisfy every requirement of §5.3.
-
-**RS-VIEW-2**
-The system shall present result-creation and result-editing tool sections in the top menu bar, and
-shall not present them in the result-set sidebar.
-
-**RS-VIEW-3**
-The system shall provide, from the result-set sidebar: listing and organization of members,
-selection of the active result set and active member, visibility and change status, navigation to a
-member, management of the configured sub-tabs, and actions that operate on a member or on the whole
-set.
-
-**RS-VIEW-4**
-The system shall provide as built-in sub-tabs of the result-set sidebar at least: a member list, a
-coverage view, and a change-state view listing changed members.
-
-**RS-VIEW-5**
-WHERE a mode configures a workflow sub-tab that lists required results, selecting an incomplete
-entry shall activate the corresponding standard OHIF tool, and completing the result shall populate
-that entry.
-
-**RS-VIEW-6**
-The system shall show the persistence state of the selected result set in the result-set sidebar's
-header region.
-
-**RS-VIEW-7**
-WHEN the active viewport changes, the system shall show in the result-set sidebar the result sets
-applicable to and displayed in the newly active viewport, without changing which result set is
-active for any other viewport.
-
-**RS-VIEW-8**
-The system shall show, for every member the result-set sidebar lists, the applicability of that
-member.
-
-### 5.5 Coverage — `RS-COV`
-
-Coverage answers "where does this result actually have content", which is distinct from "where
-could it apply" (`RS-APP`).
-
-**RS-COV-1**
-The system shall provide a coverage sub-tab that shows, for every result component of the result
-set, the source series and acquisition planes in which that component has content.
-
-**RS-COV-2**
-The system shall derive coverage from the source-image context of the result data, and shall not
-derive it from the orientation of the currently active viewport.
-
-**RS-COV-3**
-The system shall group coverage entries by source series and by acquisition plane or orientation.
-
-**RS-COV-4**
-WHEN the user selects a coverage entry, the system shall navigate to or display a representative
-location containing that content.
-
-**RS-COV-5**
-IF no representative location can be resolved for a coverage entry, THEN the system shall present
-that entry as non-navigable and shall state why.
-
-**RS-COV-6**
-WHEN a result component's data changes, the system shall update that component's coverage without
-recomputing coverage for unaffected components.
-
-**RS-COV-7**
-WHERE key-series labels are available, the system shall additionally offer grouping of coverage by
-key series and by key-image orientation.
-
-> **Note (RS-COV-7):** Key series and key images are deferred (§2.2). The requirement is stated as
-> an optional-feature clause so the coverage model reserves the grouping axis now.
-
-### 5.6 Sidebars built on the contract
+### 5.5 Sidebars built on the contract
 
 This catalogue exists to show that §5.3 is not shaped around one panel, and to name where each
-future specification attaches. Only the result-set sidebar is required to conform in this phase
-(`SB-CFG-3`).
+future specification attaches. Only the result-set sidebar is required to conform in this phase.
 
 | Sidebar | Lists | Backing service | Illustrative sub-tabs | Specification |
 | --- | --- | --- | --- | --- |
-| **Result set** | Result sets and their members | `ResultSetService` | Members · Coverage · Changes | §5.4 of this document |
+| **Result set** | Result sets and their members | `ResultSetService` | Members · Coverage · Changes | This document, plus the lower-level specification of §5.4 |
 | **Segmentation** | Segments of the active segmentation member | `SegmentationService`, via the result-set model | Segments · Statistics · Coverage by plane | Planned, prefix `SG` |
 | **Contour** | ROIs of the active contour member | `SegmentationService`, via the result-set model | ROIs · Coverage by plane · Interpolation status | Planned, prefix `CT` |
 | **Measurement** | Measurements and annotations | `MeasurementService` | By series · By finding · Required measurements | Planned, prefix `MS` |
 | **Study and series** | Display sets for current and prior studies | `DisplaySetService` | All series · Priors · Derived objects | Planned, prefix `SS` |
 | **Workflow** | Steps of a guided workflow | `WorkflowStepsService` | Steps · Outstanding items | Planned, prefix `HP` |
 
-#### 5.6.1 Worked example — one sub-tab, three sidebars
+#### 5.5.1 Worked example — one sub-tab, three sidebars
 
 A *coverage* sub-tab lists, per result component, which source series and acquisition planes
 contain content. Under §5.3 it is registered once and can be configured into the result-set
-sidebar scoped to every member of the selected set (`RS-COV-1`), into the segmentation sidebar
+sidebar scoped to every member of the selected set, into the segmentation sidebar
 scoped to the active segmentation member, and into the contour sidebar scoped to the active
 contour member. It works in all three because `SB-OWN-2` forbids it from having its own store.
 
-#### 5.6.2 Worked example — why tools left the panel
+#### 5.5.2 Worked example — why tools left the panel
 
 Today the labelmap and contour toolboxes render inside the segmentation panel. That placement
 produces two of the symptoms in the source issue: a tool cannot be used until the panel is open,
@@ -1156,7 +1051,6 @@ The only result type implemented here is **`segmentation`**, with two representa
 | Export modalities | `SEG`, `RTSTRUCT` |
 | Representation-independent operations | copy, combine, intersect, subtract, statistics, compare (`RS-OPS-2`) |
 | Conversions | `Contour ⇄ Labelmap` (`RS-OPS-3`) |
-| Coverage components | segments (`RS-COV-1`) |
 
 ### 6.1 Bindings
 
@@ -1202,28 +1096,28 @@ conformance with `RS-MEM-6`.
 | --- | --- |
 | Result set (conceptual model) | `RS-DEF-*`, `RS-GRP-*`, `RS-ID-*`, `RS-MEM-*` |
 | Representation | `RS-DEF-3`, `RS-MEM-6`, `RS-OPS-*` |
-| Result-set view and sub-tabs | `SB-COMP-*`, `SB-OWN-*`, `RS-VIEW-*` |
-| Segment coverage view | `RS-COV-*` |
-| 1. Tool selection in the standard tool UI | `EM-TOP-1`, `EM-SID-6`, `EM-PLC-4`, `SB-TOOL-1`, `SB-TOOL-2`, `SB-OWN-3`, `RS-UI-2`, `RS-TOOL-1`, `RS-TOOL-2`, `RS-VIEW-2` |
+| Result-set view and sub-tabs | `SB-COMP-*`, `SB-OWN-*`; detailed behaviour deferred, §5.4 |
+| Segment coverage view | Deferred, §5.4 |
+| 1. Tool selection in the standard tool UI | `EM-TOP-1`, `EM-SID-6`, `EM-PLC-4`, `SB-TOOL-1`, `SB-TOOL-2`, `SB-OWN-3`, `RS-UI-2`, `RS-TOOL-1`, `RS-TOOL-2` |
 | 2. Create results on first use | `RS-TOOL-3`..`RS-TOOL-12` |
 | 3. Load result sets as logical units | `RS-IMP-*`, `RS-DS-*` |
-| 4. Control result-set visibility per viewport | `RS-VP-*`, `RS-APP-*`, `SB-VP-2` |
+| 4. Control result-set visibility per viewport | `RS-VP-*`, `RS-APP-*` |
 | 5. Save a result set as one user operation | `RS-SAVE-*`, `RS-STATE-*` |
-| 6. Configurable sub-tabs over the same data | `SB-COMP-2`..`SB-COMP-6`, `SB-OWN-2`, `RS-VIEW-4`, `RS-VIEW-5`, `RS-CFG-3` |
+| 6. Configurable sub-tabs over the same data | `SB-COMP-2`..`SB-COMP-6`, `SB-OWN-2`, `RS-CFG-3` |
 | 7. Representation-independent operations | `RS-OPS-*` |
 | Relationship to DICOM | `RS-MEM-2`, `RS-IMP-1`..`RS-IMP-3`, `RS-SAVE-7`..`RS-SAVE-13`, `RS-SAVE-17` |
-| Viewport performance contract | `RS-PERF-*`, `SB-PERF-*` |
+| Viewport performance contract | `RS-PERF-*` |
 
 ### 8.2 To the narrower issues this supersedes
 
 | Issue | Requirements that address it |
 | --- | --- |
-| [#5568 Confusing segmentation behaviour with active viewport](https://github.com/OHIF/Viewers/issues/5568) | `RS-APP-*`, `SB-VP-1`, `SB-VP-3`, `RS-VP-1`, `RS-VP-3`, `RS-VP-9`, `RS-VP-12`, `RS-TOOL-4`..`RS-TOOL-6` |
+| [#5568 Confusing segmentation behaviour with active viewport](https://github.com/OHIF/Viewers/issues/5568) | `RS-APP-*`, `RS-VP-1`, `RS-VP-3`, `RS-VP-9`, `RS-VP-12`, `RS-TOOL-4`..`RS-TOOL-6` |
 | [#3879 Auto load derived display set matched via hanging protocol](https://github.com/OHIF/Viewers/issues/3879) | `RS-DS-7`, `RS-DS-8`, `RS-IMP-6`, `RS-VP-6`, `RS-VP-7` |
-| [#3421 Impossible to know which segmentation series is displayed](https://github.com/OHIF/Viewers/issues/3421) | `SB-STAT-1`, `RS-MEM-2`, `RS-VIEW-3`, `RS-VIEW-8`, `RS-IMP-7` |
-| [#3790 No way to tell which series is being segmented](https://github.com/OHIF/Viewers/issues/3790) | `RS-APP-12`, `RS-VIEW-8`, `RS-COV-1`..`RS-COV-4`, `RS-MEM-1` |
+| [#3421 Impossible to know which segmentation series is displayed](https://github.com/OHIF/Viewers/issues/3421) | `RS-MEM-2`, `RS-APP-12`, `RS-IMP-7` |
+| [#3790 No way to tell which series is being segmented](https://github.com/OHIF/Viewers/issues/3790) | `RS-APP-12`, `RS-MEM-1`; the coverage half is deferred, §5.4 |
 | [#5182 Adding multiple segmentation overlays](https://github.com/OHIF/Viewers/issues/5182) | `RS-GRP-1`, `RS-GRP-6`, `RS-GRP-7`, `RS-VP-4`, `RS-VP-5` |
-| [#5697 Contour tab should automatically switch with type loaded](https://github.com/OHIF/Viewers/issues/5697) | `SB-STAT-3`, `SB-COMP-2`, `RS-MEM-6`, `RS-TOOL-7` |
+| [#5697 Contour tab should automatically switch with type loaded](https://github.com/OHIF/Viewers/issues/5697) | `SB-COMP-2`, `RS-MEM-6`, `RS-TOOL-7` |
 | [#2852 More than one qualitative annotation SR](https://github.com/OHIF/Viewers/issues/2852) | `RS-GRP-1`, `RS-GRP-6`, `RS-IMP-7` — mechanism specified, annotation implementation deferred. |
 
 ## 9. Verification approach
@@ -1233,9 +1127,9 @@ conformance with `RS-MEM-6`.
 | `RS-DEF`, `RS-GRP`, `RS-ID`, `RS-MEM`, `RS-IMP` | Unit tests against `ResultSetService`, including a synthetic second result type registered by the test to prove type-agnosticism (`RS-DEF-4`). |
 | `RS-APP` | Unit tests with a matrix of scope × loaded display sets, including the negative cases `RS-APP-4`, `RS-APP-14`. |
 | `RS-DS` | Unit tests over SOP-class-handler output; end-to-end test that a hanging protocol matching a SEG produces a result layer, not primary viewport content. |
-| `RS-PERF`, `SB-PERF` | Index-complexity tests asserting no full scan on single-member change, and render-count assertions that one item change does not re-render unrelated rows. |
-| `RS-VP`, `RS-UI`, `RS-TOOL`, `RS-VIEW`, `RS-COV` | Playwright end-to-end tests using the OHIF fixture system, per the `ohif-test-agent` skill. |
-| `SB-COMP`, `SB-OWN`, `SB-TOOL`, `SB-SEL`, `SB-STAT`, `SB-VP` | Playwright tests against the result-set sidebar, written so they can be re-pointed at a second sidebar when the `SG` and `CT` specifications land. |
+| `RS-PERF` | Index-complexity tests asserting no full scan on single-member change, and render-count assertions that one item change does not re-render unrelated rows. |
+| `RS-VP`, `RS-UI`, `RS-TOOL` | Playwright end-to-end tests using the OHIF fixture system, per the `ohif-test-agent` skill. |
+| `SB-COMP`, `SB-OWN`, `SB-TOOL` | Playwright tests against the result-set sidebar, written so they can be re-pointed at a second sidebar when the `SG` and `CT` specifications land. |
 | `RS-SAVE`, `RS-STATE` | Unit tests on the export partitioner over synthetic result sets, plus end-to-end store-and-reload round trips asserting `RS-SAVE-13` and `RS-SAVE-17`. |
 | `RS-SAVE-10`..`RS-SAVE-10e` | Save a result set producing a SEG series and an SR series; assert every output series carries a membership item, that the set is recoverable from series-level metadata alone (`RS-SAVE-10b`), and that a later save adding a third modality relates it without rewriting the first two (`RS-SAVE-10c`). Cross-study variant for `RS-SAVE-10d`. |
 | `RS-IMP-2`, `RS-IMP-2a` | Load only the SEG series of that set and assert the SR series is brought in with it. |

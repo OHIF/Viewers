@@ -61,9 +61,9 @@ change lands and the specification it amends has been updated.
 Change proposals use the prefix `CP-<NAME>`, where `<NAME>` identifies the proposal. They are the
 usual reason a requirement elsewhere is marked *(proposed)*.
 
-| Proposal | Changes | Status |
-| --- | --- | --- |
-| [CP-SEGTOOL](./changes/segmentation-tool-submenu.md) — segmentation and contour tools into a toolbar sub-menu | `EM`, `RS` | Proposed |
+| Proposal | Changes | Phase | Status |
+| --- | --- | --- | --- |
+| [CP-SEGTOOL](./changes/segmentation-tool-submenu.md) — segmentation and contour tools into a toolbar sub-menu | `EM`, `RS` | 1 | Proposed |
 
 ---
 

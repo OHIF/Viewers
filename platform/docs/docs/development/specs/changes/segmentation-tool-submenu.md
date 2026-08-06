@@ -9,6 +9,7 @@ summary: Change proposal moving the labelmap and contour segmentation tool secti
 
 **Prefix:** `CP-SEGTOOL` — see the [specification register](../index.md#1-index-of-component-specifications).
 **Status:** Proposed
+**Phase:** 1 — see [result sets §2.4](../result-sets/requirements.md#24-phases)
 **Satisfies:** `EM-SID-6` *(proposed)*, `EM-TOP-1`, `EM-TOP-8`..`EM-TOP-19`, `RS-VIEW-2`, `RS-TOOL-1`, `RS-TOOL-2`, `SB-TOOL-1`
 **Affects:** `@ohif/extension-cornerstone`, `@ohif/mode-segmentation`, `@ohif/mode-basic`
 
