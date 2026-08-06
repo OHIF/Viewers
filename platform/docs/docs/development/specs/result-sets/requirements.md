@@ -111,6 +111,25 @@ Phases beyond the second are not yet assigned. If the phase set grows enough tha
 hard to read across the document, it is split into per-phase documents; until then the markers
 are the record.
 
+### 2.5 Prototype requirements
+
+Some decisions are better taken from use than from argument. Where that is the case, this
+specification states a **concrete behaviour to build and try**, marked *(prototype)*:
+
+```
+**RS-GRP-16** *(phase 2, prototype)*
+```
+
+A prototype requirement is **binding on the implementation and not on the specification**. Build
+exactly what it says, so that everyone is reacting to the same thing; expect it to change once
+there is experience with it.
+
+Every prototype requirement names the open item it exists to resolve. After a period of real use
+the group is reviewed and either promoted — the marker is removed and it becomes an ordinary
+requirement — or replaced by what use showed was better. A prototype requirement that has been
+in the product for a release without being reviewed is a defect in this document, not a settled
+decision.
+
 ## 3. Definitions
 
 ### 3.1 Results
@@ -250,8 +269,42 @@ The system shall show the on/off state of a result set wherever that set is list
 > **Note (RS-GRP-11, RS-GRP-12):** A group toggle is a group-level override, not a bulk edit of its
 > members. A user who has hidden one segment inside a set, turned the set off to look at the
 > images, and turned it back on expects that segment still hidden — not everything switched on.
+
+#### Prototype: where the control lives and how far it reaches
+
+`RS-GRP-15`..`RS-GRP-19` are a **prototype** in the sense of §2.5. They exist to resolve §10 item 7,
+and are stated concretely so that there is one thing to build, use, and react to. They are not a
+settled decision.
+
+**RS-GRP-15** *(phase 2, prototype)*
+The system shall provide the on/off control of `RS-GRP-10` on each result set's own row, wherever
+result sets are listed.
+
+**RS-GRP-16** *(phase 2, prototype)*
+WHEN the user activates a result set's on/off control, the system shall apply the change to the
+active viewport only.
+
+**RS-GRP-17** *(phase 2, prototype)*
+The system shall additionally provide, from the same row, an action applying a result set's on/off
+state to every viewport that set is applicable to.
+
+**RS-GRP-18** *(phase 2, prototype)*
+WHILE a result set is on in some of the viewports it applies to and off in others, the system shall
+show a third state on that set's row, distinct from both on and off.
+
+**RS-GRP-19** *(phase 2, prototype)*
+WHEN the user activates the on/off control of a result set showing the third state of `RS-GRP-18`,
+the system shall turn that set on in every viewport it is applicable to.
+
+> **Note:** The prototype deliberately offers **both** reaches rather than choosing between them.
+> `RS-GRP-16` follows the per-viewport model that `RS-VP-3` uses for everything else; `RS-GRP-17`
+> serves the user who means "hide Reader B" and means it everywhere. Building both is what makes
+> the choice observable — if the per-row action is never used, per-viewport was the wrong
+> default, and if it is used constantly, it should have been the primary.
 >
-> Where the control lives, and how far the toggle reaches, is not settled. See §10 item 8.
+> `RS-GRP-19` turning everything **on** from the third state follows the usual convention for a
+> mixed control, and is the reversible direction: turning on what was off is undone by one more
+> click, whereas turning off loses which viewports had it on.
 
 ### 4.3 Identity and lifecycle — `RS-ID`
 
@@ -1355,22 +1408,23 @@ These are unresolved and must be settled before or during design.
    what happens to unpaired members, is unspecified.
 6. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
    cannot serve.
-7. **Group on/off: reach and surface.** `RS-GRP-10` requires a result set to be turnable on and
-   off in one action but does not say where the control lives or how far the toggle reaches.
-   Three things need deciding together:
+7. **Group on/off: reach and surface** — *deferred to evaluation.* `RS-GRP-15`..`RS-GRP-19`
+   specify a prototype so the decision can be taken from use. Ship it, run it, then decide:
 
-   - **Reach.** Does the toggle affect the active viewport only, every viewport the set applies to,
-     or a viewport group? `RS-VP-3` makes per-viewport the model for everything else, which argues
-     for the active viewport — but a user thinking "hide Reader B" probably means everywhere.
-   - **Surface.** A visibility control on each set's row in the sidebar sits next to the list the
-     user is already reading and matches how per-member visibility works today. A named-set
-     selector in the viewport action menu (`EM-VPA-1`, `RS-VP-14`) makes the per-viewport reach
-     obvious but is further from that list. They are not exclusive.
-   - **Mixed state.** If reach is per-viewport, a set can be on in one viewport and off in another.
-     What the sidebar shows then, and what clicking it does, is undefined.
+   - **Is per-viewport the right default reach?** `RS-GRP-16` says yes because `RS-VP-3` does.
+     Watch whether `RS-GRP-17`'s all-viewports action is what people actually reach for. If it is,
+     the two should swap.
+   - **Is the sidebar row the right surface?** Watch whether users look for the control in the
+     viewport action menu instead, where `RS-VP-14`'s named-set selection lives. The two are not
+     exclusive and both may be warranted.
+   - **Does the third state of `RS-GRP-18` ever get seen, and is it understood?** If a mixed state
+     is rare in practice, it may be simpler to make the reach uniform and remove the state
+     entirely. If it is common, it needs a clearer treatment than a third icon.
+   - **Does `RS-GRP-19` do what people expect?** Turning everything on is the convention and the
+     reversible direction, but it may not match what a user means by clicking a half-on control.
 
-   Worth prototyping rather than specifying: the requirement fixes the capability, and the shape can
-   be settled against something a user can try.
+   Review when the prototype has had real use, per §2.5. Whatever is decided replaces
+   `RS-GRP-15`..`RS-GRP-19`; `RS-GRP-10`..`RS-GRP-14` are settled and are not in question.
 
 8. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
    configured, but not yet the noun for a member, which reads differently for a segmentation
