@@ -54,7 +54,8 @@ display-set creation for secondary DICOM objects, in hanging protocols, and in t
 - The surfaces that contract appears on (§5): top menu bar, tool activation, sidebars,
   display-set creation.
 - The general sidebar contract (`SB`, §5.3), stated component-neutrally.
-- **Labelmap** and **contour** segmentation as the first two implemented representations (§6).
+- **Labelmap** segmentation, **contour** segmentation, and **annotations** as the implemented
+  result types (§6) — the three sidebars the phase-2 name model applies to.
 
 ### 2.2 Out of scope for this phase
 
@@ -63,11 +64,11 @@ implement. Each is named so the contract can be checked against it.
 
 | Deferred result type or capability | What the contract must not preclude |
 | --- | --- |
-| Measurements and annotations | Instance- and frame-scoped applicability (`RS-APP-5`, `RS-APP-6`) exists specifically for these. |
+| Measurement-specific behaviour, and annotation operations beyond copy and compare | Annotations are in scope for naming, grouping, per-viewport selection, and saving (§6); the rest belongs in the `MS` specification. |
 | DICOM Key Object Selection | Non-renderable members (`RS-DEF-5`) and study-scoped applicability (`RS-APP-7`). |
 | Key images and key series | Study- and series-scoped members (`RS-APP-2`), and a coverage model able to group by them when it is specified. |
 | Registrations, statistics, and other non-visual results | `RS-DEF-5`. |
-| SR and KO export | Export partitioning (`RS-SAVE-7`..`RS-SAVE-13`) is written per modality, not per result type. |
+| KO export | Export partitioning (`RS-SAVE-7`..`RS-SAVE-13`) is written per modality, not per result type. |
 | Writing a single DICOM object across studies | `RS-SAVE-12`. |
 | Concurrent editing and external-update reconciliation | Only single-session change tracking is required. |
 | Rewriting the sidebars catalogued in §5.5 other than the result-set sidebar | `EM-SID-4`, `EM-CFG` equivalents in `EM`. |
@@ -93,8 +94,20 @@ absence of a marker says nothing about priority.
 | Phase | Delivers |
 | --- | --- |
 | 1 | Tool selection moves to the top menu bar — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
+| 2 | Named result sets, applied to the segmentation, contour, and annotation sidebars |
 
-Phases beyond the first are not yet assigned. If the phase set grows enough that markers become
+**Phase 2** is deliberately narrow. A result set is identified by its **name** and nothing else
+(`RS-ID-11`); the name defaults to the `SeriesDescription` the object was saved under
+(`RS-ID-10`); a set carries an applicability rule (`RS-APP-15`, `RS-APP-16`); a viewport names the
+sets it shows (`RS-VP-14`, `RS-VP-15`); a save writes the whole set and stamps the name into every
+`SeriesDescription` (`RS-SAVE-18`, `RS-SAVE-9a`); and tools that create results share one default
+name so the user ends up with one set rather than three (`RS-TOOL-14`).
+
+Nothing in phase 2 infers that differently named objects are one piece of work. The DICOM-level
+grouping of `RS-IMP-1`..`RS-IMP-3` and the anchoring of `RS-SAVE-10` are later refinements, and a
+deployment that needs them sooner can add them as custom code (`RS-IMP-11`).
+
+Phases beyond the second are not yet assigned. If the phase set grows enough that markers become
 hard to read across the document, it is split into per-phase documents; until then the markers
 are the record.
 
@@ -251,6 +264,26 @@ WHEN a mode is exited, the system shall discard all in-session result-set state.
 > add it without changing the identity model. Deleting a result set is distinct from removing a
 > sub-tab, which `SB-COMP-5` constrains to removing only an organization of the data.
 
+**RS-ID-9** *(phase 2)*
+The system shall allow the user to name a result set.
+
+**RS-ID-10** *(phase 2)*
+WHEN a result set is created from imported results, the system shall default its name to the name
+the imported object carries — its `SeriesDescription`, or the equivalent for its type.
+
+**RS-ID-11** *(phase 2)*
+The system shall treat the result-set name as the result set's identity, and shall treat results
+carrying the same name as belonging to the same result set.
+
+**RS-ID-12** *(phase 2)*
+The system shall not require results carrying different names to be reconciled into one result
+set.
+
+> **Note (RS-ID-11, RS-ID-12):** Name-only identity is the whole of phase 2. Nothing has to infer
+> that two differently named objects are one piece of work — the DICOM-level grouping of
+> `RS-IMP-1`..`RS-IMP-3` is a later refinement, and a deployment needing it sooner can add it as
+> custom code. What phase 2 must deliver is that a name is enough to group, display, and save.
+
 ### 4.4 Membership and provenance — `RS-MEM`
 
 **RS-MEM-1**
@@ -299,6 +332,18 @@ The system shall support at least the applicability scopes `frameOfReference`, `
 **RS-APP-3**
 WHERE a member's scope is `frameOfReference`, the system shall consider that member applicable to
 every display set sharing the referenced `FrameOfReferenceUID`.
+
+**RS-APP-3a**
+The system shall qualify a `frameOfReference` rule as either limited to the study the result was
+created in, or extending to any study sharing that Frame of Reference.
+
+**RS-APP-3b**
+The system shall apply the qualification its result type declares when a rule does not state one.
+
+> **Note (RS-APP-3a):** The two are materially different. Same-study keeps a result on the exam it
+> was drawn on. Any-study puts it on every prior and follow-up registered to the same frame, which
+> is what makes a segmentation follow a patient across time — and equally what makes it appear
+> somewhere unexpected. The rule states which is meant rather than leaving it to be inferred.
 
 **RS-APP-4**
 WHERE a member's scope is `displaySet` or `series`, the system shall consider that member
@@ -350,6 +395,27 @@ shown in its acquisition geometry.
 IF a member's applicability rule cannot be resolved against any loaded display set, THEN the
 system shall retain the member, shall present it as not currently displayable, and shall state
 what it references.
+
+**RS-APP-15** *(phase 2)*
+The system shall allow an applicability rule to be stated for a result set as a whole, in addition
+to per member.
+
+**RS-APP-16** *(phase 2)*
+The system shall support at least the following result-set applicability rules:
+
+| Rule | Applies to |
+| --- | --- |
+| Specified images | Only the images the result set names |
+| Same-study frame of reference | Every display set in the result set's own study sharing its `FrameOfReferenceUID` |
+| Any-study frame of reference | Every display set in any loaded study sharing its `FrameOfReferenceUID` |
+
+**RS-APP-17** *(phase 2)*
+The system shall resolve applicability in precedence order: the member's own rule, then the result
+set's rule, then the result type's default.
+
+**RS-APP-18** *(phase 2)*
+WHEN the applicability rule of a result set changes, the system shall re-evaluate every viewport
+the set is applicable to, and shall not require the set to be reloaded.
 
 ### 4.6 Display sets for secondary results — `RS-DS`
 
@@ -448,6 +514,19 @@ each member, and shall make that record available for inspection.
 The system shall complete import grouping without requiring any viewport to be displaying the
 imported data.
 
+**RS-IMP-11** *(phase 2)*
+The system shall group imported results by result-set name alone, and shall not require the
+grouping rules of `RS-IMP-1`..`RS-IMP-3` in order to do so.
+
+**RS-IMP-12** *(phase 2)*
+WHERE two imported objects carry the same name within the scope the deployment groups over, the
+system shall place them in one result set.
+
+> **Note (RS-IMP-11, RS-IMP-12):** `RS-IMP-1`..`RS-IMP-3` describe the DICOM-level grouping the
+> specification aims at. They are not phase-2 work. Phase 2 delivers name matching only, which is
+> enough to make the SEG, contour, and annotation sidebars behave as one model; a deployment that
+> needs objects unified across differing names can add a rule as custom code.
+
 ### 4.8 Viewport result layers — `RS-VP`
 
 **RS-VP-1**
@@ -509,6 +588,20 @@ The system shall allow the same result set to be visible in more than one viewpo
 **RS-VP-13**
 The system shall allow the visibility of an individual member to be controlled within a visible
 result layer, without removing the layer.
+
+**RS-VP-14** *(phase 2)*
+The system shall allow a viewport's result layers to be specified by result-set name.
+
+**RS-VP-15** *(phase 2)*
+The system shall allow a viewport's result-layer specification to name more than one result set.
+
+**RS-VP-16** *(phase 2)*
+WHERE a viewport's specification names a result set that is not present, the system shall retain
+the name and shall apply it if a result set of that name later appears.
+
+> **Note (RS-VP-16):** A layout or hanging protocol is written before the data is known. Naming
+> "Reader B" in a viewport that has no Reader B yet has to be a legitimate configuration, not an
+> error.
 
 ### 4.9 Change and persistence state — `RS-STATE`
 
@@ -598,6 +691,14 @@ study, the system shall assign a distinct `SeriesInstanceUID` per modality.
 WHEN a result set produces more than one output series within one study, the system shall give
 those series the same `SeriesDescription` and the same `SeriesNumber`.
 
+**RS-SAVE-9a** *(phase 2)*
+WHEN a result set is saved, the system shall write the result-set name as the `SeriesDescription`
+of every output series it produces.
+
+> **Note (RS-SAVE-9a):** The name is the identity (`RS-ID-11`) and `SeriesDescription` is what a
+> reader sees in any other viewer, so they have to be the same string. It is also what makes
+> `RS-ID-10` work on reload: the name the set comes back with is the name it was saved under.
+
 **RS-SAVE-10**
 WHEN a result set produces more than one output series, the system shall relate those series to
 one another using `RelatedSeriesSequence` (0008,1250).
@@ -678,11 +779,22 @@ sidebar or any sub-tab to compute it.
 
 **RS-SAVE-16**
 IF a save is attempted while the result set has no changed member, THEN the system shall state that
-there is nothing to save and shall allow the user to force a save anyway.
+nothing has changed and shall allow the user to save anyway, writing the whole set per
+`RS-SAVE-18`.
 
 **RS-SAVE-17**
 The system shall record on each output object the applicability of the results it carries, so that
 `RS-APP` can be reconstructed on reload without re-deriving it.
+
+**RS-SAVE-18**
+WHEN a result set is saved, the system shall write every member of that set, and shall not limit
+the write to the members that changed.
+
+> **Note (RS-SAVE-18):** A save produces a complete, self-contained set of objects rather than a
+> patch. `RS-SAVE-2` still distinguishes changed from unchanged in the summary, because that is
+> what tells the user what their edits touched — but the write covers the set, so the result on
+> the server after a save is the result set as it stands, not a fragment that has to be reassembled
+> from earlier saves.
 
 ### 4.11 Operations and conversion — `RS-OPS`
 
@@ -899,6 +1011,20 @@ WHEN a tool commits an edit, the system shall mark the owning result set as chan
 **RS-TOOL-12**
 The system shall apply `RS-TOOL-3` through `RS-TOOL-11` identically for every result type.
 
+**RS-TOOL-13** *(phase 2)*
+WHEN a tool creates a result set because none was suitable, the system shall give it a default
+name.
+
+**RS-TOOL-14** *(phase 2)*
+WHEN tools of different result types create results and no result-set name has been chosen, the
+system shall use the same default name for all of them.
+
+> **Note (RS-TOOL-14):** Because `RS-ID-11` makes the name the identity, one shared default name
+> means a user who draws a segmentation, a contour, and an annotation without naming anything ends
+> up with one result set holding all three, rather than three sets that happen to have been made in
+> the same sitting. That is the behaviour the user expects and it costs nothing to get right at
+> creation time; separating them afterwards is a rename, which `RS-ID-5` already allows.
+
 ### 5.3 The general sidebar contract — `SB`
 
 These apply to every OHIF sidebar, present and future, and say nothing about results.
@@ -1041,16 +1167,24 @@ than panel state, which is what `RS-TOOL-3` through `RS-TOOL-12` specify. The co
 
 ## 6. Result types implemented in this phase
 
-The only result type implemented here is **`segmentation`**, with two representations.
+Two result types are implemented: **`segmentation`** and **`annotation`**. They are the types
+behind the three sidebars the phase-2 name model applies to — segmentation, contour, and
+annotation.
 
-| Property (`RS-DEF-3`) | `segmentation` |
-| --- | --- |
-| Representations | `Labelmap`, `Contour` (`Surface` exists in rendering but is not a result-set member in this phase) |
-| Default applicability scope | `frameOfReference` (`RS-APP-3`) |
-| Import modalities | `SEG`, `RTSTRUCT` |
-| Export modalities | `SEG`, `RTSTRUCT` |
-| Representation-independent operations | copy, combine, intersect, subtract, statistics, compare (`RS-OPS-2`) |
-| Conversions | `Contour ⇄ Labelmap` (`RS-OPS-3`) |
+| Property (`RS-DEF-3`) | `segmentation` | `annotation` |
+| --- | --- | --- |
+| Representations | `Labelmap`, `Contour` (`Surface` exists in rendering but is not a result-set member in this phase) | `Markup` |
+| Sidebars | Segmentation, Contour | Annotation |
+| Default applicability scope | `frameOfReference`, same-study (`RS-APP-3`, `RS-APP-3a`) | `instance` (`RS-APP-5`) |
+| Import modalities | `SEG`, `RTSTRUCT` | `SR` |
+| Export modalities | `SEG`, `RTSTRUCT` | `SR` |
+| Representation-independent operations | copy, combine, intersect, subtract, statistics, compare (`RS-OPS-2`) | copy, compare |
+| Conversions | `Contour ⇄ Labelmap` (`RS-OPS-3`) | none |
+
+> **Note:** `annotation` is in scope for **naming, grouping, per-viewport selection, and saving**
+> — the phase-2 model — because that model has to reach the annotation sidebar to be worth
+> having. The deeper annotation work in §2.2 stays deferred: `RS-OPS` beyond copy and compare, and
+> the measurement-specific behaviour that belongs in the `MS` specification.
 
 ### 6.1 Bindings
 
@@ -1070,7 +1204,18 @@ series.
 The system shall allow a result set to contain `Labelmap` and `Contour` members simultaneously, in
 conformance with `RS-MEM-6`.
 
-> These four requirements move to the `SG` and `CT` specifications when those are written; the
+**RS-TYPE-ANN-1** *(phase 2)*
+The system shall register `annotation` as a result type with the properties tabulated above.
+
+**RS-TYPE-ANN-2** *(phase 2)*
+The system shall allow a result set to contain `segmentation` and `annotation` members
+simultaneously, in conformance with `RS-GRP-2`.
+
+**RS-TYPE-ANN-3** *(phase 2)*
+The system shall apply naming, grouping, per-viewport selection, and saving to `annotation`
+members identically to `segmentation` members.
+
+> These requirements move to the `SG`, `CT`, and `MS` specifications when those are written; the
 > `RS-*` requirements they bind do not.
 
 ---
