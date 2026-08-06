@@ -574,7 +574,24 @@ logical result set on reload.
 
 **RS-SAVE-11**
 WHEN saving a new version of a member that was previously persisted, the system shall create a new
-SOP Instance carrying a `Replaces` relationship that references the prior `SOPInstanceUID`.
+SOP Instance whose `PredecessorDocumentsSequence` (0040,A360) references the `SOPInstanceUID` it
+supersedes.
+
+**RS-SAVE-11a**
+WHEN a member has been saved more than once, the system shall reference only the immediately
+preceding `SOPInstanceUID`, and shall not restate the whole version chain.
+
+> **Note (RS-SAVE-11):** `PredecessorDocumentsSequence` is the standard attribute for "this
+> instance supersedes that one", carrying `StudyInstanceUID`, `SeriesInstanceUID`, and the
+> referenced SOP Class and Instance UIDs. Using it uniformly across SEG, RTSTRUCT, SR, and KO means
+> one attribute expresses versioning for every output type, and the reader that reconstructs a
+> version chain on import does not branch per modality.
+>
+> It is defined in the SR Document General and Key Object Document modules, so writing it on SEG
+> and RTSTRUCT is an extension of its defined scope rather than a use the standard already
+> mandates. It is a standard attribute with the exact required semantics and no conflicting
+> meaning elsewhere, which makes it a better choice than a private tag or a private purpose code;
+> confirming or formalizing its use for image-derived IODs is §10 item 1.
 
 **RS-SAVE-12**
 WHEN a result set spans more than one study, the system shall partition its output per study and
@@ -1162,6 +1179,7 @@ conformance with `RS-MEM-6`.
 | `RS-VP`, `RS-UI`, `RS-TOOL`, `RS-VIEW`, `RS-COV` | Playwright end-to-end tests using the OHIF fixture system, per the `ohif-test-agent` skill. |
 | `SB-COMP`, `SB-OWN`, `SB-TOOL`, `SB-SEL`, `SB-STAT`, `SB-VP` | Playwright tests against the result-set sidebar, written so they can be re-pointed at a second sidebar when the `SG` and `CT` specifications land. |
 | `RS-SAVE`, `RS-STATE` | Unit tests on the export partitioner over synthetic result sets, plus end-to-end store-and-reload round trips asserting `RS-SAVE-13` and `RS-SAVE-17`. |
+| `RS-SAVE-11`, `RS-SAVE-11a` | Save a member three times and assert each output instance's `PredecessorDocumentsSequence` references exactly its immediate predecessor, and that reloading reconstructs the version order. |
 | `RS-OPS` | Unit tests on the operation registry and conversion adapters. |
 | `RS-COMPAT` | Existing segmentation unit and end-to-end suites must pass unchanged with the feature enabled. |
 
@@ -1169,22 +1187,26 @@ conformance with `RS-MEM-6`.
 
 These are unresolved and must be settled before or during design.
 
-1. **DICOM purpose codes.** `RS-SAVE-10` needs a Purpose of Reference code identifying a series
-   as belonging to a result set, and `RS-SAVE-11` needs one meaning "Replaces". Neither has a
-   confirmed standard code for SEG and RTSTRUCT. The working assumption is an OHIF-private
-   coding scheme with a change proposal raised; SR objects use the standard
-   `PredecessorDocumentsSequence` (0040,A360) when SR export lands.
-2. **Where `RS-SAVE-17` writes applicability.** Recording a member's applicability scope on the
+1. **`PredecessorDocumentsSequence` outside SR and KO.** `RS-SAVE-11` writes it on every output
+   type. It is defined in the SR Document General and Key Object Document modules, so its use on
+   SEG and RTSTRUCT should be confirmed against PS3.3, and formalized by change proposal if it is
+   not already permitted. No alternative is proposed in the meantime — a private tag would be
+   worse, and the semantics are exactly right.
+2. **The result-set anchor purpose code.** `RS-SAVE-10` needs a Purpose of Reference code marking
+   a series as belonging to a result set, carried in `RelatedSeriesSequence` (0008,1250). No
+   standard code has that meaning. The working assumption is an OHIF-private coding scheme,
+   configurable per deployment, with a change proposal raised.
+3. **Where `RS-SAVE-17` writes applicability.** Recording a member's applicability scope on the
    output object has no obvious standard home for every scope, and may be partly derivable from
    existing reference sequences.
-3. **In-view applicability semantics.** `RS-APP-6` says "within the viewport's current view".
+4. **In-view applicability semantics.** `RS-APP-6` says "within the viewport's current view".
    Whether that means the exact frame, any frame within slice-thickness tolerance, or any frame
    the reference projects onto needs a decision per result type.
-4. **Comparison pairing.** `RS-OPS-9` requires members to be paired by result type and
+5. **Comparison pairing.** `RS-OPS-9` requires members to be paired by result type and
    applicability before a group comparison. Whether label matching should also participate, and
    what happens to unpaired members, is unspecified.
-5. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
+6. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
    cannot serve.
-6. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
+7. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
    configured, but not yet the noun for a member, which reads differently for a segmentation
    than for a key object.
