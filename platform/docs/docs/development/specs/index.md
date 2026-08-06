@@ -64,6 +64,7 @@ usual reason a requirement elsewhere is marked *(proposed)*.
 | Proposal | Changes | Phase | Status |
 | --- | --- | --- | --- |
 | [CP-SEGTOOL](./changes/segmentation-tool-submenu.md) — segmentation and contour tools into a toolbar sub-menu | `EM`, `RS` | 1 | Proposed |
+| [CP-TOOLCREATE](./changes/tool-create-on-first-use.md) — tools create what they need instead of refusing to run | `RS` | 2 | Proposed |
 
 ---
 

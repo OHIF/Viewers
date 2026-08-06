@@ -1,18 +1,18 @@
 ---
 sidebar_position: 1
 sidebar_label: Requirements (EARS)
-title: Result sets — requirements
-summary: The general contract for secondary results layered over images — grouping, applicability, display-set creation, viewport layers, the top menu bar, and sidebars — with labelmap and contour segmentation as the first implemented result types.
+title: Result sets â requirements
+summary: The general contract for secondary results layered over images â grouping, applicability, display-set creation, viewport layers, the top menu bar, and sidebars â with labelmap and contour segmentation as the first implemented result types.
 ---
 
-# Result sets — requirements
+# Result sets â requirements
 
-**Prefixes:** `RS` (result sets), `SB` (general sidebar contract) — see the
+**Prefixes:** `RS` (result sets), `SB` (general sidebar contract) â see the
 [specification register](../index.md#1-index-of-component-specifications).
-**Source issue:** [OHIF/Viewers#6193 — Study-level segmentation and annotation result sets](https://github.com/OHIF/Viewers/issues/6193)
+**Source issue:** [OHIF/Viewers#6193 â Study-level segmentation and annotation result sets](https://github.com/OHIF/Viewers/issues/6193)
 **Linear:** [OHIF-2686](https://linear.app/ohif/issue/OHIF-2686)
-**Status:** Draft for review — requirements only. A companion design document follows once these are agreed.
-**Depends on:** [Extensions and modes (`EM`)](../extensions-and-modes/requirements.md) — where each thing below is declared, and which UI surface it appears on.
+**Status:** Draft for review â requirements only. A companion design document follows once these are agreed.
+**Depends on:** [Extensions and modes (`EM`)](../extensions-and-modes/requirements.md) â where each thing below is declared, and which UI surface it appears on.
 
 ---
 
@@ -20,7 +20,7 @@ summary: The general contract for secondary results layered over images — grou
 
 A **result** is anything OHIF holds that is secondary to the images: a segmentation, a contour
 set, a measurement, an annotation, a key object selection, a designated key series, a computed
-statistic, a registration. OHIF has grown a separate mechanism for each — separate panels,
+statistic, a registration. OHIF has grown a separate mechanism for each â separate panels,
 separate visibility rules, separate save paths, separate ideas about which images a result
 applies to. The result of that is the confusion catalogued in the source issue.
 
@@ -31,9 +31,9 @@ Two ideas carry most of the weight.
 
 **Grouping is the point.** A result set is a *group* of results that is acted on as a group.
 The value is not that a group exists, but that **several groups of the same kind of thing can
-exist side by side over the same images** — Reader A and Reader B, baseline and follow-up, AI
-v2 and AI v3 — and each can be shown, hidden, compared, edited, and saved as one unit. Every
-capability in §4 exists to make that possible without the user having to track the underlying
+exist side by side over the same images** â Reader A and Reader B, baseline and follow-up, AI
+v2 and AI v3 â and each can be shown, hidden, compared, edited, and saved as one unit. Every
+capability in Â§4 exists to make that possible without the user having to track the underlying
 DICOM objects.
 
 **Applicability is explicit.** A result does not simply "belong to a series". It applies to
@@ -43,19 +43,19 @@ lets one mechanism serve a labelmap that spans a whole volume and a 2D annotatio
 appear on exactly one image.
 
 The contract is not a sidebar feature. It shows up in the sidebar, in the top menu bar, in
-display-set creation for secondary DICOM objects, in hanging protocols, and in the save path —
-§5 covers each of those surfaces.
+display-set creation for secondary DICOM objects, in hanging protocols, and in the save path â
+Â§5 covers each of those surfaces.
 
 ## 2. Scope
 
 ### 2.1 In scope
 
-- The general result-set contract (§4), written for **any** result type.
-- The surfaces that contract appears on (§5): top menu bar, tool activation, sidebars,
+- The general result-set contract (Â§4), written for **any** result type.
+- The surfaces that contract appears on (Â§5): top menu bar, tool activation, sidebars,
   display-set creation.
-- The general sidebar contract (`SB`, §5.3), stated component-neutrally.
+- The general sidebar contract (`SB`, Â§5.3), stated component-neutrally.
 - **Labelmap** segmentation, **contour** segmentation, and **annotations** as the implemented
-  result types (§6) — the three sidebars the phase-2 name model applies to.
+  result types (Â§6) â the three sidebars the phase-2 name model applies to.
 
 ### 2.2 Out of scope for this phase
 
@@ -64,14 +64,14 @@ implement. Each is named so the contract can be checked against it.
 
 | Deferred result type or capability | What the contract must not preclude |
 | --- | --- |
-| Measurement-specific behaviour, and annotation operations beyond copy and compare | Annotations are in scope for naming, grouping, per-viewport selection, and saving (§6); the rest belongs in the `MS` specification. |
+| Measurement-specific behaviour, and annotation operations beyond copy and compare | Annotations are in scope for naming, grouping, per-viewport selection, and saving (Â§6); the rest belongs in the `MS` specification. |
 | DICOM Key Object Selection | Non-renderable members (`RS-DEF-5`) and study-scoped applicability (`RS-APP-7`). |
 | Key images and key series | Study- and series-scoped members (`RS-APP-2`), and a coverage model able to group by them when it is specified. |
 | Registrations, statistics, and other non-visual results | `RS-DEF-5`. |
 | KO export | Export partitioning (`RS-SAVE-7`..`RS-SAVE-13`) is written per modality, not per result type. |
 | Writing a single DICOM object across studies | `RS-SAVE-12`. |
 | Concurrent editing and external-update reconciliation | Only single-session change tracking is required. |
-| Rewriting the sidebars catalogued in §5.5 other than the result-set sidebar | `EM-SID-4`, `EM-CFG` equivalents in `EM`. |
+| Rewriting the sidebars catalogued in Â§5.5 other than the result-set sidebar | `EM-SID-4`, `EM-CFG` equivalents in `EM`. |
 
 ### 2.3 Terminology decision
 
@@ -93,7 +93,7 @@ absence of a marker says nothing about priority.
 
 | Phase | Delivers |
 | --- | --- |
-| 1 | Tool selection moves to the top menu bar — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
+| 1 | Tool selection moves to the top menu bar â [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
 | 2 | Named result sets across the segmentation, contour, and annotation sidebars, and tools that create what they need instead of refusing |
 
 **Phase 2** is deliberately narrow. A result set is grouped by its **name** unless something has deliberately
@@ -105,7 +105,7 @@ name so the user ends up with one set rather than three (`RS-TOOL-14`).
 
 Phase 2 also closes the create-on-first-use gap (`RS-TOOL-3`..`RS-TOOL-19`): a tool that finds no
 result set, no member, or no segment creates them and carries on, rather than disabling itself and
-telling the user to go and do it (`RS-TOOL-15`, `RS-TOOL-16`).
+telling the user to go and do it (`RS-TOOL-15`, `RS-TOOL-16`) — [CP-TOOLCREATE](../changes/tool-create-on-first-use.md).
 
 Nothing in phase 2 infers that differently named objects are one piece of work. The DICOM-level
 grouping of `RS-IMP-1`..`RS-IMP-3` and the anchoring of `RS-SAVE-10` are later refinements, and a
@@ -129,8 +129,8 @@ exactly what it says, so that everyone is reacting to the same thing; expect it 
 there is experience with it.
 
 Every prototype requirement names the open item it exists to resolve. After a period of real use
-the group is reviewed and either promoted — the marker is removed and it becomes an ordinary
-requirement — or replaced by what use showed was better. A prototype requirement that has been
+the group is reviewed and either promoted â the marker is removed and it becomes an ordinary
+requirement â or replaced by what use showed was better. A prototype requirement that has been
 in the product for a release without being reviewed is a defect in this document, not a settled
 decision.
 
@@ -171,16 +171,16 @@ decision.
 
 ---
 
-## 4. The result-set contract — `RS`
+## 4. The result-set contract â `RS`
 
 Type-agnostic. Nothing in this section is specific to segmentation.
 
-EARS patterns used: **ubiquitous** (`The system shall …`), **event-driven** (`WHEN … the
-system shall …`), **state-driven** (`WHILE … the system shall …`), **optional feature**
-(`WHERE … the system shall …`), and **unwanted behaviour** (`IF … THEN the system shall …`).
+EARS patterns used: **ubiquitous** (`The system shall â¦`), **event-driven** (`WHEN â¦ the
+system shall â¦`), **state-driven** (`WHILE â¦ the system shall â¦`), **optional feature**
+(`WHERE â¦ the system shall â¦`), and **unwanted behaviour** (`IF â¦ THEN the system shall â¦`).
 Throughout, *the system* means the OHIF Viewer application.
 
-### 4.1 Results and result types — `RS-DEF`
+### 4.1 Results and result types â `RS-DEF`
 
 **RS-DEF-1**
 The system shall treat every result as belonging to a registered result type.
@@ -212,9 +212,9 @@ about.
 **RS-DEF-7**
 The system shall allow a result type to declare which operations of `RS-OPS` apply to it.
 
-### 4.2 Grouping — `RS-GRP`
+### 4.2 Grouping â `RS-GRP`
 
-This is the primary capability. Everything else in §4 supports it.
+This is the primary capability. Everything else in Â§4 supports it.
 
 **RS-GRP-1**
 The system shall allow more than one result set to hold results of the same result type over the
@@ -272,11 +272,11 @@ The system shall show the on/off state of a result set wherever that set is list
 
 > **Note (RS-GRP-11, RS-GRP-12):** A group toggle is a group-level override, not a bulk edit of its
 > members. A user who has hidden one segment inside a set, turned the set off to look at the
-> images, and turned it back on expects that segment still hidden — not everything switched on.
+> images, and turned it back on expects that segment still hidden â not everything switched on.
 
 #### Prototype: where the control lives and how far it reaches
 
-`RS-GRP-15`..`RS-GRP-19` are a **prototype** in the sense of §2.5. They exist to resolve §10 item 7,
+`RS-GRP-15`..`RS-GRP-19` are a **prototype** in the sense of Â§2.5. They exist to resolve Â§10 item 7,
 and are stated concretely so that there is one thing to build, use, and react to. They are not a
 settled decision.
 
@@ -303,14 +303,14 @@ the system shall turn that set on in every viewport it is applicable to.
 > **Note:** The prototype deliberately offers **both** reaches rather than choosing between them.
 > `RS-GRP-16` follows the per-viewport model that `RS-VP-3` uses for everything else; `RS-GRP-17`
 > serves the user who means "hide Reader B" and means it everywhere. Building both is what makes
-> the choice observable — if the per-row action is never used, per-viewport was the wrong
+> the choice observable â if the per-row action is never used, per-viewport was the wrong
 > default, and if it is used constantly, it should have been the primary.
 >
 > `RS-GRP-19` turning everything **on** from the third state follows the usual convention for a
 > mixed control, and is the reversible direction: turning on what was off is undone by one more
 > click, whereas turning off loses which viewports had it on.
 
-### 4.3 Identity and lifecycle — `RS-ID`
+### 4.3 Identity and lifecycle â `RS-ID`
 
 **RS-ID-1**
 The system shall assign every result set a `resultSetId` that is unique within the session and
@@ -350,7 +350,7 @@ The system shall allow the user to name a result set.
 
 **RS-ID-10** *(phase 2)*
 WHEN a result set is created from imported results, the system shall default its name to the name
-the imported object carries — its `SeriesDescription`, or the equivalent for its type.
+the imported object carries â its `SeriesDescription`, or the equivalent for its type.
 
 **RS-ID-11** *(phase 2)*
 The system shall determine which result set a result belongs to from an explicit result-set
@@ -376,7 +376,7 @@ The system shall make it inspectable whether a result set is grouped by explicit
 name.
 
 > **Note (RS-ID-11):** The name is the **default** grouping key, not the identity. Where something
-> has deliberately set an identity — a workflow, an importer, or custom deployment code — that
+> has deliberately set an identity â a workflow, an importer, or custom deployment code â that
 > identity wins, and `RS-ID-14` keeps the grouping stable when the user renames the set. Only when
 > nothing has been set does the name decide, which is the common case and the whole of what phase 2
 > has to deliver.
@@ -390,7 +390,7 @@ name.
 > work. The DICOM-level grouping of `RS-IMP-1`..`RS-IMP-3` is a later refinement, and a deployment
 > needing it sooner can add it as custom code.
 
-### 4.4 Membership and provenance — `RS-MEM`
+### 4.4 Membership and provenance â `RS-MEM`
 
 **RS-MEM-1**
 The system shall record, for every member, its result type, its representation, its backing data
@@ -425,7 +425,7 @@ same result type simultaneously.
 The system shall record for each member whether it was imported, created locally in the current
 session, or derived from other members.
 
-### 4.5 Applicability — `RS-APP`
+### 4.5 Applicability â `RS-APP`
 
 **RS-APP-1**
 The system shall record for every member an applicability rule stating an applicability scope
@@ -448,7 +448,7 @@ The system shall apply the qualification its result type declares when a rule do
 
 > **Note (RS-APP-3a):** The two are materially different. Same-study keeps a result on the exam it
 > was drawn on. Any-study puts it on every prior and follow-up registered to the same frame, which
-> is what makes a segmentation follow a patient across time — and equally what makes it appear
+> is what makes a segmentation follow a patient across time â and equally what makes it appear
 > somewhere unexpected. The rule states which is meant rather than leaving it to be inferred.
 
 **RS-APP-4**
@@ -523,7 +523,7 @@ set's rule, then the result type's default.
 WHEN the applicability rule of a result set changes, the system shall re-evaluate every viewport
 the set is applicable to, and shall not require the set to be reloaded.
 
-### 4.6 Display sets for secondary results — `RS-DS`
+### 4.6 Display sets for secondary results â `RS-DS`
 
 **RS-DS-1**
 WHEN a DICOM object carrying results is loaded, the system shall create a display set for it and
@@ -562,7 +562,7 @@ for a single viewport.
 IF a display set carrying results is removed, THEN the system shall remove the corresponding
 members and shall leave the rest of their result sets intact.
 
-### 4.7 Import and grouping rules — `RS-IMP`
+### 4.7 Import and grouping rules â `RS-IMP`
 
 **RS-IMP-1**
 WHEN DICOM objects carrying results are loaded, the system shall assemble them into result sets
@@ -633,7 +633,7 @@ system shall place them in one result set.
 > enough to make the SEG, contour, and annotation sidebars behave as one model; a deployment that
 > needs objects unified across differing names can add a rule as custom code.
 
-### 4.8 Viewport result layers — `RS-VP`
+### 4.8 Viewport result layers â `RS-VP`
 
 **RS-VP-1**
 The system shall maintain, for each viewport, an ordered list of result layers, each identifying
@@ -709,7 +709,7 @@ the name and shall apply it if a result set of that name later appears.
 > "Reader B" in a viewport that has no Reader B yet has to be a legitimate configuration, not an
 > error.
 
-### 4.9 Change and persistence state — `RS-STATE`
+### 4.9 Change and persistence state â `RS-STATE`
 
 **RS-STATE-1**
 The system shall maintain for every result set exactly one of the persistence states `unchanged`,
@@ -757,7 +757,7 @@ sets.
 WHILE a result set is in the `saving` state, the system shall prevent a second concurrent save of
 that result set.
 
-### 4.10 Save and export — `RS-SAVE`
+### 4.10 Save and export â `RS-SAVE`
 
 **RS-SAVE-1**
 The system shall allow the user to save a result set as one operation, without managing each
@@ -830,7 +830,7 @@ system shall relate the new series to the existing ones without modifying any pr
 instance.
 
 > **Note (RS-SAVE-10b, RS-SAVE-10c):** Stored instances are immutable, so a scheme in which every
-> series references every other cannot survive a later save that adds a modality — the existing
+> series references every other cannot survive a later save that adds a modality â the existing
 > series would have to be rewritten. A single anchor series referenced by every member satisfies
 > both requirements and is what the design is expected to adopt.
 
@@ -865,7 +865,7 @@ preceding `SOPInstanceUID`, and shall not restate the whole version chain.
 > and RTSTRUCT is an extension of its defined scope rather than a use the standard already
 > mandates. It is a standard attribute with the exact required semantics and no conflicting
 > meaning elsewhere, which makes it a better choice than a private tag or a private purpose code;
-> confirming or formalizing its use for image-derived IODs is §10 item 1.
+> confirming or formalizing its use for image-derived IODs is Â§10 item 1.
 
 **RS-SAVE-12**
 WHEN a result set spans more than one study, the system shall partition its output per study and
@@ -898,11 +898,11 @@ the write to the members that changed.
 
 > **Note (RS-SAVE-18):** A save produces a complete, self-contained set of objects rather than a
 > patch. `RS-SAVE-2` still distinguishes changed from unchanged in the summary, because that is
-> what tells the user what their edits touched — but the write covers the set, so the result on
+> what tells the user what their edits touched â but the write covers the set, so the result on
 > the server after a save is the result set as it stands, not a fragment that has to be reassembled
 > from earlier saves.
 
-### 4.11 Operations and conversion — `RS-OPS`
+### 4.11 Operations and conversion â `RS-OPS`
 
 **RS-OPS-1**
 The system shall offer conceptually applicable operations consistently across the representations
@@ -940,7 +940,7 @@ set as changed, and record the operation and its inputs in the new member's prov
 WHEN a group-level operation is applied to result sets rather than members, the system shall pair
 the members of those sets by result type and applicability before operating.
 
-### 4.12 Performance — `RS-PERF`
+### 4.12 Performance â `RS-PERF`
 
 **RS-PERF-1**
 The system shall resolve which result layers are displayed in a given viewport in time independent
@@ -979,7 +979,7 @@ of the number of loaded display sets.
 > **Note (RS-PERF-1..4, 8):** These constrain the *orchestration lookup* only. The rendering work
 > triggered by a layer change may legitimately scale with the number of affected frames.
 
-### 4.13 Configuration and extensibility — `RS-CFG`
+### 4.13 Configuration and extensibility â `RS-CFG`
 
 **RS-CFG-1**
 The system shall allow modes, data sources, and deployments to configure the import grouping rules
@@ -1007,7 +1007,7 @@ be configured.
 The system shall allow the default applicability scope of a result type to be configured per
 deployment.
 
-### 4.14 Compatibility — `RS-COMPAT`
+### 4.14 Compatibility â `RS-COMPAT`
 
 **RS-COMPAT-1**
 The system shall continue to support the existing segmentation and measurement service APIs for the
@@ -1030,9 +1030,9 @@ the output produced today for the equivalent single result, other than the addit
 
 ## 5. Surfaces
 
-The §4 contract is not a panel feature. It surfaces in four places.
+The Â§4 contract is not a panel feature. It surfaces in four places.
 
-### 5.1 Top menu bar — `RS-UI`
+### 5.1 Top menu bar â `RS-UI`
 
 **RS-UI-1**
 The system shall make the active result set and the active member of the active viewport available
@@ -1065,7 +1065,7 @@ requiring one as unavailable and shall state the reason.
 WHEN the active viewport changes, the system shall update the top menu bar to reflect the newly
 active viewport's applicable result types and active result set.
 
-### 5.2 Tool activation and create-on-first-use — `RS-TOOL`
+### 5.2 Tool activation and create-on-first-use â `RS-TOOL`
 
 **RS-TOOL-1** *(phase 1)*
 The system shall make every tool that creates or edits results selectable from the standard OHIF
@@ -1150,7 +1150,7 @@ displays no image data the tool's result type can apply to.
 > tools are disabled with `No segmentations available` when the viewport holds no segmentation, and
 > with `Add segment to enable this tool` when the active segmentation has no segments. Both are the
 > viewer telling the user to go and perform a setup step it could have performed itself. Neither
-> condition says anything about whether the tool *could* work here — only that nobody has drawn
+> condition says anything about whether the tool *could* work here â only that nobody has drawn
 > anything yet, which is the normal state at the start of every piece of work.
 >
 > `RS-TOOL-17` covers the second message specifically: creating the segmentation is not enough if
@@ -1159,6 +1159,8 @@ displays no image data the tool's result type can apply to.
 >
 > `RS-TOOL-18` is what makes the second stroke reuse the first stroke's target rather than creating
 > again, via `RS-TOOL-5`.
+>
+> The concrete change is [CP-TOOLCREATE](../changes/tool-create-on-first-use.md).
 
 > **Note (RS-TOOL-14):** Because the name groups by default (`RS-ID-11`), one shared default name
 > means a user who draws a segmentation, a contour, and an annotation without naming anything ends
@@ -1166,11 +1168,11 @@ displays no image data the tool's result type can apply to.
 > the same sitting. That is the behaviour the user expects and it costs nothing to get right at
 > creation time; separating them afterwards is a rename, which `RS-ID-5` already allows.
 
-### 5.3 The general sidebar contract — `SB`
+### 5.3 The general sidebar contract â `SB`
 
 These apply to every OHIF sidebar, present and future, and say nothing about results.
 
-#### 5.3.1 Composition — `SB-COMP`
+#### 5.3.1 Composition â `SB-COMP`
 
 **SB-COMP-1**
 The system shall compose every sidebar from a header region identifying what is being shown, an
@@ -1196,7 +1198,7 @@ organization of the content and shall not delete any underlying data.
 The system shall allow more than one sub-tab of the same sidebar to present the same item
 simultaneously.
 
-#### 5.3.2 Ownership — `SB-OWN`
+#### 5.3.2 Ownership â `SB-OWN`
 
 **SB-OWN-1**
 The system shall have every sidebar read its content from a backing service, and shall not have a
@@ -1218,7 +1220,7 @@ complete that operation and shall report its outcome.
 WHEN the data in a backing service changes, the system shall reflect that change in every open
 sidebar that presents it, without requiring the user to reopen or refresh the sidebar.
 
-#### 5.3.3 Tools versus actions — `SB-TOOL`
+#### 5.3.3 Tools versus actions â `SB-TOOL`
 
 The tool-versus-action distinction, and the placement each implies, are specified by
 [Extensions and modes (`EM`)](../extensions-and-modes/requirements.md). They are not restated
@@ -1244,13 +1246,13 @@ that tool through the standard tool activation path rather than through a sideba
 mechanism.
 
 > **Note (SB-TOOL-2):** This is the one part of the distinction that is genuinely sidebar-specific,
-> and it is what makes `EM-PLC-5` hold in practice — a sidebar that activates tools its own way
+> and it is what makes `EM-PLC-5` hold in practice â a sidebar that activates tools its own way
 > becomes a second tool system the top menu bar does not know about.
 
 ### 5.4 Deferred to a lower-level specification
 
-The detailed behaviour of a sidebar — selection and navigation, status display, its relationship
-to the active viewport, its update performance, and its configuration — was drafted here and has
+The detailed behaviour of a sidebar â selection and navigation, status display, its relationship
+to the active viewport, its update performance, and its configuration â was drafted here and has
 been removed. So were the result-set sidebar's own requirements and the coverage view.
 
 They were too specific for this document. This specification says which surfaces the result-set
@@ -1272,27 +1274,27 @@ they are not reused, so a lower-level specification restating this behaviour tak
 
 ### 5.5 Sidebars built on the contract
 
-This catalogue exists to show that §5.3 is not shaped around one panel, and to name where each
+This catalogue exists to show that Â§5.3 is not shaped around one panel, and to name where each
 future specification attaches. Only the result-set sidebar is required to conform in this phase.
 
 | Sidebar | Lists | Backing service | Illustrative sub-tabs | Specification |
 | --- | --- | --- | --- | --- |
-| **Result set** | Result sets and their members | `ResultSetService` | Members · Coverage · Changes | This document, plus the lower-level specification of §5.4 |
-| **Segmentation** | Segments of the active segmentation member | `SegmentationService`, via the result-set model | Segments · Statistics · Coverage by plane | Planned, prefix `SG` |
-| **Contour** | ROIs of the active contour member | `SegmentationService`, via the result-set model | ROIs · Coverage by plane · Interpolation status | Planned, prefix `CT` |
-| **Measurement** | Measurements and annotations | `MeasurementService` | By series · By finding · Required measurements | Planned, prefix `MS` |
-| **Study and series** | Display sets for current and prior studies | `DisplaySetService` | All series · Priors · Derived objects | Planned, prefix `SS` |
-| **Workflow** | Steps of a guided workflow | `WorkflowStepsService` | Steps · Outstanding items | Planned, prefix `HP` |
+| **Result set** | Result sets and their members | `ResultSetService` | Members Â· Coverage Â· Changes | This document, plus the lower-level specification of Â§5.4 |
+| **Segmentation** | Segments of the active segmentation member | `SegmentationService`, via the result-set model | Segments Â· Statistics Â· Coverage by plane | Planned, prefix `SG` |
+| **Contour** | ROIs of the active contour member | `SegmentationService`, via the result-set model | ROIs Â· Coverage by plane Â· Interpolation status | Planned, prefix `CT` |
+| **Measurement** | Measurements and annotations | `MeasurementService` | By series Â· By finding Â· Required measurements | Planned, prefix `MS` |
+| **Study and series** | Display sets for current and prior studies | `DisplaySetService` | All series Â· Priors Â· Derived objects | Planned, prefix `SS` |
+| **Workflow** | Steps of a guided workflow | `WorkflowStepsService` | Steps Â· Outstanding items | Planned, prefix `HP` |
 
-#### 5.5.1 Worked example — one sub-tab, three sidebars
+#### 5.5.1 Worked example â one sub-tab, three sidebars
 
 A *coverage* sub-tab lists, per result component, which source series and acquisition planes
-contain content. Under §5.3 it is registered once and can be configured into the result-set
+contain content. Under Â§5.3 it is registered once and can be configured into the result-set
 sidebar scoped to every member of the selected set, into the segmentation sidebar
 scoped to the active segmentation member, and into the contour sidebar scoped to the active
 contour member. It works in all three because `SB-OWN-2` forbids it from having its own store.
 
-#### 5.5.2 Worked example — why tools left the panel
+#### 5.5.2 Worked example â why tools left the panel
 
 Today the labelmap and contour toolboxes render inside the segmentation panel. That placement
 produces two of the symptoms in the source issue: a tool cannot be used until the panel is open,
@@ -1309,7 +1311,7 @@ than panel state, which is what `RS-TOOL-3` through `RS-TOOL-12` specify. The co
 ## 6. Result types implemented in this phase
 
 Two result types are implemented: **`segmentation`** and **`annotation`**. They are the types
-behind the three sidebars the phase-2 name model applies to — segmentation, contour, and
+behind the three sidebars the phase-2 name model applies to â segmentation, contour, and
 annotation.
 
 | Property (`RS-DEF-3`) | `segmentation` | `annotation` |
@@ -1320,11 +1322,11 @@ annotation.
 | Import modalities | `SEG`, `RTSTRUCT` | `SR` |
 | Export modalities | `SEG`, `RTSTRUCT` | `SR` |
 | Representation-independent operations | copy, combine, intersect, subtract, statistics, compare (`RS-OPS-2`) | copy, compare |
-| Conversions | `Contour ⇄ Labelmap` (`RS-OPS-3`) | none |
+| Conversions | `Contour â Labelmap` (`RS-OPS-3`) | none |
 
 > **Note:** `annotation` is in scope for **naming, grouping, per-viewport selection, and saving**
-> — the phase-2 model — because that model has to reach the annotation sidebar to be worth
-> having. The deeper annotation work in §2.2 stays deferred: `RS-OPS` beyond copy and compare, and
+> â the phase-2 model â because that model has to reach the annotation sidebar to be worth
+> having. The deeper annotation work in Â§2.2 stays deferred: `RS-OPS` beyond copy and compare, and
 > the measurement-specific behaviour that belongs in the `MS` specification.
 
 ### 6.1 Bindings
@@ -1365,14 +1367,14 @@ members identically to `segmentation` members.
 
 | # | Question | Resolution in this phase |
 | --- | --- | --- |
-| 1 | Which metadata carries a positive related-series identifier? | `RelatedSeriesSequence` (0008,1250), relating the output series of a result set to one another across modality and study boundaries — `RS-SAVE-10`..`RS-SAVE-10e`. The purpose code marking membership is OHIF-private until a standard one exists — see §10 item 2. |
+| 1 | Which metadata carries a positive related-series identifier? | `RelatedSeriesSequence` (0008,1250), relating the output series of a result set to one another across modality and study boundaries â `RS-SAVE-10`..`RS-SAVE-10e`. The purpose code marking membership is OHIF-private until a standard one exists â see Â§10 item 2. |
 | 2 | Which fallback matching rules when no positive identifier is present? | `RS-IMP-3` fixes the inputs a rule may consider and `RS-CFG-1` makes the chain configurable. The default chain is a design decision. |
-| 3 | Default viewport visibility when a result set is first loaded? | `allApplicableViewports`, configurable — `RS-VP-6`, `RS-VP-7`, resolved through `RS-APP-10`. |
+| 3 | Default viewport visibility when a result set is first loaded? | `allApplicableViewports`, configurable â `RS-VP-6`, `RS-VP-7`, resolved through `RS-APP-10`. |
 | 4 | When should drawing reuse the active result set vs. ask? | `RS-TOOL-4` reuse when unambiguous, `RS-TOOL-5` reuse the active one, `RS-TOOL-6` ask only when genuinely ambiguous. |
 | 5 | Which operations can be representation-independent? | `RS-OPS-2` lists the required set; everything else goes through explicit conversion, `RS-OPS-3`..`RS-OPS-6`. |
-| 6 | How should cross-study result sets be encoded? | Membership and display span studies; persistence is partitioned per study — `RS-ID-4`, `RS-SAVE-12`. |
-| 7 | Concurrent edits, external updates, partial saves? | Partial saves are specified (`RS-STATE-7`, `RS-SAVE`). Concurrent edits and external updates are deferred (§2.2). |
-| 8 | What terminology? | "Result set" — §2.3, with a per-mode override (`RS-CFG-4`). |
+| 6 | How should cross-study result sets be encoded? | Membership and display span studies; persistence is partitioned per study â `RS-ID-4`, `RS-SAVE-12`. |
+| 7 | Concurrent edits, external updates, partial saves? | Partial saves are specified (`RS-STATE-7`, `RS-SAVE`). Concurrent edits and external updates are deferred (Â§2.2). |
+| 8 | What terminology? | "Result set" â Â§2.3, with a per-mode override (`RS-CFG-4`). |
 
 ## 8. Traceability
 
@@ -1382,8 +1384,8 @@ members identically to `segmentation` members.
 | --- | --- |
 | Result set (conceptual model) | `RS-DEF-*`, `RS-GRP-*`, `RS-ID-*`, `RS-MEM-*` |
 | Representation | `RS-DEF-3`, `RS-MEM-6`, `RS-OPS-*` |
-| Result-set view and sub-tabs | `SB-COMP-*`, `SB-OWN-*`; detailed behaviour deferred, §5.4 |
-| Segment coverage view | Deferred, §5.4 |
+| Result-set view and sub-tabs | `SB-COMP-*`, `SB-OWN-*`; detailed behaviour deferred, Â§5.4 |
+| Segment coverage view | Deferred, Â§5.4 |
 | 1. Tool selection in the standard tool UI | `EM-TOP-1`, `EM-SID-6`, `EM-PLC-4`, `SB-TOOL-1`, `SB-TOOL-2`, `SB-OWN-3`, `RS-UI-2`, `RS-TOOL-1`, `RS-TOOL-2` |
 | 2. Create results on first use | `RS-TOOL-3`..`RS-TOOL-12` |
 | 3. Load result sets as logical units | `RS-IMP-*`, `RS-DS-*` |
@@ -1401,17 +1403,17 @@ members identically to `segmentation` members.
 | [#5568 Confusing segmentation behaviour with active viewport](https://github.com/OHIF/Viewers/issues/5568) | `RS-APP-*`, `RS-VP-1`, `RS-VP-3`, `RS-VP-9`, `RS-VP-12`, `RS-TOOL-4`..`RS-TOOL-6` |
 | [#3879 Auto load derived display set matched via hanging protocol](https://github.com/OHIF/Viewers/issues/3879) | `RS-DS-7`, `RS-DS-8`, `RS-IMP-6`, `RS-VP-6`, `RS-VP-7` |
 | [#3421 Impossible to know which segmentation series is displayed](https://github.com/OHIF/Viewers/issues/3421) | `RS-MEM-2`, `RS-APP-12`, `RS-IMP-7` |
-| [#3790 No way to tell which series is being segmented](https://github.com/OHIF/Viewers/issues/3790) | `RS-APP-12`, `RS-MEM-1`; the coverage half is deferred, §5.4 |
+| [#3790 No way to tell which series is being segmented](https://github.com/OHIF/Viewers/issues/3790) | `RS-APP-12`, `RS-MEM-1`; the coverage half is deferred, Â§5.4 |
 | [#5182 Adding multiple segmentation overlays](https://github.com/OHIF/Viewers/issues/5182) | `RS-GRP-1`, `RS-GRP-6`, `RS-GRP-7`, `RS-VP-4`, `RS-VP-5` |
 | [#5697 Contour tab should automatically switch with type loaded](https://github.com/OHIF/Viewers/issues/5697) | `SB-COMP-2`, `RS-MEM-6`, `RS-TOOL-7` |
-| [#2852 More than one qualitative annotation SR](https://github.com/OHIF/Viewers/issues/2852) | `RS-GRP-1`, `RS-GRP-6`, `RS-IMP-7` — mechanism specified, annotation implementation deferred. |
+| [#2852 More than one qualitative annotation SR](https://github.com/OHIF/Viewers/issues/2852) | `RS-GRP-1`, `RS-GRP-6`, `RS-IMP-7` â mechanism specified, annotation implementation deferred. |
 
 ## 9. Verification approach
 
 | Requirement group | Primary verification |
 | --- | --- |
 | `RS-DEF`, `RS-GRP`, `RS-ID`, `RS-MEM`, `RS-IMP` | Unit tests against `ResultSetService`, including a synthetic second result type registered by the test to prove type-agnosticism (`RS-DEF-4`). |
-| `RS-APP` | Unit tests with a matrix of scope × loaded display sets, including the negative cases `RS-APP-4`, `RS-APP-14`. |
+| `RS-APP` | Unit tests with a matrix of scope Ã loaded display sets, including the negative cases `RS-APP-4`, `RS-APP-14`. |
 | `RS-DS` | Unit tests over SOP-class-handler output; end-to-end test that a hanging protocol matching a SEG produces a result layer, not primary viewport content. |
 | `RS-PERF` | Index-complexity tests asserting no full scan on single-member change, and render-count assertions that one item change does not re-render unrelated rows. |
 | `RS-VP`, `RS-UI`, `RS-TOOL` | Playwright end-to-end tests using the OHIF fixture system, per the `ohif-test-agent` skill. |
@@ -1431,7 +1433,7 @@ These are unresolved and must be settled before or during design.
 1. **`PredecessorDocumentsSequence` outside SR and KO.** `RS-SAVE-11` writes it on every output
    type. It is defined in the SR Document General and Key Object Document modules, so its use on
    SEG and RTSTRUCT should be confirmed against PS3.3, and formalized by change proposal if it is
-   not already permitted. No alternative is proposed in the meantime — a private tag would be
+   not already permitted. No alternative is proposed in the meantime â a private tag would be
    worse, and the semantics are exactly right.
 2. **The result-set anchor purpose code.** `RS-SAVE-10` needs a Purpose of Reference code marking
    a series as belonging to a result set, carried in `RelatedSeriesSequence` (0008,1250). No
@@ -1448,7 +1450,7 @@ These are unresolved and must be settled before or during design.
    what happens to unpaired members, is unspecified.
 6. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
    cannot serve.
-7. **Group on/off: reach and surface** — *deferred to evaluation.* `RS-GRP-15`..`RS-GRP-19`
+7. **Group on/off: reach and surface** â *deferred to evaluation.* `RS-GRP-15`..`RS-GRP-19`
    specify a prototype so the decision can be taken from use. Ship it, run it, then decide:
 
    - **Is per-viewport the right default reach?** `RS-GRP-16` says yes because `RS-VP-3` does.
@@ -1463,7 +1465,7 @@ These are unresolved and must be settled before or during design.
    - **Does `RS-GRP-19` do what people expect?** Turning everything on is the convention and the
      reversible direction, but it may not match what a user means by clicking a half-on control.
 
-   Review when the prototype has had real use, per §2.5. Whatever is decided replaces
+   Review when the prototype has had real use, per Â§2.5. Whatever is decided replaces
    `RS-GRP-15`..`RS-GRP-19`; `RS-GRP-10`..`RS-GRP-14` are settled and are not in question.
 
 8. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
