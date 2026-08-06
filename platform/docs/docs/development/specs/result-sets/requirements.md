@@ -94,7 +94,7 @@ absence of a marker says nothing about priority.
 | Phase | Delivers |
 | --- | --- |
 | 1 | Tool selection moves to the top menu bar — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
-| 2 | Named result sets, applied to the segmentation, contour, and annotation sidebars |
+| 2 | Named result sets across the segmentation, contour, and annotation sidebars, and tools that create what they need instead of refusing |
 
 **Phase 2** is deliberately narrow. A result set is grouped by its **name** unless something has deliberately
 set an identity (`RS-ID-11`); the name defaults to the `SeriesDescription` the object was saved
@@ -102,6 +102,10 @@ under (`RS-ID-10`); a set carries an applicability rule (`RS-APP-15`, `RS-APP-16
 sets it shows (`RS-VP-14`, `RS-VP-15`); a save writes the whole set and stamps the name into every
 `SeriesDescription` (`RS-SAVE-18`, `RS-SAVE-9a`); and tools that create results share one default
 name so the user ends up with one set rather than three (`RS-TOOL-14`).
+
+Phase 2 also closes the create-on-first-use gap (`RS-TOOL-3`..`RS-TOOL-19`): a tool that finds no
+result set, no member, or no segment creates them and carries on, rather than disabling itself and
+telling the user to go and do it (`RS-TOOL-15`, `RS-TOOL-16`).
 
 Nothing in phase 2 infers that differently named objects are one piece of work. The DICOM-level
 grouping of `RS-IMP-1`..`RS-IMP-3` and the anchoring of `RS-SAVE-10` are later refinements, and a
@@ -1071,46 +1075,46 @@ toolbar and tool menus, in conformance with `EM-TOP-1`.
 The system shall not require a sidebar to be open, or a result set to exist, in order for such a
 tool to be selectable.
 
-**RS-TOOL-3**
+**RS-TOOL-3** *(phase 2)*
 WHEN a tool that creates or edits results is activated, the system shall resolve a target result
 set for the active viewport before the first edit is committed.
 
-**RS-TOOL-4**
+**RS-TOOL-4** *(phase 2)*
 WHEN target resolution finds exactly one applicable result set among the active viewport's result
 layers, the system shall use that result set without prompting the user.
 
-**RS-TOOL-5**
+**RS-TOOL-5** *(phase 2)*
 WHEN target resolution finds more than one applicable result set among the active viewport's result
 layers and one of them is marked active for that viewport, the system shall use the active one
 without prompting the user.
 
-**RS-TOOL-6**
+**RS-TOOL-6** *(phase 2)*
 WHEN target resolution finds more than one applicable result set among the active viewport's result
 layers and none is marked active, the system shall prompt the user to select one of them or to
 create a new result set.
 
-**RS-TOOL-7**
+**RS-TOOL-7** *(phase 2)*
 WHEN target resolution finds no applicable result set, the system shall create a new result set,
 create the member and representation required by the activated tool with the applicability its
 result type declares, mark the result set as changed, open or reveal the result-set sidebar, select
 the appropriate sub-tab, and show the new member in it.
 
-**RS-TOOL-8**
+**RS-TOOL-8** *(phase 2)*
 WHEN a member is created by `RS-TOOL-7`, the system shall create it without any additional user step
 beyond activating the tool.
 
-**RS-TOOL-9**
+**RS-TOOL-9** *(phase 2)*
 IF the user cancels the selection prompt of `RS-TOOL-6`, THEN the system shall not create a result
 set, shall not create a member, and shall not commit the pending edit.
 
-**RS-TOOL-10**
+**RS-TOOL-10** *(phase 2)*
 IF the active viewport displays no image data that the activated tool's result type can apply to,
 THEN the system shall present the tool as unavailable and shall state the reason.
 
-**RS-TOOL-11**
+**RS-TOOL-11** *(phase 2)*
 WHEN a tool commits an edit, the system shall mark the owning result set as changed.
 
-**RS-TOOL-12**
+**RS-TOOL-12** *(phase 2)*
 The system shall apply `RS-TOOL-3` through `RS-TOOL-11` identically for every result type.
 
 **RS-TOOL-13** *(phase 2)*
@@ -1120,6 +1124,41 @@ name.
 **RS-TOOL-14** *(phase 2)*
 WHEN tools of different result types create results and no result-set name has been chosen, the
 system shall use the same default name for all of them.
+
+**RS-TOOL-15** *(phase 2)*
+IF no result set, no member, or no component exists that a tool could act on, THEN the system
+shall not present that tool as unavailable, and shall create what the tool needs when the tool is
+used.
+
+**RS-TOOL-16** *(phase 2)*
+The system shall treat the absence of a suitable result set, member, or component as a reason to
+create one, and shall not treat it as a reason to disable, warn, or report an error.
+
+**RS-TOOL-17** *(phase 2)*
+WHEN a tool creates a result because none existed, the system shall create every intermediate
+object that tool requires, including the result set, the member, and the member's first component.
+
+**RS-TOOL-18** *(phase 2)*
+WHEN a tool creates a result set, the system shall make it the active result set for the viewport
+the tool was used in.
+
+**RS-TOOL-19** *(phase 2)*
+The system shall limit the unavailability of `RS-TOOL-10` to the case where the active viewport
+displays no image data the tool's result type can apply to.
+
+> **Note (RS-TOOL-15, RS-TOOL-16):** This replaces the current behaviour, in which segmentation
+> tools are disabled with `No segmentations available` when the viewport holds no segmentation, and
+> with `Add segment to enable this tool` when the active segmentation has no segments. Both are the
+> viewer telling the user to go and perform a setup step it could have performed itself. Neither
+> condition says anything about whether the tool *could* work here — only that nobody has drawn
+> anything yet, which is the normal state at the start of every piece of work.
+>
+> `RS-TOOL-17` covers the second message specifically: creating the segmentation is not enough if
+> the tool then refuses for want of a segment. Everything the first stroke needs is created by the
+> first stroke.
+>
+> `RS-TOOL-18` is what makes the second stroke reuse the first stroke's target rather than creating
+> again, via `RS-TOOL-5`.
 
 > **Note (RS-TOOL-14):** Because the name groups by default (`RS-ID-11`), one shared default name
 > means a user who draws a segmentation, a contour, and an annotation without naming anything ends
@@ -1376,6 +1415,7 @@ members identically to `segmentation` members.
 | `RS-DS` | Unit tests over SOP-class-handler output; end-to-end test that a hanging protocol matching a SEG produces a result layer, not primary viewport content. |
 | `RS-PERF` | Index-complexity tests asserting no full scan on single-member change, and render-count assertions that one item change does not re-render unrelated rows. |
 | `RS-VP`, `RS-UI`, `RS-TOOL` | Playwright end-to-end tests using the OHIF fixture system, per the `ohif-test-agent` skill. |
+| `RS-TOOL-15`..`RS-TOOL-19` | Playwright: open a study with no segmentation, select a labelmap tool, and draw. Assert the tool was never disabled, that a result set, member and segment were created, and that a second stroke reuses them rather than creating again. Repeat for a contour tool and an annotation tool. |
 | `SB-COMP`, `SB-OWN`, `SB-TOOL` | Playwright tests against the result-set sidebar, written so they can be re-pointed at a second sidebar when the `SG` and `CT` specifications land. |
 | `RS-SAVE`, `RS-STATE` | Unit tests on the export partitioner over synthetic result sets, plus end-to-end store-and-reload round trips asserting `RS-SAVE-13` and `RS-SAVE-17`. |
 | `RS-SAVE-10`..`RS-SAVE-10e` | Save a result set producing a SEG series and an SR series; assert every output series carries a membership item, that the set is recoverable from series-level metadata alone (`RS-SAVE-10b`), and that a later save adding a third modality relates it without rewriting the first two (`RS-SAVE-10c`). Cross-study variant for `RS-SAVE-10d`. |
