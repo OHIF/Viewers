@@ -96,6 +96,7 @@ absence of a marker says nothing about priority.
 | 1 | Tool selection moves to the top menu bar — [CP-SEGTOOL](../changes/segmentation-tool-submenu.md) |
 | 2 | Named result sets across the segmentation, contour, and annotation sidebars, and tools that create what they need instead of refusing |
 | 3 | Frame-level detail, per-segment scope, and edit safety |
+| 4 | Provenance: what produced each result, who changed it, and the record surviving a round trip |
 
 **Phase 2** is deliberately narrow. A result set is grouped by its **name** unless something has deliberately
 set an identity (`RS-ID-11`); the name defaults to the `SeriesDescription` the object was saved
@@ -124,7 +125,16 @@ That last change is what makes phase 3 hang together. Once a result only reaches
 set by default, being shown on another one is a deliberate act — and `RS-EDT` can then say what
 editing it there means, which is the question phases 1 and 2 leave open.
 
-Phases beyond the third are not yet assigned. If the phase set grows enough that markers become
+**Phase 4** is the last phase currently planned. Every result carries an ordered provenance
+history: what produced it, who changed it since, and when (`RS-PRV-1`..`RS-PRV-9`). A user can
+select any result and read that history (`RS-PRV-10`..`RS-PRV-14`). A save writes it into the
+DICOM output and a load reconstructs it (`RS-PRV-15`..`RS-PRV-23`).
+
+The distinction that gives the history meaning is `RS-PRV-4` against `RS-PRV-5`: editing a result
+appends an entry, re-saving an unedited one does not. Provenance is a record of what happened to
+the data, not a log of what happened to the file.
+
+No further phases are assigned. If the phase set grows enough that markers become
 hard to read across the document, it is split into per-phase documents; until then the markers
 are the record.
 
@@ -1156,7 +1166,136 @@ result's provenance the display set the edit was made on.
 > representation and the geometry. It requires that the user is never left guessing which one is
 > happening.
 
-### 4.17 Compatibility — `RS-COMPAT`
+### 4.17 Provenance — `RS-PRV`
+
+#### Recording
+
+**RS-PRV-1** *(phase 4)*
+The system shall record provenance for every result.
+
+**RS-PRV-2** *(phase 4)*
+The system shall record, for each provenance entry, what produced or changed the result, when, and
+by what means.
+
+**RS-PRV-3** *(phase 4)*
+The system shall record provenance as an ordered history, and shall not replace an earlier entry
+when adding a later one.
+
+**RS-PRV-4** *(phase 4)*
+WHEN a user edits a result, the system shall append a provenance entry identifying that user as
+having edited it.
+
+**RS-PRV-5** *(phase 4)*
+IF a result is saved without having been edited since it was last saved, THEN the system shall not
+append a provenance entry.
+
+> **Note (RS-PRV-4, RS-PRV-5):** Provenance records what happened to the **data**, not what
+> happened to the file. Re-saving an unchanged result is not a contribution to it, and an
+> implementation that appends on every write produces a history that grows without saying anything.
+
+**RS-PRV-6** *(phase 4)*
+WHERE a result was produced by an algorithm, the system shall record that algorithm's identity,
+version, and parameters.
+
+**RS-PRV-7** *(phase 4)*
+The system shall record enough of an algorithm's parameters to identify the configuration that
+produced the result.
+
+**RS-PRV-8** *(phase 4)*
+The system shall record provenance at the level it applies to: the result set, a member, or a
+component.
+
+**RS-PRV-9** *(phase 4)*
+WHERE components of a member have different provenance, the system shall record it per component.
+
+#### Inspection
+
+**RS-PRV-10** *(phase 4)*
+The system shall allow the user to select any result and see its provenance.
+
+**RS-PRV-11** *(phase 4)*
+The system shall present provenance as a history, in the order the contributions were made.
+
+**RS-PRV-12** *(phase 4)*
+The system shall distinguish, in that presentation, a contribution made by a person from a
+contribution made by an algorithm.
+
+**RS-PRV-13** *(phase 4)*
+WHERE a result's provenance is inherited from a level above it, the system shall show that
+provenance and shall show that it is inherited.
+
+**RS-PRV-14** *(phase 4)*
+IF a result has no recorded provenance, THEN the system shall state that rather than presenting an
+empty history.
+
+#### Persistence
+
+**RS-PRV-15** *(phase 4)*
+WHEN a result set is saved, the system shall write its provenance history into the output objects.
+
+**RS-PRV-16** *(phase 4)*
+The system shall write instance-wide system provenance once per output instance in
+`ContributingEquipmentSequence` (0018,A001), and shall identify the producing system in the
+equipment module.
+
+**RS-PRV-17** *(phase 4)*
+The system shall write per-item algorithm provenance using the Algorithm Identification macro, in
+the sequence the output object type defines:
+
+| Output item | Sequence |
+| --- | --- |
+| SEG segment | `SegmentationAlgorithmIdentificationSequence` (0062,0007) |
+| RTSTRUCT ROI | `ROIDerivationAlgorithmIdentificationSequence` (3006,0037) |
+| Annotation group | `AnnotationGroupAlgorithmIdentificationSequence` (006A,0008) |
+| SR observation or group | TID 4019 content items |
+
+**RS-PRV-18** *(phase 4)*
+The system shall repeat the algorithm identification for every automatically generated item whose
+algorithm must be known, and shall not rely on instance-wide provenance to attribute an item to an
+algorithm.
+
+> **Note (RS-PRV-18):** SEG and RTSTRUCT define no inheritance from
+> `ContributingEquipmentSequence`. An absent per-item sequence does **not** formally mean "inherit
+> the algorithm from the instance", so an item without its own record is an item whose algorithm is
+> unknown to a conformant reader — however obvious it looks in our own viewer.
+
+**RS-PRV-19** *(phase 4)*
+WHERE the output object type defines container-level algorithm provenance, the system shall be
+permitted to record it once at the container and to allow a contained item to override it.
+
+**RS-PRV-20** *(phase 4)*
+The system shall set the generation-type attribute the output object defines:
+`SegmentAlgorithmType` (0062,0008), `ROIGenerationAlgorithm` (3006,0036), or
+`AnnotationGroupGenerationType` (006A,0007).
+
+**RS-PRV-21** *(phase 4)*
+The system shall record a human creator using the content-creator or observer attribute the output
+object defines.
+
+**RS-PRV-22** *(phase 4)*
+IF contours within one RTSTRUCT ROI would carry different provenance, THEN the system shall write
+them as separate ROIs.
+
+> **Note (RS-PRV-22):** RTSTRUCT attaches provenance at the ROI, not to individual contours within
+> one. Splitting is the only conformant way to represent contours of differing origin.
+
+**RS-PRV-23** *(phase 4)*
+WHEN a result set is loaded, the system shall reconstruct its provenance history from the output
+objects.
+
+**RS-PRV-24** *(phase 4)*
+The system shall produce conformant provenance without requiring a private extension.
+
+**RS-PRV-25** *(phase 4)*
+WHERE a deployment removes the duplication `RS-PRV-18` causes, the system shall do so through a
+documented private extension, and shall continue to write the standard per-item records.
+
+> **Note (RS-PRV-25):** There is no public tag providing a provenance registry plus a per-item
+> reference to it, so deduplication costs a private extension. A private registry that *replaced*
+> the per-item records would make the object unreadable to everyone else, which is why the standard
+> records stay.
+
+### 4.18 Compatibility — `RS-COMPAT`
 
 **RS-COMPAT-1**
 The system shall continue to support the existing segmentation and measurement service APIs for the
@@ -1577,6 +1716,10 @@ members identically to `segmentation` members.
 | `RS-NAV` | Playwright: activate a segment repeatedly and assert it walks its frames and wraps; repeat in a reconstructed orientation and assert it walks the displayed slices, not acquisition frames. |
 | `RS-APP-19`..`RS-APP-23` | Unit tests on the four-level precedence, plus a test that a freshly imported result reaches only its own display set until Frame of Reference is asked for. |
 | `RS-EDT` | Playwright: display a segmentation on a second display set, attempt an edit, assert it is refused with a reason; enable editing and assert the state is evident before the edit and recorded in provenance after. |
+| `RS-PRV-1`..`RS-PRV-9` | Unit tests: an edit appends an entry naming the editor; a save of an unedited result appends nothing; a second edit appends without disturbing the first. |
+| `RS-PRV-10`..`RS-PRV-14` | Playwright: select a segment produced by an algorithm and then edited by hand, and assert both contributions show in order and are distinguishable. |
+| `RS-PRV-15`..`RS-PRV-23` | Round trip: save a result set whose segments have differing provenance, reload, and assert each segment's history is recovered. Assert per-item algorithm sequences are present rather than inferred. |
+| `RS-PRV-22` | Unit test on the RTSTRUCT exporter: contours of differing provenance within one ROI are written as separate ROIs. |
 | `RS-OPS` | Unit tests on the operation registry and conversion adapters. |
 | `RS-COMPAT` | Existing segmentation unit and end-to-end suites must pass unchanged with the feature enabled. |
 
@@ -1604,7 +1747,27 @@ These are unresolved and must be settled before or during design.
    what happens to unpaired members, is unspecified.
 6. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
    cannot serve.
-7. **Group on/off: reach and surface** — *deferred to evaluation.* `RS-GRP-15`..`RS-GRP-19`
+7. **Per-item human attribution has no standard home.** `RS-PRV-4` requires recording which user
+   edited a result. `ContributingEquipmentSequence` is for *equipment*, and its purpose code
+   (109102, DCM, "Processing Equipment") does not describe a person; `ContentCreatorName`
+   (0070,0084) is one value for the whole instance. So "user X edited segment 3, user Y edited
+   segment 5" has no conformant per-item expression in SEG or RTSTRUCT. Options are instance-level
+   attribution only, a private per-item extension under `RS-PRV-25`, or carrying the detail in an
+   accompanying SR where TID 4019 and observer context exist. Undecided, and it limits what
+   `RS-PRV-4` can promise on reload.
+
+8. **Where the history lives across saves.** `RS-SAVE-11` makes each save a new SOP Instance
+   chained by `PredecessorDocumentsSequence`, so a history could be read by walking that chain
+   rather than being restated in each instance. Restating is self-contained but grows; chaining is
+   compact but unreadable if an intermediate instance is unavailable. `RS-PRV-3` and `RS-PRV-23`
+   require the history, not a particular carrier.
+
+9. **`AlgorithmParameters` capacity.** (0066,0032) is LT, bounded at 10240 characters. A
+   configuration hash and a handful of thresholds fit comfortably; a serialized model
+   configuration may not. What gets recorded when the full configuration does not fit, and whether
+   a digest alone satisfies `RS-PRV-7`, is unsettled.
+
+10. **Group on/off: reach and surface** — *deferred to evaluation.* `RS-GRP-15`..`RS-GRP-19`
    specify a prototype so the decision can be taken from use. Ship it, run it, then decide:
 
    - **Is per-viewport the right default reach?** `RS-GRP-16` says yes because `RS-VP-3` does.
@@ -1622,6 +1785,6 @@ These are unresolved and must be settled before or during design.
    Review when the prototype has had real use, per §2.5. Whatever is decided replaces
    `RS-GRP-15`..`RS-GRP-19`; `RS-GRP-10`..`RS-GRP-14` are settled and are not in question.
 
-8. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
+11. **Terminology per result type.** `RS-CFG-4` allows the noun for a result set to be
    configured, but not yet the noun for a member, which reads differently for a segmentation
    than for a key object.
