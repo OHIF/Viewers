@@ -38,6 +38,10 @@ const screenShotPaths = {
   livewire: {
     livewireDisplayedCorrectly: 'livewireDisplayedCorrectly.png',
   },
+  livewireContourSegmentation: {
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    contourWithHole: 'contourWithHole.png',
+  },
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
   },
