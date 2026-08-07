@@ -71,6 +71,7 @@ import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata'
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
+import { useViewportState } from './hooks/useViewportState';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
 import update from 'immutability-helper';
@@ -323,6 +324,7 @@ export {
   utils,
   OHIFCornerstoneViewport,
   useMeasurementTracking,
+  useViewportState,
 };
 
 // Export constants

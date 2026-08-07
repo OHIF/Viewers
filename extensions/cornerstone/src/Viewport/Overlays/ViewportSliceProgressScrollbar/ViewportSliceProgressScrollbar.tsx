@@ -10,12 +10,7 @@ import {
   SmartScrollbarEndpoints,
 } from '@ohif/ui-next';
 import { getViewportImageIds } from './helpers';
-import {
-  useLoadedSliceBytes,
-  useProgressScrollbarMode,
-  useViewedSliceBytes,
-  useViewportSliceSync,
-} from './hooks';
+import { useLoadedSliceBytes, useProgressScrollbarMode, useViewedSliceBytes } from './hooks';
 import { ViewportSliceProgressScrollbarProps } from './types';
 
 function ViewportSliceProgressScrollbar({
@@ -23,7 +18,6 @@ function ViewportSliceProgressScrollbar({
   viewportId,
   element,
   imageSliceData,
-  setImageSliceData,
   servicesManager,
 }: ViewportSliceProgressScrollbarProps) {
   const { cineService, cornerstoneViewportService, customizationService, viewedDataService } =
@@ -67,14 +61,6 @@ function ViewportSliceProgressScrollbar({
     viewportId,
     element,
     cornerstoneViewportService,
-  });
-
-  useViewportSliceSync({
-    viewportData,
-    viewportId,
-    element,
-    cornerstoneViewportService,
-    setImageSliceData,
   });
 
   const {
@@ -194,7 +180,6 @@ ViewportSliceProgressScrollbar.propTypes = {
   viewportId: PropTypes.string.isRequired,
   element: PropTypes.instanceOf(Element),
   imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
   servicesManager: PropTypes.object.isRequired,
 };
 

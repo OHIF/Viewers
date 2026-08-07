@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSystem, utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGrid, useViewportGridApi } from '@ohif/ui-next';
 import {
   getEnhancedDisplaySets,
   sortByOverlayable,
@@ -96,12 +96,16 @@ export function useViewportDisplaySets(
   const { servicesManager } = useSystem();
   const { displaySetService, segmentationService } = servicesManager.services;
 
-  // Note: this is very important we should use the useViewportGrid hook here,
-  // since if the viewport displaySet is changed we should re-run this hook
-  // to get the latest displaySets
-  const [viewportGridState, viewportGridService] = useViewportGrid();
+  const viewportGridService = useViewportGridApi();
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
 
-  const viewportIdToUse = viewportId || viewportGridState.activeViewportId;
+  const viewportIdToUse = viewportId || activeViewportId;
+
+  // Re-render when this viewport's composition changes so consumers stay on
+  // the same update schedule as the pre-selector full-grid subscription.
+  useViewportGrid(state =>
+    viewportIdToUse ? state.viewports.get(viewportIdToUse)?.compositionRevision : undefined
+  );
 
   // Apply defaults - include everything if no options specified
   const {

@@ -4,7 +4,7 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGridApi } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
@@ -31,12 +31,11 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
 
   const { setPositionPresentation } = usePositionPresentationStore();
 
-  const [viewportGrid, viewportGridService] = useViewportGrid();
+  const viewportGridApi = useViewportGridApi();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(null);
   const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] = useState(null);
   const [element, setElement] = useState(null);
-  const { viewports, activeViewportId } = viewportGrid;
 
   const setTrackingIdentifiers = useCallback(
     measurementSelected => {
@@ -143,9 +142,15 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
+        const { viewports, activeViewportId } = viewportGridApi.getState();
         const activeViewport = viewports.get(activeViewportId);
+        // The event can arrive after a grid reset, when there is no active
+        // viewport entry to read.
+        if (!activeViewport) {
+          return;
+        }
         if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
-          viewportGridService.setDisplaySetsForViewport({
+          viewportGridApi.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });

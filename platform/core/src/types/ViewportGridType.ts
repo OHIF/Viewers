@@ -8,6 +8,13 @@ export interface GridViewportOptions {
   //
   orientation?: string;
   allowUnmatchedView?: boolean;
+  /**
+   * @deprecated No longer read by the viewport mount pipeline. The field is
+   * kept only so external hanging-protocol/mode configs that set it (it was
+   * publicly documented) keep compiling. To force a remount, call
+   * `viewportGridService.bumpComposition(viewportId, reason)` instead; the
+   * bumped compositionRevision invalidates the mount intent.
+   */
   needsRerendering?: boolean;
   background?: [number, number, number];
   syncGroups?: unknown[];

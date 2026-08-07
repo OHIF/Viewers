@@ -4,8 +4,7 @@ import { useViewportGrid } from '@ohif/ui-next';
 import ViewportWindowLevel from '../ViewportWindowLevel/ViewportWindowLevel';
 
 const ActiveViewportWindowLevel = ({ servicesManager }: withAppTypes): ReactElement => {
-  const [viewportGrid] = useViewportGrid();
-  const { activeViewportId } = viewportGrid;
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
 
   return (
     <>

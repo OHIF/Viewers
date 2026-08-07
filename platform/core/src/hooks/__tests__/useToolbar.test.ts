@@ -18,6 +18,7 @@ type MockToolbarService = {
 type MockViewportGridService = {
   EVENTS: Record<string, string>;
   subscribe: jest.Mock<MockSubscription, [string, (args: any) => void]>;
+  select: jest.Mock<() => void, [any, any, any?]>;
   getActiveViewportId: jest.Mock<string, []>;
 };
 
@@ -47,6 +48,7 @@ const createViewportGridService = (): MockViewportGridService => ({
     LAYOUT_CHANGED: 'LAYOUT_CHANGED',
   },
   subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
+  select: jest.fn(() => jest.fn()),
   getActiveViewportId: jest.fn().mockReturnValue('ACTIVE_VIEWPORT'),
 });
 

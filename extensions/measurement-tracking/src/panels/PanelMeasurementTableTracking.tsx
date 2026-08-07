@@ -16,7 +16,7 @@ import { UntrackSeriesModal } from './PanelStudyBrowserTracking/untrackSeriesMod
 const { filterMeasurementsBySeriesUID, filterAny } = utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking(props) {
-  const [viewportGrid] = useViewportGrid();
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
   const { servicesManager } = useSystem();
   const { measurementService, uiModalService } = servicesManager.services;
 
@@ -58,7 +58,7 @@ function PanelMeasurementTableTracking(props) {
   const actions = {
     createSR: ({ StudyInstanceUID }) => {
       sendTrackedMeasurementsEvent('SAVE_REPORT', {
-        viewportId: viewportGrid.activeViewportId,
+        viewportId: activeViewportId,
         isBackupSave: true,
         StudyInstanceUID,
         measurementFilter,

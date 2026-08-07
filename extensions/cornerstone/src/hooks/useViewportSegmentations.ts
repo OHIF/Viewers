@@ -5,7 +5,7 @@ import {
   SegmentationData,
   SegmentationRepresentation,
 } from '../services/SegmentationService/SegmentationService';
-import { useSystem } from '@ohif/core';
+import { useSystem, shallowEqual } from '@ohif/core';
 const excludedModalities = ['SM', 'OT', 'DOC', 'ECG'];
 
 function mapSegmentationToDisplay(segmentation, customizationService) {
@@ -198,11 +198,16 @@ export function useViewportSegmentations({
         segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
         debouncedUpdate
       ),
-      viewportGridService.subscribe(
-        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-        debouncedUpdate
-      ),
-      viewportGridService.subscribe(viewportGridService.EVENTS.GRID_STATE_CHANGED, debouncedUpdate),
+      {
+        unsubscribe: viewportGridService.select(
+          state => ({
+            activeViewportId: state.activeViewportId,
+            compositionRevision: state.viewports.get(viewportId)?.compositionRevision,
+          }),
+          () => debouncedUpdate(),
+          { equality: shallowEqual }
+        ),
+      },
     ];
 
     if (subscribeToDataModified) {

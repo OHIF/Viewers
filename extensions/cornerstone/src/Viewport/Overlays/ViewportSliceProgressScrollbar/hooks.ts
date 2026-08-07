@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { cache as cornerstoneCache, Enums, eventTarget, utilities } from '@cornerstonejs/core';
 import { useByteArray } from '@ohif/ui-next';
-import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
-import { getSliceEventName, getViewportSliceCount } from '../../../utils/viewportDataShape';
-import { getImageIdFromCacheEvent, getImageIndexFromEvent, isProgressFullMode } from './helpers';
-import { ImageSliceData, ViewportData } from './types';
+import { getImageIdFromCacheEvent, isProgressFullMode } from './helpers';
+import { ViewportData } from './types';
 
 export function useProgressScrollbarMode({
   viewportData,
@@ -69,103 +67,6 @@ export function useProgressScrollbarMode({
   }, [viewportData, viewportId, cornerstoneViewportService, element]);
 
   return isFullMode;
-}
-
-export function useViewportSliceSync({
-  viewportData,
-  viewportId,
-  element,
-  cornerstoneViewportService,
-  setImageSliceData,
-}: {
-  viewportData: ViewportData;
-  viewportId: string;
-  element: HTMLElement;
-  cornerstoneViewportService: AppTypes.CornerstoneViewportService;
-  setImageSliceData: (data: ImageSliceData) => void;
-}) {
-  /**
-   * Keeps shared slice state in sync: first initialize from the live viewport snapshot, then
-   * subscribe to navigation/render events for incremental updates while users scroll.
-   */
-  useEffect(() => {
-    if (!viewportData) {
-      return;
-    }
-
-    // Last values we pushed, so re-seeding on camera changes does not churn React
-    // state on pure pan/zoom (which keep the slice geometry unchanged).
-    const lastSlice = { imageIndex: -1, numberOfSlices: -1 };
-
-    const pushSliceData = (imageIndex: number, numberOfSlices: number) => {
-      if (imageIndex === lastSlice.imageIndex && numberOfSlices === lastSlice.numberOfSlices) {
-        return;
-      }
-      lastSlice.imageIndex = imageIndex;
-      lastSlice.numberOfSlices = numberOfSlices;
-      setImageSliceData({ imageIndex, numberOfSlices });
-    };
-
-    // Seeds the shared slice state from the live viewport. Re-run on the initial
-    // effect and on camera/orientation changes (below).
-    const syncFromViewport = () => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (!viewport || isVolume3DViewportType(viewport)) {
-        return;
-      }
-      try {
-        const currentImageIndex = viewport.getCurrentImageIdIndex();
-        const currentNumberOfSlices = getViewportSliceCount(viewportData, viewport);
-
-        pushSliceData(currentImageIndex, currentNumberOfSlices);
-      } catch (error) {
-        console.warn(error);
-      }
-    };
-
-    syncFromViewport();
-
-    // A post-mount camera carry (e.g. the layout-selector MPR protocol restoring
-    // the prior stack slice onto the freshly-mounted volume viewport) moves the
-    // camera and fires its slice events synchronously during the mount — before
-    // these listeners attach and around the initial seed above — so the scrollbar
-    // can latch the mount-time index instead of the carried slice. Re-seed once on
-    // the next frame, after the mount+carry settles; pushSliceData makes it a
-    // no-op when nothing changed (no churn/flicker).
-    const reseedRaf = requestAnimationFrame(syncFromViewport);
-
-    const eventId = getSliceEventName(viewportData);
-
-    const updateIndex = event => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (!viewport || isVolume3DViewportType(viewport)) {
-        return;
-      }
-
-      const nextImageIndex = getImageIndexFromEvent(event);
-      if (nextImageIndex == null) {
-        return;
-      }
-      const nextNumberOfSlices = viewport.getNumberOfSlices();
-
-      pushSliceData(nextImageIndex, nextNumberOfSlices);
-    };
-
-    element.addEventListener(eventId, updateIndex);
-    // Native ("next") viewports keep the same viewportData across a stack->volume
-    // transition or an orientation change, so this effect does not re-run and the
-    // slice-navigation event above may not fire until the first scroll, leaving the
-    // scrollbar unseeded (or stale, with a now-wrong slice count). CAMERA_MODIFIED
-    // fires on those orientation/geometry changes, so re-seed from the viewport
-    // then; the pushSliceData guard makes pan/zoom (same geometry) a no-op.
-    element.addEventListener(Enums.Events.CAMERA_MODIFIED, syncFromViewport);
-
-    return () => {
-      cancelAnimationFrame(reseedRaf);
-      element.removeEventListener(eventId, updateIndex);
-      element.removeEventListener(Enums.Events.CAMERA_MODIFIED, syncFromViewport);
-    };
-  }, [viewportData, element, viewportId, cornerstoneViewportService, setImageSliceData]);
 }
 
 export function useLoadedSliceBytes({
