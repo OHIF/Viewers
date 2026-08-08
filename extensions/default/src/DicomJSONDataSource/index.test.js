@@ -57,11 +57,11 @@ describe('DicomJSONDataSource helpers', () => {
   it('keeps per-frame DICOM JSON instances as single-frame instances', () => {
     const instances = [
       {
-        metadata: { ...baseMetadata, InstanceNumber: 1 },
+        metadata: { ...baseMetadata, InstanceNumber: 1, NumberOfFrames: 2 },
         url: 'wadouri:https://example.com/xray.dcm&frame=1',
       },
       {
-        metadata: { ...baseMetadata, InstanceNumber: 2 },
+        metadata: { ...baseMetadata, InstanceNumber: 2, NumberOfFrames: 2 },
         url: 'wadouri:https://example.com/xray.dcm&frame=2',
       },
     ];
@@ -117,7 +117,14 @@ describe('DicomJSONDataSource helpers', () => {
         instance: { url: 'wadouri:https://example.com/xray.dcm' },
         frame: 0,
       })
-    ).toBe('wadouri:https://example.com/xray.dcm&frame=0');
+    ).toBe('wadouri:https://example.com/xray.dcm?frame=0');
+
+    expect(
+      getDicomJSONImageId({
+        instance: { url: 'wadouri:https://example.com/xray.dcm?token=abc' },
+        frame: 0,
+      })
+    ).toBe('wadouri:https://example.com/xray.dcm?token=abc&frame=0');
 
     expect(
       getDicomJSONImageId({
@@ -181,8 +188,8 @@ describe('DicomJSONDataSource helpers', () => {
     };
 
     expect(getDicomJSONImageIdsForDisplaySet({ displaySet, seriesInstances })).toEqual([
-      'wadouri:https://example.com/xray.dcm&frame=0',
-      'wadouri:https://example.com/xray.dcm&frame=1',
+      'wadouri:https://example.com/xray.dcm?frame=0',
+      'wadouri:https://example.com/xray.dcm?frame=1',
     ]);
   });
 });

@@ -63,7 +63,8 @@ function getDicomJSONImageId({ instance, frame, config }) {
     return imageId;
   }
 
-  return `${imageId}&frame=${frame}`;
+  const separator = imageId.includes('?') ? '&' : '?';
+  return `${imageId}${separator}frame=${frame}`;
 }
 
 function getInstanceMetadata({ instance, series, study, imageId }) {
@@ -83,6 +84,14 @@ function getInstanceMetadata({ instance, series, study, imageId }) {
 
   delete obj.instances;
   delete obj.series;
+
+  // A URL with an explicit frame query already represents one decoded frame.
+  // The generator repeats NumberOfFrames on each such entry, but retaining it
+  // here would make the display set expand every entry again.
+  if (hasFrameQuery(instance.url)) {
+    delete obj.NumberOfFrames;
+  }
+
   return obj;
 }
 
