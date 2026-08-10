@@ -387,10 +387,17 @@ export class RightPanelPageObject {
         },
         get freehandContour() {
           const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
+          // data-cy sits on a span wrapper; the inner button carries the disabled
+          // state, so clicking it waits for the tool to become enabled.
+          const toolButton = button.locator('button');
           return {
             button,
+            toolButton,
             click: async () => {
-              await button.click();
+              await toolButton.click();
+              await page.waitForSelector(
+                '[data-cy="PlanarFreehandContourSegmentationTool"][data-active="true"]'
+              );
             },
           };
         },
