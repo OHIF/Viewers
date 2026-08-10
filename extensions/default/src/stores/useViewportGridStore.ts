@@ -29,7 +29,8 @@ type ViewportGridStore = {
   type: string;
 
   /**
-   * Stores the viewport grid state as a key-value mapping.
+   * Stores per-key grid states; values are deep ViewportGridService.snapshot()
+   * objects consumed by viewportGridService.restore().
    */
   viewportGridState: ViewportGridState;
 

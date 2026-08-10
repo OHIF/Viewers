@@ -82,41 +82,30 @@ function TrackedCornerstoneViewport({
 }
 ```
 
-### Viewport re-rendering optimizations
+### Viewport re-mounting and invalidation
 
-We make use of the React memoization pattern to prevent unnecessary re-renders
-for the viewport unless certain aspects of the Viewport props change. You can take
-a look into the `areEqual` function in the `OHIFCornerstoneViewport` component to
-see how this is done.
-
-```js
-function areEqual(prevProps, nextProps) {
-  if (prevProps.displaySets.length !== nextProps.displaySets.length) {
-    return false;
-  }
-
-  if (
-    prevProps.viewportOptions.orientation !==
-    nextProps.viewportOptions.orientation
-  ) {
-    return false;
-  }
-
-  // rest of the code
-```
-
-as you see, we check if the `needsRerendering` prop is true, and if so, we will
-re-render the viewport if the `displaySets` prop changes or the orientation
-changes.
-
+Data mounting is orchestrated outside React by a viewport mount controller.
+On every render, `OHIFCornerstoneViewport` publishes a *mount intent* (the
+displaySets, viewportOptions, displaySetOptions and dataSource it received)
+to the `cornerstoneViewportService`; the controller compares intents
+(`compareMountIntent`) and only re-runs the mount pipeline when the intent
+actually changed. This replaces the old `React.memo` `areEqual` comparator.
 
 We use viewportId to identify a viewport and we use it as a key in React
 rendering. This is important because it allows us to keep track of the viewport
 and its state, and also let React optimize and move the viewport around in the
 grid without re-rendering it. However, there are some cases where we need to
-force re-render the viewport, for example, when the viewport is hydrated
-with a new Segmentation. For these cases, we use the `needsRerendering` prop
-to force re-render the viewport. You can add it to the `viewportOptions`
+force a re-mount of the viewport data, for example, when the viewport is
+hydrated with a new Segmentation. For these cases, call
+
+```js
+viewportGridService.bumpComposition(viewportId, 'segmentation-hydrated');
+```
+
+which bumps the viewport's `compositionRevision`; the revision is part of the
+mount intent, so the next published intent is unequal and the viewport
+re-mounts. This replaces the removed `needsRerendering` viewport option, which
+is no longer read.
 
 
 

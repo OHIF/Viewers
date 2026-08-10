@@ -38,8 +38,8 @@ export function WindowLevelActionMenuWrapper(
     ...rest
   } = props;
 
-  const [gridState] = useViewportGrid();
-  const viewportIdToUse = viewportId || gridState.activeViewportId;
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
+  const viewportIdToUse = viewportId || activeViewportId;
 
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();

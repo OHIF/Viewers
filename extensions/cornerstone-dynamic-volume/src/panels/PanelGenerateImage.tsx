@@ -12,7 +12,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     servicesManager.services;
 
   const [{ isCineEnabled }, cineService] = useCine();
-  const [{ activeViewportId }] = useViewportGrid();
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
 
   //
   const [dimensionGroupRange, setDimensionGroupRange] = useState([1, 1]);

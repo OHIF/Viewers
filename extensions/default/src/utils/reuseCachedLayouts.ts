@@ -13,11 +13,17 @@ export type ReturnType = {
  * Calculates a set of state information for hanging protocols and viewport grid
  * which defines the currently applied hanging protocol state.
  * @param state is the viewport grid state
- * @param syncService is the state sync service to use for getting existing state
+ * @param hangingProtocolService is the hanging protocol service
+ * @param viewportGridService is the viewport grid service; custom layouts are
+ *   stored as its deep snapshot() so setHangingProtocol can restore() them
  * @returns Set of states that can be applied to the state sync to remember
  *   the current view state.
  */
-const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService): ReturnType => {
+const reuseCachedLayout = (
+  state,
+  hangingProtocolService: HangingProtocolService,
+  viewportGridService: AppTypes.ViewportGridService
+): ReturnType => {
   const { activeViewportId } = state;
   const { protocol } = hangingProtocolService.getActiveProtocol();
 
@@ -45,7 +51,10 @@ const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService
   hangingProtocolStageIndexMap[cacheId] = hpInfo;
 
   if (storeId && custom) {
-    setViewportGridState(storeId, { ...state });
+    // Deep snapshot, never the live state object: the legacy state's viewport
+    // entries alias service internals, so a by-reference copy could be
+    // corrupted by later grid mutations before it is restored.
+    setViewportGridState(storeId, viewportGridService.snapshot());
   }
 
   state.viewports.forEach((viewport, viewportId) => {

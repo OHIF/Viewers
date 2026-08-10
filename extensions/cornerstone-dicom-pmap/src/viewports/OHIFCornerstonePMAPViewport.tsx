@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGridApi } from '@ohif/ui-next';
 import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 
 function OHIFCornerstonePMAPViewport(props: withAppTypes) {
@@ -19,9 +19,8 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
   );
 
   const pmapDisplaySet = displaySets[0];
-  const [viewportGrid, viewportGridService] = useViewportGrid();
+  const viewportGridApi = useViewportGridApi();
   const referencedDisplaySetRef = useRef(null);
-  const { viewports, activeViewportId } = viewportGrid;
   const referencedDisplaySet = pmapDisplaySet.getReferenceDisplaySet();
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
     referencedDisplaySet,
@@ -112,9 +111,15 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
+        const { viewports, activeViewportId } = viewportGridApi.getState();
         const activeViewport = viewports.get(activeViewportId);
+        // The event can arrive after a grid reset, when there is no active
+        // viewport entry to read.
+        if (!activeViewport) {
+          return;
+        }
         if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
-          viewportGridService.setDisplaySetsForViewport({
+          viewportGridApi.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });
@@ -125,7 +130,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     return () => {
       onDisplaySetsRemovedSubscription.unsubscribe();
     };
-  }, [activeViewportId, displaySetService, viewportGridService, viewports]);
+  }, [displaySetService, viewportGridApi]);
 
   let childrenWithProps = null;
 

@@ -1,23 +1,36 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { Types } from '@ohif/core';
-import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
-import { useViewportGrid } from '@ohif/ui-next';
-import EmptyViewport from './EmptyViewport';
+import { ViewportGrid, ViewportPane, useViewportGrid, gridSelectors } from '@ohif/ui-next';
+import ViewportHost from './ViewportHost';
 import { useAppConfig } from '@state';
+
+const { selectLayout, selectIsActive } = gridSelectors;
 
 function ViewerViewportGrid(props: withAppTypes) {
   const { servicesManager, viewportComponents = [], dataSource, commandsManager } = props;
-  const [viewportGrid, viewportGridService] = useViewportGrid();
+  const layout = useViewportGrid(selectLayout);
   const [appConfig] = useAppConfig();
 
-  const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
-  const layoutHash = useRef(null);
 
-  const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    hangingProtocolService,
+    uiNotificationService,
+    customizationService,
+    viewportGridService,
+  } = servicesManager.services;
 
-  const generateLayoutHash = () => `${numCols}-${numRows}`;
+  // Parity with the pre-store grid, which rendered one pane per unique
+  // viewport entry (a Map keyed by viewportId) capped at the grid slot count:
+  // duplicate viewportIds across positions collapse into one pane (last
+  // geometry wins, so the keys below stay unique), and legacy set()-restored
+  // states with more viewports than slots do not overflow the grid.
+  const panes = useMemo(() => {
+    const byViewportId = new Map();
+    layout.panes.forEach(pane => byViewportId.set(pane.viewportId, pane));
+    return Array.from(byViewportId.values()).slice(0, numRows * numCols);
+  }, [layout, numRows, numCols]);
 
   /**
    * This callback runs after the viewports structure has changed in any way.
@@ -102,6 +115,10 @@ function ViewerViewportGrid(props: withAppTypes) {
         return [];
       }
 
+      // Read at event time: this callback must see the grid state of the
+      // moment the drop happens, not the state of the render that bound it.
+      const { isHangingProtocolLayout } = viewportGridService.getState(); // event-time read
+
       let updatedViewports = [];
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
@@ -122,7 +139,7 @@ function ViewerViewportGrid(props: withAppTypes) {
 
       return updatedViewports;
     },
-    [hangingProtocolService, uiNotificationService, isHangingProtocolLayout]
+    [hangingProtocolService, uiNotificationService, viewportGridService]
   );
 
   // Using Hanging protocol engine to match the displaySets
@@ -138,16 +155,6 @@ function ViewerViewportGrid(props: withAppTypes) {
       unsubscribe();
     };
   }, []);
-
-  // Check viewport readiness in useEffect
-  useEffect(() => {
-    const allReady = viewportGridService.getGridViewportsReady();
-    const sameLayoutHash = layoutHash.current === generateLayoutHash();
-    if (allReady && !sameLayoutHash) {
-      layoutHash.current = generateLayoutHash();
-      viewportGridService.publishViewportsReady();
-    }
-  }, [viewportGridService, generateLayoutHash]);
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
     const { viewportGridService } = servicesManager.services;
@@ -168,135 +175,6 @@ function ViewerViewportGrid(props: withAppTypes) {
     viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
-  const getViewportPanes = useCallback(() => {
-    const viewportPanes = [];
-
-    const numViewportPanes = viewportGridService.getNumViewportPanes();
-    for (let i = 0; i < numViewportPanes; i++) {
-      const paneMetadata = Array.from(viewports.values())[i] || {};
-      const {
-        displaySetInstanceUIDs,
-        viewportOptions,
-        displaySetOptions, // array of options for each display set in the viewport
-        x: viewportX,
-        y: viewportY,
-        width: viewportWidth,
-        height: viewportHeight,
-        viewportLabel,
-      } = paneMetadata;
-
-      const viewportId = viewportOptions.viewportId;
-      const isActive = activeViewportId === viewportId;
-
-      const displaySetInstanceUIDsToUse = displaySetInstanceUIDs || [];
-
-      // This is causing the viewport components re-render when the activeViewportId changes
-      const displaySets = displaySetInstanceUIDsToUse
-        .map(displaySetInstanceUID => {
-          return displaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
-        })
-        .filter(displaySet => {
-          return !displaySet?.unsupported;
-        });
-
-      const { component: ViewportComponent } = _getViewportComponent(
-        displaySets,
-        viewportComponents,
-        uiNotificationService
-      );
-
-      // look inside displaySets to see if they need reRendering
-      const displaySetsNeedsRerendering = displaySets.some(displaySet => {
-        return displaySet.needsRerendering;
-      });
-
-      const onInteractionHandler = event => {
-        if (isActive) {
-          return;
-        }
-
-        if (event && (appConfig?.activateViewportBeforeInteraction ?? true)) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
-        viewportGridService.setActiveViewportId(viewportId);
-      };
-
-      const getBorderStyle = viewportIndex => {
-        const style = {} as any;
-        const layoutOptions = viewportGridService.getLayoutOptionsFromState(
-          viewportGridService.getState()
-        );
-        const vp = layoutOptions[viewportIndex];
-        if (!vp) {
-          return style;
-        }
-        const { x, y, width, height } = vp;
-        const tolerance = 0.01;
-
-        if (x + width < 1 - tolerance) {
-          style.borderRight = '1px solid hsl(var(--input))';
-        }
-
-        if (y + height < 1 - tolerance) {
-          style.borderBottom = '1px solid hsl(var(--input))';
-        }
-
-        return style;
-      };
-
-      viewportPanes[i] = (
-        <ViewportPane
-          // Note: It is highly important that the key is the viewportId here,
-          // since it is used to determine if the component should be re-rendered
-          // by React, and also in the hanging protocol and stage changes if the
-          // same viewportId is used, React, by default, will only move (not re-render)
-          // those components. For instance, if we have a 2x3 layout, and we move
-          // from 2x3 to 1x1 (second viewport), if the key is the viewportIndex,
-          // React will RE-RENDER the resulting viewport as the key will be different.
-          // however, if the key is the viewportId, React will only move the component
-          // and not re-render it.
-          key={viewportId}
-          acceptDropsFor="displayset"
-          onDrop={onDropHandler.bind(null, viewportId)}
-          onInteraction={onInteractionHandler}
-          customStyle={{
-            position: 'absolute',
-            top: viewportY * 100 + '%',
-            left: viewportX * 100 + '%',
-            width: viewportWidth * 100 + '%',
-            height: viewportHeight * 100 + '%',
-            ...getBorderStyle(i),
-          }}
-          isActive={isActive}
-        >
-          <div
-            data-cy="viewport-pane"
-            data-is-active={isActive}
-            className="flex h-full w-full min-w-[5px] flex-col"
-          >
-            <ViewportComponent
-              displaySets={displaySets}
-              viewportLabel={viewports.size > 1 ? viewportLabel : ''}
-              viewportId={viewportId}
-              dataSource={dataSource}
-              viewportOptions={viewportOptions}
-              displaySetOptions={displaySetOptions}
-              needsRerendering={displaySetsNeedsRerendering}
-              isHangingProtocolLayout={isHangingProtocolLayout}
-              onElementEnabled={evt => {
-                viewportGridService.setViewportIsReady(viewportId, true);
-              }}
-            />
-          </div>
-        </ViewportPane>
-      );
-    }
-
-    return viewportPanes;
-  }, [viewports, activeViewportId, viewportComponents, dataSource]);
-
   /**
    * Loading indicator until numCols and numRows are gotten from the HangingProtocolService
    */
@@ -310,41 +188,105 @@ function ViewerViewportGrid(props: withAppTypes) {
         numRows={numRows}
         numCols={numCols}
       >
-        {getViewportPanes()}
+        {panes.map(pane => (
+          <GridPane
+            // Note: It is highly important that the key is the viewportId here,
+            // since it is used to determine if the component should be re-rendered
+            // by React, and also in the hanging protocol and stage changes if the
+            // same viewportId is used, React, by default, will only move (not re-render)
+            // those components. For instance, if we have a 2x3 layout, and we move
+            // from 2x3 to 1x1 (second viewport), if the key is the viewportIndex,
+            // React will RE-RENDER the resulting viewport as the key will be different.
+            // however, if the key is the viewportId, React will only move the component
+            // and not re-render it.
+            key={pane.viewportId}
+            pane={pane}
+            servicesManager={servicesManager}
+            dataSource={dataSource}
+            commandsManager={commandsManager}
+            viewportComponents={viewportComponents}
+            onDropHandler={onDropHandler}
+            activateViewportBeforeInteraction={
+              appConfig?.activateViewportBeforeInteraction ?? true
+            }
+          />
+        ))}
       </ViewportGrid>
     </div>
   );
 }
 
-function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
-  if (!displaySets || !displaySets.length) {
-    return { component: EmptyViewport, isReferenceViewable: () => false };
+/**
+ * One grid pane: subscribes only to its own active-ness, so activating a
+ * viewport re-renders exactly the affected pane chromes, never the hosts.
+ */
+function GridPane({
+  pane,
+  servicesManager,
+  dataSource,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  commandsManager,
+  viewportComponents,
+  onDropHandler,
+  activateViewportBeforeInteraction,
+}) {
+  const { viewportId } = pane;
+  const isActive = useViewportGrid(selectIsActive(viewportId));
+  const { viewportGridService } = servicesManager.services;
+
+  const onInteractionHandler = event => {
+    if (isActive) {
+      return;
+    }
+
+    if (event && activateViewportBeforeInteraction) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    viewportGridService.setActiveViewportId(viewportId);
+  };
+
+  const { x, y, width, height } = pane;
+  const tolerance = 0.01;
+  const customStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: y * 100 + '%',
+    left: x * 100 + '%',
+    width: width * 100 + '%',
+    height: height * 100 + '%',
+  };
+
+  if (x + width < 1 - tolerance) {
+    customStyle.borderRight = '1px solid hsl(var(--input))';
   }
 
-  // Todo: Do we have a viewport that has two different SOPClassHandlerIds?
-  const SOPClassHandlerId = displaySets[0].SOPClassHandlerId;
-
-  for (let i = 0; i < viewportComponents.length; i++) {
-    if (!viewportComponents[i]) {
-      throw new Error('viewport components not defined');
-    }
-    if (!viewportComponents[i].displaySetsToDisplay) {
-      throw new Error('displaySetsToDisplay is null');
-    }
-    if (viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)) {
-      const { component } = viewportComponents[i];
-      return { component };
-    }
+  if (y + height < 1 - tolerance) {
+    customStyle.borderBottom = '1px solid hsl(var(--input))';
   }
 
-  console.log("Can't show displaySet", SOPClassHandlerId, displaySets[0]);
-  uiNotificationService.show({
-    title: 'Viewport Not Supported Yet',
-    message: `Cannot display SOPClassUID of ${displaySets[0].SOPClassUID} yet`,
-    type: 'error',
-  });
-
-  return { component: EmptyViewport };
+  return (
+    <ViewportPane
+      acceptDropsFor="displayset"
+      onDrop={onDropHandler.bind(null, viewportId)}
+      onInteraction={onInteractionHandler}
+      customStyle={customStyle}
+      isActive={isActive}
+    >
+      <div
+        data-cy="viewport-pane"
+        data-is-active={isActive}
+        className="flex h-full w-full min-w-[5px] flex-col"
+      >
+        <ViewportHost
+          viewportId={viewportId}
+          servicesManager={servicesManager}
+          dataSource={dataSource}
+          viewportComponents={viewportComponents}
+        />
+      </div>
+    </ViewportPane>
+  );
 }
 
 export default ViewerViewportGrid;

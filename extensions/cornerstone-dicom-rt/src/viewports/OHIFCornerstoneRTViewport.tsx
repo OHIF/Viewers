@@ -1,6 +1,6 @@
 import React, { Component, useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGrid, useViewportGridApi } from '@ohif/ui-next';
 import {
   utils,
   usePositionPresentationStore,
@@ -38,7 +38,8 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const rtDisplaySet = displaySets[0];
 
-  const [{ viewports, activeViewportId }, viewportGridService] = useViewportGrid();
+  const activeViewportId = useViewportGrid(state => state.activeViewportId);
+  const viewportGridApi = useViewportGridApi();
 
   // States
   const { setPositionPresentation } = usePositionPresentationStore();
@@ -141,9 +142,15 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     const displaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
+        const { viewports, activeViewportId } = viewportGridApi.getState();
         const activeViewport = viewports.get(activeViewportId);
+        // The event can arrive after a grid reset, when there is no active
+        // viewport entry to read.
+        if (!activeViewport) {
+          return;
+        }
         if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
-          viewportGridService.setDisplaySetsForViewport({
+          viewportGridApi.setDisplaySetsForViewport({
             viewportId: activeViewportId,
             displaySetInstanceUIDs: [],
           });
@@ -155,7 +162,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       segmentLoadingSubscription.unsubscribe();
       displaySetsRemovedSubscription.unsubscribe();
     };
-  }, [rtDisplaySet, displaySetService, viewports, activeViewportId, viewportGridService]);
+  }, [rtDisplaySet, displaySetService, viewportGridApi]);
 
   useEffect(() => {
     let toolGroup = toolGroupService.getToolGroup(toolGroupId);

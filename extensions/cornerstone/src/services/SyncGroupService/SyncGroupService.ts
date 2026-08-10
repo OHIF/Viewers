@@ -58,6 +58,10 @@ export default class SyncGroupService {
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
 
+  // Ids disabled by suspendAll, so resumeAll re-enables only those and never
+  // touches synchronizers that were already disabled for other reasons.
+  private _suspendedSynchronizerIds = new Set<string>();
+
   constructor(servicesManager: AppTypes.ServicesManager) {
     this.servicesManager = servicesManager;
     this.listeners = {};
@@ -165,6 +169,48 @@ export default class SyncGroupService {
         synchronizer.addTarget(viewportInfo);
       }
     });
+  }
+
+  /**
+   * Disables every currently enabled synchronizer and records which ones this
+   * call actually disabled, so resumeAll re-enables only those. Idempotent:
+   * calling it again while suspended finds everything already disabled and
+   * records nothing new (though it does pick up synchronizers created and
+   * enabled since the previous call).
+   */
+  public suspendAll(): void {
+    SynchronizerManager.getAllSynchronizers().forEach(synchronizer => {
+      // isDisabled() also reports true for enabled synchronizers that have no
+      // source elements yet, so read the enabled flag directly: those must
+      // still be suspended, or they would start firing once a source mounts.
+      // Guarded so a cornerstone rename of the private field degrades to the
+      // public isDisabled() heuristic instead of silently suspending nothing.
+      const record = synchronizer as unknown as Record<string, unknown>;
+      const isEnabled =
+        '_enabled' in record ? Boolean(record._enabled) : !synchronizer.isDisabled();
+      if (!isEnabled) {
+        return;
+      }
+      synchronizer.setEnabled(false);
+      this._suspendedSynchronizerIds.add(synchronizer.id);
+    });
+  }
+
+  /**
+   * Re-enables only the synchronizers suspendAll disabled and clears the
+   * record. Idempotent: with nothing recorded (never suspended, or already
+   * resumed) it is a no-op.
+   */
+  public resumeAll(): void {
+    if (!this._suspendedSynchronizerIds.size) {
+      return;
+    }
+    SynchronizerManager.getAllSynchronizers().forEach(synchronizer => {
+      if (this._suspendedSynchronizerIds.has(synchronizer.id)) {
+        synchronizer.setEnabled(true);
+      }
+    });
+    this._suspendedSynchronizerIds.clear();
   }
 
   public destroy(): void {

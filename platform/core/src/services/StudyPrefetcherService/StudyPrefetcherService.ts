@@ -1,7 +1,7 @@
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import { ExtensionManager } from '../../extensions';
 import ServicesManager from '../ServicesManager';
-import ViewportGridService from '../ViewportGridService';
+import { shallowEqual } from '../ViewportGridService';
 import { DisplaySet } from '../../types';
 
 enum RequestType {
@@ -223,39 +223,72 @@ class StudyPrefetcherService extends PubSubService {
       () => this._syncWithActiveViewport({ forceRestart: true })
     );
 
-    // Loads new datasets when making a new viewport active
-    const viewportGridActiveViewportIdSubscription = viewportGridService.subscribe(
-      ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-      ({ viewportId }) => this._syncWithActiveViewport({ activeViewportId: viewportId })
-    );
+    // Deferred: grid select listeners run synchronously inside the grid
+    // store transaction; the prefetcher must stay out of the mount pipeline
+    // and keep the macrotask timing of the grid events it replaced. The
+    // disposed guard matches the legacy deferred events, which never reached
+    // a handler unsubscribed before the broadcast ran.
+    let disposed = false;
+    const deferred =
+      <T>(listener: (selected: T) => void) =>
+      (selected: T) => {
+        setTimeout(() => {
+          if (disposed) {
+            return;
+          }
+          listener(selected);
+        }, 0);
+      };
+    const disposeGridSubscriptions = {
+      unsubscribe: () => {
+        disposed = true;
+      },
+    };
 
-    // Continue loading datasets after changing the layout (eg: from 1x1 to 2x1)
-    const viewportGridLayoutChangedSubscription = viewportGridService.subscribe(
-      ViewportGridService.EVENTS.LAYOUT_CHANGED,
-      () => this._syncWithActiveViewport()
-    );
+    // Loads new datasets when making a new viewport active, after changing the
+    // layout (eg: from 1x1 to 2x1) and after loading a new display set on a
+    // viewport (the epoch bumps on every composition/layout transaction)
+    const gridSyncSubscription = {
+      unsubscribe: viewportGridService.select(
+        state => ({
+          activeViewportId: state.activeViewportId,
+          epoch: state.derived.epoch,
+        }),
+        deferred(() => this._syncWithActiveViewport()),
+        { equality: shallowEqual }
+      ),
+    };
 
-    // Loads new datasets after loading a new display set on a viewport
-    const viewportGridStateChangedSubscription = viewportGridService.subscribe(
-      ViewportGridService.EVENTS.GRID_STATE_CHANGED,
-      () => this._syncWithActiveViewport()
-    );
-
-    // Loads the first datasets right after opening the viewer
-    const viewportGridViewportreadySubscription = viewportGridService.subscribe(
-      ViewportGridService.EVENTS.VIEWPORTS_READY,
-      () => {
-        this._syncWithActiveViewport();
-        this._startPrefetching();
-      }
-    );
+    // Loads the first datasets once every viewport has mounted its current
+    // layout (the state transition the VIEWPORTS_READY event used to report).
+    // Mirrors the service's VIEWPORTS_READY bridge - (allMounted,
+    // layoutRevision) rather than allMounted edges - because a relayout that
+    // reuses every viewport carries the runtime forward and allMounted never
+    // transitions for the new revision.
+    let lastMountedLayoutRevision = -1;
+    const gridMountedSubscription = {
+      unsubscribe: viewportGridService.select(
+        state => ({
+          allMounted: state.derived.allMounted,
+          layoutRevision: state.layout.layoutRevision,
+        }),
+        deferred(({ allMounted, layoutRevision }) => {
+          if (!allMounted || layoutRevision <= lastMountedLayoutRevision) {
+            return;
+          }
+          lastMountedLayoutRevision = layoutRevision;
+          this._syncWithActiveViewport();
+          this._startPrefetching();
+        }),
+        { equality: shallowEqual }
+      ),
+    };
 
     return [
       displaySetsChangedSubscription,
-      viewportGridActiveViewportIdSubscription,
-      viewportGridLayoutChangedSubscription,
-      viewportGridStateChangedSubscription,
-      viewportGridViewportreadySubscription,
+      gridSyncSubscription,
+      gridMountedSubscription,
+      disposeGridSubscriptions,
     ];
   }
 

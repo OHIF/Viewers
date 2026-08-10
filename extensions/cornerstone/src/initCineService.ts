@@ -8,10 +8,10 @@ function _getVolumeFromViewport(viewport: Types.IBaseVolumeViewport) {
   }
 
   const volumeIds = viewport.getAllVolumeIds();
-  const volumes = volumeIds.map(id => cache.getVolume(id));
+  const volumes = volumeIds.map(id => cache.getVolume(id)).filter(Boolean);
   const dynamicVolume = volumes.find(volume => volume.isDynamicVolume());
 
-  return dynamicVolume ?? volumes[0];
+  return dynamicVolume ?? volumes[0] ?? null;
 }
 
 /**
@@ -25,12 +25,13 @@ function _getSyncedViewports(servicesManager: AppTypes.ServicesManager, srcViewp
   const { viewportGridService, cornerstoneViewportService } = servicesManager.services;
 
   const { viewports: viewportsStates } = viewportGridService.getState();
-  const srcViewportState = viewportsStates.get(srcViewportId);
 
-  if (srcViewportState?.viewportOptions?.viewportType !== 'volume') {
-    return [];
-  }
-
+  // Volume-ness is derived from the live cornerstone viewport, not the grid
+  // composition's viewportOptions.viewportType: the mount pipeline applies its
+  // dynamic-volume 'volume' override on a mount-local copy, so a 4D series
+  // mounted into a pane whose composition never said 'volume' would be missed
+  // by a grid-state check. Non-volume viewports have no getAllVolumeIds and
+  // yield no volume below.
   const srcViewport = cornerstoneViewportService.getCornerstoneViewport(srcViewportId);
 
   const srcVolume = srcViewport ? _getVolumeFromViewport(srcViewport) : null;
