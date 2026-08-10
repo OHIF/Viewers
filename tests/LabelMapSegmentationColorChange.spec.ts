@@ -4,12 +4,12 @@ import {
   visitStudy,
   waitForViewportRenderCycle,
   waitForViewportsRendered,
-  checkForScreenshot,
+  checkForViewportScreenshot,
   screenShotPaths,
 } from './utils';
 
-const NEW_LABELMAP_SEGMENT_HEX = '#FF00FF';
-const NEW_LABELMAP_SEGMENT_HEX_CSS_RGB = 'rgb(255, 0, 255)';
+const NEW_LABELMAP_SEGMENT_HEX = '#FF5722';
+const NEW_LABELMAP_SEGMENT_HEX_CSS_RGB = 'rgb(255, 87, 34)';
 
 // Default color of segment 0 in the labelmap SEG study.
 const LABELMAP_SEGMENT_0_DEFAULT_HEX = '#9D6CA2';
@@ -32,8 +32,6 @@ test('opens the color edit popup when "Change Color" is clicked', async ({
   DOMOverlayPageObject,
 }) => {
   const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
-  await segment.toggleVisibility();
-
   await segment.actions.openChangeColor();
 
   await expect(DOMOverlayPageObject.dialog.colorPicker.locator).toBeVisible();
@@ -52,6 +50,8 @@ test('changes the labelmap segment color when the user saves', async ({
   DOMOverlayPageObject,
   viewportPageObject,
 }) => {
+  const viewport = await viewportPageObject.getById('default');
+
   await rightPanelPageObject.labelMapSegmentationPanel.segmentsVisibilityToggle.click();
   const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
   await segment.toggleVisibility();
@@ -62,11 +62,10 @@ test('changes the labelmap segment color when the user saves', async ({
     LABELMAP_SEGMENT_0_DEFAULT_CSS_RGB
   );
 
-  const viewportPane = (await viewportPageObject.getById('default')).pane;
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPane,
-    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorBeforeChange
+    viewport,
+    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorBeforeChange,
   });
 
   await segment.actions.openChangeColor();
@@ -82,10 +81,10 @@ test('changes the labelmap segment color when the user saves', async ({
     NEW_LABELMAP_SEGMENT_HEX_CSS_RGB
   );
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPane,
-    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorAfterChange
+    viewport,
+    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorAfterChange,
   });
 });
 
@@ -95,21 +94,25 @@ test('does not change the labelmap segment color when the user cancels', async (
   DOMOverlayPageObject,
   viewportPageObject,
 }) => {
+  const viewport = await viewportPageObject.getById('default');
+
   await rightPanelPageObject.labelMapSegmentationPanel.segmentsVisibilityToggle.click();
   const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
   await segment.toggleVisibility();
   await segment.click();
+
+  await expect(viewport.pane.getByText('Loading...', { exact: true })).toBeHidden();
+  await waitForViewportsRendered(page);
 
   await expect(segment.rowDataColorHex).toHaveCSS(
     'background-color',
     LABELMAP_SEGMENT_0_DEFAULT_CSS_RGB
   );
 
-  const viewportPane = (await viewportPageObject.getById('default')).pane;
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPane,
-    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorBeforeCancel
+    viewport,
+    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorBeforeCancel,
   });
 
   await segment.actions.cancelChangeColor(NEW_LABELMAP_SEGMENT_HEX);
@@ -120,9 +123,9 @@ test('does not change the labelmap segment color when the user cancels', async (
     LABELMAP_SEGMENT_0_DEFAULT_CSS_RGB
   );
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPane,
-    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorAfterCancel
+    viewport,
+    screenshotPath: screenShotPaths.labelMapSegmentationColorChange.colorAfterCancel,
   });
 });
