@@ -146,7 +146,9 @@ export function useViewportSliceSync({
       if (nextImageIndex == null) {
         return;
       }
-      const nextNumberOfSlices = viewport.getNumberOfSlices();
+      // Same guarded count as the initial seed — a raw getNumberOfSlices()
+      // can return a non-finite value for degenerate volumes.
+      const nextNumberOfSlices = getViewportSliceCount(viewportData, viewport);
 
       pushSliceData(nextImageIndex, nextNumberOfSlices);
     };
