@@ -1295,6 +1295,58 @@ documented private extension, and shall continue to write the standard per-item 
 > the per-item records would make the object unreadable to everyone else, which is why the standard
 > records stay.
 
+#### Attributing a change to a person
+
+**RS-PRV-26** *(phase 4)*
+The system shall record per-item human attribution using the mechanism the output object type
+defines, and shall use a private mechanism only for an object type that defines none.
+
+**RS-PRV-27** *(phase 4)*
+WHERE the output object is RTSTRUCT, the system shall record the person responsible for an ROI in
+`ROIInterpreter` (3006,00A6), within that ROI's item of `RTROIObservationsSequence` (3006,0080).
+
+**RS-PRV-28** *(phase 4)*
+WHERE the output object is SR, the system shall record per-item attribution using observer context
+at the content item, and shall not restate it at the document level for an item that overrides it.
+
+**RS-PRV-29** *(phase 4)*
+WHERE the output object is SEG, the system shall record per-segment human attribution in private
+attributes within that segment's item.
+
+**RS-PRV-30** *(phase 4)*
+The system shall not place a standard attribute in an IOD that does not define it.
+
+> **Note (RS-PRV-29, RS-PRV-30):** SEG defines no per-segment person attribute, and the SR observer
+> attributes cannot simply be borrowed. Type is a property of an attribute *within a module of an
+> IOD*, so `VerifyingObserverSequence` being Type 3 in the SR modules confers nothing in SEG. A
+> Standard Extended SOP Class would permit adding those attributes to a SEG at the **instance**
+> level, but instance level is what `ContentCreatorName` already provides; the per-segment case
+> requires nesting them inside `SegmentSequence`, where the standard defines no meaning for them.
+> Doing that asserts semantics DICOM has not defined, and a reader recognising the tag would apply
+> SR semantics that were never sanctioned here. A private attribute makes exactly the same
+> statement without the false implication, which is why `RS-PRV-29` chooses it.
+>
+> The other conformant route — `TrackingUID` (0062,0021) per segment joined to a companion SR
+> carrying the attribution — was not chosen because it makes attribution depend on a second
+> object travelling with the first.
+
+**RS-PRV-31** *(phase 4)*
+The system shall declare a private creator for the attributes of `RS-PRV-29`, and shall document
+those attributes in its conformance statement.
+
+**RS-PRV-32** *(phase 4)*
+The system shall write standard instance-level attribution in addition to the private per-segment
+records, so that a reader discarding private attributes is left with attribution for the instance
+rather than none.
+
+**RS-PRV-33** *(phase 4)*
+WHERE a standard per-segment attribution mechanism becomes available, the system shall write it,
+and shall retain the private attributes only for as long as deployed readers require them.
+
+> **Note (RS-PRV-33):** A supplement proposing that mechanism is drafted at
+> [Segment-level attribution and approval](../dicom/supplement-segment-attribution.md). The private
+> attributes of `RS-PRV-29` are the interim, not the destination.
+
 ### 4.18 Compatibility — `RS-COMPAT`
 
 **RS-COMPAT-1**
@@ -1720,6 +1772,7 @@ members identically to `segmentation` members.
 | `RS-PRV-10`..`RS-PRV-14` | Playwright: select a segment produced by an algorithm and then edited by hand, and assert both contributions show in order and are distinguishable. |
 | `RS-PRV-15`..`RS-PRV-23` | Round trip: save a result set whose segments have differing provenance, reload, and assert each segment's history is recovered. Assert per-item algorithm sequences are present rather than inferred. |
 | `RS-PRV-22` | Unit test on the RTSTRUCT exporter: contours of differing provenance within one ROI are written as separate ROIs. |
+| `RS-PRV-26`..`RS-PRV-33` | Per-IOD export tests: RTSTRUCT carries `ROIInterpreter` per ROI; SR carries per-item observer context; SEG carries the private per-segment record with its private creator, plus standard instance-level attribution. A reader stripping private attributes still finds instance-level attribution. |
 | `RS-OPS` | Unit tests on the operation registry and conversion adapters. |
 | `RS-COMPAT` | Existing segmentation unit and end-to-end suites must pass unchanged with the feature enabled. |
 
@@ -1747,14 +1800,21 @@ These are unresolved and must be settled before or during design.
    what happens to unpaired members, is unspecified.
 6. **`RS-MEM-3` single ownership.** Revisit if a workflow emerges that copy-with-provenance
    cannot serve.
-7. **Per-item human attribution has no standard home.** `RS-PRV-4` requires recording which user
-   edited a result. `ContributingEquipmentSequence` is for *equipment*, and its purpose code
-   (109102, DCM, "Processing Equipment") does not describe a person; `ContentCreatorName`
-   (0070,0084) is one value for the whole instance. So "user X edited segment 3, user Y edited
-   segment 5" has no conformant per-item expression in SEG or RTSTRUCT. Options are instance-level
-   attribution only, a private per-item extension under `RS-PRV-25`, or carrying the detail in an
-   accompanying SR where TID 4019 and observer context exist. Undecided, and it limits what
-   `RS-PRV-4` can promise on reload.
+7. **Per-item human attribution** — *decided; the private attribute set is not.* The per-IOD
+   position is settled by `RS-PRV-26`..`RS-PRV-33`: RTSTRUCT already has `ROIInterpreter` per ROI,
+   SR already has per-item observer context, and SEG — which has neither — uses private
+   attributes within the segment item.
+
+   What remains open is the private attribute set itself: the private creator string, the block,
+   which of person name, coded identification, organization, role, and datetime each record
+   carries, and whether the record is one repeatable sequence or several flat attributes. It should
+   be shaped to match the supplement proposed at
+   [Segment-level attribution and approval](../dicom/supplement-segment-attribution.md), so that
+   `RS-PRV-33` is a substitution rather than a rewrite.
+
+   Also open: whether a reader that discards private attributes should be told it did so. `RS-PRV-32`
+   guarantees it retains instance-level attribution, but a partially-attributed result set that
+   looks fully attributed is its own hazard.
 
 8. **Where the history lives across saves.** `RS-SAVE-11` makes each save a new SOP Instance
    chained by `PredecessorDocumentsSequence`, so a history could be read by walking that chain

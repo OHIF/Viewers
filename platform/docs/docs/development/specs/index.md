@@ -66,6 +66,15 @@ usual reason a requirement elsewhere is marked *(proposed)*.
 | [CP-SEGTOOL](./changes/segmentation-tool-submenu.md) — segmentation and contour tools into a toolbar sub-menu | `EM`, `RS` | 1 | Proposed |
 | [CP-TOOLCREATE](./changes/tool-create-on-first-use.md) — tools create what they need instead of refusing to run | `RS` | 2 | Proposed |
 
+### 1.3 Proposals to external standards
+
+Where a specification here runs into a gap in an external standard, the proposal to close that gap
+is drafted alongside it rather than left implicit in a workaround.
+
+| Proposal | Gap | Interim | Status |
+| --- | --- | --- | --- |
+| [Segment-level attribution and approval](./dicom/supplement-segment-attribution.md) — DICOM work item proposal | No per-segment human attribution or per-item approval in SEG | Private attributes, `RS-PRV-29` | Draft, not submitted |
+
 ---
 
 ## 2. Requirement identifiers
