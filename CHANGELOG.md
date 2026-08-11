@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.12](https://github.com/OHIF/Viewers/compare/v3.12.11...v3.12.12) (2026-08-11)
+
+
+### Bug Fixes
+
+* **security:** update dependencies to fix security vulnerabilities and release 3.12.12 ([#6211](https://github.com/OHIF/Viewers/issues/6211)) ([3ddd381](https://github.com/OHIF/Viewers/commit/3ddd3810e58dfec0e9848bf1da3e8ff84c0fb557))
+
+
+
+
+
 ## [3.12.11](https://github.com/OHIF/Viewers/compare/v3.12.10...v3.12.11) (2026-08-03)
 
 
