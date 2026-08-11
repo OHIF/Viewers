@@ -118,6 +118,28 @@ const segmentAI = new ONNXSegmentationController({
 });
 let segmentAIEnabled = false;
 
+/**
+ * Converts a CSS color (hex or rgb/rgba string) to the { r, g, b, a }
+ * object shape the color picker dialog expects.
+ */
+function _cssColorToRgba(cssColor: string): { r: number; g: number; b: number; a: number } {
+  const rgbMatch = cssColor.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/);
+  if (rgbMatch) {
+    return {
+      r: Number(rgbMatch[1]),
+      g: Number(rgbMatch[2]),
+      b: Number(rgbMatch[3]),
+      a: rgbMatch[4] !== undefined ? Number(rgbMatch[4]) : 1,
+    };
+  }
+  const hexMatch = cssColor.match(/^#?([0-9a-f]{6})$/i);
+  if (hexMatch) {
+    const hex = parseInt(hexMatch[1], 16);
+    return { r: (hex >> 16) & 255, g: (hex >> 8) & 255, b: hex & 255, a: 1 };
+  }
+  return { r: 255, g: 255, b: 0, a: 1 };
+}
+
 function commandsModule({
   servicesManager,
   commandsManager,
@@ -782,6 +804,48 @@ function commandsModule({
         }
       }
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
+    },
+
+    /**
+     * Opens a color picker for the measurement and applies the chosen color
+     * to the annotation (and its text box) via per-annotation styles.
+     */
+    changeMeasurementColor: ({ uid }) => {
+      const measurement = measurementService.getMeasurement(uid);
+      if (!measurement) {
+        console.warn('No measurement found to change color', uid);
+        return;
+      }
+
+      const currentColor =
+        annotation.config.style.getStyleProperty('color', {
+          annotationUID: uid,
+          toolName: measurement.toolName,
+        }) || 'rgb(255, 255, 0)';
+
+      uiDialogService.show({
+        content: colorPickerDialog,
+        title: i18n.t('Tools:Measurement Color'),
+        contentProps: {
+          value: _cssColorToRgba(currentColor),
+          onSave: newRgbaColor => {
+            const cssColor = `rgb(${newRgbaColor.r}, ${newRgbaColor.g}, ${newRgbaColor.b})`;
+            actions.updateMeasurement({
+              uid,
+              style: {
+                color: cssColor,
+                colorHighlighted: cssColor,
+                colorSelected: cssColor,
+                colorLocked: cssColor,
+                textBoxColor: cssColor,
+                textBoxColorHighlighted: cssColor,
+                textBoxColorSelected: cssColor,
+                textBoxColorLocked: cssColor,
+              },
+            });
+          },
+        },
+      });
     },
 
     /**
@@ -2454,6 +2518,9 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
+    },
+    changeMeasurementColor: {
+      commandFn: actions.changeMeasurementColor,
     },
     jumpToMeasurement: actions.jumpToMeasurement,
     removeMeasurement: {
