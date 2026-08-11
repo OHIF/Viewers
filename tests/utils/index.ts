@@ -8,6 +8,7 @@ import {
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
 } from './simulateClicksOnElement';
 import {
   simulateNormalizedDragOnElement,
@@ -53,6 +54,7 @@ export {
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
   reduce3DViewportSize,

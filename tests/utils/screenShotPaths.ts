@@ -88,6 +88,12 @@ const screenShotPaths = {
   spline: {
     splineDisplayedCorrectly: 'splineDisplayedCorrectly.png',
   },
+  splineContourSegmentation: {
+    contourPersistedAfterNavigation: 'contourPersistedAfterNavigation.png',
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+  },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',

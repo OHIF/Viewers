@@ -3,6 +3,7 @@ import {
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
 } from '../utils';
@@ -62,6 +63,7 @@ export interface IViewportPageObject {
     normalizedPoints: { x: number; y: number }[],
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
+  normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
   normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
@@ -364,6 +366,12 @@ export class ViewportPageObject {
           locator: viewport,
           normalizedPoints,
           button,
+        });
+      },
+      normalizedDoubleClickAt: async (normalizedPoint: { x: number; y: number }) => {
+        await simulateNormalizedDoubleClickOnElement({
+          locator: viewport,
+          normalizedPoint,
         });
       },
       normalizedDragAt: async (params: NormalizedDragParams) => {

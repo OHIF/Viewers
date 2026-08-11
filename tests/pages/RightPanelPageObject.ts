@@ -353,6 +353,9 @@ export class RightPanelPageObject {
       tools: {
         get splineContour() {
           const button = page.getByTestId('SplineContourSegmentationTool');
+          // The data-cy sits on a span wrapper; the inner button is what carries the
+          // disabled state while no contour segmentation exists.
+          const toolButton = button.locator('button');
           // Maps a friendly spline name to the underlying cornerstone tool name,
           // which is also the data-cy of its option in the Spline Type dropdown.
           const splineTypeToolNames = {
