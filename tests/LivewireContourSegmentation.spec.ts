@@ -1,5 +1,6 @@
 import {
   checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   getSvgAttribute,
   press,
@@ -262,6 +263,59 @@ test('should merge overlapping Livewire contours drawn into the same segment', a
     page,
     locator: activeViewport.pane,
     screenshotPath: screenShotPaths.livewireContourSegmentation.overlappingContoursMerged,
+  });
+});
+
+test('should keep overlapping Livewire contours in different segments separate', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  // Same overlap geometry as the same-segment merge test; across segments it must not merge.
+  const overlappingContourClicks = [
+    { x: 450, y: 400 },
+    { x: 540, y: 370 },
+    { x: 470, y: 280 },
+  ];
+
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+
+  await contourPanel.addSegmentation();
+  await expect(contourPanel.panel.rows).toHaveCount(1);
+  await contourPanel.tools.livewireContour.click();
+
+  const activeViewport = await viewportPageObject.active;
+  const vertexHandles = activeViewport.svg('circle');
+
+  // First contour goes into Segment 1.
+  await activeViewport.clickAt(contourClicks);
+  await expect(vertexHandles, 'Expected the first contour vertices to render').toHaveCount(4);
+  await activeViewport.doubleClickAt(contourClicks[3]);
+  await expect(
+    vertexHandles,
+    'Expected the first contour vertex handles to clear on completion'
+  ).toHaveCount(0);
+
+  // Add a second segment and make it the active drawing target.
+  await contourPanel.addSegmentButton.click();
+  await expect(contourPanel.panel.rows, 'Expected a second segment row to be added').toHaveCount(2);
+  await contourPanel.panel.nthSegment(1).click();
+
+  await activeViewport.clickAt(overlappingContourClicks);
+  await expect(vertexHandles, 'Expected the second contour vertices to render').toHaveCount(3);
+  await activeViewport.doubleClickAt(overlappingContourClicks[2]);
+
+  // The handles clearing is the completion signal, so this settles the draw before the compare.
+  await expect(
+    vertexHandles,
+    'Expected the second contour vertex handles to clear on completion'
+  ).toHaveCount(0);
+
+  // The overlap that merges within one segment must stay two outlines across segments.
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.livewireContourSegmentation.differentSegmentsContoursSeparate,
   });
 });
 

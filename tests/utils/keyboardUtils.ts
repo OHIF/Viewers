@@ -42,7 +42,9 @@ type WithKeyHeldParams = {
  * throws. A held modifier (e.g. 'Shift') applies to the mouse events the action
  * performs, which is how modifier-dependent tools are driven from a test.
  */
-export const withKeyHeld = async ({ page, key, action }: WithKeyHeldParams) => {
+export const withKeyHeld = async (params: WithKeyHeldParams) => {
+  const { page, key, action } = params;
+
   await page.keyboard.down(key);
   try {
     await action();
