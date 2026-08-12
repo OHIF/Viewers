@@ -32,6 +32,12 @@ const screenShotPaths = {
     globalUnlockedSegPreEdit: 'unlockedSegPreEdit.png',
     globalUnlockedSegPostEdit: 'unlockedSegPostEdit.png',
   },
+  labelMapSegmentationColorChange: {
+    colorBeforeChange: 'labelMapSegmentationColor-beforeChange.png',
+    colorAfterChange: 'labelMapSegmentationColor-afterChange.png',
+    colorBeforeCancel: 'labelMapSegmentationColor-beforeCancel.png',
+    colorAfterCancel: 'labelMapSegmentationColor-afterCancel.png',
+  },
   length: {
     lengthDisplayedCorrectly: 'lengthDisplayedCorrectly.png',
   },
