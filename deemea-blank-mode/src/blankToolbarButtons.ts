@@ -1,4 +1,5 @@
 import type { Button } from '@ohif/core/types';
+import i18n from 'i18next';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -94,8 +95,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'dicom-tag-browser',
-      label: 'Dicom Tag Browser',
-      tooltip: 'Dicom Tag Browser',
+      label: i18n.t('Buttons:Dicom Tag Browser'),
+      tooltip: i18n.t('Buttons:Dicom Tag Browser'),
       commands: 'openDICOMTagViewer',
     },
   },

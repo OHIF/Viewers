@@ -52,17 +52,19 @@ function modeFactory() {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection('primary', [
         'Zoom',
         'WindowLevel',
         'Pan',
         'Layout',
         'Crosshairs',
+        'TagBrowser',
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
+        toolbarService,
         toolGroupService,
         syncGroupService,
         cornerstoneViewportService,
@@ -72,6 +74,7 @@ function modeFactory() {
 
       uiDialogService.hideAll();
       uiModalService.hide();
+      toolbarService.reset();
       toolGroupService.destroy();
       syncGroupService.destroy();
       cornerstoneViewportService.destroy();

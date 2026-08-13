@@ -96,6 +96,12 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
 
       window.addEventListener('message', event => {
         if (event.data.type === OHIFMessageType.IMAGE_STATUS) {
+          // Only run these toolbar updates in our deemea/deemea-3d viewers to avoid unnecessary updates in other routes
+          const activeRoute = window.location.pathname.split('/')[1];
+          if (activeRoute !== 'deemea' && activeRoute !== 'deemea-3d') {
+            return;
+          }
+
           if (event.data.message.status === 'Validated') {
             if (event.data.message.imageType === '2D') {
               const style = document.createElement('style');

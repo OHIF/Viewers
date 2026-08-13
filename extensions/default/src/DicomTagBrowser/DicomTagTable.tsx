@@ -16,6 +16,28 @@ const rowStyle = {
 };
 const indentationPadding = 8;
 
+// Rough guess at the space the dialog needs around the virtualised list (title,
+// series and search controls, column headers, paddings). Only used for the first
+// render - it is corrected against the real dialog right after, see below.
+const tableEstimatePx = 210;
+const minTableHeightPx = 160;
+const maxTableHeightPx = 512; // 32rem, the original design height
+const tableBorderPx = 4; // border-2 on the list container, top + bottom
+
+function clampTableHeight(height: number) {
+  return Math.max(minTableHeightPx, Math.min(maxTableHeightPx, height));
+}
+
+/**
+ * The list height has to be a pixel value (react-window virtualises against it),
+ * so derive it from the viewport instead of hard coding one: a fixed height makes
+ * the dialog taller than a short window, and capping the dialog instead just gives
+ * it a second scrollbar on top of the list's own.
+ */
+function getAvailableTableHeight() {
+  return clampTableHeight(window.innerHeight - tableEstimatePx);
+}
+
 const RowComponent = ({
   row,
   style,
@@ -117,12 +139,14 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
 function DicomTagTable({ rows }: { rows: Row[] }) {
   const listRef = useRef();
   const canvasRef = useRef();
+  const tableContainerRef = useRef(null);
 
   const [tagHeaderElem, setTagHeaderElem] = useState(null);
   const [vrHeaderElem, setVrHeaderElem] = useState(null);
   const [keywordHeaderElem, setKeywordHeaderElem] = useState(null);
   const [valueHeaderElem, setValueHeaderElem] = useState(null);
   const [internalRows, setInternalRows] = useState(rows);
+  const [tableHeight, setTableHeight] = useState(getAvailableTableHeight);
 
   // Here the refs are inturn stored in state to trigger a render of the table.
   // This virtualized table does NOT render until the header is rendered because the header column widths are used to determine the row heights in the table.
@@ -156,6 +180,27 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
     return internalRows.filter(row => row.isVisible);
   }, [internalRows]);
 
+  useEffect(() => {
+    const container = tableContainerRef.current;
+    const dialog = container?.closest('[role="dialog"]');
+
+    if (!container || !dialog) {
+      return;
+    }
+
+    const windowHeight = dialog.scrollHeight - container.getBoundingClientRect().height;
+
+    const maxDialogHeight = parseFloat(getComputedStyle(dialog).maxHeight);
+    const dialogBudget = Number.isFinite(maxDialogHeight) ? maxDialogHeight : window.innerHeight;
+
+    const fittedHeight = clampTableHeight(dialogBudget - windowHeight);
+
+    if (Math.abs(fittedHeight - tableHeight) > 1) {
+      setTableHeight(fittedHeight);
+      listRef.current?.resetAfterIndex(0);
+    }
+  }, [tableHeight, visibleRows]);
+
   /**
    * When new rows are set, scroll to the top and reset the virtualization.
    */
@@ -169,10 +214,14 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
   }, [rows]);
 
   /**
-   * When the browser window resizes, update the row virtualization (i.e. row heights)
+   * When the browser window resizes, resize the list to the space now available and
+   * update the row virtualization (i.e. row heights)
    */
   useEffect(() => {
-    const debouncedResize = debounce(() => listRef.current.resetAfterIndex(0), 100);
+    const debouncedResize = debounce(() => {
+      setTableHeight(getAvailableTableHeight());
+      listRef.current?.resetAfterIndex(0);
+    }, 100);
 
     window.addEventListener('resize', debouncedResize);
 
@@ -283,13 +332,14 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
         valueRef={valueRef}
       />
       <div
+        ref={tableContainerRef}
         className="relative m-auto border-2 border-black bg-black"
-        style={{ height: '32rem' }}
+        style={{ height: tableHeight }}
       >
         {isHeaderRendered() && (
           <List
             ref={listRef}
-            height={500}
+            height={tableHeight - tableBorderPx}
             itemCount={visibleRows.length}
             itemSize={getItemSize(visibleRows)}
             width={'100%'}
