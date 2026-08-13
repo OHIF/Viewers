@@ -165,6 +165,12 @@ module.exports = (env, argv) => {
           {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
+            transform: content => {
+              return content.toString().replace(/process\.env\.(\w+)/g, (match, varName) => {
+                const value = process.env[varName] || '';
+                return JSON.stringify(value);
+              });
+            },
           },
         ],
       }),

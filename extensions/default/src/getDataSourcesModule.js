@@ -6,6 +6,7 @@ import { createDicomWebApi } from './DicomWebDataSource/index';
 import { createDicomJSONApi } from './DicomJSONDataSource/index';
 import { createDicomLocalApi } from './DicomLocalDataSource/index';
 import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
+import { createDicomZipApi } from './DicomZipDataSource/index';
 import { createMergeDataSourceApi } from './MergeDataSource/index';
 
 /**
@@ -32,6 +33,11 @@ function getDataSourcesModule() {
       name: 'dicomlocal',
       type: 'localApi',
       createDataSource: createDicomLocalApi,
+    },
+    {
+      name: 'chavi',
+      type: 'webApi',
+      createDataSource: createDicomZipApi,
     },
     {
       name: 'merge',
