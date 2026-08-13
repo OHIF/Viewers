@@ -1,7 +1,7 @@
 /** @type {AppTypes.Config} */
 // QA environment configuration.
 // Built with: APP_CONFIG=config/qa.js
-const { baseConfig, getDynamicDataSources } = window.deemeaConfig;
+const { baseConfig, createDataSources } = window.deemeaConfig;
 
 window.config = {
   ...baseConfig,
@@ -10,7 +10,7 @@ window.config = {
   dangerouslyUseDynamicConfig: {
     enabled: false,
   },
-  dataSources: getDynamicDataSources({
+  dataSources: createDataSources({
     CLOUD_QA: 'https://cloud-qa.deemea.com/api/v1/didier',
     GPU_QA: 'https://gpu.qa.deemea.com/api/v1/didier',
     SANTY: 'https://santy-qa.deemea.com/api/v1/didier',

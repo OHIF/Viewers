@@ -54,33 +54,6 @@
     });
   }
 
-  /**
-   * Builds datasources with dynamic endpoint switching (didier/diego).
-   * Reads 'endpoint' query parameter and replaces /didier with the requested endpoint.
-   * Defaults to 'didier' if no parameter is provided.
-   * @param {object} map - The datasources map (same format as createDataSources)
-   */
-  function getDynamicDataSources(map) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const endpoint = urlParams.get('endpoint') || 'didier';
-
-    // Replace /didier with the requested endpoint in all URLs
-    const updatedMap = {};
-    Object.keys(map).forEach(key => {
-      const value = map[key];
-      if (typeof value === 'string') {
-        updatedMap[key] = value.replace(/\/didier/, `/${endpoint}`);
-      } else {
-        updatedMap[key] = {
-          ...value,
-          url: value.url.replace(/\/didier/, `/${endpoint}`),
-        };
-      }
-    });
-
-    return createDataSources(updatedMap);
-  }
-
   /** Base config shared by all environments. */
   const baseConfig = {
     routerBasename: null,
@@ -117,6 +90,5 @@
     baseConfig: baseConfig,
     createDidierDataSource: createDidierDataSource,
     createDataSources: createDataSources,
-    getDynamicDataSources: getDynamicDataSources,
   };
 })();
