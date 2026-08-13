@@ -122,8 +122,6 @@ const createRoutes = ({
       ? routerBasename.substring(0, routerBasename.length - 1)
       : routerBasename;
 
-  console.log('Registering worklist route', routerBasename, path);
-
   const workListVariant = customizationService.getCustomization('workList.variant');
   const WorkListComponent = workListVariant === 'legacy' ? LegacyWorkList : WorkList;
 
