@@ -1,3 +1,9 @@
+// React Compiler opt-out — PERMANENT, not cleanup debt. Do not remove.
+// TanStack Table's state lives behind methods on objects whose identity is stable
+// across renders, so compiled reads of it freeze at mount. Here that affects
+// getIsVisible(). See DataTable.tsx for the full explanation.
+'use no memo';
+
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../Button';

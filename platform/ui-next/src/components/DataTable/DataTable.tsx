@@ -1,3 +1,21 @@
+// React Compiler opt-out — PERMANENT, not cleanup debt. Do not remove.
+//
+// TanStack Table exposes its state through methods on objects whose identity is
+// deliberately stable across renders — `table.getState()`, `column.getIsSorted()`,
+// `column.getIsVisible()`. The compiler caches those calls keyed on that identity,
+// so every value derived from them freezes at mount: the page number never
+// changes, the sort direction never flips, a visibility check never updates.
+//
+// The compiler already detects this and reports `Compilation Skipped: Use of
+// incompatible library` where `useReactTable` is called — but that verdict does
+// not travel with the table object into the components that receive it through
+// context or props. These directives carry it the rest of the way.
+//
+// Unlike most `'use no memo'` uses in this repo, there is nothing to fix on our
+// side. Stable objects with getters is TanStack's design, so this opt-out is not
+// temporary and must stay for as long as this file reads TanStack state.
+'use no memo';
+
 import React, {
   type ReactNode,
   type ReactElement,
