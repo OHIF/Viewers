@@ -64,9 +64,14 @@ on the path from selector data to executed code. A selector is therefore safe to
 accept from a config file, an HTTP response, or a customization — the worst a
 malformed one can do is throw at compile time, naming the offending fragment.
 
-See the Cornerstone3D docs — [Display Sets → Sharing rules between
+The vocabulary is not specific to display sets — it is a general facility in
+Cornerstone3D, intended to replace hand-written matching code elsewhere (hanging
+protocol matching being the obvious candidate). See
+[Safe Functions](https://www.cornerstonejs.org/docs/concepts/safe-functions) for
+the full condition and value reference, and
+[Display Sets → Sharing rules between
 applications](https://www.cornerstonejs.org/docs/concepts/cornerstone-metadata/display-sets#sharing-rules-between-applications-the-raw-selector)
-— for the full vocabulary reference.
+for how a selector travels between a server and OHIF.
 
 ## Customizing the selector in OHIF
 
