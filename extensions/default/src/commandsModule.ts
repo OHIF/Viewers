@@ -35,6 +35,7 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
   reset?: false;
+  restoreCachedLayout?: boolean;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -344,6 +345,7 @@ const commandsModule = ({
       stageId,
       stageIndex,
       reset = false,
+      restoreCachedLayout = true,
     }: HangingProtocolParams): boolean => {
       const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
@@ -382,7 +384,12 @@ const commandsModule = ({
         }`;
 
         const { viewportGridState } = useViewportGridStore.getState();
-        const restoreProtocol = !reset && viewportGridState[storedHanging];
+        // When a layout preset is selected explicitly (e.g. from the toolbar layout
+        // selector), `restoreCachedLayout` is false so we apply the protocol's own
+        // stage layout instead of restoring a previously cached custom grid. This
+        // prevents a stale grid (e.g. left behind by a layout that didn't match the
+        // active series) from carrying over and dropping/blanking viewports.
+        const restoreProtocol = !reset && restoreCachedLayout && viewportGridState[storedHanging];
 
         if (
           reset ||
@@ -428,6 +435,14 @@ const commandsModule = ({
           `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
           null
         );
+
+        // The protocol/preset was applied, which is an explicit layout change, so
+        // any pending one-up toggle is abandoned. Clearing here (only once the
+        // apply has succeeded, not on the catch below) keeps the one-up store
+        // meaning strictly "a one-up entered via double-click that can be toggled
+        // back", so reaching a 1x1 preset (e.g. "3D only") and double-clicking it
+        // does not restore a stale grid left over from an earlier one-up.
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
         return true;
       } catch (e) {
         console.error(e);
@@ -505,6 +520,13 @@ const commandsModule = ({
         // Don't apply the layout if the run command returns false
         return;
       }
+
+      // An explicit grid selection abandons any pending one-up toggle (see
+      // setHangingProtocol above), so a later double-click on a 1x1 grid does not
+      // restore a stale layout. Clear only after the change is confirmed to
+      // proceed (past the onLayoutChange veto) so a rejected change keeps the
+      // toggle-back state intact.
+      useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
@@ -599,6 +621,10 @@ const commandsModule = ({
           findOrCreateViewport,
           isHangingProtocolLayout: true,
         });
+
+        // The one-up has been toggled back; drop the stored layout so the store
+        // only ever holds a one-up that is currently active.
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
         // Reset crosshairs after restoring the layout
         setTimeout(() => {
