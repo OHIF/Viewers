@@ -122,6 +122,43 @@ resolved through it would be unusable on a server. OHIF resolves its own overrid
 and passes the resulting data down. That is the whole reason the selector is data
 rather than a module of functions.
 
+### Non-image objects are surfaced, never dropped
+
+Every image rule requires a renderable image, so a series can hold objects no rule
+claims — SEG, RTSTRUCT, RTDOSE, SR, encapsulated PDF, presentation states. The
+default selector's last rule is a catch-all that claims them and marks the result
+**not displayable** rather than dropping it, because a dropped instance leaves no
+trace that the object was in the study at all:
+
+```js
+displaySet.isDisplayable;         // false
+displaySet.preferredViewportType; // 'none' — not a misleading 'stack'
+displaySet.imageIds;              // [] — nothing to render
+displaySet.sopClassUids;          // what it is, so the UI can say which kind
+displaySet.instances;             // Modality, SeriesDescription, ...
+```
+
+Check `isDisplayable` before mounting a display set on a viewport. A study browser
+can list these and explain why they are not viewable.
+
+OHIF already handles most of these formats through dedicated SOP class handlers
+(`@ohif/extension-cornerstone-dicom-seg`, `-rt`, `-sr`, `dicom-pdf`, …). When OHIF
+adopts the shared rules, those extensions contribute their own split rule *ahead*
+of the catch-all, with real viewport types, and the catch-all becomes the safety
+net for whatever no extension claims:
+
+```js
+displaySetSelector: [
+  { id: 'seg', viewportTypes: ['stack', 'volume'],
+    matches: { attribute: 'Modality', equals: 'SEG' },
+    groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'] },
+  // ...the defaults, whose 'unsupported' rule must stay last.
+],
+```
+
+The catch-all has no `matches`, so it claims everything — any rule placed after it
+is dead code.
+
 ### When data is not enough
 
 Some classification genuinely cannot be written as JSON — "is this a video?" needs
