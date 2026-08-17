@@ -25,6 +25,7 @@ const SEG_LOAD_LOG_PREFIX = '[SEG load]';
 // pair with the full-instance prefetch capability) in a follow-up.
 const SEG_FRAME_DECODE_CONCURRENCY = 16;
 
+
 function _normalizeImageId(imageId: string | string[] | undefined): string | undefined {
   if (imageId == null) {
     return undefined;
@@ -477,36 +478,32 @@ async function _loadSegments({
   };
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
 
-  // Optional: fetch the whole SEG instance as a single Part 10 object and
-  // register its per-frame compressed pixels into the Cornerstone3D frame
-  // registry, so the per-frame loads below are served locally instead of one
-  // network request per frame. Disabled (0) by default; opt-in via
-  // customization. Best-effort: any failure falls back to per-frame fetches.
-  const loadMultiframeAsPart10RaceTimeMs =
-    (dataSource?.getConfig?.()?.loadMultiframeAsPart10RaceTimeMs as
-      | number
-      | undefined) ??
+  // Fetch the whole SEG instance as a single Part 10 object and register its
+  // per-frame compressed pixels into the Cornerstone3D frame registry, so the
+  // per-frame loads below are served locally instead of one network request
+  // per frame: SEG frames are so small and numerous that one bulk fetch beats
+  // hundreds of tiny requests. Enabled by default; per-frame loading is the
+  // exception (loadMultiframeAsPart10: false in the data source config, or the
+  // cornerstone.segmentation.loadMultiframeAsPart10 customization). The
+  // prefetch is awaited until it completes OR fails — deliberately no timeout:
+  // a failed/unsupported instance fetch resolves quickly and falls back to
+  // per-frame, while a slow large fetch is still the fastest way to all frames.
+  const loadMultiframeAsPart10 =
+    (dataSource?.getConfig?.()?.loadMultiframeAsPart10 as boolean | undefined) ??
     (customizationService?.getCustomization?.(
-      'cornerstone.segmentation.loadMultiframeAsPart10RaceTimeMs'
-    ) as number | undefined) ??
-    0;
+      'cornerstone.segmentation.loadMultiframeAsPart10'
+    ) as boolean | undefined) ??
+    true;
 
   let prefetch;
-  if (loadMultiframeAsPart10RaceTimeMs > 0) {
+  if (loadMultiframeAsPart10) {
     prefetch = dataSource.retrieve?.prefetchInstanceFrames?.({
       instance,
       imageId: segImageIdForMetadata,
-      loadMultiframeAsPart10RaceTimeMs,
     });
 
     if (prefetch?.done) {
-      // Give the bulk fetch a head start, then proceed regardless: frames
-      // already registered are served locally; the rest fetch normally while
-      // registration continues in the background.
-      const raceTimer = new Promise(resolve =>
-        setTimeout(resolve, loadMultiframeAsPart10RaceTimeMs)
-      );
-      await Promise.race([prefetch.done, raceTimer]);
+      await prefetch.done;
     }
   }
 

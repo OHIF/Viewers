@@ -1,4 +1,8 @@
-import type { SegmentationMode } from '../utils/segmentationConfig';
+import {
+  DEFAULT_SEG_STORE_MODE,
+  DEFAULT_SEG_STORE_TRANSFER_SYNTAX_UID,
+  type SegmentationMode,
+} from '../utils/segmentationConfig';
 
 export type SegmentLabelCustomization = {
   enabledByDefault?: boolean;
@@ -12,9 +16,10 @@ export type SegmentationStoreCustomization = {
   transferSyntaxUID?: string;
 };
 
+/** Extension-registered defaults: Label Map SEG + RLE Lossless. */
 const segmentationCustomization = {
-  'segmentation.store.defaultMode': 'labelmap' as SegmentationMode,
-  // transferSyntaxUID is configured in app config (customizationService), not here.
+  'segmentation.store.defaultMode': DEFAULT_SEG_STORE_MODE,
+  'segmentation.store.transferSyntaxUID': DEFAULT_SEG_STORE_TRANSFER_SYNTAX_UID,
   'segmentation.segmentLabel': {
     enabledByDefault: false,
     hoverTimeout: 1,

@@ -117,8 +117,9 @@ jobs:
         # would otherwise pick up the repo-root netlify.toml (configured for the
         # main viewer app) and build the wrong project. --dir is resolved
         # relative to the repo root (the netlify.toml base), not the cwd, so it
-        # must be the full path to the prebuilt docs output.
-        run: npx netlify-cli deploy --dir=platform/docs/build --prod --no-build
+        # must be the full path to the prebuilt docs output. --filter selects
+        # the ohif-docs package so Netlify CLI does not abort on monorepo detection.
+        run: npx netlify-cli deploy --filter ohif-docs --dir=platform/docs/build --prod --no-build
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

@@ -27,6 +27,12 @@ import initCornerstoneTools from './initCornerstoneTools';
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
 import initStudyPrefetcherService from './initStudyPrefetcherService';
+import {
+  setNextViewportsEnabled,
+  resolveNextViewportsEnabled,
+  resolveViewportRendering,
+  setViewportRenderingOverrides,
+} from './utils/nextViewports';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -62,12 +68,51 @@ export default async function init({
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
 
+  // Enable cornerstone's stats/debug overlay when `?debug=true` is in the URL.
+  // Mirrors the cornerstone demo trigger so the same overlay is available inside
+  // OHIF: FPS / MS / MB panels plus the per-viewport actor & mapper bindings.
+  const statsOverlay =
+    new URLSearchParams(window.location.search).get('debug') === 'true';
+
   await cs3DInit({
     peerImport: appConfig.peerImport,
+    debug: { statsOverlay },
   });
 
-  // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
+
+  // All native ("next") Generic Viewport settings live under one config object:
+  // appConfig.genericViewports = { enabled, viewportRendering }.
+  const genericViewportsConfig = appConfig.genericViewports ?? {};
+
+  // viewportRendering selects the render backend per-session:
+  // `?viewportRendering=cpu|webgl|webgpu|auto` for all viewports, plus
+  // `?<viewportType>.viewportRendering=<backend>` (e.g.
+  // `?orthographic.viewportRendering=cpu`) to override a single viewport type
+  // via the per-mount renderBackend option. The global value maps to
+  // cornerstone's setRenderBackend; 'cpu'/'gpu' additionally drive the legacy
+  // useCPURendering flag so pre-generic viewports follow the same selection
+  // (letting a session force GPU when the deployed config defaults to CPU).
+  const { renderBackend, renderBackendByViewportType } = resolveViewportRendering(
+    genericViewportsConfig.viewportRendering
+  );
+  if (renderBackend) {
+    if (renderBackend === 'cpu') {
+      cornerstone.setUseCPURendering(true);
+    } else if (renderBackend === 'gpu') {
+      cornerstone.setUseCPURendering(false);
+    }
+    try {
+      cornerstone.setRenderBackend(renderBackend as cornerstone.RenderBackendValue);
+    } catch (error) {
+      console.warn(
+        `viewportRendering: "${renderBackend}" is not a registered render backend; ` +
+          `keeping "${cornerstone.getRenderBackend()}".`,
+        error
+      );
+    }
+  }
+  setViewportRenderingOverrides(renderBackendByViewportType);
 
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
@@ -80,6 +125,14 @@ export default async function init({
       useGenericViewport: Boolean(appConfig.useGenericViewport),
     },
   });
+
+  // Opt-in: drive viewports through the DIRECT native GenericViewport ("next")
+  // API (PLANAR_NEXT, setDisplaySets, ...). Read by getCornerstoneViewportType
+  // and the CornerstoneViewportService backend split. Distinct from
+  // useGenericViewport above (which only enables cornerstone's compat remap).
+  // resolveNextViewportsEnabled lets a `?useNextViewports=true` URL param opt in
+  // per-session; when the param is absent, appConfig.genericViewports.enabled wins.
+  setNextViewportsEnabled(resolveNextViewportsEnabled(genericViewportsConfig.enabled));
 
   // For debugging large datasets, otherwise prefer the defaults
   const { maxCacheSize } = appConfig;

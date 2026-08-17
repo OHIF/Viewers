@@ -86,9 +86,10 @@ function applyTransferSyntaxToFileMeta(dicomDict, transferSyntaxUID) {
     return;
   }
 
-  const entry = { vr: 'UI', Value: [transferSyntaxUID] };
-  dicomDict.meta.TransferSyntaxUID = entry;
-  dicomDict.meta['00020010'] = entry;
+  // Hex key only: DicomMessage.write treats every meta key as a tag string, so a
+  // naturalized key like 'TransferSyntaxUID' would be parsed via parseInt(..., 16)
+  // into tag (0000,0000) and written as a garbage element in group 2.
+  dicomDict.meta['00020010'] = { vr: 'UI', Value: [transferSyntaxUID] };
 }
 
 export function datasetToDicomPart10Buffer(dataset) {

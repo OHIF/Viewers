@@ -134,8 +134,8 @@ const bindings = [
     isEditable: true,
   },
   {
-    commandName: 'cancelMeasurement',
-    label: 'Cancel Measurement',
+    commandName: 'cancelActiveOperation',
+    label: 'Cancel',
     keys: ['esc'],
   },
   {
@@ -171,11 +171,6 @@ const bindings = [
     commandName: 'acceptPreview',
     label: 'Accept Preview',
     keys: ['enter'],
-  },
-  {
-    commandName: 'rejectPreview',
-    label: 'Reject Preview',
-    keys: ['esc'],
   },
   {
     commandName: 'undo',

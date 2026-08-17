@@ -24,12 +24,14 @@ type NormalizedPathDragParams = {
 };
 
 export interface IOverlayText {
+  locator: Locator;
   get windowLevel(): Locator;
   get instanceNumber(): Locator;
 }
 function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
   const locator = viewport.getByTestId(id);
   return {
+    locator,
     get windowLevel() {
       return locator.getByTitle('Window Level');
     },
@@ -106,6 +108,14 @@ export interface IViewportPageObject {
     scrollBy: (delta: number) => Promise<void>;
   };
   magnifyGlass: MagnifyGlassPageObject;
+  hideViewportOverlayText: () => Promise<void>;
+  hideAnnotationText: () => Promise<void>;
+  hideOrientationMarkerText: () => Promise<void>;
+  hideAllText: () => Promise<void>;
+  showViewportOverlayText: () => Promise<void>;
+  showAnnotationText: () => Promise<void>;
+  showOrientationMarkerText: () => Promise<void>;
+  showAllText: () => Promise<void>;
 }
 
 export class ViewportPageObject {
@@ -164,6 +174,68 @@ export class ViewportPageObject {
       bottomLeft: overlayTextFactory(viewport, 'viewport-overlay-bottom-left'),
       bottomRight: overlayTextFactory(viewport, 'viewport-overlay-bottom-right'),
     };
+  }
+
+  /**
+   * Hides matching elements by adding Tailwind's `hidden` class.
+   * Safe when the locator matches nothing (`evaluateAll` is a no-op on an empty set).
+   */
+  private async hideLocatorElements(locator: Locator): Promise<void> {
+    await locator.evaluateAll(elements => {
+      elements.forEach(element => element.classList.add('hidden'));
+    });
+  }
+
+  /**
+   * Shows matching elements by removing Tailwind's `hidden` class.
+   * Safe when the locator matches nothing.
+   */
+  private async showLocatorElements(locator: Locator): Promise<void> {
+    await locator.evaluateAll(elements => {
+      elements.forEach(element => element.classList.remove('hidden'));
+    });
+  }
+
+  private getTextVisibilityMethods(viewport: Locator) {
+    const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
+
+    const annotationTextSelector = 'g[data-annotation-uid] text';
+
+    const orientationMarkerSelector = '.ViewportOrientationMarkers';
+
+    const textVisibilityMethods = {
+      hideViewportOverlayText: async () => {
+        await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
+      },
+      hideAnnotationText: async () => {
+        await this.hideLocatorElements(viewport.locator(annotationTextSelector));
+      },
+      hideOrientationMarkerText: async () => {
+        await this.hideLocatorElements(viewport.locator(orientationMarkerSelector));
+      },
+      hideAllText: async () => {
+        await textVisibilityMethods.hideViewportOverlayText();
+        await textVisibilityMethods.hideAnnotationText();
+        await textVisibilityMethods.hideOrientationMarkerText();
+      },
+
+      showViewportOverlayText: async () => {
+        await this.showLocatorElements(viewport.locator(viewportOverlaySelector));
+      },
+      showAnnotationText: async () => {
+        await this.showLocatorElements(viewport.locator(annotationTextSelector));
+      },
+      showOrientationMarkerText: async () => {
+        await this.showLocatorElements(viewport.locator(orientationMarkerSelector));
+      },
+      showAllText: async () => {
+        await textVisibilityMethods.showViewportOverlayText();
+        await textVisibilityMethods.showAnnotationText();
+        await textVisibilityMethods.showOrientationMarkerText();
+      },
+    };
+
+    return textVisibilityMethods;
   }
 
   private async getOverlayMenu(viewport: Locator) {
@@ -321,13 +393,12 @@ export class ViewportPageObject {
         return this.getSvg(viewport, innerElement);
       },
       getSvgAnnotationStatTextLines: (uid: string) => {
-        return this.getSvg(viewport)
-          .locator(`g[data-annotation-uid="${uid}"]`)
-          .locator('tspan');
+        return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
       },
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
       magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),
+      ...this.getTextVisibilityMethods(viewport),
     };
   }
 

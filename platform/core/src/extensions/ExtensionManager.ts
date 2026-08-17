@@ -615,6 +615,24 @@ export default class ExtensionManager extends PubSubService {
   }
 
   /**
+   * Registers a commands module produced outside the extension registration
+   * path — e.g. a mode's `getCommandsModule`, registered at app init so its
+   * commands are available before any mode route is entered (worklist time).
+   *
+   * @param commandsModule - as returned by a `getCommandsModule` function
+   * @param defaultContext - context used when the module does not declare one
+   */
+  public registerCommandsModule(
+    commandsModule: CommandsModule,
+    defaultContext: string = 'VIEWER'
+  ): void {
+    this._initCommandsModule({
+      ...commandsModule,
+      defaultContext: commandsModule.defaultContext || defaultContext,
+    });
+  }
+
+  /**
    *
    * @private
    * @param {Object[]} commandDefinitions

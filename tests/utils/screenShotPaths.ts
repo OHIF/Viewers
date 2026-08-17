@@ -32,6 +32,12 @@ const screenShotPaths = {
     globalUnlockedSegPreEdit: 'unlockedSegPreEdit.png',
     globalUnlockedSegPostEdit: 'unlockedSegPostEdit.png',
   },
+  labelMapSegmentationColorChange: {
+    colorBeforeChange: 'labelMapSegmentationColor-beforeChange.png',
+    colorAfterChange: 'labelMapSegmentationColor-afterChange.png',
+    colorBeforeCancel: 'labelMapSegmentationColor-beforeCancel.png',
+    colorAfterCancel: 'labelMapSegmentationColor-afterCancel.png',
+  },
   length: {
     lengthDisplayedCorrectly: 'lengthDisplayedCorrectly.png',
   },
@@ -221,8 +227,18 @@ const screenShotPaths = {
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
+  overlappingSegmentationRendering: {
+    overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
+  },
+  contourCombineOperations: {
+    subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
+    intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
+  },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
+  },
+  wsi: {
+    wsiDisplayedCorrectly: 'wsiDisplayedCorrectly.png',
   },
 };
 
