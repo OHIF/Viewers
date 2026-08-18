@@ -45,6 +45,11 @@ allowBuilds:
   sharp: true
 overrides:
   # React 19 singleton: legacy transitive peers must not create a nested react copy.
+  # This also coerces packages whose declared peers stop at 18 — silently, since
+  # strictPeerDependencies is false. For example, when OHIF first migrated to
+  # React 19, @xstate/react@3.2.2 in extensions/measurement-tracking ran outside
+  # its declared range. Audit any such package for use of React 19 removals
+  # before assuming it is safe.
   react: 19.2.7
   react-dom: 19.2.7
   '@types/react': 19.2.17
