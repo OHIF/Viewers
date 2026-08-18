@@ -53,16 +53,18 @@ export class DeferredPromise {
     }
   }
 }
+
 /**
- * Creates an immutable series loader object which loads each series sequentially using the iterator interface.
+ * Creates a series async loader
  *
- * @param {DICOMWebClient} dicomWebClient The DICOMWebClient instance to be used for series load
+ * @param {Object} client The DICOMWebClient instance
  * @param {string} studyInstanceUID The Study Instance UID from which series will be loaded
  * @param {Array} seriesInstanceUIDList A list of Series Instance UIDs
+ * @param {Object} dicomWebConfig DICOMweb configuration including caseId
  *
  * @returns {Object} Returns an object which supports loading of instances from each of given Series Instance UID
  */
-function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) {
+function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList, dicomWebConfig = {}) {
   return Object.freeze({
     hasNext() {
       return seriesInstanceUIDList.length > 0;
@@ -72,10 +74,16 @@ function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) 
       const promise = new DeferredPromise();
       promise.setMetadata(metadata);
       promise.setProcessFunction(() => {
-        return client.retrieveSeriesMetadata({
+        const options = {
           studyInstanceUID,
           seriesInstanceUID,
-        });
+        };
+        // Add caseId to options if present in dicomWebConfig
+        if (dicomWebConfig && dicomWebConfig.caseId) {
+          options.queryParams = { caseId: dicomWebConfig.caseId };
+          console.log('makeSeriesAsyncLoader: Adding caseId to retrieveSeriesMetadata:', dicomWebConfig.caseId);
+        }
+        return client.retrieveSeriesMetadata(options);
       });
       return promise;
     },
@@ -94,7 +102,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
    */
   *getPreLoaders() {
     const preLoaders = [];
-    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
+    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client, dicomWebConfig } = this;
 
     // asking to include Series Date, Series Time, Series Description
     // and Series Number in the series metadata returned to better sort series
@@ -105,6 +113,12 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
         includefield: includeField,
       },
     };
+
+    // Add caseId to queryParams if present in dicomWebConfig
+    if (dicomWebConfig && dicomWebConfig.caseId) {
+      options.queryParams.caseId = dicomWebConfig.caseId;
+      console.log('retrieveMetadataLoaderAsync getPreLoaders: Adding caseId to queryParams:', dicomWebConfig.caseId);
+    }
 
     if (seriesInstanceUID) {
       options.queryParams.SeriesInstanceUID = seriesInstanceUID;
@@ -125,17 +139,22 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
     const naturalized = result.map(naturalizeDataset);
 
+    console.log('retrieveMetadataLoaderAsync preLoad: naturalized count:', naturalized.length);
+    naturalized.forEach(series => {
+      console.log('retrieveMetadataLoaderAsync preLoad: series:', series.SeriesInstanceUID, 'Modality:', series.Modality, 'SOPClassUID:', series.SOPClassUID);
+    });
+
     return sortStudySeries(naturalized, sortCriteria, sortFunction);
   }
 
   async load(preLoadData) {
-    const { client, studyInstanceUID } = this;
+    const { client, studyInstanceUID, dicomWebConfig } = this;
 
     const seriesInstanceUIDs = preLoadData.map(seriesMetadata => {
       return { seriesInstanceUID: seriesMetadata.SeriesInstanceUID, metadata: seriesMetadata };
     });
 
-    const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs);
+    const seriesAsyncLoader = makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDs, dicomWebConfig);
 
     const promises = [];
 

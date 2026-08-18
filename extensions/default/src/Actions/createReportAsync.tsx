@@ -17,9 +17,23 @@ async function createReportAsync({
       return;
     }
 
+    console.log('naturalizedReport:', naturalizedReport);
+
+    // Check if naturalizedReport has dataset property (for segmentation)
+    if (naturalizedReport.dataset) {
+      if (!naturalizedReport.dataset.InstanceNumber) {
+        console.warn('Dataset missing InstanceNumber, setting default value');
+        naturalizedReport.dataset.InstanceNumber = 1;
+      }
+    }
+
     // addInstances is called by the store command (storeMeasurements/storeSegmentation),
     // so the display set should already exist at this point.
     const displaySet = displaySetService.getMostRecentDisplaySet();
+
+    if (!displaySet) {
+      throw new Error('No display set found for segmentation');
+    }
 
     const displaySetInstanceUID = displaySet.displaySetInstanceUID;
 

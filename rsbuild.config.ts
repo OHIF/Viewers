@@ -29,7 +29,7 @@ const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 
 // Add port constant
-const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
+const OHIF_PORT = 3000; // 强制使用3000端口
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
 // Ignore node_modules except @cornerstonejs (symlinked local development).
@@ -191,14 +191,10 @@ export default defineConfig({
   server: {
     port: OHIF_PORT,
     open: OHIF_OPEN,
-    // Configure proxy
-    proxy: {
-      '/dicomweb': {
-        target: 'http://localhost:5000',
-      },
-      // Add conditional proxy based on env vars
-      ...(PROXY_TARGET && PROXY_DOMAIN
-        ? {
+    // Add conditional proxy based on env vars
+    ...(PROXY_TARGET && PROXY_DOMAIN
+      ? {
+          proxy: {
             [PROXY_TARGET]: {
               target: PROXY_DOMAIN,
               changeOrigin: true,
@@ -206,13 +202,8 @@ export default defineConfig({
                 [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
               },
             },
-          }
-        : {}),
-    },
-    // Configure history API fallback
-    historyApiFallback: {
-      disableDotRule: true,
-      index: `${PUBLIC_URL}index.html`,
-    },
+          },
+        }
+      : {}),
   },
 });

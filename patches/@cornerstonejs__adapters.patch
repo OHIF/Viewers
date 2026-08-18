@@ -1,0 +1,16 @@
+diff --git a/dist/esm/adapters/Cornerstone3D/Segmentation/labelmapImagesFromBuffer.js b/dist/esm/adapters/Cornerstone3D/Segmentation/labelmapImagesFromBuffer.js
+index db4972221ea40cd1eaad450e9a6334c8eef4ef72..00f1693053f35c31ce54cdf3538478e7d0aac62f 100644
+--- a/dist/esm/adapters/Cornerstone3D/Segmentation/labelmapImagesFromBuffer.js
++++ b/dist/esm/adapters/Cornerstone3D/Segmentation/labelmapImagesFromBuffer.js
+@@ -577,8 +577,9 @@ function insertPixelDataPlanar(_ref0) {
+         }
+         const segmentIndex = getSegmentIndex(multiframe, i);
+         if (segmentIndex === undefined) {
+-          throw new Error('Could not retrieve the segment index. Aborting segmentation loading.');
+-        }
++            console.warn('���棺δ�ܼ����� segment index����ǿ�ƽ���ΪĬ��ֵ 1');
++            segmentIndex = 1;
++          }
+         if (!segmentsPixelIndices.has(segmentIndex)) {
+           segmentsPixelIndices.set(segmentIndex, {});
+         }

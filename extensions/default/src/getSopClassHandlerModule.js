@@ -192,6 +192,13 @@ function getDisplaySetsFromSeries(instances) {
   const displaySets = [];
   const sopClassUids = getSopClassUids(instances);
 
+  // Skip SEG series - let the SEG extension handle them
+  const isSegSeries = sopClassUids.some(uid => uid === '1.2.840.10008.5.1.4.1.1.66.4' || uid === '1.2.840.10008.5.1.4.1.1.66.7');
+  if (isSegSeries) {
+    console.log('Default handler skipping SEG series:', sopClassUids);
+    return []; // Return empty array to let SEG handler handle it
+  }
+
   // Search through the instances (InstanceMetadata object) of this series
   // Split Multi-frame instances and Single-image modalities
   // into their own specific display sets. Place the rest of each

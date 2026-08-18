@@ -8,7 +8,15 @@ function buildInstanceFrameWadoRsUri(instance, config, frame) {
 
   frame = frame || 1;
 
-  return `${baseWadoRsUri}/frames/${frame}`;
+  // 先添加frames路径，然后添加查询参数
+  const uri = `${baseWadoRsUri}/frames/${frame}`;
+  
+  // 如果有caseId，添加查询参数
+  if (config.caseId) {
+    return `${uri}?caseId=${config.caseId}`;
+  }
+  
+  return uri;
 }
 
 // function getWADORSImageUrl(instance, frame) {

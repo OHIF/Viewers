@@ -27,8 +27,8 @@ export function PreviewSeriesList({ series, onSeriesClick }: PreviewSeriesListPr
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="pl-0 text-base font-normal">
-              <span className="text-foreground">Modality</span>
-              <span className="text-muted-foreground"> / Series</span>
+              <span className="text-foreground">模态</span>
+              <span className="text-muted-foreground"> / 序列</span>
             </TableHead>
             <TableHead className="text-foreground w-8 pr-0 text-right text-base font-normal">
               <Icons.Series className="ml-auto h-4 w-4" />

@@ -1,0 +1,41 @@
+// Customization to show only specific columns in StudyList
+{
+  "global": {
+    "workList.columns": {
+      "$set": [
+        {
+          "id": "patientName",
+          "meta": {
+            "label": "Patient",
+            "minWidth": 150,
+            "maxWidth": 200
+          }
+        },
+        {
+          "id": "modalities",
+          "meta": {
+            "label": "Modalities",
+            "minWidth": 100,
+            "maxWidth": 120
+          }
+        },
+        {
+          "id": "studyDescription",
+          "meta": {
+            "label": "Description",
+            "minWidth": 200,
+            "maxWidth": 300
+          }
+        },
+        {
+          "id": "instances",
+          "meta": {
+            "label": "Instances",
+            "minWidth": 80,
+            "maxWidth": 100
+          }
+        }
+      ]
+    }
+  }
+}

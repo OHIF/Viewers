@@ -20,6 +20,17 @@ const DICOMFileLoader = new (class extends FileLoader {
     dataset.AvailableTransferSyntaxUID =
       dataset.AvailableTransferSyntaxUID || dataset._meta.TransferSyntaxUID?.Value?.[0];
 
+    // Debug: Check if ReferencedSeriesSequence is present for SEG files
+    if (dataset.Modality === 'SEG') {
+      console.log('Local SEG file loaded:', {
+        SOPInstanceUID: dataset.SOPInstanceUID,
+        hasReferencedSeriesSequence: !!dataset.ReferencedSeriesSequence,
+        ReferencedSeriesSequence: dataset.ReferencedSeriesSequence,
+        Modality: dataset.Modality,
+        SOPClassUID: dataset.SOPClassUID
+      });
+    }
+
     return dataset;
   }
 })();

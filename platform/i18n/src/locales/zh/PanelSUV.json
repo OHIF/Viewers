@@ -1,0 +1,10 @@
+{
+  "Patient Information": "患者信息",
+  "Patient Sex": "患者性别",
+  "Weight": "体重",
+  "Total Dose": "总剂量",
+  "Half Life": "半衰期",
+  "Injection Time": "注射时间",
+  "Acquisition Time": "采集时间",
+  "Reload Data": "重新加载数据"
+}

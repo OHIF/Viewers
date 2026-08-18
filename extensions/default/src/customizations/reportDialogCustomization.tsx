@@ -29,12 +29,13 @@ type ReportDialogProps = {
   hide: () => void;
   onSave: (data: {
     reportName: string;
-    dataSource: string | null;
+    dataSource: string | undefined;
     series: string | null;
     priorSeriesNumber: number;
   }) => void;
   onCancel: () => void;
   enableDownload?: boolean;
+  minSeriesNumber?: number;
 };
 
 function ReportDialog({
@@ -50,8 +51,8 @@ function ReportDialog({
   const { t } = useTranslation('Buttons');
   const { servicesManager } = useSystem();
   const actionTakenRef = useRef(false);
-  const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
-    dataSources?.[0]?.value ?? null
+  const [selectedDataSource, setSelectedDataSource] = useState<string | undefined>(
+    dataSources?.[0]?.value ?? undefined
   );
   const { displaySetService } = servicesManager.services;
 
@@ -59,7 +60,17 @@ function ReportDialog({
   const [reportName, setReportName] = useState('');
 
   const seriesOptions = useMemo((): SeriesOption[] => {
-    const displaySetsMap = displaySetService.getDisplaySetCache();
+    const displaySetsMap = displaySetService?.getDisplaySetCache();
+    if (!displaySetsMap) {
+      return [{
+        optionKey: NEW_SERIES_SELECT_VALUE,
+        selectValue: NEW_SERIES_SELECT_VALUE,
+        value: null,
+        description: null,
+        seriesNumber: minSeriesNumber,
+        label: 'Create new series',
+      }];
+    }
     const displaySets = Array.from(displaySetsMap.values());
     const options = displaySets
       .filter(ds => ds.Modality === modality)
@@ -70,9 +81,9 @@ function ReportDialog({
           optionKey: `series-${ds.displaySetInstanceUID}`,
           selectValue,
           value: value || null,
-          seriesNumber: isFinite(ds.SeriesNumber) ? ds.SeriesNumber : minSeriesNumber,
-          description: ds.SeriesDescription,
-          label: `${ds.SeriesDescription} ${ds.SeriesDate}/${ds.SeriesTime} ${ds.SeriesNumber}`,
+          seriesNumber: (ds.SeriesNumber !== undefined && isFinite(ds.SeriesNumber)) ? ds.SeriesNumber : (minSeriesNumber ?? 3000),
+          description: ds.SeriesDescription ?? null,
+          label: `${ds.SeriesDescription || '无描述'} ${ds.SeriesDate || ''}/${ds.SeriesTime || ''} ${ds.SeriesNumber || ''}`,
         };
       })
       .filter(
@@ -86,7 +97,7 @@ function ReportDialog({
         selectValue: NEW_SERIES_SELECT_VALUE,
         value: null,
         description: null,
-        seriesNumber: minSeriesNumber,
+        seriesNumber: minSeriesNumber ?? 3000,
         label: 'Create new series',
       },
       ...options,
@@ -239,7 +250,6 @@ function ReportDialog({
             <InputDialog.Field className="mb-0">
               <InputDialog.Input
                 placeholder="Report name"
-                disabled={!!selectedSeries}
               />
             </InputDialog.Field>
           </InputDialog>

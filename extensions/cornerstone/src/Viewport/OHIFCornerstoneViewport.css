@@ -2,6 +2,7 @@
   width: 100%;
   height: 100%; /* MUST have `height` to prevent resize infinite loop */
   position: relative;
+  z-index: 1;
   /* Prevent text selection on the entire viewport wrapper */
   user-select: none;
   -webkit-user-select: none;

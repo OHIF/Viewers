@@ -1504,10 +1504,10 @@ function commandsModule({
      * The created labelmap will be registered as a display set and also added
      * as a segmentation representation to the viewport.
      */
-    createLabelmapForViewport: async ({ viewportId, options = {} }) => {
+    createLabelmapForViewport: async ({ viewportId, options = {}, anomalyInfo }) => {
       return createSegmentationForViewport(servicesManager, {
         viewportId,
-        options,
+        options: { ...options, anomalyInfo },
         segmentationType: SegmentationRepresentations.Labelmap,
       });
     },
@@ -1517,10 +1517,10 @@ function commandsModule({
      * The created contour will be registered as a display set and also added
      * as a segmentation representation to the viewport.
      */
-    createContourForViewport: async ({ viewportId, options = {} }) => {
+    createContourForViewport: async ({ viewportId, options = {}, anomalyInfo }) => {
       return createSegmentationForViewport(servicesManager, {
         viewportId,
-        options,
+        options: { ...options, anomalyInfo },
         segmentationType: SegmentationRepresentations.Contour,
       });
     },
@@ -1637,26 +1637,21 @@ function commandsModule({
     },
 
     /**
-     * Stores a segmentation and shows it in the viewport
+     * Stores a segmentation without auto-loading it
      * @param props.segmentationId - The ID of the segmentation to store
      */
     storeSegmentationCommand: async args => {
       const { segmentationId } = args;
-      const { segmentationService, viewportGridService } = servicesManager.services;
+      const { segmentationService } = servicesManager.services;
 
-      const displaySetInstanceUIDs = await createReportAsync({
+      await createReportAsync({
         servicesManager,
         getReport: () => commandsManager.runCommand('storeSegmentation', args),
         reportType: 'Segmentation',
       });
 
-      if (displaySetInstanceUIDs) {
-        segmentationService.remove(segmentationId);
-        viewportGridService.setDisplaySetsForViewport({
-          viewportId: viewportGridService.getActiveViewportId(),
-          displaySetInstanceUIDs,
-        });
-      }
+      // Remove the segmentation from the viewport after successful export
+      segmentationService.remove(segmentationId);
     },
 
     /**

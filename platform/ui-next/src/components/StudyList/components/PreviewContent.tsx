@@ -49,6 +49,8 @@ function PreviewContent({
 }) {
   const isToggleVisible = seriesView === 'all';
   const [seriesViewMode, setSeriesViewMode] = React.useState<PreviewSeriesViewMode>('thumbnails');
+  const [selectedSeries, setSelectedSeries] = React.useState<any>(null);
+  const [anomalyStats, setAnomalyStats] = React.useState({ total: 0, aiFound: 0 });
   const effectiveSeriesViewMode: PreviewSeriesViewMode = isToggleVisible
     ? seriesViewMode
     : seriesView;
@@ -58,6 +60,33 @@ function PreviewContent({
   const nonImagingSeries = series.filter(
     s => s.thumbnailStatus?.status === PreviewThumbnailStatusState.NotApplicable
   );
+
+  // Handle series click to fetch anomaly stats
+  const handleSeriesClick = async (seriesItem: any) => {
+    setSelectedSeries(seriesItem);
+    try {
+      // Fetch anomaly stats from parent window via postMessage
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'GET_SERIES_ANOMALY_STATS',
+          seriesInstanceUid: seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID
+        }, '*');
+      }
+    } catch (error) {
+      console.error('Failed to fetch anomaly stats:', error);
+    }
+  };
+
+  // Listen for anomaly stats response from parent window
+  React.useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'SERIES_ANOMALY_STATS') {
+        setAnomalyStats(event.data.stats || { total: 0, aiFound: 0 });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   // Handle empty state when no study is provided
   if (!study) {
@@ -76,10 +105,15 @@ function PreviewContent({
           <PreviewPatientSummary.Patient />
           <PreviewPatientSummary.Workflows />
         </PreviewPatientSummary>
-        <div className="text-muted-foreground flex h-5 w-full items-center justify-between gap-1 px-2 text-base">
-          <span className="leading-tight">
-            {series?.length ? study?.description || 'No Description' : 'No Series'}
-          </span>
+        <div className="text-muted-foreground w-full px-2 text-lg">
+          {selectedSeries
+            ? <span className="leading-tight">异常总数：${anomalyStats.total}    AI发现：${anomalyStats.aiFound}</span>
+            : series?.length
+            ? <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">异常数量：<span className="text-foreground text-lg">0</span></div>
+                <div className="text-center">AI发现：<span className="text-foreground text-lg">0</span></div>
+              </div>
+            : <span className="leading-tight">无序列</span>}
           {isToggleVisible && (
             <ToggleGroup
               type="single"
@@ -129,8 +163,8 @@ function PreviewContent({
                         seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
                         numInstances={seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0}
                         modality={seriesItem.modality || seriesItem.Modality || ''}
-                        isActive={false}
-                        onClick={() => {}}
+                        isActive={selectedSeries?.seriesInstanceUid === seriesUID}
+                        onClick={() => handleSeriesClick(seriesItem)}
                         onDoubleClick={() => {}}
                         isDraggable={false}
                         viewPreset="thumbnails"

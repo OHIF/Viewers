@@ -207,7 +207,22 @@ module.exports = (env, argv) => {
       proxy: [
         {
           context: ['/dicomweb'],
-          target: 'http://localhost:5000',
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              // Add caseId from URL query parameters to DICOMweb requests
+              const url = new URL(req.url, `http://${req.headers.host}`);
+              const caseId = url.searchParams.get('caseId');
+              if (caseId) {
+                // Add caseId to the proxied request
+                const targetUrl = new URL(proxyReq.path, 'http://localhost:3001');
+                targetUrl.searchParams.set('caseId', caseId);
+                proxyReq.path = targetUrl.pathname + targetUrl.search;
+                console.log('Proxy: Added caseId to DICOMweb request:', caseId);
+              }
+            });
+          },
         },
       ],
       static: [

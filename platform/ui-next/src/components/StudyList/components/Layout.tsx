@@ -145,9 +145,9 @@ function Table({
   const content = children ? (
     children
   ) : (
-    <div className="flex h-full min-h-0 w-full flex-col px-3 pb-3 pt-0">
+    <div className="flex h-full min-h-0 w-full flex-col pr-0 pb-0 pt-0">
       <div className="min-h-0 flex-1">
-        <div className="h-full rounded-md px-2 pb-2 pt-0">
+        <div className="h-full pr-0 pb-0 pt-0 bg-background">
           <StudyListTable
             columns={columns}
             data={data}

@@ -122,7 +122,9 @@ export function WorkflowsProvider({
           preserveQueryParameters(query);
 
           const route = `${mode.routeName}${dataPath || ''}?${query.toString()}`;
-          navigate(route);
+          // Preserve hash parameters (e.g., caseId) when navigating to viewer
+          const currentHash = window.location.hash;
+          navigate(route + currentHash);
         },
         isApplicableToStudy: (studyRow: StudyRow) => {
           if (!mode.isValidMode) {

@@ -182,9 +182,40 @@ function createDicomLocalApi(dicomLocalConfig) {
       dicom: naturalizedReport => {
         const reportBlob = datasetToDicomBlob(naturalizedReport);
 
-        //Create a URL for the binary.
-        var objectUrl = URL.createObjectURL(reportBlob);
-        window.location.assign(objectUrl);
+        // Get the file information
+        const StudyInstanceUID = naturalizedReport.StudyInstanceUID;
+        const SeriesInstanceUID = naturalizedReport.SeriesInstanceUID;
+        const SOPInstanceUID = naturalizedReport.SOPInstanceUID;
+        const Modality = naturalizedReport.Modality || 'SEG';
+        const SeriesDescription = naturalizedReport.SeriesDescription || 'Segmentation';
+
+        // Create filename
+        const filename = `${SeriesDescription}_${SOPInstanceUID}.dcm`;
+
+        // Try to upload to server via API
+        if (StudyInstanceUID && typeof window !== 'undefined' && window.uploadDicomFile) {
+          // Use custom upload function if available (provided by parent application)
+          const formData = new FormData();
+          formData.append('file', reportBlob, filename);
+          formData.append('StudyInstanceUID', StudyInstanceUID);
+          formData.append('SeriesInstanceUID', SeriesInstanceUID);
+          formData.append('Modality', Modality);
+
+          window.uploadDicomFile(formData)
+            .then(() => {
+              console.log('DICOM file uploaded successfully to server');
+            })
+            .catch(error => {
+              console.error('Failed to upload DICOM file to server:', error);
+              // Fallback to download if upload fails
+              const objectUrl = URL.createObjectURL(reportBlob);
+              window.location.assign(objectUrl);
+            });
+        } else {
+          // Fallback: download the file
+          const objectUrl = URL.createObjectURL(reportBlob);
+          window.location.assign(objectUrl);
+        }
       },
     },
     getImageIdsForDisplaySet(displaySet) {

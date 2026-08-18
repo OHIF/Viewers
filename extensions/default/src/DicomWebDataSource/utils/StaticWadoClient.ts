@@ -128,11 +128,16 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
 
     const searchResult = await super.searchForSeries(options);
+    console.log('StaticWadoClient searchForSeries: searchResult count:', searchResult.length);
+    console.log('StaticWadoClient searchForSeries: searchResult:', searchResult);
+    
     const { queryParams } = options;
+    console.log('StaticWadoClient searchForSeries: queryParams:', queryParams);
     if (!queryParams) {
       return searchResult;
     }
     const lowerParams = this.toLowerParams(queryParams);
+    console.log('StaticWadoClient searchForSeries: lowerParams:', lowerParams);
 
     const filtered = searchResult.filter(series => {
       for (const key of Object.keys(StaticWadoClient.seriesFilterKeys)) {
@@ -143,7 +148,43 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       return true;
     });
 
+    console.log('StaticWadoClient searchForSeries: filtered count:', filtered.length);
+    console.log('StaticWadoClient searchForSeries: filtered:', filtered);
     return filtered;
+  }
+
+  /**
+   * Override retrieveSeriesMetadata to add queryParams to the URL
+   * This is needed for caseId filtering in instances metadata queries
+   */
+  public async retrieveSeriesMetadata(options) {
+    if (!this.staticWado || !options.queryParams) {
+      return super.retrieveSeriesMetadata(options);
+    }
+
+    console.log('StaticWadoClient retrieveSeriesMetadata: Adding queryParams to URL:', options.queryParams);
+    
+    // Build URL with queryParams
+    const { studyInstanceUID, seriesInstanceUID, queryParams } = options;
+    const url = new URL(`${this.config.url}/studies/${studyInstanceUID}/series/${seriesInstanceUID}/metadata`);
+    
+    // Add queryParams to URL
+    Object.entries(queryParams).forEach(([key, value]) => {
+      url.searchParams.append(key, String(value));
+    });
+    
+    console.log('StaticWadoClient retrieveSeriesMetadata: Final URL:', url.toString());
+    
+    // Make request with custom URL
+    const response = await fetch(url.toString(), {
+      headers: this.config.headers || {},
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json();
   }
 
   /**

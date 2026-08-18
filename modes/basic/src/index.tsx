@@ -263,8 +263,10 @@ export const basicLayout = {
     // before the sidebars resolve.
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
-    rightPanelClosed: true,
+    // DISABLED: Using custom SEG loading pipeline instead of OHIF's default
+    // rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+    rightPanels: [cornerstone.measurements],
+    rightPanelClosed: false,
     rightPanelResizable: true,
     viewports: [
       {

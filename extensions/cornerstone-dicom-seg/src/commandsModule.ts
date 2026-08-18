@@ -4,6 +4,7 @@ import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
+import { getEnabledElement } from '@cornerstonejs/core';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 import {
@@ -128,6 +129,11 @@ const commandsModule = ({
         let z = 0;
 
         for (const segImage of segImages) {
+          if (!segImage) {
+            console.warn('SEG export - skipping null segImage');
+            continue;
+          }
+          
           const segmentsOnLabelmap = new Set();
           const pixelData = segImage.getPixelData();
           const { rows, columns } = segImage;
@@ -218,6 +224,7 @@ const commandsModule = ({
       // this. Single-layer SEGs keep the original single-labelmap3D path unchanged.
       const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
 
+
       // The referenced source images must be fully loaded (in cache) before we can
       // build the SEG dataset against them; fail loudly rather than passing undefined
       // frames to the adapter.
@@ -238,17 +245,99 @@ const commandsModule = ({
       if (layers && layers.length > 1) {
         const referencedImageIds =
           layers[0].referencedImageIds ?? labelmapData.referencedImageIds ?? [];
-        referencedImages = referencedImageIds.map(resolveReferencedImage);
+
+        referencedImages = referencedImageIds.map((referencedImageId, sliceIndex) => {
+          const referencedImage = cache.getImage(referencedImageId);
+
+          if (!referencedImage) {
+            throw new Error(
+              `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+                `(referencedImageId: ${referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+            );
+          }
+
+          // If the referenced image doesn't have metadata, try to get it from metadata provider
+          if (!referencedImage.data || !referencedImage.data.SeriesInstanceUID) {
+            const metadata = metaData.get(referencedImageId);
+            if (metadata && metadata.SeriesInstanceUID) {
+              // Add metadata to the image object
+              referencedImage.data = metadata;
+            }
+          }
+
+          return referencedImage;
+        });
+
         labelmaps3D = layers.map(layer =>
           buildLabelmap3D(layer.imageIds ?? [], metadata, referencedImageIds)
         );
       } else {
         const { imageIds } = labelmapData;
-        const segImages = imageIds.map(imageId => cache.getImage(imageId));
-        referencedImages = segImages.map((image, sliceIndex) =>
-          resolveReferencedImage(image.referencedImageId, sliceIndex)
-        );
-        labelmaps3D = buildLabelmap3D(imageIds, metadata);
+
+        // Use labelmapData.referencedImageIds if available
+        const referencedImageIds = labelmapData.referencedImageIds ?? [];
+
+        // Use original arrays without filtering
+        const filteredImageIds = imageIds;
+        const filteredReferencedImageIds = referencedImageIds;
+
+        // Try to get original image metadata from displaySetService
+        const displaySets = displaySetService?.getActiveDisplaySets();
+
+        // Find the original CT series displaySet
+        const originalDisplaySet = displaySets?.find(ds => ds.Modality === 'CT');
+
+        // Helper function to extract SOPInstanceUID from imageId
+        function extractSOPInstanceUID(imageId: string): string | undefined {
+          const match = imageId.match(/instances\/([^\/]+)/);
+          return match ? match[1] : undefined;
+        }
+
+        referencedImages = filteredReferencedImageIds.map((referencedImageId, sliceIndex) => {
+          const referencedImage = cache.getImage(referencedImageId);
+
+          if (!referencedImage) {
+            throw new Error(
+              `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+                `(referencedImageId: ${referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+            );
+          }
+
+          // Force use original displaySet metadata
+          if (originalDisplaySet && originalDisplaySet.images && originalDisplaySet.images.length > 0) {
+            const originalImage = originalDisplaySet.images[sliceIndex];
+
+            if (originalImage && originalImage.SeriesInstanceUID) {
+              referencedImage.data = {
+                ...originalImage,
+                // Extract SOPInstanceUID from referencedImageId if possible
+                SOPInstanceUID: extractSOPInstanceUID(referencedImageId) || originalImage.SOPInstanceUID,
+                // Ensure PatientID and PatientName are present
+                PatientID: originalImage.PatientID || referencedImage.data?.PatientID,
+                PatientName: originalImage.PatientName || referencedImage.data?.PatientName,
+                // Ensure spatial parameters are present - copy from original CT
+                Rows: originalImage.Rows || referencedImage.data?.Rows,
+                Columns: originalImage.Columns || referencedImage.data?.Columns,
+                PixelSpacing: originalImage.PixelSpacing || referencedImage.data?.PixelSpacing,
+                ImageOrientationPatient: originalImage.ImageOrientationPatient || referencedImage.data?.ImageOrientationPatient,
+                BitsAllocated: originalImage.BitsAllocated || referencedImage.data?.BitsAllocated,
+                BitsStored: originalImage.BitsStored || referencedImage.data?.BitsStored,
+                HighBit: originalImage.HighBit || referencedImage.data?.HighBit,
+              };
+            }
+          }
+
+          // If still no metadata, try metadata provider as fallback
+          if (!referencedImage.data || !referencedImage.data.SeriesInstanceUID) {
+            const metadata = metaData.get(referencedImageId);
+            if (metadata && metadata.SeriesInstanceUID) {
+              referencedImage.data = metadata;
+            }
+          }
+
+          return referencedImage;
+        });
+        labelmaps3D = [buildLabelmap3D(filteredImageIds, metadata)];
       }
 
       const saveOptions = {
@@ -267,9 +356,27 @@ const commandsModule = ({
       if (hasOverlappingLayers && saveOptions.sopClassUID === LABELMAP_SEG_SOP_CLASS_UID) {
         console.warn(
           'generateSegmentation: overlapping segments cannot be stored as a LABELMAP SEG; ' +
-            'switching to the binary SEG encoding for this store.'
+          'switching to the binary SEG encoding for this store.'
         );
         saveOptions.sopClassUID = BITMAP_SEG_SOP_CLASS_UID;
+      }
+
+      // 规范4：导出前严格防呆校验 - 检查是否有非零像素
+      let totalNonZeroPixels = 0;
+      for (const labelmap3D of labelmaps3D) {
+        for (const labelmap2D of labelmap3D.labelmaps2D) {
+          if (labelmap2D && labelmap2D.pixelData) {
+            for (const pixel of labelmap2D.pixelData) {
+              if (pixel !== 0) {
+                totalNonZeroPixels++;
+              }
+            }
+          }
+        }
+      }
+
+      if (totalNonZeroPixels === 0) {
+        throw new Error('当前分割为空，无法导出');
       }
 
       const generatedSegmentation = generateSegmentation(
@@ -278,6 +385,112 @@ const commandsModule = ({
         metaData,
         saveOptions
       );
+
+      // 修复 PixelData 被错误除以8的问题
+      // 从 labelmaps3D 中重建完整的像素数据，绕过底层的除以8逻辑
+      if (generatedSegmentation.dataset) {
+        const { dataset } = generatedSegmentation;
+        const { Rows, Columns } = dataset;
+
+        // 统计实际有数据的帧数
+        let actualFrames = 0;
+        const allPixelData = [];
+
+        for (const labelmap3D of labelmaps3D) {
+          for (const labelmap2D of labelmap3D.labelmaps2D) {
+            if (labelmap2D && labelmap2D.pixelData) {
+              actualFrames++;
+              // 确保 pixelData 是 Uint8Array
+              let frameData = labelmap2D.pixelData;
+              if (!(frameData instanceof Uint8Array)) {
+                frameData = new Uint8Array(frameData);
+              }
+              allPixelData.push(frameData);
+            }
+          }
+        }
+
+        console.log('DICOM SEG 导出调试信息:');
+        console.log(`原始 NumberOfFrames: ${dataset.NumberOfFrames}`);
+        console.log(`从 labelmaps3D 统计的实际帧数: ${actualFrames}`);
+
+        // 重建完整的 PixelData
+        if (allPixelData.length > 0) {
+          const combinedLength = allPixelData.reduce((sum, arr) => sum + arr.length, 0);
+          const combinedData = new Uint8Array(combinedLength);
+          let offset = 0;
+
+          for (const frameData of allPixelData) {
+            combinedData.set(frameData, offset);
+            offset += frameData.length;
+          }
+
+          dataset.PixelData = combinedData;
+          dataset.NumberOfFrames = actualFrames;
+
+          console.log(`已重建 PixelData，长度: ${combinedData.length} 字节`);
+          console.log(`已更新 NumberOfFrames 为: ${actualFrames}`);
+          console.log(`每帧字节数: ${Math.round(combinedData.length / actualFrames)} 字节`);
+        }
+      }
+
+      // 规范1：强制使用8位像素深度
+      if (generatedSegmentation.dataset) {
+        generatedSegmentation.dataset.BitsAllocated = 8;
+        generatedSegmentation.dataset.BitsStored = 8;
+        generatedSegmentation.dataset.HighBit = 7;
+        generatedSegmentation.dataset.PixelRepresentation = 0;
+
+        // 规范2：确保使用未压缩传输语法
+        generatedSegmentation.dataset.TransferSyntaxUID = '1.2.840.10008.1.2.1';
+
+        // 规范3：确保医疗级元数据完整
+        if (generatedSegmentation.dataset.SegmentSequence) {
+          for (let i = 0; i < generatedSegmentation.dataset.SegmentSequence.length; i++) {
+            const segment = generatedSegmentation.dataset.SegmentSequence[i];
+
+            // 确保 SegmentNumber 存在
+            if (!segment.SegmentNumber) {
+              segment.SegmentNumber = i + 1;
+            }
+
+            if (!segment.SegmentedPropertyCategoryCodeSequence) {
+              segment.SegmentedPropertyCategoryCodeSequence = {
+                CodeValue: "T-D0050",
+                CodingSchemeDesignator: "SRT",
+                CodeMeaning: "Tissue"
+              };
+            }
+            if (!segment.SegmentedPropertyTypeCodeSequence) {
+              segment.SegmentedPropertyTypeCodeSequence = {
+                CodeValue: "T-D0050",
+                CodingSchemeDesignator: "SRT",
+                CodeMeaning: "Tissue"
+              };
+            }
+          }
+        }
+
+        // 规范5：强制保持空间绑定的唯一性
+        // 确保ReferencedSeriesSequence包含正确的SeriesInstanceUID
+        if (referencedImages.length > 0 && referencedImages[0].data) {
+          const firstReferencedImage = referencedImages[0];
+          if (firstReferencedImage.data.SeriesInstanceUID) {
+            if (!generatedSegmentation.dataset.ReferencedSeriesSequence) {
+              generatedSegmentation.dataset.ReferencedSeriesSequence = [];
+            }
+            if (generatedSegmentation.dataset.ReferencedSeriesSequence.length === 0 || !
+              generatedSegmentation.dataset.ReferencedSeriesSequence[0]) {
+              generatedSegmentation.dataset.ReferencedSeriesSequence[0] = {
+                SeriesInstanceUID: firstReferencedImage.data.SeriesInstanceUID
+              };
+            } else {
+              generatedSegmentation.dataset.ReferencedSeriesSequence[0].SeriesInstanceUID =
+                firstReferencedImage.data.SeriesInstanceUID;
+            }
+          }
+        }
+      }
 
       return generatedSegmentation;
     },
@@ -376,12 +589,44 @@ const commandsModule = ({
 
         const { dataset: naturalizedReport } = generatedData;
 
+        // Ensure InstanceNumber is set for SEG export
+        if (modality === 'SEG' && !naturalizedReport.InstanceNumber) {
+          naturalizedReport.InstanceNumber = 1;
+        }
+
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
         if (naturalizedReport.StudyID === 'No Study ID') {
           naturalizedReport.StudyID = '';
         }
 
         await storeFn(naturalizedReport, {});
+
+        // 调用后端导出接口，将文件保存到uploads目录
+        if (modality === 'SEG') {
+          try {
+            const fileName = defaultFileName;
+            // 获取当前caseId和folderId（从window或context中获取）
+            const caseId = (window as any).currentCaseId || 'default-case';
+            const folderId = (window as any).currentFolderId || '';
+            
+            // 调用导出API
+            const exportResponse = await fetch(`http://localhost:8082/api/dicom-folders/${folderId}/files/${fileName}/export`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            if (exportResponse.ok) {
+              const exportResult = await exportResponse.json();
+              console.log('SEG file exported to uploads:', exportResult);
+            } else {
+              console.warn('Failed to export SEG file to uploads, falling back to download');
+            }
+          } catch (exportError) {
+            console.warn('Export to uploads failed, falling back to download:', exportError);
+          }
+        }
 
         return naturalizedReport;
       } catch (error) {
@@ -429,6 +674,129 @@ const commandsModule = ({
       await storeFn(dataset);
     },
 
+    /**
+     * Loads a custom SEG file using the custom rendering pipeline.
+     * This command is called from the Vue component via postMessage.
+     * It bypasses the old OHIF rendering pipeline and uses the CustomSegmentationOverlay.
+     */
+    loadCustomSEG: async ({ segFile }) => {
+      console.log('Custom SEG load command received:', segFile);
+      
+      try {
+        // Find the SEG display set by SOPInstanceUID
+        const displaySets = displaySetService.getDisplaySetsBy((ds: any) => 
+          ds.Modality === 'SEG' && ds.SOPInstanceUID === segFile.sopInstanceUID
+        );
+        
+        if (!displaySets || displaySets.length === 0) {
+          throw new Error('SEG display set not found for SOPInstanceUID: ' + segFile.sopInstanceUID);
+        }
+        
+        const segDisplaySet = displaySets[0];
+        console.log('Found SEG display set:', segDisplaySet);
+        
+        // Get the current viewport
+        const { viewports, activeViewportId } = viewportGridService.getState();
+        const viewport = viewports.get(activeViewportId);
+        
+        if (!viewport) {
+          throw new Error('No active viewport found');
+        }
+
+        // Get the current display set (CT images)
+        const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+        const ctDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        
+        if (!ctDisplaySet) {
+          throw new Error('No CT display set found');
+        }
+
+        console.log('CT display set:', ctDisplaySet);
+        console.log('SEG display set:', segDisplaySet);
+        
+        // Store the SEG display set UID in a global variable for CustomSegmentationOverlay to access
+        // This is a simple way to communicate between the command and the overlay component
+        (window as any).__activeSEGDisplaySetUID = segDisplaySet.displaySetInstanceUID;
+        (window as any).__activeCTDisplaySetUID = displaySetInstanceUID;
+        
+        console.log('Set active SEG display set UID:', segDisplaySet.displaySetInstanceUID);
+        
+        // Find the first frame with segmentation data and jump to that slice
+        if (segDisplaySet.images && segDisplaySet.images.length > 0) {
+          try {
+            // Get the first SEG image (which should have referenced image information)
+            const firstSegImage = segDisplaySet.images[0];
+            console.log('First SEG image:', firstSegImage);
+            
+            // Find the corresponding CT image by matching referenced SOP Instance UID
+            const referencedSOPInstanceUID = firstSegImage.ReferencedSOPInstanceUID || 
+                                               firstSegImage.referencedSOPInstanceUID;
+            
+            console.log('Referenced SOP Instance UID:', referencedSOPInstanceUID);
+            
+            if (referencedSOPInstanceUID && ctDisplaySet.images) {
+              const targetCTIndex = ctDisplaySet.images.findIndex(
+                (ctImage: any) => ctImage.SOPInstanceUID === referencedSOPInstanceUID
+              );
+              
+              console.log('Target CT index:', targetCTIndex);
+              
+              if (targetCTIndex !== -1) {
+                console.log(`Found target CT image at index: ${targetCTIndex}`);
+                
+                // Use the scroll command to move to the target slice
+                try {
+                  // Get current viewport element
+                  const viewportElement = document.querySelector('.cornerstone-viewport-element');
+                  if (viewportElement) {
+                    const enabledElement = getEnabledElement(viewportElement as any);
+                    if (enabledElement && enabledElement.viewport) {
+                      const csViewport = enabledElement.viewport as any;
+                      const currentIndex = csViewport.getCurrentImageIdIndex?.() || 0;
+                      const delta = targetCTIndex - currentIndex;
+                      
+                      console.log(`Current index: ${currentIndex}, target: ${targetCTIndex}, delta: ${delta}`);
+                      
+                      if (delta !== 0) {
+                        // Use the scroll command to move to the target slice
+                        await commandsManager.run('scroll', {
+                          direction: delta > 0 ? 1 : -1,
+                          delta: Math.abs(delta)
+                        });
+                        console.log('Successfully scrolled to target slice');
+                      } else {
+                        console.log('Already at target slice');
+                      }
+                    }
+                  }
+                } catch (scrollError) {
+                  console.error('Error using scroll command:', scrollError);
+                }
+              } else {
+                console.log('Could not find matching CT image for referenced SOP Instance UID');
+              }
+            }
+          } catch (error) {
+            console.error('Error finding first segmentation frame:', error);
+          }
+        }
+        
+        // Trigger a custom event to notify CustomSegmentationOverlay
+        window.dispatchEvent(new CustomEvent('SEG_LOADED', {
+          detail: {
+            segDisplaySetUID: segDisplaySet.displaySetInstanceUID,
+            ctDisplaySetUID: displaySetInstanceUID,
+            segFile: segFile
+          }
+        }));
+        
+        return { success: true, segFile, segDisplaySetUID: segDisplaySet.displaySetInstanceUID };
+      } catch (error) {
+        console.error('Failed to load custom SEG:', error);
+        throw error;
+      }
+    },
+
     toggleActiveSegmentationUtility: ({ itemId: buttonId }) => {
       const { uiState, setUIState } = useUIStateStore.getState();
       const isButtonActive = uiState['activeSegmentationUtility'] === buttonId;
@@ -449,6 +817,7 @@ const commandsModule = ({
     storeSegmentation: actions.storeSegmentation,
     downloadRTSS: actions.downloadRTSS,
     toggleActiveSegmentationUtility: actions.toggleActiveSegmentationUtility,
+    loadCustomSEG: actions.loadCustomSEG,
   };
 
   return {

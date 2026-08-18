@@ -1,0 +1,17 @@
+// Customization to show only Description column in StudyList with fixed width
+{
+  "global": {
+    "workList.columns": {
+      "$set": [
+        {
+          "id": "studyDescription",
+          "meta": {
+            "label": "Description",
+            "minWidth": 180,
+            "maxWidth": 180
+          }
+        }
+      ]
+    }
+  }
+}

@@ -57,6 +57,10 @@ function processResults(qidoStudies) {
       description: getString(qidoStudy['00081030']) || '',
       modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
       referringPhysicianName: utils.formatPN(getName(qidoStudy['00080090'])) || '', // Referring Physician's Name
+      // Add custom fields for folder information
+      folderName: getString(qidoStudy['00081030']) || '',
+      seriesCount: 0,
+      totalSlices: Number(getString(qidoStudy['00201208'])) || 0,
     })
   );
 
@@ -116,9 +120,10 @@ async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, query
 /**
  *
  * @param {string} studyInstanceUID - ID of study to return a list of series for
+ * @param {string} caseId - Optional caseId for filtering
  * @returns {Promise} - Resolves SeriesMetadata[] in study
  */
-export function seriesInStudy(dicomWebClient, studyInstanceUID) {
+export function seriesInStudy(dicomWebClient, studyInstanceUID, caseId) {
   // Series Description
   // Already included?
   const commaSeparatedFields = ['0008103E', '00080021'].join(',');
@@ -126,15 +131,93 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
     includefield: commaSeparatedFields,
   };
 
-  return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
+  if (caseId) {
+    queryParams.caseId = caseId;
+    console.log('OHIF qido.js: Adding caseId to series query:', caseId);
+  }
+
+  console.log('OHIF qido.js: DicomWebClient object:', dicomWebClient);
+  console.log('OHIF qido.js: DicomWebClient.qidoRoot:', dicomWebClient.qidoRoot);
+  console.log('OHIF qido.js: DicomWebClient.url:', dicomWebClient.url);
+  console.log('OHIF qido.js: DicomWebClient config:', dicomWebClient.config);
+  const result = dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
+  console.log('OHIF qido.js: Series query initiated for study:', studyInstanceUID);
+  console.log('OHIF qido.js: DicomWebClient URL:', dicomWebClient.qidoRoot);
+  return result;
 }
+
+// Global variable to store caseId from postMessage
+let receivedCaseId = null;
+
+// Listen for postMessage from parent window
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SET_CASE_ID') {
+    receivedCaseId = event.data.caseId;
+    console.log('OHIF qido.js: Received caseId via postMessage:', receivedCaseId);
+  }
+});
 
 export default function searchStudies(server, filter) {
   const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
+  
+  console.log('OHIF qido.js: window.location.search:', window.location.search);
+  console.log('OHIF qido.js: window.location.href:', window.location.href);
+  
+  // Add caseId from URL if present
+  // Try multiple sources: URL params, hash, postMessage, parent window URL, parent window global variable
+  let caseId = null;
+  
+  // Try current window URL search params
+  const urlParams = new URLSearchParams(window.location.search);
+  caseId = urlParams.get('caseId');
+  console.log('OHIF qido.js: caseId from URL search params:', caseId);
+  
+  // If not found, try hash
+  if (!caseId && window.location.hash) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    caseId = hashParams.get('caseId');
+    console.log('OHIF qido.js: Got caseId from hash:', caseId);
+  }
+  
+  // If not found, try postMessage
+  if (!caseId && receivedCaseId) {
+    caseId = receivedCaseId;
+    console.log('OHIF qido.js: Got caseId from postMessage:', caseId);
+  }
+  
+  // If not found, try parent window URL
+  if (!caseId && window.parent !== window) {
+    try {
+      const parentUrlParams = new URLSearchParams(window.parent.location.search);
+      caseId = parentUrlParams.get('caseId');
+      console.log('OHIF qido.js: Got caseId from parent window URL:', caseId);
+    } catch (e) {
+      console.warn('OHIF qido.js: Could not access parent window URL:', e);
+    }
+  }
+  
+  // If still not found, try parent window global variable
+  if (!caseId && window.parent !== window) {
+    try {
+      caseId = window.parent.currentCaseId;
+      console.log('OHIF qido.js: Got caseId from parent window global variable:', caseId);
+    } catch (e) {
+      console.warn('OHIF qido.js: Could not access parent window global variable:', e);
+    }
+  }
+  
+  if (caseId) {
+    console.log('OHIF qido.js: Adding caseId to query:', caseId);
+    queryParams.caseId = caseId;
+  } else {
+    console.warn('OHIF qido.js: caseId is still undefined after trying all sources');
+  }
+  
   const options = {
     queryParams,
   };
 
+  console.log('OHIF qido.js: Query params sent to server:', queryParams);
   return dicomWeb.searchForStudies(options).then(resultDataToStudies);
 }
 

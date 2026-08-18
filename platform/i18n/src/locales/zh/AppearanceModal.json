@@ -1,0 +1,12 @@
+{
+  "Appearance": "外观",
+  "Theme": "主题",
+  "Default Theme": "默认主题：OHIF蓝色",
+  "Custom": "自定义",
+  "Custom Theme": "自定义主题",
+  "Hide": "隐藏",
+  "Apply": "应用",
+  "Clear": "清除",
+  "No valid theme tokens found": "未找到有效的主题标记。预期格式如 --primary: 220 90% 60%",
+  "Paste your custom theme color tokens here": "在此粘贴您的自定义主题颜色标记"
+}

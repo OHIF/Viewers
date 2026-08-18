@@ -42,7 +42,7 @@ export function WorkflowMenu({ studyRow, align = 'end' }: Props) {
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Action Menu</TooltipContent>
+          <TooltipContent side="bottom">操作菜单</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DropdownMenuContent
@@ -50,7 +50,7 @@ export function WorkflowMenu({ studyRow, align = 'end' }: Props) {
         onClick={e => e.stopPropagation()}
       >
         <div className="text-muted-foreground border-input my-1.5 mx-1 border-b py-1 pl-1 pr-4 text-sm">
-          Launch Workflow:
+          启动工作流:
         </div>
         {workflows.map(workflow => (
           <DropdownMenuItem

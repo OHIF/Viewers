@@ -78,15 +78,15 @@ window.config = {
   defaultDataSourceName: 'ohif',
   dataSources: [
     {
-      // Read-only public demo server. Replace with your own DICOMweb server.
+      // Local DICOM server
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif',
       configuration: {
-        friendlyName: 'AWS S3 Static wado server',
-        name: 'aws',
-        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        friendlyName: 'Local DICOM Server',
+        name: 'local',
+        wadoUriRoot: 'http://localhost:3001/dicomweb',
+        qidoRoot: 'http://localhost:3001/dicomweb',
+        wadoRoot: 'http://localhost:3001/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'thumbnail',
@@ -94,12 +94,7 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,
-        staticWado: true,
-        // Multiframe SEG loads fetch the whole instance as a single Part 10
-        // object by default and wait for it: the per-frame endpoint is
-        // efficient, but SEG frames are so small and numerous that one bulk
-        // fetch beats hundreds of tiny requests. Per-frame loading is the
-        // exception — set loadMultiframeAsPart10: false here to force it.
+        staticWado: false,
         singlepart: 'bulkdata,video',
         bulkDataURI: {
           enabled: true,

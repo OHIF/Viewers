@@ -36,14 +36,12 @@ const SegmentationExpandedDropdownMenu = ({ children }: { children: React.ReactN
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="ml-1"
+        <div
+          className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent cursor-pointer"
           onClick={e => e.stopPropagation()}
         >
           <Icons.More />
-        </Button>
+        </div>
       </DropdownMenuTrigger>
       {children}
     </DropdownMenu>
@@ -69,12 +67,11 @@ const SegmentationExpandedInfo = () => {
     <div className="ml-auto mr-2">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
+          <div
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent cursor-pointer"
           >
             <Icons.Info className="h-6 w-6" />
-          </Button>
+          </div>
         </TooltipTrigger>
         <TooltipContent>
           <p>{segmentation.cachedStats?.info}</p>

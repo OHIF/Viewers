@@ -101,12 +101,11 @@ export function ActiveThemeProvider({ children }: { children: React.ReactNode })
     const urlTheme = new URLSearchParams(window.location.search).get('theme');
     if (isValidUrlTheme(urlTheme)) return urlTheme;
 
-    // Validate the stored value the same way the URL param is validated — a stale
-    // key (renamed preset, older build) must not become a theme-* body class.
-    const stored = localStorage.getItem(STORAGE_KEY_THEME);
-    if (!stored || !VALID_THEMES.has(stored)) return 'default';
-    if (stored === 'custom' && !localStorage.getItem(STORAGE_KEY_CUSTOM_CSS)) return 'default';
-    return stored;
+    // Force default theme to use custom white/blue styling
+    // Clear any stored theme to ensure our custom styling is applied
+    localStorage.removeItem(STORAGE_KEY_THEME);
+    localStorage.removeItem(STORAGE_KEY_CUSTOM_CSS);
+    return 'default';
   });
 
   const [customCss, setCustomCssState] = React.useState<string>(() => {

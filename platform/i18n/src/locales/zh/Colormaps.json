@@ -1,0 +1,15 @@
+{
+  "Grayscale": "灰度",
+  "X Ray": "X射线",
+  "Isodose": "等剂量",
+  "hsv": "HSV",
+  "hot_iron": "热铁",
+  "red_hot": "红热",
+  "s_pet": "PET",
+  "perfusion": "灌注",
+  "rainbow_2": "彩虹2",
+  "suv": "SUV",
+  "ge_256": "GE 256",
+  "ge": "GE",
+  "siemens": "西门子"
+}

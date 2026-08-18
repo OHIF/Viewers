@@ -5,6 +5,7 @@ import promptHydrateSEG from '../utils/promptHydrateSEG';
 import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
+import { CustomSegmentationOverlay } from '../components/CustomSegmentationOverlay';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
@@ -53,7 +54,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   const { viewports, activeViewportId } = viewportGrid;
 
-  const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
+  let referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
   // If the referencedDisplaySetInstanceUID is not found, it means the SEG series is being
   // launched without its corresponding referenced display set (e.g., the SEG series is launched using
   // series launch /mode?StudyInstanceUIDs=&SeriesInstanceUID).
@@ -64,19 +65,33 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   // Additional guard: If no customization handler is registered for missing
   // referenced display sets, skip SEG rendering to avoid a viewport crash.
   if (!referencedDisplaySetInstanceUID) {
-    const missingReferenceDisplaySetHandler = customizationService.getCustomization(
-      'missingReferenceDisplaySetHandler'
-    );
-    if (typeof missingReferenceDisplaySetHandler === 'function') {
-      const { handled } = missingReferenceDisplaySetHandler();
-      if (handled) {
+    console.log('SEG viewport: referencedDisplaySetInstanceUID is null, trying to find CT display set manually');
+    // Try to find CT display set manually
+    const studyDisplaySets = displaySetService.getDisplaySetsBy?.(
+      (ds: any) => ds.StudyInstanceUID === segDisplaySet.StudyInstanceUID
+    ) || [];
+    const ctDisplaySet = studyDisplaySets.find((ds: any) => ds.Modality === 'CT');
+    if (ctDisplaySet) {
+      console.log('SEG viewport: found CT display set manually:', ctDisplaySet.displaySetInstanceUID);
+      referencedDisplaySetInstanceUID = ctDisplaySet.displaySetInstanceUID;
+      // Update the segDisplaySet for future use
+      segDisplaySet.referencedDisplaySetInstanceUID = referencedDisplaySetInstanceUID;
+    } else {
+      console.warn('SEG viewport: could not find CT display set manually');
+      const missingReferenceDisplaySetHandler = customizationService.getCustomization(
+        'missingReferenceDisplaySetHandler'
+      );
+      if (typeof missingReferenceDisplaySetHandler === 'function') {
+        const { handled } = missingReferenceDisplaySetHandler();
+        if (handled) {
+          return;
+        }
+      } else {
+        console.log(
+          "No customization 'missingReferenceDisplaySetHandler' registered. Skipping SEG rendering."
+        );
         return;
       }
-    } else {
-      console.log(
-        "No customization 'missingReferenceDisplaySetHandler' registered. Skipping SEG rendering."
-      );
-      return;
     }
   }
 
@@ -275,6 +290,11 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     });
   }
 
+  // Get SEG imageId for custom overlay
+  const segImageId = segDisplaySet.images && segDisplaySet.images.length > 0 
+    ? (segDisplaySet.images[0] as any).imageId 
+    : undefined;
+
   return (
     <>
       <div className="relative flex h-full w-full flex-row overflow-hidden">
@@ -288,6 +308,11 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         )}
         {getCornerstoneViewport()}
         {childrenWithProps}
+        {/* Custom SEG Overlay - bypasses OHIF rendering pipeline */}
+        <CustomSegmentationOverlay 
+          viewportId={viewportId} 
+          segImageId={segImageId}
+        />
       </div>
     </>
   );
@@ -296,17 +321,27 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
   const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;
 
-  const SharedFunctionalGroup = Array.isArray(SharedFunctionalGroupsSequence)
-    ? SharedFunctionalGroupsSequence[0]
-    : SharedFunctionalGroupsSequence;
+  const SharedFunctionalGroup = SharedFunctionalGroupsSequence
+    ? (Array.isArray(SharedFunctionalGroupsSequence)
+        ? SharedFunctionalGroupsSequence[0]
+        : SharedFunctionalGroupsSequence)
+    : null;
 
-  const { PixelMeasuresSequence } = SharedFunctionalGroup;
+  let SpacingBetweenSlices, SliceThickness;
+  if (SharedFunctionalGroup) {
+    const { PixelMeasuresSequence } = SharedFunctionalGroup;
 
-  const PixelMeasures = Array.isArray(PixelMeasuresSequence)
-    ? PixelMeasuresSequence[0]
-    : PixelMeasuresSequence;
+    const PixelMeasures = PixelMeasuresSequence
+      ? (Array.isArray(PixelMeasuresSequence)
+          ? PixelMeasuresSequence[0]
+          : PixelMeasuresSequence)
+      : null;
 
-  const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
+    if (PixelMeasures) {
+      SpacingBetweenSlices = PixelMeasures.SpacingBetweenSlices;
+      SliceThickness = PixelMeasures.SliceThickness;
+    }
+  }
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

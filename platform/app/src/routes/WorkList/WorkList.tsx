@@ -51,7 +51,7 @@ export default function WorkList({
     useStudyListStateSync();
 
   // Default sorting if no URL state exists
-  const defaultSorting = useMemo(() => [{ id: 'studyDateTime', desc: true }], []);
+  const defaultSorting = useMemo(() => [{ id: 'description', desc: false }], []);
 
   const [selected, setSelected] = useState<StudyRow | null>(null);
 
@@ -124,6 +124,16 @@ export default function WorkList({
     setIsFilterPending(false);
   }, [isLoadingData, data]);
 
+  // 当WorkList组件挂载时，通知父窗口OHIF在检查列表界面
+  useEffect(() => {
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        type: 'OHIF_ON_STUDY_LIST'
+      }, '*');
+      console.log('Sent OHIF_ON_STUDY_LIST message to parent window');
+    }
+  }, []);
+
   return (
     <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-black">
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
@@ -158,14 +168,14 @@ export default function WorkList({
                   <div className="h-8 w-8" />
                 )
               }
-              title={'Study List'}
+              title={'检查列表'}
               onStudyDoubleClick={studyDoubleClickCommand ? onStudyDoubleClick : undefined}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
               toolbarRightActionsComponent={toolbarActions}
               toolbarRightComponent={
                 !isPreviewOpen ? (
-                  <div className="relative -top-px mt-1 ml-2 flex items-center gap-1">
+                  <div className="relative -top-px flex items-center">
                     <StudyListSettingsPopover />
                     <StudyList.OpenPreviewButton />
                   </div>

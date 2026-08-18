@@ -68,14 +68,110 @@ function App({
   defaultExtensions = [],
   defaultModes = [],
 }) {
-  const [init, setInit] = useState(null);
+  const [init, setInit] = useState<any>(null);
+  
   useEffect(() => {
     const run = async () => {
-      appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
+      const initResult = await appInit(config, defaultExtensions, defaultModes);
+      // Expose servicesManager to window for CustomSegmentationOverlay
+      if (initResult?.servicesManager) {
+        (window as any).__servicesManager = initResult.servicesManager;
+        console.log('OHIF: Exposed servicesManager to window');
+      }
+      setInit(initResult);
     };
 
     run();
   }, []);
+
+  // Listen for postMessage from parent Vue component
+  useEffect(() => {
+    console.log('OHIF: Setting up postMessage listener');
+    const handleMessage = (event) => {
+      console.log('OHIF: Received postMessage:', event.data);
+      // Only accept messages from same origin or configured origin
+      if (event.origin !== window.location.origin && event.origin !== 'http://localhost:3000' && event.origin !== 'http://localhost:5174') {
+        console.log('OHIF: Ignoring message from different origin:', event.origin);
+        return;
+      }
+
+      const { type, caseId, fileName, segFile } = event.data;
+
+      if (type === 'SET_CASE_ID' && caseId) {
+        console.log('OHIF: Received SET_CASE_ID message:', caseId);
+        // Store caseId in sessionStorage for use by other components
+        sessionStorage.setItem('ohifCaseId', caseId);
+      } else if (type === 'LOAD_CUSTOM_SEG' && caseId && fileName) {
+        console.log('OHIF: Received LOAD_CUSTOM_SEG message with caseId:', caseId, 'fileName:', fileName);
+        // 直接触发SEG_LOADED事件，传递caseId和fileName
+        window.dispatchEvent(new CustomEvent('SEG_LOADED', {
+          detail: { caseId, fileName }
+        }));
+        console.log('OHIF: Dispatched SEG_LOADED event');
+      } else if (type === 'UNLOAD_CUSTOM_SEG' && caseId && fileName) {
+        console.log('OHIF: Received UNLOAD_CUSTOM_SEG message with caseId:', caseId, 'fileName:', fileName);
+        // 触发SEG_UNLOADED事件，传递caseId和fileName
+        window.dispatchEvent(new CustomEvent('SEG_UNLOADED', {
+          detail: { caseId, fileName }
+        }));
+        console.log('OHIF: Dispatched SEG_UNLOADED event');
+      } else if (type === 'RELOAD_STUDY') {
+        console.log('OHIF: Received RELOAD_STUDY message');
+        // Reload the current study to refresh DICOMweb
+        window.location.reload();
+      } else if (type === 'GET_SEG_FILES') {
+        console.log('OHIF: Received GET_SEG_FILES message');
+        // Get SEG files from the display set service
+        const displaySetService = servicesManager?.services?.displaySetService;
+        console.log('OHIF: displaySetService:', displaySetService);
+        
+        const segFiles: any[] = [];
+        if (displaySetService) {
+          console.log('OHIF: Trying to get display sets');
+          try {
+            const displaySets = displaySetService.getDisplaySetsBy((ds: any) => ds.Modality === 'SEG');
+            console.log('OHIF: Got display sets:', displaySets);
+            
+            // 获取caseId用于构建API URL
+            const caseId = sessionStorage.getItem('ohifCaseId');
+            
+            for (const ds of displaySets) {
+              console.log('OHIF: Processing display set:', ds);
+              if (ds.SOPInstanceUID) {
+                const segFile: any = {
+                  id: ds.SOPInstanceUID,
+                  name: ds.SeriesDescription || `SEG ${ds.SeriesNumber}`,
+                  seriesInstanceUID: ds.SeriesInstanceUID,
+                  sopInstanceUID: ds.SOPInstanceUID,
+                  description: ds.SeriesDescription,
+                };
+                
+                segFiles.push(segFile);
+              }
+            }
+          } catch (error) {
+            console.error('OHIF: Error getting display sets:', error);
+          }
+        } else {
+          console.log('OHIF: displaySetService is not available');
+        }
+        
+        console.log('OHIF: Sending SEG files back to parent:', segFiles);
+        event.source.postMessage({
+          type: 'SEG_FILES_RESPONSE',
+          segFiles: segFiles
+        }, event.origin);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    console.log('OHIF: postMessage listener added');
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      console.log('OHIF: postMessage listener removed');
+    };
+  }, [commandsManager, servicesManager]);
 
   if (!init) {
     return null;

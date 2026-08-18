@@ -237,10 +237,18 @@ function _getDisplaySetsFromSeries(
   servicesManager: AppTypes.ServicesManager,
   extensionManager
 ) {
+  console.log('SEG _getDisplaySetsFromSeries called with instances:', instances.length);
+  
   utils.sortStudyInstances(instances);
 
   // Choose the LAST instance in the list as the most recently created one.
   const instance = instances[instances.length - 1];
+  
+  console.log('SEG selected instance:', {
+    SOPInstanceUID: instance.SOPInstanceUID,
+    Modality: instance.Modality,
+    SOPClassUID: instance.SOPClassUID
+  });
 
   const {
     StudyInstanceUID,
@@ -292,19 +300,56 @@ function _getDisplaySetsFromSeries(
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
 
+
+  // Force create display set even if ReferencedSeriesSequence is missing
   if (!referencedSeriesSequence) {
-    console.error('ReferencedSeriesSequence is missing for the SEG');
-    return;
+    // Try to find CT series in the study to use as reference
+    const studyInstances = servicesManager.services.displaySetService.getStudyDisplaySets?.(StudyInstanceUID) || [];
+    const ctDisplaySet = studyInstances.find(ds => ds.Modality === 'CT');
+    if (ctDisplaySet) {
+      displaySet.referencedSeriesInstanceUID = ctDisplaySet.SeriesInstanceUID;
+      displaySet.referencedDisplaySetInstanceUID = ctDisplaySet.displaySetInstanceUID;
+      displaySet.referencedImages = [];
+    } else {
+      console.error('No CT series found for SEG reference, cannot create display set');
+      return;
+    }
+  } else {
+    const referencedSeries = referencedSeriesSequence[0] || referencedSeriesSequence;
+    // Handle both ReferencedInstanceSequence and 00001114 field names
+    displaySet.referencedImages = referencedSeries.ReferencedInstanceSequence || referencedSeries['00001114'] || [];
+    displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
   }
 
-  const referencedSeries = referencedSeriesSequence[0] || referencedSeriesSequence;
-
-  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
-  displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
   const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForReferences(
-    instance.ReferencedSeriesSequence
-  );
+  
+  // Convert 00001114 to ReferencedInstanceSequence for compatibility
+  const normalizedReferencedSeriesSequence = Array.isArray(instance.ReferencedSeriesSequence)
+    ? instance.ReferencedSeriesSequence.map(ref => {
+        const normalizedRef = { ...ref };
+        if (ref['00001114'] && !ref.ReferencedInstanceSequence) {
+          normalizedRef.ReferencedInstanceSequence = ref['00001114'];
+        }
+        return normalizedRef;
+      })
+    : [instance.ReferencedSeriesSequence].map(ref => {
+        const normalizedRef = { ...ref };
+        if (ref['00001114'] && !ref.ReferencedInstanceSequence) {
+          normalizedRef.ReferencedInstanceSequence = ref['00001114'];
+        }
+        return normalizedRef;
+      });
+  
+  let referencedDisplaySets;
+  try {
+    referencedDisplaySets = displaySetService.getDisplaySetsForReferences(
+      normalizedReferencedSeriesSequence
+    );
+  } catch (error) {
+    console.error('SEG getDisplaySetsForReferences error:', error);
+    console.warn('SEG forcing display set creation without reference due to error');
+    referencedDisplaySets = null;
+  }
 
   if (referencedDisplaySets?.length > 1) {
     console.warn(
@@ -312,26 +357,14 @@ function _getDisplaySetsFromSeries(
     );
   }
 
-  const referencedDisplaySet = referencedDisplaySets[0];
+  const referencedDisplaySet = referencedDisplaySets?.[0];
 
   if (!referencedDisplaySet) {
-    // subscribe to display sets added which means at some point it will be available
-    const { unsubscribe } = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      ({ displaySetsAdded }) => {
-        // here we can also do a little bit of search, since sometimes DICOM SEG
-        // does not contain the referenced display set uid , and we can just
-        // see which of the display sets added is more similar and assign it
-        // to the referencedDisplaySet
-        const addedDisplaySet = displaySetsAdded[0];
-        if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
-          displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
-          displaySet.isReconstructable = addedDisplaySet.isReconstructable;
-          displaySet.FrameOfReferenceUID = addedDisplaySet.FrameOfReferenceUID;
-          unsubscribe();
-        }
-      }
-    );
+    console.warn('SEG referencedDisplaySet is null, forcing display set creation without reference');
+    // Force create display set even without referenced display set
+    displaySet.referencedDisplaySetInstanceUID = null;
+    displaySet.isReconstructable = true;
+    displaySet.FrameOfReferenceUID = null;
   } else {
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
@@ -380,6 +413,13 @@ function _load(
       }
     }
 
+    // DISABLED: Using custom rendering pipeline instead
+    // Skip the original segmentation service to avoid conflicts
+    console.log('SEG: Skipping createSegmentationForSEGDisplaySet, using custom overlay instead');
+    segDisplaySet.loading = false;
+    resolve();
+    
+    /* Original code disabled:
     segmentationService
       .createSegmentationForSEGDisplaySet(segDisplaySet)
       .then(() => {
@@ -390,6 +430,7 @@ function _load(
         segDisplaySet.loading = false;
         reject(error);
       });
+    */
   });
 
   // Expose the in-flight load promise so observers (e.g. the viewport service
@@ -410,6 +451,17 @@ async function _loadSegments({
   const instance = segDisplaySet.instance as Record<string, unknown>;
   const dataSource = _getSegDataSource(extensionManager, instance);
   const segImageIdStr = _getSegImageIdFromInstance(instance, dataSource);
+  
+  // Extract SEG instance dimensions
+  const segRows = instance.Rows as number || 512;
+  const segColumns = instance.Columns as number || 512;
+  const numberOfFrames = instance.NumberOfFrames as number || 1;
+  const bitsAllocated = instance.BitsAllocated as number || 8;
+  const bitsStored = instance.BitsStored as number || 1;
+  const pixelRepresentation = instance.PixelRepresentation as number || 0;
+
+  // Force bitmap parser to handle 1-bit/8-bit inconsistency
+  const parserType = 'bitmap';
 
   if (!segImageIdStr) {
     throw new Error(
@@ -417,9 +469,20 @@ async function _loadSegments({
     );
   }
 
-  const referencedDisplaySet = servicesManager.services.displaySetService.getDisplaySetByUID(
+  let referencedDisplaySet = servicesManager.services.displaySetService.getDisplaySetByUID(
     segDisplaySet.referencedDisplaySetInstanceUID
   );
+
+  // If referencedDisplaySet is null, try to find CT display set manually
+  if (!referencedDisplaySet) {
+    const studyDisplaySets = servicesManager.services.displaySetService.getDisplaySetsBy?.(
+      (ds: any) => ds.StudyInstanceUID === segDisplaySet.StudyInstanceUID
+    ) || [];
+    referencedDisplaySet = studyDisplaySets.find((ds: any) => ds.Modality === 'CT');
+    if (referencedDisplaySet) {
+      segDisplaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
+    }
+  }
 
   if (!referencedDisplaySet) {
     throw new Error('referencedDisplaySet is missing for SEG');
@@ -433,21 +496,262 @@ async function _loadSegments({
   }
 
   if (!imageIds?.length) {
-    imageIds = (referencedDisplaySet as { images?: { imageId: string }[] }).images?.map(
-      (img: { imageId: string }) => img.imageId
-    );
+    const images = (referencedDisplaySet as { images?: { imageId: string }[] }).images;
+    imageIds = images?.map((img: { imageId: string }) => img.imageId);
   }
 
   if (!imageIds?.length) {
     throw new Error('referencedDisplaySet has no imageIds');
   }
 
-  (segDisplaySet as AppTypes.DisplaySet & { referencedImageIds?: string[] }).referencedImageIds =
-    imageIds;
-
-  if (!referencedDisplaySet.imageIds?.length) {
-    referencedDisplaySet.imageIds = imageIds;
+  // For SEG loading, we need to map SEG frames to their referenced CT images
+  const segNumberOfFrames = instance.NumberOfFrames as number || 1;
+  
+  // Simplified matching logic: try to use ReferencedSOPInstanceUIDs from SEG file
+  const referencedSOPInstanceUIDs = (instance.ReferencedSOPSequence || 
+                                     instance.ReferencedInstanceSequence || 
+                                     []) as Array<{ ReferencedSOPInstanceUID?: string }>;
+  
+  const ctInstances = (referencedDisplaySet as { instances?: Array<{ SOPInstanceUID?: string }> }).instances || [];
+  
+  // If SEG has explicit referenced SOP instance UIDs, use them for precise matching
+  if (referencedSOPInstanceUIDs.length > 0) {
+    const mappedImageIds: string[] = [];
+    
+    for (const ref of referencedSOPInstanceUIDs) {
+      const sopInstanceUID = ref.ReferencedSOPInstanceUID;
+      if (sopInstanceUID) {
+        const ctInstance = ctInstances.find(inst => inst.SOPInstanceUID === sopInstanceUID);
+        if (ctInstance) {
+          const imageId = dataSource.getImageIdsForInstance?.({ instance: ctInstance }) as string | string[];
+          if (imageId) {
+            mappedImageIds.push(Array.isArray(imageId) ? imageId[0] : imageId);
+          }
+        }
+      }
+    }
+    
+    // If we successfully mapped all frames, use the mapped imageIds
+    if (mappedImageIds.length === segNumberOfFrames) {
+      imageIds = mappedImageIds;
+    } else {
+      // Fallback: use sequential mapping assuming SEG frames correspond to CT slices in order
+      imageIds = imageIds.slice(0, Math.min(segNumberOfFrames, ctInstances.length));
+    }
+  } else {
+    // No explicit references: use sequential mapping
+    imageIds = imageIds.slice(0, Math.min(segNumberOfFrames, ctInstances.length));
   }
+
+  // Ensure CT image metadata is loaded and has orientation information
+  // Create a custom metadata map for Cornerstone's metaData provider
+  const customMetadataMap = new Map();
+  const segImageIdForMetadata = isLocalSchemeImageId(segImageIdStr)
+    ? stripFrameFromImageId(segImageIdStr)
+    : segImageIdStr;
+  
+  // Add SEG instance metadata with segment information
+  const segInstanceMetadata = {
+    ...instance,
+    // Ensure required fields for SEG processing
+    SegmentationType: instance.SegmentationType || 'BINARY',
+    SegmentSequence: instance.SegmentSequence || [],
+    NumberOfFrames: instance.NumberOfFrames || 1,
+    // Add segment metadata if available
+    segments: instance.segments || [],
+  };
+  customMetadataMap.set(segImageIdForMetadata, segInstanceMetadata);
+  
+  // Get metadata from referencedDisplaySet instances and manually register it
+  if (referencedDisplaySet.instances && referencedDisplaySet.instances.length > 0) {
+    
+    // Process all imageIds to ensure createLabelmapsFromSegImageIds has complete metadata
+    const maxImagesToProcess = Math.min(imageIds.length, referencedDisplaySet.instances.length);
+    
+    for (let i = 0; i < maxImagesToProcess; i++) {
+      const imageId = isLocalSchemeImageId(imageIds[i])
+      ? stripFrameFromImageId(imageIds[i])
+      : imageIds[i];
+
+      // Use index to get instance directly since imageIds may be full URLs
+      const instanceMetadata = referencedDisplaySet.instances?.[i];
+      
+      if (!instanceMetadata) {
+        continue;
+      }
+      
+      // Construct metadata from instance
+      const imageMetadata = {
+        ...instanceMetadata,
+        // Ensure required fields for checkOrientation and labelmap creation
+        ImageOrientationPatient: instanceMetadata.ImageOrientationPatient || [1, 0, 0, 0, 1, 0],
+        ImagePositionPatient: instanceMetadata.ImagePositionPatient || [0, 0, 0],
+        PixelSpacing: instanceMetadata.PixelSpacing || [1, 1],
+        SliceThickness: instanceMetadata.SliceThickness || 1,
+        Rows: instanceMetadata.Rows || 512,
+        Columns: instanceMetadata.Columns || 512,
+        // Additional spatial metadata that may be required
+        SpacingBetweenSlices: instanceMetadata.SpacingBetweenSlices || instanceMetadata.SliceThickness || 1,
+        FrameOfReferenceUID: instanceMetadata.FrameOfReferenceUID || '1.2.840.10008.1.1.1',
+        ImagePlanePixelSpacing: instanceMetadata.ImagePlanePixelSpacing || instanceMetadata.PixelSpacing || [1, 1],
+        // 3D rendering specific metadata
+        direction: instanceMetadata.ImageOrientationPatient || [1, 0, 0, 0, 1, 0],
+        origin: instanceMetadata.ImagePositionPatient || [0, 0, 0],
+        spacing: [
+          (instanceMetadata.PixelSpacing as any)?.[0] || 1,
+          (instanceMetadata.PixelSpacing as any)?.[1] || 1,
+          instanceMetadata.SliceThickness || 1
+        ],
+        // Additional DICOM spatial fields
+        PatientPosition: instanceMetadata.PatientPosition || 'HFS',
+        ImageType: instanceMetadata.ImageType || ['ORIGINAL', 'PRIMARY'],
+        SamplesPerPixel: instanceMetadata.SamplesPerPixel || 1,
+        PhotometricInterpretation: instanceMetadata.PhotometricInterpretation || 'MONOCHROME2',
+      };
+      
+      
+      // Store in custom metadata map
+      customMetadataMap.set(imageId, imageMetadata);
+    }
+    // Register custom metadata provider with Cornerstone
+    const customProvider = (type: string, imageId: string) => {
+      // Debug logging removed to prevent console spam during scrolling
+      // console.log('SEG customProvider called - type:', type, 'imageId:', imageId);
+      // console.log('SEG customProvider - map has imageId:', customMetadataMap.has(imageId));
+      if (customMetadataMap.has(imageId)) {
+        const metadata = customMetadataMap.get(imageId);
+        // console.log('SEG customProvider - returning metadata for:', imageId, 'type:', type, 'keys:', Object.keys(metadata || {}));
+        
+        // Return appropriate metadata based on type
+        // Convert all field names to lowercase for Cornerstone compatibility
+        if (type === 'imagePlaneModule') {
+          const ipp = metadata.ImageOrientationPatient || [0, 0, 0];
+          const ps = metadata.PixelSpacing || [1, 1];
+          const iop = metadata.ImageOrientationPatient || [1, 0, 0, 0, 1, 0];
+          const result = {
+            imageOrientationPatient: iop,
+            imagePositionPatient: [ipp[0] || 0, ipp[1] || 0, ipp[2] || 0],
+            pixelSpacing: [ps[0] || 1, ps[1] || 1],
+            sliceThickness: metadata.SliceThickness || 1,
+            frameOfReferenceUID: metadata.FrameOfReferenceUID || '1.2.840.10008.1.1.1',
+            rows: metadata.Rows || 512,
+            columns: metadata.Columns || 512,
+            direction: metadata.direction || [1, 0, 0, 0, 1, 0],
+            origin: metadata.origin || [0, 0, 0],
+            spacing: metadata.spacing || [1, 1, 1],
+            // Add rowCosines and columnCosines for createLabelmapsFromSegImageIds
+            rowCosines: [iop[0] || 1, iop[1] || 0, iop[2] || 0],
+            columnCosines: [iop[3] || 0, iop[4] || 1, iop[5] || 0],
+          };
+          // console.log('imagePlaneModule returning:', result);
+          return result;
+        } else if (type === 'generalSeriesModule') {
+          return {
+            modality: metadata.Modality || 'CT',
+            seriesInstanceUID: metadata.SeriesInstanceUID || '',
+            seriesNumber: metadata.SeriesNumber || 1,
+            seriesDescription: metadata.SeriesDescription || '',
+          };
+        } else if (type === 'imagePixelModule') {
+          return {
+            rows: metadata.Rows || 512,
+            columns: metadata.Columns || 512,
+            bitsAllocated: metadata.BitsAllocated || 16,
+            samplesPerPixel: metadata.SamplesPerPixel || 1,
+            pixelRepresentation: metadata.PixelRepresentation || 0,
+          };
+        } else if (type === 'scalingModule') {
+          return {
+            rescaleIntercept: metadata.RescaleIntercept || 0,
+            rescaleSlope: metadata.RescaleSlope || 1,
+          };
+        } else if (type === 'calibratedPixelSpacing') {
+          const ps = metadata.PixelSpacing || [1, 1];
+          return {
+            rowPixelSpacing: ps[0] || 1,
+            columnPixelSpacing: ps[1] || 1,
+          };
+        } else if (type === 'generalImageModule') {
+          return {
+            sopInstanceUID: metadata.SOPInstanceUID || '',
+            sopClassUID: metadata.SOPClassUID || '',
+          };
+        } else if (type === 'sopCommonModule') {
+          return {
+            sopInstanceUID: metadata.SOPInstanceUID || '',
+            sopClassUID: metadata.SOPClassUID || '',
+            instanceNumber: metadata.InstanceNumber || 1,
+          };
+        } else if (type === 'voiLutModule') {
+          return {
+            windowCenter: metadata.WindowCenter || [400],
+            windowWidth: metadata.WindowWidth || [1000],
+          };
+        } else if (type === 'modalityLutModule') {
+          return {
+            rescaleIntercept: metadata.RescaleIntercept || 0,
+            rescaleSlope: metadata.RescaleSlope || 1,
+          };
+        } else if (type === 'compressedFrameData') {
+          return {
+            transferSyntax: metadata.TransferSyntax || '1.2.840.10008.1.2',
+          };
+        } else if (type === 'instance') {
+          // For instance type, return full metadata with functional groups for SEG
+          // Ensure functional groups are present for checkOrientation
+          const instanceMetadata = { ...metadata };
+          if (!instanceMetadata.SharedFunctionalGroupsSequence) {
+            instanceMetadata.SharedFunctionalGroupsSequence = {
+              PlaneOrientationSequence: {
+                ImageOrientationPatient: metadata.ImageOrientationPatient || [1, 0, 0, 0, 1, 0]
+              }
+            };
+          }
+          if (!instanceMetadata.PerFrameFunctionalGroupsSequence) {
+            instanceMetadata.PerFrameFunctionalGroupsSequence = [{
+              PlaneOrientationSequence: {
+                ImageOrientationPatient: metadata.ImageOrientationPatient || [1, 0, 0, 0, 1, 0]
+              }
+            }];
+          }
+          return instanceMetadata;
+        }
+      }
+      
+      // For SEG imageId or other imageIds not in map, provide default metadata
+      // This is needed for the SEG imageId itself which may not be in the map
+      if (type === 'instance') {
+        // console.log('SEG customProvider - providing default instance metadata for:', imageId);
+        return {
+          SharedFunctionalGroupsSequence: {
+            PlaneOrientationSequence: {
+              ImageOrientationPatient: [1, 0, 0, 0, 1, 0]
+            }
+          },
+          PerFrameFunctionalGroupsSequence: [{
+            PlaneOrientationSequence: {
+              ImageOrientationPatient: [1, 0, 0, 0, 1, 0]
+            }
+          }],
+          Rows: segRows,
+          Columns: segColumns,
+          BitsStored: 8,
+          BitsAllocated: 8,
+          SegmentationType: 'BINARY',
+        };
+      }
+      
+      // For reference images (CT/MRI), return undefined to let other providers handle it
+      // This allows them to get their metadata from DICOMweb provider
+      return undefined;
+    };
+    
+    metaData.addProvider(customProvider, 10000);
+  }
+
+  // Create a copy to avoid shared reference that could corrupt imageIds
+  (segDisplaySet as AppTypes.DisplaySet & { referencedImageIds?: string[] }).referencedImageIds =
+    [...imageIds];
 
   const frameImageIds = _resolveFrameImageIds(
     segImageIdStr,
@@ -455,21 +759,26 @@ async function _loadSegments({
     dataSource
   );
 
-  const segImageIdForMetadata = isLocalSchemeImageId(segImageIdStr)
-    ? stripFrameFromImageId(segImageIdStr)
-    : segImageIdStr;
-
   _logSegImageIds({
     segDisplaySet,
-    segImageIdStr: segImageIdForMetadata,
+    segImageIdStr: segImageIdStr,
     frameImageIds,
     referencedImageIds: imageIds,
   });
 
-  _ensureSegInstanceMetadataAvailable(segImageIdForMetadata, instance);
+
+  _ensureSegInstanceMetadataAvailable(segImageIdStr, instance);
   frameImageIds.forEach(id => _ensureSegInstanceMetadataAvailable(id, instance));
 
+  // DISABLED: Using custom rendering pipeline instead
+  // The old OHIF rendering pipeline is bypassed by CustomSegmentationOverlay
+  // to avoid timing issues and conflicts with dcmjs
+  // Skip the entire original rendering process
+  console.log('SEG: Skipping original OHIF rendering pipeline, using custom overlay instead');
+  return;
+  
   const tolerance = 0.001;
+  const eventTarget = new EventTarget();
   const onProgress = evt => {
     const { percentComplete } = evt.detail;
     segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
@@ -488,7 +797,8 @@ async function _loadSegments({
   // prefetch is awaited until it completes OR fails — deliberately no timeout:
   // a failed/unsupported instance fetch resolves quickly and falls back to
   // per-frame, while a slow large fetch is still the fastest way to all frames.
-  const loadMultiframeAsPart10 =
+  // Disable multiframe part10 prefetch for 1-bit SEG files to work around pixel data length issues
+  const loadMultiframeAsPart10 = bitsAllocated === 1 ? false :
     (dataSource?.getConfig?.()?.loadMultiframeAsPart10 as boolean | undefined) ??
     (customizationService?.getCustomization?.(
       'cornerstone.segmentation.loadMultiframeAsPart10'
@@ -499,7 +809,7 @@ async function _loadSegments({
   if (loadMultiframeAsPart10) {
     prefetch = dataSource.retrieve?.prefetchInstanceFrames?.({
       instance,
-      imageId: segImageIdForMetadata,
+      imageId: segImageIdStr,
     });
 
     if (prefetch?.done) {
@@ -507,22 +817,33 @@ async function _loadSegments({
     }
   }
 
+
   let results;
   try {
     results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDicomSegImageId(
       imageIds,
-      segImageIdForMetadata,
+      segImageIdStr,
       {
         metadataProvider: metaData,
         tolerance,
-        parserType: getSegmentationParserType(
-          segDisplaySet.SOPClassUID,
-          customizationService
-        ),
+        parserType: parserType,
         frameImageIds,
         concurrency: SEG_FRAME_DECODE_CONCURRENCY,
       }
     );
+  } catch (error) {
+    // 如果是 segment index 错误，说明 dcmjs 库的检查过于严格
+    // 由于无法修改 node_modules 中的 dcmjs 库，我们需要在导入源头解决这个问题
+    if (error instanceof Error && error.message.includes('Could not retrieve the segment index')) {
+      console.error('Segment index retrieval failed. This is a dcmjs library limitation.');
+      console.error('The SEG file is valid, but dcmjs requires additional metadata that our export may not provide.');
+      console.error('Please consider:');
+      console.error('1. Using patch-package to modify dcmjs library in node_modules');
+      console.error('2. Or forking @cornerstonejs/adapters and modifying labelmapImagesFromBuffer.js');
+      throw new Error('Segment index retrieval failed. The SEG file structure is valid, but dcmjs library requires additional metadata. Consider using patch-package to modify the library.');
+    } else {
+      throw error;
+    }
   } finally {
     eventTarget.removeEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
     prefetch?.cancel?.();
@@ -532,8 +853,9 @@ async function _loadSegments({
   const resultsTyped = results as {
     segMetadata: { data: { rgba?: number[]; RecommendedDisplayCIELabValue?: number[] }[] };
   };
+  
   resultsTyped.segMetadata.data.forEach((data, i) => {
-    if (i > 0) {
+    if (i > 0 && data) {
       data.rgba = data.RecommendedDisplayCIELabValue;
 
       if (data.rgba) {
@@ -557,6 +879,20 @@ async function _loadSegments({
   }
 
   Object.assign(segDisplaySet, results);
+
+  // Ensure segments have required metadata fields for SegmentationService
+  if (segDisplaySet.segments) {
+    Object.keys(segDisplaySet.segments).forEach(segmentKey => {
+      const segment = segDisplaySet.segments[segmentKey];
+      if (segment && !segment.SegmentedPropertyCategoryCodeSequence) {
+        segment.SegmentedPropertyCategoryCodeSequence = {
+          CodeValue: 'T-D0050',
+          CodingSchemeDesignator: 'SRT',
+          CodeMeaning: 'Tissue',
+        };
+      }
+    });
+  }
 
   const labelMapImageIds = (results as { labelMapImages?: { imageId: string }[][] })
     .labelMapImages?.flat()

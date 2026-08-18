@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "字段不能为空",
+  "Hotkey is already in use": "\"{{action}}\" 已使用 \"{{pressedKeys}}\" 快捷键。",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "不能仅定义修饰键（ctrl、alt和shift）作为快捷键",
+  "Shortcut combination is not allowed": "{{pressedKeys}} 快捷键组合不被允许"
+}

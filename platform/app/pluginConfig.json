@@ -19,7 +19,7 @@
     },
     {
       "packageName": "@ohif/extension-cornerstone-dicom-seg",
-      "default": false,
+      "default": true,
       "version": "3.0.0"
     },
     {

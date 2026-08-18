@@ -14,19 +14,22 @@ export default class RetrieveMetadataLoader {
    * @param {string} [filters.seriesInstanceUID] - series instance uid to filter results against
    * @param {Object} [sortCriteria] - Custom sort criteria used for series
    * @param {Function} [sortFunction] - Custom sort function for series
+   * @param {Object} [dicomWebConfig] - DICOMweb configuration including caseId
    */
   constructor(
     client,
     studyInstanceUID,
     filters = {},
     sortCriteria = undefined,
-    sortFunction = undefined
+    sortFunction = undefined,
+    dicomWebConfig = {}
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
+    this.dicomWebConfig = dicomWebConfig;
   }
 
   async execLoad() {

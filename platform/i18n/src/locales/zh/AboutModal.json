@@ -1,1 +1,20 @@
-{}
+{
+  "About OHIF Viewer": "关于OHIF查看器",
+  "Browser": "浏览器",
+  "Build number": "构建号",
+  "Commit hash": "提交哈希",
+  "Commit Hash": "提交哈希",
+  "Current Browser & OS": "当前浏览器和操作系统",
+  "Data citation": "数据引用",
+  "Important links": "重要链接",
+  "Last master commits": "最新主分支提交",
+  "More details": "更多详情",
+  "Name": "名称",
+  "OS": "操作系统",
+  "Report an issue": "报告问题",
+  "Repository URL": "仓库地址",
+  "Value": "值",
+  "Version information": "版本信息",
+  "Version number": "版本号",
+  "Visit the forum": "访问论坛"
+}

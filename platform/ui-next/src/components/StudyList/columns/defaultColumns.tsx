@@ -178,7 +178,12 @@ export const defaultColumns: ColumnDef<StudyRow, unknown>[] = [
     id: COLUMN_IDS.DESCRIPTION,
     accessorFn: row => {
       const r = row as StudyRow;
-      return r.description ?? '';
+      const description = r.description ?? '';
+      // Check if description contains folder info format (folderName (X序列, Y层))
+      if (description.includes('序列') && description.includes('层')) {
+        return description; // Already formatted by server
+      }
+      return description;
     },
     header: ({ column }) => <DataTable.ColumnHeader column={column} />,
     cell: ({ row }) => {

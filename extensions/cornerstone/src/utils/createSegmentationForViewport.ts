@@ -19,6 +19,12 @@ type CreateSegmentationForViewportOptions = {
   label?: string;
   segmentationId?: string;
   createInitialSegment?: boolean;
+  anomalyInfo?: {
+    anatomyRegion: string;
+    anomalyType: string;
+    laterality: string;
+    vitalReaction: string;
+  };
 };
 
 type CreateSegmentationForViewportParams = {
@@ -65,6 +71,7 @@ export async function createSegmentationForViewport(
     label,
     segmentationId,
     segments: _createDefaultSegments(options.createInitialSegment),
+    anomalyInfo: options.anomalyInfo,
   };
 
   // This will create the segmentation and register it as a display set

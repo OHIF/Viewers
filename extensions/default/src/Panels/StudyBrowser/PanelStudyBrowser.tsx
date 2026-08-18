@@ -472,7 +472,7 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets
-    .filter(ds => !ds.excludeFromThumbnailBrowser)
+    .filter(ds => !ds.excludeFromThumbnailBrowser && ds.Modality !== 'SEG') // Filter out SEG modality
     .forEach(ds => {
       const { thumbnailSrc, displaySetInstanceUID } = ds;
       const componentType = _getComponentType(ds);

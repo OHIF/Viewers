@@ -1,9 +1,9 @@
-export const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.7';
+export const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.4';
 export const BITMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.4';
-/** RLE Lossless — OHIF default SEG store transfer syntax. */
-export const DEFAULT_SEG_STORE_TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.5';
-/** OHIF default SEG store mode (Label Map Segmentation SOP Class). */
-export const DEFAULT_SEG_STORE_MODE = 'labelmap' as const;
+/** Explicit VR Little Endian (Uncompressed) — Fixed to avoid RLE compression bugs. */
+export const DEFAULT_SEG_STORE_TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
+/** OHIF default SEG store mode (Binary Segmentation SOP Class). */
+export const DEFAULT_SEG_STORE_MODE = 'bitmap' as const;
 
 export type SegmentationMode = 'labelmap' | 'bitmap';
 

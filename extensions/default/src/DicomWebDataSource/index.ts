@@ -36,6 +36,26 @@ const ImplementationVersionName = 'OHIF-3.11.0';
 
 const metadataProvider = classes.MetadataProvider;
 
+// Global variable to store caseId
+let globalCaseId = null;
+let refreshCallback = null;
+
+// Listen for postMessage from parent window to update caseId
+if (typeof window !== 'undefined') {
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SET_CASE_ID') {
+      globalCaseId = event.data.caseId;
+      console.log('OHIF index.ts: Updated caseId from postMessage:', globalCaseId);
+
+      // Trigger query refresh if callback is registered
+      if (refreshCallback) {
+        console.log('OHIF index.ts: Triggering query refresh');
+        refreshCallback();
+      }
+    }
+  });
+}
+
 export type DicomWebConfig = {
   /** Data source name */
   name: string;
@@ -198,6 +218,97 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
   const implementation = {
     initialize: ({ params, query }) => {
+      console.log('OHIF initialize: window.location.href:', window.location.href);
+      console.log('OHIF initialize: window.location.search:', window.location.search);
+
+      // Try to get caseId from URL hash first (highest priority for iframe URLs)
+      try {
+        const hash = window.location.hash;
+        console.log('OHIF initialize: URL hash:', hash);
+        if (hash) {
+          const hashParams = new URLSearchParams(hash.substring(1));
+          globalCaseId = hashParams.get('caseId');
+          console.log('OHIF: Retrieved caseId from URL hash:', globalCaseId);
+        }
+      } catch (e) {
+        console.warn('Could not parse URL hash:', e);
+      }
+
+      // Try to get caseId from window.location.search
+      if (!globalCaseId) {
+        try {
+          console.log('OHIF initialize: Trying window.location.search');
+          const urlParams = new URLSearchParams(window.location.search);
+          globalCaseId = urlParams.get('caseId');
+          console.log('OHIF: Retrieved caseId from window.location.search:', globalCaseId);
+        } catch (e) {
+          console.warn('Could not parse window.location.search:', e);
+        }
+      }
+
+      // 如果从URL获取到了caseId，清除sessionStorage中的旧caseId，确保使用最新的
+      if (globalCaseId) {
+        try {
+          sessionStorage.removeItem('ohifCaseId');
+          console.log('OHIF: Cleared old caseId from sessionStorage during initialization');
+        } catch (e) {
+          console.warn('Could not clear sessionStorage:', e);
+        }
+      }
+
+      // Try to get caseId from sessionStorage (only if not found in URL)
+      if (!globalCaseId) {
+        try {
+          globalCaseId = sessionStorage.getItem('ohifCaseId');
+          console.log('OHIF: Retrieved caseId from sessionStorage:', globalCaseId);
+        } catch (e) {
+          console.warn('Could not read from sessionStorage:', e);
+        }
+      }
+
+      // Listen for postMessage from parent window to set caseId
+      window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SET_CASE_ID') {
+          globalCaseId = event.data.caseId;
+          console.log('OHIF: Received caseId from parent window:', globalCaseId);
+          // 清除sessionStorage中的旧caseId，确保使用最新的caseId
+          try {
+            sessionStorage.removeItem('ohifCaseId');
+            console.log('OHIF: Cleared old caseId from sessionStorage');
+          } catch (e) {
+            console.warn('Could not clear sessionStorage:', e);
+          }
+          // 只有当caseId不是default-case时才存储到sessionStorage
+          if (globalCaseId && globalCaseId !== 'default-case') {
+            try {
+              sessionStorage.setItem('ohifCaseId', globalCaseId);
+              console.log('OHIF: Stored caseId to sessionStorage:', globalCaseId);
+            } catch (e) {
+              console.warn('Could not write to sessionStorage:', e);
+            }
+          } else {
+            console.log('OHIF: caseId is default-case, not storing to sessionStorage');
+          }
+          // 不刷新页面，直接使用新的caseId
+          console.log('OHIF: CaseId updated without reload, will use for next requests');
+          // 触发页面刷新以重新加载study列表
+          setTimeout(() => {
+            console.log('OHIF: Reloading page to refresh study list with new caseId');
+            window.location.reload();
+          }, 100);
+        }
+        if (event.data && event.data.type === 'REFRESH_STUDIES') {
+          console.log('OHIF: Refreshing studies with caseId:', globalCaseId);
+          // 刷新页面以重新加载study列表
+          window.location.reload();
+        }
+      });
+
+      // 如果没有caseId，则等待父页面发送SET_CASE_ID消息
+      if (!globalCaseId) {
+        console.log('OHIF: No caseId found, waiting for parent window to send caseId');
+      }
+
       if (dicomWebConfig.onConfiguration && typeof dicomWebConfig.onConfiguration === 'function') {
         dicomWebConfig = dicomWebConfig.onConfiguration(dicomWebConfig, {
           params,
@@ -245,8 +356,37 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         }
       };
 
+      // Add caseId to qidoRoot if present in URL
+      let qidoRoot = dicomWebConfig.qidoRoot;
+      let caseId = null;
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        caseId = urlParams.get('caseId');
+      } catch (e) {
+        console.warn('Could not parse URL params:', e);
+      }
+
+      // Try parent window URL if not found
+      if (!caseId && window.parent !== window) {
+        try {
+          const parentUrlParams = new URLSearchParams(window.parent.location.search);
+          caseId = parentUrlParams.get('caseId');
+        } catch (e) {
+          console.warn('Could not access parent window URL:', e);
+        }
+      }
+
+      // 注释掉错误的qidoRoot修改逻辑
+      // if (caseId && qidoRoot) {
+      //   // Append caseId as query parameter to the base URL
+      //   const url = new URL(qidoRoot, window.location.origin);
+      //   url.searchParams.set('caseId', caseId);
+      //   qidoRoot = url.toString();
+      //   console.log('Modified qidoRoot with caseId:', qidoRoot);
+      // }
+
       qidoConfig = {
-        url: dicomWebConfig.qidoRoot,
+        url: qidoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
@@ -261,6 +401,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
+        // 添加caseId到WADO请求
+        queryParams: globalCaseId ? { caseId: globalCaseId } : {},
       };
 
       // TODO -> Two clients sucks, but its better than 1000.
@@ -272,17 +414,33 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       wadoDicomWebClient = dicomWebConfig.staticWado
         ? new StaticWadoClient(wadoConfig)
         : new api.DICOMwebClient(wadoConfig);
+      
+      // 复制配置并添加caseId
+      dicomWebConfigCopy = { ...dicomWebConfig };
+      if (globalCaseId) {
+        dicomWebConfigCopy.caseId = globalCaseId;
+      }
     },
     query: {
       studies: {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
+          // 如果没有caseId，返回空列表，等待caseId设置后再刷新
+          if (!globalCaseId) {
+            console.log('OHIF: No caseId available, returning empty list and waiting for caseId');
+            return [];
+          }
+
           qidoDicomWebClient.headers = getAuthorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
               supportsWildcard: dicomWebConfig.supportsWildcard,
             }) || {};
+
+          // 添加caseId到查询参数进行过滤
+          mappedParams.caseId = globalCaseId;
+          console.log('Adding caseId to DICOMweb query for filtering:', globalCaseId);
 
           const results = await qidoSearch(qidoDicomWebClient, undefined, undefined, mappedParams);
 
@@ -294,7 +452,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
           qidoDicomWebClient.headers = getAuthorizationHeader();
-          const results = await seriesInStudy(qidoDicomWebClient, studyInstanceUid);
+          const results = await seriesInStudy(qidoDicomWebClient, studyInstanceUid, globalCaseId);
 
           return processSeriesResults(results);
         },
@@ -303,6 +461,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       instances: {
         search: (studyInstanceUid, queryParameters) => {
           qidoDicomWebClient.headers = getAuthorizationHeader();
+          // 添加caseId到查询参数
+          if (globalCaseId) {
+            queryParameters = queryParameters || {};
+            queryParameters.caseId = globalCaseId;
+            console.log('Adding caseId to instances query:', globalCaseId);
+          }
           return qidoSearch.call(
             undefined,
             qidoDicomWebClient,
@@ -385,7 +549,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         }
 
         const StudyInstanceUID = instance.StudyInstanceUID;
-        const SeriesInstanceUID = instance.SeriesInstanceUID;
+        // For SEG instances, use referencedSeriesInstanceUID to request CT instances
+        const SeriesInstanceUID = instance.Modality === 'SEG' 
+          ? instance.referencedSeriesInstanceUID 
+          : instance.SeriesInstanceUID;
         const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
 
         if (!StudyInstanceUID || !SeriesInstanceUID || !SOPInstanceUID) {
@@ -403,6 +570,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             studyInstanceUID: StudyInstanceUID,
             seriesInstanceUID: SeriesInstanceUID,
             sopInstanceUID: SOPInstanceUID,
+            caseId: globalCaseId,
           });
 
           if (cancelled) {
@@ -565,6 +733,20 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       const instancesPerSeries = {};
 
       naturalizedInstancesMetadata.forEach(instance => {
+        // Debug: Check if ReferencedSeriesSequence is present in naturalized metadata
+        if (instance.Modality === 'SEG') {
+          console.log('SEG instance naturalized metadata:', {
+            SOPInstanceUID: instance.SOPInstanceUID,
+            Modality: instance.Modality,
+            SOPClassUID: instance.SOPClassUID,
+            hasReferencedSeriesSequence: !!instance.ReferencedSeriesSequence,
+            ReferencedSeriesSequence: instance.ReferencedSeriesSequence,
+            allKeys: Object.keys(instance),
+            has00081115: !!instance['00081115'],
+            has0020111a: !!instance['0020111a']
+          });
+        }
+
         if (!seriesSummaryMetadata[instance.SeriesInstanceUID]) {
           seriesSummaryMetadata[instance.SeriesInstanceUID] = {
             StudyInstanceUID: instance.StudyInstanceUID,
@@ -602,6 +784,14 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       // grab all the series metadata
       const seriesMetadata = Object.values(seriesSummaryMetadata);
+      
+      // Force update series metadata to ensure SOPClassUID is present
+      console.log('Force updating series metadata for study:', StudyInstanceUID);
+      console.log('Series metadata count:', seriesMetadata.length);
+      seriesMetadata.forEach(series => {
+        console.log('Series:', series.SeriesInstanceUID, 'Modality:', series.Modality, 'SOPClassUID:', series.SOPClassUID);
+      });
+      
       DicomMetadataStore.addSeriesMetadata(seriesMetadata, madeInClient);
 
       Object.keys(instancesPerSeries).forEach(seriesInstanceUID =>
@@ -621,6 +811,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     ) => {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
+      
+      // Add caseId to dicomWebConfig for retrieveStudyMetadata
+      const dicomWebConfigWithCaseId = { ...dicomWebConfig, caseId: globalCaseId };
+      console.log('retrieveStudyMetadata with dicomWebConfigWithCaseId:', dicomWebConfigWithCaseId);
+      
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
@@ -630,7 +825,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           filters,
           sortCriteria,
           sortFunction,
-          dicomWebConfig
+          dicomWebConfigWithCaseId
         );
 
       // Async load series, store as retrieved
@@ -648,6 +843,20 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
         // Adding instanceMetadata to OHIF MetadataProvider
         naturalizedInstances.forEach(instance => {
+          // Debug: Check if ReferencedSeriesSequence is present in naturalized metadata
+          if (instance.Modality === 'SEG') {
+            console.log('SEG instance naturalized metadata (storeInstances):', {
+              SOPInstanceUID: instance.SOPInstanceUID,
+              Modality: instance.Modality,
+              SOPClassUID: instance.SOPClassUID,
+              hasReferencedSeriesSequence: !!instance.ReferencedSeriesSequence,
+              ReferencedSeriesSequence: instance.ReferencedSeriesSequence,
+              allKeys: Object.keys(instance),
+              has00081115: !!instance['00081115'],
+              has0020111a: !!instance['0020111a']
+            });
+          }
+
           setNonEnumerableInstanceProperty(instance, 'wadoRoot', dicomWebConfig.wadoRoot);
           setNonEnumerableInstanceProperty(instance, 'wadoUri', dicomWebConfig.wadoUri);
 
@@ -693,6 +902,13 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       // it manually here
       seriesSummaryMetadata.forEach(aSeries => {
         aSeries.StudyInstanceUID = StudyInstanceUID;
+      });
+
+      // Force update series metadata to ensure SOPClassUID is present
+      console.log('Force updating series metadata for study (async):', StudyInstanceUID);
+      console.log('Series metadata count (async):', seriesSummaryMetadata.length);
+      seriesSummaryMetadata.forEach(series => {
+        console.log('Series (async):', series.SeriesInstanceUID, 'Modality:', series.Modality, 'SOPClassUID:', series.SOPClassUID);
       });
 
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
@@ -772,7 +988,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       const imageIds = getImageId({
         instance,
         frame,
-        config: dicomWebConfig,
+        config: dicomWebConfigCopy,
       });
       return imageIds;
     },

@@ -1,4 +1,5 @@
 body {
   overscroll-behavior: none;
   touch-action: none;
+  background: linear-gradient(135deg, #f7fcff 0%, #e4f3ff 45%, #cde8ff 100%);
 }

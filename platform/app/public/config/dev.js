@@ -13,10 +13,64 @@
 window.config = {
   name: 'config/dev.js',
   routerBasename: null,
-  // whiteLabeling: {},
+
+  // 隐藏OHIF品牌logo
+  whiteLabeling: {
+    createLogoComponentFn: function(React) {
+      return React.createElement('span', { style: { fontSize: 0 } }, ''); // 返回空span
+    },
+  },
+
   extensions: [],
   modes: [],
-  customizationService: ['@ohif/extension-default.customizationModule.theme'],
+
+  // 设置默认语言为中文
+  defaultLanguage: 'zh',
+
+  // 关闭研究用途弹窗
+  investigationalUseDialog: {
+    option: 'never',
+  },
+
+  customizationService: [
+    '@ohif/extension-default.customizationModule.theme',
+    {
+      'workList.columns': {
+        $apply: (columns) => {
+          // 只保留指定的四列，并调整所有列宽为70px，设置中文标签
+          const labelMap = {
+            patient: '患者姓名',
+            modalities: '检查模态',
+            description: '检查描述',
+            instances: '实例数量'
+          };
+          return columns.filter(col =>
+            ['patient', 'modalities', 'description', 'instances'].includes(col.id)
+          ).map(col => {
+            return {
+              ...col,
+              meta: {
+                ...col.meta,
+                label: labelMap[col.id] || col.meta?.label,
+                minWidth: 70,
+                maxWidth: 70
+              }
+            };
+          });
+        }
+      }
+    },
+    {
+      'workList.defaultSorting': {
+        $set: [{ id: 'description', desc: false }]
+      }
+    },
+    {
+      'workList.defaultPreviewSizePercent': {
+        $set: 40 // 增加预览面板默认大小，让列表区域铺满更多空间
+      }
+    }
+  ],
 
   // URL-driven customizations (?customization=). The `default` prefix (no
   // slashes) is used for values without a leading slash; every other prefix
@@ -27,6 +81,30 @@ window.config = {
     default: './customizations/',
   },
 
+  // 改善滚动loading体验的配置，解决图像撕裂问题
+  viewportScrollbar: {
+    showLoadingPattern: false,
+    showLoadedFill: true,
+    loadedBatchIntervalMs: 100,
+    // 添加防抖配置解决图像撕裂
+    debounceTime: 100,
+    loadDebounceTime: 50,
+    thumbnailSize: 100,
+    // 确保每次只渲染一帧
+    renderMode: 'single',
+  },
+
+  // 只禁用AI自动分割，保留手动标注功能
+  ai: {
+    enabled: false,
+  },
+
+  // 增加并发请求数加快加载
+  prefetch: {
+    enabled: true,
+    prefetchCount: 3,
+  },
+
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -35,7 +113,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
-  strictZSpacingForVolumeViewport: true,
+  strictZSpacingForVolumeViewport: false, // 改为false解决图像偏移问题
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
   maxNumRequests: {
@@ -43,8 +121,12 @@ window.config = {
     thumbnail: 5,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
-    prefetch: 25,
+    prefetch: 5,
   },
+
+  // 减少并发请求防止图像撕裂
+  maxConcurrentRequests: 6,
+
   showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
   // Defines multi-monitor layouts
@@ -108,13 +190,42 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'ohif',
+  defaultDataSourceName: 'local-dicom-server',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
   //   regex: /.*/,
   // },
   dataSources: [
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'local-dicom-server',
+      configuration: {
+        friendlyName: 'Local DICOM Server',
+        name: 'local-dicom-server',
+        wadoUriRoot: 'http://localhost:3001/dicomweb',
+        qidoRoot: 'http://localhost:3001/dicomweb',
+        wadoRoot: 'http://localhost:3001/dicomweb',
+        qidoSupportsIncludeField: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        thumbnailRequestStrategy: 'fetch',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
+        singlepart: 'bulkdata,video',
+        omitQuotationForMultipartRequest: true,
+        httpTimeout: 120000,
+        supportsRetrieveBulkdata: false,
+        supportsBulkDataURI: false,
+        supportsEncoded: false,
+        supportsReject: false,
+        supportsShouldRetrieveSeriesMetadata: true,
+        // 强制OHIF请求series metadata以获取渲染参数
+        retrieveSeriesMetadata: true,
+      },
+    },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif',
@@ -267,7 +378,7 @@ window.config = {
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
-    console.warn(error.status);
+    console.warn(error?.status);
 
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');

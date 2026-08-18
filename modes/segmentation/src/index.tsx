@@ -12,7 +12,13 @@ import {
   onModeExit,
   layoutTemplate,
   modeFactory,
+  dicomSeg,
 } from '@ohif/mode-basic';
+
+const segmentationExtensionDependencies = {
+  ...extensionDependencies,
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+};
 
 /**
  * Extends the basic mode enter with the segmentation panel auto tab switch
@@ -69,7 +75,7 @@ export const segmentationRoute = {
 export const modeInstance = {
   id,
   routeName: 'segmentation',
-  displayName: 'Segmentation',
+  displayName: '异常查看与编辑',
   // Toolbar/tool-group composition: which capability packs this mode uses.
   // The mode route seeds these onto the Mode customization scope on enter, so
   // `?customization=` modules extend them through the `mode` phase (e.g. add
@@ -111,10 +117,10 @@ export const modeInstance = {
   isValidMode,
   nonModeModalities: ['SM', 'ECG', 'OT', 'DOC'],
   routes: [segmentationRoute],
-  extensions: extensionDependencies,
+  extensions: segmentationExtensionDependencies,
   // Prefer the grid layout hanging protocol when applicable.
   hangingProtocol: ['@ohif/mnGrid'],
-  sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
+  sopClassHandlers: [ohif.sopClassHandler, dicomSeg.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
 };
 
 /**
@@ -136,7 +142,7 @@ const mode = {
   id,
   modeFactory,
   modeInstance,
-  extensionDependencies,
+  extensionDependencies: segmentationExtensionDependencies,
   customizations,
 };
 

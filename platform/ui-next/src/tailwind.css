@@ -8,30 +8,31 @@
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
-    --neutral: 213 22% 59%;
-    --neutral-light: 214 69% 81%;
-    --neutral-dark: 214 16% 21%;
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 234 64% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 219 90% 15%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 214 65% 36%;
-    --secondary-foreground: 200 50% 84%;
-    --muted: 234 64% 10%;
-    --muted-foreground: 200 46% 65%;
-    --accent: 217 79% 24%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 236 52% 30%;
-    --ring: 214 98% 60%;
-    --chart-1: 220 70% 50%;
+    /* Custom theme based on system colors - White background with blue accents */
+    --highlight: 210 100% 50%;
+    --neutral: 210 100% 50%;
+    --neutral-light: 210 100% 95%;
+    --neutral-dark: 210 100% 85%;
+    --background: 0 0% 100%; /* White background */
+    --foreground: 210 100% 10%;
+    --card: 0 0% 100%; /* White card background */
+    --card-foreground: 210 100% 10%;
+    --popover: 0 0% 100%; /* White popover background */
+    --popover-foreground: 210 100% 10%;
+    --primary: 210 100% 50%; /* System blue #1e90ff */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 100% 90%; /* Light blue secondary */
+    --secondary-foreground: 210 100% 20%;
+    --muted: 210 100% 95%; /* Light muted background */
+    --muted-foreground: 210 100% 40%;
+    --accent: 210 100% 90%; /* Light accent */
+    --accent-foreground: 210 100% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 100% 90%; /* Light blue border */
+    --input: 210 100% 90%;
+    --ring: 210 100% 50%;
+    --chart-1: 210 100% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
@@ -55,13 +56,14 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    /* Keep dark theme for image viewing areas */
+    --background: 0 0% 0%; /* Black background for image areas */
     --foreground: 0 0% 98%;
-    --card: 234 64% 10%;
+    --card: 0 0% 7%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
+    --primary: 210 100% 50%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -73,7 +75,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 236 52% 30%;
-    --ring: 214 98% 60%;
+    --ring: 210 100% 50%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

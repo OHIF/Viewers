@@ -428,6 +428,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      anomalyInfo?: {
+        anatomyRegion: string;
+        anomalyType: string;
+        laterality: string;
+        vitalReaction: string;
+      };
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
@@ -440,6 +446,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      anomalyInfo?: {
+        anatomyRegion: string;
+        anomalyType: string;
+        laterality: string;
+        vitalReaction: string;
+      };
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
@@ -461,6 +473,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      anomalyInfo?: {
+        anatomyRegion: string;
+        anomalyType: string;
+        laterality: string;
+        vitalReaction: string;
+      };
     }
   ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
@@ -480,9 +498,23 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
 
     const segs = this.getSegmentations();
-    const label = options?.label || `Segmentation ${segs.length + 1}`;
+    
+    // Use anomaly type as label if anomalyInfo is provided, otherwise use default
+    let label = options?.label;
+    if (options?.anomalyInfo) {
+      label = options.anomalyInfo.anomalyType;
+    } else {
+      label = label || `异常 ${segs.length + 1}`;
+    }
 
     const segImageIds = derivedImages.map(image => image.imageId);
+
+    // Format anomaly description if provided
+    let description = '';
+    if (options?.anomalyInfo) {
+      const { anatomyRegion, anomalyType, laterality, vitalReaction } = options.anomalyInfo;
+      description = `${anatomyRegion}|${anomalyType}|${laterality}|${vitalReaction}`;
+    }
 
     const segmentationPublicInput: cstTypes.SegmentationPublicInput = {
       segmentationId,
@@ -502,12 +534,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
             ? options.segments
             : {
                 1: {
-                  label: `${i18n.t('Segment')} 1`,
+                  label: `Anomaly 1`,
                   active: true,
                 },
               },
         cachedStats: {
-          info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
+          info: description || `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
         },
       },
     };
@@ -597,6 +629,13 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
 
     segmentsInfo.forEach((segmentInfo, index) => {
       if (index === 0) {
+        colorLUT.push([0, 0, 0, 0]);
+        return;
+      }
+
+      // Skip undefined segmentInfo with warning
+      if (!segmentInfo) {
+        console.warn('SegmentationService: segmentInfo is undefined at index', index, '- skipping');
         colorLUT.push([0, 0, 0, 0]);
         return;
       }

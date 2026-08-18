@@ -32,14 +32,16 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'panelSegmentation.showAddSegment': true,
     'panelSegmentation.onSegmentationAdd': async ({
       segmentationRepresentationType = SegmentationRepresentations.Labelmap,
+      anomalyInfo,
     }) => {
       const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getState().activeViewportId;
       if (segmentationRepresentationType === SegmentationRepresentations.Labelmap) {
-        commandsManager.run('createLabelmapForViewport', { viewportId });
+        commandsManager.run('createLabelmapForViewport', { viewportId, anomalyInfo });
       } else if (segmentationRepresentationType === SegmentationRepresentations.Contour) {
         const segmentationId = await commandsManager.run('createContourForViewport', {
           viewportId,
+          anomalyInfo,
         });
         // Override the default (i.e. hydrated RTSTRUCT) style for contours if the global CONTOUR type
         // renderFill style property has not been changed.
@@ -90,7 +92,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
         );
       }
     },
-    'panelSegmentation.tableMode': 'collapsed',
+    'panelSegmentation.tableMode': 'expanded',
     'panelSegmentation.readableText': {
       // the values will appear in this order
       min: 'Min Value',

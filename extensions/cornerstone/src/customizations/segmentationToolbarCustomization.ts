@@ -870,10 +870,7 @@ export const segmentationToolboxSections: Record<string, string[]> = {
   [TOOLBAR_SECTIONS.contourSegmentationUtilities]: ['ContourUtilities'],
 
   LabelMapTools: [
-    'LabelmapSlicePropagation',
     'BrushTools',
-    'MarkerLabelmap',
-    'ClickSegment',
     'Shapes',
     'LabelMapEditWithContour',
   ],

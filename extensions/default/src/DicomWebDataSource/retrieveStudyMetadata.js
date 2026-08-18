@@ -54,7 +54,8 @@ export function retrieveStudyMetadata(
       enableStudyLazyLoad,
       filters,
       sortCriteria,
-      sortFunction
+      sortFunction,
+      dicomWebConfig
     );
   } else {
     // Create a promise to handle the data retrieval
@@ -65,7 +66,8 @@ export function retrieveStudyMetadata(
         enableStudyLazyLoad,
         filters,
         sortCriteria,
-        sortFunction
+        sortFunction,
+        dicomWebConfig
       ).then(function (data) {
         resolve(data);
       }, reject);

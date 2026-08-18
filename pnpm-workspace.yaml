@@ -101,3 +101,5 @@ overrides:
   'js-yaml@<3.15.0': 3.15.0
   'js-yaml@>=4.0.0 <4.3.0': 4.3.0
   'postcss@<=8.5.11': 8.5.22
+patchedDependencies:
+  '@cornerstonejs/adapters': patches/@cornerstonejs__adapters.patch

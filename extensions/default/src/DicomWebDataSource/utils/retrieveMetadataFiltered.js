@@ -10,6 +10,7 @@ import RetrieveMetadata from '../wado/retrieveMetadata';
  * @param {string} [filters.seriesInstanceUID] Series instance uid to filter results against
  * @param {function} [sortCriteria] Sort criteria function
  * @param {function} [sortFunction] Sort function
+ * @param {object} [dicomWebConfig] DICOMweb configuration including caseId
  *
  * @returns
  */
@@ -19,7 +20,8 @@ function retrieveMetadataFiltered(
   enableStudyLazyLoad,
   filters,
   sortCriteria,
-  sortFunction
+  sortFunction,
+  dicomWebConfig = {}
 ) {
   const { seriesInstanceUID } = filters;
 
@@ -35,7 +37,8 @@ function retrieveMetadataFiltered(
         enableStudyLazyLoad,
         seriesSpecificFilters,
         sortCriteria,
-        sortFunction
+        sortFunction,
+        dicomWebConfig
       );
     });
 

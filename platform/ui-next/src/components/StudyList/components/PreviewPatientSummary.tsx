@@ -158,7 +158,7 @@ function Workflows({ className }: { className?: string } = {}) {
       )}
     >
       <div className="flex w-full items-center justify-between">
-        <span className="text-foreground text-base font-medium leading-tight">Launch workflow</span>
+        <span className="text-foreground text-base font-medium leading-tight">启动工作流</span>
         <span
           className="text-primary shrink-0 -translate-y-0.5"
           aria-hidden
@@ -170,7 +170,7 @@ function Workflows({ className }: { className?: string } = {}) {
 
       {defaultWorkflow && (
         <div
-          className="mt-2 flex flex-wrap items-center gap-0"
+          className="mt-2 flex flex-wrap items-center gap-5"
           role="status"
           aria-live="polite"
         >

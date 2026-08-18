@@ -24,6 +24,21 @@ import CaptureViewportModal from './CaptureViewportModal.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import Tools from './Tools.json';
+import AppearanceModal from './AppearanceModal.json';
+import Colormaps from './Colormaps.json';
+import DataSourceConfiguration from './DataSourceConfiguration.json';
+import DataTable from './DataTable.json';
+import Messages from './Messages.json';
+import Onboarding from './Onboarding.json';
+import PanelSUV from './PanelSUV.json';
+import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
+import SegmentationPanel from './SegmentationPanel.json';
+import StudyItem from './StudyItem.json';
+import ThumbnailTracked from './ThumbnailTracked.json';
+import TooltipClipboard from './TooltipClipboard.json';
+import TrackedCornerstoneViewport from './TrackedCornerstoneViewport.json';
+import HotkeysValidators from './HotkeysValidators.json';
+import USAnnotationPanel from './USAnnotationPanel.json';
 
 export default {
   zh: {
@@ -53,5 +68,20 @@ export default {
     Hps,
     ToolbarLayoutSelector,
     Tools,
+    AppearanceModal,
+    Colormaps,
+    DataSourceConfiguration,
+    DataTable,
+    Messages,
+    Onboarding,
+    PanelSUV,
+    ROIThresholdConfiguration,
+    SegmentationPanel,
+    StudyItem,
+    ThumbnailTracked,
+    TooltipClipboard,
+    TrackedCornerstoneViewport,
+    HotkeysValidators,
+    USAnnotationPanel,
   },
 };
