@@ -186,7 +186,42 @@
     <script>
       // Catalog of shipped URL customizations, grouped by area/folder. The
       // `value` is the `?customization=` token (folder-relative path, no `.jsonc`).
+      // Items with `type: 'param'` are plain viewer query parameters instead —
+      // their `value` is added as `?<value>=true` (no customization module).
       const CATALOG = [
+        {
+          dir: '',
+          title: 'Viewport engine',
+          desc: 'Rendering-engine opt-ins. These are plain viewer query parameters (not customization modules); the URL value takes precedence over the deployed app config.',
+          items: [
+            {
+              value: 'useNextViewports',
+              type: 'param',
+              name: 'Native Generic Viewports',
+              scope: 'query param',
+              desc: 'Mounts viewports through the native cornerstone Generic Viewport backend (appConfig.genericViewports) instead of the legacy stack/volume path. Per-session opt-in for the migration preview.',
+            },
+          ],
+        },
+        {
+          dir: 'split/',
+          title: 'Display set splitting',
+          desc: 'Metadata-driven display set splitting (the @cornerstonejs/metadata split-rules engine, `useMetadataDisplaySet`). Rules are data — custom ones can be authored in JSONC with $function expressions; see split/scoutSeries.jsonc for the pattern.',
+          items: [
+            {
+              value: 'split/enableNewSplit',
+              name: 'Enable metadata split rules',
+              scope: 'global',
+              desc: 'Splits series into display sets with the metadata split rules instead of the stack SOP class handler. Fixes mixed-b-value DWI series; video/WSI/SEG/SR and other specialized instances still use their dedicated SOP class handlers.',
+            },
+            {
+              value: 'split/scoutSeries',
+              name: 'CT SCOUT split rule (example)',
+              scope: 'global',
+              desc: 'Example custom $function rule: splits the first image (lowest InstanceNumber) off every CT series with at least 10 frames into its own "SCOUT" display set. Pulls in split/enableNewSplit via requires.',
+            },
+          ],
+        },
         {
           dir: 'tools/',
           title: 'Tools & presets',
@@ -278,7 +313,7 @@
         section.innerHTML =
           '<div class="group-head">' +
           '<h2>' + group.title + '</h2>' +
-          '<span class="dir"><code>' + group.dir + '</code></span>' +
+          (group.dir ? '<span class="dir"><code>' + group.dir + '</code></span>' : '') +
           '<button class="toggle" type="button" data-group="' + gi + '">Select all</button>' +
           '</div>' +
           '<p class="group-desc">' + group.desc + '</p>';
@@ -286,13 +321,16 @@
         group.items.forEach(item => {
           const label = document.createElement('label');
           label.className = 'card';
+          const isParam = item.type === 'param';
+          const paramText = isParam ? '?' + item.value + '=true' : '?customization=' + item.value;
           label.innerHTML =
-            '<input type="checkbox" value="' + item.value + '" />' +
+            '<input type="checkbox" value="' + item.value + '"' +
+            (isParam ? ' data-type="param"' : '') + ' />' +
             '<span class="body">' +
             '<span class="title-row">' +
             '<span class="name">' + item.name + '</span>' +
             '<span class="tag">' + item.scope + '</span>' +
-            '<span class="param"><code>?customization=' + item.value + '</code></span>' +
+            '<span class="param"><code>' + paramText + '</code></span>' +
             '</span>' +
             '<span class="desc">' + item.desc + '</span>' +
             '</span>';
@@ -302,22 +340,33 @@
       });
 
       function selectedValues() {
-        return Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value);
+        return Array.from(
+          document.querySelectorAll('input[type=checkbox]:checked:not([data-type=param])')
+        ).map(c => c.value);
       }
 
-      // Builds the launch URL from the selected profiles and viewer theme. The
-      // `theme=` param is only added for a non-default preset (default is the
-      // viewer's built-in look and needs no param). Returns null when there is
-      // nothing to launch.
-      function buildUrl(base, values, theme) {
+      // Selected plain query-parameter opt-ins (e.g. useNextViewports), added
+      // to the launch URL as `<name>=true` rather than customization tokens.
+      function selectedParams() {
+        return Array.from(
+          document.querySelectorAll('input[type=checkbox][data-type=param]:checked')
+        ).map(c => c.value);
+      }
+
+      // Builds the launch URL from the selected profiles, query-param opt-ins
+      // and viewer theme. The `theme=` param is only added for a non-default
+      // preset (default is the viewer's built-in look and needs no param).
+      // Returns null when there is nothing to launch.
+      function buildUrl(base, values, theme, params) {
         // Sanitize the DOM-derived inputs before they reach the launch href.
         // Customization tokens are `folder/name` segments, so allow word chars,
         // dot, dash and slash only; the theme is a plain preset id. Anything with
         // query metacharacters or a URL scheme (e.g. `javascript:`) is dropped.
         const TOKEN = /^[\w.-]+(?:\/[\w.-]+)*$/;
         const safeValues = values.filter(v => TOKEN.test(v));
+        const safeParams = (params || []).filter(v => /^[\w]+$/.test(v));
         const safeTheme = /^[\w.-]+$/.test(theme || '') ? theme : 'default';
-        if (!safeValues.length && (!safeTheme || safeTheme === 'default')) {
+        if (!safeValues.length && !safeParams.length && (!safeTheme || safeTheme === 'default')) {
           return null;
         }
 
@@ -337,6 +386,9 @@
         if (safeValues.length) {
           parsed.searchParams.set('customization', safeValues.join(','));
         }
+        for (const param of safeParams) {
+          parsed.searchParams.set(param, 'true');
+        }
         if (safeTheme && safeTheme !== 'default') {
           parsed.searchParams.set('theme', safeTheme);
         }
@@ -345,8 +397,9 @@
 
       function refresh() {
         const values = selectedValues();
-        countEl.textContent = values.length + ' selected';
-        const url = buildUrl(baseEl.value.trim() || '../', values, viewerThemeEl.value);
+        const params = selectedParams();
+        countEl.textContent = values.length + params.length + ' selected';
+        const url = buildUrl(baseEl.value.trim() || '../', values, viewerThemeEl.value, params);
         if (!url) {
           urlEl.textContent = 'Select one or more profiles, or a viewer theme, above…';
           launchEl.setAttribute('aria-disabled', 'true');
@@ -381,7 +434,12 @@
       });
 
       document.getElementById('copy').addEventListener('click', async () => {
-        const text = buildUrl(baseEl.value.trim() || '../', selectedValues(), viewerThemeEl.value);
+        const text = buildUrl(
+          baseEl.value.trim() || '../',
+          selectedValues(),
+          viewerThemeEl.value,
+          selectedParams()
+        );
         if (!text) return;
         try {
           await navigator.clipboard.writeText(text);

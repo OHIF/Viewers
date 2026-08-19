@@ -90,6 +90,26 @@ export type DisplaySet = {
    * sets that are coming from same series instanceUID.
    */
   compareSameSeries?: string;
+
+  /**
+   * The deterministic, rule-namespaced group key assigned by the
+   * `@cornerstonejs/metadata` split-rules engine when this display set was
+   * created via the `useMetadataDisplaySet` customization.  Used to reconcile
+   * re-splits of the same series with already-created display sets.
+   */
+  splitKey?: string;
+
+  /** The id of the split rule that created this display set, when applicable. */
+  splitRuleId?: string;
+
+  /**
+   * Incremental-merge hook for split-rule display sets.  Intentionally named
+   * differently from `addInstances` (the SOP-class-handler merge hook) so the
+   * legacy handler loop never feeds unmatched instances into split-rule
+   * display sets.  Returns the updated display set, or undefined when the
+   * display set cannot merge the instances.
+   */
+  updateInstances?(instances: InstanceMetadata[], displaySetService): DisplaySet | undefined;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {
