@@ -113,8 +113,8 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   );
 }
 function DicomTagTable({ rows }: { rows: Row[] }) {
-  const listRef = useRef(undefined);
-  const canvasRef = useRef(undefined);
+  const listRef = useRef<List | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [tagHeaderElem, setTagHeaderElem] = useState(null);
   const [vrHeaderElem, setVrHeaderElem] = useState(null);

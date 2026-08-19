@@ -10,9 +10,11 @@
  *      into the budget would let a new `forwardRef` hide inside unrelated
  *      headroom, or net out against an unrelated fix in the same PR.
  *
- *   2. Compiler debt (react-hooks diagnostics) is budgeted. The count may only
- *      go down: when a change reduces it, tighten
- *      .react-compiler-lint-budget.json in the same PR so the win is locked in.
+ *   2. Compiler debt (react-hooks diagnostics) is budgeted, and the budget is
+ *      enforced in BOTH directions. Exceeding it fails, and so does coming in
+ *      under it: a reduction must be committed to the budget file in the same
+ *      PR. Slack left behind would let a later regression reoccupy it without
+ *      ever exceeding the budget, which is how a ratchet stops ratcheting.
  *
  * Diagnostics of the form "Definition for rule X was not found" are ignored.
  * They come from eslint-disable comments aimed at the main .eslintrc config,
@@ -122,11 +124,13 @@ if (errors > budget.errors || warnings > budget.warnings) {
   failed = true;
 }
 
-if (failed) {
-  process.exit(1);
+if (errors < budget.errors || warnings < budget.warnings) {
+  console.error('\nBudget is stale: the counts improved and the win must be locked in.');
+  console.error('Set .react-compiler-lint-budget.json to');
+  console.error(`  { "errors": ${errors}, "warnings": ${warnings} }`);
+  failed = true;
 }
 
-if (errors < budget.errors || warnings < budget.warnings) {
-  console.log('\nCounts are below budget. Tighten .react-compiler-lint-budget.json');
-  console.log(`to { "errors": ${errors}, "warnings": ${warnings} } in this PR.`);
+if (failed) {
+  process.exit(1);
 }
