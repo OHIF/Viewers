@@ -18,6 +18,8 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   series is editable, and the series descriptions used before are remembered per
   type of item and offered as completions.  `createReportDialogPrompt` takes
   `defaultSeriesDescription`, `itemType` and `rememberedDescriptionCount`, and
-  returns a `seriesNumber`.
+  returns a `seriesNumber`.  A stored instance is now identified like a loaded
+  one, so the object just saved becomes the predecessor of the next save of the
+  same data.
 
 <DocCardList />

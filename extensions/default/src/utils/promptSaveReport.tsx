@@ -64,6 +64,21 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
         servicesManager,
         getReport,
       });
+
+      // The report just written is what these measurements are now stored as, so
+      // saving them again offers to extend that series rather than making
+      // another one.  Measurements are not reloaded from the report they were
+      // stored into, so this is recorded on them directly.
+      const storedDisplaySet = displaySetInstanceUIDs?.length
+        ? displaySetService.getDisplaySetByUID(displaySetInstanceUIDs[0])
+        : undefined;
+
+      if (storedDisplaySet?.predecessorImageId) {
+        commandsManager.runCommand('recordMeasurementsPredecessor', {
+          measurements: measurementData,
+          predecessorImageId: storedDisplaySet.predecessorImageId,
+        });
+      }
     } else if (promptResult.action === PROMPT_RESPONSES.CANCEL) {
       // Do nothing
     }

@@ -112,6 +112,31 @@ Note that `SeriesDescription` and `SeriesNumber` are ignored when
 the generated instance - which is why the dialog shows them as read-only when
 extending a series.
 
+## After the save, the stored object is the predecessor
+
+Extending a series relies on the data knowing which instance it was last stored
+as - its `predecessorImageId`. That was only ever known for data loaded from a
+store, so the first save of a segmentation or a report created a new series, and
+so did the save after it, and the one after that.
+
+An instance stored from the viewer is now identified the way one loaded from a
+data source is: `registerStoredInstanceImageId` gives it the imageId that loading
+it back would use, and maps that imageId to its UIDs, before it is added to the
+metadata store. The display set made from the stored instance therefore has a
+`predecessorImageId`, which is what the two save types then record:
+
+- **segmentations and contours** are reloaded from the series just written (the
+  save removes the in-memory segmentation and displays the stored one), so the
+  reloaded segmentation picks the predecessor up from that display set through
+  the normal load path;
+- **measurements** are not reloaded from the report they were stored into, so the
+  new `recordMeasurementsPredecessor` command (`CORNERSTONE`) records it on them
+  directly - on the measurement and on the annotation it is derived from, so that
+  editing a measurement afterwards does not lose it.
+
+The effect is that saving the same data twice offers **Extend Existing** the
+second time, pointing at the series the first save created.
+
 ## Remembered series descriptions
 
 The series descriptions used to store something are remembered, so that storing
