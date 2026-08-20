@@ -249,7 +249,9 @@ function _getDisplaySetsFromSeries(
     SeriesDescription = '',
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     StructureSetDate,
+    StructureSetTime,
     SOPClassUID,
     FrameOfReferenceUID,
     wadoRoot,
@@ -266,6 +268,12 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate: SeriesDate || StructureSetDate || '',
+    // Derived modalities are sorted in reverse date/time order, comparing
+    // `SeriesDate SeriesTime` as a single string. Without a time here, every SEG
+    // compared as `<date> undefined`, which sorts above every dated series of the
+    // same day and ties SEGs with each other, so SEG and SR never interleaved by
+    // when they were created.
+    SeriesTime: SeriesTime || StructureSetTime || '',
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,

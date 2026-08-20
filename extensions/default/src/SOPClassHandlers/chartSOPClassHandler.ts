@@ -21,6 +21,7 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPClassUID,
   } = instance;
 
@@ -31,7 +32,10 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
+    // The series sort compares `SeriesDate SeriesTime` as one string, so an
+    // absent value has to be empty rather than undefined.
+    SeriesDate: SeriesDate || '',
+    SeriesTime: SeriesTime || '',
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,

@@ -20,6 +20,7 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPClassUID,
     wadoRoot,
     wadoUri,
@@ -34,7 +35,11 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: `pmap.${utils.guid()}`,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
+    // Series sorting compares `SeriesDate SeriesTime` as a single string, so a
+    // missing time leaves `<date> undefined`, which compares above every dated
+    // series of the same day. Empty sorts an undated series as the oldest.
+    SeriesDate: SeriesDate || '',
+    SeriesTime: SeriesTime || '',
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
