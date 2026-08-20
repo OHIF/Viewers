@@ -352,10 +352,7 @@ export class RightPanelPageObject {
       },
       tools: {
         get splineContour() {
-          const button = page.getByTestId('SplineContourSegmentationTool');
-          // The data-cy sits on a span wrapper; the inner button is what carries the
-          // disabled state while no contour segmentation exists.
-          const toolButton = button.locator('button');
+          const button = page.getByTestId('SplineContourSegmentationTool-btn');
           // Maps a friendly spline name to the underlying cornerstone tool name,
           // which is also the data-cy of its option in the Spline Type dropdown.
           const splineTypeToolNames = {
@@ -380,7 +377,7 @@ export class RightPanelPageObject {
           };
         },
         get livewireContour() {
-          const button = page.getByTestId('LivewireContourSegmentationTool');
+          const button = page.getByTestId('LivewireContourSegmentationTool-btn');
           return {
             button,
             click: async () => {
@@ -389,15 +386,12 @@ export class RightPanelPageObject {
           };
         },
         get freehandContour() {
-          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
-          // data-cy sits on a span wrapper; the inner button carries the disabled
-          // state, so clicking it waits for the tool to become enabled.
-          const toolButton = button.locator('button');
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool-btn');
           return {
             button,
-            toolButton,
             click: async () => {
-              await toolButton.click();
+              await button.click();
+              // data-active is stamped on the tool's span wrapper, not the button.
               await page.waitForSelector(
                 '[data-cy="PlanarFreehandContourSegmentationTool"][data-active="true"]'
               );

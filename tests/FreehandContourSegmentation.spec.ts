@@ -6,8 +6,8 @@ import {
   test,
   visitStudy,
   waitForViewportsRendered,
+  withKeyHeld,
 } from './utils';
-import { withKeyHeld } from './utils/keyboardUtils';
 
 const studyInstanceUID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
 const mode = 'segmentation';
@@ -36,15 +36,22 @@ const overlappingDragShape = [
   { x: 0.5, y: 0.5 },
 ];
 
+// Fully inside dragShape, so a Shift stroke cuts a hole instead of carving an edge.
+const holeDragShape = [
+  { x: 0.45, y: 0.45 },
+  { x: 0.55, y: 0.45 },
+  { x: 0.55, y: 0.55 },
+  { x: 0.45, y: 0.55 },
+  { x: 0.45, y: 0.45 },
+];
+
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
   await waitForViewportsRendered(page);
 
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
   await contourPanel.addSegmentation();
-  await expect(contourPanel.panel.rows, 'Expected the default segment row to be added').toHaveCount(
-    1
-  );
+  await expect(contourPanel.panel.rows, 'Expected the default segment row').toHaveCount(1);
   await waitForViewportsRendered(page);
 });
 
@@ -66,13 +73,8 @@ test('should keep a freehand contour drawn on a slice after navigating away and 
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
   await rightPanelPageObject.contourSegmentationPanel.tools.freehandContour.click();
   await activeViewport.normalizedPathDragAt({ path: dragShape });
-  await expect(paths, 'Expected the freehand contour to be added on the drawing slice').toHaveCount(
-    1
-  );
-  await expect(
-    paths.nth(0),
-    'Expected the drawn freehand contour to be visible on the drawing slice'
-  ).toBeVisible();
+  await expect(paths, 'Expected the contour to be added on the drawing slice').toHaveCount(1);
+  await expect(paths.nth(0), 'Expected the drawn contour to be visible').toBeVisible();
 
   const drawnPathD = await getSvgAttribute({
     viewportPageObject,
@@ -85,29 +87,15 @@ test('should keep a freehand contour drawn on a slice after navigating away and 
   //Navigate to last slice
   await activeViewport.sliceNavigation.toLastSlice();
   await waitForViewportsRendered(page);
-  await expect(
-    sliceIndicator,
-    'Expected scrolling to navigate off the drawing slice'
-  ).not.toHaveText(drawingSliceInfo);
-  await expect(
-    paths,
-    'Expected the freehand contour to be absent from the other slice'
-  ).toHaveCount(0);
+  await expect(sliceIndicator, 'Expected to leave drawing slice').not.toHaveText(drawingSliceInfo);
+  await expect(paths, 'Expected no contour on the other slice').toHaveCount(0);
 
   // Come back to first slice
   await activeViewport.sliceNavigation.toFirstSlice();
   await waitForViewportsRendered(page);
-  await expect(sliceIndicator, 'Expected to scroll back to the drawing slice').toHaveText(
-    drawingSliceInfo
-  );
-  await expect(
-    paths,
-    'Expected the freehand contour to re-render on the drawing slice'
-  ).toHaveCount(1);
-  await expect(
-    paths.nth(0),
-    'Expected the persisted freehand contour to be visible on the drawing slice'
-  ).toBeVisible();
+  await expect(sliceIndicator, 'Expected to return to drawing slice').toHaveText(drawingSliceInfo);
+  await expect(paths, 'Expected the contour to re-render on the drawing slice').toHaveCount(1);
+  await expect(paths.nth(0), 'Expected the persisted contour to be visible').toBeVisible();
 
   const persistedPathD = await getSvgAttribute({
     viewportPageObject,
@@ -115,13 +103,8 @@ test('should keep a freehand contour drawn on a slice after navigating away and 
     attributeName: 'd',
     nth: 0,
   });
-  expect(
-    persistedPathD,
-    'Expected the freehand contour to still render on the drawing slice'
-  ).not.toBeNull();
-  expect(persistedPathD, 'Expected the persisted freehand contour to match what was drawn').toBe(
-    drawnPathD
-  );
+  expect(persistedPathD, 'Expected the persisted contour to render an SVG path').not.toBeNull();
+  expect(persistedPathD, 'Expected the persisted contour to match the drawn one').toBe(drawnPathD);
 });
 
 test('should keep distinct freehand contours drawn into the same segment separate', async ({
@@ -218,6 +201,38 @@ test('should carve out overlapping freehand contours drawn into one segment when
   });
 });
 
+test('should cut a hole into a freehand contour when drawing with Shift held', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const activeViewport = await viewportPageObject.active;
+  const paths = activeViewport.svg('path');
+
+  await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
+  await rightPanelPageObject.contourSegmentationPanel.tools.freehandContour.click();
+  await activeViewport.normalizedPathDragAt({ path: dragShape });
+  await expect(paths, 'Expected the outer freehand contour to be added').toHaveCount(1);
+
+  // A Shift stroke fully inside the contour cuts a hole into it.
+  await withKeyHeld({
+    page,
+    key: 'Shift',
+    action: async () => {
+      await activeViewport.normalizedPathDragAt({ path: holeDragShape });
+    },
+  });
+
+  // The hole is cut into the contour's path as a subpath rather than added as a
+  // second path element; the screenshot then verifies the fill is actually cut.
+  await expect(paths, 'Expected the contour and hole to render as one path').toHaveCount(1);
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.freehandContourSegmentation.contourWithHole,
+  });
+});
+
 test('should not merge overlapping freehand contours drawn into separate segments', async ({
   page,
   rightPanelPageObject,
@@ -278,6 +293,9 @@ test('should not carve out overlapping freehand contours drawn into separate seg
     },
   });
 
+  // The stroke cuts nothing and creates nothing, so segment 1's contour stays the
+  // only path; the screenshot then verifies it is left whole.
+  await expect(paths, 'Expected the Shift stroke to leave a single path').toHaveCount(1);
   await checkForViewportScreenshot({
     page,
     viewport: activeViewport,

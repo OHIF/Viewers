@@ -30,6 +30,7 @@ const screenShotPaths = {
     disjointContoursSeparate: 'disjointContoursSeparate.png',
     overlappingContoursMerged: 'overlappingContoursMerged.png',
     overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
     overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
     overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
@@ -99,6 +100,8 @@ const screenShotPaths = {
     disjointContoursSeparate: 'disjointContoursSeparate.png',
     overlappingContoursMerged: 'overlappingContoursMerged.png',
     overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
