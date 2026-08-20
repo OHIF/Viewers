@@ -255,21 +255,22 @@ Reach for the cheapest *faithful* signal, in this order:
    it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
    escape hatch for *setup*, not for *appearance* assertions.
 
-For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport or the viewport grid:
+For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport — `checkForViewportScreenshot` hides the viewport's overlay text before capturing, then restores it:
 
 ```ts
-await checkForScreenshot({
+await checkForViewportScreenshot({
   page,
-  locator: viewportPageObject.grid, // scope to the viewport grid — not the whole page
+  viewport: activeViewport, // captures the viewport pane with its text hidden
   screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
 });
 ```
 
-`checkForScreenshot` retries up to 10 times at 500 ms intervals. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
+Both helpers retry up to 10 times at 500 ms intervals (`checkForViewportScreenshot` delegates to `checkForScreenshot`; use the latter directly only for non-viewport locators such as the grid or a panel). Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
 
 Rules (apply to all new screenshot assertions):
 
 - **Use the object form.** The positional form is legacy; don't introduce it in new code, and don't treat existing positional-form usage as a pattern to copy.
+- **No text in baselines.** Overlay text (date, series description, W/L, slice index) drifts with data, locale, and font rendering, so a baseline that contains it is fragile — new viewport baselines must be text-free. Capture viewports through `checkForViewportScreenshot`, which hides all viewport text for the shot; a raw `checkForScreenshot` on a viewport pane bakes the text in.
 - **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope by passing a `locator` — `viewportPageObject.grid` for the grid, or a specific viewport pane. A bare `normalizedClip: { x: 0, y: 0, width: 1, height: 1 }` with no `locator` is **not** scoping — it clips to the full page. Use `normalizedClip` only to target a sub-region *of a locator* (e.g. a scrollbar strip). If you reach for `fullPage: true`, stop and pick a locator.
 - **Do not tune `maxDiffPixelRatio` or `threshold`** to make a screenshot pass. If a baseline mismatches, regenerate it after a human review of the diff, or fix the underlying flake.
 

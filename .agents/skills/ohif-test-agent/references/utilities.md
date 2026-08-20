@@ -66,6 +66,7 @@ So: pick `10000` when the mode is `tmtv`, `2000` otherwise, and only ramp up if 
 
 1. Use the object form.
 2. Scope by passing a `locator` — `viewportPageObject.grid` for the whole grid, or a specific viewport pane locator. **Never screenshot the full app.** `normalizedClip` is computed *relative to the locator* (and defaults to the full page when no locator is given), so `{ x: 0, y: 0, width: 1, height: 1 }` alone does not scope anything — reserve `normalizedClip` for clipping to a sub-region of a locator. If you find yourself reaching for `fullPage: true`, stop and pass a locator instead.
+3. **No text in baselines.** Capture viewports with `checkForViewportScreenshot({ page, viewport, screenshotPath })` — it hides all viewport text (overlays, annotation text, orientation markers) before each attempt and restores it afterwards, then delegates to `checkForScreenshot` for the retry/compare. A raw `checkForScreenshot` on a viewport pane bakes overlay text (date, series description, W/L, slice index) into the baseline, which drifts with data, locale, and font rendering. Reserve raw `checkForScreenshot` for non-viewport locators (grid, panels).
 
 Do not tune `maxDiffPixelRatio` or `threshold` to make a screenshot pass — those are intentionally rarely touched and not the right knob for flakes. If a baseline mismatches, regenerate it (`--update-snapshots`) after a human review of the diff, or fix the underlying instability. Check the current signature in `tests/utils/checkForScreenshot.ts` if something looks off.
 
