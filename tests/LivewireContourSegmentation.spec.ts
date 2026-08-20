@@ -1,5 +1,4 @@
 import {
-  checkForScreenshot,
   checkForViewportScreenshot,
   expect,
   getSvgAttribute,
@@ -17,6 +16,14 @@ const contourClicks = [
   { x: 430, y: 210 },
   { x: 570, y: 240 },
   { x: 520, y: 340 },
+];
+
+// Starts below contourClicks' bottom edge and crosses into it. Both overlap tests
+// share this geometry: it merges within one segment and must stay separate across segments.
+const overlappingContourClicks = [
+  { x: 450, y: 400 },
+  { x: 540, y: 370 },
+  { x: 470, y: 280 },
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -129,7 +136,7 @@ test('should enable the Livewire Contour tool only once a contour segmentation e
   await contourPanel.select();
 
   await expect(
-    contourPanel.tools.livewireContour.toolButton,
+    contourPanel.tools.livewireContour.button,
     'Expected Livewire to be unavailable with no contour segmentation'
   ).toBeDisabled();
 
@@ -137,7 +144,7 @@ test('should enable the Livewire Contour tool only once a contour segmentation e
   await expect(contourPanel.panel.rows).toHaveCount(1);
 
   await expect(
-    contourPanel.tools.livewireContour.toolButton,
+    contourPanel.tools.livewireContour.button,
     'Expected creating a contour segmentation to enable Livewire'
   ).toBeEnabled();
 });
@@ -226,13 +233,6 @@ test('should merge overlapping Livewire contours drawn into the same segment', a
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  // Starts below the first contour's bottom edge and crosses into it.
-  const overlappingContourClicks = [
-    { x: 450, y: 400 },
-    { x: 540, y: 370 },
-    { x: 470, y: 280 },
-  ];
-
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
 
   await contourPanel.addSegmentation();
@@ -259,9 +259,16 @@ test('should merge overlapping Livewire contours drawn into the same segment', a
     'Expected the second contour vertex handles to clear on completion'
   ).toHaveCount(0);
 
-  await checkForScreenshot({
+  // The union replaces both inputs, so exactly one outline remains; the screenshot
+  // then verifies its merged shape.
+  await expect(
+    paths,
+    'Expected the overlapping contours to merge into a single outline'
+  ).toHaveCount(1);
+
+  await checkForViewportScreenshot({
     page,
-    locator: activeViewport.pane,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.livewireContourSegmentation.overlappingContoursMerged,
   });
 });
@@ -271,13 +278,6 @@ test('should keep overlapping Livewire contours in different segments separate',
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  // Same overlap geometry as the same-segment merge test; across segments it must not merge.
-  const overlappingContourClicks = [
-    { x: 450, y: 400 },
-    { x: 540, y: 370 },
-    { x: 470, y: 280 },
-  ];
-
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
 
   await contourPanel.addSegmentation();
@@ -285,6 +285,7 @@ test('should keep overlapping Livewire contours in different segments separate',
   await contourPanel.tools.livewireContour.click();
 
   const activeViewport = await viewportPageObject.active;
+  const paths = activeViewport.svg('path');
   const vertexHandles = activeViewport.svg('circle');
 
   // First contour goes into Segment 1.
@@ -311,7 +312,13 @@ test('should keep overlapping Livewire contours in different segments separate',
     'Expected the second contour vertex handles to clear on completion'
   ).toHaveCount(0);
 
-  // The overlap that merges within one segment must stay two outlines across segments.
+  // The overlap that merges within one segment must stay two outlines across segments;
+  // the screenshot then verifies each keeps its own segment's color and shape.
+  await expect(
+    paths,
+    'Expected the contours in different segments to stay separate'
+  ).toHaveCount(2);
+
   await checkForViewportScreenshot({
     page,
     viewport: activeViewport,
@@ -362,9 +369,14 @@ test('should cut a hole into a Livewire contour when drawing with Shift held', a
     'Expected the hole vertex handles to clear on completion'
   ).toHaveCount(0);
 
-  await checkForScreenshot({
+  await expect(
+    paths,
+    'Expected the contour and its hole to render as a single path'
+  ).toHaveCount(1);
+
+  await checkForViewportScreenshot({
     page,
-    locator: activeViewport.pane,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.livewireContourSegmentation.contourWithHole,
   });
 });
