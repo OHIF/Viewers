@@ -377,7 +377,7 @@ export class RightPanelPageObject {
           };
         },
         get livewireContour() {
-          const button = page.getByTestId('LivewireContourSegmentationTool');
+          const button = page.getByTestId('LivewireContourSegmentationTool-btn');
           return {
             button,
             click: async () => {

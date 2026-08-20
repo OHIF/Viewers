@@ -32,6 +32,7 @@ import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
 import { visitStudyAndHydrate } from './visitStudyAndHydrate';
+import { press, withKeyHeld } from './keyboardUtils';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 import {
@@ -78,6 +79,8 @@ export {
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   waitForPaintToSettle,
+  press,
+  withKeyHeld,
   test,
   expect,
 };
