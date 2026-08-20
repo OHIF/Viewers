@@ -785,6 +785,46 @@ function commandsModule({
     },
 
     /**
+     * Records the instance that the given measurements were just stored as, so
+     * that storing them again offers to extend that series rather than creating
+     * another one.
+     *
+     * The predecessor is kept on the annotation as well as on the measurement,
+     * because the measurement is re-derived from the annotation whenever the
+     * annotation is edited.
+     *
+     * @param props.measurements - the measurements that were stored
+     * @param props.predecessorImageId - imageId of the instance they were stored as
+     * @returns the number of measurements the predecessor was recorded on
+     */
+    recordMeasurementsPredecessor: ({ measurements = [], predecessorImageId }) => {
+      if (!predecessorImageId) {
+        return 0;
+      }
+
+      let recorded = 0;
+
+      for (const { uid } of measurements) {
+        const measurement = measurementService.getMeasurement(uid);
+
+        if (!measurement) {
+          continue;
+        }
+
+        measurement.predecessorImageId = predecessorImageId;
+
+        const targetAnnotation = annotation.state.getAnnotation(uid);
+        if (targetAnnotation) {
+          targetAnnotation.predecessorImageId = predecessorImageId;
+        }
+
+        recorded++;
+      }
+
+      return recorded;
+    },
+
+    /**
      * Jumps to the specified (by uid) measurement in the active viewport.
      * Also marks any provided display measurements isActive value
      */
@@ -2456,6 +2496,9 @@ function commandsModule({
       commandFn: actions.updateMeasurement,
     },
     jumpToMeasurement: actions.jumpToMeasurement,
+    recordMeasurementsPredecessor: {
+      commandFn: actions.recordMeasurementsPredecessor,
+    },
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
