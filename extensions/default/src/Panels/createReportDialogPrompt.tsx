@@ -48,7 +48,7 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  * goes into the same series, superseding the existing instance there.
  */
 export default function CreateReportDialogPrompt({
-  title = 'Create Report',
+  title = 'Save Measurements',
   modality = 'SR',
   minSeriesNumber = 0,
   predecessorImageId,

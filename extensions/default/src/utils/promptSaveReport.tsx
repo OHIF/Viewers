@@ -21,7 +21,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       filterMeasurementsByStudyUID(StudyInstanceUID),
       filterMeasurementsBySeriesUID(trackedSeries)
     ),
-    defaultSaveTitle = 'Create Report',
+    defaultSaveTitle = 'Save Measurements',
     defaultSeriesDescription = 'Measurements',
   } = ctx;
   let displaySetInstanceUIDs;
