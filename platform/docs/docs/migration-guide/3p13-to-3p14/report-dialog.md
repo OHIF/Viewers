@@ -33,6 +33,10 @@ still loaded, since that is the only series it can extend.  Data that has never
 been stored has no predecessor, and is always saved as a new series.  Storing
 into some other arbitrary series of the same modality is no longer offered.
 
+The segmentation and contour dialogs are titled **Save Segmentation** and **Save
+Contours**, having been `Store Segmentation` and `Store Contours`, to match the
+`Save` action in them.  A caller that passes its own `title` is unaffected.
+
 ## `createReportDialogPrompt` input
 
 `defaultSeriesDescription` is new, and optional:
@@ -42,7 +46,7 @@ const { value, series, seriesNumber, dataSourceName, action } =
   await createReportDialogPrompt({
     servicesManager,
     extensionManager,
-    title: 'Store Segmentation',
+    title: 'Save Segmentation',
     modality: 'SEG',
     predecessorImageId,
     // New: the series description offered when a new series is created

@@ -335,7 +335,7 @@ const commandsModule = ({
         servicesManager,
         extensionManager,
         predecessorImageId,
-        title: modality === 'RTSTRUCT' ? 'Store Contours' : 'Store Segmentation',
+        title: modality === 'RTSTRUCT' ? 'Save Contours' : 'Save Segmentation',
         modality,
         defaultSeriesDescription,
         enableDownload: true,
