@@ -53,7 +53,7 @@ export const compareSameSeriesDisplaySet = (a, b) => {
       compareA === compareB
         ? compareA.compare(a, b)
         : compare(compareA.priority, compareB.priority);
-    if (!compareValue) {
+    if (compareValue) {
       return compareValue;
     }
   }
@@ -112,7 +112,13 @@ export const seriesSortCriteria = {
  */
 export const sortByInstanceNumber = (a, b) => {
   if (!a || !b) {
-    return (!a && !b && 0) || (!a && -1) || 1;
+    // Two missing instances are equal.  The `||` chain this replaces treated a
+    // 0 as "no answer" and fell through to -1, so a pair of display sets that
+    // both lack an instance compared as -1 in both directions.
+    if (!a && !b) {
+      return 0;
+    }
+    return a ? 1 : -1;
   }
   const aInstance = parseInt(a.InstanceNumber) || 0;
   const bInstance = parseInt(b.InstanceNumber) || 0;
