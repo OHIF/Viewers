@@ -22,6 +22,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       filterMeasurementsBySeriesUID(trackedSeries)
     ),
     defaultSaveTitle = 'Create Report',
+    defaultSeriesDescription = 'Measurements',
   } = ctx;
   let displaySetInstanceUIDs;
 
@@ -32,6 +33,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     const promptResult = await createReportDialogPrompt({
       title: defaultSaveTitle,
       predecessorImageId,
+      defaultSeriesDescription,
       minSeriesNumber: 3000,
       extensionManager,
       servicesManager,
@@ -39,8 +41,8 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     });
 
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
-      const { series, priorSeriesNumber, value: reportName, dataSourceName } = promptResult;
-      const SeriesDescription = reportName || defaultSaveTitle;
+      const { series, seriesNumber, value: reportName, dataSourceName } = promptResult;
+      const SeriesDescription = reportName || defaultSeriesDescription;
 
       const getReport = async () =>
         commandsManager.runCommand(
@@ -51,7 +53,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
             additionalFindingTypes: ['ArrowAnnotate'],
             options: {
               SeriesDescription,
-              SeriesNumber: 1 + priorSeriesNumber,
+              SeriesNumber: seriesNumber,
               predecessorImageId: series,
             },
           },

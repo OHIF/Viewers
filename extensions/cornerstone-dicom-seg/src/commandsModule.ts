@@ -141,7 +141,7 @@ const commandsModule = ({
           }
 
           const frameIndex = referencedFrameIndexById
-            ? referencedFrameIndexById.get(segImage.referencedImageId) ?? -1
+            ? (referencedFrameIndexById.get(segImage.referencedImageId) ?? -1)
             : z++;
 
           if (frameIndex < 0) {
@@ -322,19 +322,22 @@ const commandsModule = ({
       }
 
       const { label, predecessorImageId } = segmentation;
+      const defaultSeriesDescription =
+        label || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
 
       const {
         value: reportName,
         dataSourceName,
         series,
-        priorSeriesNumber,
+        seriesNumber,
         action,
       } = await createReportDialogPrompt({
         servicesManager,
         extensionManager,
         predecessorImageId,
-        title: 'Store Segmentation',
+        title: modality === 'RTSTRUCT' ? 'Store Contours' : 'Store Segmentation',
         modality,
+        defaultSeriesDescription,
         enableDownload: true,
       });
 
@@ -360,8 +363,8 @@ const commandsModule = ({
           options: {
             // Resolve store overrides against the data source we are storing into.
             dataSource: dataSourceName,
-            SeriesDescription: series ? undefined : reportName || label || 'Contour Series',
-            SeriesNumber: series ? undefined : 1 + priorSeriesNumber,
+            SeriesDescription: series ? undefined : reportName || defaultSeriesDescription,
+            SeriesNumber: series ? undefined : seriesNumber,
             predecessorImageId: series,
           },
         };
