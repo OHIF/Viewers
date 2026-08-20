@@ -1,9 +1,3 @@
-// React Compiler opt-out — PERMANENT, not cleanup debt. Do not remove.
-// TanStack Table's state lives behind methods on objects whose identity is stable
-// across renders, so compiled reads of it freeze at mount.
-// See DataTable.tsx for the full explanation.
-'use no memo';
-
 import * as React from 'react';
 import { TableRow, TableCell } from '../Table';
 import { Input } from '../Input';

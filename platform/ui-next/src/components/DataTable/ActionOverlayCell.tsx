@@ -1,18 +1,14 @@
-// React Compiler opt-out — PERMANENT, not cleanup debt. Do not remove.
-// TanStack Table's state lives behind methods on objects whose identity is stable
-// across renders, so compiled reads of it freeze at mount.
-// See DataTable.tsx for the full explanation.
-'use no memo';
-
 import * as React from 'react';
+import { Subscribe } from '@tanstack/react-table';
 import type { Cell } from '@tanstack/react-table';
+import type { DataTableFeatures } from './DataTable';
 import type { ColumnMeta } from './types';
 
 // Context to share computed values with sub-components
 type ActionOverlayCellContextValue = {
   isActive: boolean;
   computedAlign: 'start' | 'center' | 'end';
-  cell: Cell<unknown, unknown>;
+  cell: Cell<DataTableFeatures, unknown, unknown>;
 };
 
 const ActionOverlayCellContext = React.createContext<ActionOverlayCellContextValue | null>(null);
@@ -22,22 +18,15 @@ const VALUE_TYPE = Symbol('ActionOverlayCell.Value');
 const OVERLAY_TYPE = Symbol('ActionOverlayCell.Overlay');
 
 type ActionOverlayCellProps<TData> = {
-  cell: Cell<TData, unknown>;
+  cell: Cell<DataTableFeatures, TData, unknown>;
   children?: React.ReactNode;
 };
 
 export function ActionOverlayCell<TData>({ cell, children }: ActionOverlayCellProps<TData>) {
-  const isActive = cell.row.getIsSelected();
   const meta = (cell.column.columnDef.meta as ColumnMeta | undefined) ?? undefined;
   const align = meta?.align ?? 'right';
   // Map 'left' | 'center' | 'right' to 'start' | 'center' | 'end' for overlay positioning
   const computedAlign = align === 'left' ? 'start' : align === 'center' ? 'center' : 'end';
-
-  const contextValue: ActionOverlayCellContextValue = {
-    isActive,
-    computedAlign,
-    cell: cell as Cell<unknown, unknown>,
-  };
 
   // Extract Value and Overlay components from children
   // Only Value and Overlay sub-components are recognized; other children are ignored
@@ -56,12 +45,32 @@ export function ActionOverlayCell<TData>({ cell, children }: ActionOverlayCellPr
   });
 
   return (
-    <ActionOverlayCellContext.Provider value={contextValue}>
-      <div className="relative">
-        {valueElement}
-        {overlayElement}
-      </div>
-    </ActionOverlayCellContext.Provider>
+    // Whether this row is selected is table STATE read through `cell`, an
+    // object whose identity is stable across renders — a compiled
+    // cell.row.getIsSelected() here would freeze at mount. Subscribe moves the
+    // read outside this compiled component and hands the value in as a
+    // function argument, which the compiler cannot hoist or cache. (The
+    // getIsSelected() calls in Overlay's event handlers are fine: handlers
+    // execute fresh at event time.)
+    <Subscribe
+      source={cell.row.table.atoms.rowSelection}
+      selector={selection => !!selection[cell.row.id]}
+    >
+      {isActive => (
+        <ActionOverlayCellContext.Provider
+          value={{
+            isActive,
+            computedAlign,
+            cell: cell as Cell<DataTableFeatures, unknown, unknown>,
+          }}
+        >
+          <div className="relative">
+            {valueElement}
+            {overlayElement}
+          </div>
+        </ActionOverlayCellContext.Provider>
+      )}
+    </Subscribe>
   );
 }
 

@@ -1,9 +1,3 @@
-// React Compiler opt-out — PERMANENT, not cleanup debt. Do not remove.
-// TanStack Table's state lives behind methods on objects whose identity is stable
-// across renders, so compiled reads of it freeze at mount. Here that froze
-// pageIndex/pageSize. See DataTable.tsx for the full explanation.
-'use no memo';
-
 import * as React from 'react';
 import { Button } from '../Button';
 import {
@@ -22,7 +16,7 @@ import { useDataTable } from './context';
  */
 export function Pagination<TData>() {
   const { table } = useDataTable<TData>();
-  const { pageIndex, pageSize } = table.getState().pagination ?? { pageIndex: 0, pageSize: 50 };
+  const { pageIndex, pageSize } = table.state.pagination ?? { pageIndex: 0, pageSize: 50 };
 
   const total = table.getFilteredRowModel().rows.length;
   const start = total === 0 ? 0 : pageIndex * pageSize + 1;

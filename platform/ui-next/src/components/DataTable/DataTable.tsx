@@ -1,20 +1,15 @@
-// React Compiler opt-out — PERMANENT, not cleanup debt. Do not remove.
+// This file is compiled by the React Compiler — there is no opt-out here.
 //
-// TanStack Table exposes its state through methods on objects whose identity is
-// deliberately stable across renders — `table.getState()`, `column.getIsSorted()`,
-// `column.getIsVisible()`. The compiler caches those calls keyed on that identity,
-// so every value derived from them freezes at mount: the page number never
-// changes, the sort direction never flips, a visibility check never updates.
-//
-// The compiler already detects this and reports `Compilation Skipped: Use of
-// incompatible library` where `useReactTable` is called — but that verdict does
-// not travel with the table object into the components that receive it through
-// context or props. These directives carry it the rest of the way.
-//
-// Unlike most `'use no memo'` uses in this repo, there is nothing to fix on our
-// side. Stable objects with getters is TanStack's design, so this opt-out is not
-// temporary and must stay for as long as this file reads TanStack state.
-'use no memo';
+// The contract that keeps it correct: TanStack state must never be read
+// through an identity-stable object (a row, cell, column, or header) in
+// render. The compiler caches such reads keyed on the object, which never
+// changes, so the value freezes at mount. Read the replaced-on-change state
+// object instead — table.state.<slice> — and derive from it, or hand the
+// value in through a Subscribe boundary (see ColumnHeader). Method reads
+// keyed on the `table` wrapper itself are safe: useTable returns a fresh
+// wrapper whenever options or subscribed state change. Reads of static
+// column config (columnDef, meta) are safe frozen. Event handlers may call
+// anything — they execute fresh at event time.
 
 import React, {
   type ReactNode,
@@ -31,20 +26,25 @@ import type {
   ColumnDef,
   ColumnFiltersState,
   RowSelectionState,
+  ReactTable,
   SortingState,
-  VisibilityState,
+  ColumnVisibilityState,
   PaginationState,
   Row,
 } from '@tanstack/react-table';
 import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  useReactTable,
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  tableFeatures,
+  useTable,
   flexRender,
 } from '@tanstack/react-table';
-
 import { DataTableContext, DataTableContextValue, useDataTable } from './context';
 import { Toolbar } from './Toolbar';
 import { Title } from './Title';
@@ -66,15 +66,66 @@ import {
 import { ScrollArea } from '../ScrollArea';
 import { cn } from '../../lib/utils';
 
+/**
+ * The feature set for every OHIF DataTable.
+ *
+ * Defined at module scope deliberately: v9 requires `features` to be stable, and
+ * a fresh object each render would invalidate every data-dependent model. The
+ * core row model is automatic in v9 and must not be registered here.
+ *
+ * Client-side filtering is always registered; the `manualFiltering` prop
+ * disables the filtering step at runtime, which is the supported way to support
+ * both client- and server-side filtering from one static feature set.
+ */
+export const dataTableFeatures = tableFeatures({
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
+});
+
+export type DataTableFeatures = typeof dataTableFeatures;
+
+/**
+ * Drops selected row ids that are absent from the table’s currently visible row
+ * model. Returns the given selection unchanged when every selected row is
+ * visible, so callers can use reference identity to detect “nothing to do”.
+ */
+function pruneToVisibleRows<TData>(
+  selection: RowSelectionState,
+  table: ReactTable<DataTableFeatures, TData>
+): RowSelectionState {
+  const selectedIds = Object.keys(selection);
+  if (selectedIds.length === 0) {
+    return selection;
+  }
+  const rows = table.getPaginatedRowModel().rows;
+  const visibleIds = new Set(rows.map(r => r.id));
+  if (selectedIds.every(id => visibleIds.has(id))) {
+    return selection;
+  }
+  const next: RowSelectionState = {};
+  for (const id of selectedIds) {
+    if (visibleIds.has(id)) {
+      next[id] = selection[id];
+    }
+  }
+  return next;
+}
+
 // Type for state update functions that accept either a value or an updater function
 type Updater<T> = T | ((prev: T) => T);
 type OnChangeFn<T> = (updater: Updater<T>) => void;
 
 export type DataTableProps<TData> = {
   data: TData[];
-  columns: ColumnDef<TData, unknown>[];
+  columns: ColumnDef<DataTableFeatures, TData, unknown>[];
   getRowId?: (row: TData, index: number) => string;
-  initialVisibility?: VisibilityState;
+  initialVisibility?: ColumnVisibilityState;
   sorting?: SortingState;
   pagination?: PaginationState;
   filters?: ColumnFiltersState;
@@ -107,10 +158,12 @@ function DataTableRoot<TData>({
   onSelectionChange,
   children,
 }: DataTableProps<TData>) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialVisibility);
+  const [columnVisibility, setColumnVisibility] =
+    useState<ColumnVisibilityState>(initialVisibility);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const table = useReactTable<TData>({
+  const table = useTable<DataTableFeatures, TData>({
+    features: dataTableFeatures,
     data,
     columns,
     state: { sorting, columnVisibility, rowSelection, columnFilters: filters, pagination },
@@ -119,16 +172,32 @@ function DataTableRoot<TData>({
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: onFiltersChange,
     onPaginationChange: onPaginationChange,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: manualFiltering ? undefined : getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     manualFiltering,
     enableRowSelection: true,
     enableMultiRowSelection: !enforceSingleSelection,
     getRowId,
     autoResetPageIndex: false,
   });
+
+  // Invariant: if a row id is in rowSelection, that row is on screen. Enforced
+  // in this one place so every reader — this component, its subcomponents, and
+  // onSelectionChange — gets the same answer with nothing to remember. Keeping
+  // off-screen rows selected and filtering at each point of use instead would
+  // leave two competing notions of what is selected, with the stored one as the
+  // wrong default.
+  //
+  // Adjusted during render rather than from an effect: React discards this
+  // render and re-runs it immediately with the corrected state, so there is no
+  // second commit and the stale selection is never painted.
+  //
+  // Convergence is on us. react-hooks/set-state-in-render permits any guarded
+  // set-state during render without checking that the guard settles, so what
+  // stops the re-render here is pruneToVisibleRows being idempotent and
+  // returning its argument unchanged when every selected row is already visible.
+  const prunedSelection = pruneToVisibleRows(rowSelection, table);
+  if (prunedSelection !== rowSelection) {
+    setRowSelection(prunedSelection);
+  }
 
   // Reset pagination to page 0 when filters or sorting change, but only when
   // pagination itself did not change in the same render. A simultaneous
@@ -155,37 +224,14 @@ function DataTableRoot<TData>({
     }
   }, [filters, sorting, pagination, onPaginationChange]);
 
-  // Deselect rows that are no longer on the current page (after filters +
-  // pagination). Without this, a selected row that gets filtered or paged out
-  // remains in rowSelection — keeping downstream consumers (e.g. a preview
-  // panel) pinned to a study the user can't see.
-  useEffect(() => {
-    const selectedIds = Object.keys(rowSelection);
-    if (selectedIds.length === 0) {
-      return;
-    }
-    const visibleIds = new Set(table.getPaginationRowModel().rows.map(r => r.id));
-    if (selectedIds.every(id => visibleIds.has(id))) {
-      return;
-    }
-    setRowSelection(prev => {
-      const next: RowSelectionState = {};
-      for (const id of Object.keys(prev)) {
-        if (visibleIds.has(id)) {
-          next[id] = prev[id];
-        }
-      }
-      return next;
-    });
-  }, [filters, sorting, pagination, data, table, rowSelection]);
-
-  // Surface selection changes to consumers.
+  // Surface selection changes to consumers. Safe to read the selection whole:
+  // it is pruned to the visible rows above, so it can never contain a row the
+  // user cannot see.
   useEffect(() => {
     if (!onSelectionChange) {
       return;
     }
-    const selected = table.getSelectedRowModel().rows.map(r => r.original as TData);
-    onSelectionChange(selected);
+    onSelectionChange(table.getSelectedRowModel().rows.map(r => r.original as TData));
   }, [rowSelection, onSelectionChange, table]);
 
   return (
@@ -224,10 +270,7 @@ function Table<TData>({ children, className, tableClassName }: TableProps) {
   // by DataTableRoot above us in the tree).
   useResponsiveColumns(table, wrapperRef);
 
-  const rows =
-    typeof table.getPaginationRowModel === 'function'
-      ? table.getPaginationRowModel().rows
-      : table.getRowModel().rows;
+  const rows = table.getPaginatedRowModel().rows;
   const isEmpty = rows.length === 0;
 
   const renderColGroup = useCallback(
@@ -310,10 +353,16 @@ function Table<TData>({ children, className, tableClassName }: TableProps) {
 
 /**
  * Renders the table header row(s) based on the current table instance.
- * Applies meta.headerClassName and a muted background to match StudyList styling.
+ * Applies meta.headerClassName and a muted background for visual separation from the body.
  */
 function Header<TData>() {
   const { table } = useDataTable<TData>();
+  // getHeaderGroups() is identity-stable across a sort change (header groups
+  // do not derive from sorting), so the loop below would not re-run for one.
+  // Reading the sorting state here — an object replaced on every change —
+  // and deriving each column's direction from it makes sorting a dependency
+  // of the loop.
+  const sorting = table.state.sorting;
 
   return (
     <BasicTableHeader>
@@ -322,7 +371,8 @@ function Header<TData>() {
           {headerGroup.headers.map(header => {
             const meta = (header.column.columnDef.meta as ColumnMeta | undefined) ?? undefined;
             const headerClassName = meta?.headerClassName ?? '';
-            const sortState = header.column.getIsSorted() as false | 'asc' | 'desc';
+            const sortEntry = sorting.find(s => s.id === header.column.id);
+            const sortState = sortEntry ? (sortEntry.desc ? 'desc' : 'asc') : false;
 
             return (
               <BasicTableHead
@@ -345,10 +395,10 @@ function Header<TData>() {
 }
 
 type RowProps<TData> = {
-  render?: (row: Row<TData>) => ReactNode;
-  onClick?: (row: Row<TData>) => void;
-  onDoubleClick?: (row: Row<TData>) => void;
-  className?: string | ((row: Row<TData>) => string);
+  render?: (row: Row<DataTableFeatures, TData>) => ReactNode;
+  onClick?: (row: Row<DataTableFeatures, TData>) => void;
+  onDoubleClick?: (row: Row<DataTableFeatures, TData>) => void;
+  className?: string | ((row: Row<DataTableFeatures, TData>) => string);
 };
 
 type BodyProps<TData> = {
@@ -369,25 +419,26 @@ type BodyProps<TData> = {
 
 /**
  * Core body renderer. Keeps awareness of selection state via data-state="selected".
- * Automatically uses pagination if getPaginationRowModel is configured on the table.
+ * Every DataTable is paginated: the paginated row model is registered statically
+ * in dataTableFeatures and pagination state always has a default.
  * Consumers can either rely on the default row renderer or provide a custom one.
  */
-function Body<TData>({
-  rowProps,
-  emptyMessage,
-  isLoading,
-  loadingComponent,
-}: BodyProps<TData>) {
+function Body<TData>({ rowProps, emptyMessage, isLoading, loadingComponent }: BodyProps<TData>) {
   const { t } = useTranslation('DataTable');
   const resolvedEmptyMessage = emptyMessage ?? t('No results.');
   const { table } = useDataTable<TData>();
 
+  // The row-model array is identity-stable across selection and visibility
+  // changes (row models derive from data/filters/sorting/pagination only), so
+  // the row loop below would not re-run for either. Reading both state
+  // objects here — each replaced on every change — and deriving per-row
+  // selection and per-row cells from them makes both dependencies of the loop.
+  const rowSelection = table.state.rowSelection;
+  const columnVisibility = table.state.columnVisibility;
+
   // Automatically determine if pagination should be used
-  // Use pagination if getPaginationRowModel is defined (pagination is configured)
-  const rows =
-    typeof table.getPaginationRowModel === 'function'
-      ? table.getPaginationRowModel().rows
-      : table.getRowModel().rows;
+  // Use pagination if getPaginatedRowModel is defined (pagination is configured)
+  const rows = table.getPaginatedRowModel().rows;
 
   if (!rows.length) {
     if (isLoading && loadingComponent) {
@@ -420,11 +471,12 @@ function Body<TData>({
           return customRender;
         }
 
+        const isSelected = rowSelection[row.id] === true;
         // Default row rendering
         return (
           <BasicTableRow
             key={row.id}
-            data-state={row.getIsSelected() ? 'selected' : undefined}
+            data-state={isSelected ? 'selected' : undefined}
             className={
               rowProps?.className
                 ? typeof rowProps.className === 'function'
@@ -436,20 +488,27 @@ function Body<TData>({
             {...(rowProps?.onDoubleClick && {
               onDoubleClick: () => rowProps.onDoubleClick(row),
             })}
-            aria-selected={row.getIsSelected()}
+            aria-selected={isSelected}
           >
-            {row.getVisibleCells().map(cell => {
-              const metaClass =
-                (cell.column.columnDef.meta as ColumnMeta | undefined)?.cellClassName ?? '';
-              return (
-                <BasicTableCell
-                  key={cell.id}
-                  className={metaClass}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </BasicTableCell>
-              );
-            })}
+            {/* Cells are derived through the visibility map read above rather
+                than row.getVisibleCells(), whose result is reachable only via
+                the identity-stable row. Equivalent while this table has no
+                column ordering/pinning/grouping features. */}
+            {row
+              .getAllCells()
+              .filter(cell => columnVisibility[cell.column.id] !== false)
+              .map(cell => {
+                const metaClass =
+                  (cell.column.columnDef.meta as ColumnMeta | undefined)?.cellClassName ?? '';
+                return (
+                  <BasicTableCell
+                    key={cell.id}
+                    className={metaClass}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </BasicTableCell>
+                );
+              })}
           </BasicTableRow>
         );
       })}

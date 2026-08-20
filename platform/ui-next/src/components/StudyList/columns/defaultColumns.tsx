@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
+import type { DataTableFeatures } from '../../DataTable/DataTable';
 import { DataTable } from '../../DataTable';
 import type { ColumnMeta } from '../../DataTable/types';
 import { Icons } from '../../Icons';
@@ -48,7 +49,7 @@ export function textColumn(
   id: string,
   label: string,
   meta?: Partial<ColumnMeta>
-): ColumnDef<StudyRow, unknown> {
+): ColumnDef<DataTableFeatures, StudyRow, unknown> {
   return {
     id,
     accessorFn: row => (row as Record<string, unknown>)[id] ?? '',
@@ -58,7 +59,7 @@ export function textColumn(
   };
 }
 
-export const defaultColumns: ColumnDef<StudyRow, unknown>[] = [
+export const defaultColumns: ColumnDef<DataTableFeatures, StudyRow, unknown>[] = [
   {
     id: COLUMN_IDS.PATIENT,
     accessorFn: row => {
@@ -134,7 +135,7 @@ export const defaultColumns: ColumnDef<StudyRow, unknown>[] = [
     cell: ({ row }) => {
       return <div className="truncate">{row.getValue(COLUMN_IDS.STUDY_DATE_TIME)}</div>;
     },
-    sortingFn: (a, b) => {
+    sortFn: (a, b) => {
       const aRow = a.original as StudyRow;
       const bRow = b.original as StudyRow;
       const aTimestamp = parseStudyDateTimestamp(aRow.date ?? '', aRow.time ?? '');
@@ -224,7 +225,7 @@ export const defaultColumns: ColumnDef<StudyRow, unknown>[] = [
       const value = row.getValue(COLUMN_IDS.INSTANCES) as number;
       return <div className="text-right">{value}</div>;
     },
-    sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
+    sortFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
     meta: {
       label: 'Instances',
       headerContent: (

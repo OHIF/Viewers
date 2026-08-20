@@ -22,5 +22,9 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `workList.variant` customization are removed. The ui-next `WorkList` is now
   always mounted at `/`, and the legacy `@ohif/ui` package leaves the app graph
   with it.
+- **[DataTable / TanStack Table v9](./data-table.md)** — `@ohif/ui-next` upgrades
+  `@tanstack/react-table` to v9. Column definitions need the `DataTableFeatures`
+  generic and the `sortFn` rename; programmatic visibility toggles should go
+  through `useToggleColumnVisibility`.
 
 <DocCardList />

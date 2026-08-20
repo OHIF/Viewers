@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppConfig } from '@state';
 import type { RunInput } from '@ohif/core/src/classes/CommandsManager';
+import { useCustomization } from '@ohif/core';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
@@ -37,10 +38,12 @@ export default function WorkList({
   commandsManager,
 }: Props) {
   const [appConfig] = useAppConfig();
-  const { customizationService } = servicesManager.services;
-  const LoadingIndicatorProgress = customizationService.getCustomization(
-    'ui.loadingIndicatorProgress'
-  ) as React.ComponentType<{ className?: string }> | undefined;
+  // Customizations are read through useCustomization — it subscribes to the
+  // customization service, so late registrations and runtime changes propagate
+  // instead of freezing at the value seen on first render.
+  const LoadingIndicatorProgress = useCustomization('ui.loadingIndicatorProgress') as
+    | React.ComponentType<{ className?: string }>
+    | undefined;
   const [isFilterPending, setIsFilterPending] = useState(false);
   const showStudyListLoading = Boolean(
     (appConfig.showLoadingIndicator && isLoadingData) || !hasFetchedOnce || isFilterPending
@@ -74,9 +77,7 @@ export default function WorkList({
   // The study and its applicable workflows are merged into the command options
   // at call time, so an override only needs to name a command and any static
   // options (e.g. a specific `workflowId`).
-  const studyDoubleClickCommand = customizationService.getCustomization(
-    'workList.onStudyDoubleClick'
-  ) as RunInput;
+  const studyDoubleClickCommand = useCustomization('workList.onStudyDoubleClick') as RunInput;
   const onStudyDoubleClick = useCallback<OnStudyDoubleClick>(
     (study, { defaultWorkflow, workflows }) => {
       commandsManager.run(studyDoubleClickCommand, { study, defaultWorkflow, workflows });
@@ -84,11 +85,13 @@ export default function WorkList({
     [commandsManager, studyDoubleClickCommand]
   );
 
+  // `workList.columns` is registered as a value (StudyList.defaultColumns) and
+  // merged via customization commands, so we read the result directly.
+  const customizedColumns = useCustomization('workList.columns');
   const columns = useMemo(() => {
-    // `workList.columns` is registered as a value (StudyList.defaultColumns) and
-    // merged via customization commands, so we read the result directly.
-    const customized = customizationService.getCustomization('workList.columns');
-    const resolved = Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    const resolved = Array.isArray(customizedColumns)
+      ? customizedColumns
+      : StudyList.defaultColumns;
     // Expand data-only column specs. A `?customization=` JSONC file (or any
     // serializable source) cannot carry render functions, so an entry that has
     // an `id` but no `accessorFn`/`cell` is turned into a display-only text
@@ -98,7 +101,7 @@ export default function WorkList({
         ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
         : col
     );
-  }, [customizationService]);
+  }, [customizedColumns]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
     <Icons.OHIFLogoHorizontal
@@ -176,7 +179,6 @@ export default function WorkList({
               <SidePanelPreview
                 dataSource={dataSource}
                 selected={selected}
-                servicesManager={servicesManager}
               />
             </StudyList.Preview>
           </StudyList>
@@ -185,4 +187,3 @@ export default function WorkList({
     </div>
   );
 }
-

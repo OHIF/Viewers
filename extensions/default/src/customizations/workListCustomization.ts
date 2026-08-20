@@ -26,7 +26,7 @@ import { StudyList } from '@ohif/ui-next';
  *   column without writing the accessor/header/cell wiring.
  *
  *   Gotchas / limitations:
- *   - A `ColumnDef`'s `accessorFn` / `cell` / `header` / `filterFn` / `sortingFn`
+ *   - A `ColumnDef`'s `accessorFn` / `cell` / `header` / `filterFn` / `sortFn`
  *     are functions: `$set`/`$push` accept them, but they are not serializable,
  *     so columns that render anything beyond plain text still need code.
  *   - The trailing `actions` column should stay last for correct layout (its
