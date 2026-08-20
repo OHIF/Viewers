@@ -13,7 +13,14 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
   return instances.map(instance => {
     const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
-    const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
+    const {
+      SeriesNumber,
+      SeriesDate,
+      SeriesTime,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+      SOPClassUID,
+    } = instance;
     const renderedUrlParams = {
       instance,
       tag: 'EncapsulatedDocument',
@@ -32,7 +39,10 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       displaySetInstanceUID: utils.guid(),
       SeriesDescription,
       SeriesNumber,
-      SeriesDate,
+      // The series sort compares `SeriesDate SeriesTime` as one string, so an
+      // absent value has to be empty rather than undefined.
+      SeriesDate: SeriesDate || '',
+      SeriesTime: SeriesTime || '',
       SOPInstanceUID,
       SeriesInstanceUID,
       StudyInstanceUID,

@@ -55,8 +55,15 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     })
     .map(instance => {
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
-      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
-        instance;
+      const {
+        SeriesNumber,
+        SeriesDate,
+        SeriesTime,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        NumberOfFrames,
+        url,
+      } = instance;
       const videoUrlParams = {
         instance,
         singlepart: 'video',
@@ -73,7 +80,10 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         displaySetInstanceUID: utils.guid(),
         SeriesDescription,
         SeriesNumber,
-        SeriesDate,
+        // The series sort compares `SeriesDate SeriesTime` as one string, so an
+        // absent value has to be empty rather than undefined.
+        SeriesDate: SeriesDate || '',
+        SeriesTime: SeriesTime || '',
         SOPInstanceUID,
         SeriesInstanceUID,
         StudyInstanceUID,
