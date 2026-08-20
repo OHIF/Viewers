@@ -326,6 +326,62 @@ test('should keep overlapping Livewire contours in different segments separate',
   });
 });
 
+test('should not carve out overlapping Livewire contours drawn into separate segments, when shift is held', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+
+  await contourPanel.addSegmentation();
+  await expect(contourPanel.panel.rows).toHaveCount(1);
+  await contourPanel.tools.livewireContour.click();
+
+  const activeViewport = await viewportPageObject.active;
+  const paths = activeViewport.svg('path');
+  const vertexHandles = activeViewport.svg('circle');
+
+  // First contour goes into Segment 1.
+  await activeViewport.clickAt(contourClicks);
+  await expect(vertexHandles, 'Expected the first contour vertices to render').toHaveCount(4);
+  await activeViewport.doubleClickAt(contourClicks[3]);
+  await expect(paths, 'Expected the first contour to be added').toHaveCount(1);
+
+  // Add a second segment and make it the active drawing target.
+  await contourPanel.addSegmentButton.click();
+  await expect(contourPanel.panel.rows, 'Expected a second segment row to be added').toHaveCount(2);
+  await contourPanel.panel.nthSegment(1).click();
+
+  // A Shift stroke cuts into the contours of the segment it is drawn in, so from the
+  // second segment it has nothing to cut and must leave segment 1's contour whole.
+  await withKeyHeld({
+    page,
+    key: 'Shift',
+    action: async () => {
+      await activeViewport.clickAt(overlappingContourClicks);
+      await expect(vertexHandles, 'Expected the second contour vertices to render').toHaveCount(3);
+      await activeViewport.doubleClickAt(overlappingContourClicks[2]);
+    },
+  });
+
+  // The handles clearing is the completion signal, so this settles the draw before the compare.
+  await expect(
+    vertexHandles,
+    'Expected the second contour vertex handles to clear on completion'
+  ).toHaveCount(0);
+
+  // The stroke cuts nothing and creates nothing, so segment 1's contour stays the
+  // only path; the screenshot then verifies it is left whole.
+  await expect(paths, 'Expected the cross-segment Shift stroke to leave a single path').toHaveCount(1);
+
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath:
+      screenShotPaths.livewireContourSegmentation.overlappingContourNotCarvedAcrossSegments,
+  });
+});
+
 test('should cut a hole into a Livewire contour when drawing with Shift held', async ({
   page,
   rightPanelPageObject,
