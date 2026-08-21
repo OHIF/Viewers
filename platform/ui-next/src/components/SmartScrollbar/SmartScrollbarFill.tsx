@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
 import { computeContiguousRuns, computePixelFilledFromMarked } from './utils';
 
@@ -18,13 +18,11 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
 }: SmartScrollbarFillProps) {
   const { trackHeight, effectiveWidth, fillPadding, isLoading } = useSmartScrollbarLayoutContext();
 
-  const runs = useMemo(() => {
-    // Render fill in pixel space so the fill never overstates coverage when
-    // many indices map into a single pixel row (subpixel heights).
-    const pixelCount = Math.max(0, Math.floor(trackHeight - fillPadding * 2));
-    const pixelFilled = computePixelFilledFromMarked(marked, pixelCount);
-    return computeContiguousRuns(pixelFilled);
-  }, [marked, trackHeight, fillPadding]);
+  // Render fill in pixel space so the fill never overstates coverage when
+  // many indices map into a single pixel row (subpixel heights).
+  const pixelCount = Math.max(0, Math.floor(trackHeight - fillPadding * 2));
+  const pixelFilled = computePixelFilledFromMarked(marked, pixelCount);
+  const runs = computeContiguousRuns(pixelFilled);
 
   if (runs.length === 0 || trackHeight === 0) return null;
 
