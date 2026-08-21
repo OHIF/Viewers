@@ -117,6 +117,32 @@ const resolveOpacityScalar = (opacityVal: unknown): number | undefined => {
  * @param options - Options for the hook, including location and displaySetInstanceUID
  * @returns Window level API for the specified viewport
  */
+/**
+ * Resolves the colormap currently applied to the active display set, falling
+ * back to Grayscale (or the first available colormap) when none is applied or
+ * resolution fails.
+ */
+function resolveActiveColormap(
+  viewport,
+  activeDisplaySetInstanceUID,
+  viewportDisplaySets,
+  colormaps
+) {
+  if (!activeDisplaySetInstanceUID || !viewportDisplaySets?.length) {
+    return null;
+  }
+  try {
+    if (!viewport) {
+      return null;
+    }
+    const colormap = getViewportAdapter(viewport).getColormap(activeDisplaySetInstanceUID);
+    return colormap || colormaps?.find(c => c.Name === 'Grayscale') || colormaps?.[0];
+  } catch (error) {
+    console.error('Error getting viewport colormap:', error);
+    return colormaps?.find(c => c.Name === 'Grayscale') || colormaps?.[0];
+  }
+}
+
 export function useViewportRendering(
   viewportId?: string,
   options?: ViewportRenderingOptions
@@ -640,32 +666,20 @@ export function useViewportRendering(
     [validateActiveDisplaySet, viewport]
   );
 
-  // Get the current colormap for the active display set
-  const colormap = useMemo(() => {
-    if (!activeDisplaySetInstanceUID || !viewportDisplaySets?.length) {
-      return null;
-    }
-
-    try {
-      if (!viewport) {
-        return null;
-      }
-
-      const colormap = getViewportAdapter(viewport).getColormap(activeDisplaySetInstanceUID);
-
-      return (
-        colormap ||
-        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-        colorbarProperties?.colormaps?.[0]
-      );
-    } catch (error) {
-      console.error('Error getting viewport colormap:', error);
-      return (
-        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-        colorbarProperties?.colormaps?.[0]
-      );
-    }
-  }, [activeDisplaySetInstanceUID, viewportDisplaySets, colorbarProperties?.colormaps, viewport]);
+  // Get the current colormap for the active display set. Deliberately not
+  // memoized: resolveActiveColormap returns a reference that already exists —
+  // the viewport presentation's colormap, or one of the `colormaps` presets —
+  // rather than constructing one, so repeated calls hand back the same
+  // identity and no consumer sees churn. The lookup is a WeakMap-cached
+  // adapter fetch plus a property read, not worth a dependency comparison.
+  // (It was a useMemo whose optional-chained deps tripped
+  // preserve-manual-memoization.)
+  const colormap = resolveActiveColormap(
+    viewport,
+    activeDisplaySetInstanceUID,
+    viewportDisplaySets,
+    colorbarProperties?.colormaps
+  );
 
   // 3D volume rendering functions
   const setVolumeRenderingPreset = useCallback(

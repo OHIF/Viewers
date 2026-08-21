@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRunCommand, useSystem } from '@ohif/core';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import {
@@ -112,6 +112,8 @@ function LogicalContourOperationOptions() {
       )
     : 1;
 
+  const segmentationId = activeRepresentation?.segmentation?.segmentationId;
+
   const activeSegment = segments.find(segment => segment.active);
 
   const activeSegmentIndex = activeSegment?.segmentIndex || 0;
@@ -132,12 +134,12 @@ function LogicalContourOperationOptions() {
 
   const runCommand = useRunCommand();
 
-  const applyLogicalContourOperation = useCallback(() => {
+  const applyLogicalContourOperation = () => {
     let resultSegmentIndex = segmentA;
     if (createNewSegment) {
       resultSegmentIndex = nextSegmentIndex.toString();
       runCommand('addSegment', {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         config: {
           label: newSegmentName,
           segmentIndex: nextSegmentIndex,
@@ -146,29 +148,20 @@ function LogicalContourOperationOptions() {
     }
     runCommand('applyLogicalContourOperation', {
       segmentAInfo: {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         segmentIndex: parseInt(segmentA),
       },
       segmentBInfo: {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         segmentIndex: parseInt(segmentB),
       },
       resultSegmentInfo: {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         segmentIndex: parseInt(resultSegmentIndex),
       },
       logicalOperation: operation.logicalOperation,
     });
-  }, [
-    activeRepresentation?.segmentation?.segmentationId,
-    createNewSegment,
-    newSegmentName,
-    nextSegmentIndex,
-    operation.logicalOperation,
-    runCommand,
-    segmentA,
-    segmentB,
-  ]);
+  };
 
   return (
     <div className="flex w-[245px] flex-col gap-4">
