@@ -1,5 +1,3 @@
-import React, { useCallback } from 'react';
-//
 import PanelStudyBrowser from './StudyBrowser/PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
 import getStudiesForPatientByMRN from './getStudiesForPatientByMRN';
@@ -19,10 +17,10 @@ function WrappedPanelStudyBrowser() {
   // already determined our datasource
   const [dataSource] = extensionManager.getActiveDataSource();
   const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
-  const _getImageSrcFromImageId = useCallback(
-    _createGetImageSrcFromImageIdFn(extensionManager),
-    []
-  );
+  // Plain call: the React Compiler caches this keyed on extensionManager (a
+  // stable service), so it runs once and keeps a stable identity — what the
+  // old useCallback(fn(), []) wanted, but analyzable and correctly keyed.
+  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(extensionManager);
   const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
     dataSource
