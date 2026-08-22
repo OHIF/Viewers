@@ -1,3 +1,9 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
@@ -80,7 +86,7 @@ const OHIFCornerstoneViewport = React.memo(
 
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
-    const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+    const elementRef = useRef(undefined) as React.MutableRefObject<HTMLDivElement>;
     const viewportRef = useViewportRef(viewportId);
 
     const {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useMemo } from 'react';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 import type { Locale } from 'react-day-picker';
@@ -61,13 +60,8 @@ function Calendar({
   const { i18n } = useTranslation('DatePicker');
   const defaultClassNames = getDefaultClassNames();
 
-  const locale = useMemo(() => {
-    if (localeProp) {
-      return localeProp;
-    }
-    const lang = i18n.language || 'en';
-    return LOCALE_MAP[lang] ?? enUS;
-  }, [i18n.language, localeProp]);
+  const lang = i18n.language || 'en';
+  const locale = localeProp || (LOCALE_MAP[lang] ?? enUS);
 
   return (
     <DayPicker
@@ -114,7 +108,14 @@ function Calendar({
           'relative rounded-md border border-input',
           defaultClassNames.dropdown_root
         ),
-        dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
+        // The native <select> is invisible, but browsers paint its option popup
+        // using this element's own colors — not inherited, and unaffected by
+        // opacity-0. Set them explicitly or the popup falls back to a browser
+        // default background, leaving the theme's near-white text unreadable.
+        dropdown: cn(
+          'bg-popover text-popover-foreground absolute inset-0 opacity-0',
+          defaultClassNames.dropdown
+        ),
         caption_label: cn(
           'select-none font-medium',
           captionLayout === 'label'

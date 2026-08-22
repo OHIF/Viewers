@@ -1,7 +1,6 @@
 // External
 
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter, type BrowserRouterProps } from 'react-router-dom';
@@ -182,27 +181,7 @@ function App({
   );
 }
 
-App.propTypes = {
-  config: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({
-      routerBasename: PropTypes.string,
-      oidc: PropTypes.array,
-      whiteLabeling: PropTypes.object,
-      extensions: PropTypes.array,
-      showLoadingIndicator: PropTypes.bool,
-      showStudyList: PropTypes.bool,
-      modes: PropTypes.array,
-      dataSources: PropTypes.array,
-    }),
-  ]),
-  /* Extensions that are "bundled" or "baked-in" to the application.
-   * These would be provided at build time as part of they entry point. */
-  defaultExtensions: PropTypes.array,
-  /* Modes that are "bundled" or "baked-in" to the application.
-   * These would be provided at build time as part of they entry point. */
-  defaultModes: PropTypes.array,
-};
+
 
 export default App;
 

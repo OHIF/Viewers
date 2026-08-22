@@ -1,6 +1,11 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
-import PropTypes from 'prop-types';
 import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
@@ -457,11 +462,7 @@ function InstanceNumberOverlayItem({
   );
 }
 
-CustomizableViewportOverlay.propTypes = {
-  viewportData: PropTypes.object,
-  imageIndex: PropTypes.number,
-  viewportId: PropTypes.string,
-};
+
 
 export default CustomizableViewportOverlay;
 

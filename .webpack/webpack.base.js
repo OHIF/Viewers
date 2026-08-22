@@ -115,12 +115,19 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
                     {
                       test: /\.[jt]sx?$/,
                       exclude: /node_modules/,
-                      use: {
-                        loader: 'babel-loader',
-                        options: {
-                          presets: ['@babel/preset-typescript', '@babel/preset-react'],
-                          plugins: ['istanbul'],
-                        },
+                      loader: 'babel-loader',
+                      options: {
+                        // Rely on the root babel.config.js (preset-env,
+                        // preset-react automatic runtime, preset-typescript, and
+                        // babel-plugin-react-compiler) and only add coverage
+                        // instrumentation. Supplying inline presets here
+                        // re-added a classic-runtime preset-react that shadowed
+                        // the compiler, so the coverage/e2e builds shipped the
+                        // cleanup-era components without the memoization the
+                        // compiler is meant to restore - breaking behavior (e.g.
+                        // orientation markers after rotate/flip) that works in
+                        // the production and dev builds.
+                        plugins: ['istanbul'],
                       },
                     },
                   ]
