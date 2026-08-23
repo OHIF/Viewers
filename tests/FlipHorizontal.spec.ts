@@ -6,11 +6,16 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should flip the image horizontally', async ({ page, mainToolbarPageObject }) => {
+test('should flip the image horizontally', async ({
+  page,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
   await mainToolbarPageObject.moreTools.flipHorizontal.click();
+
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.flipHorizontal.flipHorizontalDisplayedCorrectly
   );
 });

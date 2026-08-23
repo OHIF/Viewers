@@ -1,4 +1,8 @@
-import { Types, DicomMetadataStore } from '@ohif/core';
+import { Types, DicomMetadataStore, utils } from '@ohif/core';
+import { datasetToDicomBlob, setNonEnumerableInstanceProperty } from './utils/dicomWriter';
+import { registerNaturalizedDatasetsForLocalWadouri } from './utils/registerNaturalizedDatasetForLocalWadouri';
+
+const { downloadBlob } = utils;
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -656,7 +660,9 @@ const commandsModule = ({
       const displaySets = displaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
-      const defaultDisplaySetInstanceUID = displaySetInstanceUID || displaySetInstanceUIDs[0];
+      const defaultDisplaySetInstanceUID =
+        displaySetInstanceUID || displaySetInstanceUIDs[0] || displaySets[0]?.displaySetInstanceUID;
+
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
@@ -729,10 +735,11 @@ const commandsModule = ({
         displaySetIndexToShow > -1 && displaySetIndexToShow < currentDisplaySets.length;
         displaySetIndexToShow += direction
       ) {
-        if (
-          !excludeNonImageModalities ||
-          !nonImageModalities.includes(currentDisplaySets[displaySetIndexToShow].Modality)
-        ) {
+        const nextDisplaySet = currentDisplaySets[displaySetIndexToShow];
+        if (nextDisplaySet.madeInClient) {
+          continue;
+        }
+        if (!excludeNonImageModalities || !nonImageModalities.includes(nextDisplaySet.Modality)) {
           break;
         }
       }
@@ -766,6 +773,102 @@ const commandsModule = ({
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },
+
+    /**
+     * Creates a store function based on the data source type.
+     * @param dataSource - 'download', 'copyToClipboard', or a named data source
+     * @param defaultFileName - Default filename for download/clipboard
+     * @param defaultContentType - Default content type for clipboard
+     * @returns A store function, or null if no valid store exists
+     */
+    createStoreFunction: ({ dataSource, defaultFileName, defaultContentType }) => {
+      if (dataSource === 'download') {
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          registerNaturalizedDatasetsForLocalWadouri(instances);
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Download only supports a single DICOM instance');
+          }
+          const reportBlob = datasetToDicomBlob(instances[0]);
+          downloadBlob(reportBlob, { filename: defaultFileName || 'dicom.dcm' });
+        };
+      }
+
+      if (dataSource === 'copyToClipboard') {
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          registerNaturalizedDatasetsForLocalWadouri(instances);
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Copy to clipboard only supports a single DICOM instance');
+          }
+          const reportBlob = datasetToDicomBlob(instances[0]);
+          const type = defaultContentType || 'application/dicom';
+          await navigator.clipboard.write([
+            new ClipboardItem({ [type]: reportBlob }),
+          ]);
+        };
+      }
+
+      // DICOM STOW path — resolve the named data source
+      const dataSources = extensionManager.getDataSources(dataSource);
+      const resolvedDataSource = dataSources?.[0];
+      if (!resolvedDataSource?.store?.dicom) {
+        return null;
+      }
+
+      return async (dicom, { dicomDict } = {}) => {
+        const instances = Array.isArray(dicom) ? dicom : [dicom];
+        // Always keep an in-memory wadouri copy so DICOM can be read without re-fetching.
+        registerNaturalizedDatasetsForLocalWadouri(instances);
+
+        if (dataSource !== 'dicomlocal') {
+          const config = resolvedDataSource.getConfig?.();
+          if (config?.wadoRoot) {
+            instances.forEach(instance => {
+              setNonEnumerableInstanceProperty(instance, 'wadoRoot', config.wadoRoot);
+            });
+          }
+        }
+
+        DicomMetadataStore.addInstances(instances, true);
+        for (const instance of instances) {
+          await resolvedDataSource.store.dicom(instance, null, dicomDict);
+        }
+        const studyUIDs = new Set(instances.map(i => i.StudyInstanceUID).filter(Boolean));
+        for (const uid of studyUIDs) {
+          resolvedDataSource.deleteStudyMetadataPromise(uid);
+        }
+      };
+    },
+
+    /**
+     * Launches a workflow (mode) for a study from the worklist. This is the
+     * default `workList.onStudyDoubleClick` command.
+     *
+     * @param study - the StudyRow the action applies to
+     * @param workflows - the workflows applicable to the study, in menu order;
+     *   each has `id`, `displayName`, `isDefault` and `launchWithStudy(study)`
+     * @param defaultWorkflow - the user's default workflow when it applies to
+     *   the study
+     * @param workflowId - command option to force a specific workflow (mode id)
+     *   instead of the default/first applicable one
+     */
+    launchDefaultMode: ({ study, workflows = [], defaultWorkflow, workflowId }) => {
+      const workflow = workflowId
+        ? workflows.find(w => w.id === workflowId)
+        : (defaultWorkflow ?? workflows[0]);
+      if (!workflow) {
+        console.warn(
+          workflowId
+            ? `launchDefaultMode: workflow '${workflowId}' is not applicable to the study`
+            : 'launchDefaultMode: no workflow is applicable to the study'
+        );
+        return;
+      }
+      workflow.launchWithStudy(study);
+    },
   };
 
   const definitions = {
@@ -794,6 +897,11 @@ const commandsModule = ({
     scrollActiveThumbnailIntoView: actions.scrollActiveThumbnailIntoView,
     addDisplaySetAsLayer: actions.addDisplaySetAsLayer,
     removeDisplaySetLayer: actions.removeDisplaySetLayer,
+    createStoreFunction: actions.createStoreFunction,
+    launchDefaultMode: {
+      commandFn: actions.launchDefaultMode,
+      context: 'WORKLIST',
+    },
   };
 
   return {

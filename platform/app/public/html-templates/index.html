@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!--
+      Content-Security-Policy is delivered via hosting headers (netlify.toml
+      for Netlify deploys; commented add_header examples in the nginx
+      recipes under platform/app/.recipes), not as a meta tag: a meta tag
+      cannot express Report-Only mode. See the deployment docs
+      (docs/deployment) for the policy and the criteria for promoting it
+      from Report-Only to enforcing.
+    -->
     <meta charset="UTF-8" />
     <meta
       name="viewport"

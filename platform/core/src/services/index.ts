@@ -22,6 +22,8 @@ import CollaborationService from './CollaborationService';
 
 import type Services from '../types/Services';
 
+export * from './CustomizationService/customizationUrl';
+
 export {
   Services,
   MeasurementService,

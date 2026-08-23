@@ -2,11 +2,15 @@ import dcmjs from 'dcmjs';
 import { classes, Types, utils } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
-import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
+import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
-import { DicomMetadataStore } from '@ohif/core';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
+import {
+  getSegmentationSaveOptions,
+  LABELMAP_SEG_SOP_CLASS_UID,
+  BITMAP_SEG_SOP_CLASS_UID,
+} from './utils/segmentationConfig';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -29,13 +33,12 @@ const {
   },
 } = adaptersRT;
 
-const { downloadDICOMData } = helpers;
-
 const commandsModule = ({
   servicesManager,
   extensionManager,
+  commandsManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const { segmentationService, displaySetService, viewportGridService } =
+  const { segmentationService, displaySetService, viewportGridService, customizationService } =
     servicesManager.services as AppTypes.Services;
 
   const actions = {
@@ -89,49 +92,85 @@ const commandsModule = ({
      * @returns Returns the generated segmentation data.
      */
     generateSegmentation: ({ segmentationId, options = {} }) => {
+      // `dataSource` (a data source name) is consumed here to resolve the store
+      // overrides; it must not be forwarded to the adapter's generateSegmentation.
+      const { dataSource: dataSourceName, ...generateOptions } = options;
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
-      const predecessorImageId = options.predecessorImageId ?? segmentation.predecessorImageId;
+      const predecessorImageId =
+        generateOptions.predecessorImageId ?? segmentation.predecessorImageId;
 
-      const { imageIds } = segmentation.representationData.Labelmap;
+      // A data source may override the app-wide `segmentation.store.*` defaults
+      // via `configuration.segmentation.store` (different back ends support
+      // different SEG encodings). Use the named target data source when storing,
+      // otherwise the active one (e.g. download).
+      const dataSourceDefinition = dataSourceName
+        ? extensionManager.getDataSourceDefinition(dataSourceName)
+        : extensionManager.getActiveDataSourceDefinition();
+      const dataSourceStoreOverride = dataSourceDefinition?.configuration?.segmentation?.store;
 
-      const segImages = imageIds.map(imageId => cache.getImage(imageId));
-      const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
+      const labelmapData = segmentation.representationData.Labelmap;
 
-      const labelmaps2D = [];
+      // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
+      // derived labelmap image ids. When `referencedImageIds` is supplied (the
+      // multi-layer/overlap path) each frame is indexed by its source slice so the
+      // layers align to the same frames; otherwise frames are sequential (the legacy
+      // single-layer behavior, kept byte-identical).
+      const buildLabelmap3D = (segImageIds: string[], metadata, referencedImageIds?: string[]) => {
+        const segImages = segImageIds.map(imageId => cache.getImage(imageId));
+        const labelmaps2D = [];
 
-      let z = 0;
+        // Map each source imageId to its frame index once (O(n)) so the per-slice lookup
+        // below is O(1) — avoids the O(slices^2) indexOf scan on the multi-layer path.
+        const referencedFrameIndexById = referencedImageIds
+          ? new Map(referencedImageIds.map((imageId, index) => [imageId, index]))
+          : undefined;
 
-      for (const segImage of segImages) {
-        const segmentsOnLabelmap = new Set();
-        const pixelData = segImage.getPixelData();
-        const { rows, columns } = segImage;
+        let z = 0;
 
-        // Use a single pass through the pixel data
-        for (let i = 0; i < pixelData.length; i++) {
-          const segment = pixelData[i];
-          if (segment !== 0) {
-            segmentsOnLabelmap.add(segment);
+        for (const segImage of segImages) {
+          const segmentsOnLabelmap = new Set();
+          const pixelData = segImage.getPixelData();
+          const { rows, columns } = segImage;
+
+          // Use a single pass through the pixel data
+          for (let i = 0; i < pixelData.length; i++) {
+            const segment = pixelData[i];
+            if (segment !== 0) {
+              segmentsOnLabelmap.add(segment);
+            }
           }
+
+          const frameIndex = referencedFrameIndexById
+            ? referencedFrameIndexById.get(segImage.referencedImageId) ?? -1
+            : z++;
+
+          if (frameIndex < 0) {
+            continue;
+          }
+
+          labelmaps2D[frameIndex] = {
+            segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
+            pixelData,
+            rows,
+            columns,
+          };
         }
 
-        labelmaps2D[z++] = {
-          segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
-          pixelData,
-          rows,
-          columns,
+        const allSegmentsOnLabelmap = labelmaps2D
+          .filter(Boolean)
+          .map(labelmap => labelmap.segmentsOnLabelmap);
+
+        return {
+          segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+          metadata,
+          labelmaps2D,
         };
-      }
-
-      const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
-
-      const labelmap3D = {
-        segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
-        metadata: [],
-        labelmaps2D,
       };
 
+      // Segment metadata (shared across all layers).
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       const representations = segmentationService.getRepresentationsForSegmentation(segmentationId);
+      const metadata = [];
 
       Object.entries(segmentationInOHIF.segments).forEach(([segmentIndex, segment]) => {
         // segmentation service already has a color for each segment
@@ -152,7 +191,7 @@ const commandsModule = ({
           color.slice(0, 3).map(value => value / 255)
         ).map(value => Math.round(value));
 
-        const segmentMetadata = {
+        metadata[segmentIndex] = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
           SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
@@ -169,13 +208,76 @@ const commandsModule = ({
             CodeMeaning: 'Tissue',
           },
         };
-        labelmap3D.metadata[segmentIndex] = segmentMetadata;
       });
 
-      const generatedSegmentation = generateSegmentation(referencedImages, labelmap3D, metaData, {
+      // Multi-layer (overlapping) SEGs register one labelmap layer per conflict-free
+      // group. Export each layer as its own labelmap3D against the UNIQUE referenced
+      // source series, so cornerstone writes overlapping segments as separate frames
+      // that reference the same source slice (the DICOM SEG overlap encoding). The
+      // cs3D adapter's fillSegmentation accepts an array of labelmap3D for exactly
+      // this. Single-layer SEGs keep the original single-labelmap3D path unchanged.
+      const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
+
+      // The referenced source images must be fully loaded (in cache) before we can
+      // build the SEG dataset against them; fail loudly rather than passing undefined
+      // frames to the adapter.
+      const resolveReferencedImage = (referencedImageId: string, sliceIndex: number) => {
+        const referencedImage = cache.getImage(referencedImageId);
+        if (!referencedImage) {
+          throw new Error(
+            `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+              `(referencedImageId: ${referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+          );
+        }
+        return referencedImage;
+      };
+
+      let referencedImages;
+      let labelmaps3D;
+
+      if (layers && layers.length > 1) {
+        const referencedImageIds =
+          layers[0].referencedImageIds ?? labelmapData.referencedImageIds ?? [];
+        referencedImages = referencedImageIds.map(resolveReferencedImage);
+        labelmaps3D = layers.map(layer =>
+          buildLabelmap3D(layer.imageIds ?? [], metadata, referencedImageIds)
+        );
+      } else {
+        const { imageIds } = labelmapData;
+        const segImages = imageIds.map(imageId => cache.getImage(imageId));
+        referencedImages = segImages.map((image, sliceIndex) =>
+          resolveReferencedImage(image.referencedImageId, sliceIndex)
+        );
+        labelmaps3D = buildLabelmap3D(imageIds, metadata);
+      }
+
+      const saveOptions = {
         predecessorImageId,
-        ...options,
-      });
+        ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
+        ...generateOptions,
+      };
+
+      // A LABELMAP SEG frame stores a single label per voxel, so the labelmap
+      // encoder cannot represent overlapping segments — it keeps only the last
+      // layer written to each voxel. Overlapping segmentations arrive here as
+      // multiple layers, so switch those to the binary SEG encoding, which
+      // writes overlapping segments as separate frames referencing the same
+      // source slice.
+      const hasOverlappingLayers = Boolean(layers && layers.length > 1);
+      if (hasOverlappingLayers && saveOptions.sopClassUID === LABELMAP_SEG_SOP_CLASS_UID) {
+        console.warn(
+          'generateSegmentation: overlapping segments cannot be stored as a LABELMAP SEG; ' +
+            'switching to the binary SEG encoding for this store.'
+        );
+        saveOptions.sopClassUID = BITMAP_SEG_SOP_CLASS_UID;
+      }
+
+      const generatedSegmentation = generateSegmentation(
+        referencedImages,
+        labelmaps3D,
+        metaData,
+        saveOptions
+      );
 
       return generatedSegmentation;
     },
@@ -194,8 +296,11 @@ const commandsModule = ({
       const generatedSegmentation = actions.generateSegmentation({
         segmentationId,
       });
-
-      downloadDICOMData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
+      const storeFn = commandsManager.runCommand('createStoreFunction', {
+        dataSource: 'download',
+        defaultFileName: `${segmentationInOHIF.label}.dcm`,
+      });
+      storeFn(generatedSegmentation.dataset);
     },
     /**
      * Stores a segmentation based on the provided segmentationId into a specified data source.
@@ -217,11 +322,10 @@ const commandsModule = ({
       }
 
       const { label, predecessorImageId } = segmentation;
-      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource()[0];
 
       const {
         value: reportName,
-        dataSourceName: selectedDataSource,
+        dataSourceName,
         series,
         priorSeriesNumber,
         action,
@@ -231,55 +335,65 @@ const commandsModule = ({
         predecessorImageId,
         title: 'Store Segmentation',
         modality,
+        enableDownload: true,
       });
 
-      if (action === PROMPT_RESPONSES.CREATE_REPORT) {
-        try {
-          const selectedDataSourceConfig = selectedDataSource
-            ? extensionManager.getDataSources(selectedDataSource)[0]
-            : defaultDataSource;
+      if (action !== PROMPT_RESPONSES.CREATE_REPORT) {
+        return;
+      }
 
-          const args = {
-            segmentationId,
-            options: {
-              SeriesDescription: series ? undefined : reportName || label || 'Contour Series',
-              SeriesNumber: series ? undefined : 1 + priorSeriesNumber,
-              predecessorImageId: series,
-            },
-          };
-          const generatedDataAsync =
-            (modality === 'SEG' && actions.generateSegmentation(args)) ||
-            (modality === 'RTSTRUCT' && actions.generateContour(args));
-          const generatedData = await generatedDataAsync;
+      const defaultFileName =
+        modality === 'RTSTRUCT' ? `rtss-${segmentationId}.dcm` : `${label || 'segmentation'}.dcm`;
 
-          if (!generatedData || !generatedData.dataset) {
-            throw new Error('Error during segmentation generation');
-          }
+      const storeFn = commandsManager.runCommand('createStoreFunction', {
+        dataSource: dataSourceName,
+        defaultFileName,
+      });
 
-          const { dataset: naturalizedReport } = generatedData;
+      if (!storeFn) {
+        throw new Error(`No valid store for dataSource: ${dataSourceName}`);
+      }
 
-          // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
-          if (naturalizedReport.StudyID === 'No Study ID') {
-            naturalizedReport.StudyID = '';
-          }
+      try {
+        const args = {
+          segmentationId,
+          options: {
+            // Resolve store overrides against the data source we are storing into.
+            dataSource: dataSourceName,
+            SeriesDescription: series ? undefined : reportName || label || 'Contour Series',
+            SeriesNumber: series ? undefined : 1 + priorSeriesNumber,
+            predecessorImageId: series,
+          },
+        };
+        const generatedDataAsync =
+          (modality === 'SEG' && actions.generateSegmentation(args)) ||
+          (modality === 'RTSTRUCT' && actions.generateContour(args));
+        const generatedData = await generatedDataAsync;
 
-          await selectedDataSourceConfig.store.dicom(naturalizedReport);
-
-          // add the information for where we stored it to the instance as well
-          naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
-
-          DicomMetadataStore.addInstances([naturalizedReport], true);
-
-          return naturalizedReport;
-        } catch (error) {
-          console.debug('Error storing segmentation:', error);
-          throw error;
+        if (!generatedData?.dataset) {
+          throw new Error('Error during segmentation generation');
         }
+
+        const { dataset: naturalizedReport } = generatedData;
+
+        // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
+        if (naturalizedReport.StudyID === 'No Study ID') {
+          naturalizedReport.StudyID = '';
+        }
+
+        await storeFn(naturalizedReport, {});
+
+        return naturalizedReport;
+      } catch (error) {
+        console.debug('Error storing segmentation:', error);
+        throw error;
       }
     },
 
     generateContour: async args => {
       const { segmentationId, options } = args;
+      // `dataSource` is only used by the SEG store path; keep it out of the RTSS options.
+      const { dataSource: _dataSource, ...contourOptions } = options ?? {};
       const segmentations = segmentationService.getSegmentation(segmentationId);
 
       // inject colors to the segmentIndex
@@ -292,10 +406,11 @@ const commandsModule = ({
           Number(segmentIndex)
         );
       });
-      const predecessorImageId = options?.predecessorImageId ?? segmentations.predecessorImageId;
+      const predecessorImageId =
+        contourOptions.predecessorImageId ?? segmentations.predecessorImageId;
       const dataset = await generateRTSSFromRepresentation(segmentations, {
         predecessorImageId,
-        ...options,
+        ...contourOptions,
       });
       return { dataset };
     },
@@ -307,14 +422,11 @@ const commandsModule = ({
     downloadRTSS: async args => {
       const { dataset } = await actions.generateContour(args);
       const { InstanceNumber: instanceNumber = 1, SeriesInstanceUID: seriesUID } = dataset;
-
-      try {
-        //Create a URL for the binary.
-        const filename = `rtss-${seriesUID}-${instanceNumber}.dcm`;
-        downloadDICOMData(dataset, filename);
-      } catch (e) {
-        console.warn(e);
-      }
+      const storeFn = commandsManager.runCommand('createStoreFunction', {
+        dataSource: 'download',
+        defaultFileName: `rtss-${seriesUID}-${instanceNumber}.dcm`,
+      });
+      await storeFn(dataset);
     },
 
     toggleActiveSegmentationUtility: ({ itemId: buttonId }) => {

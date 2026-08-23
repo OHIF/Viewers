@@ -1,101 +1,44 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
-import moment from 'moment';
-import qs from 'query-string';
-import isEqual from 'lodash.isequal';
-import { useTranslation } from 'react-i18next';
-//
-import filtersMeta from './filtersMeta.js';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { useAppConfig } from '@state';
-import { useDebounce, useSearchParams } from '../../hooks';
-import { utils, Types as coreTypes } from '@ohif/core';
+import type { RunInput } from '@ohif/core/src/classes/CommandsManager';
+import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
+import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
 import {
-  StudyListExpandedRow,
-  EmptyStudies,
-  StudyListTable,
-  StudyListPagination,
-  StudyListFilter,
-  Button,
-  ButtonEnums,
-} from '@ohif/ui';
-
-import {
-  Header,
+  StudyList,
   Icons,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  Clipboard,
-  useModal,
-  useSessionStorage,
-  Onboarding,
-  ScrollArea,
   InvestigationalUseDialog,
+  useSessionStorage,
+  type StudyRow,
+  type OnStudyDoubleClick,
 } from '@ohif/ui-next';
+import { StudyListSettingsPopover } from './StudyListSettingsPopover';
+import { SidePanelPreview } from './SidePanelPreview';
 
-import { Types } from '@ohif/ui';
+type Props = withAppTypes & {
+  data: any[];
+  dataSource: any;
+  isLoadingData: boolean;
+  hasFetchedOnce?: boolean;
+  dataPath?: string;
+  onRefresh: () => void;
+};
 
-import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
-
-const PatientInfoVisibility = Types.PatientInfoVisibility;
-
-const { sortBySeriesDate } = utils;
-
-const seriesInStudiesMap = new Map();
-
-/**
- * TODO:
- * - debounce `setFilterValues` (150ms?)
- */
-function WorkList({
-  data: studies,
-  dataTotal: studiesTotal,
-  isLoadingData,
+export default function WorkList({
+  data,
   dataSource,
-  hotkeysManager,
+  isLoadingData,
+  hasFetchedOnce = false,
   dataPath,
   onRefresh,
   servicesManager,
-}: withAppTypes) {
-  const { show, hide } = useModal();
-  const { t } = useTranslation();
-  // ~ Modes
+  extensionManager,
+  commandsManager,
+}: Props) {
   const [appConfig] = useAppConfig();
-  // ~ Filters
-  const searchParams = useSearchParams();
-  const navigate = useNavigate();
-  const STUDIES_LIMIT = 101;
-  const queryFilterValues = _getQueryFilterValues(searchParams);
-  const [sessionQueryFilterValues, updateSessionQueryFilterValues] = useSessionStorage({
-    key: 'queryFilterValues',
-    defaultValue: queryFilterValues,
-    // ToDo: useSessionStorage currently uses an unload listener to clear the filters from session storage
-    // so on systems that do not support unload events a user will NOT be able to alter any existing filter
-    // in the URL, load the page and have it apply.
-    clearOnUnload: true,
-  });
-  const [filterValues, _setFilterValues] = useState({
-    ...defaultFilterValues,
-    ...sessionQueryFilterValues,
-  });
-
-  const debouncedFilterValues = useDebounce(filterValues, 200);
-  const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
-
-  /*
-   * The default sort value keep the filters synchronized with runtime conditional sorting
-   * Only applied if no other sorting is specified and there are less than 101 studies
-   */
-
-  const canSort = studiesTotal < STUDIES_LIMIT;
-  const shouldUseDefaultSort = sortBy === '' || !sortBy;
-  const sortModifier = sortDirection === 'descending' ? 1 : -1;
-  const defaultSortValues =
-    shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
   const { customizationService } = servicesManager.services;
+<<<<<<< HEAD
 
   const sortedStudies = useMemo(() => {
     if (!canSort) {
@@ -515,185 +458,153 @@ function WorkList({
     });
   }
 
+=======
+>>>>>>> 42b6231b81808e4fa7b64c262e41d01dc7f90310
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
+  ) as React.ComponentType<{ className?: string }> | undefined;
+  const [isFilterPending, setIsFilterPending] = useState(false);
+  const showStudyListLoading = Boolean(
+    (appConfig.showLoadingIndicator && isLoadingData) || !hasFetchedOnce || isFilterPending
   );
-  const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent');
 
-  const uploadProps =
-    DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
-      ? {
-          title: 'Upload files',
-          containerClassName: DicomUploadComponent?.containerClassName,
-          closeButton: true,
-          shouldCloseOnEsc: false,
-          shouldCloseOnOverlayClick: false,
-          content: () => (
-            <DicomUploadComponent
-              dataSource={dataSource}
-              onComplete={() => {
-                hide();
-                onRefresh();
-              }}
-              onStarted={() => {
-                show({
-                  ...uploadProps,
-                  // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
-                  closeButton: false,
-                });
-              }}
-            />
-          ),
-        }
-      : undefined;
+  // Sync table state (sorting, pagination, filters) with URL and sessionStorage
+  const { sorting, pagination, filters, setSorting, setPagination, setFilters } =
+    useStudyListStateSync();
 
-  const dataSourceConfigurationComponent = customizationService.getCustomization(
-    'ohif.dataSourceConfigurationComponent'
+  // Default sorting if no URL state exists
+  const defaultSorting = useMemo(() => [{ id: 'studyDateTime', desc: true }], []);
+
+  const [selected, setSelected] = useState<StudyRow | null>(null);
+
+  // Persist the preview panel open/closed state so it survives navigating
+  // into a study and back. The hook only handles objects, hence the wrapper.
+  const [previewState, updatePreviewState] = useSessionStorage({
+    key: 'studyList.previewOpen',
+    defaultValue: { open: true },
+    clearOnUnload: false,
+  });
+  const isPreviewOpen = previewState.open !== false;
+  const setPreviewOpen = useCallback(
+    (open: boolean) => updatePreviewState({ open }),
+    [updatePreviewState]
   );
+
+  // `workList.onStudyDoubleClick` is the command (or command list) run when a
+  // study row is double-clicked — by default `launchDefaultMode`, which
+  // launches the default workflow, falling back to the first applicable one.
+  // The study and its applicable workflows are merged into the command options
+  // at call time, so an override only needs to name a command and any static
+  // options (e.g. a specific `workflowId`).
+  const studyDoubleClickCommand = customizationService.getCustomization(
+    'workList.onStudyDoubleClick'
+  ) as RunInput;
+  const onStudyDoubleClick = useCallback<OnStudyDoubleClick>(
+    (study, { defaultWorkflow, workflows }) => {
+      commandsManager.run(studyDoubleClickCommand, { study, defaultWorkflow, workflows });
+    },
+    [commandsManager, studyDoubleClickCommand]
+  );
+
+  const columns = useMemo(() => {
+    // `workList.columns` is registered as a value (StudyList.defaultColumns) and
+    // merged via customization commands, so we read the result directly.
+    const customized = customizationService.getCustomization('workList.columns');
+    const resolved = Array.isArray(customized) ? customized : StudyList.defaultColumns;
+    // Expand data-only column specs. A `?customization=` JSONC file (or any
+    // serializable source) cannot carry render functions, so an entry that has
+    // an `id` but no `accessorFn`/`cell` is turned into a display-only text
+    // column that reads `row[id]` — matching `StudyList.textColumn`.
+    return resolved.map((col: any) =>
+      col && typeof col === 'object' && col.id && !col.accessorFn && !col.cell
+        ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
+        : col
+    );
+  }, [customizationService]);
+
+  const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
+    <Icons.OHIFLogoHorizontal
+      aria-label="OHIF logo"
+      className="h-[22px] w-[232px]"
+    />
+  );
+
+  const toolbarActions = useWorkListToolbarActions(servicesManager, dataSource, onRefresh);
+
+  const previewDefaultSize = useMemo(() => {
+    if (typeof window !== 'undefined' && window.innerWidth > 0) {
+      const percent = (325 / window.innerWidth) * 100;
+      return Math.min(Math.max(percent, 15), 50);
+    }
+    return 30;
+  }, []);
+
+  useEffect(() => {
+    if (isLoadingData) {
+      return;
+    }
+    setIsFilterPending(false);
+  }, [isLoadingData, data]);
 
   return (
-    <div className="flex h-screen flex-col bg-black">
-      <Header
-        isSticky
-        menuOptions={menuOptions}
-        isReturnEnabled={false}
-        WhiteLabeling={appConfig.whiteLabeling}
-        showPatientInfo={PatientInfoVisibility.DISABLED}
-      />
-      <Onboarding />
+    <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-black">
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="flex h-full flex-col overflow-y-auto">
-        <ScrollArea>
-          <div className="flex grow flex-col">
-            <StudyListFilter
-              numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-              filtersMeta={filtersMeta}
-              filterValues={{ ...filterValues, ...defaultSortValues }}
-              onChange={setFilterValues}
-              clearFilters={() => setFilterValues(defaultFilterValues)}
-              isFiltering={isFiltering(filterValues, defaultFilterValues)}
-              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
-              getDataSourceConfigurationComponent={
-                dataSourceConfigurationComponent
-                  ? () => dataSourceConfigurationComponent()
-                  : undefined
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <StudyList
+            loadedModes={appConfig?.loadedModes ?? []}
+            preserveQueryParameters={preserveQueryParameters}
+            dataPath={dataPath}
+            isPreviewOpen={isPreviewOpen}
+            onIsPreviewOpenChange={setPreviewOpen}
+            defaultPreviewSizePercent={previewDefaultSize}
+            className="h-full w-full"
+          >
+            <StudyList.Table
+              columns={columns}
+              data={data as StudyRow[]}
+              sorting={sorting.length > 0 ? sorting : defaultSorting}
+              pagination={pagination}
+              filters={filters}
+              onSortingChange={setSorting}
+              onPaginationChange={setPagination}
+              onFiltersChange={updater => {
+                setIsFilterPending(true);
+                setFilters(updater);
+              }}
+              isLoading={showStudyListLoading}
+              loadingComponent={
+                LoadingIndicatorProgress ? (
+                  <LoadingIndicatorProgress className="bg-background !relative" />
+                ) : (
+                  <div className="h-8 w-8" />
+                )
+              }
+              title={'Study List'}
+              onStudyDoubleClick={studyDoubleClickCommand ? onStudyDoubleClick : undefined}
+              onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
+              toolbarLeftComponent={logoComponent}
+              toolbarRightActionsComponent={toolbarActions}
+              toolbarRightComponent={
+                !isPreviewOpen ? (
+                  <div className="relative -top-px mt-1 ml-2 flex items-center gap-1">
+                    <StudyListSettingsPopover />
+                    <StudyList.OpenPreviewButton />
+                  </div>
+                ) : undefined
               }
             />
-          </div>
-          {hasStudies ? (
-            <div className="flex grow flex-col">
-              <StudyListTable
-                tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-                numOfStudies={numOfStudies}
-                querying={querying}
-                filtersMeta={filtersMeta}
+            <StudyList.Preview>
+              <SidePanelPreview
+                dataSource={dataSource}
+                selected={selected}
+                servicesManager={servicesManager}
               />
-              <div className="grow">
-                <StudyListPagination
-                  onChangePage={onPageNumberChange}
-                  onChangePerPage={onResultsPerPageChange}
-                  currentPage={pageNumber}
-                  perPage={resultsPerPage}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center pt-48">
-              {appConfig.showLoadingIndicator && isLoadingData ? (
-                <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
-              ) : (
-                <EmptyStudies />
-              )}
-            </div>
-          )}
-        </ScrollArea>
+            </StudyList.Preview>
+          </StudyList>
+        </div>
       </div>
     </div>
   );
 }
 
-WorkList.propTypes = {
-  data: PropTypes.array.isRequired,
-  dataSource: PropTypes.shape({
-    query: PropTypes.object.isRequired,
-    getConfig: PropTypes.func,
-  }).isRequired,
-  isLoadingData: PropTypes.bool.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
-
-const defaultFilterValues = {
-  patientName: '',
-  mrn: '',
-  studyDate: {
-    startDate: null,
-    endDate: null,
-  },
-  description: '',
-  modalities: [],
-  accession: '',
-  sortBy: '',
-  sortDirection: 'none',
-  pageNumber: 1,
-  resultsPerPage: 25,
-  datasources: '',
-};
-
-function _tryParseInt(str, defaultValue) {
-  let retValue = defaultValue;
-  if (str && str.length > 0) {
-    if (!isNaN(str)) {
-      retValue = parseInt(str);
-    }
-  }
-  return retValue;
-}
-
-function _getQueryFilterValues(params) {
-  const newParams = new URLSearchParams();
-  for (const [key, value] of params) {
-    newParams.set(key.toLowerCase(), value);
-  }
-  params = newParams;
-
-  const queryFilterValues = {
-    patientName: params.get('patientname'),
-    mrn: params.get('mrn'),
-    studyDate: {
-      startDate: params.get('startdate') || null,
-      endDate: params.get('enddate') || null,
-    },
-    description: params.get('description'),
-    modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
-    accession: params.get('accession'),
-    sortBy: params.get('sortby'),
-    sortDirection: params.get('sortdirection'),
-    pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
-    resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
-    datasources: params.get('datasources'),
-    configUrl: params.get('configurl'),
-  };
-
-  // Delete null/undefined keys
-  Object.keys(queryFilterValues).forEach(
-    key => queryFilterValues[key] == null && delete queryFilterValues[key]
-  );
-
-  return queryFilterValues;
-}
-
-function _sortStringDates(s1, s2, sortModifier) {
-  // TODO: Delimiters are non-standard. Should we support them?
-  const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-  const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-
-  if (s1Date.isValid() && s2Date.isValid()) {
-    return (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier;
-  } else if (s1Date.isValid()) {
-    return sortModifier;
-  } else if (s2Date.isValid()) {
-    return -1 * sortModifier;
-  }
-}
-
-export default WorkList;

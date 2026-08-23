@@ -12,11 +12,20 @@ const arrowClasses =
  */
 function ViewportActionArrows({ onArrowsClick, className }) {
   return (
-    <div className={classNames(className, 'flex')}>
-      <div className={arrowClasses}>
+    <div
+      data-cy="viewport-action-arrows"
+      className={classNames(className, 'flex')}
+    >
+      <div
+        data-cy="viewport-action-arrows-left"
+        className={arrowClasses}
+      >
         <Icons.ArrowLeftBold onClick={() => onArrowsClick(-1)} />
       </div>
-      <div className={arrowClasses}>
+      <div
+        data-cy="viewport-action-arrows-right"
+        className={arrowClasses}
+      >
         <Icons.ArrowRightBold onClick={() => onArrowsClick(1)} />
       </div>
     </div>

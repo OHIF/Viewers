@@ -33,14 +33,43 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   }
 
   const { renderedUrl } = displaySets[0];
+  const { getRenderedUrl } = displaySets[0];
 
   useEffect(() => {
+    let isCancelled = false;
+    let revokeUrl;
+    const abortController = new AbortController();
+
     const load = async () => {
-      setUrl(await renderedUrl);
+      try {
+        const result = getRenderedUrl
+          ? await getRenderedUrl({ signal: abortController.signal })
+          : { url: await renderedUrl };
+
+        if (isCancelled) {
+          result?.revoke?.();
+          return;
+        }
+
+        revokeUrl = result?.revoke;
+        setUrl(result?.url || null);
+      } catch (error) {
+        console.warn('Failed to load PDF', error);
+        if (!isCancelled) {
+          setUrl(null);
+        }
+        return;
+      }
     };
 
     load();
-  }, [renderedUrl]);
+
+    return () => {
+      isCancelled = true;
+      abortController.abort();
+      revokeUrl?.();
+    };
+  }, [renderedUrl, getRenderedUrl]);
 
   return (
     <div

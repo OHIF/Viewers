@@ -11,17 +11,30 @@ test('should hydrate RT reports correctly', async ({
   DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);
-  await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPreHydration);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydration.rtPreHydration
+  );
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(5000);
-  await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydration.rtPostHydration
+  );
 
   await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Small Sphere').click();
   await page.waitForTimeout(5000);
-  await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtJumpToStructure);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydration.rtJumpToStructure
+  );
 });

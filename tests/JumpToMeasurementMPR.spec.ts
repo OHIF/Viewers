@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportRenderCycle,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -43,7 +50,8 @@ test('should hydrate in MPR correctly', async ({
   await page.waitForTimeout(5000);
 
   await mainToolbarPageObject.measurementTools.bidirectional.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);
@@ -53,7 +61,11 @@ test('should hydrate in MPR correctly', async ({
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // scroll away
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.initialDraw
+  );
 
   // Focus on the canvas first, then use mouse wheel to scroll away
   await page.evaluate(() => {
@@ -77,11 +89,19 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.scrollAway);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.scrollAway
+  );
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack
+  );
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
@@ -92,19 +112,35 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(3000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpInMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.jumpInMPR
+  );
+
+  const seriesChangeRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 30000 });
 
   await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
-  await page.waitForTimeout(5000);
+  await seriesChangeRenderCycle;
+  // Series change unloads the old volume and progressively streams the new
+  // one; the wait helper resolves when loadStatus.loaded flips true, but the
+  // MPR mappers can still be sampling stale low-res frames for one tick.
+  // Give the streaming tail a chance to upload before screenshotting.
+  await page.waitForTimeout(2000);
+  await waitForPaintToSettle(page);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR
+  );
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementAfterSeriesChange
   );
 });

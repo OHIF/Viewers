@@ -14,7 +14,7 @@ workbox.core.clientsClaim();
 
 // Cache static assets that aren't precached
 workbox.routing.registerRoute(
-  /\.(?:js|css|json5)$/,
+  /\.(?:js|css|json5|jsonc)$/,
   new workbox.strategies.StaleWhileRevalidate({
     cacheName: 'static-resources',
   })

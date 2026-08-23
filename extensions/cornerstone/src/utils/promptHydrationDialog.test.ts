@@ -11,7 +11,7 @@ describe('promptHydrationDialog', () => {
   };
 
   const mockExtensionManager = {
-    _appConfig: {
+    appConfig: {
       measurementTrackingMode: 'standard',
       disableConfirmationPrompts: false,
     },
@@ -57,7 +57,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should return HYDRATE response when disableConfirmationPrompts is true for non-SR types', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
 
     const result = await promptHydrationDialog(defaultParameters);
 
@@ -71,7 +71,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should show dialog when disableConfirmationPrompts is false for non-SR types', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog(defaultParameters);
 
@@ -107,7 +107,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle CANCEL response', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog(defaultParameters);
 
@@ -120,7 +120,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle onOutsideClick', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog(defaultParameters);
 
@@ -133,7 +133,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle onKeyPress Enter', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog(defaultParameters);
 
@@ -146,7 +146,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle onKeyPress non-Enter key', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog(defaultParameters);
 
@@ -163,7 +163,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle SEG type hydration with setTimeout', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
 
     await promptHydrationDialog({
       ...defaultParameters,
@@ -178,7 +178,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle RTSTRUCT type hydration', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
 
     const result = await promptHydrationDialog({
       ...defaultParameters,
@@ -194,7 +194,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle SR type hydration when standardMode is true', async () => {
-    mockExtensionManager._appConfig.measurementTrackingMode = 'standard';
+    mockExtensionManager.appConfig.measurementTrackingMode = 'standard';
     const mockHydrationResult = {
       StudyInstanceUID: 'test-study-uid',
       SeriesInstanceUIDs: ['series-1', 'series-2'],
@@ -222,7 +222,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle SR type hydration when standardMode is false', async () => {
-    mockExtensionManager._appConfig.measurementTrackingMode = 'other';
+    mockExtensionManager.appConfig.measurementTrackingMode = 'other';
 
     const result = await promptHydrationDialog({
       ...defaultParameters,
@@ -241,7 +241,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle SR type with CANCEL response', async () => {
-    mockExtensionManager._appConfig.measurementTrackingMode = 'standard';
+    mockExtensionManager.appConfig.measurementTrackingMode = 'standard';
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -262,7 +262,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle undefined preHydrateCallbacks', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
 
     await promptHydrationDialog({
       ...defaultParameters,
@@ -273,7 +273,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle empty preHydrateCallbacks array', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
 
     await promptHydrationDialog({
       ...defaultParameters,
@@ -285,7 +285,7 @@ describe('promptHydrationDialog', () => {
 
   it('should execute multiple preHydrateCallbacks', async () => {
     const mockPreHydrateCallback2 = jest.fn();
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
 
     await promptHydrationDialog({
       ...defaultParameters,
@@ -297,7 +297,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get correct customization message key for SEG type', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -314,7 +314,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get correct customization message key for RTSTRUCT type', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -331,7 +331,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get correct customization message key for SR type', async () => {
-    mockExtensionManager._appConfig.measurementTrackingMode = 'standard';
+    mockExtensionManager.appConfig.measurementTrackingMode = 'standard';
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -348,7 +348,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get default customization message key for unknown type', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -365,7 +365,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get correct dialog id for SEG type', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -384,7 +384,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get correct dialog id for SR type', async () => {
-    mockExtensionManager._appConfig.measurementTrackingMode = 'standard';
+    mockExtensionManager.appConfig.measurementTrackingMode = 'standard';
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -403,7 +403,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should get default dialog id for unknown type', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog({
       ...defaultParameters,
@@ -422,7 +422,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle hydrateCallback returning false for SEG', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
     mockHydrateCallback.mockResolvedValue(false);
 
     const result = await promptHydrationDialog({
@@ -434,7 +434,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle hydrateCallback returning false for RTSTRUCT', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = true;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = true;
     mockHydrateCallback.mockResolvedValue(false);
 
     const result = await promptHydrationDialog({
@@ -446,7 +446,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle SR hydration with null result', async () => {
-    mockExtensionManager._appConfig.measurementTrackingMode = 'standard';
+    mockExtensionManager.appConfig.measurementTrackingMode = 'standard';
     mockHydrateCallback.mockResolvedValue(null);
 
     const promise = promptHydrationDialog({
@@ -470,7 +470,7 @@ describe('promptHydrationDialog', () => {
   });
 
   it('should handle RTSTRUCT type in getDialogId', async () => {
-    mockExtensionManager._appConfig.disableConfirmationPrompts = false;
+    mockExtensionManager.appConfig.disableConfirmationPrompts = false;
 
     const promise = promptHydrationDialog({
       ...defaultParameters,

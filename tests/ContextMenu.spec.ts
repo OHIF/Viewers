@@ -13,20 +13,25 @@ test('should the context menu completely on screen and is not clipped for a poin
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.length.click();
-  await viewportPageObject.active.normalizedClickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.normalizedClickAt([
     { x: 0.45, y: 0.98 },
     { x: 0.55, y: 0.98 },
   ]);
 
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(page, page, screenShotPaths.contextMenu.preContextMenuNearBottomEdge);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.contextMenu.preContextMenuNearBottomEdge
+  );
 
-  await viewportPageObject.active.normalizedClickAt([{ x: 0.55, y: 0.98 }], 'right');
+  await activeViewport.normalizedClickAt([{ x: 0.55, y: 0.98 }], 'right');
 
   await checkForScreenshot({
     page,
-    locator: page,
+    locator: viewportPageObject.grid,
     screenshotPath: screenShotPaths.contextMenu.contextMenuNearBottomEdgeNotClipped,
   });
 });

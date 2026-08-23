@@ -12,6 +12,7 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
@@ -20,7 +21,11 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.rtHydrationThenMPR.rtPostHydration);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.rtHydrationThenMPR.rtPostHydration
+  );
 
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
@@ -28,7 +33,7 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.rtHydrationThenMPR.rtPostHydrationMPRAxialPrimary
   );
 });

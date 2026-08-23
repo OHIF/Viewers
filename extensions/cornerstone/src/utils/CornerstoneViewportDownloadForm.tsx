@@ -1,9 +1,10 @@
 import { utils } from '@ohif/core';
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
-import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
+import { getEnabledElement } from '@cornerstonejs/core';
 import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
+import { getViewportAdapter } from '../services/ViewportService/adapter';
 import { useSystem } from '@ohif/core/src';
 
 const { downloadUrl } = utils;
@@ -118,33 +119,27 @@ const CornerstoneViewportDownloadForm = ({
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
     try {
-      const properties = viewport.getProperties();
-      if (downloadViewport instanceof StackViewport) {
-        const imageId = viewport.getCurrentImageId();
+      // Capture current viewport state. The download (capture) viewport is created
+      // with the SAME type as the source (see handleEnableViewport), so source and
+      // capture are both legacy or both native, and the source's adapter can mount
+      // its displayed content (data + appearance + view state) onto the capture
+      // viewport directly.
+      await getViewportAdapter(viewport).copyDisplayedContentTo(downloadViewport);
 
-        await downloadViewport.setStack([imageId]);
-        downloadViewport.setProperties(properties);
-      } else if (downloadViewport instanceof BaseVolumeViewport) {
-        const volumeIds = viewport.getAllVolumeIds();
-        await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
-      }
-      downloadViewport.setProperties(properties);
-      const viewRef = viewport.getViewReference();
-      downloadViewport.setViewReference(viewRef);
       downloadViewport.render();
 
+      // Re-apply segmentation overlays to the download viewport
       if (segmentationRepresentations?.length) {
         segmentationRepresentations.forEach(segRepresentation => {
           const { segmentationId, colorLUTIndex, type } = segRepresentation;
+
           if (type === Enums.SegmentationRepresentations.Labelmap) {
             segmentation.addLabelmapRepresentationToViewportMap({
               [downloadViewport.id]: [
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Labelmap,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
@@ -156,9 +151,7 @@ const CornerstoneViewportDownloadForm = ({
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Contour,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });

@@ -132,6 +132,48 @@ export const sortingCriteria = {
   instancesSortCriteria,
 };
 
+export type SortDisplaySetsCopyOptions = {
+  /**
+   * Display sets for this study are sorted by series criteria and listed first;
+   * all other display sets follow in their original relative order.
+   */
+  studyInstanceUIDFirst?: string;
+  /** Defaults to {@link seriesSortCriteria.default} (not app customization). */
+  seriesSortingCriteria?: (a, b) => number;
+};
+
+/**
+ * Returns a new array of display sets sorted by default series order
+ * ({@link seriesSortCriteria.default} / {@link seriesInfoSortingCriteria}), not
+ * the app customization. Does not mutate the input.
+ *
+ * With `studyInstanceUIDFirst`, only that study's display sets are sorted; they
+ * are placed before the rest, which keeps source order (e.g. load order).
+ */
+export function sortDisplaySetsCopy(
+  displaySets,
+  options?: SortDisplaySetsCopyOptions | null
+) {
+  const seriesSortingCriteria =
+    options?.seriesSortingCriteria ?? seriesSortCriteria.default;
+  const studyFirst = options?.studyInstanceUIDFirst;
+
+  if (!studyFirst) {
+    return [...displaySets].sort(seriesSortingCriteria);
+  }
+
+  const sameStudy = [];
+  const otherStudy = [];
+  for (const ds of displaySets) {
+    if (ds.StudyInstanceUID === studyFirst) {
+      sameStudy.push(ds);
+    } else {
+      otherStudy.push(ds);
+    }
+  }
+  return [...[...sameStudy].sort(seriesSortingCriteria), ...otherStudy];
+}
+
 /**
  * Sorts given series or display sets
  * The default criteria is based on series number in ascending order.
