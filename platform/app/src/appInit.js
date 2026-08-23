@@ -29,11 +29,7 @@ import loadModules, { loadModule as peerImport } from './pluginImports';
 import { publicUrl } from './utils/publicUrl';
 
 /**
-<<<<<<< HEAD
  * @param {object|Function} appConfigOrFunc - application configuration, or a function that returns application configuration
-=======
- * @param {object|function} appConfigOrFunc - application configuration, or a function that returns application configuration
->>>>>>> 42b6231b81808e4fa7b64c262e41d01dc7f90310
  * @param {object[]} defaultExtensions - array of extension objects
  */
 async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {

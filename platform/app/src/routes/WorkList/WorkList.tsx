@@ -38,7 +38,6 @@ export default function WorkList({
 }: Props) {
   const [appConfig] = useAppConfig();
   const { customizationService } = servicesManager.services;
-<<<<<<< HEAD
 
   const sortedStudies = useMemo(() => {
     if (!canSort) {
@@ -458,8 +457,6 @@ export default function WorkList({
     });
   }
 
-=======
->>>>>>> 42b6231b81808e4fa7b64c262e41d01dc7f90310
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
   ) as React.ComponentType<{ className?: string }> | undefined;
