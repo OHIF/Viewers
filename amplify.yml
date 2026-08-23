@@ -10,6 +10,7 @@ frontend:
       commands:
         - export NODE_OPTIONS="--max-old-space-size=6144"
         - export GENERATE_SOURCEMAP=false
+        - chmod -R +x node_modules/.bin 2>/dev/null || true
         - APP_CONFIG=config/smartcareplus.js pnpm run build
   artifacts:
     baseDirectory: platform/app/dist
