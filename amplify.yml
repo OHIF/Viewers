@@ -3,14 +3,17 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm install 24
+        - nvm use 24
         - export NODE_OPTIONS="--max-old-space-size=6144"
         - corepack enable
         - pnpm install --no-frozen-lockfile
+        - chmod -R +x node_modules/.bin
+        - find . -path "*/node_modules/.bin/*" -exec chmod +x {} \;
     build:
       commands:
         - export NODE_OPTIONS="--max-old-space-size=6144"
         - export GENERATE_SOURCEMAP=false
-        - chmod -R +x node_modules/.bin 2>/dev/null || true
         - APP_CONFIG=config/smartcareplus.js pnpm run build
   artifacts:
     baseDirectory: platform/app/dist
