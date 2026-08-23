@@ -210,63 +210,43 @@ window.config = {
     },
 
 
-    // Utility Data Sources
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
-      sourceName: 'dicomwebproxy',
-      configuration: {
-        friendlyName: 'DICOMweb Proxy',
-        name: 'dicomwebproxy',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
-      sourceName: 'dicomjson',
-      configuration: {
-        friendlyName: 'DICOM JSON',
-        name: 'json',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
-      sourceName: 'dicomlocal',
-      configuration: {
-        friendlyName: 'Local Files',
-      },
-    },
+    // Utility Data Sources — disabled in production for security
+    // dicomwebproxy, dicomjson, and dicomlocal are removed to prevent
+    // datasource switching via URL parameters.
   ],
 
   // Enhanced error handling for healthcare context
   httpErrorHandler: error => {
-    console.error('[SmartCarePlus] HTTP Error:', {
+    // Log only non-sensitive details — never log tokens, PHI, or full URLs
+    const safeInfo = {
       status: error.status,
       statusText: error.statusText,
-      url: error.config?.url,
       timestamp: new Date().toISOString(),
-    });
+    };
 
     // Handle specific error codes relevant to healthcare systems
     switch (error.status) {
       case 401:
-        console.warn('[SmartCarePlus] Authentication required. Please log in.');
-        // TODO: Redirect to SmartCarePlus login
+        // Token expired or invalid — clear and redirect
+        sessionStorage.removeItem('ohif-jwt');
+        console.warn('[SmartCarePlus] Session expired. Please re-open from your dashboard.');
         break;
       case 403:
-        console.warn('[SmartCarePlus] Access denied. Check user permissions.');
+        console.warn('[SmartCarePlus] Access denied.');
         break;
       case 404:
-        console.warn('[SmartCarePlus] Study or series not found.');
+        console.warn('[SmartCarePlus] Resource not found.');
         break;
       case 429:
-        console.warn('[SmartCarePlus] Rate limit exceeded. Please wait before retrying.');
+        console.warn('[SmartCarePlus] Rate limit exceeded.');
         break;
       case 500:
       case 502:
       case 503:
-        console.error('[SmartCarePlus] Server error. Please contact support if this persists.');
+        console.warn('[SmartCarePlus] Server error. Please try again later.');
         break;
       default:
-        console.warn('[SmartCarePlus] An error occurred while loading imaging data.');
+        console.warn('[SmartCarePlus] An error occurred loading imaging data.');
     }
   },
 

@@ -83,9 +83,9 @@ export default function ModeRoute({
   useEffect(() => {
     const checkToken = async () => {
       let authToken = token;
-      // If no token in URL, try to get from local storage (reload handling & cross-tab)
+      // If no token in URL, try to get from session storage (reload handling within same tab)
       if (!authToken) {
-        authToken = localStorage.getItem('ohif-jwt');
+        authToken = sessionStorage.getItem('ohif-jwt');
       }
 
       if (authToken) {
@@ -97,8 +97,7 @@ export default function ModeRoute({
           const studyUIDs = dataSource?.getStudyInstanceUIDs({ params, query }) || [];
           if (payload.dicom_study_id && studyUIDs.length > 0) {
             if (!studyUIDs.includes(payload.dicom_study_id)) {
-              console.error('Study UID mismatch');
-              localStorage.removeItem('ohif-jwt');
+              sessionStorage.removeItem('ohif-jwt');
               navigate('/', { replace: true });
               return;
             }
@@ -107,26 +106,23 @@ export default function ModeRoute({
           // Check expiry (client-side pre-check)
           const currentTime = Math.floor(Date.now() / 1000);
           if (payload.exp && payload.exp < currentTime) {
-            console.error('Token expired');
-            localStorage.removeItem('ohif-jwt');
+            sessionStorage.removeItem('ohif-jwt');
             navigate('/', { replace: true });
             return;
           }
 
-          // Persist token for reload capability
-          localStorage.setItem('ohif-jwt', authToken);
+          // Persist token for reload capability (sessionStorage = same tab only, cleared on close)
+          sessionStorage.setItem('ohif-jwt', authToken);
 
           updateAuthServiceAndCleanUrl(authToken, location, userAuthenticationService);
           userAuthenticationService.setUser(payload);
           setIsVerified(true);
         } catch (err) {
-          console.error('JWT Decoding failed:', err);
-          localStorage.removeItem('ohif-jwt');
+          sessionStorage.removeItem('ohif-jwt');
           navigate('/', { replace: true });
         }
       } else if (mode.routeName === 'viewer') {
           // For the viewer route, a token is mandatory
-          console.warn('No token provided for viewer');
           navigate('/', { replace: true });
       } else {
         // Other routes (like local) might not need a token
