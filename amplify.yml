@@ -7,9 +7,8 @@ frontend:
         - nvm use 24
         - export NODE_OPTIONS="--max-old-space-size=6144"
         - corepack enable
+        - rm -rf node_modules
         - pnpm install --no-frozen-lockfile
-        - chmod -R +x node_modules/.bin
-        - find . -path "*/node_modules/.bin/*" -exec chmod +x {} \;
     build:
       commands:
         - export NODE_OPTIONS="--max-old-space-size=6144"
@@ -19,6 +18,3 @@ frontend:
     baseDirectory: platform/app/dist
     files:
       - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
