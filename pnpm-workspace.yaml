@@ -85,7 +85,7 @@ overrides:
   lodash-es: 4.18.1
   diff: 5.2.2
   webpack: 5.105.0
-  tar: 7.5.20
+  tar: 7.5.21
   serialize-javascript: 7.0.4
   'svgo@>=3.0.0 <3.3.4': 3.3.4
   flatted: 3.4.2

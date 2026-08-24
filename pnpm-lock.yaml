@@ -31,7 +31,7 @@ overrides:
   lodash-es: 4.18.1
   diff: 5.2.2
   webpack: 5.105.0
-  tar: 7.5.20
+  tar: 7.5.21
   serialize-javascript: 7.0.4
   svgo@>=3.0.0 <3.3.4: 3.3.4
   flatted: 3.4.2
@@ -13426,8 +13426,8 @@ packages:
     resolution: {integrity: sha512-rzS0heiNf8Xn7/mpdSVVSMAWAoy9bfb1WOTYC78Z0UQKeKa/CWS8FOq0lKGNa8DWKAn9gxjCvMLYc5PGXYlK2A==}
     engines: {node: '>= 0.8.0'}
 
-  tar@7.5.20:
-    resolution: {integrity: sha512-9FcyK4PA6+WbzlTM9WhQm6vB5W7cP7dUiPsv1g7YDwEQnQ1CGpK3MGlKk/ITVWMk05kHZuBhmVhiv8LZoy/PFQ==}
+  tar@7.5.21:
+    resolution: {integrity: sha512-XdhtCvlMywwxpCW8YEq3lOXBJpUPTR2OHHcwLPO3HwsJqOHa2Ok/oJ7ruGzp+JrKoRPVCzJwAdEjqLW/vNRPHA==}
     engines: {node: '>=18'}
 
   temp-dir@2.0.0:
@@ -18683,7 +18683,7 @@ snapshots:
       decompress: 4.2.1
       files-from-path: 1.1.4
       ipfs-car: 1.2.0
-      tar: 7.5.20
+      tar: 7.5.21
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -29534,7 +29534,7 @@ snapshots:
       to-buffer: 1.2.2
       xtend: 4.0.2
 
-  tar@7.5.20:
+  tar@7.5.21:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
