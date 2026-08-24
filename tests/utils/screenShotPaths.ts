@@ -26,6 +26,14 @@ const screenShotPaths = {
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },
+  freehandContourSegmentation: {
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
+  },
   labelMapSegLocking: {
     globalLockedSegPreEdit: 'lockedSegPreEdit.png',
     globalLockedSegPostEdit: 'lockedSegPostEdit.png',
@@ -43,6 +51,12 @@ const screenShotPaths = {
   },
   livewire: {
     livewireDisplayedCorrectly: 'livewireDisplayedCorrectly.png',
+  },
+  livewireContourSegmentation: {
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    contourWithHole: 'contourWithHole.png',
+    differentSegmentsContoursSeparate: 'differentSegmentsContoursSeparate.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
@@ -86,6 +100,14 @@ const screenShotPaths = {
   },
   spline: {
     splineDisplayedCorrectly: 'splineDisplayedCorrectly.png',
+  },
+  splineContourSegmentation: {
+    contourPersistedAfterNavigation: 'contourPersistedAfterNavigation.png',
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
