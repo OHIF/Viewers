@@ -47,35 +47,29 @@ const DoubleSlider = ({
     return Math.round(num * inverse) / inverse;
   };
 
-  const handleSliderChange = React.useCallback(
-    (newValue: number[]) => {
-      const clampedValue: [number, number] = [
-        roundToStep(Math.max(min, Math.min(newValue[0], max))),
-        roundToStep(Math.min(max, Math.max(newValue[1], min))),
-      ];
+  const handleSliderChange = (newValue: number[]) => {
+    const clampedValue: [number, number] = [
+      roundToStep(Math.max(min, Math.min(newValue[0], max))),
+      roundToStep(Math.min(max, Math.max(newValue[1], min))),
+    ];
+    setValue(clampedValue);
+    onValueChange?.(clampedValue);
+  };
+
+  const handleInputChange = (index: 0 | 1, inputValue: string) => {
+    const newValue = parseFloat(inputValue);
+    if (!isNaN(newValue)) {
+      const clampedValue: [number, number] = [...value];
+      clampedValue[index] = roundToStep(Math.min(Math.max(newValue, min), max));
+      if (index === 0 && clampedValue[0] > clampedValue[1]) {
+        clampedValue[1] = clampedValue[0];
+      } else if (index === 1 && clampedValue[1] < clampedValue[0]) {
+        clampedValue[0] = clampedValue[1];
+      }
       setValue(clampedValue);
       onValueChange?.(clampedValue);
-    },
-    [min, max, onValueChange, step]
-  );
-
-  const handleInputChange = React.useCallback(
-    (index: 0 | 1, inputValue: string) => {
-      const newValue = parseFloat(inputValue);
-      if (!isNaN(newValue)) {
-        const clampedValue: [number, number] = [...value];
-        clampedValue[index] = roundToStep(Math.min(Math.max(newValue, min), max));
-        if (index === 0 && clampedValue[0] > clampedValue[1]) {
-          clampedValue[1] = clampedValue[0];
-        } else if (index === 1 && clampedValue[1] < clampedValue[0]) {
-          clampedValue[0] = clampedValue[1];
-        }
-        setValue(clampedValue);
-        onValueChange?.(clampedValue);
-      }
-    },
-    [value, min, max, onValueChange, step]
-  );
+    }
+  };
 
   const formatValue = (val: number) => {
     return isInteger ? Math.round(val) : val;
