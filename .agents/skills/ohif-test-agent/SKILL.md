@@ -265,7 +265,7 @@ await checkForViewportScreenshot({
 });
 ```
 
-Both helpers retry up to 10 times at 500 ms intervals (`checkForViewportScreenshot` delegates to `checkForScreenshot`; use the latter directly only for non-viewport locators such as the grid or a panel). Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
+Both helpers retry up to 10 times at 1250 ms intervals by default (`attempts` and `delay` are configurable) (`checkForViewportScreenshot` delegates to `checkForScreenshot`; use the latter directly only for non-viewport locators such as the grid or a panel). Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
 
 Rules (apply to all new screenshot assertions):
 
