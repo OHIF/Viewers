@@ -247,9 +247,9 @@ Reach for the cheapest *faithful* signal, in this order:
    on it directly, no screenshot.
 2. **The thing under test is painted onto the WebGL canvas with no DOM representation → a
    screenshot is correct and required.** Raster output on the canvas exposes no attribute to
-   read for a painted pixel. Scope a `checkForScreenshot` to the viewport (pane or grid) and
-   assert it — this is the right tool, not a last resort, whenever what you're verifying is
-   the rendered canvas itself.
+   read for a painted pixel. Capture a viewport pane with `checkForViewportScreenshot`, or
+   scope a `checkForScreenshot` to the grid — this is the right tool, not a last resort,
+   whenever what you're verifying is the rendered canvas itself.
 3. **Never substitute a service/state read for a render assertion.** Reading a service's
    state (any `window.services...`) asserts the *data model*, not the pixels the user sees —
    it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
