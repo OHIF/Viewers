@@ -65,6 +65,7 @@ export interface IViewportPageObject {
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
+  normalizedPathClickAt: (params: { path: { x: number; y: number }[] }) => Promise<void>;
   normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
@@ -382,6 +383,17 @@ export class ViewportPageObject {
           button: params.config?.button,
           delay: params.config?.delay,
           steps: params.config?.steps,
+        });
+      },
+      normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
+        const { path } = params;
+        await simulateNormalizedClicksOnElement({
+          locator: viewport,
+          normalizedPoints: path,
+        });
+        await simulateNormalizedDoubleClickOnElement({
+          locator: viewport,
+          normalizedPoint: path[path.length - 1],
         });
       },
       normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
