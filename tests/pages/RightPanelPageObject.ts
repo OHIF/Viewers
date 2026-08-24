@@ -352,7 +352,7 @@ export class RightPanelPageObject {
       },
       tools: {
         get splineContour() {
-          const button = page.getByTestId('SplineContourSegmentationTool');
+          const button = page.getByTestId('SplineContourSegmentationTool-btn');
           // Maps a friendly spline name to the underlying cornerstone tool name,
           // which is also the data-cy of its option in the Spline Type dropdown.
           const splineTypeToolNames = {
@@ -386,11 +386,15 @@ export class RightPanelPageObject {
           };
         },
         get freehandContour() {
-          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool-btn');
           return {
             button,
             click: async () => {
               await button.click();
+              // data-active is stamped on the tool's span wrapper, not the button.
+              await page.waitForSelector(
+                '[data-cy="PlanarFreehandContourSegmentationTool"][data-active="true"]'
+              );
             },
           };
         },
