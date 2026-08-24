@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSystem, utils } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui-next';
 import {
@@ -115,7 +115,10 @@ export function useViewportDisplaySets(
 
   // Get all available display sets (only if needed)
   const needsAllDisplaySets = includePotentialBackground;
-  const allDisplaySets = needsAllDisplaySets ? displaySetService.getActiveDisplaySets() : [];
+  const allDisplaySets = useMemo(
+    () => (needsAllDisplaySets ? displaySetService.getActiveDisplaySets() : []),
+    [displaySetService, needsAllDisplaySets]
+  );
 
   // Get all available segmentations (only if needed)
   const needsSegmentations = includeOverlay;
@@ -147,73 +150,106 @@ export function useViewportDisplaySets(
     };
   }, [segmentationService, viewportIdToUse, needsSegmentations]);
 
-  const overlayDisplaySets = includeOverlay
-    ? segmentationRepresentations.map(repr =>
-        displaySetService.getDisplaySetByUID(repr.segmentationId)
-      )
-    : [];
+  const overlayDisplaySets = useMemo(() => {
+    if (!includeOverlay) {
+      return [];
+    }
+    return segmentationRepresentations.map(repr => {
+      const displaySet = displaySetService.getDisplaySetByUID(repr.segmentationId);
+      return displaySet;
+    });
+  }, [includeOverlay, segmentationRepresentations, displaySetService]);
 
-  const overlayDisplaySetUIDs = overlayDisplaySets.map(ds => ds.displaySetInstanceUID);
+  const overlayDisplaySetUIDs = useMemo(() => {
+    return overlayDisplaySets.map(ds => ds.displaySetInstanceUID);
+  }, [overlayDisplaySets]);
 
   // Get enhanced display sets (only if needed)
   const needsEnhancedDisplaySets =
     includeBackground || includeForeground || includePotentialOverlay || includePotentialForeground;
 
-  const { viewportDisplaySets = [], enhancedDisplaySets = [] } = needsEnhancedDisplaySets
-    ? getEnhancedDisplaySets({
+  const { viewportDisplaySets = [], enhancedDisplaySets = [] } = useMemo(() => {
+    if (!needsEnhancedDisplaySets) {
+      return { viewportDisplaySets: [], enhancedDisplaySets: [] };
+    }
+    return (
+      getEnhancedDisplaySets({
         viewportId: viewportIdToUse,
         services: { displaySetService, viewportGridService },
-      }) || {}
-    : {};
+      }) || { viewportDisplaySets: [], enhancedDisplaySets: [] }
+    );
+  }, [viewportIdToUse, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
 
-  const backgroundDisplaySet =
-    includeBackground && viewportDisplaySets.length > 0 ? viewportDisplaySets[0] : undefined;
+  const backgroundDisplaySet = useMemo(
+    () =>
+      includeBackground && viewportDisplaySets.length > 0 ? viewportDisplaySets[0] : undefined,
+    [includeBackground, viewportDisplaySets]
+  );
 
-  const foregroundDisplaySets =
-    includeForeground && backgroundDisplaySet
-      ? viewportDisplaySets.filter(
-          ds =>
-            !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
-            ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID
-        )
-      : [];
+  const foregroundDisplaySets = useMemo(() => {
+    if (!includeForeground || !backgroundDisplaySet) {
+      return [];
+    }
+    return viewportDisplaySets.filter(
+      ds =>
+        !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+        ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID
+    );
+  }, [includeForeground, viewportDisplaySets, backgroundDisplaySet]);
 
-  const foregroundDisplaySetUIDs = foregroundDisplaySets.map(ds => ds.displaySetInstanceUID);
+  const foregroundDisplaySetUIDs = useMemo(
+    () => foregroundDisplaySets.map(ds => ds.displaySetInstanceUID),
+    [foregroundDisplaySets]
+  );
 
-  const potentialOverlayDisplaySets = includePotentialOverlay
-    ? enhancedDisplaySets
-        .filter(
-          ds =>
-            DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
-            !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
-            ds.isOverlayable
-        )
-        .sort(sortByOverlayable)
-    : [];
+  const potentialOverlayDisplaySets = useMemo(() => {
+    if (!includePotentialOverlay) {
+      return [];
+    }
+    return enhancedDisplaySets
+      .filter(
+        ds =>
+          DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+          !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
+          ds.isOverlayable
+      )
+      .sort(sortByOverlayable);
+  }, [includePotentialOverlay, enhancedDisplaySets, overlayDisplaySetUIDs]);
 
-  const potentialForegroundDisplaySets = includePotentialForeground
-    ? enhancedDisplaySets
-        .filter(
-          ds =>
-            !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
-            !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
-            ds.isOverlayable
-        )
-        .sort(sortByPriority)
-    : [];
+  const potentialForegroundDisplaySets = useMemo(() => {
+    if (!includePotentialForeground) {
+      return [];
+    }
+    return enhancedDisplaySets
+      .filter(
+        ds =>
+          !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+          !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
+          ds.isOverlayable
+      )
+      .sort(sortByPriority);
+  }, [includePotentialForeground, enhancedDisplaySets, foregroundDisplaySetUIDs]);
 
-  const potentialBackgroundDisplaySets =
-    includePotentialBackground && backgroundDisplaySet
-      ? allDisplaySets
-          .filter(
-            ds =>
-              !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
-              ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID &&
-              !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
-              !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID)
-          )
-          .sort(sortByPriority)
-      : [];
+  const potentialBackgroundDisplaySets = useMemo(() => {
+    if (!includePotentialBackground || !backgroundDisplaySet) {
+      return [];
+    }
+    return allDisplaySets
+      .filter(
+        ds =>
+          !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+          ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID &&
+          !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
+          !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID)
+      )
+      .sort(sortByPriority);
+  }, [
+    includePotentialBackground,
+    allDisplaySets,
+    backgroundDisplaySet,
+    overlayDisplaySetUIDs,
+    foregroundDisplaySetUIDs,
+  ]);
 
   const result: ViewportDisplaySets = {
     allDisplaySets: allDisplaySets || [],
