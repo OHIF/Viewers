@@ -143,6 +143,39 @@ function resolveActiveColormap(
   }
 }
 
+/**
+ * Reads the viewport's stored presentation (VOI range, colormap) for a display
+ * set. Kept at module scope: the `??` inside the try/catch trips a React
+ * Compiler limitation ("value blocks within a try/catch") that bails the whole
+ * hook when this code is inlined.
+ */
+function readPresentation(viewport, activeDisplaySetInstanceUID) {
+  try {
+    const adapter = getViewportAdapter(viewport);
+    const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
+    const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
+
+    if (!properties) {
+      return null;
+    }
+
+    let voiRange = properties.voiRange;
+    if (!voiRange) {
+      // Native ("next") viewports store only explicit VOI overrides in the
+      // per-display-set presentation; a freshly shown series has none, so fall
+      // back to its computed default VOI (undefined on legacy, whose
+      // getProperties always returns the applied VOI). Without this, changing
+      // the series left the overlay showing the previous series' window level.
+      voiRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
+    }
+
+    return { voiRange, colormap: properties.colormap };
+  } catch (error) {
+    console.error('Error initializing VOI range:', error);
+    return null;
+  }
+}
+
 export function useViewportRendering(
   viewportId?: string,
   options?: ViewportRenderingOptions
@@ -311,45 +344,26 @@ export function useViewportRendering(
     if (!viewport || !activeDisplaySetInstanceUID) {
       return;
     }
-    try {
-      const adapter = getViewportAdapter(viewport);
-      const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
-      const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
+    const presentation = readPresentation(viewport, activeDisplaySetInstanceUID);
+    if (!presentation) {
+      return;
+    }
 
-      if (!properties) {
-        return;
+    if (presentation.voiRange) {
+      setVoiRange(presentation.voiRange);
+      voiRangeRef.current = presentation.voiRange;
+    }
+
+    if (presentation.colormap?.opacity !== undefined) {
+      const opacity = resolveOpacityScalar(presentation.colormap.opacity);
+      if (opacity !== undefined) {
+        setOpacityState(opacity);
+        setOpacityLinearState(opacityToLinear(opacity));
       }
+    }
 
-      if (properties.voiRange) {
-        setVoiRange(properties.voiRange);
-        voiRangeRef.current = properties.voiRange;
-      } else {
-        // Native ("next") viewports store only explicit VOI overrides in the
-        // per-display-set presentation; a freshly shown series has none, so fall
-        // back to its computed default VOI (undefined on legacy, whose
-        // getProperties always returns the applied VOI). Without this, changing
-        // the series left the overlay showing the previous series' window level.
-        const defaultVOIRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
-
-        if (defaultVOIRange) {
-          setVoiRange(defaultVOIRange);
-          voiRangeRef.current = defaultVOIRange;
-        }
-      }
-
-      if (properties.colormap?.opacity !== undefined) {
-        const opacity = resolveOpacityScalar(properties.colormap.opacity);
-        if (opacity !== undefined) {
-          setOpacityState(opacity);
-          setOpacityLinearState(opacityToLinear(opacity));
-        }
-      }
-
-      if (properties.colormap?.threshold !== undefined) {
-        setThresholdState(properties.colormap.threshold);
-      }
-    } catch (error) {
-      console.error('Error initializing VOI range:', error);
+    if (presentation.colormap?.threshold !== undefined) {
+      setThresholdState(presentation.colormap.threshold);
     }
   }, [activeDisplaySetInstanceUID, viewport]);
 
