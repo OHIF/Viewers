@@ -1,5 +1,36 @@
 import * as React from 'react';
 
+const storageKey = 'studyList.defaultWorkflow';
+
+/**
+ * Read the stored workflow, or null when storage is unavailable or empty.
+ * Module scope on purpose: a conditional inside a try/catch is a React Compiler
+ * limitation that bails the whole hook, and plain functions are never compiled.
+ */
+function readStoredWorkflow(): string | null {
+  try {
+    return typeof window !== 'undefined' ? window.localStorage.getItem(storageKey) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Write or clear the stored workflow. Module scope for the same reason. */
+function writeStoredWorkflow(next: string | null): void {
+  try {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (next == null) {
+      window.localStorage.removeItem(storageKey);
+    } else {
+      window.localStorage.setItem(storageKey, next);
+    }
+  } catch {
+    // no-op
+  }
+}
+
 /**
  * Persist and retrieve a default workflow string from localStorage.
  * If `allowed` is provided, the returned value is guaranteed to be from the allowed list (or null).
@@ -7,41 +38,19 @@ import * as React from 'react';
 export function useDefaultWorkflow(
   allowed?: readonly string[]
 ): [string | null, (next: string | null) => void] {
-  const storageKey = 'studyList.defaultWorkflow';
-  const [value, setValue] = React.useState<string | null>(null);
+  // State holds the raw stored string; the validated value is derived during
+  // render. Deriving rather than storing keeps the result correct when `allowed`
+  // arrives late - the study list passes `appConfig?.loadedModes ?? []`, so it is
+  // briefly empty - and removes an effect whose only job was to re-validate.
+  const [stored, setStored] = React.useState<string | null>(readStoredWorkflow);
 
-  React.useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const raw = window.localStorage.getItem(storageKey);
-        if (raw != null) {
-          if (!allowed || allowed.includes(raw)) {
-            setValue(raw);
-          } else {
-            setValue(null);
-          }
-        }
-      }
-    } catch {
-      // no-op
-    }
-  }, [allowed]);
+  const value = stored != null && (!allowed || allowed.includes(stored)) ? stored : null;
 
   const setAndPersist = React.useCallback(
     (next: string | null) => {
-      setValue(next);
-      try {
-        if (typeof window !== 'undefined') {
-          if (next == null) {
-            window.localStorage.removeItem(storageKey);
-          } else {
-            if (!allowed || allowed.includes(next)) {
-              window.localStorage.setItem(storageKey, next);
-            }
-          }
-        }
-      } catch {
-        // no-op
+      setStored(next);
+      if (next == null || !allowed || allowed.includes(next)) {
+        writeStoredWorkflow(next);
       }
     },
     [allowed]
