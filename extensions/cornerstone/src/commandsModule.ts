@@ -23,7 +23,6 @@ import {
 } from '@cornerstonejs/tools/utilities/contourSegmentation/logicalOperators';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
-import { ONNXSegmentationController } from '@cornerstonejs/ai';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
 import {
@@ -119,28 +118,6 @@ const getPreviewTools = ({ toolGroupService }) => {
 
   return previewTools;
 };
-
-const segmentAI = new ONNXSegmentationController({
-  autoSegmentMode: true,
-  models: {
-    sam_b: [
-      {
-        name: 'sam-b-encoder',
-        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.encoder-fp16.onnx',
-        size: 180,
-        key: 'encoder',
-      },
-      {
-        name: 'sam-b-decoder',
-        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.decoder.onnx',
-        size: 17,
-        key: 'decoder',
-      },
-    ],
-  },
-  modelName: 'sam_b',
-});
-let segmentAIEnabled = false;
 
 function commandsModule({
   servicesManager,
@@ -1980,7 +1957,6 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const { viewport } = _getActiveViewportEnabledElement();
       const previewTools = getPreviewTools({ toolGroupService });
 
       previewTools.forEach(tool => {
@@ -1990,66 +1966,12 @@ function commandsModule({
           console.debug('Error accepting preview for tool', tool.toolName);
         }
       });
-
-      if (segmentAI.enabled) {
-        segmentAI[`${action}Preview`](viewport.element);
-      }
     },
     acceptPreview: () => {
       actions._handlePreviewAction('accept');
     },
     rejectPreview: () => {
       actions._handlePreviewAction('reject');
-    },
-    clearMarkersForMarkerLabelmap: () => {
-      const { viewport } = _getActiveViewportEnabledElement();
-      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(viewport.id);
-      const toolInstance = toolGroup.getToolInstance('MarkerLabelmap');
-
-      if (!toolInstance) {
-        return;
-      }
-
-      toolInstance.clearMarkers(viewport);
-    },
-    interpolateScrollForMarkerLabelmap: () => {
-      const { viewport } = _getActiveViewportEnabledElement();
-      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(viewport.id);
-      const toolInstance = toolGroup.getToolInstance('MarkerLabelmap');
-
-      if (!toolInstance) {
-        return;
-      }
-
-      toolInstance.interpolateScroll(viewport, 1);
-    },
-    toggleLabelmapAssist: async () => {
-      const { viewport } = _getActiveViewportEnabledElement();
-      const newState = !segmentAI.enabled;
-      segmentAI.enabled = newState;
-
-      if (!segmentAIEnabled) {
-        await segmentAI.initModel();
-        segmentAIEnabled = true;
-      }
-
-      // set the brush tool to active
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-      if (newState) {
-        actions.setToolActiveToolbar({
-          toolName: 'CircularBrushForAutoSegmentAI',
-          toolGroupIds: toolGroupIds,
-        });
-      } else {
-        toolGroupIds.forEach(toolGroupId => {
-          const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-          toolGroup.setToolPassive('CircularBrushForAutoSegmentAI');
-        });
-      }
-
-      if (segmentAI.enabled) {
-        segmentAI.initViewport(viewport);
-      }
     },
     setBrushSize: ({ value }) => {
       const brushSize = Number(value);
@@ -2753,9 +2675,6 @@ function commandsModule({
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
-    toggleLabelmapAssist: actions.toggleLabelmapAssist,
-    interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
-    clearMarkersForMarkerLabelmap: actions.clearMarkersForMarkerLabelmap,
     setBrushSize: actions.setBrushSize,
     setThresholdRange: actions.setThresholdRange,
     increaseBrushSize: actions.increaseBrushSize,

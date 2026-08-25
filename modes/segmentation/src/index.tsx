@@ -99,9 +99,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection('LabelMapTools', [
-        'LabelmapSlicePropagation',
         'BrushTools',
-        'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
         'LabelMapEditWithContour',

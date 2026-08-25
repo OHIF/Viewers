@@ -54,7 +54,6 @@
   "dependencies": {
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/adapters": "4.15.29",
-    "@cornerstonejs/ai": "4.15.29",
     "@cornerstonejs/core": "4.15.29",
     "@cornerstonejs/labelmap-interpolation": "4.15.29",
     "@cornerstonejs/polymorphic-segmentation": "4.15.29",

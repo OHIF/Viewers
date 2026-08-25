@@ -110,10 +110,6 @@ module.exports = (env, argv) => {
               ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
-          {
-            from: '../../../node_modules/onnxruntime-web/dist',
-            to: `${DIST_DIR}/ort`,
-          },
           // Shared Deemea config helpers, loaded before app-config.js by the HTML template
           {
             from: `${PUBLIC_DIR}/config/deemea-shared.js`,

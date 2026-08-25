@@ -265,29 +265,6 @@ const toolbarButtons: Button[] = [
   //     commands: 'setToolActiveToolbar',
   //   },
   // },
-  {
-    id: 'LabelmapSlicePropagation',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-labelmap-slice-propagation',
-      label: 'Labelmap Assist',
-      tooltip:
-        'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle',
-        {
-          name: 'evaluate.cornerstone.hasSegmentation',
-        },
-      ],
-      listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
-          'LabelmapSlicePropagation'
-        ),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
-      },
-      commands: 'toggleEnabledDisabledToolbar',
-    },
-  },
   // {
   //   id: 'MarkerLabelmap',
   //   uiType: 'ohif.toolBoxButton',

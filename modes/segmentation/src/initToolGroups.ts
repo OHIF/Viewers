@@ -39,12 +39,6 @@ function createTools({ utilityModule, commandsManager }) {
         },
       },
       {
-        toolName: toolNames.LabelmapSlicePropagation,
-      },
-      {
-        toolName: toolNames.MarkerLabelmap,
-      },
-      {
         toolName: toolNames.RegionSegmentPlus,
       },
       {

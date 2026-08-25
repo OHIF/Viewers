@@ -1,5 +1,4 @@
 import type { Button } from '@ohif/core/types';
-import { ViewportGridService } from '@ohif/core';
 import i18n from 'i18next';
 
 import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
@@ -10,15 +9,6 @@ const setToolActiveToolbar = {
     toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
-
-const callbacks = (toolName: string) => [
-  {
-    commandName: 'setViewportForToolConfiguration',
-    commandOptions: {
-      toolName,
-    },
-  },
-];
 
 export const toolbarButtons: Button[] = [
   {
@@ -793,103 +783,6 @@ export const toolbarButtons: Button[] = [
           commandOptions: {
             segmentationRepresentationType: 'Labelmap',
           },
-        },
-      ],
-    },
-  },
-  {
-    id: 'LabelmapSlicePropagation',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-labelmap-slice-propagation',
-      label: i18n.t('Buttons:Labelmap Assist'),
-      tooltip: i18n.t(
-        'Buttons:Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.'
-      ),
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle',
-        {
-          name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: 'Labelmap',
-        },
-      ],
-      listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
-          'LabelmapSlicePropagation'
-        ),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
-      },
-      commands: [
-        {
-          commandName: 'activateSelectedSegmentationOfType',
-          commandOptions: {
-            segmentationRepresentationType: 'Labelmap',
-          },
-        },
-        'toggleEnabledDisabledToolbar',
-      ],
-    },
-  },
-  {
-    id: 'MarkerLabelmap',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-marker-labelmap',
-      label: i18n.t('Buttons:Marker Guided Labelmap'),
-      tooltip: i18n.t(
-        'Buttons:Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.'
-      ),
-      evaluate: [
-        {
-          name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
-        },
-        {
-          name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: 'Labelmap',
-        },
-      ],
-      commands: [
-        'setToolActiveToolbar',
-        {
-          commandName: 'activateSelectedSegmentationOfType',
-          commandOptions: {
-            segmentationRepresentationType: 'Labelmap',
-          },
-        },
-      ],
-      listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
-      },
-      options: [
-        {
-          name: i18n.t('Buttons:Marker Mode'),
-          type: 'radio',
-          id: 'marker-mode',
-          value: 'markerInclude',
-          values: [
-            { value: 'markerInclude', label: i18n.t('Buttons:Include') },
-            { value: 'markerExclude', label: i18n.t('Buttons:Exclude') },
-          ],
-          commands: ({ commandsManager, options }) => {
-            const markerModeOption = options.find(option => option.id === 'marker-mode');
-            if (markerModeOption.value === 'markerInclude') {
-              commandsManager.run('setToolActive', {
-                toolName: 'MarkerInclude',
-              });
-            } else {
-              commandsManager.run('setToolActive', {
-                toolName: 'MarkerExclude',
-              });
-            }
-          },
-        },
-        {
-          name: i18n.t('Buttons:Clear Markers'),
-          type: 'button',
-          id: 'clear-markers',
-          commands: 'clearMarkersForMarkerLabelmap',
         },
       ],
     },

@@ -190,12 +190,6 @@ const bindings = [
     isEditable: true,
   },
   {
-    commandName: 'interpolateScrollForMarkerLabelmap',
-    label: 'Interpolate Scroll',
-    keys: ['n'],
-    isEditable: true,
-  },
-  {
     commandName: 'increaseBrushSize',
     label: 'Increase Brush Size',
     keys: [']'],
