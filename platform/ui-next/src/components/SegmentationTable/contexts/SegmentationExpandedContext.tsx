@@ -26,6 +26,16 @@ export const useSegmentationExpanded = (componentName?: string) => {
   return context;
 };
 
+/**
+ * Non-throwing variant: returns undefined outside a SegmentationExpandedProvider.
+ *
+ * Components that render both inside and outside the provider need this. Wrapping
+ * the throwing hook in try/catch instead puts a hook call inside a try block,
+ * which breaks the rules of hooks and makes the React Compiler bail on the whole
+ * component.
+ */
+export const useSegmentationExpandedOptional = () => useContext(SegmentationExpandedContext);
+
 export const SegmentationExpandedProvider: React.FC<{
   segmentation: any;
   representation: any;

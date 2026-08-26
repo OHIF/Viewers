@@ -32,7 +32,6 @@ export default function PanelSegmentation({
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
   const {
-    customizationService,
     displaySetService,
     viewportGridService,
     toolbarService,
@@ -94,23 +93,23 @@ export default function PanelSegmentation({
     }
   };
 
-  // Extract customization options
-  const segmentationTableMode = customizationService.getCustomization(
-    'panelSegmentation.tableMode'
-  ) as unknown as string;
-  // onSegmentationAdd is read through useCustomization (not a direct
-  // getCustomization call) so the panel re-renders when a mode registers its
-  // handler after this panel first mounted - e.g. TMTV replaces it with its
-  // create-labelmap-from-PT command in onModeEnter, and a render-time read
-  // (memoized by the React Compiler) would keep serving the stale default.
+  // Customizations are read through useCustomization rather than calling
+  // customizationService.getCustomization during render. Modes register these in
+  // onModeEnter, which can land after this panel has already mounted, and a
+  // render-time getCustomization call gets memoized by the React Compiler on the
+  // (stable) service reference - so it would serve the pre-registration default
+  // for the life of the panel. useCustomization subscribes to the service's
+  // change events instead. TMTV hit this twice: its 'expanded' tableMode stayed
+  // stuck on the 'collapsed' default, and its create-labelmap-from-PT
+  // onSegmentationAdd handler was ignored in favour of the default.
+  const segmentationTableMode = useCustomization('panelSegmentation.tableMode') as string;
   const onSegmentationAdd = useCustomization('panelSegmentation.onSegmentationAdd');
-  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
-  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = customizationService.getCustomization(
+  const disableEditing = useCustomization('panelSegmentation.disableEditing');
+  const showAddSegment = useCustomization('panelSegmentation.showAddSegment');
+  const CustomDropdownMenuContent = useCustomization(
     'panelSegmentation.customDropdownMenuContent'
   );
-
-  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
+  const CustomSegmentStatisticsHeader = useCustomization(
     'panelSegmentation.customSegmentStatisticsHeader'
   );
 
