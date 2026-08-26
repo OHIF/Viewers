@@ -16,7 +16,10 @@ function ViewportPane({
   onInteraction = () => {},
   acceptDropsFor,
 }) {
-  let dropElement = null;
+  // A ref, not a render-scoped variable: refHandler runs after render, so
+  // assigning a plain local there mutates a binding the render has already
+  // finished with - and the local resets to null on every subsequent render.
+  const dropElementRef = React.useRef(null);
 
   const [{ isHovered, isHighlighted }, drop] = useDrop({
     accept: acceptDropsFor,
@@ -33,9 +36,7 @@ function ViewportPane({
   });
 
   const focus = () => {
-    if (dropElement) {
-      dropElement.focus();
-    }
+    dropElementRef.current?.focus();
   };
 
   const onInteractionHandler = event => {
@@ -45,7 +46,7 @@ function ViewportPane({
 
   const refHandler = element => {
     drop(element);
-    dropElement = element;
+    dropElementRef.current = element;
   };
 
   return (
