@@ -236,10 +236,13 @@ const InputNumberHorizontalControls = ({
   const context = useInputNumber();
   const { value, onChange } = context;
 
-  // Set constraints in context for child components to use
-  React.useEffect(() => {
-    context.constraints = { min, max, step, disabled };
-  }, [context, min, max, step, disabled]);
+  // Provide the constraints to children rather than writing them onto the context
+  // object. The root re-creates its context value whenever the input value
+  // changes, which silently discarded a mutated `constraints` on every keystroke
+  // until the effect re-ran - and children that had already rendered never saw it
+  // at all. Extending the context here means children have the constraints on
+  // their first render.
+  const contextWithConstraints = { ...context, constraints: { min, max, step, disabled } };
 
   // Increment function with local constraints
   const increment = React.useCallback(() => {
@@ -264,33 +267,35 @@ const InputNumberHorizontalControls = ({
   }, [value, min, max, step, onChange, disabled]);
 
   return (
-    <div
-      ref={ref}
-      className={cn('flex flex-row items-center', className)}
-      {...props}
-    >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={decrement}
-        disabled={disabled}
-        className="text-primary h-6 w-4 cursor-pointer p-0"
+    <InputNumberContext.Provider value={contextWithConstraints}>
+      <div
+        ref={ref}
+        className={cn('flex flex-row items-center', className)}
+        {...props}
       >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={decrement}
+          disabled={disabled}
+          className="text-primary h-6 w-4 cursor-pointer p-0"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
 
-      {children}
+        {children}
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={increment}
-        disabled={disabled}
-        className="text-primary h-6 w-4 cursor-pointer p-0"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={increment}
+          disabled={disabled}
+          className="text-primary h-6 w-4 cursor-pointer p-0"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </InputNumberContext.Provider>
   );
 };
 
@@ -318,10 +323,13 @@ const InputNumberVerticalControls = ({
   const context = useInputNumber();
   const { value, onChange } = context;
 
-  // Set constraints in context for child components to use
-  React.useEffect(() => {
-    context.constraints = { min, max, step, disabled };
-  }, [context, min, max, step, disabled]);
+  // Provide the constraints to children rather than writing them onto the context
+  // object. The root re-creates its context value whenever the input value
+  // changes, which silently discarded a mutated `constraints` on every keystroke
+  // until the effect re-ran - and children that had already rendered never saw it
+  // at all. Extending the context here means children have the constraints on
+  // their first render.
+  const contextWithConstraints = { ...context, constraints: { min, max, step, disabled } };
 
   // Increment function with local constraints
   const increment = React.useCallback(() => {
@@ -346,33 +354,35 @@ const InputNumberVerticalControls = ({
   }, [value, min, max, step, onChange, disabled]);
 
   return (
-    <div
-      ref={ref}
-      className={cn('flex items-center', className)}
-      {...props}
-    >
-      {children}
-      <div className="ml-1 flex flex-col">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={increment}
-          disabled={disabled}
-          className="text-primary h-3 w-5 pr-px"
-        >
-          <ChevronUp className="h-3 w-3" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={decrement}
-          disabled={disabled}
-          className="text-primary h-3 w-5 pr-px"
-        >
-          <ChevronDown className="h-3 w-3" />
-        </Button>
+    <InputNumberContext.Provider value={contextWithConstraints}>
+      <div
+        ref={ref}
+        className={cn('flex items-center', className)}
+        {...props}
+      >
+        {children}
+        <div className="ml-1 flex flex-col">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={increment}
+            disabled={disabled}
+            className="text-primary h-3 w-5 pr-px"
+          >
+            <ChevronUp className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={decrement}
+            disabled={disabled}
+            className="text-primary h-3 w-5 pr-px"
+          >
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+        </div>
       </div>
-    </div>
+    </InputNumberContext.Provider>
   );
 };
 
