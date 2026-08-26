@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { useViewportRef } from '@ohif/core';
 import { DisplayableDocumentType } from '../utils/displayableDocumentTypes';
 import { DocumentLoadFailureReason } from '../utils/loadDisplayableDocument';
 import './OHIFCornerstonePdfViewport.css';
 
-const FAILURE_MESSAGES: Record<DocumentLoadFailureReason, string> = {
+/** Translation keys in the EncapsulatedDocument namespace, by failure reason. */
+const FAILURE_MESSAGE_KEYS: Record<DocumentLoadFailureReason, string> = {
   'unsupported-type': 'This document type cannot be displayed',
   'signature-mismatch': 'Document content does not match its declared type',
   'retrieve-failed': 'Unable to retrieve this document',
-  aborted: 'Loading document…',
+  aborted: 'Loading document...',
 };
 
 function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
@@ -20,6 +22,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   const [failure, setFailure] = useState<DocumentLoadFailureReason | null>(null);
   const viewportElementRef = useRef(null);
   const viewportRef = useViewportRef(viewportId);
+  const { t } = useTranslation('EncapsulatedDocument');
 
   useEffect(() => {
     document.body.addEventListener('drag', makePdfDropTarget);
@@ -98,10 +101,10 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
       data-viewport-id={viewportId}
     >
       {embeddedDocument ? (
-        renderDocument(embeddedDocument, style, label)
+        renderDocument(embeddedDocument, style, t, label)
       ) : (
         <div className="flex h-full w-full items-center justify-center">
-          {failure ? FAILURE_MESSAGES[failure] : 'Loading document…'}
+          {t(failure ? FAILURE_MESSAGE_KEYS[failure] : 'Loading document...')}
         </div>
       )}
     </div>
@@ -111,6 +114,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
 function renderDocument(
   { url, documentType }: { url: string; documentType: DisplayableDocumentType },
   style: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
   label?: string
 ) {
   // <object> is used only for the types the allowlist marks as un-sandboxable -
@@ -124,7 +128,7 @@ function renderDocument(
         type={documentType.mimeType}
         className={style}
       >
-        <div>No online viewer installed for {documentType.mimeType}</div>
+        <div>{t('No viewer installed for {{mimeType}}', { mimeType: documentType.mimeType })}</div>
       </object>
     );
   }
@@ -132,7 +136,7 @@ function renderDocument(
   return (
     <iframe
       src={url}
-      title={label || 'Encapsulated document'}
+      title={label || t('Encapsulated document')}
       className={`${style} border-0`}
       sandbox={documentType.sandbox ?? ''}
       referrerPolicy="no-referrer"
