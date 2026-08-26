@@ -4,6 +4,23 @@ import { Numeric } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * Records the shift applied to a viewport's opacity transfer function.
+ *
+ * Module scope on purpose: shiftedBy is stashed on the cornerstone viewport
+ * object, and writing to a value the render produced is a mutation the React
+ * Compiler cannot account for - it refuses to optimize the whole component.
+ * Passing the viewport to a named helper keeps the operation explicit and lets
+ * the compiler key the callback on the viewport reference rather than on a
+ * property path it would have to dereference during render.
+ */
+function setShiftedBy(viewport, shift) {
+  if (!viewport) {
+    return;
+  }
+  viewport.shiftedBy = shift;
+}
+
 export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement<any> {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
@@ -41,11 +58,7 @@ export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement<any>
   const onChangeRange = newShift => {
     const shiftDifference = newShift - prevShiftRef.current;
     prevShiftRef.current = newShift;
-    // Look the viewport up here rather than reusing the one captured during
-    // render: shiftedBy is stashed on the cornerstone viewport object, and
-    // writing to a render-captured value is a mutation the compiler cannot
-    // account for, so it refuses to optimize the component.
-    cornerstoneViewportService.getCornerstoneViewport(viewportId).shiftedBy = newShift;
+    setShiftedBy(viewport, newShift);
     commandsManager.runCommand('shiftVolumeOpacityPoints', {
       viewportId,
       shift: shiftDifference,
