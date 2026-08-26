@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
+import React, { ReactElement, useEffect, useState, useRef } from 'react';
 import { VolumeShiftProps } from '../../types/ViewportPresets';
 import { Numeric } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
@@ -38,19 +38,20 @@ export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement<any>
     setStep(Math.pow(10, Math.floor(Math.log10(transferFunctionWidth / 500))));
   }, [cornerstoneViewportService, viewportId, actor, ofun, isBlocking]);
 
-  const onChangeRange = useCallback(
-    newShift => {
-      const shiftDifference = newShift - prevShiftRef.current;
-      prevShiftRef.current = newShift;
-      viewport.shiftedBy = newShift;
-      commandsManager.runCommand('shiftVolumeOpacityPoints', {
-        viewportId,
-        shift: shiftDifference,
-      });
-      setShift(newShift);
-    },
-    [commandsManager, viewportId, viewport]
-  );
+  const onChangeRange = newShift => {
+    const shiftDifference = newShift - prevShiftRef.current;
+    prevShiftRef.current = newShift;
+    // Look the viewport up here rather than reusing the one captured during
+    // render: shiftedBy is stashed on the cornerstone viewport object, and
+    // writing to a render-captured value is a mutation the compiler cannot
+    // account for, so it refuses to optimize the component.
+    cornerstoneViewportService.getCornerstoneViewport(viewportId).shiftedBy = newShift;
+    commandsManager.runCommand('shiftVolumeOpacityPoints', {
+      viewportId,
+      shift: shiftDifference,
+    });
+    setShift(newShift);
+  };
 
   return (
     <div className="my-1 mt-2 flex flex-col space-y-2">
