@@ -2,16 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useViewportRef } from '@ohif/core';
 import { DisplayableDocumentType } from '../utils/displayableDocumentTypes';
-import {
-  DocumentLoadFailureReason,
-  loadDisplayableDocument,
-} from '../utils/loadDisplayableDocument';
+import { DocumentLoadFailureReason } from '../utils/loadDisplayableDocument';
 import './OHIFCornerstonePdfViewport.css';
 
 const FAILURE_MESSAGES: Record<DocumentLoadFailureReason, string> = {
   'unsupported-type': 'This document type cannot be displayed',
   'signature-mismatch': 'Document content does not match its declared type',
-  'fetch-failed': 'Unable to retrieve this document',
+  'retrieve-failed': 'Unable to retrieve this document',
   aborted: 'Loading document…',
 };
 
@@ -48,7 +45,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
     );
   }
 
-  const { renderedUrl, getRenderedUrl, mimeType, label } = displaySets[0];
+  const { getDocument, label } = displaySets[0];
 
   useEffect(() => {
     let isCancelled = false;
@@ -56,32 +53,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
     const abortController = new AbortController();
 
     const load = async () => {
-      let retrieved;
-
-      try {
-        retrieved = getRenderedUrl
-          ? await getRenderedUrl({ signal: abortController.signal })
-          : { url: await renderedUrl };
-      } catch (error) {
-        console.warn('Failed to retrieve document', error);
-        retrieved = { url: null };
-      }
-
-      if (isCancelled) {
-        retrieved?.revoke?.();
-        return;
-      }
-
-      // The retrieved URL may be an origin-server URL or a Blob built from the
-      // declared MIME type; either way its type is not trustworthy, so it is
-      // only ever used as a source of bytes for loadDisplayableDocument.
-      const result = await loadDisplayableDocument({
-        url: retrieved?.url,
-        mimeType,
-        signal: abortController.signal,
-      });
-
-      retrieved?.revoke?.();
+      const result = await getDocument({ signal: abortController.signal });
 
       if (isCancelled) {
         if (result.ok) {
@@ -111,7 +83,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
       abortController.abort();
       revokeUrl?.();
     };
-  }, [renderedUrl, getRenderedUrl, mimeType]);
+  }, [getDocument]);
 
   return (
     <div
