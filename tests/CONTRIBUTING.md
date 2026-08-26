@@ -261,8 +261,9 @@ Conventions that come up in every review:
 - Logic repeated across specs belongs in `tests/utils/`. Before adding a
   utility, check whether one already covers it. Don't add wrappers that
   contribute nothing; a function whose only body is a wait shouldn't exist.
-- Utilities take a single object parameter with defaults, not positional
-  arguments.
+- New utilities take a single object parameter with defaults, not positional
+  arguments. Some existing helpers (e.g. `visitStudy`) predate this — check
+  each utility's signature before calling it.
 - Import utilities through the `./utils` barrel. A few helpers are
   intentionally not re-exported; only then import from the deeper path.
 - Hoist literals repeated within a spec (e.g. a click-coordinate array) into

@@ -255,7 +255,7 @@ Reach for the cheapest *faithful* signal, in this order:
    it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
    escape hatch for *setup*, not for *appearance* assertions.
 
-For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport — `checkForViewportScreenshot` hides the viewport's overlay text before capturing, then restores it:
+For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport — `checkForViewportScreenshot` hides the viewport's overlay text for the capture:
 
 ```ts
 await checkForViewportScreenshot({
