@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
-import { useSegmentationTableContext, useSegmentationExpandedOptional } from './contexts';
+import { useSegmentationTableContext, useSegmentationExpanded } from './contexts';
 import { useTranslation } from 'react-i18next';
 
 export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ children = null }) => {
@@ -18,7 +18,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
 
   // Prefer the expanded context when this row is rendered inside one and it is
   // active; otherwise fall back to the active segmentation from the table context.
-  const expandedContext = useSegmentationExpandedOptional();
+  const expandedContext = useSegmentationExpanded();
   const useExpanded = expandedContext?.isActive === true;
   const segmentationId = useExpanded
     ? expandedContext.segmentation.segmentationId

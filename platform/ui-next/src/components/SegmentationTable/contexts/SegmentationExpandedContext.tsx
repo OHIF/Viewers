@@ -13,28 +13,23 @@ const SegmentationExpandedContext = createContext<SegmentationExpandedContextTyp
 );
 SegmentationExpandedContext.displayName = 'SegmentationExpandedContext';
 
-export const useSegmentationExpanded = (componentName?: string) => {
-  const context = useContext(SegmentationExpandedContext);
-
-  if (context === undefined) {
-    throw new Error(
-      `useSegmentationExpanded must be used within a SegmentationExpandedProvider` +
-        (componentName ? ` (called from ${componentName})` : '')
-    );
-  }
-
-  return context;
-};
-
 /**
- * Non-throwing variant: returns undefined outside a SegmentationExpandedProvider.
+ * Returns the expanded-segmentation context, or undefined when rendered outside a
+ * SegmentationExpandedProvider.
  *
- * Components that render both inside and outside the provider need this. Wrapping
- * the throwing hook in try/catch instead puts a hook call inside a try block,
- * which breaks the rules of hooks and makes the React Compiler bail on the whole
- * component.
+ * Deliberately does not throw. Most consumers render both inside and outside the
+ * provider and treat absence as a normal fallback case; when this hook threw,
+ * every one of them wrapped it in try/catch, which puts a hook call inside a try
+ * block - a rules-of-hooks violation that also makes the React Compiler bail on
+ * the whole component. The `| undefined` return type is the guard instead: it
+ * makes callers state what they do when the context is absent, at compile time.
+ *
+ * A consumer that genuinely requires the provider should assert for itself (see
+ * SegmentationCollapsedSelector), so the error names the component that has the
+ * requirement.
  */
-export const useSegmentationExpandedOptional = () => useContext(SegmentationExpandedContext);
+export const useSegmentationExpanded = (): SegmentationExpandedContextType | undefined =>
+  useContext(SegmentationExpandedContext);
 
 export const SegmentationExpandedProvider: React.FC<{
   segmentation: any;

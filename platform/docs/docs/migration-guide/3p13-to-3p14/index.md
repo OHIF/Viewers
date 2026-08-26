@@ -27,4 +27,10 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   generic and the `sortFn` rename; programmatic visibility toggles should go
   through `useToggleColumnVisibility`.
 
+- **[useSegmentationExpanded](./segmentation-expanded-context.md)** — the hook
+  returns `undefined` outside a `SegmentationExpandedProvider` instead of
+  throwing, and no longer takes a component-name argument. Callers that wrapped
+  it in `try/catch` should check for `undefined`; callers that require the
+  provider should assert for themselves.
+
 <DocCardList />
