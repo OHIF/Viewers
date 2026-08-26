@@ -136,7 +136,15 @@ const createRoutes = ({
     const [appConfig] = useAppConfig();
     const { showErrorDetails } = appConfig;
 
-    history.navigate = useNavigate();
+    const navigate = useNavigate();
+
+    // Assigned in an effect, not during render: history is a module singleton and
+    // writing to it mid-render is an external mutation the compiler refuses. Its
+    // setter takes only the first value it is given, and the sole consumer calls
+    // history.navigate() from a command, well after mount.
+    React.useEffect(() => {
+      history.navigate = navigate;
+    }, [navigate]);
 
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
