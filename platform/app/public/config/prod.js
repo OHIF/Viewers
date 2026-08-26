@@ -1,7 +1,7 @@
 /** @type {AppTypes.Config} */
 // Production environment configuration.
 // Built with: APP_CONFIG=config/prod.js
-const { baseConfig, createDataSources } = window.deemeaConfig;
+const { baseConfig, getDynamicDataSources } = window.deemeaConfig;
 
 window.config = {
   ...baseConfig,
@@ -11,7 +11,7 @@ window.config = {
   dangerouslyUseDynamicConfig: {
     enabled: false,
   },
-  dataSources: createDataSources({
+  dataSources: getDynamicDataSources({
     STRAUBING: { url: 'https://straubing.deemea.com/api/v1/didier', qidoSupportsIncludeField: true, supportsReject: true },
     MERMOZ: { url: 'https://mermoz.deemea.com/api/v1/didier', qidoSupportsIncludeField: true, supportsReject: true },
     ERASME: { url: 'https://erasme.deemea.com/api/v1/didier', qidoSupportsIncludeField: true, supportsReject: true },
