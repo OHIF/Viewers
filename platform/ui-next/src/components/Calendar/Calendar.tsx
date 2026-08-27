@@ -114,7 +114,10 @@ function Calendar({
           'relative rounded-md border border-input',
           defaultClassNames.dropdown_root
         ),
-        dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
+        dropdown: cn(
+          'bg-popover text-popover-foreground absolute inset-0 opacity-0',
+          defaultClassNames.dropdown
+        ),
         caption_label: cn(
           'select-none font-medium',
           captionLayout === 'label'
