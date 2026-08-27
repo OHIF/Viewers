@@ -1,10 +1,13 @@
 import React, { type JSX } from 'react';
 
 // should be used in a Select component
+const defaultDataCY = (displaySet: AppTypes.DisplaySet) =>
+  `${displaySet.label}-${displaySet.Modality}`;
+
 const SelectItemWithModality = ({
   displaySet,
   showModality = true,
-  dataCY = `${displaySet.label}-${displaySet.Modality}`,
+  dataCY = defaultDataCY(displaySet),
 }: {
   displaySet: AppTypes.DisplaySet;
   showModality?: boolean;
