@@ -255,6 +255,7 @@ const screenShotPaths = {
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
     intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
+    mergeBigSphereSmallSphereResult: 'mergeBigSphereSmallSphereResult.png',
   },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
