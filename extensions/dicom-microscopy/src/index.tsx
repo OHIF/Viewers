@@ -56,6 +56,20 @@ const extension: Types.Extensions.Extension = {
      * @param props.displaySetOptions
      * @returns
      */
+    // Declared here rather than inside the component. It closes over
+    // `servicesManager`, which belongs to this factory and not to render, and the
+    // compiler will hoist a render-scope callback it believes captures nothing
+    // all the way to module scope - where `servicesManager` does not resolve.
+    // It also addresses every managed viewer, so one shared debounce is right.
+    const onResize = debounce(() => {
+      const { microscopyService } = servicesManager.services;
+      const managedViewer = microscopyService.getAllManagedViewers();
+
+      if (managedViewer && managedViewer.length > 0) {
+        managedViewer[0].viewer.resize();
+      }
+    }, 100);
+
     const ExtendedMicroscopyViewport = props => {
       const { viewportOptions } = props;
 
@@ -63,15 +77,6 @@ const extension: Types.Extensions.Extension = {
       const { activeViewportId } = viewportGrid;
 
       const displaySetsKey = props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
-
-      const onResize = debounce(() => {
-        const { microscopyService } = servicesManager.services;
-        const managedViewer = microscopyService.getAllManagedViewers();
-
-        if (managedViewer && managedViewer.length > 0) {
-          managedViewer[0].viewer.resize();
-        }
-      }, 100);
 
       const { ref: resizeRef } = useResizeDetector({
         onResize,
