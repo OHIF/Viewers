@@ -1,44 +1,54 @@
 import React from 'react';
 import { OHIFCornerstoneSRContentItem } from './OHIFCornerstoneSRContentItem';
 
-export function OHIFCornerstoneSRContainer(props) {
-  const { container, nodeIndexesTree = [0], containerNumberedTree = [1] } = props;
-  const { ContinuityOfContent, ConceptNameCodeSequence } = container;
-  const { CodeMeaning } = ConceptNameCodeSequence ?? {};
+/**
+ * Builds the rendered children of a container's content sequence. Container
+ * children are numbered 1, 2, 3... in order; everything else renders as a
+ * content item. Lives at module scope so the running counter is not a variable
+ * captured by a lambda, which the compiler cannot lower.
+ */
+function renderContentItems(container, nodeIndexesTree, containerNumberedTree) {
+  const { ContinuityOfContent } = container;
+  const contentSequence = container.ContentSequence;
+
+  if (!contentSequence) {
+    return undefined;
+  }
+
   let childContainerIndex = 1;
-  const contentItems = container.ContentSequence?.map((contentItem, i) => {
+
+  return contentSequence.map((contentItem, i) => {
     const { ValueType } = contentItem;
     const childNodeLevel = [...nodeIndexesTree, i];
     const key = childNodeLevel.join('.');
 
-    let Component;
-    let componentProps;
-
     if (ValueType === 'CONTAINER') {
-      const childContainerNumberedTree = [...containerNumberedTree, childContainerIndex++];
-
-      Component = OHIFCornerstoneSRContainer;
-      componentProps = {
-        container: contentItem,
-        nodeIndexesTree: childNodeLevel,
-        containerNumberedTree: childContainerNumberedTree,
-      };
-    } else {
-      Component = OHIFCornerstoneSRContentItem;
-      componentProps = {
-        contentItem,
-        nodeIndexesTree: childNodeLevel,
-        continuityOfContent: ContinuityOfContent,
-      };
+      return (
+        <OHIFCornerstoneSRContainer
+          key={key}
+          container={contentItem}
+          nodeIndexesTree={childNodeLevel}
+          containerNumberedTree={[...containerNumberedTree, childContainerIndex++]}
+        />
+      );
     }
 
     return (
-      <Component
+      <OHIFCornerstoneSRContentItem
         key={key}
-        {...componentProps}
+        contentItem={contentItem}
+        nodeIndexesTree={childNodeLevel}
+        continuityOfContent={ContinuityOfContent}
       />
     );
   });
+}
+
+export function OHIFCornerstoneSRContainer(props) {
+  const { container, nodeIndexesTree = [0], containerNumberedTree = [1] } = props;
+  const { ConceptNameCodeSequence } = container;
+  const { CodeMeaning } = ConceptNameCodeSequence ?? {};
+  const contentItems = renderContentItems(container, nodeIndexesTree, containerNumberedTree);
 
   return (
     <div>
@@ -50,5 +60,3 @@ export function OHIFCornerstoneSRContainer(props) {
     </div>
   );
 }
-
-
