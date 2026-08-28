@@ -39,7 +39,7 @@ const RowComponent = ({
     <div
       style={{ ...style, ...rowStyle }}
       className={classNames(
-        'hover:bg-primary/25 border-input text-foreground flex w-full flex-row items-center break-all bg-background text-base',
+        'hover:bg-primary/25 border-input text-foreground bg-background flex w-full flex-row items-center break-all text-base',
         lineHeightClassName
       )}
       key={keyPrefix}
@@ -112,6 +112,38 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
     </div>
   );
 }
+/**
+ * Measures the tallest column of one row, in pixels, using the header column
+ * widths and a canvas for text metrics.
+ *
+ * Takes the header elements as arguments rather than closing over them: the
+ * compiler infers a callback's dependencies from its body, so reading
+ * `el.offsetWidth` inside a component-level callback gets hoisted into render,
+ * where these are still null. Passing the elements in means the emitted guard
+ * compares the references instead, and there is no property path to hoist.
+ */
+function measureRowHeight(row, headerElems, canvas) {
+  if (!canvas || headerElems.some(elem => !elem)) {
+    return 0;
+  }
+
+  const headerWidths = headerElems.map(elem => elem.offsetWidth);
+
+  const context = canvas.getContext('2d');
+  context.font = getComputedStyle(canvas).font;
+
+  const propertiesToCheck = ['tag', 'valueRepresentation', 'keyword', 'value'];
+
+  return Object.entries(row)
+    .filter(([key]) => propertiesToCheck.includes(key))
+    .map(([, colText], index) => {
+      const colOneLineWidth = context.measureText(colText).width;
+      const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
+      return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
+    })
+    .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight), 0);
+}
+
 function DicomTagTable({ rows }: { rows: Row[] }) {
   const listRef = useRef<List | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -180,44 +212,19 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
     };
   }, []);
 
-  const getOneRowHeight = useCallback(
-    row => {
-      const headerWidths = [
-        tagHeaderElem.offsetWidth,
-        vrHeaderElem.offsetWidth,
-        keywordHeaderElem.offsetWidth,
-        valueHeaderElem.offsetWidth,
-      ];
-
-      const context = canvasRef.current.getContext('2d');
-      context.font = getComputedStyle(canvasRef.current).font;
-
-      const propertiesToCheck = ['tag', 'valueRepresentation', 'keyword', 'value'];
-
-      return Object.entries(row)
-        .filter(([key]) => propertiesToCheck.includes(key))
-        .map(([, colText], index) => {
-          const colOneLineWidth = context.measureText(colText).width;
-          const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
-          return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
-        })
-        .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight), 0);
-    },
-    [keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
-  );
-
   /**
    * Get the item/row size. We use the header column widths to calculate the various row heights.
    * @param index the row index
    * @returns the row height
    */
   const getItemSize = useCallback(
-    rows => index => {
-      const row = rows[index];
-      const height = getOneRowHeight(row);
-      return height;
-    },
-    [getOneRowHeight]
+    rows => index =>
+      measureRowHeight(
+        rows[index],
+        [tagHeaderElem, vrHeaderElem, keywordHeaderElem, valueHeaderElem],
+        canvasRef.current
+      ),
+    [tagHeaderElem, vrHeaderElem, keywordHeaderElem, valueHeaderElem]
   );
 
   const onToggle = useCallback(
@@ -246,8 +253,8 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
 
   const getRowComponent = useCallback(
     ({ rows }: { rows: Row[] }) =>
-      (function RowList({ index, style }) {
-        const row = useMemo(() => rows[index], [index]);
+      function RowList({ index, style }) {
+        const row = rows[index];
 
         return (
           <RowComponent
@@ -257,7 +264,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
             onToggle={onToggle(row)}
           />
         );
-      }),
+      },
     [onToggle]
   );
 
@@ -281,7 +288,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
         valueRef={valueRef}
       />
       <div
-        className="relative m-auto border-2 border-background bg-background"
+        className="border-background bg-background relative m-auto border-2"
         style={{ height: '32rem' }}
       >
         {isHeaderRendered() && (
