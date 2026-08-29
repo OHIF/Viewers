@@ -21,6 +21,19 @@ describe('copyTextToClipboard', () => {
     await expect(copyTextToClipboard('error details')).resolves.toBe(false);
   });
 
+  it('returns false when clipboard access throws synchronously', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: jest.fn(() => {
+          throw new DOMException('Not allowed', 'NotAllowedError');
+        }),
+      },
+    });
+
+    await expect(copyTextToClipboard('error details')).resolves.toBe(false);
+  });
+
   it('copies text when clipboard access is available', async () => {
     const writeText = jest.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {
