@@ -7,6 +7,7 @@ import {
   RightPanelPageObject,
   ViewportPageObject,
   NotFoundStudyPageObject,
+  HeaderPageObject,
 } from '../pages';
 
 type PageObjects = {
@@ -16,6 +17,7 @@ type PageObjects = {
   rightPanelPageObject: RightPanelPageObject;
   viewportPageObject: ViewportPageObject;
   notFoundStudyPageObject: NotFoundStudyPageObject;
+  headerPageObject: HeaderPageObject;
 };
 
 type TestFixtures = PageObjects & {
@@ -47,6 +49,9 @@ export const test = base.extend<TestFixtures>({
   },
   notFoundStudyPageObject: async ({ page }, use) => {
     await use(new NotFoundStudyPageObject(page));
+  },
+  headerPageObject: async ({ page }, use) => {
+    await use(new HeaderPageObject(page));
   },
 });
 
