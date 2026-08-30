@@ -177,6 +177,7 @@ const OHIFCornerstoneViewport = React.memo(
         const { synchronizersStore } = useSynchronizersStore.getState();
         // Read live, since this handler is registered once on mount and the prop goes stale
         const { isHangingProtocolLayout: isHPLayout } = viewportGridService.getState();
+        // HPs define their own synchronizers, so only rehydrate the old ones outside of them
         if (synchronizersStore?.[viewportId]?.length && !isHPLayout) {
           // If the viewport used to have a synchronizer, re apply it again
           _rehydrateSynchronizers(viewportId, syncGroupService);
