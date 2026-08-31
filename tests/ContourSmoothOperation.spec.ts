@@ -12,19 +12,17 @@ import {
 const THRESHOLD_SEGMENT_INDEX = 0;
 const THRESHOLD_SEGMENT_LABEL = 'Threshold';
 
-test.beforeEach(
-  async ({ page, leftPanelPageObject, DOMOverlayPageObject, rightPanelPageObject }) => {
-    const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
+test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
+  const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
-    await visitStudyAndHydrate({
-      page,
-      leftPanelPageObject,
-      DOMOverlayPageObject,
-      studyInstanceUID,
-      modality: 'RTSTRUCT',
-    });
-  }
-);
+  await visitStudyAndHydrate({
+    page,
+    leftPanelPageObject,
+    DOMOverlayPageObject,
+    studyInstanceUID,
+    modality: 'RTSTRUCT',
+  });
+});
 
 test('smooth edges changes the active segment contour and keeps it closed', async ({
   page,
@@ -62,19 +60,14 @@ test('smooth edges changes the active segment contour and keeps it closed', asyn
   await smoothRenderCycle;
 
   await expect(paths, 'Expected smoothing to keep a single contour path').toHaveCount(1);
-  const thresholdSvgPathAfter = await getSvgAttribute({
-    viewportPageObject,
-    svgInnerElement: 'path',
-    attributeName: 'd',
-  });
-  if (thresholdSvgPathAfter === null) {
-    throw new Error('Expected Threshold to render an SVG path after smoothing');
-  }
-  expect(
-    thresholdSvgPathAfter,
-    'Expected smoothing to change the active contour geometry'
-  ).not.toBe(thresholdSvgPathBefore);
-  expect(thresholdSvgPathAfter, 'Expected the smoothed contour to stay closed').toMatch(/Z\s*$/);
+  await expect(paths.first(), 'Expected smoothing to change the contour').not.toHaveAttribute(
+    'd',
+    thresholdSvgPathBefore
+  );
+  await expect(paths.first(), 'Expected the smoothed contour to stay closed').toHaveAttribute(
+    'd',
+    /Z\s*$/
+  );
 
   await smoothContours.close();
   await checkForViewportScreenshot({
