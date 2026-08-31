@@ -10,6 +10,51 @@ import constructSR from '../../utils/constructSR';
 const { downloadDicom } = utils;
 
 let saving = false;
+
+/**
+ * Writes the constructed SR dataset out - to a file when the data source is the
+ * download pseudo-source, otherwise to the data source itself - and reports the
+ * outcome. Always clears the `saving` re-entrancy guard.
+ *
+ * Lives at module scope so it can keep a real `finally`: the compiler cannot yet
+ * lower a `try` with a finalizer, and moving the reset after the `try`/`catch`
+ * instead would leave the guard stuck if the `catch` itself threw.
+ */
+async function storeDataset(dataset, dataSource, onSaveComplete) {
+  try {
+    if (!dataSource) {
+      console.error('Server unspecified');
+      return;
+    }
+
+    if (dataSource.wadoRoot == 'saveDicom') {
+      // download as DICOM file
+      const part10Buffer = datasetToBuffer(dataset);
+      downloadDicom(part10Buffer, { filename: `sr-microscopy.dcm` });
+    } else {
+      // Save into Web Data source
+      const { StudyInstanceUID } = dataset;
+      await dataSource.store.dicom(dataset);
+      if (StudyInstanceUID) {
+        dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
+      }
+    }
+
+    onSaveComplete({
+      title: 'SR Saved',
+      message: 'Measurements downloaded successfully',
+      type: 'success',
+    });
+  } catch (error) {
+    onSaveComplete({
+      title: 'SR Save Failed',
+      message: error.message || error.toString(),
+      type: 'error',
+    });
+  } finally {
+    saving = false;
+  }
+}
 const { datasetToBuffer } = dcmjs.data;
 
 const formatArea = area => {
@@ -191,38 +236,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     // construct SR dataset
     const dataset = constructSR(metadata, { SeriesDescription, SeriesNumber }, annotations);
 
-    // Save in DICOM format
-    try {
-      if (dataSource) {
-        if (dataSource.wadoRoot == 'saveDicom') {
-          // download as DICOM file
-          const part10Buffer = datasetToBuffer(dataset);
-          downloadDicom(part10Buffer, { filename: `sr-microscopy.dcm` });
-        } else {
-          // Save into Web Data source
-          const { StudyInstanceUID } = dataset;
-          await dataSource.store.dicom(dataset);
-          if (StudyInstanceUID) {
-            dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
-          }
-        }
-        onSaveComplete({
-          title: 'SR Saved',
-          message: 'Measurements downloaded successfully',
-          type: 'success',
-        });
-      } else {
-        console.error('Server unspecified');
-      }
-    } catch (error) {
-      onSaveComplete({
-        title: 'SR Save Failed',
-        message: error.message || error.toString(),
-        type: 'error',
-      });
-    } finally {
-      saving = false;
-    }
+    await storeDataset(dataset, dataSource, onSaveComplete);
   };
 
   /**
