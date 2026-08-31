@@ -252,6 +252,9 @@ const screenShotPaths = {
   overlappingSegmentationRendering: {
     overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
   },
+  contourSmoothOperation: {
+    smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+  },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
     intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
