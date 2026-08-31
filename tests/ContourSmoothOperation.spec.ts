@@ -36,12 +36,6 @@ test('smooth edges changes the active segment contour and keeps it closed', asyn
   const activeViewport = await viewportPageObject.active;
   const paths = activeViewport.svg('path');
 
-  // // Maximize the viewport so the smoothed-result screenshot is legible, and wait
-  // // for the resize to settle so the baseline path below uses final coordinates.
-  // const maximizeRenderCycle = waitForViewportRenderCycle(page);
-  // await activeViewport.pane.dblclick();
-  // await maximizeRenderCycle;
-
   // Preconditions for the hardcoded row index used below.
   await expect(panel.rows).toHaveCount(4);
   await expect(panel.nthSegment(THRESHOLD_SEGMENT_INDEX).title).toHaveText(THRESHOLD_SEGMENT_LABEL);
