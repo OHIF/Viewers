@@ -64,7 +64,7 @@ test('smooth edges changes the active segment contour and keeps it closed', asyn
     'd',
     thresholdSvgPathBefore
   );
-  
+
   await smoothContours.close();
   await checkForViewportScreenshot({
     page,
