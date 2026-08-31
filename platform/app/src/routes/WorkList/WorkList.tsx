@@ -22,6 +22,7 @@ type Props = withAppTypes & {
   dataSource: any;
   isLoadingData: boolean;
   hasFetchedOnce?: boolean;
+  isDataSourceInitialized?: boolean;
   dataPath?: string;
   onRefresh: () => void;
 };
@@ -31,9 +32,9 @@ export default function WorkList({
   dataSource,
   isLoadingData,
   hasFetchedOnce = false,
+  isDataSourceInitialized = false,
   dataPath,
   onRefresh,
-  servicesManager,
   extensionManager,
   commandsManager,
 }: Props) {
@@ -110,7 +111,11 @@ export default function WorkList({
     />
   );
 
-  const toolbarActions = useWorkListToolbarActions(servicesManager, dataSource, onRefresh);
+  const toolbarActions = useWorkListToolbarActions(
+    dataSource,
+    onRefresh,
+    isDataSourceInitialized
+  );
 
   const previewDefaultSize = useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {

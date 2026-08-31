@@ -1,5 +1,4 @@
-import React, { useCallback, useState } from 'react';
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
@@ -18,10 +17,10 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
     'min-h-[375px] flex flex-col bg-background select-none rounded-lg overflow-hidden';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
-  const onDrop = useCallback(async acceptedFiles => {
+  const onDrop = async acceptedFiles => {
     onStarted();
     setDicomFileUploaderArr(acceptedFiles.map(file => new DicomFileUploader(file, dataSource)));
-  }, []);
+  };
 
   const getDropZoneComponent = (): ReactElement<any> => {
     return (

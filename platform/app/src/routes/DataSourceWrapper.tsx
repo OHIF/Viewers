@@ -134,6 +134,7 @@ function DataSourceWrapper(props: withAppTypes) {
       dataSource={dataSource}
       isLoadingData={isLoading}
       hasFetchedOnce={hasFetchedOnce}
+      isDataSourceInitialized={isDataSourceInitialized}
       onRefresh={refresh}
     />
   );

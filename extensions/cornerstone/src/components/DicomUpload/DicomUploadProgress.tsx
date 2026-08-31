@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
+import { useEffect, useRef, useState, ReactElement } from 'react';
 import { useSystem } from '@ohif/core';
 import { Button } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
@@ -63,7 +63,10 @@ function DicomUploadProgress({
 
   const [showFailedOnly, setShowFailedOnly] = useState(false);
 
-  const progressBarContainerRef = useRef<HTMLElement>(undefined);
+  // Held in state, not a ref: the width below is read during render, and a
+  // ref is not guaranteed to be populated then. State also re-renders once the
+  // element arrives, so the first measurement is not missed.
+  const [progressBarContainer, setProgressBarContainer] = useState<HTMLElement | null>(null);
 
   /**
    * The effect for measuring and setting the current upload rate. This is
@@ -207,7 +210,7 @@ function DicomUploadProgress({
     };
   }, []);
 
-  const cancelAllUploads = useCallback(async () => {
+  const cancelAllUploads = async () => {
     for (const dicomFileUploader of dicomFileUploaderArr) {
       // Important: we need a non-blocking way to cancel every upload,
       // otherwise the UI will freeze and the user will not be able
@@ -219,9 +222,9 @@ function DicomUploadProgress({
         }, 0);
       });
     }
-  }, []);
+  };
 
-  const getFormattedTimeRemaining = useCallback((): string => {
+  const getFormattedTimeRemaining = (): string => {
     if (timeRemaining == null) {
       return '';
     }
@@ -238,31 +241,28 @@ function DicomUploadProgress({
 
     const hoursRemaining = Math.ceil(timeRemaining / ONE_HOUR);
     return `${hoursRemaining} ${hoursRemaining === 1 ? 'hour' : 'hours'}`;
-  }, [timeRemaining]);
+  };
 
-  const getPercentCompleteRounded = useCallback(
-    () => Math.min(100, Math.round(percentComplete)),
-    [percentComplete]
-  );
+  const getPercentCompleteRounded = () => Math.min(100, Math.round(percentComplete));
 
   /**
    * Determines if the progress bar should show the infinite animation or not.
    * Show the infinite animation for progress less than 1% AND if less than
    * one pixel of the progress bar would be displayed.
    */
-  const showInfiniteProgressBar = useCallback((): boolean => {
+  const showInfiniteProgressBar = (): boolean => {
     return (
       getPercentCompleteRounded() < 1 &&
-      (progressBarContainerRef?.current?.offsetWidth ?? 0) * (percentComplete / 100) < 1
+      (progressBarContainer?.offsetWidth ?? 0) * (percentComplete / 100) < 1
     );
-  }, [getPercentCompleteRounded, percentComplete]);
+  };
 
   /**
    * Gets the CSS style for the 'n of m' (files completed) text.
    * The width changes according to numFilesCompleted and can vary,
    * e.g. "1 of 200", "10 of 200", "100 of 200" all have differents width.
    */
-  const getNofMFilesStyle = useCallback(() => {
+  const getNofMFilesStyle = () => {
     // the number of digits accounts for the digits being on each side of the ' of '
     const numDigits =
       numFilesCompleted.toString().length + dicomFileUploaderArr.length.toString().length;
@@ -271,7 +271,7 @@ function DicomUploadProgress({
     // The font may play a part in this discrepancy.
     const numChars = numDigits + 3;
     return { width: `${numChars}ch` };
-  }, [numFilesCompleted]);
+  };
 
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement<any> => {
     return (
@@ -350,7 +350,7 @@ function DicomUploadProgress({
           ) : (
             <>
               <div
-                ref={progressBarContainerRef}
+                ref={setProgressBarContainer}
                 className="flex-grow"
               >
                 <ProgressLoadingBar
