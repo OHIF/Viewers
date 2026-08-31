@@ -1,5 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ExtensionManager, MODULE_TYPES } from '@ohif/core';
 //
 import { extensionManager } from '../App';
@@ -31,7 +30,7 @@ function DataSourceWrapper(props: withAppTypes) {
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
 
-  const getInitialDataSourceName = useCallback(() => {
+  const getInitialDataSourceName = () => {
     // TODO - get the variable from the props all the time...
     let dataSourceName = lowerCaseSearchParams.get('datasources');
 
@@ -59,7 +58,7 @@ function DataSourceWrapper(props: withAppTypes) {
     }
 
     return dataSourceName;
-  }, []);
+  };
 
   const [isDataSourceInitialized, setIsDataSourceInitialized] = useState(false);
 
@@ -139,7 +138,5 @@ function DataSourceWrapper(props: withAppTypes) {
     />
   );
 }
-
-
 
 export default DataSourceWrapper;
