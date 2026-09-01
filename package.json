@@ -49,7 +49,7 @@
     "install:update-lockfile": "yarn install && bun install --config=./bunfig.update-lockfile.toml",
     "install:yarn:frozen-lockfile": "echo Deprecated - use install:frozen && yarn install --frozen-lockfile",
     "install:frozen": "yarn install --frozen-lockfile",
-    "audit": "bun audit --ignore=GHSA-3ppc-4f35-3m26 --ignore=GHSA-7r86-cg39-jmmj --ignore=GHSA-23c5-xmqv-rm74 --ignore=GHSA-c2c7-rcm5-vvqj --ignore=GHSA-mp2f-45pm-3cg9",
+    "audit": "bun audit --ignore=GHSA-3ppc-4f35-3m26 --ignore=GHSA-7r86-cg39-jmmj --ignore=GHSA-23c5-xmqv-rm74 --ignore=GHSA-c2c7-rcm5-vvqj --ignore=GHSA-mp2f-45pm-3cg9 --ignore=GHSA-jmr9-qjv8-65gv",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",
@@ -157,7 +157,7 @@
     "lodash-es": "4.18.1",
     "diff": "5.2.2",
     "webpack": "5.105.0",
-    "tar": "7.5.20",
+    "tar": "7.5.22",
     "serialize-javascript": "7.0.4",
     "svgo": "3.3.4",
     "flatted": "3.4.2",
@@ -174,7 +174,8 @@
     "js-yaml": "3.15.1",
     "postcss": "8.5.26",
     "ip-address": "10.5.0",
-    "nx": "22.7.8"
+    "nx": "22.7.8",
+    "pacote": "21.5.1"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
