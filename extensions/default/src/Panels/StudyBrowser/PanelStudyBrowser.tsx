@@ -1,3 +1,18 @@
+// 'use no memo' - this component triggers a runtime hook-order error when the
+// React Compiler processes it:
+//   "React has detected a change in the order of Hooks called by PanelStudyBrowser"
+//
+// Ruled out, each by testing the built app:
+//   - hot-module reload (survives a hard reload and a fresh tab)
+//   - the hook count (occurs whether the double-click useCallback is kept or not)
+//   - the dependency contents (occurs with extensionManager.appConfig or useAppConfig)
+//   - a stale prebuilt dist/ copy of this extension (renaming it changes nothing)
+//
+// The emitted output is structurally sound - 24 hooks, all top level, one return
+// at the end - and 46 other files compiled without this. The cause is unknown and
+// narrowing it needs runtime bisection, not reading.
+'use no memo';
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
@@ -102,6 +117,8 @@ function PanelStudyBrowser({
       servicesManager,
       isHangingProtocolLayout,
       customizationService,
+      extensionManager.appConfig,
+      onDoubleClickThumbnailHandlerCallBack,
     ]
   );
 
