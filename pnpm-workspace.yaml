@@ -33,14 +33,9 @@ auditConfig:
     # docs build time on repo-committed images — never on untrusted input.
     - GHSA-w3rx-r6r6-pgpr
     - GHSA-5p2g-fcmc-qvqq
-    # extract-zip only used transitively via the dev cypress dependency for automated testing
+    # extract-zip is a transitive dependency of cypress and is only used in dev
     - GHSA-jmr9-qjv8-65gv
-    # deepmerge-ts stack exhaustion needs a recursive/cyclic object graph. The
-    # only consumer is shepherd.js, merging onboarding tour definitions passed in
-    # by application code or deployment config — never DICOM data, URL params or
-    # user input. An override wouldn't help anyway: shepherd bundles
-    # deepmerge-ts 7.1.5 into its own dist, so the installed copy never loads.
-    - GHSA-ggr8-5vv4-36mx
+
 allowBuilds:
   '@scarf/scarf': true
   '@swc/core': true
@@ -85,7 +80,7 @@ overrides:
   lodash-es: 4.18.1
   diff: 5.2.2
   webpack: 5.105.0
-  tar: 7.5.21
+  tar: 7.5.22
   serialize-javascript: 7.0.4
   'svgo@>=3.0.0 <3.3.4': 3.3.4
   flatted: 3.4.2
@@ -124,3 +119,4 @@ overrides:
   'js-yaml@>=3.0.0 <3.15.1': 3.15.1
   'js-yaml@>=4.0.0 <4.3.1': 4.3.1
   'postcss@<8.5.26': 8.5.26
+  'pacote@>=11.2.7 <21.5.1': 21.5.1
