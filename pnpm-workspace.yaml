@@ -90,7 +90,7 @@ overrides:
   shell-quote: 1.10.0
   'fast-uri@>=3.0.0 <3.1.5': 3.1.5
   '@babel/plugin-transform-modules-systemjs': 7.29.4
-  # pnpm-branch-only overrides (kept across merges from master).
+  'browserslist@<4.28.7': 4.28.7
   'sharp@<0.35.0': 0.35.3
   # Force a single modern tslib for the whole workspace. Without this, rxjs@6
   # pulls in tslib@1, which gets hoisted to root node_modules and shadows the
