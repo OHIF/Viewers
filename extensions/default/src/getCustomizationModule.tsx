@@ -25,6 +25,7 @@ import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomiz
 import onboardingCustomization from './customizations/onboardingCustomization';
 import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
 import getWorkListCustomization from './customizations/workListCustomization';
+import getMetadataDisplaySetCustomization from './customizations/metadataDisplaySetCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -34,11 +35,19 @@ import getWorkListCustomization from './customizations/workListCustomization';
  * custom page for the user to view their profile, or to add a custom
  * page for login etc.
  */
-export default function getCustomizationModule({ servicesManager, extensionManager }) {
+export default function getCustomizationModule({ servicesManager, extensionManager, appConfig }) {
   return [
     {
       name: 'helloPage',
       value: helloPageCustomization,
+    },
+    {
+      // Enables metadata-driven display set splitting when listed in
+      // `appConfig.customizationService` (Global scope).
+      name: 'metadataDisplaySet',
+      value: {
+        useMetadataDisplaySet: { enabled: { $set: true } },
+      },
     },
     {
       name: 'theme',
@@ -78,6 +87,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...onboardingCustomization,
         ...instanceSortingCriteriaCustomization,
         ...getWorkListCustomization(),
+        ...getMetadataDisplaySetCustomization({ servicesManager, extensionManager, appConfig }),
       },
     },
   ];
