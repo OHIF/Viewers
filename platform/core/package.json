@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "3.14.0-beta.16",
+  "version": "3.14.0-beta.17",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -55,7 +55,7 @@
     "moment": "2.30.1",
     "object-hash": "2.1.1",
     "query-string": "6.14.1",
-    "shepherd.js": "15.2.2",
+    "shepherd.js": "15.3.0",
     "validate.js": "0.12.0"
   },
   "devDependencies": {
