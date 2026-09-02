@@ -7,7 +7,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
-import { MeasurementService, useViewportRef } from '@ohif/core';
+import { MeasurementService, useViewportElementRegistration } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
@@ -87,7 +87,8 @@ const OHIFCornerstoneViewport = React.memo(
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
     const elementRef = useRef(undefined) as React.MutableRefObject<HTMLDivElement>;
-    const viewportRef = useViewportRef(viewportId);
+    const { register: registerViewportElement, unregister: unregisterViewportElement } =
+      useViewportElementRegistration(viewportId);
 
     const {
       displaySetService,
@@ -226,7 +227,7 @@ const OHIFCornerstoneViewport = React.memo(
         }
 
         cornerstoneViewportService.disableElement(viewportId);
-        viewportRef.unregister();
+        unregisterViewportElement();
 
         eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
       };
@@ -324,7 +325,7 @@ const OHIFCornerstoneViewport = React.memo(
             ref={el => {
               elementRef.current = el;
               if (el) {
-                viewportRef.register(el);
+                registerViewportElement(el);
               }
             }}
           ></div>

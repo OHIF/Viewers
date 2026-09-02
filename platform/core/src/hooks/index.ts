@@ -1,6 +1,6 @@
 export * from './useToolbar';
 export * from './types';
-export * from './useViewportRef';
+export * from './useViewportElement';
 export * from './useViewportSize';
 export * from './useViewportMousePosition';
 export * from './useActiveToolOptions';

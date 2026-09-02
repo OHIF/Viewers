@@ -33,4 +33,10 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   it in `try/catch` should check for `undefined`; callers that require the
   provider should assert for themselves.
 
+- **[Viewport element hooks](./use-viewport-refs.md)** — `useViewportRef` and
+  `useViewportRefs` are replaced by `useViewportElement` for readers and
+  `useViewportElementRegistration` for the viewport that owns the element, and
+  `ViewportRefsProvider` is renamed `ViewportElementsProvider`. The element is now
+  a subscribed value rather than a snapshot read during render.
+
 <DocCardList />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useViewportRef } from '@ohif/core';
+import { useViewportElementRegistration } from '@ohif/core';
 import './OHIFCornerstonePdfViewport.css';
 
 /**
@@ -21,7 +21,8 @@ async function loadRenderedPdf(getRenderedUrl, renderedUrl, signal) {
 function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
   const [url, setUrl] = useState(null);
   const viewportElementRef = useRef(null);
-  const viewportRef = useViewportRef(viewportId);
+  const { register: registerViewportElement, unregister: unregisterViewportElement } =
+    useViewportElementRegistration(viewportId);
 
   // Declared above the effect that subscribes makePdfDropTarget: the effect body
   // only runs after render, but a reference that textually precedes its
@@ -40,7 +41,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
     document.body.addEventListener('drag', makePdfDropTarget);
     return function cleanup() {
       document.body.removeEventListener('drag', makePdfDropTarget);
-      viewportRef.unregister();
+      unregisterViewportElement();
     };
   }, []);
 
@@ -91,7 +92,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
       ref={el => {
         viewportElementRef.current = el;
         if (el) {
-          viewportRef.register(el);
+          registerViewportElement(el);
         }
       }}
       data-viewport-id={viewportId}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { utilities } from '@cornerstonejs/tools';
-import { useSystem, useViewportRef, useViewportSize } from '@ohif/core';
+import { useSystem, useViewportElement, useViewportSize } from '@ohif/core';
 import {
   ColorbarPositionType,
   TickPositionType,
@@ -23,7 +23,6 @@ type ColorbarProps = {
   tickPosition: TickPositionType;
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
-  viewportElementRef?: React.RefObject<HTMLDivElement | null>;
   numColorbars: number;
 };
 
@@ -55,7 +54,7 @@ function ViewportColorbar({
   const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
-  const viewportElementRef = useViewportRef(viewportId);
+  const viewportElement = useViewportElement<HTMLDivElement>(viewportId);
   const { height, width } = useViewportSize(viewportId);
 
   // Memoize colorbar customization to prevent rerenders from unrelated customization changes
@@ -87,8 +86,6 @@ function ViewportColorbar({
     if (!containerEl || !colormaps || !activeColormapName) {
       return;
     }
-
-    const viewportElement = viewportElementRef?.current;
 
     if (!viewportElement || !colormaps?.length) {
       return;
@@ -122,7 +119,7 @@ function ViewportColorbar({
     colorbarId,
     appropriateTickPosition,
     mergedTickStyles,
-    viewportElementRef,
+    viewportElement,
     containerEl,
   ]);
 
