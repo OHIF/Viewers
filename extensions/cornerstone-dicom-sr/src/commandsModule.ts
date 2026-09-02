@@ -1,6 +1,6 @@
 import { metaData } from '@cornerstonejs/core';
 
-import OHIF from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
@@ -102,6 +102,12 @@ const commandsModule = (props: withAppTypes) => {
           additionalFindingTypes,
           options
         );
+
+        // A report saved into an existing series inherits that series' date and
+        // time, and its instance number is derived from the one predecessor
+        // instance, which is not necessarily the highest in the series.  Stamp
+        // both so this report is identifiable as the most recent instance.
+        utils.updateNewInstanceMetadata(naturalizedReport);
 
         const { ContentSequence } = naturalizedReport;
         // The content sequence has 5 or more elements, of which

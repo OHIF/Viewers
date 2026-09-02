@@ -1,5 +1,6 @@
 import {
   compareSeriesUID,
+  compareSeriesDateTime,
   addSameSeriesCompare,
   compare,
   seriesInfoSortingCriteria,
@@ -110,6 +111,90 @@ describe('sortByInstanceNumber', () => {
     expect(
       sortByInstanceNumber({ ...instance, frameNumber: 1 }, { ...instance, frameNumber: 2 })
     ).toBe(-1);
+  });
+
+  // The last instance of a series is taken to be the most recently created one,
+  // so instance numbers that do not say which that is have to give way to the
+  // creation date/time - but only then, as the instance number is the default.
+  test('falls back to the creation date time when the instance numbers tie', () => {
+    // The sop instance uids order the other way round, so only the date decides.
+    const older = { ...instance, SOPInstanceUID: '1.2.3.2', ContentDate: '20260817' };
+    const newer = { ...instance, SOPInstanceUID: '1.2.3.1', ContentDate: '20260819' };
+
+    expect(sortByInstanceNumber(older, newer)).toBe(-1);
+    expect(sortByInstanceNumber(newer, older)).toBe(1);
+  });
+
+  test('the instance number decides before the creation date time', () => {
+    const first = { ...instance, InstanceNumber: 1, ContentDate: '20260819' };
+    const second = { ...instance, InstanceNumber: 2, ContentDate: '20260817' };
+
+    expect(sortByInstanceNumber(first, second)).toBe(-1);
+  });
+});
+
+describe('compareSeriesDateTime', () => {
+  const series = (name, attributes) => ({
+    name,
+    SeriesInstanceUID: `1.2.3.${name}`,
+    ...attributes,
+  });
+
+  // Every instance of a series carries that series' date and time, so a report
+  // saved into an existing series has the date and time of the series as it was
+  // first created.  Only the creation date/time of the instance the display set
+  // shows says when the display set itself was created.
+  test('orders display sets by the creation date time of their instance', () => {
+    const sameSeries = { SeriesDate: '20260817', SeriesTime: '090000' };
+    const sorted = [
+      series('third', {
+        ...sameSeries,
+        instance: { ...sameSeries, ContentDate: '20260819', ContentTime: '080000' },
+      }),
+      series('first', { ...sameSeries, instance: { ...sameSeries } }),
+      series('second', {
+        ...sameSeries,
+        instance: { ...sameSeries, ContentDate: '20260818', ContentTime: '235959' },
+      }),
+    ].sort(compareSeriesDateTime);
+
+    expect(names(sorted)).toEqual(['first', 'second', 'third']);
+  });
+
+  // A list of series, as opposed to display sets, has no instance to look at
+  // and is ordered by the series date and time alone.
+  test('orders series with no instance by their series date and time', () => {
+    const sorted = [
+      series('c', { SeriesDate: '20260817', SeriesTime: '093000' }),
+      series('a', { SeriesDate: '20260817', SeriesTime: '090000' }),
+      series('b', { seriesDate: '20260817', seriesTime: '091500' }),
+    ].sort(compareSeriesDateTime);
+
+    expect(names(sorted)).toEqual(['a', 'b', 'c']);
+  });
+
+  test('falls back to the series date time when the instance has no date', () => {
+    const sorted = [
+      series('later', { SeriesDate: '20260818', instance: { SOPInstanceUID: '1.2.3.2' } }),
+      series('earlier', { SeriesDate: '20260817', instance: { SOPInstanceUID: '1.2.3.1' } }),
+    ].sort(compareSeriesDateTime);
+
+    expect(names(sorted)).toEqual(['earlier', 'later']);
+  });
+
+  test('a series with no date at all sorts as the oldest', () => {
+    const sorted = [series('dated', { SeriesDate: '20260817' }), series('undated', {})].sort(
+      compareSeriesDateTime
+    );
+
+    expect(names(sorted)).toEqual(['undated', 'dated']);
+  });
+
+  test('is symmetric', () => {
+    const a = series('a', { SeriesDate: '20260817', SeriesTime: '090000' });
+    const b = series('b', { SeriesDate: '20260818' });
+
+    expect(compareSeriesDateTime(a, b) + compareSeriesDateTime(b, a)).toBe(0);
   });
 });
 

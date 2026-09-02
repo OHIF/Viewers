@@ -66,3 +66,52 @@ a value less than `25` here.
    // BCC view
    [24, 'CC', 'B']
 ```
+
+### Display Set Date and Time `getSeriesDateTime`
+
+Derived series - reports, segmentations, structure sets - are listed after the
+images in reverse date/time order, so the most recently created one is the one
+nearest the images.  Ordering them that way needs a single date/time saying when
+each display set was created.
+
+A display set is created from one instance of its series, which it carries as
+`instance`, and the date/time it is ordered by is the creation date/time of that
+instance.  This matters because every instance of a series carries that series'
+`SeriesDate`/`SeriesTime`: a second report saved into an existing SR series has
+the date and time of the series as it was first created, and only its
+instance level date/time say when the report itself was made.
+
+- **Instances** are sorted by instance number, increasing, as the default.  Only
+  when the instance numbers do not decide - they tie, or neither instance has
+  one - does the sort fall back to the creation date/time below, and then to the
+  sop instance uid.  The last instance of a series is taken to be the most
+  recently created one, so an instance number that fails to say which that is
+  has to be replaced by something that does.
+- **Display sets** are ordered by the creation date/time of their `instance`.
+- **Series**, and any display set whose instance says nothing about when it was
+  created, have nothing but their own `SeriesDate`/`SeriesTime` and are ordered
+  by those alone.  Sorting a list of series rather than display sets is
+  therefore the plain series date/time sort it always was.
+
+DICOM records "when this was created" in several different attribute pairs, and
+which of them are present depends on the modality and on whoever wrote the
+object, so `getSeriesDateTime` chooses one pair from all of them:
+`InstanceCreationDate`/`Time`, `ContentDate`/`Time`, `AcquisitionDate`/`Time`
+(or the combined `AcquisitionDateTime`), `StructureSetDate`/`Time`,
+`PresentationCreationDate`/`Time` and `SeriesDate`/`Time`.  The rules are:
+
+- The date is the latest date found in any of those attributes.
+- The time is the latest time found in an attribute carrying that exact same
+  date.  A time is never combined with a date it did not arrive with, so the
+  result is always a date/time that really occurred.
+- When nothing carries a time for the winning date, the time is empty and the
+  ordering is only accurate to the day, which is as good as the data allows.
+- `StudyDate`/`StudyTime` are not included.  Every series in the study shares
+  them, so they cannot tell one series from another.
+
+For any of this to work on newly stored objects, `updateNewInstanceMetadata`
+stamps every report, segmentation and structure set OHIF saves with the current
+date/time, and with an instance number one higher than every instance already in
+the series - the most recently created instance of a series is not necessarily
+the one with the highest instance number, so deriving the instance number from a
+single predecessor instance can collide with an instance that already exists.

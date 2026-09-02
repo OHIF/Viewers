@@ -20,10 +20,12 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
     SOPClassUID,
   } = instance;
+
+  // The date/time of a display set is the date/time of the instance it shows,
+  // chosen from all the attributes that instance carries.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
 
   return {
     Modality: CHART_MODALITY,
@@ -32,10 +34,8 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    // The series sort compares `SeriesDate SeriesTime` as one string, so an
-    // absent value has to be empty rather than undefined.
-    SeriesDate: SeriesDate || '',
-    SeriesTime: SeriesTime || '',
+    SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,

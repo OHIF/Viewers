@@ -31,4 +31,16 @@ describe('chartHandler', () => {
     expect(displaySet.SeriesDate).toBe('');
     expect(displaySet.SeriesTime).toBe('');
   });
+
+  // The date/time of the display set is the latest one the instance carries,
+  // which for an instance added to an existing series is the instance level one
+  // rather than the series one.
+  it('takes the instance date and time over an older series one', () => {
+    const [displaySet] = chartHandler.getDisplaySetsFromSeries([
+      chartInstance({ ContentDate: '20260819', ContentTime: '080000' }),
+    ]);
+
+    expect(displaySet.SeriesDate).toBe('20260819');
+    expect(displaySet.SeriesTime).toBe('080000');
+  });
 });

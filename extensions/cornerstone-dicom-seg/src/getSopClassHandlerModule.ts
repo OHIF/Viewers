@@ -248,10 +248,6 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription = '',
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
-    StructureSetDate,
-    StructureSetTime,
     SOPClassUID,
     FrameOfReferenceUID,
     wadoRoot,
@@ -260,6 +256,13 @@ function _getDisplaySetsFromSeries(
     imageId: predecessorImageId,
   } = instance;
 
+  // The date/time of a display set is the date/time of the instance it shows,
+  // chosen from all the attributes that instance carries - for a SEG that is
+  // typically the content or structure set date/time rather than the series
+  // one, and for a SEG saved into an existing series only the instance level
+  // date/time reflects the save.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+
   const displaySet = {
     Modality: 'SEG',
     loading: false,
@@ -267,13 +270,8 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    SeriesDate: SeriesDate || StructureSetDate || '',
-    // Derived modalities are sorted in reverse date/time order, comparing
-    // `SeriesDate SeriesTime` as a single string. Without a time here, every SEG
-    // compared as `<date> undefined`, which sorts above every dated series of the
-    // same day and ties SEGs with each other, so SEG and SR never interleaved by
-    // when they were created.
-    SeriesTime: SeriesTime || StructureSetTime || '',
+    SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,

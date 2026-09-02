@@ -103,13 +103,16 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
     imageId: predecessorImageId,
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
+
+  // The date/time of the display set is that of the instance it shows.  A
+  // report saved into an existing series keeps the original SeriesDate, so only
+  // the instance level content date/time places it as the newest one.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
 
   const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 

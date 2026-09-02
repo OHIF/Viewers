@@ -376,6 +376,13 @@ const commandsModule = ({
 
         const { dataset: naturalizedReport } = generatedData;
 
+        // A segmentation saved into an existing series inherits that series'
+        // date and time, and its instance number is derived from the one
+        // predecessor instance, which is not necessarily the highest in the
+        // series.  Stamp both so this segmentation is identifiable as the most
+        // recent instance.
+        utils.updateNewInstanceMetadata(naturalizedReport);
+
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
         if (naturalizedReport.StudyID === 'No Study ID') {
           naturalizedReport.StudyID = '';

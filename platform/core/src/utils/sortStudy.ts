@@ -2,6 +2,7 @@ import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
+import { getDateTimeSortKey, getSeriesDateTimeSortKey } from './seriesDateTime';
 
 export const compare = (a, b) => {
   if (a == b) return 0;
@@ -63,12 +64,31 @@ export const compareSameSeriesDisplaySet = (a, b) => {
 export const compareSeriesUID = (a, b) =>
   compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeriesDisplaySet(a, b);
 
-export const compareSeriesDateTime = (a, b) => {
-  // Natural order of string is good enough here
-  const seriesDateA = `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`;
-  const seriesDateB = `${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`;
-  return compare(seriesDateA, seriesDateB) || compareSeriesUID(a, b);
-};
+/**
+ * The date/time a display set is ordered by is the creation date/time of the
+ * instance it shows, which the display set carries as `instance` - see
+ * {@link getSeriesDateTime} for how that one date/time is chosen from the
+ * attributes the instance has.  That is the only date/time which moves when a
+ * report or segmentation is saved into an existing series, whose series
+ * date/time remain those of the series as it was first created.
+ *
+ * A series, or a display set whose instance says nothing about when it was
+ * created, has nothing but its series date/time and is ordered by that alone.
+ */
+export const dateTimeSortKey = source =>
+  (source.instance && getSeriesDateTimeSortKey(source.instance)) ||
+  getDateTimeSortKey(
+    source.seriesDate ?? source.SeriesDate,
+    source.seriesTime ?? source.SeriesTime
+  );
+
+/**
+ * Compares by {@link dateTimeSortKey}, oldest first.  Sides with no date at all
+ * sort as the oldest, and a date with no time sorts before the timed values of
+ * that same date.
+ */
+export const compareSeriesDateTime = (a, b) =>
+  compare(dateTimeSortKey(a), dateTimeSortKey(b)) || compareSeriesUID(a, b);
 
 export const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
@@ -106,8 +126,8 @@ export const seriesSortCriteria = {
 };
 
 /**
- * Compares two instances first by instance number, and then by
- * sop and frame numbers.
+ * Compares two instances first by instance number, then by when they were
+ * created, and then by sop and frame numbers.
  * Handles undefined values for use with display set comparison.
  */
 export const sortByInstanceNumber = (a, b) => {
@@ -123,9 +143,18 @@ export const sortByInstanceNumber = (a, b) => {
   const aInstance = parseInt(a.InstanceNumber) || 0;
   const bInstance = parseInt(b.InstanceNumber) || 0;
   if (aInstance !== bInstance) {
-    return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+    return aInstance - bInstance;
   }
-  return compare(a.SOPInstanceUID, b.SOPInstanceUID) || compare(a.frameNumber, b.frameNumber);
+  // The instance numbers do not order these two - they are the same, or neither
+  // instance has one - so fall back to when each of them was created.  The last
+  // instance of a series is taken to be the most recently created one, so an
+  // instance number that fails to say which that is has to be replaced by
+  // something that does.
+  return (
+    compare(getSeriesDateTimeSortKey(a), getSeriesDateTimeSortKey(b)) ||
+    compare(a.SOPInstanceUID, b.SOPInstanceUID) ||
+    compare(a.frameNumber, b.frameNumber)
+  );
 };
 
 export const instancesSortCriteria = {

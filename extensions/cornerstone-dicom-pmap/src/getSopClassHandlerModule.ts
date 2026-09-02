@@ -19,13 +19,15 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
   } = instance;
+
+  // The date/time of a display set is the date/time of the instance it shows,
+  // chosen from all the attributes that instance carries.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
 
   const displaySet = {
     // Parametric map use to have the same modality as its referenced volume but
@@ -35,11 +37,8 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: `pmap.${utils.guid()}`,
     SeriesDescription,
     SeriesNumber,
-    // Series sorting compares `SeriesDate SeriesTime` as a single string, so a
-    // missing time leaves `<date> undefined`, which compares above every dated
-    // series of the same day. Empty sorts an undated series as the oldest.
-    SeriesDate: SeriesDate || '',
-    SeriesTime: SeriesTime || '',
+    SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
