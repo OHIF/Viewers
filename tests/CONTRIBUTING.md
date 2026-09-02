@@ -22,6 +22,9 @@ tests/
 
 ## Getting started
 
+`playwright install` is first-time-only. Re-run it if Playwright reports a
+browser-version mismatch after a dependency bump.
+
 ```bash
 # one-time setup
 pnpm install
@@ -61,7 +64,8 @@ guide disagrees with the current source under `tests/pages/` or
    `new` them.
 3. Reach every application control through a page object, with no raw
    `page.getByTestId(...)` or `getByRole(...)` calls in specs.
-4. Use normalized coordinates (0 to 1) for viewport clicks and drags.
+4. Prefer normalized coordinates (0 to 1) for viewport clicks and drags, so
+   the test doesn't depend on viewport size.
 5. Load studies with `visitStudy` using a real StudyInstanceUID and the
    correct mode, and handle hydration and tracking prompts.
 6. Use web-first, auto-retrying assertions with exact expected values; never
@@ -134,8 +138,9 @@ sequence).
 ## Interacting with the viewport
 
 The viewport is a WebGL canvas, so you cannot select rendered pixels with
-CSS. Interact with normalized coordinates (0 to 1, origin top-left) so tests
-are independent of viewport size:
+CSS. Prefer normalized coordinates (0 to 1, origin top-left) so tests are
+independent of viewport size. Reach for absolute pixels only when the target
+is genuinely pixel-anchored, and say why in a comment:
 
 ```ts
 const activeViewport = await viewportPageObject.active;
@@ -205,7 +210,8 @@ await expect(segmentRow.title).toHaveText('Segment 5');
 - Verify the outcome, not a proxy. After deleting a segment, assert the
   deleted name is gone from the list, not merely that the count dropped.
   After activating a tool, drag on the viewport and confirm the image
-  responded; `data-active` on the button proves nothing about the canvas.
+  responded. Asserting that the toolbar button looks active proves only that
+  the button changed, not that the tool does anything to the canvas.
   Assert the side-panel state too (e.g. the clicked segment is highlighted,
   not only that the viewport navigated).
 - A drawn annotation must be visible, not merely present. `toHaveCount(n)`
@@ -277,8 +283,8 @@ Reach for the cheapest faithful signal, in this order:
 1. If the result has a DOM or SVG signal, assert on it. Panel counts, dialog
    and overlay text, enabled state, and SVG annotation paths are all DOM; no
    screenshot needed.
-2. If the result is painted onto the WebGL canvas with no DOM
-   representation, a viewport-scoped screenshot is the correct tool.
+2. If the result exists only as pixels on the WebGL canvas, a
+   viewport-scoped screenshot is the correct tool.
 3. Never substitute a `window.services` state read for a render assertion.
    It passes even when rendering is broken.
 
@@ -299,6 +305,11 @@ Rules for new screenshot assertions:
   locator, and never tune `maxDiffPixelRatio` or `threshold` to make a test
   pass. If a baseline mismatches, fix the flake or regenerate the baseline
   with `--update-snapshots` and review the diff by eye before committing.
+- A missing baseline is written on the spot by Playwright. Because
+  `checkForScreenshot` retries, the first run then compares against the file it
+  just wrote and usually **passes** — an unreviewed baseline can slip in
+  silently. Always open the new PNG under `tests/screenshots/chromium/<spec>/`
+  and confirm it shows what you expect before committing it.
 
 ## Naming
 
@@ -320,9 +331,12 @@ Rules for new screenshot assertions:
 - Keep the scope small: one feature or behavior per PR. Small, decoupled PRs
   get reviewed much faster (see the general
   [contributing guidelines](https://docs.ohif.org/development/contributing)).
-- Title the PR in conventional-commit form (`test(scope): subject`), e.g.
-  `test(contour): add segment rename interactions`, not the auto-filled
-  branch name.
+- Title the PR in [Conventional Commits](https://www.conventionalcommits.org/)
+  form — `<type>(<scope>): <subject>`, e.g.
+  `test(contour): add segment rename interactions` — not the auto-filled branch
+  name. The repo's release tooling parses these to derive the semantic version,
+  so the type matters. See this
+  [quick reference](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716).
 
 ## Agentic development
 

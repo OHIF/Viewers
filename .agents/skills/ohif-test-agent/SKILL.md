@@ -243,19 +243,19 @@ Reach for the cheapest *faithful* signal, in this order:
 
 1. **A faithful DOM/SVG/state signal exists → assert on it.** Panel counts, dialog and
    overlay text, enabled/disabled state, and any overlay that renders as SVG (a vector
-   overlay's color is readable via `getSvgAttribute`) all have a DOM representation — assert
-   on it directly, no screenshot.
-2. **The thing under test is painted onto the WebGL canvas with no DOM representation → a
-   screenshot is correct and required.** Raster output on the canvas exposes no attribute to
-   read for a painted pixel. Capture a viewport pane with `checkForViewportScreenshot`, or
-   scope a `checkForScreenshot` to the grid — this is the right tool, not a last resort,
-   whenever what you're verifying is the rendered canvas itself.
+   overlay's color is readable via `getSvgAttribute`) are all readable from the DOM —
+   assert on them directly, no screenshot.
+2. **The thing under test exists only as pixels on the WebGL canvas → a screenshot is
+   correct and required.** A painted pixel exposes no element or attribute to read. Capture
+   a viewport pane with `checkForViewportScreenshot`, or scope a `checkForScreenshot` to the
+   grid — this is the right tool, not a last resort, whenever what you're verifying is the
+   rendered canvas itself.
 3. **Never substitute a service/state read for a render assertion.** Reading a service's
    state (any `window.services...`) asserts the *data model*, not the pixels the user sees —
    it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
    escape hatch for *setup*, not for *appearance* assertions.
 
-For anything drawn onto the WebGL canvas with no DOM signal, compare a screenshot scoped to a specific viewport — `checkForViewportScreenshot` hides the viewport's overlay text for the capture:
+For a screenshot comparison scoped to a specific viewport, use `checkForViewportScreenshot` — it hides the viewport's overlay text for the capture:
 
 ```ts
 await checkForViewportScreenshot({
@@ -271,7 +271,7 @@ Rules (apply to all new screenshot assertions):
 
 - **Use the object form.** The positional form is legacy; don't introduce it in new code, and don't treat existing positional-form usage as a pattern to copy.
 - **No text in baselines.** Overlay text (date, series description, W/L, slice index) drifts with data, locale, and font rendering, so a baseline that contains it is fragile — new viewport baselines must be text-free. Capture viewports through `checkForViewportScreenshot`, which hides all viewport text for the shot; a raw `checkForScreenshot` on a viewport pane bakes the text in.
-- **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope by passing a `locator` — `viewportPageObject.grid` for the grid, or a specific viewport pane. A bare `normalizedClip: { x: 0, y: 0, width: 1, height: 1 }` with no `locator` is **not** scoping — it clips to the full page. Use `normalizedClip` only to target a sub-region *of a locator* (e.g. a scrollbar strip). If you reach for `fullPage: true`, stop and pick a locator.
+- **Never screenshot the full app.** Full-page screenshots include panels, toolbars, and dialogs that drift independently of what's under test and make baselines fragile. Scope by passing a `locator` — `viewportPageObject.grid` for the grid, or a specific viewport pane. A bare `normalizedClip: { x: 0, y: 0, width: 1, height: 1 }` with no `locator` is **not** scoping — it clips to the full page. Use `normalizedClip` only to target a sub-region *of a locator* (e.g. a scrollbar strip). `fullPage: true` only takes effect when no `locator` is passed — that *is* the full-app capture this rule forbids, so pass a `locator` instead. (Through `checkForViewportScreenshot` the flag is inert: the capture is always scoped to the viewport pane.)
 - **Do not tune `maxDiffPixelRatio` or `threshold`** to make a screenshot pass. If a baseline mismatches, regenerate it after a human review of the diff, or fix the underlying flake.
 
 ## Playwright config facts worth remembering
@@ -324,7 +324,7 @@ Before returning a generated OHIF test, confirm all items:
 3. Uses normalized viewport interactions (`normalizedClickAt` / `normalizedDragAt`) unless there is a strong reason otherwise.
 4. Uses a valid canonical StudyInstanceUID and compatible mode.
 5. Handles hydration or measurement tracking prompts when the workflow requires them.
-6. Uses the faithful signal for each assertion — DOM/SVG where the result has a DOM representation, a viewport-scoped screenshot when what's verified is canvas-only raster output, and never a `window.services` state read in place of a render check. Any `checkForScreenshot` call uses the object form, scoped via a `locator` (viewport pane or grid) — no full-app screenshots.
+6. Uses the faithful signal for each assertion — DOM/SVG where the result is readable from the DOM, a viewport-scoped screenshot when what's verified exists only as pixels on the canvas, and never a `window.services` state read in place of a render check. Any `checkForScreenshot` call uses the object form, scoped via a `locator` (viewport pane or grid) — no full-app screenshots.
 7. Replaces `page.waitForTimeout(...)` after viewport-rendering actions with `waitForViewportRenderCycle(page)` (started before the action) — keeps `waitForTimeout` only for non-render waits like the hydration prompt in `beforeEach`.
 8. If execution was skipped, states that explicitly and provides concrete run commands.
 9. Every application control is reached through a page object — no raw `getByTestId`/`getByRole` in the spec for buttons, menus, dialogs, or fields. Any control not already covered was added to the right page object (or a new one), with a source `data-cy` if it lacked one.
