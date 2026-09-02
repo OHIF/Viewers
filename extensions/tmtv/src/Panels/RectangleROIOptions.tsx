@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { Button } from '@ohif/ui-next';
 import ROIThresholdConfiguration, {
   ROI_STAT,
@@ -49,12 +49,9 @@ function RectangleROIOptions() {
   const activeSegmentation = segmentations[0];
   const { t } = useTranslation('ROIThresholdConfiguration');
 
-  const runCommand = useCallback(
-    (commandName, commandOptions = {}) => {
-      return commandsManager.runCommand(commandName, commandOptions);
-    },
-    [commandsManager]
-  );
+  const runCommand = (commandName, commandOptions = {}) => {
+    return commandsManager.runCommand(commandName, commandOptions);
+  };
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
@@ -65,7 +62,7 @@ function RectangleROIOptions() {
     weight: WEIGHT_DEFAULT,
   });
 
-  const handleROIThresholding = useCallback(() => {
+  const handleROIThresholding = () => {
     if (!activeSegmentation) {
       return;
     }
@@ -79,7 +76,7 @@ function RectangleROIOptions() {
       config,
       segmentIndex: activeSegmentIndex,
     });
-  }, [activeSegmentation, config]);
+  };
 
   return (
     <div className="invisible-scrollbar mb-1 flex flex-col overflow-y-auto overflow-x-hidden">

@@ -1,21 +1,32 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { useViewportRef } from '@ohif/core';
+import { useViewportElementRegistration } from '@ohif/core';
 import './OHIFCornerstonePdfViewport.css';
+
+/**
+ * Resolves the display set's rendered PDF, or null if it fails.
+ *
+ * Module scope on purpose: the conditional inside this try/catch is a React
+ * Compiler limitation ("value blocks within a try/catch") that bails the whole
+ * component when inlined. Plain functions are never compiled.
+ */
+async function loadRenderedPdf(getRenderedUrl, renderedUrl, signal) {
+  try {
+    return getRenderedUrl ? await getRenderedUrl({ signal }) : { url: await renderedUrl };
+  } catch (error) {
+    console.warn('Failed to load PDF', error);
+    return null;
+  }
+}
 
 function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
   const [url, setUrl] = useState(null);
   const viewportElementRef = useRef(null);
-  const viewportRef = useViewportRef(viewportId);
+  const { register: registerViewportElement, unregister: unregisterViewportElement } =
+    useViewportElementRegistration(viewportId);
 
-  useEffect(() => {
-    document.body.addEventListener('drag', makePdfDropTarget);
-    return function cleanup() {
-      document.body.removeEventListener('drag', makePdfDropTarget);
-      viewportRef.unregister();
-    };
-  }, []);
-
+  // Declared above the effect that subscribes makePdfDropTarget: the effect body
+  // only runs after render, but a reference that textually precedes its
+  // declaration is something the compiler refuses to reason about.
   const [style, setStyle] = useState('pdf-yes-click');
 
   const makePdfScrollable = () => {
@@ -25,6 +36,15 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   const makePdfDropTarget = () => {
     setStyle('pdf-no-click');
   };
+
+  useEffect(() => {
+    document.body.addEventListener('drag', makePdfDropTarget);
+    return function cleanup() {
+      document.body.removeEventListener('drag', makePdfDropTarget);
+      unregisterViewportElement();
+    };
+  }, []);
+
 
   if (displaySets && displaySets.length > 1) {
     throw new Error(
@@ -41,25 +61,19 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
     const abortController = new AbortController();
 
     const load = async () => {
-      try {
-        const result = getRenderedUrl
-          ? await getRenderedUrl({ signal: abortController.signal })
-          : { url: await renderedUrl };
+      const result = await loadRenderedPdf(
+        getRenderedUrl,
+        renderedUrl,
+        abortController.signal
+      );
 
-        if (isCancelled) {
-          result?.revoke?.();
-          return;
-        }
-
-        revokeUrl = result?.revoke;
-        setUrl(result?.url || null);
-      } catch (error) {
-        console.warn('Failed to load PDF', error);
-        if (!isCancelled) {
-          setUrl(null);
-        }
+      if (isCancelled) {
+        result?.revoke?.();
         return;
       }
+
+      revokeUrl = result?.revoke;
+      setUrl(result?.url || null);
     };
 
     load();
@@ -78,7 +92,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
       ref={el => {
         viewportElementRef.current = el;
         if (el) {
-          viewportRef.register(el);
+          registerViewportElement(el);
         }
       }}
       data-viewport-id={viewportId}
@@ -94,9 +108,6 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   );
 }
 
-OHIFCornerstonePdfViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  viewportId: PropTypes.string,
-};
+
 
 export default OHIFCornerstonePdfViewport;

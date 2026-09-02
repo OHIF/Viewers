@@ -6,28 +6,36 @@ interface ClipboardProps {
   children: ReactNode;
 }
 
-const Clipboard: React.FC<ClipboardProps> = ({ children }) => {
-  const [copyState, setCopyState] = React.useState<'idle' | 'success' | 'error'>('idle');
-  const copyText = React.useMemo(() => {
-    if (typeof children === 'string') {
-      return children.trim();
-    }
-    return '';
-  }, [children]);
+type CopyState = 'idle' | 'success' | 'error';
 
-  const handleCopy = React.useCallback(async () => {
-    if (!copyText) {
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(copyText);
-      setCopyState('success');
-    } catch {
-      setCopyState('error');
-    } finally {
-      setTimeout(() => setCopyState('idle'), 1500); // Reset state after feedback
-    }
-  }, [copyText]);
+/**
+ * Copies `children` to the clipboard when it is plain text, reporting the
+ * outcome through `setCopyState` and resetting to idle after the feedback.
+ *
+ * Module scope on purpose: the React Compiler cannot yet lower a `try` with a
+ * `finally` clause, and inlining this bails the whole component. Plain
+ * functions are never compiled, so the limitation does not apply here.
+ */
+async function copyChildrenToClipboard(
+  children: ReactNode,
+  setCopyState: (state: CopyState) => void
+): Promise<void> {
+  const text = typeof children === 'string' ? children.trim() : '';
+  if (!text) {
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    setCopyState('success');
+  } catch {
+    setCopyState('error');
+  } finally {
+    setTimeout(() => setCopyState('idle'), 1500); // Reset state after feedback
+  }
+}
+
+const Clipboard: React.FC<ClipboardProps> = ({ children }) => {
+  const [copyState, setCopyState] = React.useState<CopyState>('idle');
 
   return (
     <Button
@@ -35,7 +43,7 @@ const Clipboard: React.FC<ClipboardProps> = ({ children }) => {
       size="icon"
       onClick={e => {
         e.stopPropagation();
-        handleCopy();
+        copyChildrenToClipboard(children, setCopyState);
       }}
       className="text-foreground"
       title="Copy"

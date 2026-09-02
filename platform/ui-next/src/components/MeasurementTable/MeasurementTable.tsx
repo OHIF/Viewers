@@ -55,12 +55,16 @@ const Header = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Body = () => {
+  // Hooks stay above the early return below: called inside it, useTranslation
+  // would run only when the list is empty, so the hook count would change as
+  // measurements come and go.
+  const { t } = useTranslation('MeasurementTable');
   const { data } = useMeasurementTableContext('MeasurementTable.Body');
 
   if (!data || data.length === 0) {
     return (
       <div className="text-highlight mb-1 flex flex-1 items-center px-2 py-2 text-base">
-        {useTranslation('MeasurementTable').t('No tracked measurements')}
+        {t('No tracked measurements')}
       </div>
     );
   }

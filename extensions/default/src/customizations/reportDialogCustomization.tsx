@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InputDialog } from '@ohif/ui-next';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ohif/ui-next';
@@ -93,15 +93,12 @@ function ReportDialog({
     ];
   }, [displaySetService, modality, minSeriesNumber]);
 
-  const handleSeriesChange = useCallback(
-    (selectValue: string) => {
-      const option = seriesOptions.find(o => o.selectValue === selectValue);
-      setSelectedSeries(
-        selectValue === NEW_SERIES_SELECT_VALUE ? null : (option?.value ?? selectValue)
-      );
-    },
-    [seriesOptions]
-  );
+  const handleSeriesChange = (selectValue: string) => {
+    const option = seriesOptions.find(o => o.selectValue === selectValue);
+    setSelectedSeries(
+      selectValue === NEW_SERIES_SELECT_VALUE ? null : (option?.value ?? selectValue)
+    );
+  };
 
   useEffect(() => {
     const seriesOption = seriesOptions.find(s => s.value === selectedSeries);
@@ -110,7 +107,7 @@ function ReportDialog({
     setReportName(newReportName);
   }, [selectedSeries, seriesOptions]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = () => {
     actionTakenRef.current = true;
     onSave({
       reportName,
@@ -119,15 +116,9 @@ function ReportDialog({
       series: selectedSeries,
     });
     hide();
-  }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
+  };
 
-  const handleCancel = useCallback(() => {
-    actionTakenRef.current = true;
-    onCancel();
-    hide();
-  }, [onCancel, hide]);
-
-  const handleDownload = useCallback(() => {
+  const handleDownload = () => {
     actionTakenRef.current = true;
     onSave({
       reportName,
@@ -136,7 +127,7 @@ function ReportDialog({
       series: selectedSeries,
     });
     hide();
-  }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
+  };
 
   // Handles the close dialog button/external close as a cancel
   useEffect(() => {

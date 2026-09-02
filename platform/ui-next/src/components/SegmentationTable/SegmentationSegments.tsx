@@ -20,28 +20,20 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     showSegmentIndex = true,
   } = useSegmentationTableContext('SegmentationSegments');
 
-  // Try to get segmentation data from expanded context first, then fall back to table context
-  let segmentation;
-  let representation;
-
   const activeSegmentRef = React.useRef<{
     element: HTMLElement | null;
     index: number | null;
   }>({ element: null, index: null });
 
-  try {
-    // Try to use the SegmentationExpanded context if available
-    const segmentationInfo = useSegmentationExpanded('SegmentationSegments');
-    segmentation = segmentationInfo.segmentation;
-    representation = segmentationInfo.representation;
-  } catch (e) {
-    // Not within SegmentationExpanded context, get from active segmentation
-    const segmentationInfo = data.find(
-      entry => entry.segmentation.segmentationId === activeSegmentationId
-    );
-    segmentation = segmentationInfo?.segmentation;
-    representation = segmentationInfo?.representation;
-  }
+  // Prefer the expanded context when this list is rendered inside one, otherwise
+  // fall back to the active segmentation from the table context. Both shapes
+  // expose `segmentation` and `representation`, so one lookup covers each case.
+  const expandedContext = useSegmentationExpanded();
+  const segmentationInfo =
+    expandedContext ??
+    data.find(entry => entry.segmentation.segmentationId === activeSegmentationId);
+  const segmentation = segmentationInfo?.segmentation;
+  const representation = segmentationInfo?.representation;
 
   const segments = Object.values(representation.segments);
 
@@ -92,11 +84,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     <div ref={scrollableContainerRef}>
       <ScrollArea
         className={`bg-background space-y-px`}
-        showArrows={
-          scrollableContainerRef?.current
-            ? scrollableContainerRef?.current?.offsetHeight >= parseFloat(maxHeight)
-            : false
-        }
+        showArrows={true}
       >
         <div style={{ maxHeight: maxHeight }}>
           {segments.map(segment => {

@@ -33,7 +33,7 @@ auditConfig:
     # docs build time on repo-committed images — never on untrusted input.
     - GHSA-w3rx-r6r6-pgpr
     - GHSA-5p2g-fcmc-qvqq
-      # extract-zip is a transitive dependency of cypress and is only used in dev
+    # extract-zip is a transitive dependency of cypress and is only used in dev
     - GHSA-jmr9-qjv8-65gv
 
 allowBuilds:
@@ -45,6 +45,15 @@ allowBuilds:
   protobufjs: true
   sharp: true
 overrides:
+  # React 19 singleton: legacy transitive peers must not create a nested react copy.
+  # This also coerces packages whose declared peers stop at 18 — silently, since
+  # strictPeerDependencies is false. For example, when OHIF first migrated to
+  # React 19, @xstate/react@3.2.2 in extensions/measurement-tracking ran outside
+  # its declared range. Audit any such package for use of React 19 removals
+  # before assuming it is safe.
+  react: 19.2.7
+  react-dom: 19.2.7
+  '@types/react': 19.2.17
   # Synced from origin/master's package.json `resolutions` block during the
   # merge. Keep this list aligned with master so security/version pins from
   # upstream PRs land here too.
@@ -81,7 +90,7 @@ overrides:
   shell-quote: 1.10.0
   'fast-uri@>=3.0.0 <3.1.5': 3.1.5
   '@babel/plugin-transform-modules-systemjs': 7.29.4
-  # pnpm-branch-only overrides (kept across merges from master).
+  'browserslist@<4.28.7': 4.28.7
   'sharp@<0.35.0': 0.35.3
   # Force a single modern tslib for the whole workspace. Without this, rxjs@6
   # pulls in tslib@1, which gets hoisted to root node_modules and shadows the

@@ -31,8 +31,8 @@
   "peerDependencies": {
     "i18next": "17.3.1",
     "i18next-browser-languagedetector": "3.1.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1"
   },
   "dependencies": {
@@ -45,8 +45,8 @@
     "cross-env": "7.0.3",
     "i18next": "17.3.1",
     "i18next-browser-languagedetector": "3.1.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "react-i18next": "12.3.1",
     "webpack-merge": "5.10.0"
   }
