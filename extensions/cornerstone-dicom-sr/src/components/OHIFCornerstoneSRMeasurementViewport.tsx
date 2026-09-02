@@ -91,16 +91,27 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
         });
       });
     },
-    [dataSource, srDisplaySet, activeImageDisplaySetData, viewportId]
+    [
+      dataSource,
+      srDisplaySet,
+      activeImageDisplaySetData,
+      viewportId,
+      displaySetService,
+      viewportOptions,
+      setPositionPresentation,
+    ]
   );
 
-  const getCornerstoneViewport = useCallback(() => {
+  const getCornerstoneViewport = () => {
     if (!activeImageDisplaySetData) {
       return null;
     }
 
+    // A newly selected SR has not loaded its measurements yet, and this now reads
+    // the current display set rather than the one captured when the callback was
+    // last memoized - so it can legitimately be undefined for a render or two.
     const { measurements } = srDisplaySet;
-    const measurement = measurements[measurementSelected];
+    const measurement = measurements?.[measurementSelected];
 
     if (!measurement) {
       return null;
@@ -133,7 +144,7 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
         isJumpToMeasurementDisabled={true}
       />
     );
-  }, [activeImageDisplaySetData, viewportId, measurementSelected]);
+  };
 
   /**
    Cleanup the SR viewport when the viewport is destroyed
