@@ -1,0 +1,97 @@
+import { utils } from '@ohif/core';
+
+const { formatValue } = utils;
+
+export type ThumbnailDetail = {
+  id: string;
+  label: string;
+  title: string;
+  value: string;
+  iconName?: string;
+};
+
+type ResolveOptions = {
+  /** `studyBrowser.thumbnailDetails` - the items to include. */
+  items;
+  displaySet;
+  /** `studyBrowser.thumbnailDetailSources` - named value sources. */
+  sources?: Record<string, (props) => unknown>;
+  /** `studyBrowser.thumbnailDetailTests` - named `condition` tests. */
+  tests?: Record<string, (props) => boolean>;
+  formatters;
+};
+
+/** A `condition` / `contentF` / `iconName` that is a name resolves against a registry. */
+const resolveNamed = (value, registry, kind: string, id: string) => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+  const named = registry?.[value];
+  if (!named) {
+    console.warn(`Thumbnail detail item "${id}" names an unknown ${kind} "${value}"`);
+  }
+  return named;
+};
+
+/**
+ * Builds the detail line of a study browser thumbnail from the
+ * `studyBrowser.thumbnailDetails` items, in the order they are declared.
+ *
+ * Each item contributes its value, taken from its own `contentF`, from a named
+ * `source`, or from an `attribute` of the instance the display set shows - the
+ * same three ways the viewport overlay items get theirs. An item whose
+ * `condition` says no, or which has no value to show, is left out.
+ */
+export function resolveThumbnailDetails({
+  items,
+  displaySet,
+  sources,
+  tests,
+  formatters,
+}: ResolveOptions): ThumbnailDetail[] {
+  const props = { displaySet, instance: displaySet?.instance, formatters };
+  const details: ThumbnailDetail[] = [];
+
+  for (const item of items ?? []) {
+    if (!item) {
+      continue;
+    }
+    const { id, condition, contentF, source, attribute, iconName } = item;
+
+    if (condition !== undefined) {
+      const test = resolveNamed(condition, tests, 'condition', id);
+      if (typeof test !== 'function' || !test(props)) {
+        continue;
+      }
+    }
+
+    let value;
+    if (typeof contentF === 'function') {
+      value = contentF(props);
+    } else if (source !== undefined) {
+      const sourceF = resolveNamed(source, sources, 'source', id);
+      value = typeof sourceF === 'function' ? sourceF(props) : undefined;
+    } else if (attribute) {
+      value = props.instance?.[attribute];
+    }
+
+    const displayValue = formatValue(value);
+    if (!displayValue) {
+      continue;
+    }
+
+    const icon = typeof iconName === 'function' ? iconName(props) : iconName;
+
+    details.push({
+      id,
+      label: item.label ?? '',
+      title: item.title ?? '',
+      value: displayValue,
+      iconName: icon || undefined,
+    });
+  }
+
+  return details;
+}
+
+export default resolveThumbnailDetails;

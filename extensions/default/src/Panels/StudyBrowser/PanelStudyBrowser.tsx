@@ -9,8 +9,9 @@ import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
 import { type TabsProps } from '@ohif/core/src/utils/createStudyBrowserTabs';
 import { thumbnailNoImageModalities } from '@ohif/core/src/utils/thumbnailNoImageModalities';
+import { resolveThumbnailDetails } from './resolveThumbnailDetails';
 
-const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
+const { sortStudyInstances, formatDate, formatTime, createStudyBrowserTabs } = utils;
 
 /**
  * Study Browser component that displays and manages studies and their display sets
@@ -73,7 +74,39 @@ function PanelStudyBrowser({
     setViewPresets(newViewPresets);
   };
 
-  const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
+  const mapDisplaySets = customMapDisplaySets || _mapDisplaySets;
+
+  // The detail line of each thumbnail is customizable, and is added to whatever
+  // the mapping produced so that a panel supplying its own mapping - the
+  // measurement tracking one does - gets it too.
+  const mapDisplaySetsWithState = useCallback(
+    (displaySetsToMap, ...args) => {
+      const mapped = mapDisplaySets(displaySetsToMap, ...args);
+      const items = customizationService.getCustomization('studyBrowser.thumbnailDetails');
+      const sources = customizationService.getCustomization('studyBrowser.thumbnailDetailSources');
+      const tests = customizationService.getCustomization('studyBrowser.thumbnailDetailTests');
+
+      return mapped.map(thumbnail => {
+        const displaySet = displaySetService.getDisplaySetByUID(thumbnail.displaySetInstanceUID);
+        if (!displaySet) {
+          // Leave `details` unset so the thumbnail keeps showing the series
+          // number and instance count it was given.
+          return thumbnail;
+        }
+        return {
+          ...thumbnail,
+          details: resolveThumbnailDetails({
+            items,
+            displaySet,
+            sources,
+            tests,
+            formatters: { formatDate, formatTime },
+          }),
+        };
+      });
+    },
+    [mapDisplaySets, customizationService, displaySetService]
+  );
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {

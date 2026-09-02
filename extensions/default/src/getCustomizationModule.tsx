@@ -4,6 +4,7 @@ import datasourcesCustomization from './customizations/datasourcesCustomization'
 import multimonitorCustomization from './customizations/multimonitorCustomization';
 import customRoutesCustomization from './customizations/customRoutesCustomization';
 import studyBrowserCustomization from './customizations/studyBrowserCustomization';
+import thumbnailDetailsCustomization from './customizations/thumbnailDetailsCustomization';
 import overlayItemCustomization from './customizations/overlayItemCustomization';
 import contextMenuCustomization from './customizations/contextMenuCustomization';
 import contextMenuUICustomization from './customizations/contextMenuUICustomization';
@@ -57,6 +58,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: {
         ...customRoutesCustomization,
         ...studyBrowserCustomization,
+        ...thumbnailDetailsCustomization,
         ...overlayItemCustomization,
         ...contextMenuCustomization,
         ...menuContentCustomization,

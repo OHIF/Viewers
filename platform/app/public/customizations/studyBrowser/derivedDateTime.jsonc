@@ -1,0 +1,36 @@
+// Example URL-loaded customization: studyBrowser/derivedDateTime
+//
+// Adds the creation date/time to the detail line of every derived series
+// thumbnail - SR, SEG, RTSTRUCT, PMAP - in the study browser. Loaded via
+// `?customization=studyBrowser/derivedDateTime`.
+//
+// Derived series are listed newest first, and the date/time they are sorted by
+// is the creation date/time of the instance each display set shows (see
+// `getSeriesDateTime`). The default thumbnail shows only the series number and
+// the instance count, so several reports saved on the same day give no sign of
+// which is which and their order reads as arbitrary. This shows it.
+//
+// Declared the same way as the veterinary demographics overlay
+// (`?customization=veterinary/veterinaryOverlay`): a `global` payload naming a
+// customization and, for each item, where to get its value from and whether to
+// include it. Both are names here rather than functions, so the whole thing is
+// data - `source` names a `studyBrowser.thumbnailDetailSources` entry and
+// `condition` a `studyBrowser.thumbnailDetailTests` one. Items declared in code
+// may pass a `contentF` / `condition` function instead.
+//
+// `$push` appends to the default items rather than replacing them, so the series
+// number and instance count are kept. Use `$set` to replace the whole line.
+{
+  "global": {
+    "studyBrowser.thumbnailDetails": {
+      "$push": [
+        {
+          "id": "InstanceDateTime",
+          "source": "instanceDateTime",
+          "condition": "isDerivedDisplaySet",
+          "title": "Created"
+        }
+      ]
+    }
+  }
+}
