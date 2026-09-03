@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Header, Icons, useModal } from '@ohif/ui-next';
+import { Header, useModal } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
 import HeaderPatientInfo from './HeaderPatientInfo';
@@ -11,7 +11,7 @@ import { preserveQueryParameters } from '@ohif/app';
 import { Types } from '@ohif/core';
 
 function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
-  const { servicesManager, extensionManager, commandsManager } = useSystem();
+  const { servicesManager, extensionManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   const navigate = useNavigate();
@@ -50,6 +50,11 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   const UserPreferencesModal = customizationService.getCustomization(
     'ohif.userPreferencesModal'
   ) as Types.MenuComponentCustomization;
+
+  // The right hand menu bar section. Assumed to be a component, so a
+  // replacement can be a full component with its own hooks; `null` leaves the
+  // slot empty.
+  const UndoRedo = customizationService.getCustomization('ohif.headerUndoRedo');
 
   const menuOptions = [
     {
@@ -113,32 +118,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           />
         )
       }
-      UndoRedo={
-        !appConfig?.hideUndoRedo && (
-          <div className="text-primary flex cursor-pointer items-center">
-            <Button
-              variant="ghost"
-              className="hover:bg-muted"
-              data-cy="undo-btn"
-              onClick={() => {
-                commandsManager.run('undo');
-              }}
-            >
-              <Icons.Undo className="" />
-            </Button>
-            <Button
-              variant="ghost"
-              className="hover:bg-muted"
-              data-cy="redo-btn"
-              onClick={() => {
-                commandsManager.run('redo');
-              }}
-            >
-              <Icons.Redo className="" />
-            </Button>
-          </div>
-        )
-      }
+      UndoRedo={UndoRedo ? <UndoRedo /> : null}
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar buttonSection="primary" />

@@ -488,10 +488,7 @@ export default class CustomizationService extends PubSubService {
     if (transformed) {
       return transformed;
     }
-    const customization =
-      this.globalCustomizations.get(customizationId) ??
-      this.modeCustomizations.get(customizationId) ??
-      this.defaultCustomizations.get(customizationId);
+    const customization = this._resolveScoped(customizationId);
     // Apply `inheritsFrom` / `$transform`, then expand any `$reference`
     // markers (see `_resolveReferences`). `seen` starts with the id being read
     // so a value that references itself is caught as a cycle.
@@ -503,6 +500,27 @@ export default class CustomizationService extends PubSubService {
       this.transformedCustomizations.set(customizationId, newTransformed);
     }
     return newTransformed;
+  }
+
+  /**
+   * Picks a customization's raw value from the highest priority scope that
+   * declares one: global > mode > default.
+   *
+   * `undefined` means "this scope says nothing", so the search continues, but
+   * an explicit `null` is a value and wins — that is how a higher scope
+   * removes something a lower scope provides (e.g. a component slot set to
+   * `null` so nothing renders) rather than merely failing to override it.
+   */
+  private _resolveScoped(customizationId: string): Customization | undefined {
+    const global = this.globalCustomizations.get(customizationId);
+    if (global !== undefined) {
+      return global;
+    }
+    const mode = this.modeCustomizations.get(customizationId);
+    if (mode !== undefined) {
+      return mode;
+    }
+    return this.defaultCustomizations.get(customizationId);
   }
 
   /**
@@ -572,10 +590,7 @@ export default class CustomizationService extends PubSubService {
       console.warn(`CustomizationService: $reference cycle detected at "${name}"`);
       return undefined;
     }
-    const raw =
-      this.globalCustomizations.get(name) ??
-      this.modeCustomizations.get(name) ??
-      this.defaultCustomizations.get(name);
+    const raw = this._resolveScoped(name);
     if (raw === undefined) {
       console.warn(`CustomizationService: no customization registered for $reference "${name}"`);
       return undefined;

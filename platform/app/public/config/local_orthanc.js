@@ -4,7 +4,6 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
-  hideUndoRedo: false,
   maxNumberOfWebWorkers: 3,
   showLoadingIndicator: true,
   showWarningMessageForCrossOrigin: true,

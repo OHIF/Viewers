@@ -62,7 +62,6 @@ function App({
      */
     showLoadingIndicator: true,
     showStudyList: true,
-    hideUndoRedo: false,
     oidc: [],
     extensions: [],
   },
@@ -193,7 +192,6 @@ App.propTypes = {
       extensions: PropTypes.array,
       showLoadingIndicator: PropTypes.bool,
       showStudyList: PropTypes.bool,
-      hideUndoRedo: PropTypes.bool,
       modes: PropTypes.array,
       dataSources: PropTypes.array,
     }),

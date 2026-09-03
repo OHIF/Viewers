@@ -82,7 +82,8 @@ function Header({
           </div>
           <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
             {UndoRedo}
-            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
+            {/* Only separate the section from PatientInfo when it rendered something */}
+            {UndoRedo && <div className="border-muted mx-1.5 h-[25px] border-r"></div>}
             {PatientInfo}
             <div className="border-muted mx-1.5 h-[25px] border-r"></div>
             <div className="flex-shrink-0">

@@ -35,6 +35,37 @@ window.config = {
 
 With this example, navigation preserves the default keys plus `customizationAlt` and `experimentFlag`.
 
+## `ohif.headerUndoRedo`
+
+- **Purpose**: Supplies the right hand menu bar section of the viewer header — by default the undo/redo buttons.
+- **Value**: a React component, or `null`.
+- **How it is applied**: `ViewerHeader` reads the customization and renders it as a
+  component (`<UndoRedo />`), so a replacement is a normal component and may use
+  hooks (the default uses `useSystem()` to reach the commands manager). A `null`
+  value renders nothing at all.
+- **Default**: `extensions/default/src/customizations/headerUndoRedoCustomization.tsx`.
+
+Because `null` is an explicit value rather than an absent one, it overrides the
+default instead of falling back to it. `extension-default` ships that override as
+a named customization module, so hiding the undo/redo buttons is a one-line
+config change:
+
+```js
+window.config = {
+  customizationService: ['@ohif/extension-default.customizationModule.hideUndoRedo'],
+};
+```
+
+To put something else there instead, set the key to your own component:
+
+```js
+import MyHeaderActions from './MyHeaderActions';
+
+window.config = {
+  customizationService: [{ 'ohif.headerUndoRedo': { $set: MyHeaderActions } }],
+};
+```
+
 ## `customizationUrlPrefixes` (app config)
 
 - **Purpose**: Allowlist of prefixes that `?customization=` values may resolve against. The `?customization=` feature is **off until this is configured**.
