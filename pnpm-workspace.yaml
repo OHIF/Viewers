@@ -79,7 +79,7 @@ overrides:
   protobufjs: 7.6.1
   tmp: 0.2.7
   shell-quote: 1.10.0
-  'fast-uri@>=3.0.0 <3.1.5': 3.1.5
+  'fast-uri@>=3.0.0 <3.1.6': 3.1.6
   '@babel/plugin-transform-modules-systemjs': 7.29.4
   # pnpm-branch-only overrides (kept across merges from master).
   'sharp@<0.35.0': 0.35.3
@@ -111,3 +111,4 @@ overrides:
   'js-yaml@>=4.0.0 <4.3.1': 4.3.1
   'postcss@<8.5.26': 8.5.26
   'pacote@>=11.2.7 <21.5.1': 21.5.1
+  'browserslist@<4.28.7': 4.28.7
