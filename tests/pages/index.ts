@@ -6,6 +6,7 @@ import { ViewportPageObject } from './ViewportPageObject';
 import { NotFoundStudyPageObject } from './NotFoundStudyPageObject';
 import { DicomTagBrowserPageObject } from './DicomTagBrowserPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
+import { HeaderPageObject } from './HeaderPageObject';
 
 export {
   DOMOverlayPageObject,
@@ -16,4 +17,5 @@ export {
   NotFoundStudyPageObject,
   DicomTagBrowserPageObject,
   MagnifyGlassPageObject,
+  HeaderPageObject,
 };
