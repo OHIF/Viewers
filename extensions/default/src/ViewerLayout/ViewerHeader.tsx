@@ -51,10 +51,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
     'ohif.userPreferencesModal'
   ) as Types.MenuComponentCustomization;
 
-  // The right hand menu bar section. Assumed to be a component, so a
-  // replacement can be a full component with its own hooks; `null` leaves the
-  // slot empty.
-  const UndoRedo = customizationService.getCustomization('ohif.headerUndoRedo');
+  // Whatever fills the right side of the menu bar (undo/redo by default).
+  // Assumed to be a component, so a replacement can bring its own hooks;
+  // `null` leaves the area empty.
+  const RightSide = customizationService.getCustomization('ohif.headerRightSide');
 
   const menuOptions = [
     {
@@ -118,7 +118,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           />
         )
       }
-      UndoRedo={UndoRedo ? <UndoRedo /> : null}
+      RightSide={RightSide ? <RightSide /> : null}
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar buttonSection="primary" />

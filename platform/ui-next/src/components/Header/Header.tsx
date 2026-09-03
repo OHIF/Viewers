@@ -30,7 +30,8 @@ interface HeaderProps {
   };
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
-  UndoRedo?: ReactNode;
+  /** Sits at the right of the menu bar, ahead of PatientInfo. */
+  RightSide?: ReactNode;
 }
 
 function Header({
@@ -41,7 +42,7 @@ function Header({
   isSticky = false,
   WhiteLabeling,
   PatientInfo,
-  UndoRedo,
+  RightSide,
   Secondary,
   ...props
 }: HeaderProps): ReactNode {
@@ -81,9 +82,9 @@ function Header({
             <div className="flex items-center justify-center space-x-2">{children}</div>
           </div>
           <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
-            {UndoRedo}
+            {RightSide}
             {/* Only separate the section from PatientInfo when it rendered something */}
-            {UndoRedo && <div className="border-muted mx-1.5 h-[25px] border-r"></div>}
+            {RightSide && <div className="border-muted mx-1.5 h-[25px] border-r"></div>}
             {PatientInfo}
             <div className="border-muted mx-1.5 h-[25px] border-r"></div>
             <div className="flex-shrink-0">

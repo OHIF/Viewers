@@ -3,15 +3,16 @@ import { Button, Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
 /**
- * The undo/redo section of the viewer header's right hand menu bar.
+ * The right side of the viewer header's menu bar, ahead of the patient info and
+ * settings menu. Named for where it sits rather than what it holds, because
+ * what it holds is entirely up to the `ohif.headerRightSide` customization —
+ * this default happens to be undo/redo buttons.
  *
- * Registered as the `ohif.headerUndoRedo` customization, which the header
- * renders as a component: return whatever should sit there, or set the
- * customization to `null` to leave the slot empty. Because it is a component
- * (not a value) a replacement is free to use hooks — as this default does to
- * reach the commands manager.
+ * `ViewerHeader` renders the customization as a component, so a replacement is
+ * free to use hooks (as this default does to reach the commands manager). Set
+ * the customization to `null` to leave the area empty.
  */
-function HeaderUndoRedo() {
+function HeaderRightSide() {
   const { commandsManager } = useSystem();
 
   return (
@@ -41,5 +42,5 @@ function HeaderUndoRedo() {
 }
 
 export default {
-  'ohif.headerUndoRedo': HeaderUndoRedo,
+  'ohif.headerRightSide': HeaderRightSide,
 };

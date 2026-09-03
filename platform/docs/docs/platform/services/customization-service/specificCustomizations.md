@@ -35,15 +35,18 @@ window.config = {
 
 With this example, navigation preserves the default keys plus `customizationAlt` and `experimentFlag`.
 
-## `ohif.headerUndoRedo`
+## `ohif.headerRightSide`
 
-- **Purpose**: Supplies the right hand menu bar section of the viewer header — by default the undo/redo buttons.
+- **Purpose**: Fills the right side of the viewer header's menu bar, ahead of the
+  patient info and settings menu. The key is named for the area, not its
+  contents — the shipped default is the undo/redo buttons, but a replacement owns
+  the area outright.
 - **Value**: a React component, or `null`.
 - **How it is applied**: `ViewerHeader` reads the customization and renders it as a
-  component (`<UndoRedo />`), so a replacement is a normal component and may use
+  component (`<RightSide />`), so a replacement is a normal component and may use
   hooks (the default uses `useSystem()` to reach the commands manager). A `null`
-  value renders nothing at all.
-- **Default**: `extensions/default/src/customizations/headerUndoRedoCustomization.tsx`.
+  value renders nothing at all, and its separator is dropped with it.
+- **Default**: `extensions/default/src/customizations/headerRightSideCustomization.tsx`.
 
 Because `null` is an explicit value rather than an absent one, it overrides the
 default instead of falling back to it. `extension-default` ships that override as
@@ -52,7 +55,7 @@ config change:
 
 ```js
 window.config = {
-  customizationService: ['@ohif/extension-default.customizationModule.hideUndoRedo'],
+  customizationService: ['@ohif/extension-default.customizationModule.hideHeaderRightSide'],
 };
 ```
 
@@ -62,7 +65,7 @@ To put something else there instead, set the key to your own component:
 import MyHeaderActions from './MyHeaderActions';
 
 window.config = {
-  customizationService: [{ 'ohif.headerUndoRedo': { $set: MyHeaderActions } }],
+  customizationService: [{ 'ohif.headerRightSide': { $set: MyHeaderActions } }],
 };
 ```
 
