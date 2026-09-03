@@ -1,6 +1,8 @@
 import { SOPClassHandlerId } from './id';
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
+import { normalizeDocumentMimeType } from './utils/displayableDocumentTypes';
+import { loadDisplayableDocument } from './utils/loadDisplayableDocument';
 
 const SOP_CLASS_UIDS = {
   ENCAPSULATED_PDF: '1.2.840.10008.5.1.4.1.1.104.1',
@@ -9,7 +11,6 @@ const SOP_CLASS_UIDS = {
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
 
 const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
-  const dataSource = extensionManager.getActiveDataSource()[0];
   return instances.map(instance => {
     const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
@@ -17,17 +18,17 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     // The date/time of a display set is the date/time of the instance it shows,
     // chosen from all the attributes that instance carries.
     const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
-    const renderedUrlParams = {
+    // The declared type is only a claim. It is resolved against the displayable
+    // type allowlist, and the payload is re-wrapped in a Blob of the canonical
+    // type, so the instance cannot steer how the browser parses the document.
+    const mimeType = normalizeDocumentMimeType(MIMETypeOfEncapsulatedDocument) || 'application/pdf';
+
+    const documentParams = {
       instance,
       tag: 'EncapsulatedDocument',
-      defaultType: MIMETypeOfEncapsulatedDocument || 'application/pdf',
-      singlepart: 'pdf',
+      mimeType,
     };
-    const renderedUrl = dataSource.retrieve.directURL(renderedUrlParams);
-    const getRenderedUrl = dataSource.retrieve.renderedURL
-      ? options =>
-          dataSource.retrieve.renderedURL({ ...renderedUrlParams, url: renderedUrl }, options)
-      : undefined;
+    const getDocument = options => loadDisplayableDocument(documentParams, options);
 
     const displaySet = {
       //plugin: id,
@@ -44,8 +45,8 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       SOPClassUID,
       referencedImages: null,
       measurements: null,
-      renderedUrl: renderedUrl,
-      getRenderedUrl,
+      getDocument,
+      mimeType,
       instances: [instance],
       thumbnailSrc: null,
       isDerivedDisplaySet: true,
