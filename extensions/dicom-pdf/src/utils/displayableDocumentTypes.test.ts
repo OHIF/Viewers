@@ -87,6 +87,29 @@ describe('matchesDocumentSignature', () => {
     expect(matchesDocumentSignature(pdf, payload)).toBe(true);
   });
 
+  // "%PDF-1.4"
+  const pdfHeader = [0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34];
+
+  it('accepts a pdf whose header follows a UTF-8 BOM', () => {
+    const payload = bufferFrom([0xef, 0xbb, 0xbf, ...pdfHeader]);
+
+    expect(matchesDocumentSignature(pdf, payload)).toBe(true);
+  });
+
+  it('accepts a pdf whose header starts at the last searched offset', () => {
+    // Mainstream readers scan roughly the first 1024 bytes for "%PDF-", so a
+    // header this far in is still a file they open.
+    const payload = bufferFrom([...new Array(1024).fill(0x20), ...pdfHeader]);
+
+    expect(matchesDocumentSignature(pdf, payload)).toBe(true);
+  });
+
+  it('rejects a pdf whose header starts past the search window', () => {
+    const payload = bufferFrom([...new Array(1025).fill(0x20), ...pdfHeader]);
+
+    expect(matchesDocumentSignature(pdf, payload)).toBe(false);
+  });
+
   it('rejects a payload declared as pdf that is actually html', () => {
     // "<html>"
     const payload = bufferFrom([0x3c, 0x68, 0x74, 0x6d, 0x6c, 0x3e]);

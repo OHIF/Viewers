@@ -29,10 +29,28 @@ export type DisplayableDocumentType = {
   strategy: DocumentEmbedStrategy;
   /** sandbox attribute value; only meaningful for the 'iframe' strategy. */
   sandbox?: string;
-  /** Leading bytes every payload of this type must begin with, when it has a
-   *  reliable magic number. Types without one rely on the sandbox instead. */
+  /** Magic number every payload of this type has to carry, when the type has a
+   *  reliable one. Types without one rely on the sandbox instead. */
   signature?: number[];
+  /** How far into the payload the signature is allowed to start. Absent means
+   *  offset 0 - see PDF_SIGNATURE_SEARCH_LIMIT for why a type wants slack. */
+  signatureSearchLimit?: number;
 };
+
+/**
+ * Real files do not always put their magic number at byte 0, and readers that
+ * accept them anyway are the reason such files exist in the wild.
+ *
+ * PDF: ISO 32000-1 requires "%PDF-" at the start of the file, but Adobe's own
+ * implementation note relaxes this to anywhere within the first 1024 bytes, and
+ * every mainstream reader follows suit. Producers that write a UTF-8 BOM, or
+ * that prepend junk before the header, therefore produce files that open
+ * everywhere except here. Matching the 1024-byte allowance keeps the check
+ * doing its actual job - catching a payload that is not a PDF at all, which is
+ * how a document declared as PDF but containing markup gets rejected - without
+ * failing valid documents over leading bytes the renderer will skip anyway.
+ */
+const PDF_SIGNATURE_SEARCH_LIMIT = 1024;
 
 /**
  * Canonical entries, keyed by canonical MIME type. Exported so downstream
@@ -44,6 +62,7 @@ export const DISPLAYABLE_DOCUMENT_TYPES: Record<string, DisplayableDocumentType>
     mimeType: 'application/pdf',
     strategy: 'object',
     signature: [0x25, 0x50, 0x44, 0x46, 0x2d], // "%PDF-"
+    signatureSearchLimit: PDF_SIGNATURE_SEARCH_LIMIT,
   },
   'text/html': {
     mimeType: 'text/html',
@@ -117,15 +136,16 @@ export function getDisplayableDocumentType(
 }
 
 /**
- * Checks a payload against its type's magic number. Types that have no reliable
- * signature pass, since for those the sandbox rather than the content check is
- * what contains the document.
+ * Checks a payload against its type's magic number, allowing the signature to
+ * start anywhere within `signatureSearchLimit` bytes of the payload. Types that
+ * have no reliable signature pass, since for those the sandbox rather than the
+ * content check is what contains the document.
  */
 export function matchesDocumentSignature(
   documentType: DisplayableDocumentType,
   payload: ArrayBuffer
 ): boolean {
-  const { signature } = documentType;
+  const { signature, signatureSearchLimit = 0 } = documentType;
 
   if (!signature?.length) {
     return true;
@@ -135,7 +155,16 @@ export function matchesDocumentSignature(
     return false;
   }
 
-  const head = new Uint8Array(payload, 0, signature.length);
+  // Only the window the signature could still start in needs reading, and it is
+  // bounded, so an oversized document costs the same as a small one.
+  const lastStart = Math.min(signatureSearchLimit, payload.byteLength - signature.length);
+  const head = new Uint8Array(payload, 0, lastStart + signature.length);
 
-  return signature.every((byte, index) => head[index] === byte);
+  for (let start = 0; start <= lastStart; start++) {
+    if (signature.every((byte, index) => head[start + index] === byte)) {
+      return true;
+    }
+  }
+
+  return false;
 }
