@@ -79,6 +79,8 @@ overrides:
   protobufjs: 7.6.1
   tmp: 0.2.7
   shell-quote: 1.10.0
+  # 3.1.6 patches GHSA-5jgf-p345-68v8, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf
+  # and GHSA-jqff-g426-hqxp (host confusion / SSRF via IDN and userinfo parsing).
   'fast-uri@>=3.0.0 <3.1.6': 3.1.6
   '@babel/plugin-transform-modules-systemjs': 7.29.4
   # pnpm-branch-only overrides (kept across merges from master).
@@ -111,4 +113,8 @@ overrides:
   'js-yaml@>=4.0.0 <4.3.1': 4.3.1
   'postcss@<8.5.26': 8.5.26
   'pacote@>=11.2.7 <21.5.1': 21.5.1
-  'browserslist@<4.28.7': 4.28.7
+  # browserslist reaches the tree only through @babel/helper-compilation-targets
+  # at build time. 4.28.7 patches GHSA-c83g-rgw3-j3cx (unbounded cache growth ->
+  # OOM) and GHSA-73wf-gq98-2v4g (crash / prototype write via untrusted
+  # browserslist-stats.json).
+  'browserslist@<4.28.7': 4.28.8
