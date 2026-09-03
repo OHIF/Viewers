@@ -6,7 +6,7 @@ module.exports = function (ctx) {
     map: ctx.env === 'development' ? ctx.map : false,
     plugins: {
       'postcss-import': {},
-      'postcss-preset-env': {},
+      'postcss-preset-env': { autoprefixer: false },
       cssnano: ctx.env === 'production' ? {} : false,
     },
   };

@@ -31,6 +31,7 @@ import Colormaps from './Colormaps.json';
 import PanelSUV from './PanelSUV.json';
 import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
 import USAnnotationPanel from './USAnnotationPanel.json';
+import EncapsulatedDocument from './EncapsulatedDocument.json';
 
 export default {
   'en-US': {
@@ -67,5 +68,6 @@ export default {
     PanelSUV,
     ROIThresholdConfiguration,
     USAnnotationPanel,
+    EncapsulatedDocument,
   },
 };
