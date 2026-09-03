@@ -1,15 +1,14 @@
 import { visitStudy, visitStudyOptions } from './visitStudy';
-import {
-  addOHIFConfiguration,
-  addOHIFGlobalCustomizations,
-} from './OHIFConfiguration';
+import { addOHIFConfiguration, addOHIFGlobalCustomizations } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
+import { checkForViewportScreenshot } from './checkForViewportScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
 } from './simulateClicksOnElement';
 import {
   simulateNormalizedDragOnElement,
@@ -20,6 +19,11 @@ import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
+import {
+  expectAnnotationLabelText,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+} from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
@@ -30,6 +34,7 @@ import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
 import { visitStudyAndHydrate } from './visitStudyAndHydrate';
 import { test, expect } from './fixture';
+import { press, withKeyHeld } from './keyboardUtils';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 import {
   waitForAnyViewportNeedsRender,
@@ -44,11 +49,13 @@ export {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,
+  checkForViewportScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
   reduce3DViewportSize,
@@ -57,6 +64,9 @@ export {
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
+  expectAnnotationLabelText,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   clearAllAnnotations,
   scrollVolumeViewport,
   attemptAction,
@@ -71,6 +81,8 @@ export {
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   waitForPaintToSettle,
+  press,
+  withKeyHeld,
   test,
   expect,
 };
