@@ -14,7 +14,8 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
-  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
+    .dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('Segmentation');
 
@@ -28,7 +29,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR
   );
 
@@ -38,7 +39,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPostMPR
   );
 

@@ -185,67 +185,53 @@ export const ModalConsumer = ModalContext.Consumer;
 ```
 
 Therefore, anywhere in the app that we have access to react context we can use
-it by calling the `useModal` from `@ohif/ui`. As a matter of fact, we are
+it by calling the `useModal` from `@ohif/ui-next`. As a matter of fact, we are
 utilizing the modal for the preference window which shows the hotkeys after
 clicking on the gear button on the right side of the header.
 
-A `simplified` code for our worklist is:
+A `simplified` code for our viewer header is:
 
-```js title="platform/app/src/routes/WorkList/WorkList.jsx"
-import { useModal, Header } from '@ohif/ui';
+```tsx title="extensions/default/src/ViewerLayout/ViewerHeader.tsx"
+import { Header, useModal } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 
-function WorkList({
-  history,
-  data: studies,
-  dataTotal: studiesTotal,
-  isLoadingData,
-  dataSource,
-  hotkeysManager,
-}) {
-  const { show, hide } = useModal();
+function ViewerHeader({ appConfig }) {
+  const { servicesManager } = useSystem();
+  const { customizationService } = servicesManager.services;
+  const { show } = useModal();
 
-  /** ... **/
+  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+  const UserPreferencesModal = customizationService.getCustomization(
+    'ohif.userPreferencesModal'
+  );
 
   const menuOptions = [
     {
-      title: t('Header:About'),
+      title: AboutModal?.menuTitle ?? t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' }),
+      onClick: () =>
+        show({
+          content: AboutModal,
+          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+          containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
+        }),
     },
     {
-      title: t('Header:Preferences'),
+      title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User Preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-              hotkeyDefaults
-            ),
-            hotkeyDefinitions,
-            onCancel: hide,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onSubmit: state => {
-              i18n.changeLanguage(state.language.value);
-              hotkeysManager.setHotkeys(state.hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-          },
+          content: UserPreferencesModal,
+          title: UserPreferencesModal.title ?? t('UserPreferencesModal:User preferences'),
+          containerClassName:
+            UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
   ];
+
   /** ... **/
-  return (
-    <div>
-      /** ... **/
-      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
-      /** ... **/
-    </div>
-  );
+
+  return <Header menuOptions={menuOptions} /** ... **/ />;
 }
 ```
 

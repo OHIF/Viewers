@@ -1,14 +1,22 @@
-import { expect, test, visitStudy, getSvgPath, navigateWithViewportArrow } from './utils';
+import {
+  expect,
+  test,
+  visitStudyAndHydrate,
+  getSvgAttribute,
+  navigateWithViewportArrow,
+} from './utils';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
 test.beforeEach(
   async ({ page, leftPanelPageObject, DOMOverlayPageObject, rightPanelPageObject }) => {
-    const mode = 'segmentation';
-    await visitStudy(page, studyInstanceUID, mode, 2000);
-    await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
-    await page.waitForTimeout(5000);
-    await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+    await visitStudyAndHydrate({
+      page,
+      leftPanelPageObject,
+      DOMOverlayPageObject,
+      studyInstanceUID,
+      modality: 'RTSTRUCT',
+    });
     await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
     await page.waitForTimeout(1000);
   }
@@ -78,7 +86,11 @@ test('should restore svg paths when segment visibility is toggled on/off', async
 
   const segment0 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
   await segment0.toggleVisibility();
-  const svgPathBefore = await getSvgPath(viewportPageObject);
+  const svgPathBefore = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+  });
   expect(svgPathBefore, 'Expected a visible SVG path for segment 0').not.toBeNull();
 
   await segment0.toggleVisibility();
@@ -88,7 +100,11 @@ test('should restore svg paths when segment visibility is toggled on/off', async
   ).toHaveCount(0);
 
   await segment0.toggleVisibility();
-  const svgPathAfter = await getSvgPath(viewportPageObject);
+  const svgPathAfter = await getSvgAttribute({
+    viewportPageObject,
+    svgInnerElement: 'path',
+    attributeName: 'd',
+  });
   expect(svgPathAfter, 'Expected SVG path to be restored after toggling visibility back on').toBe(
     svgPathBefore
   );

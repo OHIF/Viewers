@@ -23,11 +23,11 @@
 }
 
 .shepherd-button {
-  @apply !text-foreground !inline-flex !h-[36px] !min-w-[62px] !flex-row !items-center !justify-center !gap-[5px] !whitespace-nowrap !rounded !bg-[#348cfd] !px-[10px] !text-center !font-sans !text-[14px] !leading-[1.2] !outline-none !transition !duration-300 !ease-in-out focus:!outline-none;
+  @apply !text-foreground !inline-flex !h-[36px] !min-w-[62px] !flex-row !items-center !justify-center !gap-[5px] !whitespace-nowrap !rounded !bg-primary !px-[10px] !text-center !font-sans !text-[14px] !leading-[1.2] !outline-none !transition !duration-300 !ease-in-out focus:!outline-none;
 }
 
 .shepherd-button.shepherd-button-secondary {
-  @apply !bg-transparent !text-[#348cfd];
+  @apply !bg-transparent !text-primary;
 }
 
 .shepherd-arrow::before {

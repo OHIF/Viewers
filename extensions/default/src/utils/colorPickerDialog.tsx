@@ -12,7 +12,7 @@ function ColorPickerDialog({ value, hide, onSave }) {
   };
 
   return (
-    <div>
+    <div data-cy="color-picker-dialog">
       <ChromePicker
         color={color}
         onChange={handleChange}
@@ -21,8 +21,14 @@ function ColorPickerDialog({ value, hide, onSave }) {
       />
       <FooterAction>
         <FooterAction.Right>
-          <FooterAction.Secondary onClick={hide}>Cancel</FooterAction.Secondary>
+          <FooterAction.Secondary
+            dataCY="color-picker-cancel-btn"
+            onClick={hide}
+          >
+            Cancel
+          </FooterAction.Secondary>
           <FooterAction.Primary
+            dataCY="color-picker-save-btn"
             onClick={() => {
               hide();
               onSave(color);

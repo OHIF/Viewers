@@ -15,14 +15,17 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to labelmap tab.
-  segmentationPanel.click();
+  await segmentationPanel.click();
 
   // Add segmentation
   await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-  // Expect new segmentation and blank segment named "Segment 1"
-  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(1);
+  // Expect new segmentation and blank segment named "Segment 1". Use a retrying
+  // toHaveCount assertion: the segment row renders asynchronously after the add,
+  // so a one-shot getSegmentCount() races the render and was intermittently 0.
+  const { panel } = rightPanelPageObject.labelMapSegmentationPanel;
+  const segment1 = panel.nthSegment(0);
+  await expect(panel.rows).toHaveCount(1);
   await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
@@ -34,7 +37,8 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   // Delete
   await segment1.actions.delete();
 
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(0);
+  // Retrying assertion: row removal is async too.
+  await expect(panel.rows).toHaveCount(0);
 });
 
 test('checks saved segmentations loads and jumps to slices', async ({

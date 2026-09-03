@@ -24,7 +24,9 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
+        supportsWildcard: true,
         requestOptions: {
           auth: 'admin:admin',
         },

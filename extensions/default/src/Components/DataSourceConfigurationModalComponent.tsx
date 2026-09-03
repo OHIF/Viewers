@@ -152,7 +152,7 @@ function DataSourceConfigurationModalComponent({
             >
               <div className="text- flex items-center gap-2">
                 {itemLabelIndex < selectedItems.length ? (
-                  <Icons.ByName name="status-tracked" />
+                  <Icons.ByName name="status-tracked" className="text-highlight" />
                 ) : (
                   <Icons.ByName name="status-untracked" />
                 )}

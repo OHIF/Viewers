@@ -20,6 +20,11 @@ window.config = {
   routerBasename: null,
   extensions: [],
   modes: ['@ohif/mode-test'],
+  // Allow the `default` prefix so e2e specs can exercise `?customization=` (e.g.
+  // Customization.spec.ts loads `?customization=veterinary/veterinaryOverlay`).
+  customizationUrlPrefixes: {
+    default: './customizations/',
+  },
   showStudyList: true,
   hideUndoRedo: false,
   // below flag is for performance reasons, but it might not work for all servers
@@ -114,7 +119,8 @@ window.config = {
         wadoRoot: '/viewer-testdata',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,

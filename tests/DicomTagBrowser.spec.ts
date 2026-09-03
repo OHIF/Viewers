@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy, expect } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  expect,
+  waitForViewportsRendered,
+} from './utils';
 import { assertBoundingBoxIsContainedWithin } from './utils/assertions';
 
 async function expectSelectedSeriesExistsInOptions(seriesSelect) {
@@ -23,7 +30,6 @@ test('should display the dicom tag browser', async ({ page, mainToolbarPageObjec
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await mainToolbarPageObject.waitForVolumeLoad();
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   await checkForScreenshot(
     page,
@@ -35,13 +41,17 @@ test('should display the dicom tag browser', async ({ page, mainToolbarPageObjec
 test('should render the scroll bar with the correct look-and-feel', async ({
   page,
   mainToolbarPageObject,
+  DOMOverlayPageObject,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await mainToolbarPageObject.waitForVolumeLoad();
   await mainToolbarPageObject.moreTools.tagBrowser.click();
+
+  const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
+  await dicomTagBrowser.waitVisible();
+
   await checkForScreenshot({
     page,
     normalizedClip: { x: 0.77, y: 0.25, width: 0.03, height: 0.75 },
@@ -58,7 +68,6 @@ test('should display the long series name properly within the series select butt
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await mainToolbarPageObject.waitForVolumeLoad();
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
 
@@ -94,7 +103,8 @@ test('should open DICOM Tag Browser from empty viewport and show default series'
   // Switch to 3x3 layout
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-2-2').click();
-  await mainToolbarPageObject.waitForVolumeLoad();
+
+  await waitForViewportsRendered(page);
 
   await viewportPageObject.getNthLocator(6).click();
 
@@ -119,7 +129,8 @@ test('should open DICOM Tag Browser with active viewport series when viewport ha
 
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-2-2').click();
-  await mainToolbarPageObject.waitForVolumeLoad();
+
+  await waitForViewportsRendered(page);
 
   await (await viewportPageObject.getNth(2)).pane.click();
 

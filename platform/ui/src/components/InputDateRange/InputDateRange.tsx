@@ -30,7 +30,7 @@ const InputDateRange = ({
     >
       <div className="relative xl:max-w-[246px]">
         <DatePickerWithRange
-          className="mt-2"
+          className="mt-2 [&_input]:h-[34px] [&_input]:py-2 [&_input]:px-3"
           id={id}
           startDate={startDate}
           endDate={endDate}

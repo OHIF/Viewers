@@ -30,10 +30,14 @@ const mockDocument = {
   },
 };
 
-Object.defineProperty(global, 'document', {
-  writable: true,
-  value: mockDocument,
-});
+// jsdom (jest 30) makes the global `document` non-configurable, so it can't be
+// replaced wholesale. Route the methods the code under test uses onto the real
+// jsdom document; assertions still target mockDocument's jest.fn() references.
+const doc = document as unknown as typeof mockDocument;
+doc.addEventListener = mockDocument.addEventListener;
+doc.createElement = mockDocument.createElement;
+document.body.appendChild = mockDocument.body.appendChild as typeof document.body.appendChild;
+document.body.removeChild = mockDocument.body.removeChild as typeof document.body.removeChild;
 
 describe('generateSegmentationCSVReport', () => {
   const mockInfo = {

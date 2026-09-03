@@ -21,7 +21,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.mprThenSEGOverlayNoHydration.mprPreSEGOverlayNoHydration
   );
 
@@ -42,7 +42,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.mprThenSEGOverlayNoHydration.mprPostSEGOverlayNoHydration
   );
 });

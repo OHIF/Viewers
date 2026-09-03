@@ -135,16 +135,27 @@ const _getSegmentationPresentationId = ({
     return;
   }
 
+  const { displaySetService } = servicesManager.services;
   const { displaySetInstanceUIDs, viewportOptions } = viewport;
+
+  // Match keys used by updateStoredSegmentationPresentation (referenced volume only).
+  // Including overlay UIDs (e.g. SEG) produced ids like "MR&SEG" while the store
+  // entry is under "MR", so hydrated segmentations never applied and viewports could mis-render.
+  const nonOverlayUIDs = displaySetInstanceUIDs.filter(uid => {
+    const ds = displaySetService.getDisplaySetByUID(uid);
+    return ds && !ds.isOverlayDisplaySet;
+  });
+
+  if (!nonOverlayUIDs.length) {
+    return;
+  }
 
   let orientation = viewportOptions.orientation;
 
   if (!orientation) {
     // Calculate orientation from the viewport sample image
-    const displaySet = servicesManager.services.displaySetService.getDisplaySetByUID(
-      displaySetInstanceUIDs[0]
-    );
-    const sampleImage = displaySet.images?.[0];
+    const displaySet = displaySetService.getDisplaySetByUID(nonOverlayUIDs[0]);
+    const sampleImage = displaySet?.images?.[0];
     const imageOrientationPatient = sampleImage?.ImageOrientationPatient;
 
     orientation = getViewportOrientationFromImageOrientationPatient(imageOrientationPatient);
@@ -152,7 +163,7 @@ const _getSegmentationPresentationId = ({
 
   const segmentationPresentationArr = [];
 
-  segmentationPresentationArr.push(...displaySetInstanceUIDs);
+  segmentationPresentationArr.push(...nonOverlayUIDs);
 
   // Uncomment if unique indexing is needed
   // addUniqueIndex(

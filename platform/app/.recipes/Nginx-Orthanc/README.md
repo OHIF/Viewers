@@ -24,3 +24,12 @@ localhost/pacs -> Orthanc
 
 
 See [here](../../../docs/docs/deployment/nginx--image-archive.md) for more information about this recipe.
+
+# Security notes
+
+- CORS: earlier versions of this recipe set `Access-Control-Allow-Origin: *`
+  on the `/pacs/` proxy. That default has been removed. The viewer is served
+  by the same nginx as the proxy, so same-origin deployments need no CORS
+  headers. If you host the viewer on a different origin, set that origin
+  explicitly in `config/nginx.conf` - never `*` on an endpoint that serves
+  PHI.
