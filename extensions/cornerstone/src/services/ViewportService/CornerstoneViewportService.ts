@@ -1684,10 +1684,19 @@ class CornerstoneViewportService
       const { Labelmap, Surface } = csToolsEnums.SegmentationRepresentations;
       const isVolume3D = isVolume3DViewportType(viewport);
 
-      // Determine the appropriate segmentation representation for the viewport.
-      // If the current type is Surface but the viewport is not 3D, fallback to Labelmap.
-      // Otherwise, use the existing type.
-      const representationType = type === Surface && !isVolume3D ? Labelmap : type;
+      // The stored type is a hint: it was recorded when the segmentation was
+      // hydrated, possibly against a viewport of a different kind than this
+      // one, or with no viewport at all. Surface only renders in a 3D viewport
+      // and a 3D viewport renders a labelmap as a surface, so correct in both
+      // directions here. Being tolerant of the stored value is what lets the
+      // hydration path record a type without needing a live viewport.
+      let representationType = type;
+
+      if (type === Surface && !isVolume3D) {
+        representationType = Labelmap;
+      } else if (type === Labelmap && isVolume3D) {
+        representationType = Surface;
+      }
 
       if (hydrated) {
         segmentationService.addSegmentationRepresentation(viewport.id, {
@@ -1699,6 +1708,19 @@ class CornerstoneViewportService
                 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
                 : undefined,
           },
+        });
+        return;
+      }
+
+      // hydrated === false means this segmentation was explicitly removed from
+      // the presentation (closed from the segmentation panel, or the layer
+      // removed). Converge the viewport on the stored state instead of only
+      // ever adding, so a re-created viewport does not restore a segmentation
+      // the user dismissed. hydrated == null is "no representation yet" and is
+      // deliberately left alone.
+      if (hydrated === false) {
+        segmentationService.removeRepresentationsFromViewport(viewport.id, {
+          segmentationId,
         });
       }
     });

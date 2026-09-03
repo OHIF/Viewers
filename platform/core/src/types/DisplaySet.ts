@@ -82,6 +82,23 @@ export type DisplaySet = {
    * isHydrated, which means it is loaded into view.
    */
   isLoaded?: boolean;
+
+  /**
+   * isHydrated means: display this display set as part of a standard view.
+   * Nothing more and nothing less than that.
+   *
+   * It is orthogonal to isLoaded.  A display set can be loaded - decoded, and
+   * for SEG/RTSTRUCT present in the segmentation state - without being
+   * hydrated: isLoaded is a statement about whether the data is available,
+   * isHydrated is a statement about whether it should be shown in the ordinary
+   * viewports of the study.
+   *
+   * false (or undefined) means do not display it in anything except its own
+   * dedicated viewport, i.e. the SEG or RTSTRUCT viewport that exists to
+   * preview a single derived display set.  That viewport displays the display
+   * set because the display set is what it was created for, so it is not
+   * governed by this flag.
+   */
   isHydrated?: boolean;
   isRehydratable?: boolean;
 

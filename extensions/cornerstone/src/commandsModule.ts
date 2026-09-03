@@ -327,20 +327,19 @@ function commandsModule({
 
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport) {
-        return;
-      }
-
       if (displaySet.isOverlayDisplaySet) {
         // update the previously stored segmentationPresentation with the new viewportId
         // presentation so that when we put the referencedDisplaySet back in the viewport
         // it will have the correct segmentation representation hydrated
 
+        // Recorded as a hint only: _setSegmentationPresentation corrects
+        // Labelmap <-> Surface against the viewport that actually renders it,
+        // so this does not have to be resolved against a viewport here.
         const segmentationType =
           // Todo: check if PMAP modality should be handled such as SEG
           displaySet.Modality !== 'SEG'
             ? SegmentationRepresentations.Contour
-            : isVolume3DViewportType(viewport)
+            : viewport && isVolume3DViewportType(viewport)
               ? SegmentationRepresentations.Surface
               : SegmentationRepresentations.Labelmap;
 
@@ -349,6 +348,10 @@ function commandsModule({
           type: segmentationType,
         });
       }
+
+      // isHydrated means "display this display set as part of a standard view".
+      // That is decided here and does not depend on a viewport existing yet.
+      displaySet.isHydrated = true;
 
       const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
 
@@ -380,22 +383,15 @@ function commandsModule({
           'panelSegmentation.disableEditing'
         );
         if (disableEditing) {
-          const segmentationRepresentations = segmentationService.getSegmentationRepresentations(
-            viewportId,
-            {
-              segmentationId: displaySet.displaySetInstanceUID,
-            }
-          );
+          // Locking is a property of the segmentation, not of a per-viewport
+          // representation. Reading the segments from the representations would
+          // silently skip locking whenever hydration ran before the viewport
+          // had one.
+          const segmentationId = displaySet.displaySetInstanceUID;
+          const segmentation = segmentationService.getSegmentation(segmentationId);
 
-          segmentationRepresentations.forEach(representation => {
-            const segmentIndices = Object.keys(representation.segments);
-            segmentIndices.forEach(segmentIndex => {
-              segmentationService.setSegmentLocked(
-                representation.segmentationId,
-                parseInt(segmentIndex),
-                true
-              );
-            });
+          Object.keys(segmentation?.segments ?? {}).forEach(segmentIndex => {
+            segmentationService.setSegmentLocked(segmentationId, parseInt(segmentIndex), true);
           });
         }
         return results;
@@ -551,14 +547,33 @@ function commandsModule({
 
       commandsManager.run(options, optionsToUse);
     },
-    updateStoredSegmentationPresentation: ({ displaySet, type }) => {
-      const { addSegmentationPresentationItem } = useSegmentationPresentationStore.getState();
+    /**
+     * Records the desired presentation of a derived (SEG/RTSTRUCT) display set
+     * against the display set it references.
+     *
+     * @param props.hydrated - true to display it in the standard viewports for
+     *   the referenced display set, false to stop displaying it there. Writing
+     *   false matters: the store is the desired state a viewport converges on,
+     *   so simply omitting an entry would let an earlier `true` keep restoring
+     *   a segmentation that was removed.
+     */
+    updateStoredSegmentationPresentation: ({ displaySet, type, hydrated = true }) => {
+      const { addSegmentationPresentationItem, segmentationPresentationStore } =
+        useSegmentationPresentationStore.getState();
 
       const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
+      const segmentationId = displaySet.displaySetInstanceUID;
+
+      // A caller that only changes hydration (removing the layer) has no reason
+      // to know the representation type, so keep whatever hydration recorded.
+      const existingType = segmentationPresentationStore[referencedDisplaySetInstanceUID]?.find(
+        item => item.segmentationId === segmentationId
+      )?.type;
+
       addSegmentationPresentationItem(referencedDisplaySetInstanceUID, {
-        segmentationId: displaySet.displaySetInstanceUID,
-        hydrated: true,
-        type,
+        segmentationId,
+        hydrated,
+        type: type ?? existingType,
       });
     },
 

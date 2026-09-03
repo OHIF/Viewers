@@ -166,6 +166,19 @@ const commandsModule = ({
         segmentationService.removeRepresentationsFromViewport(viewportId, {
           segmentationId: displaySetInstanceUID,
         });
+
+        // Record the removal, do not just perform it. The segmentation
+        // presentation store is the desired state that viewport setup converges
+        // on, so leaving an earlier `hydrated: true` entry behind would restore
+        // this segmentation the next time a viewport is created for the
+        // referenced display set - which is what made a re-loaded RTSTRUCT or
+        // SEG behave inconsistently after being closed from the panel.
+        displaySet.isHydrated = false;
+
+        commandsManager.runCommand('updateStoredSegmentationPresentation', {
+          displaySet,
+          hydrated: false,
+        });
       }
 
       // Get current display sets for the viewport

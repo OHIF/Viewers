@@ -56,11 +56,16 @@ type SegmentationPresentationStore = {
   ) => string | undefined;
 
   /**
-   * Adds a new segmentation presentation state.
+   * Adds or replaces a segmentation presentation item.
+   *
+   * Items are identified by their `segmentationId`: an existing entry for the
+   * same segmentation is replaced rather than appended.  Appending would let
+   * hydrate -> remove -> hydrate accumulate duplicate entries for one
+   * segmentation, and the viewport applies every entry, so the same
+   * representation would be added more than once.
    *
    * @param presentationId - The presentation ID.
-   * @param segmentationPresentation - The `SegmentationPresentation` to add.
-   * @param servicesManager - The services manager instance.
+   * @param segmentationPresentationItem - The item to add or replace.
    */
   addSegmentationPresentationItem: (
     presentationId: string,
@@ -193,7 +198,8 @@ const createSegmentationPresentationStore = set => ({
     set({ segmentationPresentationStore: {} }, false, 'clearSegmentationPresentationStore'),
 
   /**
-   * Adds a new segmentation presentation item to the store.
+   * Adds a new segmentation presentation item to the store, replacing any
+   * existing item for the same segmentation.
    *
    * segmentationPresentationItem: {
    *   segmentationId: string;
@@ -207,15 +213,24 @@ const createSegmentationPresentationStore = set => ({
     segmentationPresentationItem: SegmentationPresentationItem
   ) =>
     set(
-      state => ({
-        segmentationPresentationStore: {
-          ...state.segmentationPresentationStore,
-          [presentationId]: [
-            ...(state.segmentationPresentationStore[presentationId] || []),
-            segmentationPresentationItem,
-          ],
-        },
-      }),
+      state => {
+        const existingItems = state.segmentationPresentationStore[presentationId] || [];
+
+        // Upsert by segmentationId: the store records the desired state of a
+        // segmentation for this presentation, so there is exactly one entry per
+        // segmentation and a later write (hydrate, or remove-from-viewport)
+        // supersedes an earlier one.
+        const otherItems = existingItems.filter(
+          item => item.segmentationId !== segmentationPresentationItem.segmentationId
+        );
+
+        return {
+          segmentationPresentationStore: {
+            ...state.segmentationPresentationStore,
+            [presentationId]: [...otherItems, segmentationPresentationItem],
+          },
+        };
+      },
       false,
       'addSegmentationPresentationItem'
     ),

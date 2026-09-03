@@ -1,7 +1,5 @@
-/** Callback invoked to hydrate a secondary display set into a viewport. */
 export type HydrationCallback = (params: any) => Promise<boolean>;
 
-/** Supported secondary display set types for hydration prompts. */
 export const HydrationType = {
   SEG: 'SEG',
   SR: 'SR',
@@ -36,11 +34,6 @@ const RESPONSE = {
   HYDRATE: 5,
 };
 
-/**
- * Returns the customization message key for the hydration confirmation prompt.
- *
- * @param type - Hydration display set type (SEG, RTSTRUCT, or SR).
- */
 function getCustomizationMessageKey(type: string): string {
   switch (type) {
     case HydrationType.RTSTRUCT:
@@ -54,11 +47,6 @@ function getCustomizationMessageKey(type: string): string {
   }
 }
 
-/**
- * Returns the viewport dialog id for the hydration confirmation prompt.
- *
- * @param type - Hydration display set type (SEG, RTSTRUCT, or SR).
- */
 function getDialogId(type: string): string {
   switch (type) {
     case HydrationType.RTSTRUCT:
@@ -72,50 +60,6 @@ function getDialogId(type: string): string {
   }
 }
 
-/**
- * Waits for viewport data to initialize for the given viewportId.
- *
- * SEG and RTSTRUCT hydration require an active Cornerstone viewport. When hydration
- * is triggered before the viewport has finished loading, this subscribes to
- * VIEWPORT_DATA_CHANGED and resolves once that viewport receives data.
- *
- * @param cornerstoneViewportService - Service that owns viewport lifecycle events.
- * @param viewportId - Viewport to wait for.
- * @param timeoutMs - Maximum wait time before rejecting. Defaults to 5000ms.
- */
-function waitForViewportDataChange(
-  cornerstoneViewportService: AppTypes.CornerstoneViewportService,
-  viewportId: string,
-  timeoutMs = 5000
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const { unsubscribe } = cornerstoneViewportService.subscribe(
-      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-      ({ viewportId: updatedViewportId }) => {
-        if (updatedViewportId === viewportId) {
-          clearTimeout(timer);
-          unsubscribe();
-          resolve();
-        }
-      }
-    );
-    const timer = setTimeout(() => {
-      unsubscribe();
-      reject(new Error(`Viewport data change timed out for viewportId: ${viewportId}`));
-    }, timeoutMs);
-  });
-}
-
-/**
- * Displays a hydration confirmation dialog (when required) and performs
- * hydration for SEG, RTSTRUCT, or SR display sets.
- *
- * Executes pre-hydration callbacks, waits for the viewport to be ready
- * when necessary, and invokes the appropriate hydration callback.
- *
- * @param params - Hydration dialog configuration.
- * @returns A promise that resolves to the hydration result.
- */
 function promptHydrationDialog({
   servicesManager,
   viewportId,
@@ -124,8 +68,7 @@ function promptHydrationDialog({
   hydrateCallback,
   type,
 }: HydrationDialogProps): Promise<boolean | HydrationSRResult> {
-  const { uiViewportDialogService, customizationService, cornerstoneViewportService } =
-    servicesManager.services;
+  const { uiViewportDialogService, customizationService } = servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
   const appConfig = extensionManager.appConfig;
 
@@ -148,46 +91,33 @@ function promptHydrationDialog({
         callback();
       });
 
-      // SEG and RTSTRUCT hydration must run after the Cornerstone viewport is ready.
-      // Replaces the previous setTimeout(0) deferral with an explicit wait for
-      // VIEWPORT_DATA_CHANGED when the viewport is not yet available.
-      if (
-        (type === HydrationType.SEG || type === HydrationType.RTSTRUCT) &&
-        cornerstoneViewportService?.getCornerstoneViewport
-      ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-        if (!viewport) {
+      if (type === HydrationType.SEG) {
+        // SEG needs setTimeout
+        window.setTimeout(async () => {
           try {
-            await waitForViewportDataChange(cornerstoneViewportService, viewportId);
+            const isHydrated = await hydrateCallback({
+              segDisplaySet: displaySet,
+              viewportId,
+            });
+            resolve(isHydrated);
           } catch (error) {
             reject(error);
-            return;
           }
-        }
-      }
-
-      if (type === HydrationType.SEG) {
-        try {
-          const isHydrated = await hydrateCallback({
-            segDisplaySet: displaySet,
-            viewportId,
-          });
-          resolve(isHydrated);
-        } catch (error) {
-          reject(error);
-        }
+        }, 0);
       } else if (type === HydrationType.RTSTRUCT) {
-        try {
-          const isHydrated = await hydrateCallback({
-            rtDisplaySet: displaySet,
-            viewportId,
-            servicesManager,
-          });
-          resolve(isHydrated);
-        } catch (error) {
-          reject(error);
-        }
+        // RT hydration
+        window.setTimeout(async () => {
+          try {
+            const isHydrated = await hydrateCallback({
+              rtDisplaySet: displaySet,
+              viewportId,
+              servicesManager,
+            });
+            resolve(isHydrated);
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
       } else if (type === HydrationType.SR) {
         // SR has a different result structure
         const hydrationResult = await hydrateCallback(displaySet);
@@ -216,15 +146,6 @@ function promptHydrationDialog({
   });
 }
 
-/**
- * Shows the hydration confirmation dialog in the target viewport.
- *
- * @param uiViewportDialogService - Service used to show and hide viewport dialogs.
- * @param customizationService - Service that supplies the localized prompt message.
- * @param viewportId - Viewport where the dialog is displayed.
- * @param type - Hydration display set type (SEG, RTSTRUCT, or SR).
- * @returns The user's dialog response value.
- */
 function _askHydrate(
   uiViewportDialogService: AppTypes.UIViewportDialogService,
   customizationService: AppTypes.CustomizationService,
