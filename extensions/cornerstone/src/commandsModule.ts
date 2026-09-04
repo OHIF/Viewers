@@ -374,6 +374,7 @@ function commandsModule({
         const results = commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+          derivedDisplaySetInstanceUID: displaySet.displaySetInstanceUID,
           // RTSTRUCT-on-next pins the referenced image to stack mode on hydrate;
           // see the policy's rationale in utils/nextViewportPolicies.
           viewportType: getHydrationViewportTypeForModality(displaySet.Modality),
@@ -558,11 +559,32 @@ function commandsModule({
      *   a segmentation that was removed.
      */
     updateStoredSegmentationPresentation: ({ displaySet, type, hydrated = true }) => {
-      const { addSegmentationPresentationItem, segmentationPresentationStore } =
-        useSegmentationPresentationStore.getState();
+      const {
+        addSegmentationPresentationItem,
+        setHydrationForSegmentation,
+        segmentationPresentationStore,
+      } = useSegmentationPresentationStore.getState();
 
       const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
       const segmentationId = displaySet.displaySetInstanceUID;
+
+      // The store is keyed by the referenced display set, so there is no key to
+      // create an entry under without one - segmentations created in the client
+      // (see the SEGMENTATION_ADDED handler) have no referenced display set,
+      // and writing them would land every one of them under a single
+      // `undefined` key.
+      //
+      // They are still recorded, though: storePresentation records a
+      // client-drawn segmentation as hydrated under the key of whatever
+      // viewport it was drawn in (see _getInitialHydrationForSync), and that
+      // record is what re-adds it on the next mount. Nothing else supersedes it
+      // - syncSegmentationPresentation only ever merges - so a removal has to
+      // update it in place wherever it was written, or a segmentation the user
+      // dismissed or deleted comes back.
+      if (!referencedDisplaySetInstanceUID) {
+        setHydrationForSegmentation(segmentationId, { hydrated, type });
+        return;
+      }
 
       // A caller that only changes hydration (removing the layer) has no reason
       // to know the representation type, so keep whatever hydration recorded.
@@ -618,6 +640,14 @@ function commandsModule({
               },
             }
           : presentations.positionPresentation;
+
+      // With no live viewport there is no position to record - getPresentations
+      // returns an object whose positionPresentation is undefined. Writing that
+      // would clobber the referenced series' stored slice/pan/zoom with
+      // undefined, which matters now that hydration runs without a viewport.
+      if (!presentationData) {
+        return;
+      }
 
       if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
@@ -1715,7 +1745,15 @@ function commandsModule({
     },
 
     /**
-     * Removes a segmentation from the viewport
+     * Removes a segmentation from the viewport.
+     *
+     * This is the segmentation panel's Remove from Viewport, which lists the
+     * segmentations of the study rather than the layers of one pane, so it is
+     * the global statement: it un-hydrates the display set as well as clearing
+     * it from the active viewport. The per-viewport equivalent is the viewport
+     * data overlay menu's Remove, which runs `removeDisplaySetLayer` without
+     * `unhydrate`.
+     *
      * @param props.segmentationId - The ID of the segmentation to remove
      */
     removeSegmentationFromViewportCommand: ({ segmentationId: displaySetInstanceUID }) => {
@@ -1725,6 +1763,7 @@ function commandsModule({
       commandsManager.runCommand('removeDisplaySetLayer', {
         viewportId,
         displaySetInstanceUID,
+        unhydrate: true,
       });
     },
 
@@ -2079,11 +2118,17 @@ function commandsModule({
       viewportId,
       displaySetInstanceUIDs,
       viewportType,
+      // The SEG/RTSTRUCT being hydrated. Passing it lets the target selection
+      // include panes that share its frame of reference rather than only those
+      // hung with the exact referenced display set, and lets it work when there
+      // is no viewport to match against at all.
+      derivedDisplaySetInstanceUID,
     }) => {
       const updatedViewports = getUpdatedViewportsForSegmentation({
         viewportId,
         servicesManager,
         displaySetInstanceUIDs,
+        derivedDisplaySetInstanceUID,
       });
 
       if (!updatedViewports?.length) {
@@ -2095,14 +2140,23 @@ function commandsModule({
         csViewport?.setNeedsRender?.();
       });
 
+      // A pinned viewportType (RTSTRUCT contour hydration on a native "next"
+      // viewport requests 'stack') is a statement about the pane hydration was
+      // invoked on, whose background is being set to the referenced image. The
+      // other panes here were matched because they already show something the
+      // segmentation can be drawn over - by frame of reference, and keeping the
+      // display sets they already have - so their own render mode is the right
+      // one and forcing 'stack' onto them would flip an MPR pane to a stack.
+      // Note the merged entries carry no viewportOptions at all, so the grid
+      // reducer would merge a bare `{ viewportType }` straight over the pane's
+      // real options.
+      const targetViewportId = viewportId || viewportGridService.getActiveViewportId();
+
       actions.setDisplaySetsForViewports({
         viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
           displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
-          // When the caller pins a viewportType (RTSTRUCT contour hydration on a
-          // native "next" viewport requests 'stack'), force it so the referenced
-          // image stays in that render mode instead of resolving to a volume slice.
-          ...(viewportType
+          ...(viewportType && viewport.viewportId === targetViewportId
             ? { viewportOptions: { ...viewport.viewportOptions, viewportType } }
             : {}),
         })),
