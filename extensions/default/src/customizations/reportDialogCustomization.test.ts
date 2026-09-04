@@ -64,7 +64,11 @@ jest.mock('@ohif/ui-next', () => {
       ),
     SelectTrigger: ({ children, ...props }) => ReactMock.createElement('div', props, children),
     SelectContent: ({ children }) => ReactMock.createElement('div', null, children),
-    SelectValue: () => null,
+    // Radix shows the placeholder until an item is chosen, then the item's text.
+    SelectValue: ({ placeholder }) => {
+      const context = ReactMock.useContext(SelectContext);
+      return context?.value ? null : placeholder;
+    },
     SelectItem: ({ value, children }) => {
       const context = ReactMock.useContext(SelectContext);
       return ReactMock.createElement(
@@ -278,6 +282,11 @@ describe('ReportDialog', () => {
       expect(isDisabled(saveButton())).toBe(true);
       expect(isDisabled(screen.getByTestId('report-download-button'))).toBe(true);
       expect(seriesNumberField().textContent).toBe('');
+      // The row is labelled `Series Description`, so the control asks for the
+      // choice it needs rather than repeating the label.
+      expect(screen.getByTestId('report-replaced-series-select').textContent).toBe(
+        'Select a series'
+      );
 
       // The series the data was loaded from is not offered again here.
       fireEvent.click(screen.getByText('Spleen'));

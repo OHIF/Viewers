@@ -527,7 +527,9 @@ function ReportDialog({
             onValueChange={setReplacedSeriesValue}
           >
             <SelectTrigger data-cy="report-replaced-series-select">
-              <SelectValue placeholder="Series description" />
+              {/* The `Series Description` label is on the left of this row, so
+                  the control itself asks for the choice it needs. */}
+              <SelectValue placeholder="Select a series" />
             </SelectTrigger>
             <SelectContent>
               {replaceableSeries.map(series => (
