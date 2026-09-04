@@ -21,59 +21,48 @@ jest.mock('@ohif/core', () => ({
 
 // Lightweight stand ins for the design system components - the dialog is being
 // tested for what it says about the destination series, not for how ui-next
-// renders a select, an input or a tooltip.
+// renders tabs, a select or an input.
 jest.mock('@ohif/ui-next', () => {
   const ReactMock = require('react');
+  const TabsContext = ReactMock.createContext(null);
   const SelectContext = ReactMock.createContext(null);
-  const InputContext = ReactMock.createContext(null);
-  // Only renders the tooltip content while the tooltip is open, so that the
-  // dialog can be tested for when it shows a tooltip.
-  const TooltipContext = ReactMock.createContext(false);
 
-  const InputDialog = ({ value = '', onChange, children }) =>
-    ReactMock.createElement(InputContext.Provider, { value: { value, onChange } }, children);
-  InputDialog.Field = ({ children }) => ReactMock.createElement('div', null, children);
-  InputDialog.Input = ({ placeholder, ...props }) => {
-    const context = ReactMock.useContext(InputContext);
-    return ReactMock.createElement('input', {
-      'aria-label': placeholder,
-      value: context.value,
-      onChange: event => context.onChange(event.target.value),
-      ...props,
-    });
-  };
-  InputDialog.Actions = ({ children }) => ReactMock.createElement('div', null, children);
-  InputDialog.ActionsPrimary = ({ onClick, children }) =>
-    ReactMock.createElement('button', { onClick: () => onClick('') }, children);
-  InputDialog.ActionsSecondary = ({ onClick, children }) =>
-    ReactMock.createElement('button', { onClick: () => onClick('') }, children);
+  const FooterAction = ({ children }) => ReactMock.createElement('div', null, children);
+  FooterAction.Left = ({ children }) => ReactMock.createElement('div', null, children);
+  FooterAction.Right = ({ children }) => ReactMock.createElement('div', null, children);
+  const footerButton = ({ dataCY, onClick, disabled, children }) =>
+    ReactMock.createElement('button', { 'data-cy': dataCY, onClick, disabled }, children);
+  FooterAction.Primary = footerButton;
+  FooterAction.Secondary = footerButton;
 
   return {
     cn: (...classes) => classes.filter(Boolean).join(' '),
-    Icons: {
-      Add: () => null,
-      Info: () => null,
-      ArrowRight: () => null,
-      ChevronOpen: () => null,
-    },
+    Icons: { ChevronOpen: () => null },
     Label: ({ children, htmlFor }) => ReactMock.createElement('label', { htmlFor }, children),
-    Button: ({ dataCY, variant, size, className, children, ...props }) =>
-      ReactMock.createElement('button', { 'data-cy': dataCY, ...props }, children),
     Input: ({ className, ...props }) => ReactMock.createElement('input', props),
-    InputDialog,
-    Tooltip: ({ open, children }) =>
-      ReactMock.createElement(TooltipContext.Provider, { value: !!open }, children),
-    TooltipProvider: ({ children }) => ReactMock.createElement('div', null, children),
-    TooltipTrigger: ({ children }) => children,
-    TooltipContent: ({ children }) =>
-      ReactMock.useContext(TooltipContext) ? ReactMock.createElement('span', null, children) : null,
+    FooterAction,
+    Tabs: ({ value, onValueChange, children }) =>
+      ReactMock.createElement(TabsContext.Provider, { value: { value, onValueChange } }, children),
+    TabsList: ({ children }) => ReactMock.createElement('div', null, children),
+    TabsTrigger: ({ value, children, ...props }) => {
+      const context = ReactMock.useContext(TabsContext);
+      return ReactMock.createElement(
+        'button',
+        {
+          ...props,
+          'aria-selected': context.value === value,
+          onClick: () => context.onValueChange(value),
+        },
+        children
+      );
+    },
     Select: ({ value, onValueChange, children }) =>
       ReactMock.createElement(
         SelectContext.Provider,
         { value: { value, onValueChange } },
         children
       ),
-    SelectTrigger: ({ children }) => ReactMock.createElement('div', null, children),
+    SelectTrigger: ({ children, ...props }) => ReactMock.createElement('div', props, children),
     SelectContent: ({ children }) => ReactMock.createElement('div', null, children),
     SelectValue: () => null,
     SelectItem: ({ value, children }) => {
@@ -91,7 +80,37 @@ import { ReportDialog } from './reportDialogCustomization';
 
 configure({ testIdAttribute: 'data-cy' });
 
-const PREDECESSOR_IMAGE_ID = 'wadors:/seg-instance-1';
+const CURRENT_SERIES_IMAGE_ID = 'wadors:/seg-instance-1';
+const OTHER_SERIES_IMAGE_ID = 'wadors:/seg-instance-2';
+
+const CURRENT_SERIES = {
+  displaySetInstanceUID: 'ds-current',
+  Modality: 'SEG',
+  SeriesInstanceUID: '1.2.3',
+  SeriesNumber: 3105,
+  SeriesDescription: 'Liver',
+  predecessorImageId: CURRENT_SERIES_IMAGE_ID,
+};
+
+const OTHER_SERIES = {
+  displaySetInstanceUID: 'ds-other',
+  Modality: 'SEG',
+  SeriesInstanceUID: '1.2.5',
+  SeriesNumber: 3103,
+  SeriesDescription: 'Spleen',
+  predecessorImageId: OTHER_SERIES_IMAGE_ID,
+};
+
+// Another modality, so it is never a destination for a SEG.
+const UNRELATED_SERIES = {
+  displaySetInstanceUID: 'ds-ct',
+  Modality: 'CT',
+  SeriesInstanceUID: '1.2.4',
+  SeriesNumber: 1,
+  SeriesDescription: 'Axial',
+};
+
+const HISTORY_STORAGE_KEY = 'ohif.seriesDescriptionHistory';
 
 function setDisplaySets(displaySets) {
   mockDisplaySetCache.clear();
@@ -107,6 +126,7 @@ function renderDialog(props = {}) {
       modality: 'SEG',
       minSeriesNumber: 3100,
       defaultSeriesDescription: 'Segmentation 1',
+      enableDownload: true,
       hide: jest.fn(),
       onSave,
       onCancel,
@@ -116,13 +136,16 @@ function renderDialog(props = {}) {
   return { onSave, onCancel };
 }
 
-const HISTORY_STORAGE_KEY = 'ohif.seriesDescriptionHistory';
-
-const destinationTitle = () => screen.getByTestId('report-destination-title').textContent;
+const tab = (destination: string) => screen.getByTestId(`report-destination-${destination}`);
+const selectedTab = () =>
+  ['current', 'new', 'replace'].find(
+    destination => tab(destination).getAttribute('aria-selected') === 'true'
+  );
+const helpText = () => screen.getByTestId('report-destination-help').textContent;
 const seriesNumberField = () => screen.getByTestId('report-series-number') as HTMLInputElement;
-const seriesDescriptionField = () =>
-  screen.getByLabelText('Series description') as HTMLInputElement;
-const descriptionOptionsButton = () => screen.getByTestId('report-series-description-options');
+const descriptionField = () => screen.getByTestId('dialog-input') as HTMLInputElement;
+const saveButton = () => screen.getByTestId('input-dialog-save-button') as HTMLButtonElement;
+const isDisabled = (element: HTMLElement) => (element as HTMLButtonElement).disabled;
 const shownDescriptions = () =>
   Array.from(screen.getByTestId('report-series-description-list').querySelectorAll('button')).map(
     option => option.textContent
@@ -134,38 +157,69 @@ const setStoredHistory = (history: Record<string, string[]>) =>
 describe('ReportDialog', () => {
   beforeEach(() => {
     window.localStorage.clear();
-    setDisplaySets([
-      {
-        displaySetInstanceUID: 'ds-1',
-        Modality: 'SEG',
-        SeriesInstanceUID: '1.2.3',
-        SeriesNumber: 3105,
-        SeriesDescription: 'Liver',
-        SeriesDate: '20260101',
-        SeriesTime: '120000',
-        predecessorImageId: PREDECESSOR_IMAGE_ID,
-      },
-      // Another modality, so it is not a valid destination for a SEG.
-      {
-        displaySetInstanceUID: 'ds-2',
-        Modality: 'CT',
-        SeriesInstanceUID: '1.2.4',
-        SeriesNumber: 1,
-        SeriesDescription: 'Axial',
-      },
-    ]);
+    setDisplaySets([CURRENT_SERIES, OTHER_SERIES, UNRELATED_SERIES]);
   });
 
-  describe('new series', () => {
+  describe('destinations', () => {
+    it('saves to the series the data was loaded from by default', () => {
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      expect(selectedTab()).toBe('current');
+      expect(helpText()).toContain('Adds a new version to this series');
+      expect(saveButton().textContent).toBe('Save to current');
+    });
+
+    it('creates a series by default when the data has never been saved', () => {
+      renderDialog();
+
+      expect(selectedTab()).toBe('new');
+      expect(helpText()).toBe('Creates a separate series.');
+      expect(saveButton().textContent).toBe('Save as new');
+      // There is no series it was loaded from to save to.
+      expect(isDisabled(tab('current'))).toBe(true);
+      expect(tab('current').getAttribute('title')).toBe(
+        'This data has not been saved to a series yet'
+      );
+    });
+
+    it('cannot replace a series when no other series of the type is loaded', () => {
+      setDisplaySets([CURRENT_SERIES, UNRELATED_SERIES]);
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      expect(isDisabled(tab('replace'))).toBe(true);
+      expect(tab('replace').getAttribute('title')).toBe('No other series of this type is loaded');
+    });
+  });
+
+  describe('save to current', () => {
+    it('shows the series number and description, uneditable, and stores into it', () => {
+      const { onSave } = renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      expect(screen.getByTestId('report-series-description').textContent).toBe('Liver');
+      expect(seriesNumberField().textContent).toBe('3105');
+      expect(screen.queryByTestId('dialog-input')).toBeNull();
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reportName: 'Liver',
+          series: CURRENT_SERIES_IMAGE_ID,
+          seriesNumber: 3105,
+        })
+      );
+    });
+  });
+
+  describe('save as new', () => {
     it('offers the next series number and the default description', () => {
       const { onSave } = renderDialog();
 
-      expect(destinationTitle()).toBe('New Series');
       // One past the highest existing series number of this modality.
       expect(seriesNumberField().value).toBe('3106');
-      expect(seriesDescriptionField().value).toBe('Segmentation 1');
+      expect(descriptionField().value).toBe('Segmentation 1');
 
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.click(saveButton());
 
       expect(onSave).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -178,7 +232,7 @@ describe('ReportDialog', () => {
     });
 
     it('uses the minimum series number when no series of the modality exists', () => {
-      setDisplaySets([]);
+      setDisplaySets([UNRELATED_SERIES]);
       renderDialog();
 
       expect(seriesNumberField().value).toBe('3101');
@@ -188,8 +242,8 @@ describe('ReportDialog', () => {
       const { onSave } = renderDialog();
 
       fireEvent.change(seriesNumberField(), { target: { value: '4321' } });
-      fireEvent.change(seriesDescriptionField(), { target: { value: 'Left kidney' } });
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.change(descriptionField(), { target: { value: 'Left kidney' } });
+      fireEvent.click(saveButton());
 
       expect(onSave).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -205,31 +259,70 @@ describe('ReportDialog', () => {
       const { onSave } = renderDialog();
 
       fireEvent.change(seriesNumberField(), { target: { value: '' } });
-      fireEvent.change(seriesDescriptionField(), { target: { value: '  ' } });
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
 
       expect(onSave).toHaveBeenCalledWith(
         expect.objectContaining({ reportName: 'Segmentation 1', seriesNumber: 3106 })
       );
     });
+  });
 
-    it('is the only destination when the data has no series to extend', () => {
-      renderDialog({ predecessorImageId: 'wadors:/not-loaded' });
+  describe('replace existing', () => {
+    it('waits for a series to be chosen, then stores into it', () => {
+      const { onSave } = renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
 
-      expect(destinationTitle()).toBe('New Series');
-      expect(screen.queryByTestId('report-extend-existing')).toBeNull();
+      fireEvent.click(tab('replace'));
+
+      expect(helpText()).toContain('Choose a series to replace');
+      expect(isDisabled(saveButton())).toBe(true);
+      expect(isDisabled(screen.getByTestId('report-download-button'))).toBe(true);
+      expect(seriesNumberField().textContent).toBe('');
+
+      // The series the data was loaded from is not offered again here.
+      fireEvent.click(screen.getByText('Spleen'));
+
+      expect(screen.queryByText('Liver')).toBeNull();
+      expect(seriesNumberField().textContent).toBe('3103');
+      expect(isDisabled(saveButton())).toBe(false);
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reportName: 'Spleen',
+          series: OTHER_SERIES_IMAGE_ID,
+          seriesNumber: 3103,
+        })
+      );
+    });
+
+    it('names a series without a description by its number', () => {
+      setDisplaySets([{ ...OTHER_SERIES, SeriesDescription: undefined }]);
+      renderDialog();
+
+      fireEvent.click(tab('replace'));
+
+      expect(screen.getByText('Series 3103')).toBeTruthy();
     });
   });
 
   describe('remembered series descriptions', () => {
     it('remembers the description that was used, per type of item', () => {
-      const { onSave } = renderDialog();
+      renderDialog();
 
-      fireEvent.change(seriesDescriptionField(), { target: { value: 'Right kidney' } });
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.change(descriptionField(), { target: { value: 'Right kidney' } });
+      fireEvent.click(saveButton());
 
-      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('remembers nothing when an existing series is stored into', () => {
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      fireEvent.click(saveButton());
+
+      expect(storedHistory()).toEqual({});
     });
 
     it('offers the last used description, and keeps the older ones behind it', () => {
@@ -237,9 +330,9 @@ describe('ReportDialog', () => {
       renderDialog();
 
       // The last used one is the most likely to be wanted again.
-      expect(seriesDescriptionField().value).toBe('Right kidney');
+      expect(descriptionField().value).toBe('Right kidney');
 
-      fireEvent.click(descriptionOptionsButton());
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
       // The provided description first, then the ones used before it.
       expect(shownDescriptions()).toEqual(['Segmentation 1', 'Right kidney', 'Left kidney']);
     });
@@ -248,8 +341,8 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
       renderDialog();
 
-      fireEvent.change(seriesDescriptionField(), { target: { value: 'left kidney' } });
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.change(descriptionField(), { target: { value: 'left kidney' } });
+      fireEvent.click(saveButton());
 
       expect(storedHistory()).toEqual({ SEG: ['left kidney', 'Right kidney'] });
     });
@@ -258,8 +351,8 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['4', '3', '2', '1'] });
       renderDialog({ rememberedDescriptionCount: 3 });
 
-      fireEvent.change(seriesDescriptionField(), { target: { value: '5' } });
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.change(descriptionField(), { target: { value: '5' } });
+      fireEvent.click(saveButton());
 
       expect(storedHistory()).toEqual({ SEG: ['5', '4', '3'] });
     });
@@ -268,10 +361,10 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['Right kidney'] });
       renderDialog({ rememberedDescriptionCount: 0 });
 
-      expect(seriesDescriptionField().value).toBe('Segmentation 1');
+      expect(descriptionField().value).toBe('Segmentation 1');
       expect(screen.queryByTestId('report-series-description-options')).toBeNull();
 
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.click(saveButton());
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
     });
 
@@ -279,9 +372,9 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['Right kidney'] });
       renderDialog({ modality: 'RTSTRUCT', defaultSeriesDescription: 'Contours' });
 
-      expect(seriesDescriptionField().value).toBe('Contours');
+      expect(descriptionField().value).toBe('Contours');
 
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.click(saveButton());
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'], RTSTRUCT: ['Contours'] });
     });
 
@@ -289,7 +382,7 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['Right kidney', 'Left kidney', 'Liver'] });
       renderDialog();
 
-      fireEvent.change(seriesDescriptionField(), { target: { value: 'Li' } });
+      fireEvent.change(descriptionField(), { target: { value: 'Li' } });
 
       expect(shownDescriptions()).toEqual(['Liver']);
     });
@@ -298,10 +391,10 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
       renderDialog();
 
-      fireEvent.change(seriesDescriptionField(), { target: { value: 'le' } });
-      fireEvent.keyDown(seriesDescriptionField(), { key: 'Tab' });
+      fireEvent.change(descriptionField(), { target: { value: 'le' } });
+      fireEvent.keyDown(descriptionField(), { key: 'Tab' });
 
-      expect(seriesDescriptionField().value).toBe('Left kidney');
+      expect(descriptionField().value).toBe('Left kidney');
       expect(screen.queryByTestId('report-series-description-list')).toBeNull();
     });
 
@@ -309,78 +402,47 @@ describe('ReportDialog', () => {
       setStoredHistory({ SEG: ['Right kidney'] });
       renderDialog();
 
-      fireEvent.change(seriesDescriptionField(), { target: { value: 'Spleen' } });
-      fireEvent.keyDown(seriesDescriptionField(), { key: 'Tab' });
+      fireEvent.change(descriptionField(), { target: { value: 'Spleen' } });
+      fireEvent.keyDown(descriptionField(), { key: 'Tab' });
 
-      expect(seriesDescriptionField().value).toBe('Spleen');
+      expect(descriptionField().value).toBe('Spleen');
     });
 
     it('accepts a highlighted description with enter, and saves with the next one', () => {
       setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
       const { onSave } = renderDialog();
 
-      fireEvent.click(descriptionOptionsButton());
-      fireEvent.keyDown(seriesDescriptionField(), { key: 'ArrowDown' });
-      fireEvent.keyDown(seriesDescriptionField(), { key: 'ArrowDown' });
-      fireEvent.keyDown(seriesDescriptionField(), { key: 'Enter' });
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      fireEvent.keyDown(descriptionField(), { key: 'ArrowDown' });
+      fireEvent.keyDown(descriptionField(), { key: 'ArrowDown' });
+      fireEvent.keyDown(descriptionField(), { key: 'Enter' });
 
-      expect(seriesDescriptionField().value).toBe('Right kidney');
+      expect(descriptionField().value).toBe('Right kidney');
       expect(onSave).not.toHaveBeenCalled();
 
-      fireEvent.keyDown(seriesDescriptionField(), { key: 'Enter' });
+      fireEvent.keyDown(descriptionField(), { key: 'Enter' });
       expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
     });
   });
 
-  describe('extend existing', () => {
-    it('shows the series number and description being extended, uneditable', () => {
-      const { onSave } = renderDialog({ predecessorImageId: PREDECESSOR_IMAGE_ID });
+  describe('actions', () => {
+    it('downloads through the same destination', () => {
+      const { onSave } = renderDialog();
 
-      expect(destinationTitle()).toBe('Extend Existing');
-      expect(seriesNumberField().textContent).toBe('3105');
-      expect(screen.getByTestId('report-series-description').textContent).toBe('Liver');
-      expect(screen.queryByLabelText('Series description')).toBeNull();
-
-      fireEvent.click(screen.getByText('Save'));
+      fireEvent.click(screen.getByTestId('report-download-button'));
 
       expect(onSave).toHaveBeenCalledWith(
-        expect.objectContaining({
-          reportName: 'Liver',
-          series: PREDECESSOR_IMAGE_ID,
-          seriesNumber: 3105,
-        })
+        expect.objectContaining({ dataSource: 'download', series: null })
       );
     });
 
-    it('describes the switch only while the pointer is over it', () => {
-      renderDialog({ predecessorImageId: PREDECESSOR_IMAGE_ID });
-      const switchButton = screen.getByTestId('report-use-new-series');
+    it('cancels without saving', () => {
+      const { onSave, onCancel } = renderDialog();
 
-      // The dialog focuses its first control on open, which must not be enough
-      // to show the tooltip.
-      expect(screen.queryByText('Save to a new series')).toBeNull();
+      fireEvent.click(screen.getByTestId('input-dialog-cancel-button'));
 
-      fireEvent.mouseEnter(switchButton);
-      expect(screen.getByText('Save to a new series')).toBeTruthy();
-
-      fireEvent.mouseLeave(switchButton);
-      expect(screen.queryByText('Save to a new series')).toBeNull();
-    });
-
-    it('switches to and from creating a new series', () => {
-      const { onSave } = renderDialog({ predecessorImageId: PREDECESSOR_IMAGE_ID });
-
-      fireEvent.click(screen.getByTestId('report-use-new-series'));
-      expect(destinationTitle()).toBe('New Series');
-      expect(seriesNumberField().value).toBe('3106');
-
-      fireEvent.click(screen.getByTestId('report-extend-existing'));
-      expect(destinationTitle()).toBe('Extend Existing');
-
-      fireEvent.click(screen.getByText('Save'));
-      expect(onSave).toHaveBeenCalledWith(
-        expect.objectContaining({ series: PREDECESSOR_IMAGE_ID })
-      );
+      expect(onCancel).toHaveBeenCalled();
+      expect(onSave).not.toHaveBeenCalled();
     });
   });
 });

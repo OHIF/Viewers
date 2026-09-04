@@ -13,29 +13,41 @@ different operations - creating a new series, and storing into a series that
 already exists.  Which one was about to happen, and what it would do to the
 data already stored, was not visible.
 
-The dialog now always states which of the two destinations is in effect, and
-offers a button to switch to the other one:
+The destination is now an explicit choice of three, made with a segmented control
+on a `Series` row, with a line of help under it and the same words repeated on the
+button that commits the save:
 
-- **New Series** creates a new series.  The series number and the series
-  description are both editable.  The series number is offered as one past the
-  existing series of this modality (at least `minSeriesNumber`), and the
-  description is offered as the one last used for this type of item, falling back
-  to `defaultSeriesDescription` - see
-  [remembered series descriptions](#remembered-series-descriptions) below.
-- **Extend Existing** stores into the series the data was loaded from - the
+- **Save to current** adds a version to the series the data was loaded from - the
   series identified by `predecessorImageId`.  The stored instance becomes the one
-  loaded by default for that series; the data already in the series is kept, but
-  is no longer the default.  An existing series keeps its own series number and
-  description, so both are shown read-only.
+  loaded by default for that series; the data already there is kept, but is no
+  longer the default.  It is the default choice when there is such a series, and
+  is unavailable otherwise.
+- **Save as new** creates a separate series, with no predecessor.  The series
+  number and the series description are both editable: the number is offered as
+  one past the existing series of this modality (at least `minSeriesNumber`), and
+  the description as the one last used for this type of item, falling back to
+  `defaultSeriesDescription` - see
+  [remembered series descriptions](#remembered-series-descriptions).  It is the
+  default choice when the data has not been stored before, and is always
+  available.
+- **Replace existing** adds a version to another loaded series of this modality,
+  chosen from a select of their descriptions.  It behaves like `Save to current`
+  otherwise, and is unavailable when no such series is loaded.  This is what the
+  old drop down could do, as its own destination rather than an entry mixed in
+  among the series.
 
-`Extend Existing` is only offered when the data was loaded from a series that is
-still loaded, since that is the only series it can extend.  Data that has never
-been stored has no predecessor, and is always saved as a new series.  Storing
-into some other arbitrary series of the same modality is no longer offered.
+A series that already exists keeps its own series number and description, so both
+are read-only for `Save to current` and `Replace existing`; the number shown
+follows the series picked.
 
-The segmentation and contour dialogs are titled **Save Segmentation** and **Save
-Contours**, having been `Store Segmentation` and `Store Contours`, to match the
-`Save` action in them.  A caller that passes its own `title` is unaffected.
+The dialogs are titled **Save Segmentation**, **Save Contours** and **Save
+Measurements**, having been `Store Segmentation`, `Store Contours` and `Create
+Report`, to match the `Save` action in them.  A caller that passes its own `title`,
+or a mode that sets `defaultSaveTitle`, is unaffected.
+
+The footer is now a `FooterAction` with `Download` on the left and `Cancel` and
+the primary action on the right, rather than the right-aligned cluster
+`InputDialog.Actions` gives.
 
 ## `createReportDialogPrompt` input
 
@@ -114,10 +126,10 @@ extending a series.
 
 ## After the save, the stored object is the predecessor
 
-Extending a series relies on the data knowing which instance it was last stored
-as - its `predecessorImageId`. That was only ever known for data loaded from a
-store, so the first save of a segmentation or a report created a new series, and
-so did the save after it, and the one after that.
+Saving to the current series relies on the data knowing which instance it was
+last stored as - its `predecessorImageId`. That was only ever known for data
+loaded from a store, so the first save of a segmentation or a report created a new
+series, and so did the save after it, and the one after that.
 
 An instance stored from the viewer is now identified the way one loaded from a
 data source is: `registerStoredInstanceImageId` gives it the imageId that loading
@@ -134,7 +146,7 @@ metadata store. The display set made from the stored instance therefore has a
   directly - on the measurement and on the annotation it is derived from, so that
   editing a measurement afterwards does not lose it.
 
-The effect is that saving the same data twice offers **Extend Existing** the
+The effect is that saving the same data twice defaults to **Save to current** the
 second time, pointing at the series the first save created.
 
 ## Remembered series descriptions
@@ -155,7 +167,7 @@ Two new optional inputs control this:
   **0 disables the feature**: nothing is remembered, nothing is offered, and the
   pull down is not shown, leaving a plain description field.
 
-In the dialog, the description field:
+In the dialog, the `Save as new` description field:
 
 - is prefilled with the description last used for this type of item, and with
   `defaultSeriesDescription` when there is none yet;
@@ -165,7 +177,7 @@ In the dialog, the description field:
   completing to the first of them, and the arrow keys plus Enter picking one.
 
 A description is remembered when it is used to create a new series, including a
-download.  Extending an existing series does not record anything, since that
+download.  Storing into a series that already exists records nothing, since that
 series keeps its own description.  Reusing a description moves it back to the
 front of the list rather than duplicating it, matched without regard to case.
 

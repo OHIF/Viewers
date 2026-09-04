@@ -1,21 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Button,
   cn,
+  FooterAction,
   Icons,
   Input,
-  InputDialog,
   Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+  Tabs,
+  TabsList,
+  TabsTrigger,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
@@ -30,23 +28,60 @@ type DataSource = {
   placeHolder: string;
 };
 
-/** A series of the stored modality that this save could be added to. */
+/** A series of the stored modality that this save could be written into. */
 type ExistingSeries = {
-  /** Identifies the series to extend, as a predecessorImageId value. */
+  /** Identifies the series to store into, as a predecessorImageId value. */
   value: string;
   /** Numeric series number, used to compute the next available series number. */
   seriesNumber: number;
   /** Series number as shown to the user, or a placeholder when there isn't one. */
   seriesNumberLabel: string;
   description: string | null;
+  /** What the series is called in the list of series to replace. */
+  label: string;
 };
+
+/**
+ * Where the save goes:
+ *   - `current` adds a version to the series the data was loaded from
+ *   - `new` creates a series
+ *   - `replace` adds a version to another loaded series of this modality
+ */
+type Destination = 'current' | 'new' | 'replace';
+
+const DESTINATIONS: {
+  value: Destination;
+  label: string;
+  help: string;
+  /** Why the destination is not available, shown on the disabled tab. */
+  unavailable: string;
+}[] = [
+  {
+    value: 'current',
+    label: 'Save to current',
+    help: 'Adds a new version to this series as the new default.  Earlier versions are kept.',
+    unavailable: 'This data has not been saved to a series yet',
+  },
+  {
+    value: 'new',
+    label: 'Save as new',
+    help: 'Creates a separate series.',
+    unavailable: '',
+  },
+  {
+    value: 'replace',
+    label: 'Replace existing',
+    help: 'Choose a series to replace.  The current data becomes the default and earlier versions are kept.',
+    unavailable: 'No other series of this type is loaded',
+  },
+];
 
 type ReportDialogProps = {
   dataSources: DataSource[];
   modality?: string;
   /**
    * The image id the data being saved was loaded from.  When it belongs to a
-   * loaded series, that series can be extended by this save.
+   * loaded series, that series is the one `Save to current` writes into.
    */
   predecessorImageId?: string;
   /** Lowest series number to use for a newly created series of this modality. */
@@ -94,6 +129,7 @@ function ReportDialog({
   const { t } = useTranslation('Buttons');
   const { servicesManager } = useSystem();
   const actionTakenRef = useRef(false);
+  const descriptionInputRef = useRef<HTMLInputElement>(null);
   const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
     dataSources?.[0]?.value ?? null
   );
@@ -102,29 +138,45 @@ function ReportDialog({
   const existingSeries = useMemo((): ExistingSeries[] => {
     const displaySetsMap = displaySetService.getDisplaySetCache();
     const displaySets = Array.from(displaySetsMap.values());
+    const seen = new Set<string>();
 
     return displaySets
       .filter(ds => ds.Modality === modality)
       .map(ds => {
         const hasSeriesNumber = isFinite(ds.SeriesNumber);
+        const seriesNumberLabel = hasSeriesNumber ? `${ds.SeriesNumber}` : 'Not specified';
         return {
           value: ds.predecessorImageId || ds.SeriesInstanceUID,
           seriesNumber: hasSeriesNumber ? Number(ds.SeriesNumber) : minSeriesNumber,
-          seriesNumberLabel: hasSeriesNumber ? `${ds.SeriesNumber}` : 'Not specified',
+          seriesNumberLabel,
           description: ds.SeriesDescription || null,
+          label: ds.SeriesDescription || `Series ${seriesNumberLabel}`,
         };
       })
-      .filter(series => !!series.value);
+      .filter(series => {
+        // Two display sets of one series would otherwise both be offered, and
+        // the select needs unique values.
+        if (!series.value || seen.has(series.value)) {
+          return false;
+        }
+        seen.add(series.value);
+        return true;
+      });
   }, [displaySetService, modality, minSeriesNumber]);
 
   /**
-   * The series this save can extend - the one the data was loaded from.  There
-   * isn't one for data that has never been stored, which is then always saved
-   * as a new series.
+   * The series the data was loaded from, which `Save to current` writes into.
+   * There isn't one for data that has never been stored.
    */
-  const predecessorSeries = useMemo(
+  const currentSeries = useMemo(
     () => existingSeries.find(series => series.value === predecessorImageId) ?? null,
     [existingSeries, predecessorImageId]
+  );
+
+  /** The other series of this modality, which `Replace existing` chooses from. */
+  const replaceableSeries = useMemo(
+    () => existingSeries.filter(series => series !== currentSeries),
+    [existingSeries, currentSeries]
   );
 
   /** The series number offered for a new series - one past the existing ones. */
@@ -134,10 +186,10 @@ function ReportDialog({
   );
 
   /**
-   * The series descriptions to offer, being the one provided for this data
-   * followed by the ones last used for this type of item.  The most recently
-   * used one is what gets offered in the field, as it is the most likely one to
-   * want again.
+   * The series descriptions to offer for a new series, being the one provided
+   * for this data followed by the ones last used for this type of item.  The
+   * most recently used one is what gets offered in the field, as it is the most
+   * likely one to want again.
    */
   const descriptionOptions = useMemo(() => {
     const history = getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount);
@@ -149,24 +201,44 @@ function ReportDialog({
     );
   }, [defaultSeriesDescription, itemType, modality, rememberedDescriptionCount]);
 
-  const [extendExisting, setExtendExisting] = useState(!!predecessorSeries);
+  const [destination, setDestination] = useState<Destination>(currentSeries ? 'current' : 'new');
   const [newSeriesNumber, setNewSeriesNumber] = useState(String(defaultNewSeriesNumber));
   const [newSeriesDescription, setNewSeriesDescription] = useState(
     // The provided description is the first option, so anything after it is a
     // remembered one, and the first of those was the last one used.
     () => descriptionOptions[1] ?? defaultSeriesDescription
   );
-  // Radix opens a tooltip when its trigger takes focus, and the dialog focuses
-  // the first control in its content on open, which left this tooltip showing
-  // before the user had done anything.  Drive it from the pointer instead.
-  const [switchTooltipOpen, setSwitchTooltipOpen] = useState(false);
+  const [replacedSeriesValue, setReplacedSeriesValue] = useState<string | null>(null);
   const [descriptionsOpen, setDescriptionsOpen] = useState(false);
   // Typing narrows the list to what it can complete; opening the list from its
   // button shows everything on offer.
   const [descriptionsFiltered, setDescriptionsFiltered] = useState(false);
   const [highlightedDescription, setHighlightedDescription] = useState(-1);
 
-  const isExtending = extendExisting && !!predecessorSeries;
+  const replacedSeries =
+    replaceableSeries.find(series => series.value === replacedSeriesValue) ?? null;
+
+  /** The series being written into - null when a series is being created. */
+  const targetSeries: ExistingSeries | null =
+    destination === 'current' ? currentSeries : destination === 'replace' ? replacedSeries : null;
+
+  /** Nothing can be produced until the series to replace has been chosen. */
+  const isIncomplete = destination === 'replace' && !replacedSeries;
+
+  const isAvailable = useCallback(
+    (value: Destination) =>
+      (value === 'current' && !!currentSeries) ||
+      value === 'new' ||
+      (value === 'replace' && replaceableSeries.length > 0),
+    [currentSeries, replaceableSeries]
+  );
+
+  // An emptied or otherwise unusable series number falls back to the offered one
+  // rather than storing something invalid.
+  const parsedSeriesNumber = Number.parseInt(newSeriesNumber, 10);
+  const seriesNumber = Number.isFinite(parsedSeriesNumber)
+    ? parsedSeriesNumber
+    : defaultNewSeriesNumber;
 
   /** The options completing what has been typed so far, in offered order. */
   const descriptionCompletions = useMemo(() => {
@@ -189,24 +261,21 @@ function ReportDialog({
     setDescriptionsOpen(true);
   }, []);
 
-  // An emptied or otherwise unusable series number falls back to the offered one
-  // rather than storing something invalid.
-  const parsedSeriesNumber = Number.parseInt(newSeriesNumber, 10);
-  const seriesNumber = Number.isFinite(parsedSeriesNumber)
-    ? parsedSeriesNumber
-    : defaultNewSeriesNumber;
-
   const submit = useCallback(
     (dataSource: string | null) => {
+      if (isIncomplete) {
+        return;
+      }
+
       actionTakenRef.current = true;
-      const storedSeriesNumber = isExtending ? predecessorSeries.seriesNumber : seriesNumber;
+      const storedSeriesNumber = targetSeries ? targetSeries.seriesNumber : seriesNumber;
       // An existing series keeps its own description, so there is nothing for
       // the user to have changed there.
-      const storedDescription = isExtending
-        ? (predecessorSeries.description ?? '')
+      const storedDescription = targetSeries
+        ? (targetSeries.description ?? '')
         : newSeriesDescription.trim() || defaultSeriesDescription;
 
-      if (!isExtending) {
+      if (!targetSeries) {
         rememberSeriesDescription(
           itemType || modality,
           storedDescription,
@@ -217,7 +286,7 @@ function ReportDialog({
       onSave({
         reportName: storedDescription,
         dataSource,
-        series: isExtending ? predecessorSeries.value : null,
+        series: targetSeries ? targetSeries.value : null,
         seriesNumber: storedSeriesNumber,
         // Kept for callers that compute the new series number as
         // `1 + priorSeriesNumber`, including when it has been edited here.
@@ -226,8 +295,8 @@ function ReportDialog({
       hide();
     },
     [
-      isExtending,
-      predecessorSeries,
+      isIncomplete,
+      targetSeries,
       seriesNumber,
       newSeriesDescription,
       defaultSeriesDescription,
@@ -241,6 +310,12 @@ function ReportDialog({
 
   const handleSave = useCallback(() => submit(selectedDataSource), [submit, selectedDataSource]);
   const handleDownload = useCallback(() => submit('download'), [submit]);
+
+  const handleCancel = useCallback(() => {
+    actionTakenRef.current = true;
+    onCancel();
+    hide();
+  }, [onCancel, hide]);
 
   const handleDescriptionKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -308,207 +383,225 @@ function ReportDialog({
     };
   }, [onCancel]);
 
+  // The dialog focuses the first control in its content when it opens, which is
+  // the destination tabs.  Put the caret in the description instead, so that a
+  // new series can be named by typing straight away.
+  useEffect(() => {
+    if (destination !== 'new') {
+      return;
+    }
+    const focusDescription = window.setTimeout(() => descriptionInputRef.current?.focus(), 0);
+    return () => window.clearTimeout(focusDescription);
+  }, [destination]);
+
+  const selected = DESTINATIONS.find(option => option.value === destination);
   const showDataSourceSelect = dataSources?.length > 1;
 
   return (
-    <div className="text-foreground flex min-w-[420px] max-w-md flex-col gap-4">
-      {showDataSourceSelect && (
+    <div className="text-foreground flex min-w-[460px] max-w-lg flex-col gap-4">
+      <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3">
+        {showDataSourceSelect && (
+          <>
+            <Label className="whitespace-nowrap pt-1.5 text-base">Data source</Label>
+            <Select
+              value={selectedDataSource}
+              onValueChange={setSelectedDataSource}
+            >
+              <SelectTrigger data-cy="report-data-source-select">
+                <SelectValue placeholder="Select a data source" />
+              </SelectTrigger>
+              <SelectContent>
+                {dataSources.map(source => (
+                  <SelectItem
+                    key={source.value}
+                    value={source.value}
+                  >
+                    {source.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
+        )}
+
+        <Label className="whitespace-nowrap pt-1.5 text-base">Series</Label>
         <div>
-          <Label className="mb-1 block pl-1 text-base">Data source</Label>
-          <Select
-            value={selectedDataSource}
-            onValueChange={setSelectedDataSource}
+          <Tabs
+            value={destination}
+            onValueChange={value => setDestination(value as Destination)}
           >
-            <SelectTrigger data-cy="report-data-source-select">
-              <SelectValue placeholder="Select a data source" />
+            <TabsList>
+              {DESTINATIONS.map(option => (
+                <TabsTrigger
+                  key={option.value}
+                  value={option.value}
+                  data-cy={`report-destination-${option.value}`}
+                  disabled={!isAvailable(option.value)}
+                  title={isAvailable(option.value) ? undefined : option.unavailable}
+                >
+                  {option.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <p
+            className="text-muted-foreground mt-1.5 text-sm"
+            data-cy="report-destination-help"
+          >
+            {selected?.help}
+          </p>
+        </div>
+
+        <Label
+          htmlFor={destination === 'new' ? 'dialog-input' : undefined}
+          className="whitespace-nowrap pt-1.5 text-base"
+        >
+          Series Description
+        </Label>
+        {destination === 'new' ? (
+          <div className="relative flex items-center gap-1">
+            <Input
+              ref={descriptionInputRef}
+              id="dialog-input"
+              data-cy="dialog-input"
+              autoComplete="off"
+              placeholder="Series description"
+              value={newSeriesDescription}
+              onChange={event => handleDescriptionChange(event.target.value)}
+              onKeyDown={handleDescriptionKeyDown}
+              onBlur={() => setDescriptionsOpen(false)}
+            />
+            {descriptionOptions.length > 1 && (
+              <button
+                type="button"
+                data-cy="report-series-description-options"
+                aria-label="Series descriptions used before"
+                className="text-primary hover:bg-primary/25 shrink-0 rounded p-0.5"
+                // Keeps the focus in the input, so that opening the list does
+                // not blur it shut again, and so that the arrow keys keep
+                // working afterwards.
+                onMouseDown={event => event.preventDefault()}
+                onClick={() => {
+                  setHighlightedDescription(-1);
+                  setDescriptionsFiltered(false);
+                  setDescriptionsOpen(open => !open);
+                }}
+              >
+                <Icons.ChevronOpen className="h-5 w-5" />
+              </button>
+            )}
+            {descriptionsOpen && shownDescriptions.length > 0 && (
+              <ul
+                className="bg-popover text-popover-foreground border-input absolute left-0 right-0 top-full z-50 mt-1 max-h-40 overflow-auto rounded border p-1 shadow-md"
+                data-cy="report-series-description-list"
+              >
+                {shownDescriptions.map((description, index) => (
+                  <li key={description}>
+                    <button
+                      type="button"
+                      className={cn(
+                        'hover:bg-accent hover:text-accent-foreground w-full truncate rounded px-2 py-1 text-left text-base',
+                        index === highlightedDescription && 'bg-accent text-accent-foreground'
+                      )}
+                      // Keeps the focus in the input, so that the list is not
+                      // closed by the blur before the click lands.
+                      onMouseDown={event => event.preventDefault()}
+                      onClick={() => acceptDescription(description)}
+                    >
+                      {description}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : destination === 'replace' ? (
+          <Select
+            value={replacedSeriesValue ?? undefined}
+            onValueChange={setReplacedSeriesValue}
+          >
+            <SelectTrigger data-cy="report-replaced-series-select">
+              <SelectValue placeholder="Series description" />
             </SelectTrigger>
             <SelectContent>
-              {dataSources.map(source => (
+              {replaceableSeries.map(series => (
                 <SelectItem
-                  key={source.value}
-                  value={source.value}
+                  key={series.value}
+                  value={series.value}
                 >
-                  {source.label}
+                  {series.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
-      )}
+        ) : (
+          <span
+            className="break-words pt-1.5 text-base"
+            data-cy="report-series-description"
+          >
+            {currentSeries?.description ?? 'No description'}
+          </span>
+        )}
 
-      <div
-        className="border-input bg-muted/30 rounded-md border p-3"
-        data-cy="report-destination"
-      >
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {isExtending ? (
-              <Icons.Info className="h-5 w-5 shrink-0" />
-            ) : (
-              <Icons.Add className="h-5 w-5 shrink-0" />
-            )}
-            <span
-              className="text-base font-semibold"
-              data-cy="report-destination-title"
-            >
-              {isExtending ? 'Extend Existing' : 'New Series'}
-            </span>
-          </div>
-          {/* Only offered when there is a series to extend - data that has
-              never been stored can only be saved as a new series. */}
-          {predecessorSeries && (
-            <TooltipProvider>
-              <Tooltip open={switchTooltipOpen}>
-                <TooltipTrigger asChild>
-                  {/* Outlined rather than ghost, so that it reads as something
-                      to click rather than as another label on the panel. */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 pl-1.5"
-                    dataCY={isExtending ? 'report-use-new-series' : 'report-extend-existing'}
-                    onMouseEnter={() => setSwitchTooltipOpen(true)}
-                    onMouseLeave={() => setSwitchTooltipOpen(false)}
-                    onClick={() => setExtendExisting(!isExtending)}
-                  >
-                    <Icons.ArrowRight className="h-4 w-4 shrink-0" />
-                    {isExtending ? 'New Series' : 'Extend Existing'}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isExtending
-                    ? 'Save to a new series'
-                    : 'Extend an existing series with this update'}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-
-        <p className="text-muted-foreground mt-1 text-sm">
-          {isExtending
-            ? `Stores a new ${modality} object into the existing series below, and it becomes the one loaded by default.  The data already in the series is kept unchanged, but is no longer the default.`
-            : `Creates a new ${modality} series, so nothing already stored changes.`}
-        </p>
-
-        <div className="mt-3 flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor="report-series-number"
-              className="text-muted-foreground w-32 shrink-0 text-sm"
-            >
-              Series number
-            </Label>
-            {isExtending ? (
-              <span
-                className="text-base"
-                data-cy="report-series-number"
-              >
-                {predecessorSeries.seriesNumberLabel}
-              </span>
-            ) : (
-              <Input
-                id="report-series-number"
-                data-cy="report-series-number"
-                type="number"
-                className="w-28"
-                value={newSeriesNumber}
-                onChange={event => setNewSeriesNumber(event.target.value)}
-              />
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor="dialog-input"
-              className="text-muted-foreground w-32 shrink-0 text-sm"
-            >
-              Series description
-            </Label>
-            {isExtending ? (
-              <span
-                className="break-words text-base"
-                data-cy="report-series-description"
-              >
-                {predecessorSeries.description ?? 'No description'}
-              </span>
-            ) : (
-              <div className="relative flex flex-1 items-center gap-1">
-                <InputDialog
-                  value={newSeriesDescription}
-                  onChange={handleDescriptionChange}
-                  className="flex-1"
-                >
-                  <InputDialog.Field className="mb-0">
-                    <InputDialog.Input
-                      placeholder="Series description"
-                      autoComplete="off"
-                      onKeyDown={handleDescriptionKeyDown}
-                      onBlur={() => setDescriptionsOpen(false)}
-                    />
-                  </InputDialog.Field>
-                </InputDialog>
-                {descriptionOptions.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    dataCY="report-series-description-options"
-                    aria-label="Series descriptions used before"
-                    // Keeps the focus in the input, so that opening the list
-                    // does not blur it shut again, and so that the arrow keys
-                    // keep working afterwards.
-                    onMouseDown={event => event.preventDefault()}
-                    onClick={() => {
-                      setHighlightedDescription(-1);
-                      setDescriptionsFiltered(false);
-                      setDescriptionsOpen(open => !open);
-                    }}
-                  >
-                    <Icons.ChevronOpen className="h-5 w-5" />
-                  </Button>
-                )}
-                {descriptionsOpen && shownDescriptions.length > 0 && (
-                  <ul
-                    className="bg-popover text-popover-foreground border-input absolute left-0 right-0 top-full z-50 mt-1 max-h-40 overflow-auto rounded border p-1 shadow-md"
-                    data-cy="report-series-description-list"
-                  >
-                    {shownDescriptions.map((description, index) => (
-                      <li key={description}>
-                        <button
-                          type="button"
-                          className={cn(
-                            'hover:bg-accent hover:text-accent-foreground w-full truncate rounded px-2 py-1 text-left text-base',
-                            index === highlightedDescription && 'bg-accent text-accent-foreground'
-                          )}
-                          // Keeps the focus in the input, so that the list is
-                          // not closed by the blur before the click lands.
-                          onMouseDown={event => event.preventDefault()}
-                          onClick={() => acceptDescription(description)}
-                        >
-                          {description}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        <Label
+          htmlFor={destination === 'new' ? 'report-series-number' : undefined}
+          className="whitespace-nowrap pt-1.5 text-base"
+        >
+          Series Number
+        </Label>
+        {destination === 'new' ? (
+          <Input
+            id="report-series-number"
+            data-cy="report-series-number"
+            type="number"
+            className="w-28"
+            value={newSeriesNumber}
+            onChange={event => setNewSeriesNumber(event.target.value)}
+            onKeyDown={event => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                handleSave();
+              }
+            }}
+          />
+        ) : (
+          <span
+            className="pt-1.5 text-base"
+            data-cy="report-series-number"
+          >
+            {targetSeries ? targetSeries.seriesNumberLabel : ''}
+          </span>
+        )}
       </div>
 
-      <div className="flex justify-end gap-2">
-        <InputDialog>
-          <InputDialog.Actions>
-            {enableDownload && (
-              <InputDialog.ActionsSecondary onClick={handleDownload}>
-                {t('Download')}
-              </InputDialog.ActionsSecondary>
-            )}
-            <InputDialog.ActionsPrimary onClick={handleSave}>Save</InputDialog.ActionsPrimary>
-          </InputDialog.Actions>
-        </InputDialog>
-      </div>
+      <FooterAction>
+        {enableDownload && (
+          <FooterAction.Left>
+            <FooterAction.Secondary
+              onClick={handleDownload}
+              dataCY="report-download-button"
+              disabled={isIncomplete}
+            >
+              {t('Download')}
+            </FooterAction.Secondary>
+          </FooterAction.Left>
+        )}
+        <FooterAction.Right>
+          <FooterAction.Secondary
+            onClick={handleCancel}
+            dataCY="input-dialog-cancel-button"
+          >
+            {t('Cancel')}
+          </FooterAction.Secondary>
+          <FooterAction.Primary
+            onClick={handleSave}
+            dataCY="input-dialog-save-button"
+            disabled={isIncomplete}
+          >
+            {selected?.label}
+          </FooterAction.Primary>
+        </FooterAction.Right>
+      </FooterAction>
     </div>
   );
 }
