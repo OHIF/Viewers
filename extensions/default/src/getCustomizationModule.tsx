@@ -26,7 +26,7 @@ import onboardingCustomization from './customizations/onboardingCustomization';
 import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
 import getWorkListCustomization from './customizations/workListCustomization';
 import headerRightSideCustomization from './customizations/headerRightSideCustomization';
-import hideHeaderRightSideCustomization from './customizations/hideHeaderRightSideCustomization';
+import hideHeaderUndoRedoCustomization from './customizations/hideHeaderUndoRedoCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -55,10 +55,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: multimonitorCustomization,
     },
     {
-      // Opt-in: empties the right side of the header's menu bar, which by
-      // default holds the undo/redo buttons.
-      name: 'hideHeaderRightSide',
-      value: hideHeaderRightSideCustomization,
+      // Opt-in: drops the undo/redo buttons from the right side of the
+      // header's menu bar, leaving the rest of that list in place.
+      name: 'hideHeaderUndoRedo',
+      value: hideHeaderUndoRedoCustomization,
     },
     {
       name: 'default',

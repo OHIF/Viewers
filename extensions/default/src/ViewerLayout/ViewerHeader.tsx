@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Header, useModal } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
-import HeaderPatientInfo from './HeaderPatientInfo';
-import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
 import { preserveQueryParameters } from '@ohif/app';
 import { Types } from '@ohif/core';
 
@@ -51,10 +49,11 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
     'ohif.userPreferencesModal'
   ) as Types.MenuComponentCustomization;
 
-  // Whatever fills the right side of the menu bar (undo/redo by default).
-  // Assumed to be a component, so a replacement can bring its own hooks;
-  // `null` leaves the area empty.
-  const RightSide = customizationService.getCustomization('ohif.headerRightSide');
+  // Whatever fills the right side of the menu bar, in order: undo/redo then
+  // patient info by default. Each item is rendered as a component, so it can
+  // bring its own hooks, and reordering the list reorders the header.
+  const rightSideItems =
+    customizationService.getCustomization('ohif.headerRightSide')?.items ?? [];
 
   const menuOptions = [
     {
@@ -110,15 +109,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
       Secondary={<Toolbar buttonSection="secondary" />}
-      PatientInfo={
-        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
-          <HeaderPatientInfo
-            servicesManager={servicesManager}
-            appConfig={appConfig}
-          />
-        )
-      }
-      RightSide={RightSide ? <RightSide /> : null}
+      RightSide={rightSideItems.map((Item, index) => (
+        // The list is static per configuration, so the index is a stable key.
+        <Item key={index} />
+      ))}
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar buttonSection="primary" />

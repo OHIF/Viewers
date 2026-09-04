@@ -5,13 +5,16 @@ declare global {
   namespace AppTypes {
     interface Customizations {
       /**
-       * The right side of the viewer header's menu bar, ahead of the patient
-       * info and settings menu. `ViewerHeader` renders it as a component, so a
-       * replacement may use hooks. Set it to `null` to render nothing there —
-       * the `@ohif/extension-default.customizationModule.hideHeaderRightSide`
-       * module does exactly that. The shipped default is the undo/redo buttons.
+       * The right side of the viewer header's menu bar, ahead of the settings
+       * menu. `items` is an ordered list of components — undo/redo and patient
+       * info by default — each rendered by `ViewerHeader` in its own separated
+       * slot, so reordering the array reorders the header and dropping an entry
+       * removes it (the
+       * `@ohif/extension-default.customizationModule.hideHeaderUndoRedo` module
+       * does exactly that). Items take no props and may use hooks; one that
+       * renders `null` collapses its slot.
        */
-      'ohif.headerRightSide': ComponentType | null;
+      'ohif.headerRightSide': { items: ComponentType[] };
     }
   }
 }

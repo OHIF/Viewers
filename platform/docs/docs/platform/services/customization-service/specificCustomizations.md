@@ -38,34 +38,39 @@ With this example, navigation preserves the default keys plus `customizationAlt`
 ## `ohif.headerRightSide`
 
 - **Purpose**: Fills the right side of the viewer header's menu bar, ahead of the
-  patient info and settings menu. The key is named for the area, not its
-  contents — the shipped default is the undo/redo buttons, but a replacement owns
-  the area outright.
-- **Value**: a React component, or `null`.
-- **How it is applied**: `ViewerHeader` reads the customization and renders it as a
-  component (`<RightSide />`), so a replacement is a normal component and may use
-  hooks (the default uses `useSystem()` to reach the commands manager). A `null`
-  value renders nothing at all, and its separator is dropped with it.
-- **Default**: `extensions/default/src/customizations/headerRightSideCustomization.tsx`.
+  settings menu. The key is named for the area, not its contents — the shipped
+  default is the undo/redo buttons followed by the patient info, but the list is
+  yours to reorder, extend or trim.
+- **Value**: `{ items: ComponentType[] }` — an ordered list of components.
+- **How it is applied**: `ViewerHeader` renders each entry as a component
+  (`<Item />`) in array order, each in its own slot with a separator after it. An
+  item takes no props and may use hooks (both defaults use `useSystem()`), and an
+  item that renders `null` collapses its slot and separator — that is how patient
+  info disappears under `showPatientInfo: 'disabled'`.
+- **Default**: `extensions/default/src/customizations/headerRightSideCustomization.ts`.
 
-Because `null` is an explicit value rather than an absent one, it overrides the
-default instead of falling back to it. `extension-default` ships that override as
-a named customization module, so hiding the undo/redo buttons is a one-line
-config change:
+Reordering the list reorders the header — putting patient info ahead of undo/redo
+is just a different array:
 
 ```js
+import HeaderPatientInfo from '@ohif/extension-default/src/ViewerLayout/HeaderPatientInfo';
+import HeaderUndoRedo from '@ohif/extension-default/src/ViewerLayout/HeaderUndoRedo';
+
 window.config = {
-  customizationService: ['@ohif/extension-default.customizationModule.hideHeaderRightSide'],
+  customizationService: [
+    { 'ohif.headerRightSide': { items: { $set: [HeaderPatientInfo, HeaderUndoRedo] } } },
+  ],
 };
 ```
 
-To put something else there instead, set the key to your own component:
+Adding your own component is a `$push`, and removing one is a `$filter`.
+`extension-default` ships the undo/redo removal as a named customization module,
+so hiding those buttons — and only those, leaving the rest of the list alone — is
+a one-line config change:
 
 ```js
-import MyHeaderActions from './MyHeaderActions';
-
 window.config = {
-  customizationService: [{ 'ohif.headerRightSide': { $set: MyHeaderActions } }],
+  customizationService: ['@ohif/extension-default.customizationModule.hideHeaderUndoRedo'],
 };
 ```
 

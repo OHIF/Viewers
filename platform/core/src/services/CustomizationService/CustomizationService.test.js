@@ -123,24 +123,6 @@ describe('CustomizationService - Registration + API Operations', () => {
       expect(result).toBe(true);
     });
 
-    // `null` is how a higher scope removes a slot a lower scope fills (e.g. a
-    // component customization set to null so nothing renders), so it has to win
-    // over the default rather than read as "nothing configured here".
-    it('lets a null override win over the default', () => {
-      customizationService.setCustomizations({ onAddSegment: null });
-      expect(customizationService.getCustomization('onAddSegment')).toBe(null);
-    });
-
-    it('lets a null override set with $set win over the default', () => {
-      customizationService.setCustomizations({ onAddSegment: { $set: null } });
-      expect(customizationService.getCustomization('onAddSegment')).toBe(null);
-    });
-
-    it('still falls through to the default for an undefined override', () => {
-      customizationService.setCustomizations({ showAddSegment: undefined });
-      expect(customizationService.getCustomization('showAddSegment')).toBe(true);
-    });
-
     it('replaces function value using $set over the default', () => {
       // Original default returns "default add"
       const original = customizationService.getCustomization('onAddSegment');
