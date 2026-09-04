@@ -22,8 +22,7 @@ tests/
 
 ## Getting started
 
-`playwright install` is first-time-only. Re-run it if Playwright reports a
-browser-version mismatch after a dependency bump.
+You might need to run `pnpm exec playwright install` for the first time if you have not.
 
 ```bash
 # one-time setup
