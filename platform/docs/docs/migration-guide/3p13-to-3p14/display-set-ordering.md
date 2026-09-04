@@ -62,7 +62,8 @@ The instance number remains the primary key, and image series give every instanc
 a unique one, so their ordering is unchanged. The fallback only runs when the
 instance numbers tie or neither instance has one - which is where the SOP
 instance UID, an arbitrary identifier, was deciding which instance of a series is
-the most recent.
+the most recent. Two frames of the same instance are excluded from it: they share
+the one date/time their instance has, so only the frame number orders them.
 
 ## New instances are stamped on save
 
@@ -73,6 +74,12 @@ an instance number one higher than every instance already in the series.
 The date/time are read as wall clock values in the dataset's own timezone -
 `TimezoneOffsetFromUTC` when it declares one, the local zone otherwise - since
 that is how a viewer displays them.
+
+The series level date/time cannot be stamped afterwards, since an object added to
+an existing series has to keep that series' own. So the store commands generate
+the object with the series date/time it should have: `SeriesDate`/`Time` for a
+new series, and `StructureSetDate`/`Time` for every structure set, in the local
+zone rather than the UTC values dcmjs and the adapters default to.
 
 **What changes for you:** stored objects carry these attributes where they may
 not have before. If you post-process saved instances and relied on the instance

@@ -69,6 +69,14 @@ describe('resolveThumbnailDetails', () => {
     expect(resolve(items, ds)[0].value).toBe('1.2.3.4');
   });
 
+  // With no items at all - no customization was resolved - the thumbnail has to
+  // be left showing the default detail line it stands alone with, which an
+  // empty array would replace with an empty line.
+  it('resolves to nothing when there are no items to resolve', () => {
+    expect(resolve(undefined, displaySet())).toBeUndefined();
+    expect(resolve([], displaySet())).toEqual([]);
+  });
+
   it('leaves out an item with no value', () => {
     const items = [{ id: 'SeriesDate', source: 'seriesDate' }];
 

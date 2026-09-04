@@ -132,6 +132,33 @@ describe('sortByInstanceNumber', () => {
     expect(sortByInstanceNumber(first, second)).toBe(-1);
   });
 
+  // Every frame of a multi frame instance carries that instance's number and
+  // its one creation date/time, so only the frame number can order them.  They
+  // are also the pairs a large series is sorted by, so they are recognised by
+  // their shared sop instance uid and never read a date/time at all.
+  test('orders the frames of one instance by frame number', () => {
+    const frames = [3, 1, 2].map(frameNumber => ({
+      ...instance,
+      frameNumber,
+      ContentDate: '20260819',
+      ContentTime: '080000',
+    }));
+
+    expect(frames.sort(sortByInstanceNumber).map(frame => frame.frameNumber)).toEqual([1, 2, 3]);
+  });
+
+  // The study browser sorts thumbnail view models, which carry no instance
+  // number or sop instance uid to be ordered by and a date formatted for
+  // display rather than a comparable one, so they keep the order they came in.
+  test('leaves sources with no sop instance uid in the order given', () => {
+    const thumbnails = [
+      { name: 'b', seriesDate: '05-Feb-2026' },
+      { name: 'a', seriesDate: '19-Jan-2026' },
+    ];
+
+    expect(names(thumbnails.sort(sortByInstanceNumber))).toEqual(['b', 'a']);
+  });
+
   // An image series has a unique instance number on every instance, so the
   // creation date/time tie break never runs for one and the order is the
   // instance number order it has always been - here the acquisition times run

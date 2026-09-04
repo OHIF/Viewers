@@ -145,6 +145,15 @@ export const sortByInstanceNumber = (a, b) => {
   if (aInstance !== bInstance) {
     return aInstance - bInstance;
   }
+  // Two frames of one instance share every date/time that instance has, so only
+  // the frame number orders them.  Excluding them first is also what keeps a
+  // large multi frame series cheap to sort: its frames all carry the same
+  // instance number, so every pair reaches this point.  Sources with no SOP
+  // instance UID at all - display set view models, whose dates are formatted
+  // for display rather than comparable - are likewise left as they came in.
+  if (a.SOPInstanceUID === b.SOPInstanceUID) {
+    return compare(a.frameNumber, b.frameNumber);
+  }
   // The instance numbers do not order these two - they are the same, or neither
   // instance has one - so fall back to when each of them was created.  The last
   // instance of a series is taken to be the most recently created one, so an
@@ -152,8 +161,7 @@ export const sortByInstanceNumber = (a, b) => {
   // something that does.
   return (
     compare(getSeriesDateTimeSortKey(a), getSeriesDateTimeSortKey(b)) ||
-    compare(a.SOPInstanceUID, b.SOPInstanceUID) ||
-    compare(a.frameNumber, b.frameNumber)
+    compare(a.SOPInstanceUID, b.SOPInstanceUID)
   );
 };
 
@@ -185,12 +193,8 @@ export type SortDisplaySetsCopyOptions = {
  * With `studyInstanceUIDFirst`, only that study's display sets are sorted; they
  * are placed before the rest, which keeps source order (e.g. load order).
  */
-export function sortDisplaySetsCopy(
-  displaySets,
-  options?: SortDisplaySetsCopyOptions | null
-) {
-  const seriesSortingCriteria =
-    options?.seriesSortingCriteria ?? seriesSortCriteria.default;
+export function sortDisplaySetsCopy(displaySets, options?: SortDisplaySetsCopyOptions | null) {
+  const seriesSortingCriteria = options?.seriesSortingCriteria ?? seriesSortCriteria.default;
   const studyFirst = options?.studyInstanceUIDFirst;
 
   if (!studyFirst) {

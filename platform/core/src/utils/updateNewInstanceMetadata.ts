@@ -60,6 +60,13 @@ export function getCurrentDicomDateTime(
  * one, the local zone otherwise - because that is the wall clock reading a
  * viewer displays them as.
  *
+ * The series level date/time of a series being *created* cannot be stamped here
+ * for the same reason - this function cannot tell the two cases apart - so the
+ * store commands pass it to the object generation instead, from
+ * {@link getCurrentDicomDateTime} and in the same zone.  Without that the
+ * generated `SeriesDate`/`SeriesTime` are dcmjs's UTC ones, which around
+ * midnight name the wrong day and then win the latest date this reads.
+ *
  * The instance number has to be higher than every instance already in the
  * series.  Deriving it from a single predecessor instance is not enough: the
  * most recently created instance of a series is not necessarily the one with

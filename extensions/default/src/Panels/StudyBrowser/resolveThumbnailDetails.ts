@@ -41,6 +41,10 @@ const resolveNamed = (value, registry, kind: string, id: string) => {
  * `source`, or from an `attribute` of the instance the display set shows - the
  * same three ways the viewport overlay items get theirs. An item whose
  * `condition` says no, or which has no value to show, is left out.
+ *
+ * Returns `undefined` when there are no items to resolve at all, which leaves
+ * the thumbnail showing the default detail line it stands alone with. An empty
+ * `items` is a customization asking for an empty line, and is honoured as one.
  */
 export function resolveThumbnailDetails({
   items,
@@ -48,11 +52,15 @@ export function resolveThumbnailDetails({
   sources,
   tests,
   formatters,
-}: ResolveOptions): ThumbnailDetail[] {
+}: ResolveOptions): ThumbnailDetail[] | undefined {
+  if (!Array.isArray(items)) {
+    return undefined;
+  }
+
   const props = { displaySet, instance: displaySet?.instance, formatters };
   const details: ThumbnailDetail[] = [];
 
-  for (const item of items ?? []) {
+  for (const item of items) {
     if (!item) {
       continue;
     }

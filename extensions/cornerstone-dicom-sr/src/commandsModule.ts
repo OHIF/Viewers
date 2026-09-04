@@ -97,11 +97,18 @@ const commandsModule = (props: withAppTypes) => {
       }
 
       try {
-        const naturalizedReport = _generateReport(
-          measurementData,
-          additionalFindingTypes,
-          options
-        );
+        // dcmjs stamps the series date/time of the series it derives in UTC,
+        // which is the wrong wall clock reading anywhere else and, around
+        // midnight, the wrong day - DICOM DA and TM are displayed as they are
+        // stored.  So the series being created here is given the current
+        // date/time in its own zone instead.  A report added to an existing
+        // series takes that series' date and time, which the adapter copies
+        // from the predecessor instance.
+        const { date, time } = utils.getCurrentDicomDateTime();
+        const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, {
+          ...(options.predecessorImageId ? {} : { SeriesDate: date, SeriesTime: time }),
+          ...options,
+        });
 
         // A report saved into an existing series inherits that series' date and
         // time, and its instance number is derived from the one predecessor

@@ -55,8 +55,18 @@ const getAttribute = (source, attribute: string) => {
   return Array.isArray(value) ? value[0] : value;
 };
 
-/** A DICOM DA value as 8 comparable digits, or `''` when there is no date. */
-const dateSortKey = (value): string => `${value ?? ''}`.replace(/[^0-9]/g, '').slice(0, 8);
+/**
+ * A DICOM DA value as 8 comparable digits, or `''` when there is no date.
+ *
+ * A value that is not a DICOM DA is rejected rather than compared.  Some series
+ * level metadata carries a date already formatted for display, and `19-Jan-2026`
+ * would otherwise read as `192026`, which orders by day of month and makes two
+ * different months compare as equal.
+ */
+const dateSortKey = (value): string => {
+  const digits = `${value ?? ''}`.replace(/[^0-9]/g, '');
+  return digits.length < 8 ? '' : digits.slice(0, 8);
+};
 
 /**
  * A DICOM TM value as a comparable fixed width string, or `''` when there is no

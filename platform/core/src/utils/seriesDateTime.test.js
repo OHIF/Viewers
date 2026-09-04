@@ -115,6 +115,24 @@ describe('getSeriesDateTime', () => {
     });
   });
 
+  // Some series level metadata carries a date already formatted for display.
+  // `19-Jan-2026` would read as `192026`, ordering by day of month and making
+  // two different months compare as equal, so it counts as no date at all.
+  test('ignores a date that is not a DICOM DA value', () => {
+    expect(getSeriesDateTime({ SeriesDate: '19-Jan-2026' })).toEqual({
+      SeriesDate: '',
+      SeriesTime: '',
+    });
+    expect(getSeriesDateTimeSortKey({ seriesDate: '05-Feb-2026' })).toBe('');
+  });
+
+  test('reads the dotted date of the retired DICOM form', () => {
+    expect(getSeriesDateTime({ SeriesDate: '2026.08.17' })).toEqual({
+      SeriesDate: '2026.08.17',
+      SeriesTime: '',
+    });
+  });
+
   test('ignores the study date, which every series in the study shares', () => {
     expect(getSeriesDateTime({ StudyDate: '20260819', StudyTime: '080000' })).toEqual({
       SeriesDate: '',

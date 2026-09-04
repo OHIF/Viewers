@@ -108,6 +108,9 @@ object, so `getSeriesDateTime` chooses one pair from all of them:
   ordering is only accurate to the day, which is as good as the data allows.
 - `StudyDate`/`StudyTime` are not included.  Every series in the study shares
   them, so they cannot tell one series from another.
+- A value that is not a DICOM DA counts as no date at all.  Some series level
+  metadata carries a date already formatted for display, and `19-Jan-2026` would
+  otherwise read as `192026` and order by day of month.
 
 For any of this to work on newly stored objects, `updateNewInstanceMetadata`
 stamps every report, segmentation and structure set OHIF saves with the current
@@ -115,6 +118,14 @@ date/time, and with an instance number one higher than every instance already in
 the series - the most recently created instance of a series is not necessarily
 the one with the highest instance number, so deriving the instance number from a
 single predecessor instance can collide with an instance that already exists.
+
+That stamp covers the instance level attributes, which are the ones that move
+when an object is added to an existing series.  The date/time of the series
+being *created* is generated with the object instead, from
+`getCurrentDicomDateTime`, because dcmjs and the adapters stamp `SeriesDate`/
+`Time` and `StructureSetDate`/`Time` in UTC - the wrong wall clock reading
+anywhere else, and around midnight the wrong day.  The store commands pass those
+in, so an object OHIF saves reads as one wall clock instant throughout.
 
 A comparator registered with `addSameSeriesCompare` orders two display sets of
 the same series, and decides before the instance compare that
