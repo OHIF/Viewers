@@ -82,6 +82,9 @@ export default function CreateReportDialogPrompt({
     uiDialogService.show({
       id: 'report-dialog',
       title,
+      // The default dialog width (max-w-md) is narrower than the destination
+      // control, which would otherwise stick out past the dialog's edge.
+      containerClassName: 'max-w-lg',
       content: ReportDialog,
       contentProps: {
         dataSources: allowMultipleDataSources ? dataSources : undefined,

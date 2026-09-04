@@ -404,8 +404,8 @@ function ReportDialog({
   const showDataSourceSelect = dataSources?.length > 1;
 
   return (
-    <div className="text-foreground flex min-w-[460px] max-w-lg flex-col gap-4">
-      <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3">
+    <div className="text-foreground flex flex-col gap-4">
+      <div className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-3 gap-y-4">
         {showDataSourceSelect && (
           <>
             <Label className="whitespace-nowrap pt-1.5 text-base">Data source</Label>

@@ -1,6 +1,6 @@
 import dcmjs from 'dcmjs';
 import { classes, Types, utils } from '@ohif/core';
-import { cache, metaData } from '@cornerstonejs/core';
+import { cache, Enums as csEnums, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
@@ -378,6 +378,21 @@ const commandsModule = ({
         }
 
         const { dataset: naturalizedReport } = generatedData;
+
+        // The SEG adapter's `generateSegmentation` assigns the predecessor's
+        // series data to the derivation it returns rather than to the dataset
+        // inside it, so the stored instance would keep the series dcmjs made up
+        // for it - a new series named `Research Derived series` numbered 99,
+        // with no predecessor sequence - however this dialog was answered.
+        // Applying it to the dataset puts the instance in the series that was
+        // chosen, with that series' number and description.  It is the same data
+        // the adapter resolves, so this stays correct once the adapter does.
+        if (series) {
+          Object.assign(
+            naturalizedReport,
+            metaData.get(csEnums.MetadataModules.PREDECESSOR_SEQUENCE, series)
+          );
+        }
 
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
         if (naturalizedReport.StudyID === 'No Study ID') {
