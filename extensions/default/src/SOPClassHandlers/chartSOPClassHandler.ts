@@ -20,9 +20,12 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
     SOPClassUID,
   } = instance;
+
+  // The date/time of a display set is the date/time of the instance it shows,
+  // chosen from all the attributes that instance carries.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
 
   return {
     Modality: CHART_MODALITY,
@@ -32,6 +35,7 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -51,6 +55,12 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     addInstances: function (instances: InstanceMetadata[], _displaySetService: DisplaySetService) {
       this.instances.push(...instances);
       this.instance = this.instances[this.instances.length - 1];
+      // The date/time shown and sorted by is that of the instance the display
+      // set shows, so it moves with that instance rather than staying on the
+      // one the chart was first created with.
+      const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(this.instance);
+      this.SeriesDate = SeriesDate;
+      this.SeriesTime = SeriesTime;
 
       return this;
     },

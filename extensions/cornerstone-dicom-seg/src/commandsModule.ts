@@ -251,8 +251,28 @@ const commandsModule = ({
         labelmaps3D = buildLabelmap3D(imageIds, metadata);
       }
 
+      // `...generateOptions` has the last word on the predecessor: the store
+      // dialog sets it to `undefined` to say "a new series", which overrides the
+      // one the segmentation itself was loaded from.
+      const storeIntoSeriesImageId =
+        'predecessorImageId' in generateOptions
+          ? generateOptions.predecessorImageId
+          : predecessorImageId;
+
+      // dcmjs stamps every date/time of the object it derives in UTC, which is
+      // the wrong wall clock reading anywhere else and, around midnight, the
+      // wrong day - DICOM DA and TM are displayed as they are stored.  So they
+      // are supplied in the local zone instead.  The content date/time say when
+      // this instance was created whichever series it goes into, whereas a
+      // segmentation added to an existing series takes that series' date and
+      // time, which the adapter copies from the predecessor instance.
+      const { date: creationDate, time: creationTime } = utils.getCurrentDicomDateTime();
+
       const saveOptions = {
         predecessorImageId,
+        ContentDate: creationDate,
+        ContentTime: creationTime,
+        ...(storeIntoSeriesImageId ? {} : { SeriesDate: creationDate, SeriesTime: creationTime }),
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,
       };
@@ -394,6 +414,14 @@ const commandsModule = ({
           );
         }
 
+        // A segmentation saved into an existing series inherits that series'
+        // date and time, and its instance number is derived from the one
+        // predecessor instance, which is not necessarily the highest in the
+        // series.  Stamp both so this segmentation is identifiable as the most
+        // recent instance.  After the predecessor series data above, which is
+        // what names the series whose instances are numbered here.
+        utils.updateNewInstanceMetadata(naturalizedReport);
+
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
         if (naturalizedReport.StudyID === 'No Study ID') {
           naturalizedReport.StudyID = '';
@@ -426,8 +454,20 @@ const commandsModule = ({
       });
       const predecessorImageId =
         contourOptions.predecessorImageId ?? segmentations.predecessorImageId;
+
+      // The adapter stamps the structure set date/time in UTC, which is the
+      // wrong wall clock reading anywhere else and, around midnight, the wrong
+      // day - DICOM DA and TM are displayed as they are stored.  This is the
+      // creation date/time of the structure set itself, so it is stamped
+      // whichever series it is stored into.  There is no series date/time to
+      // supply alongside it: an RTSTRUCT gets one only from the series it is
+      // added to, which the adapter copies from the predecessor instance.
+      const { date: structureSetDate, time: structureSetTime } = utils.getCurrentDicomDateTime();
+
       const dataset = await generateRTSSFromRepresentation(segmentations, {
         predecessorImageId,
+        StructureSetDate: structureSetDate,
+        StructureSetTime: structureSetTime,
         ...contourOptions,
       });
       return { dataset };

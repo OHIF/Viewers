@@ -40,6 +40,13 @@ import {
   seriesSortCriteria,
   instancesSortCriteria,
 } from './sortStudy';
+import {
+  dateTimeAttributes,
+  getSeriesDateTime,
+  getSeriesDateTimeSortKey,
+  getDateTimeSortKey,
+} from './seriesDateTime';
+import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
@@ -76,6 +83,12 @@ const utils = {
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
+  dateTimeAttributes,
+  getSeriesDateTime,
+  getSeriesDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
   writeScript,
   formatDate,
   formatTime,
@@ -130,6 +143,12 @@ export {
   sortBy,
   formatDate,
   formatValue,
+  dateTimeAttributes,
+  getSeriesDateTime,
+  getSeriesDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
   writeScript,
   b64toBlob,
   urlUtil,
