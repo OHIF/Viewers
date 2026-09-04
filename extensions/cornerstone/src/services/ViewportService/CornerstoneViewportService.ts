@@ -44,6 +44,7 @@ import {
 } from '../../utils/getLegacyViewportType';
 import { BlendModes } from '@cornerstonejs/core/enums';
 import { isNextViewportsEnabled } from '../../utils/nextViewports';
+import { isAutoHydrateViewportType } from '../../utils/autoHydrateViewportTypes';
 import type { IViewportBackend } from './backends/IViewportBackend';
 import type { IViewportServiceInternals } from './backends/IViewportServiceInternals';
 import { LegacyViewportBackend } from './backends/LegacyViewportBackend';
@@ -360,7 +361,7 @@ class CornerstoneViewportService
     const { setLutPresentation } = useLutPresentationStore.getState();
     const { setPositionPresentation } = usePositionPresentationStore.getState();
     const { setSynchronizers } = useSynchronizersStore.getState();
-    const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+    const { syncSegmentationPresentation } = useSegmentationPresentationStore.getState();
 
     if (lutPresentationId) {
       setLutPresentation(lutPresentationId, lutPresentation);
@@ -371,7 +372,13 @@ class CornerstoneViewportService
     }
 
     if (segmentationPresentationId) {
-      setSegmentationPresentation(segmentationPresentationId, segmentationPresentation);
+      syncSegmentationPresentation(
+        segmentationPresentationId,
+        (segmentationPresentation ?? []).map(item => ({
+          ...item,
+          hydrated: this._getInitialHydrationForSync(item.segmentationId),
+        }))
+      );
     }
 
     if (synchronizers?.length) {
@@ -472,6 +479,28 @@ class CornerstoneViewportService
 
     const presentation = segmentationService.getPresentation(viewportId);
     return presentation;
+  }
+
+  /**
+   * The `hydrated` to record for a segmentation the presentation store has not
+   * heard of yet (`syncSegmentationPresentation` keeps the recorded value for
+   * one it has).
+   *
+   * Hydration is owned by the hydration paths exactly when they can record it,
+   * and `updateStoredSegmentationPresentation` keys the store by the referenced
+   * display set - so a segmentation whose display set has one gets `null` ("no
+   * statement"), leaving it to the hydration prompt, the segmentation panel and
+   * the study browser to say whether it belongs in the standard view. Anything
+   * else - a segmentation drawn in the client, or one whose display set has not
+   * been registered yet - has no other record, so the viewport it lives in is
+   * the authority and it is recorded as shown.
+   */
+  private _getInitialHydrationForSync(segmentationId: string): boolean | null {
+    const { displaySetService } = this.servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetByUID(segmentationId);
+
+    return displaySet?.referencedDisplaySetInstanceUID ? null : true;
   }
 
   /**
@@ -1676,7 +1705,32 @@ class CornerstoneViewportService
       return;
     }
 
-    const { segmentationService } = this.servicesManager.services;
+    const { segmentationService, customizationService, viewportGridService } =
+      this.servicesManager.services;
+
+    // A site can narrow which viewport types a hydrated segmentation appears in
+    // automatically (surface generation for a 3D viewport being the expensive
+    // case). This gates only the automatic add - an explicit add from the
+    // overlay menu goes through addSegmentationRepresentation directly.
+    //
+    // The type comes from the grid, not from ViewportInfo: the customization is
+    // written in OHIF viewport types and getUpdatedViewportsForSegmentation
+    // reads the same field, so one configured list means the same thing in both
+    // places. ViewportInfo holds the cornerstone type, which under
+    // `useNextViewports` is 'planarNext' for stack and MPR alike.
+    const autoHydrateAllowed = isAutoHydrateViewportType({
+      viewportType: viewportGridService.getState().viewports.get(viewport.id)?.viewportOptions
+        ?.viewportType,
+      customizationService,
+    });
+
+    // Display sets the viewport carries as explicit layers. Those are added by
+    // _addOverlayRepresentations as part of this same mount, and the two run in
+    // opposite orders on the stack and volume paths, so a stored `hydrated:
+    // false` must not remove one of them - being listed in the viewport is the
+    // more specific statement, and it is what the overlay menu's per-viewport
+    // Add records.
+    const explicitLayerUIDs = new Set(this.viewportsDisplaySets.get(viewport.id) || []);
 
     segmentationPresentation.forEach((presentationItem: SegmentationPresentationItem) => {
       const { segmentationId, type, hydrated } = presentationItem;
@@ -1684,12 +1738,21 @@ class CornerstoneViewportService
       const { Labelmap, Surface } = csToolsEnums.SegmentationRepresentations;
       const isVolume3D = isVolume3DViewportType(viewport);
 
-      // Determine the appropriate segmentation representation for the viewport.
-      // If the current type is Surface but the viewport is not 3D, fallback to Labelmap.
-      // Otherwise, use the existing type.
-      const representationType = type === Surface && !isVolume3D ? Labelmap : type;
+      // The stored type is a hint: it was recorded when the segmentation was
+      // hydrated, possibly against a viewport of a different kind than this
+      // one, or with no viewport at all. Surface only renders in a 3D viewport
+      // and a 3D viewport renders a labelmap as a surface, so correct in both
+      // directions here. Being tolerant of the stored value is what lets the
+      // hydration path record a type without needing a live viewport.
+      let representationType = type;
 
-      if (hydrated) {
+      if (type === Surface && !isVolume3D) {
+        representationType = Labelmap;
+      } else if (type === Labelmap && isVolume3D) {
+        representationType = Surface;
+      }
+
+      if (hydrated && autoHydrateAllowed) {
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
           type: representationType,
@@ -1699,6 +1762,19 @@ class CornerstoneViewportService
                 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
                 : undefined,
           },
+        });
+        return;
+      }
+
+      // hydrated === false means this segmentation was explicitly removed from
+      // the presentation (closed from the segmentation panel, or the layer
+      // removed). Converge the viewport on the stored state instead of only
+      // ever adding, so a re-created viewport does not restore a segmentation
+      // the user dismissed. hydrated == null is "no representation yet" and is
+      // deliberately left alone.
+      if (hydrated === false && !explicitLayerUIDs.has(segmentationId)) {
+        segmentationService.removeRepresentationsFromViewport(viewport.id, {
+          segmentationId,
         });
       }
     });
