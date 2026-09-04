@@ -55,6 +55,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
+import { loadDisplaySetData } from './utils/loadDisplaySetData';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { EasingFunctionEnum } from './utils/transitions';
 import { createSegmentationForViewport } from './utils/createSegmentationForViewport';
@@ -318,6 +319,25 @@ function commandsModule({
       if (element) {
         cancelActiveManipulations(element);
       }
+    },
+
+    /**
+     * Loads a display set's data without reference to a viewport.
+     *
+     * The viewport-independent counterpart to displaying it: this makes the data
+     * available (for a segmentation, present in the segmentation state), while
+     * where it is shown remains a separate decision. Loading is memoized per
+     * display set, so calling this early or more than once is free.
+     */
+    loadDisplaySetData: async ({ displaySet, displaySetInstanceUID }) => {
+      const displaySetToLoad =
+        displaySet ?? displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      if (!displaySetToLoad) {
+        return;
+      }
+
+      await loadDisplaySetData(displaySetToLoad, servicesManager);
     },
 
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
@@ -2792,6 +2812,7 @@ function commandsModule({
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
+    loadDisplaySetData: actions.loadDisplaySetData,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
     startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,

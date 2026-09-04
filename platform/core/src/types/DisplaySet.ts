@@ -77,6 +77,23 @@ export type DisplaySet = {
   predecessorImageId?: string;
 
   /**
+   * Fetches and decodes this display set's data, for display sets whose content
+   * is not available from the metadata alone - SEG, RTSTRUCT, PMAP, SR, PDF,
+   * video and microscopy annotations all provide one. It is attached by the SOP
+   * class handler that creates the display set, and is absent on display sets
+   * whose images are simply retrieved by image id.
+   *
+   * A load takes no viewport: what it makes available and where that gets
+   * displayed are separate concerns. Implementations memoize, returning the
+   * same in-flight promise to concurrent callers, so calling it repeatedly or
+   * earlier than the viewport that will show the result is safe.
+   *
+   * Individual handlers accept options beyond `headers`, so the option bag is
+   * deliberately open.
+   */
+  load?: (options?: { headers?: unknown; [key: string]: unknown }) => Promise<unknown>;
+
+  /**
    * isLoaded is used for display sets containing a load operation that
    * is required before the display set can be shown.  This is separate from
    * isHydrated, which means it is loaded into view.
