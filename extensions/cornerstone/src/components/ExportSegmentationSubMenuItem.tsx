@@ -33,7 +33,7 @@ export const ExportSegmentationSubMenuItem: React.FC<ExportSegmentationSubMenuIt
     <DropdownMenuSub>
       <DropdownMenuSubTrigger className="pl-1">
         <Icons.Export className="text-foreground" />
-        <span className="pl-2">{t('Export')}</span>
+        <span className="pl-2">{t('Save')}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent>
