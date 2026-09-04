@@ -2171,7 +2171,9 @@ window.config = {
       'may each be a function or a name, so the whole line can be declared as data - see ' +
       '`studyBrowser.thumbnailDetailSources` and `studyBrowser.thumbnailDetailTests` for the ' +
       'names, and `?customization=studyBrowser/derivedDateTime` for an example of adding the ' +
-      'creation date/time that derived series are sorted by.',
+      'creation date/time that derived series are sorted by. An item naming a source or test ' +
+      'that is not registered is left out with a warning; if that leaves no items at all, the ' +
+      'thumbnail keeps its default detail line rather than showing an empty one.',
     default: [
       {
         id: 'SeriesNumber',
@@ -2220,7 +2222,8 @@ window.config = {
       'instead of supplying a `contentF` function. Each is called with ' +
       '`{ displaySet, instance, formatters }`, where `instance` is the instance the display ' +
       'set shows. `instanceDateTime` is the creation date/time that the series list is sorted ' +
-      'by, formatted to the minute.',
+      'by, formatted to the minute. Add to it with `$merge`, as a `$set` replaces the whole ' +
+      'registry and so takes away the sources the default items name.',
     default: {
       seriesNumber: ({ displaySet }) => displaySet?.SeriesNumber,
       numInstances: ({ displaySet }) =>

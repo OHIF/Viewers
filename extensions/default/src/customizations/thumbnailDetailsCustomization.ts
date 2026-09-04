@@ -8,6 +8,9 @@ const { getSeriesDateTime } = utils;
  * lets the whole thing be declared as data in a `?customization=` JSONC file.
  *
  * An item may name one of these as `source`, or supply its own `contentF`.
+ *
+ * Add to this with `$merge`: a `$set` replaces the registry, which takes away
+ * the sources the default items name.
  */
 export const thumbnailDetailSources = {
   seriesNumber: ({ displaySet }) => displaySet?.SeriesNumber,
@@ -63,7 +66,9 @@ export default {
    * - the value comes from `contentF` (a function of the same properties),
    *   `source` (the name of a `studyBrowser.thumbnailDetailSources` entry) or
    *   `attribute` (an attribute of the instance the display set shows).  An item
-   *   with no value is left out.
+   *   with no value, or naming a source or test that is not registered, is left
+   *   out; if that leaves no items at all the thumbnail keeps its default detail
+   *   line rather than showing an empty one.
    * - `label` prefixes the value, `title` is its tooltip, and `iconName` puts an
    *   icon before it - a name, or a function returning one.
    *

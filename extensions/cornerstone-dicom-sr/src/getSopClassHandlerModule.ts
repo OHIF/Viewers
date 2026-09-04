@@ -68,6 +68,14 @@ function addInstances(instances: InstanceMetadata[], _displaySetService: Display
   // Eventually, the SR viewer should have the ability to choose which SR
   // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
+  // The date/time of the display set is that of the instance it shows, so it
+  // has to move with that instance.  The series level SeriesDate/SeriesTime
+  // still hold those of the first report saved into the series, so leaving
+  // them would show, and summarize by, a date older than the report shown and
+  // older than the position the series list has just sorted this one into.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(this.instance);
+  this.SeriesDate = SeriesDate;
+  this.SeriesTime = SeriesTime;
   this.isLoaded = false;
   return this;
 }

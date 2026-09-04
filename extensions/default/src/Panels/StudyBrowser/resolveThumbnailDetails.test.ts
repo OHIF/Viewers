@@ -83,6 +83,26 @@ describe('resolveThumbnailDetails', () => {
     expect(resolve(items, displaySet({ SeriesDate: undefined, instance: {} }))).toEqual([]);
   });
 
+  // A `studyBrowser.thumbnailDetailSources` override written with `$set` rather
+  // than `$merge` takes the sources the default items name away with it.  That
+  // must not blank the series number and instance count on every thumbnail, so
+  // a line left empty only by names that could not be resolved is not honoured
+  // as an empty line - the thumbnail keeps the default one it stands alone with.
+  it('resolves to nothing when nothing was left after an unresolved name', () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    expect(
+      resolveThumbnailDetails({
+        items: defaultItems,
+        displaySet: displaySet(),
+        sources: { somethingElse: () => 'x' },
+        tests: thumbnailDetailTests,
+        formatters: { formatDate, formatTime },
+      })
+    ).toBeUndefined();
+    expect(console.warn).toHaveBeenCalled();
+  });
+
   describe('condition', () => {
     const items = [
       { id: 'InstanceDateTime', source: 'instanceDateTime', condition: 'isDerivedDisplaySet' },
@@ -99,10 +119,13 @@ describe('resolveThumbnailDetails', () => {
     });
 
     it('leaves the item out when it names a test that is not registered', () => {
-      const unknown = [{ id: 'X', source: 'seriesNumber', condition: 'noSuchTest' }];
+      const unknown = [
+        { id: 'X', source: 'seriesNumber', condition: 'noSuchTest' },
+        { id: 'SeriesDate', source: 'seriesDate' },
+      ];
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      expect(resolve(unknown, displaySet())).toEqual([]);
+      expect(resolve(unknown, displaySet()).map(detail => detail.id)).toEqual(['SeriesDate']);
       expect(console.warn).toHaveBeenCalled();
     });
 

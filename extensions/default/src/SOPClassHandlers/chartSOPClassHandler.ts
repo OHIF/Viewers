@@ -55,6 +55,12 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
     addInstances: function (instances: InstanceMetadata[], _displaySetService: DisplaySetService) {
       this.instances.push(...instances);
       this.instance = this.instances[this.instances.length - 1];
+      // The date/time shown and sorted by is that of the instance the display
+      // set shows, so it moves with that instance rather than staying on the
+      // one the chart was first created with.
+      const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(this.instance);
+      this.SeriesDate = SeriesDate;
+      this.SeriesTime = SeriesTime;
 
       return this;
     },

@@ -87,7 +87,12 @@ instance level date/time say when the report itself was made.
   sop instance uid.  The last instance of a series is taken to be the most
   recently created one, so an instance number that fails to say which that is
   has to be replaced by something that does.
-- **Display sets** are ordered by the creation date/time of their `instance`.
+- **Display sets** are ordered by the creation date/time of their `instance`.  A
+  handler whose `addInstances` advances that instance - the SR and chart ones,
+  which append to their display set rather than making a new one - has to
+  restamp the display set's `SeriesDate`/`SeriesTime` from the new instance, or
+  the date shown for it stays that of the report it replaced and disagrees with
+  the place the series list has just sorted it into.
 - **Series**, and any display set whose instance says nothing about when it was
   created, have nothing but their own `SeriesDate`/`SeriesTime` and are ordered
   by those alone.  Sorting a list of series rather than display sets is

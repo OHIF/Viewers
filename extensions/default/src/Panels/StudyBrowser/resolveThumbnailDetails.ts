@@ -21,18 +21,6 @@ type ResolveOptions = {
   formatters;
 };
 
-/** A `condition` / `contentF` / `iconName` that is a name resolves against a registry. */
-const resolveNamed = (value, registry, kind: string, id: string) => {
-  if (typeof value !== 'string') {
-    return value;
-  }
-  const named = registry?.[value];
-  if (!named) {
-    console.warn(`Thumbnail detail item "${id}" names an unknown ${kind} "${value}"`);
-  }
-  return named;
-};
-
 /**
  * Builds the detail line of a study browser thumbnail from the
  * `studyBrowser.thumbnailDetails` items, in the order they are declared.
@@ -45,6 +33,13 @@ const resolveNamed = (value, registry, kind: string, id: string) => {
  * Returns `undefined` when there are no items to resolve at all, which leaves
  * the thumbnail showing the default detail line it stands alone with. An empty
  * `items` is a customization asking for an empty line, and is honoured as one.
+ *
+ * A line that came out empty only because the names it used could not be
+ * resolved is a broken customization rather than a request for an empty line -
+ * an override of `studyBrowser.thumbnailDetailSources` written with `$set`
+ * removes the sources the default items name - so that too is returned as
+ * `undefined`, leaving every thumbnail its default detail line instead of
+ * blanking the series number and instance count on all of them.
  */
 export function resolveThumbnailDetails({
   items,
@@ -59,6 +54,20 @@ export function resolveThumbnailDetails({
 
   const props = { displaySet, instance: displaySet?.instance, formatters };
   const details: ThumbnailDetail[] = [];
+  let hasUnresolvedName = false;
+
+  /** A `condition` / `source` that is a name resolves against a registry. */
+  const resolveNamed = (value, registry, kind: string, id: string) => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+    const named = registry?.[value];
+    if (!named) {
+      console.warn(`Thumbnail detail item "${id}" names an unknown ${kind} "${value}"`);
+      hasUnresolvedName = true;
+    }
+    return named;
+  };
 
   for (const item of items) {
     if (!item) {
@@ -97,6 +106,10 @@ export function resolveThumbnailDetails({
       value: displayValue,
       iconName: icon || undefined,
     });
+  }
+
+  if (!details.length && hasUnresolvedName) {
+    return undefined;
   }
 
   return details;

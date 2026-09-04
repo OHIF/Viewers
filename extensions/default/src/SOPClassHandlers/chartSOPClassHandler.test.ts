@@ -43,4 +43,22 @@ describe('chartHandler', () => {
     expect(displaySet.SeriesDate).toBe('20260819');
     expect(displaySet.SeriesTime).toBe('080000');
   });
+
+  // `addInstances` advances the instance the display set shows, so the date and
+  // time shown for it - and summarized from it - have to advance with it rather
+  // than staying on those of the instance the series was created with.
+  it('moves the date and time on to the newly added instance', () => {
+    const [displaySet] = chartHandler.getDisplaySetsFromSeries([chartInstance()]);
+
+    displaySet.addInstances([
+      chartInstance({
+        SOPInstanceUID: '1.2.3.4.2',
+        ContentDate: '20260819',
+        ContentTime: '080000',
+      }),
+    ]);
+
+    expect(displaySet.SeriesDate).toBe('20260819');
+    expect(displaySet.SeriesTime).toBe('080000');
+  });
 });
