@@ -77,6 +77,10 @@ const Thumbnail = ({
    * customization declares, kept here so the component still stands alone.
    */
   const renderDetails = (textClass: string, firstItemClass?: string) => {
+    // `??`, not `|| `: an unset `details` means no customization was resolved
+    // for this thumbnail and the defaults below stand in, whereas an empty
+    // `details` is a customization that resolved to no items at all and is
+    // honoured as the empty line it asks for.
     const items = details ?? [
       { id: 'SeriesNumber', label: 'S:', value: seriesNumber },
       { id: 'InstanceCount', iconName: countIcon || 'InfoSeries', value: numInstances },

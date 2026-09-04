@@ -1,12 +1,22 @@
 import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
 
-/** The current local date and time as DICOM DA and TM values. */
+/**
+ * The current date and time as DICOM DA and TM values, in UTC.
+ *
+ * UTC rather than local time because the object generation these stamps are
+ * written over - dcmjs `DerivedDataset` - writes its `SeriesDate`/`SeriesTime`
+ * in UTC.  Mixing the two clocks on one object would let the series and
+ * instance level attributes disagree by the UTC offset, and since the display
+ * set date/time is the latest date any attribute carries (see
+ * `getSeriesDateTime`), a local stamp west of UTC could be passed over in
+ * favour of the UTC series date it was meant to supersede.
+ */
 export function getCurrentDicomDateTime(now: Date = new Date()): { date: string; time: string } {
   const pad = (value: number, length = 2) => `${value}`.padStart(length, '0');
-  const date = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const date = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`;
   const time =
-    `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}` +
-    `.${pad(now.getMilliseconds(), 3)}000`;
+    `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}` +
+    `.${pad(now.getUTCMilliseconds(), 3)}000`;
 
   return { date, time };
 }

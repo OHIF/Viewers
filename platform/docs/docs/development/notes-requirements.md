@@ -111,7 +111,24 @@ object, so `getSeriesDateTime` chooses one pair from all of them:
 
 For any of this to work on newly stored objects, `updateNewInstanceMetadata`
 stamps every report, segmentation and structure set OHIF saves with the current
-date/time, and with an instance number one higher than every instance already in
-the series - the most recently created instance of a series is not necessarily
+date/time in UTC - the same clock dcmjs writes the derived object's
+`SeriesDate`/`SeriesTime` on, so that the series and instance level attributes
+of one object cannot disagree by the UTC offset - and with an instance number
+one higher than every instance already in the series - the most recently created instance of a series is not necessarily
 the one with the highest instance number, so deriving the instance number from a
 single predecessor instance can collide with an instance that already exists.
+
+#### Behaviour change: `addSameSeriesCompare` comparators now run
+
+A comparator registered with `addSameSeriesCompare` is used to order two display
+sets of the same series.  Until now `compareSameSeriesDisplaySet` returned the
+comparator's answer only when that answer was `0`, and discarded it whenever it
+actually ordered the two sides, falling through to the instance compare instead -
+so a registered comparator had no effect on the resulting order.  It is now
+applied as documented: a non zero answer decides, and only a tie falls through to
+the instance compare.
+
+Anyone who registered a comparator will see it take effect, which may reorder
+display sets within a series that were previously ordered by instance number
+alone.  If the old order is the wanted one, remove the registration by passing
+`null` as the compare function - `addSameSeriesCompare(name, null, priority)`.

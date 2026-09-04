@@ -131,6 +131,22 @@ describe('sortByInstanceNumber', () => {
 
     expect(sortByInstanceNumber(first, second)).toBe(-1);
   });
+
+  // An image series has a unique instance number on every instance, so the
+  // creation date/time tie break never runs for one and the order is the
+  // instance number order it has always been - here the acquisition times run
+  // backwards, and the images still come out in instance number order.
+  test('orders an image series by instance number alone', () => {
+    const images = [
+      { InstanceNumber: 3, SOPInstanceUID: '1.2.3.3', AcquisitionDateTime: '20260819080000' },
+      { InstanceNumber: 1, SOPInstanceUID: '1.2.3.1', AcquisitionDateTime: '20260819080002' },
+      { InstanceNumber: 2, SOPInstanceUID: '1.2.3.2', AcquisitionDateTime: '20260819080001' },
+    ];
+
+    expect([...images].sort(sortByInstanceNumber).map(image => image.InstanceNumber)).toEqual([
+      1, 2, 3,
+    ]);
+  });
 });
 
 describe('compareSeriesDateTime', () => {

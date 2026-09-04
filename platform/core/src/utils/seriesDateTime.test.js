@@ -80,6 +80,34 @@ describe('getSeriesDateTime', () => {
     ).toEqual({ SeriesDate: '20260817', SeriesTime: '090000' });
   });
 
+  // A SEG is authored after the series it segments, and carries that in its
+  // structure set date/time while the series date/time stay those of the
+  // images.  The structure set pair is the one that says when the SEG was made.
+  test('prefers a later structure set date over the series date of a SEG', () => {
+    expect(
+      getSeriesDateTime({
+        Modality: 'SEG',
+        SeriesDate: '20260817',
+        SeriesTime: '090000',
+        StructureSetDate: '20260819',
+        StructureSetTime: '143000',
+      })
+    ).toEqual({ SeriesDate: '20260819', SeriesTime: '143000' });
+  });
+
+  // The winning date takes no time at all rather than the series time, which
+  // belongs to the day the images were acquired and not to the SEG.
+  test('leaves the time empty when the later SEG date carries none', () => {
+    expect(
+      getSeriesDateTime({
+        Modality: 'SEG',
+        SeriesDate: '20260817',
+        SeriesTime: '090000',
+        StructureSetDate: '20260819',
+      })
+    ).toEqual({ SeriesDate: '20260819', SeriesTime: '' });
+  });
+
   test('ignores a time that has no date with it', () => {
     expect(getSeriesDateTime({ SeriesTime: '090000', ContentDate: '20260817' })).toEqual({
       SeriesDate: '20260817',

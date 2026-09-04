@@ -268,6 +268,7 @@ function PanelStudyBrowser({
     viewports,
     thumbnailImageSrcMap,
     customMapDisplaySets,
+    mapDisplaySetsWithState,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -371,6 +372,7 @@ function PanelStudyBrowser({
     viewports,
     displaySetService,
     customMapDisplaySets,
+    mapDisplaySetsWithState,
   ]);
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
