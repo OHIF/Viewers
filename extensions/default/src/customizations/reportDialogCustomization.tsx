@@ -42,10 +42,16 @@ type ExistingSeries = {
 };
 
 /**
- * Where the save goes:
- *   - `current` adds a version to the series the data was loaded from
- *   - `new` creates a series
- *   - `replace` adds a version to another loaded series of this modality
+ * Which series the save goes into:
+ *   - `current` the series the data was loaded from
+ *   - `new` a series created for it
+ *   - `replace` another loaded series of this modality
+ *
+ * All three store the same object - all of the current data, as selected from
+ * the service holding it.  The destination only decides which series that object
+ * belongs to, and so which instance it supersedes.  Nothing is merged: storing
+ * into a series that already has data neither loads that data to add to it, nor
+ * leaves any of the current data out.
  */
 type Destination = 'current' | 'new' | 'replace';
 

@@ -40,6 +40,18 @@ A series that already exists keeps its own series number and description, so bot
 are read-only for `Save to current` and `Replace existing`; the number shown
 follows the series picked.
 
+All three store the same object: all of the current data, as selected from the
+service holding it - the measurements in the measurement service, the segments in
+the segmentation service.  The destination only decides which series that object
+belongs to, and so which instance it supersedes.  In particular, `Replace
+existing` does not merge: it neither loads what is already stored in the chosen
+series to add to it, nor leaves any of the current data out.  The instance it
+supersedes is kept, and stops being the one loaded by default.
+
+Storing into a series makes that series the one the data was last stored as, so a
+save after a `Replace existing` defaults to `Save to current` on the series that
+was replaced.
+
 The dialogs are titled **Save Segmentation**, **Save Contours** and **Save
 Measurements**, having been `Store Segmentation`, `Store Contours` and `Create
 Report`, to match the `Save` action in them.  A caller that passes its own `title`,
