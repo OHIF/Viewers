@@ -5,7 +5,8 @@
 **Funded scope:** OHIF / FU Berlin Set-Aside, task **T6** (Aim 2.3, required)
 **Depends on:** Cornerstone3D viewport fidelity state (T3) — required
 **Design:** @dan-rukas feature request — *not* a blocker; see "Sequencing" below
-**Specification:** the `VF-` identifiers cited here are defined in the feature request
+**Specification:** `platform/docs/docs/development/specs/viewport-fidelity/requirements.md` —
+the `VF-` identifiers cited here are defined there
 
 ---
 
@@ -19,6 +20,14 @@ expected to improve. Red = lossy now, and this is as good as it gets. Green = wa
 any more, shown for about a second and then withdrawn. **No indicator at all** for a viewport
 that has never been lossy — its presence is itself information. A viewport with no data
 displayed is neither lossy nor lossless and shows nothing.
+
+**The premise (§4.1 `VF-AUTO`), which constrains every choice below:** the system selects
+fidelity automatically, with no user input required and no low-level parameters exposed. The
+user must never have to interact with the indicator to get the best rendering feasible for
+their data, viewport and device. The previous decimated-views attempt failed by making users
+dictate settings; the indicator exists so automatic decisions can be disclosed rather than
+configured. Any influence the user does get is a small number of high-level inputs in the
+separate T5 settings work — never per-viewport resolution levels.
 
 ## Work
 

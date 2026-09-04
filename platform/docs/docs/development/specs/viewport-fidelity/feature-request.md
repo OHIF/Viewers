@@ -18,6 +18,16 @@ density. None of that is visible to the user today. The image simply looks the w
 Add **one consistent per-viewport fidelity indicator** that appears when the displayed image is
 lossy, plus a detail view saying what was lost, why, and whether it will improve.
 
+**The premise, and it is a hard requirement rather than a preference** (§4.1 `VF-AUTO`): the
+system decides what to render, not the user. The previous decimated-views attempt failed
+because it made users dictate the settings needed to view things quickly, burdening them with
+detail they should never have had to hold. Users do not want to configure a renderer; they want
+to read a study. An indicator is what makes automatic decision-making acceptable rather than
+opaque — the system decides silently and continuously, and the indicator discloses when a
+decision cost the user something. Anything that answers "the image might be degraded" by
+handing the user controls has reproduced the original failure with more steps. This is the
+substantive reason the indicator and its detail view are **read-only**.
+
 The model is a state machine over lossiness *through time*, not a severity scale:
 
 | State | Indicator | Meaning to the user |

@@ -29,6 +29,12 @@ This specification defines what the user must be able to determine about the fid
 they are looking at, and requires a single consistent per-viewport affordance that lets them
 determine it.
 
+The choice of *what* to render is the system's, not the user's. An indicator exists precisely so
+that the system can decide automatically and continuously without the user having to know or
+configure anything — disclosing the cost when a decision had one. That premise is stated as
+requirements in §4.1, because it is the constraint the previous decimated-views attempt
+violated and the reason it failed.
+
 > The motivating consequence is diagnostic, not aesthetic. A user who cannot distinguish
 > "this lesion is small" from "this rendering discarded three quarters of the z-axis" is being
 > asked to trust a picture whose provenance is hidden from them.
@@ -54,7 +60,7 @@ out to be inconvenient to implement.
 ### 2.2 In scope
 
 - A per-viewport fidelity indicator, available whenever a fidelity difference exists.
-- A detail view, reached from that indicator, answering the questions in §4.1.
+- A detail view, reached from that indicator, answering the questions in §4.2.
 - Consumption of the Cornerstone3D per-viewport fidelity state delivered by T3.
 - The Cornerstone3D fidelity interface, viewport events, and example implementations
   described in §5.5.
@@ -132,10 +138,57 @@ does not enter the fidelity state machine at all.
 
 > Change these only if wrongly described, or if the intended user-facing behaviour is changing.
 
-> **Altitude.** §4.1 states what the user must be able to *determine*. It deliberately does not
+> **Altitude.** §4.2 states what the user must be able to *determine*. It deliberately does not
 > say through which surface, in what order, or with what visual encoding — that is §5.
 
-### 4.1 Information the user must be able to determine — `VF-INFO`
+### 4.1 The system decides, not the user — `VF-AUTO`
+
+> This group is the premise of the whole feature and is why the deliverable is an *indicator*
+> rather than a control panel. It is a requirement, not a design preference.
+
+**VF-AUTO-1**
+The system shall select the fidelity at which a viewport renders without requiring input from
+the user.
+
+**VF-AUTO-2**
+The system shall not require the user to understand resolution levels, texture limits, sampling
+density, GPU classes, or any other low-level rendering parameter in order to view a study at
+usable speed and quality.
+
+**VF-AUTO-3**
+The system shall not require the user to interact with the fidelity indicator in order to
+obtain the best rendering feasible for their data, viewport and device.
+
+**VF-AUTO-4**
+IF full fidelity cannot be achieved, THEN the system shall present the best feasible rendering
+without user intervention.
+
+**VF-AUTO-5**
+WHERE the user wishes to influence the trade-off between fidelity and speed, the system shall
+accept a small number of high-level inputs rather than per-viewport low-level parameters.
+
+> A performance target is a high-level input. A per-viewport resolution level is not.
+> `VF-AUTO-5` is why the settings surface is a separate, deliberately small piece of work
+> (T5) and why it lives in general settings rather than in this indicator — see §7 item 1.
+
+**VF-AUTO-6**
+The system shall not present the user with a choice they need renderer knowledge to answer.
+
+> **Rationale for this group, and the reason it sits first.** The previous decimated-views
+> implementation failed for exactly this reason: it made the user dictate the settings needed to
+> view certain things quickly, which burdened them with detail they should never have had to
+> hold. Users do not want to configure a renderer; they want to read a study. Any solution that
+> answers "the image might be degraded" by handing the user controls has reproduced the
+> original failure with more steps.
+>
+> The indicator is what makes automatic decision-making *acceptable* rather than opaque. The
+> system decides, silently and continuously, and the indicator discloses when a decision cost
+> the user something — so that trust does not depend on the user having configured anything.
+> This is also the substantive reason the indicator is read-only (`VF-DET-9`): a detail view
+> that offered fixes would drag the low-level detail back into the user's lap through the one
+> affordance built to keep it out.
+
+### 4.2 Information the user must be able to determine — `VF-INFO`
 
 **VF-INFO-1**
 The system shall enable the user to determine whether the image currently displayed in a
@@ -203,7 +256,7 @@ rendering they are now looking at is no longer lossy.
 The system shall express every item in this group in terms the user can act on without
 knowledge of renderer implementation, GPU architecture, or retrieval-stage terminology.
 
-### 4.2 Availability of the indicator — `VF-VIS`
+### 4.3 Availability of the indicator — `VF-VIS`
 
 **VF-VIS-1**
 WHILE a fidelity difference exists in a viewport, the system shall present a fidelity indicator
@@ -286,7 +339,7 @@ different display set.
 The system shall not require the user to discover the indicator in more than one place or form
 across viewports, modes, or view kinds.
 
-### 4.3 The detail view — `VF-DET`
+### 4.4 The detail view — `VF-DET`
 
 **VF-DET-1**
 WHEN the user activates the fidelity indicator, the system shall present a detail view.
@@ -327,7 +380,7 @@ The detail view shall be read-only with respect to fidelity.
 
 > See §7 item 1 for the separate settings surface it may later link to.
 
-### 4.4 Removal and its consequence — `VF-CFG`
+### 4.5 Removal and its consequence — `VF-CFG`
 
 **VF-CFG-1**
 The system shall allow a deployment to remove the indicator by configuration.
@@ -341,7 +394,7 @@ of removing it.
 > that removes it is choosing to show users substituted pixels with no disclosure, and whoever
 > writes that config line should have to read that sentence first.
 
-### 4.5 Language — `VF-LANG`
+### 4.6 Language — `VF-LANG`
 
 **VF-LANG-1**
 The system shall label the indicator and every element of the detail view in user-oriented
@@ -681,7 +734,8 @@ Cornerstone3D repository.
 1. **Settings surface reachable from the indicator.** The indicator is read-only
    (`VF-DET-9`). Quality and GPU settings are a separate piece of the overall work — T5 — and
    may later be reachable by click-through from the detail view. Not part of the fidelity
-   indicator now. **Deferred by decision.**
+   indicator now. Whatever that surface becomes, `VF-AUTO-5` binds it: a small number of
+   high-level inputs, not per-viewport low-level parameters. **Deferred by decision.**
 
 2. **Whether `DisplaySetMessage` migrates onto the same registry.** `VF-VOCAB` establishes a
    typed, extensible, argument-forwarding replacement for exactly the pattern
@@ -720,6 +774,7 @@ Cornerstone3D repository.
 
 | Requirement group | Anchored in |
 |---|---|
+| `VF-AUTO` | T15 (automatic, deterministic selection policy); T6 bullet 5; prior failure of the decimated-views approach |
 | `VF-INFO` | T6 bullets 2 and 5; T3 bullets 2 and 3 |
 | `VF-VIS` | T6 bullets 1 and 4; T3 bullet 4 |
 | `VF-DET` | T6 bullet 2; T9 final bullet; T14 final bullet |
@@ -740,6 +795,7 @@ inclusion, priority, and effort.
 
 | Requirement group | Primary verification |
 |---|---|
+| `VF-AUTO` | E2E: a study on a capability-constrained fixture renders usably with no user input and no settings visited; review that no user-facing choice requires renderer knowledge |
 | `VF-INFO` | Detail-view content assertions against fixture fidelity states, one per dimension and cause |
 | `VF-VIS` | E2E: indicator present in a non-active, non-hovered viewport with a degraded fixture; default-on across modes |
 | `VF-DET` | E2E: activate indicator, assert all three sections; assert live update while open |
