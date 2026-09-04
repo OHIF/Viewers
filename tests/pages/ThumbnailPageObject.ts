@@ -25,9 +25,17 @@ export class ThumbnailPageObject {
     return this.root.locator(`[data-cy="thumbnail-detail-${id}"]`);
   }
 
+  /** The detail item in the given position of the line, to assert their order. */
+  detailAt(nth: number) {
+    return this.details.nth(nth);
+  }
+
   /**
    * The ids of the detail items, in display order - what the
-   * `studyBrowser.thumbnailDetails` customization resolved to.
+   * `studyBrowser.thumbnailDetails` customization resolved to.  Extracted
+   * rather than a locator because it is the set and order of the items being
+   * asserted; assert `details` has the expected count first so that this does
+   * not read a line still being rendered.
    */
   async detailIds(): Promise<string[]> {
     return this.details.evaluateAll(elements =>

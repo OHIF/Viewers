@@ -13,6 +13,7 @@ test('shows the series number and the instance count by default', async ({
   const thumbnail = leftPanelPageObject.derivedThumbnailAt(0);
   await expect(thumbnail.root).toBeVisible({ timeout: 120_000 });
 
+  await expect(thumbnail.details).toHaveCount(2);
   expect(await thumbnail.detailIds()).toEqual(['SeriesNumber', 'InstanceCount']);
   await expect(thumbnail.seriesNumber).toHaveText(/^S:\d+$/);
 });
@@ -31,6 +32,7 @@ test('adds the creation date and time with the derivedDateTime customization', a
   await expect(thumbnail.root).toBeVisible({ timeout: 120_000 });
 
   // Appended to the default items rather than replacing them.
+  await expect(thumbnail.details).toHaveCount(3);
   expect(await thumbnail.detailIds()).toEqual([
     'SeriesNumber',
     'InstanceCount',
