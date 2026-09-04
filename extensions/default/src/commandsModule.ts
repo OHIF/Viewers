@@ -1,6 +1,7 @@
 import { Types, DicomMetadataStore, utils } from '@ohif/core';
 import { datasetToDicomBlob, setNonEnumerableInstanceProperty } from './utils/dicomWriter';
 import { registerNaturalizedDatasetsForLocalWadouri } from './utils/registerNaturalizedDatasetForLocalWadouri';
+import { registerStoredInstanceImageIds } from './utils/registerStoredInstanceImageId';
 
 const { downloadBlob } = utils;
 
@@ -805,9 +806,7 @@ const commandsModule = ({
           }
           const reportBlob = datasetToDicomBlob(instances[0]);
           const type = defaultContentType || 'application/dicom';
-          await navigator.clipboard.write([
-            new ClipboardItem({ [type]: reportBlob }),
-          ]);
+          await navigator.clipboard.write([new ClipboardItem({ [type]: reportBlob })]);
         };
       }
 
@@ -831,6 +830,11 @@ const commandsModule = ({
             });
           }
         }
+
+        // Identify the stored instances before they reach the metadata store, so
+        // that the display sets made from them know which instance they came
+        // from, and a later save of the same data can extend this series.
+        registerStoredInstanceImageIds(instances, resolvedDataSource);
 
         DicomMetadataStore.addInstances(instances, true);
         for (const instance of instances) {
