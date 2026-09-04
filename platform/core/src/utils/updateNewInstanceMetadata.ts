@@ -1,22 +1,45 @@
 import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
 
 /**
- * The current date and time as DICOM DA and TM values, in UTC.
- *
- * UTC rather than local time because the object generation these stamps are
- * written over - dcmjs `DerivedDataset` - writes its `SeriesDate`/`SeriesTime`
- * in UTC.  Mixing the two clocks on one object would let the series and
- * instance level attributes disagree by the UTC offset, and since the display
- * set date/time is the latest date any attribute carries (see
- * `getSeriesDateTime`), a local stamp west of UTC could be passed over in
- * favour of the UTC series date it was meant to supersede.
+ * `TimezoneOffsetFromUTC` (0008,0201) as a number of minutes ahead of UTC, or
+ * `undefined` when the value is absent or not the `&ZZXX` format DICOM defines.
  */
-export function getCurrentDicomDateTime(now: Date = new Date()): { date: string; time: string } {
+function parseTimezoneOffsetFromUTC(value): number | undefined {
+  const match = /^([+-])(\d{2})(\d{2})$/.exec(`${value ?? ''}`.trim());
+  if (!match) {
+    return undefined;
+  }
+  const [, sign, hours, minutes] = match;
+  return (sign === '-' ? -1 : 1) * (Number(hours) * 60 + Number(minutes));
+}
+
+/**
+ * The current date and time as DICOM DA and TM values.
+ *
+ * DICOM DA and TM are wall clock values, read in the timezone the object
+ * declares in `TimezoneOffsetFromUTC` and otherwise in the local one.  They are
+ * displayed as they are stored, so a value in any other zone is simply the
+ * wrong date/time to show - and around midnight the wrong day as well.
+ *
+ * @param now - the instant to express, defaulting to the current one
+ * @param timezoneOffsetFromUTC - the object's `TimezoneOffsetFromUTC`, if it
+ *   has one; local time is used when it does not
+ */
+export function getCurrentDicomDateTime(
+  now: Date = new Date(),
+  timezoneOffsetFromUTC?: string
+): { date: string; time: string } {
+  // The wall clock reading is the instant shifted by the zone's offset and then
+  // read in UTC, which for the local zone is what the local getters return.
+  const offsetMinutes =
+    parseTimezoneOffsetFromUTC(timezoneOffsetFromUTC) ?? -now.getTimezoneOffset();
+  const at = new Date(now.getTime() + offsetMinutes * 60_000);
+
   const pad = (value: number, length = 2) => `${value}`.padStart(length, '0');
-  const date = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`;
+  const date = `${at.getUTCFullYear()}${pad(at.getUTCMonth() + 1)}${pad(at.getUTCDate())}`;
   const time =
-    `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}` +
-    `.${pad(now.getUTCMilliseconds(), 3)}000`;
+    `${pad(at.getUTCHours())}${pad(at.getUTCMinutes())}${pad(at.getUTCSeconds())}` +
+    `.${pad(at.getUTCMilliseconds(), 3)}000`;
 
   return { date, time };
 }
@@ -32,7 +55,10 @@ export function getCurrentDicomDateTime(now: Date = new Date()): { date: string;
  * `SeriesDate`/`SeriesTime` belong to the original series and must stay as they
  * are, so only the instance level creation date/time say that the series has
  * just been added to.  Those are what the display set date/time is chosen from
- * (see `getSeriesDateTime`), so they have to be set on every save.
+ * (see `getSeriesDateTime`), so they have to be set on every save.  They are
+ * stamped in the dataset's own timezone - `TimezoneOffsetFromUTC` when it has
+ * one, the local zone otherwise - because that is the wall clock reading a
+ * viewer displays them as.
  *
  * The instance number has to be higher than every instance already in the
  * series.  Deriving it from a single predecessor instance is not enough: the
@@ -57,7 +83,7 @@ export function updateNewInstanceMetadata(dataset, priorInstances?: Array<{ Inst
   );
   dataset.InstanceNumber = priorInstanceNumber + 1;
 
-  const { date, time } = getCurrentDicomDateTime();
+  const { date, time } = getCurrentDicomDateTime(new Date(), dataset.TimezoneOffsetFromUTC);
   dataset.InstanceCreationDate = date;
   dataset.InstanceCreationTime = time;
   dataset.ContentDate = date;

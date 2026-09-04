@@ -111,10 +111,8 @@ object, so `getSeriesDateTime` chooses one pair from all of them:
 
 For any of this to work on newly stored objects, `updateNewInstanceMetadata`
 stamps every report, segmentation and structure set OHIF saves with the current
-date/time in UTC - the same clock dcmjs writes the derived object's
-`SeriesDate`/`SeriesTime` on, so that the series and instance level attributes
-of one object cannot disagree by the UTC offset - and with an instance number
-one higher than every instance already in the series - the most recently created instance of a series is not necessarily
+date/time, and with an instance number one higher than every instance already in
+the series - the most recently created instance of a series is not necessarily
 the one with the highest instance number, so deriving the instance number from a
 single predecessor instance can collide with an instance that already exists.
 

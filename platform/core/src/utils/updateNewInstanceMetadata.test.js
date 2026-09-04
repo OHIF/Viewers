@@ -2,22 +2,58 @@ import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewI
 import { getSeriesDateTime } from './seriesDateTime';
 
 describe('getCurrentDicomDateTime', () => {
+  // Built with the local constructor, because a DICOM DA/TM pair with no
+  // timezone is the local wall clock reading of the instant.
   test('formats a date as DICOM DA and TM values', () => {
-    expect(getCurrentDicomDateTime(new Date(Date.UTC(2026, 7, 9, 4, 5, 6, 70)))).toEqual({
+    expect(getCurrentDicomDateTime(new Date(2026, 7, 9, 4, 5, 6, 70))).toEqual({
       date: '20260809',
       time: '040506.070000',
     });
   });
 
-  // dcmjs writes the SeriesDate/SeriesTime of a derived object in UTC, so these
-  // stamps have to be on the same clock or the two can disagree by the offset.
-  test('reads the date and time in UTC, not the local zone', () => {
-    // 23:30 UTC is the previous day in every zone behind UTC and the same day
-    // in every zone ahead of it, so a local reading cannot produce this.
-    expect(getCurrentDicomDateTime(new Date(Date.UTC(2026, 7, 9, 23, 30, 0, 0)))).toEqual({
+  test('reads the local wall clock whatever the zone the runner is in', () => {
+    const now = new Date(2026, 7, 9, 23, 30, 0, 0);
+
+    expect(getCurrentDicomDateTime(now)).toEqual({
       date: '20260809',
       time: '233000.000000',
     });
+  });
+
+  // DA and TM say nothing about the zone they were read in, so an object that
+  // declares one has to be stamped in that zone rather than the local one.
+  test('reads the timezone the object declares when it has one', () => {
+    const noon = new Date(Date.UTC(2026, 7, 9, 12, 0, 0, 0));
+
+    expect(getCurrentDicomDateTime(noon, '+0000')).toEqual({
+      date: '20260809',
+      time: '120000.000000',
+    });
+    expect(getCurrentDicomDateTime(noon, '-0500')).toEqual({
+      date: '20260809',
+      time: '070000.000000',
+    });
+    expect(getCurrentDicomDateTime(noon, '+0930')).toEqual({
+      date: '20260809',
+      time: '213000.000000',
+    });
+  });
+
+  test('crosses the day boundary in the declared timezone', () => {
+    const justAfterMidnightUTC = new Date(Date.UTC(2026, 7, 9, 0, 30, 0, 0));
+
+    // Half past midnight in UTC is still the previous evening in New York.
+    expect(getCurrentDicomDateTime(justAfterMidnightUTC, '-0500')).toEqual({
+      date: '20260808',
+      time: '193000.000000',
+    });
+  });
+
+  test('falls back to the local zone for a malformed offset', () => {
+    const now = new Date(2026, 7, 9, 4, 5, 6, 70);
+
+    expect(getCurrentDicomDateTime(now, 'not an offset')).toEqual(getCurrentDicomDateTime(now));
+    expect(getCurrentDicomDateTime(now, '')).toEqual(getCurrentDicomDateTime(now));
   });
 });
 
@@ -57,6 +93,21 @@ describe('updateNewInstanceMetadata', () => {
     expect(getSeriesDateTime(dataset)).toEqual({
       SeriesDate: dataset.ContentDate,
       SeriesTime: dataset.ContentTime,
+    });
+  });
+
+  // The stamp has to be on the same clock as the rest of the object, or the
+  // date/time shown for it is off by the offset between the two zones.
+  test('stamps in the timezone the dataset declares', () => {
+    const now = new Date();
+    const dataset = updateNewInstanceMetadata(
+      { ...series, TimezoneOffsetFromUTC: '+0930' },
+      []
+    );
+
+    expect({ date: dataset.ContentDate, time: dataset.ContentTime.slice(0, 4) }).toEqual({
+      date: getCurrentDicomDateTime(now, '+0930').date,
+      time: getCurrentDicomDateTime(now, '+0930').time.slice(0, 4),
     });
   });
 });
