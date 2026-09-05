@@ -102,7 +102,7 @@ importers:
         version: 7.29.7(@babel/core@7.29.7)
       '@babel/preset-env':
         specifier: 7.29.7
-        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/preset-react':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7)
@@ -776,6 +776,8 @@ importers:
         specifier: 5.10.0
         version: 5.10.0
 
+  extensions/study-notes-extension: {}
+
   extensions/test-extension:
     dependencies:
       '@babel/runtime':
@@ -1390,9 +1392,60 @@ importers:
       '@ohif/core':
         specifier: workspace:*
         version: link:../core
+      '@ohif/extension-cornerstone':
+        specifier: workspace:*
+        version: link:../../extensions/cornerstone
+      '@ohif/extension-cornerstone-dicom-rt':
+        specifier: workspace:*
+        version: link:../../extensions/cornerstone-dicom-rt
+      '@ohif/extension-cornerstone-dicom-seg':
+        specifier: workspace:*
+        version: link:../../extensions/cornerstone-dicom-seg
+      '@ohif/extension-cornerstone-dicom-sr':
+        specifier: workspace:*
+        version: link:../../extensions/cornerstone-dicom-sr
+      '@ohif/extension-default':
+        specifier: workspace:*
+        version: link:../../extensions/default
+      '@ohif/extension-dicom-microscopy':
+        specifier: workspace:*
+        version: link:../../extensions/dicom-microscopy
+      '@ohif/extension-dicom-pdf':
+        specifier: workspace:*
+        version: link:../../extensions/dicom-pdf
+      '@ohif/extension-dicom-video':
+        specifier: workspace:*
+        version: link:../../extensions/dicom-video
+      '@ohif/extension-study-notes':
+        specifier: workspace:*
+        version: link:../../extensions/study-notes-extension
+      '@ohif/extension-test':
+        specifier: workspace:*
+        version: link:../../extensions/test-extension
+      '@ohif/extension-ultrasound-pleura-bline':
+        specifier: workspace:*
+        version: link:../../extensions/usAnnotation
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../i18n
+      '@ohif/mode-basic':
+        specifier: workspace:*
+        version: link:../../modes/basic
+      '@ohif/mode-basic-dev-mode':
+        specifier: workspace:*
+        version: link:../../modes/basic-dev-mode
+      '@ohif/mode-longitudinal':
+        specifier: workspace:*
+        version: link:../../modes/longitudinal
+      '@ohif/mode-microscopy':
+        specifier: workspace:*
+        version: link:../../modes/microscopy
+      '@ohif/mode-test':
+        specifier: workspace:*
+        version: link:../../modes/basic-test-mode
+      '@ohif/mode-ultrasound-pleura-bline':
+        specifier: workspace:*
+        version: link:../../modes/usAnnotation
       '@ohif/ui':
         specifier: workspace:*
         version: link:../ui
@@ -14086,7 +14139,7 @@ snapshots:
       '@babel/helpers': 7.29.2
       '@babel/parser': 7.29.3
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -14106,7 +14159,7 @@ snapshots:
       '@babel/helpers': 7.29.2
       '@babel/parser': 7.29.3
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.0
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -15300,7 +15353,7 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.0(supports-color@8.1.1))
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15310,17 +15363,17 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.0)
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))':
+  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -16097,7 +16150,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))':
+  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/core': 7.29.7(supports-color@8.1.1)
@@ -16139,7 +16192,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-amd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-commonjs': 7.29.7(@babel/core@7.29.7)
-      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/plugin-transform-modules-umd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-named-capturing-groups-regex': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-new-target': 7.29.7(@babel/core@7.29.7)
@@ -16216,7 +16269,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-amd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-commonjs': 7.29.7(@babel/core@7.29.7)
-      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/plugin-transform-modules-umd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-named-capturing-groups-regex': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-new-target': 7.29.7(@babel/core@7.29.7)
@@ -16366,7 +16419,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.0':
+  '@babel/traverse@7.29.0(supports-color@8.1.1)':
     dependencies:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.7

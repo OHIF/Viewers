@@ -62,7 +62,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       onClick: () =>
         show({
           content: AboutModal,
-          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+          title: AboutModal?.title ?? t('AboutModal:About Viewer'),
           containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
         }),
     },
