@@ -1323,6 +1323,39 @@ window.config = {
         `,
   },
   {
+    id: 'ohif.headerRightSide',
+    description: (
+      <>
+        The ordered list of components filling the right of the header's menu bar, ahead of the
+        settings menu. Each entry is rendered as a component in its own separated slot, so
+        reordering the array reorders the header, and an item that renders <code>null</code>{' '}
+        collapses its slot. Items take no props and may use hooks; see{' '}
+        <code>extensions/default/src/customizations/headerRightSideCustomization.ts</code> for the
+        default.
+      </>
+    ),
+    default: '{ items: [HeaderUndoRedo, HeaderPatientInfo] }',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        Reorder or extend the list with <code>$set</code> / <code>$push</code>. To drop just the
+        undo/redo buttons, <code>extension-default</code> ships that as a named module:{' '}
+        <code>'@ohif/extension-default.customizationModule.hideHeaderUndoRedo'</code>.
+      </p>
+    ),
+    configuration: `
+import HeaderPatientInfo from '@ohif/extension-default/src/ViewerLayout/HeaderPatientInfo';
+import HeaderUndoRedo from '@ohif/extension-default/src/ViewerLayout/HeaderUndoRedo';
+
+window.config = {
+  // rest of window config
+  customizationService: [
+    // Patient info first, then undo/redo.
+    { 'ohif.headerRightSide': { items: { $set: [HeaderPatientInfo, HeaderUndoRedo] } } },
+  ],
+};
+        `,
+  },
+  {
     id: 'viewportNotification.beginTrackingMessage',
     description: 'Define the content to be displayed in begin tracking prompt',
     default: 'Track measurements for this series?',

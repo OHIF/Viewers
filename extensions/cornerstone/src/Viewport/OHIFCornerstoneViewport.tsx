@@ -276,7 +276,15 @@ const OHIFCornerstoneViewport = React.memo(
           initialImageIndex
         );
 
-        const presentations = getViewportPresentations(viewportId, viewportOptions);
+        // displaySets is this viewport's new state; the segmentation
+        // presentation needs it to decide which hydrated segmentations are
+        // overlayable on this viewport's background.
+        const presentations = getViewportPresentations(
+          viewportId,
+          viewportOptions,
+          displaySets,
+          displaySetService
+        );
 
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
         // Used for segmentation hydration right now, since the logic to decide whether
