@@ -447,6 +447,24 @@ export class RightPanelPageObject {
           },
         };
       },
+      // The "Smooth Contours" utility popover. Its actions operate on the active
+      // segment only, so a segment row must be clicked before invoking them.
+      get smoothContours() {
+        return {
+          open: async () => {
+            await page.getByTestId('SmoothContours').click();
+          },
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await page.getByRole('button', { name: 'Smooth Edges' }).waitFor({ state: 'hidden' });
+          },
+          // Runs the smoothContours command (b-spline resample of the outline).
+          smoothEdges: async () => {
+            await page.getByRole('button', { name: 'Smooth Edges' }).click();
+          },
+        };
+      },
     };
   }
   get labelMapSegmentationPanel() {
