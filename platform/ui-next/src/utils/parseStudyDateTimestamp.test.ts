@@ -19,6 +19,16 @@ describe('parseStudyDateTimestamp', () => {
     );
   });
 
+  it('parses time with 6 fractional digits (e.g. Orthanc)', () => {
+    const expected = new Date(2018, 8, 16, 9, 3, 23).getTime();
+    expect(parseStudyDateTimestamp('20180916', '090323.000000')).toBe(expected);
+  });
+
+  it('preserves non-zero fractional seconds in the timestamp', () => {
+    const expected = new Date(2018, 8, 16, 9, 3, 23, 123).getTime();
+    expect(parseStudyDateTimestamp('20180916', '090323.123456')).toBe(expected);
+  });
+
   it('returns 0 for missing or invalid dates', () => {
     expect(parseStudyDateTimestamp(undefined, '143052')).toBe(0);
     expect(parseStudyDateTimestamp('')).toBe(0);
