@@ -68,6 +68,11 @@ describe('formatDICOMTime', () => {
       expect(formatDICOMTime('2530')).toBe('');
     });
 
+    it('rejects fractional seconds with more than 6 digits', () => {
+      expect(formatDICOMTime('090323.1234567')).toBe('');
+      expect(formatDICOMTime('090323.1234567', { invalidFallback: '--' })).toBe('--');
+    });
+
     it('returns invalidFallback when provided', () => {
       expect(formatDICOMTime('', { invalidFallback: 'N/A' })).toBe('N/A');
       expect(formatDICOMTime('notatime', { invalidFallback: '--' })).toBe('--');

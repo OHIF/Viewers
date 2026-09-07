@@ -36,6 +36,13 @@ export function formatDICOMTime(time: string, options: FormatDICOMTimeOptions = 
 
   const format = strFormat ?? i18n.t('Common:localTimeFormat', fallbackFormat);
   const locale = i18n.language || 'en';
+
+  // DICOM TM allows at most 6 fractional digits; reject longer fractions
+  // before Moment's greedy SSSSSS parser silently accepts them.
+  if (/\.\d{7,}/.test(time)) {
+    return invalidFallback ?? '';
+  }
+
   const parsed = moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS', 'HHmmss.SSSSSS'], true);
 
   // Unlike formatDICOMDate, there is no lenient reparse: a no-format

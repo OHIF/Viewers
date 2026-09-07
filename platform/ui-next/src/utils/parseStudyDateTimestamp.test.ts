@@ -29,6 +29,12 @@ describe('parseStudyDateTimestamp', () => {
     expect(parseStudyDateTimestamp('20180916', '090323.123456')).toBe(expected);
   });
 
+  it('rejects fractional seconds with more than 6 digits (treats as midnight)', () => {
+    expect(parseStudyDateTimestamp('20180916', '090323.1234567')).toBe(
+      parseStudyDateTimestamp('20180916')
+    );
+  });
+
   it('returns 0 for missing or invalid dates', () => {
     expect(parseStudyDateTimestamp(undefined, '143052')).toBe(0);
     expect(parseStudyDateTimestamp('')).toBe(0);
