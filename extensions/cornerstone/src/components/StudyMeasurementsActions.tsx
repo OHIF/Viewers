@@ -47,7 +47,7 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           }}
         >
           <Icons.Add />
-          {t('Create SR')}
+          {t('Save')}
         </Button>
         <Button
           size="sm"

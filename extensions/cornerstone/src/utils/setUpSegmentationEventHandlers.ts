@@ -65,6 +65,23 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
 
       // Remove the display set layer from all viewports that have it
       if (displaySet) {
+        // This is the global removal path (the segmentation is gone from state,
+        // e.g. deleted from the segmentation panel), so clear the global
+        // "show this wherever it logically belongs" state. It must happen
+        // outside the loop below: that loop only visits viewports carrying the
+        // segmentation as an explicit layer, and a hydrated segmentation is
+        // never listed in a viewport's displaySetInstanceUIDs - only the
+        // referenced volume is. Recording `hydrated: false` rather than just
+        // dropping the entry keeps the store a statement of desired state, so a
+        // viewport created later converges on "not shown" instead of replaying
+        // an earlier `hydrated: true`.
+        displaySet.isHydrated = false;
+
+        commandsManager.runCommand('updateStoredSegmentationPresentation', {
+          displaySet,
+          hydrated: false,
+        });
+
         const state = viewportGridService.getState();
         const viewports = state.viewports;
 

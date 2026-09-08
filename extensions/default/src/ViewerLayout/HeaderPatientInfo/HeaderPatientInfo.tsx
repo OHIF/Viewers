@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSystem } from '@ohif/core';
 import usePatientInfo from '../../hooks/usePatientInfo';
 import { Icons } from '@ohif/ui-next';
 
@@ -16,12 +17,12 @@ const formatWithEllipsis = (str, maxLength) => {
   return str;
 };
 
-function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
+function PatientInfo({ showPatientInfo }) {
   const initialExpandedState =
-    appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE ||
-    appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;
+    showPatientInfo === PatientInfoVisibility.VISIBLE ||
+    showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;
   const [expanded, setExpanded] = useState(initialExpandedState);
-  const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
+  const { patientInfo, isMixedPatients } = usePatientInfo();
 
   useEffect(() => {
     if (isMixedPatients && expanded) {
@@ -30,7 +31,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
   }, [isMixedPatients, expanded]);
 
   const handleOnClick = () => {
-    if (!isMixedPatients && appConfig.showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
+    if (!isMixedPatients && showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
       setExpanded(!expanded);
     }
   };
@@ -69,6 +70,27 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
       <Icons.ArrowLeft className={`text-primary ${expanded ? 'rotate-180' : ''}`} />
     </div>
   );
+}
+
+/**
+ * Patient name/ID/sex/DOB, shipped as one of the `ohif.headerRightSide` items.
+ * Like every item in that list it takes no props, and it renders nothing when
+ * `showPatientInfo` is `disabled` — the header slot collapses with it.
+ *
+ * The visibility check lives out here rather than inside `PatientInfo` so that
+ * `disabled` never mounts the body: `usePatientInfo` subscribes to display set
+ * events and recomputes on every batch, which is wasted work when the result is
+ * always `null`.
+ */
+function HeaderPatientInfo() {
+  const { extensionManager } = useSystem();
+  const { showPatientInfo } = extensionManager.appConfig;
+
+  if (showPatientInfo === PatientInfoVisibility.DISABLED) {
+    return null;
+  }
+
+  return <PatientInfo showPatientInfo={showPatientInfo} />;
 }
 
 export default HeaderPatientInfo;

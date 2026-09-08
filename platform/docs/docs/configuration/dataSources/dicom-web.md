@@ -179,6 +179,14 @@ customizationService: {
 ```
 
 
+#### `stowRoot`
+The base URL for STOW-RS requests, for deployments that expose storage on a
+different endpoint than retrieval. Optional — when omitted, STOW requests use
+`wadoRoot`.
+
+Note that `qidoRoot`, `wadoRoot` and `stowRoot` are independent absolute URLs and
+need not share a host or path prefix. Each service is routed to its own root.
+
 #### `singlepart`
 A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`.
 

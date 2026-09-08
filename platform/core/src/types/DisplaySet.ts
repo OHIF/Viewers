@@ -77,11 +77,45 @@ export type DisplaySet = {
   predecessorImageId?: string;
 
   /**
+   * Fetches and decodes this display set's data, for display sets whose content
+   * is not available from the metadata alone - SEG, RTSTRUCT, PMAP, SR, PDF,
+   * video and microscopy annotations all provide one. It is attached by the SOP
+   * class handler that creates the display set, and is absent on display sets
+   * whose images are simply retrieved by image id.
+   *
+   * A load takes no viewport: what it makes available and where that gets
+   * displayed are separate concerns. Implementations memoize, returning the
+   * same in-flight promise to concurrent callers, so calling it repeatedly or
+   * earlier than the viewport that will show the result is safe.
+   *
+   * Individual handlers accept options beyond `headers`, so the option bag is
+   * deliberately open.
+   */
+  load?: (options?: { headers?: unknown; [key: string]: unknown }) => Promise<unknown>;
+
+  /**
    * isLoaded is used for display sets containing a load operation that
    * is required before the display set can be shown.  This is separate from
    * isHydrated, which means it is loaded into view.
    */
   isLoaded?: boolean;
+
+  /**
+   * isHydrated means: display this display set as part of a standard view.
+   * Nothing more and nothing less than that.
+   *
+   * It is orthogonal to isLoaded.  A display set can be loaded - decoded, and
+   * for SEG/RTSTRUCT present in the segmentation state - without being
+   * hydrated: isLoaded is a statement about whether the data is available,
+   * isHydrated is a statement about whether it should be shown in the ordinary
+   * viewports of the study.
+   *
+   * false (or undefined) means do not display it in anything except its own
+   * dedicated viewport, i.e. the SEG or RTSTRUCT viewport that exists to
+   * preview a single derived display set.  That viewport displays the display
+   * set because the display set is what it was created for, so it is not
+   * governed by this flag.
+   */
   isHydrated?: boolean;
   isRehydratable?: boolean;
 

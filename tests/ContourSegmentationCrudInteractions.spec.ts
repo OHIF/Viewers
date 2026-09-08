@@ -222,13 +222,10 @@ test.describe('Contour Segmentation interactions on RTSTRUCT panel', () => {
     await expectSegmentationLabels(segmentationSelect, ['Contours on PET']);
   });
 
-  // KNOWN BUG: the last remaining segmentation cannot be removed from the viewport
-  // ("Remove from Viewport" is a silent no-op once it is the only one left), so the
-  // panel keeps its segment row instead of clearing. Skipped until the bug is fixed.
-  // Tracked in https://github.com/OHIF/Viewers/issues/6090
-  test.skip('should remove every segmentation from the viewport', async ({
-    rightPanelPageObject,
-  }) => {
+  // Regression coverage for https://github.com/OHIF/Viewers/issues/6090: removing the
+  // last remaining segmentation looked like a silent no-op, because the panel never
+  // re-read the viewport's representations once nothing was left to become active.
+  test('should remove every segmentation from the viewport', async ({ rightPanelPageObject }) => {
     const { panel, addSegmentationButton } = rightPanelPageObject.contourSegmentationPanel;
 
     // Start with the hydrated RTSTRUCT plus two created segmentations.

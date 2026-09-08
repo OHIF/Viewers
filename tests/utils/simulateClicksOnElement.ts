@@ -32,6 +32,23 @@ export async function simulateDoubleClickOnElement({
 }
 
 /**
+ * Simulates a double click on an element at a point normalized to the element's
+ * @param locator - The locator to click on.
+ * @param normalizedPoint - The point with x and y coordinates, normalized to the element's bounding box.
+ */
+export async function simulateNormalizedDoubleClickOnElement({
+  locator,
+  normalizedPoint,
+}: {
+  locator: Locator;
+  normalizedPoint: { x: number; y: number };
+}) {
+  const bBox = await locator.boundingBox();
+  const position = { x: normalizedPoint.x * bBox.width, y: normalizedPoint.y * bBox.height };
+  await locator.dblclick({ delay: 100, position });
+}
+
+/**
  * Simulates clicks on an element at a normalized point.
  *
  * @param locator - The locator to click on.
