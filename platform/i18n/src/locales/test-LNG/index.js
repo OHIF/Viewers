@@ -35,6 +35,7 @@ import Tools from './Tools.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import USAnnotationPanel from './USAnnotationPanel.json';
+import EncapsulatedDocument from './EncapsulatedDocument.json';
 
 export default {
   'test-LNG': {
@@ -75,5 +76,6 @@ export default {
     Hps,
     ToolbarLayoutSelector,
     USAnnotationPanel,
+    EncapsulatedDocument,
   },
 };
