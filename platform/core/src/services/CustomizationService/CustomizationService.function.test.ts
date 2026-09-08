@@ -244,4 +244,135 @@ describe('CustomizationService $function', () => {
       expect(referrer.rule.matches).toBeUndefined();
     });
   });
+
+  describe('registered signatures', () => {
+    it('compiles a marker with the registered params, without the data saying so', () => {
+      service.registerFunctionSignatures({
+        'rules.compareInstances': ['a', 'b', 'context'],
+      });
+      service.setCustomizations(
+        { rules: { compareInstances: { $function: 'a.SliceLocation - b.SliceLocation' } } },
+        CustomizationScope.Global
+      );
+      const compare = service.getCustomization('rules') as any;
+      const sorted = [{ SliceLocation: 3 }, { SliceLocation: 1 }, { SliceLocation: 2 }].sort(
+        compare.compareInstances
+      );
+      expect(sorted.map(i => i.SliceLocation)).toEqual([1, 2, 3]);
+    });
+
+    it('passes the third parameter through', () => {
+      service.registerFunctionSignatures({ 'cmp.fn': ['a', 'b', 'context'] });
+      service.setCustomizations(
+        {
+          cmp: {
+            fn: {
+              $function:
+                'context.descending ? b.InstanceNumber - a.InstanceNumber : a.InstanceNumber - b.InstanceNumber',
+            },
+          },
+        },
+        CustomizationScope.Global
+      );
+      const { fn } = service.getCustomization('cmp') as any;
+      expect(fn({ InstanceNumber: 1 }, { InstanceNumber: 2 }, { descending: true })).toBe(1);
+      expect(fn({ InstanceNumber: 1 }, { InstanceNumber: 2 }, {})).toBe(-1);
+    });
+
+    it('overrides params the data declared, and warns about the disagreement', () => {
+      service.registerFunctionSignatures({ 'rules.matches': ['instance', 'context'] });
+      service.setCustomizations(
+        {
+          rules: {
+            // Wrong convention, copied from a comparator example. The registered
+            // signature is authoritative because the caller defined it.
+            matches: { $function: { expr: "Modality === 'CT'", params: ['a', 'b'] } },
+          },
+        },
+        CustomizationScope.Global
+      );
+      const { matches } = service.getCustomization('rules') as any;
+      expect(matches({ Modality: 'CT' })).toBe(true);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('declares params'));
+    });
+
+    it('accepts a marker that spells the registered signature out', () => {
+      service.registerFunctionSignatures({ 'rules.matches': ['instance', 'context'] });
+      service.setCustomizations(
+        {
+          rules: {
+            matches: {
+              $function: { expr: "Modality === 'CT'", params: ['instance', 'context'] },
+            },
+          },
+        },
+        CustomizationScope.Global
+      );
+      const { matches } = service.getCustomization('rules') as any;
+      expect(matches({ Modality: 'CT' })).toBe(true);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('prefers the most specific matching pattern', () => {
+      service.registerFunctionSignatures({
+        'rules.series.*': ['context'],
+        'rules.series.special': ['instance', 'context'],
+      });
+      service.setCustomizations(
+        {
+          rules: {
+            series: {
+              generic: { $function: 'instances.length' },
+              special: { $function: 'Rows' },
+            },
+          },
+        },
+        CustomizationScope.Global
+      );
+      const { series } = service.getCustomization('rules') as any;
+      expect(series.generic({ instances: [1, 2, 3] })).toBe(3);
+      expect(series.special({ Rows: 512 })).toBe(512);
+    });
+
+    it('falls back to the default convention when nothing is registered', () => {
+      service.setCustomizations(
+        { unregistered: { $function: "Modality === 'CT'" } },
+        CustomizationScope.Global
+      );
+      const fn = service.getCustomization('unregistered') as (instance) => boolean;
+      expect(fn({ Modality: 'CT' })).toBe(true);
+    });
+
+    it('re-reads customizations resolved before a signature was registered', () => {
+      service.setCustomizations(
+        { rules: { compareInstances: { $function: 'a.InstanceNumber - b.InstanceNumber' } } },
+        CustomizationScope.Global
+      );
+      // Resolved with the default convention: `a` is not a parameter, so it
+      // resolves off the first argument and the result is NaN.
+      const before = service.getCustomization('rules') as any;
+      expect(Number.isNaN(before.compareInstances({}, {}))).toBe(true);
+
+      service.registerFunctionSignatures({ 'rules.compareInstances': ['a', 'b'] });
+
+      const after = service.getCustomization('rules') as any;
+      expect(after.compareInstances({ InstanceNumber: 2 }, { InstanceNumber: 1 })).toBe(1);
+    });
+
+    it('ignores a malformed signature', () => {
+      service.registerFunctionSignatures({
+        'rules.matches': 'instance' as unknown as string[],
+      });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('must be an array of parameter names'),
+        expect.anything()
+      );
+      service.setCustomizations(
+        { rules: { matches: { $function: "Modality === 'CT'" } } },
+        CustomizationScope.Global
+      );
+      const { matches } = service.getCustomization('rules') as any;
+      expect(matches({ Modality: 'CT' })).toBe(true);
+    });
+  });
 });

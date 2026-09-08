@@ -130,4 +130,53 @@ export function isFunctionAttributeDenied(path: string[], patterns: string[]): b
   return patterns.some(pattern => typeof pattern === 'string' && patternMatches(pattern, path));
 }
 
+/** Parameter names a `$function` at some attribute path is called with. */
+export type FunctionSignature = string[];
+
+/** Attribute-path pattern -> the parameters a marker there is called with. */
+export type FunctionSignatureRegistry = Map<string, FunctionSignature>;
+
+/**
+ * The calling convention a `$function` gets when nothing registered one.
+ *
+ * `instance` names the first argument because the display set split rules that
+ * drove this marker pass a naturalized instance; `context` is the second.
+ */
+export const DEFAULT_FUNCTION_PARAMS: FunctionSignature = ['instance', 'context'];
+
+/**
+ * The parameters a `$function` at this attribute path should be compiled with,
+ * or `undefined` when nothing registered a signature for it.
+ *
+ * Registered by whoever will *call* the compiled closure, not by the data that
+ * declares it — see `CustomizationService.registerFunctionSignatures`. The data
+ * author is the wrong party to state the calling convention: a marker declaring
+ * `params: ['a', 'b']` at a site the consumer invokes as `(instance, context)`
+ * compiles cleanly and then computes nonsense, with nothing to warn about it.
+ *
+ * The most specific match wins, so a `series.*` signature can be overridden for
+ * one named fact. Specificity is the count of literal (non-wildcard) segments,
+ * then a trailing `**` losing to an exact-length pattern.
+ */
+export function findFunctionSignature(
+  path: string[],
+  registry: FunctionSignatureRegistry
+): FunctionSignature | undefined {
+  let best: { signature: FunctionSignature; literals: number; exact: boolean } | undefined;
+
+  for (const [pattern, signature] of registry) {
+    if (!patternMatches(pattern, path)) {
+      continue;
+    }
+    const segments = pattern.split('.');
+    const exact = segments[segments.length - 1] !== '**';
+    const literals = segments.filter(segment => segment !== '*' && segment !== '**').length;
+    if (!best || literals > best.literals || (literals === best.literals && exact && !best.exact)) {
+      best = { signature, literals, exact };
+    }
+  }
+
+  return best?.signature;
+}
+
 export default customizationFunctionPolicyDefaults;

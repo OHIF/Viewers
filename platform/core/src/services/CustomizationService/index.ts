@@ -9,10 +9,16 @@ export type {
 } from './customizationUrlTypes';
 export {
   CUSTOMIZATION_FUNCTION_POLICY_KEY,
+  DEFAULT_FUNCTION_PARAMS,
   customizationFunctionPolicyDefaults,
+  findFunctionSignature,
   getCustomizationFunctionPolicy,
   isFunctionAttributeDenied,
 } from './functionPolicy';
-export type { CustomizationFunctionPolicy } from './functionPolicy';
+export type {
+  CustomizationFunctionPolicy,
+  FunctionSignature,
+  FunctionSignatureRegistry,
+} from './functionPolicy';
 
 export default CustomizationService;

@@ -3,7 +3,13 @@ import JSON5 from 'json5';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import { compileExpression } from '@cornerstonejs/metadata';
 import type { CompiledExpression } from '@cornerstonejs/metadata';
-import { getCustomizationFunctionPolicy, isFunctionAttributeDenied } from './functionPolicy';
+import {
+  DEFAULT_FUNCTION_PARAMS,
+  findFunctionSignature,
+  getCustomizationFunctionPolicy,
+  isFunctionAttributeDenied,
+} from './functionPolicy';
+import type { FunctionSignature, FunctionSignatureRegistry } from './functionPolicy';
 import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
 import type ExtensionManager from '../../extensions/ExtensionManager';
@@ -126,6 +132,13 @@ export default class CustomizationService extends PubSubService {
    * transform every time a customization is requested.
    */
   private transformedCustomizations = new Map<string, Customization>();
+
+  /**
+   * `$function` calling conventions by attribute-path pattern, from
+   * {@link registerFunctionSignatures}. Code-only: never read from a
+   * customization or the app config.
+   */
+  private _functionSignatures: FunctionSignatureRegistry = new Map();
   private configuration: AppTypes.Config;
 
   /**
@@ -603,6 +616,10 @@ export default class CustomizationService extends PubSubService {
    * `appConfig.customizationFunctionPolicy.denyAttributes` — read from the app
    * config rather than from a customization, so a customization cannot lift its
    * own restrictions. Nothing is denied by default (see {@link functionPolicy}).
+   *
+   * The parameters the closure is compiled with come from
+   * {@link registerFunctionSignatures}, keyed on the attribute path — declared
+   * by whoever calls the closure rather than by the data that writes it.
    */
   private _resolveFunctionMarker(definition: any, path: string[]): CompiledExpression | undefined {
     const expr = typeof definition === 'string' ? definition : definition?.expr;
@@ -621,13 +638,87 @@ export default class CustomizationService extends PubSubService {
       return undefined;
     }
 
-    const params = typeof definition === 'object' ? definition.params : undefined;
+    const params = this._resolveFunctionParams(definition, path);
     try {
       return compileExpression(expr, { params });
     } catch (error) {
       console.warn(`CustomizationService: failed to compile $function "${expr}"`, error);
       return undefined;
     }
+  }
+
+  /**
+   * The parameter names a `$function` at `path` is compiled with.
+   *
+   * A registered signature wins, because the consumer of the closure is the only
+   * party that knows how it will be invoked. A marker may still spell the same
+   * signature out — copied from documentation, say — but one that *disagrees* is
+   * refused rather than honoured: data changing its own calling convention is
+   * how a marker silently computes the wrong thing.
+   *
+   * With nothing registered, the default `['instance', 'context']` applies and a
+   * marker's own `params` are accepted, which is how every `$function` behaved
+   * before signatures existed.
+   */
+  private _resolveFunctionParams(definition: any, path: string[]): FunctionSignature {
+    const declared = typeof definition === 'object' ? definition.params : undefined;
+    const registered = findFunctionSignature(path, this._functionSignatures);
+
+    if (!registered) {
+      return Array.isArray(declared) ? declared : DEFAULT_FUNCTION_PARAMS;
+    }
+
+    if (
+      Array.isArray(declared) &&
+      (declared.length !== registered.length ||
+        declared.some((name, index) => name !== registered[index]))
+    ) {
+      console.warn(
+        `CustomizationService: $function at "${path.join('.')}" declares params ` +
+          `[${declared.join(', ')}] but that attribute is called with ` +
+          `[${registered.join(', ')}]. Using the registered signature — remove the ` +
+          `\`params\` from the customization.`
+      );
+    }
+
+    return registered;
+  }
+
+  /**
+   * Declares the parameters a `$function` is called with, per attribute path.
+   *
+   * Called by whatever code will invoke the compiled closure — an extension
+   * registering a customization it later reads back — so that a data author does
+   * not have to guess the calling convention, and cannot get it wrong. Paths use
+   * the same dotted patterns as `denyAttributes` (`*` for one segment, a
+   * trailing `**` for any depth); the most specific match wins.
+   *
+   * ```ts
+   * customizationService.registerFunctionSignatures({
+   *   'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
+   *   'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+   * });
+   * ```
+   *
+   * Deliberately a method rather than a customization or an app-config value:
+   * signatures are a property of the code doing the calling, and a customization
+   * that could declare them could hand itself a different one.
+   */
+  public registerFunctionSignatures(signatures: Record<string, FunctionSignature>): void {
+    for (const [pattern, params] of Object.entries(signatures ?? {})) {
+      if (!Array.isArray(params) || params.some(name => typeof name !== 'string')) {
+        console.warn(
+          `CustomizationService: ignoring function signature for "${pattern}" — ` +
+            `it must be an array of parameter names.`,
+          params
+        );
+        continue;
+      }
+      this._functionSignatures.set(pattern, params);
+    }
+    // Signatures change how a marker compiles, so anything already resolved with
+    // the previous set has to be read again.
+    this.transformedCustomizations.clear();
   }
 
   /** Resolves a single `$reference` target name, guarding against cycles. */

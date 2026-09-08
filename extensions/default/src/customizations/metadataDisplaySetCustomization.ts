@@ -32,7 +32,35 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * rules and become a separate legacy stack display set (the legacy handler
  * merges them into the series' stackable display set instead).
  */
+/**
+ * How a `$function` at each split-rule attribute is invoked.
+ *
+ * Registered here, by the extension that reads these attributes back, rather
+ * than left for a data author to declare with `params`: the caller is the only
+ * party that knows the calling convention, and a marker guessing it wrong
+ * compiles cleanly and then computes nonsense.
+ *
+ * `series` facts take only the series context, so a bare `instances` in a fact
+ * expression resolves against it. `compareInstances` is the reason this exists
+ * at all — a comparator needs both instances in scope, which no default
+ * convention provides.
+ */
+const SPLIT_RULE_FUNCTION_SIGNATURES: Record<string, string[]> = {
+  'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.runBy': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.groupBy': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.series.*': ['context'],
+  'useMetadataDisplaySet.splitRules.customAttributes.*': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+};
+
 export default function getMetadataDisplaySetCustomization(context: ImageSetFactoryContext) {
+  // Registered as the customization module is built, which is the once-per-app
+  // moment the attributes below become readable.
+  context.servicesManager.services.customizationService?.registerFunctionSignatures?.(
+    SPLIT_RULE_FUNCTION_SIGNATURES
+  );
+
   return {
     useMetadataDisplaySet: {
       enabled: false,

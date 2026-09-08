@@ -186,6 +186,50 @@ The expression language itself lives in `@cornerstonejs/metadata` (as
 server building a study index compiles the same rules the viewer does. OHIF
 contributes only the `$function` marker that wires it into customizations.
 
+### How a `$function` is called
+
+The compiled closure's parameters are declared by the code that **calls** it, not
+by the data that writes it:
+
+```ts
+customizationService.registerFunctionSignatures({
+  'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+});
+```
+
+`@ohif/extension-default` registers the split-rule signatures, so a rule written
+in JSONC does not state a convention and cannot state a wrong one. A marker that
+declares `params` disagreeing with the registered signature is compiled with the
+registered one and warns — data changing its own calling convention is how a
+marker computes nonsense while looking correct. With nothing registered for a
+path, the default `['instance', 'context']` applies and a marker's own `params`
+are honoured.
+
+This is what makes an ordering comparator declarable as data, since a comparator
+needs both instances in scope:
+
+```jsonc
+{
+  "id": "spatial",
+  "matches": { "$function": "Modality === 'CT'" },
+  "compareInstances": { "$function": "a.SliceLocation - b.SliceLocation" }
+}
+```
+
+Returning 0 from a comparator declines to have an opinion rather than asserting
+the two instances are interchangeable: OHIF's default order (the
+`instanceSortingCriteria` customization, else patient position, else instance
+number) is the base, and whatever the comparator does not decide keeps it. So a
+rule can order by one attribute and leave the rest of the ordering alone.
+
+:::caution Bare identifiers still bind to the first argument
+In a comparator, a bare `SliceLocation` resolves against `a` — the first
+argument — rather than being an error, so `SliceLocation - b.SliceLocation`
+silently means `a.SliceLocation - b.SliceLocation`. Write `a.` and `b.`
+explicitly in a comparator.
+:::
+
 ### Withholding an attribute from data
 
 A `$function` cannot run code; it computes the value of the attribute it sits on
