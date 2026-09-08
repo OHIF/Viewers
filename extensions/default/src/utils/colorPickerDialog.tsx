@@ -5,10 +5,15 @@ import { FooterAction } from '@ohif/ui-next';
 import './colorPickerDialog.css';
 
 function ColorPickerDialog({ value, hide, onSave }) {
-  const [color, setColor] = useState(value);
+  // ChromePicker hides its hex input (and blocks toggling back to it)
+  // whenever the color's alpha is not exactly 1, so keep alpha out of the
+  // picker entirely and return the caller's alpha untouched on save.
+  const { a: alpha, ...rgbValue } = value ?? {};
+  const [color, setColor] = useState(rgbValue);
 
   const handleChange = color => {
-    setColor(color.rgb);
+    const { a: _a, ...rgb } = color.rgb;
+    setColor(rgb);
   };
 
   return (
@@ -16,6 +21,7 @@ function ColorPickerDialog({ value, hide, onSave }) {
       <ChromePicker
         color={color}
         onChange={handleChange}
+        disableAlpha={true}
         presetColors={[]}
         width={300}
       />
@@ -31,7 +37,7 @@ function ColorPickerDialog({ value, hide, onSave }) {
             dataCY="color-picker-save-btn"
             onClick={() => {
               hide();
-              onSave(color);
+              onSave({ ...color, a: alpha ?? 1 });
             }}
           >
             Save
