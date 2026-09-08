@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useViewportElementRegistration } from '@ohif/core';
 import { DisplayableDocumentType } from '../utils/displayableDocumentTypes';
@@ -14,7 +13,15 @@ const FAILURE_MESSAGE_KEYS: Record<DocumentLoadFailureReason, string> = {
   aborted: 'Loading document...',
 };
 
-function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
+type OHIFCornerstonePdfViewportProps = {
+  displaySets: AppTypes.DisplaySet[];
+  viewportId?: string;
+};
+
+function OHIFCornerstonePdfViewport({
+  displaySets,
+  viewportId = 'pdf-viewport',
+}: OHIFCornerstonePdfViewportProps) {
   const [embeddedDocument, setEmbeddedDocument] = useState<{
     url: string;
     documentType: DisplayableDocumentType;
@@ -148,10 +155,5 @@ function renderDocument(
     />
   );
 }
-
-OHIFCornerstonePdfViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  viewportId: PropTypes.string,
-};
 
 export default OHIFCornerstonePdfViewport;
