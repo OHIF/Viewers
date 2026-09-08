@@ -45,6 +45,8 @@ test.describe('Intersect operation', () => {
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 
+    await expect(contourSegmentationPanel.panel.rows, '4 initial segments').toHaveCount(4);
+
     const combineContours = rightPanelPageObject.contourSegmentationPanel.combineContours;
 
     await combineContours.open();
@@ -90,6 +92,8 @@ test.describe('Subtract operation', () => {
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 
+    await expect(contourSegmentationPanel.panel.rows, '4 initial segments').toHaveCount(4);
+
     const combineContours = rightPanelPageObject.contourSegmentationPanel.combineContours;
 
     await combineContours.open();
@@ -134,6 +138,8 @@ test.describe('Merge operation', () => {
     await contourSegmentationPanel.config.display.fillAndOutline();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
+
+    await expect(contourSegmentationPanel.panel.rows, '4 initial segments').toHaveCount(4);
 
     const combineContours = rightPanelPageObject.contourSegmentationPanel.combineContours;
 
