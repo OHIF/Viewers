@@ -38,7 +38,7 @@ test.describe('Intersect operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
     await contourSegmentationPanel.config.display.fillAndOutline.click();
 
@@ -83,7 +83,7 @@ test.describe('Subtract operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
     await contourSegmentationPanel.config.display.fillAndOutline.click();
 

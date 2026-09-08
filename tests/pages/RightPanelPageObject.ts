@@ -22,40 +22,56 @@ export class RightPanelPageObject {
   }
 
   /**
-   * Returns the accessors for one of the numeric (slider plus number input) controls of the
-   * segmentation appearance config section, e.g. its Opacity or Border control. The value is
-   * driven through the number input; the slider itself is not exercised yet.
+   * Expands the segmentation appearance config section unless it already is.
    */
-  private getNumericConfig(dataCy: string) {
-    const input = this.page.getByTestId(dataCy).locator('input[type="number"]');
+  private async openSegmentationConfig(typeSuffix: string) {
+    const opacityControl = this.page.getByTestId(`segmentation-config-opacity-${typeSuffix}`);
+
+    if (await opacityControl.isVisible()) {
+      return;
+    }
+    await this.page.getByTestId(`segmentation-config-toggle-${typeSuffix}`).click();
+    await opacityControl.waitFor({ state: 'visible' });
+  }
+
+  /**
+   * A numeric (slider plus number input) config control, e.g. Opacity or Border. The value is
+   * driven through the number input.
+   */
+  private getNumericConfig(control: 'opacity' | 'border' | 'opacity-inactive', typeSuffix: string) {
+    const input = this.page
+      .getByTestId(`segmentation-config-${control}-${typeSuffix}`)
+      .locator('input[type="number"]');
 
     return {
       input,
       fill: async (value: string) => {
+        await this.openSegmentationConfig(typeSuffix);
         await input.fill(value);
       },
     };
   }
 
   /**
-   * Returns the appearance config accessors shared by the segmentation panels: the section
-   * toggle, the display mode tabs and the opacity/border controls. The display tab buttons
-   * carry a data-state attribute reflecting which mode is currently selected.
+   * The appearance config shared by the segmentation panels.
    */
   private getSegmentationConfig(typeSuffix: string) {
     const page = this.page;
     const configToggle = page.getByTestId(`segmentation-config-toggle-${typeSuffix}`);
+    const open = () => this.openSegmentationConfig(typeSuffix);
     const displayMode = (mode: 'fill-and-outline' | 'outline' | 'fill') => {
       const button = page.getByTestId(`segmentation-config-display-${mode}-${typeSuffix}`);
       return {
         button,
         click: async () => {
+          await open();
           await button.click();
         },
       };
     };
 
     return {
+      open,
       toggle: {
         locator: configToggle,
         click: async () => {
@@ -67,9 +83,9 @@ export class RightPanelPageObject {
         outline: displayMode('outline'),
         fill: displayMode('fill'),
       },
-      opacity: this.getNumericConfig(`segmentation-config-opacity-${typeSuffix}`),
-      border: this.getNumericConfig(`segmentation-config-border-${typeSuffix}`),
-      opacityInactive: this.getNumericConfig(`segmentation-config-opacity-inactive-${typeSuffix}`),
+      opacity: this.getNumericConfig('opacity', typeSuffix),
+      border: this.getNumericConfig('border', typeSuffix),
+      opacityInactive: this.getNumericConfig('opacity-inactive', typeSuffix),
     };
   }
 

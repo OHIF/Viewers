@@ -63,8 +63,9 @@ test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await expect(contourPanel.panel.rows, 'Expected the default segment row').toHaveCount(1);
   await waitForViewportsRendered(page);
 
-  // Expand the appearance config section holding the display tabs and sliders.
-  await contourPanel.config.toggle.click();
+  // Expand the appearance config section holding the display tabs and sliders, so the tests
+  // that only assert on its controls find them. The config actions expand it on their own.
+  await contourPanel.config.open();
 });
 
 test('should render a panel-created contour with both fill and outline by default', async ({
