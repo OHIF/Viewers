@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.15](https://github.com/OHIF/Viewers/compare/v3.12.14...v3.12.15) (2026-09-08)
+
+
+### Bug Fixes
+
+* **dicom-pdf:** guarantee the type of encapsulated documents and release 3.12.15 ([#6228](https://github.com/OHIF/Viewers/issues/6228)) ([#6258](https://github.com/OHIF/Viewers/issues/6258)) ([f0dba78](https://github.com/OHIF/Viewers/commit/f0dba789a313f40fe7e8a8cbec322a8d8a491d76))
+
+
+
+
+
 ## [3.12.14](https://github.com/OHIF/Viewers/compare/v3.12.13...v3.12.14) (2026-09-03)
 
 **Note:** Version bump only for package @ohif/i18n
