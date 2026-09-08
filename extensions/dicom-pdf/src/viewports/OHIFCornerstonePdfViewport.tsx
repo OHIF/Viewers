@@ -58,12 +58,12 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
     const load = async () => {
       const result = await getDocument({ signal: abortController.signal });
 
-        if (isCancelled) {
+      if (isCancelled) {
         if (result.ok) {
           result.revoke();
         }
-          return;
-        }
+        return;
+      }
 
       if (!result.ok) {
         setEmbeddedDocument(null);
