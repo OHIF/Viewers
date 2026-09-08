@@ -421,6 +421,28 @@ export class RightPanelPageObject {
               await page.getByTestId(`segmentation-config-display-fill-Contour`).click();
             },
           },
+
+          get opacity() {
+            const container = page.getByTestId('segmentation-config-opacity-Contour');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+
+          get border() {
+            const container = page.getByTestId('segmentation-config-border-Contour');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
         };
       },
       get combineContours() {
