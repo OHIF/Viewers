@@ -2038,7 +2038,9 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const { viewport } = _getActiveViewportEnabledElement();
+      // May be undefined when no viewport is enabled (e.g. Escape pressed while
+      // a modal such as Preferences is open).
+      const enabledElement = _getActiveViewportEnabledElement();
       const previewTools = getPreviewTools({ toolGroupService });
 
       previewTools.forEach(tool => {
@@ -2050,7 +2052,7 @@ function commandsModule({
       });
 
       if (segmentAI.enabled) {
-        segmentAI[`${action}Preview`](viewport.element);
+        segmentAI[`${action}Preview`](enabledElement?.viewport?.element);
       }
     },
     acceptPreview: () => {
