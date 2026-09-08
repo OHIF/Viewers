@@ -25,6 +25,7 @@ import {
   measurementTextFormatters,
 } from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
+import { drawFreehandContour } from './drawFreehandContour';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
@@ -68,6 +69,7 @@ export {
   expectAnnotationStatsText,
   measurementTextFormatters,
   clearAllAnnotations,
+  drawFreehandContour,
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,

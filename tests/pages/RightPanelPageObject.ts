@@ -21,6 +21,58 @@ export class RightPanelPageObject {
     this.DOMOverlayPageObject = new DOMOverlayPageObject(page);
   }
 
+  /**
+   * Returns the accessors for one of the numeric (slider plus number input) controls of the
+   * segmentation appearance config section, e.g. its Opacity or Border control. The value is
+   * driven through the number input; the slider itself is not exercised yet.
+   */
+  private getNumericConfig(dataCy: string) {
+    const input = this.page.getByTestId(dataCy).locator('input[type="number"]');
+
+    return {
+      input,
+      fill: async (value: string) => {
+        await input.fill(value);
+      },
+    };
+  }
+
+  /**
+   * Returns the appearance config accessors shared by the segmentation panels: the section
+   * toggle, the display mode tabs and the opacity/border controls. The display tab buttons
+   * carry a data-state attribute reflecting which mode is currently selected.
+   */
+  private getSegmentationConfig(typeSuffix: string) {
+    const page = this.page;
+    const configToggle = page.getByTestId(`segmentation-config-toggle-${typeSuffix}`);
+    const displayMode = (mode: 'fill-and-outline' | 'outline' | 'fill') => {
+      const button = page.getByTestId(`segmentation-config-display-${mode}-${typeSuffix}`);
+      return {
+        button,
+        click: async () => {
+          await button.click();
+        },
+      };
+    };
+
+    return {
+      toggle: {
+        locator: configToggle,
+        click: async () => {
+          await configToggle.click();
+        },
+      },
+      display: {
+        fillAndOutline: displayMode('fill-and-outline'),
+        outline: displayMode('outline'),
+        fill: displayMode('fill'),
+      },
+      opacity: this.getNumericConfig(`segmentation-config-opacity-${typeSuffix}`),
+      border: this.getNumericConfig(`segmentation-config-border-${typeSuffix}`),
+      opacityInactive: this.getNumericConfig(`segmentation-config-opacity-inactive-${typeSuffix}`),
+    };
+  }
+
   private getCollapsedMoreMenu(typeSuffix?: string) {
     const page = this.page;
     const testId = typeSuffix
@@ -399,52 +451,7 @@ export class RightPanelPageObject {
           };
         },
       },
-      get config() {
-        const configToggle = page.getByTestId('segmentation-config-toggle-Contour');
-        return {
-          toggle: {
-            locator: configToggle,
-            click: async () => {
-              await configToggle.click();
-            },
-          },
-          display: {
-            fillAndOutline: async () => {
-              await page
-                .getByTestId(`segmentation-config-display-fill-and-outline-Contour`)
-                .click();
-            },
-            outline: async () => {
-              await page.getByTestId(`segmentation-config-display-outline-Contour`).click();
-            },
-            fill: async () => {
-              await page.getByTestId(`segmentation-config-display-fill-Contour`).click();
-            },
-          },
-
-          get opacity() {
-            const container = page.getByTestId('segmentation-config-opacity-Contour');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-
-          get border() {
-            const container = page.getByTestId('segmentation-config-border-Contour');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-        };
-      },
+      config: this.getSegmentationConfig('Contour'),
       get combineContours() {
         return {
           open: async () => {
@@ -535,50 +542,7 @@ export class RightPanelPageObject {
         },
       },
 
-      get config() {
-        const configToggle = page.getByTestId('segmentation-config-toggle-Labelmap');
-        return {
-          toggle: {
-            locator: configToggle,
-            click: async () => {
-              await configToggle.click();
-            },
-          },
-
-          get opacity() {
-            const container = page.getByTestId('segmentation-config-opacity-Labelmap');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-
-          get border() {
-            const container = page.getByTestId('segmentation-config-border-Labelmap');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-
-          get opacityInactive() {
-            const container = page.getByTestId('segmentation-config-opacity-inactive-Labelmap');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-        };
-      },
+      config: this.getSegmentationConfig('Labelmap'),
 
       get segmentBidirectional() {
         const button = page.getByTestId('SegmentBidirectional');

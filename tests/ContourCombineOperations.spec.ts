@@ -40,7 +40,7 @@ test.describe('Intersect operation', () => {
 
     await contourSegmentationPanel.config.toggle.click();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 
@@ -85,7 +85,7 @@ test.describe('Subtract operation', () => {
 
     await contourSegmentationPanel.config.toggle.click();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 
