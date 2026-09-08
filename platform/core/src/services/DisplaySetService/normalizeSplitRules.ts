@@ -1,5 +1,5 @@
+import { compileExpression } from '@cornerstonejs/metadata';
 import type { SplitRule } from '@cornerstonejs/metadata';
-import { compileExpression } from '../CustomizationService/expression';
 
 /**
  * Normalizes declaratively-authored split rules (e.g. JSONC URL

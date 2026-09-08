@@ -1,8 +1,9 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import { compileExpression } from './expression';
-import type { CompiledExpression } from './expression';
+import { compileExpression } from '@cornerstonejs/metadata';
+import type { CompiledExpression } from '@cornerstonejs/metadata';
+import { getCustomizationFunctionPolicy, isFunctionAttributeDenied } from './functionPolicy';
 import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
 import type ExtensionManager from '../../extensions/ExtensionManager';
@@ -499,7 +500,8 @@ export default class CustomizationService extends PubSubService {
     // so a value that references itself is caught as a cycle.
     const newTransformed = this._resolveReferences(
       this.transform(customization),
-      new Set([customizationId])
+      new Set([customizationId]),
+      [customizationId]
     );
     if (newTransformed !== undefined) {
       this.transformedCustomizations.set(customizationId, newTransformed);
@@ -527,8 +529,14 @@ export default class CustomizationService extends PubSubService {
    * functions and React elements are returned untouched, and unchanged values
    * are returned by identity so non-referencing customizations are not cloned.
    * Cycles are broken and warned via `seen`.
+   *
+   * `path` is the chain of object keys walked so far, starting at the
+   * customization id. It exists for `$function`, whose deny policy is keyed on
+   * where the marker sits (see {@link functionPolicy}). Array indices are
+   * deliberately not pushed onto it, so a pattern describes the shape of a
+   * customization rather than a position within a list.
    */
-  private _resolveReferences(value: any, seen: Set<string>): any {
+  private _resolveReferences(value: any, seen: Set<string>, path: string[]): any {
     if (!value || typeof value !== 'object' || value.$$typeof) {
       return value;
     }
@@ -536,7 +544,7 @@ export default class CustomizationService extends PubSubService {
       return this._resolveReferenceName(value.$reference, seen);
     }
     if (value.$function !== undefined) {
-      return this._resolveFunctionMarker(value.$function);
+      return this._resolveFunctionMarker(value.$function, path);
     }
     if (Array.isArray(value)) {
       let changed = false;
@@ -556,7 +564,8 @@ export default class CustomizationService extends PubSubService {
             result.push(resolved);
           }
         } else {
-          const resolved = this._resolveReferences(item, seen);
+          // Same `path`: an array index is not an attribute name.
+          const resolved = this._resolveReferences(item, seen, path);
           changed ||= resolved !== item;
           result.push(resolved);
         }
@@ -569,7 +578,7 @@ export default class CustomizationService extends PubSubService {
     let changed = false;
     const result: Record<string, any> = {};
     for (const [key, val] of Object.entries(value)) {
-      const resolved = this._resolveReferences(val, seen);
+      const resolved = this._resolveReferences(val, seen, [...path, key]);
       changed ||= resolved !== val;
       result[key] = resolved;
     }
@@ -589,13 +598,29 @@ export default class CustomizationService extends PubSubService {
    * closure is memoized with the transformed customization; a parse error
    * warns and resolves to `undefined` rather than breaking the whole
    * customization read.
+   *
+   * A deployment can withhold particular attributes from data via
+   * `appConfig.customizationFunctionPolicy.denyAttributes` — read from the app
+   * config rather than from a customization, so a customization cannot lift its
+   * own restrictions. Nothing is denied by default (see {@link functionPolicy}).
    */
-  private _resolveFunctionMarker(definition: any): CompiledExpression | undefined {
+  private _resolveFunctionMarker(definition: any, path: string[]): CompiledExpression | undefined {
     const expr = typeof definition === 'string' ? definition : definition?.expr;
     if (typeof expr !== 'string' || !expr.trim()) {
       console.warn('CustomizationService: invalid $function definition', definition);
       return undefined;
     }
+
+    const policy = getCustomizationFunctionPolicy(this);
+    if (isFunctionAttributeDenied(path, policy.denyAttributes)) {
+      console.warn(
+        `CustomizationService: refusing $function at "${path.join('.')}" — that attribute is ` +
+          `listed in appConfig.customizationFunctionPolicy.denyAttributes.`,
+        expr
+      );
+      return undefined;
+    }
+
     const params = typeof definition === 'object' ? definition.params : undefined;
     try {
       return compileExpression(expr, { params });
@@ -620,7 +645,11 @@ export default class CustomizationService extends PubSubService {
       return undefined;
     }
     const nextSeen = new Set(seen).add(name);
-    return this._resolveReferences(this.transform(raw), nextSeen);
+    // The path restarts at the referenced customization rather than continuing
+    // the referrer's: a `$function` inside `<name>` is at an attribute path of
+    // `<name>`, and must be approved (or not) by the same pattern whether it is
+    // read directly or reached through a reference.
+    return this._resolveReferences(this.transform(raw), nextSeen, [name]);
   }
 
   /**

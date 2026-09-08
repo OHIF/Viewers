@@ -1,3 +1,27 @@
+/**
+ * OHIF's default display-set split rules, hand-written as closures.
+ *
+ * **Transitional.** `@cornerstonejs/metadata` now authors its own defaults as a
+ * raw selector — rules as pure JSON, compiled by `createDisplaySetSplitRules` —
+ * so that a server indexing a study and a viewer splitting a series can read
+ * the same rules instead of each implementing them. These rules are not in that
+ * form, which means OHIF's *actual* defaults are the ones that cannot cross the
+ * wire.
+ *
+ * They are not being converted, because they are on their way out: each exists
+ * to reproduce the legacy stack SOP class handler exactly (see
+ * {@link isStackImageInstance}), and once that handler is gone the divergences
+ * below go with it. Converting them first would mean maintaining the
+ * legacy-parity behaviour twice, in two forms.
+ *
+ * What a conversion would need, when the time comes: the seam is already there.
+ * `createDisplaySetSplitRules` takes named `classifiers`, and everything
+ * OHIF-specific here reduces to one — `isStackHandledInstance` — so the rules
+ * themselves become JSON referencing `{ classifier: 'stackImage' }`.
+ *
+ * @module ohifDefaultSplitRules
+ */
+
 import {
   defaultDisplaySetSplitRules,
   isEcgInstance,

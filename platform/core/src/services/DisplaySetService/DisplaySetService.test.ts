@@ -330,7 +330,7 @@ describe('DisplaySetService', () => {
     it('supports declarative rules with compiled expressions (SCOUT example)', () => {
       // Simulates a JSONC-authored rule after $function markers were compiled
       // by the CustomizationService read-time resolution.
-      const { compileExpression } = require('../CustomizationService/expression');
+      const { compileExpression } = require('@cornerstonejs/metadata');
       const scoutRule = {
         id: 'ctScout',
         viewportTypes: ['stack'],
@@ -385,7 +385,7 @@ describe('DisplaySetService', () => {
     });
 
     it('does not split a small CT series with the SCOUT rule', () => {
-      const { compileExpression } = require('../CustomizationService/expression');
+      const { compileExpression } = require('@cornerstonejs/metadata');
       const scoutRule = {
         id: 'ctScout',
         viewportTypes: ['stack'],

@@ -1,7 +1,7 @@
 import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
 import type { SplitRule } from '@cornerstonejs/metadata';
 import { normalizeSplitRules } from './normalizeSplitRules';
-import { compileExpression } from '../CustomizationService/expression';
+import { compileExpression } from '@cornerstonejs/metadata';
 
 const makeInstance = (overrides: Record<string, unknown> = {}) => ({
   SOPInstanceUID: 'sop-1',

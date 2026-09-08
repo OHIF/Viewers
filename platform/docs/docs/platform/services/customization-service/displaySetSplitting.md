@@ -146,6 +146,29 @@ tags, while series facts are reached via `context.series`.
 Expressions can return strings as well as booleans — the same mechanism
 works for text-producing customizations such as viewport overlay items.
 
+:::note Composing text from attributes is intended
+A rule can build a display set's `label` or `SeriesDescription` out of any
+attribute the instance carries — that is the point of template literals here,
+and relabelling a split ("`SCOUT ${SeriesDescription}`", "b=0 / b=1000") is a
+main reason to write a rule at all. It is a capability, not an oversight.
+
+It does mean a rule decides what appears in the study browser and viewport
+overlays, and the instance it reads from carries patient identifiers alongside
+the acquisition tags. A rule that interpolates `PatientName` or `PatientID`
+will therefore put them on screen — and, because the text is composed by a
+*rule*, that can happen without anyone editing a viewer template.
+
+So treat a split-rule set as content a reviewer reads, on the same footing as
+the overlay configuration: whoever can write rules for a deployment can change
+what its screens say. Two things follow for how rules reach a deployment.
+Loading them from the URL is off unless `customizationUrlPrefixes` names a
+prefix, and that prefix should point somewhere with the same write controls as
+any other deployed configuration. And where text composition is not wanted at
+all, `customizationFunctionPolicy.denyAttributes` is where to withhold it — deny
+`customAttributes.label` and `customAttributes.SeriesDescription` and rules can
+still split, just not relabel.
+:::
+
 Where each rule field runs:
 
 | Field | Arguments | Bare identifiers read |
@@ -157,6 +180,65 @@ Where each rule field runs:
 
 Parse errors are reported at customization-read time with the offending
 expression; runtime errors warn once and evaluate to `undefined`.
+
+The expression language itself lives in `@cornerstonejs/metadata` (as
+`compileExpression`, part of its **safe functions**) rather than in OHIF, so a
+server building a study index compiles the same rules the viewer does. OHIF
+contributes only the `$function` marker that wires it into customizations.
+
+### Withholding an attribute from data
+
+A `$function` cannot run code; it computes the value of the attribute it sits on
+from the subject it is handed. A deployment that nonetheless wants to keep data
+out of a particular attribute names it in
+`appConfig.customizationFunctionPolicy.denyAttributes`:
+
+```js
+window.config = {
+  customizationFunctionPolicy: {
+    denyAttributes: [
+      // this deployment composes series labels centrally
+      'useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription',
+    ],
+  },
+};
+```
+
+A path is the chain of object keys from the customization id to the key holding
+the marker. **Array indices are not segments**, so one pattern covers every rule
+in a list and stays valid when the list is reordered. `*` matches exactly one
+segment (useful for author-named keys such as a series fact); a trailing `**`
+matches any remaining segments. A refused marker resolves to `undefined` with a
+console warning naming the path, and the rest of the rule still applies.
+
+**Nothing is denied by default.** `['**']` switches `$function` off entirely.
+
+It is a deny list rather than an allow list because the set of attributes a rule
+may legitimately compute is not knowable in advance — a rule's
+`customAttributes` keys are chosen by its author — so an allow list would refuse
+working configurations by default, which is a worse failure than the one it
+would prevent.
+
+Like `customizationUrlPrefixes`, this policy is read from the **app config and
+never from a customization** — customizations can be loaded from the URL, so a
+customization able to define the policy could lift its own restrictions.
+
+### Unknown attributes resolve to `undefined`
+
+An expression naming an attribute the instance does not carry evaluates to
+`undefined` rather than throwing, which is what makes sparse DICOM tags usable
+(`DiffusionBValue != undefined`). The cost is that a typo behaves the same way:
+`Modallity === 'CT'` compiles cleanly and then matches nothing.
+
+There is deliberately no validation against a known-attribute list. A
+naturalized instance carries private tags, vendor additions and per-frame data
+folded in by the naturalizer, so no dictionary enumerates it — validating
+against one would reject expressions that would have worked, and a false
+rejection breaks a deployment where a silent no-match only puzzles one.
+
+When a rule mysteriously matches nothing, a misspelt attribute is the first
+thing to check. `collectIdentifiers` from `@cornerstonejs/metadata` reports what
+an expression actually reads, which is the quickest way to see it.
 
 :::caution
 A `$function` that fails to compile resolves to `undefined`. For `matches` and
