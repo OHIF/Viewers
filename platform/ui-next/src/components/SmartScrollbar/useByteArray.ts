@@ -22,6 +22,9 @@ export interface ByteArrayHandle {
  *                          for immediate re-renders on every write.
  */
 export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle {
+  // A non-finite or negative size (e.g. a degenerate volume reporting
+  // Infinity slices) must not crash the Uint8Array allocation.
+  size = Number.isFinite(size) && size > 0 ? Math.floor(size) : 0;
   const bytesRef = useRef(new Uint8Array(size));
   const countRef = useRef(0);
   const [version, setVersion] = useState(0);

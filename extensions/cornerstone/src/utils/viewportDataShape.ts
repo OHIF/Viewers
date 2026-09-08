@@ -78,8 +78,12 @@ export function getViewportSliceCount(
   viewport: { getNumberOfSlices: () => number }
 ): number {
   const firstData = getPrimaryViewportDatum(viewportData);
-  return (
+  const count =
     (!isVolumeViewportData(viewportData) && firstData?.imageIds?.length) ||
-    viewport.getNumberOfSlices()
-  );
+    viewport.getNumberOfSlices();
+  // getNumberOfSlices() returns Infinity when the volume's spacing in the
+  // camera's normal direction degenerates to 0 (seen with some SEG-derived
+  // volumes in multi-viewport layouts); a non-finite count is unusable for
+  // slice-indexed UI and crashes typed-array allocation downstream.
+  return Number.isFinite(count) && count > 0 ? count : 0;
 }
