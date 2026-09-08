@@ -1,5 +1,10 @@
 import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
-import type { InstanceGroup, NaturalizedInstance, SplitRule } from '@cornerstonejs/metadata';
+import type {
+  GroupInstancesOptions,
+  InstanceGroup,
+  NaturalizedInstance,
+  SplitRule,
+} from '@cornerstonejs/metadata';
 import { ExtensionManager } from '../../extensions';
 import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
@@ -27,6 +32,25 @@ export type UseMetadataDisplaySetCustomization = {
     group: InstanceGroup,
     context: { splitNumber: number }
   ) => DisplaySet | undefined;
+  /**
+   * The base instance order the engine applies to every rule, before any rule's
+   * own `compareInstances`. A whole-list sort, because OHIF's default order is
+   * one — `sortImagesByPatientPosition` picks a reference instance and projects
+   * onto its normal, which no pairwise comparator expresses.
+   *
+   * Optional. The display set factory applies OHIF's default order itself (it
+   * needs `isReconstructable`, which only exists once the display set is built),
+   * so supplying this changes the order the *engine* walks runs in — and hence
+   * which display sets a `runBy` rule produces — rather than the final frame
+   * order. Unset, the engine's acquisition order applies.
+   */
+  sortInstances?: GroupInstancesOptions['sortInstances'];
+  /**
+   * A comparator the engine consults after a rule's own `compareInstances` and
+   * before falling back to the base order. Returning 0 declines to have an
+   * opinion rather than asserting equality.
+   */
+  compareInstances?: GroupInstancesOptions['compareInstances'];
 };
 
 /**
@@ -472,7 +496,16 @@ export default class DisplaySetService extends PubSubService {
     const groups = groupInstancesBySplitRules(
       instancesSrc as unknown as NaturalizedInstance[],
       config.splitRules,
-      instance => unmatched.push(instance as unknown as InstanceMetadata)
+      instance => unmatched.push(instance as unknown as InstanceMetadata),
+      // Ordering the engine applies to every rule, so the instance order it
+      // walks runs in - and so which display sets a `runBy` rule produces -
+      // matches the order the display sets end up in. Optional: with neither
+      // supplied the engine's own acquisition order applies, which is what the
+      // legacy handler effectively used for run detection.
+      {
+        sortInstances: config.sortInstances,
+        compareInstances: config.compareInstances,
+      }
     );
 
     if (!groups.length) {

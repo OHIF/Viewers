@@ -1,4 +1,5 @@
-import type { InstanceGroup } from '@cornerstonejs/metadata';
+import { orderInstancesForRule } from '@cornerstonejs/metadata';
+import type { InstanceGroup, SplitRule } from '@cornerstonejs/metadata';
 import {
   applyImageListAttributes,
   applyThumbnailSrc,
@@ -20,6 +21,33 @@ const RESERVED_ATTRIBUTES = new Set([
 ]);
 
 /**
+ * Puts a split-rule display set's images in the order the rule asks for.
+ *
+ * Two orderings meet here and only one can win. OHIF has a default instance
+ * order (`ImageSet.sortInstances` — the `instanceSortingCriteria` customization,
+ * else patient-position, else instance number) and a split rule may declare a
+ * `compareInstances` of its own. Calling OHIF's sort on its own discards the
+ * rule's, which is what used to happen: the engine ordered the group and
+ * `imageSet.sort` immediately re-sorted it from scratch, so a rule's declared
+ * order had no effect on the display set at all.
+ *
+ * `orderInstancesForRule` composes them with the engine's own precedence, so the
+ * answer is the same one the split engine computed: OHIF's default is the base
+ * order, the rule's comparator overrides it where it has an opinion, and a
+ * comparator returning 0 leaves the base order alone.
+ *
+ * Sorted in place, because `imageSet.images` is a non-writable property whose
+ * contents are mutable.
+ */
+function applyInstanceOrder(imageSet, matchedRule: SplitRule, context: ImageSetFactoryContext) {
+  const { customizationService } = context.servicesManager.services;
+  const ordered = orderInstancesForRule(imageSet.images, matchedRule, {
+    sortInstances: list => imageSet.sortInstances(list, customizationService),
+  });
+  imageSet.images.splice(0, imageSet.images.length, ...ordered);
+}
+
+/**
  * Converts a `@cornerstonejs/metadata` split-rule instance group into a full
  * OHIF ImageSet display set.  This is the default
  * `createDisplaySetFromGroup` of the `useMetadataDisplaySet` customization.
@@ -36,7 +64,11 @@ export function makeDisplaySetFromInstanceGroup(
 ) {
   const { instances, matchedRule, splitKey } = group;
 
-  const imageSet = makeImageSetDisplaySet([...instances], context);
+  const imageSet = makeImageSetDisplaySet([...instances], context, {
+    // The order is applied below, once, with the matched rule folded in.
+    skipSort: true,
+  });
+  applyInstanceOrder(imageSet, matchedRule, context);
   const sopClassUids = [...new Set(instances.map(instance => instance.SOPClassUID))];
   const viewportTypes = matchedRule.viewportTypes ? [...matchedRule.viewportTypes] : undefined;
 
@@ -91,7 +123,7 @@ export function makeDisplaySetFromInstanceGroup(
 
     // `images` is a non-writable property, but the array contents are mutable.
     imageSet.images.push(...instancesToAdd);
-    imageSet.sort(context.servicesManager.services.customizationService);
+    applyInstanceOrder(imageSet, matchedRule, context);
 
     // Recompute every image-list-derived attribute through the same helper the
     // initial build uses (reconstructability, messages, volumeLoaderSchema,

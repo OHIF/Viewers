@@ -111,7 +111,19 @@ function getDisplaySetInfo(instances, imageIds, context: ImageSetFactoryContext)
  * handler and the `useMetadataDisplaySet` split-rules path, so both paths
  * produce identical display sets.
  */
-export function makeImageSetDisplaySet(instances, context: ImageSetFactoryContext) {
+export type MakeImageSetDisplaySetOptions = {
+  /**
+   * Leave the instance order alone. Set by the split-rule path, which applies
+   * OHIF's default order and the matched rule's comparator together, once.
+   */
+  skipSort?: boolean;
+};
+
+export function makeImageSetDisplaySet(
+  instances,
+  context: ImageSetFactoryContext,
+  options: MakeImageSetDisplaySetOptions = {}
+) {
   // Need to sort the instances in order to get a consistent instance/thumbnail
   sortStudyInstances(instances);
   const instance = instances[0];
@@ -146,7 +158,13 @@ export function makeImageSetDisplaySet(instances, context: ImageSetFactoryContex
   const { servicesManager } = context;
   const { customizationService } = servicesManager.services;
 
-  imageSet.sort(customizationService);
+  // The legacy SOP class handler path has no rule to consult, so OHIF's default
+  // order is the whole answer and is applied here. The split-rule path passes
+  // `skipSort` and orders once itself, folding the matched rule's comparator in
+  // over this same default - see `applyInstanceOrder`.
+  if (!options.skipSort) {
+    imageSet.sort(customizationService);
+  }
 
   return imageSet;
 }
