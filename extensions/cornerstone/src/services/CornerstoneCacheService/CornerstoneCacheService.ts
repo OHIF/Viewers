@@ -2,6 +2,7 @@ import { Types } from '@ohif/core';
 import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
+import { loadDisplaySetData } from '../../utils/loadDisplaySetData';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { VOLUME_LOADER_SCHEME } from '../../constants';
 
@@ -197,23 +198,11 @@ class CornerstoneCacheService {
     initialImageIndex,
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
-    const { uiNotificationService } = this.servicesManager.services;
+    // Overlays are loaded before the loop below so that a segmentation can
+    // back-fill the imageIds of the series it references.
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
     for (const overlayDisplaySet of overlayDisplaySets) {
-      if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
-        const { userAuthenticationService } = this.servicesManager.services;
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        try {
-          await overlayDisplaySet.load({ headers });
-        } catch (e) {
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
-      }
+      await loadDisplaySetData(overlayDisplaySet, this.servicesManager);
     }
 
     // Ensuring the first non-overlay `displaySet` is always the primary one
@@ -221,20 +210,7 @@ class CornerstoneCacheService {
     for (const displaySet of displaySets) {
       const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
 
-      if (displaySet.load && displaySet.load instanceof Function) {
-        const { userAuthenticationService } = this.servicesManager.services;
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        try {
-          await displaySet.load({ headers });
-        } catch (e) {
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
-      }
+      await loadDisplaySetData(displaySet, this.servicesManager);
 
       let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
@@ -280,21 +256,8 @@ class CornerstoneCacheService {
       // and they take care of their own loading after they are created in their
       // getSOPClassHandler method
 
-      if (displaySet.load && displaySet.load instanceof Function) {
-        const { userAuthenticationService } = this.servicesManager.services;
-        const headers = userAuthenticationService.getAuthorizationHeader();
-
-        try {
-          await displaySet.load({ headers });
-        } catch (e) {
-          const { uiNotificationService } = this.servicesManager.services;
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
+      if (displaySet.load instanceof Function) {
+        await loadDisplaySetData(displaySet, this.servicesManager);
 
         // Parametric maps have a `load` method but it should not be loaded in the
         // same way as SEG and RTSTRUCT but like a normal volume
