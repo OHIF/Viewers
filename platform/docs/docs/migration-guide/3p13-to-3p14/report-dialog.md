@@ -96,6 +96,18 @@ defaults to.  A `predecessorImageId` that does not belong to a loaded series of
 the given modality falls back to creating a new series, rather than claiming to
 update a series that cannot be described.
 
+A `predecessorImageId` value is the image id of one instance, and not the id of a
+series.  The dialog offers a loaded series as a destination only when that series
+has a `predecessorImageId` value.  The dialog does not fall back to the
+`SeriesInstanceUID` value of the display set, because a `SeriesInstanceUID` value
+is not an image id: the `PredecessorSequence` provider finds no instance for a
+UID, and the provider then raises an exception while the adapter makes the
+object.  A local id, such as `dicomfile:3`, is a valid value, and the dialog
+offers a series that carries one: the viewer registers an uploaded instance under
+a local id, so a user can save more than once against an uploaded instance.  A
+series that the dialog does not offer still counts towards the number that the
+dialog offers for a new series.
+
 ## `createReportDialogPrompt` output
 
 `seriesNumber` is new:

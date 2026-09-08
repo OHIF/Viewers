@@ -114,6 +114,26 @@ const UNRELATED_SERIES = {
   SeriesDescription: 'Axial',
 };
 
+// A series that the user uploaded, which the viewer registers under a local id.
+// The provider resolves a local id, so this series is a destination.
+const LOCAL_SERIES = {
+  displaySetInstanceUID: 'ds-local',
+  Modality: 'SEG',
+  SeriesInstanceUID: '1.2.6',
+  SeriesNumber: 3107,
+  SeriesDescription: 'Kidney',
+  predecessorImageId: 'dicomfile:3',
+};
+
+// A series that the viewer downloaded and never stored, so no image id names it.
+const DOWNLOADED_SERIES = {
+  displaySetInstanceUID: 'ds-downloaded',
+  Modality: 'SEG',
+  SeriesInstanceUID: '1.2.7',
+  SeriesNumber: 3108,
+  SeriesDescription: 'Pancreas',
+};
+
 const HISTORY_STORAGE_KEY = 'ohif.seriesDescriptionHistory';
 
 function setDisplaySets(displaySets) {
@@ -242,6 +262,16 @@ describe('ReportDialog', () => {
       expect(seriesNumberField().value).toBe('3101');
     });
 
+    it('counts a series that it does not offer as a destination', () => {
+      // 3108 belongs to a series that no predecessor image id names, so the
+      // lists above do not offer that series. A new series must still get a
+      // number past 3108, or a later save takes a number that is already in use.
+      setDisplaySets([CURRENT_SERIES, DOWNLOADED_SERIES]);
+      renderDialog();
+
+      expect(seriesNumberField().value).toBe('3109');
+    });
+
     it('saves an edited series number and description', () => {
       const { onSave } = renderDialog();
 
@@ -313,6 +343,49 @@ describe('ReportDialog', () => {
       fireEvent.click(tab('replace'));
 
       expect(screen.getByText('Series 3103')).toBeTruthy();
+    });
+
+    it('does not offer a series that no predecessor image id names', () => {
+      setDisplaySets([CURRENT_SERIES, OTHER_SERIES, LOCAL_SERIES, DOWNLOADED_SERIES]);
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      fireEvent.click(tab('replace'));
+
+      expect(screen.getByText('Spleen')).toBeTruthy();
+      // An uploaded instance carries a local id, and the provider resolves that
+      // id, so the user can save against the uploaded instance more than once.
+      expect(screen.getByText('Kidney')).toBeTruthy();
+      // A downloaded object has no predecessor image id. The list gave the
+      // SeriesInstanceUID of that display set before, which is not an image id,
+      // and the adapter then raised an exception while it made the object.
+      expect(screen.queryByText('Pancreas')).toBeNull();
+    });
+
+    it('cannot replace when the only other series has no predecessor image id', () => {
+      setDisplaySets([CURRENT_SERIES, DOWNLOADED_SERIES]);
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      expect(isDisabled(tab('replace'))).toBe(true);
+    });
+
+    it('stores into an uploaded series through its local image id', () => {
+      // The viewer registers an uploaded instance under a local id, and the
+      // provider resolves that id. A user must be able to save more than once
+      // against an uploaded instance, so a local id is a destination.
+      setDisplaySets([LOCAL_SERIES]);
+      const { onSave } = renderDialog();
+
+      fireEvent.click(tab('replace'));
+      fireEvent.click(screen.getByText('Kidney'));
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reportName: 'Kidney',
+          series: 'dicomfile:3',
+          seriesNumber: 3107,
+        })
+      );
     });
   });
 

@@ -22,14 +22,32 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  *     descriptions to remember and offer for this type of item, 0 to remember
  *     none of them.
  *
- * The dialog offers exactly two destinations, and says which one is in effect:
- *   - `New Series` creates a new series, with an editable series number
+ * The dialog offers three destinations, and says which one is in effect.  Each
+ * destination stores all of the current data as one object; the destination
+ * decides only which series that object belongs to, and so which instance the
+ * object supersedes.  The dialog merges nothing:
+ *   - `Save as new` creates a new series, with an editable series number
  *     (defaulting to one past the existing series of this modality) and series
  *     description.  The description defaults to the one last used for this type
  *     of item, or to `defaultSeriesDescription` when there isn't one, and both
  *     are offered as completions of what gets typed.
- *   - `Extend Existing` stores into the series the data was loaded from, which
- *     keeps its own series number and description, so neither is editable.
+ *   - `Save to current` stores into the series the data was loaded from, which
+ *     keeps its own series number and description, so neither is editable.  The
+ *     dialog offers this destination only when `predecessorImageId` names a
+ *     loaded series.
+ *   - `Replace existing` stores into another loaded series of this modality,
+ *     which the user chooses from a list.  That series also keeps its own series
+ *     number and description.  The dialog offers this destination only when
+ *     there is another such series.
+ *
+ * A series appears as a destination only when that series has a
+ * `predecessorImageId` value.  The value is the image id of one instance, the
+ * save supersedes that one instance, and the save reads the series and the
+ * instance number through the image id.  A local id, such as `dicomfile:3`, is
+ * a valid value: the viewer registers an uploaded instance under a local id, so
+ * a user can save more than once against an uploaded instance.  A display set
+ * that the viewer downloaded and never stored has no value, and the dialog does
+ * not offer that display set.
  *
  * The response is:
  *   - `value`, the series description of the object/series being created.  When

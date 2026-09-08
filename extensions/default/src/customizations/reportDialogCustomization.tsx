@@ -141,18 +141,24 @@ function ReportDialog({
   );
   const { displaySetService } = servicesManager.services;
 
+  /** Every loaded display set of the stored modality. */
+  const modalityDisplaySets = useMemo(
+    () =>
+      Array.from(displaySetService.getDisplaySetCache().values()).filter(
+        ds => ds.Modality === modality
+      ),
+    [displaySetService, modality]
+  );
+
   const existingSeries = useMemo((): ExistingSeries[] => {
-    const displaySetsMap = displaySetService.getDisplaySetCache();
-    const displaySets = Array.from(displaySetsMap.values());
     const seen = new Set<string>();
 
-    return displaySets
-      .filter(ds => ds.Modality === modality)
+    return modalityDisplaySets
       .map(ds => {
         const hasSeriesNumber = isFinite(ds.SeriesNumber);
         const seriesNumberLabel = hasSeriesNumber ? `${ds.SeriesNumber}` : 'Not specified';
         return {
-          value: ds.predecessorImageId || ds.SeriesInstanceUID,
+          value: ds.predecessorImageId,
           seriesNumber: hasSeriesNumber ? Number(ds.SeriesNumber) : minSeriesNumber,
           seriesNumberLabel,
           description: ds.SeriesDescription || null,
@@ -160,15 +166,29 @@ function ReportDialog({
         };
       })
       .filter(series => {
-        // Two display sets of one series would otherwise both be offered, and
-        // the select needs unique values.
+        // A `predecessorImageId` value is the image id of one instance, and the
+        // save supersedes that one instance.  The `PredecessorSequence` provider
+        // reads the general image module of the instance through the value.
+        //
+        // A `SeriesInstanceUID` value is not an image id, so this list does not
+        // fall back to one.  The provider finds no instance for a UID, and the
+        // provider then raises an exception on `1 + Number(undefined)` while the
+        // adapter makes the object.  A display set that the viewer downloaded and
+        // never stored has no value, and this list drops that display set.
+        //
+        // A local id, such as `dicomfile:3`, stays in this list.  The viewer
+        // registers an uploaded instance under a local id, and the provider
+        // resolves that id, so a user can save more than once against an
+        // uploaded instance.
+        //
+        // A dropped series still counts towards the number of a new series below.
         if (!series.value || seen.has(series.value)) {
           return false;
         }
         seen.add(series.value);
         return true;
       });
-  }, [displaySetService, modality, minSeriesNumber]);
+  }, [modalityDisplaySets, minSeriesNumber]);
 
   /**
    * The series the data was loaded from, which `Save to current` writes into.
@@ -185,10 +205,23 @@ function ReportDialog({
     [existingSeries, currentSeries]
   );
 
-  /** The series number offered for a new series - one past the existing ones. */
+  /**
+   * The series number offered for a new series - one past the existing ones.
+   *
+   * This number counts every loaded series of the modality, and not the series
+   * that the lists above offer.  A series without a `predecessorImageId` value
+   * is not offered, and a count of the offered series alone therefore gave the
+   * next new series a number that a loaded series already holds.
+   */
   const defaultNewSeriesNumber = useMemo(
-    () => 1 + Math.max(minSeriesNumber, ...existingSeries.map(series => series.seriesNumber)),
-    [existingSeries, minSeriesNumber]
+    () =>
+      1 +
+      modalityDisplaySets.reduce(
+        (highest, ds) =>
+          isFinite(ds.SeriesNumber) ? Math.max(highest, Number(ds.SeriesNumber)) : highest,
+        minSeriesNumber
+      ),
+    [modalityDisplaySets, minSeriesNumber]
   );
 
   /**
