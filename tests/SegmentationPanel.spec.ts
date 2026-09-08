@@ -88,7 +88,7 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
   test.beforeEach(async ({ rightPanelPageObject }) => {
     await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-    await rightPanelPageObject.labelMapSegmentationPanel.config.toggle.click();
+    await rightPanelPageObject.labelMapSegmentationPanel.config.open();
   });
 
   test.describe('opacity', () => {
