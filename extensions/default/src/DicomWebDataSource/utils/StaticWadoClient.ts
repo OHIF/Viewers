@@ -190,6 +190,13 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       );
     }
 
+    // Worklist filtering is expected to be case-insensitive regardless of
+    // fuzzy matching support (e.g. MRN, description, accession number).
+    if (typeof actual === 'string' && typeof desired === 'string') {
+      actual = actual.toLowerCase();
+      desired = desired.toLowerCase();
+    }
+
     if (typeof actual == 'string') {
       if (actual.length === 0) {
         return true;
