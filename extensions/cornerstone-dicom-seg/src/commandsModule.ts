@@ -322,8 +322,9 @@ const commandsModule = ({
       }
 
       const { label, predecessorImageId } = segmentation;
-      const defaultSeriesDescription =
-        label || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
+      // The label is the editable name, and this is the name for an item
+      // without one.  The dialog offers the label first, and this name last.
+      const defaultSeriesDescription = modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation';
 
       const {
         value: reportName,
@@ -337,6 +338,7 @@ const commandsModule = ({
         predecessorImageId,
         title: modality === 'RTSTRUCT' ? 'Save Contours' : 'Save Segmentation',
         modality,
+        itemName: label,
         defaultSeriesDescription,
         enableDownload: true,
       });
@@ -363,7 +365,7 @@ const commandsModule = ({
           options: {
             // Resolve store overrides against the data source we are storing into.
             dataSource: dataSourceName,
-            SeriesDescription: series ? undefined : reportName || defaultSeriesDescription,
+            SeriesDescription: series ? undefined : reportName || label || defaultSeriesDescription,
             SeriesNumber: series ? undefined : seriesNumber,
             predecessorImageId: series,
           },

@@ -114,8 +114,7 @@ const UNRELATED_SERIES = {
   SeriesDescription: 'Axial',
 };
 
-// A series that the user uploaded, which the viewer registers under a local id.
-// The provider resolves a local id, so this series is a destination.
+// An uploaded instance carries a local id, which the provider resolves.
 const LOCAL_SERIES = {
   displaySetInstanceUID: 'ds-local',
   Modality: 'SEG',
@@ -125,7 +124,7 @@ const LOCAL_SERIES = {
   predecessorImageId: 'dicomfile:3',
 };
 
-// A series that the viewer downloaded and never stored, so no image id names it.
+// The viewer never stored this series, so the series has no predecessor image id.
 const DOWNLOADED_SERIES = {
   displaySetInstanceUID: 'ds-downloaded',
   Modality: 'SEG',
@@ -263,9 +262,8 @@ describe('ReportDialog', () => {
     });
 
     it('counts a series that it does not offer as a destination', () => {
-      // 3108 belongs to a series that no predecessor image id names, so the
-      // lists above do not offer that series. A new series must still get a
-      // number past 3108, or a later save takes a number that is already in use.
+      // The lists do not offer series 3108, because that series has no
+      // predecessor image id.  A new series must still take a number past 3108.
       setDisplaySets([CURRENT_SERIES, DOWNLOADED_SERIES]);
       renderDialog();
 
@@ -352,12 +350,10 @@ describe('ReportDialog', () => {
       fireEvent.click(tab('replace'));
 
       expect(screen.getByText('Spleen')).toBeTruthy();
-      // An uploaded instance carries a local id, and the provider resolves that
-      // id, so the user can save against the uploaded instance more than once.
+      // An uploaded instance carries a local id, which the provider resolves.
       expect(screen.getByText('Kidney')).toBeTruthy();
-      // A downloaded object has no predecessor image id. The list gave the
-      // SeriesInstanceUID of that display set before, which is not an image id,
-      // and the adapter then raised an exception while it made the object.
+      // The list gave the `SeriesInstanceUID` of this display set before, which
+      // is not an image id, and the provider then threw a `TypeError`.
       expect(screen.queryByText('Pancreas')).toBeNull();
     });
 
@@ -369,9 +365,7 @@ describe('ReportDialog', () => {
     });
 
     it('stores into an uploaded series through its local image id', () => {
-      // The viewer registers an uploaded instance under a local id, and the
-      // provider resolves that id. A user must be able to save more than once
-      // against an uploaded instance, so a local id is a destination.
+      // A user must be able to save against an uploaded instance more than once.
       setDisplaySets([LOCAL_SERIES]);
       const { onSave } = renderDialog();
 
@@ -415,13 +409,41 @@ describe('ReportDialog', () => {
       expect(descriptionField().value).toBe('Right kidney');
 
       fireEvent.click(screen.getByTestId('report-series-description-options'));
-      // The ones used before, most recent first, then the provided one.
+      // The ones used before, most recent first, then the generic name.
       expect(shownDescriptions()).toEqual(['Right kidney', 'Left kidney', 'Segmentation 1']);
     });
 
-    it('offers the description the data was loaded from before any other', () => {
-      // A save of this data into a new series usually keeps the name that the
-      // data already has, so that name comes before the remembered ones.
+    it('offers the item name before every other description', () => {
+      // The user renamed `Liver` to `Liver + tumor` before the save.
+      setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID, itemName: 'Liver + tumor' });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver + tumor');
+
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      expect(shownDescriptions()).toEqual([
+        'Liver + tumor',
+        'Liver',
+        'Right kidney',
+        'Left kidney',
+        'Segmentation 1',
+      ]);
+    });
+
+    it('ignores an item name of spaces', () => {
+      // A blank name must not hide the description of the loaded series.
+      setStoredHistory({ SEG: ['Right kidney'] });
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID, itemName: '  ' });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver');
+    });
+
+    it('offers the description of the loaded series when there is no item name', () => {
+      // The name of the last save comes before the remembered names.
       setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
       renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
 
@@ -439,18 +461,15 @@ describe('ReportDialog', () => {
     });
 
     it('offers the last used description when the caller provides none', () => {
-      // The findings flow of a fork provides no description. The field started
-      // from `descriptionOptions[1]` before, which was the name used before the
-      // last one, because the empty provided name never took the first place.
+      // A caller such as the findings flow of a fork provides no description.
       setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
       renderDialog({ defaultSeriesDescription: '' });
 
       expect(descriptionField().value).toBe('Right kidney');
     });
 
-    it('offers the last used description when the provided one is the same', () => {
-      // The deduplication drops the remembered copy of the provided name, which
-      // moved every later name up one place and offered the second most recent.
+    it('drops the second copy of a description that two sources hold', () => {
+      // The history holds the generic name, so the list holds that name once.
       setStoredHistory({ SEG: ['Segmentation 1', 'Left kidney'] });
       renderDialog();
 
@@ -467,7 +486,7 @@ describe('ReportDialog', () => {
       fireEvent.change(descriptionField(), { target: { value: '  ' } });
       fireEvent.click(saveButton());
 
-      // The name the field offered, and not the provided one behind it.
+      // The name the field offered, and not the generic name behind it.
       expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
     });
 
@@ -502,10 +521,30 @@ describe('ReportDialog', () => {
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
     });
 
+    it('still starts from the item name for a count of 0', () => {
+      setStoredHistory({ SEG: ['Right kidney'] });
+      renderDialog({ rememberedDescriptionCount: 0, itemName: 'Liver + tumor' });
+
+      expect(descriptionField().value).toBe('Liver + tumor');
+      expect(screen.queryByTestId('report-series-description-options')).toBeNull();
+    });
+
+    it('ignores an item name of spaces for a count of 0', () => {
+      // A blank name must not empty the field, and must not hide `Liver`.
+      renderDialog({
+        rememberedDescriptionCount: 0,
+        itemName: '   ',
+        predecessorImageId: CURRENT_SERIES_IMAGE_ID,
+      });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver');
+      expect(screen.queryByTestId('report-series-description-options')).toBeNull();
+    });
+
     it('offers the default when the current description is blank, for a count of 0', () => {
-      // A blank series description is truthy, so it was taken as the one name
-      // the count of 0 offers, and then dropped for being blank: the field
-      // opened empty and an emptied field saved an empty name.
+      // A blank loaded description must fall through to the generic name.
       setDisplaySets([{ ...CURRENT_SERIES, SeriesDescription: '   ' }]);
       const { onSave } = renderDialog({
         rememberedDescriptionCount: 0,
@@ -571,7 +610,7 @@ describe('ReportDialog', () => {
       fireEvent.keyDown(descriptionField(), { key: 'ArrowDown' });
       fireEvent.keyDown(descriptionField(), { key: 'Enter' });
 
-      // The second entry of the list, the field having started from the first.
+      // The field starts from the first entry, so the arrow key picks the second.
       expect(descriptionField().value).toBe('Left kidney');
       expect(onSave).not.toHaveBeenCalled();
 

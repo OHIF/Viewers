@@ -25,8 +25,8 @@ button that commits the save:
 - **Save as new** creates a separate series, with no predecessor.  The series
   number and the series description are both editable: the number is offered as
   one past the existing series of this modality (at least `minSeriesNumber`), and
-  the description as the first of three names - the description the data was
-  loaded from, the one last used for this type of item, then
+  the description as the first of four names - `itemName`, the description the
+  data was loaded from, the one last used for this type of item, then
   `defaultSeriesDescription` - see
   [remembered series descriptions](#remembered-series-descriptions).  It is the
   default choice when the data has not been stored before, and is always
@@ -64,7 +64,7 @@ the primary action on the right, rather than the right-aligned cluster
 
 ## `createReportDialogPrompt` input
 
-`defaultSeriesDescription` is new, and optional:
+`itemName` and `defaultSeriesDescription` are new, and both are optional:
 
 ```ts
 const { value, series, seriesNumber, dataSourceName, action } =
@@ -74,19 +74,26 @@ const { value, series, seriesNumber, dataSourceName, action } =
     title: 'Save Segmentation',
     modality: 'SEG',
     predecessorImageId,
-    // New: the series description offered when a new series is created
-    defaultSeriesDescription: segmentation.label,
+    // New: the current name of the item, offered first for a new series
+    itemName: segmentation.label,
+    // New: the name for an item that has no other, offered last
+    defaultSeriesDescription: 'Segmentation',
     enableDownload: true,
   });
 ```
 
-It should be the name of the thing being stored, so that the user is offered a
-meaningful series description rather than an empty field.  The in-tree callers
-pass the segmentation name (falling back to `Contours` for an RTSTRUCT export
-and `Segmentation` for a SEG), and `Measurements` for a measurement report.
-Previously an unedited description stored the *title of the dialog* as the series
-description, so a measurement report saved without typing a name was stored as
-`Create Report`.
+`itemName` is the current name of the item being stored, when the user can edit
+that name.  A new series offers `itemName` first, so a rename that the user makes
+before the save reaches the description field.  A caller with no such name passes
+nothing: the measurement report passes no `itemName`.
+
+`defaultSeriesDescription` is the name for an item that has no other name, and a
+new series offers `defaultSeriesDescription` last.  The in-tree callers pass
+`Segmentation` for a SEG, `Contours` for an RTSTRUCT export, and `Measurements`
+for a measurement report.  A user therefore gets a meaningful series description
+rather than an empty field.  Previously an unedited description stored the *title
+of the dialog* as the series description, so a measurement report saved without
+typing a name was stored as `Create Report`.
 
 `itemType` and `rememberedDescriptionCount` are also new and optional - see
 [remembered series descriptions](#remembered-series-descriptions).
@@ -97,22 +104,12 @@ defaults to.  A `predecessorImageId` that does not belong to a loaded series of
 the given modality falls back to creating a new series, rather than claiming to
 update a series that cannot be described.
 
-The dialog offers a loaded series as a destination only when the save applies to
-that series.  Two things must hold: the series holds the same type of object,
-which is the modality being stored; and the series has a `predecessorImageId`
-value, which names the immediate prior object of that type that someone saved
-into the series.
-
-The dialog does not fall back to the `SeriesInstanceUID` value of the display
-set, because that value meets neither condition.  A `SeriesInstanceUID` value
-names a series and not an instance, so it names no prior object, and it is not an
-image id: the `PredecessorSequence` provider finds no instance for a UID, and the
-provider then raises an exception while the adapter makes the object.  A local
-id, such as `dicomfile:3`, meets both conditions, and the dialog
-offers a series that carries one: the viewer registers an uploaded instance under
-a local id, so a user can save more than once against an uploaded instance.  A
-series that the dialog does not offer still counts towards the number that the
-dialog offers for a new series.
+The dialog offers a loaded series as a destination only when the series holds the
+modality being stored, and when the series has a `predecessorImageId` value.  The
+dialog does not fall back to the `SeriesInstanceUID` value of the display set,
+because the `PredecessorSequence` provider throws on a UID.  For the whole rule,
+and for the local ids that an uploaded instance carries, see
+[the behaviour doc](../../behaviours/report-dialog-save-destinations.md).
 
 ## `createReportDialogPrompt` output
 
@@ -199,9 +196,9 @@ Two new optional inputs control this:
 
 In the dialog, the `Save as new` description field:
 
-- starts from the first of three names: the description the data was loaded from,
-  then the one last used for this type of item, then `defaultSeriesDescription`.
-  An emptied field falls back to that same name;
+- starts from the first of four names: `itemName`, then the description the data
+  was loaded from, then the one last used for this type of item, then
+  `defaultSeriesDescription`.  An emptied field falls back to that same name;
 - offers a pull-down that holds those names in that order, with the remembered
   ones most recent first;
 - narrows that list to the entries the typing can complete, with **Tab**

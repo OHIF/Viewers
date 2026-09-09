@@ -22,6 +22,13 @@ import {
   rememberSeriesDescription,
 } from '../utils/seriesDescriptionHistory';
 
+/**
+ * The dialog that stores a segmentation, a contour set or a measurement report.
+ * The behaviour doc describes the destinations, the series that the dialog
+ * offers, and the names for a new series:
+ * `platform/docs/docs/behaviours/report-dialog-save-destinations.md`.
+ */
+
 type DataSource = {
   value: string;
   label: string;
@@ -47,11 +54,7 @@ type ExistingSeries = {
  *   - `new` a series created for it
  *   - `replace` another loaded series of this modality
  *
- * All three store the same object - all of the current data, as selected from
- * the service holding it.  The destination only decides which series that object
- * belongs to, and so which instance it supersedes.  Nothing is merged: storing
- * into a series that already has data neither loads that data to add to it, nor
- * leaves any of the current data out.
+ * All three store the same object, and the dialog merges nothing.
  */
 type Destination = 'current' | 'new' | 'replace';
 
@@ -93,11 +96,13 @@ type ReportDialogProps = {
   /** Lowest series number to use for a newly created series of this modality. */
   minSeriesNumber?: number;
   /**
-   * Series description to offer when creating a new series - typically the name
-   * of the object being saved, such as the segmentation name or 'Contours'.
-   * This is the last of the three names a new series starts from: the name the
-   * data was loaded from comes first, then the name last used for this type of
-   * item.
+   * The current name of the item, when the user can edit that name - the
+   * segmentation name, for example.  A new series offers this name first.
+   */
+  itemName?: string;
+  /**
+   * The name for an item that has no other name, such as 'Contours' or
+   * 'Measurements'.  A new series offers this name last.
    */
   defaultSeriesDescription?: string;
   /**
@@ -127,6 +132,7 @@ function ReportDialog({
   modality = 'SR',
   predecessorImageId,
   minSeriesNumber = 3000,
+  itemName = '',
   defaultSeriesDescription = '',
   itemType,
   rememberedDescriptionCount = 5,
@@ -169,27 +175,11 @@ function ReportDialog({
         };
       })
       .filter(series => {
-        // This save applies to a series when two things hold: the series holds
-        // the same type of object, which the modality filter above decides; and
-        // the series has a `predecessorImageId` value, which names the immediate
-        // prior object of that type that someone saved into the series.  The
-        // save supersedes that one instance, and the `PredecessorSequence`
-        // provider reads the general image module of the instance through the
-        // value.
-        //
-        // A `SeriesInstanceUID` value meets neither condition, so this list does
-        // not fall back to one.  A UID names a series and not an instance, so it
-        // names no prior object, and the provider finds no instance for it.  The
-        // provider then raises an exception on `1 + Number(undefined)` while the
-        // adapter makes the object.  A display set that the viewer downloaded and
-        // never stored has no value, and this list drops that display set.
-        //
-        // A local id, such as `dicomfile:3`, meets both conditions and stays in
-        // this list.  The viewer registers an uploaded instance under a local id,
-        // and the provider resolves that id, so a user can save more than once
-        // against an uploaded instance.
-        //
-        // A dropped series still counts towards the number of a new series below.
+        // The value must be a `predecessorImageId`, which names the instance
+        // that this save supersedes.  A `SeriesInstanceUID` value names no
+        // instance, and the provider throws on one - see the behaviour doc.  The
+        // `seen` set keeps the values unique, because two display sets can
+        // belong to one series.
         if (!series.value || seen.has(series.value)) {
           return false;
         }
@@ -214,12 +204,8 @@ function ReportDialog({
   );
 
   /**
-   * The series number offered for a new series - one past the existing ones.
-   *
-   * This number counts every loaded series of the modality, and not the series
-   * that the lists above offer.  A series without a `predecessorImageId` value
-   * is not offered, and a count of the offered series alone therefore gave the
-   * next new series a number that a loaded series already holds.
+   * The series number offered for a new series - one past every loaded series of
+   * the modality, and not only the series that `existingSeries` offers.
    */
   const defaultNewSeriesNumber = useMemo(
     () =>
@@ -233,47 +219,41 @@ function ReportDialog({
   );
 
   /**
-   * The series descriptions to offer for a new series, most likely to be wanted
-   * first.  The first of them is the one the field starts with:
-   *
-   *   1. the description the data was loaded from, since a save of that same
-   *      data into a new series usually keeps its name;
-   *   2. the descriptions last used for this type of item, most recent first;
-   *   3. `defaultSeriesDescription`, the name the caller provided for this data.
-   *
-   * The field started from `descriptionOptions[1]` before, which assumed that
-   * the provided name was always the first option and that the last used one
-   * therefore came second.  Two cases broke that assumption, and both offered
-   * the *second* most recent name: a caller that provides no name at all, and a
-   * provided name that the user has already saved something as, which the
-   * deduplication below removes from the history.
+   * The series descriptions to offer for a new series: `itemName`, then the
+   * description of `currentSeries`, then the ones used before for this type of
+   * item, then `defaultSeriesDescription`.
    */
   const descriptionOptions = useMemo(() => {
-    // A `rememberedDescriptionCount` of 0 turns the list off, so the field gets
-    // a name to start from and there is nothing to pick from.  The name has to
-    // be one that survives the filter below: a blank series description is
-    // truthy, so taking it here and dropping it there left no name at all, and
-    // an emptied field then saved an empty one.
-    const offered = !(rememberedDescriptionCount > 0)
-      ? [currentSeries?.description?.trim() ? currentSeries.description : defaultSeriesDescription]
-      : [
-          currentSeries?.description,
-          ...getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount),
-          defaultSeriesDescription,
-        ];
+    // A count of 0 turns the history off, and the list then holds one name.
+    const remembered =
+      rememberedDescriptionCount > 0
+        ? getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount)
+        : [];
 
-    const options = offered.filter((option): option is string => !!option?.trim());
+    // A blank name drops out here, so a name of spaces cannot hide a later name.
+    const offered = [
+      itemName,
+      currentSeries?.description,
+      ...remembered,
+      defaultSeriesDescription,
+    ].filter((option): option is string => !!option?.trim());
 
-    return options.filter(
+    const options = offered.filter(
       (option, index) =>
-        options.findIndex(other => other.toLowerCase() === option.toLowerCase()) === index
+        offered.findIndex(other => other.toLowerCase() === option.toLowerCase()) === index
     );
-  }, [currentSeries, defaultSeriesDescription, itemType, modality, rememberedDescriptionCount]);
 
-  /**
-   * The name a new series starts with, and what an emptied field falls back to,
-   * being the first of the options above.
-   */
+    return rememberedDescriptionCount > 0 ? options : options.slice(0, 1);
+  }, [
+    currentSeries,
+    itemName,
+    defaultSeriesDescription,
+    itemType,
+    modality,
+    rememberedDescriptionCount,
+  ]);
+
+  /** The name a new series starts from, and the fallback for an emptied field. */
   const baseSeriesDescription = descriptionOptions[0] ?? '';
 
   const [destination, setDestination] = useState<Destination>(currentSeries ? 'current' : 'new');

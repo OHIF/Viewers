@@ -11,9 +11,10 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  *     from.  That is the series the dialog offers to extend, and it defaults to
  *     extending it instead of creating a new series.  Without one, the dialog
  *     only offers to create a new series.
- *   - `defaultSeriesDescription` is the series description offered when a new
- *     series is being created, typically the name of the thing being saved such
- *     as the segmentation name or 'Contours'.
+ *   - `itemName` is the current name of the item, when the user can edit that
+ *     name, such as the segmentation name.  A new series offers this name first.
+ *   - `defaultSeriesDescription` is the name for an item that has no other name,
+ *     such as 'Contours' or 'Measurements'.  A new series offers this name last.
  *   - `itemType` is the type of item being stored, used as the key that the
  *     series descriptions used before are remembered under.  Defaults to the
  *     modality, so that segmentations, contours and reports are remembered
@@ -22,35 +23,12 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  *     descriptions to remember and offer for this type of item, 0 to remember
  *     none of them.
  *
- * The dialog offers three destinations, and says which one is in effect.  Each
- * destination stores all of the current data as one object; the destination
- * decides only which series that object belongs to, and so which instance the
- * object supersedes.  The dialog merges nothing:
- *   - `Save as new` creates a new series, with an editable series number
- *     (defaulting to one past the existing series of this modality) and series
- *     description.  The description starts from the first of three names: the
- *     description the data was loaded from, then the one last used for this type
- *     of item, then `defaultSeriesDescription`.  All of them are offered as
- *     completions of what gets typed.
- *   - `Save to current` stores into the series the data was loaded from, which
- *     keeps its own series number and description, so neither is editable.  The
- *     dialog offers this destination only when `predecessorImageId` names a
- *     loaded series.
- *   - `Replace existing` stores into another loaded series of this modality,
- *     which the user chooses from a list.  That series also keeps its own series
- *     number and description.  The dialog offers this destination only when
- *     there is another such series.
- *
- * A series appears as a destination only when this save applies to that series.
- * Two things must hold: the series holds the same type of object, which is the
- * `modality`; and the series has a `predecessorImageId` value, which names the
- * immediate prior object of that type that someone saved into the series.  The
- * save supersedes that one instance, and the save reads the series and the
- * instance number through the image id.  A local id, such as `dicomfile:3`, is
- * a valid value: the viewer registers an uploaded instance under a local id, so
- * a user can save more than once against an uploaded instance.  A display set
- * that the viewer downloaded and never stored has no value, and the dialog does
- * not offer that display set.
+ * The dialog offers three destinations - `Save to current`, `Save as new` and
+ * `Replace existing` - and says which one is in effect.  Each destination stores
+ * all of the current data as one object, and the dialog merges nothing.  The
+ * behaviour doc describes the destinations, the series that the dialog offers,
+ * and the names for a new series:
+ * `platform/docs/docs/behaviours/report-dialog-save-destinations.md`.
  *
  * The response is:
  *   - `value`, the series description of the object/series being created.  When
@@ -73,6 +51,7 @@ export default function CreateReportDialogPrompt({
   modality = 'SR',
   minSeriesNumber = 0,
   predecessorImageId,
+  itemName = '',
   defaultSeriesDescription = '',
   itemType,
   rememberedDescriptionCount = 5,
@@ -111,6 +90,7 @@ export default function CreateReportDialogPrompt({
         dataSources: allowMultipleDataSources ? dataSources : undefined,
         predecessorImageId,
         minSeriesNumber,
+        itemName,
         defaultSeriesDescription,
         itemType,
         rememberedDescriptionCount,
