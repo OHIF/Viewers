@@ -25,7 +25,8 @@ button that commits the save:
 - **Save as new** creates a separate series, with no predecessor.  The series
   number and the series description are both editable: the number is offered as
   one past the existing series of this modality (at least `minSeriesNumber`), and
-  the description as the one last used for this type of item, falling back to
+  the description as the first of three names - the description the data was
+  loaded from, the one last used for this type of item, then
   `defaultSeriesDescription` - see
   [remembered series descriptions](#remembered-series-descriptions).  It is the
   default choice when the data has not been stored before, and is always
@@ -96,13 +97,18 @@ defaults to.  A `predecessorImageId` that does not belong to a loaded series of
 the given modality falls back to creating a new series, rather than claiming to
 update a series that cannot be described.
 
-A `predecessorImageId` value is the image id of one instance, and not the id of a
-series.  The dialog offers a loaded series as a destination only when that series
-has a `predecessorImageId` value.  The dialog does not fall back to the
-`SeriesInstanceUID` value of the display set, because a `SeriesInstanceUID` value
-is not an image id: the `PredecessorSequence` provider finds no instance for a
-UID, and the provider then raises an exception while the adapter makes the
-object.  A local id, such as `dicomfile:3`, is a valid value, and the dialog
+The dialog offers a loaded series as a destination only when the save applies to
+that series.  Two things must hold: the series holds the same type of object,
+which is the modality being stored; and the series has a `predecessorImageId`
+value, which names the immediate prior object of that type that someone saved
+into the series.
+
+The dialog does not fall back to the `SeriesInstanceUID` value of the display
+set, because that value meets neither condition.  A `SeriesInstanceUID` value
+names a series and not an instance, so it names no prior object, and it is not an
+image id: the `PredecessorSequence` provider finds no instance for a UID, and the
+provider then raises an exception while the adapter makes the object.  A local
+id, such as `dicomfile:3`, meets both conditions, and the dialog
 offers a series that carries one: the viewer registers an uploaded instance under
 a local id, so a user can save more than once against an uploaded instance.  A
 series that the dialog does not offer still counts towards the number that the
@@ -193,10 +199,11 @@ Two new optional inputs control this:
 
 In the dialog, the `Save as new` description field:
 
-- is prefilled with the description last used for this type of item, and with
-  `defaultSeriesDescription` when there is none yet;
-- offers a pull down whose first entry is `defaultSeriesDescription`, followed by
-  the remembered descriptions, most recent first;
+- starts from the first of three names: the description the data was loaded from,
+  then the one last used for this type of item, then `defaultSeriesDescription`.
+  An emptied field falls back to that same name;
+- offers a pull down that holds those names in that order, with the remembered
+  ones most recent first;
 - narrows that list to the entries the typing can complete, with **Tab**
   completing to the first of them, and the arrow keys plus Enter picking one.
 

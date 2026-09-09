@@ -415,8 +415,62 @@ describe('ReportDialog', () => {
       expect(descriptionField().value).toBe('Right kidney');
 
       fireEvent.click(screen.getByTestId('report-series-description-options'));
-      // The provided description first, then the ones used before it.
-      expect(shownDescriptions()).toEqual(['Segmentation 1', 'Right kidney', 'Left kidney']);
+      // The ones used before, most recent first, then the provided one.
+      expect(shownDescriptions()).toEqual(['Right kidney', 'Left kidney', 'Segmentation 1']);
+    });
+
+    it('offers the description the data was loaded from before any other', () => {
+      // A save of this data into a new series usually keeps the name that the
+      // data already has, so that name comes before the remembered ones.
+      setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver');
+
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      expect(shownDescriptions()).toEqual([
+        'Liver',
+        'Right kidney',
+        'Left kidney',
+        'Segmentation 1',
+      ]);
+    });
+
+    it('offers the last used description when the caller provides none', () => {
+      // The findings flow of a fork provides no description. The field started
+      // from `descriptionOptions[1]` before, which was the name used before the
+      // last one, because the empty provided name never took the first place.
+      setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
+      renderDialog({ defaultSeriesDescription: '' });
+
+      expect(descriptionField().value).toBe('Right kidney');
+    });
+
+    it('offers the last used description when the provided one is the same', () => {
+      // The deduplication drops the remembered copy of the provided name, which
+      // moved every later name up one place and offered the second most recent.
+      setStoredHistory({ SEG: ['Segmentation 1', 'Left kidney'] });
+      renderDialog();
+
+      expect(descriptionField().value).toBe('Segmentation 1');
+
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      expect(shownDescriptions()).toEqual(['Segmentation 1', 'Left kidney']);
+    });
+
+    it('falls back to the offered description when the field is emptied', () => {
+      setStoredHistory({ SEG: ['Right kidney'] });
+      const { onSave } = renderDialog();
+
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
+
+      // The name the field offered, and not the provided one behind it.
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ reportName: 'Right kidney' })
+      );
     });
 
     it('moves a reused description back to the front, without duplicating it', () => {
@@ -499,11 +553,12 @@ describe('ReportDialog', () => {
       fireEvent.keyDown(descriptionField(), { key: 'ArrowDown' });
       fireEvent.keyDown(descriptionField(), { key: 'Enter' });
 
-      expect(descriptionField().value).toBe('Right kidney');
+      // The second entry of the list, the field having started from the first.
+      expect(descriptionField().value).toBe('Left kidney');
       expect(onSave).not.toHaveBeenCalled();
 
       fireEvent.keyDown(descriptionField(), { key: 'Enter' });
-      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Left kidney' }));
     });
   });
 

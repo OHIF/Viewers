@@ -95,6 +95,9 @@ type ReportDialogProps = {
   /**
    * Series description to offer when creating a new series - typically the name
    * of the object being saved, such as the segmentation name or 'Contours'.
+   * This is the last of the three names a new series starts from: the name the
+   * data was loaded from comes first, then the name last used for this type of
+   * item.
    */
   defaultSeriesDescription?: string;
   /**
@@ -166,20 +169,25 @@ function ReportDialog({
         };
       })
       .filter(series => {
-        // A `predecessorImageId` value is the image id of one instance, and the
-        // save supersedes that one instance.  The `PredecessorSequence` provider
-        // reads the general image module of the instance through the value.
+        // This save applies to a series when two things hold: the series holds
+        // the same type of object, which the modality filter above decides; and
+        // the series has a `predecessorImageId` value, which names the immediate
+        // prior object of that type that someone saved into the series.  The
+        // save supersedes that one instance, and the `PredecessorSequence`
+        // provider reads the general image module of the instance through the
+        // value.
         //
-        // A `SeriesInstanceUID` value is not an image id, so this list does not
-        // fall back to one.  The provider finds no instance for a UID, and the
+        // A `SeriesInstanceUID` value meets neither condition, so this list does
+        // not fall back to one.  A UID names a series and not an instance, so it
+        // names no prior object, and the provider finds no instance for it.  The
         // provider then raises an exception on `1 + Number(undefined)` while the
         // adapter makes the object.  A display set that the viewer downloaded and
         // never stored has no value, and this list drops that display set.
         //
-        // A local id, such as `dicomfile:3`, stays in this list.  The viewer
-        // registers an uploaded instance under a local id, and the provider
-        // resolves that id, so a user can save more than once against an
-        // uploaded instance.
+        // A local id, such as `dicomfile:3`, meets both conditions and stays in
+        // this list.  The viewer registers an uploaded instance under a local id,
+        // and the provider resolves that id, so a user can save more than once
+        // against an uploaded instance.
         //
         // A dropped series still counts towards the number of a new series below.
         if (!series.value || seen.has(series.value)) {
@@ -225,28 +233,49 @@ function ReportDialog({
   );
 
   /**
-   * The series descriptions to offer for a new series, being the one provided
-   * for this data followed by the ones last used for this type of item.  The
-   * most recently used one is what gets offered in the field, as it is the most
-   * likely one to want again.
+   * The series descriptions to offer for a new series, most likely to be wanted
+   * first.  The first of them is the one the field starts with:
+   *
+   *   1. the description the data was loaded from, since a save of that same
+   *      data into a new series usually keeps its name;
+   *   2. the descriptions last used for this type of item, most recent first;
+   *   3. `defaultSeriesDescription`, the name the caller provided for this data.
+   *
+   * The field started from `descriptionOptions[1]` before, which assumed that
+   * the provided name was always the first option and that the last used one
+   * therefore came second.  Two cases broke that assumption, and both offered
+   * the *second* most recent name: a caller that provides no name at all, and a
+   * provided name that the user has already saved something as, which the
+   * deduplication below removes from the history.
    */
   const descriptionOptions = useMemo(() => {
-    const history = getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount);
-    const options = [defaultSeriesDescription, ...history].filter(option => !!option?.trim());
+    // A `rememberedDescriptionCount` of 0 turns the list off, so the field gets
+    // a name to start from and there is nothing to pick from.
+    const offered = !(rememberedDescriptionCount > 0)
+      ? [currentSeries?.description || defaultSeriesDescription]
+      : [
+          currentSeries?.description,
+          ...getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount),
+          defaultSeriesDescription,
+        ];
+
+    const options = offered.filter((option): option is string => !!option?.trim());
 
     return options.filter(
       (option, index) =>
         options.findIndex(other => other.toLowerCase() === option.toLowerCase()) === index
     );
-  }, [defaultSeriesDescription, itemType, modality, rememberedDescriptionCount]);
+  }, [currentSeries, defaultSeriesDescription, itemType, modality, rememberedDescriptionCount]);
+
+  /**
+   * The name a new series starts with, and what an emptied field falls back to,
+   * being the first of the options above.
+   */
+  const baseSeriesDescription = descriptionOptions[0] ?? '';
 
   const [destination, setDestination] = useState<Destination>(currentSeries ? 'current' : 'new');
   const [newSeriesNumber, setNewSeriesNumber] = useState(String(defaultNewSeriesNumber));
-  const [newSeriesDescription, setNewSeriesDescription] = useState(
-    // The provided description is the first option, so anything after it is a
-    // remembered one, and the first of those was the last one used.
-    () => descriptionOptions[1] ?? defaultSeriesDescription
-  );
+  const [newSeriesDescription, setNewSeriesDescription] = useState(baseSeriesDescription);
   const [replacedSeriesValue, setReplacedSeriesValue] = useState<string | null>(null);
   const [descriptionsOpen, setDescriptionsOpen] = useState(false);
   // Typing narrows the list to what it can complete; opening the list from its
@@ -312,7 +341,7 @@ function ReportDialog({
       // the user to have changed there.
       const storedDescription = targetSeries
         ? (targetSeries.description ?? '')
-        : newSeriesDescription.trim() || defaultSeriesDescription;
+        : newSeriesDescription.trim() || baseSeriesDescription;
 
       if (!targetSeries) {
         rememberSeriesDescription(
@@ -338,7 +367,7 @@ function ReportDialog({
       targetSeries,
       seriesNumber,
       newSeriesDescription,
-      defaultSeriesDescription,
+      baseSeriesDescription,
       itemType,
       modality,
       rememberedDescriptionCount,
