@@ -327,7 +327,14 @@ function ReportDialog({
         ? (targetSeries.description ?? '')
         : newSeriesDescription.trim() || baseSeriesDescription;
 
-      if (!targetSeries) {
+      // The history keeps a name that the user chose.  The caller supplies
+      // `defaultSeriesDescription` at every save, such as the generated
+      // `Segmentation 3`, and the dialog offers the name in any case, so the
+      // history drops that name and keeps the room for a chosen one.
+      const isProvidedName =
+        storedDescription.toLowerCase() === defaultSeriesDescription.trim().toLowerCase();
+
+      if (!targetSeries && !isProvidedName) {
         rememberSeriesDescription(
           itemType || modality,
           storedDescription,
@@ -352,6 +359,7 @@ function ReportDialog({
       seriesNumber,
       newSeriesDescription,
       baseSeriesDescription,
+      defaultSeriesDescription,
       itemType,
       modality,
       rememberedDescriptionCount,

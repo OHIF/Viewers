@@ -210,8 +210,11 @@ In the dialog, the `Save as new` description field:
 
 A description is remembered when it is used to create a new series, including a
 download.  Storing into a series that already exists records nothing, since that
-series keeps its own description.  Reusing a description moves it back to the
-front of the list rather than duplicating it, matched without regard to case.
+series keeps its own description.  A save that uses `defaultSeriesDescription`
+also records nothing, because the caller supplies that name at every save, and
+the dialog offers the name in any case; a generated segmentation label therefore
+stays out of the history.  Reusing a description moves it back to the front of the
+list rather than duplicating it, matched without regard to case.
 
 Deployments that must not persist anything into local storage should pass
 `rememberedDescriptionCount: 0`.

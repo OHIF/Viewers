@@ -393,6 +393,29 @@ describe('ReportDialog', () => {
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
     });
 
+    it('remembers nothing for the name that the caller provides', () => {
+      // `Segmentation 1` is the generated name of this segmentation.  A later
+      // segmentation carries `Segmentation 2`, and the history would otherwise
+      // offer `Segmentation 1` as the name of that unrelated segmentation.
+      const { onSave } = renderDialog();
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ reportName: 'Segmentation 1' })
+      );
+      expect(storedHistory()).toEqual({});
+    });
+
+    it('remembers nothing when the typed name is the provided one', () => {
+      renderDialog({ defaultSeriesDescription: 'Contours' });
+
+      fireEvent.change(descriptionField(), { target: { value: '  contours  ' } });
+      fireEvent.click(saveButton());
+
+      expect(storedHistory()).toEqual({});
+    });
+
     it('remembers nothing when an existing series is stored into', () => {
       renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
 
@@ -567,8 +590,9 @@ describe('ReportDialog', () => {
 
       expect(descriptionField().value).toBe('Contours');
 
+      fireEvent.change(descriptionField(), { target: { value: 'Left lung' } });
       fireEvent.click(saveButton());
-      expect(storedHistory()).toEqual({ SEG: ['Right kidney'], RTSTRUCT: ['Contours'] });
+      expect(storedHistory()).toEqual({ SEG: ['Right kidney'], RTSTRUCT: ['Left lung'] });
     });
 
     it('narrows the offered descriptions to what is being typed', () => {

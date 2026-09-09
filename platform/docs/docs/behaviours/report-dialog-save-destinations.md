@@ -84,8 +84,7 @@ not blank:
    invents a name such as `Segmentation 3` for a new segmentation, and records
    the invented name as `generatedLabel`. A label that is still equal to
    `generatedLabel` goes to `defaultSeriesDescription` instead, so a generated
-   name cannot outrank the remembered descriptions, and cannot fill the history
-   with `Segmentation 1`, `Segmentation 2`, and so on.
+   name does not outrank the remembered descriptions.
 2. The description of the series that the viewer loaded the data from, which is
    the name of the last save of this data.
 3. The descriptions that the user used before for this type of item, most recent
@@ -107,6 +106,13 @@ series, or from the last used name.
 The viewer remembers a description when the user creates a new series with the
 description, and a download counts as a save. A save into a series that already
 exists remembers nothing, because that series keeps its own description.
+
+The history holds a name that the user chose. A save that uses
+`defaultSeriesDescription` remembers nothing, because the caller supplies that
+name at every save, and the dialog offers the name in any case. A generated
+segmentation label reaches `defaultSeriesDescription`, so `Segmentation 1` stays
+out of the history and the dialog cannot offer `Segmentation 1` as the name of a
+later, unrelated segmentation.
 
 - `itemType` is the key that the viewer remembers the descriptions under, and
   `itemType` defaults to the modality.
