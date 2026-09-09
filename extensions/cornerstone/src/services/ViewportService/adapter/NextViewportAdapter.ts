@@ -1,7 +1,23 @@
-import { Enums, cache, Types as CoreTypes } from '@cornerstonejs/core';
+import {
+  ActorRenderMode,
+  Enums,
+  cache,
+  getShouldUseCPURendering,
+  Types as CoreTypes,
+} from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
+import {
+  blendOpFromEngine,
+  blendOpToEngine,
+  getVolumeDiagonal,
+} from '../../../projection/projectionRegistry';
+import { MIN_SLAB_THICKNESS } from '../../../projection/projectionConstants';
 import type {
   IViewportAdapter,
+  ProjectionState,
+  ProjectionSupport,
+  ProjectionWriteResult,
+  SlabRange,
   ViewportColormap,
   ViewportPresentation,
   ViewportShape,
@@ -31,6 +47,10 @@ type NativeViewport = CoreTypes.IViewport & {
     displaySetId: string;
     options?: Record<string, unknown>;
   }) => Promise<void>;
+  /** The active binding's rendering; renderMode tells the GPU slice lane from the CPU lanes. */
+  getCurrentPlanarRendering?: () => { renderMode?: string } | undefined;
+  /** Registered planar dataset for a dataId (undefined when the layer is not bound). */
+  getDataSet?: (dataId: string) => { volumeId?: string } | undefined;
 };
 
 const voiRangesClose = (a: VOIRange, b: VOIRange, eps = 0.001): boolean =>
@@ -200,6 +220,110 @@ export class NextViewportAdapter implements IViewportAdapter {
     return volume?.voxelManager as unknown as
       | { getRange?: () => [number, number]; [key: string]: unknown }
       | undefined;
+  }
+
+  // ---- projection ----
+  //
+  // The native planar volume lane renders through vtkImageResliceMapper, whose
+  // slab is declared per binding via setDisplaySetPresentation(dataId,
+  // { blendMode, slabThickness }). Its slabThickness is the TOTAL width (the
+  // mapper marches to t/2 on each side), so no scaling is needed. COMPOSITE alone
+  // maps to a MEAN slab type there, so "off" must write COMPOSITE AND thickness 0
+  // (0 is the mapper's documented single-slice value on this lane).
+
+  private resolveProjectionDataId(displaySetInstanceUID?: string): string | undefined {
+    const dataId = displaySetInstanceUID ?? this.viewport.getSourceDataId?.();
+    if (!dataId) {
+      return undefined;
+    }
+    const known = this.viewport.getDataSet
+      ? !!this.viewport.getDataSet(dataId)
+      : this.viewport.getDisplaySetPresentation?.(dataId) !== undefined;
+    return known ? dataId : undefined;
+  }
+
+  private findVolumeForDataId(dataId: string) {
+    const volumeId = this.viewport.getDataSet?.(dataId)?.volumeId;
+    if (volumeId) {
+      const volume = cache.getVolume(volumeId);
+      if (volume) {
+        return volume;
+      }
+    }
+    return cache
+      .getVolumes()
+      .find(v => v.volumeId === dataId || v.volumeId?.endsWith(`:${dataId}`));
+  }
+
+  supportsProjection(displaySetInstanceUID?: string): ProjectionSupport {
+    if (isVolume3DViewportType(this.viewport)) {
+      return { supported: false, reason: 'volume3d' };
+    }
+    if (this.viewport.getCurrentMode?.() !== 'volume') {
+      return { supported: false, reason: 'not-volume' };
+    }
+    const renderMode = this.viewport.getCurrentPlanarRendering?.()?.renderMode;
+    // The CPU volume path silently drops slabThickness and samples one slice;
+    // refuse it rather than draw a plausible-but-wrong image.
+    if (
+      getShouldUseCPURendering?.() ||
+      (renderMode !== undefined && renderMode !== ActorRenderMode.VTK_VOLUME_SLICE)
+    ) {
+      return { supported: false, reason: 'cpu-lane' };
+    }
+    const dataId = this.resolveProjectionDataId(displaySetInstanceUID);
+    if (!dataId) {
+      return { supported: false, reason: 'layer-unresolved' };
+    }
+    const volume = this.findVolumeForDataId(dataId);
+    const loaded = !!volume && (!volume.loadStatus || volume.loadStatus.loaded === true);
+    if (!loaded) {
+      return { supported: false, reason: 'volume-not-loaded' };
+    }
+    return { supported: true };
+  }
+
+  getProjection(displaySetInstanceUID?: string): ProjectionState | undefined {
+    const dataId = this.resolveProjectionDataId(displaySetInstanceUID);
+    if (!dataId) {
+      return undefined;
+    }
+    const presentation = this.viewport.getDisplaySetPresentation?.(dataId) ?? {};
+    const slab = presentation.slabThickness;
+    const slabThickness = typeof slab === 'number' && slab > 0 ? slab : 0;
+    if (slabThickness === 0) {
+      return { blendOp: 'none', slabThickness: 0 };
+    }
+    const blendOp = blendOpFromEngine(presentation.blendMode);
+    if (blendOp === undefined) {
+      return undefined;
+    }
+    return { blendOp, slabThickness };
+  }
+
+  setProjection(
+    projection: ProjectionState,
+    displaySetInstanceUID?: string
+  ): ProjectionWriteResult {
+    const dataId = this.resolveProjectionDataId(displaySetInstanceUID);
+    if (!dataId) {
+      return { applied: false, rendered: false };
+    }
+    const off = projection.blendOp === 'none';
+    this.viewport.setDisplaySetPresentation?.(dataId, {
+      blendMode: blendOpToEngine(projection.blendOp),
+      slabThickness: off ? 0 : Math.max(projection.slabThickness, MIN_SLAB_THICKNESS),
+    });
+    return { applied: true, rendered: false };
+  }
+
+  getSlabRange(displaySetInstanceUID?: string): SlabRange | undefined {
+    const dataId = this.resolveProjectionDataId(displaySetInstanceUID);
+    const volume = dataId ? this.findVolumeForDataId(dataId) : undefined;
+    if (!volume) {
+      return undefined;
+    }
+    return { min: MIN_SLAB_THICKNESS, max: getVolumeDiagonal(volume) };
   }
 
   // ---- capture ----
