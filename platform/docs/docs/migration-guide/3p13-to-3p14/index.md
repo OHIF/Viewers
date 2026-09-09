@@ -49,4 +49,10 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   stored instance is now identified like a loaded one, so the object just saved
   becomes the predecessor of the next save of the same data.
 
+- **[createContext helper](./create-context.md)** — the internal
+  `ui-next/lib/createContext` helper is removed. It was never exported from
+  `@ohif/ui-next`; if you imported it from source, use React's own
+  `createContext` and `useContext` — the compiler now provides the memoization it
+  was hand-rolling.
+
 <DocCardList />

@@ -2,7 +2,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icons, PanelSection, Tooltip, TooltipContent, TooltipTrigger } from '../../index';
 import DataRow from '../DataRow/DataRow';
-import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
   data?: any[];
@@ -11,8 +10,13 @@ interface MeasurementTableContext {
   isExpanded: boolean;
 }
 
-const [MeasurementTableProvider, useMeasurementTableContext] =
-  createContext<MeasurementTableContext>('MeasurementTable', { data: [], isExpanded: true });
+// The default stands in when a part is rendered outside a MeasurementTable: it
+// shows the empty state rather than throwing, which is what the previous
+// createContext helper did too - it preferred a supplied default over its error.
+const MeasurementTableContextValue = React.createContext<MeasurementTableContext>({
+  data: [],
+  isExpanded: true,
+});
 
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
@@ -31,11 +35,8 @@ const MeasurementTable = ({
   const amount = data.length;
 
   return (
-    <MeasurementTableProvider
-      data={data}
-      onAction={onAction}
-      isExpanded={isExpanded}
-      disableEditing={disableEditing}
+    <MeasurementTableContextValue.Provider
+      value={{ data, onAction, isExpanded, disableEditing }}
     >
       <PanelSection defaultOpen={true}>
         <PanelSection.Header
@@ -46,7 +47,7 @@ const MeasurementTable = ({
         </PanelSection.Header>
         <PanelSection.Content key="measurementTableContent">{children}</PanelSection.Content>
       </PanelSection>
-    </MeasurementTableProvider>
+    </MeasurementTableContextValue.Provider>
   );
 };
 
@@ -59,7 +60,7 @@ const Body = () => {
   // would run only when the list is empty, so the hook count would change as
   // measurements come and go.
   const { t } = useTranslation('MeasurementTable');
-  const { data } = useMeasurementTableContext('MeasurementTable.Body');
+  const { data } = React.useContext(MeasurementTableContextValue);
 
   if (!data || data.length === 0) {
     return (
@@ -106,8 +107,7 @@ interface RowProps {
 }
 
 const Row = ({ item, index }: RowProps) => {
-  const { onAction, isExpanded, disableEditing } =
-    useMeasurementTableContext('MeasurementTable.Row');
+  const { onAction, isExpanded, disableEditing } = React.useContext(MeasurementTableContextValue);
 
   const { uid } = item;
   return (
