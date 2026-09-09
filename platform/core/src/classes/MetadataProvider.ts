@@ -365,6 +365,15 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUID: instance.SOPInstanceUID,
+          // `@cornerstonejs/metadata` lists SOPClassUID in this module, and a
+          // consumer that reads the module through either provider expects the
+          // value. The adapters build a ReferencedSOPClassUID from it: the
+          // PredecessorSequence module of `referencedMetadataProvider` reads
+          // `generalImage.sopClassUID` for the back pointer of a new revision,
+          // and that Type 1 element was absent from every such back pointer,
+          // because this provider answered `undefined` and dcmjs drops an
+          // undefined key when dcmjs denaturalizes a dataset.
+          sopClassUID: instance.SOPClassUID,
           instanceNumber: toNumber(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,

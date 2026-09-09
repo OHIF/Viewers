@@ -79,4 +79,32 @@ describe('MetadataProvider', () => {
       frameNumber: '3',
     });
   });
+
+  describe('generalImageModule', () => {
+    const instance = {
+      SOPInstanceUID: 'sop-general-image',
+      SOPClassUID: '1.2.840.10008.5.1.4.1.1.88.33',
+      InstanceNumber: '2',
+    };
+
+    it('gives the SOP Class UID of the instance', () => {
+      // `@cornerstonejs/metadata` lists SOPClassUID in this module, and the
+      // adapters read `generalImage.sopClassUID` to build a
+      // ReferencedSOPClassUID. That Type 1 element was absent from every
+      // predecessor back pointer while this provider answered `undefined`.
+      expect(metadataProvider.getTagFromInstance('generalImageModule', instance)).toMatchObject({
+        sopInstanceUID: 'sop-general-image',
+        sopClassUID: '1.2.840.10008.5.1.4.1.1.88.33',
+        instanceNumber: 2,
+      });
+    });
+
+    it('gives no SOP Class UID for an instance that carries none', () => {
+      const { SOPClassUID: _omitted, ...withoutSopClass } = instance;
+
+      expect(
+        metadataProvider.getTagFromInstance('generalImageModule', withoutSopClass).sopClassUID
+      ).toBeUndefined();
+    });
+  });
 });
