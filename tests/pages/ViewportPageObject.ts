@@ -304,6 +304,15 @@ export class ViewportPageObject {
           },
         };
       },
+      get projection() {
+        const button = viewport.locator('[data-cy="projectionMenu"]');
+        return {
+          button,
+          async click() {
+            await button.click();
+          },
+        };
+      },
     };
   }
 
