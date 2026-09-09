@@ -195,14 +195,14 @@ Two new optional inputs control this:
   kinds of item that deserve their own list.
 - `rememberedDescriptionCount` is how many to remember, and defaults to **5**.
   **0 disables the feature**: nothing is remembered, nothing is offered, and the
-  pull down is not shown, leaving a plain description field.
+  pull-down is not shown, leaving a plain description field.
 
 In the dialog, the `Save as new` description field:
 
 - starts from the first of three names: the description the data was loaded from,
   then the one last used for this type of item, then `defaultSeriesDescription`.
   An emptied field falls back to that same name;
-- offers a pull down that holds those names in that order, with the remembered
+- offers a pull-down that holds those names in that order, with the remembered
   ones most recent first;
 - narrows that list to the entries the typing can complete, with **Tab**
   completing to the first of them, and the arrow keys plus Enter picking one.

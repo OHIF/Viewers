@@ -250,9 +250,12 @@ function ReportDialog({
    */
   const descriptionOptions = useMemo(() => {
     // A `rememberedDescriptionCount` of 0 turns the list off, so the field gets
-    // a name to start from and there is nothing to pick from.
+    // a name to start from and there is nothing to pick from.  The name has to
+    // be one that survives the filter below: a blank series description is
+    // truthy, so taking it here and dropping it there left no name at all, and
+    // an emptied field then saved an empty one.
     const offered = !(rememberedDescriptionCount > 0)
-      ? [currentSeries?.description || defaultSeriesDescription]
+      ? [currentSeries?.description?.trim() ? currentSeries.description : defaultSeriesDescription]
       : [
           currentSeries?.description,
           ...getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount),

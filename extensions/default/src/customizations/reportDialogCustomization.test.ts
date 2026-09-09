@@ -468,9 +468,7 @@ describe('ReportDialog', () => {
       fireEvent.click(saveButton());
 
       // The name the field offered, and not the provided one behind it.
-      expect(onSave).toHaveBeenCalledWith(
-        expect.objectContaining({ reportName: 'Right kidney' })
-      );
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
     });
 
     it('moves a reused description back to the front, without duplicating it', () => {
@@ -502,6 +500,26 @@ describe('ReportDialog', () => {
 
       fireEvent.click(saveButton());
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('offers the default when the current description is blank, for a count of 0', () => {
+      // A blank series description is truthy, so it was taken as the one name
+      // the count of 0 offers, and then dropped for being blank: the field
+      // opened empty and an emptied field saved an empty name.
+      setDisplaySets([{ ...CURRENT_SERIES, SeriesDescription: '   ' }]);
+      const { onSave } = renderDialog({
+        rememberedDescriptionCount: 0,
+        predecessorImageId: CURRENT_SERIES_IMAGE_ID,
+      });
+
+      fireEvent.click(tab('new'));
+      expect(descriptionField().value).toBe('Segmentation 1');
+
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ reportName: 'Segmentation 1' })
+      );
     });
 
     it('keeps each type of item separate', () => {
