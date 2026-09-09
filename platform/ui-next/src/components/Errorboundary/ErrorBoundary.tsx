@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { Button } from '../Button/Button';
 import { useNotification } from '../../contextProviders';
+import { copyTextToClipboard } from '../../utils/copyTextToClipboard';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -157,9 +158,8 @@ const DefaultFallback = ({
 
   const { errorTitle, code, firstFilename } = parseErrorStack(error);
 
-  const copyErrorToClipboard = () => {
-    if (code) {
-      navigator.clipboard.writeText(code);
+  const copyErrorToClipboard = async () => {
+    if (code && (await copyTextToClipboard(code))) {
       show({
         title: t('Success'),
         message: t('Error copied to clipboard'),

@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Button } from '../Button';
 import { Icons } from '../Icons';
+import { copyTextToClipboard } from '../../utils/copyTextToClipboard';
 
 interface ClipboardProps {
   children: ReactNode;
@@ -19,14 +20,9 @@ const Clipboard: React.FC<ClipboardProps> = ({ children }) => {
     if (!copyText) {
       return;
     }
-    try {
-      await navigator.clipboard.writeText(copyText);
-      setCopyState('success');
-    } catch {
-      setCopyState('error');
-    } finally {
-      setTimeout(() => setCopyState('idle'), 1500); // Reset state after feedback
-    }
+    const wasCopied = await copyTextToClipboard(copyText);
+    setCopyState(wasCopied ? 'success' : 'error');
+    setTimeout(() => setCopyState('idle'), 1500); // Reset state after feedback
   }, [copyText]);
 
   return (
@@ -41,8 +37,8 @@ const Clipboard: React.FC<ClipboardProps> = ({ children }) => {
       title="Copy"
     >
       {copyState === 'idle' && <Icons.Copy className="h-6 w-6" />}
-      {copyState === 'success' && <Icons.FeedbackComplete className="h-6 w-6 text-foreground" />}
-      {copyState === 'error' && <Icons.StatusError className="h-6 w-6 text-foreground" />}
+      {copyState === 'success' && <Icons.FeedbackComplete className="text-foreground h-6 w-6" />}
+      {copyState === 'error' && <Icons.StatusError className="text-foreground h-6 w-6" />}
     </Button>
   );
 };
