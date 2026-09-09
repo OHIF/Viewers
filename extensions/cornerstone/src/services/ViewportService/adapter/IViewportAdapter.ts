@@ -1,4 +1,34 @@
 import type { Types as CoreTypes } from '@cornerstonejs/core';
+import type { ProjectionState } from '../../../projection/projectionRegistry';
+
+export type { ProjectionState };
+
+/**
+ * Why a rendering lane cannot project right now. Every reason is a refusal the
+ * service and UI surface verbatim; none of them is guessed around.
+ */
+export type ProjectionUnsupportedReason =
+  | 'not-volume'
+  | 'volume3d'
+  | 'cpu-lane'
+  | 'layer-unresolved'
+  | 'volume-not-loaded';
+
+export type ProjectionSupport =
+  | { supported: true }
+  | { supported: false; reason: ProjectionUnsupportedReason };
+
+export interface ProjectionWriteResult {
+  /** False when the layer could not be resolved to an engine object; nothing was written. */
+  applied: boolean;
+  /** Always false today: the adapter never renders, the caller renders exactly once. */
+  rendered: boolean;
+}
+
+export interface SlabRange {
+  min: number;
+  max: number;
+}
 
 /**
  * Content shape of a viewport, independent of the runtime cornerstone viewport
@@ -167,6 +197,38 @@ export interface IViewportAdapter {
   getVoxelManagerForDisplaySet(
     displaySetInstanceUID: string
   ): { getRange?: () => [number, number]; [key: string]: unknown } | undefined;
+
+  // ---- projection (MIP / MinIP / AIP) ----
+  //
+  // The last code before the engine for slab projection. Slab thickness on this
+  // surface always means the TOTAL width in world units (planes at focal +/- t/2);
+  // each lane normalises to its mapper's native convention (legacy volume
+  // mapper clipping planes sit at focal +/- t, the next reslice mapper marches
+  // to t/2 each side). The layer is a display set UID; each lane resolves it to
+  // its own engine key (legacy actor uid via referencedId, next dataId) and
+  // refuses (applied: false) when it cannot, never falling through to an empty
+  // filter that the engine treats as "every layer".
+
+  /** Whether the lane can project the given layer right now (false for stack/3D/CPU/unloaded). */
+  supportsProjection(displaySetInstanceUID?: string): ProjectionSupport;
+
+  /**
+   * Read the projection back from the engine (never from remembered state).
+   * `undefined` when the layer cannot be resolved or the engine holds a blend the
+   * registry does not offer (e.g. a labelmap edge blend).
+   */
+  getProjection(displaySetInstanceUID?: string): ProjectionState | undefined;
+
+  /**
+   * Write blend operation AND slab thickness together. `blendOp: 'none'` is the
+   * off path: it restores composite rendering and clears the slab through the
+   * lane's explicit reset, never by writing thickness 0 to the legacy engine.
+   * Does not render.
+   */
+  setProjection(projection: ProjectionState, displaySetInstanceUID?: string): ProjectionWriteResult;
+
+  /** Valid slab range for the layer's volume: [engine minimum, volume diagonal]. */
+  getSlabRange(displaySetInstanceUID?: string): SlabRange | undefined;
 
   // ---- capture ----
 

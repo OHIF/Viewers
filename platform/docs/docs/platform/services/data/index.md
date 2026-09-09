@@ -24,6 +24,7 @@ We maintain the following non-ui Services:
 - [Customization Service](./../customization-service/customizationService.md)
 - [Panel Service](../data/PanelService.md)
 - [Viewed Data Service](../data/ViewedDataService.md)
+- [Projection Service](../data/ProjectionService.md)
 
 ## Service Architecture
 

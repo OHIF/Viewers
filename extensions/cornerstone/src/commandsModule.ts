@@ -2222,6 +2222,39 @@ function commandsModule({
         })),
       });
     },
+    /**
+     * Sets the projection mode (e.g. 'mip', 'none') of a viewport layer. The only
+     * command, together with setSlabThickness, that changes blend/slab at runtime;
+     * everything (guards, stack->volume promotion, persistence, one render,
+     * PROJECTION_CHANGED) lives in the ProjectionService.
+     * @param viewportId - Target viewport; defaults to the active viewport.
+     * @param modeId - Registry mode id ('none' | 'mip' | 'minip' | 'aip').
+     * @param slabThickness - Optional total slab width in mm.
+     * @param displaySetInstanceUID - Optional layer; defaults to the foreground layer.
+     */
+    setProjectionMode: ({ viewportId, modeId, slabThickness, displaySetInstanceUID }) => {
+      const { projectionService } = servicesManager.services;
+      return projectionService.setProjectionMode({
+        viewportId,
+        modeId,
+        slabThickness,
+        displaySetInstanceUID,
+      });
+    },
+
+    /**
+     * Sets the slab thickness (total width, mm) of a viewport layer, restating the
+     * current projection mode read back from the engine.
+     */
+    setSlabThickness: ({ viewportId, slabThickness, displaySetInstanceUID }) => {
+      const { projectionService } = servicesManager.services;
+      return projectionService.setSlabThickness({
+        viewportId,
+        slabThickness,
+        displaySetInstanceUID,
+      });
+    },
+
     setViewportOrientation: ({ viewportId, orientation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -2854,6 +2887,8 @@ function commandsModule({
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
+    setProjectionMode: actions.setProjectionMode,
+    setSlabThickness: actions.setSlabThickness,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     loadDisplaySetData: actions.loadDisplaySetData,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
