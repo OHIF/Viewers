@@ -78,9 +78,14 @@ gave a new series a number that a loaded series already held.
 `Save as new` offers four names, and the field starts from the first name that is
 not blank:
 
-1. `itemName`, the current name of the item. The user can edit that name, so a
-   rename before the save reaches the field. `storeSegmentation` passes
-   `segmentation.label`.
+1. `itemName`, the name that the user chose for the item. A rename before the
+   save therefore reaches the field. `storeSegmentation` passes
+   `segmentation.label`, but only when the user chose that label: the service
+   invents a name such as `Segmentation 3` for a new segmentation, and records
+   the invented name as `generatedLabel`. A label that is still equal to
+   `generatedLabel` goes to `defaultSeriesDescription` instead, so a generated
+   name cannot outrank the remembered descriptions, and cannot fill the history
+   with `Segmentation 1`, `Segmentation 2`, and so on.
 2. The description of the series that the viewer loaded the data from, which is
    the name of the last save of this data.
 3. The descriptions that the user used before for this type of item, most recent

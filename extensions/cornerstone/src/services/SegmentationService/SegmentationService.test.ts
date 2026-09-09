@@ -1263,6 +1263,54 @@ describe('SegmentationService', () => {
       expect(retrievedSegmentationId).toEqual(expect.any(String));
     });
 
+    describe('generatedLabel', () => {
+      // `storeSegmentation` offers the label of a segmentation as the first name
+      // for a new series, but only when the user chose that name.  The service
+      // records the name that the service invents, so the save can tell the two
+      // apart.
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+      } as unknown as AppTypes.DisplaySet;
+
+      const createWith = async (options?: Record<string, unknown>) => {
+        const stored = { segmentationId: 'created' } as cstTypes.Segmentation;
+
+        jest
+          .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+          .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentations')
+          .mockReturnValue([{ segmentationId: 'segmentationId' }] as cstTypes.Segmentation[]);
+        jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(stored);
+        jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+        await service.createLabelmapForDisplaySet(displaySet, options);
+        return stored;
+      };
+
+      it('records a label that the service invents', async () => {
+        const stored = await createWith();
+
+        expect(stored.generatedLabel).toBe('Segmentation 2');
+      });
+
+      it('records nothing for a label that the caller gives', async () => {
+        const stored = await createWith({ label: 'Liver' });
+
+        expect(stored.generatedLabel).toBeUndefined();
+      });
+
+      it('records a label that the caller reports as generated', async () => {
+        const stored = await createWith({ label: 'Segmentation 7', labelIsGenerated: true });
+
+        expect(stored.generatedLabel).toBe('Segmentation 7');
+      });
+    });
+
     it('should create a labelmap for a dynamic volume display set', async () => {
       const segmentationId = 'segmentationId';
       const displaySet = {

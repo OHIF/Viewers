@@ -428,6 +428,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      /** The caller invented the label, so the user has not chosen a name. */
+      labelIsGenerated?: boolean;
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
@@ -440,6 +442,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      /** The caller invented the label, so the user has not chosen a name. */
+      labelIsGenerated?: boolean;
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
@@ -461,6 +465,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      /** The caller invented the label, so the user has not chosen a name. */
+      labelIsGenerated?: boolean;
     }
   ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
@@ -526,6 +532,17 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     }
 
     this.addOrUpdateSegmentation(segmentationPublicInput);
+
+    // `storeSegmentation` compares the label with this name, to tell a name that
+    // the user chose from a generated one such as `Segmentation 3`.
+    if (options?.labelIsGenerated || !options?.label) {
+      const segmentation = this.getSegmentation(segmentationId);
+
+      if (segmentation) {
+        segmentation.generatedLabel = label;
+      }
+    }
+
     return segmentationId;
   }
 

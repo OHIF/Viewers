@@ -321,10 +321,13 @@ const commandsModule = ({
         throw new Error('No segmentation found');
       }
 
-      const { label, predecessorImageId } = segmentation;
-      // The label is the editable name, and this is the name for an item
-      // without one.  The dialog offers the label first, and this name last.
-      const defaultSeriesDescription = modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation';
+      const { label, predecessorImageId, generatedLabel } = segmentation;
+      // The dialog offers the name that the user chose first, ahead of the
+      // remembered descriptions.  A generated name such as `Segmentation 3` is
+      // not such a name, so a generated name goes last instead.
+      const chosenLabel = label && label !== generatedLabel ? label : '';
+      const defaultSeriesDescription =
+        (!chosenLabel && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
 
       const {
         value: reportName,
@@ -338,7 +341,7 @@ const commandsModule = ({
         predecessorImageId,
         title: modality === 'RTSTRUCT' ? 'Save Contours' : 'Save Segmentation',
         modality,
-        itemName: label,
+        itemName: chosenLabel,
         defaultSeriesDescription,
         enableDownload: true,
       });

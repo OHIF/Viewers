@@ -96,8 +96,9 @@ type ReportDialogProps = {
   /** Lowest series number to use for a newly created series of this modality. */
   minSeriesNumber?: number;
   /**
-   * The current name of the item, when the user can edit that name - the
-   * segmentation name, for example.  A new series offers this name first.
+   * The name that the user chose for the item - the segmentation name, for
+   * example.  A new series offers this name first.  A generated name is not such
+   * a name, and belongs in `defaultSeriesDescription`.
    */
   itemName?: string;
   /**

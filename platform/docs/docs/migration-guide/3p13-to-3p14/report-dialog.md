@@ -82,10 +82,14 @@ const { value, series, seriesNumber, dataSourceName, action } =
   });
 ```
 
-`itemName` is the current name of the item being stored, when the user can edit
-that name.  A new series offers `itemName` first, so a rename that the user makes
-before the save reaches the description field.  A caller with no such name passes
-nothing: the measurement report passes no `itemName`.
+`itemName` is the name that the user chose for the item being stored.  A new
+series offers `itemName` first, so a rename that the user makes before the save
+reaches the description field.  A caller with no such name passes nothing: the
+measurement report passes no `itemName`, and `storeSegmentation` passes no
+`itemName` while the label is still the name that the service invented.  A
+generated name belongs in `defaultSeriesDescription`, so that the name does not
+outrank the remembered descriptions - see
+[the behaviour doc](../../behaviours/report-dialog-save-destinations.md).
 
 `defaultSeriesDescription` is the name for an item that has no other name, and a
 new series offers `defaultSeriesDescription` last.  The in-tree callers pass

@@ -11,8 +11,9 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  *     from.  That is the series the dialog offers to extend, and it defaults to
  *     extending it instead of creating a new series.  Without one, the dialog
  *     only offers to create a new series.
- *   - `itemName` is the current name of the item, when the user can edit that
- *     name, such as the segmentation name.  A new series offers this name first.
+ *   - `itemName` is the name that the user chose for the item, such as the
+ *     segmentation name.  A new series offers this name first.  A generated name
+ *     is not such a name, and belongs in `defaultSeriesDescription`.
  *   - `defaultSeriesDescription` is the name for an item that has no other name,
  *     such as 'Contours' or 'Measurements'.  A new series offers this name last.
  *   - `itemType` is the type of item being stored, used as the key that the
