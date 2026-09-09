@@ -441,3 +441,315 @@ describe('capture (copyDisplayedContentTo)', () => {
     expect(target.setViewState).toHaveBeenCalledWith({ orientation: 'axial', rotation: 45 });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Projection (MIP): T4 adapter contract, T6 off path, T7 guards.
+// The same expectations run against both lanes; the intentional divergences
+// (legacy half-width clipping planes vs native total-width reslice slab, and
+// legacy resetSlabThickness vs native COMPOSITE + 0) are asserted side by side.
+// ---------------------------------------------------------------------------
+
+const MIP = Enums.BlendModes.MAXIMUM_INTENSITY_BLEND;
+const COMPOSITE = Enums.BlendModes.COMPOSITE;
+
+function makeLoadedVolume(volumeId: string, overrides: Record<string, unknown> = {}) {
+  return {
+    volumeId,
+    dimensions: [32, 32, 32],
+    spacing: [1, 1, 1],
+    loadStatus: { loaded: true, loading: false },
+    ...overrides,
+  };
+}
+
+/** Legacy ORTHOGRAPHIC viewport with two volume layers and the projection surface. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function makeProjectableLegacyViewport(overrides: Record<string, unknown> = {}): any {
+  const actors = [
+    { uid: 'actor-ct', referencedId: 'volumeId:ds-ct', slabThickness: undefined },
+    { uid: 'actor-pt', referencedId: 'volumeId:ds-pt', slabThickness: undefined },
+  ];
+  const blendByUid: Record<string, unknown> = { 'actor-ct': COMPOSITE, 'actor-pt': COMPOSITE };
+  return makeLegacyVolumeViewport({
+    getAllVolumeIds: jest.fn().mockReturnValue(['volumeId:ds-ct', 'volumeId:ds-pt']),
+    getVolumeId: jest.fn().mockReturnValue('volumeId:ds-ct'),
+    getActors: jest.fn(() => actors),
+    getBlendMode: jest.fn((filter?: string[]) => blendByUid[filter?.[0] ?? 'actor-ct']),
+    setBlendMode: jest.fn((blendMode: unknown, filter?: string[]) => {
+      (filter ?? []).forEach(uid => {
+        blendByUid[uid] = blendMode;
+      });
+    }),
+    setSlabThickness: jest.fn((t: number, filter?: string[]) => {
+      actors
+        .filter(a => (filter ?? []).includes(a.uid))
+        .forEach(a => {
+          a.slabThickness = t;
+        });
+    }),
+    resetSlabThickness: jest.fn(() => {
+      actors.forEach(a => {
+        a.slabThickness = undefined;
+      });
+    }),
+    render: jest.fn(),
+    ...overrides,
+  });
+}
+
+/** Native planar viewport in volume mode with two bound layers. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function makeProjectableNextViewport(overrides: Record<string, unknown> = {}): any {
+  const presentations: Record<string, Record<string, unknown>> = { 'ds-ct': {}, 'ds-pt': {} };
+  return makeNextViewport({
+    getCurrentMode: jest.fn().mockReturnValue('volume'),
+    getSourceDataId: jest.fn().mockReturnValue('ds-ct'),
+    getCurrentPlanarRendering: jest.fn().mockReturnValue({ renderMode: 'vtkVolumeSlice' }),
+    getDataSet: jest.fn((dataId: string) =>
+      presentations[dataId] ? { volumeId: `volumeId:${dataId}` } : undefined
+    ),
+    getDisplaySetPresentation: jest.fn((dataId: string) => presentations[dataId]),
+    setDisplaySetPresentation: jest.fn((dataId: string, props: Record<string, unknown>) => {
+      presentations[dataId] = { ...presentations[dataId], ...props };
+    }),
+    render: jest.fn(),
+    ...overrides,
+  });
+}
+
+function mockLoadedVolumes(ptLoadStatus = { loaded: true, loading: false }) {
+  const volumes = [
+    makeLoadedVolume('volumeId:ds-ct'),
+    makeLoadedVolume('volumeId:ds-pt', { loadStatus: ptLoadStatus }),
+  ];
+  jest
+    .spyOn(cache, 'getVolume')
+    .mockImplementation((id: string) => volumes.find(v => v.volumeId === id) as never);
+  jest.spyOn(cache, 'getVolumes').mockReturnValue(volumes as never);
+}
+
+describe('projection (T4 adapter contract)', () => {
+  beforeEach(() => mockLoadedVolumes());
+  afterEach(() => jest.restoreAllMocks());
+
+  it('supportsProjection is true on a loaded planar volume layer on both lanes', () => {
+    expect(getViewportAdapter(makeProjectableLegacyViewport()).supportsProjection('ds-pt')).toEqual(
+      { supported: true }
+    );
+    expect(getViewportAdapter(makeProjectableNextViewport()).supportsProjection('ds-pt')).toEqual({
+      supported: true,
+    });
+  });
+
+  it('getProjection reads back off before any write', () => {
+    expect(getViewportAdapter(makeProjectableLegacyViewport()).getProjection('ds-pt')).toEqual({
+      blendOp: 'none',
+      slabThickness: 0,
+    });
+    expect(getViewportAdapter(makeProjectableNextViewport()).getProjection('ds-pt')).toEqual({
+      blendOp: 'none',
+      slabThickness: 0,
+    });
+  });
+
+  it('setProjection writes blend AND slab to exactly the requested layer, never rendering', () => {
+    const legacy = makeProjectableLegacyViewport();
+    const legacyResult = getViewportAdapter(legacy).setProjection(
+      { blendOp: 'max', slabThickness: 10 },
+      'ds-pt'
+    );
+    expect(legacyResult).toEqual({ applied: true, rendered: false });
+    expect(legacy.setBlendMode).toHaveBeenCalledWith(MIP, ['actor-pt']);
+    // Legacy clipping planes sit at focal +/- value, so the engine gets HALF the width.
+    expect(legacy.setSlabThickness).toHaveBeenCalledWith(5, ['actor-pt']);
+    expect(legacy.render).not.toHaveBeenCalled();
+    // The other layer is untouched.
+    expect(legacy.getBlendMode(['actor-ct'])).toBe(COMPOSITE);
+    expect(legacy.getActors().find(a => a.uid === 'actor-ct').slabThickness).toBeUndefined();
+
+    const next = makeProjectableNextViewport();
+    const nextResult = getViewportAdapter(next).setProjection(
+      { blendOp: 'max', slabThickness: 10 },
+      'ds-pt'
+    );
+    expect(nextResult).toEqual({ applied: true, rendered: false });
+    // The reslice mapper marches to t/2 each side, so it receives the TOTAL width.
+    expect(next.setDisplaySetPresentation).toHaveBeenCalledWith('ds-pt', {
+      blendMode: MIP,
+      slabThickness: 10,
+    });
+    expect(next.render).not.toHaveBeenCalled();
+    expect(next.getDisplaySetPresentation('ds-ct')).toEqual({});
+  });
+
+  it('getProjection reads back the normalised total width on both lanes', () => {
+    const legacy = makeProjectableLegacyViewport();
+    getViewportAdapter(legacy).setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-pt');
+    expect(getViewportAdapter(legacy).getProjection('ds-pt')).toEqual({
+      blendOp: 'max',
+      slabThickness: 10,
+    });
+
+    const next = makeProjectableNextViewport();
+    getViewportAdapter(next).setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-pt');
+    expect(getViewportAdapter(next).getProjection('ds-pt')).toEqual({
+      blendOp: 'max',
+      slabThickness: 10,
+    });
+  });
+
+  it('getProjection returns undefined for a foreign engine blend the registry does not offer', () => {
+    const legacy = makeProjectableLegacyViewport();
+    legacy.setBlendMode(Enums.BlendModes.LABELMAP_EDGE_PROJECTION_BLEND, ['actor-pt']);
+    expect(getViewportAdapter(legacy).getProjection('ds-pt')).toBeUndefined();
+
+    const next = makeProjectableNextViewport();
+    next.setDisplaySetPresentation('ds-pt', {
+      blendMode: Enums.BlendModes.LABELMAP_EDGE_PROJECTION_BLEND,
+      slabThickness: 5,
+    });
+    expect(getViewportAdapter(next).getProjection('ds-pt')).toBeUndefined();
+  });
+
+  it('getSlabRange spans [engine minimum, volume diagonal]', () => {
+    const expected = { min: 0.05, max: Math.sqrt(3) * 32 };
+    const legacyRange = getViewportAdapter(makeProjectableLegacyViewport()).getSlabRange('ds-pt');
+    const nextRange = getViewportAdapter(makeProjectableNextViewport()).getSlabRange('ds-pt');
+    expect(legacyRange.min).toBeCloseTo(expected.min);
+    expect(legacyRange.max).toBeCloseTo(expected.max);
+    expect(nextRange.min).toBeCloseTo(expected.min);
+    expect(nextRange.max).toBeCloseTo(expected.max);
+  });
+
+  it('refuses a write whose layer cannot be resolved instead of using an empty filter', () => {
+    const legacy = makeProjectableLegacyViewport();
+    expect(
+      getViewportAdapter(legacy).setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-missing')
+    ).toEqual({ applied: false, rendered: false });
+    expect(legacy.setBlendMode).not.toHaveBeenCalled();
+    expect(legacy.setSlabThickness).not.toHaveBeenCalled();
+
+    const next = makeProjectableNextViewport();
+    expect(
+      getViewportAdapter(next).setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-missing')
+    ).toEqual({ applied: false, rendered: false });
+    expect(next.setDisplaySetPresentation).not.toHaveBeenCalled();
+  });
+});
+
+describe('projection off path (T6)', () => {
+  beforeEach(() => mockLoadedVolumes());
+  afterEach(() => jest.restoreAllMocks());
+
+  it('legacy: MIP to off restores COMPOSITE and clears the slab through the explicit reset', () => {
+    const legacy = makeProjectableLegacyViewport();
+    const adapter = getViewportAdapter(legacy);
+    adapter.setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-pt');
+    adapter.setProjection({ blendOp: 'none', slabThickness: 0 }, 'ds-pt');
+
+    expect(legacy.setBlendMode).toHaveBeenLastCalledWith(COMPOSITE, ['actor-pt']);
+    expect(legacy.resetSlabThickness).toHaveBeenCalledTimes(1);
+    // Never thickness = 0.
+    expect(legacy.setSlabThickness).not.toHaveBeenCalledWith(0, expect.anything());
+    expect(adapter.getProjection('ds-pt')).toEqual({ blendOp: 'none', slabThickness: 0 });
+  });
+
+  it('legacy: turning one layer off while another still projects resets only that layer', () => {
+    const legacy = makeProjectableLegacyViewport();
+    const adapter = getViewportAdapter(legacy);
+    adapter.setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-ct');
+    adapter.setProjection({ blendOp: 'max', slabThickness: 20 }, 'ds-pt');
+    adapter.setProjection({ blendOp: 'none', slabThickness: 0 }, 'ds-pt');
+
+    expect(legacy.resetSlabThickness).not.toHaveBeenCalled();
+    expect(legacy.setSlabThickness).toHaveBeenLastCalledWith(0.05, ['actor-pt']);
+    expect(adapter.getProjection('ds-ct')).toEqual({ blendOp: 'max', slabThickness: 10 });
+    expect(adapter.getProjection('ds-pt')).toEqual({ blendOp: 'none', slabThickness: 0 });
+  });
+
+  it('native: MIP to off writes COMPOSITE together with slabThickness 0 (the single-slice value)', () => {
+    const next = makeProjectableNextViewport();
+    const adapter = getViewportAdapter(next);
+    adapter.setProjection({ blendOp: 'max', slabThickness: 10 }, 'ds-pt');
+    adapter.setProjection({ blendOp: 'none', slabThickness: 0 }, 'ds-pt');
+
+    expect(next.setDisplaySetPresentation).toHaveBeenLastCalledWith('ds-pt', {
+      blendMode: COMPOSITE,
+      slabThickness: 0,
+    });
+    expect(adapter.getProjection('ds-pt')).toEqual({ blendOp: 'none', slabThickness: 0 });
+    expect(next.getDisplaySetPresentation('ds-ct')).toEqual({});
+  });
+});
+
+describe('projection guards (T7)', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('refuses stack viewports on both lanes', () => {
+    expect(getViewportAdapter(makeLegacyStackViewport()).supportsProjection()).toEqual({
+      supported: false,
+      reason: 'not-volume',
+    });
+    expect(
+      getViewportAdapter(
+        makeNextViewport({ getCurrentMode: jest.fn().mockReturnValue('stack') })
+      ).supportsProjection()
+    ).toEqual({ supported: false, reason: 'not-volume' });
+  });
+
+  it('refuses 3D volume rendering viewports on both lanes', () => {
+    mockLoadedVolumes();
+    expect(
+      getViewportAdapter(
+        makeProjectableLegacyViewport({ type: ViewportType.VOLUME_3D })
+      ).supportsProjection('ds-pt')
+    ).toEqual({ supported: false, reason: 'volume3d' });
+    expect(
+      getViewportAdapter(
+        makeProjectableNextViewport({ type: ViewportType.VOLUME_3D_NEXT })
+      ).supportsProjection('ds-pt')
+    ).toEqual({ supported: false, reason: 'volume3d' });
+  });
+
+  it('refuses the native CPU volume lane (it silently drops the slab)', () => {
+    mockLoadedVolumes();
+    const next = makeProjectableNextViewport({
+      getCurrentPlanarRendering: jest.fn().mockReturnValue({ renderMode: 'cpuVolume' }),
+    });
+    expect(getViewportAdapter(next).supportsProjection('ds-pt')).toEqual({
+      supported: false,
+      reason: 'cpu-lane',
+    });
+  });
+
+  it('refuses a partially loaded volume on both lanes', () => {
+    mockLoadedVolumes({ loaded: false, loading: true });
+    expect(getViewportAdapter(makeProjectableLegacyViewport()).supportsProjection('ds-pt')).toEqual(
+      { supported: false, reason: 'volume-not-loaded' }
+    );
+    expect(getViewportAdapter(makeProjectableNextViewport()).supportsProjection('ds-pt')).toEqual({
+      supported: false,
+      reason: 'volume-not-loaded',
+    });
+  });
+
+  it('reports an unresolvable layer', () => {
+    mockLoadedVolumes();
+    expect(
+      getViewportAdapter(makeProjectableLegacyViewport()).supportsProjection('ds-missing')
+    ).toEqual({ supported: false, reason: 'layer-unresolved' });
+    expect(
+      getViewportAdapter(makeProjectableNextViewport()).supportsProjection('ds-missing')
+    ).toEqual({ supported: false, reason: 'layer-unresolved' });
+  });
+
+  it('windowing after MIP leaves the projection read-back unchanged (T8, adapter level)', () => {
+    mockLoadedVolumes();
+    const next = makeProjectableNextViewport();
+    const adapter = getViewportAdapter(next);
+    adapter.setProjection({ blendOp: 'max', slabThickness: 12 }, 'ds-pt');
+    adapter.setPresentation({ voiRange: { lower: -100, upper: 300 } }, 'ds-pt');
+    expect(adapter.getProjection('ds-pt')).toEqual({ blendOp: 'max', slabThickness: 12 });
+    expect(adapter.getPresentation('ds-pt').voiRange).toEqual({ lower: -100, upper: 300 });
+  });
+});
