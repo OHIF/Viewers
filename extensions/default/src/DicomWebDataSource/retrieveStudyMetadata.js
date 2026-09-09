@@ -82,10 +82,31 @@ export function retrieveStudyMetadata(
  * Delete the cached study metadata retrieval promise to ensure that the browser will
  * re-retrieve the study metadata when it is next requested.
  *
+ * Promises are cached under `<data source name>:<StudyInstanceUID>` (see above),
+ * but every caller knows only the study — a data source exports this function
+ * directly, unbound, and the callers that matter (storing a derived artifact, and
+ * the microscopy save) hold a study UID and nothing else. Looking the bare UID up
+ * as a key therefore never matched, and this function had never removed anything:
+ * any re-retrieve after a store returned the promise resolved *before* it. Match
+ * on the study instead, across whichever data sources have cached it.
+ *
  * @param {String} StudyInstanceUID The UID of the Study to be removed from cache
  */
 export function deleteStudyMetadataPromise(StudyInstanceUID) {
-  if (StudyMetaDataPromises.has(StudyInstanceUID)) {
-    StudyMetaDataPromises.delete(StudyInstanceUID);
+  if (!StudyInstanceUID) {
+    return;
   }
+
+  const suffix = `:${StudyInstanceUID}`;
+
+  for (const promiseId of [...StudyMetaDataPromises.keys()]) {
+    if (promiseId === StudyInstanceUID || promiseId.endsWith(suffix)) {
+      StudyMetaDataPromises.delete(promiseId);
+    }
+  }
+}
+
+/** Test seam: the cached promises, so a test can assert what invalidation removed. */
+export function _getStudyMetadataPromiseCache() {
+  return StudyMetaDataPromises;
 }
