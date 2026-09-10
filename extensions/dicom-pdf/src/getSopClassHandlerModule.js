@@ -17,7 +17,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
     // The date/time of a display set is the date/time of the instance it shows,
     // chosen from all the attributes that instance carries.
-    const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+    const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
     // The declared type is only a claim. It is resolved against the displayable
     // type allowlist, and the payload is re-wrapped in a Blob of the canonical
     // type, so the instance cannot steer how the browser parses the document.

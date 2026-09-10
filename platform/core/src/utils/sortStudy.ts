@@ -2,7 +2,7 @@ import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
-import { getDateTimeSortKey, getSeriesDateTimeSortKey } from './seriesDateTime';
+import { getDateTimeSortKey, getLatestInstanceDateTimeSortKey } from './latestInstanceDateTime';
 
 export const compare = (a, b) => {
   if (a == b) return 0;
@@ -68,11 +68,14 @@ export const compareSeriesUID = (a, b) =>
  * The date/time a display set is ordered by is the display set's own
  * `SeriesDate`/`SeriesTime`, which is the *display set* date/time and not
  * necessarily the date/time of the series the instances belong to - see the
- * `SeriesDate` field of the `DisplaySet` type for the whole contract.  The SOP
- * class handler writes it with {@link getSeriesDateTime} of the instance the
- * display set shows, so a report or a segmentation saved into an existing
- * series carries the date/time of that save rather than the date/time the
- * series was first created.
+ * `SeriesDate` field of the `DisplaySet` type for the whole contract.  A
+ * handler of a derived display set writes it with
+ * {@link getLatestInstanceDateTime} of the instance the display set shows, so a
+ * report or a segmentation saved into an existing series carries the date/time
+ * of that save rather than the date/time the series was first created.  A
+ * handler of an image display set writes the `SeriesDate`/`SeriesTime` of the
+ * instance directly, and must not call that function - the next paragraph gives
+ * the reason.
  *
  * The key is read from the display set and never from `displaySet.instance`,
  * for two reasons.
@@ -177,7 +180,7 @@ export const sortByInstanceNumber = (a, b) => {
   // instance number that fails to say which that is has to be replaced by
   // something that does.
   return (
-    compare(getSeriesDateTimeSortKey(a), getSeriesDateTimeSortKey(b)) ||
+    compare(getLatestInstanceDateTimeSortKey(a), getLatestInstanceDateTimeSortKey(b)) ||
     compare(a.SOPInstanceUID, b.SOPInstanceUID)
   );
 };

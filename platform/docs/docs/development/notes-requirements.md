@@ -67,7 +67,7 @@ a value less than `25` here.
    [24, 'CC', 'B']
 ```
 
-### Display Set Date and Time `getSeriesDateTime`
+### Display Set Date and Time `getLatestInstanceDateTime`
 
 Derived series - reports, segmentations, structure sets - are listed after the
 images in reverse date/time order, so the most recently created one is the one
@@ -90,7 +90,7 @@ instance level date/time say when the report itself was made.
 - **Display sets** are ordered by their own `SeriesDate`/`SeriesTime`, which
   hold the date/time *of the display set* and not always the date/time of the
   series the instances belong to.  The SOP class handler writes both, with
-  `getSeriesDateTime` of the instance the display set shows.  A handler whose
+  `getLatestInstanceDateTime` of the instance the display set shows.  A handler whose
   `addInstances` advances that instance - the SR and the chart one, which append
   to their display set rather than making a new one - has to write both again,
   or the date shown for the display set stays that of the report it replaced and
@@ -100,7 +100,7 @@ instance level date/time say when the report itself was made.
   date/time sort it always was.
 
 The sort reads the display set and never `displaySet.instance`, because
-`getSeriesDateTime(instance)` differs between the display sets of one split
+`getLatestInstanceDateTime(instance)` differs between the display sets of one split
 series.  A key that varies inside a series hides the `addSameSeriesCompare`
 comparison, which runs only when the key ties, and it makes the comparator
 inconsistent: with one key inside a series and another between series, a series
@@ -125,7 +125,7 @@ Two consequences follow, and both are intended:
 
 DICOM records "when this was created" in several different attribute pairs, and
 which of them are present depends on the modality and on whoever wrote the
-object, so `getSeriesDateTime` chooses one pair from all of them:
+object, so `getLatestInstanceDateTime` chooses one pair from all of them:
 `InstanceCreationDate`/`Time`, `ContentDate`/`Time`, `AcquisitionDate`/`Time`
 (or the combined `AcquisitionDateTime`), `StructureSetDate`/`Time`,
 `PresentationCreationDate`/`Time` and `SeriesDate`/`Time`.  The rules are:
