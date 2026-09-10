@@ -39,9 +39,14 @@ test('should display the rectangle tool', async ({
 
   const expectedArea = 15959;
   const expectedMax = 295;
-  const expectedMean = 80.4;
+  // Cornerstone3D selects the voxels whose centres lie inside the rectangle.
+  // The older code walked the index bounding box and applied no shape test, so
+  // it also counted a border of voxels outside the rectangle. The mean and the
+  // standard deviation therefore move a little; the area and the two extremes
+  // do not.
+  const expectedMean = 79.8;
   const expectedMin = -77.0;
-  const expectedStdDev = 38.2;
+  const expectedStdDev = 38.1;
 
   // RectangleROI panel: area (no prefix) + Max (with prefix).
   // RectangleROI SVG: Area, Mean, Max, Min, Std Dev (5 lines for CT modality).
