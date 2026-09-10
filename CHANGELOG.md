@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.17](https://github.com/OHIF/Viewers/compare/v3.12.15...v3.12.17) (2026-09-10)
+
+
+### Bug Fixes
+
+* **security:** update dependencies to address several vulnerabilities and release 3.12.16 ([#6265](https://github.com/OHIF/Viewers/issues/6265)) ([fa89fa0](https://github.com/OHIF/Viewers/commit/fa89fa0255077928e740f40e2c4fadd568631b88))
+* **security:** update smol-toml version to address security vulnerability and release 3.12.17 ([#6266](https://github.com/OHIF/Viewers/issues/6266)) ([f5fa616](https://github.com/OHIF/Viewers/commit/f5fa616f15a7a71390bd4c12cba6e51d94155672))
+
+
+
+
+
 ## [3.12.15](https://github.com/OHIF/Viewers/compare/v3.12.14...v3.12.15) (2026-09-08)
 
 

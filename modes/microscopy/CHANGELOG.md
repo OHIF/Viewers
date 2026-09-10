@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.17](https://github.com/OHIF/Viewers/compare/v3.12.15...v3.12.17) (2026-09-10)
+
+**Note:** Version bump only for package @ohif/mode-microscopy
+
+
+
+
+
 ## [3.12.15](https://github.com/OHIF/Viewers/compare/v3.12.14...v3.12.15) (2026-09-08)
 
 **Note:** Version bump only for package @ohif/mode-microscopy
