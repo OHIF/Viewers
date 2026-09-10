@@ -74,3 +74,12 @@ describe('projectionRegistry (T1)', () => {
     );
   });
 });
+
+describe('projectionRegistry prototype-chain safety', () => {
+  it('rejects inherited object property names as vocabulary', () => {
+    for (const name of ['constructor', 'toString', 'valueOf', '__proto__', 'hasOwnProperty']) {
+      expect(() => normalizeProjectionModeId(name)).toThrow(`Unsupported blend mode: ${name}`);
+      expect(() => blendOpToEngine(name as never)).toThrow();
+    }
+  });
+});

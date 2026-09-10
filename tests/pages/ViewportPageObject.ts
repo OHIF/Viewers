@@ -89,6 +89,10 @@ export interface IViewportPageObject {
       button: Locator;
       click: () => Promise<void>;
     };
+    projection: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;

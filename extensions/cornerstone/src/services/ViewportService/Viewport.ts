@@ -78,7 +78,8 @@ export type DisplaySetOptions = {
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
-  slabThickness?: number;
+  /** Raw protocol value; CornerstoneViewportService._getSlabThickness resolves 'fullVolume'. */
+  slabThickness?: number | 'fullVolume';
   colormap?: { name: string; opacity?: number };
   displayPreset?: string;
 };

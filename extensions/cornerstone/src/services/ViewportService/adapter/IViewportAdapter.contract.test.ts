@@ -612,13 +612,13 @@ describe('projection (T4 adapter contract)', () => {
   });
 
   it('getSlabRange spans [engine minimum, volume diagonal]', () => {
-    const expected = { min: 0.05, max: Math.sqrt(3) * 32 };
+    const max = Math.sqrt(3) * 32;
     const legacyRange = getViewportAdapter(makeProjectableLegacyViewport()).getSlabRange('ds-pt');
     const nextRange = getViewportAdapter(makeProjectableNextViewport()).getSlabRange('ds-pt');
-    expect(legacyRange.min).toBeCloseTo(expected.min);
-    expect(legacyRange.max).toBeCloseTo(expected.max);
-    expect(nextRange.min).toBeCloseTo(expected.min);
-    expect(nextRange.max).toBeCloseTo(expected.max);
+    expect(legacyRange.min).toBeCloseTo(0.2); // smallest total width the legacy engine keeps
+    expect(legacyRange.max).toBeCloseTo(max);
+    expect(nextRange.min).toBeCloseTo(0.05);
+    expect(nextRange.max).toBeCloseTo(max);
   });
 
   it('refuses a write whose layer cannot be resolved instead of using an empty filter', () => {
@@ -751,5 +751,37 @@ describe('projection guards (T7)', () => {
     adapter.setPresentation({ voiRange: { lower: -100, upper: 300 } }, 'ds-pt');
     expect(adapter.getProjection('ds-pt')).toEqual({ blendOp: 'max', slabThickness: 12 });
     expect(adapter.getPresentation('ds-pt').voiRange).toEqual({ lower: -100, upper: 300 });
+  });
+});
+
+describe('projection review follow-ups', () => {
+  beforeEach(() => mockLoadedVolumes());
+  afterEach(() => jest.restoreAllMocks());
+
+  it('legacy: a write at the advertised minimum total width round-trips through the engine floor', () => {
+    const legacy = makeProjectableLegacyViewport({
+      // Mirror cornerstone: half-widths below 0.1 are floored to 0.05.
+      setSlabThickness: jest.fn(function (t: number, filter?: string[]) {
+        const floored = t < 0.1 ? 0.05 : t;
+        this.getActors()
+          .filter(a => (filter ?? []).includes(a.uid))
+          .forEach(a => {
+            a.slabThickness = floored;
+          });
+      }),
+    });
+    const adapter = getViewportAdapter(legacy);
+    const { min } = adapter.getSlabRange('ds-pt');
+    adapter.setProjection({ blendOp: 'max', slabThickness: min }, 'ds-pt');
+    expect(adapter.getProjection('ds-pt')).toEqual({ blendOp: 'max', slabThickness: min });
+  });
+
+  it('native: a foreign engine blend is reported as undefined even when the slab is 0', () => {
+    const next = makeProjectableNextViewport();
+    next.setDisplaySetPresentation('ds-pt', {
+      blendMode: Enums.BlendModes.LABELMAP_EDGE_PROJECTION_BLEND,
+      slabThickness: 0,
+    });
+    expect(getViewportAdapter(next).getProjection('ds-pt')).toBeUndefined();
   });
 });
