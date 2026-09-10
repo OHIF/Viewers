@@ -3,9 +3,11 @@ import {
   compareSeriesDateTime,
   addSameSeriesCompare,
   compare,
+  defaultSeriesSort,
   seriesInfoSortingCriteria,
   sortByInstanceNumber,
 } from './sortStudy';
+import { getSeriesDateTime } from './seriesDateTime';
 
 addSameSeriesCompare('default', (a, b) => compare(a.default, b.default), 5);
 const altCompare = 'altCompare';
@@ -183,25 +185,110 @@ describe('compareSeriesDateTime', () => {
     ...attributes,
   });
 
+  /**
+   * A derived display set as a SOP class handler builds one: the display set
+   * carries the date/time of the instance it shows, and the instance keeps the
+   * series' own `SeriesDate`/`SeriesTime` unchanged.
+   *
+   * `SeriesInstanceUID` is given explicitly so that a test can order the uids
+   * against the date/time it expects.  `compareSeriesDateTime` falls through to
+   * the uid when the date/time tie, so a fixture whose uids already run in the
+   * expected order passes whether the date/time decided anything or not.
+   */
+  const derived = (name, SeriesInstanceUID, seriesDateTime, instanceDateTime) => {
+    const instance = { ...seriesDateTime, ...instanceDateTime };
+    return {
+      name,
+      SeriesInstanceUID,
+      instance,
+      ...seriesDateTime,
+      ...getSeriesDateTime(instance),
+    };
+  };
+
+  const seriesDateTime = { SeriesDate: '20260817', SeriesTime: '090000' };
+
   // Every instance of a series carries that series' date and time, so a report
   // saved into an existing series has the date and time of the series as it was
-  // first created.  Only the creation date/time of the instance the display set
-  // shows says when the display set itself was created.
-  test('orders display sets by the creation date time of their instance', () => {
-    const sameSeries = { SeriesDate: '20260817', SeriesTime: '090000' };
+  // first created.  The handler writes the creation date/time of the instance
+  // the display set shows onto the display set, and that is what orders it.
+  test('orders display sets by the date time the handler wrote from their instance', () => {
+    // The uids run the other way round, so only the date/time can give this
+    // order: on a tie the sort would answer third, second, first.
     const sorted = [
-      series('third', {
-        ...sameSeries,
-        instance: { ...sameSeries, ContentDate: '20260819', ContentTime: '080000' },
+      derived('third', '1.2.3.1', seriesDateTime, {
+        ContentDate: '20260819',
+        ContentTime: '080000',
       }),
-      series('first', { ...sameSeries, instance: { ...sameSeries } }),
-      series('second', {
-        ...sameSeries,
-        instance: { ...sameSeries, ContentDate: '20260818', ContentTime: '235959' },
+      derived('first', '1.2.3.3', seriesDateTime, {}),
+      derived('second', '1.2.3.2', seriesDateTime, {
+        ContentDate: '20260818',
+        ContentTime: '235959',
       }),
     ].sort(compareSeriesDateTime);
 
     expect(names(sorted)).toEqual(['first', 'second', 'third']);
+  });
+
+  // A mammography, CR or DX series makes one display set per instance, and a
+  // multi frame series one per multi frame instance.  Each of them carries the
+  // series' own date and time, so they tie on the sort key and the same series
+  // compare orders them - the instance date/time is never read here, because a
+  // key that varies inside a series both hides the same series compare and
+  // makes the comparator inconsistent.
+  test('keeps the display sets of one split series together', () => {
+    const split = (name, def, ContentTime) => ({
+      name,
+      SeriesInstanceUID: '1.2.3.A',
+      default: def,
+      ...seriesDateTime,
+      instance: { ...seriesDateTime, ContentDate: '20260817', ContentTime },
+    });
+    // Series B falls between the two instances of series A by content time.
+    const between = series('between', {
+      SeriesDate: '20260817',
+      SeriesTime: '091500',
+      instance: { SeriesDate: '20260817', SeriesTime: '091500' },
+    });
+
+    const sorted = [split('a1', 'b', '090000'), split('a2', 'a', '093000'), between].sort(
+      compareSeriesDateTime
+    );
+
+    expect(names(sorted)).toEqual(['a2', 'a1', 'between']);
+  });
+
+  // The cycle that a comparator using one key inside a series and another
+  // between series produces: a1 < between < a2 by the instance date/time, while
+  // the registered compare puts a2 before a1.  `sort` then answers differently
+  // for each input order.  One key for both cases cannot produce a cycle.
+  test('is transitive across a same series pair and a third series', () => {
+    const a1 = {
+      name: 'a1',
+      SeriesInstanceUID: 'A',
+      default: 'b',
+      ...seriesDateTime,
+      instance: { ContentDate: '20260817', ContentTime: '090000' },
+    };
+    const a2 = {
+      name: 'a2',
+      SeriesInstanceUID: 'A',
+      default: 'a',
+      ...seriesDateTime,
+      instance: { ContentDate: '20260817', ContentTime: '093000' },
+    };
+    const b = {
+      name: 'b',
+      SeriesInstanceUID: 'B',
+      SeriesDate: '20260817',
+      SeriesTime: '091500',
+      instance: { ContentDate: '20260817', ContentTime: '091500' },
+    };
+
+    expect(compareSeriesDateTime(a2, a1)).toBeLessThan(0);
+    expect(compareSeriesDateTime(a1, b)).toBeLessThan(0);
+    // a2 is before a1, and a1 is before b, so a2 has to be before b.
+    expect(compareSeriesDateTime(a2, b)).toBeLessThan(0);
   });
 
   // A list of series, as opposed to display sets, has no instance to look at
@@ -283,6 +370,177 @@ describe('seriesInfoSortingCriteria', () => {
     expect(names([segNoTime, sr].sort(seriesInfoSortingCriteria))).toEqual([
       'SR 090000',
       'SEG no time',
+    ]);
+  });
+});
+
+/**
+ * A worked example proves one case.  These prove the property, over a pool that
+ * holds every shape the sort has to deal with at once:
+ *
+ * - a split image series, whose display sets share the series' date/time and
+ *   whose registered compare disagrees with the order of their instances;
+ * - a second image series that shares the first one's `SeriesNumber`, so the
+ *   pre-key of `defaultSeriesSort` decides nothing between the two;
+ * - a derived series holding two display sets, one per save, with different
+ *   display set date/times - what `DisplaySetService` builds for a second SEG
+ *   saved into an existing SEG series;
+ * - a derived series holding one display set, and one with no date at all.
+ *
+ * The pool is small enough to check every permutation, which is stronger than a
+ * sample of shuffles and needs no seed to reproduce.
+ */
+describe('comparator consistency', () => {
+  const splitImage = (name, def, ContentTime) => ({
+    name,
+    Modality: 'MG',
+    SeriesNumber: 1,
+    SeriesInstanceUID: 'A',
+    // Written from the instance's own SeriesDate/SeriesTime, which every
+    // instance of the series carries identically.
+    SeriesDate: '20260817',
+    SeriesTime: '090000',
+    default: def,
+    // The instance date/time interleave with the other image series, so a
+    // comparator that reads them rather than the display set produces the
+    // cycle these tests exist to catch.
+    instance: {
+      InstanceNumber: def === 'a' ? 2 : 1,
+      SOPInstanceUID: `A.${def}`,
+      ContentDate: '20260817',
+      ContentTime,
+    },
+  });
+
+  const otherImage = {
+    name: 'ct',
+    Modality: 'CT',
+    SeriesNumber: 1,
+    SeriesInstanceUID: 'B',
+    SeriesDate: '20260817',
+    SeriesTime: '091500',
+    instance: {
+      InstanceNumber: 1,
+      SOPInstanceUID: 'B.1',
+      ContentDate: '20260817',
+      ContentTime: '091500',
+    },
+  };
+
+  // Two saves into one SEG series: DisplaySetService gives each instance its
+  // own display set, and each writes its own date/time.
+  const segSave = (name, SeriesTime) => ({
+    name,
+    Modality: 'SEG',
+    SeriesNumber: 99,
+    SeriesInstanceUID: 'C',
+    SeriesDate: '20260817',
+    SeriesTime,
+    instance: { InstanceNumber: 1, SOPInstanceUID: `C.${SeriesTime}` },
+  });
+
+  const sr = {
+    name: 'sr',
+    Modality: 'SR',
+    SeriesNumber: 98,
+    SeriesInstanceUID: 'D',
+    SeriesDate: '20260817',
+    SeriesTime: '140000',
+    instance: { InstanceNumber: 1, SOPInstanceUID: 'D.1' },
+  };
+
+  const undated = {
+    name: 'undated',
+    Modality: 'SEG',
+    SeriesNumber: 97,
+    SeriesInstanceUID: 'E',
+    instance: { InstanceNumber: 1, SOPInstanceUID: 'E.1' },
+  };
+
+  const pool = [
+    splitImage('a1', 'b', '090000'),
+    splitImage('a2', 'a', '093000'),
+    otherImage,
+    segSave('seg0930', '093000'),
+    segSave('seg1330', '133000'),
+    sr,
+    undated,
+  ];
+
+  const permutations = items => {
+    if (items.length <= 1) {
+      return [items];
+    }
+    const result = [];
+    items.forEach((item, index) => {
+      const rest = [...items.slice(0, index), ...items.slice(index + 1)];
+      permutations(rest).forEach(tail => result.push([item, ...tail]));
+    });
+    return result;
+  };
+
+  const sign = value => (value < 0 ? -1 : value > 0 ? 1 : 0);
+
+  describe.each([
+    ['compareSeriesDateTime', compareSeriesDateTime],
+    ['compareSeriesUID', compareSeriesUID],
+    ['defaultSeriesSort', defaultSeriesSort],
+    ['seriesInfoSortingCriteria', seriesInfoSortingCriteria],
+  ])('%s', (_name, compareF) => {
+    test('answers with the opposite sign in the opposite direction', () => {
+      const asymmetric = [];
+      for (const x of pool) {
+        for (const y of pool) {
+          if (sign(compareF(x, y)) !== -sign(compareF(y, x))) {
+            asymmetric.push(`${x.name},${y.name}`);
+          }
+        }
+      }
+
+      expect(asymmetric).toEqual([]);
+    });
+
+    test('is transitive', () => {
+      const intransitive = [];
+      for (const x of pool) {
+        for (const y of pool) {
+          if (compareF(x, y) > 0) {
+            continue;
+          }
+          for (const z of pool) {
+            if (compareF(y, z) <= 0 && compareF(x, z) > 0) {
+              intransitive.push(`${x.name}<=${y.name}<=${z.name} but ${x.name}>${z.name}`);
+            }
+          }
+        }
+      }
+
+      expect(intransitive).toEqual([]);
+    });
+
+    // What an inconsistent comparator costs the user: the series list depends
+    // on the order the display sets arrived in.
+    test('gives the same list whatever order the display sets arrive in', () => {
+      const results = new Set(
+        permutations(pool).map(input => names([...input].sort(compareF)).join(','))
+      );
+
+      expect([...results]).toHaveLength(1);
+    });
+  });
+
+  // The two display sets of the split series keep the order their registered
+  // compare gives them, and no display set of another series comes between
+  // them, because they hold one date/time between them.
+  test('keeps a split image series together and orders the derived series newest first', () => {
+    expect(names([...pool].sort(seriesInfoSortingCriteria))).toEqual([
+      'a2',
+      'a1',
+      'ct',
+      'sr',
+      'seg1330',
+      'seg0930',
+      'undated',
     ]);
   });
 });

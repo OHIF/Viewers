@@ -13,25 +13,57 @@ Getting that order right needed two changes with behaviour you may be relying on
 See [display set date and time](../../development/notes-requirements.md) for how
 the date/time of a display set is chosen and what it is used for.
 
-## Display sets order by their instance's creation date/time
+## A display set's `SeriesDate`/`SeriesTime` are the display set's own date/time
 
-`compareSeriesDateTime` compared the `SeriesDate`/`SeriesTime` of the two sides
-directly. It now compares the creation date/time of the instance each display set
-was made from (`dateTimeSortKey`), chosen by `getSeriesDateTime` from every
-creation attribute the instance carries - `InstanceCreationDate`/`Time`,
+`compareSeriesDateTime` still compares the `SeriesDate`/`SeriesTime` of the two
+sides, and `dateTimeSortKey` still reads them from the display set. What changed
+is the value the SOP class handler puts there. The handler now writes
+`getSeriesDateTime` of the instance the display set shows, chosen from every
+creation attribute that instance carries - `InstanceCreationDate`/`Time`,
 `ContentDate`/`Time`, `AcquisitionDate`/`Time` (or `AcquisitionDateTime`),
 `StructureSetDate`/`Time`, `PresentationCreationDate`/`Time` and
 `SeriesDate`/`Time`.
 
-Every instance of a series carries that series' `SeriesDate`/`SeriesTime`, so a
-second report saved into an existing SR series used to be indistinguishable from
-the first. Only the instance level date/time say which was saved when.
+So the two fields hold the date/time **of the display set**, which is not always
+the date/time of the series the instances belong to. The series' own
+`SeriesDate`/`SeriesTime`, in the instance metadata and in the archive, stay as
+they are. Every instance of a series carries that series' `SeriesDate`/
+`SeriesTime`, so a second report saved into an existing SR series used to be
+indistinguishable from the first.
+
+| Display set | Value written |
+| --- | --- |
+| image (CT, MR, MG, CR, DX, ECG, multi-frame) | the instance's `SeriesDate`/`SeriesTime`, identical on every instance of the series |
+| derived (SEG, RTSTRUCT, SR, PMAP, PDF, video, chart) | the creation date/time of the instance the display set shows |
 
 **What changes for you:** display sets of derived series whose instance level
-date/time differ from their series date/time will change position. Series
-themselves, and display sets whose instance says nothing about when it was
-created, still order by their own `SeriesDate`/`SeriesTime` exactly as before, so
-sorting a list of series rather than display sets is unaffected.
+date/time differ from their series date/time change position. Series themselves
+are unaffected: sorting a list of series rather than display sets is the plain
+series date/time sort it always was.
+
+**If you write a SOP class handler,** write both fields, and write them again
+whenever `addInstances` moves the instance the display set shows. A handler that
+writes neither gets the series date/time and orders as it did in 3.13. See the
+`SeriesDate` field of the `DisplaySet` type for the whole contract.
+
+**If you split a series into several display sets,** give all of them one value.
+The sort reads the display set and never `displaySet.instance`, for two reasons.
+A key read from the instance differs between the display sets of a split series,
+so it would order them by the instance each one happens to show and the
+`addSameSeriesCompare` comparison, which runs only when the key ties, would
+never run. A key read from the instance would also make the comparator
+inconsistent: with one key inside a series and another between series, a series
+A whose two display sets straddle a display set B of another series gives
+A1 &lt; B, B &lt; A2 and A2 &lt; A1, and `Array.prototype.sort` then returns a
+different list for each input order.
+
+Two display sets of one series that hold different values order by those values,
+and a display set of another series can come between them. That is what a second
+segmentation saved into an existing SEG series needs: the SEG, RTSTRUCT and PMAP
+handlers have no `addInstances`, so `DisplaySetService` gives the new instance
+its own display set, and that display set takes the position of the save. To
+keep a split together instead, give every display set of the split the value of
+the series and register an `addSameSeriesCompare` comparison to order them.
 
 ## `addSameSeriesCompare` comparators now run
 

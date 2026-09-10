@@ -65,18 +65,35 @@ export const compareSeriesUID = (a, b) =>
   compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeriesDisplaySet(a, b);
 
 /**
- * The date/time a display set is ordered by is the creation date/time of the
- * instance it shows, which the display set carries as `instance` - see
- * {@link getSeriesDateTime} for how that one date/time is chosen from the
- * attributes the instance has.  That is the only date/time which moves when a
- * report or segmentation is saved into an existing series, whose series
- * date/time remain those of the series as it was first created.
+ * The date/time a display set is ordered by is the display set's own
+ * `SeriesDate`/`SeriesTime`, which is the *display set* date/time and not
+ * necessarily the date/time of the series the instances belong to - see the
+ * `SeriesDate` field of the `DisplaySet` type for the whole contract.  The SOP
+ * class handler writes it with {@link getSeriesDateTime} of the instance the
+ * display set shows, so a report or a segmentation saved into an existing
+ * series carries the date/time of that save rather than the date/time the
+ * series was first created.
  *
- * A series, or a display set whose instance says nothing about when it was
- * created, has nothing but its series date/time and is ordered by that alone.
+ * The key is read from the display set and never from `displaySet.instance`,
+ * for two reasons.
+ *
+ * `compareSeriesDateTime` falls through to `compareSameSeriesDisplaySet` only
+ * when this key ties.  A key read from the instance differs between the display
+ * sets of one split series, because each of them shows a different instance, so
+ * it would order them by the instance each one happens to show and the
+ * comparison registered for that series would never run.
+ *
+ * A key read from the instance also makes the comparator inconsistent.  A
+ * pairwise rule that reads one key inside a series and another between series
+ * answers A1 < B, B < A2 and A2 < A1 for a series A whose two display sets
+ * straddle a display set B of another series.  That is a cycle, and
+ * `Array.prototype.sort` then returns a different list for each input order.
+ * Reading one key for both cases removes the cycle by construction.
+ *
+ * A series, as opposed to a display set, carries the same two attributes and is
+ * ordered by them in the same way.
  */
 export const dateTimeSortKey = source =>
-  (source.instance && getSeriesDateTimeSortKey(source.instance)) ||
   getDateTimeSortKey(
     source.seriesDate ?? source.SeriesDate,
     source.seriesTime ?? source.SeriesTime

@@ -87,16 +87,41 @@ instance level date/time say when the report itself was made.
   sop instance uid.  The last instance of a series is taken to be the most
   recently created one, so an instance number that fails to say which that is
   has to be replaced by something that does.
-- **Display sets** are ordered by the creation date/time of their `instance`.  A
-  handler whose `addInstances` advances that instance - the SR and chart ones,
-  which append to their display set rather than making a new one - has to
-  restamp the display set's `SeriesDate`/`SeriesTime` from the new instance, or
-  the date shown for it stays that of the report it replaced and disagrees with
-  the place the series list has just sorted it into.
-- **Series**, and any display set whose instance says nothing about when it was
-  created, have nothing but their own `SeriesDate`/`SeriesTime` and are ordered
-  by those alone.  Sorting a list of series rather than display sets is
-  therefore the plain series date/time sort it always was.
+- **Display sets** are ordered by their own `SeriesDate`/`SeriesTime`, which
+  hold the date/time *of the display set* and not always the date/time of the
+  series the instances belong to.  The SOP class handler writes both, with
+  `getSeriesDateTime` of the instance the display set shows.  A handler whose
+  `addInstances` advances that instance - the SR and the chart one, which append
+  to their display set rather than making a new one - has to write both again,
+  or the date shown for the display set stays that of the report it replaced and
+  disagrees with the place the series list has just sorted it into.
+- **Series** carry the same two attributes and are ordered by them in the same
+  way, so sorting a list of series rather than display sets is the plain series
+  date/time sort it always was.
+
+The sort reads the display set and never `displaySet.instance`, because
+`getSeriesDateTime(instance)` differs between the display sets of one split
+series.  A key that varies inside a series hides the `addSameSeriesCompare`
+comparison, which runs only when the key ties, and it makes the comparator
+inconsistent: with one key inside a series and another between series, a series
+A whose two display sets straddle a display set B of another series gives
+A1 < B, B < A2 and A2 < A1, and `Array.prototype.sort` then returns a different
+list for each input order.
+
+Two consequences follow, and both are intended:
+
+- An image display set takes the instance's `SeriesDate`/`SeriesTime`, which
+  every instance of a series carries identically.  Every display set of one
+  mammography, CR, DX, ECG or multi-frame series therefore holds the same value,
+  ties on the key, and the display sets stay together in the series list.
+- Two display sets of one series that hold *different* values order by those
+  values, and a display set of another series can come between them.  That is
+  what a second segmentation saved into an existing SEG series needs:
+  `DisplaySetService` gives it its own display set, because the SEG, RTSTRUCT
+  and PMAP handlers have no `addInstances`, and that display set has to take the
+  position of the save.  A split that needs its display sets kept together gives
+  all of them one value - the value of the series - and registers a comparison
+  with `addSameSeriesCompare` to order them among themselves.
 
 DICOM records "when this was created" in several different attribute pairs, and
 which of them are present depends on the modality and on whoever wrote the
