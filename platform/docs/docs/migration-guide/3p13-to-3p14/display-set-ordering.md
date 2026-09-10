@@ -84,10 +84,12 @@ acquisition made in another season.
 - A DT that declares no offset is read exactly as it is. Nothing says what zone
   it was written in, and every bare DA and TM is read with the same silence.
 - A DT holding a date alone names the start of that day, which is the reading
-  the move needs. It gains a real time when the move changes it, and around
-  midnight it changes day.
-- A DT already in the viewer's own offset is returned unchanged, so a date with
-  no time keeps its empty time rather than gaining an invented `0000`.
+  the move needs, and it comes back with the time of that instant here. Around
+  midnight it changes day as well.
+- A DT that declares an offset always comes back with a time, including when
+  the offset it declares is the viewer's own. Two DT values naming one instant
+  have to give one answer, and a date returned alone would order before the
+  same instant written out in another offset.
 
 **What changes for you:** a display set whose date/time came from an
 offset-bearing `AcquisitionDateTime` changes position, and the `SeriesTime`

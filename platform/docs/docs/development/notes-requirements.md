@@ -146,8 +146,9 @@ object, so `getSeriesDateTime` chooses one pair from all of them:
   read from it is the local wall clock reading of that same instant.  A DT that
   declares no offset is read exactly as it is, like every bare DA and TM here.
   A DT holding a date alone names the start of that day, which is the reading
-  the move needs; a value already in the viewer's own offset is unchanged and so
-  keeps its empty time.
+  the move needs, and it comes back with the time of that instant here.  It gets
+  that time even when it declares the viewer's own offset, so that two DT values
+  naming one instant always give one answer.
 
 For any of this to work on newly stored objects, `updateNewInstanceMetadata`
 stamps every report, segmentation and structure set OHIF saves with the current

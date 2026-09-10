@@ -1,4 +1,5 @@
 import {
+  getDateTimeSortKey,
   expandDicomDateTime,
   getSeriesDateTime,
   getSeriesDateTimeSortKey,
@@ -167,6 +168,25 @@ describe('getSeriesDateTime', () => {
     );
   });
 
+  // The equality above has to hold in the zone the viewer runs in, whichever
+  // one that is.  It failed in CI and passed on a developer machine, because
+  // one of the two values declared the offset the machine was already in and
+  // came back with no time, while the other was moved and gained one.
+  test.each([[0], [-5 * 60], [5 * 60 + 30], [12 * 60]])(
+    'gives one sort key to one instant when the viewer is at %s minutes',
+    localOffsetMinutes => {
+      const west = expandDicomDateTime('20260819100000-0500', localOffsetMinutes);
+      const utc = expandDicomDateTime('20260819150000+0000', localOffsetMinutes);
+      const dateOnly = expandDicomDateTime('20260819+0000', localOffsetMinutes);
+      const midnight = expandDicomDateTime('20260819000000+0000', localOffsetMinutes);
+
+      expect(west).toEqual(utc);
+      expect(getDateTimeSortKey(dateOnly.SeriesDate, dateOnly.SeriesTime)).toBe(
+        getDateTimeSortKey(midnight.SeriesDate, midnight.SeriesTime)
+      );
+    }
+  );
+
   test('leaves a combined date time that declares no offset exactly as it is', () => {
     expect(getSeriesDateTime({ AcquisitionDateTime: '20260819' })).toEqual({
       SeriesDate: '20260819',
@@ -249,14 +269,20 @@ describe('expandDicomDateTime', () => {
     });
   });
 
-  test('keeps a DT already in the local offset, and invents no time for a date', () => {
+  test('keeps a DT that is already in the local offset', () => {
     expect(expandDicomDateTime('20260819143000-0500', newYork)).toEqual({
       SeriesDate: '20260819',
       SeriesTime: '143000',
     });
+  });
+
+  // A date alone gets the time of the start of that day even when it needs no
+  // move.  Returning a date alone here would order the value before the same
+  // instant written out in another offset, which does get a time.
+  test('gives a date alone the start of the day even in the local offset', () => {
     expect(expandDicomDateTime('20260819-0500', newYork)).toEqual({
       SeriesDate: '20260819',
-      SeriesTime: '',
+      SeriesTime: '0000',
     });
   });
 

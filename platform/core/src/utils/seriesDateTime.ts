@@ -87,9 +87,10 @@ const pad = (value: number) => `${value}`.padStart(2, '0');
  * is a bare DA or TM with the same silence.
  *
  * A DT holding a date alone names the start of that day, which is the reading
- * needed to move it.  The time it gains is the wall clock reading of that
- * instant here, so a value already in the viewer's own offset keeps its empty
- * time and gains nothing.
+ * needed to move it, and it comes back with the time of that instant here.  It
+ * gets that time even when the offset it declares is the viewer's own: two DT
+ * values naming one instant have to give one answer, and returning a date alone
+ * for the one that needs no move would order it before the one that does.
  *
  * @param value - the DT value
  * @param localOffsetMinutes - the offset to move the value to, in minutes ahead
@@ -109,11 +110,10 @@ export function expandDicomDateTime(
     return undefined;
   }
   const [, date, time = '', fraction = '', offset = ''] = match;
-  const asFound = { SeriesDate: date, SeriesTime: `${time}${fraction}` };
 
   const offsetMinutes = parseUTCOffset(offset);
   if (offsetMinutes === undefined) {
-    return asFound;
+    return { SeriesDate: date, SeriesTime: `${time}${fraction}` };
   }
 
   // Only the hours and the minutes can move: a UTC offset is a whole number of
@@ -148,18 +148,13 @@ export function expandDicomDateTime(
         local.getHours(),
         local.getMinutes(),
       ];
-  const localDate = `${year}${pad(month)}${pad(day)}`;
-  const localHHMM = `${pad(localHours)}${pad(localMinutes)}`;
-
-  // The value is already the local wall clock reading, so it is returned as it
-  // was found - which is what keeps a date with no time free of an invented one.
-  if (localDate === date && localHHMM === `${pad(hours)}${pad(minutes)}`) {
-    return asFound;
-  }
-
+  // The computed reading is returned even when the offset needed no move, so
+  // that two DT values naming one instant always give one answer.  The hours
+  // and the minutes are always written, because a date alone cannot compare as
+  // equal to the same instant written out in another offset.
   return {
-    SeriesDate: localDate,
-    SeriesTime: `${localHHMM}${time.slice(4, 6)}${fraction}`,
+    SeriesDate: `${year}${pad(month)}${pad(day)}`,
+    SeriesTime: `${pad(localHours)}${pad(localMinutes)}${time.slice(4, 6)}${fraction}`,
   };
 }
 
