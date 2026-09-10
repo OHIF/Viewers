@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSystem } from '@ohif/core';
 import {
   Button,
@@ -22,6 +23,7 @@ type ProjectionMenuWrapperProps = {
 export function ProjectionMenuWrapper(props: ProjectionMenuWrapperProps): ReactNode {
   const { viewportId, location, isOpen = false, onOpen, onClose, disabled, ...rest } = props;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
+  const { t } = useTranslation('Buttons');
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
@@ -66,6 +68,7 @@ export function ProjectionMenuWrapper(props: ProjectionMenuWrapperProps): ReactN
             <Button
               variant="ghost"
               size="icon"
+              aria-label={t('Projection')}
               disabled={disabled}
             >
               {Icon}

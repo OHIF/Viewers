@@ -11,7 +11,10 @@ import {
   blendOpToEngine,
   getVolumeDiagonal,
 } from '../../../projection/projectionRegistry';
-import { MIN_SLAB_THICKNESS } from '../../../projection/projectionConstants';
+import {
+  LEGACY_MIN_SLAB_THICKNESS,
+  MIN_SLAB_THICKNESS,
+} from '../../../projection/projectionConstants';
 import type {
   IViewportAdapter,
   ProjectionState,
@@ -328,7 +331,10 @@ export class LegacyViewportAdapter implements IViewportAdapter {
     }
 
     this.viewport.setBlendMode?.(blendOpToEngine(projection.blendOp), filter);
-    this.viewport.setSlabThickness?.(projection.slabThickness / 2, filter);
+    // Half-width for the clipping planes, never below the smallest value the
+    // engine keeps (see LEGACY_MIN_SLAB_THICKNESS).
+    const totalWidth = Math.max(projection.slabThickness, LEGACY_MIN_SLAB_THICKNESS);
+    this.viewport.setSlabThickness?.(totalWidth / 2, filter);
     return { applied: true, rendered: false };
   }
 
@@ -338,7 +344,7 @@ export class LegacyViewportAdapter implements IViewportAdapter {
     if (!volume) {
       return undefined;
     }
-    return { min: MIN_SLAB_THICKNESS, max: getVolumeDiagonal(volume) };
+    return { min: LEGACY_MIN_SLAB_THICKNESS, max: getVolumeDiagonal(volume) };
   }
 
   // ---- capture ----
