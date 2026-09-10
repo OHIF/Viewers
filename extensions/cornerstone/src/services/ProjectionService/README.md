@@ -10,7 +10,7 @@ the rendering engine.
 | Layer | Where | Responsibility |
 |---|---|---|
 | Registry | `src/projection/projectionRegistry.ts` | `PROJECTION_MODES` (`none`, `mip`, `minip`, `aip`), `toEngine` / `fromEngine`, `normalizeProjectionModeId`, `getVolumeDiagonal`. Nothing else branches on a mode string. |
-| Constants | `src/projection/projectionConstants.ts` | `DEFAULT_SLAB_THICKNESS` (10 mm), `MIN_SLAB_THICKNESS` (engine minimum, 0.05), `SLAB_COMMIT_DELAY_MS` (150), `SLAB_SLIDER_STEP` (1), `FULL_VOLUME_KEYWORD`. |
+| Constants | `src/projection/projectionConstants.ts` | `DEFAULT_SLAB_THICKNESS` (10 mm), `MIN_SLAB_THICKNESS` (engine minimum, 0.05), `LEGACY_MIN_SLAB_THICKNESS` (0.2, smallest total width the legacy engine keeps), `SLAB_COMMIT_DELAY_MS` (150), `SLAB_SLIDER_STEP` (1), `FULL_VOLUME_KEYWORD`. |
 | Reference | `src/projection/projectionReference.ts` | CPU oracle used by the unit tests (axis-aligned reduce, symmetric slab march, window/level after the max). Never used at runtime. |
 | Commands | `commandsModule.ts` `setProjectionMode`, `setSlabThickness` | The only two entry points. `setSlabThickness` reads the current mode back and restates it, so every engine write carries both blend and slab. |
 | Service | `ProjectionService.ts` | Guards, stack-to-volume promotion, one render per write, per-layer restore cache, `PROJECTION_CHANGED` with an engine read-back payload, toolbar refresh. |

@@ -111,7 +111,7 @@ export function getUiExposedProjectableModes(): ProjectionModeDefinition[] {
 /** Registry blend operation -> engine enum. Throws on an unknown operation. */
 export function blendOpToEngine(blendOp: ProjectionBlendOp): Enums.BlendModes {
   const table = blendOpEngineTable();
-  if (!(blendOp in table)) {
+  if (!Object.prototype.hasOwnProperty.call(table, blendOp)) {
     throw new Error(`Unknown projection blend operation: ${String(blendOp)}`);
   }
   return table[blendOp];
@@ -170,7 +170,7 @@ export function normalizeProjectionModeId(input: string | null | undefined): Pro
   if (byShortLabel) {
     return byShortLabel.id;
   }
-  if (key in MODE_ALIASES) {
+  if (Object.prototype.hasOwnProperty.call(MODE_ALIASES, key)) {
     return MODE_ALIASES[key];
   }
   throw new Error(`Unsupported blend mode: ${input}`);

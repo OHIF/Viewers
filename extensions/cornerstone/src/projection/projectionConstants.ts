@@ -19,6 +19,15 @@ export const DEFAULT_SLAB_THICKNESS = 10;
 export const MIN_SLAB_THICKNESS: number =
   CONSTANTS?.RENDERING_DEFAULTS?.MINIMUM_SLAB_THICKNESS ?? 0.05;
 
+/**
+ * Smallest total width the legacy volume viewport can represent. Its engine
+ * value is the half-width, and cornerstone's VolumeViewport.setSlabThickness
+ * floors any half-width below 0.1 to MINIMUM_SLAB_THICKNESS, which the read-back
+ * treats as "no slab". A total width of 0.2 (half-width 0.1) is the smallest
+ * value that survives a write/read round trip on that lane.
+ */
+export const LEGACY_MIN_SLAB_THICKNESS = 0.2;
+
 /** Debounce applied to the slab slider so a drag issues one engine write, not one per frame. */
 export const SLAB_COMMIT_DELAY_MS = 150;
 

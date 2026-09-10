@@ -109,7 +109,6 @@ export default class ProjectionService extends PubSubService {
   private readonly servicesManager: AppTypes.ServicesManager;
   private readonly commandsManager: AppTypes.CommandsManager;
   private readonly stored = new Map<string, Map<string, StoredProjection>>();
-  private readonly preProjection = new Map<string, Map<string, ProjectionState>>();
   private subscriptions: Array<() => void> | undefined;
 
   constructor(
@@ -304,7 +303,6 @@ export default class ProjectionService extends PubSubService {
     this.subscriptions?.forEach(unsubscribe => unsubscribe());
     this.subscriptions = undefined;
     this.stored.clear();
-    this.preProjection.clear();
   }
 
   // ---- internals ----
@@ -386,13 +384,11 @@ export default class ProjectionService extends PubSubService {
 
   private forget(viewportId: string, layer: string): void {
     this.stored.get(viewportId)?.delete(layer);
-    this.preProjection.get(viewportId)?.delete(layer);
   }
 
   /**
-   * The single engine write path: captures the pre-projection state on the
-   * first enable, writes both blend and slab through the adapter, and renders
-   * exactly once.
+   * The single engine write path: writes blend and slab together through the
+   * adapter and renders exactly once.
    */
   private write(
     viewport: csTypes.IViewport,
@@ -400,18 +396,6 @@ export default class ProjectionService extends PubSubService {
     projection: ProjectionState
   ): { applied: boolean } {
     const adapter = getViewportAdapter(viewport);
-    const viewportId = viewport.id;
-
-    if (projection.blendOp !== 'none' && !this.preProjection.get(viewportId)?.has(layer)) {
-      const before = adapter.getProjection(layer);
-      if (before) {
-        if (!this.preProjection.has(viewportId)) {
-          this.preProjection.set(viewportId, new Map());
-        }
-        this.preProjection.get(viewportId).set(layer, before);
-      }
-    }
-
     const result = adapter.setProjection(projection, layer);
     if (result.applied && !result.rendered) {
       viewport.render();
