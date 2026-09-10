@@ -155,7 +155,7 @@ interface HotkeysGridProps {
 }
 function HotkeysGrid({ children, className }: HotkeysGridProps) {
   return (
-    <div className={cn('grid grid-cols-1 gap-3 gap-x-16 md:grid-cols-2 lg:grid-cols-3', className)}>
+    <div className={cn('grid grid-cols-1 gap-3 gap-x-10 md:grid-cols-2 lg:grid-cols-3', className)}>
       {children}
     </div>
   );
@@ -207,8 +207,8 @@ function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: Hot
   };
 
   return (
-    <div className={cn('flex items-start justify-between gap-2', className)}>
-      <Label className="flex-1 whitespace-normal break-words text-sm">{label}</Label>
+    <div className={cn('flex items-center justify-between gap-2', className)}>
+      <Label className="text-base">{label}</Label>
       <Input
         className={cn(
           'w-16 text-center transition-colors',
