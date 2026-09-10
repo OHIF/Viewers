@@ -2,6 +2,7 @@ import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
+import { getDateTimeSortKey, getSeriesDateTimeSortKey } from './seriesDateTime';
 
 export const compare = (a, b) => {
   if (a == b) return 0;
@@ -53,7 +54,7 @@ export const compareSameSeriesDisplaySet = (a, b) => {
       compareA === compareB
         ? compareA.compare(a, b)
         : compare(compareA.priority, compareB.priority);
-    if (!compareValue) {
+    if (compareValue) {
       return compareValue;
     }
   }
@@ -63,12 +64,48 @@ export const compareSameSeriesDisplaySet = (a, b) => {
 export const compareSeriesUID = (a, b) =>
   compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeriesDisplaySet(a, b);
 
-export const compareSeriesDateTime = (a, b) => {
-  // Natural order of string is good enough here
-  const seriesDateA = `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`;
-  const seriesDateB = `${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`;
-  return compare(seriesDateA, seriesDateB) || compareSeriesUID(a, b);
-};
+/**
+ * The date/time a display set is ordered by is the display set's own
+ * `SeriesDate`/`SeriesTime`, which is the *display set* date/time and not
+ * necessarily the date/time of the series the instances belong to - see the
+ * `SeriesDate` field of the `DisplaySet` type for the whole contract.  The SOP
+ * class handler writes it with {@link getSeriesDateTime} of the instance the
+ * display set shows, so a report or a segmentation saved into an existing
+ * series carries the date/time of that save rather than the date/time the
+ * series was first created.
+ *
+ * The key is read from the display set and never from `displaySet.instance`,
+ * for two reasons.
+ *
+ * `compareSeriesDateTime` falls through to `compareSameSeriesDisplaySet` only
+ * when this key ties.  A key read from the instance differs between the display
+ * sets of one split series, because each of them shows a different instance, so
+ * it would order them by the instance each one happens to show and the
+ * comparison registered for that series would never run.
+ *
+ * A key read from the instance also makes the comparator inconsistent.  A
+ * pairwise rule that reads one key inside a series and another between series
+ * answers A1 < B, B < A2 and A2 < A1 for a series A whose two display sets
+ * straddle a display set B of another series.  That is a cycle, and
+ * `Array.prototype.sort` then returns a different list for each input order.
+ * Reading one key for both cases removes the cycle by construction.
+ *
+ * A series, as opposed to a display set, carries the same two attributes and is
+ * ordered by them in the same way.
+ */
+export const dateTimeSortKey = source =>
+  getDateTimeSortKey(
+    source.seriesDate ?? source.SeriesDate,
+    source.seriesTime ?? source.SeriesTime
+  );
+
+/**
+ * Compares by {@link dateTimeSortKey}, oldest first.  Sides with no date at all
+ * sort as the oldest, and a date with no time sorts before the timed values of
+ * that same date.
+ */
+export const compareSeriesDateTime = (a, b) =>
+  compare(dateTimeSortKey(a), dateTimeSortKey(b)) || compareSeriesUID(a, b);
 
 export const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
@@ -106,20 +143,43 @@ export const seriesSortCriteria = {
 };
 
 /**
- * Compares two instances first by instance number, and then by
- * sop and frame numbers.
+ * Compares two instances first by instance number, then by when they were
+ * created, and then by sop and frame numbers.
  * Handles undefined values for use with display set comparison.
  */
 export const sortByInstanceNumber = (a, b) => {
   if (!a || !b) {
-    return (!a && !b && 0) || (!a && -1) || 1;
+    // Two missing instances are equal.  The `||` chain this replaces treated a
+    // 0 as "no answer" and fell through to -1, so a pair of display sets that
+    // both lack an instance compared as -1 in both directions.
+    if (!a && !b) {
+      return 0;
+    }
+    return a ? 1 : -1;
   }
   const aInstance = parseInt(a.InstanceNumber) || 0;
   const bInstance = parseInt(b.InstanceNumber) || 0;
   if (aInstance !== bInstance) {
-    return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+    return aInstance - bInstance;
   }
-  return compare(a.SOPInstanceUID, b.SOPInstanceUID) || compare(a.frameNumber, b.frameNumber);
+  // Two frames of one instance share every date/time that instance has, so only
+  // the frame number orders them.  Excluding them first is also what keeps a
+  // large multi frame series cheap to sort: its frames all carry the same
+  // instance number, so every pair reaches this point.  Sources with no SOP
+  // instance UID at all - display set view models, whose dates are formatted
+  // for display rather than comparable - are likewise left as they came in.
+  if (a.SOPInstanceUID === b.SOPInstanceUID) {
+    return compare(a.frameNumber, b.frameNumber);
+  }
+  // The instance numbers do not order these two - they are the same, or neither
+  // instance has one - so fall back to when each of them was created.  The last
+  // instance of a series is taken to be the most recently created one, so an
+  // instance number that fails to say which that is has to be replaced by
+  // something that does.
+  return (
+    compare(getSeriesDateTimeSortKey(a), getSeriesDateTimeSortKey(b)) ||
+    compare(a.SOPInstanceUID, b.SOPInstanceUID)
+  );
 };
 
 export const instancesSortCriteria = {
@@ -150,12 +210,8 @@ export type SortDisplaySetsCopyOptions = {
  * With `studyInstanceUIDFirst`, only that study's display sets are sorted; they
  * are placed before the rest, which keeps source order (e.g. load order).
  */
-export function sortDisplaySetsCopy(
-  displaySets,
-  options?: SortDisplaySetsCopyOptions | null
-) {
-  const seriesSortingCriteria =
-    options?.seriesSortingCriteria ?? seriesSortCriteria.default;
+export function sortDisplaySetsCopy(displaySets, options?: SortDisplaySetsCopyOptions | null) {
+  const seriesSortingCriteria = options?.seriesSortingCriteria ?? seriesSortCriteria.default;
   const studyFirst = options?.studyInstanceUIDFirst;
 
   if (!studyFirst) {

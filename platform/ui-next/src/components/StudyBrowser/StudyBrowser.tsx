@@ -113,6 +113,8 @@ StudyBrowser.propTypes = {
               seriesDate: PropTypes.string,
               seriesNumber: PropTypes.any,
               numInstances: PropTypes.number,
+              /** Detail line items, see `Thumbnail`. */
+              details: PropTypes.array,
               description: PropTypes.string,
               componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])
                 .isRequired,

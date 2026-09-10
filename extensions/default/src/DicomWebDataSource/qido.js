@@ -83,7 +83,10 @@ export function processSeriesResults(qidoSeries) {
         seriesInstanceUid: getString(qidoSeries['0020000E']),
         modality: getString(qidoSeries['00080060']),
         seriesNumber: getString(qidoSeries['00200011']),
-        seriesDate: utils.formatDate(getString(qidoSeries['00080021'])),
+        // The raw DICOM DA value: `sortStudySeries` orders by it and cannot
+        // read a date already formatted for display, so it is formatted below,
+        // once the order is settled.
+        seriesDate: getString(qidoSeries['00080021']),
         numSeriesInstances: Number(getString(qidoSeries['00201209'])),
         description: getString(qidoSeries['0008103E']),
       })
@@ -92,7 +95,10 @@ export function processSeriesResults(qidoSeries) {
 
   sortStudySeries(series);
 
-  return series;
+  return series.map(result => ({
+    ...result,
+    seriesDate: utils.formatDate(result.seriesDate),
+  }));
 }
 
 /**
