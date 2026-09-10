@@ -88,10 +88,10 @@ describe('MetadataProvider', () => {
     };
 
     it('gives the SOP Class UID of the instance', () => {
-      // `@cornerstonejs/metadata` lists SOPClassUID in this module, and the
-      // adapters read `generalImage.sopClassUID` to build a
-      // ReferencedSOPClassUID. That Type 1 element was absent from every
-      // predecessor back pointer while this provider answered `undefined`.
+      // The DICOM standard lists SOPClassUID in the General Image module, and
+      // `@cornerstonejs/metadata` lists the attribute as well, so a consumer
+      // that asks either provider for this module expects the value. This
+      // provider answered `undefined` for the attribute.
       expect(metadataProvider.getTagFromInstance('generalImageModule', instance)).toMatchObject({
         sopInstanceUID: 'sop-general-image',
         sopClassUID: '1.2.840.10008.5.1.4.1.1.88.33',

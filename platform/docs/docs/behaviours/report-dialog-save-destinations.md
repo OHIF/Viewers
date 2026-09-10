@@ -81,10 +81,12 @@ not blank:
 1. `itemName`, the name that the user chose for the item. A rename before the
    save therefore reaches the field. `storeSegmentation` passes
    `segmentation.label`, but only when the user chose that label: the service
-   invents a name such as `Segmentation 3` for a new segmentation, and records
-   the invented name as `generatedLabel`. A label that is still equal to
-   `generatedLabel` goes to `defaultSeriesDescription` instead, so a generated
-   name does not outrank the remembered descriptions.
+   invents a name such as `Segmentation 3` for a new segmentation, and marks the
+   segmentation with `labelIsGenerated`. A label that is still marked this way
+   goes to `defaultSeriesDescription` instead, so a generated name does not
+   outrank the remembered descriptions. A rename clears the mark, and the save
+   compares no two strings, so a user who types the invented name still gets the
+   name in `itemName`.
 2. The description of the series that the viewer loaded the data from, which is
    the name of the last save of this data.
 3. The descriptions that the user used before for this type of item, most recent

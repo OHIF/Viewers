@@ -321,13 +321,15 @@ const commandsModule = ({
         throw new Error('No segmentation found');
       }
 
-      const { label, predecessorImageId, generatedLabel } = segmentation;
+      const { label, predecessorImageId, labelIsGenerated } = segmentation;
       // The dialog offers the name that the user chose first, ahead of the
       // remembered descriptions.  A generated name such as `Segmentation 3` is
-      // not such a name, so a generated name goes last instead.
-      const chosenLabel = label && label !== generatedLabel ? label : '';
+      // not such a name, so a generated name goes last instead.  The state says
+      // which of the two the label is, so this reads no string against another:
+      // a user who types the generated name still chose the name.
+      const chosenLabel = labelIsGenerated ? '' : label || '';
       const defaultSeriesDescription =
-        (!chosenLabel && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
+        (labelIsGenerated && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
 
       const {
         value: reportName,

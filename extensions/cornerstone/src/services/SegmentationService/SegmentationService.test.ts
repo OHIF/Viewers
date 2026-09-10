@@ -1242,6 +1242,8 @@ describe('SegmentationService', () => {
             info: 'S1: Series Description',
           },
           label: 'Segmentation 2',
+          // The caller gave no label, so the service invented this one.
+          labelIsGenerated: true,
           fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
@@ -1263,11 +1265,13 @@ describe('SegmentationService', () => {
       expect(retrievedSegmentationId).toEqual(expect.any(String));
     });
 
-    describe('generatedLabel', () => {
+    describe('labelIsGenerated', () => {
       // `storeSegmentation` offers the label of a segmentation as the first name
       // for a new series, but only when the user chose that name.  The service
-      // records the name that the service invents, so the save can tell the two
-      // apart.
+      // marks the label that the service invents, so the save can tell the two
+      // apart without a comparison of two strings.  The mark goes into the
+      // public input, and `normalizeSegmentationInput` puts the mark on the
+      // segmentation; the service writes nothing onto the state afterwards.
       const displaySet = {
         imageIds: ['imageId'],
         isDynamicVolume: false,
@@ -1277,37 +1281,37 @@ describe('SegmentationService', () => {
       } as unknown as AppTypes.DisplaySet;
 
       const createWith = async (options?: Record<string, unknown>) => {
-        const stored = { segmentationId: 'created' } as cstTypes.Segmentation;
-
         jest
           .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
           .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
         jest
           .spyOn(cstSegmentation.state, 'getSegmentations')
           .mockReturnValue([{ segmentationId: 'segmentationId' }] as cstTypes.Segmentation[]);
-        jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(stored);
-        jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+        const add = jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
 
         await service.createLabelmapForDisplaySet(displaySet, options);
-        return stored;
+        return (add.mock.calls[0][0] as cstTypes.SegmentationPublicInput).config;
       };
 
-      it('records a label that the service invents', async () => {
-        const stored = await createWith();
+      it('marks a label that the service invents', async () => {
+        const config = await createWith();
 
-        expect(stored.generatedLabel).toBe('Segmentation 2');
+        expect(config.label).toBe('Segmentation 2');
+        expect(config.labelIsGenerated).toBe(true);
       });
 
-      it('records nothing for a label that the caller gives', async () => {
-        const stored = await createWith({ label: 'Liver' });
+      it('marks nothing for a label that the caller gives', async () => {
+        const config = await createWith({ label: 'Liver' });
 
-        expect(stored.generatedLabel).toBeUndefined();
+        expect(config.label).toBe('Liver');
+        expect(config.labelIsGenerated).toBe(false);
       });
 
-      it('records a label that the caller reports as generated', async () => {
-        const stored = await createWith({ label: 'Segmentation 7', labelIsGenerated: true });
+      it('marks a label that the caller reports as generated', async () => {
+        const config = await createWith({ label: 'Segmentation 7', labelIsGenerated: true });
 
-        expect(stored.generatedLabel).toBe('Segmentation 7');
+        expect(config.label).toBe('Segmentation 7');
+        expect(config.labelIsGenerated).toBe(true);
       });
     });
 
@@ -1359,6 +1363,8 @@ describe('SegmentationService', () => {
             info: 'S1: Series Description',
           },
           label: 'Segmentation 2',
+          // The caller gave the label, so the label is not a generated one.
+          labelIsGenerated: false,
           fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {

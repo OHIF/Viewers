@@ -491,6 +491,41 @@ describe('ReportDialog', () => {
       expect(descriptionField().value).toBe('Right kidney');
     });
 
+    it('saves when the caller provides a null description', () => {
+      // A mode context, or a customization, can give an explicit null, and the
+      // default of the prop replaces `undefined` alone.  A save read `.trim()`
+      // off that null and threw, and the save then stored nothing.
+      setStoredHistory({ SEG: ['Right kidney'] });
+      const { onSave } = renderDialog({ defaultSeriesDescription: null });
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+      expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('drops the outer spaces of an offered name', () => {
+      // The dialog shows the trimmed name, so the save stores the trimmed name
+      // as well, and the history holds the same name as the series.
+      const { onSave } = renderDialog({ itemName: '  Right kidney  ' });
+
+      expect(descriptionField().value).toBe('Right kidney');
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+      expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('drops the outer spaces of the name an emptied field falls back to', () => {
+      const { onSave } = renderDialog({ itemName: '  Right kidney  ' });
+
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+    });
+
     it('drops the second copy of a description that two sources hold', () => {
       // The history holds the generic name, so the list holds that name once.
       setStoredHistory({ SEG: ['Segmentation 1', 'Left kidney'] });

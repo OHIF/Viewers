@@ -231,13 +231,12 @@ function ReportDialog({
         ? getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount)
         : [];
 
-    // A blank name drops out here, so a name of spaces cannot hide a later name.
-    const offered = [
-      itemName,
-      currentSeries?.description,
-      ...remembered,
-      defaultSeriesDescription,
-    ].filter((option): option is string => !!option?.trim());
+    // Every name loses its outer spaces here, so the stored name matches the
+    // name that the dialog shows, and the remembered name matches both.  A
+    // blank name drops out, so a name of spaces cannot hide a later name.
+    const offered = [itemName, currentSeries?.description, ...remembered, defaultSeriesDescription]
+      .map(option => option?.trim())
+      .filter((option): option is string => !!option);
 
     const options = offered.filter(
       (option, index) =>
@@ -330,9 +329,11 @@ function ReportDialog({
       // The history keeps a name that the user chose.  The caller supplies
       // `defaultSeriesDescription` at every save, such as the generated
       // `Segmentation 3`, and the dialog offers the name in any case, so the
-      // history drops that name and keeps the room for a chosen one.
+      // history drops that name and keeps the room for a chosen one.  A caller
+      // that passes an explicit null supplies no such name, and `?.` keeps the
+      // save from throwing on that null.
       const isProvidedName =
-        storedDescription.toLowerCase() === defaultSeriesDescription.trim().toLowerCase();
+        storedDescription.toLowerCase() === defaultSeriesDescription?.trim().toLowerCase();
 
       if (!targetSeries && !isProvidedName) {
         rememberSeriesDescription(

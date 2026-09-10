@@ -67,6 +67,11 @@ the primary action on the right, rather than the right-aligned cluster
 `itemName` and `defaultSeriesDescription` are new, and both are optional:
 
 ```ts
+// `labelIsGenerated` says that the service invented the label, so the user has
+// chosen no name for this segmentation.  A generated name goes to
+// `defaultSeriesDescription`, and a name that the user chose goes to `itemName`.
+const { label, labelIsGenerated } = segmentation;
+
 const { value, series, seriesNumber, dataSourceName, action } =
   await createReportDialogPrompt({
     servicesManager,
@@ -74,10 +79,11 @@ const { value, series, seriesNumber, dataSourceName, action } =
     title: 'Save Segmentation',
     modality: 'SEG',
     predecessorImageId,
-    // New: the current name of the item, offered first for a new series
-    itemName: segmentation.label,
+    // New: the name that the user chose for the item, offered first for a new
+    // series
+    itemName: labelIsGenerated ? '' : label,
     // New: the name for an item that has no other, offered last
-    defaultSeriesDescription: 'Segmentation',
+    defaultSeriesDescription: (labelIsGenerated && label) || 'Segmentation',
     enableDownload: true,
   });
 ```
@@ -90,6 +96,15 @@ measurement report passes no `itemName`, and `storeSegmentation` passes no
 generated name belongs in `defaultSeriesDescription`, so that the name does not
 outrank the remembered descriptions - see
 [the behaviour doc](../../behaviours/report-dialog-save-destinations.md).
+
+`Segmentation.labelIsGenerated` is new in `@cornerstonejs/tools`, and
+`SegmentationPublicInput.config` carries the flag.  A creator that invents a
+label passes `labelIsGenerated: true` beside the label.  A creator that gives no
+label at all gets the flag anyway, because such a creator gives no name that the
+user chose.  An update that carries a `label` and no `labelIsGenerated` clears
+the flag, so a rename gives a name that the user chose.  The viewer wrote a
+private `generatedLabel` attribute onto the segmentation state before, and a
+consumer compared the two strings; a consumer reads the flag now.
 
 `defaultSeriesDescription` is the name for an item that has no other name, and a
 new series offers `defaultSeriesDescription` last.  The in-tree callers pass

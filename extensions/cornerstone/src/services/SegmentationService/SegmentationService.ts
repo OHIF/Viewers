@@ -502,6 +502,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       },
       config: {
         label,
+        // The service invents a name such as `Segmentation 3` when the caller
+        // gives no label.  `storeSegmentation` reads the flag, to tell a name
+        // that the user chose from a name that the service invented.  The flag
+        // is explicit here, because this config always carries a label, and the
+        // fallback of `normalizeSegmentationInput` reads `!config.label`.
+        labelIsGenerated: options?.labelIsGenerated ?? !options?.label,
         fallbackLabel: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         segments:
           options?.segments && Object.keys(options.segments).length > 0
@@ -532,16 +538,6 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     }
 
     this.addOrUpdateSegmentation(segmentationPublicInput);
-
-    // `storeSegmentation` compares the label with this name, to tell a name that
-    // the user chose from a generated one such as `Segmentation 3`.
-    if (options?.labelIsGenerated || !options?.label) {
-      const segmentation = this.getSegmentation(segmentationId);
-
-      if (segmentation) {
-        segmentation.generatedLabel = label;
-      }
-    }
 
     return segmentationId;
   }
