@@ -90,6 +90,7 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
               <span className="text-foreground text-sm">{t(toggleMode.shortLabel)}</span>
               <Switch
                 data-cy="projection-toggle"
+                aria-label={t(toggleMode.label)}
                 checked={isProjecting}
                 disabled={!canEnable && !isProjecting}
                 onCheckedChange={checked => setMode(checked ? toggleMode.id : 'none')}
@@ -98,6 +99,7 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
           ) : (
             <select
               data-cy="projection-mode-select"
+              aria-label={t('Projection')}
               className="bg-popover text-foreground border-input rounded border px-2 py-1 text-sm"
               value={modeId}
               disabled={!canEnable && !isProjecting}

@@ -289,14 +289,17 @@ export class NextViewportAdapter implements IViewportAdapter {
       return undefined;
     }
     const presentation = this.viewport.getDisplaySetPresentation?.(dataId) ?? {};
+    // A blend the registry does not offer is foreign state regardless of the
+    // slab, so it is checked first. An unset blend is the mapper default.
+    const engineBlend = presentation.blendMode;
+    const blendOp = engineBlend === undefined ? ('none' as const) : blendOpFromEngine(engineBlend);
+    if (blendOp === undefined) {
+      return undefined;
+    }
     const slab = presentation.slabThickness;
     const slabThickness = typeof slab === 'number' && slab > 0 ? slab : 0;
     if (slabThickness === 0) {
       return { blendOp: 'none', slabThickness: 0 };
-    }
-    const blendOp = blendOpFromEngine(presentation.blendMode);
-    if (blendOp === undefined) {
-      return undefined;
     }
     return { blendOp, slabThickness };
   }
