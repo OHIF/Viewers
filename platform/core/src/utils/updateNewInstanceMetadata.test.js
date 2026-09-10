@@ -96,14 +96,56 @@ describe('updateNewInstanceMetadata', () => {
     });
   });
 
+  // The Segmentation and SR IODs both define ContentDate/ContentTime, as does
+  // the General Image module an ordinary image series is built from, so the
+  // default pair is the right one for all three.
+  test.each([['SEG'], ['SR'], ['CT'], [undefined]])(
+    'stamps the content date and time of a %s instance',
+    Modality => {
+      const dataset = updateNewInstanceMetadata({ ...series, Modality }, []);
+
+      expect(dataset.ContentDate).toBe(dataset.InstanceCreationDate);
+      expect(dataset.ContentTime).toBe(dataset.InstanceCreationTime);
+      expect(dataset.StructureSetDate).toBeUndefined();
+    }
+  );
+
+  // The RTSTRUCT IOD defines neither ContentDate nor ContentTime - the
+  // Structure Set module carries StructureSetDate/StructureSetTime instead - so
+  // stamping a content date/time writes an attribute a strict validator or
+  // archive rejects the instance for.
+  test('stamps the structure set date and time of an RTSTRUCT instance', () => {
+    const dataset = updateNewInstanceMetadata({ ...series, Modality: 'RTSTRUCT' }, []);
+
+    expect(dataset.StructureSetDate).toBe(dataset.InstanceCreationDate);
+    expect(dataset.StructureSetTime).toBe(dataset.InstanceCreationTime);
+    expect(dataset.ContentDate).toBeUndefined();
+    expect(dataset.ContentTime).toBeUndefined();
+    expect(getSeriesDateTime(dataset)).toEqual({
+      SeriesDate: dataset.StructureSetDate,
+      SeriesTime: dataset.StructureSetTime,
+    });
+  });
+
+  // The Presentation State Identification module is the same story, with
+  // PresentationCreationDate/PresentationCreationTime.
+  test('stamps the presentation creation date and time of a PR instance', () => {
+    const dataset = updateNewInstanceMetadata({ ...series, Modality: 'PR' }, []);
+
+    expect(dataset.PresentationCreationDate).toBe(dataset.InstanceCreationDate);
+    expect(dataset.PresentationCreationTime).toBe(dataset.InstanceCreationTime);
+    expect(dataset.ContentDate).toBeUndefined();
+    expect(getSeriesDateTime(dataset)).toEqual({
+      SeriesDate: dataset.PresentationCreationDate,
+      SeriesTime: dataset.PresentationCreationTime,
+    });
+  });
+
   // The stamp has to be on the same clock as the rest of the object, or the
   // date/time shown for it is off by the offset between the two zones.
   test('stamps in the timezone the dataset declares', () => {
     const now = new Date();
-    const dataset = updateNewInstanceMetadata(
-      { ...series, TimezoneOffsetFromUTC: '+0930' },
-      []
-    );
+    const dataset = updateNewInstanceMetadata({ ...series, TimezoneOffsetFromUTC: '+0930' }, []);
 
     expect({ date: dataset.ContentDate, time: dataset.ContentTime.slice(0, 4) }).toEqual({
       date: getCurrentDicomDateTime(now, '+0930').date,

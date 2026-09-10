@@ -124,6 +124,15 @@ the series - the most recently created instance of a series is not necessarily
 the one with the highest instance number, so deriving the instance number from a
 single predecessor instance can collide with an instance that already exists.
 
+The stamp writes `InstanceCreationDate`/`Time`, which the SOP Common module
+gives to every IOD, and the creation date/time pair the modality's own IOD
+defines: `StructureSetDate`/`Time` for an RTSTRUCT, `PresentationCreationDate`/
+`Time` for a PR, and `ContentDate`/`Time` for everything else - a SEG gets that
+pair from the Multi-frame Functional Groups module, an SR from the SR Document
+General module, and an image series from the General Image module.  The RTSTRUCT
+and PR IODs define no content date/time at all, so writing one on them adds an
+attribute a strict validator or archive can reject the instance for.
+
 That stamp covers the instance level attributes, which are the ones that move
 when an object is added to an existing series.  The date/time of the series
 being *created* is generated with the object instead, from

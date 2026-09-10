@@ -68,8 +68,23 @@ the one date/time their instance has, so only the frame number orders them.
 ## New instances are stamped on save
 
 `updateNewInstanceMetadata` stamps every report, segmentation and structure set
-OHIF saves with `InstanceCreationDate`/`Time` and `ContentDate`/`Time`, and with
-an instance number one higher than every instance already in the series.
+OHIF saves with `InstanceCreationDate`/`Time`, with the creation date/time pair
+the modality's IOD defines, and with an instance number one higher than every
+instance already in the series.
+
+`InstanceCreationDate`/`Time` are in the SOP Common module, so every IOD has
+them. The creation date/time of the object itself depends on the modality:
+
+| Modality | Attribute pair | Module that defines it |
+| --- | --- | --- |
+| `RTSTRUCT` | `StructureSetDate`/`Time` | Structure Set |
+| `PR` | `PresentationCreationDate`/`Time` | Presentation State Identification |
+| every other modality | `ContentDate`/`Time` | Multi-frame Functional Groups (SEG), SR Document General (SR), General Image (an image series) |
+
+The RTSTRUCT and PR IODs define no content date/time at all, so a
+`ContentDate`/`Time` on one of them is an attribute a strict validator or
+archive can reject the instance for. `getSeriesDateTime` reads all three pairs,
+so the ordering is the same whichever pair the modality gets.
 
 The date/time are read as wall clock values in the dataset's own timezone -
 `TimezoneOffsetFromUTC` when it declares one, the local zone otherwise - since

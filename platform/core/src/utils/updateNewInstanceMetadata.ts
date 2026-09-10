@@ -45,6 +45,33 @@ export function getCurrentDicomDateTime(
 }
 
 /**
+ * The date/time pair an IOD defines for "when this object was created", for the
+ * modalities whose IOD does not define `ContentDate`/`ContentTime`.
+ *
+ * An RT Structure Set is built from the Structure Set module, which carries
+ * `StructureSetDate`/`StructureSetTime` (both type 2) and no content date/time
+ * at all - the RTSTRUCT IOD has no General Image module and no Multi-frame
+ * Functional Groups module to bring one in.  A softcopy presentation state is
+ * the same story with the Presentation State Identification module, whose
+ * `PresentationCreationDate`/`PresentationCreationTime` are type 1.
+ *
+ * Both pairs are read back by `getSeriesDateTime`, so an instance stamped
+ * through this map orders exactly as one stamped with a content date/time.
+ */
+const modalityDateTimeAttributes: Record<string, [string, string]> = {
+  RTSTRUCT: ['StructureSetDate', 'StructureSetTime'],
+  PR: ['PresentationCreationDate', 'PresentationCreationTime'],
+};
+
+/**
+ * The pair used by every other modality.  A segmentation gets it from the
+ * Multi-frame Functional Groups module and a report from the SR Document
+ * General module, both as type 1, and an ordinary image series gets it from the
+ * General Image module as type 2C.
+ */
+const defaultDateTimeAttributes: [string, string] = ['ContentDate', 'ContentTime'];
+
+/**
  * Stamps a newly created instance - a report, segmentation or structure set
  * about to be stored - as the most recent instance of its series.
  *
@@ -59,6 +86,12 @@ export function getCurrentDicomDateTime(
  * stamped in the dataset's own timezone - `TimezoneOffsetFromUTC` when it has
  * one, the local zone otherwise - because that is the wall clock reading a
  * viewer displays them as.
+ *
+ * `InstanceCreationDate`/`InstanceCreationTime` are in the SOP Common module,
+ * so every IOD has them.  The creation date/time of the object itself is not
+ * shared in that way: the attributes that hold it depend on the modality, and
+ * writing an attribute the IOD does not define is what a strict validator or
+ * archive rejects the instance for.  See {@link modalityDateTimeAttributes}.
  *
  * The series level date/time of a series being *created* cannot be stamped here
  * for the same reason - this function cannot tell the two cases apart - so the
@@ -93,8 +126,11 @@ export function updateNewInstanceMetadata(dataset, priorInstances?: Array<{ Inst
   const { date, time } = getCurrentDicomDateTime(new Date(), dataset.TimezoneOffsetFromUTC);
   dataset.InstanceCreationDate = date;
   dataset.InstanceCreationTime = time;
-  dataset.ContentDate = date;
-  dataset.ContentTime = time;
+
+  const [dateAttribute, timeAttribute] =
+    modalityDateTimeAttributes[dataset.Modality] ?? defaultDateTimeAttributes;
+  dataset[dateAttribute] = date;
+  dataset[timeAttribute] = time;
 
   return dataset;
 }
