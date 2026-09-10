@@ -103,6 +103,21 @@ describe('resolveThumbnailDetails', () => {
     expect(console.warn).toHaveBeenCalled();
   });
 
+  // The same broken customization is resolved for every item of every
+  // thumbnail, and again on every re-map, so a report on each of them buries
+  // the console under thousands of identical lines while a study loads.
+  it('reports an unresolved name once', () => {
+    const items = [{ id: 'ReportedOnce', source: 'noSuchSourceReportedOnce' }];
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    (console.warn as jest.Mock).mockClear();
+
+    resolve(items, displaySet());
+    resolve(items, displaySet());
+    resolve(items, displaySet({ displaySetInstanceUID: 'ds2' }));
+
+    expect(console.warn).toHaveBeenCalledTimes(1);
+  });
+
   describe('condition', () => {
     const items = [
       { id: 'InstanceDateTime', source: 'instanceDateTime', condition: 'isDerivedDisplaySet' },

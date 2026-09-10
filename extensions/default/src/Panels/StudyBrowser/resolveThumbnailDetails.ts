@@ -22,6 +22,16 @@ type ResolveOptions = {
 };
 
 /**
+ * The `<kind> "<value>"` names already reported by {@link resolveThumbnailDetails}.
+ *
+ * A broken customization is broken for every item of every thumbnail, and the
+ * details are re-resolved on each re-map, so the same name would otherwise be
+ * reported thousands of times while a large study loads.  One report per name
+ * says everything the developer needs, so the rest are dropped.
+ */
+const reportedNames = new Set<string>();
+
+/**
  * Builds the detail line of a study browser thumbnail from the
  * `studyBrowser.thumbnailDetails` items, in the order they are declared.
  *
@@ -63,7 +73,11 @@ export function resolveThumbnailDetails({
     }
     const named = registry?.[value];
     if (!named) {
-      console.warn(`Thumbnail detail item "${id}" names an unknown ${kind} "${value}"`);
+      const reportKey = `${id}|${kind}|${value}`;
+      if (!reportedNames.has(reportKey)) {
+        reportedNames.add(reportKey);
+        console.warn(`Thumbnail detail item "${id}" names an unknown ${kind} "${value}"`);
+      }
       hasUnresolvedName = true;
     }
     return named;
