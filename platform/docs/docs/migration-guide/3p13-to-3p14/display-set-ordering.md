@@ -65,6 +65,36 @@ its own display set, and that display set takes the position of the save. To
 keep a split together instead, give every display set of the split the value of
 the series and register an `addSameSeriesCompare` comparison to order them.
 
+## A DT that declares a UTC offset is read in the viewer's own offset
+
+`AcquisitionDateTime` is a DICOM DT, and a DT may end with the `&ZZXX` UTC
+offset the rest of it is written in. `getSeriesDateTime` used to take the first
+8 characters as the date and everything after as the time, which read the offset
+digits as time digits: `20260819+0500` became five in the morning, and the `05`
+of `202608191030-0500` became the seconds.
+
+`expandDicomDateTime` now splits the offset off and moves the value to the
+offset of the viewer, so the date and the time are the local wall clock reading
+of the same instant - noon at `-0400` is 16:00 UTC, and 16:00 UTC is 10:00 at
+`-0600`. That is the value a DT carrying no offset would have to hold to name
+the same instant, because a value with no offset is read as local. The offset of
+the viewer *at that instant* is used, so daylight saving is right for an
+acquisition made in another season.
+
+- A DT that declares no offset is read exactly as it is. Nothing says what zone
+  it was written in, and every bare DA and TM is read with the same silence.
+- A DT holding a date alone names the start of that day, which is the reading
+  the move needs. It gains a real time when the move changes it, and around
+  midnight it changes day.
+- A DT already in the viewer's own offset is returned unchanged, so a date with
+  no time keeps its empty time rather than gaining an invented `0000`.
+
+**What changes for you:** a display set whose date/time came from an
+offset-bearing `AcquisitionDateTime` changes position, and the `SeriesTime`
+stored on it is now a valid DICOM TM. It used to be the raw remainder of the DT,
+offset included - `100000.000000-0500` - which the thumbnail detail line then
+passed to `formatTime`.
+
 ## `addSameSeriesCompare` comparators now run
 
 A comparator registered with `addSameSeriesCompare` orders two display sets of

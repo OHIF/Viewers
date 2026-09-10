@@ -46,6 +46,124 @@ export type SeriesDateTime = {
 };
 
 /**
+ * `&ZZXX` - the UTC offset DICOM defines - as a number of minutes ahead of UTC,
+ * or `undefined` when the value is absent or not in that format.  It is the
+ * whole of `TimezoneOffsetFromUTC` (0008,0201) and the suffix a DT value may
+ * end with.
+ */
+export function parseUTCOffset(value): number | undefined {
+  const match = /^([+-])(\d{2})(\d{2})$/.exec(`${value ?? ''}`.trim());
+  if (!match) {
+    return undefined;
+  }
+  const [, sign, hours, minutes] = match;
+  return (sign === '-' ? -1 : 1) * (Number(hours) * 60 + Number(minutes));
+}
+
+/**
+ * A DICOM DT value: 8 digits of date, up to 6 more of time, an optional
+ * fraction, and an optional `&ZZXX` offset.  A DT with fewer than 8 digits of
+ * date names a year or a month rather than a day, which is not a date this can
+ * order by, so it is not matched at all.
+ */
+const dicomDateTime = /^(\d{8})(\d{0,6})(\.\d{1,6})?([+-]\d{4})?$/;
+
+const pad = (value: number) => `${value}`.padStart(2, '0');
+
+/**
+ * Splits a DICOM DT into a date and a time, in the timezone of the viewer.
+ *
+ * A DT may end with the UTC offset the rest of it is written in.  That offset
+ * is not a part of the date/time, and reading it as one is how `20260819+0500`
+ * becomes five in the morning and how the `05` of `202608191030-0500` becomes
+ * the seconds.  It also cannot simply be dropped: the wall clock reading it
+ * carries belongs to another place, so a viewer that displays it displays a
+ * time that is not the time of day here, and around midnight the wrong day too.
+ *
+ * So a DT that declares an offset is moved to the offset of the viewer, and the
+ * result is the local wall clock reading of the same instant.  A DT that
+ * declares no offset is returned exactly as it was found - there is nothing to
+ * say what zone it was written in, and every other attribute this module reads
+ * is a bare DA or TM with the same silence.
+ *
+ * A DT holding a date alone names the start of that day, which is the reading
+ * needed to move it.  The time it gains is the wall clock reading of that
+ * instant here, so a value already in the viewer's own offset keeps its empty
+ * time and gains nothing.
+ *
+ * @param value - the DT value
+ * @param localOffsetMinutes - the offset to move the value to, in minutes ahead
+ *   of UTC.  The viewer's own offset *at that instant* is used when this is not
+ *   supplied, which is what keeps a summer acquisition correct when it is read
+ *   in the winter.  Tests supply it to pin a result that does not depend on the
+ *   zone the test runs in.
+ * @returns the date and the time, or `undefined` when the value is not a DT
+ *   naming a day
+ */
+export function expandDicomDateTime(
+  value,
+  localOffsetMinutes?: number
+): SeriesDateTime | undefined {
+  const match = dicomDateTime.exec(`${value ?? ''}`.trim());
+  if (!match) {
+    return undefined;
+  }
+  const [, date, time = '', fraction = '', offset = ''] = match;
+  const asFound = { SeriesDate: date, SeriesTime: `${time}${fraction}` };
+
+  const offsetMinutes = parseUTCOffset(offset);
+  if (offsetMinutes === undefined) {
+    return asFound;
+  }
+
+  // Only the hours and the minutes can move: a UTC offset is a whole number of
+  // minutes, so the seconds and the fraction of the source survive untouched.
+  const hours = Number(time.slice(0, 2) || 0);
+  const minutes = Number(time.slice(2, 4) || 0);
+  const at = new Date(0);
+  at.setUTCFullYear(
+    Number(date.slice(0, 4)),
+    Number(date.slice(4, 6)) - 1,
+    Number(date.slice(6, 8))
+  );
+  at.setUTCHours(hours, minutes - offsetMinutes, 0, 0);
+
+  // Reading the instant with the local getters applies the viewer's offset at
+  // that instant, daylight saving included.  A supplied offset is applied by
+  // shifting the instant and reading it back in UTC instead.
+  const supplied = localOffsetMinutes !== undefined;
+  const local = supplied ? new Date(at.getTime() + localOffsetMinutes * 60_000) : at;
+  const [year, month, day, localHours, localMinutes] = supplied
+    ? [
+        local.getUTCFullYear(),
+        local.getUTCMonth() + 1,
+        local.getUTCDate(),
+        local.getUTCHours(),
+        local.getUTCMinutes(),
+      ]
+    : [
+        local.getFullYear(),
+        local.getMonth() + 1,
+        local.getDate(),
+        local.getHours(),
+        local.getMinutes(),
+      ];
+  const localDate = `${year}${pad(month)}${pad(day)}`;
+  const localHHMM = `${pad(localHours)}${pad(localMinutes)}`;
+
+  // The value is already the local wall clock reading, so it is returned as it
+  // was found - which is what keeps a date with no time free of an invented one.
+  if (localDate === date && localHHMM === `${pad(hours)}${pad(minutes)}`) {
+    return asFound;
+  }
+
+  return {
+    SeriesDate: localDate,
+    SeriesTime: `${localHHMM}${time.slice(4, 6)}${fraction}`,
+  };
+}
+
+/**
  * Reads an attribute allowing for the normalized, lower camel case spelling
  * used by series level metadata (`seriesDate` as well as `SeriesDate`).
  */
@@ -93,7 +211,11 @@ const timeSortKey = (value): string => {
  * one of its most recently created instance.
  *
  * The values are returned as found, so they are safe to store on a display set
- * and to display; use {@link getSeriesDateTimeSortKey} to compare them.
+ * and to display; use {@link getSeriesDateTimeSortKey} to compare them.  The
+ * one exception is a DT value that declares a UTC offset, which
+ * {@link expandDicomDateTime} moves to the offset of the viewer first - the
+ * date/time returned is then the local wall clock reading of the same instant,
+ * and a valid DA and TM rather than the offset-bearing DT it came from.
  */
 export function getSeriesDateTime(source): SeriesDateTime {
   const sources = Array.isArray(source) ? source : [source];
@@ -129,9 +251,9 @@ export function getSeriesDateTime(source): SeriesDateTime {
       consider(getAttribute(item, dateAttribute), getAttribute(item, timeAttribute));
     }
     for (const attribute of dateTimeCombinedAttributes) {
-      const dateTime = `${getAttribute(item, attribute) ?? ''}`;
+      const dateTime = expandDicomDateTime(getAttribute(item, attribute));
       if (dateTime) {
-        consider(dateTime.slice(0, 8), dateTime.slice(8));
+        consider(dateTime.SeriesDate, dateTime.SeriesTime);
       }
     }
   }

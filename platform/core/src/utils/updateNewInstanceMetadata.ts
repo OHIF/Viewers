@@ -1,17 +1,5 @@
 import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
-
-/**
- * `TimezoneOffsetFromUTC` (0008,0201) as a number of minutes ahead of UTC, or
- * `undefined` when the value is absent or not the `&ZZXX` format DICOM defines.
- */
-function parseTimezoneOffsetFromUTC(value): number | undefined {
-  const match = /^([+-])(\d{2})(\d{2})$/.exec(`${value ?? ''}`.trim());
-  if (!match) {
-    return undefined;
-  }
-  const [, sign, hours, minutes] = match;
-  return (sign === '-' ? -1 : 1) * (Number(hours) * 60 + Number(minutes));
-}
+import { parseUTCOffset } from './seriesDateTime';
 
 /**
  * The current date and time as DICOM DA and TM values.
@@ -31,8 +19,7 @@ export function getCurrentDicomDateTime(
 ): { date: string; time: string } {
   // The wall clock reading is the instant shifted by the zone's offset and then
   // read in UTC, which for the local zone is what the local getters return.
-  const offsetMinutes =
-    parseTimezoneOffsetFromUTC(timezoneOffsetFromUTC) ?? -now.getTimezoneOffset();
+  const offsetMinutes = parseUTCOffset(timezoneOffsetFromUTC) ?? -now.getTimezoneOffset();
   const at = new Date(now.getTime() + offsetMinutes * 60_000);
 
   const pad = (value: number, length = 2) => `${value}`.padStart(length, '0');

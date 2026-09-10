@@ -141,6 +141,13 @@ object, so `getSeriesDateTime` chooses one pair from all of them:
 - A value that is not a DICOM DA counts as no date at all.  Some series level
   metadata carries a date already formatted for display, and `19-Jan-2026` would
   otherwise read as `192026` and order by day of month.
+- A combined `AcquisitionDateTime` that ends with the `&ZZXX` UTC offset is
+  moved to the offset of the viewer, by `expandDicomDateTime`, and the date/time
+  read from it is the local wall clock reading of that same instant.  A DT that
+  declares no offset is read exactly as it is, like every bare DA and TM here.
+  A DT holding a date alone names the start of that day, which is the reading
+  the move needs; a value already in the viewer's own offset is unchanged and so
+  keeps its empty time.
 
 For any of this to work on newly stored objects, `updateNewInstanceMetadata`
 stamps every report, segmentation and structure set OHIF saves with the current

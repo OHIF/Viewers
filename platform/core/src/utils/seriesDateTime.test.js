@@ -1,4 +1,9 @@
-import { getSeriesDateTime, getSeriesDateTimeSortKey } from './seriesDateTime';
+import {
+  expandDicomDateTime,
+  getSeriesDateTime,
+  getSeriesDateTimeSortKey,
+  parseUTCOffset,
+} from './seriesDateTime';
 
 describe('getSeriesDateTime', () => {
   test('uses the series date and time when they are the only pair', () => {
@@ -147,6 +152,32 @@ describe('getSeriesDateTime', () => {
     });
   });
 
+  // Two DT values that name the same instant in two different zones have to
+  // order as equal, whatever zone the viewer is in.  Reading the offset as a
+  // part of the time gave `20260819+0500` five in the morning, and made the
+  // `05` of `202608191030-0500` the seconds.
+  test.each([
+    ['a full value', '20260819100000.000000-0500', '20260819150000.000000+0000'],
+    ['a value with no seconds', '202608191030-0500', '202608191530+0000'],
+    ['a value with no time', '20260819+0000', '20260818200000-0400'],
+    ['a value that crosses the day boundary', '20260819233000-0500', '20260820043000+0000'],
+  ])('gives one sort key to %s in two zones', (_name, west, utc) => {
+    expect(getSeriesDateTimeSortKey({ AcquisitionDateTime: west })).toBe(
+      getSeriesDateTimeSortKey({ AcquisitionDateTime: utc })
+    );
+  });
+
+  test('leaves a combined date time that declares no offset exactly as it is', () => {
+    expect(getSeriesDateTime({ AcquisitionDateTime: '20260819' })).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '',
+    });
+    expect(getSeriesDateTime({ AcquisitionDateTime: '202608191030' })).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '1030',
+    });
+  });
+
   test('takes the latest date time of an array of instances', () => {
     const instances = [
       { ContentDate: '20260817', ContentTime: '090000' },
@@ -159,6 +190,140 @@ describe('getSeriesDateTime', () => {
       SeriesTime: '143000',
     });
   });
+});
+
+describe('parseUTCOffset', () => {
+  test.each([
+    ['+0000', 0],
+    ['-0500', -300],
+    ['+0930', 570],
+    ['+1400', 840],
+  ])('reads %s as %s minutes ahead of UTC', (value, expected) => {
+    expect(parseUTCOffset(value)).toBe(expected);
+  });
+
+  test.each([[undefined], [''], ['0500'], ['+05:00'], ['not an offset']])(
+    'reports %s as no offset',
+    value => {
+      expect(parseUTCOffset(value)).toBeUndefined();
+    }
+  );
+});
+
+/**
+ * The local offset is supplied to every case here, so the expected value does
+ * not depend on the zone the test runs in.  `getSeriesDateTime` supplies none
+ * and gets the viewer's own offset at that instant instead.
+ */
+describe('expandDicomDateTime', () => {
+  const utc = 0;
+  const newYork = -5 * 60;
+  const chicago = -6 * 60;
+  const adelaide = 9 * 60 + 30;
+
+  // Neither side is UTC here, so this pins the direction of both halves of the
+  // move: noon at -0400 is 16:00 UTC, and 16:00 UTC is 10:00 at -0600.  The
+  // result is what a value carrying no offset at all would have to hold to name
+  // the same instant, because such a value is read as local.
+  test('moves a value between two offsets that are both behind UTC', () => {
+    expect(expandDicomDateTime('20260819120000-0400', chicago)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '100000',
+    });
+    // The same instant written in UTC, and the same answer.
+    expect(expandDicomDateTime('20260819160000+0000', chicago)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '100000',
+    });
+    // And the other way round, so a wrong sign cannot pass both.
+    expect(expandDicomDateTime('20260819100000-0600', -4 * 60)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '120000',
+    });
+  });
+
+  test('reads a DT that declares no offset exactly as it is', () => {
+    expect(expandDicomDateTime('20260819143000.000000', newYork)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '143000.000000',
+    });
+  });
+
+  test('keeps a DT already in the local offset, and invents no time for a date', () => {
+    expect(expandDicomDateTime('20260819143000-0500', newYork)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '143000',
+    });
+    expect(expandDicomDateTime('20260819-0500', newYork)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '',
+    });
+  });
+
+  test('moves a DT to the local offset', () => {
+    expect(expandDicomDateTime('20260819150000+0000', newYork)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '100000',
+    });
+    expect(expandDicomDateTime('20260819100000-0500', utc)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '150000',
+    });
+  });
+
+  test('moves a DT across the day boundary', () => {
+    // Half past eleven at night in New York is half past four the next morning
+    // in UTC.
+    expect(expandDicomDateTime('20260819233000-0500', utc)).toEqual({
+      SeriesDate: '20260820',
+      SeriesTime: '043000',
+    });
+    // And half past midnight in UTC is still the previous evening there.
+    expect(expandDicomDateTime('20260820003000+0000', newYork)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '193000',
+    });
+  });
+
+  // A DT holding a date alone names the start of that day, which is the reading
+  // the move needs.  The time it gains is a real one, so it is reported.
+  test('reads a date alone as the start of that day', () => {
+    expect(expandDicomDateTime('20260819+0000', newYork)).toEqual({
+      SeriesDate: '20260818',
+      SeriesTime: '1900',
+    });
+  });
+
+  test('moves by an offset that is not a whole number of hours', () => {
+    // 09:30 ahead of UTC, so 14:30 UTC is midnight the next day in Adelaide.
+    expect(expandDicomDateTime('20260819143000+0000', adelaide)).toEqual({
+      SeriesDate: '20260820',
+      SeriesTime: '000000',
+    });
+  });
+
+  test('keeps the seconds and the fraction of the source', () => {
+    expect(expandDicomDateTime('20260819150012.345678+0000', newYork)).toEqual({
+      SeriesDate: '20260819',
+      SeriesTime: '100012.345678',
+    });
+  });
+
+  // A DT truncated to the hour or the minute gains the minutes the move needs,
+  // and nothing below them.
+  test.each([
+    ['20260819', '2026081900', '20260818', '1900'],
+    ['20260819', '202608191030', '20260819', '0530'],
+  ])('expands the truncated DT %s / %s', (_date, value, SeriesDate, SeriesTime) => {
+    expect(expandDicomDateTime(`${value}+0000`, newYork)).toEqual({ SeriesDate, SeriesTime });
+  });
+
+  test.each([[undefined], [''], ['2026'], ['202608'], ['not a date time']])(
+    'reports %s as no date time at all',
+    value => {
+      expect(expandDicomDateTime(value, utc)).toBeUndefined();
+    }
+  );
 });
 
 describe('getSeriesDateTimeSortKey', () => {
