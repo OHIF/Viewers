@@ -1,4 +1,5 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+import { ThumbnailPageObject } from './ThumbnailPageObject';
 
 export class LeftPanelPageObject {
   readonly page: Page;
@@ -13,6 +14,24 @@ export class LeftPanelPageObject {
 
   get thumbnails() {
     return this.page.locator('[data-cy^="study-browser-thumbnail"]');
+  }
+
+  /** Thumbnails of derived series - SEG, SR, RTSTRUCT - which show no image. */
+  get derivedThumbnails() {
+    return this.page.locator('[data-cy="study-browser-thumbnail-no-image"]');
+  }
+
+  /** Wraps a thumbnail locator so its contents can be read by name. */
+  thumbnail(locator: Locator) {
+    return new ThumbnailPageObject(this.page, locator);
+  }
+
+  thumbnailAt(nth: number = 0) {
+    return this.thumbnail(this.thumbnails.nth(nth));
+  }
+
+  derivedThumbnailAt(nth: number = 0) {
+    return this.thumbnail(this.derivedThumbnails.nth(nth));
   }
 
   async loadSeriesByModality(modality: string, nth: number = 0) {

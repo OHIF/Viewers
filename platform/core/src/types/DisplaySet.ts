@@ -63,7 +63,43 @@ export type DisplaySet = {
    */
   FrameOfReferenceUID?: string;
 
+  /**
+   * The date and the time **of the display set**, which is what the series list
+   * is ordered by - `dateTimeSortKey` in `sortStudy`. The two names are
+   * historical: the value is not always the `SeriesDate`/`SeriesTime` of the
+   * series that the instances belong to, and it must not be copied back to the
+   * series metadata or to an instance.
+   *
+   * The SOP class handler that creates the display set writes both, with
+   * `getSeriesDateTime` of the instance the display set shows:
+   *
+   * - An image display set takes the instance's `SeriesDate`/`SeriesTime`.
+   *   Every instance of a series carries those two identically, so every
+   *   display set of one image series holds the same value, ties on the sort
+   *   key, and the display sets stay together in the series list - ordered
+   *   among themselves by `compareSameSeriesDisplaySet`.
+   * - A derived display set - SEG, RTSTRUCT, SR, PMAP, PDF, video, chart -
+   *   takes the creation date/time of the instance it shows. A report saved
+   *   today into a series created last week gets today's date, and the series
+   *   list places that display set as today's work. The series' own
+   *   `SeriesDate`/`SeriesTime`, in the instance metadata and in the archive,
+   *   stay as they are.
+   *
+   * A display set that changes the instance it shows has to write both again,
+   * or the series list keeps the position of the instance it no longer shows.
+   * `addInstances` of the SR handler and of the chart handler does that. The
+   * SEG, the RTSTRUCT and the PMAP handler have no `addInstances`, so
+   * `DisplaySetService` gives each new instance its own display set, and that
+   * display set writes its own date/time.
+   *
+   * Two display sets of one series that hold different values order by those
+   * values, and a display set of another series can come between them. A split
+   * that needs its display sets kept together gives all of them one value - the
+   * value of the series - and registers a comparison with `addSameSeriesCompare`
+   * to order them among themselves.
+   */
   SeriesDate?: string;
+  /** The time of the display set. See {@link DisplaySet.SeriesDate}. */
   SeriesTime?: string;
   instance?: InstanceMetadata;
 

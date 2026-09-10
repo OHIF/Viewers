@@ -14,7 +14,10 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
   return instances.map(instance => {
     const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
-    const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
+    const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
+    // The date/time of a display set is the date/time of the instance it shows,
+    // chosen from all the attributes that instance carries.
+    const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
     // The declared type is only a claim. It is resolved against the displayable
     // type allowlist, and the payload is re-wrapped in a Blob of the canonical
     // type, so the instance cannot steer how the browser parses the document.
@@ -34,6 +37,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       SeriesDescription,
       SeriesNumber,
       SeriesDate,
+      SeriesTime,
       SOPInstanceUID,
       SeriesInstanceUID,
       StudyInstanceUID,

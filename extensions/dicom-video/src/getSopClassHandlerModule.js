@@ -55,8 +55,10 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     })
     .map(instance => {
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
-      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
-        instance;
+      const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } = instance;
+      // The date/time of a display set is the date/time of the instance it
+      // shows, chosen from all the attributes that instance carries.
+      const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
       const videoUrlParams = {
         instance,
         singlepart: 'video',
@@ -74,6 +76,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SeriesDescription,
         SeriesNumber,
         SeriesDate,
+        SeriesTime,
         SOPInstanceUID,
         SeriesInstanceUID,
         StudyInstanceUID,

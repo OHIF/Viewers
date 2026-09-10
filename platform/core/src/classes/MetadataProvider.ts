@@ -370,9 +370,20 @@ class MetadataProvider {
           // consumer that asks either provider for this module expects the
           // value. This provider answered `undefined`, and a consumer that
           // reads the value off this module therefore got nothing. The SOP
-          // Common module of this provider already answers the same value.
+          // Common module of this provider answers the same value, and the
+          // predecessor reference of a new instance reads the pair of UIDs
+          // there; that reference reads the instance number below from this
+          // module.
           sopClassUID: instance.SOPClassUID,
           instanceNumber: toNumber(instance.InstanceNumber),
+          // The instance level date/time is the only one that distinguishes a
+          // newly saved instance from the rest of its series, whose
+          // SeriesDate/SeriesTime it inherits, so it has to be carried through
+          // to instances derived from this one.  See `getSeriesDateTime`.
+          instanceCreationDate: instance.InstanceCreationDate,
+          instanceCreationTime: instance.InstanceCreationTime,
+          contentDate: instance.ContentDate,
+          contentTime: instance.ContentTime,
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
           lossyImageCompressionMethod: instance.LossyImageCompressionMethod,
