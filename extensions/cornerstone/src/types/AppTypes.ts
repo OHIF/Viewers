@@ -5,6 +5,7 @@ import SegmentationServiceType from '../services/SegmentationService';
 import SyncGroupServiceType from '../services/SyncGroupService';
 import ToolGroupServiceType from '../services/ToolGroupService';
 import ColorbarServiceType from '../services/ColorbarService';
+import ProjectionServiceType from '../services/ProjectionService';
 import ViewedDataServiceType from '../services/ViewedDataService';
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
@@ -24,6 +25,7 @@ declare global {
     export type SyncGroupService = SyncGroupServiceType;
     export type ToolGroupService = ToolGroupServiceType;
     export type ColorbarService = ColorbarServiceType;
+    export type ProjectionService = ProjectionServiceType;
     export type ViewedDataService = ViewedDataServiceType;
 
     export interface Services {
@@ -33,6 +35,7 @@ declare global {
       segmentationService?: SegmentationServiceType;
       cornerstoneCacheService?: CornerstoneCacheServiceType;
       colorbarService?: ColorbarServiceType;
+      projectionService?: ProjectionServiceType;
       viewedDataService?: ViewedDataServiceType;
     }
 
