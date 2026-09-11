@@ -365,16 +365,11 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUID: instance.SOPInstanceUID,
-          // The DICOM standard lists SOPClassUID in the General Image module,
-          // and `@cornerstonejs/metadata` lists the attribute as well, so a
-          // consumer that asks either provider for this module expects the
-          // value. This provider answered `undefined`, and a consumer that
-          // reads the value off this module therefore got nothing. The SOP
-          // Common module of this provider answers the same value, and the
-          // predecessor reference of a new instance reads the pair of UIDs
-          // there; that reference reads the instance number below from this
-          // module.
-          sopClassUID: instance.SOPClassUID,
+          // SOPClassUID is not in the General Image module. It belongs to the
+          // SOP Common module, and the `sopCommonModule` case answers it
+          // there. A consumer that needs the pair of UIDs, such as the
+          // predecessor reference of a new instance, reads the pair of UIDs
+          // from that module, and reads the instance number here.
           instanceNumber: toNumber(instance.InstanceNumber),
           // The instance level date/time is the only one that distinguishes a
           // newly saved instance from the rest of its series, whose

@@ -80,31 +80,31 @@ describe('MetadataProvider', () => {
     });
   });
 
-  describe('generalImageModule', () => {
+  describe('the module a UID belongs to', () => {
     const instance = {
       SOPInstanceUID: 'sop-general-image',
       SOPClassUID: '1.2.840.10008.5.1.4.1.1.88.33',
       InstanceNumber: '2',
     };
 
-    it('gives the SOP Class UID of the instance', () => {
-      // The DICOM standard lists SOPClassUID in the General Image module, and
-      // `@cornerstonejs/metadata` lists the attribute as well, so a consumer
-      // that asks either provider for this module expects the value. This
-      // provider answered `undefined` for the attribute.
-      expect(metadataProvider.getTagFromInstance('generalImageModule', instance)).toMatchObject({
+    it('gives the instance number, and no SOP Class UID, for the General Image module', () => {
+      // SOPClassUID is not in the General Image module, so this provider must
+      // not answer it here. A consumer that reads the pair of UIDs off this
+      // module reads the wrong module.
+      const generalImage = metadataProvider.getTagFromInstance('generalImageModule', instance);
+
+      expect(generalImage).toMatchObject({
         sopInstanceUID: 'sop-general-image',
-        sopClassUID: '1.2.840.10008.5.1.4.1.1.88.33',
         instanceNumber: 2,
       });
+      expect(generalImage.sopClassUID).toBeUndefined();
     });
 
-    it('gives no SOP Class UID for an instance that carries none', () => {
-      const { SOPClassUID: _omitted, ...withoutSopClass } = instance;
-
-      expect(
-        metadataProvider.getTagFromInstance('generalImageModule', withoutSopClass).sopClassUID
-      ).toBeUndefined();
+    it('gives both UIDs for the SOP Common module', () => {
+      expect(metadataProvider.getTagFromInstance('sopCommonModule', instance)).toEqual({
+        sopClassUID: '1.2.840.10008.5.1.4.1.1.88.33',
+        sopInstanceUID: 'sop-general-image',
+      });
     });
   });
 });
