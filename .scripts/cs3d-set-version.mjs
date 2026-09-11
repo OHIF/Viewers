@@ -5,9 +5,14 @@
  *
  * Usage: node .scripts/cs3d-set-version.mjs <version>
  *
- * Only updates the 8 main CS3D packages (not codec packages):
- *   adapters, ai, core, dicom-image-loader, labelmap-interpolation,
+ * Only updates the CS3D packages built from source (not codec packages):
+ *   adapters, ai, core, dicom-image-loader, labelmap-interpolation, metadata,
  *   nifti-volume-loader, polymorphic-segmentation, tools
+ *
+ * Every package OHIF depends on has to be in that list, because they are
+ * released together as one version: bumping some and leaving others pinned to
+ * an older release mixes two CS3D builds in one install, and the mismatch shows
+ * up as a missing export rather than as a version error.
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
@@ -24,22 +29,64 @@ if (!version) {
   process.exit(1);
 }
 
-// The 8 CS3D packages that are built from source (not codecs)
+// The CS3D packages that are built from source (not codecs)
 const CS3D_PACKAGES = [
   '@cornerstonejs/adapters',
   '@cornerstonejs/ai',
   '@cornerstonejs/core',
   '@cornerstonejs/dicom-image-loader',
   '@cornerstonejs/labelmap-interpolation',
+  // `metadata` is depended on by @ohif/core, extensions/cornerstone and
+  // extensions/default (the typed metadata cache display sets live in, and the
+  // display-set split rule engine).
+  '@cornerstonejs/metadata',
   '@cornerstonejs/nifti-volume-loader',
   '@cornerstonejs/polymorphic-segmentation',
   '@cornerstonejs/tools',
 ];
 
-// Read root package.json to get workspace globs
 const rootPkgPath = resolve(rootDir, 'package.json');
-const rootPkg = JSON.parse(readFileSync(rootPkgPath, 'utf8'));
-const workspaceGlobs = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
+
+/**
+ * Workspace globs, from `pnpm-workspace.yaml` with the root `package.json`
+ * `workspaces` field as a fallback.
+ *
+ * pnpm is the authority here: the repo's package manager moved to pnpm and the
+ * `workspaces` field went with it, so reading only that found no packages and
+ * this script silently rewrote nothing but the root `package.json` — a version
+ * bump that reported success and changed no pin.
+ *
+ * Parsed with a small matcher rather than a YAML dependency: this script is
+ * standalone and dependency-free, and the block it needs is a flat list of
+ * strings under `packages:`.
+ */
+function readWorkspaceGlobs() {
+  const pnpmWorkspacePath = resolve(rootDir, 'pnpm-workspace.yaml');
+  if (existsSync(pnpmWorkspacePath)) {
+    const yaml = readFileSync(pnpmWorkspacePath, 'utf8');
+    const packagesBlock = yaml.match(/^packages:\s*$([\s\S]*?)(?=^\S|\Z)/m);
+    if (packagesBlock) {
+      const globs = [...packagesBlock[1].matchAll(/^\s*-\s*['"]?([^'"\s#]+)['"]?/gm)].map(
+        match => match[1]
+      );
+      if (globs.length) {
+        return globs;
+      }
+    }
+  }
+  const rootPkg = JSON.parse(readFileSync(rootPkgPath, 'utf8'));
+  return rootPkg.workspaces?.packages || rootPkg.workspaces || [];
+}
+
+const workspaceGlobs = readWorkspaceGlobs();
+if (!workspaceGlobs.length) {
+  console.error(
+    'Found no workspace globs in pnpm-workspace.yaml or package.json "workspaces" — refusing to ' +
+      'run, because only the root package.json would be updated and the bump would look like it ' +
+      'succeeded.'
+  );
+  process.exit(1);
+}
 
 // Collect all package.json paths from workspace globs
 function findWorkspacePackageJsons() {
@@ -124,8 +171,7 @@ console.log(
   `\nDone: ${totalChanges} version(s) updated to ${version} across ${pkgPaths.length} package files.`
 );
 console.log(
-  'This step changes package.json; the following install must not use a frozen Bun lockfile ' +
-    '(OHIF+CS3D combined “version” CI does: `bun install --config=./bunfig.update-lockfile.toml`). ' +
-    'Other installs stay frozen. Locally after this script, use that bun command and/or ' +
-    '`bun run install:update-lockfile` when you intend to commit lockfile updates.\n'
+  'This step changes package.json, so the install that follows must not be frozen: run ' +
+    '`pnpm install --no-frozen-lockfile` (which is what the CS3D "version" path in ' +
+    '.github/workflows/playwright.yml does). Every other install stays frozen.\n'
 );

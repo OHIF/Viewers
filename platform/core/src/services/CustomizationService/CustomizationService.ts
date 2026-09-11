@@ -1,6 +1,15 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { compileExpression } from '@cornerstonejs/metadata';
+import type { CompiledExpression } from '@cornerstonejs/metadata';
+import {
+  DEFAULT_FUNCTION_PARAMS,
+  findFunctionSignature,
+  getCustomizationFunctionPolicy,
+  isFunctionAttributeDenied,
+} from './functionPolicy';
+import type { FunctionSignature, FunctionSignatureRegistry } from './functionPolicy';
 import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
 import type ExtensionManager from '../../extensions/ExtensionManager';
@@ -123,6 +132,13 @@ export default class CustomizationService extends PubSubService {
    * transform every time a customization is requested.
    */
   private transformedCustomizations = new Map<string, Customization>();
+
+  /**
+   * `$function` calling conventions by attribute-path pattern, from
+   * {@link registerFunctionSignatures}. Code-only: never read from a
+   * customization or the app config.
+   */
+  private _functionSignatures: FunctionSignatureRegistry = new Map();
   private configuration: AppTypes.Config;
 
   /**
@@ -497,7 +513,8 @@ export default class CustomizationService extends PubSubService {
     // so a value that references itself is caught as a cycle.
     const newTransformed = this._resolveReferences(
       this.transform(customization),
-      new Set([customizationId])
+      new Set([customizationId]),
+      [customizationId]
     );
     if (newTransformed !== undefined) {
       this.transformedCustomizations.set(customizationId, newTransformed);
@@ -525,19 +542,33 @@ export default class CustomizationService extends PubSubService {
    * functions and React elements are returned untouched, and unchanged values
    * are returned by identity so non-referencing customizations are not cloned.
    * Cycles are broken and warned via `seen`.
+   *
+   * `path` is the chain of object keys walked so far, starting at the
+   * customization id. It exists for `$function`, whose deny policy is keyed on
+   * where the marker sits (see {@link functionPolicy}). Array indices are
+   * deliberately not pushed onto it, so a pattern describes the shape of a
+   * customization rather than a position within a list.
    */
-  private _resolveReferences(value: any, seen: Set<string>): any {
+  private _resolveReferences(value: any, seen: Set<string>, path: string[]): any {
     if (!value || typeof value !== 'object' || value.$$typeof) {
       return value;
     }
     if (typeof value.$reference === 'string') {
       return this._resolveReferenceName(value.$reference, seen);
     }
+    if (value.$function !== undefined) {
+      return this._resolveFunctionMarker(value.$function, path);
+    }
     if (Array.isArray(value)) {
       let changed = false;
       const result: any[] = [];
       for (const item of value) {
-        if (item && typeof item === 'object' && !item.$$typeof && typeof item.$reference === 'string') {
+        if (
+          item &&
+          typeof item === 'object' &&
+          !item.$$typeof &&
+          typeof item.$reference === 'string'
+        ) {
           changed = true;
           const resolved = this._resolveReferenceName(item.$reference, seen);
           if (Array.isArray(resolved)) {
@@ -546,7 +577,8 @@ export default class CustomizationService extends PubSubService {
             result.push(resolved);
           }
         } else {
-          const resolved = this._resolveReferences(item, seen);
+          // Same `path`: an array index is not an attribute name.
+          const resolved = this._resolveReferences(item, seen, path);
           changed ||= resolved !== item;
           result.push(resolved);
         }
@@ -559,11 +591,134 @@ export default class CustomizationService extends PubSubService {
     let changed = false;
     const result: Record<string, any> = {};
     for (const [key, val] of Object.entries(value)) {
-      const resolved = this._resolveReferences(val, seen);
+      const resolved = this._resolveReferences(val, seen, [...path, key]);
       changed ||= resolved !== val;
       result[key] = resolved;
     }
     return changed ? result : value;
+  }
+
+  /**
+   * Compiles a `{ $function: ... }` marker into a plain closure.
+   *
+   * `$function` lets data-only customizations (JSONC URL modules, app config)
+   * declare behavior with a safe, CSP-compatible expression language — see
+   * {@link compileExpression} for the grammar.  Accepted forms:
+   *   - `{ $function: '<expression>' }` — default params `['instance', 'context']`;
+   *   - `{ $function: { expr: '<expression>', params?: string[] } }`.
+   *
+   * Like `$reference`, resolution happens at read time and the compiled
+   * closure is memoized with the transformed customization; a parse error
+   * warns and resolves to `undefined` rather than breaking the whole
+   * customization read.
+   *
+   * A deployment can withhold particular attributes from data via
+   * `appConfig.customizationFunctionPolicy.denyAttributes` — read from the app
+   * config rather than from a customization, so a customization cannot lift its
+   * own restrictions. Nothing is denied by default (see {@link functionPolicy}).
+   *
+   * The parameters the closure is compiled with come from
+   * {@link registerFunctionSignatures}, keyed on the attribute path — declared
+   * by whoever calls the closure rather than by the data that writes it.
+   */
+  private _resolveFunctionMarker(definition: any, path: string[]): CompiledExpression | undefined {
+    const expr = typeof definition === 'string' ? definition : definition?.expr;
+    if (typeof expr !== 'string' || !expr.trim()) {
+      console.warn('CustomizationService: invalid $function definition', definition);
+      return undefined;
+    }
+
+    const policy = getCustomizationFunctionPolicy(this);
+    if (isFunctionAttributeDenied(path, policy.denyAttributes)) {
+      console.warn(
+        `CustomizationService: refusing $function at "${path.join('.')}" — that attribute is ` +
+          `listed in appConfig.customizationFunctionPolicy.denyAttributes.`,
+        expr
+      );
+      return undefined;
+    }
+
+    const params = this._resolveFunctionParams(definition, path);
+    try {
+      return compileExpression(expr, { params });
+    } catch (error) {
+      console.warn(`CustomizationService: failed to compile $function "${expr}"`, error);
+      return undefined;
+    }
+  }
+
+  /**
+   * The parameter names a `$function` at `path` is compiled with.
+   *
+   * A registered signature wins, because the consumer of the closure is the only
+   * party that knows how it will be invoked. A marker may still spell the same
+   * signature out — copied from documentation, say — but one that *disagrees* is
+   * refused rather than honoured: data changing its own calling convention is
+   * how a marker silently computes the wrong thing.
+   *
+   * With nothing registered, the default `['instance', 'context']` applies and a
+   * marker's own `params` are accepted, which is how every `$function` behaved
+   * before signatures existed.
+   */
+  private _resolveFunctionParams(definition: any, path: string[]): FunctionSignature {
+    const declared = typeof definition === 'object' ? definition.params : undefined;
+    const registered = findFunctionSignature(path, this._functionSignatures);
+
+    if (!registered) {
+      return Array.isArray(declared) ? declared : DEFAULT_FUNCTION_PARAMS;
+    }
+
+    if (
+      Array.isArray(declared) &&
+      (declared.length !== registered.length ||
+        declared.some((name, index) => name !== registered[index]))
+    ) {
+      console.warn(
+        `CustomizationService: $function at "${path.join('.')}" declares params ` +
+          `[${declared.join(', ')}] but that attribute is called with ` +
+          `[${registered.join(', ')}]. Using the registered signature — remove the ` +
+          `\`params\` from the customization.`
+      );
+    }
+
+    return registered;
+  }
+
+  /**
+   * Declares the parameters a `$function` is called with, per attribute path.
+   *
+   * Called by whatever code will invoke the compiled closure — an extension
+   * registering a customization it later reads back — so that a data author does
+   * not have to guess the calling convention, and cannot get it wrong. Paths use
+   * the same dotted patterns as `denyAttributes` (`*` for one segment, a
+   * trailing `**` for any depth); the most specific match wins.
+   *
+   * ```ts
+   * customizationService.registerFunctionSignatures({
+   *   'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
+   *   'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+   * });
+   * ```
+   *
+   * Deliberately a method rather than a customization or an app-config value:
+   * signatures are a property of the code doing the calling, and a customization
+   * that could declare them could hand itself a different one.
+   */
+  public registerFunctionSignatures(signatures: Record<string, FunctionSignature>): void {
+    for (const [pattern, params] of Object.entries(signatures ?? {})) {
+      if (!Array.isArray(params) || params.some(name => typeof name !== 'string')) {
+        console.warn(
+          `CustomizationService: ignoring function signature for "${pattern}" — ` +
+            `it must be an array of parameter names.`,
+          params
+        );
+        continue;
+      }
+      this._functionSignatures.set(pattern, params);
+    }
+    // Signatures change how a marker compiles, so anything already resolved with
+    // the previous set has to be read again.
+    this.transformedCustomizations.clear();
   }
 
   /** Resolves a single `$reference` target name, guarding against cycles. */
@@ -581,7 +736,11 @@ export default class CustomizationService extends PubSubService {
       return undefined;
     }
     const nextSeen = new Set(seen).add(name);
-    return this._resolveReferences(this.transform(raw), nextSeen);
+    // The path restarts at the referenced customization rather than continuing
+    // the referrer's: a `$function` inside `<name>` is at an attribute path of
+    // `<name>`, and must be approved (or not) by the same pattern whether it is
+    // read directly or reached through a reference.
+    return this._resolveReferences(this.transform(raw), nextSeen, [name]);
   }
 
   /**
@@ -1239,11 +1398,16 @@ function hasDollarKey(value) {
       return false;
     }
     for (const key of Object.keys(value)) {
-      // `$transform` and `$reference` are read-time markers resolved by the
-      // service (in `transform` / `_resolveReferences`), not immutability-helper
-      // merge commands — so a value carrying them is stored verbatim rather than
-      // being run through `update()`.
-      if (key.startsWith('$') && key !== '$transform' && key !== '$reference') {
+      // `$transform`, `$reference` and `$function` are read-time markers
+      // resolved by the service (in `transform` / `_resolveReferences`), not
+      // immutability-helper merge commands — so a value carrying them is
+      // stored verbatim rather than being run through `update()`.
+      if (
+        key.startsWith('$') &&
+        key !== '$transform' &&
+        key !== '$reference' &&
+        key !== '$function'
+      ) {
         return true;
       }
       if (hasDollarKey(value[key])) {

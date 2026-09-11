@@ -29,12 +29,43 @@ window.config = {
   // `customizationUrlPrefixes` to a map of allowed prefixes. The `default` prefix
   // (no slashes) is used for values with no leading slash; every other prefix
   // must start AND end with a slash and is matched against the leading
-  // `/segment/` of the value. Files are fetched and parsed as JSONC data — they
-  // are never executed. Example (left disabled here on purpose):
+  // `/segment/` of the value. Files are fetched and parsed as JSONC data — no
+  // code in them is ever executed. The one thing a data file can declare that
+  // *behaves* is a `$function` expression, compiled from a closed vocabulary
+  // with no eval; see `customizationFunctionPolicy` below.
+  // Example (left disabled here on purpose):
   //
   // customizationUrlPrefixes: {
   //   default: './customizations/',                       // ?customization=tools/ctPresets
   //   '/remote/': 'https://cdn.example.com/ohif-custom/', // ?customization=/remote/siteA
+  // },
+  // ----------------------------------------------------------------------------
+
+  // --- `$function` in customization data --------------------------------------
+  // A `{ "$function": "<expression>" }` value in a customization compiles into a
+  // callable closure. The expression language has no eval and no arbitrary calls,
+  // so it cannot run code — it only computes the value of the attribute it sits
+  // on, from the subject it is handed.
+  //
+  // `denyAttributes` lists attribute paths where a marker is REFUSED, as dotted
+  // patterns (`*` = one segment, trailing `**` = any depth). Array indices are
+  // not path segments, so a pattern describes a shape rather than a position in
+  // a list, and stays valid when a rule list is reordered.
+  //
+  // Nothing is denied by default. This is a knob for a deployment that wants to
+  // withhold a particular attribute from data — e.g. one that composes series
+  // labels centrally and does not want a split rule relabelling them. Use
+  // `['**']` to switch `$function` off entirely.
+  //
+  // A deny list rather than an allow list because the set of attributes a rule
+  // may legitimately compute is not knowable from here — `customAttributes` keys
+  // are chosen by the rule's author — so an allow list would refuse working
+  // configurations by default.
+  //
+  // customizationFunctionPolicy: {
+  //   denyAttributes: [
+  //     'useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription',
+  //   ],
   // },
   // ----------------------------------------------------------------------------
 

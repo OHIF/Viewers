@@ -11,6 +11,10 @@ import DocCardList from '@theme/DocCardList';
 
 This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 
+- **[Display set storage](./display-set-store.md)** — display sets now live in
+  the `@cornerstonejs/metadata` typed metadata cache.
+  `DisplaySetService.getDisplaySetCache()` is deprecated and returns a
+  read-only snapshot.
 - **[Save/report dialog](./report-dialog.md)** — the dialog for storing
   measurements, segmentations and contours replaces its series drop down with an
   explicit choice of three destinations: **Save to current**, **Save as new** and
