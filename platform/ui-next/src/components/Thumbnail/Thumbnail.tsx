@@ -40,6 +40,7 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  details,
   loadingProgress,
   countIcon,
   messages,
@@ -67,6 +68,49 @@ const Thumbnail = ({
   }, [imageSrc]);
 
   const shouldRenderThumbnailImage = Boolean(imageSrc && !imageLoadFailed);
+
+  /**
+   * The detail line under the description. `details` comes from the
+   * `studyBrowser.thumbnailDetails` customization, resolved by the panel; the
+   * series number and instance count below are the same two items the default
+   * customization declares, kept here so the component still stands alone.
+   */
+  const renderDetails = (textClass: string, firstItemClass?: string) => {
+    // `??`, not `|| `: an unset `details` means no customization was resolved
+    // for this thumbnail and the defaults below stand in, whereas an empty
+    // `details` is a customization that resolved to no items at all and is
+    // honoured as the empty line it asks for.
+    const items = details ?? [
+      { id: 'SeriesNumber', label: 'S:', value: seriesNumber },
+      { id: 'InstanceCount', iconName: countIcon || 'InfoSeries', value: numInstances },
+    ];
+
+    return (
+      <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
+        {items.map(({ id, label, title, value, iconName }, index) => (
+          <div
+            key={id ?? index}
+            className={classnames(
+              'text-muted-foreground',
+              textClass,
+              index === 0 && firstItemClass
+            )}
+            title={title || undefined}
+            data-cy={`thumbnail-detail-${id}`}
+          >
+            <div className="flex items-center gap-[4px]">
+              {iconName &&
+                React.createElement(Icons[iconName] || Icons.MissingIcon, { className: 'w-3' })}
+              <div>
+                {label}
+                {value}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const handleTouchEnd = e => {
     const currentTime = new Date().getTime();
@@ -177,19 +221,7 @@ const Thumbnail = ({
               </div>
             </TooltipTrigger>
           </Tooltip>
-          <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-            <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
-            <div className="text-muted-foreground text-[11px]">
-              <div className="flex items-center gap-[4px]">
-                {countIcon ? (
-                  React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                ) : (
-                  <Icons.InfoSeries className="w-3" />
-                )}
-                <div>{numInstances}</div>
-              </div>
-            </div>
-          </div>
+          {renderDetails('text-[11px]', 'pl-1')}
         </div>
       </div>
     );
@@ -232,20 +264,7 @@ const Thumbnail = ({
               </Tooltip>
             </div>
 
-            <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-              <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
-              <div className="text-muted-foreground text-[12px]">
-                <div className="flex items-center gap-[4px]">
-                  {' '}
-                  {countIcon ? (
-                    React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                  ) : (
-                    <Icons.InfoSeries className="w-3" />
-                  )}
-                  <div>{numInstances}</div>
-                </div>
-              </div>
-            </div>
+            {renderDetails('text-[12px]')}
           </div>
         </div>
         <div className="flex h-full items-center gap-[4px]">

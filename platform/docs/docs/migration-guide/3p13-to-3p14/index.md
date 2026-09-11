@@ -48,6 +48,12 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `itemType` and `rememberedDescriptionCount`, and returns a `seriesNumber`.  A
   stored instance is now identified like a loaded one, so the object just saved
   becomes the predecessor of the next save of the same data.
+- **[Display set date/time ordering](./display-set-ordering.md)** — derived
+  display sets are ordered by the creation date/time of the instance they show
+  rather than by their series date/time, comparators registered with
+  `addSameSeriesCompare` now actually run, instances tie-break by creation
+  date/time before the SOP instance UID, and saved reports and segmentations are
+  stamped with a creation date/time and an instance number.
 
 - **[createContext helper](./create-context.md)** — the internal
   `ui-next/lib/createContext` helper is removed. It was never exported from

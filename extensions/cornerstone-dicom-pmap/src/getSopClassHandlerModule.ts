@@ -19,12 +19,15 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
   } = instance;
+
+  // The date/time of a display set is the date/time of the instance it shows,
+  // chosen from all the attributes that instance carries.
+  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
 
   const displaySet = {
     // Parametric map use to have the same modality as its referenced volume but
@@ -35,6 +38,7 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
