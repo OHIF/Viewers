@@ -1873,9 +1873,7 @@ function commandsModule({
         placeholder: i18n.t('Tools:Enter new label'),
         defaultValue: label,
       }).then(label => {
-        // The update clears `labelIsGenerated`, because the user chose this
-        // label.  `storeSegmentation` then offers the label as the first name
-        // for a new series.
+        // The update clears `labelIsGenerated` - the user chose this label.
         segmentationService.addOrUpdateSegmentation({ segmentationId, label });
       });
     },

@@ -342,11 +342,8 @@ const commandsModule = ({
       }
 
       const { label, predecessorImageId, labelIsGenerated } = segmentation;
-      // The dialog offers the name that the user chose first, ahead of the
-      // remembered descriptions.  A generated name such as `Segmentation 3` is
-      // not such a name, so a generated name goes last instead.  The state says
-      // which of the two the label is, so this reads no string against another:
-      // a user who types the generated name still chose the name.
+      // Only a name the user chose goes to `itemName`, which the dialog offers
+      // first; a generated one goes to `defaultSeriesDescription`, offered last.
       const chosenLabel = labelIsGenerated ? '' : label || '';
       const defaultSeriesDescription =
         (labelIsGenerated && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
@@ -406,20 +403,7 @@ const commandsModule = ({
 
         const { dataset: naturalizedReport } = generatedData;
 
-        // Both adapters apply the predecessor to the dataset they return, from
-        // the `predecessorImageId` option above: `generateSegmentation` assigns
-        // it to `segmentationResult.dataset`, and the RTSS path assigns it in
-        // `createInstance`.  The instance therefore already carries the series
-        // that was chosen, with that series' number and description.  Do not
-        // apply the predecessor a second time here.
-
-        // A segmentation saved into an existing series inherits that series'
-        // date and time, and its instance number is derived from the one
-        // predecessor instance, which is not necessarily the highest in the
-        // series.  Stamp both so this segmentation is identifiable as the most
-        // recent instance.  After the object generation, because the predecessor
-        // series data it applies is what names the series whose instances are
-        // numbered here.
+        // After the generation, which is what names the series numbered here.
         utils.updateNewInstanceMetadata(naturalizedReport);
 
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out

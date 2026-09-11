@@ -24,9 +24,7 @@ import {
 
 /**
  * The dialog that stores a segmentation, a contour set or a measurement report.
- * The behaviour doc describes the destinations, the series that the dialog
- * offers, and the names for a new series:
- * `platform/docs/docs/behaviours/report-dialog-save-destinations.md`.
+ * See `platform/docs/docs/behaviours/report-dialog-save-destinations.md`.
  */
 
 type DataSource = {
@@ -176,11 +174,8 @@ function ReportDialog({
         };
       })
       .filter(series => {
-        // The value must be a `predecessorImageId`, which names the instance
-        // that this save supersedes.  A `SeriesInstanceUID` value names no
-        // instance, and the provider throws on one - see the behaviour doc.  The
-        // `seen` set keeps the values unique, because two display sets can
-        // belong to one series.
+        // The value names the superseded instance, so a display set without one
+        // cannot be a target.  Two display sets can share a series.
         if (!series.value || seen.has(series.value)) {
           return false;
         }
@@ -204,10 +199,7 @@ function ReportDialog({
     [existingSeries, currentSeries]
   );
 
-  /**
-   * The series number offered for a new series - one past every loaded series of
-   * the modality, and not only the series that `existingSeries` offers.
-   */
+  /** One past every loaded series of the modality, not only the offered ones. */
   const defaultNewSeriesNumber = useMemo(
     () =>
       1 +
@@ -231,9 +223,7 @@ function ReportDialog({
         ? getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount)
         : [];
 
-    // Every name loses its outer spaces here, so the stored name matches the
-    // name that the dialog shows, and the remembered name matches both.  A
-    // blank name drops out, so a name of spaces cannot hide a later name.
+    // Trimmed here, so the stored, shown and remembered names all match.
     const offered = [itemName, currentSeries?.description, ...remembered, defaultSeriesDescription]
       .map(option => option?.trim())
       .filter((option): option is string => !!option);
@@ -326,12 +316,8 @@ function ReportDialog({
         ? (targetSeries.description ?? '')
         : newSeriesDescription.trim() || baseSeriesDescription;
 
-      // The history keeps a name that the user chose.  The caller supplies
-      // `defaultSeriesDescription` at every save, such as the generated
-      // `Segmentation 3`, and the dialog offers the name in any case, so the
-      // history drops that name and keeps the room for a chosen one.  A caller
-      // that passes an explicit null supplies no such name, and `?.` keeps the
-      // save from throwing on that null.
+      // The history keeps only a name the user chose, so the offered default
+      // does not consume a slot.
       const isProvidedName =
         storedDescription.toLowerCase() === defaultSeriesDescription?.trim().toLowerCase();
 

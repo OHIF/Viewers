@@ -365,11 +365,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUID: instance.SOPInstanceUID,
-          // SOPClassUID is not in the General Image module. It belongs to the
-          // SOP Common module, and the `sopCommonModule` case answers it
-          // there. A consumer that needs the pair of UIDs, such as the
-          // predecessor reference of a new instance, reads the pair of UIDs
-          // from that module, and reads the instance number here.
+          // No SOPClassUID here - it belongs to the SOP Common module.
           instanceNumber: toNumber(instance.InstanceNumber),
           // The instance level date/time is the only one that distinguishes a
           // newly saved instance from the rest of its series, whose

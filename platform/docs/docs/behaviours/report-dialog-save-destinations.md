@@ -58,10 +58,7 @@ the series and the instance number through the value, from the
 The dialog does **not** fall back to the `SeriesInstanceUID` value of the display
 set. A UID names a series and not an instance, so a UID names no prior object,
 and a UID is not an image id. The provider finds no instance for a UID, and the
-provider then throws
-`TypeError: Cannot read properties of undefined (reading 'instanceNumber')` while
-the adapter makes the object. The dialog offered a UID before, and a save into a
-downloaded series then failed with that error.
+save then starts a new series rather than extending the chosen one.
 
 A local id, such as `dicomfile:3`, is a valid value. The viewer registers an
 uploaded instance under a local id, and the provider resolves a local id, so a
@@ -69,9 +66,8 @@ user can save against an uploaded instance more than once.
 
 A display set that the viewer downloaded and never stored has no
 `predecessorImageId` value, and the dialog does not offer that display set. The
-count for the number of a new series still includes such a series: the count
-reads every loaded series of the modality. A count of the offered series alone
-gave a new series a number that a loaded series already held.
+number of a new series still counts such a series, because the number comes from
+every loaded series of the modality and not from the offered ones alone.
 
 ## What the new series is called
 

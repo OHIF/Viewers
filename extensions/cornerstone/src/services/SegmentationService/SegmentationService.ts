@@ -502,11 +502,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       },
       config: {
         label,
-        // The service invents a name such as `Segmentation 3` when the caller
-        // gives no label.  `storeSegmentation` reads the flag, to tell a name
-        // that the user chose from a name that the service invented.  The flag
-        // is explicit here, because this config always carries a label, and the
-        // fallback of `normalizeSegmentationInput` reads `!config.label`.
+        // Explicit, because `label` below always has a value by this point.
         labelIsGenerated: options?.labelIsGenerated ?? !options?.label,
         fallbackLabel: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         segments:
@@ -538,7 +534,6 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     }
 
     this.addOrUpdateSegmentation(segmentationPublicInput);
-
     return segmentationId;
   }
 

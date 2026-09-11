@@ -72,10 +72,7 @@ export const compareSeriesUID = (a, b) =>
  * handler of a derived display set writes it with
  * {@link getLatestInstanceDateTime} of the instance the display set shows, so a
  * report or a segmentation saved into an existing series carries the date/time
- * of that save rather than the date/time the series was first created.  A
- * handler of an image display set writes the `SeriesDate`/`SeriesTime` of the
- * instance directly, and must not call that function - the next paragraph gives
- * the reason.
+ * of that save rather than the date/time the series was first created.
  *
  * The key is read from the display set and never from `displaySet.instance`,
  * for two reasons.
