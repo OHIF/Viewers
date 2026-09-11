@@ -51,6 +51,16 @@ overrides:
   # React 19, @xstate/react@3.2.2 in extensions/measurement-tracking ran outside
   # its declared range. Audit any such package for use of React 19 removals
   # before assuming it is safe.
+  #
+  # That audit was done for @xstate/react@3.2.2 on 2026-09-10: it calls only
+  # ordinary hooks plus a useSyncExternalStore shim, and none of the APIs React
+  # 19 removed, so the coercion holds. Its declaration is what is stale, not its
+  # code. Correcting that means @xstate/react v4+, which requires xstate v5 - a
+  # rewrite of the measurement-tracking machine rather than a version bump.
+  #
+  # Every other package coerced this way lives in frozen platform/ui, outside
+  # the app graph. To re-check, read peerDependencies.react from each installed
+  # package.json - the lockfile records the coerced range, not the declared one.
   react: 19.2.7
   react-dom: 19.2.7
   '@types/react': 19.2.17
