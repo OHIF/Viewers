@@ -36,6 +36,11 @@ references) so each behaviour doc stays anchored to the code it describes.
   via `loadMultiframeAsPart10: false` (data source config or the
   `cornerstone.segmentation.loadMultiframeAsPart10` customization).
 
+- [Report dialog: where a save goes, and what the series is called](./report-dialog-save-destinations.md)
+  — _implemented_. The three destinations of a save, the `predecessorImageId`
+  rule that decides which loaded series the dialog offers, the four names that a
+  new series starts from, and the descriptions that the viewer remembers.
+
 ## Writing a new behaviour doc
 
 1. Add a `kebab-case.md` file in this directory.

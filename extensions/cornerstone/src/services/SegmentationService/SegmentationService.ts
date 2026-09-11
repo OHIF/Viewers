@@ -428,6 +428,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      /** The caller invented the label, so the user has not chosen a name. */
+      labelIsGenerated?: boolean;
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
@@ -440,6 +442,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      /** The caller invented the label, so the user has not chosen a name. */
+      labelIsGenerated?: boolean;
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
@@ -461,6 +465,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
       label?: string;
+      /** The caller invented the label, so the user has not chosen a name. */
+      labelIsGenerated?: boolean;
     }
   ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
@@ -496,6 +502,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       },
       config: {
         label,
+        // Explicit, because `label` below always has a value by this point.
+        labelIsGenerated: options?.labelIsGenerated ?? !options?.label,
         fallbackLabel: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         segments:
           options?.segments && Object.keys(options.segments).length > 0

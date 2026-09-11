@@ -11,9 +11,11 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  *     from.  That is the series the dialog offers to extend, and it defaults to
  *     extending it instead of creating a new series.  Without one, the dialog
  *     only offers to create a new series.
- *   - `defaultSeriesDescription` is the series description offered when a new
- *     series is being created, typically the name of the thing being saved such
- *     as the segmentation name or 'Contours'.
+ *   - `itemName` is the name the user chose, such as the segmentation name.  A
+ *     new series offers it first.  A generated name belongs in
+ *     `defaultSeriesDescription` instead.
+ *   - `defaultSeriesDescription` is the name for an item with no chosen name,
+ *     such as 'Contours' or 'Measurements'.  A new series offers it last.
  *   - `itemType` is the type of item being stored, used as the key that the
  *     series descriptions used before are remembered under.  Defaults to the
  *     modality, so that segmentations, contours and reports are remembered
@@ -22,14 +24,12 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
  *     descriptions to remember and offer for this type of item, 0 to remember
  *     none of them.
  *
- * The dialog offers exactly two destinations, and says which one is in effect:
- *   - `New Series` creates a new series, with an editable series number
- *     (defaulting to one past the existing series of this modality) and series
- *     description.  The description defaults to the one last used for this type
- *     of item, or to `defaultSeriesDescription` when there isn't one, and both
- *     are offered as completions of what gets typed.
- *   - `Extend Existing` stores into the series the data was loaded from, which
- *     keeps its own series number and description, so neither is editable.
+ * The dialog offers three destinations - `Save to current`, `Save as new` and
+ * `Replace existing` - and says which one is in effect.  Each destination stores
+ * all of the current data as one object, and the dialog merges nothing.  The
+ * behaviour doc describes the destinations, the series that the dialog offers,
+ * and the names for a new series:
+ * `platform/docs/docs/behaviours/report-dialog-save-destinations.md`.
  *
  * The response is:
  *   - `value`, the series description of the object/series being created.  When
@@ -52,6 +52,7 @@ export default function CreateReportDialogPrompt({
   modality = 'SR',
   minSeriesNumber = 0,
   predecessorImageId,
+  itemName = '',
   defaultSeriesDescription = '',
   itemType,
   rememberedDescriptionCount = 5,
@@ -90,6 +91,7 @@ export default function CreateReportDialogPrompt({
         dataSources: allowMultipleDataSources ? dataSources : undefined,
         predecessorImageId,
         minSeriesNumber,
+        itemName,
         defaultSeriesDescription,
         itemType,
         rememberedDescriptionCount,
