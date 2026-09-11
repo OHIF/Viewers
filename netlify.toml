@@ -2,10 +2,6 @@
 #
 # TOML Reference:
 # https://www.netlify.com/docs/netlify-toml-reference/
-#
-# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
-# https://viewer.ohif.org is created using a different process that is
-# managed by CircleCI and deployed to our Google Hosting
 
 [build]
   base = ""
@@ -13,27 +9,57 @@
   publish = "platform/app/dist"
 
 [build.environment]
-  # If 'production', `pnpm install` does not install devDependencies
   NODE_ENV = "development"
   NODE_VERSION = "24.15.0"
+
+# ─── Security Headers (Production) ───────────────────────────────────────────
 
 [[headers]]
   for = "/*"
 
   [headers.values]
+    # HTTPS enforcement
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+    # Clickjacking protection
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
 
-    # Report-Only CSP: observational only, enforces nothing. Watch browser
-    # consoles for violation reports before ever promoting this to an
-    # enforcing Content-Security-Policy header. cdnjs.cloudflare.com is for
-    # the Rollbar snippet in html-templates/rollbar.html (demo builds);
-    # connect-src stays broad because deployments point the viewer at
-    # arbitrary DICOMweb origins.
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https: blob:; worker-src 'self' blob:; object-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    # MIME-type sniffing prevention
+    X-Content-Type-Options = "nosniff"
 
+    # Referrer policy — don't leak full URL (which might contain study UIDs)
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Disable legacy XSS auditor (modern browsers use CSP instead)
+    X-XSS-Protection = "0"
+
+    # Restrict browser features
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+    # Content Security Policy (enforcing)
+    # - connect-src restricted to our own API domains only
+    # - object-src blocked entirely
+    # - frame-ancestors none (no embedding)
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://api.imaging.smartcareplus.in; font-src 'self' data:; connect-src 'self' https://api.imaging.smartcareplus.in https://api.smartcareplus.in blob:; worker-src 'self' blob:; object-src 'none'; frame-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+    # Prevent caching of HTML pages (which may embed study context)
     cache-control = '''
     max-age=0,
     no-cache,
     no-store,
     must-revalidate'''
+
+# Static assets can be cached aggressively (hashed filenames)
+[[headers]]
+  for = "/static/*"
+
+  [headers.values]
+    cache-control = "public, max-age=31536000, immutable"
+
+# Block source maps from being indexed or cached
+[[headers]]
+  for = "/*.map"
+
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    cache-control = "no-store"

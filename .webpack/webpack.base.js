@@ -70,7 +70,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    devtool: isProdBuild ? false : 'cheap-module-source-map',
     // `rspack serve` (@rspack/cli) auto-enables lazyCompilation for web-only
     // apps unless the config defines it explicitly. The on-demand proxy chunks
     // it produces fail to load in the headless cypress/electron e2e run
