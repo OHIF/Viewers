@@ -70,7 +70,13 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    // Full source maps in development as well as production. The React
+    // Compiler restructures function bodies, so the line-only maps a
+    // 'cheap-*' devtool produces can no longer place a breakpoint on the
+    // statement you clicked. Measured on this repo: no rebuild cost, and the
+    // .map files are fetched only when DevTools is open, so the payload the
+    // browser downloads is unchanged.
+    devtool: 'source-map',
     // `rspack serve` (@rspack/cli) auto-enables lazyCompilation for web-only
     // apps unless the config defines it explicitly. The on-demand proxy chunks
     // it produces fail to load in the headless cypress/electron e2e run

@@ -282,7 +282,10 @@ export default defineConfig(({ env }) => {
       // *.LICENSE.txt siblings (which would also inflate the sw.js precache).
       legalComments: 'none',
       sourceMap: {
-        js: QUICK_BUILD ? false : isProd ? 'source-map' : 'cheap-module-source-map',
+        // Full source maps in dev too - see the devtool comment in
+        // .webpack/webpack.base.js for why line-only maps stopped being
+        // enough once the React Compiler was turned on.
+        js: QUICK_BUILD ? false : 'source-map',
         css: isProd && !QUICK_BUILD,
       },
       copy: [
