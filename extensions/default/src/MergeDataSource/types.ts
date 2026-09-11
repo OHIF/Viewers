@@ -17,6 +17,7 @@ export type CallForAllDataSourcesAsyncOptions = {
 };
 
 export type CallForAllDataSourcesOptions = {
+  mergeMap: object;
   path: string;
   args: unknown[];
   dataSourceNames: string[];
