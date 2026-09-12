@@ -69,6 +69,10 @@ import { createRequire } from 'node:module';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+// Which directories the compiler applies to. Shared with babel.config.js,
+// rsbuild.config.ts and eslint.config.mjs, so this gate scans exactly what the
+// build compiles.
+import compilerScope from '../react-compiler.scope.cjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const budgetPath = path.join(repoRoot, '.react-compiler-budget.json');
@@ -86,15 +90,8 @@ try {
   process.exit(2);
 }
 
-// Application code only: no tests, mocks or generated output.
-const GLOBS = [
-  'platform/app/src/**',
-  'platform/core/src/**',
-  'platform/i18n/src/**',
-  'platform/ui-next/src/**',
-  'extensions/*/src/**',
-  'modes/*/src/**',
-];
+// Application code only: no tests, mocks or generated output. Which directories
+// count is decided in react-compiler.scope.cjs, not here.
 const SOURCE = /\.(js|jsx|ts|tsx)$/;
 const NOT_SOURCE = /\.test\.|\/__tests__\/|\/__mocks__\//;
 
@@ -118,11 +115,18 @@ function directiveAt(absPath, line) {
   return match ? `'${match[1]}'` : null;
 }
 
-const listed = spawnSync('git', ['ls-files', ...GLOBS], {
-  cwd: repoRoot,
-  encoding: 'utf8',
-  maxBuffer: 64 * 1024 * 1024,
-});
+// --others adds untracked files so a component that has not been staged yet is
+// still scanned; --exclude-standard keeps .gitignore'd output (dist/,
+// node_modules/) out. In CI everything is committed and this is a no-op.
+const listed = spawnSync(
+  'git',
+  ['ls-files', '--cached', '--others', '--exclude-standard', ...compilerScope.gitPathspecs],
+  {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+  }
+);
 
 if (listed.status !== 0) {
   console.error('git ls-files failed');
@@ -130,10 +134,18 @@ if (listed.status !== 0) {
   process.exit(2);
 }
 
-const files = listed.stdout
+const listedFiles = listed.stdout
   .split(/\r?\n/)
   .filter(Boolean)
   .filter(file => SOURCE.test(file) && !NOT_SOURCE.test(file));
+
+// The compiler never runs on a scope-excluded file, so it reports nothing - the
+// same as a utility file with no components. Without this split, a React
+// component in an excluded directory would pass through unclassified and the
+// exclusion would leave no trace in the output. Set those files aside and name
+// them instead.
+const excludedByScope = listedFiles.filter(file => !compilerScope.isCompiled(file));
+const files = listedFiles.filter(file => compilerScope.isCompiled(file));
 
 if (files.length === 0) {
   console.error('no source files matched; check the globs in this script');
@@ -333,6 +345,21 @@ console.log(`react-compiler coverage: ${files.length} source files`);
 console.log(`  refusals:  ${totalRefused} function(s) in ${Object.keys(refusals).length} file(s)`);
 console.log(`  file opt-outs:     ${fileOptOuts.length}`);
 console.log(`  function opt-outs: ${totalFunctionOptOuts}`);
+if (excludedByScope.length > 0) {
+  // Name the directories, not the files: the exclusion is a directory-level
+  // decision in react-compiler.scope.cjs and that is what a reader will look for.
+  const dirs = [
+    ...new Set(
+      excludedByScope.map(
+        file =>
+          compilerScope.excluded.find(dir => file === dir || file.startsWith(`${dir}/`)) ?? file
+      )
+    ),
+  ].sort();
+  console.log(
+    `  excluded by react-compiler.scope.cjs: ${excludedByScope.length} file(s) under ${dirs.join(', ')}`
+  );
+}
 
 if (refusalDetail.length > 0) {
   console.log('\nRefusals:');

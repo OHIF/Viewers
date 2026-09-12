@@ -29,12 +29,10 @@ const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 const QUICK_BUILD = process.env.QUICK_BUILD === 'true';
-const ENABLE_REACT_COMPILER = process.env.REACT_COMPILER !== 'off';
-
-// Workspace source only (including plain .ts — hooks live there too), so the
-// babel pass stays off node_modules and dev rebuilds stay fast. Legacy
-// platform/ui is excluded: it is frozen and outside the app graph.
-const REACT_COMPILER_INCLUDE = /(platform|extensions|modes)[\\/](?!ui[\\/])[^\\/]+[\\/]src[\\/].*\.[jt]sx?$/;
+// Which directories the React Compiler applies to, and the REACT_COMPILER=off
+// diagnostic switch, live in react-compiler.scope.cjs - shared with
+// babel.config.js, eslint.config.mjs and the coverage gate so they cannot drift.
+const compilerScope = require('./react-compiler.scope.cjs');
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
@@ -96,17 +94,14 @@ export default defineConfig(({ env }) => {
     plugins: [
       pluginReact(),
       // React Compiler runs as a scoped babel pass on top of SWC (SWC has no
-      // compiler transform). REACT_COMPILER=off is the kill switch, matching
-      // the babel.config.js gate used by the rspack/jest pipelines.
-      ...(ENABLE_REACT_COMPILER
+      // compiler transform). The babel pass is limited to the compiler's
+      // directories so node_modules stays SWC-only and dev rebuilds stay fast.
+      // Per-file opt-outs are `'use no memo'` directives in the source.
+      ...(compilerScope.enabled
         ? [
             pluginBabel({
-              include: REACT_COMPILER_INCLUDE,
-              // Per-file opt-outs are `'use no memo'` directives in the source
-              // (see extensions/cornerstone/src/Viewport/), not a path list
-              // here - a path list would have to be kept in sync with
-              // babel.config.js by hand.
-              exclude: /node_modules/,
+              include: compilerScope.includeDirs(),
+              exclude: [/node_modules/, ...compilerScope.excludeDirs()],
               babelLoaderOptions(opts) {
                 opts.plugins ??= [];
                 opts.plugins.unshift(['babel-plugin-react-compiler', { target: '19' }]);

@@ -9,13 +9,16 @@ This repo compiles its React with the React Compiler. Most of what that means
 is enforced by tooling; this skill tells you how to work with that tooling and
 records the decisions already made so you do not relitigate them.
 
-## What is different here
+## How this repo is set up
 
 - React 19. `ref` is an ordinary prop. There is no `forwardRef`, no
   `propTypes`, and manual memoization is unnecessary.
-- The compiler runs on all workspace source under `platform/`, `extensions/` and
-  `modes/`, except the frozen `platform/ui` package and files that carry a
-  `'use no memo'` directive at the top.
+- Which directories the compiler applies to is defined once, in
+  `react-compiler.scope.cjs` at the repo root. Read it rather than assuming; the
+  build, the lint rules and the coverage gate all take their scope from it, and
+  adding a directory to its `excluded` list takes that directory out of all
+  three together. Files carrying a `'use no memo'` directive at the top are
+  skipped regardless of directory.
 - Two CI gates hold the current state and fail in **both** directions — when
   things get worse, and when things get better but the budget was not tightened.
 

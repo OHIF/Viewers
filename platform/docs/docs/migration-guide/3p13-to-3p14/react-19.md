@@ -92,10 +92,61 @@ defaults changed:
 npx types-react-codemod@latest preset-19 ./src
 ```
 
-## A note on the React Compiler
+## The React Compiler, and what it means for your extension
 
-3.14 enables the React Compiler across OHIF's own source and its published package
-builds. It applies to OHIF's code, not to yours — a third-party extension is compiled by
-its own build pipeline, so nothing is required of you here. If you want the same
-automatic memoization in your extension, enable `babel-plugin-react-compiler` in your
-own build.
+3.14 enables the React Compiler across OHIF's own source. What that means for you
+depends on how you build.
+
+**You consume OHIF from npm and build your extension yourself.** The compiler applies
+to OHIF's code, not yours, and nothing is required. If you want the same automatic
+memoization, enable `babel-plugin-react-compiler` in your own build.
+
+**You fork the repository and add your extension under `extensions/` or `modes/`.**
+Your code becomes part of OHIF's build and CI, so the same tooling that covers OHIF's
+own components covers yours:
+
+1. **It is compiled.** The compiler's scope is every `src/` directory under
+   `platform/`, `extensions/` and `modes/`. Most components are fine. A component that
+   reads or mutates state outside React during render — a cornerstone3D viewport or
+   overlay is the typical case — can be memoized in a way that stops it updating; the
+   opt-outs below are for that.
+2. **The React 19 lint rules apply.** `pnpm lint:compiler` flags `forwardRef` and
+   `prop-types`, which React 19 no longer needs.
+3. **The coverage gate includes it.** `pnpm run compiler:coverage:ci` reports any
+   function the compiler declines to memoize. Fix it, or record it in
+   `.react-compiler-budget.json`.
+4. **The lint budget includes it.** `pnpm run lint:compiler:ci` compares the
+   `react-hooks/*` error and warning counts against `.react-compiler-lint-budget.json`.
+   Adjust the budget when your code moves them.
+
+Both gates fail CI until their budget file matches, and both print exactly which file
+and which entry is involved, so the fix is never a guess.
+
+### Opting a file out
+
+Put `'use no memo';` as the first statement in the file, with a comment above it
+saying what broke, and add the file's path to `fileOptOuts` in
+`.react-compiler-budget.json`. The compiler skips the whole file, and the gate checks
+that the entry exists. Prefer this when one or two components are the problem.
+
+### Opting a directory out
+
+Add it to `excluded` in `react-compiler.scope.cjs` at the repository root:
+
+```js
+const excluded = [
+  'platform/ui',
+  'extensions/my-extension',
+];
+```
+
+That one list drives the compiler in both build pipelines, the compiler lint rules
+and the coverage gate, so they cannot disagree. The gate names every directory it
+skips:
+
+```
+excluded by react-compiler.scope.cjs: 12 file(s) under extensions/my-extension
+```
+
+An excluded directory is outside the compiler's world entirely — not compiled, not
+linted by the compiler rules, not gated — the way `platform/ui` is.
