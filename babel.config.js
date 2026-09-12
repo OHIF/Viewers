@@ -26,6 +26,9 @@ const reactCompilerPlugin = ['babel-plugin-react-compiler', { target: '19' }];
 // react-compiler.scope.cjs instead, so every consumer of the decision agrees.
 
 module.exports = {
+  // Which packages may carry their own babel.config.js when built on their own.
+  // Unrelated to react-compiler.scope.cjs, and deliberately wider: platform/ui
+  // is built as a package but never compiled, so it belongs here and not there.
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
   presets: [
     '@babel/preset-env',

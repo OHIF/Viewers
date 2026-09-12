@@ -113,8 +113,15 @@ const ignoreGlobs = excluded.map(dir => `${dir}/**`);
 /** `git ls-files` pathspecs. */
 const gitPathspecs = roots.map(root => `${root}/src/**`);
 
+// The bundlers treat a string condition as a plain prefix match on the absolute
+// resource path. Every directory handed to them therefore ends in a separator:
+// without it, `...\platform\ui` also matches every file under
+// `...\platform\ui-next`, and all of ui-next silently stops being compiled.
+// (The regexes this file replaced guarded the same edge with `(?!ui[\\/])`.)
+const asDirPrefix = dir => path.join(repoRoot, dir) + path.sep;
+
 /**
- * Absolute `<root>/src` directory prefixes for a bundler `include`, with `*`
+ * Absolute `<root>/src/` directory prefixes for a bundler `include`, with `*`
  * expanded against the directories present on disk. Read once at config time,
  * so a package added while a dev server is running needs a restart - which is
  * already true of everything else in the bundler config.
@@ -124,7 +131,7 @@ function includeDirs() {
     const parts = root.split('/');
     const star = parts.indexOf('*');
     if (star === -1) {
-      return [path.join(repoRoot, root, 'src')];
+      return [asDirPrefix(path.join(root, 'src'))];
     }
     const parent = path.join(repoRoot, ...parts.slice(0, star));
     if (!fs.existsSync(parent)) {
@@ -133,13 +140,14 @@ function includeDirs() {
     return fs
       .readdirSync(parent)
       .map(name => path.join(parent, name, ...parts.slice(star + 1), 'src'))
-      .filter(dir => fs.existsSync(dir));
+      .filter(dir => fs.existsSync(dir))
+      .map(dir => dir + path.sep);
   });
 }
 
-/** Absolute directory prefixes for a bundler `exclude`. */
+/** Absolute directory prefixes for a bundler `exclude`, separator-terminated. */
 function excludeDirs() {
-  return excluded.map(dir => path.join(repoRoot, dir));
+  return excluded.map(asDirPrefix);
 }
 
 module.exports = {
