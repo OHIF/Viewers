@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useDrop } from 'react-dnd';
 
@@ -17,7 +16,10 @@ function ViewportPane({
   onInteraction = () => {},
   acceptDropsFor,
 }) {
-  let dropElement = null;
+  // A ref, not a render-scoped variable: refHandler runs after render, so
+  // assigning a plain local there mutates a binding the render has already
+  // finished with - and the local resets to null on every subsequent render.
+  const dropElementRef = React.useRef(null);
 
   const [{ isHovered, isHighlighted }, drop] = useDrop({
     accept: acceptDropsFor,
@@ -34,9 +36,7 @@ function ViewportPane({
   });
 
   const focus = () => {
-    if (dropElement) {
-      dropElement.focus();
-    }
+    dropElementRef.current?.focus();
   };
 
   const onInteractionHandler = event => {
@@ -46,7 +46,7 @@ function ViewportPane({
 
   const refHandler = element => {
     drop(element);
-    dropElement = element;
+    dropElementRef.current = element;
   };
 
   return (
@@ -77,15 +77,6 @@ function ViewportPane({
   );
 }
 
-ViewportPane.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  isActive: PropTypes.bool.isRequired,
-  acceptDropsFor: PropTypes.string.isRequired,
-  onDrop: PropTypes.func.isRequired,
-  onInteraction: PropTypes.func.isRequired,
-  onDoubleClick: PropTypes.func,
-  customStyle: PropTypes.object,
-};
+
 
 export { ViewportPane };

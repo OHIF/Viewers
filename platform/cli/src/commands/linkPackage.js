@@ -1,8 +1,38 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
 import { execa } from 'execa';
 import { keywords } from './enums/index.js';
 import { validatePnpm, addExtensionToConfig, addModeToConfig } from './utils/index.js';
+
+/**
+ * The `resolve.modules` entry written below only exists in webpack.pwa.js, which
+ * is read by the legacy rspack pipeline alone. The default build and dev:fast go
+ * through rsbuild.config.ts, which builds resolve.modules from
+ * .webpack/resolveConfig.js and never reads webpack.pwa.js - so the patch
+ * succeeds while having no effect there. Say so rather than letting it look like
+ * the link worked everywhere.
+ */
+function warnLegacyPipelineOnly() {
+  console.log(
+    [
+      '',
+      chalk.yellow.bold('This link only applies to the legacy rspack pipeline.'),
+      `The ${chalk.bold('resolve.modules')} entry is written into platform/app/.webpack/webpack.pwa.js,`,
+      'which is read by:',
+      chalk.green('  pnpm run dev            pnpm run dev:orthanc / dev:dcm4chee / dev:static'),
+      chalk.green('  pnpm run build:legacy   the Playwright e2e web server'),
+      '',
+      'It is NOT read by the rsbuild pipeline, so these will not see the link:',
+      chalk.red('  pnpm run build          (the default production build)'),
+      chalk.red('  pnpm run dev:fast'),
+      '',
+      'If the linked package resolves its own dependencies from its own',
+      'node_modules, build with pnpm run build:legacy until the CLI is removed.',
+      '',
+    ].join('\n')
+  );
+}
 
 async function linkPackage(packageDir, options, addToConfig, keyword) {
   const { viewerDirectory } = options;
@@ -63,6 +93,8 @@ async function linkPackage(packageDir, options, addToConfig, keyword) {
 
   // run prettier on the webpack config
   results = await execa('pnpm', ['exec', 'prettier', '--write', webpackPwaPath]);
+
+  warnLegacyPipelineOnly();
 }
 
 function linkExtension(packageDir, options) {

@@ -16,19 +16,14 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
     segmentationRepresentationTypes
   } = useSegmentationTableContext('AddSegmentRow');
 
-  // Try to get from expanded context first, then fall back to active segmentation
-  let segmentationId = activeSegmentationId;
-  let representation = activeRepresentation;
-
-  try {
-    const expandedContext = useSegmentationExpanded('AddSegmentRow');
-    if (expandedContext.isActive) {
-      segmentationId = expandedContext.segmentation.segmentationId;
-      representation = expandedContext.representation;
-    }
-  } catch (e) {
-    // Use the default values from table context
-  }
+  // Prefer the expanded context when this row is rendered inside one and it is
+  // active; otherwise fall back to the active segmentation from the table context.
+  const expandedContext = useSegmentationExpanded();
+  const useExpanded = expandedContext?.isActive === true;
+  const segmentationId = useExpanded
+    ? expandedContext.segmentation.segmentationId
+    : activeSegmentationId;
+  const representation = useExpanded ? expandedContext.representation : activeRepresentation;
 
   // If no segmentations, don't render
   if (!data?.length) {

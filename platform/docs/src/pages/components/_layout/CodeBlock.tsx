@@ -6,7 +6,7 @@ interface CodeBlockProps {
 
 export default function CodeBlock({ code }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 

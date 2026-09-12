@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ThumbnailList } from '../ThumbnailList';
 
@@ -96,22 +95,6 @@ const StudyItem = ({
   );
 };
 
-StudyItem.propTypes = {
-  date: PropTypes.string.isRequired,
-  description: PropTypes.string,
-  modalities: PropTypes.string.isRequired,
-  numInstances: PropTypes.number.isRequired,
-  isActive: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  isExpanded: PropTypes.bool,
-  displaySets: PropTypes.array,
-  activeDisplaySetInstanceUIDs: PropTypes.array,
-  onClickThumbnail: PropTypes.func,
-  onDoubleClickThumbnail: PropTypes.func,
-  onClickUntrack: PropTypes.func,
-  viewPreset: PropTypes.string,
-  StudyMenuItems: PropTypes.func,
-  StudyInstanceUID: PropTypes.string,
-};
+
 
 export { StudyItem };

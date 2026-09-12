@@ -13,15 +13,18 @@ import { useTranslation } from 'react-i18next';
 export function MeasumentsMenu(props) {
   const { group, classNames } = props;
   const { t } = useTranslation('MeasurementTable');
+  const system = useSystem();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Hooks must run before this guard, or the hook count changes with the group.
   if (!group.items?.length) {
     console.log('No items to iterate', group.items);
     return null;
   }
+
   const { items } = group;
   const [item] = items;
   const { isSelected, isVisible } = item;
-
-  const system = useSystem();
 
   const onAction = (event, command, args?) => {
     const uid = items.map(item => item.uid);
@@ -34,8 +37,6 @@ export function MeasumentsMenu(props) {
       event,
     });
   };
-
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <div className={`relative ml-2 inline-flex items-center space-x-1 ${classNames}`}>

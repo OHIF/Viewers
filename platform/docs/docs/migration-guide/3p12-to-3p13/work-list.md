@@ -22,7 +22,18 @@ import WorkList from 'path/to/routes/WorkList/WorkList';
 import LegacyWorkList from 'path/to/routes/LegacyWorkList/LegacyWorkList';
 ```
 
+This path was removed in 3.14 along with the route itself; see the
+[3.13 to 3.14 migration guide](../3p13-to-3p14/work-list.md).
+
 ## Opting back into the legacy study list
+
+:::danger Removed in 3.14
+Both `workList.variant` and `LegacyWorkList` were removed in 3.14. The opt-out
+below works only while you are on 3.13 — treat it as a temporary bridge, not a
+long-term setting, and plan to migrate to the ui-next `WorkList` before
+upgrading. See the
+[3.13 to 3.14 migration guide](../3p13-to-3p14/work-list.md).
+:::
 
 If you need more time to migrate, set the new `workList.variant` customization to `'legacy'` to mount `LegacyWorkList` at `/`:
 

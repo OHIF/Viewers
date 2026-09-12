@@ -1,8 +1,9 @@
 import { createContext, useContext } from 'react';
-import type { Table } from '@tanstack/react-table';
+import type { ReactTable } from '@tanstack/react-table';
+import type { DataTableFeatures } from './DataTable';
 
 export type DataTableContextValue<TData> = {
-  table: Table<TData>;
+  table: ReactTable<DataTableFeatures, TData>;
 };
 
 // React Context cannot be generic, so we use 'unknown' as the base type

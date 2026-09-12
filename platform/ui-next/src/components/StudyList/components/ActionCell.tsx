@@ -1,10 +1,11 @@
 import * as React from 'react';
 import type { Cell } from '@tanstack/react-table';
+import type { DataTableFeatures } from '../../DataTable/DataTable';
 import { DataTable } from '../../DataTable';
 import { WorkflowMenu } from './WorkflowMenu';
 import type { StudyRow } from '../types/types';
 
-export function ActionCell({ cell }: { cell: Cell<StudyRow, unknown> }) {
+export function ActionCell({ cell }: { cell: Cell<DataTableFeatures, StudyRow, unknown> }) {
   const original = cell.row.original as StudyRow;
 
   return (

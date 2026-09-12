@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { DisplaySet } from '../types';
 import { useSystem } from '../';
 /**
@@ -12,13 +12,10 @@ const useActiveViewportDisplaySets = (): DisplaySet[] => {
   const { servicesManager } = useSystem();
   const { displaySetService, viewportGridService } = servicesManager.services;
   // Move this function outside useEffect and memoize it
-  const getDisplaySetsForViewport = useCallback(
-    (viewportId: string) => {
-      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId) || [];
-      return displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid)).filter(Boolean);
-    },
-    [displaySetService, viewportGridService]
-  );
+  const getDisplaySetsForViewport = (viewportId: string) => {
+    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId) || [];
+    return displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid)).filter(Boolean);
+  };
 
   // Get initial state
   const viewportId = viewportGridService.getActiveViewportId();

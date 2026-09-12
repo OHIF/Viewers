@@ -24,7 +24,7 @@ const InputFilterText = ({
   onDebounceChange,
   onChange,
   debounceTime = 200,
-}: InputFilterTextProps): ReactElement => {
+}: InputFilterTextProps): ReactElement<any> => {
   const [filterValue, setFilterValue] = useState<string>(value);
 
   const searchInputRef = useRef(null);

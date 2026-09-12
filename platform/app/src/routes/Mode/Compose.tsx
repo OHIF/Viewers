@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * Nests React components as ordered in array. We use this to
@@ -20,7 +19,4 @@ export default function Compose(props) {
 }
 
 // https://juliuskoronci.medium.com/avoid-a-long-list-of-react-providers-c45a269d80c1
-Compose.propTypes = {
-  components: PropTypes.array,
-  children: PropTypes.node.isRequired,
-};
+

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import { Icons } from '@ohif/ui-next';
@@ -41,7 +40,9 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   const isDynamic = !!dynamicInfo?.numDimensionGroups;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const debouncedSetFrameRate = useCallback(debounce(onFrameRateChange, 100), [onFrameRateChange]);
+  // Plain call: the React Compiler caches the debounced wrapper keyed on
+  // onFrameRateChange — the same invalidation the old useCallback deps gave it.
+  const debouncedSetFrameRate = debounce(onFrameRateChange, 100);
 
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
 
@@ -181,27 +182,6 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       )}
     </div>
   );
-};
-
-CinePlayer.propTypes = {
-  /** Minimum value for range slider */
-  minFrameRate: PropTypes.number,
-  /** Maximum value for range slider */
-  maxFrameRate: PropTypes.number,
-  /** Increment range slider can "step" in either direction */
-  stepFrameRate: PropTypes.number,
-  frameRate: PropTypes.number,
-  /** 'true' if playing, 'false' if paused */
-  isPlaying: PropTypes.bool.isRequired,
-  onPlayPauseChange: PropTypes.func,
-  onFrameRateChange: PropTypes.func,
-  onClose: PropTypes.func,
-  isDynamic: PropTypes.bool,
-  dynamicInfo: PropTypes.shape({
-    dimensionGroupNumber: PropTypes.number,
-    numDimensionGroups: PropTypes.number,
-    label: PropTypes.string,
-  }),
 };
 
 export default CinePlayer;

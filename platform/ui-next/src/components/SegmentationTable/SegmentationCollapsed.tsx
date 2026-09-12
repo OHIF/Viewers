@@ -60,7 +60,17 @@ const SegmentationCollapsedSelector = () => {
   const { t } = useTranslation('SegmentationPanel');
   const { data, onSegmentationClick, segmentationRepresentationTypes } =
     useSegmentationTableContext('SegmentationCollapsedSelector');
-  const { segmentation } = useSegmentationExpanded('SegmentationCollapsedSelector');
+  // This selector is only ever rendered inside SegmentationCollapsedRoot, which
+  // provides the context, so a missing context is a wiring mistake rather than a
+  // supported state. Assert here rather than in the hook, so the error names the
+  // component that has the requirement.
+  const expandedContext = useSegmentationExpanded();
+  if (!expandedContext) {
+    throw new Error(
+      'SegmentationCollapsedSelector must be rendered inside a SegmentationExpandedProvider'
+    );
+  }
+  const { segmentation } = expandedContext;
 
   if (!data?.length) {
     return null;

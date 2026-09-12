@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
 
 const DEFAULT_STATE = {
   isCineEnabled: false,
@@ -55,25 +55,20 @@ export default function CineProvider({ children, service }) {
 
   const [state, dispatch] = useReducer(reducer, DEFAULT_STATE);
 
-  const getState = useCallback(() => state, [state]);
+  const getState = () => state;
 
-  const setIsCineEnabled = useCallback(
-    isCineEnabled => dispatch({ type: 'SET_IS_CINE_ENABLED', payload: isCineEnabled }),
-    [dispatch]
-  );
+  const setIsCineEnabled = isCineEnabled =>
+    dispatch({ type: 'SET_IS_CINE_ENABLED', payload: isCineEnabled });
 
-  const setCine = useCallback(
-    ({ id, frameRate, isPlaying }) =>
-      dispatch({
-        type: 'SET_CINE',
-        payload: {
-          id,
-          frameRate,
-          isPlaying,
-        },
-      }),
-    [dispatch]
-  );
+  const setCine = ({ id, frameRate, isPlaying }) =>
+    dispatch({
+      type: 'SET_CINE',
+      payload: {
+        id,
+        frameRate,
+        isPlaying,
+      },
+    });
 
   /**
    * Sets the implementation of a modal service that can be used by extensions.

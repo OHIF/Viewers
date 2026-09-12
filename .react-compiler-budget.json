@@ -1,0 +1,19 @@
+{
+  "refusals": {
+    "extensions/cornerstone/src/components/CinePlayer/CinePlayer.tsx": 1,
+    "platform/app/src/routes/Mode/Mode.tsx": 1,
+    "platform/ui-next/src/components/Dialog/useDraggable.ts": 1
+  },
+  "fileOptOuts": [
+    "extensions/cornerstone/src/Viewport/OHIFCornerstoneViewport.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/CornerstoneOverlays.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/CustomizableViewportOverlay.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/ViewportImageScrollbar.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/ViewportImageSliceLoadingIndicator.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/ViewportOrientationMarkers.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/ViewportSliceProgressScrollbar/ViewportSliceProgressScrollbar.tsx",
+    "extensions/cornerstone/src/Viewport/Overlays/ViewportSliceProgressScrollbar/hooks.ts",
+    "extensions/default/src/Panels/StudyBrowser/PanelStudyBrowser.tsx"
+  ],
+  "functionOptOuts": {}
+}

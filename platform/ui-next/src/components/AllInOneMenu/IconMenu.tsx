@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { MenuProps } from './Menu';
 import classNames from 'classnames';
@@ -40,7 +40,7 @@ export default function IconMenu({
 }: IconMenuProps) {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-  const toggleMenuVisibility = useCallback(() => setIsMenuVisible(isVisible => !isVisible), []);
+  const toggleMenuVisibility = () => setIsMenuVisible(isVisible => !isVisible);
 
   return (
     <OutsideClickHandler
