@@ -352,7 +352,7 @@ export class RightPanelPageObject {
       },
       tools: {
         get splineContour() {
-          const button = page.getByTestId('SplineContourSegmentationTool');
+          const button = page.getByTestId('SplineContourSegmentationTool-btn');
           // Maps a friendly spline name to the underlying cornerstone tool name,
           // which is also the data-cy of its option in the Spline Type dropdown.
           const splineTypeToolNames = {
@@ -377,7 +377,7 @@ export class RightPanelPageObject {
           };
         },
         get livewireContour() {
-          const button = page.getByTestId('LivewireContourSegmentationTool');
+          const button = page.getByTestId('LivewireContourSegmentationTool-btn');
           return {
             button,
             click: async () => {
@@ -386,11 +386,15 @@ export class RightPanelPageObject {
           };
         },
         get freehandContour() {
-          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool-btn');
           return {
             button,
             click: async () => {
               await button.click();
+              // data-active is stamped on the tool's span wrapper, not the button.
+              await page.waitForSelector(
+                '[data-cy="PlanarFreehandContourSegmentationTool"][data-active="true"]'
+              );
             },
           };
         },
@@ -419,27 +423,76 @@ export class RightPanelPageObject {
           },
         };
       },
+      // The "Combine Contours" utility popover. Its toggle button closes an open
+      // popover, so every action opens it only when it is not already showing.
       get combineContours() {
+        const toggleButton = page.getByTestId('LogicalContourOperations');
+        const applyButton = page.getByTestId('apply-logical-contour-operation');
+        const open = async () => {
+          if (await applyButton.isVisible()) {
+            return;
+          }
+          await toggleButton.click();
+          await applyButton.waitFor({ state: 'visible' });
+        };
         return {
-          open: async () => {
-            await page.getByTestId('LogicalContourOperations').click();
+          toggleButton,
+          open,
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await applyButton.waitFor({ state: 'hidden' });
           },
           selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
+            await open();
             await page.getByTestId(`logical-contour-operation-${operation}`).click();
           },
           selectSegmentA: async (label: string) => {
+            await open();
             await page.getByTestId('logical-contour-segment-a-trigger').click();
             await page.getByRole('option', { name: label }).click();
           },
           selectSegmentB: async (label: string) => {
+            await open();
             await page.getByTestId('logical-contour-segment-b-trigger').click();
             await page.getByRole('option', { name: label }).click();
           },
           apply: async () => {
-            await page.getByTestId('apply-logical-contour-operation').click();
+            await open();
+            await applyButton.click();
           },
           enableCreateNewSegment: async () => {
+            await open();
             await page.getByTestId('logical-contour-create-new-segment-switch').click();
+          },
+        };
+      },
+      // The "Smooth Contours" utility popover. Its actions operate on the active
+      // segment only, so a segment row must be clicked before invoking them. The
+      // toggle button closes an open popover, so every action opens it only when
+      // it is not already showing.
+      get smoothContours() {
+        const toggleButton = page.getByTestId('SmoothContours');
+        const smoothEdgesButton = page.getByRole('button', { name: 'Smooth Edges' });
+        const open = async () => {
+          if (await smoothEdgesButton.isVisible()) {
+            return;
+          }
+          await toggleButton.click();
+          await smoothEdgesButton.waitFor({ state: 'visible' });
+        };
+        return {
+          toggleButton,
+          open,
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await smoothEdgesButton.waitFor({ state: 'hidden' });
+          },
+          // Runs the smoothContours command (b-spline resample of the outline).
+          smoothEdges: async () => {
+            await open();
+            await smoothEdgesButton.click();
           },
         };
       },
@@ -452,11 +505,13 @@ export class RightPanelPageObject {
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
     const segmentationSelect = this.getSegmentationSelect('Labelmap');
+    const segmentsVisibilityToggle = this.getSegmentsVisibilityToggle('Labelmap');
 
     return {
       addSegmentationButton,
       addSegmentButton,
       menuButton,
+      segmentsVisibilityToggle,
       panel,
       segmentationSelect,
       select: async () => {

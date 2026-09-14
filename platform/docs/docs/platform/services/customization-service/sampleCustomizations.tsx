@@ -1323,6 +1323,39 @@ window.config = {
         `,
   },
   {
+    id: 'ohif.headerRightSide',
+    description: (
+      <>
+        The ordered list of components filling the right of the header's menu bar, ahead of the
+        settings menu. Each entry is rendered as a component in its own separated slot, so
+        reordering the array reorders the header, and an item that renders <code>null</code>{' '}
+        collapses its slot. Items take no props and may use hooks; see{' '}
+        <code>extensions/default/src/customizations/headerRightSideCustomization.ts</code> for the
+        default.
+      </>
+    ),
+    default: '{ items: [HeaderUndoRedo, HeaderPatientInfo] }',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        Reorder or extend the list with <code>$set</code> / <code>$push</code>. To drop just the
+        undo/redo buttons, <code>extension-default</code> ships that as a named module:{' '}
+        <code>'@ohif/extension-default.customizationModule.hideHeaderUndoRedo'</code>.
+      </p>
+    ),
+    configuration: `
+import HeaderPatientInfo from '@ohif/extension-default/src/ViewerLayout/HeaderPatientInfo';
+import HeaderUndoRedo from '@ohif/extension-default/src/ViewerLayout/HeaderUndoRedo';
+
+window.config = {
+  // rest of window config
+  customizationService: [
+    // Patient info first, then undo/redo.
+    { 'ohif.headerRightSide': { items: { $set: [HeaderPatientInfo, HeaderUndoRedo] } } },
+  ],
+};
+        `,
+  },
+  {
     id: 'viewportNotification.beginTrackingMessage',
     description: 'Define the content to be displayed in begin tracking prompt',
     default: 'Track measurements for this series?',
@@ -2153,6 +2186,117 @@ window.config = {
             commands: 'markAsFavorite',
           },
         ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.thumbnailDetails',
+    description:
+      'The items on the detail line of a study browser thumbnail, under the modality and ' +
+      'series description. Declared the same way as the viewport overlay items: each has an ' +
+      '`id`, an optional `condition` deciding whether to include it, and a value taken from ' +
+      'its `contentF`, from a named `source`, or from an `attribute` of the instance the ' +
+      'display set shows. `label` prefixes the value, `title` is its tooltip, and `iconName` ' +
+      'puts an icon before it. An item with no value is left out. `condition` and `iconName` ' +
+      'may each be a function or a name, so the whole line can be declared as data - see ' +
+      '`studyBrowser.thumbnailDetailSources` and `studyBrowser.thumbnailDetailTests` for the ' +
+      'names, and `?customization=studyBrowser/derivedDateTime` for an example of adding the ' +
+      'creation date/time that derived series are sorted by. An item naming a source or test ' +
+      'that is not registered is left out with a warning; if that leaves no items at all, the ' +
+      'thumbnail keeps its default detail line rather than showing an empty one.',
+    default: [
+      {
+        id: 'SeriesNumber',
+        label: 'S:',
+        source: 'seriesNumber',
+      },
+      {
+        id: 'InstanceCount',
+        source: 'numInstances',
+        iconName: ({ displaySet }) => displaySet?.countIcon || 'InfoSeries',
+      },
+    ],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'studyBrowser.thumbnailDetails': {
+        $push: [
+          {
+            id: 'InstanceDateTime',
+            // Named source and test, so this can also be written in a
+            // ?customization= JSONC file, which is data and never executed.
+            source: 'instanceDateTime',
+            condition: 'isDerivedDisplaySet',
+            title: 'Created',
+          },
+          {
+            // Or supply the functions directly.
+            id: 'BodyPart',
+            label: 'Part:',
+            attribute: 'BodyPartExamined',
+            condition: ({ displaySet }) => displaySet.Modality === 'CT',
+          },
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.thumbnailDetailSources',
+    description:
+      'Named value sources a `studyBrowser.thumbnailDetails` item can point at with `source`, ' +
+      'instead of supplying a `contentF` function. Each is called with ' +
+      '`{ displaySet, instance, formatters }`, where `instance` is the instance the display ' +
+      'set shows. `instanceDateTime` is the creation date/time that the series list is sorted ' +
+      'by, formatted to the minute. Add to it with `$merge`, as a `$set` replaces the whole ' +
+      'registry and so takes away the sources the default items name.',
+    default: {
+      seriesNumber: ({ displaySet }) => displaySet?.SeriesNumber,
+      numInstances: ({ displaySet }) =>
+        (displaySet?.numImageFrames ?? displaySet?.instances?.length) || 1,
+      seriesDate: ({ displaySet, formatters }) => formatters.formatDate(displaySet?.SeriesDate),
+      instanceDateTime: '(the creation date/time, see getLatestInstanceDateTime)',
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'studyBrowser.thumbnailDetailSources': {
+        $merge: {
+          seriesDescription: ({ displaySet }) => displaySet.SeriesDescription,
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.thumbnailDetailTests',
+    description:
+      'Named tests a `studyBrowser.thumbnailDetails` item can point at with `condition`, ' +
+      'instead of supplying a function. Each is called with the same properties as a source ' +
+      'and returns whether to include the item.',
+    default: {
+      isDerivedDisplaySet: ({ displaySet }) => !!displaySet?.isDerivedDisplaySet,
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'studyBrowser.thumbnailDetailTests': {
+        $merge: {
+          isMultiframe: ({ displaySet }) => displaySet.isMultiFrame,
+        },
       },
     },
   ],

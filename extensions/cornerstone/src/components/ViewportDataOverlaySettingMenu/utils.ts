@@ -1,9 +1,12 @@
-import { utilities as csUtils } from '@cornerstonejs/core';
+import {
+  DERIVED_OVERLAY_MODALITIES,
+  isDisplaySetOverlayable,
+} from '../../utils/isDisplaySetOverlayable';
 
 export const DEFAULT_COLORMAP = 'hsv';
 export const DEFAULT_OPACITY = 0.5;
 export const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
-export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
+export { DERIVED_OVERLAY_MODALITIES };
 
 /**
  * Get modality-specific color and opacity settings from the customization service
@@ -29,11 +32,10 @@ export function getModalityOverlayColormap(customizationService, modality) {
  * 2. Are evaluated for their ability to be overlaid onto the background display set
  * 3. Have an "isOverlayable" flag indicating if they're compatible with the viewport
  *
- * A display set is considered overlayable when:
- * - The background display set is reconstructable
- * - The display set is not unsupported
- * - The Frame of Reference matches the background display set
- * - For non-derived modalities: background can be a volume and display set is either multiframe or valid volume
+ * This is the viewport-driven caller of `isDisplaySetOverlayable`: it resolves
+ * the viewport's background display set and applies the shared rule to every
+ * other display set. The rule itself lives in utils/isDisplaySetOverlayable so
+ * that hydration - which has no viewport to start from - can use it too.
  *
  * @returns {Object} Object containing:
  *   - viewportDisplaySets: Display sets already in the viewport
@@ -60,60 +62,12 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
     displaySetService.getDisplaySetByUID(displaySetUID)
   );
 
-  const backgroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds || []);
   const backgroundDisplaySet = viewportDisplaySets[0];
 
-  const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
-    if (!backgroundDisplaySet.isReconstructable) {
-      return {
-        ...displaySet,
-        isOverlayable: false,
-      };
-    }
-
-    if (displaySet.unsupported) {
-      return {
-        ...displaySet,
-        isOverlayable: false,
-      };
-    }
-
-    // Check if Frame of Reference matches
-    if (
-      displaySet.FrameOfReferenceUID &&
-      displaySet.FrameOfReferenceUID !== backgroundDisplaySet.FrameOfReferenceUID
-    ) {
-      return {
-        ...displaySet,
-        isOverlayable: false,
-      };
-    }
-
-    // Special handling for derived modalities
-    if (!DERIVED_OVERLAY_MODALITIES.includes(displaySet.Modality)) {
-      if (!backgroundCanBeVolume) {
-        return {
-          ...displaySet,
-          isOverlayable: false,
-        };
-      }
-
-      const imageIds = displaySet.imageIds || displaySet.images?.map(image => image.imageId);
-      const isMultiframe = displaySet.isMultiFrame;
-
-      if (!isMultiframe && imageIds?.length > 0 && !csUtils.isValidVolume(imageIds)) {
-        return {
-          ...displaySet,
-          isOverlayable: false,
-        };
-      }
-    }
-
-    return {
-      ...displaySet,
-      isOverlayable: true,
-    };
-  });
+  const enhancedDisplaySets = otherDisplaySets.map(displaySet => ({
+    ...displaySet,
+    isOverlayable: isDisplaySetOverlayable({ displaySet, backgroundDisplaySet }),
+  }));
 
   return {
     viewportDisplaySets,
