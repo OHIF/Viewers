@@ -58,7 +58,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } = instance;
       // The date/time of a display set is the date/time of the instance it
       // shows, chosen from all the attributes that instance carries.
-      const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+      const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
       const videoUrlParams = {
         instance,
         singlepart: 'video',

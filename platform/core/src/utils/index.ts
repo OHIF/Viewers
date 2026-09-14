@@ -42,10 +42,10 @@ import {
 } from './sortStudy';
 import {
   dateTimeAttributes,
-  getSeriesDateTime,
-  getSeriesDateTimeSortKey,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
   getDateTimeSortKey,
-} from './seriesDateTime';
+} from './latestInstanceDateTime';
 import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
@@ -84,8 +84,8 @@ const utils = {
   seriesSortCriteria,
   instancesSortCriteria,
   dateTimeAttributes,
-  getSeriesDateTime,
-  getSeriesDateTimeSortKey,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
   getDateTimeSortKey,
   getCurrentDicomDateTime,
   updateNewInstanceMetadata,
@@ -144,8 +144,8 @@ export {
   formatDate,
   formatValue,
   dateTimeAttributes,
-  getSeriesDateTime,
-  getSeriesDateTimeSortKey,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
   getDateTimeSortKey,
   getCurrentDicomDateTime,
   updateNewInstanceMetadata,

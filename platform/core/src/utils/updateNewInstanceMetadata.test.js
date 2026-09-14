@@ -1,5 +1,5 @@
 import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
-import { getSeriesDateTime } from './seriesDateTime';
+import { getLatestInstanceDateTime } from './latestInstanceDateTime';
 
 describe('getCurrentDicomDateTime', () => {
   // Built with the local constructor, because a DICOM DA/TM pair with no
@@ -90,7 +90,7 @@ describe('updateNewInstanceMetadata', () => {
 
     expect(dataset.ContentDate).toBe(dataset.InstanceCreationDate);
     expect(dataset.ContentTime).toBe(dataset.InstanceCreationTime);
-    expect(getSeriesDateTime(dataset)).toEqual({
+    expect(getLatestInstanceDateTime(dataset)).toEqual({
       SeriesDate: dataset.ContentDate,
       SeriesTime: dataset.ContentTime,
     });
@@ -121,7 +121,7 @@ describe('updateNewInstanceMetadata', () => {
     expect(dataset.StructureSetTime).toBe(dataset.InstanceCreationTime);
     expect(dataset.ContentDate).toBeUndefined();
     expect(dataset.ContentTime).toBeUndefined();
-    expect(getSeriesDateTime(dataset)).toEqual({
+    expect(getLatestInstanceDateTime(dataset)).toEqual({
       SeriesDate: dataset.StructureSetDate,
       SeriesTime: dataset.StructureSetTime,
     });
@@ -135,7 +135,7 @@ describe('updateNewInstanceMetadata', () => {
     expect(dataset.PresentationCreationDate).toBe(dataset.InstanceCreationDate);
     expect(dataset.PresentationCreationTime).toBe(dataset.InstanceCreationTime);
     expect(dataset.ContentDate).toBeUndefined();
-    expect(getSeriesDateTime(dataset)).toEqual({
+    expect(getLatestInstanceDateTime(dataset)).toEqual({
       SeriesDate: dataset.PresentationCreationDate,
       SeriesTime: dataset.PresentationCreationTime,
     });
