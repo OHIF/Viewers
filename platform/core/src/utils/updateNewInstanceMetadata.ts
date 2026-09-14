@@ -1,5 +1,5 @@
 import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
-import { parseUTCOffset } from './seriesDateTime';
+import { parseUTCOffset } from './latestInstanceDateTime';
 
 /**
  * The current date and time as DICOM DA and TM values.
@@ -42,7 +42,7 @@ export function getCurrentDicomDateTime(
  * the same story with the Presentation State Identification module, whose
  * `PresentationCreationDate`/`PresentationCreationTime` are type 1.
  *
- * Both pairs are read back by `getSeriesDateTime`, so an instance stamped
+ * Both pairs are read back by `getLatestInstanceDateTime`, so an instance stamped
  * through this map orders exactly as one stamped with a content date/time.
  */
 const modalityDateTimeAttributes: Record<string, [string, string]> = {
@@ -69,7 +69,7 @@ const defaultDateTimeAttributes: [string, string] = ['ContentDate', 'ContentTime
  * `SeriesDate`/`SeriesTime` belong to the original series and must stay as they
  * are, so only the instance level creation date/time say that the series has
  * just been added to.  Those are what the display set date/time is chosen from
- * (see `getSeriesDateTime`), so they have to be set on every save.  They are
+ * (see `getLatestInstanceDateTime`), so they have to be set on every save.  They are
  * stamped in the dataset's own timezone - `TimezoneOffsetFromUTC` when it has
  * one, the local zone otherwise - because that is the wall clock reading a
  * viewer displays them as.

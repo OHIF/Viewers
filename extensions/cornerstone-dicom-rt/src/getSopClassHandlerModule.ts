@@ -39,7 +39,7 @@ function _getDisplaySetsFromSeries(
    * usually the structure set date/time, and for one saved into an existing
    * series only the instance level date/time reflects the save.
    */
-  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
   const displaySet = {
     Modality: 'RTSTRUCT',

@@ -70,16 +70,19 @@ export type DisplaySet = {
    * series that the instances belong to, and it must not be copied back to the
    * series metadata or to an instance.
    *
-   * The SOP class handler that creates the display set writes both, with
-   * `getSeriesDateTime` of the instance the display set shows:
+   * The SOP class handler that creates the display set writes both, and the two
+   * kinds of handler take the value from different places:
    *
-   * - An image display set takes the instance's `SeriesDate`/`SeriesTime`.
-   *   Every instance of a series carries those two identically, so every
-   *   display set of one image series holds the same value, ties on the sort
-   *   key, and the display sets stay together in the series list - ordered
-   *   among themselves by `compareSameSeriesDisplaySet`.
+   * - An image display set takes the instance's `SeriesDate`/`SeriesTime`
+   *   directly. Every instance of a series carries those two identically, so
+   *   every display set of one image series holds the same value, ties on the
+   *   sort key, and the display sets stay together in the series list - ordered
+   *   among themselves by `compareSameSeriesDisplaySet`. Such a handler must not
+   *   call `getLatestInstanceDateTime`, which also reads
+   *   `AcquisitionDate`/`AcquisitionTime` and so differs per instance.
    * - A derived display set - SEG, RTSTRUCT, SR, PMAP, PDF, video, chart -
-   *   takes the creation date/time of the instance it shows. A report saved
+   *   takes the creation date/time of the instance it shows, from
+   *   `getLatestInstanceDateTime`. A report saved
    *   today into a series created last week gets today's date, and the series
    *   list places that display set as today's work. The series' own
    *   `SeriesDate`/`SeriesTime`, in the instance metadata and in the archive,

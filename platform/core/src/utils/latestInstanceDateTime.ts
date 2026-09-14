@@ -38,7 +38,7 @@ export const dateTimeAttributes: Array<[string, string]> = [
  */
 export const dateTimeCombinedAttributes: string[] = ['AcquisitionDateTime'];
 
-export type SeriesDateTime = {
+export type LatestInstanceDateTime = {
   /** The chosen date, as found in the source, or `''`. */
   SeriesDate: string;
   /** The time belonging to that same date, as found in the source, or `''`. */
@@ -104,7 +104,7 @@ const pad = (value: number) => `${value}`.padStart(2, '0');
 export function expandDicomDateTime(
   value,
   localOffsetMinutes?: number
-): SeriesDateTime | undefined {
+): LatestInstanceDateTime | undefined {
   const match = dicomDateTime.exec(`${value ?? ''}`.trim());
   if (!match) {
     return undefined;
@@ -206,13 +206,29 @@ const timeSortKey = (value): string => {
  * one of its most recently created instance.
  *
  * The values are returned as found, so they are safe to store on a display set
- * and to display; use {@link getSeriesDateTimeSortKey} to compare them.  The
- * one exception is a DT value that declares a UTC offset, which
+ * and to display; use {@link getLatestInstanceDateTimeSortKey} to compare
+ * them.  The one exception is a DT value that declares a UTC offset, which
  * {@link expandDicomDateTime} moves to the offset of the viewer first - the
  * date/time returned is then the local wall clock reading of the same instant,
  * and a valid DA and TM rather than the offset-bearing DT it came from.
+ *
+ * **A handler of a derived display set calls this function.  The handler of an
+ * image display set must not call this function.**  A SEG, an RTSTRUCT, an SR,
+ * a PMAP, a PDF, a video and a chart each need the date/time of creation of the
+ * object, so a report that the user saves today into a series of last week is
+ * listed as the work of today.  An image instance is different: an image
+ * instance carries `AcquisitionDate` and `AcquisitionTime`, and those two
+ * attributes differ between the instances of one series.  This function would
+ * therefore give a different date/time to each display set of one split series.
+ * The display sets of one series must tie on `dateTimeSortKey`, because only a
+ * tie sends them to `compareSameSeriesDisplaySet` and to every comparison that
+ * `addSameSeriesCompare` registers.  The handler of an image display set writes
+ * `instance.SeriesDate` and `instance.SeriesTime` directly, and
+ * `extensions/default/src/getSopClassHandlerModule.js` does exactly that.  A
+ * change of that handler to this function raises no error, and puts the series
+ * list in the wrong order.
  */
-export function getSeriesDateTime(source): SeriesDateTime {
+export function getLatestInstanceDateTime(source): LatestInstanceDateTime {
   const sources = Array.isArray(source) ? source : [source];
   let SeriesDate = '';
   let SeriesTime = '';
@@ -271,10 +287,10 @@ export function getDateTimeSortKey(date, time): string {
 }
 
 /**
- * The {@link getSeriesDateTime} of the given instance, series or display set as
- * a {@link getDateTimeSortKey} comparable string.
+ * The {@link getLatestInstanceDateTime} of the given instance, series or
+ * display set as a {@link getDateTimeSortKey} comparable string.
  */
-export function getSeriesDateTimeSortKey(source): string {
-  const { SeriesDate, SeriesTime } = getSeriesDateTime(source);
+export function getLatestInstanceDateTimeSortKey(source): string {
+  const { SeriesDate, SeriesTime } = getLatestInstanceDateTime(source);
   return getDateTimeSortKey(SeriesDate, SeriesTime);
 }

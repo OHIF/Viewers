@@ -1,6 +1,6 @@
 import { utils } from '@ohif/core';
 
-const { getSeriesDateTime } = utils;
+const { getLatestInstanceDateTime } = utils;
 
 /**
  * Named sources for the study browser thumbnail detail items, so an item can
@@ -22,7 +22,7 @@ export const thumbnailDetailSources = {
 
   /**
    * When the display set was created, which is the date/time the series list is
-   * sorted by - see `getSeriesDateTime`.  Without this on the thumbnail, several
+   * sorted by - see `getLatestInstanceDateTime`.  Without this on the thumbnail, several
    * reports or segmentations saved on the same day all read as the same date and
    * their order looks arbitrary.
    *
@@ -30,7 +30,7 @@ export const thumbnailDetailSources = {
    * a reader can use, and it is not reliably recorded either.
    */
   instanceDateTime: ({ displaySet, instance, formatters }) => {
-    const { SeriesDate, SeriesTime } = getSeriesDateTime(instance ?? displaySet);
+    const { SeriesDate, SeriesTime } = getLatestInstanceDateTime(instance ?? displaySet);
     if (!SeriesDate) {
       return '';
     }

@@ -2262,7 +2262,7 @@ window.config = {
       numInstances: ({ displaySet }) =>
         (displaySet?.numImageFrames ?? displaySet?.instances?.length) || 1,
       seriesDate: ({ displaySet, formatters }) => formatters.formatDate(displaySet?.SeriesDate),
-      instanceDateTime: '(the creation date/time, see getSeriesDateTime)',
+      instanceDateTime: '(the creation date/time, see getLatestInstanceDateTime)',
     },
     configuration: `
 window.config = {

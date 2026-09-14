@@ -1,25 +1,25 @@
 import {
   getDateTimeSortKey,
   expandDicomDateTime,
-  getSeriesDateTime,
-  getSeriesDateTimeSortKey,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
   parseUTCOffset,
-} from './seriesDateTime';
+} from './latestInstanceDateTime';
 
-describe('getSeriesDateTime', () => {
+describe('getLatestInstanceDateTime', () => {
   test('uses the series date and time when they are the only pair', () => {
-    expect(getSeriesDateTime({ SeriesDate: '20260817', SeriesTime: '093000' })).toEqual({
+    expect(getLatestInstanceDateTime({ SeriesDate: '20260817', SeriesTime: '093000' })).toEqual({
       SeriesDate: '20260817',
       SeriesTime: '093000',
     });
   });
 
   test('reports an empty date and time rather than undefined', () => {
-    expect(getSeriesDateTime({})).toEqual({ SeriesDate: '', SeriesTime: '' });
+    expect(getLatestInstanceDateTime({})).toEqual({ SeriesDate: '', SeriesTime: '' });
   });
 
   test('reads the lower camel case spelling of series metadata', () => {
-    expect(getSeriesDateTime({ seriesDate: '20260817', seriesTime: '093000' })).toEqual({
+    expect(getLatestInstanceDateTime({ seriesDate: '20260817', seriesTime: '093000' })).toEqual({
       SeriesDate: '20260817',
       SeriesTime: '093000',
     });
@@ -27,7 +27,7 @@ describe('getSeriesDateTime', () => {
 
   test('takes the latest date of all the attributes', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         SeriesDate: '20260817',
         SeriesTime: '090000',
         ContentDate: '20260819',
@@ -41,7 +41,7 @@ describe('getSeriesDateTime', () => {
   // time say that it has just been added to.
   test('prefers the instance date over an older series date', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         SeriesDate: '20260817',
         SeriesTime: '090000',
         InstanceCreationDate: '20260819',
@@ -52,7 +52,7 @@ describe('getSeriesDateTime', () => {
 
   test('takes the latest time of the attributes carrying the winning date', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         SeriesDate: '20260819',
         SeriesTime: '090000',
         ContentDate: '20260819',
@@ -68,7 +68,7 @@ describe('getSeriesDateTime', () => {
   // within its day.
   test('never takes a time from a date other than the winning one', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         SeriesDate: '20260818',
         StructureSetDate: '20260817',
         StructureSetTime: '090000',
@@ -78,7 +78,7 @@ describe('getSeriesDateTime', () => {
 
   test('uses the time of the winning date even when it comes from another attribute', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         SeriesDate: '20260817',
         StructureSetDate: '20260817',
         StructureSetTime: '090000',
@@ -91,7 +91,7 @@ describe('getSeriesDateTime', () => {
   // images.  The structure set pair is the one that says when the SEG was made.
   test('prefers a later structure set date over the series date of a SEG', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         Modality: 'SEG',
         SeriesDate: '20260817',
         SeriesTime: '090000',
@@ -105,7 +105,7 @@ describe('getSeriesDateTime', () => {
   // belongs to the day the images were acquired and not to the SEG.
   test('leaves the time empty when the later SEG date carries none', () => {
     expect(
-      getSeriesDateTime({
+      getLatestInstanceDateTime({
         Modality: 'SEG',
         SeriesDate: '20260817',
         SeriesTime: '090000',
@@ -115,7 +115,7 @@ describe('getSeriesDateTime', () => {
   });
 
   test('ignores a time that has no date with it', () => {
-    expect(getSeriesDateTime({ SeriesTime: '090000', ContentDate: '20260817' })).toEqual({
+    expect(getLatestInstanceDateTime({ SeriesTime: '090000', ContentDate: '20260817' })).toEqual({
       SeriesDate: '20260817',
       SeriesTime: '',
     });
@@ -125,29 +125,29 @@ describe('getSeriesDateTime', () => {
   // `19-Jan-2026` would read as `192026`, ordering by day of month and making
   // two different months compare as equal, so it counts as no date at all.
   test('ignores a date that is not a DICOM DA value', () => {
-    expect(getSeriesDateTime({ SeriesDate: '19-Jan-2026' })).toEqual({
+    expect(getLatestInstanceDateTime({ SeriesDate: '19-Jan-2026' })).toEqual({
       SeriesDate: '',
       SeriesTime: '',
     });
-    expect(getSeriesDateTimeSortKey({ seriesDate: '05-Feb-2026' })).toBe('');
+    expect(getLatestInstanceDateTimeSortKey({ seriesDate: '05-Feb-2026' })).toBe('');
   });
 
   test('reads the dotted date of the retired DICOM form', () => {
-    expect(getSeriesDateTime({ SeriesDate: '2026.08.17' })).toEqual({
+    expect(getLatestInstanceDateTime({ SeriesDate: '2026.08.17' })).toEqual({
       SeriesDate: '2026.08.17',
       SeriesTime: '',
     });
   });
 
   test('ignores the study date, which every series in the study shares', () => {
-    expect(getSeriesDateTime({ StudyDate: '20260819', StudyTime: '080000' })).toEqual({
+    expect(getLatestInstanceDateTime({ StudyDate: '20260819', StudyTime: '080000' })).toEqual({
       SeriesDate: '',
       SeriesTime: '',
     });
   });
 
   test('splits a combined acquisition date time', () => {
-    expect(getSeriesDateTime({ AcquisitionDateTime: '20260819143000.000000' })).toEqual({
+    expect(getLatestInstanceDateTime({ AcquisitionDateTime: '20260819143000.000000' })).toEqual({
       SeriesDate: '20260819',
       SeriesTime: '143000.000000',
     });
@@ -163,8 +163,8 @@ describe('getSeriesDateTime', () => {
     ['a value with no time', '20260819+0000', '20260818200000-0400'],
     ['a value that crosses the day boundary', '20260819233000-0500', '20260820043000+0000'],
   ])('gives one sort key to %s in two zones', (_name, west, utc) => {
-    expect(getSeriesDateTimeSortKey({ AcquisitionDateTime: west })).toBe(
-      getSeriesDateTimeSortKey({ AcquisitionDateTime: utc })
+    expect(getLatestInstanceDateTimeSortKey({ AcquisitionDateTime: west })).toBe(
+      getLatestInstanceDateTimeSortKey({ AcquisitionDateTime: utc })
     );
   });
 
@@ -188,11 +188,11 @@ describe('getSeriesDateTime', () => {
   );
 
   test('leaves a combined date time that declares no offset exactly as it is', () => {
-    expect(getSeriesDateTime({ AcquisitionDateTime: '20260819' })).toEqual({
+    expect(getLatestInstanceDateTime({ AcquisitionDateTime: '20260819' })).toEqual({
       SeriesDate: '20260819',
       SeriesTime: '',
     });
-    expect(getSeriesDateTime({ AcquisitionDateTime: '202608191030' })).toEqual({
+    expect(getLatestInstanceDateTime({ AcquisitionDateTime: '202608191030' })).toEqual({
       SeriesDate: '20260819',
       SeriesTime: '1030',
     });
@@ -205,7 +205,7 @@ describe('getSeriesDateTime', () => {
       { ContentDate: '20260818', ContentTime: '235959' },
     ];
 
-    expect(getSeriesDateTime(instances)).toEqual({
+    expect(getLatestInstanceDateTime(instances)).toEqual({
       SeriesDate: '20260819',
       SeriesTime: '143000',
     });
@@ -232,7 +232,7 @@ describe('parseUTCOffset', () => {
 
 /**
  * The local offset is supplied to every case here, so the expected value does
- * not depend on the zone the test runs in.  `getSeriesDateTime` supplies none
+ * not depend on the zone the test runs in.  `getLatestInstanceDateTime` supplies none
  * and gets the viewer's own offset at that instant instead.
  */
 describe('expandDicomDateTime', () => {
@@ -352,8 +352,8 @@ describe('expandDicomDateTime', () => {
   );
 });
 
-describe('getSeriesDateTimeSortKey', () => {
-  const sortKey = source => getSeriesDateTimeSortKey(source);
+describe('getLatestInstanceDateTimeSortKey', () => {
+  const sortKey = source => getLatestInstanceDateTimeSortKey(source);
 
   test('is empty with no date, which sorts as the oldest', () => {
     expect(sortKey({})).toBe('');

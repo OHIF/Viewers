@@ -73,7 +73,7 @@ function addInstances(instances: InstanceMetadata[], _displaySetService: Display
   // still hold those of the first report saved into the series, so leaving
   // them would show, and summarize by, a date older than the report shown and
   // older than the position the series list has just sorted this one into.
-  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(this.instance);
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(this.instance);
   this.SeriesDate = SeriesDate;
   this.SeriesTime = SeriesTime;
   this.isLoaded = false;
@@ -120,7 +120,7 @@ function _getDisplaySetsFromSeries(
   // The date/time of the display set is that of the instance it shows.  A
   // report saved into an existing series keeps the original SeriesDate, so only
   // the instance level content date/time places it as the newest one.
-  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
   const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 

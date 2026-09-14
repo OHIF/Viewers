@@ -39,9 +39,13 @@ test('should display the rectangle tool', async ({
 
   const expectedArea = 15959;
   const expectedMax = 295;
-  const expectedMean = 80.4;
+  // cornerstone3D 2744 gave the area annotations one rule for the voxels that
+  // an annotation covers. The rule changed which voxels the statistics read,
+  // and the mean and the standard deviation moved. The area, the maximum and
+  // the minimum did not move.
+  const expectedMean = 79.8;
   const expectedMin = -77.0;
-  const expectedStdDev = 38.2;
+  const expectedStdDev = 38.1;
 
   // RectangleROI panel: area (no prefix) + Max (with prefix).
   // RectangleROI SVG: Area, Mean, Max, Min, Std Dev (5 lines for CT modality).
