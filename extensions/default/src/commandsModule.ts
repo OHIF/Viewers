@@ -384,11 +384,7 @@ const commandsModule = ({
         }`;
 
         const { viewportGridState } = useViewportGridStore.getState();
-        // When a layout preset is selected explicitly (e.g. from the toolbar layout
-        // selector), `restoreCachedLayout` is false so we apply the protocol's own
-        // stage layout instead of restoring a previously cached custom grid. This
-        // prevents a stale grid (e.g. left behind by a layout that didn't match the
-        // active series) from carrying over and dropping/blanking viewports.
+        // An explicit preset selection passes restoreCachedLayout: false so the stage layout wins over a stale cached grid
         const restoreProtocol = !reset && restoreCachedLayout && viewportGridState[storedHanging];
 
         if (
@@ -436,12 +432,7 @@ const commandsModule = ({
           null
         );
 
-        // The protocol/preset was applied, which is an explicit layout change, so
-        // any pending one-up toggle is abandoned. Clearing here (only once the
-        // apply has succeeded, not on the catch below) keeps the one-up store
-        // meaning strictly "a one-up entered via double-click that can be toggled
-        // back", so reaching a 1x1 preset (e.g. "3D only") and double-clicking it
-        // does not restore a stale grid left over from an earlier one-up.
+        // An applied protocol is an explicit layout change, so abandon any pending one-up toggle
         useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
         return true;
       } catch (e) {
@@ -521,11 +512,7 @@ const commandsModule = ({
         return;
       }
 
-      // An explicit grid selection abandons any pending one-up toggle (see
-      // setHangingProtocol above), so a later double-click on a 1x1 grid does not
-      // restore a stale layout. Clear only after the change is confirmed to
-      // proceed (past the onLayoutChange veto) so a rejected change keeps the
-      // toggle-back state intact.
+      // An explicit grid selection abandons any pending one-up toggle; clear only past the onLayoutChange veto
       useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
       const completeLayout = () => {
@@ -622,8 +609,7 @@ const commandsModule = ({
           isHangingProtocolLayout: true,
         });
 
-        // The one-up has been toggled back; drop the stored layout so the store
-        // only ever holds a one-up that is currently active.
+        // Toggled back, so drop the stored layout; the store only holds a currently active one-up
         useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
         // Reset crosshairs after restoring the layout
