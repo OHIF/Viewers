@@ -112,10 +112,10 @@ function ToolbarLayoutSelectorWithServices({
   const handleSelectionChange = useCallback(
     (commandOptions, isPreset) => {
       if (isPreset) {
-        // Advanced preset selection
+        // Advanced preset selection: apply the stage layout, not a cached custom grid
         commandsManager.run({
           commandName: 'setHangingProtocol',
-          commandOptions,
+          commandOptions: { ...commandOptions, restoreCachedLayout: false },
         });
       } else {
         // Common preset or custom grid selection

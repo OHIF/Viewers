@@ -36,6 +36,7 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
   reset?: false;
+  restoreCachedLayout?: boolean;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -385,6 +386,7 @@ const commandsModule = ({
       stageId,
       stageIndex,
       reset = false,
+      restoreCachedLayout = true,
     }: HangingProtocolParams): boolean => {
       const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
@@ -423,7 +425,8 @@ const commandsModule = ({
         }`;
 
         const { viewportGridState } = useViewportGridStore.getState();
-        const restoreProtocol = !reset && viewportGridState[storedHanging];
+        // An explicit preset selection passes restoreCachedLayout: false so the stage layout wins over a stale cached grid
+        const restoreProtocol = !reset && restoreCachedLayout && viewportGridState[storedHanging];
 
         if (
           reset ||
@@ -469,6 +472,9 @@ const commandsModule = ({
           `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
           null
         );
+
+        // An applied protocol is an explicit layout change, so abandon any pending one-up toggle
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
         return true;
       } catch (e) {
         console.error(e);
@@ -546,6 +552,9 @@ const commandsModule = ({
         // Don't apply the layout if the run command returns false
         return;
       }
+
+      // An explicit grid selection abandons any pending one-up toggle; clear only past the onLayoutChange veto
+      useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
@@ -640,6 +649,9 @@ const commandsModule = ({
           findOrCreateViewport,
           isHangingProtocolLayout: true,
         });
+
+        // Toggled back, so drop the stored layout; the store only holds a currently active one-up
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
         // Reset crosshairs after restoring the layout
         setTimeout(() => {
