@@ -29,6 +29,10 @@ jest.mock('../utils/dicomWriter', () => ({
 jest.mock('../utils/registerNaturalizedDatasetForLocalWadouri', () => ({
   registerNaturalizedDatasetsForLocalWadouri: jest.fn(),
 }));
+jest.mock('../utils/registerStoredInstanceImageId', () => ({
+  registerStoredInstanceImageId: jest.fn(),
+  registerStoredInstanceImageIds: jest.fn(),
+}));
 jest.mock('../CustomizableContextMenu', () => ({ ContextMenuController: class {} }));
 jest.mock('../DicomTagBrowser/DicomTagBrowser', () => ({ __esModule: true, default: class {} }));
 jest.mock('../utils/reuseCachedLayouts', () => ({ __esModule: true, default: jest.fn() }));
