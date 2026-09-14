@@ -8,6 +8,8 @@ interface RowDoubleRangeProps {
   onChange: (values: [number, number]) => void;
   minValue: number;
   maxValue: number;
+  hardMin?: number;
+  hardMax?: number;
   step: number;
   showLabel?: boolean;
   label?: string;
@@ -20,6 +22,8 @@ const RowDoubleRange: React.FC<RowDoubleRangeProps> = ({
   onChange,
   minValue,
   maxValue,
+  hardMin,
+  hardMax,
   step,
   showLabel = false,
   label = '',
@@ -52,6 +56,8 @@ const RowDoubleRange: React.FC<RowDoubleRangeProps> = ({
       onChange={onChange}
       min={minValue}
       max={maxValue}
+      hardMin={hardMin}
+      hardMax={hardMax}
       step={step}
       className={cn('flex flex-col space-y-2', className)}
     >

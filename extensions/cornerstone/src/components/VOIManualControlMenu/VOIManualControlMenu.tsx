@@ -127,6 +127,8 @@ function VOIManualControlMenu({ viewportId, className }: VOIManualControlMenuPro
               mode="doubleRange"
               min={min}
               max={max}
+              hardMin={min}
+              hardMax={max}
               values={[lower, upper]}
               step={1}
               className="space-y-1"

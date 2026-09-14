@@ -383,6 +383,8 @@ const toolbarButtons = [
           id: 'threshold-range',
           min: 0,
           max: 50,
+          hardMin: 0,
+          hardMax: 50,
           step: 0.5,
           value: [2.5, 50],
           condition: ({ options }) =>

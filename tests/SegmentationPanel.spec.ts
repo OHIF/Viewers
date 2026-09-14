@@ -96,12 +96,15 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await opacity.fill('0');
+      await opacity.input.blur();
       await expect(opacity.input).toHaveValue('0');
 
       await opacity.fill('0.5');
+      await opacity.input.blur();
       await expect(opacity.input).toHaveValue('0.5');
 
       await opacity.fill('1');
+      await opacity.input.blur();
       await expect(opacity.input).toHaveValue('1');
     });
 
@@ -111,6 +114,7 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await opacity.fill('500');
+      await opacity.input.blur();
       await expect(opacity.input).toHaveValue('1');
     });
 
@@ -120,13 +124,19 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await opacity.fill('-1');
+      await opacity.input.press('Enter');
       await expect(opacity.input).toHaveValue('0');
     });
 
     test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacity.fill('abc')).rejects.toThrow(nonNumericError);
+      await opacity.fill('0.5');
+      await opacity.input.blur();
+      await opacity.fill('abc');
+      await opacity.input.press('Enter');
+      // confirm that previous value was restored
+      await expect(opacity.input).toHaveValue('0.5');
     });
   });
 
@@ -135,12 +145,15 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await border.fill('0');
+      await border.input.blur();
       await expect(border.input).toHaveValue('0');
 
       await border.fill('5');
+      await border.input.blur();
       await expect(border.input).toHaveValue('5');
 
       await border.fill('10');
+      await border.input.blur();
       await expect(border.input).toHaveValue('10');
     });
 
@@ -150,6 +163,7 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await border.fill('500');
+      await border.input.blur();
       await expect(border.input).toHaveValue('10');
     });
 
@@ -159,13 +173,19 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await border.fill('-1');
+      await border.input.blur();
       await expect(border.input).toHaveValue('0');
     });
 
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(border.fill('abc')).rejects.toThrow(nonNumericError);
+      await border.fill('3`');
+      await border.input.blur();
+      await border.fill('abc');
+      await border.input.press('Enter');
+      // confirm that previous value was restored
+      await expect(border.input).toHaveValue('3');
     });
   });
 
@@ -174,12 +194,15 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await opacityInactive.fill('0');
+      await opacityInactive.input.blur();
       await expect(opacityInactive.input).toHaveValue('0');
 
       await opacityInactive.fill('0.5');
+      await opacityInactive.input.blur();
       await expect(opacityInactive.input).toHaveValue('0.5');
 
       await opacityInactive.fill('1');
+      await opacityInactive.input.blur();
       await expect(opacityInactive.input).toHaveValue('1');
     });
 
@@ -189,6 +212,7 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await opacityInactive.fill('500');
+      await opacityInactive.input.blur();
       await expect(opacityInactive.input).toHaveValue('1');
     });
 
@@ -198,13 +222,19 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
       await opacityInactive.fill('-1');
+      await opacityInactive.input.blur();
       await expect(opacityInactive.input).toHaveValue('0');
     });
 
     test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacityInactive.fill('abc')).rejects.toThrow(nonNumericError);
+      await opacityInactive.fill('0.5');
+      await opacityInactive.input.blur();
+      await opacityInactive.fill('abc');
+      await opacityInactive.input.press('Enter');
+      // confirm that previous value was restored
+      await expect(opacityInactive.input).toHaveValue('0.5');
     });
   });
 });

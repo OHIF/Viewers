@@ -127,6 +127,8 @@ const WindowLevel = ({
           mode="doubleRange"
           min={range.min}
           max={range.max}
+          hardMin={range.min}
+          hardMax={range.max}
           values={[voiRange.min, voiRange.max]}
           step={step}
           onChange={values => handleVOIRangeChange(values as [number, number])}

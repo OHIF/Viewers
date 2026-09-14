@@ -29,8 +29,10 @@ function NumericPageContent() {
     { name: 'values', type: '[number, number]', default: '—', description: 'Controlled range values (doubleRange mode)' },
     { name: 'defaultValues', type: '[number, number]', default: '[30%, 70%]', description: 'Initial uncontrolled range values' },
     { name: 'onChange', type: '(val: number | [number, number]) => void', default: '—', description: 'Called when any value changes' },
-    { name: 'min', type: 'number', default: '0', description: 'Minimum allowed value' },
-    { name: 'max', type: 'number', default: '100', description: 'Maximum allowed value' },
+    { name: 'min', type: 'number', default: '0', description: 'Minimum value, or the initial slider minimum in doubleRange mode' },
+    { name: 'max', type: 'number', default: '100', description: 'Maximum value, or the initial slider maximum in doubleRange mode' },
+    { name: 'hardMin', type: 'number', default: '—', description: 'Optional hard minimum for typed doubleRange values' },
+    { name: 'hardMax', type: 'number', default: '—', description: 'Optional hard maximum for typed doubleRange values' },
     { name: 'step', type: 'number', default: '1', description: 'Step increment' },
   ];
 
@@ -63,6 +65,12 @@ function NumericPageContent() {
             <strong className="text-foreground">cine playback frame rate</strong>. The{' '}
             <strong className="text-foreground">mode</strong> prop on the Container determines which
             input type renders.
+          </p>
+          <p>
+            Editable number fields preserve intermediate text such as an empty value, a minus
+            sign, or a decimal point, and commit on Enter or blur. In double-range mode, typed
+            values can expand the slider beyond its initial min and max. Use hardMin and hardMax
+            when the domain must remain bounded, such as percentages and opacity.
           </p>
         </div>
       </div>
@@ -202,10 +210,12 @@ function NumericPageContent() {
               mode="doubleRange"
               min={0}
               max={100}
+              hardMin={0}
+              hardMax={100}
               step={1}
               className="space-y-1"
             >
-              <Numeric.Label showValue>Window Width/Level</Numeric.Label>
+              <Numeric.Label showValue>Bounded range</Numeric.Label>
               <Numeric.DoubleRange />
             </Numeric.Container>
 
@@ -275,6 +285,18 @@ function NumericPageContent() {
 // Double range slider
 <Numeric.Container mode="doubleRange" min={-1000} max={3000} step={10}>
   <Numeric.Label showValue>CT Window</Numeric.Label>
+  <Numeric.DoubleRange showNumberInputs />
+</Numeric.Container>
+
+// Add true limits for bounded domains
+<Numeric.Container
+  mode="doubleRange"
+  min={0}
+  max={100}
+  hardMin={0}
+  hardMax={100}
+>
+  <Numeric.Label>Percentage</Numeric.Label>
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>`}
         />

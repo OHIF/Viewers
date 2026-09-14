@@ -118,16 +118,22 @@ const renderRadioSetting = option => {
 
 function renderDoubleRangeSetting(option) {
   return (
-    <RowDoubleRange
+    <div
       key={option.id}
-      values={option.value}
-      onChange={option.onChange}
-      minValue={option.min}
-      maxValue={option.max}
-      step={option.step}
-      showLabel={false}
-      tooltip={option.tooltip}
-    />
+      data-cy={option.id}
+    >
+      <RowDoubleRange
+        values={option.value}
+        onChange={option.onChange}
+        minValue={option.min}
+        maxValue={option.max}
+        hardMin={option.hardMin}
+        hardMax={option.hardMax}
+        step={option.step}
+        showLabel={false}
+        tooltip={option.tooltip}
+      />
+    </div>
   );
 }
 
