@@ -199,6 +199,9 @@ const screenShotPaths = {
     brushTool: 'brushTool.png',
     eraserTool: 'eraserTool.png',
   },
+  thresholdRange: {
+    expandedRangePaint: 'expandedRangePaint.png',
+  },
   mprThenRTOverlayNoHydration: {
     mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
     mprPostRTOverlayNoHydration: 'mprPostRTOverlayNoHydration.png',
