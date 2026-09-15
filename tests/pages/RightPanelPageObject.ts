@@ -549,6 +549,9 @@ export class RightPanelPageObject {
         get threshold() {
           const button = page.getByTestId('Threshold-btn');
           const input = page.locator(`css=div[data-cy="threshold-radius"] input`);
+          const rangeContainer = page.getByTestId('threshold-range');
+          const rangeInputs = rangeContainer.locator('input');
+          const rangeSliders = rangeContainer.getByRole('slider');
           return {
             button,
             input,
@@ -557,6 +560,15 @@ export class RightPanelPageObject {
             },
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
+            },
+            range: {
+              select: async () => {
+                await page.getByTestId('dynamic-mode-ThresholdRange').click();
+              },
+              lowerInput: rangeInputs.nth(0),
+              upperInput: rangeInputs.nth(1),
+              lowerSlider: rangeSliders.nth(0),
+              upperSlider: rangeSliders.nth(1),
             },
           };
         },
