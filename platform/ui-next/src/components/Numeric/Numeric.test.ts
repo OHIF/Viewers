@@ -74,6 +74,20 @@ describe.each(numericInputs)('Numeric.$name', numericInput => {
     expect(input.value).toBe('50');
     expect(onChange).not.toHaveBeenCalled();
   });
+
+  it('does not commit Enter while an IME composition is active', () => {
+    const { input, onChange } = renderNumericInput(numericInput);
+
+    fireEvent.change(input, { target: { value: '30' } });
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+
+    expect(input.value).toBe('30');
+    expect(onChange).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(onChange).toHaveBeenLastCalledWith(30);
+  });
 });
 
 it('commits a valid Numeric.NumberInput draft on blur', () => {

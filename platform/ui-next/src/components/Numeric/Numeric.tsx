@@ -225,12 +225,12 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
     }
   }, [commitInputValue, restorePreviousInputValue]);
 
-  if (mode !== 'singleRange') {
-    return null;
-  }
-
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.nativeEvent.isComposing) {
+        return;
+      }
+
       if (event.key === 'Enter') {
         event.preventDefault();
         if (!commitInputValue()) {
@@ -240,6 +240,10 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
     },
     [commitInputValue, restorePreviousInputValue]
   );
+
+  if (mode !== 'singleRange') {
+    return null;
+  }
 
   return (
     <div className="flex flex-1 items-center space-x-2">
@@ -356,9 +360,15 @@ function NumberInput({ className }: NumberInputProps) {
       value={inputValue}
       onChange={event => setInputValue(event.target.value)}
       onKeyDown={event => {
+        if (event.nativeEvent.isComposing) {
+          return;
+        }
+
         if (event.key === 'Enter') {
           event.preventDefault();
-          commitInputValue();
+          if (!commitInputValue()) {
+            setInputValue(singleValue.toString());
+          }
         }
       }}
       onBlur={() => {
@@ -423,9 +433,15 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing) {
+      return;
+    }
+
     if (event.key === 'Enter') {
       event.preventDefault();
-      commitInputValue();
+      if (!commitInputValue()) {
+        setInputValue(formatDisplayValue(singleValue));
+      }
     }
   };
 

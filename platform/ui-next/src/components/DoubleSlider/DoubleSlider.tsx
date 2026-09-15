@@ -95,7 +95,11 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
           Math.min(parsedValue, hardMax ?? Infinity)
         );
         const newValue: [number, number] = [...value];
-        newValue[index] = roundToStep(hardLimitedValue);
+        const roundedValue = roundToStep(hardLimitedValue);
+        newValue[index] = Math.max(
+          hardMin ?? -Infinity,
+          Math.min(roundedValue, hardMax ?? Infinity)
+        );
 
         if (index === 0 && newValue[0] > newValue[1]) {
           newValue[1] = newValue[0];
@@ -135,6 +139,10 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
 
     const handleInputKeyDown = React.useCallback(
       (index: 0 | 1, event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.nativeEvent.isComposing) {
+          return;
+        }
+
         if (event.key === 'Enter') {
           event.preventDefault();
           if (!commitInputValue(index)) {

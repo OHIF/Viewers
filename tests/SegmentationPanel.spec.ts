@@ -180,7 +180,7 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('3`');
+      await border.fill('3');
       await border.input.blur();
       await border.fill('abc');
       await border.input.press('Enter');

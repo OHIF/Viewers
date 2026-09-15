@@ -127,6 +127,21 @@ describe('DoubleSlider', () => {
     expect(thumbs[1].getAttribute('aria-valuemax')).toBe('1000');
   });
 
+  it('does not commit Enter while an IME composition is active', () => {
+    const { inputs, onValueChange } = renderDoubleSlider();
+    const lowerInput = inputs[0];
+
+    fireEvent.change(lowerInput, { target: { value: '30' } });
+    fireEvent.keyDown(lowerInput, { key: 'Enter', isComposing: true });
+
+    expect(lowerInput.value).toBe('30');
+    expect(onValueChange).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(lowerInput, { key: 'Enter' });
+
+    expect(onValueChange).toHaveBeenLastCalledWith([30, 600]);
+  });
+
   it('keeps the lower value at or below the upper value', () => {
     const { inputs, onValueChange } = renderDoubleSlider();
 
