@@ -7,7 +7,6 @@ import React, {
   useState,
   useRef,
 } from 'react';
-import PropTypes from 'prop-types';
 import { Toaster, toast } from '../components';
 
 const NotificationContext = createContext(null);
@@ -26,19 +25,23 @@ interface NotificationProviderProps {
   deduplicationInterval?: number;
 }
 
+// Constant: hoisted to module scope so it has a stable identity. Built inside the
+// component it was a new object every render, which made it unusable as a
+// dependency of the memoized show() below.
+const DEFAULT_OPTIONS = {
+  title: '',
+  message: '',
+  duration: 5000,
+  position: 'bottom-right',
+  type: 'info',
+  visible: true,
+};
+
 const NotificationProvider = ({
   children,
   service,
   deduplicationInterval = 10000, // Default to 10 seconds
 }: NotificationProviderProps) => {
-  const DEFAULT_OPTIONS = {
-    title: '',
-    message: '',
-    duration: 5000,
-    position: 'bottom-right',
-    type: 'info',
-    visible: true,
-  };
   const [options, setOptions] = useState([]);
 
   // Cache for recent notifications to prevent duplicates
@@ -160,7 +163,7 @@ const NotificationProvider = ({
     setOptions(prev => [...prev, { ...newNotification, id: id }]);
 
     return id;
-  }, []);
+  }, [deduplicationInterval]);
 
   const hide = useCallback(id => {
     setOptions(state => [...state.filter(item => item.id !== id)]);
@@ -226,11 +229,7 @@ const NotificationProvider = ({
   );
 };
 
-NotificationProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  service: PropTypes.object,
-  deduplicationInterval: PropTypes.number,
-};
+
 
 export const withNotification = Component => {
   return function WrappedComponent(props) {

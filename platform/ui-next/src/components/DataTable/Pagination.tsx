@@ -16,7 +16,7 @@ import { useDataTable } from './context';
  */
 export function Pagination<TData>() {
   const { table } = useDataTable<TData>();
-  const { pageIndex, pageSize } = table.getState().pagination ?? { pageIndex: 0, pageSize: 50 };
+  const { pageIndex, pageSize } = table.state.pagination ?? { pageIndex: 0, pageSize: 50 };
 
   const total = table.getFilteredRowModel().rows.length;
   const start = total === 0 ? 0 : pageIndex * pageSize + 1;

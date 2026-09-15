@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '../../hooks';
@@ -497,11 +496,4 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
   };
 }
 
-ModeRoute.propTypes = {
-  mode: PropTypes.object.isRequired,
-  dataSourceName: PropTypes.string,
-  extensionManager: PropTypes.object,
-  servicesManager: PropTypes.object,
-  hotkeysManager: PropTypes.object,
-  commandsManager: PropTypes.object,
-};
+

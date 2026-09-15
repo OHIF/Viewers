@@ -1,7 +1,7 @@
 ---
 sidebar_label: Work List
 title: Work List Customization
-summary: Documentation for configuring the OHIF WorkList study-list route — selecting between the new (default) and legacy variants, the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
+summary: Documentation for configuring the OHIF WorkList study-list route — the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
 sidebar_position: 10
 ---
 
@@ -9,16 +9,17 @@ sidebar_position: 10
 
 The `workList.*` namespace customizes the WorkList study-list route used as the default landing page in OHIF.
 
-With the exception of `workList.variant` itself, the customizations below only apply when `workList.variant` is `'default'`; they are ignored when the legacy study list is mounted.
+:::warning Removed in 3.14: `workList.variant`
+`workList.variant` and the `LegacyWorkList` route it selected were removed in
+3.14. The ui-next WorkList is now always mounted at `/`, and every
+customization on this page applies unconditionally.
 
-## `workList.variant`
-
-Selects which study-list route is mounted at `/`.
-
-- `'default'` (default customization value): the new ui-next WorkList, introduced in 3.13.
-- `'legacy'`: the pre-3.13 WorkList (internally `LegacyWorkList`). Use this as an opt-out while migrating to the new study list.
-
-The customization is read once during route registration, so changing it requires a reload.
+If you set `workList.variant` to `'legacy'` as a migration opt-out in 3.13,
+remove it — an unrecognized customization id is ignored, so no error surfaces,
+but the legacy study list is gone and you will get the new one either way. See
+the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/work-list.md)
+for what to do instead.
+:::
 
 ## `workList.previewSeriesView`
 
