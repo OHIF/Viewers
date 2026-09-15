@@ -276,6 +276,18 @@ export class MainToolbarPageObject {
           },
         };
       },
+      get imageSliceSync() {
+        // Qualified by role because the MoreTools split button surfaces the same
+        // data-cy on its primary slot, same reason as `reset` below.
+        const button = page.locator('[data-cy="ImageSliceSync"][role="menuitem"]');
+        return {
+          button,
+          async click() {
+            await moreTools.click();
+            await button.click();
+          },
+        };
+      },
       get invert() {
         const button = page.getByTestId('invert');
         return {
