@@ -8,8 +8,7 @@ interface DoubleSliderProps {
   className?: string;
   min: number;
   max: number;
-  hardMin?: number;
-  hardMax?: number;
+  allowTypedExpansion?: boolean | [number, number];
   step?: number;
   defaultValue?: [number, number];
   onValueChange?: (value: [number, number]) => void;
@@ -22,8 +21,7 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
       className,
       min,
       max,
-      hardMin,
-      hardMax,
+      allowTypedExpansion = false,
       onValueChange,
       step = 1,
       defaultValue = [min, max],
@@ -32,38 +30,41 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
     ref
   ) => {
     const [value, setValue] = React.useState<[number, number]>(defaultValue);
-    const [effectiveMin, setEffectiveMin] = React.useState(min);
-    const [effectiveMax, setEffectiveMax] = React.useState(max);
     const [inputValues, setInputValues] = React.useState<[string, string]>([
       defaultValue[0].toString(),
       defaultValue[1].toString(),
     ]);
+    const [sliderMin, setSliderMin] = React.useState(() => Math.min(min, defaultValue[0]));
+    const [sliderMax, setSliderMax] = React.useState(() => Math.max(max, defaultValue[1]));
 
-    const prevDefaultValueRef = React.useRef<[number, number] | null>(null);
-    const prevLimitsRef = React.useRef({ min, max });
+    // Adjust prop-derived state during render so React retries before committing stale values.
+    // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+    const [prevDefaultValue, setPrevDefaultValue] = React.useState(defaultValue);
+    const [prevLimits, setPrevLimits] = React.useState({ min, max });
 
-    React.useEffect(() => {
-      // Only update if defaultValue has actually changed
-      if (
-        !prevDefaultValueRef.current ||
-        prevDefaultValueRef.current[0] !== defaultValue[0] ||
-        prevDefaultValueRef.current[1] !== defaultValue[1]
-      ) {
-        setValue(defaultValue);
-        setInputValues([defaultValue[0].toString(), defaultValue[1].toString()]);
-        setEffectiveMin(currentMin => Math.min(currentMin, defaultValue[0]));
-        setEffectiveMax(currentMax => Math.max(currentMax, defaultValue[1]));
-        prevDefaultValueRef.current = defaultValue;
-      }
-    }, [defaultValue]);
+    let nextSliderMin = sliderMin;
+    let nextSliderMax = sliderMax;
 
-    React.useEffect(() => {
-      if (prevLimitsRef.current.min !== min || prevLimitsRef.current.max !== max) {
-        setEffectiveMin(Math.min(min, defaultValue[0]));
-        setEffectiveMax(Math.max(max, defaultValue[1]));
-        prevLimitsRef.current = { min, max };
-      }
-    }, [defaultValue, min, max]);
+    if (prevLimits.min !== min || prevLimits.max !== max) {
+      setPrevLimits({ min, max });
+      nextSliderMin = min;
+      nextSliderMax = max;
+    }
+
+    if (prevDefaultValue[0] !== defaultValue[0] || prevDefaultValue[1] !== defaultValue[1]) {
+      setPrevDefaultValue(defaultValue);
+      setValue(defaultValue);
+      setInputValues([defaultValue[0].toString(), defaultValue[1].toString()]);
+      nextSliderMin = Math.min(nextSliderMin, defaultValue[0]);
+      nextSliderMax = Math.max(nextSliderMax, defaultValue[1]);
+    }
+
+    if (nextSliderMin !== sliderMin) {
+      setSliderMin(nextSliderMin);
+    }
+    if (nextSliderMax !== sliderMax) {
+      setSliderMax(nextSliderMax);
+    }
 
     const roundToStep = (num: number): number => {
       const inverse = 1 / step;
@@ -73,33 +74,55 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
     const handleSliderChange = React.useCallback(
       (newValue: number[]) => {
         const clampedValue: [number, number] = [
-          roundToStep(Math.max(effectiveMin, Math.min(newValue[0], effectiveMax))),
-          roundToStep(Math.min(effectiveMax, Math.max(newValue[1], effectiveMin))),
+          roundToStep(Math.max(sliderMin, Math.min(newValue[0], sliderMax))),
+          roundToStep(Math.min(sliderMax, Math.max(newValue[1], sliderMin))),
         ];
         setValue(clampedValue);
         setInputValues([clampedValue[0].toString(), clampedValue[1].toString()]);
         onValueChange?.(clampedValue);
       },
-      [effectiveMin, effectiveMax, onValueChange, step]
+      [onValueChange, sliderMax, sliderMin, step]
     );
 
     const commitInputValue = React.useCallback(
       (index: 0 | 1) => {
-        const parsedValue = Number(inputValues[index]);
-        if (inputValues[index].trim() === '' || !Number.isFinite(parsedValue)) {
+        const inputValue = inputValues[index].trim();
+
+        if (inputValue === '') {
+          const newValue: [number, number] = [...value];
+          newValue[index] = index === 0 ? min : max;
+
+          if (index === 0 && newValue[0] > newValue[1]) {
+            newValue[1] = newValue[0];
+          } else if (index === 1 && newValue[1] < newValue[0]) {
+            newValue[0] = newValue[1];
+          }
+
+          if (index === 0) {
+            setSliderMin(min);
+          } else {
+            setSliderMax(max);
+          }
+          setValue(newValue);
+          setInputValues([newValue[0].toString(), newValue[1].toString()]);
+          onValueChange?.(newValue);
+          return true;
+        }
+
+        const parsedValue = Number(inputValue);
+        if (!Number.isFinite(parsedValue)) {
           return false;
         }
 
-        const hardLimitedValue = Math.max(
-          hardMin ?? -Infinity,
-          Math.min(parsedValue, hardMax ?? Infinity)
-        );
+        const [inputMin, inputMax] = Array.isArray(allowTypedExpansion)
+          ? allowTypedExpansion
+          : allowTypedExpansion
+            ? [-Infinity, Infinity]
+            : [min, max];
+        const hardLimitedValue = Math.max(inputMin, Math.min(parsedValue, inputMax));
         const newValue: [number, number] = [...value];
         const roundedValue = roundToStep(hardLimitedValue);
-        newValue[index] = Math.max(
-          hardMin ?? -Infinity,
-          Math.min(roundedValue, hardMax ?? Infinity)
-        );
+        newValue[index] = Math.max(inputMin, Math.min(roundedValue, inputMax));
 
         if (index === 0 && newValue[0] > newValue[1]) {
           newValue[1] = newValue[0];
@@ -107,14 +130,14 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
           newValue[0] = newValue[1];
         }
 
-        setEffectiveMin(currentMin => Math.min(currentMin, newValue[0]));
-        setEffectiveMax(currentMax => Math.max(currentMax, newValue[1]));
+        setSliderMin(currentMin => Math.min(currentMin, newValue[0]));
+        setSliderMax(currentMax => Math.max(currentMax, newValue[1]));
         setValue(newValue);
         setInputValues([newValue[0].toString(), newValue[1].toString()]);
         onValueChange?.(newValue);
         return true;
       },
-      [hardMax, hardMin, inputValues, onValueChange, step, value]
+      [allowTypedExpansion, inputValues, max, min, onValueChange, step, value]
     );
 
     const restorePreviousInputValue = React.useCallback(
@@ -173,8 +196,8 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
         )}
         <SliderPrimitive.Root
           className="relative flex h-4 w-full touch-none select-none items-center"
-          min={effectiveMin}
-          max={effectiveMax}
+          min={sliderMin}
+          max={sliderMax}
           step={step}
           value={value}
           onValueChange={handleSliderChange}

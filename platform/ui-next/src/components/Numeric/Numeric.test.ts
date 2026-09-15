@@ -88,6 +88,29 @@ describe.each(numericInputs)('Numeric.$name', numericInput => {
 
     expect(onChange).toHaveBeenLastCalledWith(30);
   });
+
+  it('updates the displayed input when the controlled value changes', () => {
+    const onChange = jest.fn();
+    const renderControlledInput = value =>
+      createElement(
+        Numeric.Container,
+        {
+          mode: numericInput.mode,
+          min: 0,
+          max: 100,
+          value,
+          onChange,
+        },
+        numericInput.child()
+      );
+    const result = render(renderControlledInput(50));
+    const input = result.container.querySelector('input') as HTMLInputElement;
+
+    fireEvent.change(input, { target: { value: 'draft' } });
+    result.rerender(renderControlledInput(75));
+
+    expect(input.value).toBe('75');
+  });
 });
 
 it('commits a valid Numeric.NumberInput draft on blur', () => {

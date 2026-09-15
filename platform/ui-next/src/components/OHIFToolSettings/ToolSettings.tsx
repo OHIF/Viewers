@@ -127,8 +127,7 @@ function renderDoubleRangeSetting(option) {
         onChange={option.onChange}
         minValue={option.min}
         maxValue={option.max}
-        hardMin={option.hardMin}
-        hardMax={option.hardMax}
+        allowTypedExpansion={option.allowTypedExpansion}
         step={option.step}
         showLabel={false}
         tooltip={option.tooltip}

@@ -179,8 +179,6 @@ const DynamicVolumeControls = ({
                 mode="doubleRange"
                 min={1}
                 max={numDimensionGroups || 1}
-                hardMin={1}
-                hardMax={numDimensionGroups || 1}
                 values={rangeValues || [1, numDimensionGroups || 1]}
                 onChange={onDoubleRangeChange || (() => {})}
               >

@@ -29,10 +29,9 @@ function NumericPageContent() {
     { name: 'values', type: '[number, number]', default: '—', description: 'Controlled range values (doubleRange mode)' },
     { name: 'defaultValues', type: '[number, number]', default: '[30%, 70%]', description: 'Initial uncontrolled range values' },
     { name: 'onChange', type: '(val: number | [number, number]) => void', default: '—', description: 'Called when any value changes' },
-    { name: 'min', type: 'number', default: '0', description: 'Minimum value, or the initial slider minimum in doubleRange mode' },
-    { name: 'max', type: 'number', default: '100', description: 'Maximum value, or the initial slider maximum in doubleRange mode' },
-    { name: 'hardMin', type: 'number', default: '—', description: 'Optional hard minimum for typed doubleRange values' },
-    { name: 'hardMax', type: 'number', default: '—', description: 'Optional hard maximum for typed doubleRange values' },
+    { name: 'min', type: 'number', default: '0', description: 'Minimum value and default lower bound for typed doubleRange values' },
+    { name: 'max', type: 'number', default: '100', description: 'Maximum value and default upper bound for typed doubleRange values' },
+    { name: 'allowTypedExpansion', type: 'boolean | [number, number]', default: 'false', description: 'Allows typed doubleRange values beyond min/max, optionally within explicit bounds' },
     { name: 'step', type: 'number', default: '1', description: 'Step increment' },
   ];
 
@@ -69,8 +68,9 @@ function NumericPageContent() {
           <p>
             Editable number fields preserve intermediate text such as an empty value, a minus
             sign, or a decimal point, and commit on Enter or blur. In double-range mode, typed
-            values can expand the slider beyond its initial min and max. Use hardMin and hardMax
-            when the domain must remain bounded, such as percentages and opacity.
+            values are limited by min and max by default. Set allowTypedExpansion to true to accept
+            any finite typed value, or provide [minimum, maximum] to constrain the expansion. A
+            committed out-of-range value expands the slider domain.
           </p>
         </div>
       </div>
@@ -210,12 +210,10 @@ function NumericPageContent() {
               mode="doubleRange"
               min={0}
               max={100}
-              hardMin={0}
-              hardMax={100}
               step={1}
               className="space-y-1"
             >
-              <Numeric.Label showValue>Bounded range</Numeric.Label>
+              <Numeric.Label showValue>Default bounded range</Numeric.Label>
               <Numeric.DoubleRange />
             </Numeric.Container>
 
@@ -223,11 +221,12 @@ function NumericPageContent() {
               mode="doubleRange"
               min={0}
               max={100}
+              allowTypedExpansion
               step={1}
               defaultValues={[30, 70]}
               className="space-y-1"
             >
-              <Numeric.Label>With number inputs</Numeric.Label>
+              <Numeric.Label>Expandable typed range</Numeric.Label>
               <Numeric.DoubleRange showNumberInputs />
             </Numeric.Container>
           </div>
@@ -288,15 +287,14 @@ function NumericPageContent() {
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>
 
-// Add true limits for bounded domains
+// Allow typed values to expand beyond the slider's initial limits
 <Numeric.Container
   mode="doubleRange"
   min={0}
   max={100}
-  hardMin={0}
-  hardMax={100}
+  allowTypedExpansion
 >
-  <Numeric.Label>Percentage</Numeric.Label>
+  <Numeric.Label>Expandable range</Numeric.Label>
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>`}
         />

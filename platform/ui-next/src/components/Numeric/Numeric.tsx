@@ -1,12 +1,5 @@
 // Numeric.tsx
-import React, {
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-  useState,
-  PropsWithChildren,
-} from 'react';
+import React, { createContext, useContext, useCallback, useState, PropsWithChildren } from 'react';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input/Input';
@@ -35,8 +28,7 @@ interface NumericMetaContextValue {
   setDoubleValue: (vals: [number, number]) => void;
   min: number;
   max: number;
-  hardMin?: number;
-  hardMax?: number;
+  allowTypedExpansion?: boolean | [number, number];
   step: number;
 }
 
@@ -54,8 +46,7 @@ interface NumericMetaContainerProps {
   onChange?: (val: number | [number, number]) => void;
   min?: number;
   max?: number;
-  hardMin?: number;
-  hardMax?: number;
+  allowTypedExpansion?: boolean | [number, number];
   step?: number;
   className?: string;
 }
@@ -69,8 +60,7 @@ function NumericMetaContainer({
   onChange,
   min = 0,
   max = 100,
-  hardMin,
-  hardMax,
+  allowTypedExpansion,
   step = 1,
   className,
   children,
@@ -127,8 +117,7 @@ function NumericMetaContainer({
         setDoubleValue: handleDoubleChange,
         min,
         max,
-        hardMin,
-        hardMax,
+        allowTypedExpansion,
         step,
       }}
     >
@@ -191,10 +180,13 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
 
   const { mode, singleValue, setSingleValue, min, max, step } = ctx;
   const [inputValue, setInputValue] = useState(singleValue.toString());
-
-  useEffect(() => {
+  // Adjust prop-derived state before React commits a render with a stale displayed value.
+  // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevValue, setPrevValue] = useState(singleValue);
+  if (prevValue !== singleValue) {
+    setPrevValue(singleValue);
     setInputValue(singleValue.toString());
-  }, [singleValue]);
+  }
 
   const handleSliderChange = useCallback(
     (val: number[]) => {
@@ -284,7 +276,7 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
     throw new Error('DoubleRange must be used inside <Numeric.Container>.');
   }
 
-  const { mode, doubleValue, setDoubleValue, min, max, hardMin, hardMax, step } = ctx;
+  const { mode, doubleValue, setDoubleValue, min, max, allowTypedExpansion, step } = ctx;
 
   const handleSliderChange = useCallback(
     (values: [number, number]) => {
@@ -302,8 +294,7 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
       <DoubleSlider
         min={min}
         max={max}
-        hardMin={hardMin}
-        hardMax={hardMax}
+        allowTypedExpansion={allowTypedExpansion}
         step={step}
         defaultValue={doubleValue}
         onValueChange={handleSliderChange}
@@ -328,10 +319,13 @@ function NumberInput({ className }: NumberInputProps) {
 
   const { mode, singleValue, setSingleValue, min, max } = ctx;
   const [inputValue, setInputValue] = useState(singleValue.toString());
-
-  useEffect(() => {
+  // Adjust prop-derived state before React commits a render with a stale displayed value.
+  // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevValue, setPrevValue] = useState(singleValue);
+  if (prevValue !== singleValue) {
+    setPrevValue(singleValue);
     setInputValue(singleValue.toString());
-  }, [singleValue]);
+  }
 
   if (mode !== 'number') {
     return null;
@@ -404,11 +398,15 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
     (value: number) => (decimalPlaces > 0 ? value.toFixed(decimalPlaces) : value.toString()),
     [decimalPlaces]
   );
-  const [inputValue, setInputValue] = useState(() => formatDisplayValue(singleValue));
-
-  useEffect(() => {
-    setInputValue(formatDisplayValue(singleValue));
-  }, [formatDisplayValue, singleValue]);
+  const formattedSingleValue = formatDisplayValue(singleValue);
+  const [inputValue, setInputValue] = useState(formattedSingleValue);
+  // Adjust prop-derived state before React commits a render with a stale displayed value.
+  // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevFormattedValue, setPrevFormattedValue] = useState(formattedSingleValue);
+  if (prevFormattedValue !== formattedSingleValue) {
+    setPrevFormattedValue(formattedSingleValue);
+    setInputValue(formattedSingleValue);
+  }
 
   if (mode !== 'stepper') {
     return null;
