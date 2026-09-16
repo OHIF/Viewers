@@ -1,4 +1,3 @@
-import * as React from 'react';
 import type { Cell } from '@tanstack/react-table';
 import type { DataTableFeatures } from '../../DataTable/DataTable';
 import { DataTable } from '../../DataTable';
