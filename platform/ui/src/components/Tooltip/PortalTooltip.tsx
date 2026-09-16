@@ -86,15 +86,18 @@ export default class PortalTooltip extends React.Component {
   }
 
   componentWillUnmount() {
-    if (portalNodes[this.props.group]) {
-      portalNodes[this.props.group].root.unmount();
-      clearTimeout(portalNodes[this.props.group].timeout);
-
-      try {
-        document.body.removeChild(portalNodes[this.props.group].node);
-      } catch (e) {}
-
+    const portal = portalNodes[this.props.group];
+    if (portal) {
+      clearTimeout(portal.timeout);
       portalNodes[this.props.group] = null;
+
+      // componentWillUnmount runs inside React's commit phase, and root.unmount()
+      // refuses to run synchronously there (it warns and forces a nested flush).
+      // Defer the teardown of the portal's own root until this commit is done.
+      queueMicrotask(() => {
+        portal.root.unmount();
+        portal.node.remove();
+      });
     }
   }
 
