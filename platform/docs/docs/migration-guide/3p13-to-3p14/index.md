@@ -57,6 +57,20 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   date/time before the SOP instance UID, and saved reports and segmentations are
   stamped with a creation date/time and an instance number.
 
+- **[useCustomization](./use-customization.md)** — `@ohif/core` adds a
+  `useCustomization` hook. A component that calls
+  `customizationService.getCustomization` during render can now freeze at a stale
+  value, because the React Compiler caches the call on the service reference,
+  which never changes. Move such reads to the hook. Event handlers and non-React
+  code keep calling the service directly.
+
+- **[InputNumber](./input-number.md)** — `InputNumber.HorizontalControls` and
+  `InputNumber.VerticalControls` now share `min`, `max`, `step` and `disabled`
+  through a nested provider rather than by writing onto the root context object.
+  That fixes constraints being discarded on every keystroke, but it means only
+  **descendants** of the controls receive them; an `InputNumber.Input` rendered as
+  a sibling silently falls back to `min=0, max=100, step=1`.
+
 - **[createContext helper](./create-context.md)** — the internal
   `ui-next/lib/createContext` helper is removed. It was never exported from
   `@ohif/ui-next`; if you imported it from source, use React's own
