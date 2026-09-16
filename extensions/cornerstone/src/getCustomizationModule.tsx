@@ -7,6 +7,7 @@ import measurementsCustomization from './customizations/measurementsCustomizatio
 import volumeRenderingCustomization from './customizations/volumeRenderingCustomization';
 import colorbarCustomization from './customizations/colorbarCustomization';
 import modalityColorMapCustomization from './customizations/modalityColorMapCustomization';
+import segmentationHydrationCustomization from './customizations/segmentationHydrationCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import toolbarButtonsCustomization from './customizations/toolbarButtonsCustomization';
 import segmentationToolbarCustomization from './customizations/segmentationToolbarCustomization';
@@ -34,6 +35,7 @@ function getCustomizationModule({ commandsManager, servicesManager, extensionMan
         ...volumeRenderingCustomization,
         ...colorbarCustomization,
         ...modalityColorMapCustomization,
+        ...segmentationHydrationCustomization,
         ...windowLevelPresetsCustomization,
         ...toolbarButtonsCustomization,
         ...segmentationToolbarCustomization,

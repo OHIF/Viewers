@@ -35,6 +35,45 @@ window.config = {
 
 With this example, navigation preserves the default keys plus `customizationAlt` and `experimentFlag`.
 
+## `ohif.headerRightSide`
+
+- **Purpose**: Fills the right side of the viewer header's menu bar, ahead of the
+  settings menu. The key is named for the area, not its contents — the shipped
+  default is the undo/redo buttons followed by the patient info, but the list is
+  yours to reorder, extend or trim.
+- **Value**: `{ items: ComponentType[] }` — an ordered list of components.
+- **How it is applied**: `ViewerHeader` renders each entry as a component
+  (`<Item />`) in array order, each in its own slot with a separator after it. An
+  item takes no props and may use hooks (both defaults use `useSystem()`), and an
+  item that renders `null` collapses its slot and separator — that is how patient
+  info disappears under `showPatientInfo: 'disabled'`.
+- **Default**: `extensions/default/src/customizations/headerRightSideCustomization.ts`.
+
+Reordering the list reorders the header — putting patient info ahead of undo/redo
+is just a different array:
+
+```js
+import HeaderPatientInfo from '@ohif/extension-default/src/ViewerLayout/HeaderPatientInfo';
+import HeaderUndoRedo from '@ohif/extension-default/src/ViewerLayout/HeaderUndoRedo';
+
+window.config = {
+  customizationService: [
+    { 'ohif.headerRightSide': { items: { $set: [HeaderPatientInfo, HeaderUndoRedo] } } },
+  ],
+};
+```
+
+Adding your own component is a `$push`, and removing one is a `$filter`.
+`extension-default` ships the undo/redo removal as a named customization module,
+so hiding those buttons — and only those, leaving the rest of the list alone — is
+a one-line config change:
+
+```js
+window.config = {
+  customizationService: ['@ohif/extension-default.customizationModule.hideHeaderUndoRedo'],
+};
+```
+
 ## `customizationUrlPrefixes` (app config)
 
 - **Purpose**: Allowlist of prefixes that `?customization=` values may resolve against. The `?customization=` feature is **off until this is configured**.
