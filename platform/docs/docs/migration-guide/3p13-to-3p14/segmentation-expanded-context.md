@@ -34,7 +34,8 @@ const useSegmentationExpanded = (): SegmentationExpandedContextType | undefined 
 ```
 
 The `componentName` argument is gone. It only existed to name the component in the
-error message, and passing it is now harmless but ignored.
+error message. Remove it from your calls: TypeScript rejects it (`TS2554: Expected 0
+arguments, but got 1`), and at runtime it is ignored.
 
 ## Why
 
