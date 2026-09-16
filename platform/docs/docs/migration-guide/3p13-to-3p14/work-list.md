@@ -9,7 +9,7 @@ title: LegacyWorkList deprecated
 3.13 shipped the ui-next `WorkList` at `/` and kept the previous study list as
 `LegacyWorkList`, selectable through the `workList.variant` customization.
 
-3.14 keeps that opt-out, unchanged. It is deprecated.
+3.14 keeps that opt-out. It is deprecated.
 
 :::warning `LegacyWorkList` will be removed in a future release
 `workList.variant: 'legacy'` still mounts the 3.13 study list in 3.14. A later
@@ -22,9 +22,31 @@ as time to finish migrating, not as a setting to keep.
 - `workList.variant` accepts `'default'` and `'legacy'`, and defaults to
   `'default'`.
 - `'legacy'` mounts the same `LegacyWorkList` code as 3.13. The file is opted
-  out of the React Compiler, so it runs on its own memoization exactly as it did.
+  out of the React Compiler, so it keeps its own memoization.
 - The other `workList.*` customizations apply only when the variant is
   `'default'`, as before.
+
+## What changed around the legacy list
+
+`DataSourceWrapper` was rewritten for the new study list. `DataSourceWrapper`
+now issues one query and pages on the client. `LegacyWorkList` still contains
+the server-paged rolling-window arithmetic of 3.13, and it hard-codes its sort
+threshold at 100 results. On a result set larger than one page, the page
+controls and the column sorting of the legacy list can behave incorrectly. Use
+a small result set when you compare the two study lists.
+
+## How to turn the opt-out on
+
+The viewer ships a URL customization file that sets the variant, at
+`platform/app/public/customizations/worklist/legacyWorkList.jsonc`. Load it with
+`?customization=worklist/legacyWorkList`, or add `worklist/legacyWorkList` to
+`appConfig.customizationService.requires`. The `?customization=` parameter needs
+`customizationUrlPrefixes` in the app config; `dev.js`, `e2e.js`, `netlify.js`
+and `customization.js` set that property.
+
+The legacy study list was verified in 3.14 through this customization file. See
+the [Work List customization docs](../../platform/services/customization-service/WorkList.md#turning-on-the-legacy-list)
+for the full note.
 
 ## What to do now
 

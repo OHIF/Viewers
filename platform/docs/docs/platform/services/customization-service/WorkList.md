@@ -20,6 +20,44 @@ Selects which study-list route is mounted at `/`.
 
 The customization is read once during route registration, so changing it requires a reload.
 
+### Turning on the legacy list
+
+The viewer ships a URL customization file that sets this value, at
+`platform/app/public/customizations/worklist/legacyWorkList.jsonc`:
+
+```jsonc
+{
+  "global": {
+    "workList.variant": { "$set": "legacy" }
+  }
+}
+```
+
+Load it in either of two ways:
+
+- Append `?customization=worklist/legacyWorkList` to the viewer URL.
+- Add `worklist/legacyWorkList` to `appConfig.customizationService.requires`.
+
+The `?customization=` parameter is off unless the app config sets
+`customizationUrlPrefixes`. The configs `dev.js`, `e2e.js`, `netlify.js` and
+`customization.js` set that property; `default.js` does not. `pnpm run dev`
+selects `dev.js`, so `http://localhost:3000/?customization=worklist/legacyWorkList`
+works with no config change.
+
+The file applies in the `global` phase. That phase is applied before the app
+renders, and therefore before route registration reads `workList.variant`.
+
+The legacy study list was verified in 3.14 through this customization file.
+
+:::warning The legacy list expects 3.13 paging
+`LegacyWorkList` still contains the server-paged rolling-window arithmetic of
+3.13, and it hard-codes its sort threshold at 100 results. The 3.14
+`DataSourceWrapper` issues one query and pages on the client. On a result set
+larger than one page, the page controls and the column sorting of the legacy
+list can behave incorrectly. Use a small result set when you compare the two
+study lists.
+:::
+
 :::warning Deprecated
 `'legacy'` and `LegacyWorkList` are deprecated and will be removed in a future
 release. Use the opt-out to finish migrating to the `workList.*`
