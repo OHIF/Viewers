@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -259,68 +258,59 @@ export function useResponsiveColumns<TData>(
     .filter(s => !s.alwaysVisible)
     .sort((a, b) => b.priority - a.priority || a.minWidth - b.minWidth);
 
-  // The one manual memoization kept in this file: runAlgorithm feeds two
-  // effect dependency arrays, and react-hooks/exhaustive-deps is not
-  // compiler-aware — it cannot see that the compiler already caches this
-  // function on exactly these deps (verified in compiled output) and warns
-  // as if it churned every render. The wrapper restates what the compiler
-  // does; remove it if the rule ever learns to trust compiled memoization.
-  const runAlgorithm = useCallback(
-    (containerWidth: number) => {
-      if (droppableColumns.length === 0) {
-        return;
-      }
+  const runAlgorithm = (containerWidth: number) => {
+    if (droppableColumns.length === 0) {
+      return;
+    }
 
-      // Always-visible columns consume budget unconditionally; the walk
-      // operates on what remains.
-      let budget = containerWidth;
-      for (const sizing of columnSizings) {
-        if (sizing.alwaysVisible) {
-          budget -= sizing.minWidth;
-        }
+    // Always-visible columns consume budget unconditionally; the walk
+    // operates on what remains.
+    let budget = containerWidth;
+    for (const sizing of columnSizings) {
+      if (sizing.alwaysVisible) {
+        budget -= sizing.minWidth;
       }
+    }
 
-      // The currently-committed visibility. Feeds the regrow hysteresis
-      // (a hidden column must clear extra slack before re-showing) and the
-      // did-anything-change check below.
-      const currentVisibility = table.atoms.columnVisibility.get();
+    // The currently-committed visibility. Feeds the regrow hysteresis
+    // (a hidden column must clear extra slack before re-showing) and the
+    // did-anything-change check below.
+    const currentVisibility = table.atoms.columnVisibility.get();
 
-      // Single walk produces both the applied visibility (honoring user-
-      // hidden columns) and the unfit set (columns whose View-menu toggle
-      // would have no effect because the algorithm would immediately re-hide
-      // them).
-      const { hiddenIds: appliedHidden, unfitIds: nextUnfit } = computeColumnVisibility(
-        droppableColumns,
-        budget,
-        (id: string) => userHiddenColumnIdsRef.current.has(id),
-        (id: string) => currentVisibility[id] === false
-      );
+    // Single walk produces both the applied visibility (honoring user-
+    // hidden columns) and the unfit set (columns whose View-menu toggle
+    // would have no effect because the algorithm would immediately re-hide
+    // them).
+    const { hiddenIds: appliedHidden, unfitIds: nextUnfit } = computeColumnVisibility(
+      droppableColumns,
+      budget,
+      (id: string) => userHiddenColumnIdsRef.current.has(id),
+      (id: string) => currentVisibility[id] === false
+    );
 
-      // Build the visibility map and apply it only if it changes anything.
-      const nextVisibility: ColumnVisibilityState = {};
-      for (const sizing of droppableColumns) {
-        nextVisibility[sizing.id] = !appliedHidden.has(sizing.id);
+    // Build the visibility map and apply it only if it changes anything.
+    const nextVisibility: ColumnVisibilityState = {};
+    for (const sizing of droppableColumns) {
+      nextVisibility[sizing.id] = !appliedHidden.has(sizing.id);
+    }
+    let appliedChanged = false;
+    for (const key of Object.keys(nextVisibility)) {
+      if ((currentVisibility[key] !== false) !== (nextVisibility[key] !== false)) {
+        appliedChanged = true;
+        break;
       }
-      let appliedChanged = false;
-      for (const key of Object.keys(nextVisibility)) {
-        if ((currentVisibility[key] !== false) !== (nextVisibility[key] !== false)) {
-          appliedChanged = true;
-          break;
-        }
-      }
-      if (appliedChanged) {
-        table.setColumnVisibility(prev => ({ ...prev, ...nextVisibility }));
-      }
+    }
+    if (appliedChanged) {
+      table.setColumnVisibility(prev => ({ ...prev, ...nextVisibility }));
+    }
 
-      // Publish the unfit set if it changed.
-      const lastUnfit = lastUnfitColumnIdsRef.current;
-      lastUnfitColumnIdsRef.current = nextUnfit;
-      if (!idSetsEqual(lastUnfit, nextUnfit)) {
-        setUnfitColumnIds(nextUnfit);
-      }
-    },
-    [droppableColumns, table, columnSizings, setUnfitColumnIds, userHiddenColumnIdsRef]
-  );
+    // Publish the unfit set if it changed.
+    const lastUnfit = lastUnfitColumnIdsRef.current;
+    lastUnfitColumnIdsRef.current = nextUnfit;
+    if (!idSetsEqual(lastUnfit, nextUnfit)) {
+      setUnfitColumnIds(nextUnfit);
+    }
+  };
 
   // Track and react to the table's width.
   useEffect(() => {
