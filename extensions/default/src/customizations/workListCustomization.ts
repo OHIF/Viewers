@@ -3,6 +3,13 @@ import { StudyList } from '@ohif/ui-next';
 /**
  * Default customization values for the WorkList study-list route.
  *
+ * - `workList.variant`: `'default' | 'legacy'` (default: `'default'`)
+ *   Selects which study-list route is mounted at `/`.
+ *   - `'default'`: the new ui-next WorkList.
+ *   - `'legacy'`: the pre-3.13 WorkList (now `LegacyWorkList`). Useful as an
+ *     opt-out while integrators migrate to the new study list. Deprecated; a
+ *     future release removes it along with this id.
+ *
  * - `workList.previewSeriesView`: `'all' | 'thumbnails' | 'list'` (default: `'all'`)
  *   Controls which series views are available in the preview panel.
  *   - `'all'`: thumbnails/list toggle is visible; defaults to thumbnails.
@@ -90,6 +97,7 @@ import { StudyList } from '@ohif/ui-next';
  */
 export default function getWorkListCustomization() {
   return {
+    'workList.variant': 'default',
     'workList.previewSeriesView': 'all',
     'workList.columns': StudyList.defaultColumns,
     'workList.renderPreviewContent': undefined,

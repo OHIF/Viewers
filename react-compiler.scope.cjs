@@ -32,9 +32,9 @@ const roots = [
 
 /** Directories the compiler must never touch, even if they sit under a root. */
 const excluded = [
-  // Frozen legacy UI package. Outside the app graph since 3.14, so a miscompile
-  // there would ship unnoticed; and its rules-of-React violations were never
-  // counted in the lint budget.
+  // Frozen legacy UI package. Its rules-of-React violations were never counted
+  // in the lint budget, and its only in-app consumer is the LegacyWorkList route,
+  // which is itself opted out, so nothing compiled depends on it.
   'platform/ui',
 ];
 

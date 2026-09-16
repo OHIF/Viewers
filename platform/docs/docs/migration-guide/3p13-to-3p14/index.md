@@ -18,12 +18,9 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 - **[SmartScrollbar](./smart-scrollbar.md)** — `SmartScrollbarFill` and
   `SmartScrollbarEndpoints` now require the `marked` array to change identity when
   its contents change. The `version` prop is deprecated and no longer invalidates.
-- **[WorkList](./work-list.md)** — the `LegacyWorkList` route and the
-  `workList.variant` customization are removed. The ui-next `WorkList` is now
-  always mounted at `/`, and the legacy `@ohif/ui` package leaves the app graph
-  with it. The guide records why 3.14 removes the route without one release of
-  deprecation: React 19 and the React Compiler would have left it mounted but no
-  longer fully backwards compatible.
+- **[WorkList](./work-list.md)** — `LegacyWorkList` and the `workList.variant`
+  customization still work in 3.14 and are deprecated. A future release removes
+  both; migrate to the `workList.*` customizations on the ui-next `WorkList`.
 - **[DataTable / TanStack Table v9](./data-table.md)** — `@ohif/ui-next` upgrades
   `@tanstack/react-table` to v9. Column definitions need the `DataTableFeatures`
   generic and the `sortFn` rename; programmatic visibility toggles should go

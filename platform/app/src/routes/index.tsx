@@ -3,6 +3,9 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
+// Study list variants are selected by the `workList.variant` customization:
+// - 'legacy'  -> LegacyWorkList (the pre-3.13 study list; deprecated, removed in a future release)
+// - anything else (including 'default') -> WorkList (ui-next study list)
 import WorkList from './WorkList/WorkList';
 import DataSourceWrapper from './DataSourceWrapper';
 import Local from './Local';
@@ -13,6 +16,15 @@ import PrivateRoute from './PrivateRoute';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
+
+// The legacy list is its own chunk, fetched only when the variant selects it, so
+// deployments on the default list do not download @ohif/ui or react-select.
+const LazyLegacyWorkList = React.lazy(() => import('./LegacyWorkList/LegacyWorkList'));
+const LegacyWorkList = (props: React.ComponentProps<typeof LazyLegacyWorkList>) => (
+  <React.Suspense fallback={null}>
+    <LazyLegacyWorkList {...props} />
+  </React.Suspense>
+);
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -25,8 +37,6 @@ const NotFoundServer = ({
     </div>
   );
 };
-
-
 
 const NotFoundStudy = () => {
   const [appConfig] = useAppConfig();
@@ -57,8 +67,6 @@ const NotFoundStudy = () => {
     </div>
   );
 };
-
-
 
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
@@ -115,11 +123,14 @@ const createRoutes = ({
 
   console.log('Registering worklist route', routerBasename, path);
 
+  const workListVariant = customizationService.getCustomization('workList.variant');
+  const WorkListComponent = workListVariant === 'legacy' ? LegacyWorkList : WorkList;
+
   const WorkListRoute = {
     path: '/',
     children: DataSourceWrapper,
     private: true,
-    props: { children: WorkList, servicesManager, extensionManager, commandsManager },
+    props: { children: WorkListComponent, servicesManager, extensionManager, commandsManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');

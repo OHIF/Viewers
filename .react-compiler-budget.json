@@ -13,7 +13,8 @@
     "extensions/cornerstone/src/Viewport/Overlays/ViewportOrientationMarkers.tsx",
     "extensions/cornerstone/src/Viewport/Overlays/ViewportSliceProgressScrollbar/ViewportSliceProgressScrollbar.tsx",
     "extensions/cornerstone/src/Viewport/Overlays/ViewportSliceProgressScrollbar/hooks.ts",
-    "extensions/default/src/Panels/StudyBrowser/PanelStudyBrowser.tsx"
+    "extensions/default/src/Panels/StudyBrowser/PanelStudyBrowser.tsx",
+    "platform/app/src/routes/LegacyWorkList/LegacyWorkList.tsx"
   ],
   "functionOptOuts": {}
 }
