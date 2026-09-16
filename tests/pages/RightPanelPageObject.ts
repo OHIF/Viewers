@@ -22,11 +22,10 @@ export class RightPanelPageObject {
   }
 
   /**
-   * Expands the segmentation appearance config section unless it already is.
+   * Expands the collapsible segmentation appearance config section
    */
-  private async openSegmentationConfig(typeSuffix: string) {
+  private async expandSegmentationConfig(typeSuffix: string) {
     const opacityControl = this.page.getByTestId(`segmentation-config-opacity-${typeSuffix}`);
-
     if (await opacityControl.isVisible()) {
       return;
     }
@@ -35,19 +34,18 @@ export class RightPanelPageObject {
   }
 
   /**
-   * A numeric (slider plus number input) config control, e.g. Opacity or Border. The value is
-   * driven through the number input.
+   * A numeric config control such as Opacity or Border, set through its number input.
    */
   private getNumericConfig(control: 'opacity' | 'border' | 'opacity-inactive', typeSuffix: string) {
-    const input = this.page
+    const numberInput = this.page
       .getByTestId(`segmentation-config-${control}-${typeSuffix}`)
       .locator('input[type="number"]');
 
     return {
-      input,
-      fill: async (value: string) => {
-        await this.openSegmentationConfig(typeSuffix);
-        await input.fill(value);
+      numberInput,
+      setValue: async (value: string) => {
+        await this.expandSegmentationConfig(typeSuffix);
+        await numberInput.fill(value);
       },
     };
   }
@@ -57,8 +55,7 @@ export class RightPanelPageObject {
    */
   private getSegmentationConfig(typeSuffix: string) {
     const page = this.page;
-    const configToggle = page.getByTestId(`segmentation-config-toggle-${typeSuffix}`);
-    const open = () => this.openSegmentationConfig(typeSuffix);
+    const open = () => this.expandSegmentationConfig(typeSuffix);
     const displayMode = (mode: 'fill-and-outline' | 'outline' | 'fill') => {
       const button = page.getByTestId(`segmentation-config-display-${mode}-${typeSuffix}`);
       return {
@@ -72,12 +69,6 @@ export class RightPanelPageObject {
 
     return {
       open,
-      toggle: {
-        locator: configToggle,
-        click: async () => {
-          await configToggle.click();
-        },
-      },
       display: {
         fillAndOutline: displayMode('fill-and-outline'),
         outline: displayMode('outline'),

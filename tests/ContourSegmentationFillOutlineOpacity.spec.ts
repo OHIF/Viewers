@@ -5,14 +5,11 @@ import type { IViewportPageObject } from './pages/ViewportPageObject';
 const studyInstanceUID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
 const mode = 'segmentation';
 
-// Default contour style for segmentations created from the panel: the fill is enabled on
-// creation (segmentationPanelCustomization) and inherits the Contour type-level fill alpha
-// declared in the cornerstone extension init, while the outline uses the default width.
+// Contour style defaults for a panel-created segmentation, from the cornerstone extension.
 const defaultFillOpacity = '0.5';
 const defaultOutlineWidth = '1';
 
-// First entry of the cornerstone color LUT, which a panel-created segmentation gets for its
-// first segment (SegmentationService seeds the LUT with the background color only).
+// Color of the first segment: the first entry of the cornerstone color LUT.
 const defaultSegmentColor = 'rgb(221, 84, 84)';
 
 const dragShape = [
@@ -32,8 +29,7 @@ const secondDragShape = [
 ];
 
 /**
- * Draws the first freehand contour of a test into the active segment and returns its SVG path,
- * asserting the viewport starts empty and ends up rendering the drawn contour.
+ * Draws a freehand contour into the active segment of an empty viewport and returns its SVG path.
  */
 async function drawFirstContour({
   contourPanel,
@@ -48,10 +44,10 @@ async function drawFirstContour({
   await drawFreehandContour({ segmentationPanel: contourPanel, viewport, path: dragShape });
   await expect(paths, 'Expected the freehand contour to be added').toHaveCount(1);
 
-  const contour = paths.nth(0);
-  await expect(contour, 'Expected the drawn contour to be visible').toBeVisible();
+  const contourPath = paths.nth(0);
+  await expect(contourPath, 'Expected the drawn contour to be visible').toBeVisible();
 
-  return contour;
+  return contourPath;
 }
 
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
@@ -63,8 +59,7 @@ test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await expect(contourPanel.panel.rows, 'Expected the default segment row').toHaveCount(1);
   await waitForViewportsRendered(page);
 
-  // Expand the appearance config section holding the display tabs and sliders, so the tests
-  // that only assert on its controls find them. The config actions expand it on their own.
+  // Expand the config section so the tests can assert on its controls.
   await contourPanel.config.open();
 });
 
@@ -75,21 +70,21 @@ test('should render a panel-created contour with both fill and outline by defaul
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
   const { display } = contourPanel.config;
   const activeViewport = await viewportPageObject.active;
-  const contour = await drawFirstContour({ contourPanel, viewport: activeViewport });
+  const contourPath = await drawFirstContour({ contourPanel, viewport: activeViewport });
 
   await expect(
     display.fillAndOutline.button,
     'Expected the panel to start in fill & outline mode'
   ).toHaveAttribute('data-state', 'active');
-  await expect(contour, 'Expected the fill at the default alpha').toHaveAttribute(
+  await expect(contourPath, 'Expected the fill at the default alpha').toHaveAttribute(
     'fill-opacity',
     defaultFillOpacity
   );
-  await expect(contour, 'Expected the outline at the default width').toHaveAttribute(
+  await expect(contourPath, 'Expected the outline at the default width').toHaveAttribute(
     'stroke-width',
     defaultOutlineWidth
   );
-  await expect(contour, 'Expected the fill to use the segment color').toHaveAttribute(
+  await expect(contourPath, 'Expected the fill to use the segment color').toHaveAttribute(
     'fill',
     defaultSegmentColor
   );
@@ -102,18 +97,18 @@ test('should toggle fill and outline rendering when switching display modes', as
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
   const { display } = contourPanel.config;
   const activeViewport = await viewportPageObject.active;
-  const contour = await drawFirstContour({ contourPanel, viewport: activeViewport });
+  const contourPath = await drawFirstContour({ contourPanel, viewport: activeViewport });
 
   await display.outline.click();
   await expect(display.outline.button, 'Expected the panel to be in outline mode').toHaveAttribute(
     'data-state',
     'active'
   );
-  await expect(contour, 'Expected outline mode to hide the fill').toHaveAttribute(
+  await expect(contourPath, 'Expected outline mode to hide the fill').toHaveAttribute(
     'fill-opacity',
     '0'
   );
-  await expect(contour, 'Expected outline mode to keep the outline').toHaveAttribute(
+  await expect(contourPath, 'Expected outline mode to keep the outline').toHaveAttribute(
     'stroke-width',
     defaultOutlineWidth
   );
@@ -123,11 +118,11 @@ test('should toggle fill and outline rendering when switching display modes', as
     'data-state',
     'active'
   );
-  await expect(contour, 'Expected fill mode to restore the fill').toHaveAttribute(
+  await expect(contourPath, 'Expected fill mode to restore the fill').toHaveAttribute(
     'fill-opacity',
     defaultFillOpacity
   );
-  await expect(contour, 'Expected fill mode to hide the outline').toHaveAttribute(
+  await expect(contourPath, 'Expected fill mode to hide the outline').toHaveAttribute(
     'stroke-width',
     '0'
   );
@@ -137,11 +132,11 @@ test('should toggle fill and outline rendering when switching display modes', as
     display.fillAndOutline.button,
     'Expected the panel to be in fill & outline mode'
   ).toHaveAttribute('data-state', 'active');
-  await expect(contour, 'Expected fill & outline mode to render the fill').toHaveAttribute(
+  await expect(contourPath, 'Expected fill & outline mode to render the fill').toHaveAttribute(
     'fill-opacity',
     defaultFillOpacity
   );
-  await expect(contour, 'Expected fill & outline mode to render the outline').toHaveAttribute(
+  await expect(contourPath, 'Expected fill & outline mode to render the outline').toHaveAttribute(
     'stroke-width',
     defaultOutlineWidth
   );
@@ -177,16 +172,13 @@ test('should apply a display mode to contours drawn afterwards and re-render exi
   await contourPanel.addSegmentButton.click();
   await expect(panel.rows, 'Expected a second segment row to be added').toHaveCount(2);
   await panel.nthSegment(1).click();
-  // The second contour must land in the second segment, so wait for the selection to render
-  // before drawing it.
+  // Wait for the segment selection to render so the next contour lands in the second segment.
   await waitForViewportsRendered(page);
 
-  // The freehand tool is still armed from the first contour.
   await drawFreehandContour({
     segmentationPanel: contourPanel,
     viewport: activeViewport,
     path: secondDragShape,
-    activateTool: false,
   });
   await expect(paths, 'Expected the second freehand contour to be added').toHaveCount(2);
   await expect(paths.nth(0), 'Expected the first contour to be visible').toBeVisible();
@@ -220,34 +212,38 @@ test('should change the contour fill opacity when the opacity value is typed in'
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
   const { opacity, display } = contourPanel.config;
   const activeViewport = await viewportPageObject.active;
-  const contour = await drawFirstContour({ contourPanel, viewport: activeViewport });
+  const contourPath = await drawFirstContour({ contourPanel, viewport: activeViewport });
 
-  await expect(opacity.input, 'Expected the default opacity value').toHaveValue(defaultFillOpacity);
+  await expect(opacity.numberInput, 'Expected default opacity').toHaveValue(defaultFillOpacity);
+  await expect(contourPath, 'Expected the fill at the default alpha').toHaveAttribute(
+    'fill-opacity',
+    defaultFillOpacity
+  );
 
-  await opacity.fill('0.3');
-  await expect(opacity.input, 'Expected the opacity input to accept 0.3').toHaveValue('0.3');
-  await expect(contour, 'Expected the fill to render at 0.3 alpha').toHaveAttribute(
+  await opacity.setValue('0.3');
+  await expect(opacity.numberInput, 'Expected the opacity input to accept 0.3').toHaveValue('0.3');
+  await expect(contourPath, 'Expected the fill to render at 0.3 alpha').toHaveAttribute(
     'fill-opacity',
     '0.3'
   );
 
-  await opacity.fill('1');
-  await expect(contour, 'Expected the fill to render fully opaque').toHaveAttribute(
+  await opacity.setValue('1');
+  await expect(contourPath, 'Expected the fill to render fully opaque').toHaveAttribute(
     'fill-opacity',
     '1'
   );
 
-  await opacity.fill('0');
-  await expect(contour, 'Expected the fill to render fully transparent').toHaveAttribute(
+  await opacity.setValue('0');
+  await expect(contourPath, 'Expected the fill to render fully transparent').toHaveAttribute(
     'fill-opacity',
     '0'
   );
-  // A zero alpha is the opacity value hiding the fill, not the fill display being turned off.
+  // Zero opacity hides the fill without turning the fill display off.
   await expect(
     display.fillAndOutline.button,
     'Expected the panel to stay in fill & outline mode'
   ).toHaveAttribute('data-state', 'active');
-  await expect(contour, 'Expected the outline to be unaffected by opacity').toHaveAttribute(
+  await expect(contourPath, 'Expected the outline to be unaffected by opacity').toHaveAttribute(
     'stroke-width',
     defaultOutlineWidth
   );
@@ -260,23 +256,27 @@ test('should change the contour outline width when the border value is typed in'
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
   const { border } = contourPanel.config;
   const activeViewport = await viewportPageObject.active;
-  const contour = await drawFirstContour({ contourPanel, viewport: activeViewport });
+  const contourPath = await drawFirstContour({ contourPanel, viewport: activeViewport });
 
-  await expect(border.input, 'Expected the default border value').toHaveValue(defaultOutlineWidth);
+  await expect(border.numberInput, 'Expected default border').toHaveValue(defaultOutlineWidth);
+  await expect(contourPath, 'Expected the outline at the default width').toHaveAttribute(
+    'stroke-width',
+    defaultOutlineWidth
+  );
 
-  await border.fill('5');
-  await expect(border.input, 'Expected the border input to accept 5').toHaveValue('5');
-  await expect(contour, 'Expected the outline to render 5px wide').toHaveAttribute(
+  await border.setValue('5');
+  await expect(border.numberInput, 'Expected the border input to accept 5').toHaveValue('5');
+  await expect(contourPath, 'Expected the outline to render 5px wide').toHaveAttribute(
     'stroke-width',
     '5'
   );
-  await expect(contour, 'Expected the fill to be unaffected by border').toHaveAttribute(
+  await expect(contourPath, 'Expected the fill to be unaffected by border').toHaveAttribute(
     'fill-opacity',
     defaultFillOpacity
   );
 
-  await border.fill('0');
-  await expect(contour, 'Expected a zero border to hide the outline').toHaveAttribute(
+  await border.setValue('0');
+  await expect(contourPath, 'Expected a zero border to hide the outline').toHaveAttribute(
     'stroke-width',
     '0'
   );
@@ -289,33 +289,33 @@ test('should keep the fill hidden in outline mode until fill display is re-enabl
   const contourPanel = rightPanelPageObject.contourSegmentationPanel;
   const { opacity, display } = contourPanel.config;
   const activeViewport = await viewportPageObject.active;
-  const contour = await drawFirstContour({ contourPanel, viewport: activeViewport });
+  const contourPath = await drawFirstContour({ contourPanel, viewport: activeViewport });
 
   await display.outline.click();
   await expect(display.outline.button, 'Expected the panel to be in outline mode').toHaveAttribute(
     'data-state',
     'active'
   );
-  await expect(contour, 'Expected outline mode to hide the fill').toHaveAttribute(
+  await expect(contourPath, 'Expected outline mode to hide the fill').toHaveAttribute(
     'fill-opacity',
     '0'
   );
 
   // Changing the opacity while the fill is hidden must not reveal it.
-  await opacity.fill('0.8');
-  await expect(opacity.input, 'Expected the opacity input to accept 0.8').toHaveValue('0.8');
-  await expect(contour, 'Expected the fill to stay hidden in outline mode').toHaveAttribute(
+  await opacity.setValue('0.8');
+  await expect(opacity.numberInput, 'Expected the opacity input to accept 0.8').toHaveValue('0.8');
+  await expect(contourPath, 'Expected the fill to stay hidden in outline mode').toHaveAttribute(
     'fill-opacity',
     '0'
   );
-  await expect(contour, 'Expected the outline to keep rendering').toHaveAttribute(
+  await expect(contourPath, 'Expected the outline to keep rendering').toHaveAttribute(
     'stroke-width',
     defaultOutlineWidth
   );
 
   // Re-enabling the fill applies the opacity chosen while it was hidden.
   await display.fillAndOutline.click();
-  await expect(contour, 'Expected the fill to return at the new alpha').toHaveAttribute(
+  await expect(contourPath, 'Expected the fill to return at the new alpha').toHaveAttribute(
     'fill-opacity',
     '0.8'
   );
