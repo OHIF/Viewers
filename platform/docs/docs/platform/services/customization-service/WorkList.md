@@ -114,7 +114,7 @@ Two caveats: the server must actually return the tag (it has to support `include
 
 ### Gotchas and limitations
 
-- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortingFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
+- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
 - **The `actions` column should stay last (cosmetic).** Its hover menu is right-aligned to anchor the row end, so placing it mid-row just looks wrong — it's not a functional requirement. Insert new columns *before* it (e.g. `$splice` at its index, or the `$apply` pattern above); a bare `$push` lands *after* it, leaving the actions menu mid-row.
 - **Index-based commands are position-fragile.** `{ 2: { … } }` targets whatever is at index 2, which shifts if earlier columns are added/removed. Prefer `$apply` with a `findIndex`/`id` lookup for edits that should survive reordering.
 - If the merged value is not an array, WorkList falls back to `StudyList.defaultColumns`.
