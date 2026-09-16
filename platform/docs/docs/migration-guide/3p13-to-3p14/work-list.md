@@ -17,6 +17,31 @@ In 3.14 both are gone:
 - The ui-next `WorkList` is always mounted at `/`, so every `workList.*`
   customization now applies unconditionally.
 
+## Why 3.14 removes this instead of deprecating it for one release
+
+OHIF normally marks a feature as deprecated for one release before it removes the
+feature. That would have been the proper process here, and 3.14 does not follow
+it. This is a deliberate exception, and this section records the reason.
+
+`LegacyWorkList` was built on `@ohif/ui` and on React 18 patterns. 3.14 moves the
+monorepo to React 19 and turns on the React Compiler, which changes the rules
+those components depend on: `forwardRef` becomes a `ref` prop, React 19 drops
+`propTypes`, and the compiler supplies the memoization that the legacy components
+wrote by hand.
+
+If 3.14 had kept `LegacyWorkList` for one more release, the route would still have
+mounted, but it would no longer have been fully backwards compatible with 3.13. We
+could not guarantee that its behavior matched the behavior of the 3.13 study list.
+A deprecated feature that does not behave the way it did is worse than a removed
+one, because it gives you a migration period that you cannot use to test against
+real behavior.
+
+A removal in one step is the honest answer, so 3.14 removes the route and
+documents the replacement path below.
+
+**If you still depend on the legacy study list**, stay on 3.13 while you migrate
+your customizations to the `workList.*` namespace.
+
 ## If you set `workList.variant`
 
 Remove the setting. It is now an unrecognized customization id, and OHIF ignores
