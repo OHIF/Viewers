@@ -134,3 +134,8 @@ overrides:
   'js-yaml@>=4.0.0 <4.3.2': 4.3.2
   'postcss@<8.5.26': 8.5.26
   'pacote@>=11.2.7 <21.5.1': 21.5.1
+  # browserslist reaches the tree only through @babel/helper-compilation-targets
+  # at build time. 4.28.7 patches GHSA-c83g-rgw3-j3cx (unbounded cache growth ->
+  # OOM) and GHSA-73wf-gq98-2v4g (crash / prototype write via untrusted
+  # browserslist-stats.json).
+  'browserslist@<4.28.7': 4.28.8
