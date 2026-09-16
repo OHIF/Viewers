@@ -6,7 +6,13 @@ title: Study list paging and the query limit
 
 # Study list paging and the query limit
 
-The study-list data fetch in `DataSourceWrapper` was simplified. In 3.13 this affected **both** the new `WorkList` and the `LegacyWorkList`, since both received their studies from `DataSourceWrapper`. (`LegacyWorkList` was removed in 3.14; only `WorkList` remains.)
+The study-list data fetch in `DataSourceWrapper` was simplified. This affects **both** the new `WorkList` and the `LegacyWorkList`, since both receive their studies from `DataSourceWrapper`.
+
+:::note Later change in 3.14
+3.14 removes `LegacyWorkList`, so from 3.14 onward this page applies to `WorkList`
+only. Everything else on this page is unchanged. See the
+[3.13 to 3.14 WorkList guide](../3p13-to-3p14/work-list.md).
+:::
 
 ## What changed
 

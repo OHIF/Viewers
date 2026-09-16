@@ -109,7 +109,7 @@ window.config = {
     requires: ['worklist/patientBirthDate'],   // resolves ./customizations/worklist/patientBirthDate.jsonc
     global: [                                  // mixes string references and inline maps
       '@ohif/extension-default.customizationModule.datasources',
-      { 'workList.previewSeriesView': 'all' },
+      { 'workList.variant': 'default' },
     ],
     mode: {
       '*': { 'someId': { $set: 'all modes' } },
@@ -118,6 +118,13 @@ window.config = {
   },
 };
 ```
+
+:::note Later change in 3.14
+The example above uses `workList.variant`, which is a valid customization id in
+3.13. 3.14 removes that id. The phases and the syntax shown here do not change;
+only that one id is gone. See the
+[3.13 to 3.14 WorkList guide](../3p13-to-3p14/work-list.md).
+:::
 
 How the phases map onto the boot sequence:
 
