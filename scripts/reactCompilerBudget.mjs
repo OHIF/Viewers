@@ -446,6 +446,43 @@ if (unexplained.length > 0) {
   failed = true;
 }
 
+// Everything above compiles from the repo root, so it always sees the root
+// babel config. A package's own build does not: babel walks upward from the
+// package directory and stops at the first babel.config.js it finds. A stale
+// package-local config therefore builds that package's npm artifact WITHOUT the
+// compiler while this gate reports every file in it as compiled. Ask babel the
+// question the package build asks, from inside each package, and require the
+// compiler plugin in the answer.
+if (compilerScope.enabled) {
+  const notDelegating = [];
+  for (const srcDir of compilerScope.includeDirs()) {
+    const pkgDir = path.dirname(srcDir.replace(/[\\/]$/, ''));
+    const probe = path.join(srcDir, 'index.tsx'); // need not exist; only config resolution runs
+    const resolved = babel.loadPartialConfigSync({
+      filename: probe,
+      cwd: pkgDir,
+      rootMode: 'upward',
+    });
+    const hasCompiler = resolved.options.plugins.some(p =>
+      /babel-plugin-react-compiler/.test(p.file?.request ?? p.file?.resolved ?? '')
+    );
+    if (!hasCompiler) {
+      notDelegating.push(path.relative(repoRoot, pkgDir).split(path.sep).join('/'));
+    }
+  }
+  if (notDelegating.length > 0) {
+    console.error(
+      `\n${notDelegating.length} package(s) have a babel.config.js that does not reach the root config,`
+    );
+    console.error('so their own npm builds run without the React Compiler. Never budgeted; make');
+    console.error("each one `module.exports = require('../../babel.config.js');`:");
+    for (const entry of notDelegating.sort()) {
+      console.error(`  ${entry}/babel.config.js`);
+    }
+    failed = true;
+  }
+}
+
 report(
   'Refusals do not match the budget',
   refusalDiff,
