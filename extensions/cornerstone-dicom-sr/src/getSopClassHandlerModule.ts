@@ -285,7 +285,17 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (!unloadedMeasurements.length || newDisplaySet.unsupported) {
+  // An SR measurement references source images, never the images of a derived
+  // display set, which is why hydration already leaves those out. Walking one
+  // here is worse than useless: once a SEG is hydrated its display set carries the
+  // labelmap's `derived:` image ids, which resolve to no UIDs (the destructure
+  // below then throws), and a SEG shares its source's FrameOfReferenceUID, so a
+  // SCOORD3D measurement could otherwise land on it.
+  if (
+    !unloadedMeasurements.length ||
+    newDisplaySet.unsupported ||
+    newDisplaySet.isDerivedDisplaySet
+  ) {
     return;
   }
 
@@ -829,4 +839,5 @@ function isTextPosition(group) {
   );
 }
 
+export { _checkIfCanAddMeasurementsToDisplaySet };
 export default getSopClassHandlerModule;
