@@ -29,8 +29,13 @@ fi
 # three accepted forms: <branch>, <version>, and '<branch> now <version>'. The
 # two are separate on purpose — the gate must not run a script from the PR's
 # checkout — so keep them in step by hand.
-RAW=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' \
-  | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\(.*[^[:space:]]\)[[:space:]]*$/\1/p' | head -1)
+RAW=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' | awk '
+  /^[[:space:]]*(```|~~~)/ { fence = !fence; next }
+  !fence && /^[[:space:]]*CS3D_REF:/ {
+    sub(/^[[:space:]]*CS3D_REF:[[:space:]]*/, "")
+    sub(/[[:space:]]+$/, "")
+    print; exit
+  }')
 
 if [[ -z "$RAW" ]]; then
   echo "::notice::No CS3D_REF line in the pull request body — nothing to flag."

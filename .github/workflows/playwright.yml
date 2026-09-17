@@ -43,9 +43,9 @@ jobs:
   # `all_external_contributors`, so a maintainer approves every fork PR run.
   # Relaxing it removes that barrier silently, so treat it as part of this file.
   #
-  # This job's value is catching an approval given without full attention, not a
-  # deliberate attacker, who deletes it. Other layers exist outside this
-  # repository; this is not the last line of defence.
+  # This job's value is catching an approval given without full attention.
+  # Anyone setting out to get past it deletes it instead. Other layers exist
+  # outside this repository; this is not the last line of defence.
   gate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -142,13 +142,20 @@ jobs:
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             raw="${CS3D_REF_INPUT:-}"
           elif [ "$EVENT_NAME" = "pull_request" ]; then
-            # Capture the WHOLE remainder of the line, not just its first token.
-            # The old parse took the first token and silently dropped the rest,
-            # so `CS3D_REF: fix/x (released as 5.25.80)` read as an annotation
-            # and behaved as a live branch directive. Taking the whole line lets
-            # the grammar below reject that instead.
-            raw=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.body' \
-              | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\(.*[^[:space:]]\)[[:space:]]*$/\1/p' | head -1)
+            # Lines inside a fenced code block are skipped: a PR that documents
+            # or discusses this syntax would otherwise have its own examples
+            # parsed as a request. Take the WHOLE remainder of a matching line,
+            # not just its first token — the first-token parse silently dropped
+            # the rest, so `CS3D_REF: fix/x (released as 5.25.80)` read as an
+            # annotation and behaved as a live branch directive. Taking the
+            # whole line lets the grammar below reject that instead.
+            raw=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.body' | awk '
+              /^[[:space:]]*(```|~~~)/ { fence = !fence; next }
+              !fence && /^[[:space:]]*CS3D_REF:/ {
+                sub(/^[[:space:]]*CS3D_REF:[[:space:]]*/, "")
+                sub(/[[:space:]]+$/, "")
+                print; exit
+              }')
           fi
           raw="${raw#"${raw%%[![:space:]]*}"}"; raw="${raw%"${raw##*[![:space:]]}"}"
 
@@ -187,10 +194,10 @@ jobs:
           fi
 
           # ── 3. Validate the ref before it goes anywhere ────────────────────
-          # On a fork PR this value is attacker-controlled: it is read out of the
-          # PR body and later steps interpolate it into a git clone and log
-          # lines. Validate it against a conservative git-ref grammar here, off
-          # the box, before it is published as a job output.
+          # On a fork PR this value is written by someone outside the project:
+          # it is read out of the PR body and later steps put it into a git
+          # clone and into log lines. Validate it against a conservative git-ref
+          # grammar here, off the box, before it is published as a job output.
           #
           # The grammar bars whitespace and newlines (which would let the value
           # append extra entries to GITHUB_OUTPUT, a key=value file), a leading
@@ -199,16 +206,21 @@ jobs:
           # names a repository, only a branch or tag within
           # cornerstonejs/cornerstone3D.
           #
-          # Fails loudly rather than falling back to the default, so a rejected
-          # ref is diagnosable. The rejected value is NOT echoed — there is no
-          # need to put attacker-supplied text into the log to explain this.
+          # Fails loudly rather than falling back to the default, and quotes what
+          # it read, because without that a rejection is undiagnosable — the
+          # author cannot tell a typo from a line picked up somewhere they did
+          # not expect. The value came from the PR body, which anyone can
+          # already read, so quoting it discloses nothing; newlines and control
+          # characters are stripped and the length capped so it cannot be read
+          # as a workflow command of its own.
           ok=true
           if [[ ! "$ref" =~ ^[A-Za-z0-9][A-Za-z0-9._/+-]*$ ]] || [[ "$ref" == *..* ]]; then ok=false; fi
           if [ -n "$history" ]; then
             if [[ ! "$history" =~ ^[A-Za-z0-9][A-Za-z0-9._/+-]*$ ]] || [[ "$history" == *..* ]]; then ok=false; fi
           fi
           if [ "$ok" != true ]; then
-            echo "::error::Rejected the requested CS3D ref. Write it as one of: <branch>, <version>, or '<branch> now <version>'. Each part must start with a letter or digit, contain only letters, digits and the characters . _ / + - and contain no '..'. Forks cannot be named: give a branch or tag in cornerstonejs/cornerstone3D, or a published version."
+            shown=$(printf '%s' "$raw" | tr -d '\000-\037' | cut -c1-200)
+            echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. Write it as one of: <branch>, <version>, or '<branch> now <version>'. Each part must start with a letter or digit, contain only letters, digits and the characters . _ / + - and contain no '..'. Forks cannot be named: give a branch or tag in cornerstonejs/cornerstone3D, or a published version."
             exit 1
           fi
 
@@ -265,7 +277,8 @@ jobs:
     # `unrestricted` carries no protection rules and is the ordinary path. The
     # choice comes from the gate rather than from the event payload — see the
     # note on reading the PR body live, above.
-    environment: ${{ needs.gate.outputs.approval == 'true' && 'cs3d-integration' || 'unrestricted' }}
+    environment:
+      ${{ needs.gate.outputs.approval == 'true' && 'cs3d-integration' || 'unrestricted' }}
     runs-on: [self-hosted, nashua]
     strategy:
       fail-fast: false
@@ -446,7 +459,7 @@ jobs:
         # `npx netlify-cli`, which fetched whatever the registry served at that
         # moment and ran it on the self-hosted box with NETLIFY_AUTH_TOKEN in
         # its environment.
-        #        #
+        #
         # `--package` is required: its binaries are `netlify` and `ntl`, neither
         # matching the package name, so pnpm cannot pick a default.
         run: |
