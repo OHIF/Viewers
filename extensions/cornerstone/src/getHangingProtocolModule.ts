@@ -6,6 +6,7 @@ import { only3D } from './hps/only3D';
 import { primary3D } from './hps/primary3D';
 import { primaryAxial } from './hps/primaryAxial';
 import { frameView } from './hps/frameView';
+import { mgCC, mgMLO } from './hps/mammo';
 
 function getHangingProtocolModule() {
   return [
@@ -40,6 +41,14 @@ function getHangingProtocolModule() {
     {
       name: frameView.id,
       protocol: frameView,
+    },
+    {
+      name: mgCC.id,
+      protocol: mgCC,
+    },
+    {
+      name: mgMLO.id,
+      protocol: mgMLO,
     },
   ];
 }
