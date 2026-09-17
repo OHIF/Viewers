@@ -14,11 +14,18 @@
 # dependency on an unreleased branch is worth flagging either way.
 #
 # Exits 0 when there is nothing to flag: not a pull request, no CS3D_REF line,
-# or a line naming a published version. Exits 1 when the line names a branch.
+# or a line naming a published version. Exits 1 when the line names a branch,
+# when the version after `now` is not one concrete release, or when the PR body
+# cannot be read.
 #
 # Required env: GH_TOKEN, EVENT_NAME, REPO, PR_NUMBER
 
-set -e
+# pipefail as well as -e: the PR body arrives through `gh api`, and a pipeline
+# reports only the exit status of its last command. Without it a failed API call
+# leaves an empty body, which reads as "no CS3D_REF line" and passes the guard.
+# The body also goes into a variable before it is parsed, because the parser
+# stops at the first match and can close the pipe while `gh` is still writing.
+set -eo pipefail
 
 if [[ "$EVENT_NAME" != "pull_request" ]]; then
   echo "::notice::${EVENT_NAME} — no merge to flag, skipping guard."
@@ -29,13 +36,32 @@ fi
 # three accepted forms: <branch>, <version>, and '<branch> now <version>'. The
 # two are separate on purpose — the gate must not run a script from the PR's
 # checkout — so keep them in step by hand.
-RAW=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' | awk '
-  /^[[:space:]]*(```|~~~)/ { fence = !fence; next }
-  !fence && /^[[:space:]]*CS3D_REF:/ {
-    sub(/^[[:space:]]*CS3D_REF:[[:space:]]*/, "")
-    sub(/[[:space:]]+$/, "")
-    print; exit
-  }')
+if ! BODY=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body'); then
+  echo "::error::Could not read the body of pull request ${PR_NUMBER} in ${REPO}, so this guard cannot tell whether the PR depends on unreleased cornerstone3D code. Failing instead of reporting all clear."
+  exit 1
+fi
+
+RAW=$(awk '
+  {
+    line = $0
+    sub(/^[[:space:]]+/, "", line)
+    ch = substr(line, 1, 1)
+    n = 0
+    if (ch == "`" || ch == "~") { while (substr(line, n + 1, 1) == ch) n++ }
+    if (n >= 3) {
+      # A closing fence repeats the opening marker, is at least as long, and
+      # carries nothing else. Anything else is content: a three-backtick line
+      # inside a four-backtick block must not end it.
+      if (fence == "") { fence = ch; flen = n }
+      else if (ch == fence && n >= flen && substr(line, n + 1) ~ /^[[:space:]]*$/) { fence = "" }
+      next
+    }
+    if (fence == "" && line ~ /^CS3D_REF:/) {
+      sub(/^CS3D_REF:[[:space:]]*/, "", line)
+      sub(/[[:space:]]+$/, "", line)
+      print line; exit
+    }
+  }' <<<"$BODY")
 
 if [[ -z "$RAW" ]]; then
   echo "::notice::No CS3D_REF line in the pull request body — nothing to flag."
@@ -51,6 +77,13 @@ if [[ "$RAW" =~ ^(.*[^[:space:]])[[:space:]]+now[[:space:]]+([^[:space:]]+)$ ]];
 else
   CS3D_HISTORY=""
   CS3D_REF="$RAW"
+fi
+
+# The version after `now` records what the branch shipped as, so it has to be
+# one concrete release; a range would resolve differently on a later read.
+if [[ -n "$CS3D_HISTORY" ]] && [[ ! "$CS3D_REF" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9._]+)?$ ]]; then
+  echo "::error::CS3D_REF says branch '${CS3D_HISTORY}' was released as '${CS3D_REF}', which is not one concrete version. Write the exact release, e.g. 5.10.6."
+  exit 1
 fi
 
 if [[ "$CS3D_REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then

@@ -161,31 +161,38 @@ function updateDeps(deps, targetVersion) {
 
 const pkgPaths = findWorkspacePackageJsons();
 
+const relToRoot = (p) => p.replace(rootDir + '/', '').replace(rootDir + '\\', '');
+
 /**
- * The version currently committed, read from the first CS3D dependency found.
- * The workspace keeps these in step (every occurrence carries the same value),
- * so any one of them answers the question.
+ * Every @cornerstonejs/* dependency in the workspace, with where it was found.
+ * All of them, not the first match: one manifest already carrying the requested
+ * version would otherwise satisfy the no-change check below, leaving every
+ * other manifest stale and skipping the reinstall.
  */
-function committedVersion() {
+function committedOccurrences() {
+  const found = [];
   for (const pkgPath of pkgPaths) {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-    for (const deps of [pkg.dependencies, pkg.devDependencies, pkg.peerDependencies, pkg.resolutions]) {
+    for (const field of ['dependencies', 'devDependencies', 'peerDependencies', 'resolutions']) {
+      const deps = pkg[field];
       if (!deps) continue;
       for (const name of CS3D_PACKAGES) {
-        if (name in deps && semver.valid(deps[name])) return deps[name];
+        if (name in deps) {
+          found.push({ file: relToRoot(pkgPath), field, name, value: deps[name] });
+        }
       }
     }
   }
-  return null;
+  return found;
 }
 
-const committed = committedVersion();
+const occurrences = committedOccurrences();
 
 // No @cornerstonejs/* dependency anywhere means the discovery above is wrong or
 // the repository has changed shape — not that there is nothing to do. Say so
 // rather than reporting a successful no-op, which is how this went unnoticed
 // before.
-if (!committed) {
+if (occurrences.length === 0) {
   console.error(
     `Found no @cornerstonejs/* dependency in any of the ${pkgPaths.length} manifest(s) scanned.`
   );
@@ -193,6 +200,26 @@ if (!committed) {
   console.error('Expected at least one; check the globs in pnpm-workspace.yaml.');
   process.exit(1);
 }
+
+// The comparisons below only mean something if the workspace speaks with one
+// voice. Mixed values, or a range where a pin belongs, leave no baseline to
+// compare the request against, so name the offenders rather than pick one and
+// treat the rest as agreed.
+const distinct = [...new Set(occurrences.map((o) => o.value))];
+if (distinct.length > 1 || !semver.valid(distinct[0])) {
+  console.error(
+    distinct.length > 1
+      ? `@cornerstonejs/* is not pinned consistently: found ${distinct.join(', ')}.`
+      : `@cornerstonejs/* is pinned at "${distinct[0]}", which is not one concrete version.`
+  );
+  for (const o of occurrences) {
+    console.error(`  ${o.file}  ${o.field}.${o.name} = ${o.value}`);
+  }
+  console.error('Pin every occurrence to the same concrete version, then run this again.');
+  process.exit(1);
+}
+
+const committed = distinct[0];
 
 if (semver.eq(committed, version)) {
   console.log(`@cornerstonejs/* already pinned at ${version}; nothing to change.`);
@@ -234,7 +261,7 @@ for (const pkgPath of pkgPaths) {
     // we don't accidentally capture a CRLF newline as part of the indent string)
     const indent = content.match(/^([ \t]+)/m)?.[1] || '  ';
     writeFileSync(pkgPath, JSON.stringify(pkg, null, indent) + '\n');
-    const rel = pkgPath.replace(rootDir + '/', '').replace(rootDir + '\\', '');
+    const rel = relToRoot(pkgPath);
     console.log(`  Updated ${rel} (${changes} packages)`);
     totalChanges += changes;
   }

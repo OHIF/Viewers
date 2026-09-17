@@ -150,11 +150,26 @@ jobs:
             # annotation and behaved as a live branch directive. Taking the
             # whole line lets the grammar below reject that instead.
             raw=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.body' | awk '
-              /^[[:space:]]*(```|~~~)/ { fence = !fence; next }
-              !fence && /^[[:space:]]*CS3D_REF:/ {
-                sub(/^[[:space:]]*CS3D_REF:[[:space:]]*/, "")
-                sub(/[[:space:]]+$/, "")
-                print; exit
+              {
+                line = $0
+                sub(/^[[:space:]]+/, "", line)
+                ch = substr(line, 1, 1)
+                n = 0
+                if (ch == "`" || ch == "~") { while (substr(line, n + 1, 1) == ch) n++ }
+                if (n >= 3) {
+                  # A closing fence repeats the opening marker, is at least as
+                  # long, and carries nothing else. Anything else is content:
+                  # a three-backtick line inside a four-backtick block, or a
+                  # tilde line inside a backtick block, must not end it.
+                  if (fence == "") { fence = ch; flen = n }
+                  else if (ch == fence && n >= flen && substr(line, n + 1) ~ /^[[:space:]]*$/) { fence = "" }
+                  next
+                }
+                if (fence == "" && line ~ /^CS3D_REF:/) {
+                  sub(/^CS3D_REF:[[:space:]]*/, "", line)
+                  sub(/[[:space:]]+$/, "", line)
+                  print line; exit
+                }
               }')
           fi
           raw="${raw#"${raw%%[![:space:]]*}"}"; raw="${raw%"${raw##*[![:space:]]}"}"
@@ -169,7 +184,7 @@ jobs:
           # Three accepted forms:
           #   <branch>                     a branch or tag in cornerstonejs/cornerstone3D
           #   <version>                    a published version, e.g. 5.10.3, 5.x
-          #   <branch> now <version>       the branch, and what it was released as
+          #   <branch> now <version>       the branch, and the concrete release it became
           #
           # The third is the retiring form: once the cornerstone3D fix ships, the
           # author changes the line rather than deleting it, and the branch name
@@ -247,6 +262,15 @@ jobs:
               exit 1
             fi
           done
+
+          # The version after `now` records what a branch shipped as, so it has
+          # to be one concrete release. A range would resolve to a different
+          # version on a later run and the record would stop meaning what it
+          # said. A bare version request may still be a range.
+          if [ -n "$history" ] && [[ ! "$ref" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?$ ]]; then
+            echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. The version after 'now' must be one concrete release, e.g. 5.10.6 or 5.11.0-beta.1 — not a range."
+            exit 1
+          fi
 
           if [ -n "$history" ]; then
             echo "::notice::CS3D ref: ${ref} (was branch ${history})"
