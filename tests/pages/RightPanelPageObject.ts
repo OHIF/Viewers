@@ -40,7 +40,7 @@ export class RightPanelPageObject {
   private getNumericConfig(control: 'opacity' | 'border' | 'opacity-inactive', typeSuffix: string) {
     const numberInput = this.page
       .getByTestId(`segmentation-config-${control}-${typeSuffix}`)
-      .locator('input[type="number"]');
+      .locator('input[inputmode="decimal"]');
 
     return {
       numberInput,
