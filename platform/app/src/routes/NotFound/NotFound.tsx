@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Button, Icons } from '@ohif/ui-next';
 import { useAppConfig } from '@state';
@@ -36,9 +35,6 @@ const NotFound = ({
   );
 };
 
-NotFound.propTypes = {
-  message: PropTypes.string,
-  showGoBackButton: PropTypes.bool,
-};
+
 
 export default NotFound;

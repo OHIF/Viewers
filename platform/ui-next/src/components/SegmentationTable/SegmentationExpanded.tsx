@@ -13,9 +13,23 @@ import { ScrollArea } from '../../components';
 import { useDynamicMaxHeight } from '../../hooks/useDynamicMaxHeight';
 import { SegmentationLabel } from './SegmentationLabel';
 
+// The Header, Label, Info and Content parts are only ever rendered inside
+// SegmentationExpandedRoot, which provides the context, so a missing context is a
+// wiring mistake rather than a supported state. Assert here rather than in the
+// hook, so the error names the component that has the requirement.
+const useRequiredSegmentationExpanded = (
+  componentName: string
+): NonNullable<ReturnType<typeof useSegmentationExpanded>> => {
+  const context = useSegmentationExpanded();
+  if (!context) {
+    throw new Error(`${componentName} must be rendered inside a SegmentationExpandedProvider`);
+  }
+  return context;
+};
+
 // The Header container component
 const SegmentationExpandedHeader = ({ children }: { children: React.ReactNode }) => {
-  const { segmentation, isActive } = useSegmentationExpanded('SegmentationExpandedHeader');
+  const { segmentation, isActive } = useRequiredSegmentationExpanded('SegmentationExpandedHeader');
   const { onSegmentationClick } = useSegmentationTableContext('SegmentationExpandedHeader');
 
   return (
@@ -52,7 +66,7 @@ const SegmentationExpandedDropdownMenu = ({ children }: { children: React.ReactN
 
 // Label component - for displaying the segmentation label
 const SegmentationExpandedLabel = () => {
-  const { segmentation } = useSegmentationExpanded('SegmentationExpandedLabel');
+  const { segmentation } = useRequiredSegmentationExpanded('SegmentationExpandedLabel');
 
   return (
     <div className="pl-1.5">
@@ -63,7 +77,7 @@ const SegmentationExpandedLabel = () => {
 
 // Info component - for the info tooltip
 const SegmentationExpandedInfo = () => {
-  const { segmentation } = useSegmentationExpanded('SegmentationExpandedInfo');
+  const { segmentation } = useRequiredSegmentationExpanded('SegmentationExpandedInfo');
 
   return (
     <div className="ml-auto mr-2">
@@ -86,7 +100,7 @@ const SegmentationExpandedInfo = () => {
 
 // Content component
 const SegmentationExpandedContent = ({ children }: { children: React.ReactNode }) => {
-  const { isActive } = useSegmentationExpanded('SegmentationExpandedContent');
+  const { isActive } = useRequiredSegmentationExpanded('SegmentationExpandedContent');
   return (
     <PanelSection.Content
       className={`border-l-[2px] py-0 pb-6 pl-[8px] ${isActive ? 'border-primary/70' : 'border-primary/35'}`}

@@ -29,6 +29,71 @@ type ViewportDownloadFormProps = {
   activeViewportId: string;
 };
 
+/**
+ * Mounts the source viewport's displayed content onto the capture viewport and
+ * re-applies its segmentation overlays, returning the clamped capture size.
+ *
+ * Module scope on purpose: the optional chaining inside this try/catch is a
+ * React Compiler limitation ("value blocks within a try/catch") that bails the
+ * whole component when inlined. Plain functions are never compiled.
+ */
+async function mountCaptureViewport(
+  viewport: any,
+  downloadViewport: any,
+  segmentationRepresentations: any[] | undefined,
+  width: number,
+  height: number
+): Promise<{ width: number; height: number } | undefined> {
+  try {
+    // Capture current viewport state. The download (capture) viewport is created
+    // with the SAME type as the source (see handleEnableViewport), so source and
+    // capture are both legacy or both native, and the source's adapter can mount
+    // its displayed content (data + appearance + view state) onto the capture
+    // viewport directly.
+    await getViewportAdapter(viewport).copyDisplayedContentTo(downloadViewport);
+
+    downloadViewport.render();
+
+    // Re-apply segmentation overlays to the download viewport
+    if (segmentationRepresentations?.length) {
+      segmentationRepresentations.forEach(segRepresentation => {
+        const { segmentationId, colorLUTIndex, type } = segRepresentation;
+
+        if (type === Enums.SegmentationRepresentations.Labelmap) {
+          segmentation.addLabelmapRepresentationToViewportMap({
+            [downloadViewport.id]: [
+              {
+                segmentationId,
+                type: Enums.SegmentationRepresentations.Labelmap,
+                config: { colorLUTOrIndex: colorLUTIndex },
+              },
+            ],
+          });
+        }
+
+        if (type === Enums.SegmentationRepresentations.Contour) {
+          segmentation.addContourRepresentationToViewportMap({
+            [downloadViewport.id]: [
+              {
+                segmentationId,
+                type: Enums.SegmentationRepresentations.Contour,
+                config: { colorLUTOrIndex: colorLUTIndex },
+              },
+            ],
+          });
+        }
+      });
+    }
+
+    return {
+      width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+      height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+    };
+  } catch (error) {
+    console.error('Error loading image:', error);
+  }
+}
+
 const CornerstoneViewportDownloadForm = ({
   hide,
   activeViewportId: activeViewportIdProp,
@@ -118,54 +183,13 @@ const CornerstoneViewportDownloadForm = ({
     const { viewport } = activeViewportEnabledElement;
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
-    try {
-      // Capture current viewport state. The download (capture) viewport is created
-      // with the SAME type as the source (see handleEnableViewport), so source and
-      // capture are both legacy or both native, and the source's adapter can mount
-      // its displayed content (data + appearance + view state) onto the capture
-      // viewport directly.
-      await getViewportAdapter(viewport).copyDisplayedContentTo(downloadViewport);
-
-      downloadViewport.render();
-
-      // Re-apply segmentation overlays to the download viewport
-      if (segmentationRepresentations?.length) {
-        segmentationRepresentations.forEach(segRepresentation => {
-          const { segmentationId, colorLUTIndex, type } = segRepresentation;
-
-          if (type === Enums.SegmentationRepresentations.Labelmap) {
-            segmentation.addLabelmapRepresentationToViewportMap({
-              [downloadViewport.id]: [
-                {
-                  segmentationId,
-                  type: Enums.SegmentationRepresentations.Labelmap,
-                  config: { colorLUTOrIndex: colorLUTIndex },
-                },
-              ],
-            });
-          }
-
-          if (type === Enums.SegmentationRepresentations.Contour) {
-            segmentation.addContourRepresentationToViewportMap({
-              [downloadViewport.id]: [
-                {
-                  segmentationId,
-                  type: Enums.SegmentationRepresentations.Contour,
-                  config: { colorLUTOrIndex: colorLUTIndex },
-                },
-              ],
-            });
-          }
-        });
-      }
-
-      return {
-        width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-        height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-      };
-    } catch (error) {
-      console.error('Error loading image:', error);
-    }
+    return mountCaptureViewport(
+      viewport,
+      downloadViewport,
+      segmentationRepresentations,
+      width,
+      height
+    );
   };
 
   const handleToggleAnnotations = (show: boolean) => {

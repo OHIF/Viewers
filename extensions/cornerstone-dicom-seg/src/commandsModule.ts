@@ -1,6 +1,6 @@
 import dcmjs from 'dcmjs';
 import { classes, Types, utils } from '@ohif/core';
-import { cache, Enums as csEnums, metaData } from '@cornerstonejs/core';
+import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
@@ -251,8 +251,28 @@ const commandsModule = ({
         labelmaps3D = buildLabelmap3D(imageIds, metadata);
       }
 
+      // `...generateOptions` has the last word on the predecessor: the store
+      // dialog sets it to `undefined` to say "a new series", which overrides the
+      // one the segmentation itself was loaded from.
+      const storeIntoSeriesImageId =
+        'predecessorImageId' in generateOptions
+          ? generateOptions.predecessorImageId
+          : predecessorImageId;
+
+      // dcmjs stamps every date/time of the object it derives in UTC, which is
+      // the wrong wall clock reading anywhere else and, around midnight, the
+      // wrong day - DICOM DA and TM are displayed as they are stored.  So they
+      // are supplied in the local zone instead.  The content date/time say when
+      // this instance was created whichever series it goes into, whereas a
+      // segmentation added to an existing series takes that series' date and
+      // time, which the adapter copies from the predecessor instance.
+      const { date: creationDate, time: creationTime } = utils.getCurrentDicomDateTime();
+
       const saveOptions = {
         predecessorImageId,
+        ContentDate: creationDate,
+        ContentTime: creationTime,
+        ...(storeIntoSeriesImageId ? {} : { SeriesDate: creationDate, SeriesTime: creationTime }),
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,
       };
@@ -321,9 +341,12 @@ const commandsModule = ({
         throw new Error('No segmentation found');
       }
 
-      const { label, predecessorImageId } = segmentation;
+      const { label, predecessorImageId, labelIsGenerated } = segmentation;
+      // Only a name the user chose goes to `itemName`, which the dialog offers
+      // first; a generated one goes to `defaultSeriesDescription`, offered last.
+      const chosenLabel = labelIsGenerated ? '' : label || '';
       const defaultSeriesDescription =
-        label || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
+        (labelIsGenerated && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
 
       const {
         value: reportName,
@@ -337,6 +360,7 @@ const commandsModule = ({
         predecessorImageId,
         title: modality === 'RTSTRUCT' ? 'Save Contours' : 'Save Segmentation',
         modality,
+        itemName: chosenLabel,
         defaultSeriesDescription,
         enableDownload: true,
       });
@@ -363,7 +387,7 @@ const commandsModule = ({
           options: {
             // Resolve store overrides against the data source we are storing into.
             dataSource: dataSourceName,
-            SeriesDescription: series ? undefined : reportName || defaultSeriesDescription,
+            SeriesDescription: series ? undefined : reportName || label || defaultSeriesDescription,
             SeriesNumber: series ? undefined : seriesNumber,
             predecessorImageId: series,
           },
@@ -379,20 +403,8 @@ const commandsModule = ({
 
         const { dataset: naturalizedReport } = generatedData;
 
-        // The SEG adapter's `generateSegmentation` assigns the predecessor's
-        // series data to the derivation it returns rather than to the dataset
-        // inside it, so the stored instance would keep the series dcmjs made up
-        // for it - a new series named `Research Derived series` numbered 99,
-        // with no predecessor sequence - however this dialog was answered.
-        // Applying it to the dataset puts the instance in the series that was
-        // chosen, with that series' number and description.  It is the same data
-        // the adapter resolves, so this stays correct once the adapter does.
-        if (series) {
-          Object.assign(
-            naturalizedReport,
-            metaData.get(csEnums.MetadataModules.PREDECESSOR_SEQUENCE, series)
-          );
-        }
+        // After the generation, which is what names the series numbered here.
+        utils.updateNewInstanceMetadata(naturalizedReport);
 
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
         if (naturalizedReport.StudyID === 'No Study ID') {
@@ -426,8 +438,20 @@ const commandsModule = ({
       });
       const predecessorImageId =
         contourOptions.predecessorImageId ?? segmentations.predecessorImageId;
+
+      // The adapter stamps the structure set date/time in UTC, which is the
+      // wrong wall clock reading anywhere else and, around midnight, the wrong
+      // day - DICOM DA and TM are displayed as they are stored.  This is the
+      // creation date/time of the structure set itself, so it is stamped
+      // whichever series it is stored into.  There is no series date/time to
+      // supply alongside it: an RTSTRUCT gets one only from the series it is
+      // added to, which the adapter copies from the predecessor instance.
+      const { date: structureSetDate, time: structureSetTime } = utils.getCurrentDicomDateTime();
+
       const dataset = await generateRTSSFromRepresentation(segmentations, {
         predecessorImageId,
+        StructureSetDate: structureSetDate,
+        StructureSetTime: structureSetTime,
         ...contourOptions,
       });
       return { dataset };

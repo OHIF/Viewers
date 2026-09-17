@@ -34,7 +34,8 @@ export class RightPanelPageObject {
   }
 
   /**
-   * A numeric config control such as Opacity or Border, set through its number input.
+   * A numeric config control such as Opacity or Border, set through its number input. The
+   * input applies a typed value on blur, restoring the previous one if it is not a number.
    */
   private getNumericConfig(control: 'opacity' | 'border' | 'opacity-inactive', typeSuffix: string) {
     const numberInput = this.page
@@ -46,6 +47,7 @@ export class RightPanelPageObject {
       setValue: async (value: string) => {
         await this.expandSegmentationConfig(typeSuffix);
         await numberInput.fill(value);
+        await numberInput.blur();
       },
     };
   }
@@ -461,27 +463,76 @@ export class RightPanelPageObject {
         },
       },
       config: this.getSegmentationConfig('Contour'),
+      // The "Combine Contours" utility popover. Its toggle button closes an open
+      // popover, so every action opens it only when it is not already showing.
       get combineContours() {
+        const toggleButton = page.getByTestId('LogicalContourOperations');
+        const applyButton = page.getByTestId('apply-logical-contour-operation');
+        const open = async () => {
+          if (await applyButton.isVisible()) {
+            return;
+          }
+          await toggleButton.click();
+          await applyButton.waitFor({ state: 'visible' });
+        };
         return {
-          open: async () => {
-            await page.getByTestId('LogicalContourOperations').click();
+          toggleButton,
+          open,
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await applyButton.waitFor({ state: 'hidden' });
           },
           selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
+            await open();
             await page.getByTestId(`logical-contour-operation-${operation}`).click();
           },
           selectSegmentA: async (label: string) => {
+            await open();
             await page.getByTestId('logical-contour-segment-a-trigger').click();
             await page.getByRole('option', { name: label }).click();
           },
           selectSegmentB: async (label: string) => {
+            await open();
             await page.getByTestId('logical-contour-segment-b-trigger').click();
             await page.getByRole('option', { name: label }).click();
           },
           apply: async () => {
-            await page.getByTestId('apply-logical-contour-operation').click();
+            await open();
+            await applyButton.click();
           },
           enableCreateNewSegment: async () => {
+            await open();
             await page.getByTestId('logical-contour-create-new-segment-switch').click();
+          },
+        };
+      },
+      // The "Smooth Contours" utility popover. Its actions operate on the active
+      // segment only, so a segment row must be clicked before invoking them. The
+      // toggle button closes an open popover, so every action opens it only when
+      // it is not already showing.
+      get smoothContours() {
+        const toggleButton = page.getByTestId('SmoothContours');
+        const smoothEdgesButton = page.getByRole('button', { name: 'Smooth Edges' });
+        const open = async () => {
+          if (await smoothEdgesButton.isVisible()) {
+            return;
+          }
+          await toggleButton.click();
+          await smoothEdgesButton.waitFor({ state: 'visible' });
+        };
+        return {
+          toggleButton,
+          open,
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await smoothEdgesButton.waitFor({ state: 'hidden' });
+          },
+          // Runs the smoothContours command (b-spline resample of the outline).
+          smoothEdges: async () => {
+            await open();
+            await smoothEdgesButton.click();
           },
         };
       },
@@ -538,6 +589,9 @@ export class RightPanelPageObject {
         get threshold() {
           const button = page.getByTestId('Threshold-btn');
           const input = page.locator(`css=div[data-cy="threshold-radius"] input`);
+          const rangeContainer = page.getByTestId('threshold-range');
+          const rangeInputs = rangeContainer.locator('input');
+          const rangeSliders = rangeContainer.getByRole('slider');
           return {
             button,
             input,
@@ -546,6 +600,15 @@ export class RightPanelPageObject {
             },
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
+            },
+            range: {
+              select: async () => {
+                await page.getByTestId('dynamic-mode-ThresholdRange').click();
+              },
+              lowerInput: rangeInputs.nth(0),
+              upperInput: rangeInputs.nth(1),
+              lowerSlider: rangeSliders.nth(0),
+              upperSlider: rangeSliders.nth(1),
             },
           };
         },

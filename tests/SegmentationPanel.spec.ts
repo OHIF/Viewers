@@ -1,7 +1,5 @@
 import { expect, test, visitStudy } from './utils';
 
-const nonNumericError = 'Cannot type text into input[type=number]';
-
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -126,7 +124,10 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacity.setValue('abc')).rejects.toThrow(nonNumericError);
+      await opacity.setValue('0.5');
+      await opacity.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacity.numberInput).toHaveValue('0.5');
     });
   });
 
@@ -165,7 +166,10 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(border.setValue('abc')).rejects.toThrow(nonNumericError);
+      await border.setValue('3');
+      await border.setValue('abc');
+      // confirm that previous value was restored
+      await expect(border.numberInput).toHaveValue('3');
     });
   });
 
@@ -204,7 +208,10 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacityInactive.setValue('abc')).rejects.toThrow(nonNumericError);
+      await opacityInactive.setValue('0.5');
+      await opacityInactive.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
     });
   });
 });

@@ -117,6 +117,65 @@ const resolveOpacityScalar = (opacityVal: unknown): number | undefined => {
  * @param options - Options for the hook, including location and displaySetInstanceUID
  * @returns Window level API for the specified viewport
  */
+/**
+ * Resolves the colormap currently applied to the active display set, falling
+ * back to Grayscale (or the first available colormap) when none is applied or
+ * resolution fails.
+ */
+function resolveActiveColormap(
+  viewport,
+  activeDisplaySetInstanceUID,
+  viewportDisplaySets,
+  colormaps
+) {
+  if (!activeDisplaySetInstanceUID || !viewportDisplaySets?.length) {
+    return null;
+  }
+  try {
+    if (!viewport) {
+      return null;
+    }
+    const colormap = getViewportAdapter(viewport).getColormap(activeDisplaySetInstanceUID);
+    return colormap || colormaps?.find(c => c.Name === 'Grayscale') || colormaps?.[0];
+  } catch (error) {
+    console.error('Error getting viewport colormap:', error);
+    return colormaps?.find(c => c.Name === 'Grayscale') || colormaps?.[0];
+  }
+}
+
+/**
+ * Reads the viewport's stored presentation (VOI range, colormap) for a display
+ * set. Kept at module scope: the `??` inside the try/catch trips a React
+ * Compiler limitation ("value blocks within a try/catch") that bails the whole
+ * hook when this code is inlined.
+ */
+function readPresentation(viewport, activeDisplaySetInstanceUID) {
+  try {
+    const adapter = getViewportAdapter(viewport);
+    const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
+    const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
+
+    if (!properties) {
+      return null;
+    }
+
+    let voiRange = properties.voiRange;
+    if (!voiRange) {
+      // Native ("next") viewports store only explicit VOI overrides in the
+      // per-display-set presentation; a freshly shown series has none, so fall
+      // back to its computed default VOI (undefined on legacy, whose
+      // getProperties always returns the applied VOI). Without this, changing
+      // the series left the overlay showing the previous series' window level.
+      voiRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
+    }
+
+    return { voiRange, colormap: properties.colormap };
+  } catch (error) {
+    console.error('Error initializing VOI range:', error);
+    return null;
+  }
+}
+
 export function useViewportRendering(
   viewportId?: string,
   options?: ViewportRenderingOptions
@@ -130,7 +189,7 @@ export function useViewportRendering(
     options?.location ? getPosition(options.location) : 'bottom'
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
-  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
+  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>(undefined);
   // Viewport from service; kept in state so we can subscribe to VIEWPORT_DATA_CHANGED when null and re-run effects when it becomes available
   const [viewport, setViewport] = useState<Types.IViewport | null>(() =>
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
@@ -285,45 +344,26 @@ export function useViewportRendering(
     if (!viewport || !activeDisplaySetInstanceUID) {
       return;
     }
-    try {
-      const adapter = getViewportAdapter(viewport);
-      const dataId = adapter.getDataIdForDisplaySet(activeDisplaySetInstanceUID);
-      const properties = adapter.getPresentation(dataId ?? activeDisplaySetInstanceUID);
+    const presentation = readPresentation(viewport, activeDisplaySetInstanceUID);
+    if (!presentation) {
+      return;
+    }
 
-      if (!properties) {
-        return;
+    if (presentation.voiRange) {
+      setVoiRange(presentation.voiRange);
+      voiRangeRef.current = presentation.voiRange;
+    }
+
+    if (presentation.colormap?.opacity !== undefined) {
+      const opacity = resolveOpacityScalar(presentation.colormap.opacity);
+      if (opacity !== undefined) {
+        setOpacityState(opacity);
+        setOpacityLinearState(opacityToLinear(opacity));
       }
+    }
 
-      if (properties.voiRange) {
-        setVoiRange(properties.voiRange);
-        voiRangeRef.current = properties.voiRange;
-      } else {
-        // Native ("next") viewports store only explicit VOI overrides in the
-        // per-display-set presentation; a freshly shown series has none, so fall
-        // back to its computed default VOI (undefined on legacy, whose
-        // getProperties always returns the applied VOI). Without this, changing
-        // the series left the overlay showing the previous series' window level.
-        const defaultVOIRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
-
-        if (defaultVOIRange) {
-          setVoiRange(defaultVOIRange);
-          voiRangeRef.current = defaultVOIRange;
-        }
-      }
-
-      if (properties.colormap?.opacity !== undefined) {
-        const opacity = resolveOpacityScalar(properties.colormap.opacity);
-        if (opacity !== undefined) {
-          setOpacityState(opacity);
-          setOpacityLinearState(opacityToLinear(opacity));
-        }
-      }
-
-      if (properties.colormap?.threshold !== undefined) {
-        setThresholdState(properties.colormap.threshold);
-      }
-    } catch (error) {
-      console.error('Error initializing VOI range:', error);
+    if (presentation.colormap?.threshold !== undefined) {
+      setThresholdState(presentation.colormap.threshold);
     }
   }, [activeDisplaySetInstanceUID, viewport]);
 
@@ -640,32 +680,20 @@ export function useViewportRendering(
     [validateActiveDisplaySet, viewport]
   );
 
-  // Get the current colormap for the active display set
-  const colormap = useMemo(() => {
-    if (!activeDisplaySetInstanceUID || !viewportDisplaySets?.length) {
-      return null;
-    }
-
-    try {
-      if (!viewport) {
-        return null;
-      }
-
-      const colormap = getViewportAdapter(viewport).getColormap(activeDisplaySetInstanceUID);
-
-      return (
-        colormap ||
-        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-        colorbarProperties?.colormaps?.[0]
-      );
-    } catch (error) {
-      console.error('Error getting viewport colormap:', error);
-      return (
-        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-        colorbarProperties?.colormaps?.[0]
-      );
-    }
-  }, [activeDisplaySetInstanceUID, viewportDisplaySets, colorbarProperties?.colormaps, viewport]);
+  // Get the current colormap for the active display set. Deliberately not
+  // memoized: resolveActiveColormap returns a reference that already exists —
+  // the viewport presentation's colormap, or one of the `colormaps` presets —
+  // rather than constructing one, so repeated calls hand back the same
+  // identity and no consumer sees churn. The lookup is a WeakMap-cached
+  // adapter fetch plus a property read, not worth a dependency comparison.
+  // (It was a useMemo whose optional-chained deps tripped
+  // preserve-manual-memoization.)
+  const colormap = resolveActiveColormap(
+    viewport,
+    activeDisplaySetInstanceUID,
+    viewportDisplaySets,
+    colorbarProperties?.colormaps
+  );
 
   // 3D volume rendering functions
   const setVolumeRenderingPreset = useCallback(
