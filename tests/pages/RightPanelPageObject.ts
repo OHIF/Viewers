@@ -55,20 +55,23 @@ export class RightPanelPageObject {
    */
   private getSegmentationConfig(typeSuffix: string) {
     const page = this.page;
-    const open = () => this.expandSegmentationConfig(typeSuffix);
+    const openFillOutlineBorderConfig = () => this.expandSegmentationConfig(typeSuffix);
+    const renderInactiveSwitch = page.getByTestId(
+      `segmentation-config-render-inactive-${typeSuffix}`
+    );
     const displayMode = (mode: 'fill-and-outline' | 'outline' | 'fill') => {
       const button = page.getByTestId(`segmentation-config-display-${mode}-${typeSuffix}`);
       return {
         button,
         click: async () => {
-          await open();
+          await openFillOutlineBorderConfig();
           await button.click();
         },
       };
     };
 
     return {
-      open,
+      open: openFillOutlineBorderConfig,
       display: {
         fillAndOutline: displayMode('fill-and-outline'),
         outline: displayMode('outline'),
@@ -77,6 +80,13 @@ export class RightPanelPageObject {
       opacity: this.getNumericConfig('opacity', typeSuffix),
       border: this.getNumericConfig('border', typeSuffix),
       opacityInactive: this.getNumericConfig('opacity-inactive', typeSuffix),
+      renderInactiveSegmentations: {
+        locator: renderInactiveSwitch,
+        toggleDisplayInactiveSwitch: async () => {
+          await openFillOutlineBorderConfig();
+          await renderInactiveSwitch.click();
+        },
+      },
     };
   }
 

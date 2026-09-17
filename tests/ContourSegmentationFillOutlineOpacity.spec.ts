@@ -1,4 +1,5 @@
 import { drawFreehandContour, expect, test, visitStudy, waitForViewportsRendered } from './utils';
+import type { Page } from '@playwright/test';
 import type { RightPanelPageObject } from './pages';
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 
@@ -7,6 +8,7 @@ const mode = 'segmentation';
 
 // Contour style defaults for a panel-created segmentation, from the cornerstone extension.
 const defaultFillOpacity = '0.5';
+const defaultInactiveFillOpacity = '0.4';
 const defaultOutlineWidth = '1';
 
 // Color of the first segment: the first entry of the cornerstone color LUT.
@@ -48,6 +50,38 @@ async function drawFirstContour({
   await expect(contourPath, 'Expected the drawn contour to be visible').toBeVisible();
 
   return contourPath;
+}
+
+/**
+ * Draws a contour into the segmentation created by the beforeEach hook, then creates a second
+ * segmentation and draws a contour into it. The second segmentation is left active.
+ */
+async function drawContoursInTwoSegmentations({
+  page,
+  contourPanel,
+  viewport,
+}: {
+  page: Page;
+  contourPanel: RightPanelPageObject['contourSegmentationPanel'];
+  viewport: IViewportPageObject;
+}) {
+  const paths = viewport.svg('path');
+
+  await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
+  await drawFreehandContour({ segmentationPanel: contourPanel, viewport, path: dragShape });
+  await expect(paths, 'Expected the first contour to be added').toHaveCount(1);
+
+  await contourPanel.panel.moreMenu.createNewSegmentation();
+  await expect(
+    contourPanel.segmentationSelect.selectedValue,
+    'Expected the second segmentation to be active'
+  ).toHaveText('Segmentation 2');
+  await waitForViewportsRendered(page);
+
+  await drawFreehandContour({ segmentationPanel: contourPanel, viewport, path: secondDragShape });
+  await expect(paths, 'Expected the second contour to be added').toHaveCount(2);
+
+  return { paths, inactiveContourPath: paths.nth(0), activeContourPath: paths.nth(1) };
 }
 
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
@@ -319,4 +353,156 @@ test('should keep the fill hidden in outline mode until fill display is re-enabl
     'fill-opacity',
     '0.8'
   );
+});
+
+test('should render the inactive segmentation contour at the inactive fill opacity', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+  const { opacity, opacityInactive } = contourPanel.config;
+  const activeViewport = await viewportPageObject.active;
+  const { inactiveContourPath, activeContourPath } = await drawContoursInTwoSegmentations({
+    page,
+    contourPanel,
+    viewport: activeViewport,
+  });
+
+  await expect(opacity.numberInput, 'Expected default opacity').toHaveValue(defaultFillOpacity);
+  await expect(opacityInactive.numberInput, 'Expected default inactive opacity').toHaveValue(
+    defaultInactiveFillOpacity
+  );
+  await expect(activeContourPath, 'Expected the active contour at the fill alpha').toHaveAttribute(
+    'fill-opacity',
+    defaultFillOpacity
+  );
+  await expect(
+    inactiveContourPath,
+    'Expected the inactive contour at the inactive fill alpha'
+  ).toHaveAttribute('fill-opacity', defaultInactiveFillOpacity);
+});
+
+test('should apply the inactive opacity value to the inactive segmentation contour only', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+  const { opacity, opacityInactive } = contourPanel.config;
+  const activeViewport = await viewportPageObject.active;
+  const { inactiveContourPath, activeContourPath } = await drawContoursInTwoSegmentations({
+    page,
+    contourPanel,
+    viewport: activeViewport,
+  });
+
+  await opacityInactive.setValue('0.2');
+  await expect(inactiveContourPath, 'Expected the inactive fill at 0.2 alpha').toHaveAttribute(
+    'fill-opacity',
+    '0.2'
+  );
+  await expect(activeContourPath, 'Expected the active fill unchanged').toHaveAttribute(
+    'fill-opacity',
+    defaultFillOpacity
+  );
+
+  // The active opacity must not leak into the inactive contour either.
+  await opacity.setValue('0.8');
+  await expect(activeContourPath, 'Expected the active fill at 0.8 alpha').toHaveAttribute(
+    'fill-opacity',
+    '0.8'
+  );
+  await expect(inactiveContourPath, 'Expected the inactive fill unchanged').toHaveAttribute(
+    'fill-opacity',
+    '0.2'
+  );
+});
+
+test('should swap the contour fill opacities when the active segmentation changes', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+  const { segmentationSelect } = contourPanel;
+  const activeViewport = await viewportPageObject.active;
+  const { inactiveContourPath, activeContourPath } = await drawContoursInTwoSegmentations({
+    page,
+    contourPanel,
+    viewport: activeViewport,
+  });
+
+  await segmentationSelect.selectNthSegmentation(0);
+  await expect(segmentationSelect.selectedValue, 'Expected the first segmentation').toHaveText(
+    'Segmentation 1'
+  );
+  await expect(inactiveContourPath, 'Expected the first contour at the fill alpha').toHaveAttribute(
+    'fill-opacity',
+    defaultFillOpacity
+  );
+  await expect(
+    activeContourPath,
+    'Expected the second contour at the inactive fill alpha'
+  ).toHaveAttribute('fill-opacity', defaultInactiveFillOpacity);
+});
+
+test('should hide the fill of the inactive segmentation contour in outline mode', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+  const { display } = contourPanel.config;
+  const activeViewport = await viewportPageObject.active;
+  const { inactiveContourPath, activeContourPath } = await drawContoursInTwoSegmentations({
+    page,
+    contourPanel,
+    viewport: activeViewport,
+  });
+
+  await display.outline.click();
+  await expect(inactiveContourPath, 'Expected the inactive fill hidden').toHaveAttribute(
+    'fill-opacity',
+    '0'
+  );
+  await expect(activeContourPath, 'Expected the active fill hidden').toHaveAttribute(
+    'fill-opacity',
+    '0'
+  );
+
+  await display.fillAndOutline.click();
+  await expect(
+    inactiveContourPath,
+    'Expected the inactive fill back at the inactive alpha'
+  ).toHaveAttribute('fill-opacity', defaultInactiveFillOpacity);
+  await expect(activeContourPath, 'Expected the active fill back at the alpha').toHaveAttribute(
+    'fill-opacity',
+    defaultFillOpacity
+  );
+});
+
+test('should hide the inactive segmentation contour when inactive display is turned off', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const contourPanel = rightPanelPageObject.contourSegmentationPanel;
+  const { renderInactiveSegmentations } = contourPanel.config;
+  const activeViewport = await viewportPageObject.active;
+  const { paths } = await drawContoursInTwoSegmentations({
+    page,
+    contourPanel,
+    viewport: activeViewport,
+  });
+
+  await renderInactiveSegmentations.toggleDisplayInactiveSwitch();
+  await expect(paths, 'Expected only the active contour to remain').toHaveCount(1);
+  await expect(paths.first(), 'Expected the active contour unaffected').toHaveAttribute(
+    'fill-opacity',
+    defaultFillOpacity
+  );
+
+  await renderInactiveSegmentations.toggleDisplayInactiveSwitch();
+  await expect(paths, 'Expected the inactive contour to be shown again').toHaveCount(2);
 });
