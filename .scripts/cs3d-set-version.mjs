@@ -66,10 +66,43 @@ const CS3D_PACKAGES = [
   '@cornerstonejs/tools',
 ];
 
-// Read root package.json to get workspace globs
+// Workspace globs. This repo declares them in pnpm-workspace.yaml; the
+// package.json `workspaces` field is read too, for repos that use it.
+//
+// Reading only package.json was a silent failure: this repo has no
+// `workspaces` field, so the glob list came back empty, only the root manifest
+// was scanned, and the root carries no @cornerstonejs/* dependency. The script
+// then rewrote nothing and reported success — "0 version(s) updated" reads like
+// a no-op rather than a fault. The checks at the end of this file exist so that
+// cannot happen quietly again.
+function readPnpmWorkspaceGlobs() {
+  const p = resolve(rootDir, 'pnpm-workspace.yaml');
+  if (!existsSync(p)) return [];
+  const globs = [];
+  let inPackages = false;
+  for (const line of readFileSync(p, 'utf8').split(/\r?\n/)) {
+    if (/^packages:\s*$/.test(line)) {
+      inPackages = true;
+      continue;
+    }
+    if (inPackages) {
+      const m = line.match(/^\s+-\s*['"]?([^'"#]+?)['"]?\s*$/);
+      if (m) {
+        globs.push(m[1]);
+        continue;
+      }
+      if (/^\S/.test(line)) inPackages = false; // next top-level key
+    }
+  }
+  return globs;
+}
+
 const rootPkgPath = resolve(rootDir, 'package.json');
 const rootPkg = JSON.parse(readFileSync(rootPkgPath, 'utf8'));
-const workspaceGlobs = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
+const workspaceGlobs = [
+  ...readPnpmWorkspaceGlobs(),
+  ...(rootPkg.workspaces?.packages || rootPkg.workspaces || []),
+];
 
 // Collect all package.json paths from workspace globs
 function findWorkspacePackageJsons() {
@@ -148,13 +181,26 @@ function committedVersion() {
 
 const committed = committedVersion();
 
-if (committed && semver.eq(committed, version)) {
+// No @cornerstonejs/* dependency anywhere means the discovery above is wrong or
+// the repository has changed shape — not that there is nothing to do. Say so
+// rather than reporting a successful no-op, which is how this went unnoticed
+// before.
+if (!committed) {
+  console.error(
+    `Found no @cornerstonejs/* dependency in any of the ${pkgPaths.length} manifest(s) scanned.`
+  );
+  console.error('Workspace globs used: ' + (workspaceGlobs.join(', ') || '(none)'));
+  console.error('Expected at least one; check the globs in pnpm-workspace.yaml.');
+  process.exit(1);
+}
+
+if (semver.eq(committed, version)) {
   console.log(`@cornerstonejs/* already pinned at ${version}; nothing to change.`);
   reportChanged(false);
   process.exit(0);
 }
 
-if (onlyIfNewer && committed && semver.gt(committed, version)) {
+if (onlyIfNewer && semver.gt(committed, version)) {
   console.log(
     `@cornerstonejs/* is pinned at ${committed}, which is newer than the recorded ${version}.\n` +
       'Keeping the committed version: a "now" clause records what a branch became, so it never ' +
@@ -164,7 +210,7 @@ if (onlyIfNewer && committed && semver.gt(committed, version)) {
   process.exit(0);
 }
 
-if (committed && semver.lt(version, committed)) {
+if (semver.lt(version, committed)) {
   // Reached only without --only-if-newer, i.e. someone asked for this outright.
   console.log(
     `::warning::Requested ${version} is older than the committed ${committed}; downgrading as requested.`
@@ -194,10 +240,21 @@ for (const pkgPath of pkgPaths) {
   }
 }
 
+// Reaching here means the committed version differs from the requested one, so
+// at least one manifest had to change. Zero means the write loop and the
+// version lookup disagree — a fault, not a no-op.
+if (totalChanges === 0) {
+  console.error(
+    `Found @cornerstonejs/* pinned at ${committed} but updated nothing when asked for ${version}.`
+  );
+  console.error(`Scanned ${pkgPaths.length} manifest(s) from globs: ${workspaceGlobs.join(', ')}`);
+  process.exit(1);
+}
+
 console.log(
   `\nDone: ${totalChanges} version(s) updated to ${version} across ${pkgPaths.length} package files.`
 );
-reportChanged(totalChanges > 0);
+reportChanged(true);
 console.log(
   'This rewrites package.json, so the lockfile no longer matches it and the next install cannot ' +
     'be frozen. In CI the workflow handles that. Locally, run `pnpm run install:update-lockfile` ' +
