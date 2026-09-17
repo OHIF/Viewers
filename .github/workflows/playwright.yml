@@ -213,13 +213,15 @@ jobs:
           # already read, so quoting it discloses nothing; newlines and control
           # characters are stripped and the length capped so it cannot be read
           # as a workflow command of its own.
+          # Quoted in both rejections below, so the author can see what was read.
+          shown=$(printf '%s' "$raw" | tr -d '\000-\037' | cut -c1-200)
+
           ok=true
           if [[ ! "$ref" =~ ^[A-Za-z0-9][A-Za-z0-9._/+-]*$ ]] || [[ "$ref" == *..* ]]; then ok=false; fi
           if [ -n "$history" ]; then
             if [[ ! "$history" =~ ^[A-Za-z0-9][A-Za-z0-9._/+-]*$ ]] || [[ "$history" == *..* ]]; then ok=false; fi
           fi
           if [ "$ok" != true ]; then
-            shown=$(printf '%s' "$raw" | tr -d '\000-\037' | cut -c1-200)
             echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. Write it as one of: <branch>, <version>, or '<branch> now <version>'. Each part must start with a letter or digit, contain only letters, digits and the characters . _ / + - and contain no '..'. Forks cannot be named: give a branch or tag in cornerstonejs/cornerstone3D, or a published version."
             exit 1
           fi
@@ -241,7 +243,7 @@ jobs:
           # deliberately has no checkout.
           for part in "$ref" $history; do
             if ! git check-ref-format "refs/heads/${part}"; then
-              echo "::error::Rejected the requested CS3D ref: git does not accept that ref name. Check for a trailing or doubled '/', a path component starting with '.', or a '.lock' suffix."
+              echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. Git does not accept that ref name — check for a trailing or doubled '/', a path component starting with '.', or a '.lock' suffix."
               exit 1
             fi
           done
