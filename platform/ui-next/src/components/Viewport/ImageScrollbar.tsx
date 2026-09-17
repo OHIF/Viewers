@@ -1,6 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { cn } from '../../lib/utils';
 import styles from './ImageScrollbar.module.css';
+
+const preventDefault = (e: React.MouseEvent) => e.preventDefault();
 
 export interface ImageScrollbarProps {
   value: number;
@@ -16,7 +18,7 @@ export const ImageScrollbar: React.FC<ImageScrollbarProps> = ({
   max,
   height,
   onChange,
-  onContextMenu = e => e.preventDefault(),
+  onContextMenu = preventDefault,
   className = '',
 }) => {
   if (max === 0) {
@@ -27,15 +29,12 @@ export const ImageScrollbar: React.FC<ImageScrollbarProps> = ({
     width: height, // This is intentional for the rotation
   };
 
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const intValue = parseInt(event.target.value, 10);
-      onChange(intValue);
-    },
-    [onChange]
-  );
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const intValue = parseInt(event.target.value, 10);
+    onChange(intValue);
+  };
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     // We don't allow direct keyboard navigation (arrow keys)
     const keys = {
       DOWN: 40,
@@ -45,7 +44,7 @@ export const ImageScrollbar: React.FC<ImageScrollbarProps> = ({
     if (event.which === keys.DOWN || event.which === keys.UP) {
       event.preventDefault();
     }
-  }, []);
+  };
 
   return (
     <div
