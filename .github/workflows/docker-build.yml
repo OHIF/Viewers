@@ -99,7 +99,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-${{ needs.prepare.outputs.short_sha }}-${{ matrix.arch }}
           labels: ${{ needs.prepare.outputs.labels }}
           build-args: |
-            PUBLIC_URL=/radiology-ohif/
+            PUBLIC_URL=/viewer/
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
 
@@ -168,7 +168,7 @@ jobs:
           echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Run Number:** \`${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Commit SHA:** \`${{ needs.prepare.outputs.short_sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**PUBLIC_URL:** \`/radiology-ohif/\`" >> $GITHUB_STEP_SUMMARY
+          echo "**PUBLIC_URL:** \`/viewer/\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
