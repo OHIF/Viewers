@@ -149,7 +149,19 @@ jobs:
             # the rest, so `CS3D_REF: fix/x (released as 5.25.80)` read as an
             # annotation and behaved as a live branch directive. Taking the
             # whole line lets the grammar below reject that instead.
-            raw=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.body' | awk '
+            #
+            # The body goes into a variable before it is parsed, rather than
+            # straight down a pipe into awk. The parser stops at the first
+            # match, so on a body larger than the pipe buffer it can close the
+            # pipe while `gh` is still writing; `gh` then dies on SIGPIPE, and
+            # `pipefail` turns that into status 141, which `set -e` reads as a
+            # gate failure and skips Playwright for the whole PR.
+            # `.scripts/ci/cs3d-branch-merge-guard.sh` avoids this the same way.
+            if ! body=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.body'); then
+              echo "::error::Could not read the body of pull request ${PR_NUMBER}, so this gate cannot tell whether a CS3D integration run was requested. Failing instead of running the ordinary suite."
+              exit 1
+            fi
+            raw=$(awk '
               {
                 line = $0
                 sub(/^[[:space:]]+/, "", line)
@@ -170,7 +182,7 @@ jobs:
                   sub(/[[:space:]]+$/, "", line)
                   print line; exit
                 }
-              }')
+              }' <<<"$body")
           fi
           raw="${raw#"${raw%%[![:space:]]*}"}"; raw="${raw%"${raw##*[![:space:]]}"}"
 
@@ -267,7 +279,15 @@ jobs:
           # to be one concrete release. A range would resolve to a different
           # version on a later run and the record would stop meaning what it
           # said. A bare version request may still be a range.
-          if [ -n "$history" ] && [[ ! "$ref" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?$ ]]; then
+          #
+          # The prerelease class is the one semver allows: dot-separated
+          # identifiers of letters, digits and hyphens. The hyphen matters —
+          # `5.11.0-rc-1` is a legal release, and a class without it rejects the
+          # ref and fails the run. `_` is NOT legal and is deliberately absent.
+          # Three other copies of this class must agree: the version classifier
+          # below, and both regular expressions in
+          # `.scripts/ci/cs3d-branch-merge-guard.sh`.
+          if [ -n "$history" ] && [[ ! "$ref" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
             echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. The version after 'now' must be one concrete release, e.g. 5.10.6 or 5.11.0-beta.1 — not a range."
             exit 1
           fi
@@ -287,6 +307,15 @@ jobs:
           # the reviewers on the `cs3d-integration` environment. A same-repo PR
           # or a manual run was already started by someone with write access, so
           # it proceeds unattended.
+          #
+          # Every accepted ref asks for approval, including a retired
+          # `<branch> now <version>` clause that this repo has already moved past
+          # and that will therefore change nothing on the box. Telling those two
+          # apart needs the version the repo pins, and this job has no checkout
+          # by design — so the conservative answer is the only one available
+          # here. A spent line still costs a fork PR one approval per run; the
+          # steps on the box do recognise it, and skip the preview build and the
+          # deploy. Delete the line to stop the approval prompt.
           if [ "$EVENT_NAME" = "pull_request" ] && [ "$IS_SAME_REPO" != "true" ]; then
             echo "::notice::This fork PR requests a CS3D integration run, so it needs approval from a reviewer on the cs3d-integration environment before it reaches the self-hosted runner."
             echo "approval=true" >> "$GITHUB_OUTPUT"
@@ -343,7 +372,10 @@ jobs:
         id: cs3d-ref
         if: needs.gate.outputs.integration == 'true'
         run: |
-          if [[ "$CS3D_REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
+          # Same prerelease class as the gate: `[0-9A-Za-z.-]`. A ref that does
+          # not match here is cloned as a branch, so a class that omits the
+          # hyphen sends `5.11.0-rc-1` to `git clone` as a branch name.
+          if [[ "$CS3D_REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[0-9A-Za-z.-]+)?$ ]]; then
             echo "type=version" >> "$GITHUB_OUTPUT"
             RESOLVED=$(node .scripts/cs3d-resolve-version.mjs "$CS3D_REF")
             echo "version=$RESOLVED" >> "$GITHUB_OUTPUT"
@@ -475,12 +507,19 @@ jobs:
           CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
 
+      # The preview build and deploy exist to show a tree that differs from an
+      # ordinary run. A branch run always differs. A version run differs only
+      # when the manifests were actually rewritten — which a retired
+      # `<branch> now <version>` clause stops doing once the repo pins that
+      # version or something newer. Without this condition a spent line keeps
+      # building and deploying a preview identical to the ordinary suite on
+      # every re-run, for as long as the line stays in the body as history.
       - name: Build OHIF viewer (CS3D preview)
-        if: needs.gate.outputs.integration == 'true'
+        if: needs.gate.outputs.integration == 'true' && (steps.cs3d-ref.outputs.type == 'branch' || steps.set-version.outputs.changed == 'true')
         run: pnpm run build:ci
 
       - name: Deploy CS3D preview to Netlify
-        if: needs.gate.outputs.integration == 'true'
+        if: needs.gate.outputs.integration == 'true' && (steps.cs3d-ref.outputs.type == 'branch' || steps.set-version.outputs.changed == 'true')
         # The version is pinned here rather than in package.json. This ran
         # `npx netlify-cli`, which fetched whatever the registry served at that
         # moment and ran it on the self-hosted box with NETLIFY_AUTH_TOKEN in
@@ -511,13 +550,20 @@ jobs:
         run: |
           if [[ "$CS3D_REF_TYPE" == "branch" ]]; then
             echo "::notice::CS3D integration PASSED with branch ${CS3D_REF} (linked from libs/@cornerstonejs)"
-          else
+          elif [[ "$CS3D_CHANGED" == "true" ]]; then
             echo "::notice::CS3D integration PASSED with @cornerstonejs/*@${CS3D_VERSION}"
+          else
+            # The retired form, now spent: the repo already pins this version or
+            # something newer, so nothing was rewritten and this run tested the
+            # same tree as the ordinary suite. Say so, rather than reporting an
+            # integration run that did not happen.
+            echo "::notice::CS3D_REF names ${CS3D_VERSION}, which this repo already pins (or has moved past), so no version change was made. The line is now a record of history and no longer changes the run; it is safe to leave in place."
           fi
         env:
           CS3D_REF_TYPE: ${{ steps.cs3d-ref.outputs.type }}
           CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
+          CS3D_CHANGED: ${{ steps.set-version.outputs.changed }}
 
   # ── Separate job: flag a merge that would depend on unreleased CS3D ──
   # Advisory, deliberately: it reports, it does not block. `master` requires no

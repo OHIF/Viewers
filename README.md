@@ -176,52 +176,105 @@ validated together before merging.
 
 #### Setting up an integration build
 
-1. Add the **`ohif-integration`** label to your OHIF pull request.
-2. In the PR body, add a line specifying the CS3D ref:
-   ```
-   CS3D_REF: feat/my-feature
-   ```
-   - **Version ref** (e.g. `4.19+`, `4.18.2`) — the workflow resolves it to an
-     exact published version and swaps the CS3D dependency via npm.
-   - **Branch ref** (e.g. `main`, `cornerstonejs:feat/foo`) — the workflow
-     clones the branch, builds CS3D from source with `bun run build:esm`, and
-     symlinks the built packages into OHIF's `node_modules`.
-   - For forks, use the `<owner>:<branch>` format
-     (e.g. `myGithubUser:feat/foo`).
-   - If no `CS3D_REF` is specified, the default is `4.19+`.
-3. The workflow can also be triggered manually via **workflow_dispatch** with a
-   `cs3d_ref` input.
+Add a `CS3D_REF:` line to the PR body. No label is involved — the line itself is
+the request. A line inside a fenced code block is ignored, so you can document
+this syntax in a PR without triggering it.
+
+```
+CS3D_REF: feat/my-feature
+```
+
+The line takes one of three forms:
+
+| Form | Meaning |
+|------|---------|
+| `CS3D_REF: feat/my-feature` | A branch or tag in `cornerstonejs/cornerstone3D`. The workflow clones it, builds CS3D from source with `pnpm run build:esm`, and symlinks the built packages into OHIF's `node_modules`. |
+| `CS3D_REF: 5.10.6` | A published version. The workflow rewrites every `@cornerstonejs/*` entry across the workspace to that version and reinstalls. Ranges such as `5.x` also work. |
+| `CS3D_REF: feat/my-feature now 5.10.6` | The branch, and the concrete release it became. See [Retiring a branch ref](#retiring-a-branch-ref) below. |
+
+Three rules are worth knowing:
+
+- **The branch must live in `cornerstonejs/cornerstone3D`.** The
+  `<owner>:<branch>` form is no longer accepted: it let a PR point the clone at
+  any GitHub account and run that account's install scripts on the shared
+  self-hosted runner. Push your branch to the CS3D repository instead.
+- **There is no default.** A PR with no `CS3D_REF` line runs the ordinary
+  Playwright suite against the CS3D version this repo already pins. The same
+  holds for a manual run with an empty `cs3d_ref` box.
+- **From a fork, an integration run needs approval.** The run waits on the
+  `cs3d-integration` environment until one of the named reviewers approves that
+  specific run, because it builds and executes CS3D code on a shared machine.
+  A PR from a branch in this repository proceeds unattended.
+
+The workflow can also be triggered manually via **workflow_dispatch** with a
+`cs3d_ref` input, which accepts the same three forms.
 
 #### What happens in CI
 
-The [Playwright workflow](.github/workflows/playwright.yml) runs two jobs:
+The [Playwright workflow](.github/workflows/playwright.yml) runs three jobs:
 
 | Job | Purpose |
 |-----|---------|
-| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, uploads test results and coverage, and deploys a Netlify preview when `ohif-integration` is active. |
-| **CS3D Branch Merge Guard** | A lightweight check that **fails** when the `ohif-integration` label is present and `CS3D_REF` points to a branch (not a version). This prevents merging while still letting the Playwright tests show green so you can see whether the code actually works. |
+| **Gate** | Runs on GitHub's own runners and never checks out the repository. It decides whether the PR may reach the self-hosted runner at all, reads and validates any `CS3D_REF` line, and decides whether the run needs a reviewer's approval. |
+| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, and uploads test results and coverage. When a `CS3D_REF` line changes the tree under test, it also deploys a Netlify preview. |
+| **CS3D Branch Merge Guard** | Reports when `CS3D_REF` names a branch rather than a published version, because merging would leave `master` depending on unreleased CS3D code. It is **advisory**: it reports a red result, but it does not block the merge button. |
+
+#### Playwright does not run on every fork PR
+
+A PR from a fork that changes a CI-defining file does not run Playwright on the
+self-hosted runner. It runs once the change is reviewed and merged. The affected
+paths are `.github/`, `.scripts/`, `package.json`, `pnpm-lock.yaml`,
+`pnpm-workspace.yaml`, `preinstall.js`, `.npmrc` and any root pnpmfile.
+
+`package.json` and `pnpm-lock.yaml` are on that list deliberately: `pnpm install`
+runs package install scripts on the runner, so a change to either can execute
+code there before any test starts. A PR from a branch in this repository is not
+affected.
 
 #### Testing changes that span both repos
 
 If a feature requires changes in both Cornerstone3D and OHIF:
 
-1. Create your feature branch in CS3D and push it.
+1. Create your feature branch in the `cornerstonejs/cornerstone3D` repository and
+   push it.
 2. Create a matching branch in OHIF.
-3. Add the `ohif-integration` label to the OHIF pull request.
-4. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
-5. Playwright tests will build CS3D from source, link it, and run the full
-   suite. The merge guard will block merge until you switch to a published
-   version — but you can see the test results and the preview deploy while
-   iterating.
-6. Once the CS3D side is merged and published, update the PR body to reference
-   the published version (e.g. `CS3D_REF: 4.19+`). The tests will run against
-   the registry version and the merge guard will pass.
+3. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
+4. Playwright tests build CS3D from source, link it, and run the full suite. The
+   merge guard reports a red result for as long as the line names a branch, so
+   you can see the test results and the preview deploy while you iterate.
+5. Once the CS3D side is merged and published, change the line to the retiring
+   form below.
+
+#### Retiring a branch ref
+
+Once the CS3D fix ships, change the line rather than deleting it:
+
+```
+CS3D_REF: feat/my-feature now 5.10.6
+```
+
+The version after `now` is a **record, not a request**. It never moves the pin
+backwards: on every run the workflow compares it against the version this repo
+pins and keeps whichever is newer. So a line still saying `now 5.10.6` in a repo
+that has moved on to 5.11.0 tests 5.11.0, not 5.10.6.
+
+That is what lets the line stay in place as history — the branch name remains
+visible as the reason the pinned version moved, and the line stops changing what
+the run does. Once the repo pins that version or something newer, no rewrite
+happens, no reinstall happens, and no preview is built or deployed. The version
+must be one concrete release, such as `5.10.6` or `5.11.0-beta.1`, not a range.
+
+A fork PR still asks for the `cs3d-integration` approval while the line is
+present, even after the line is spent, because the gate has no checkout and
+cannot tell which version the repo pins. Delete the line to stop the prompt.
 
 #### Preview deploys
 
-When `ohif-integration` is active, the Playwright workflow also builds the OHIF
-viewer and deploys it to Netlify as a preview. This gives you a live URL to
-manually test the combined CS3D + OHIF changes without running anything locally.
+When a `CS3D_REF` line changes the tree under test, the Playwright workflow also
+builds the OHIF viewer and deploys it to Netlify as a preview. This gives you a
+live URL to manually test the combined CS3D + OHIF changes without running
+anything locally. A spent retiring form tests the same tree as an ordinary run,
+so it does not produce a preview.
 
 For details on linking CS3D locally for development, see the
 [Cornerstone3D README](libs/@cornerstonejs/README.md#local-development-linking--unlinking).

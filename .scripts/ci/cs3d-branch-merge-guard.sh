@@ -81,12 +81,18 @@ fi
 
 # The version after `now` records what the branch shipped as, so it has to be
 # one concrete release; a range would resolve differently on a later read.
-if [[ -n "$CS3D_HISTORY" ]] && [[ ! "$CS3D_REF" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9._]+)?$ ]]; then
+#
+# The prerelease class is the one semver allows: dot-separated identifiers of
+# letters, digits and hyphens. The hyphen matters — `5.11.0-rc-1` is a legal
+# release. `_` is NOT legal and is deliberately absent. The same class appears
+# in the version test below and twice in the `gate` job of
+# `.github/workflows/playwright.yml`; keep all four in step.
+if [[ -n "$CS3D_HISTORY" ]] && [[ ! "$CS3D_REF" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
   echo "::error::CS3D_REF says branch '${CS3D_HISTORY}' was released as '${CS3D_REF}', which is not one concrete version. Write the exact release, e.g. 5.10.6."
   exit 1
 fi
 
-if [[ "$CS3D_REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
+if [[ "$CS3D_REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[0-9A-Za-z.-]+)?$ ]]; then
   if [[ -n "$CS3D_HISTORY" ]]; then
     echo "::notice::CS3D ref '$CS3D_REF' is a published version (branch '$CS3D_HISTORY' shipped as it) — merge allowed."
   else
