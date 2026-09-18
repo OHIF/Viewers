@@ -1,5 +1,5 @@
 export default displaySet => {
-  const ViewCodeSequence = displaySet?.images[0]?.ViewCodeSequence[0];
+  const ViewCodeSequence = displaySet?.images?.[0]?.ViewCodeSequence?.[0];
   if (!ViewCodeSequence) {
     return undefined;
   }
