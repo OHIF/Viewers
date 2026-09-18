@@ -35,8 +35,21 @@ CS3D_REF: 5.10.6
 
 The line itself is the request. There is no label, and there is no default: a PR with no
 `CS3D_REF` line runs the ordinary Playwright suite against the CS3D version this repo
-already pins. A line inside a fenced code block is ignored, so a PR can document this
-syntax without triggering it.
+already pins.
+
+The line must sit at the top level of the body. The workflow ignores a `CS3D_REF` line in
+any of three places, because a reader takes each of them as an example and not as an
+instruction:
+
+- inside a fenced code block, which is how a PR documents this syntax without triggering it;
+- inside an indented code block, which means four spaces or more;
+- inside an HTML comment. The OHIF pull request template is almost entirely HTML comments,
+  so write the line outside them.
+
+The workflow prints a warning when it ignores a `CS3D_REF` line for one of these reasons.
+It fails the gate when the code block or the comment that hides the line is never closed,
+because an unclosed block hides every line below it, and a request written there would
+otherwise disappear without a word.
 
 The workflow reads the PR body live on every run, so you can change the line and re-run
 without pushing a commit.
@@ -60,7 +73,15 @@ run the ordinary suite.
 | `5.11.0-beta.1` | Install exact prerelease |
 | `5.10.x` | Install latest 5.10.x release |
 | `5.x` | Install latest published 5.x release |
+| `4.19+` | Install the latest 4.19.0 or later release within major version 4 |
 | `main` | Clone and build the `cornerstonejs/cornerstone3D` `main` branch from source |
+
+The version forms are exactly these five: `5.10.6`, `5.11.0-beta.1`, `5.10.x`, `5.x` and
+`4.19+`. A value that is written only from digits, dots, `x` and `+`, and that is not one of
+the five, is rejected by the gate with a message that names the accepted forms. A two-part
+number such as `5.10` is the common mistake: write `5.10.x` for the latest 5.10 release, or
+name the exact release. A branch whose name merely starts with a digit, such as
+`5.x-backport`, is still treated as a branch.
 
 ### Branch vs Version Behavior
 
@@ -119,10 +140,13 @@ Two rules apply to a PR from a fork, and to no other PR:
   runner to build and execute CS3D code, so the run pauses on the `cs3d-integration`
   environment until one of the named reviewers approves that specific run.
 - **A PR that changes a CI-defining file does not run Playwright until it is merged.** The
-  paths are `.github/`, `.scripts/`, `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
-  `preinstall.js`, `.npmrc` and any root pnpmfile. `pnpm install` runs package install
-  scripts on the runner, so a change to `package.json` or the lockfile can execute code
-  there before any test starts.
+  paths are `.github/`, `.scripts/`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
+  `preinstall.js`, any root pnpmfile, and every `package.json` and `.npmrc` in the
+  workspace. `pnpm install` runs the lifecycle scripts of each workspace project on the
+  runner, so a `postinstall` added to `extensions/<name>/package.json` executes there
+  before any test starts, exactly as one added to the root manifest does. The cost of that
+  rule is that a fork PR which only adds a dependency to one extension waits for its merge
+  before Playwright runs.
 
 A PR from a branch in the OHIF repository is unaffected by both rules: the branch lives in
 this repo, so someone with write access pushed it.
@@ -199,6 +223,13 @@ The workflow uses `--only-if-newer` for the version recorded after `now` in a re
 `CS3D_REF` line, which is how a spent line stops changing the run. Without the flag the
 requested version is applied as given, downgrades included.
 
-This updates the 8 main CS3D packages (adapters, ai, core, dicom-image-loader,
-labelmap-interpolation, nifti-volume-loader, polymorphic-segmentation, tools)
-but not codec packages.
+This updates the packages that the cornerstone3D monorepo releases together (adapters, ai,
+core, dicom-image-loader, labelmap-interpolation, metadata, nifti-volume-loader,
+polymorphic-segmentation, tools, utils). It does not touch the codec packages or
+`calculate-suv`, which carry their own version lines.
+
+The script stops with an error when it finds an `@cornerstonejs/*` dependency that is in
+neither group. A package it does not recognise is a question it cannot answer: it would
+either leave that package behind at the old version, or ask npm for a release that does not
+exist. Add the new package to `CS3D_PACKAGES` or to `INDEPENDENT_PACKAGES` in
+`.scripts/cs3d-set-version.mjs`.

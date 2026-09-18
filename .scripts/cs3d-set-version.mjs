@@ -5,9 +5,13 @@
  *
  * Usage: node .scripts/cs3d-set-version.mjs <version> [--only-if-newer]
  *
- * Only updates the 8 main CS3D packages (not codec packages):
- *   adapters, ai, core, dicom-image-loader, labelmap-interpolation,
- *   nifti-volume-loader, polymorphic-segmentation, tools
+ * Only updates the packages that the cornerstone3D monorepo releases together
+ * (not the codec packages, and not calculate-suv):
+ *   adapters, ai, core, dicom-image-loader, labelmap-interpolation, metadata,
+ *   nifti-volume-loader, polymorphic-segmentation, tools, utils
+ *
+ * An @cornerstonejs/* dependency that is in neither group stops the run with an
+ * error, so that a new package cannot be left silently at an old version.
  *
  * --only-if-newer
  *   Do nothing when the version already committed is the same as, or newer
@@ -34,7 +38,7 @@ const rootDir = resolve(__dirname, '..');
 
 const args = process.argv.slice(2);
 const onlyIfNewer = args.includes('--only-if-newer');
-const version = args.find((a) => !a.startsWith('--'));
+const version = args.find(a => !a.startsWith('--'));
 if (!version) {
   console.error('Usage: cs3d-set-version.mjs <version> [--only-if-newer]');
   console.error('  e.g. 5.10.3, 5.11.0-beta.1');
@@ -54,17 +58,33 @@ function reportChanged(changed) {
   }
 }
 
-// The 8 CS3D packages that are built from source (not codecs)
+// The packages the cornerstone3D monorepo releases together, all carrying the
+// same version. These are the ones this script rewrites.
+//
+// `@cornerstonejs/metadata` was missing from this list while the workspace
+// pinned it, so a run rewrote the others and left metadata behind.
+// `@cornerstonejs/core` peer-depends on metadata at its own exact version, so
+// the run then tested a mixed tree and still reported a passing integration.
+// `scanManifests` below rejects an unrecognised @cornerstonejs/* package for
+// that reason: the next addition cannot go missing quietly.
 const CS3D_PACKAGES = [
   '@cornerstonejs/adapters',
   '@cornerstonejs/ai',
   '@cornerstonejs/core',
   '@cornerstonejs/dicom-image-loader',
   '@cornerstonejs/labelmap-interpolation',
+  '@cornerstonejs/metadata',
   '@cornerstonejs/nifti-volume-loader',
   '@cornerstonejs/polymorphic-segmentation',
   '@cornerstonejs/tools',
+  '@cornerstonejs/utils',
 ];
+
+// Packages under the same npm scope that the cornerstone3D monorepo does NOT
+// release: the WASM codecs and calculate-suv each have their own repository and
+// their own version line (1.2.5, 2.4.9, 1.1.0 today). Rewriting them to a CS3D
+// version would ask npm for releases that do not exist.
+const INDEPENDENT_PACKAGES = [/^@cornerstonejs\/codec-/, /^@cornerstonejs\/calculate-suv$/];
 
 // Workspace globs. This repo declares them in pnpm-workspace.yaml; the
 // package.json `workspaces` field is read too, for repos that use it.
@@ -161,32 +181,68 @@ function updateDeps(deps, targetVersion) {
 
 const pkgPaths = findWorkspacePackageJsons();
 
-const relToRoot = (p) => p.replace(rootDir + '/', '').replace(rootDir + '\\', '');
+const relToRoot = p => p.replace(rootDir + '/', '').replace(rootDir + '\\', '');
+
+const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'resolutions'];
 
 /**
- * Every @cornerstonejs/* dependency in the workspace, with where it was found.
- * All of them, not the first match: one manifest already carrying the requested
- * version would otherwise satisfy the no-change check below, leaving every
- * other manifest stale and skipping the reinstall.
+ * Scans every manifest once and sorts the @cornerstonejs/* dependencies it
+ * finds into two lists.
+ *
+ * `found` holds every occurrence of a tracked package, with where it was
+ * found. All of them, not the first match: one manifest already carrying the
+ * requested version would otherwise satisfy the no-change check below, leaving
+ * every other manifest stale and skipping the reinstall.
+ *
+ * `unknown` holds every @cornerstonejs/* dependency that is neither tracked nor
+ * known to be released separately. A package this script does not recognise is
+ * a question it cannot answer, not a package to leave alone — leaving one alone
+ * is exactly how the workspace came to pin a metadata version that no longer
+ * matched the core version beside it.
  */
-function committedOccurrences() {
+function scanManifests() {
   const found = [];
+  const unknown = [];
   for (const pkgPath of pkgPaths) {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-    for (const field of ['dependencies', 'devDependencies', 'peerDependencies', 'resolutions']) {
+    for (const field of DEP_FIELDS) {
       const deps = pkg[field];
       if (!deps) continue;
-      for (const name of CS3D_PACKAGES) {
-        if (name in deps) {
-          found.push({ file: relToRoot(pkgPath), field, name, value: deps[name] });
+      for (const name of Object.keys(deps)) {
+        if (!name.startsWith('@cornerstonejs/')) continue;
+        const where = { file: relToRoot(pkgPath), field, name, value: deps[name] };
+        if (CS3D_PACKAGES.includes(name)) {
+          found.push(where);
+        } else if (!INDEPENDENT_PACKAGES.some(re => re.test(name))) {
+          unknown.push(where);
         }
       }
     }
   }
-  return found;
+  return { found, unknown };
 }
 
-const occurrences = committedOccurrences();
+const { found: occurrences, unknown } = scanManifests();
+
+// Fail on an unrecognised @cornerstonejs/* package rather than skipping it. The
+// caller must decide which of the two lists at the top of this file the package
+// belongs in: CS3D_PACKAGES when the cornerstone3D monorepo releases it, and
+// INDEPENDENT_PACKAGES when it has a version line of its own.
+if (unknown.length > 0) {
+  console.error(
+    `Found ${unknown.length} @cornerstonejs/* dependency/dependencies that this script does not recognise:`
+  );
+  for (const o of unknown) {
+    console.error(`  ${o.file}  ${o.field}.${o.name} = ${o.value}`);
+  }
+  console.error(
+    'Add each one to CS3D_PACKAGES in this file when cornerstone3D releases it with the other\n' +
+      'packages, or to INDEPENDENT_PACKAGES when it carries its own version. Guessing would\n' +
+      'either leave the package behind at an old version or ask npm for a release that does\n' +
+      'not exist.'
+  );
+  process.exit(1);
+}
 
 // No @cornerstonejs/* dependency anywhere means the discovery above is wrong or
 // the repository has changed shape — not that there is nothing to do. Say so
@@ -205,7 +261,7 @@ if (occurrences.length === 0) {
 // voice. Mixed values, or a range where a pin belongs, leave no baseline to
 // compare the request against, so name the offenders rather than pick one and
 // treat the rest as agreed.
-const distinct = [...new Set(occurrences.map((o) => o.value))];
+const distinct = [...new Set(occurrences.map(o => o.value))];
 if (distinct.length > 1 || !semver.valid(distinct[0])) {
   console.error(
     distinct.length > 1

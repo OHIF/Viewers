@@ -177,8 +177,15 @@ validated together before merging.
 #### Setting up an integration build
 
 Add a `CS3D_REF:` line to the PR body. No label is involved — the line itself is
-the request. A line inside a fenced code block is ignored, so you can document
-this syntax in a PR without triggering it.
+the request.
+
+The line must sit at the top level of the body. A line inside a fenced code
+block, inside an indented code block (four spaces or more), or inside an HTML
+comment is an example rather than a request, so you can document this syntax in
+a PR without triggering it. The PR template is mostly HTML comments, so write
+the line outside them. The workflow prints a warning when it ignores a
+`CS3D_REF:` line for one of these reasons, and it fails when the block that
+hides the line is never closed.
 
 ```
 CS3D_REF: feat/my-feature
@@ -189,7 +196,7 @@ The line takes one of three forms:
 | Form | Meaning |
 |------|---------|
 | `CS3D_REF: feat/my-feature` | A branch or tag in `cornerstonejs/cornerstone3D`. The workflow clones it, builds CS3D from source with `pnpm run build:esm`, and symlinks the built packages into OHIF's `node_modules`. |
-| `CS3D_REF: 5.10.6` | A published version. The workflow rewrites every `@cornerstonejs/*` entry across the workspace to that version and reinstalls. Ranges such as `5.x` also work. |
+| `CS3D_REF: 5.10.6` | A published version. The workflow rewrites every `@cornerstonejs/*` entry across the workspace to that version and reinstalls. The accepted forms are `5.10.6`, `5.11.0-beta.1`, `5.x`, `5.10.x` and `4.19+`. A two-part number such as `5.10` is not one of them; write `5.10.x`. |
 | `CS3D_REF: feat/my-feature now 5.10.6` | The branch, and the concrete release it became. See [Retiring a branch ref](#retiring-a-branch-ref) below. |
 
 Three rules are worth knowing:
@@ -223,13 +230,16 @@ The [Playwright workflow](.github/workflows/playwright.yml) runs three jobs:
 
 A PR from a fork that changes a CI-defining file does not run Playwright on the
 self-hosted runner. It runs once the change is reviewed and merged. The affected
-paths are `.github/`, `.scripts/`, `package.json`, `pnpm-lock.yaml`,
-`pnpm-workspace.yaml`, `preinstall.js`, `.npmrc` and any root pnpmfile.
+paths are `.github/`, `.scripts/`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
+`preinstall.js`, any root pnpmfile, and **every** `package.json` and `.npmrc` in
+the workspace, not only the ones in the root directory.
 
-`package.json` and `pnpm-lock.yaml` are on that list deliberately: `pnpm install`
-runs package install scripts on the runner, so a change to either can execute
-code there before any test starts. A PR from a branch in this repository is not
-affected.
+Those manifests are on the list deliberately: `pnpm install` runs the lifecycle
+scripts of each workspace project on the runner, so a `postinstall` added to
+`extensions/<name>/package.json` executes there before any test starts. The cost
+is that a fork PR which only adds a dependency to one extension waits for its
+merge before Playwright runs. A PR from a branch in this repository is not
+affected by either rule.
 
 #### Testing changes that span both repos
 

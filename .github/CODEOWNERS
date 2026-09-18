@@ -44,6 +44,19 @@
 /pnpmfile.mjs                      @jbocce @sedghi @wayfarer3130
 /pnpmfile.cjs                      @jbocce @sedghi @wayfarer3130
 
+# The `gate` job also defers a fork PR that edits ANY workspace manifest
+# (`*/package.json`, `*/.npmrc`), because `pnpm install` runs the lifecycle
+# scripts of the workspace projects and not only the root ones. Those paths are
+# deliberately NOT listed here, so the two lists differ by exactly that much.
+#
+# The reason is the different cost of each list. The gate costs a fork PR one
+# deferred Playwright run, and only until the change merges. A rule here costs
+# every PR in the repository that adds a dependency to any package an approval
+# from one of three named people, on a path that changes several times a week.
+# Master already requires a review before any merge, so a lifecycle script added
+# to an extension still faces a reviewer; what it does not face is these three.
+# Add `package.json` (no leading slash) here to change that decision.
+
 # ── Release pipeline ──────────────────────────────────────────────────────────
 # OHIF does not release from GitHub Actions: CircleCI publishes to npm with
 # NPM_TOKEN, pushes the Docker images, and runs the versioning scripts below. A
