@@ -54,8 +54,17 @@ class ImageOverlayViewerTool extends AnnotationDisplayTool {
       return;
     }
 
+    // A direct Generic ("next") viewport returns a falsy view-reference id until
+    // it has data bound (e.g. while it is being enabled, before setDisplaySets).
+    // getTargetId() would throw in that case and break the whole render pass, so
+    // skip overlay rendering until a reference is resolvable. Legacy viewports
+    // always return a string here, so this leaves their behavior unchanged.
+    if (!viewport.getViewReferenceId?.()) {
+      return;
+    }
+
     const targetId = this.getTargetId(viewport);
-    return targetId.split('imageId:')[1];
+    return targetId?.split('imageId:')[1];
   }
 
   renderAnnotation = (enabledElement, svgDrawingHelper) => {

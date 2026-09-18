@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import { useAppConfig } from '@state';
 
-import { Button, ButtonEnums } from '@ohif/ui';
+import { Button } from '@ohif/ui-next';
 
 function DataSourceSelector() {
   const [appConfig] = useAppConfig();
@@ -31,8 +31,8 @@ function DataSourceSelector() {
                     {ds.configuration?.friendlyName || ds.friendlyName}
                   </h1>
                   <Button
-                    type={ButtonEnums.type.primary}
-                    className={classnames('ml-2')}
+                    variant="secondary"
+                    className={classnames('ml-2', 'mt-1')}
                     onClick={() => {
                       navigate({
                         pathname: '/',

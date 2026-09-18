@@ -74,22 +74,16 @@ function LayoutRoot({
     throw new Error('StudyList must contain a Table component.');
   }
 
-  const openPreview = React.useCallback(() => onIsPreviewOpenChange(true), [onIsPreviewOpenChange]);
-  const closePreview = React.useCallback(
-    () => onIsPreviewOpenChange(false),
-    [onIsPreviewOpenChange]
-  );
+  const openPreview = () => onIsPreviewOpenChange(true);
+  const closePreview = () => onIsPreviewOpenChange(false);
 
-  const value = React.useMemo<LayoutContextValue>(
-    () => ({
-      isPreviewOpen,
-      openPreview,
-      closePreview,
-      defaultPreviewSizePercent,
-      minPreviewSizePercent,
-    }),
-    [isPreviewOpen, openPreview, closePreview, defaultPreviewSizePercent, minPreviewSizePercent]
-  );
+  const value: LayoutContextValue = {
+    isPreviewOpen,
+    openPreview,
+    closePreview,
+    defaultPreviewSizePercent,
+    minPreviewSizePercent,
+  };
 
   return (
     <WorkflowsProvider
@@ -135,6 +129,7 @@ function Table({
   toolbarRightActionsComponent,
   isLoading,
   loadingComponent,
+  onStudyDoubleClick,
   children,
 }: TableProps) {
   const { defaultPreviewSizePercent } = useLayout();
@@ -168,6 +163,7 @@ function Table({
             filters={filters}
             isLoading={isLoading}
             loadingComponent={loadingComponent}
+            onStudyDoubleClick={onStudyDoubleClick}
           />
         </div>
       </div>

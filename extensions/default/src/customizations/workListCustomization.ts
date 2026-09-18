@@ -7,7 +7,8 @@ import { StudyList } from '@ohif/ui-next';
  *   Selects which study-list route is mounted at `/`.
  *   - `'default'`: the new ui-next WorkList.
  *   - `'legacy'`: the pre-3.13 WorkList (now `LegacyWorkList`). Useful as an
- *     opt-out while integrators migrate to the new study list.
+ *     opt-out while integrators migrate to the new study list. Deprecated; a
+ *     future release removes it along with this id.
  *
  * - `workList.previewSeriesView`: `'all' | 'thumbnails' | 'list'` (default: `'all'`)
  *   Controls which series views are available in the preview panel.
@@ -17,7 +18,6 @@ import { StudyList } from '@ohif/ui-next';
  *   Note: the preview is forced to `'list'` when the active data source either:
  *   - declares `thumbnailRendering` as `'wadors'` or `'thumbnailDirect'`, or
  *   - declares `thumbnailRequestStrategy` as `'bulkDataRetrieve'` (default value).
- *   Currently only applies when `workList.variant` is `'default'`.
  *
  * - `workList.columns`: `ColumnDef[]` (default: `StudyList.defaultColumns`)
  *   The column set for the WorkList table, as a value (not a function). Because
@@ -33,7 +33,7 @@ import { StudyList } from '@ohif/ui-next';
  *   column without writing the accessor/header/cell wiring.
  *
  *   Gotchas / limitations:
- *   - A `ColumnDef`'s `accessorFn` / `cell` / `header` / `filterFn` / `sortingFn`
+ *   - A `ColumnDef`'s `accessorFn` / `cell` / `header` / `filterFn` / `sortFn`
  *     are functions: `$set`/`$push` accept them, but they are not serializable,
  *     so columns that render anything beyond plain text still need code.
  *   - The trailing `actions` column should stay last for correct layout (its
@@ -43,7 +43,6 @@ import { StudyList } from '@ohif/ui-next';
  *   - Index-based commands (e.g. `{ 2: { meta: { label: { $set: '…' } } } }`)
  *     are position-fragile; prefer `$apply` for id-based edits.
  *   If the merged value is not an array, WorkList falls back to the defaults.
- *   Currently only applies when `workList.variant` is `'default'`.
  *
  * - `workList.renderPreviewContent`: `(React, props) => ReactNode` (default: undefined)
  *   Render function for the preview panel content. Receives the host React and
@@ -65,7 +64,28 @@ import { StudyList } from '@ohif/ui-next';
  *   Use this to change the preview layout while keeping the fetch/abort/thumbnail
  *   logic intact. When unset (or not a function), the built-in
  *   `<StudyList.PreviewContainer>` layout is used.
- *   Currently only applies when `workList.variant` is `'default'`.
+ *
+ * - `workList.onStudyDoubleClick`: command run input (default:
+ *   `{ commandName: 'launchDefaultMode' }`)
+ *   The command(s) run when a study row is double-clicked (the row is selected
+ *   first). Accepts anything `commandsManager.run` does: a command name string,
+ *   `{ commandName, commandOptions, context }`, an array of those, or a plain
+ *   function. At call time these are merged into the command options (a plain
+ *   function receives them as its single argument):
+ *   - `study`: the double-clicked `StudyRow`.
+ *   - `workflows`: the workflows applicable to the study, in the same order as
+ *     the row's Launch Workflow menu. Each has `id`, `displayName`,
+ *     `isDefault`, and `launchWithStudy(study)`.
+ *   - `defaultWorkflow`: the user's default workflow when it applies to the
+ *     study, else `undefined`.
+ *   The default `launchDefaultMode` command launches `defaultWorkflow`,
+ *   falling back to the first applicable workflow. Override the options to
+ *   always launch a specific mode:
+ *   `{ commandName: 'launchDefaultMode', commandOptions: { workflowId: 'segmentation' } }`.
+ *   Modes can contribute their own commands for this via a `getCommandsModule`
+ *   export on the mode definition, registered at app init in the 'WORKLIST'
+ *   context — before any mode route is entered. When set to a falsy value the
+ *   built-in StudyList.Table double-click behavior applies.
  *
  * - `workList.settingsMenuItems`: `(defaults) => SettingsMenuItem[]` (default: identity)
  *   Builds the items in the WorkList settings popover. Receives the default
@@ -74,7 +94,6 @@ import { StudyList } from '@ohif/ui-next';
  *   `SettingsMenuItem[]`. Each item is `{ id, label, onClick }`. Use this to
  *   reorder, remove, or insert items without rebuilding the popover shell. If
  *   the returned value is not an array, WorkList falls back to the defaults.
- *   Currently only applies when `workList.variant` is `'default'`.
  */
 export default function getWorkListCustomization() {
   return {
@@ -82,6 +101,7 @@ export default function getWorkListCustomization() {
     'workList.previewSeriesView': 'all',
     'workList.columns': StudyList.defaultColumns,
     'workList.renderPreviewContent': undefined,
+    'workList.onStudyDoubleClick': { commandName: 'launchDefaultMode' },
     'workList.settingsMenuItems': (defaults: unknown) => defaults,
   };
 }

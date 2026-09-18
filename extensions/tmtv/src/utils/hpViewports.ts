@@ -286,6 +286,13 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
       options: {
         colormap: {
           name: 'hsv',
+          // Legacy fusion PT opacity ramp (unchanged): low PT values stay mostly
+          // transparent so the CT shows through. Do NOT flatten this to a scalar —
+          // the legacy viewport renders this ramp and depends on it. The native
+          // ("next") viewport would apply the ramp literally (keeping the
+          // background transparent and preventing the 100% opacity slider from
+          // fully covering the CT), so the next path replaces this ramp with a
+          // flat scalar in getHangingProtocolModule instead of changing it here.
           opacity: [
             { value: 0, opacity: 0 },
             { value: 0.1, opacity: 0.8 },
@@ -349,6 +356,13 @@ const fusionSAGITTAL = {
       options: {
         colormap: {
           name: 'hsv',
+          // Legacy fusion PT opacity ramp (unchanged): low PT values stay mostly
+          // transparent so the CT shows through. Do NOT flatten this to a scalar —
+          // the legacy viewport renders this ramp and depends on it. The native
+          // ("next") viewport would apply the ramp literally (keeping the
+          // background transparent and preventing the 100% opacity slider from
+          // fully covering the CT), so the next path replaces this ramp with a
+          // flat scalar in getHangingProtocolModule instead of changing it here.
           opacity: [
             { value: 0, opacity: 0 },
             { value: 0.1, opacity: 0.8 },
@@ -412,6 +426,13 @@ const fusionCORONAL = {
       options: {
         colormap: {
           name: 'hsv',
+          // Legacy fusion PT opacity ramp (unchanged): low PT values stay mostly
+          // transparent so the CT shows through. Do NOT flatten this to a scalar —
+          // the legacy viewport renders this ramp and depends on it. The native
+          // ("next") viewport would apply the ramp literally (keeping the
+          // background transparent and preventing the 100% opacity slider from
+          // fully covering the CT), so the next path replaces this ramp with a
+          // flat scalar in getHangingProtocolModule instead of changing it here.
           opacity: [
             { value: 0, opacity: 0 },
             { value: 0.1, opacity: 0.8 },

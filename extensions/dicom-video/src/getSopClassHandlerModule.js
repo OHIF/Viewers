@@ -55,14 +55,20 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     })
     .map(instance => {
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
-      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
-        instance;
-      const videoUrl = dataSource.retrieve.directURL({
+      const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } = instance;
+      // The date/time of a display set is the date/time of the instance it
+      // shows, chosen from all the attributes that instance carries.
+      const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
+      const videoUrlParams = {
         instance,
         singlepart: 'video',
         tag: 'PixelData',
         url,
-      });
+      };
+      const videoUrl = dataSource.retrieve.directURL(videoUrlParams);
+      const getVideoUrl = dataSource.retrieve.renderedURL
+        ? options => dataSource.retrieve.renderedURL({ ...videoUrlParams, url: videoUrl }, options)
+        : undefined;
       const displaySet = {
         //plugin: id,
         Modality,
@@ -70,12 +76,15 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SeriesDescription,
         SeriesNumber,
         SeriesDate,
+        SeriesTime,
         SOPInstanceUID,
         SeriesInstanceUID,
         StudyInstanceUID,
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
+        videoUrl,
+        getVideoUrl,
         viewportType: csEnums.ViewportType.VIDEO,
         instances: [instance],
         getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance),

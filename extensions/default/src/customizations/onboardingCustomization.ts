@@ -167,7 +167,9 @@ export default {
         {
           id: 'changeLayout',
           title: i18n.t('Onboarding:Changing Layout'),
-          text: i18n.t('Onboarding:You can change the layout of the viewer using the layout button.'),
+          text: i18n.t(
+            'Onboarding:You can change the layout of the viewer using the layout button, including MPR for multi-planar views.'
+          ),
           attachTo: {
             element: '[data-cy="Layout"]',
             on: 'bottom',
@@ -177,20 +179,6 @@ export default {
             event: 'click',
           },
           beforeShowPromise: () => waitForElement('[data-cy="Layout"]'),
-        },
-        {
-          id: 'selectLayout',
-          title: i18n.t('Onboarding:Selecting the MPR Layout'),
-          text: i18n.t('Onboarding:Select the MPR layout to view the images in MPR mode.'),
-          attachTo: {
-            element: '[data-cy="MPR"]',
-            on: 'left-start',
-          },
-          advanceOn: {
-            selector: '[data-cy="MPR"]',
-            event: 'click',
-          },
-          beforeShowPromise: () => waitForElement('[data-cy="MPR"]'),
         },
       ],
       tourOptions: {

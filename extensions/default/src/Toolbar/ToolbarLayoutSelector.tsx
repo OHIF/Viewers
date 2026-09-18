@@ -1,6 +1,5 @@
 // Updated ToolbarLayoutSelector.tsx
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { CommandsManager } from '@ohif/core';
 
 import { LayoutSelector } from '@ohif/ui-next';
@@ -109,13 +108,12 @@ function ToolbarLayoutSelectorWithServices({
       ];
 
   // Unified selection handler that dispatches to the appropriate command
-  const handleSelectionChange = useCallback(
-    (commandOptions, isPreset) => {
+  const handleSelectionChange = (commandOptions, isPreset) => {
       if (isPreset) {
-        // Advanced preset selection
+        // Advanced preset selection: apply the stage layout, not a cached custom grid
         commandsManager.run({
           commandName: 'setHangingProtocol',
-          commandOptions,
+          commandOptions: { ...commandOptions, restoreCachedLayout: false },
         });
       } else {
         // Common preset or custom grid selection
@@ -124,9 +122,7 @@ function ToolbarLayoutSelectorWithServices({
           commandOptions,
         });
       }
-    },
-    [commandsManager]
-  );
+  };
 
   return (
     <div
@@ -194,11 +190,6 @@ function ToolbarLayoutSelectorWithServices({
   );
 }
 
-ToolbarLayoutSelectorWithServices.propTypes = {
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object,
-  rows: PropTypes.number,
-  columns: PropTypes.number,
-};
+
 
 export default ToolbarLayoutSelectorWithServices;

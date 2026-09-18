@@ -1,4 +1,12 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -10,6 +18,7 @@ test('should display the cobb angle tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.cobbAngle.click();
@@ -22,9 +31,25 @@ test('should display the cobb angle tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.cobbangle.cobbangleDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.cobbangle.cobbangleDisplayedCorrectly,
+  });
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  const expectedCobbAngle = 1.66;
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'CobbAngle',
+    expectedPanelPrimaryLines: [measurementTextFormatters.angleLine(`${expectedCobbAngle}`)],
+    expectedSvgLines: [measurementTextFormatters.angleLine(`${expectedCobbAngle}`)],
+    assertStats: stats => {
+      expect(stats.angle as number).toBeCloseTo(expectedCobbAngle, 2);
+    },
+  });
 });

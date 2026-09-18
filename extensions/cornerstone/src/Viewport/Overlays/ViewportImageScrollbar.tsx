@@ -1,8 +1,14 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Enums, utilities as csUtils } from '@cornerstonejs/core';
+import { utilities as csUtils } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui-next';
 import { isVolume3DViewportType } from '../../utils/getLegacyViewportType';
+import { getSliceEventName, getViewportSliceCount } from '../../utils/viewportDataShape';
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -47,10 +53,10 @@ function CornerstoneImageScrollbar({
 
     try {
       const imageIndex = viewport.getCurrentImageIdIndex();
-      const numberOfSlices = viewport.getNumberOfSlices();
+      const numberOfSlices = getViewportSliceCount(viewportData, viewport);
 
       setImageSliceData({
-        imageIndex: imageIndex,
+        imageIndex,
         numberOfSlices,
       });
     } catch (error) {
@@ -62,11 +68,7 @@ function CornerstoneImageScrollbar({
     if (!viewportData) {
       return;
     }
-    const { viewportType } = viewportData;
-    const eventId =
-      (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_NEW_IMAGE) ||
-      (viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE) ||
-      Enums.Events.IMAGE_RENDERED;
+    const eventId = getSliceEventName(viewportData);
 
     const updateIndex = event => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -99,14 +101,6 @@ function CornerstoneImageScrollbar({
   );
 }
 
-CornerstoneImageScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  scrollbarHeight: PropTypes.string,
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
+
 
 export default CornerstoneImageScrollbar;

@@ -23,6 +23,7 @@ concurrency:
 jobs:
   playwright-tests:
     timeout-minutes: 120
+    environment: fork-pr-approval
     runs-on: [self-hosted, nashua]
     strategy:
       fail-fast: false

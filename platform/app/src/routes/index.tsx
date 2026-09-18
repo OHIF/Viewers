@@ -4,20 +4,27 @@ import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
 // Study list variants are selected by the `workList.variant` customization:
-// - `'legacy'`  → LegacyWorkList (the pre-3.13 study list)
-// - anything else (including `'default'`) → WorkList (ui-next study list)
+// - 'legacy'  -> LegacyWorkList (the pre-3.13 study list; deprecated, removed in a future release)
+// - anything else (including 'default') -> WorkList (ui-next study list)
 import WorkList from './WorkList/WorkList';
-import LegacyWorkList from './LegacyWorkList/LegacyWorkList';
 import DataSourceWrapper from './DataSourceWrapper';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
-import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
+
+// The legacy list is its own chunk, fetched only when the variant selects it, so
+// deployments on the default list do not download @ohif/ui or react-select.
+const LazyLegacyWorkList = React.lazy(() => import('./LegacyWorkList/LegacyWorkList'));
+const LegacyWorkList = (props: React.ComponentProps<typeof LazyLegacyWorkList>) => (
+  <React.Suspense fallback={null}>
+    <LazyLegacyWorkList {...props} />
+  </React.Suspense>
+);
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -29,10 +36,6 @@ const NotFoundServer = ({
       </div>
     </div>
   );
-};
-
-NotFoundServer.propTypes = {
-  message: PropTypes.string,
 };
 
 const NotFoundStudy = () => {
@@ -63,10 +66,6 @@ const NotFoundStudy = () => {
       </div>
     </div>
   );
-};
-
-NotFoundStudy.propTypes = {
-  message: PropTypes.string,
 };
 
 // TODO: Include "routes" debug route if dev build
@@ -131,7 +130,7 @@ const createRoutes = ({
     path: '/',
     children: DataSourceWrapper,
     private: true,
-    props: { children: WorkListComponent, servicesManager, extensionManager },
+    props: { children: WorkListComponent, servicesManager, extensionManager, commandsManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');
@@ -148,7 +147,15 @@ const createRoutes = ({
     const [appConfig] = useAppConfig();
     const { showErrorDetails } = appConfig;
 
-    history.navigate = useNavigate();
+    const navigate = useNavigate();
+
+    // Assigned in an effect, not during render: history is a module singleton and
+    // writing to it mid-render is an external mutation the compiler refuses. Its
+    // setter takes only the first value it is given, and the sole consumer calls
+    // history.navigate() from a command, well after mount.
+    React.useEffect(() => {
+      history.navigate = navigate;
+    }, [navigate]);
 
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (

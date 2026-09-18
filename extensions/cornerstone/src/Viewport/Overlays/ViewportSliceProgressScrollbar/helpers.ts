@@ -1,6 +1,6 @@
-import { Enums } from '@cornerstonejs/core';
 import { ViewportData } from './types';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
+import { getViewportAdapter } from '../../../services/ViewportService/adapter';
 
 export function getImageIndexFromEvent(event): number | undefined {
   const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;
@@ -24,12 +24,17 @@ export function isProgressFullMode(viewportData: ViewportData, viewport): boolea
     return false;
   }
 
-  if (viewportData.viewportType === Enums.ViewportType.STACK) {
+  // A stack renders the full progress UI; an acquisition-plane volume is the
+  // volume-mode equivalent. The adapter classifies both lanes (legacy by
+  // viewport type / isInAcquisitionPlane; native by content mode + view-state
+  // orientation, since PLANAR_NEXT collapses the runtime type).
+  const adapter = getViewportAdapter(viewport);
+  const shape = adapter.getShape();
+  if (shape === 'stack') {
     return true;
   }
-
-  if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-    return !!viewport.isInAcquisitionPlane?.();
+  if (shape === 'volume') {
+    return adapter.isInAcquisitionPlane();
   }
 
   return false;

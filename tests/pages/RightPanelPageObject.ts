@@ -21,6 +21,77 @@ export class RightPanelPageObject {
     this.DOMOverlayPageObject = new DOMOverlayPageObject(page);
   }
 
+  /**
+   * Expands the collapsible segmentation appearance config section
+   */
+  private async expandSegmentationConfig(typeSuffix: string) {
+    const opacityControl = this.page.getByTestId(`segmentation-config-opacity-${typeSuffix}`);
+    if (await opacityControl.isVisible()) {
+      return;
+    }
+    await this.page.getByTestId(`segmentation-config-toggle-${typeSuffix}`).click();
+    await opacityControl.waitFor({ state: 'visible' });
+  }
+
+  /**
+   * A numeric config control such as Opacity or Border, set through its number input. The
+   * input applies a typed value on blur, restoring the previous one if it is not a number.
+   */
+  private getNumericConfig(control: 'opacity' | 'border' | 'opacity-inactive', typeSuffix: string) {
+    const numberInput = this.page
+      .getByTestId(`segmentation-config-${control}-${typeSuffix}`)
+      .locator('input[inputmode="decimal"]');
+
+    return {
+      numberInput,
+      setValue: async (value: string) => {
+        await this.expandSegmentationConfig(typeSuffix);
+        await numberInput.fill(value);
+        await numberInput.blur();
+      },
+    };
+  }
+
+  /**
+   * The appearance config shared by the segmentation panels.
+   */
+  private getSegmentationConfig(typeSuffix: string) {
+    const page = this.page;
+    const openFillOutlineBorderConfig = () => this.expandSegmentationConfig(typeSuffix);
+    const renderInactiveSwitch = page.getByTestId(
+      `segmentation-config-render-inactive-${typeSuffix}`
+    );
+    const displayMode = (mode: 'fill-and-outline' | 'outline' | 'fill') => {
+      const button = page.getByTestId(`segmentation-config-display-${mode}-${typeSuffix}`);
+      return {
+        button,
+        click: async () => {
+          await openFillOutlineBorderConfig();
+          await button.click();
+        },
+      };
+    };
+
+    return {
+      open: openFillOutlineBorderConfig,
+      display: {
+        fillAndOutline: displayMode('fill-and-outline'),
+        outline: displayMode('outline'),
+        fill: displayMode('fill'),
+      },
+      opacity: this.getNumericConfig('opacity', typeSuffix),
+      border: this.getNumericConfig('border', typeSuffix),
+      opacityInactive: this.getNumericConfig('opacity-inactive', typeSuffix),
+      renderInactiveSegmentations: {
+        locator: renderInactiveSwitch,
+        toggleDisplayInactiveSwitch: async () => {
+          await openFillOutlineBorderConfig();
+          await renderInactiveSwitch.click();
+        },
+      },
+    };
+  }
+
   private getCollapsedMoreMenu(typeSuffix?: string) {
     const page = this.page;
     const testId = typeSuffix
@@ -302,14 +373,6 @@ export class RightPanelPageObject {
       // Retrying-friendly locator for `expect(...).toHaveCount(n)` — prefer this
       // over the one-shot getSegmentCount() when asserting row counts.
       rows: page.getByTestId('data-row'),
-      /**
-       * @deprecated One-shot count that races the render. Prefer
-       * `expect(panel.rows).toHaveCount(n)` for assertions. Use this only to
-       * capture a stable baseline value (e.g. for a delta).
-       */
-      getSegmentCount: async () => {
-        return await page.getByTestId('data-row').count();
-      },
       // get all the segment titles in the panel
       getSegmentLabels: () => {
         return page.getByTestId('data-row-title');
@@ -352,7 +415,7 @@ export class RightPanelPageObject {
       },
       tools: {
         get splineContour() {
-          const button = page.getByTestId('SplineContourSegmentationTool');
+          const button = page.getByTestId('SplineContourSegmentationTool-btn');
           // Maps a friendly spline name to the underlying cornerstone tool name,
           // which is also the data-cy of its option in the Spline Type dropdown.
           const splineTypeToolNames = {
@@ -377,7 +440,7 @@ export class RightPanelPageObject {
           };
         },
         get livewireContour() {
-          const button = page.getByTestId('LivewireContourSegmentationTool');
+          const button = page.getByTestId('LivewireContourSegmentationTool-btn');
           return {
             button,
             click: async () => {
@@ -386,14 +449,92 @@ export class RightPanelPageObject {
           };
         },
         get freehandContour() {
-          const button = page.getByTestId('PlanarFreehandContourSegmentationTool');
+          const button = page.getByTestId('PlanarFreehandContourSegmentationTool-btn');
           return {
             button,
             click: async () => {
               await button.click();
+              // data-active is stamped on the tool's span wrapper, not the button.
+              await page.waitForSelector(
+                '[data-cy="PlanarFreehandContourSegmentationTool"][data-active="true"]'
+              );
             },
           };
         },
+      },
+      config: this.getSegmentationConfig('Contour'),
+      // The "Combine Contours" utility popover. Its toggle button closes an open
+      // popover, so every action opens it only when it is not already showing.
+      get combineContours() {
+        const toggleButton = page.getByTestId('LogicalContourOperations');
+        const applyButton = page.getByTestId('apply-logical-contour-operation');
+        const open = async () => {
+          if (await applyButton.isVisible()) {
+            return;
+          }
+          await toggleButton.click();
+          await applyButton.waitFor({ state: 'visible' });
+        };
+        return {
+          toggleButton,
+          open,
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await applyButton.waitFor({ state: 'hidden' });
+          },
+          selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
+            await open();
+            await page.getByTestId(`logical-contour-operation-${operation}`).click();
+          },
+          selectSegmentA: async (label: string) => {
+            await open();
+            await page.getByTestId('logical-contour-segment-a-trigger').click();
+            await page.getByRole('option', { name: label }).click();
+          },
+          selectSegmentB: async (label: string) => {
+            await open();
+            await page.getByTestId('logical-contour-segment-b-trigger').click();
+            await page.getByRole('option', { name: label }).click();
+          },
+          apply: async () => {
+            await open();
+            await applyButton.click();
+          },
+          enableCreateNewSegment: async () => {
+            await open();
+            await page.getByTestId('logical-contour-create-new-segment-switch').click();
+          },
+        };
+      },
+      // The "Smooth Contours" utility popover. Its actions operate on the active
+      // segment only, so a segment row must be clicked before invoking them. The
+      // toggle button closes an open popover, so every action opens it only when
+      // it is not already showing.
+      get smoothContours() {
+        const toggleButton = page.getByTestId('SmoothContours');
+        const smoothEdgesButton = page.getByRole('button', { name: 'Smooth Edges' });
+        const open = async () => {
+          if (await smoothEdgesButton.isVisible()) {
+            return;
+          }
+          await toggleButton.click();
+          await smoothEdgesButton.waitFor({ state: 'visible' });
+        };
+        return {
+          toggleButton,
+          open,
+          // Dismisses the popover so it no longer overlaps the viewport.
+          close: async () => {
+            await page.keyboard.press('Escape');
+            await smoothEdgesButton.waitFor({ state: 'hidden' });
+          },
+          // Runs the smoothContours command (b-spline resample of the outline).
+          smoothEdges: async () => {
+            await open();
+            await smoothEdgesButton.click();
+          },
+        };
       },
     };
   }
@@ -404,11 +545,13 @@ export class RightPanelPageObject {
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
     const segmentationSelect = this.getSegmentationSelect('Labelmap');
+    const segmentsVisibilityToggle = this.getSegmentsVisibilityToggle('Labelmap');
 
     return {
       addSegmentationButton,
       addSegmentButton,
       menuButton,
+      segmentsVisibilityToggle,
       panel,
       segmentationSelect,
       select: async () => {
@@ -446,6 +589,9 @@ export class RightPanelPageObject {
         get threshold() {
           const button = page.getByTestId('Threshold-btn');
           const input = page.locator(`css=div[data-cy="threshold-radius"] input`);
+          const rangeContainer = page.getByTestId('threshold-range');
+          const rangeInputs = rangeContainer.locator('input');
+          const rangeSliders = rangeContainer.getByRole('slider');
           return {
             button,
             input,
@@ -455,54 +601,20 @@ export class RightPanelPageObject {
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
             },
+            range: {
+              select: async () => {
+                await page.getByTestId('dynamic-mode-ThresholdRange').click();
+              },
+              lowerInput: rangeInputs.nth(0),
+              upperInput: rangeInputs.nth(1),
+              lowerSlider: rangeSliders.nth(0),
+              upperSlider: rangeSliders.nth(1),
+            },
           };
         },
       },
 
-      get config() {
-        const configToggle = page.getByTestId('segmentation-config-toggle-Labelmap');
-        return {
-          toggle: {
-            locator: configToggle,
-            click: async () => {
-              await configToggle.click();
-            },
-          },
-
-          get opacity() {
-            const container = page.getByTestId('segmentation-config-opacity-Labelmap');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-
-          get border() {
-            const container = page.getByTestId('segmentation-config-border-Labelmap');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-
-          get opacityInactive() {
-            const container = page.getByTestId('segmentation-config-opacity-inactive-Labelmap');
-            return {
-              input: container.locator('input'),
-              slider: container.getByRole('slider'),
-              fill: async (value: string) => {
-                await container.locator('input').fill(value);
-              },
-            };
-          },
-        };
-      },
+      config: this.getSegmentationConfig('Labelmap'),
 
       get segmentBidirectional() {
         const button = page.getByTestId('SegmentBidirectional');
