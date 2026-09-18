@@ -1,10 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAppConfig } from '@state';
+import type { RunInput } from '@ohif/core/src/classes/CommandsManager';
+import { useCustomization } from '@ohif/core';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync, useWorkListToolbarActions } from '../../hooks';
 
-import { StudyList, Icons, InvestigationalUseDialog, type StudyRow } from '@ohif/ui-next';
+import {
+  StudyList,
+  Icons,
+  InvestigationalUseDialog,
+  useSessionStorage,
+  type StudyRow,
+  type OnStudyDoubleClick,
+} from '@ohif/ui-next';
 import { StudyListSettingsPopover } from './StudyListSettingsPopover';
 import { SidePanelPreview } from './SidePanelPreview';
 
@@ -13,6 +22,7 @@ type Props = withAppTypes & {
   dataSource: any;
   isLoadingData: boolean;
   hasFetchedOnce?: boolean;
+  isDataSourceInitialized?: boolean;
   dataPath?: string;
   onRefresh: () => void;
 };
@@ -22,16 +32,19 @@ export default function WorkList({
   dataSource,
   isLoadingData,
   hasFetchedOnce = false,
+  isDataSourceInitialized = false,
   dataPath,
   onRefresh,
-  servicesManager,
   extensionManager,
+  commandsManager,
 }: Props) {
   const [appConfig] = useAppConfig();
-  const { customizationService } = servicesManager.services;
-  const LoadingIndicatorProgress = customizationService.getCustomization(
-    'ui.loadingIndicatorProgress'
-  ) as React.ComponentType<{ className?: string }> | undefined;
+  // Customizations are read through useCustomization — it subscribes to the
+  // customization service, so late registrations and runtime changes propagate
+  // instead of freezing at the value seen on first render.
+  const LoadingIndicatorProgress = useCustomization('ui.loadingIndicatorProgress') as
+    | React.ComponentType<{ className?: string }>
+    | undefined;
   const [isFilterPending, setIsFilterPending] = useState(false);
   const showStudyListLoading = Boolean(
     (appConfig.showLoadingIndicator && isLoadingData) || !hasFetchedOnce || isFilterPending
@@ -45,14 +58,51 @@ export default function WorkList({
   const defaultSorting = useMemo(() => [{ id: 'studyDateTime', desc: true }], []);
 
   const [selected, setSelected] = useState<StudyRow | null>(null);
-  const [isPreviewOpen, setPreviewOpen] = useState(true);
 
+  // Persist the preview panel open/closed state so it survives navigating
+  // into a study and back. The hook only handles objects, hence the wrapper.
+  const [previewState, updatePreviewState] = useSessionStorage({
+    key: 'studyList.previewOpen',
+    defaultValue: { open: true },
+    clearOnUnload: false,
+  });
+  const isPreviewOpen = previewState.open !== false;
+  const setPreviewOpen = useCallback(
+    (open: boolean) => updatePreviewState({ open }),
+    [updatePreviewState]
+  );
+
+  // `workList.onStudyDoubleClick` is the command (or command list) run when a
+  // study row is double-clicked — by default `launchDefaultMode`, which
+  // launches the default workflow, falling back to the first applicable one.
+  // The study and its applicable workflows are merged into the command options
+  // at call time, so an override only needs to name a command and any static
+  // options (e.g. a specific `workflowId`).
+  const studyDoubleClickCommand = useCustomization('workList.onStudyDoubleClick') as RunInput;
+  const onStudyDoubleClick = useCallback<OnStudyDoubleClick>(
+    (study, { defaultWorkflow, workflows }) => {
+      commandsManager.run(studyDoubleClickCommand, { study, defaultWorkflow, workflows });
+    },
+    [commandsManager, studyDoubleClickCommand]
+  );
+
+  // `workList.columns` is registered as a value (StudyList.defaultColumns) and
+  // merged via customization commands, so we read the result directly.
+  const customizedColumns = useCustomization('workList.columns');
   const columns = useMemo(() => {
-    // `workList.columns` is registered as a value (StudyList.defaultColumns) and
-    // merged via customization commands, so we read the result directly.
-    const customized = customizationService.getCustomization('workList.columns');
-    return Array.isArray(customized) ? customized : StudyList.defaultColumns;
-  }, [customizationService]);
+    const resolved = Array.isArray(customizedColumns)
+      ? customizedColumns
+      : StudyList.defaultColumns;
+    // Expand data-only column specs. A `?customization=` JSONC file (or any
+    // serializable source) cannot carry render functions, so an entry that has
+    // an `id` but no `accessorFn`/`cell` is turned into a display-only text
+    // column that reads `row[id]` — matching `StudyList.textColumn`.
+    return resolved.map((col: any) =>
+      col && typeof col === 'object' && col.id && !col.accessorFn && !col.cell
+        ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
+        : col
+    );
+  }, [customizedColumns]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
     <Icons.OHIFLogoHorizontal
@@ -61,7 +111,11 @@ export default function WorkList({
     />
   );
 
-  const toolbarActions = useWorkListToolbarActions(servicesManager, dataSource, onRefresh);
+  const toolbarActions = useWorkListToolbarActions(
+    dataSource,
+    onRefresh,
+    isDataSourceInitialized
+  );
 
   const previewDefaultSize = useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
@@ -107,12 +161,13 @@ export default function WorkList({
               isLoading={showStudyListLoading}
               loadingComponent={
                 LoadingIndicatorProgress ? (
-                  <LoadingIndicatorProgress className="!relative bg-black" />
+                  <LoadingIndicatorProgress className="bg-background !relative" />
                 ) : (
                   <div className="h-8 w-8" />
                 )
               }
               title={'Study List'}
+              onStudyDoubleClick={studyDoubleClickCommand ? onStudyDoubleClick : undefined}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
               toolbarRightActionsComponent={toolbarActions}
@@ -129,7 +184,6 @@ export default function WorkList({
               <SidePanelPreview
                 dataSource={dataSource}
                 selected={selected}
-                servicesManager={servicesManager}
               />
             </StudyList.Preview>
           </StudyList>
@@ -138,4 +192,3 @@ export default function WorkList({
     </div>
   );
 }
-

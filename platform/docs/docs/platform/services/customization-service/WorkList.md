@@ -1,7 +1,8 @@
 ---
+sidebar_label: Work List
 title: Work List Customization
 summary: Documentation for configuring the OHIF WorkList study-list route — selecting between the new (default) and legacy variants, the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Work List
@@ -18,6 +19,51 @@ Selects which study-list route is mounted at `/`.
 - `'legacy'`: the pre-3.13 WorkList (internally `LegacyWorkList`). Use this as an opt-out while migrating to the new study list.
 
 The customization is read once during route registration, so changing it requires a reload.
+
+### Turning on the legacy list
+
+The viewer ships a URL customization file that sets this value, at
+`platform/app/public/customizations/worklist/legacyWorkList.jsonc`:
+
+```jsonc
+{
+  "global": {
+    "workList.variant": { "$set": "legacy" }
+  }
+}
+```
+
+Load it in either of two ways:
+
+- Append `?customization=worklist/legacyWorkList` to the viewer URL.
+- Add `worklist/legacyWorkList` to `appConfig.customizationService.requires`.
+
+The `?customization=` parameter is off unless the app config sets
+`customizationUrlPrefixes`. The configs `dev.js`, `e2e.js`, `netlify.js` and
+`customization.js` set that property; `default.js` does not. `pnpm run dev`
+selects `dev.js`, so `http://localhost:3000/?customization=worklist/legacyWorkList`
+works with no config change.
+
+The file applies in the `global` phase. That phase is applied before the app
+renders, and therefore before route registration reads `workList.variant`.
+
+The legacy study list was verified in 3.14 through this customization file.
+
+:::warning The legacy list expects 3.13 paging
+`LegacyWorkList` still contains the server-paged rolling-window arithmetic of
+3.13, and it hard-codes its sort threshold at 100 results. The 3.14
+`DataSourceWrapper` issues one query and pages on the client. On a result set
+larger than one page, the page controls and the column sorting of the legacy
+list can behave incorrectly. Use a small result set when you compare the two
+study lists.
+:::
+
+:::warning Deprecated
+`'legacy'` and `LegacyWorkList` are deprecated and will be removed in a future
+release. Use the opt-out to finish migrating to the `workList.*`
+customizations below, then remove it. See the
+[3.13 to 3.14 WorkList guide](../../../migration-guide/3p13-to-3p14/work-list.md).
+:::
 
 ## `workList.previewSeriesView`
 
@@ -112,7 +158,7 @@ Two caveats: the server must actually return the tag (it has to support `include
 
 ### Gotchas and limitations
 
-- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortingFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
+- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
 - **The `actions` column should stay last (cosmetic).** Its hover menu is right-aligned to anchor the row end, so placing it mid-row just looks wrong — it's not a functional requirement. Insert new columns *before* it (e.g. `$splice` at its index, or the `$apply` pattern above); a bare `$push` lands *after* it, leaving the actions menu mid-row.
 - **Index-based commands are position-fragile.** `{ 2: { … } }` targets whatever is at index 2, which shifts if earlier columns are added/removed. Prefer `$apply` with a `findIndex`/`id` lookup for edits that should survive reordering.
 - If the merged value is not an array, WorkList falls back to `StudyList.defaultColumns`.

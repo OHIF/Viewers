@@ -45,7 +45,7 @@ function createTools({ utilityModule, commandsManager }) {
         toolName: toolNames.MarkerLabelmap,
       },
       {
-        toolName: toolNames.RegionSegmentPlus,
+        toolName: toolNames.ClickSegment,
       },
       {
         toolName: 'CircularEraser',
@@ -198,6 +198,18 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   tools.disabled.push(
     {
       toolName: utilityModule.exports.toolNames.Crosshairs,
+      // Bind Crosshairs to Primary+Shift (matching the longitudinal/tmtv modes)
+      // so it lives on its own mouse binding. Without a binding it activates on
+      // plain Primary and, being `disableOnPassive`, gets disabled the moment
+      // another Primary tool (brush/zoom/pan, all in this `mpr` group) is
+      // activated from the toolbar — making Crosshairs mutually exclusive with
+      // them. On its own binding it stays active alongside those tools.
+      bindings: [
+        {
+          mouseButton: utilityModule.exports.Enums.MouseBindings.Primary,
+          modifierKey: utilityModule.exports.Enums.KeyboardBindings.Shift,
+        },
+      ],
       configuration: {
         viewportIndicators: true,
         viewportIndicatorsConfig: {
@@ -258,7 +270,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);

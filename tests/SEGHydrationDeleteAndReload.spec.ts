@@ -34,7 +34,7 @@ test('should fully remove segmentation overlay after repeated load-and-delete cy
   await rightPanelPageObject.labelMapSegmentationPanel.panel.moreMenu.delete();
   await viewportRenderCycle;
 
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(0);
+  await expect(rightPanelPageObject.labelMapSegmentationPanel.panel.rows).toHaveCount(0);
 
   // reload SEG series
   viewportRenderCycle = waitForViewportRenderCycle(page);
@@ -57,7 +57,7 @@ test('should fully remove segmentation overlay after repeated load-and-delete cy
   await rightPanelPageObject.labelMapSegmentationPanel.panel.moreMenu.delete();
   await viewportRenderCycle;
 
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(0);
+  await expect(rightPanelPageObject.labelMapSegmentationPanel.panel.rows).toHaveCount(0);
 
   await checkForScreenshot(
     page,

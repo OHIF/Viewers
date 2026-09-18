@@ -19,7 +19,7 @@ import editPackageJson from './editPackageJson.js';
 import createLicense from './createLicense.js';
 import createReadme from './createReadme.js';
 import prettyPrint from './prettyPrint.js';
-import validateYarn from './validateYarn.js';
+import validatePnpm from './validatePnpm.js';
 
 export {
   getYarnInfo,
@@ -43,5 +43,5 @@ export {
   createLicense,
   createReadme,
   prettyPrint,
-  validateYarn,
+  validatePnpm,
 };

@@ -4,6 +4,7 @@ import datasourcesCustomization from './customizations/datasourcesCustomization'
 import multimonitorCustomization from './customizations/multimonitorCustomization';
 import customRoutesCustomization from './customizations/customRoutesCustomization';
 import studyBrowserCustomization from './customizations/studyBrowserCustomization';
+import thumbnailDetailsCustomization from './customizations/thumbnailDetailsCustomization';
 import overlayItemCustomization from './customizations/overlayItemCustomization';
 import contextMenuCustomization from './customizations/contextMenuCustomization';
 import contextMenuUICustomization from './customizations/contextMenuUICustomization';
@@ -18,12 +19,15 @@ import progressLoadingBarCustomization from './customizations/progressLoadingBar
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
 import aboutModalCustomization from './customizations/aboutModalCustomization';
+import appearanceModalCustomization from './customizations/appearanceModalCustomization';
 import userPreferencesCustomization from './customizations/userPreferencesCustomization';
 import reportDialogCustomization from './customizations/reportDialogCustomization';
 import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomization';
 import onboardingCustomization from './customizations/onboardingCustomization';
 import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
 import getWorkListCustomization from './customizations/workListCustomization';
+import headerRightSideCustomization from './customizations/headerRightSideCustomization';
+import hideHeaderUndoRedoCustomization from './customizations/hideHeaderUndoRedoCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -40,6 +44,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: helloPageCustomization,
     },
     {
+      name: 'theme',
+      value: appearanceModalCustomization,
+    },
+    {
       name: 'datasources',
       value: datasourcesCustomization,
     },
@@ -48,10 +56,17 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: multimonitorCustomization,
     },
     {
+      // Opt-in: drops the undo/redo buttons from the right side of the
+      // header's menu bar, leaving the rest of that list in place.
+      name: 'hideHeaderUndoRedo',
+      value: hideHeaderUndoRedoCustomization,
+    },
+    {
       name: 'default',
       value: {
         ...customRoutesCustomization,
         ...studyBrowserCustomization,
+        ...thumbnailDetailsCustomization,
         ...overlayItemCustomization,
         ...contextMenuCustomization,
         ...menuContentCustomization,
@@ -73,6 +88,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...onboardingCustomization,
         ...instanceSortingCriteriaCustomization,
         ...getWorkListCustomization(),
+        ...headerRightSideCustomization,
       },
     },
   ];

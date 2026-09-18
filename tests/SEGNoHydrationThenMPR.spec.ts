@@ -1,4 +1,10 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
@@ -27,6 +33,7 @@ test('should launch MPR with unhydrated SEG', async ({
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
+  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,

@@ -72,13 +72,22 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           }}
         >
           <TabsList>
-            <TabsTrigger value="fill-and-outline">
+            <TabsTrigger
+              value="fill-and-outline"
+              data-cy={`segmentation-config-display-fill-and-outline${dataCyTypeSuffix}`}
+            >
               <Icons.FillAndOutline className="text-primary" />
             </TabsTrigger>
-            <TabsTrigger value="outline">
+            <TabsTrigger
+              value="outline"
+              data-cy={`segmentation-config-display-outline${dataCyTypeSuffix}`}
+            >
               <Icons.OutlineOnly className="text-primary" />
             </TabsTrigger>
-            <TabsTrigger value="fill">
+            <TabsTrigger
+              value="fill"
+              data-cy={`segmentation-config-display-fill${dataCyTypeSuffix}`}
+            >
               <Icons.FillOnly className="text-primary" />
             </TabsTrigger>
           </TabsList>
@@ -124,10 +133,13 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
               mode="singleRange"
               min={0}
               max={10}
-              step={0.1}
+              step={1}
               value={outlineWidth}
               onChange={value =>
-                setOutlineWidth({ type: segmentationRepresentationTypes?.[0] }, value as number)
+                setOutlineWidth(
+                  { type: segmentationRepresentationTypes?.[0] },
+                  Math.round(value as number)
+                )
               }
             >
               <Numeric.SingleRange

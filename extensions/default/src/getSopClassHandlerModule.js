@@ -14,14 +14,13 @@ const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
 let appContext = {};
 
-const getDynamicVolumeInfo = instances => {
+const getDynamicVolumeInfo = imageIds => {
   const { extensionManager } = appContext;
 
   if (!extensionManager) {
     throw new Error('extensionManager is not available');
   }
 
-  const imageIds = instances.map(({ imageId }) => imageId);
   const volumeLoaderUtility = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.volumeLoader'
   );
@@ -34,8 +33,8 @@ const isMultiFrame = instance => {
   return instance.NumberOfFrames > 1;
 };
 
-function getDisplaySetInfo(instances) {
-  const dynamicVolumeInfo = getDynamicVolumeInfo(instances);
+function getDisplaySetInfo(instances, imageIds) {
+  const dynamicVolumeInfo = getDynamicVolumeInfo(imageIds);
   const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
   let displaySetInfo;
 
@@ -82,12 +81,13 @@ const makeDisplaySet = (instances, index) => {
   const imageSet = new ImageSet(instances);
   const { extensionManager } = appContext;
   const dataSource = extensionManager.getActiveDataSource()[0];
+  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
   const {
     isDynamicVolume,
     value: isReconstructable,
     averageSpacingBetweenFrames,
     dynamicVolumeInfo,
-  } = getDisplaySetInfo(instances);
+  } = getDisplaySetInfo(instances, imageIds);
 
   const volumeLoaderSchema = isDynamicVolume
     ? DYNAMIC_VOLUME_LOADER_SCHEME
@@ -124,7 +124,6 @@ const makeDisplaySet = (instances, index) => {
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
-  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
   let imageId = imageIds[Math.floor(imageIds.length / 2)];
   let thumbnailInstance = instances[Math.floor(instances.length / 2)];
   if (isDynamicVolume) {

@@ -4,6 +4,7 @@ import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getCommandsModule from './commandsModule';
+import getCustomizationModule from './getCustomizationModule';
 import { getToolbarModule } from './getToolbarModule';
 
 const Component = React.lazy(() => {
@@ -28,6 +29,7 @@ const extension = {
    */
   id,
   getCommandsModule,
+  getCustomizationModule,
   getToolbarModule,
   getViewportModule({ servicesManager, extensionManager, commandsManager }) {
     const ExtendedOHIFCornerstoneSEGViewport = props => {

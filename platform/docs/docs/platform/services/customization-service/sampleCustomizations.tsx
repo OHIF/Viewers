@@ -358,31 +358,6 @@ window.config = {
 
 export const workListCustomizations = [
   {
-    id: 'workList.variant',
-    description: (
-      <>
-        Selects which study-list route is mounted at <code>/</code>. Use <code>'default'</code>{' '}
-        (default customization value) for the new ui-next WorkList introduced in 3.13. Use{' '}
-        <code>'legacy'</code> to mount the pre-3.13 WorkList (internally{' '}
-        <code>LegacyWorkList</code>) as an opt-out while migrating. The customization is read once
-        during route registration, so changing it requires a reload.
-      </>
-    ),
-    default: 'default',
-    configuration: `
-window.config = {
-  // rest of window config
-  customizationService: [
-    {
-      'workList.variant': {
-        $set: 'legacy',
-      },
-    },
-  ],
-};
-  `,
-  },
-  {
     id: 'workList.previewSeriesView',
     description: (
       <>
@@ -393,8 +368,7 @@ window.config = {
         <code>'list'</code> when the active data source declares <code>thumbnailRendering</code> as{' '}
         <code>'wadors'</code> or <code>'thumbnailDirect'</code>, or declares{' '}
         <code>thumbnailRequestStrategy</code> as <code>'bulkDataRetrieve'</code> (its default
-        value), regardless of this setting. Currently only applies when <code>workList.variant</code> is{' '}
-        <code>'default'</code>.
+        value), regardless of this setting.
       </>
     ),
     default: 'all',
@@ -429,8 +403,7 @@ window.config = {
         <em>before</em> it with <code>$splice</code> rather than <code>$push</code>; and
         index-based edits are position-fragile (prefer <code>$apply</code>{' '}
         for id-based changes). If the merged value is not an array, WorkList falls back to the
-        defaults. Currently only applies when <code>workList.variant</code> is{' '}
-        <code>'default'</code>.
+        defaults.
       </>
     ),
     default: 'StudyList.defaultColumns',
@@ -488,8 +461,7 @@ window.config = {
         </ul>
         Use this to change the preview layout while keeping the fetch, abort, and thumbnail
         worker-pool logic intact. When unset, the built-in{' '}
-        <code>{'<StudyList.PreviewContainer>'}</code> layout is used. Currently only applies when{' '}
-        <code>workList.variant</code> is <code>'default'</code>.
+        <code>{'<StudyList.PreviewContainer>'}</code> layout is used.
       </>
     ),
     default: 'undefined',
@@ -525,6 +497,53 @@ window.config = {
   `,
   },
   {
+    id: 'workList.onStudyDoubleClick',
+    description: (
+      <>
+        The command run when a study row is double-clicked (the row is selected first). Accepts
+        anything <code>commandsManager.run</code> does: a command name string,{' '}
+        <code>{"{ commandName, commandOptions, context }"}</code>, an array of those, or a plain
+        function. At call time the following are merged into the command options (a plain
+        function receives them as its single argument):
+        <ul>
+          <li>
+            <code>study</code>: the double-clicked <code>StudyRow</code>.
+          </li>
+          <li>
+            <code>workflows</code>: the workflows applicable to the study, in the same order as
+            the row's Launch Workflow menu. Each has <code>id</code>, <code>displayName</code>,{' '}
+            <code>isDefault</code>, and <code>launchWithStudy(study)</code>.
+          </li>
+          <li>
+            <code>defaultWorkflow</code>: the user's default workflow when it applies to the
+            study, else <code>undefined</code>.
+          </li>
+        </ul>
+        The default <code>launchDefaultMode</code> command launches the default workflow, falling
+        back to the first applicable one. Modes can contribute their own commands via a{' '}
+        <code>getCommandsModule</code> export on the mode definition — these are registered at
+        app init in the <code>WORKLIST</code> context, before any mode route is entered.
+      </>
+    ),
+    default: "{ commandName: 'launchDefaultMode' }",
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workList.onStudyDoubleClick': {
+        // Always launch a specific mode on double click, regardless of the default.
+        $set: {
+          commandName: 'launchDefaultMode',
+          commandOptions: { workflowId: '@ohif/mode-longitudinal' },
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
     id: 'workList.settingsMenuItems',
     description: (
       <>
@@ -534,8 +553,7 @@ window.config = {
         defaults are <code>about</code>, <code>userPreferences</code>, and (when{' '}
         <code>appConfig.oidc</code> is configured) <code>logout</code>. Use it to reorder, remove,
         or insert items without rebuilding the popover shell. If the customization returns a
-        non-array value, WorkList falls back to the defaults. Currently only applies when{' '}
-        <code>workList.variant</code> is <code>'default'</code>.
+        non-array value, WorkList falls back to the defaults.
       </>
     ),
     default: '(defaults) => defaults',
@@ -1270,6 +1288,39 @@ window.config = {
   // rest of window config
   customizationService: [
     { 'ohif.aboutModal': { $set: MyAboutModal } },
+  ],
+};
+        `,
+  },
+  {
+    id: 'ohif.headerRightSide',
+    description: (
+      <>
+        The ordered list of components filling the right of the header's menu bar, ahead of the
+        settings menu. Each entry is rendered as a component in its own separated slot, so
+        reordering the array reorders the header, and an item that renders <code>null</code>{' '}
+        collapses its slot. Items take no props and may use hooks; see{' '}
+        <code>extensions/default/src/customizations/headerRightSideCustomization.ts</code> for the
+        default.
+      </>
+    ),
+    default: '{ items: [HeaderUndoRedo, HeaderPatientInfo] }',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        Reorder or extend the list with <code>$set</code> / <code>$push</code>. To drop just the
+        undo/redo buttons, <code>extension-default</code> ships that as a named module:{' '}
+        <code>'@ohif/extension-default.customizationModule.hideHeaderUndoRedo'</code>.
+      </p>
+    ),
+    configuration: `
+import HeaderPatientInfo from '@ohif/extension-default/src/ViewerLayout/HeaderPatientInfo';
+import HeaderUndoRedo from '@ohif/extension-default/src/ViewerLayout/HeaderUndoRedo';
+
+window.config = {
+  // rest of window config
+  customizationService: [
+    // Patient info first, then undo/redo.
+    { 'ohif.headerRightSide': { items: { $set: [HeaderPatientInfo, HeaderUndoRedo] } } },
   ],
 };
         `,
@@ -2105,6 +2156,117 @@ window.config = {
             commands: 'markAsFavorite',
           },
         ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.thumbnailDetails',
+    description:
+      'The items on the detail line of a study browser thumbnail, under the modality and ' +
+      'series description. Declared the same way as the viewport overlay items: each has an ' +
+      '`id`, an optional `condition` deciding whether to include it, and a value taken from ' +
+      'its `contentF`, from a named `source`, or from an `attribute` of the instance the ' +
+      'display set shows. `label` prefixes the value, `title` is its tooltip, and `iconName` ' +
+      'puts an icon before it. An item with no value is left out. `condition` and `iconName` ' +
+      'may each be a function or a name, so the whole line can be declared as data - see ' +
+      '`studyBrowser.thumbnailDetailSources` and `studyBrowser.thumbnailDetailTests` for the ' +
+      'names, and `?customization=studyBrowser/derivedDateTime` for an example of adding the ' +
+      'creation date/time that derived series are sorted by. An item naming a source or test ' +
+      'that is not registered is left out with a warning; if that leaves no items at all, the ' +
+      'thumbnail keeps its default detail line rather than showing an empty one.',
+    default: [
+      {
+        id: 'SeriesNumber',
+        label: 'S:',
+        source: 'seriesNumber',
+      },
+      {
+        id: 'InstanceCount',
+        source: 'numInstances',
+        iconName: ({ displaySet }) => displaySet?.countIcon || 'InfoSeries',
+      },
+    ],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'studyBrowser.thumbnailDetails': {
+        $push: [
+          {
+            id: 'InstanceDateTime',
+            // Named source and test, so this can also be written in a
+            // ?customization= JSONC file, which is data and never executed.
+            source: 'instanceDateTime',
+            condition: 'isDerivedDisplaySet',
+            title: 'Created',
+          },
+          {
+            // Or supply the functions directly.
+            id: 'BodyPart',
+            label: 'Part:',
+            attribute: 'BodyPartExamined',
+            condition: ({ displaySet }) => displaySet.Modality === 'CT',
+          },
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.thumbnailDetailSources',
+    description:
+      'Named value sources a `studyBrowser.thumbnailDetails` item can point at with `source`, ' +
+      'instead of supplying a `contentF` function. Each is called with ' +
+      '`{ displaySet, instance, formatters }`, where `instance` is the instance the display ' +
+      'set shows. `instanceDateTime` is the creation date/time that the series list is sorted ' +
+      'by, formatted to the minute. Add to it with `$merge`, as a `$set` replaces the whole ' +
+      'registry and so takes away the sources the default items name.',
+    default: {
+      seriesNumber: ({ displaySet }) => displaySet?.SeriesNumber,
+      numInstances: ({ displaySet }) =>
+        (displaySet?.numImageFrames ?? displaySet?.instances?.length) || 1,
+      seriesDate: ({ displaySet, formatters }) => formatters.formatDate(displaySet?.SeriesDate),
+      instanceDateTime: '(the creation date/time, see getLatestInstanceDateTime)',
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'studyBrowser.thumbnailDetailSources': {
+        $merge: {
+          seriesDescription: ({ displaySet }) => displaySet.SeriesDescription,
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.thumbnailDetailTests',
+    description:
+      'Named tests a `studyBrowser.thumbnailDetails` item can point at with `condition`, ' +
+      'instead of supplying a function. Each is called with the same properties as a source ' +
+      'and returns whether to include the item.',
+    default: {
+      isDerivedDisplaySet: ({ displaySet }) => !!displaySet?.isDerivedDisplaySet,
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'studyBrowser.thumbnailDetailTests': {
+        $merge: {
+          isMultiframe: ({ displaySet }) => displaySet.isMultiFrame,
+        },
       },
     },
   ],

@@ -1,4 +1,5 @@
 import AboutModal from './AboutModal.json';
+import AppearanceModal from './AppearanceModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
@@ -32,10 +33,12 @@ import Colormaps from './Colormaps.json';
 import PanelSUV from './PanelSUV.json';
 import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
 import USAnnotationPanel from './USAnnotationPanel.json';
+import EncapsulatedDocument from './EncapsulatedDocument.json';
 
 export default {
   'en-US': {
     AboutModal,
+    AppearanceModal,
     Buttons,
     CineDialog,
     Common,
@@ -69,5 +72,6 @@ export default {
     PanelSUV,
     ROIThresholdConfiguration,
     USAnnotationPanel,
+    EncapsulatedDocument,
   },
 };

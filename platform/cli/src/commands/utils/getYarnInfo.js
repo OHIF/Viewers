@@ -1,5 +1,6 @@
-import { info } from 'yarn-programmatic';
+import { execa } from 'execa';
 
 export default async function getYarnInfo(packageName) {
-  return await info(packageName);
+  const { stdout } = await execa('npm', ['info', packageName, '--json']);
+  return JSON.parse(stdout);
 }

@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportRenderCycle,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -111,9 +118,17 @@ test('should hydrate in MPR correctly', async ({
     screenShotPaths.jumpToMeasurementMPR.jumpInMPR
   );
 
+  const seriesChangeRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 30000 });
+
   await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
-  await page.waitForTimeout(5000);
+  await seriesChangeRenderCycle;
+  // Series change unloads the old volume and progressively streams the new
+  // one; the wait helper resolves when loadStatus.loaded flips true, but the
+  // MPR mappers can still be sampling stale low-res frames for one tick.
+  // Give the streaming tail a chance to upload before screenshotting.
+  await page.waitForTimeout(2000);
+  await waitForPaintToSettle(page);
 
   await checkForScreenshot(
     page,

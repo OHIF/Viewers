@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
 import { Icons } from '@ohif/ui-next';
 
@@ -32,9 +31,6 @@ function ViewportActionArrows({ onArrowsClick, className }) {
   );
 }
 
-ViewportActionArrows.propTypes = {
-  onArrowsClick: PropTypes.func.isRequired,
-  className: PropTypes.string,
-};
+
 
 export { ViewportActionArrows };

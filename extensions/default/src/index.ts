@@ -27,6 +27,7 @@ import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolSt
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import { callInputDialogAutoComplete, callInputDialog } from './utils/callInputDialog';
+import { releaseLocalWadouriRegistrations } from './utils/registerNaturalizedDatasetForLocalWadouri';
 import colorPickerDialog from './utils/colorPickerDialog';
 
 import promptSaveReport from './utils/promptSaveReport';
@@ -52,6 +53,9 @@ const defaultExtension: Types.Extensions.Extension = {
     useHangingProtocolStageIndexStore.getState().clearHangingProtocolStageIndexMap();
     useToggleHangingProtocolStore.getState().clearToggleHangingProtocol();
     useViewportsByPositionStore.getState().clearViewportsByPosition();
+    // Free the Part 10 Blobs (and any parsed copies) retained for locally
+    // generated instances (SEG etc.) registered with the wadouri loader.
+    releaseLocalWadouriRegistrations();
   },
   getDataSourcesModule,
   getViewportModule,

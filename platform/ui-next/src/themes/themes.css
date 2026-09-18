@@ -1,0 +1,206 @@
+/* Theme Presets
+ * Complete token sets applied via .theme-* class on <body>.
+ * Default theme ("Tonal: OHIF Blue") = no class (uses :root values from tailwind.css).
+ * Outside @layer base so presets override :root via proximity on <body>.
+ *
+ * Tonal themes: full hue-shifted palettes (surfaces, borders, text all carry the theme hue).
+ * Neutral themes: desaturated/achromatic surfaces with a colored primary accent.
+ */
+
+/* ─── Tonal: Orchid ──────────────────────────────────────────────────── */
+
+.theme-orchid {
+  --highlight: 292 75% 62%;
+  --neutral: 270 18% 55%;
+  --neutral-light: 275 35% 75%;
+  --neutral-dark: 268 20% 24%;
+  --background: 270 45% 6%;
+  --foreground: 280 15% 96%;
+  --card: 268 40% 10%;
+  --card-foreground: 280 15% 96%;
+  --popover: 264 48% 13%;
+  --popover-foreground: 280 15% 96%;
+  --primary: 270 85% 65%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 268 45% 32%;
+  --secondary-foreground: 275 45% 88%;
+  --muted: 268 40% 10%;
+  --muted-foreground: 272 30% 60%;
+  --accent: 268 50% 20%;
+  --accent-foreground: 280 15% 96%;
+  --destructive: 0 65% 40%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 268 30% 18%;
+  --input: 268 40% 25%;
+  --ring: 270 80% 60%;
+  --chart-1: 270 70% 58%;
+  --chart-2: 160 55% 45%;
+  --chart-3: 35 80% 55%;
+  --chart-4: 200 65% 55%;
+  --chart-5: 340 70% 55%;
+}
+
+/* ─── Tonal: Arctic ──────────────────────────────────────────────────── */
+
+.theme-arctic {
+  --highlight: 173 81% 52%;
+  --neutral: 185 20% 55%;
+  --neutral-light: 180 40% 78%;
+  --neutral-dark: 190 18% 22%;
+  --background: 0 0% 0%;
+  --foreground: 180 10% 97%;
+  --card: 203 39% 9%;
+  --card-foreground: 180 10% 97%;
+  --popover: 202 54% 11%;
+  --popover-foreground: 180 10% 97%;
+  --primary: 175 85% 42%;
+  --primary-foreground: 185 50% 8%;
+  --secondary: 180 45% 28%;
+  --secondary-foreground: 175 50% 88%;
+  --muted: 203 39% 9%;
+  --muted-foreground: 185 30% 60%;
+  --accent: 185 55% 18%;
+  --accent-foreground: 180 10% 97%;
+  --destructive: 0 65% 35%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 190 25% 17%;
+  --input: 223 40% 24%;
+  --ring: 175 85% 42%;
+  --chart-1: 175 75% 45%;
+  --chart-2: 140 60% 42%;
+  --chart-3: 35 80% 55%;
+  --chart-4: 280 65% 58%;
+  --chart-5: 330 75% 55%;
+}
+
+/* ─── Tonal: Verdant ─────────────────────────────────────────────────── */
+
+.theme-verdant {
+  --highlight: 152 79% 52%;
+  --neutral: 150 15% 52%;
+  --neutral-light: 145 30% 72%;
+  --neutral-dark: 155 18% 24%;
+  --background: 155 40% 5%;
+  --foreground: 140 15% 95%;
+  --card: 152 35% 9%;
+  --card-foreground: 140 15% 95%;
+  --popover: 167 65% 10%;
+  --popover-foreground: 140 15% 95%;
+  --primary: 152 75% 40%;
+  --primary-foreground: 155 50% 8%;
+  --secondary: 150 40% 26%;
+  --secondary-foreground: 145 40% 85%;
+  --muted: 152 35% 9%;
+  --muted-foreground: 148 25% 55%;
+  --accent: 150 45% 16%;
+  --accent-foreground: 140 15% 95%;
+  --destructive: 0 65% 38%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 150 25% 16%;
+  --input: 150 35% 22%;
+  --ring: 152 75% 40%;
+  --chart-1: 152 70% 42%;
+  --chart-2: 200 60% 48%;
+  --chart-3: 35 80% 55%;
+  --chart-4: 280 60% 55%;
+  --chart-5: 340 70% 52%;
+}
+
+/* ─── Neutral: Midnight ──────────────────────────────────────────────── */
+
+.theme-midnight {
+  --highlight: 188 90% 58%;
+  --neutral: 213 22% 59%;
+  --neutral-light: 214 69% 81%;
+  --neutral-dark: 214 16% 21%;
+  --background: 240 15% 3%;
+  --foreground: 0 0% 99%;
+  --card: 240 12% 8%;
+  --card-foreground: 0 0% 99%;
+  --popover: 225 45% 13%;
+  --popover-foreground: 0 0% 99%;
+  --primary: 210 100% 62%;
+  --primary-foreground: 0 0% 99%;
+  --secondary: 215 55% 32%;
+  --secondary-foreground: 200 60% 88%;
+  --muted: 240 12% 8%;
+  --muted-foreground: 210 40% 70%;
+  --accent: 220 65% 20%;
+  --accent-foreground: 0 0% 99%;
+  --destructive: 0 70% 35%;
+  --destructive-foreground: 0 0% 99%;
+  --border: 240 10% 18%;
+  --input: 225 35% 24%;
+  --ring: 210 100% 62%;
+  --chart-1: 210 85% 55%;
+  --chart-2: 165 70% 42%;
+  --chart-3: 35 85% 52%;
+  --chart-4: 275 70% 58%;
+  --chart-5: 335 80% 52%;
+}
+
+/* ─── Neutral: Slate ─────────────────────────────────────────────────── */
+
+.theme-slate {
+  --highlight: 217 97% 52%;
+  --neutral: 0 0% 55%;
+  --neutral-light: 0 0% 75%;
+  --neutral-dark: 0 0% 25%;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 96%;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 96%;
+  --popover: 0 0% 9%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 230 75% 55%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 25%;
+  --secondary-foreground: 0 0% 85%;
+  --muted: 0 0% 7%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 0 0% 18%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 65% 40%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 18%;
+  --input: 0 0% 22%;
+  --ring: 215 75% 55%;
+  --chart-1: 215 70% 55%;
+  --chart-2: 160 55% 45%;
+  --chart-3: 35 75% 55%;
+  --chart-4: 280 60% 58%;
+  --chart-5: 340 70% 55%;
+}
+
+/* ─── Neutral: Deep ──────────────────────────────────────────────────── */
+
+.theme-deep {
+  --highlight: 184 53% 54%;
+  --neutral: 215 15% 50%;
+  --neutral-light: 210 20% 68%;
+  --neutral-dark: 220 18% 22%;
+  --background: 0 0% 0%;
+  --foreground: 215 15% 82%;
+  --card: 218 25% 5%;
+  --card-foreground: 215 15% 82%;
+  --popover: 215 30% 8%;
+  --popover-foreground: 215 15% 82%;
+  --primary: 200 43% 48%;
+  --primary-foreground: 210 20% 92%;
+  --secondary: 218 30% 18%;
+  --secondary-foreground: 215 25% 75%;
+  --muted: 214 28% 5%;
+  --muted-foreground: 215 18% 48%;
+  --accent: 216 32% 12%;
+  --accent-foreground: 215 15% 82%;
+  --destructive: 0 50% 35%;
+  --destructive-foreground: 0 15% 90%;
+  --border: 218 22% 10%;
+  --input: 216 28% 15%;
+  --ring: 215 45% 42%;
+  --chart-1: 215 50% 45%;
+  --chart-2: 175 40% 38%;
+  --chart-3: 35 50% 45%;
+  --chart-4: 280 40% 48%;
+  --chart-5: 340 45% 45%;
+}

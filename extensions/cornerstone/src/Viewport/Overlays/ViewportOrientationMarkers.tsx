@@ -1,3 +1,10 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates - this component kept its
+// pre-transform letters after rotate/flip/reset even though the camera changed.
+'use no memo';
+
 import React, { useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { metaData, Enums, getEnabledElement } from '@cornerstonejs/core';
@@ -6,6 +13,7 @@ import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
 import { useViewportRendering } from '../../hooks';
+import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
 function ViewportOrientationMarkers({
@@ -46,7 +54,9 @@ function ViewportOrientationMarkers({
       return '';
     }
 
-    if (viewportData.viewportType === 'stack') {
+    // Use the persisted data shape, not viewportType: a native stack reports
+    // PLANAR_NEXT, which would skip this synthetic-IOP default-cosine guard.
+    if (getViewportDataShapeType(viewportData) === Enums.ViewportType.STACK) {
       const imageIndex = imageSliceData.imageIndex;
       const imageId = viewportData.data[0].imageIds?.[imageIndex];
 

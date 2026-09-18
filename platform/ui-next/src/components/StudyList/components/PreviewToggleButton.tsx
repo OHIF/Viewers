@@ -30,7 +30,7 @@ function PreviewToggleButton({
     >
       <Icons.PanelRight
         aria-hidden="true"
-        className="h-4 w-4"
+        className="text-primary h-4 w-4"
       />
     </Button>
   );

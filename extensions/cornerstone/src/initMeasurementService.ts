@@ -531,10 +531,8 @@ const connectMeasurementServiceToTools = ({
       }
       // Cancel any active tool manipulation (e.g., Spline/Livewire) to avoid leaving the tool
       // in a drawing state after deleting a not completed measurement, which can block viewport interactivity.
-      const element = getActiveViewportEnabledElement(viewportGridService)?.viewport?.element;
-      if (element) {
-        cancelActiveManipulations(element);
-      }
+      commandsManager.run('cancelMeasurement');
+
       const removedAnnotation = annotation.state.getAnnotation(removedMeasurementId);
       removeAnnotation(removedMeasurementId);
       // Ensure `removedAnnotation` is available before triggering the memo,

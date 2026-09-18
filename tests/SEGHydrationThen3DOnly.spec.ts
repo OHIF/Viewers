@@ -23,7 +23,8 @@ test.beforeEach(
 );
 
 test('should list segments in side panel for 3D only view', async ({ rightPanelPageObject }) => {
-  const numberOfSegments =
-    await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount();
-  expect(numberOfSegments, 'The side panel should list 13 segments for the 3D only view.').toBe(13);
+  await expect(
+    rightPanelPageObject.labelMapSegmentationPanel.panel.rows,
+    'The side panel should list 13 segments for the 3D only view.'
+  ).toHaveCount(13);
 });
