@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
+import type { To, NavigateOptions } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
@@ -12,6 +13,64 @@ import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
+
+/**
+ * The properties that the mode route gives to the `validateModeEntry` hook of a
+ * mode, and to the default hook below.
+ *
+ * `navigate` does nothing after the user leaves the route.
+ */
+export type ValidateModeEntryProps = {
+  studyInstanceUIDs?: string[];
+  dataSource: any;
+  navigate: (to: To, options?: NavigateOptions) => void;
+  servicesManager: AppTypes.ServicesManager;
+  extensionManager: AppTypes.ExtensionManager;
+  commandsManager: AppTypes.CommandsManager;
+  appConfig: AppTypes.Config;
+  query: URLSearchParams;
+};
+
+/**
+ * The default `validateModeEntry` hook. It checks that every study in the URL
+ * exists in the data source, and it navigates to `/notfoundstudy` when a study
+ * is absent or when the query fails.
+ *
+ * This check moved here from PanelStudyBrowser.tsx so that the check runs in
+ * all modes. A mode that does not load its data by StudyInstanceUID replaces
+ * this check with its own `validateModeEntry` - see `ModeRoute` below.
+ *
+ * @param props.studyInstanceUIDs the studies that the URL asks for
+ * @param props.dataSource the active data source
+ * @param props.navigate navigates away, and does nothing after an unmount
+ */
+async function validateStudies({
+  studyInstanceUIDs,
+  dataSource,
+  navigate,
+}: ValidateModeEntryProps) {
+  if (!studyInstanceUIDs?.length || !dataSource) {
+    return;
+  }
+
+  for (const studyInstanceUID of studyInstanceUIDs) {
+    try {
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: studyInstanceUID,
+      });
+
+      if (!qidoForStudyUID?.length) {
+        console.warn('Study not found:', studyInstanceUID);
+        navigate('/notfoundstudy');
+        return;
+      }
+    } catch (error) {
+      console.error('Error validating study:', studyInstanceUID, error);
+      navigate('/notfoundstudy');
+      return;
+    }
+  }
+}
 
 export default function ModeRoute({
   mode,
@@ -140,34 +199,6 @@ export default function ModeRoute({
       layoutTemplateData.current = null;
     };
   }, [location, ExtensionDependenciesLoaded]);
-
-  /**
-   * Validates study existence before loading the viewer.
-   * Moved from PanelStudyBrowser.tsx to ensure validation runs in all modes
-   */
-  const validateStudies = async () => {
-    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length || !dataSource) {
-      return;
-    }
-
-    for (const studyInstanceUID of studyInstanceUIDs) {
-      try {
-        const qidoForStudyUID = await dataSource.query.studies.search({
-          studyInstanceUid: studyInstanceUID,
-        });
-
-        if (!qidoForStudyUID?.length) {
-          console.warn('Study not found:', studyInstanceUID);
-          navigate('/notfoundstudy');
-          return;
-        }
-      } catch (error) {
-        console.error('Error validating study:', studyInstanceUID, error);
-        navigate('/notfoundstudy');
-        return;
-      }
-    }
-  };
 
   useEffect(() => {
     if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
@@ -373,20 +404,56 @@ export default function ModeRoute({
       );
     };
 
+    // The validation runs after the route setup, so the user can navigate away
+    // before the validation completes. A navigation after an unmount removes
+    // the user from the route that the user already moved to.
+    const navigateIfMounted = (to: To, options?: NavigateOptions) => {
+      if (isMounted.current) {
+        navigate(to, options);
+      }
+    };
+
     let unsubscriptions;
-    setupRouteInit()
-      .then(unsubs => {
-        unsubscriptions = unsubs;
+    setupRouteInit().then(unsubs => {
+      unsubscriptions = unsubs;
 
-        validateStudies()
-      })
-      .then(() => {
+      // The validation runs after setupRouteInit resolves. A mode that sets a
+      // custom authentication token in `onModeInit`, in `onModeEnter` or in
+      // `route.init` has set that token already, so the validation query can
+      // use that token. The validation ran before the route setup until
+      // OHIF 3.14, and a custom token made the validation query fail.
+      //
+      // `mode.validateModeEntry` replaces the default study check. The mode
+      // hook can be an async function, and the mode hook can navigate away on
+      // its own. The `navigate` here does nothing after an unmount.
+      //
+      // The validation does not block `onSetupRouteComplete`. `Promise.resolve`
+      // starts the chain, so a hook that throws before the hook returns its
+      // promise also gives a rejection, and no rejection stays unhandled.
+      const validateModeEntry = mode?.validateModeEntry ?? validateStudies;
 
-        mode?.onSetupRouteComplete?.({
-          servicesManager,
-          extensionManager,
-          commandsManager,
+      Promise.resolve()
+        .then(() =>
+          validateModeEntry({
+            studyInstanceUIDs,
+            dataSource,
+            navigate: navigateIfMounted,
+            servicesManager,
+            extensionManager,
+            commandsManager,
+            appConfig,
+            query,
+          })
+        )
+        .catch(e => {
+          console.warn('mode entry validation failure', e);
         });
+
+      mode?.onSetupRouteComplete?.({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
     });
 
     return () => {
@@ -496,5 +563,3 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
     return Compose({ components: contextModuleProviders, children });
   };
 }
-
-
