@@ -248,6 +248,61 @@ export default function ModeRoute({
       return;
     }
 
+    // The validation can complete after the user leaves the route, so a
+    // navigation can happen after an unmount. A navigation after an unmount
+    // removes the user from the route that the user already moved to.
+    const navigateIfMounted = (to: To, options?: NavigateOptions) => {
+      if (isMounted.current) {
+        navigate(to, options);
+      }
+    };
+
+    // Starts the validation, and does not wait for the validation.
+    //
+    // `setupRouteInit` calls this function after `route.init`, and before
+    // `defaultRouteInit`. Every hook that sets a custom authentication token
+    // runs before that point: `onModeInit`, the `onModeEnter` of the
+    // extensions, the `onModeEnter` of the mode, and `route.init`. The
+    // validation query then uses that token.
+    //
+    // The validation does not use the promise of `setupRouteInit`, and the
+    // validation runs at the same time as the retrieve of the metadata. Two
+    // results come from this:
+    //
+    //   - The validation does not add a delay to the retrieve. This keeps the
+    //     behaviour of OHIF 3.13, where the validation ran in its own effect.
+    //   - The validation still runs when `defaultRouteInit` rejects. An
+    //     invalid StudyInstanceUID gives an undefined `activeStudy`, and
+    //     `hangingProtocolService.run` throws for that undefined study. A
+    //     validation that waits for the promise of `setupRouteInit` never runs
+    //     in that case, and the viewer never shows the "not found" page.
+    //     See `tests/StudyValidation.spec.ts`.
+    const startModeEntryValidation = () => {
+      // `mode.validateModeEntry` replaces the default study check. The hook can
+      // be an async function, and the hook can navigate away on its own.
+      const validateModeEntry = mode?.validateModeEntry ?? validateStudies;
+
+      // `Promise.resolve` starts the chain, so a hook that throws before the
+      // hook returns its promise also gives a rejection, and no rejection
+      // stays unhandled.
+      Promise.resolve()
+        .then(() =>
+          validateModeEntry({
+            studyInstanceUIDs,
+            dataSource,
+            navigate: navigateIfMounted,
+            servicesManager,
+            extensionManager,
+            commandsManager,
+            appConfig,
+            query,
+          })
+        )
+        .catch(e => {
+          console.warn('mode entry validation failure', e);
+        });
+    };
+
     const setupRouteInit = async () => {
       // TODO: For some reason this is running before the Providers
       // are calling setServiceImplementation
@@ -391,6 +446,11 @@ export default function ModeRoute({
         );
       }
 
+      // Every hook that can set a custom authentication token has run, so the
+      // validation starts here. The validation runs at the same time as the
+      // retrieve below.
+      startModeEntryValidation();
+
       return defaultRouteInit(
         {
           servicesManager,
@@ -404,50 +464,9 @@ export default function ModeRoute({
       );
     };
 
-    // The validation runs after the route setup, so the user can navigate away
-    // before the validation completes. A navigation after an unmount removes
-    // the user from the route that the user already moved to.
-    const navigateIfMounted = (to: To, options?: NavigateOptions) => {
-      if (isMounted.current) {
-        navigate(to, options);
-      }
-    };
-
     let unsubscriptions;
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
-
-      // The validation runs after setupRouteInit resolves. A mode that sets a
-      // custom authentication token in `onModeInit`, in `onModeEnter` or in
-      // `route.init` has set that token already, so the validation query can
-      // use that token. The validation ran before the route setup until
-      // OHIF 3.14, and a custom token made the validation query fail.
-      //
-      // `mode.validateModeEntry` replaces the default study check. The mode
-      // hook can be an async function, and the mode hook can navigate away on
-      // its own. The `navigate` here does nothing after an unmount.
-      //
-      // The validation does not block `onSetupRouteComplete`. `Promise.resolve`
-      // starts the chain, so a hook that throws before the hook returns its
-      // promise also gives a rejection, and no rejection stays unhandled.
-      const validateModeEntry = mode?.validateModeEntry ?? validateStudies;
-
-      Promise.resolve()
-        .then(() =>
-          validateModeEntry({
-            studyInstanceUIDs,
-            dataSource,
-            navigate: navigateIfMounted,
-            servicesManager,
-            extensionManager,
-            commandsManager,
-            appConfig,
-            query,
-          })
-        )
-        .catch(e => {
-          console.warn('mode entry validation failure', e);
-        });
 
       mode?.onSetupRouteComplete?.({
         servicesManager,

@@ -80,9 +80,13 @@ function modeFactory() {
 ## validateModeEntry
 
 This hook checks that the mode can run with the data that the URL asks for. The
-mode route calls this hook after the route setup completes, which means after
-`onModeEnter` and after `route.init`. A mode that sets a custom authentication
-token in one of those hooks has set that token before this hook runs.
+mode route calls this hook after `onModeInit`, after the `onModeEnter` of the
+extensions, after the `onModeEnter` of the mode, and after `route.init`. A mode
+that sets a custom authentication token in one of those hooks has set that token
+before this hook runs.
+
+The mode route does not wait for this hook. The hook runs at the same time as
+the retrieve of the metadata, so the hook adds no delay to the retrieve.
 
 The hook can be an async function. The hook receives `navigate`, and the hook
 navigates away on its own when the data is not valid. A `navigate` call after
@@ -129,7 +133,8 @@ function modeFactory() {
 }
 ```
 
-The mode route does not wait for this hook before the mode route calls
+The retrieve of the metadata starts before this hook completes, and the mode
+route does not wait for this hook before the mode route calls
 `onSetupRouteComplete`. Put the work that must complete before the viewer
 renders in `onModeEnter` instead.
 
