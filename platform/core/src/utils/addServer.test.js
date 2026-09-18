@@ -31,7 +31,7 @@ describe('addServers', () => {
 
   test('should be able to add a server and dispatch to the store successfuly', () => {
     addServers(servers, store);
-    expect(store.dispatch).toBeCalledWith({
+    expect(store.dispatch).toHaveBeenCalledWith({
       server: {
         authority: 'http://127.0.0.1/auth/realms/ohif',
         client_id: 'ohif-viewer',
@@ -43,7 +43,7 @@ describe('addServers', () => {
       },
       type: 'ADD_SERVER',
     });
-    expect(store.dispatch).toBeCalledWith({
+    expect(store.dispatch).toHaveBeenCalledWith({
       server: {
         imageRendering: 'wadors',
         name: 'DCM4CHEE',
@@ -59,19 +59,19 @@ describe('addServers', () => {
   });
 
   test('should throw an error if servers list is not defined', () => {
-    expect(() => addServers(undefined, store)).toThrowError(
+    expect(() => addServers(undefined, store)).toThrow(
       new Error('The servers and store must be defined')
     );
   });
 
   test('should throw an error if store is not defined', () => {
-    expect(() => addServers(servers, undefined)).toThrowError(
+    expect(() => addServers(servers, undefined)).toThrow(
       new Error('The servers and store must be defined')
     );
   });
 
   test('should throw an error when both server and store are not defined', () => {
-    expect(() => addServers(undefined, undefined)).toThrowError(
+    expect(() => addServers(undefined, undefined)).toThrow(
       new Error('The servers and store must be defined')
     );
   });

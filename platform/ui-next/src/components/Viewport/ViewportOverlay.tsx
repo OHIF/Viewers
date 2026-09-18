@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
 import './ViewportOverlay.css';
 
@@ -31,14 +30,12 @@ function ViewportOverlay({ topLeft, topRight, bottomRight, bottomLeft, color = '
       <div
         data-cy="viewport-overlay-top-right"
         className={classNames(overlay, classes.topRight)}
-        style={{ transform: 'translateX(9px)' }}
       >
         {topRight}
       </div>
       <div
         data-cy="viewport-overlay-bottom-right"
         className={classNames(overlay, classes.bottomRight)}
-        style={{ transform: 'translateX(6px)' }}
       >
         {bottomRight}
       </div>
@@ -52,13 +49,6 @@ function ViewportOverlay({ topLeft, topRight, bottomRight, bottomLeft, color = '
   );
 }
 
-ViewportOverlay.propTypes = {
-  topLeft: PropTypes.node,
-  topRight: PropTypes.node,
-  bottomRight: PropTypes.node,
-  bottomLeft: PropTypes.node,
-  color: PropTypes.string,
-  shadowClass: PropTypes.string,
-};
+
 
 export { ViewportOverlay };

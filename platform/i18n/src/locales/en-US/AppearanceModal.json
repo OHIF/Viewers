@@ -1,0 +1,12 @@
+{
+  "Appearance": "Appearance",
+  "Theme": "Theme",
+  "Default Theme": "Tonal: OHIF Blue",
+  "Custom": "Custom",
+  "Custom Theme": "Custom Theme",
+  "Hide": "Hide",
+  "Apply": "Apply",
+  "Clear": "Clear",
+  "No valid theme tokens found": "No valid theme tokens found. Expected lines like --primary: 220 90% 60%",
+  "Paste your custom theme color tokens here": "Paste your custom theme color tokens here"
+}

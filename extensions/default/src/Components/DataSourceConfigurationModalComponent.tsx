@@ -115,7 +115,7 @@ function DataSourceConfigurationModalComponent({
   const getSelectedItemTextClasses = itemIndex =>
     itemIndex <= selectedItems.length ? 'text-highlight' : 'text-primary';
 
-  const getErrorComponent = (): ReactElement => {
+  const getErrorComponent = (): ReactElement<any> => {
     return (
       <div className="flex min-h-[1px] grow flex-col gap-4">
         <div className="text-highlight text-[20px]">
@@ -126,7 +126,7 @@ function DataSourceConfigurationModalComponent({
     );
   };
 
-  const getSelectedItemsComponent = (): ReactElement => {
+  const getSelectedItemsComponent = (): ReactElement<any> => {
     return (
       <div className="flex gap-4">
         {itemLabels.map((itemLabel, itemLabelIndex) => {
@@ -152,7 +152,7 @@ function DataSourceConfigurationModalComponent({
             >
               <div className="text- flex items-center gap-2">
                 {itemLabelIndex < selectedItems.length ? (
-                  <Icons.ByName name="status-tracked" />
+                  <Icons.ByName name="status-tracked" className="text-highlight" />
                 ) : (
                   <Icons.ByName name="status-untracked" />
                 )}

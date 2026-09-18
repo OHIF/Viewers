@@ -1,4 +1,11 @@
-import { utils, classes, DisplaySetService, Types as OhifTypes } from '@ohif/core';
+import {
+  utils,
+  classes,
+  DisplaySetService,
+  DisplaySetMessage,
+  DisplaySetMessageList,
+  Types as OhifTypes,
+} from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -61,6 +68,14 @@ function addInstances(instances: InstanceMetadata[], _displaySetService: Display
   // Eventually, the SR viewer should have the ability to choose which SR
   // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
+  // The date/time of the display set is that of the instance it shows, so it
+  // has to move with that instance.  The series level SeriesDate/SeriesTime
+  // still hold those of the first report saved into the series, so leaving
+  // them would show, and summarize by, a date older than the report shown and
+  // older than the position the series list has just sorted this one into.
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(this.instance);
+  this.SeriesDate = SeriesDate;
+  this.SeriesTime = SeriesTime;
   this.isLoaded = false;
   return this;
 }
@@ -96,18 +111,36 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
     imageId: predecessorImageId,
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
+  // The date/time of the display set is that of the instance it shows.  A
+  // report saved into an existing series keeps the original SeriesDate, so only
+  // the instance level content date/time places it as the newest one.
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
+
   const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 
-  const isImagingMeasurementReport =
+  const conceptIsImagingMeasurementReport =
     ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurementReport;
+
+  // A report flagged as an Imaging Measurement Report but stored without its
+  // report body (no ContentSequence / (0040,A730)) cannot be parsed or rendered
+  // as one. Treat it as a plain SR so neither the loader nor the SR viewport
+  // takes the measurement path (which calls `.find` on the missing content and
+  // assumes at least one measurement exists), both of which would crash.
+  const hasReportContent = !!instance.ContentSequence;
+  const isImagingMeasurementReport = conceptIsImagingMeasurementReport && hasReportContent;
+
+  // Surface the empty report through the standard display set message list, so
+  // it is reported in the display set tray like any other display set problem.
+  const messages = new DisplaySetMessageList();
+  if (!hasReportContent) {
+    messages.addMessage(DisplaySetMessage.CODES.MISSING_REPORT_CONTENT);
+  }
 
   const displaySet = {
     Modality: 'SR',
@@ -127,6 +160,7 @@ function _getDisplaySetsFromSeries(
     isDerivedDisplaySet: true,
     isLoaded: false,
     isImagingMeasurementReport,
+    messages,
     sopClassUids,
     instance,
     predecessorImageId,
@@ -200,8 +234,13 @@ async function _load(
   srDisplaySet.isRehydratable = isRehydratable(srDisplaySet, mappings);
   srDisplaySet.isLoaded = true;
 
-  /** Check currently added displaySets and add measurements if the sources exist */
-  displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
+  /** Check currently added displaySets and add measurements if the sources exist.
+   *  Walk the SR's study first in default series order (not load order) so SCOORD3D
+   *  FrameOfReference matching picks a stable series when several share FOR. */
+  const displaySetsForSRPass = utils.sortDisplaySetsCopy(displaySetService.activeDisplaySets, {
+    studyInstanceUIDFirst: srDisplaySet.StudyInstanceUID,
+  });
+  displaySetsForSRPass.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(
       srDisplaySet,
       activeDisplaySet,
@@ -637,16 +676,35 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   NUMContentItems.forEach(item => {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
-    // Handle spatial reference ONLY if ContentSequence exists
+    // Handle spatial reference ONLY if ContentSequence exists.
+    // ContentSequence may be a scalar SCOORD or an array when additional named
+    // SCOORDs (e.g. control points) are nested alongside the primary geometry.
+    // Pick the primary geometry entry: prefer the SCOORD without a
+    // ConceptNameCodeSequence (plain polyline), falling back to the first SCOORD.
     if (ContentSequence) {
-      const { ValueType } = ContentSequence;
+      const scoordItem = Array.isArray(ContentSequence)
+        ? (ContentSequence.find(
+            cs =>
+              (cs.ValueType === 'SCOORD' || cs.ValueType === 'SCOORD3D') &&
+              !cs.ConceptNameCodeSequence
+          ) ?? ContentSequence.find(cs => cs.ValueType === 'SCOORD' || cs.ValueType === 'SCOORD3D'))
+        : ContentSequence;
+
+      if (!scoordItem) {
+        console.warn(
+          'ContentSequence array contains no SCOORD or SCOORD3D entry, skipping annotation.'
+        );
+        return;
+      }
+
+      const { ValueType } = scoordItem;
 
       if (ValueType !== 'SCOORD' && ValueType !== 'SCOORD3D') {
         console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
         return;
       }
 
-      const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
+      const coords = _getCoordsFromSCOORDOrSCOORD3D(scoordItem);
 
       if (coords) {
         measurement.coords.push(coords);

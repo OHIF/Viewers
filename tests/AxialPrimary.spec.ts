@@ -7,11 +7,16 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Axial Primary Test', async () => {
-  test('should render Axial Primary correctly.', async ({ page, mainToolbarPageObject }) => {
+  test('should render Axial Primary correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
     await mainToolbarPageObject.layoutSelection.axialPrimary.click();
+
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.axialPrimary.axialPrimaryDisplayedCorrectly
     );
   });

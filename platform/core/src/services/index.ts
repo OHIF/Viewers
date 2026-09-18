@@ -21,6 +21,8 @@ import { MultiMonitorService } from './MultiMonitorService';
 
 import type Services from '../types/Services';
 
+export * from './CustomizationService/customizationUrl';
+
 export {
   Services,
   MeasurementService,

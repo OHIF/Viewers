@@ -25,6 +25,7 @@ export default {
     {
       id: 'WindowLevel',
       inheritsFrom: 'ohif.overlayItem.windowLevel',
+      title: 'Window Level',
     },
     {
       id: 'ZoomLevel',
@@ -39,6 +40,7 @@ export default {
     {
       id: 'InstanceNumber',
       inheritsFrom: 'ohif.overlayItem.instanceNumber',
+      title: 'Instance Number',
     },
   ],
 };

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Button, Icons } from '@ohif/ui-next';
 import { useAppConfig } from '@state';
@@ -15,7 +14,7 @@ const NotFound = ({
   return (
     <div className="absolute flex h-full w-full items-center justify-center bg-background">
       <div className="flex flex-col">
-        <div className="bg-background flex items-center justify-center rounded-t-2xl p-6">
+        <div className="bg-background flex items-center justify-center rounded-t-2xl p-6 text-primary">
           <Icons.IllustrationNotFound />
         </div>
         <div className="bg-input h-px" />
@@ -36,9 +35,6 @@ const NotFound = ({
   );
 };
 
-NotFound.propTypes = {
-  message: PropTypes.string,
-  showGoBackButton: PropTypes.bool,
-};
+
 
 export default NotFound;

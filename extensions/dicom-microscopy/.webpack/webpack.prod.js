@@ -1,8 +1,8 @@
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = webpack.CssExtractRspackPlugin;
 
 const pkg = require('./../package.json');
 
@@ -35,9 +35,11 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
+      library: {
+        name: 'ohif-extension-dicom-microscopy',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-extension-dicom-microscopy',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [

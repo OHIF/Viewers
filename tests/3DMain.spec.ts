@@ -5,6 +5,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,10 +15,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D main Test', async () => {
-  test('should render 3D main correctly.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D main correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
     await mainToolbarPageObject.layoutSelection.threeDMain.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await page.waitForTimeout(5000);
-    await checkForScreenshot(page, page, screenShotPaths.threeDMain.threeDMainDisplayedCorrectly);
+    await waitForViewportsRendered(page);
+    await checkForScreenshot(
+      page,
+      viewportPageObject.grid,
+      screenShotPaths.threeDMain.threeDMainDisplayedCorrectly
+    );
   });
 });

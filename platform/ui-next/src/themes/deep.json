@@ -1,0 +1,31 @@
+{
+  "name": "deep",
+  "label": "Neutral: Deep",
+  "cssVars": {
+    "dark": {
+      "highlight": "184 53% 54%",
+      "neutral": "215 15% 50%",
+      "neutral-light": "210 20% 68%",
+      "neutral-dark": "220 18% 22%",
+      "background": "0 0% 0%",
+      "foreground": "215 15% 82%",
+      "card": "218 25% 5%",
+      "card-foreground": "215 15% 82%",
+      "popover": "215 30% 8%",
+      "popover-foreground": "215 15% 82%",
+      "primary": "200 43% 48%",
+      "primary-foreground": "210 20% 92%",
+      "secondary": "218 30% 18%",
+      "secondary-foreground": "215 25% 75%",
+      "muted": "214 28% 5%",
+      "muted-foreground": "215 18% 48%",
+      "accent": "216 32% 12%",
+      "accent-foreground": "215 15% 82%",
+      "destructive": "0 50% 35%",
+      "destructive-foreground": "0 15% 90%",
+      "border": "218 22% 10%",
+      "input": "216 28% 15%",
+      "ring": "215 45% 42%"
+    }
+  }
+}

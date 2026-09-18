@@ -33,6 +33,14 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
   SegmentStatistics: typeof SegmentStatistics;
 }
 
+/**
+ * Returns `fallback` only when `value` is `undefined`, matching the semantics of
+ * a destructuring default (which `??` does not - it also replaces `null`).
+ */
+function pick<T>(value: T | undefined, fallback: T): T {
+  return value === undefined ? fallback : value;
+}
+
 export const SegmentationTableRoot = (props: SegmentationTableProps) => {
   const { t } = useTranslation('SegmentationPanel');
   const {
@@ -44,6 +52,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     children,
     showConfig: externalShowConfig,
     selectedSegmentationIdForType,
+    segmentationRepresentationTypes,
     ...contextProps
   } = props;
 
@@ -64,14 +73,15 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
   );
   const selectedSegmentationForTypeRepresentation = selectedSegmentationForTypeInfo?.representation;
 
-  // Extract style properties or use defaults
-  const {
-    fillAlpha = props.fillAlpha || 0.5,
-    fillAlphaInactive = props.fillAlphaInactive || 0.2,
-    outlineWidth = props.outlineWidth || 1,
-    renderFill = props.renderFill !== undefined ? props.renderFill : true,
-    renderOutline = props.renderOutline !== undefined ? props.renderOutline : true,
-  } = selectedSegmentationForTypeRepresentation?.styles ?? {};
+  // Extract style properties or use defaults. These were destructuring defaults,
+  // which the compiler cannot reorder; `pick` keeps the same rule - a default
+  // applies only when the value is `undefined`, never when it is `null`.
+  const styles = selectedSegmentationForTypeRepresentation?.styles ?? {};
+  const fillAlpha = pick(styles.fillAlpha, props.fillAlpha || 0.5);
+  const fillAlphaInactive = pick(styles.fillAlphaInactive, props.fillAlphaInactive || 0.2);
+  const outlineWidth = pick(styles.outlineWidth, props.outlineWidth || 1);
+  const renderFill = pick(styles.renderFill, pick(props.renderFill, true));
+  const renderOutline = pick(styles.renderOutline, pick(props.renderOutline, true));
 
   // Check if SegmentationTableConfig is present in children
   const hasConfigComponent = Children.toArray(children).some(
@@ -95,6 +105,10 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     }
   };
 
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
+
   return (
     <SegmentationTableProvider
       value={{
@@ -112,6 +126,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         activeSegmentation,
         activeRepresentation,
         selectedSegmentationIdForType,
+        segmentationRepresentationTypes,
         ...contextProps,
         setShowConfig: toggleShowConfig,
       }}
@@ -120,7 +135,10 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         <PanelSection.Header className="flex items-center justify-between">
           <span>{t(title)}</span>
           {hasConfigComponent && (
-            <div className="ml-auto mr-2">
+            <div
+              className="ml-auto mr-2"
+              data-cy={`segmentation-config-toggle${dataCyTypeSuffix}`}
+            >
               <Icons.Settings
                 className="text-primary h-4 w-4"
                 onClick={e => {

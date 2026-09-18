@@ -4,6 +4,8 @@ function transpileJavaScript(mode) {
   const exclude =
     mode === 'production'
       ? excludeNodeModulesExcept([
+          // Workspace packages (needed for pnpm shamefully-hoist where they resolve through node_modules)
+          '@ohif',
           // 'dicomweb-client',
           // https://github.com/react-dnd/react-dnd/blob/master/babel.config.js
           'react-dnd',

@@ -1,0 +1,31 @@
+{
+  "name": "midnight",
+  "label": "Neutral: Midnight",
+  "cssVars": {
+    "dark": {
+      "highlight": "188 90% 58%",
+      "neutral": "213 22% 59%",
+      "neutral-light": "214 69% 81%",
+      "neutral-dark": "214 16% 21%",
+      "background": "240 15% 3%",
+      "foreground": "0 0% 99%",
+      "card": "240 12% 8%",
+      "card-foreground": "0 0% 99%",
+      "popover": "225 45% 13%",
+      "popover-foreground": "0 0% 99%",
+      "primary": "210 100% 62%",
+      "primary-foreground": "0 0% 99%",
+      "secondary": "215 55% 32%",
+      "secondary-foreground": "200 60% 88%",
+      "muted": "240 12% 8%",
+      "muted-foreground": "210 40% 70%",
+      "accent": "220 65% 20%",
+      "accent-foreground": "0 0% 99%",
+      "destructive": "0 70% 35%",
+      "destructive-foreground": "0 0% 99%",
+      "border": "240 10% 18%",
+      "input": "225 35% 24%",
+      "ring": "210 100% 62%"
+    }
+  }
+}

@@ -33,6 +33,7 @@ export class DOMOverlayPageObject {
       get input() {
         const locator = page.getByTestId('dialog-input');
         const saveButton = page.getByTestId('input-dialog-save-button');
+        const cancelButton = page.getByTestId('input-dialog-cancel-button');
         return {
           locator,
           fill: async (text: string) => {
@@ -45,11 +46,51 @@ export class DOMOverlayPageObject {
           save: async () => {
             await saveButton.click();
           },
+          fillAndCancel: async (text: string) => {
+            await locator.fill(text);
+            await cancelButton.click();
+          },
+          cancel: async () => {
+            await cancelButton.click();
+          },
         };
       },
 
       get dicomTagBrowser() {
         return new DicomTagBrowserPageObject(page);
+      },
+
+      get colorPicker() {
+        const locator = page.getByTestId('color-picker-dialog');
+        const hexInput = locator.getByLabel('hex');
+        const saveButton = locator.getByTestId('color-picker-save-btn');
+        const cancelButton = locator.getByTestId('color-picker-cancel-btn');
+        return {
+          locator,
+          hexInput,
+          saveButton,
+          cancelButton,
+          fillHex: async (hex: string) => {
+            await hexInput.fill(hex);
+            await hexInput.press('Enter');
+          },
+          save: async () => {
+            await saveButton.click();
+          },
+          cancel: async () => {
+            await cancelButton.click();
+          },
+          fillHexAndSave: async (hex: string) => {
+            await hexInput.fill(hex);
+            await hexInput.press('Enter');
+            await saveButton.click();
+          },
+          fillHexAndCancel: async (hex: string) => {
+            await hexInput.fill(hex);
+            await hexInput.press('Enter');
+            await cancelButton.click();
+          },
+        };
       },
 
       title: page.locator('[role="dialog"] h2'),

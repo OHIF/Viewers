@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { useShepherd } from 'react-shepherd';
-import { StepOptions, TourOptions } from 'shepherd.js';
+import Shepherd, { StepOptions, TourOptions } from 'shepherd.js';
 import { useLocation } from 'react-router';
 import 'shepherd.js/dist/css/shepherd.css';
 import './Onboarding.css';
@@ -17,7 +16,6 @@ const Onboarding = ({
     steps: StepOptions[];
   }>;
 }) => {
-  const Shepherd = useShepherd();
   const location = useLocation();
 
   /**
@@ -52,7 +50,7 @@ const Onboarding = ({
     matchingTour.steps.forEach(step => tourInstance.addStep(step));
     tourInstance.start();
     markTourAsShown(matchingTour.id);
-  }, [Shepherd, tours, location.pathname]);
+  }, [tours, location.pathname]);
 
   return null;
 };

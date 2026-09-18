@@ -26,16 +26,20 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription = '',
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
-    StructureSetDate,
-    StructureSetTime,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
     imageId: predecessorImageId,
   } = instance;
+
+  /**
+   * The "SeriesDate" for a display set is really the display set date, which
+   * should be the date of the instance being used - for a structure set that is
+   * usually the structure set date/time, and for one saved into an existing
+   * series only the instance level date/time reflects the save.
+   */
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
   const displaySet = {
     Modality: 'RTSTRUCT',
@@ -44,18 +48,14 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    /**
-     * The "SeriesDate" for a display set is really the display set date, which
-     * should be the date of the instance being used, which will be the structure
-     * set date in this case.
-     */
-    SeriesDate: StructureSetDate || SeriesDate,
-    SeriesTime: StructureSetTime || SeriesTime,
+    SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId,
     SOPClassUID,
+    FrameOfReferenceUID: null,
     referencedImages: null,
     referencedSeriesInstanceUID: null,
     referencedDisplaySetInstanceUID: null,
@@ -95,6 +95,9 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
+  displaySet.FrameOfReferenceUID =
+    instance.ReferencedFrameOfReferenceSequence?.[0]?.FrameOfReferenceUID;
+
   const { displaySetService } = servicesManager.services;
   const referencedDisplaySets =
     displaySetService.getDisplaySetsForReferences(referencedSeriesSequence);
@@ -113,6 +116,7 @@ function _getDisplaySetsFromSeries(
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
           displaySet.isReconstructable = addedDisplaySet.isReconstructable;
+          displaySet.FrameOfReferenceUID = addedDisplaySet.FrameOfReferenceUID;
           unsubscribe();
         }
       }
@@ -121,6 +125,7 @@ function _getDisplaySetsFromSeries(
     const [referencedDisplaySet] = referencedDisplaySets;
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
+    displaySet.FrameOfReferenceUID = referencedDisplaySet.FrameOfReferenceUID;
   }
 
   displaySet.load = ({ headers, createSegmentation = true }) =>
