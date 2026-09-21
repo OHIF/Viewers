@@ -52,7 +52,7 @@ overrides:
   picomatch@<2.3.2: 2.3.2
   picomatch@>=4.0.0 <4.0.4: 4.0.4
   websocket-driver@<0.7.5: 0.7.5
-  adm-zip@<0.6.0: 0.6.0
+  adm-zip@<0.6.1: 0.6.1
   brace-expansion@<1.1.17: 1.1.18
   brace-expansion@>=2.0.0 <2.1.3: 2.1.4
   brace-expansion@>=3.0.0 <3.0.3: 3.0.6
@@ -106,7 +106,7 @@ importers:
         version: 7.29.7(@babel/core@7.29.7)
       '@babel/preset-env':
         specifier: 7.29.7
-        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/preset-react':
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7)
@@ -6668,8 +6668,8 @@ packages:
     resolution: {integrity: sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==}
     engines: {node: '>= 10.0.0'}
 
-  adm-zip@0.6.0:
-    resolution: {integrity: sha512-XleryMhbuksdKtofnWZ9Sk+4CUTbms4Mb/EU32SZwToAyZ5RgVos/ki8n+yr0LWHOGKuakbXTuuYNHLQjhddgg==}
+  adm-zip@0.6.1:
+    resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
     engines: {node: '>=14.0'}
 
   agent-base@6.0.2:
@@ -14524,7 +14524,7 @@ snapshots:
       '@babel/helpers': 7.29.2
       '@babel/parser': 7.29.7
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.7
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -14544,7 +14544,7 @@ snapshots:
       '@babel/helpers': 7.29.2
       '@babel/parser': 7.29.7
       '@babel/template': 7.28.6
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
       '@babel/types': 7.29.7
       convert-source-map: 2.0.0
       debug: 4.4.3(supports-color@8.1.1)
@@ -15764,7 +15764,7 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.0(supports-color@8.1.1))
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15774,17 +15774,17 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.28.0)
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))':
+  '@babel/plugin-transform-modules-systemjs@7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@babel/helper-module-transforms': 7.28.6(@babel/core@7.29.7(supports-color@8.1.1))
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/helper-validator-identifier': 7.28.5
-      '@babel/traverse': 7.29.0
+      '@babel/traverse': 7.29.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -16561,7 +16561,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))':
+  '@babel/preset-env@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/core': 7.29.7(supports-color@8.1.1)
@@ -16603,7 +16603,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-amd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-commonjs': 7.29.7(@babel/core@7.29.7)
-      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/plugin-transform-modules-umd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-named-capturing-groups-regex': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-new-target': 7.29.7(@babel/core@7.29.7)
@@ -16680,7 +16680,7 @@ snapshots:
       '@babel/plugin-transform-member-expression-literals': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-amd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-modules-commonjs': 7.29.7(@babel/core@7.29.7)
-      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-modules-systemjs': 7.29.4(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@babel/plugin-transform-modules-umd': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-named-capturing-groups-regex': 7.29.7(@babel/core@7.29.7)
       '@babel/plugin-transform-new-target': 7.29.7(@babel/core@7.29.7)
@@ -16830,7 +16830,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.0':
+  '@babel/traverse@7.29.0(supports-color@8.1.1)':
     dependencies:
       '@babel/code-frame': 7.29.7
       '@babel/generator': 7.29.7
@@ -21238,7 +21238,7 @@ snapshots:
 
   address@1.2.2: {}
 
-  adm-zip@0.6.0: {}
+  adm-zip@0.6.1: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -22800,7 +22800,7 @@ snapshots:
   dcmjs@0.52.0:
     dependencies:
       '@babel/runtime-corejs3': 7.29.2
-      adm-zip: 0.6.0
+      adm-zip: 0.6.1
       gl-matrix: 3.4.4
       lodash.clonedeep: 4.5.0
       loglevel: 1.9.2
