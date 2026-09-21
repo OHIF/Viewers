@@ -7,7 +7,7 @@ import { VolumeShade } from './VolumeShade';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useTranslation } from 'react-i18next';
 
-export function VolumeRenderingOptions({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function VolumeRenderingOptions({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { volumeRenderingQualityRange } = useViewportRendering(viewportId);
   const [hasShade, setShade] = useState(false);
   const { t } = useTranslation('WindowLevelActionMenu');

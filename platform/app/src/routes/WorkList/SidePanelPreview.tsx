@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { useCustomization } from '@ohif/core';
 import { StudyList, type StudyRow } from '@ohif/ui-next';
 import { useSeriesFetch } from '../../hooks';
 
@@ -15,14 +16,11 @@ const ALLOWED_PREVIEW_SERIES_VIEWS: ReadonlyArray<PreviewSeriesView> = [
 export function SidePanelPreview({
   dataSource,
   selected,
-  servicesManager,
 }: {
   dataSource: any;
   selected: StudyRow | null;
-  servicesManager: AppTypes.ServicesManager;
 }) {
   const { series, onThumbnailImageError } = useSeriesFetch({ dataSource, selected });
-  const { customizationService } = servicesManager.services;
   const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
   const thumbnailRequestStrategy =
     dataSource?.getConfig?.()?.thumbnailRequestStrategy || 'bulkDataRetrieve';
@@ -31,9 +29,9 @@ export function SidePanelPreview({
     thumbnailRendering === 'thumbnailDirect' ||
     thumbnailRequestStrategy === 'bulkDataRetrieve';
 
-  const customizationSeriesView = customizationService.getCustomization(
-    'workList.previewSeriesView'
-  );
+  // useCustomization subscribes to customization changes, so a runtime change
+  // to the series view takes effect without closing and reopening the panel.
+  const customizationSeriesView = useCustomization('workList.previewSeriesView');
   const configuredSeriesView: PreviewSeriesView = ALLOWED_PREVIEW_SERIES_VIEWS.includes(
     customizationSeriesView as PreviewSeriesView
   )
@@ -48,7 +46,7 @@ export function SidePanelPreview({
     onThumbnailImageError,
   };
 
-  const renderPreviewContent = customizationService.getCustomization('workList.renderPreviewContent');
+  const renderPreviewContent = useCustomization('workList.renderPreviewContent');
   if (typeof renderPreviewContent === 'function') {
     return <>{(renderPreviewContent as RenderPreviewContent)(React, previewProps)}</>;
   }

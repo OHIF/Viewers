@@ -11,7 +11,7 @@ export type ProgressLoadingBarProps = {
  * If progress is provided, it will render a progress bar
  * The progress text can be optionally displayed to the left of the bar.
  */
-function ProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement {
+function ProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement<any> {
   return (
     <div className="loading">
       {progress === undefined || progress === null ? (

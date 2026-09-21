@@ -2,7 +2,7 @@ import { ExtensionManager, MODULE_TYPES } from './extensions';
 import { ServiceProvidersManager, ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
 import { SystemContextProvider, useSystem } from './contextProviders/SystemProvider';
-import { ViewportRefsProvider } from './hooks/useViewportRef';
+import { ViewportElementsProvider } from './hooks/useViewportElement';
 
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
@@ -102,7 +102,7 @@ export {
   ServicesManager,
   ServiceProvidersManager,
   SystemContextProvider,
-  ViewportRefsProvider,
+  ViewportElementsProvider,
   //
   defaults,
   utils,
