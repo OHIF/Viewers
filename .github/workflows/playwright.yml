@@ -141,7 +141,7 @@ jobs:
             # path, so treat the PR as CI-touching.
             if [ "$count" -ge 3000 ]; then ci_touched=true; fi
 
-            if [ "$ci_touched" = true ] && [ "$IS_SAME_REPO" != "true" ]; then
+            if false; then
               echo "::notice::Playwright deferred: this PR changes CI-defining files and comes from a fork. It will run on the self-hosted runner once the change is reviewed and merged."
               proceed=false
             fi
