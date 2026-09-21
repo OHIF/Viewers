@@ -82,6 +82,57 @@ describe('_checkIfCanAddMeasurementsToDisplaySet', () => {
     expect(srDisplaySet.measurements[0].loaded).toBe(false);
   });
 
+  // A segmentation that the client makes carries `isDerived` and
+  // `isOverlayDisplaySet`, and it carries no `isDerivedDisplaySet`.
+  it('leaves the display set of a segmentation that the client made alone', () => {
+    const srDisplaySet = srWithOneMeasurementOn('sop-1');
+    const clientSegDisplaySet = {
+      displaySetInstanceUID: 'seg-in-client',
+      Modality: 'SEG',
+      madeInClient: true,
+      isDerived: true,
+      isOverlayDisplaySet: true,
+    };
+    const dataSource = { getImageIdsForDisplaySet: jest.fn(() => []) };
+
+    _checkIfCanAddMeasurementsToDisplaySet(
+      srDisplaySet as never,
+      clientSegDisplaySet as never,
+      dataSource,
+      servicesManager as never
+    );
+
+    expect(dataSource.getImageIdsForDisplaySet).not.toHaveBeenCalled();
+    expect(srDisplaySet.measurements[0].loaded).toBe(false);
+  });
+
+  // A custom SOP class handler, or a custom data source, can give an image id
+  // that the metadata provider does not know, and it can set no derived flag.
+  it('skips an image id that the metadata provider does not know', () => {
+    const srDisplaySet = srWithOneMeasurementOn('sop-1');
+    const displaySet = { displaySetInstanceUID: 'custom', Modality: 'OT' };
+    const dataSource = {
+      getImageIdsForDisplaySet: jest.fn(() => ['custom:unknown-1', 'wadors:known-1']),
+    };
+    mockGetUIDsFromImageID.mockImplementation(imageId =>
+      imageId === 'wadors:known-1' ? { SOPInstanceUID: 'sop-1', frameNumber: '1' } : undefined
+    );
+
+    expect(() =>
+      _checkIfCanAddMeasurementsToDisplaySet(
+        srDisplaySet as never,
+        displaySet as never,
+        dataSource,
+        servicesManager as never
+      )
+    ).not.toThrow();
+
+    expect(srDisplaySet.measurements[0]).toMatchObject({
+      loaded: true,
+      imageId: 'wadors:known-1',
+    });
+  });
+
   it('still places a measurement on the source image it references', () => {
     const srDisplaySet = srWithOneMeasurementOn('sop-1');
     const sourceDisplaySet = { displaySetInstanceUID: 'nm', Modality: 'NM' };

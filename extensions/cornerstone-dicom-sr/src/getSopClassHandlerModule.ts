@@ -290,11 +290,16 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   // here is worse than useless: once a SEG is hydrated its display set carries the
   // labelmap's `derived:` image ids, which resolve to no UIDs (the destructure
   // below then throws), and a SEG shares its source's FrameOfReferenceUID, so a
-  // SCOORD3D measurement could otherwise land on it.
+  // SCOORD3D measurement could otherwise land on it. The three flags below all
+  // mark a derived display set: a SEG loaded from the server sets
+  // `isDerivedDisplaySet`, and one made in the client sets `isDerived` and
+  // `isOverlayDisplaySet`.
   if (
     !unloadedMeasurements.length ||
     newDisplaySet.unsupported ||
-    newDisplaySet.isDerivedDisplaySet
+    newDisplaySet.isDerivedDisplaySet ||
+    newDisplaySet.isDerived ||
+    newDisplaySet.isOverlayDisplaySet
   ) {
     return;
   }
@@ -304,7 +309,16 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
 
   for (const imageId of imageIds) {
-    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
+    // A metadata provider returns undefined for an image id that it does not
+    // know, for example an id of a custom SOP class handler or of a data source
+    // that marks no derived flag. Skip that image id, and do not throw.
+    const uids = metadataProvider.getUIDsFromImageID(imageId);
+
+    if (!uids) {
+      continue;
+    }
+
+    const { SOPInstanceUID, frameNumber } = uids;
     const key = `${SOPInstanceUID}:${frameNumber || 1}`;
     imageIdMap.set(key, imageId);
   }
