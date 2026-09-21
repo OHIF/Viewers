@@ -28,6 +28,8 @@ export type DisplaySet = {
   isOverlayDisplaySet?: boolean;
   /** Flag indicating this is a derived dataset */
   isDerived?: boolean;
+  /** Flag that a SOP class handler sets on a derived display set, for example a SEG */
+  isDerivedDisplaySet?: boolean;
   /** flag indicating if it supports window level */
   supportsWindowLevel?: boolean;
 
