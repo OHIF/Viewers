@@ -65,6 +65,9 @@ improving Extension System.
 
 ## Why Choose Us
 
+###
+Because OHIF is awesome.
+
 ### Community & Experience
 
 The OHIF Viewer is a collaborative effort that has served as the basis for many
