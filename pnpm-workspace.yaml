@@ -101,10 +101,7 @@ overrides:
   # (@docusaurus/core > webpack-dev-server > sockjs > faye-websocket). 0.7.5
   # patches GHSA-xv26-6w52-cph6 (message corruption via protocol length headers).
   'websocket-driver@<0.7.5': 0.7.5
-  # adm-zip <0.6.0 reaches the tree only via dcmjs, which pins 0.5.17 but does
-  # not import it in its runtime code. 0.6.0 patches GHSA-xcpc-8h2w-3j85
-  # (crafted ZIP triggers a 4GB memory allocation).
-  'adm-zip@<0.6.0': 0.6.0
+  'adm-zip@<0.6.1': 0.6.1
   'brace-expansion@<1.1.17': 1.1.18
   'brace-expansion@>=2.0.0 <2.1.3': 2.1.4
   'brace-expansion@>=3.0.0 <3.0.3': 3.0.6
