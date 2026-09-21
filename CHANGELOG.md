@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.18](https://github.com/OHIF/Viewers/compare/v3.12.17...v3.12.18) (2026-09-21)
+
+
+### Bug Fixes
+
+* **security:** update the adm-zip version and release OHIF 3.12.18 ([#6288](https://github.com/OHIF/Viewers/issues/6288)) ([4314c75](https://github.com/OHIF/Viewers/commit/4314c75fae723bf1d33ca0be91410c1c48be1a76))
+
+
+
+
+
 ## [3.12.17](https://github.com/OHIF/Viewers/compare/v3.12.15...v3.12.17) (2026-09-10)
 
 
