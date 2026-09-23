@@ -115,6 +115,7 @@
     "postcss-loader": "6.2.1",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "0.6.9",
+    "semver": "7.8.5",
     "shader-loader": "1.3.1",
     "source-map-support": "0.5.21",
     "style-loader": "1.3.0",
@@ -135,5 +136,5 @@
       "git add"
     ]
   },
-  "version": "3.14.0-beta.30"
+  "version": "3.14.0-beta.35"
 }

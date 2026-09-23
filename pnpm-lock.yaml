@@ -52,7 +52,7 @@ overrides:
   picomatch@<2.3.2: 2.3.2
   picomatch@>=4.0.0 <4.0.4: 4.0.4
   websocket-driver@<0.7.5: 0.7.5
-  adm-zip@<0.6.0: 0.6.0
+  adm-zip@<0.6.1: 0.6.1
   brace-expansion@<1.1.17: 1.1.18
   brace-expansion@>=2.0.0 <2.1.3: 2.1.4
   brace-expansion@>=3.0.0 <3.0.3: 3.0.6
@@ -203,6 +203,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: 0.6.9
         version: 0.6.9(prettier@3.6.2)
+      semver:
+        specifier: 7.8.5
+        version: 7.8.5
       shader-loader:
         specifier: 1.3.1
         version: 1.3.1
@@ -6665,8 +6668,8 @@ packages:
     resolution: {integrity: sha512-4B/qKCfeE/ODUaAUpSwfzazo5x29WD4r3vXiWsB7I2mSDAihwEqKO+g8GELZUQSSAo5e1XTYh3ZVfLyxBc12nA==}
     engines: {node: '>= 10.0.0'}
 
-  adm-zip@0.6.0:
-    resolution: {integrity: sha512-XleryMhbuksdKtofnWZ9Sk+4CUTbms4Mb/EU32SZwToAyZ5RgVos/ki8n+yr0LWHOGKuakbXTuuYNHLQjhddgg==}
+  adm-zip@0.6.1:
+    resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
     engines: {node: '>=14.0'}
 
   agent-base@6.0.2:
@@ -12935,11 +12938,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.8.0:
-    resolution: {integrity: sha512-AcM7dV/5ul4EekoQ29Agm5vri8JNqRyj39o0qpX6vDF2GZrtutZl5RwgD1XnZjiTAfncsJhMI48QQH3sN87YNA==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.8.5:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
@@ -17516,7 +17514,7 @@ snapshots:
       react-router: 5.3.4(react@19.2.7)
       react-router-config: 5.1.1(react-router@5.3.4(react@19.2.7))(react@19.2.7)
       react-router-dom: 5.3.4(react@19.2.7)
-      semver: 7.8.0
+      semver: 7.8.5
       serve-handler: 6.1.7
       tinypool: 1.1.1
       tslib: 2.8.1
@@ -17558,7 +17556,7 @@ snapshots:
       '@swc/html': 1.15.13
       browserslist: 4.28.8
       lightningcss: 1.31.1
-      semver: 7.8.0
+      semver: 7.8.5
       swc-loader: 0.2.7(@swc/core@1.15.13(@swc/helpers@0.5.23))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23)))
       tslib: 2.8.1
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23))
@@ -21240,7 +21238,7 @@ snapshots:
 
   address@1.2.2: {}
 
-  adm-zip@0.6.0: {}
+  adm-zip@0.6.1: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -22456,7 +22454,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.26)
       postcss-modules-values: 4.0.0(postcss@8.5.26)
       postcss-value-parser: 4.2.0
-      semver: 7.8.0
+      semver: 7.8.5
     optionalDependencies:
       '@rspack/core': 1.7.11(@swc/helpers@0.5.23)
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23))
@@ -22681,7 +22679,7 @@ snapshots:
       process: 0.11.10
       proxy-from-env: 1.0.0
       request-progress: 3.0.0
-      semver: 7.8.0
+      semver: 7.8.5
       supports-color: 8.1.1
       tmp: 0.2.7
       tree-kill: 1.2.2
@@ -22802,7 +22800,7 @@ snapshots:
   dcmjs@0.52.0:
     dependencies:
       '@babel/runtime-corejs3': 7.29.2
-      adm-zip: 0.6.0
+      adm-zip: 0.6.1
       gl-matrix: 3.4.4
       lodash.clonedeep: 4.5.0
       loglevel: 1.9.2
@@ -24809,7 +24807,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@istanbuljs/schema': 0.1.6
       istanbul-lib-coverage: 3.2.2
-      semver: 7.8.0
+      semver: 7.8.5
     transitivePeerDependencies:
       - supports-color
 
@@ -27412,7 +27410,7 @@ snapshots:
       cosmiconfig: 7.1.0
       klona: 2.0.6
       postcss: 8.5.26
-      semver: 7.8.0
+      semver: 7.8.5
       webpack: 5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23))
 
   postcss-loader@7.3.4(postcss@8.5.26)(typescript@5.5.4)(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23))):
@@ -28876,8 +28874,6 @@ snapshots:
 
   semver@6.3.1: {}
 
-  semver@7.8.0: {}
-
   semver@7.8.5: {}
 
   send@0.19.2:
@@ -30062,7 +30058,7 @@ snapshots:
   validate-peer-dependencies@2.2.0:
     dependencies:
       resolve-package-path: 4.0.3
-      semver: 7.8.0
+      semver: 7.8.5
 
   validate.js@0.12.0: {}
 
