@@ -45,6 +45,9 @@ jobs:
       - run:
           name: 'React Compiler lint budget'
           command: pnpm run lint:compiler:ci
+      - run:
+          name: 'React Compiler coverage budget'
+          command: pnpm run compiler:coverage:ci
       # platform/app
       - run:
           name: 'VIEWER: Combine report output'

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.14.0-beta.3",
+  "version": "3.14.0-beta.35",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:i18n": "pnpm run dev",
-    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "pullTranslations": "./pullTranslations.sh",
     "test:unit": "echo 'platform/i18n: missing unit tests'",

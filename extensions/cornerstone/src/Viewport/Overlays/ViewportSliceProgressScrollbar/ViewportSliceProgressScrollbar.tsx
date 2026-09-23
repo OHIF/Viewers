@@ -58,8 +58,8 @@ function ViewportSliceProgressScrollbar({
   // Manual memoization is load-bearing here: this component is excluded from
   // the React Compiler (see rsbuild.config.ts / babel.config.js), and the
   // byte-array hooks below list these in their effect deps — fresh identities
-  // every render re-run the seeding effects, whose version bump re-renders
-  // this component in an infinite setState loop.
+  // every render re-run the seeding effects, whose publish re-renders this
+  // component in an infinite setState loop.
   const { imageIds, imageIdToIndex } = useMemo(() => {
     const ids = getViewportImageIds(viewportData);
     const idToIndex = new Map<string, number>();
@@ -87,11 +87,7 @@ function ViewportSliceProgressScrollbar({
     setImageSliceData,
   });
 
-  const {
-    bytes: loadedBytes,
-    version: loadedVersion,
-    isFull: isFullyLoaded,
-  } = useLoadedSliceBytes({
+  const { bytes: loadedBytes, isFull: isFullyLoaded } = useLoadedSliceBytes({
     isFullMode,
     numberOfSlices,
     viewportData,
@@ -100,7 +96,7 @@ function ViewportSliceProgressScrollbar({
     loadedBatchIntervalMs,
   });
 
-  const { bytes: viewedBytes, version: viewedVersion } = useViewedSliceBytes({
+  const { bytes: viewedBytes } = useViewedSliceBytes({
     isFullMode,
     numberOfSlices,
     imageIndex,
@@ -172,7 +168,6 @@ function ViewportSliceProgressScrollbar({
             {isFullMode && showLoadedFill && (
               <SmartScrollbarFill
                 marked={loadedBytes}
-                version={loadedVersion}
                 className="bg-neutral/25"
                 loadingClassName="bg-neutral/50"
               />
@@ -180,7 +175,6 @@ function ViewportSliceProgressScrollbar({
             {isFullMode && showViewedFill && (
               <SmartScrollbarFill
                 marked={viewedBytes}
-                version={viewedVersion}
                 className="bg-primary/35"
                 loadingClassName="bg-primary/35"
               />
@@ -188,10 +182,7 @@ function ViewportSliceProgressScrollbar({
           </SmartScrollbarTrack>
           <SmartScrollbarIndicator />
           {isFullMode && showLoadedEndpoints && (
-            <SmartScrollbarEndpoints
-              marked={loadedBytes}
-              version={loadedVersion}
-            />
+            <SmartScrollbarEndpoints marked={loadedBytes} />
           )}
         </SmartScrollbar>
       </div>

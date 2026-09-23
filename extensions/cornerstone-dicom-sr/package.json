@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-sr",
-  "version": "3.14.0-beta.3",
+  "version": "3.14.0-beta.35",
   "private": true,
   "description": "OHIF extension for an SR Cornerstone Viewport",
   "author": "OHIF",
@@ -21,9 +21,9 @@
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
-    "dev": "cross-env REACT_COMPILER=off NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:cornerstone": "pnpm run dev",
-    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package-1": "pnpm run build",
     "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
@@ -32,7 +32,6 @@
   "peerDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
-    "@ohif/ui": "workspace:*",
     "@ohif/ui-next": "workspace:*",
     "dcmjs": "0.52.0",
     "dicom-parser": "1.8.21",
@@ -41,9 +40,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@cornerstonejs/adapters": "5.6.8",
-    "@cornerstonejs/core": "5.6.8",
-    "@cornerstonejs/tools": "5.6.8",
+    "@cornerstonejs/adapters": "5.10.3",
+    "@cornerstonejs/core": "5.10.3",
+    "@cornerstonejs/tools": "5.10.3",
     "classnames": "2.5.1"
   },
   "devDependencies": {

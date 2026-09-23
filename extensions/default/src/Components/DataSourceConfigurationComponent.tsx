@@ -87,7 +87,7 @@ function DataSourceConfigurationComponent({
         onHide: hide,
       },
     });
-  }, [configurationAPI, configuredItems]);
+  }, [configurationAPI, configuredItems, show, t, hide]);
 
   useEffect(() => {
     if (!configurationAPI || !configuredItems) {

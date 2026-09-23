@@ -1,0 +1,74 @@
+# Review routing for CI-critical paths. Requires an approval from one of the
+# listed owners when a PR touches a matching path (enforced via branch
+# protection's "require review from Code Owners" on master).
+#
+# Notes on how GitHub evaluates this file:
+#   - gitignore-style patterns; the LAST matching pattern wins.
+#   - Owners must have write access or the rule silently does not bind.
+#   - Any single listed owner's approval satisfies the rule; an author's own
+#     approval never counts, so keep at least two owners per rule.
+#   - Only the copy of this file on the PR's base branch is enforced, so a PR
+#     that rewrites these rules is still judged by the old ones.
+#
+# No default (catch-all) owner: paths not listed here keep the normal review
+# flow.
+#
+# Two groups of paths are protected, for two different reasons. A path belongs
+# here when a change to it changes what CI executes, or with what rights, so
+# that the review is routed to someone who will look at it in those terms.
+
+# ── Workflows ─────────────────────────────────────────────────────────────────
+# Every workflow file, whichever runner it targets.
+
+/.github/                          @jbocce @sedghi @wayfarer3130
+
+# ── Self-hosted runner ────────────────────────────────────────────────────────
+# Code and configuration that decide what executes on the shared self-hosted
+# "nashua" box. The same paths are listed in the `gate` job of
+# .github/workflows/playwright.yml; keep the two in step. They do different
+# jobs: the gate keeps a fork PR off the box until its change is merged, and
+# these rules put a code owner in front of the merge.
+
+/.scripts/                         @jbocce @sedghi @wayfarer3130
+/preinstall.js                     @jbocce @sedghi @wayfarer3130
+/package.json                      @jbocce @sedghi @wayfarer3130
+/pnpm-lock.yaml                    @jbocce @sedghi @wayfarer3130
+/pnpm-workspace.yaml               @jbocce @sedghi @wayfarer3130
+/.npmrc                            @jbocce @sedghi @wayfarer3130
+
+# These do not exist in the repository today, and the rules have to be here
+# before the files are: pnpm executes a root pnpmfile if one appears. Both
+# extensions are listed because either name is loaded.
+/.pnpmfile.mjs                     @jbocce @sedghi @wayfarer3130
+/.pnpmfile.cjs                     @jbocce @sedghi @wayfarer3130
+/pnpmfile.mjs                      @jbocce @sedghi @wayfarer3130
+/pnpmfile.cjs                      @jbocce @sedghi @wayfarer3130
+
+# The `gate` job also defers a fork PR that edits ANY workspace manifest
+# (`*/package.json`, `*/.npmrc`), because `pnpm install` runs the lifecycle
+# scripts of the workspace projects and not only the root ones. Those paths are
+# deliberately NOT listed here, so the two lists differ by exactly that much.
+#
+# The reason is the different cost of each list. The gate costs a fork PR one
+# deferred Playwright run, and only until the change merges. A rule here costs
+# every PR in the repository that adds a dependency to any package an approval
+# from one of three named people, on a path that changes several times a week.
+# Master already requires a review before any merge, so a lifecycle script added
+# to an extension still faces a reviewer; what it does not face is these three.
+# Add `package.json` (no leading slash) here to change that decision.
+
+# ── Release pipeline ──────────────────────────────────────────────────────────
+# OHIF does not release from GitHub Actions: CircleCI publishes to npm with
+# NPM_TOKEN, pushes the Docker images, and runs the versioning scripts below. A
+# change to any of these changes what runs with those credentials, and the
+# review before merge is the only check on it. netlify.toml is here for the same
+# reason — it sets the command Netlify runs in its own build context.
+#
+# These do NOT belong in the `gate` list above: none of them runs on the
+# self-hosted box.
+
+/.circleci/                        @jbocce @sedghi @wayfarer3130
+/version.mjs                       @jbocce @sedghi @wayfarer3130
+/publish-version.mjs               @jbocce @sedghi @wayfarer3130
+/publish-package.mjs               @jbocce @sedghi @wayfarer3130
+/netlify.toml                      @jbocce @sedghi @wayfarer3130

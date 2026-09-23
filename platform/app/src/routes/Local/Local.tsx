@@ -84,6 +84,10 @@ function Local({ modePath }: LocalProps) {
 
     const query = new URLSearchParams();
 
+    // Local, not the prop: microscopy studies force their own mode, and props
+    // are read-only.
+    let targetModePath = modePath;
+
     if (microscopyExtensionLoaded) {
       // TODO: for microscopy, we are forcing microscopy mode, which is not ideal.
       //     we should make the local drag and drop navigate to the worklist and
@@ -98,7 +102,7 @@ function Local({ modePath }: LocalProps) {
       if (smStudies.length > 0) {
         smStudies.forEach(id => query.append('StudyInstanceUIDs', id));
 
-        modePath = 'microscopy';
+        targetModePath = 'microscopy';
       }
     }
 
@@ -106,7 +110,7 @@ function Local({ modePath }: LocalProps) {
     studies.forEach(id => query.append('StudyInstanceUIDs', id));
     query.append('datasources', 'dicomlocal');
 
-    navigate(`/${modePath}?${decodeURIComponent(query.toString())}`);
+    navigate(`/${targetModePath}?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style
@@ -139,7 +143,7 @@ function Local({ modePath }: LocalProps) {
               <div className="space-y-2 py-6 text-center">
                 {dropInitiated ? (
                   <div className="flex flex-col items-center justify-center pt-12">
-                    <LoadingIndicatorProgress className={'h-full w-full bg-background'} />
+                    <LoadingIndicatorProgress className={'bg-background h-full w-full'} />
                   </div>
                 ) : (
                   <div className="space-y-2">

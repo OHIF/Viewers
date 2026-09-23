@@ -59,13 +59,6 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
   const [prePreviewPreset, setPrePreviewPreset] = useState<WindowLevelPreset | null>(null);
   const [currentPreset, setCurrentPreset] = useState<WindowLevelPreset | null>(null);
 
-  const showPreviewRef = useRef(showPreview);
-  showPreviewRef.current = showPreview;
-  const prePreviewPresetRef = useRef(prePreviewPreset);
-  prePreviewPresetRef.current = prePreviewPreset;
-  const currentPresetRef = useRef(currentPreset);
-  currentPresetRef.current = currentPreset;
-
   // Reset presets when active display set changes
   useEffect(() => {
     setCurrentPreset(null);
@@ -118,8 +111,8 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
             setShowPreview(checked);
 
             // When turning off preview, restore the current preset if one exists
-            if (!checked && currentPresetRef.current) {
-              handleSetWindowLevel(currentPresetRef.current, true);
+            if (!checked && currentPreset) {
+              handleSetWindowLevel(currentPreset, true);
             }
           }}
         />
@@ -142,16 +135,16 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
                   setPrePreviewPreset(null);
                 }}
                 onMouseEnter={() => {
-                  if (showPreviewRef.current) {
-                    if (!prePreviewPresetRef.current) {
-                      setPrePreviewPreset(currentPresetRef.current || preset);
+                  if (showPreview) {
+                    if (!prePreviewPreset) {
+                      setPrePreviewPreset(currentPreset || preset);
                     }
                     handleSetWindowLevel(preset, true);
                   }
                 }}
                 onMouseLeave={() => {
-                  if (showPreviewRef.current && prePreviewPresetRef.current) {
-                    handleSetWindowLevel(prePreviewPresetRef.current, true);
+                  if (showPreview && prePreviewPreset) {
+                    handleSetWindowLevel(prePreviewPreset, true);
                   }
                 }}
               />

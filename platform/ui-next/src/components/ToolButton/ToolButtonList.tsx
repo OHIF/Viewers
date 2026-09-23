@@ -138,12 +138,26 @@ ToolButtonListDropDown.displayName = 'ToolButtonListDropDown';
  * Individual item in the dropdown menu
  * -----------------------------------------------
  */
-interface ToolButtonListItemProps extends React.ComponentProps<typeof DropdownMenuItem> {
+/**
+ * Deliberately does not extend DropdownMenuItem's props, and the component
+ * forwards no rest object. Callers spread a whole toolbar button's
+ * componentProps onto this component, and Radix hands anything it does not
+ * recognise to a DOM element - so a service field such as evaluate or isActive
+ * would land as an attribute on a div. Naming what is forwarded keeps that
+ * closed against fields added to the toolbar service later.
+ */
+interface ToolButtonListItemProps {
   icon?: string;
   children?: React.ReactNode;
   className?: string;
+  disabled?: boolean;
   disabledText?: string;
   tooltip?: string;
+  onSelect?: React.ComponentProps<typeof DropdownMenuItem>['onSelect'];
+  ref?: React.ComponentProps<typeof DropdownMenuItem>['ref'];
+  'data-cy'?: string;
+  'data-tool'?: string;
+  'data-active'?: boolean;
 }
 
 const ToolButtonListItem = ({
@@ -153,8 +167,11 @@ const ToolButtonListItem = ({
   disabledText,
   tooltip,
   disabled,
+  onSelect,
   ref,
-  ...props
+  'data-cy': dataCy,
+  'data-tool': dataTool,
+  'data-active': dataActive,
 }: ToolButtonListItemProps) => {
   const defaultTooltip = tooltip || (typeof children === 'string' ? children : undefined);
 
@@ -163,7 +180,10 @@ const ToolButtonListItem = ({
       ref={ref}
       className={cn('flex items-center space-x-2', className)}
       disabled={disabled}
-      {...props}
+      onSelect={onSelect}
+      data-cy={dataCy}
+      data-tool={dataTool}
+      data-active={dataActive}
     >
       {icon && (
         <Icons.ByName

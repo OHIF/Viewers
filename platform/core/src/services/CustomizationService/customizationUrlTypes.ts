@@ -1,15 +1,18 @@
 import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
 import type { ValidatedCustomization } from './validate';
+import type { CustomizationEntries } from './types';
 
 /**
  * The value accepted by any single customization phase block. It is whatever
  * {@link CustomizationService.setCustomizations} accepts:
  *   - an object map of `customizationId -> customization` (with optional
- *     immutability-helper commands like `$set` / `$apply` / `$splice`), or
+ *     immutability-helper commands like `$set` / `$apply` / `$splice`), where
+ *     ids registered in `AppTypes.Customizations` are checked against their
+ *     declared value type, or
  *   - an array that mixes string references (extension module ids resolved via
  *     the ExtensionManager) and inline object maps.
  */
-export type CustomizationPhaseInput = string[] | Record<string, any>;
+export type CustomizationPhaseInput = string[] | CustomizationEntries;
 
 /**
  * Mode-phase customizations, keyed by mode. The reserved `*` key (see

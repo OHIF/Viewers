@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { utilities } from '@cornerstonejs/tools';
-import { useSystem, useViewportRef, useViewportSize } from '@ohif/core';
+import { useSystem, useViewportElement, useViewportSize } from '@ohif/core';
 import {
   ColorbarPositionType,
   TickPositionType,
@@ -23,7 +23,6 @@ type ColorbarProps = {
   tickPosition: TickPositionType;
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
-  viewportElementRef?: React.RefObject<HTMLDivElement | null>;
   numColorbars: number;
 };
 
@@ -46,10 +45,16 @@ function ViewportColorbar({
   tickStyles,
   numColorbars,
 }: ColorbarProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  // State rather than a ref: the component renders null until useViewportSize
+  // reports a size, so the container node does not exist on the first pass. A
+  // ref would leave the effect below with nothing to attach to and no
+  // dependency that changes once the node appears - it would only ever retry if
+  // some unrelated dependency happened to churn. Storing the node in state makes
+  // its arrival a dependency change, so the colorbar is created deterministically.
+  const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
-  const viewportElementRef = useViewportRef(viewportId);
+  const viewportElement = useViewportElement<HTMLDivElement>(viewportId);
   const { height, width } = useViewportSize(viewportId);
 
   // Memoize colorbar customization to prevent rerenders from unrelated customization changes
@@ -78,11 +83,9 @@ function ViewportColorbar({
   const colorbarId = `Colorbar-${viewportId}-${displaySetInstanceUID}`;
 
   useEffect(() => {
-    if (!containerRef.current || !colormaps || !activeColormapName) {
+    if (!containerEl || !colormaps || !activeColormapName) {
       return;
     }
-
-    const viewportElement = viewportElementRef?.current;
 
     if (!viewportElement || !colormaps?.length) {
       return;
@@ -92,7 +95,7 @@ function ViewportColorbar({
     const csColorbar = new CornerstoneViewportColorbar({
       id: colorbarId,
       element: viewportElement,
-      container: containerRef.current,
+      container: containerEl,
       colormaps: colormaps,
       activeColormapName: activeColormapName,
       volumeId,
@@ -116,7 +119,8 @@ function ViewportColorbar({
     colorbarId,
     appropriateTickPosition,
     mergedTickStyles,
-    viewportElementRef,
+    viewportElement,
+    containerEl,
   ]);
 
   if (!height || !width) {
@@ -126,7 +130,7 @@ function ViewportColorbar({
   return (
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
-      ref={containerRef}
+      ref={setContainerEl}
       style={{
         position: 'relative',
         zIndex: 1000,

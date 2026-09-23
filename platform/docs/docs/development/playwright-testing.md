@@ -8,7 +8,15 @@ summary: Guide to writing and running end-to-end tests for OHIF Viewer using Pla
 
 
 :::note
-You might need to run the `bun playwright install ` for the first time if you have not
+**Writing tests?** The conventions for contributing E2E tests — fixtures, page
+objects, normalized coordinates, render waits, and screenshot rules — live next
+to the suite in
+[`tests/CONTRIBUTING.md`](https://github.com/OHIF/Viewers/blob/master/tests/CONTRIBUTING.md).
+This page covers running the tests and the basics.
+:::
+
+:::note
+You might need to run `pnpm exec playwright install` the first time, if you have not.
 :::
 
 # Running the tests

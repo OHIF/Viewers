@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-ultrasound-pleura-bline",
-  "version": "3.14.0-beta.3",
+  "version": "3.14.0-beta.35",
   "private": true,
   "description": "Allows users to annotate ultrasound images with pleura B-line annotations.",
   "author": "OHIF",
@@ -20,9 +20,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "cross-env REACT_COMPILER=off NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:cornerstone": "pnpm run dev",
-    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@cornerstonejs/core": "5.6.8",
-    "@cornerstonejs/tools": "5.6.8",
+    "@cornerstonejs/core": "5.10.3",
+    "@cornerstonejs/tools": "5.10.3",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
     "@ohif/extension-ultrasound-pleura-bline": "workspace:*",

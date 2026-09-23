@@ -8,6 +8,12 @@ title: Study list paging and the query limit
 
 The study-list data fetch in `DataSourceWrapper` was simplified. In 3.13 this affected **both** the new `WorkList` and the `LegacyWorkList`, since both received their studies from `DataSourceWrapper`. (`LegacyWorkList` was removed in 3.14; only `WorkList` remains.)
 
+:::warning Deprecated
+`LegacyWorkList` still exists in 3.14 but will be removed in a future release,
+after which this page applies to `WorkList` only. See the
+[3.13 to 3.14 WorkList guide](../3p13-to-3p14/work-list.md).
+:::
+
 ## What changed
 
 Previously, for data sources that support `offset`/`limit`, the wrapper derived a server-side `offset` from the current page and re-queried as you paged — a "rolling window" that let you page past the first result window.

@@ -66,7 +66,8 @@
     "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
     "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs .",
     "lint:compiler": "eslint --config eslint.config.mjs --no-config-lookup .",
-    "lint:compiler:ci": "node scripts/reactCompilerLintBudget.mjs"
+    "lint:compiler:ci": "node scripts/reactCompilerLintBudget.mjs",
+    "compiler:coverage:ci": "node scripts/reactCompilerBudget.mjs"
   },
   "dependencies": {
     "execa": "8.0.1"
@@ -92,9 +93,9 @@
     "@rsbuild/plugin-node-polyfill": "1.4.6",
     "@rsbuild/plugin-react": "2.1.0",
     "@rsdoctor/rspack-plugin": "1.6.0",
-    "@rspack/cli": "^2.0.0",
-    "@rspack/core": "^2.0.0",
-    "@rspack/plugin-react-refresh": "^2.0.0",
+    "@rspack/cli": "2.1.10",
+    "@rspack/core": "2.1.10",
+    "@rspack/plugin-react-refresh": "2.0.2",
     "@testing-library/dom": "10.4.1",
     "@testing-library/react": "16.3.2",
     "@typescript-eslint/parser": "8.64.0",
@@ -119,6 +120,7 @@
     "postcss-loader": "6.2.1",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "0.6.9",
+    "semver": "7.8.5",
     "shader-loader": "1.3.1",
     "source-map-support": "0.5.21",
     "style-loader": "1.3.0",
@@ -139,5 +141,5 @@
       "git add"
     ]
   },
-  "version": "3.14.0-beta.3"
+  "version": "3.14.0-beta.35"
 }

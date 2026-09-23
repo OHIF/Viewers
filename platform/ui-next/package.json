@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.14.0-beta.3",
+  "version": "3.14.0-beta.35",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "author": "OHIF",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "start": "pnpm run build --watch",
     "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env REACT_COMPILER=off NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build"
   },
   "dependencies": {
@@ -58,7 +58,7 @@
     "@radix-ui/react-toggle": "1.1.9",
     "@radix-ui/react-toggle-group": "1.1.10",
     "@radix-ui/react-tooltip": "1.2.7",
-    "@tanstack/react-table": "8.21.3",
+    "@tanstack/react-table": "9.1.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
@@ -67,7 +67,7 @@
     "next-themes": "0.4.6",
     "react-day-picker": "9.12.0",
     "react-resizable-panels": "2.1.9",
-    "shepherd.js": "15.2.2",
+    "shepherd.js": "15.3.0",
     "sonner": "1.7.4",
     "tailwind-merge": "2.6.0",
     "tailwindcss": "3.2.4",
@@ -82,8 +82,16 @@
     "react-dom": "19.2.7"
   },
   "keywords": [],
+  "//": [
+    "peerDependencies are a contract with the consuming app, not an install pin.",
+    "The range lets consumers use any React 19.x.",
+    "Nothing is installed from this block. React itself comes from devDependencies,",
+    "exactly pinned and held to one copy by the workspace overrides, so the range",
+    "specified below adds no packages, versions or transitive dependencies to",
+    "pnpm-lock.yaml and the supply chain stays fully pinned."
+  ],
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }

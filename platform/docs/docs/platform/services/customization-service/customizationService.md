@@ -249,6 +249,7 @@ Use this introduction page for the core model (scope, priority, and syntax), the
 - [Measurements](./Measurements.md): Measurement-related customization surface.
 - [Segmentation](./Segmentation.md): Segmentation-specific customization options.
 - [Advanced Customization](./advanced.md): `inheritsFrom`, `$transform`, and compositional patterns.
+- [Typing Customizations](./typing.md): Declaring a customization id in `AppTypes.Customizations` so reads are typed, writes are checked, and call-site casts can be deleted.
 
 ## Customization Syntax
 
@@ -487,6 +488,8 @@ customizationService.setCustomizations({
 | `$apply`    | Compute the new value dynamically            | Apply a function to transform values |
 | `$filter`   | Find and update specific items in arrays     | Target nested structures             |
 | `$transform`| Apply a function to transform the customization | Apply a function to transform values |
+
+Extensions can register additional commands with `registerCustomUpdateCommand`. To have specs using them type-checked, declare them as described in [Typing Customizations](./typing.md#declaring-a-custom-update-command).
 
 ## Building Customizations Across Multiple Extensions
 

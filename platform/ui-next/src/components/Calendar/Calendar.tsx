@@ -44,6 +44,13 @@ const LOCALE_MAP: Record<string, Locale> = {
   'test-LNG': enUS,
 };
 
+// Tailwind arbitrary variants targeting react-day-picker's internal class names.
+// `String.raw` keeps the backslash that escapes the underscore, and the two live
+// at module scope because the compiler cannot lower a tagged template whose
+// cooked value differs from its raw value.
+const RTL_NEXT_ARROW = String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`;
+const RTL_PREVIOUS_ARROW = String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`;
+
 function Calendar({
   className,
   classNames,
@@ -69,8 +76,8 @@ function Calendar({
       locale={locale}
       className={cn(
         'bg-background group/calendar p-3 [--cell-size:2rem] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
-        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
-        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
+        RTL_NEXT_ARROW,
+        RTL_PREVIOUS_ARROW,
         className
       )}
       captionLayout={captionLayout}
@@ -108,7 +115,14 @@ function Calendar({
           'relative rounded-md border border-input',
           defaultClassNames.dropdown_root
         ),
-        dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
+        // The native <select> is invisible, but browsers paint its option popup
+        // using this element's own colors — not inherited, and unaffected by
+        // opacity-0. Set them explicitly or the popup falls back to a browser
+        // default background, leaving the theme's near-white text unreadable.
+        dropdown: cn(
+          'bg-popover text-popover-foreground absolute inset-0 opacity-0',
+          defaultClassNames.dropdown
+        ),
         caption_label: cn(
           'select-none font-medium',
           captionLayout === 'label'

@@ -431,7 +431,9 @@ function scanSourceImports(targetDir, flags) {
   const importRe = /(?:\bfrom\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]/g;
   const files = listFiles(srcDir).filter(file => /\.(js|jsx|ts|tsx|mjs|cjs)$/.test(file));
   for (const file of files) {
-    const rel = path.relative(targetDir, file);
+    // Forward slashes regardless of platform: the report is user-facing and its
+    // paths are asserted verbatim by the tests.
+    const rel = path.relative(targetDir, file).split(path.sep).join('/');
     const lines = fs.readFileSync(file, 'utf8').split('\n');
     lines.forEach((line, index) => {
       for (const match of line.matchAll(importRe)) {

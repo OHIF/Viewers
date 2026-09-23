@@ -1,4 +1,4 @@
-import React, { Component, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useViewportGrid } from '@ohif/ui-next';
 import {
   utils,
@@ -47,8 +47,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     totalSegments: null,
   });
 
-  const referencedDisplaySetRef = useRef(null);
-
   const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
   // If the referencedDisplaySetInstanceUID is not found, it means the RTStruct series is being
   // launched without its corresponding referenced display set (e.g., the RTStruct series is launched using
@@ -56,25 +54,30 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   // In such cases, we attempt to handle this scenario gracefully by
   // invoking a custom handler. Ideally, if a user tries to launch a series that isn't viewable,
   // (eg.: we can prompt them with an explanation and provide a link to the full study).
+  // Additional guard: If no customization handler is registered for missing
+  // referenced display sets, skip RT rendering to avoid a viewport crash.
+  // Only the *return* moves below the hooks; the handler still runs here, at the
+  // same point in the render it always did.
+  let skipRendering = false;
   if (!referencedDisplaySetInstanceUID) {
     const missingReferenceDisplaySetHandler = customizationService.getCustomization(
       'missingReferenceDisplaySetHandler'
     );
-    const { handled } = missingReferenceDisplaySetHandler();
-    if (handled) {
-      return;
+    if (typeof missingReferenceDisplaySetHandler === 'function') {
+      ({ handled: skipRendering } = missingReferenceDisplaySetHandler());
+    } else {
+      console.log(
+        "No customization 'missingReferenceDisplaySetHandler' registered. Skipping RT rendering."
+      );
+      skipRendering = true;
     }
   }
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    referencedDisplaySetInstanceUID
-  );
-  const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(referencedDisplaySet);
-
-  referencedDisplaySetRef.current = {
-    displaySet: referencedDisplaySet,
-    metadata: referencedDisplaySetMetadata,
-  };
-
+  // getDisplaySetByUID throws on a non-string, and the UID is absent on exactly
+  // the path handled above - so this has to be guarded now that the early return
+  // has moved below the hooks.
+  const referencedDisplaySet = referencedDisplaySetInstanceUID
+    ? displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID)
+    : undefined;
   useEffect(() => {
     if (rtIsLoading) {
       return;
@@ -168,14 +171,11 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     return () => {
       // remove the segmentation representations if seg displayset changed
       segmentationService.removeRepresentationsFromViewport(viewportId);
-      referencedDisplaySetRef.current = null;
       toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
 
-  const getCornerstoneViewport = useCallback(() => {
-    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
-
+  const getCornerstoneViewport = () => {
     // Todo: jump to the center of the first segment
     return (
       <OHIFCornerstoneViewport
@@ -193,15 +193,11 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
         }}
       />
     );
-  }, [viewportId, rtDisplaySet, toolGroupId]);
+  };
 
   let childrenWithProps = null;
 
-  if (
-    !referencedDisplaySetRef.current ||
-    referencedDisplaySet.displaySetInstanceUID !==
-      referencedDisplaySetRef.current.displaySet.displaySetInstanceUID
-  ) {
+  if (skipRendering || !referencedDisplaySet) {
     return null;
   }
 
@@ -233,27 +229,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       </div>
     </>
   );
-}
-
-
-
-function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
-  const image0 = referencedDisplaySet.images[0];
-  const referencedDisplaySetMetadata = {
-    PatientID: image0.PatientID,
-    PatientName: image0.PatientName,
-    PatientSex: image0.PatientSex,
-    PatientAge: image0.PatientAge,
-    SliceThickness: image0.SliceThickness,
-    StudyDate: image0.StudyDate,
-    SeriesDescription: image0.SeriesDescription,
-    SeriesInstanceUID: image0.SeriesInstanceUID,
-    SeriesNumber: image0.SeriesNumber,
-    ManufacturerModelName: image0.ManufacturerModelName,
-    SpacingBetweenSlices: image0.SpacingBetweenSlices,
-  };
-
-  return referencedDisplaySetMetadata;
 }
 
 export default OHIFCornerstoneRTViewport;

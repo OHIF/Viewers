@@ -6,22 +6,25 @@
 // waves. Deliberately not wired into the legacy .eslintrc.json world.
 import reactHooks from 'eslint-plugin-react-hooks';
 import tsParser from '@typescript-eslint/parser';
+// Which directories the compiler applies to. Shared with babel.config.js,
+// rsbuild.config.ts and the coverage gate so the lint scope cannot drift from
+// the compile scope.
+import compilerScope from './react-compiler.scope.cjs';
 
 const hooksPreset = reactHooks.configs['recommended-latest'] ?? reactHooks.configs.recommended;
 
 export default [
   {
-    ignores: ['**/coverage/**', '**/dist/**', '**/build/**', 'platform/docs/**'],
+    ignores: [
+      '**/coverage/**',
+      '**/dist/**',
+      '**/build/**',
+      'platform/docs/**',
+      ...compilerScope.ignoreGlobs,
+    ],
   },
   {
-    files: [
-      'platform/app/src/**/*.{js,jsx,ts,tsx}',
-      'platform/core/src/**/*.{js,jsx,ts,tsx}',
-      'platform/i18n/src/**/*.{js,jsx,ts,tsx}',
-      'platform/ui-next/src/**/*.{js,jsx,ts,tsx}',
-      'extensions/*/src/**/*.{js,jsx,ts,tsx}',
-      'modes/*/src/**/*.{js,jsx,ts,tsx}',
-    ],
+    files: compilerScope.globs,
     ignores: ['**/*.test.*', '**/__tests__/**', '**/__mocks__/**'],
     languageOptions: {
       parser: tsParser,
@@ -44,14 +47,7 @@ export default [
     // The workspace is compiler-first: React 19 idioms are enforced so the
     // removed patterns (forwardRef wrappers, runtime propTypes) do not creep
     // back in. Legacy platform/ui is exempt (frozen, outside the app graph).
-    files: [
-      'platform/app/src/**/*.{js,jsx,ts,tsx}',
-      'platform/core/src/**/*.{js,jsx,ts,tsx}',
-      'platform/i18n/src/**/*.{js,jsx,ts,tsx}',
-      'platform/ui-next/src/**/*.{js,jsx,ts,tsx}',
-      'extensions/*/src/**/*.{js,jsx,ts,tsx}',
-      'modes/*/src/**/*.{js,jsx,ts,tsx}',
-    ],
+    files: compilerScope.globs,
     ignores: ['**/*.test.*'],
     rules: {
       'no-restricted-imports': [

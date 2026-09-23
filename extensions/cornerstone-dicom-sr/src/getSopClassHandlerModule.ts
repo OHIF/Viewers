@@ -1,4 +1,11 @@
-import { utils, classes, DisplaySetService, Types as OhifTypes } from '@ohif/core';
+import {
+  utils,
+  classes,
+  DisplaySetService,
+  DisplaySetMessage,
+  DisplaySetMessageList,
+  Types as OhifTypes,
+} from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -61,6 +68,14 @@ function addInstances(instances: InstanceMetadata[], _displaySetService: Display
   // Eventually, the SR viewer should have the ability to choose which SR
   // gets loaded, and to navigate among them.
   this.instance = this.instances[this.instances.length - 1];
+  // The date/time of the display set is that of the instance it shows, so it
+  // has to move with that instance.  The series level SeriesDate/SeriesTime
+  // still hold those of the first report saved into the series, so leaving
+  // them would show, and summarize by, a date older than the report shown and
+  // older than the position the series list has just sorted this one into.
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(this.instance);
+  this.SeriesDate = SeriesDate;
+  this.SeriesTime = SeriesTime;
   this.isLoaded = false;
   return this;
 }
@@ -96,18 +111,36 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
-    SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
     imageId: predecessorImageId,
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
+  // The date/time of the display set is that of the instance it shows.  A
+  // report saved into an existing series keeps the original SeriesDate, so only
+  // the instance level content date/time places it as the newest one.
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
+
   const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 
-  const isImagingMeasurementReport =
+  const conceptIsImagingMeasurementReport =
     ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurementReport;
+
+  // A report flagged as an Imaging Measurement Report but stored without its
+  // report body (no ContentSequence / (0040,A730)) cannot be parsed or rendered
+  // as one. Treat it as a plain SR so neither the loader nor the SR viewport
+  // takes the measurement path (which calls `.find` on the missing content and
+  // assumes at least one measurement exists), both of which would crash.
+  const hasReportContent = !!instance.ContentSequence;
+  const isImagingMeasurementReport = conceptIsImagingMeasurementReport && hasReportContent;
+
+  // Surface the empty report through the standard display set message list, so
+  // it is reported in the display set tray like any other display set problem.
+  const messages = new DisplaySetMessageList();
+  if (!hasReportContent) {
+    messages.addMessage(DisplaySetMessage.CODES.MISSING_REPORT_CONTENT);
+  }
 
   const displaySet = {
     Modality: 'SR',
@@ -127,6 +160,7 @@ function _getDisplaySetsFromSeries(
     isDerivedDisplaySet: true,
     isLoaded: false,
     isImagingMeasurementReport,
+    messages,
     sopClassUids,
     instance,
     predecessorImageId,
@@ -251,7 +285,22 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (!unloadedMeasurements.length || newDisplaySet.unsupported) {
+  // An SR measurement references source images, never the images of a derived
+  // display set, which is why hydration already leaves those out. Walking one
+  // here is worse than useless: once a SEG is hydrated its display set carries the
+  // labelmap's `derived:` image ids, which resolve to no UIDs (the destructure
+  // below then throws), and a SEG shares its source's FrameOfReferenceUID, so a
+  // SCOORD3D measurement could otherwise land on it. The three flags below all
+  // mark a derived display set: a SEG loaded from the server sets
+  // `isDerivedDisplaySet`, and one made in the client sets `isDerived` and
+  // `isOverlayDisplaySet`.
+  if (
+    !unloadedMeasurements.length ||
+    newDisplaySet.unsupported ||
+    newDisplaySet.isDerivedDisplaySet ||
+    newDisplaySet.isDerived ||
+    newDisplaySet.isOverlayDisplaySet
+  ) {
     return;
   }
 
@@ -260,7 +309,16 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
 
   for (const imageId of imageIds) {
-    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
+    // A metadata provider returns undefined for an image id that it does not
+    // know, for example an id of a custom SOP class handler or of a data source
+    // that marks no derived flag. Skip that image id, and do not throw.
+    const uids = metadataProvider.getUIDsFromImageID(imageId);
+
+    if (!uids) {
+      continue;
+    }
+
+    const { SOPInstanceUID, frameNumber } = uids;
     const key = `${SOPInstanceUID}:${frameNumber || 1}`;
     imageIdMap.set(key, imageId);
   }
@@ -795,4 +853,5 @@ function isTextPosition(group) {
   );
 }
 
+export { _checkIfCanAddMeasurementsToDisplaySet };
 export default getSopClassHandlerModule;

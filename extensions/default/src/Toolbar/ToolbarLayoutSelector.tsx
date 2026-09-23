@@ -109,19 +109,19 @@ function ToolbarLayoutSelectorWithServices({
 
   // Unified selection handler that dispatches to the appropriate command
   const handleSelectionChange = (commandOptions, isPreset) => {
-    if (isPreset) {
-      // Advanced preset selection
-      commandsManager.run({
-        commandName: 'setHangingProtocol',
-        commandOptions,
-      });
-    } else {
-      // Common preset or custom grid selection
-      commandsManager.run({
-        commandName: 'setViewportGridLayout',
-        commandOptions,
-      });
-    }
+      if (isPreset) {
+        // Advanced preset selection: apply the stage layout, not a cached custom grid
+        commandsManager.run({
+          commandName: 'setHangingProtocol',
+          commandOptions: { ...commandOptions, restoreCachedLayout: false },
+        });
+      } else {
+        // Common preset or custom grid selection
+        commandsManager.run({
+          commandName: 'setViewportGridLayout',
+          commandOptions,
+        });
+      }
   };
 
   return (

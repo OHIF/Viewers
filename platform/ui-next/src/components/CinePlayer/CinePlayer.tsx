@@ -40,7 +40,9 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   const isDynamic = !!dynamicInfo?.numDimensionGroups;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const debouncedSetFrameRate = useCallback(debounce(onFrameRateChange, 100), [onFrameRateChange]);
+  // Plain call: the React Compiler caches the debounced wrapper keyed on
+  // onFrameRateChange — the same invalidation the old useCallback deps gave it.
+  const debouncedSetFrameRate = debounce(onFrameRateChange, 100);
 
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
 
@@ -181,7 +183,5 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
     </div>
   );
 };
-
-
 
 export default CinePlayer;

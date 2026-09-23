@@ -263,10 +263,9 @@ const ActionsPrimary = ({
     <div
       ref={ref}
       {...props}
-      data-cy="input-dialog-save-button"
-      onClick={() => onClick(value)}
     >
       <FooterAction.Primary
+        data-cy="input-dialog-save-button"
         onClick={() => onClick(value)}
         className={cn(className)}
       >
