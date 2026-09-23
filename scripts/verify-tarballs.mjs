@@ -316,20 +316,52 @@ function verifyTarball(pkg, tgzPath) {
 
   // (g) React-singleton guard: no react/react-dom code bundled into the UMD
   // output (regression test for the externals contract).
+  //
+  // One exemption: `react/compiler-runtime`. The React Compiler imports it from
+  // every compiled component, and the string externals ('react', 'react-dom',
+  // 'react/jsx-runtime') match the bare specifier only, so the shim is bundled.
+  // It is not a copy of React: it is a few lines whose sole dependency is
+  // `require('react')`, which does hit the external and resolves to the host's
+  // React (see the analysis in babel.config.js). The exemption is by exact file
+  // name AND by size, so a future React that put real code under this name
+  // would fail here rather than slip through.
+  const COMPILER_RUNTIME_SHIM =
+    /node_modules\/react\/(compiler-runtime\.js|cjs\/react-compiler-runtime\.(production|development)\.js)$/;
+  const COMPILER_RUNTIME_SHIM_MAX_CHARS = 2048;
+  let mapsInspected = 0;
+  let shimsAllowed = 0;
   for (const entry of entries) {
     if (!/^dist\/.*\.umd\.js\.map$/.test(entry)) {
       continue;
     }
     let sources = [];
+    let sourcesContent = [];
     try {
-      sources = JSON.parse(readTarballFile(tgzPath, entry)).sources || [];
+      const map = JSON.parse(readTarballFile(tgzPath, entry));
+      sources = map.sources || [];
+      sourcesContent = map.sourcesContent || [];
     } catch (error) {
       fail(name, `could not parse sourcemap '${entry}': ${error.message}`);
       continue;
     }
-    const offenders = sources.filter(
-      source => source.includes('node_modules/react/') || source.includes('node_modules/react-dom/')
-    );
+    mapsInspected += 1;
+    const offenders = [];
+    sources.forEach((source, index) => {
+      if (!source.includes('node_modules/react/') && !source.includes('node_modules/react-dom/')) {
+        return;
+      }
+      if (COMPILER_RUNTIME_SHIM.test(source)) {
+        const content = sourcesContent[index];
+        const size = typeof content === 'string' ? content.length : 0;
+        if (size <= COMPILER_RUNTIME_SHIM_MAX_CHARS) {
+          shimsAllowed += 1;
+          return;
+        }
+        offenders.push(`${source} (${size} chars: too large to be the compiler-runtime shim)`);
+        return;
+      }
+      offenders.push(source);
+    });
     if (offenders.length > 0) {
       fail(
         name,
@@ -337,6 +369,11 @@ function verifyTarball(pkg, tgzPath) {
       );
     }
   }
+  // Printed so CI output shows whether the guard had anything to inspect.
+  console.log(
+    `   ${name}: react-singleton guard inspected ${mapsInspected} sourcemap(s), ` +
+      `allowed ${shimsAllowed} compiler-runtime shim source(s)`
+  );
 
   // (h) extensions/cornerstone: legacy UI package retired from the peer surface.
   if (name === '@ohif/extension-cornerstone') {
