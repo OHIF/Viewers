@@ -42,8 +42,21 @@ test('keeps the viewer header regions separate on mobile', async ({ page, header
   expect(brandingBox!.y + brandingBox!.height).toBeLessThanOrEqual(toolbarBox!.y);
   expect(brandingBox!.x + brandingBox!.width).toBeLessThanOrEqual(actionsBox!.x);
 
-  await toolbar.evaluate(element => element.scrollTo({ left: element.scrollWidth }));
+  // Patient identity must be readable without any scrolling: it is the check the
+  // user makes before reading the study.
   await expect(contextActions).toBeInViewport();
+  const contextActionsBox = await contextActions.boundingBox();
+
+  expect(contextActionsBox).not.toBeNull();
+  expect(contextActionsBox!.y + contextActionsBox!.height).toBeLessThanOrEqual(toolbarBox!.y);
+
+  // The toolbar row itself scrolls horizontally rather than overflowing the header.
+  const toolbarOverflow = await toolbar.evaluate(element => ({
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+  }));
+
+  expect(toolbarOverflow.scrollWidth).toBeGreaterThanOrEqual(toolbarOverflow.clientWidth);
 
   await page.setViewportSize({ width: 640, height: 900 });
   await toolbar.evaluate(element => element.scrollTo({ left: 0 }));

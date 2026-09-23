@@ -71,7 +71,9 @@ function Header({
           className={classNames(
             'relative items-center',
             isResponsive
-              ? 'grid h-[96px] grid-cols-[minmax(0,1fr)_auto] grid-rows-2 lg:block lg:h-[48px]'
+              ? // Row 1 is pinned to the desktop header height; row 2 may grow so that a
+                // taller toolbar wraps instead of being clipped by `overflow-x-auto`.
+                'grid min-h-[96px] grid-cols-[minmax(0,1fr)_auto] grid-rows-[48px_minmax(48px,auto)] lg:block lg:h-[48px] lg:min-h-0'
               : 'h-[48px]'
           )}
           data-cy="app-header"
@@ -102,7 +104,7 @@ function Header({
           <div
             className={classNames(
               isResponsive
-                ? 'col-span-2 row-start-2 flex min-w-0 items-center justify-start gap-2 overflow-x-auto lg:contents'
+                ? 'col-span-2 row-start-2 flex min-w-0 items-center justify-start gap-2 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:contents'
                 : 'contents'
             )}
             data-cy="app-header-toolbar"
@@ -126,13 +128,23 @@ function Header({
             >
               <div className="flex items-center justify-center space-x-2">{children}</div>
             </div>
+          </div>
+          {/* Patient identity has to stay on the first row: it is the safety check
+              the user makes before reading the study, so it must never sit behind
+              a horizontal scroll. Keeping it in normal flow next to the settings
+              menu also reproduces the pre-`isResponsive` desktop DOM exactly —
+              the two used to share this one flex row. */}
+          <div
+            className={classNames(
+              'flex select-none items-center',
+              isResponsive
+                ? 'relative col-start-2 row-start-1 min-w-0 justify-self-end lg:absolute lg:top-1/2 lg:right-0 lg:-translate-y-1/2'
+                : 'absolute top-1/2 right-0 -translate-y-1/2'
+            )}
+            data-cy="app-header-actions"
+          >
             <div
-              className={classNames(
-                'flex items-center',
-                isResponsive
-                  ? 'shrink-0 lg:absolute lg:top-1/2 lg:right-[28px] lg:-translate-y-1/2'
-                  : 'absolute top-1/2 right-[28px] -translate-y-1/2'
-              )}
+              className="flex min-w-0 items-center"
               data-cy="app-header-context-actions"
             >
               {RightSide.map((item, index) => (
@@ -147,16 +159,6 @@ function Header({
                 </div>
               ))}
             </div>
-          </div>
-          <div
-            className={classNames(
-              'flex select-none items-center',
-              isResponsive
-                ? 'relative col-start-2 row-start-1 justify-self-end lg:absolute lg:top-1/2 lg:right-0 lg:-translate-y-1/2'
-                : 'absolute top-1/2 right-0 -translate-y-1/2'
-            )}
-            data-cy="app-header-actions"
-          >
             <div className="flex-shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

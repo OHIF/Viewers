@@ -148,8 +148,12 @@ function ViewerLayout({
 
   const viewportComponents = viewports.map(getViewportComponentData);
 
+  // `h-screen` is `100vh`, which on mobile browsers is the *largest* viewport (URL
+  // bar retracted) and so overflows the screen. `dvh` tracks the visible viewport;
+  // `h-screen` stays as the fallback for browsers without it. Tailwind 3.2 predates
+  // `h-dvh`, hence the arbitrary value.
   return (
-    <div className="flex h-screen min-h-0 flex-col overflow-hidden">
+    <div className="supports-[height:100dvh]:h-[100dvh] flex h-screen min-h-0 flex-col overflow-hidden">
       <ViewerHeader
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
