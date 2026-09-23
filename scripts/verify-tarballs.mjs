@@ -369,10 +369,44 @@ function verifyTarball(pkg, tgzPath) {
       );
     }
   }
+  // (g2) Same guard against the bundle text, so it also covers tarballs that
+  // ship no sourcemap. CI's shared QUICK_BUILD=true turns devtool off for the
+  // package builds, so NPM_PUBLISH tarballs (and, before this check, the PR
+  // gate's) carried no maps and (g) had nothing to inspect -- which is how
+  // @ohif/core 3.14.0-beta.36 shipped with a full copy of React inside.
+  // Markers are string literals that survive minification and appear only in
+  // React itself, never in the compiler-runtime shim or in code that merely
+  // calls React:
+  //   - React core assigns its internals export; the shim only reads it.
+  //   - react-dom's production error formatter prefix.
+  const REACT_CORE_MARKER =
+    /__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE\s*=(?!=)/;
+  const REACT_DOM_MARKER = /Minified React error/;
+  let bundlesScanned = 0;
+  for (const entry of entries) {
+    if (!/^dist\/.*\.umd\.js$/.test(entry)) {
+      continue;
+    }
+    let text;
+    try {
+      text = readTarballFile(tgzPath, entry);
+    } catch (error) {
+      fail(name, `could not read bundle '${entry}': ${error.message}`);
+      continue;
+    }
+    bundlesScanned += 1;
+    if (REACT_CORE_MARKER.test(text)) {
+      fail(name, `bundle '${entry}' contains a copy of React (core internals export defined)`);
+    }
+    if (REACT_DOM_MARKER.test(text)) {
+      fail(name, `bundle '${entry}' contains a copy of react-dom`);
+    }
+  }
   // Printed so CI output shows whether the guard had anything to inspect.
   console.log(
-    `   ${name}: react-singleton guard inspected ${mapsInspected} sourcemap(s), ` +
-      `allowed ${shimsAllowed} compiler-runtime shim source(s)`
+    `   ${name}: react-singleton guard inspected ${mapsInspected} sourcemap(s) ` +
+      `(allowed ${shimsAllowed} compiler-runtime shim source(s)), ` +
+      `scanned ${bundlesScanned} bundle(s) for React markers`
   );
 
   // (h) extensions/cornerstone: legacy UI package retired from the peer surface.
