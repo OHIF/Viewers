@@ -1,6 +1,6 @@
 import {
   addOHIFGlobalCustomizations,
-  checkForScreenshot,
+  checkForViewportScreenshot,
   screenShotPaths,
   test,
   visitStudy,
@@ -38,11 +38,13 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   // navigate to the 12th image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 11 });
 
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.labelMapSegLocking.globalLockedSegPreEdit
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.labelMapSegLocking.globalLockedSegPreEdit,
+  });
 
   // Attempt to erase the segmentations.
   await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.click();
@@ -65,11 +67,11 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
     end: { x: 1.0, y: 0.75 },
   });
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.labelMapSegLocking.globalLockedSegPostEdit
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.labelMapSegLocking.globalLockedSegPostEdit,
+  });
 });
 
 test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
@@ -97,11 +99,13 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   // navigate to the 12th image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 11 });
 
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.labelMapSegLocking.globalUnlockedSegPreEdit
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.labelMapSegLocking.globalUnlockedSegPreEdit,
+  });
 
   // Attempt to erase the segmentations.
   await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.click();
@@ -124,9 +128,9 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
     end: { x: 1.0, y: 0.75 },
   });
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.labelMapSegLocking.globalUnlockedSegPostEdit
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.labelMapSegLocking.globalUnlockedSegPostEdit,
+  });
 });

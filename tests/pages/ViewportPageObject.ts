@@ -121,6 +121,15 @@ export interface IViewportPageObject {
   showAllText: () => Promise<void>;
 }
 
+const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
+const annotationTextSelector = 'g[data-annotation-uid] text';
+const orientationMarkerSelector = '.ViewportOrientationMarkers';
+const allViewportTextSelector = [
+  viewportOverlaySelector,
+  annotationTextSelector,
+  orientationMarkerSelector,
+].join(', ');
+
 export class ViewportPageObject {
   readonly page: Page;
 
@@ -180,6 +189,23 @@ export class ViewportPageObject {
   }
 
   /**
+   * Hides the text of every viewport in the grid (overlay text, annotation
+   * text, and orientation markers) in one selector sweep. Unlike `getAll()`,
+   * this never builds per-viewport page objects — `getViewportId` auto-waits
+   * on pane attributes and throws when a layout change detaches a pane
+   * mid-resolution — so it is safe to call while panes are being added or
+   * removed.
+   */
+  async hideAllViewportsText(): Promise<void> {
+    await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /** Re-shows everything {@link hideAllViewportsText} hid. */
+  async showAllViewportsText(): Promise<void> {
+    await this.showLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /**
    * Hides matching elements by adding Tailwind's `hidden` class.
    * Safe when the locator matches nothing (`evaluateAll` is a no-op on an empty set).
    */
@@ -200,12 +226,6 @@ export class ViewportPageObject {
   }
 
   private getTextVisibilityMethods(viewport: Locator) {
-    const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
-
-    const annotationTextSelector = 'g[data-annotation-uid] text';
-
-    const orientationMarkerSelector = '.ViewportOrientationMarkers';
-
     const textVisibilityMethods = {
       hideViewportOverlayText: async () => {
         await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));

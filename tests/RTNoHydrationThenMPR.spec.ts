@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
@@ -17,20 +24,24 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
   await page.waitForTimeout(5000);
+  await waitForViewportsRendered(page, { timeout: 60000 });
 
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR,
+  });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
+  await waitForViewportsRendered(page, { timeout: 60000 });
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPostMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPostMPR,
+  });
 });

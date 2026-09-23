@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   screenShotPaths,
   test,
   visitStudy,
@@ -15,9 +15,11 @@ test.beforeEach(async ({ page }) => {
 test('should invert the image', async ({ page, mainToolbarPageObject, viewportPageObject }) => {
   await mainToolbarPageObject.moreTools.invert.click();
   await waitForViewportsRendered(page);
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.invert.invertDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.invert.invertDisplayedCorrectly,
+  });
 });

@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   screenShotPaths,
   test,
@@ -47,11 +47,11 @@ test('should fully remove segmentation overlay after repeated load-and-delete cy
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await viewportRenderCycle;
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.segHydrationDeleteAndReload.viewportAfterSecondHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segHydrationDeleteAndReload.viewportAfterSecondHydration,
+  });
 
   viewportRenderCycle = waitForViewportRenderCycle(page);
   await rightPanelPageObject.labelMapSegmentationPanel.panel.moreMenu.delete();
@@ -59,9 +59,9 @@ test('should fully remove segmentation overlay after repeated load-and-delete cy
 
   await expect(rightPanelPageObject.labelMapSegmentationPanel.panel.rows).toHaveCount(0);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.segHydrationDeleteAndReload.viewportAfterSecondDelete
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segHydrationDeleteAndReload.viewportAfterSecondDelete,
+  });
 });

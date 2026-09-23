@@ -1,5 +1,6 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
@@ -30,11 +31,13 @@ test('should hydrate SR reports correctly', async ({
   await waitForViewportsRendered(page);
   await page.waitForTimeout(2000);
   await waitForPaintToSettle(page);
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.srHydration.srPreHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srPreHydration,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -57,11 +60,22 @@ test('should hydrate SR reports correctly', async ({
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
-  await checkForScreenshot(
+
+  // Hydration should produce exactly the SR's two labeled measurements.
+  // ("Max: NaN" is the current UI output for the second row's missing stat;
+  // if that is ever fixed this assertion will surface it.)
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+  const firstRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(firstRow.title).toHaveText('Label1');
+  await expect(firstRow.stats.primary.lines).toHaveText(['46.6 mm']);
+  const secondRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1);
+  await expect(secondRow.title).toHaveText('Label2');
+  await expect(secondRow.stats.primary.lines).toHaveText(['1064', 'Max: NaN']);
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.srHydration.srPostHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srPostHydration,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -84,9 +98,9 @@ test('should hydrate SR reports correctly', async ({
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.srHydration.srJumpToMeasurement
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srJumpToMeasurement,
+  });
 });

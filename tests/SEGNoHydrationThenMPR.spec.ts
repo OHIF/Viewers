@@ -1,9 +1,11 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
   screenShotPaths,
   test,
   visitStudy,
   waitForPaintToSettle,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -23,21 +25,25 @@ test('should launch MPR with unhydrated SEG', async ({
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
   await page.waitForTimeout(5000);
+  await waitForViewportsRendered(page, { timeout: 60000 });
 
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR,
+  });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
+  await waitForViewportsRendered(page, { timeout: 60000 });
   await waitForPaintToSettle(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR,
+  });
 });

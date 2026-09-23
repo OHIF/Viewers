@@ -1,4 +1,4 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import { checkForViewportScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
@@ -15,9 +15,11 @@ test('should reset the image to its original state', async ({
   await mainToolbarPageObject.moreTools.invert.click();
   await mainToolbarPageObject.moreTools.reset.click();
 
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.reset.resetDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.reset.resetDisplayedCorrectly,
+  });
 });
