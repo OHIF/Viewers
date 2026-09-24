@@ -14,7 +14,12 @@ export class ObjectPath {
       length = components !== null ? components.length : 0,
       result = false;
 
-    if (length > 0 && ObjectPath.isValidObject(object)) {
+    // Refuse the whole path before creating anything: a rejected path leaves the object unchanged.
+    if (
+      length > 0 &&
+      ObjectPath.isValidObject(object) &&
+      !components.some(ObjectPath.isPrototypeKey)
+    ) {
       let i = 0,
         last = length - 1,
         currentObject = object;
@@ -22,6 +27,8 @@ export class ObjectPath {
       while (i < last) {
         let field = components[i];
 
+        // Never true after the check above. CodeQL (js/prototype-pollution-utility) only
+        // recognizes a check on the key that is written, so it stays next to each write.
         if (ObjectPath.isPrototypeKey(field)) {
           break;
         }

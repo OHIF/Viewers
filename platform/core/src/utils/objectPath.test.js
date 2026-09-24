@@ -133,6 +133,20 @@ describe('objectPath', () => {
       expect(searchObject.constructor).toBe(Object);
     });
 
+    test('should return false and leave the object unchanged when __proto__ follows a missing property', () => {
+      const searchObject = {};
+      const output = objectPath.set(searchObject, 'missing.__proto__.polluted', 'MOCK_VALUE');
+      expect(output).toBe(false);
+      expect(searchObject).toEqual({});
+    });
+
+    test('should return false and leave the object unchanged when the path ends in constructor', () => {
+      const searchObject = {};
+      const output = objectPath.set(searchObject, 'missing.constructor', 'MOCK_VALUE');
+      expect(output).toBe(false);
+      expect(searchObject).toEqual({});
+    });
+
     test('should return false and leave Object.prototype untouched when the path starts with __proto__', () => {
       const output = objectPath.set({}, '__proto__.polluted', 'MOCK_VALUE');
       expect(output).toBe(false);
