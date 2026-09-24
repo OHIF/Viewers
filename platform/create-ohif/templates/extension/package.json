@@ -32,23 +32,23 @@
   },
   "peerDependencies": {
     "@ohif/core": "{{peerRange}}",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
-    "@rspack/cli": "^2.0.0",
-    "@rspack/core": "^2.0.0",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "cross-env": "^7.0.3",
-    "css-loader": "^6.11.0",
-    "postcss": "^8.4.0",
-    "postcss-loader": "^8.1.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "style-loader": "^4.0.0",
+    "@rspack/cli": "2.1.10",
+    "@rspack/core": "2.1.10",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "cross-env": "7.0.3",
+    "css-loader": "6.11.0",
+    "postcss": "8.5.28",
+    "postcss-loader": "8.2.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "style-loader": "4.0.0",
     "tailwindcss": "3.2.4",
-    "typescript": "^5.5.0",
-    "vitest": "^3.2.0"
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
   }
 }

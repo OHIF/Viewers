@@ -410,7 +410,7 @@ test('--in-tree scaffolds into the checkout with workspace peers and minimal dev
 
   const pkg = readPkg(dir);
   assert.equal(pkg.peerDependencies['@ohif/core'], 'workspace:*');
-  assert.deepEqual(pkg.devDependencies, { 'cross-env': '7.0.3', vitest: '^3.2.0' });
+  assert.deepEqual(pkg.devDependencies, { 'cross-env': '7.0.3', vitest: '3.2.7' });
   assert.equal(pkg.scripts.typecheck, undefined, 'typecheck dropped in-tree (tsc resolves from root)');
   assert.ok(!exists(dir, '.npmrc'), 'root .npmrc governs in-tree installs');
   assertNoTokens(dir);

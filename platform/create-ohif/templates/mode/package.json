@@ -27,10 +27,10 @@
     "@ohif/extension-default": "{{peerRange}}"
   },
   "devDependencies": {
-    "@rspack/cli": "^2.0.0",
-    "@rspack/core": "^2.0.0",
-    "cross-env": "^7.0.3",
-    "typescript": "^5.5.0",
-    "vitest": "^3.2.0"
+    "@rspack/cli": "2.1.10",
+    "@rspack/core": "2.1.10",
+    "cross-env": "7.0.3",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
   }
 }

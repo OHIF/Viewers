@@ -253,7 +253,7 @@ function inTreeTransformPass(targetDir) {
   fs.rmSync(path.join(targetDir, '.npmrc'), { force: true });
   const pkgPath = path.join(targetDir, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-  pkg.devDependencies = { 'cross-env': '7.0.3', vitest: '^3.2.0' };
+  pkg.devDependencies = { 'cross-env': '7.0.3', vitest: '3.2.7' };
   if (pkg.scripts) {
     delete pkg.scripts.typecheck;
   }
@@ -377,20 +377,22 @@ const WEBPACK_TOOLING = [
 ];
 // devDependencies the vendored .rspack config needs at build time (extension
 // additionally compiles CSS through postcss/tailwind).
+// Exact pins, matching OHIF's convention (ranges only in peerDependencies) and
+// the versions the monorepo itself builds with where it has them.
 const MIGRATE_DEV_DEPS = {
   extension: {
-    '@rspack/cli': '^2.0.0',
-    '@rspack/core': '^2.0.0',
-    'cross-env': '^7.0.3',
-    'css-loader': '^6.11.0',
-    postcss: '^8.4.0',
-    'postcss-loader': '^8.1.1',
+    '@rspack/cli': '2.1.10',
+    '@rspack/core': '2.1.10',
+    'cross-env': '7.0.3',
+    'css-loader': '6.11.0',
+    postcss: '8.5.28',
+    'postcss-loader': '8.2.1',
     tailwindcss: '3.2.4',
   },
   mode: {
-    '@rspack/cli': '^2.0.0',
-    '@rspack/core': '^2.0.0',
-    'cross-env': '^7.0.3',
+    '@rspack/cli': '2.1.10',
+    '@rspack/core': '2.1.10',
+    'cross-env': '7.0.3',
   },
 };
 // The only @ohif deep imports the published contract resolves (ui-next
