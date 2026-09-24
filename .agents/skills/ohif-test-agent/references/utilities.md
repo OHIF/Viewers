@@ -73,9 +73,11 @@ Do not tune `maxDiffPixelRatio` or `threshold` to make a screenshot pass — tho
 ### `screenShotPaths` — use keys, not raw strings
 
 ```ts
-await checkForScreenshot({
+const viewport = await viewportPageObject.active;
+
+await checkForViewportScreenshot({
   page,
-  locator: viewportPageObject.grid,
+  viewport,
   screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
 });
 ```
