@@ -8,6 +8,7 @@ import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu
 import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
 import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
 import { OpacityMenuWrapper } from './components/OpacityMenu/OpacityMenuWrapper';
+import { ProjectionMenuWrapper } from './components/ProjectionMenu/ProjectionMenuWrapper';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
@@ -253,6 +254,41 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     {
       name: 'ohif.opacityMenu',
       defaultComponent: OpacityMenuWrapper,
+    },
+    {
+      name: 'ohif.projectionMenu',
+      defaultComponent: ProjectionMenuWrapper,
+    },
+    {
+      name: 'evaluate.projectionMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Projection is a planar-volume feature: 3D volume rendering viewports are
+        // excluded here, at the command (service guard) and at the adapter.
+        if (getViewportAdapter(viewport).getShape() === 'volume3d') {
+          return {
+            disabled: true,
+          };
+        }
+
+        // A stack viewport is promoted to a volume viewport on first enable, so the
+        // menu stays discoverable as long as the data can be reconstructed. Volume
+        // load state is reported inside the menu (it re-enables on load complete).
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId) ?? [];
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const reconstructable = displaySets.some(displaySet => displaySet?.isReconstructable);
+
+        return {
+          disabled: !reconstructable,
+        };
+      },
     },
     {
       name: 'evaluate.windowLevelMenu',
