@@ -6,7 +6,8 @@ export class ObjectPath {
    * @param path {String} A string representing the property to be set, e.g. "user.study.series.timepoint".
    * @param value {Any} The value of the property that will be set.
    * @return {Boolean} Returns "true" on success, "false" if any intermediate component of the supplied path
-   * ... is not a valid Object, in which case the property cannot be set. No exceptions are thrown.
+   * ... is not a valid Object, or if the path contains "__proto__" or "constructor", in which case the property
+   * ... cannot be set. No exceptions are thrown.
    */
   static set(object, path, value) {
     let components = ObjectPath.getPathComponents(path),
@@ -21,6 +22,10 @@ export class ObjectPath {
       while (i < last) {
         let field = components[i];
 
+        if (ObjectPath.isPrototypeKey(field)) {
+          break;
+        }
+
         if (field in currentObject) {
           if (!ObjectPath.isValidObject(currentObject[field])) {
             break;
@@ -33,8 +38,9 @@ export class ObjectPath {
         i++;
       }
 
-      if (i === last) {
-        currentObject[components[last]] = value;
+      const lastField = components[last];
+      if (i === last && !ObjectPath.isPrototypeKey(lastField)) {
+        currentObject[lastField] = value;
         result = true;
       }
     }
@@ -86,6 +92,17 @@ export class ObjectPath {
    */
   static isValidObject(object) {
     return typeof object === 'object' && object !== null && object instanceof Object;
+  }
+
+  /**
+   * Check if a path component can reach a prototype instead of a property of the object (prototype
+   * ... pollution): "list.__proto__.polluted" would set Array.prototype.polluted for every array,
+   * ... and "constructor.prototype" leads to the prototype through the constructor.
+   * @param field {String} A component of a path.
+   * @return {Boolean} Returns "true" for "__proto__" and "constructor".
+   */
+  static isPrototypeKey(field) {
+    return field === '__proto__' || field === 'constructor';
   }
 
   static getPathComponents(path) {
