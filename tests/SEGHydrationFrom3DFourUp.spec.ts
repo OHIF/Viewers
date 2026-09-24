@@ -1,6 +1,6 @@
 import {
   attemptAction,
-  checkForScreenshot,
+  checkForGridScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -30,11 +30,11 @@ test.describe('3D four up SEG hydration', async () => {
 
     await waitForViewportsRendered(page);
 
-    await checkForScreenshot(
+    await checkForGridScreenshot({
       page,
-      viewportPageObject.grid,
-      screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG
-    );
+      viewportPageObject,
+      screenshotPath: screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG,
+    });
 
     let viewportRenderCycle = waitForViewportRenderCycle(page);
     await leftPanelPageObject.loadSeriesByDescription('SEG');
@@ -44,11 +44,11 @@ test.describe('3D four up SEG hydration', async () => {
       timeout: 60000,
     });
 
-    await checkForScreenshot(
+    await checkForGridScreenshot({
       page,
-      viewportPageObject.grid,
-      screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
-    );
+      viewportPageObject,
+      screenshotPath: screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG,
+    });
 
     // start watching for viewports to render
 
@@ -64,9 +64,9 @@ test.describe('3D four up SEG hydration', async () => {
     // first render cycle resolves.
     await waitForViewportsRendered(page, { timeout: 240000 });
 
-    await checkForScreenshot({
+    await checkForGridScreenshot({
       page,
-      locator: viewportPageObject.grid,
+      viewportPageObject,
       screenshotPath: screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated,
     });
   });
@@ -108,9 +108,9 @@ test.describe('3D four up to 3x2 layout SEG hydration', () => {
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
     await viewportRenderCycle;
 
-    await checkForScreenshot({
+    await checkForGridScreenshot({
       page,
-      locator: viewportPageObject.grid,
+      viewportPageObject,
       screenshotPath: screenShotPaths.segHydrationAfterLayoutSwitchTo3By2.afterSEGHydrated,
     });
 
@@ -118,9 +118,9 @@ test.describe('3D four up to 3x2 layout SEG hydration', () => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
     await viewportRenderCycle;
 
-    await checkForScreenshot({
+    await checkForGridScreenshot({
       page,
-      locator: viewportPageObject.grid,
+      viewportPageObject,
       screenshotPath: screenShotPaths.segHydrationAfterLayoutSwitchTo3By2.backTo3DFourUp,
     });
   });

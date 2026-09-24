@@ -1,6 +1,7 @@
 import { visitStudy, visitStudyOptions } from './visitStudy';
 import { addOHIFConfiguration, addOHIFGlobalCustomizations } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
+import { checkForGridScreenshot } from './checkForGridScreenshot';
 import { checkForViewportScreenshot } from './checkForViewportScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -50,6 +51,7 @@ export {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,
+  checkForGridScreenshot,
   checkForViewportScreenshot,
   screenShotPaths,
   simulateClicksOnElement,

@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   screenShotPaths,
   test,
@@ -28,9 +28,11 @@ test('should render overlapping segments from SEG series 1004', async ({
   await viewportRenderCycle;
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot({
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.overlappingSegmentationRendering.overlappingSegmentsDisplayed,
   });
 });
