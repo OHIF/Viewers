@@ -394,7 +394,7 @@ export default class MicroscopyService extends PubSubService {
    * Toggle ROIs visibility
    */
   toggleROIsVisibility() {
-    this.isROIsVisible ? this.hideROIs() : this.showROIs;
+    this.isROIsVisible ? this.hideROIs() : this.showROIs();
     this.isROIsVisible = !this.isROIsVisible;
   }
 
