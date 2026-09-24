@@ -125,16 +125,11 @@
   "optionalDependencies": {
     "@playwright/test": "1.56.1"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "src/**/*.{js,json,css}": [
       "prettier --write",
       "git add"
     ]
   },
-  "version": "3.14.0-beta.35"
+  "version": "3.14.0-beta.36"
 }
