@@ -71,7 +71,9 @@ for the series or not.
 If you click Yes, DICOM SR measurements gets re-hydrated into the viewer and
 the series become a tracked series. If you click No, the viewer does not ask again
 for this SR while the study stays open. To track its measurements later, open the
-study again and click Yes.
+study again and click Yes. This works for an SR that is stored in the data source.
+An SR that was only downloaded, or copied to the clipboard, shows in the viewer
+until the study is closed, and is not there when the study is opened again.
 
 The full workflow for saving measurements to SR and loading SR into the viewer is shown below.
 
