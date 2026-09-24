@@ -2,7 +2,6 @@ import { expect, test } from 'playwright-test-coverage';
 import { Locator, Page } from 'playwright';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { waitForPaintToSettle, waitForViewportsRendered } from './waitForViewportsRendered';
 
 export type CheckForScreenshotProps = {
   page: Page;
@@ -80,24 +79,6 @@ const _cleanupIntermediateScreenshotArtifacts = async (
   }
 };
 
-/**
- * In update mode the first capture becomes the baseline, so the
- * compare-retry loop cannot absorb late renders or progressive volume
- * loading: an unsettled frame gets baked in as the baseline and every later
- * comparison fails against it. Wait for the viewports to finish rendering
- * and loading volumes before capturing. A page without matching viewports
- * (e.g. a dialog capture) times out harmlessly and proceeds.
- */
-const _settleForBaselineCapture = async (page: Page) => {
-  await waitForViewportsRendered(page, { timeout: 60000 }).catch(() => undefined);
-  // The rendered/loaded flags can fire before late output lands on the
-  // canvas (e.g. the 3D volume ray cast paints after the viewport reports
-  // rendered), so add a generous wall-clock settle on top. This runs during
-  // baseline generation only; normal runs rely on the compare-retry loop.
-  await page.waitForTimeout(5000);
-  await waitForPaintToSettle(page);
-};
-
 const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
   const {
     page,
@@ -112,20 +93,12 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
   } = props;
 
   let { locator = page } = props;
-  const testInfo = test.info();
-  const testOutputDir = testInfo.outputDir;
-  const updateSnapshots = testInfo.config.updateSnapshots;
-  const isUpdatingBaselines = updateSnapshots === 'all' || updateSnapshots === 'changed';
+  const testOutputDir = test.info().outputDir;
 
   await page.waitForLoadState('networkidle');
 
   for (let i = 0; i < attempts; i++) {
     try {
-      // Settle before beforeAttempt: cornerstone re-creates annotation SVG on
-      // render, which would resurrect text a text-hiding beforeAttempt hid.
-      if (isUpdatingBaselines) {
-        await _settleForBaselineCapture(page);
-      }
       await beforeAttempt?.();
       let clip;
       if (normalizedClip) {
