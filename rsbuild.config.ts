@@ -12,6 +12,8 @@ import resolveConfig from './.rspack/resolveConfig';
 // `compiler.webpack` inside apply() instead of importing @rspack/core.
 import InjectServiceWorkerManifestPlugin from './platform/app/.rspack/InjectServiceWorkerManifestPlugin';
 import fs from 'fs';
+import type { IncomingMessage, ServerResponse } from 'http';
+import serveStatic from 'serve-static';
 
 const APP_ROOT = path.resolve(__dirname, './platform/app');
 const SRC_DIR = path.resolve(APP_ROOT, 'src');
@@ -37,7 +39,68 @@ const QUICK_BUILD = process.env.QUICK_BUILD === 'true';
 const compilerScope = require('./react-compiler.scope.cjs');
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
-const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
+// Never try to open a browser on CI: there is none, and rsbuild logs a
+// `spawn xdg-open ENOENT` error for every server start (seen in the Cypress job).
+const OHIF_OPEN = process.env.OHIF_OPEN !== 'false' && !process.env.CI;
+
+// Local DICOMweb test data for e2e. The Cypress suite and the `e2e`, `multiple`
+// and `customization` app configs read studies from `/viewer-testdata`, which
+// the retired rspack dev server (webpack.pwa.js) mounted from the `testdata`
+// submodule through devServer.static. rsbuild has no prefix-mounted static
+// option, so the same directory is served with the same serve-static options
+// as a dev middleware below. Playwright is unaffected: its fixtures load
+// studies from the remote `ohif` data source.
+const TESTDATA_DIR = path.resolve(__dirname, 'testdata');
+const TESTDATA_PUBLIC_PATH = '/viewer-testdata';
+
+// Ported verbatim from webpack.pwa.js. The static WADO tree stores
+// pre-compressed JSON (.gz / .br) and extensionless multipart frames, so the
+// transport headers have to be derived from the file path.
+const setTestDataHeaders = (res: ServerResponse, filePath: string) => {
+  if (filePath.indexOf('.gz') !== -1) {
+    res.setHeader('Content-Encoding', 'gzip');
+  } else if (filePath.indexOf('.br') !== -1) {
+    res.setHeader('Content-Encoding', 'br');
+  }
+  if (filePath.indexOf('thumbnail') !== -1) {
+    res.setHeader('Content-Type', 'image/jpeg');
+  } else if (filePath.indexOf('.pdf') !== -1) {
+    res.setHeader('Content-Type', 'application/pdf');
+  } else if (filePath.indexOf('mp4') !== -1) {
+    res.setHeader('Content-Type', 'video/mp4');
+  } else if (filePath.indexOf('frames') !== -1) {
+    res.setHeader('Content-Type', 'multipart/related');
+  } else {
+    res.setHeader('Content-Type', 'application/json');
+  }
+};
+
+type TestDataRequest = IncomingMessage & { originalUrl?: string };
+
+const serveTestData = (() => {
+  const handler = serveStatic(TESTDATA_DIR, {
+    extensions: ['gz', 'br', 'mht'],
+    index: ['index.json.gz', 'index.mht.gz'],
+    redirect: true,
+    setHeaders: setTestDataHeaders,
+  });
+  return (req: TestDataRequest, res: ServerResponse, next: (err?: unknown) => void) => {
+    const url = req.url || '';
+    if (url !== TESTDATA_PUBLIC_PATH && !url.startsWith(`${TESTDATA_PUBLIC_PATH}/`)) {
+      return next();
+    }
+    // serve-static resolves against req.url. Strip the mount prefix the way
+    // `app.use(prefix, static)` would, and keep originalUrl so its directory
+    // redirects point back under /viewer-testdata.
+    const original = req.url;
+    req.originalUrl = req.originalUrl || original;
+    req.url = url.slice(TESTDATA_PUBLIC_PATH.length) || '/';
+    handler(req, res, (err?: unknown) => {
+      req.url = original;
+      next(err);
+    });
+  };
+})();
 
 // Ignore node_modules except @cornerstonejs (symlinked local development).
 const WATCH_IGNORED = /node_modules[\\/](?!@cornerstonejs(?:[\\/]|$))/;
@@ -384,6 +447,13 @@ export default defineConfig(({ env }) => {
       host: '0.0.0.0',
       port: OHIF_PORT,
       open: OHIF_OPEN,
+      // Serve the `testdata` submodule at /viewer-testdata (see serveTestData).
+      // `setup` runs before rsbuild registers its built-in middlewares, so this
+      // answers ahead of the history-API fallback, which would otherwise return
+      // index.html for every study request. Applies to dev and preview alike.
+      setup: ({ server }) => {
+        server.middlewares.use(serveTestData);
+      },
       // Disable rsbuild's built-in public-dir handling: it copies ALL of
       // platform/app/public into dist (including config/ and html-templates/).
       // The explicit output.copy patterns above replicate the rspack build's
