@@ -189,12 +189,7 @@ export class ViewportPageObject {
   }
 
   /**
-   * Hides the text of every viewport in the grid (overlay text, annotation
-   * text, and orientation markers) in one selector sweep. Unlike `getAll()`,
-   * this never builds per-viewport page objects — `getViewportId` auto-waits
-   * on pane attributes and throws when a layout change detaches a pane
-   * mid-resolution — so it is safe to call while panes are being added or
-   * removed.
+   * Hides all viewport text (overlays, annotations, orientation markers) in one sweep.
    */
   async hideAllViewportsText(): Promise<void> {
     await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
