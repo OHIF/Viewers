@@ -67,6 +67,12 @@ RUN ./.docker/compressDist.sh
 # which runs Nginx using Alpine Linux
 FROM nginxinc/nginx-unprivileged:1.27-alpine as final
 #RUN apk add --no-cache bash
+# The base image is not rebuilt for every Alpine security fix (for example OpenSSL,
+# CVE-2026-31789), so take the fixed packages at build time. apk needs root, and
+# the image runs as nginx.
+USER root
+RUN apk upgrade --no-cache
+USER nginx
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
 ARG PORT=80
