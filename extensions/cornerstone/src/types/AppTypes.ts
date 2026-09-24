@@ -43,6 +43,16 @@ declare global {
       export type SegmentationInfo = SegInfo;
     }
 
+    export interface Customizations {
+      /**
+       * Maximum number of undo/redo history items to keep. Segmentation memos
+       * hold full labelmap buffers, so a large history can cause out-of-memory
+       * or buffer allocation issues. When unset, the Cornerstone default is
+       * used.
+       */
+      'cornerstone.maxUndoRedoCacheSize': number | undefined;
+    }
+
     export interface PresentationIds {
       lutPresentationId: string;
       positionPresentationId: string;
