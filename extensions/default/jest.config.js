@@ -8,6 +8,7 @@ module.exports = {
     // catch-all below appends a second one (e.g. `@ohif/core/src/utils/x`
     // would otherwise resolve to `platform/core/src/utils/x/src`).
     '^@ohif/([^/]+)/src/(.*)$': '<rootDir>/../../platform/$1/src/$2',
+    '^@ohif/extension-cornerstone$': '<rootDir>/../cornerstone/src',
     '@ohif/(.*)': '<rootDir>/../../platform/$1/src',
   },
   // rootDir: "../.."
