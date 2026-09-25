@@ -77,6 +77,17 @@ module.exports = {
         steps: 2, // the max number of images generated between min and max (inclusive)
       },
     ],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            from: '/development/ohif-cli',
+            to: '/migration-guide/3p12-to-3p13/cli-removal',
+          },
+        ],
+      },
+    ],
   ],
   presets: [
     [

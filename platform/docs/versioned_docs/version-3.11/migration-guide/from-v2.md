@@ -923,7 +923,7 @@ build.
 How can I enhance the existing build to consume my own webpack script?
 </summary>
 You can't enhance the existing build to consume your own webpack script as of now. However, you can
-modify the webpack.base.js and webpakc.pwa.js files to add your own webpack script/modules if needed.
+modify the rspack.base.js and webpakc.pwa.js files to add your own webpack script/modules if needed.
 
 </details>
 

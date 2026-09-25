@@ -1,0 +1,5 @@
+{
+  "ohifVersion": "{{ohifVersion}}",
+  "plugins": [],
+  "appConfig": "config/app-config.js"
+}

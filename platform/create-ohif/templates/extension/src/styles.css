@@ -1,0 +1,19 @@
+/*
+ * Self-contained styles: everything this extension needs is bundled and
+ * injected as a <style> tag at runtime (style-loader), so it loads whether the
+ * extension is bundled into the host, loaded at runtime, or compiled from
+ * source. Tailwind scans only this package's src/ and preflight is off so
+ * nothing resets host styles. Never rely on classes the host may or may not ship.
+ */
+@tailwind components;
+@tailwind utilities;
+
+.{{dirName}}-example {
+  padding: 0.5rem;
+  /* Inherit the host theme's text color (OHIF sets --foreground on :root and
+   * flips it between light and dark themes). Without this the panel text would
+   * fall back to the browser default (black) and be invisible on the dark
+   * viewer background. Uses the CSS variable rather than a Tailwind color
+   * utility so it works without depending on the host's generated classes. */
+  color: hsl(var(--foreground));
+}

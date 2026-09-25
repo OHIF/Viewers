@@ -83,7 +83,8 @@ COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root
-RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html${PUBLIC_URL}plugins \
+  && chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

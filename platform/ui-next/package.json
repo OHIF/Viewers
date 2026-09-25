@@ -14,18 +14,28 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "src",
+    "public",
+    "README.md",
+    "tailwind.config.js"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "module": "dist/ohif-ui-next.umd.js",
+    "exports": {
+      ".": "./dist/ohif-ui-next.umd.js",
+      "./tailwind.config": "./tailwind.config.js",
+      "./lib/*": "./src/lib/*.ts",
+      "./components/*": "./src/components/*.tsx"
+    }
   },
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "start": "pnpm run build --watch",
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build"
   },
   "dependencies": {
@@ -72,6 +82,14 @@
     "react-dom": "19.2.7"
   },
   "keywords": [],
+  "//": [
+    "peerDependencies are a contract with the consuming app, not an install pin.",
+    "The range lets consumers use any React 19.x.",
+    "Nothing is installed from this block. React itself comes from devDependencies,",
+    "exactly pinned and held to one copy by the workspace overrides, so the range",
+    "specified below adds no packages, versions or transitive dependencies to",
+    "pnpm-lock.yaml and the supply chain stays fully pinned."
+  ],
   "peerDependencies": {
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

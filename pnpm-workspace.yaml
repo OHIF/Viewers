@@ -47,20 +47,19 @@ allowBuilds:
 overrides:
   # React 19 singleton: legacy transitive peers must not create a nested react copy.
   # This also coerces packages whose declared peers stop at 18 — silently, since
-  # strictPeerDependencies is false. For example, when OHIF first migrated to
-  # React 19, @xstate/react@3.2.2 in extensions/measurement-tracking ran outside
-  # its declared range. Audit any such package for use of React 19 removals
-  # before assuming it is safe.
+  # strictPeerDependencies is false. Before assuming such a package is safe,
+  # check its shipped code for the APIs React 19 removed.
   #
-  # That audit was done for @xstate/react@3.2.2 on 2026-09-10: it calls only
-  # ordinary hooks plus a useSyncExternalStore shim, and none of the APIs React
-  # 19 removed, so the coercion holds. Its declaration is what is stale, not its
-  # code. Correcting that means @xstate/react v4+, which requires xstate v5 - a
-  # rewrite of the measurement-tracking machine rather than a version bump.
+  # Audited 2026-09-23. Three coerced packages reach the app:
+  #   @xstate/react@3.2.2 (measurement-tracking): ordinary hooks only.
+  #   react-select@5.7.4 (platform/ui, via LegacyWorkList): defaultProps on a
+  #     class component, which React 19 still supports.
+  #   use-sync-external-store@1.2.2 (zustand): hands off to React's own hook.
+  # react-modal and react-with-direction do use removed APIs, but platform/ui
+  # declares them without importing them, so they never reach a bundle.
   #
-  # Every other package coerced this way lives in frozen platform/ui, outside
-  # the app graph. To re-check, read peerDependencies.react from each installed
-  # package.json - the lockfile records the coerced range, not the declared one.
+  # To re-check, read peerDependencies.react from each installed package.json;
+  # the lockfile records the coerced range, not the declared one.
   react: 19.2.7
   react-dom: 19.2.7
   '@types/react': 19.2.17

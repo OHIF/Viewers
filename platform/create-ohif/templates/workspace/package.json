@@ -1,0 +1,14 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "private": true,
+  "description": "{{description}}",
+  "packageManager": "pnpm@11.5.2",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "node scripts/ohif.mjs dev",
+    "build": "node scripts/ohif.mjs build",
+    "doctor": "node scripts/ohif.mjs doctor",
+    "plugin": "node scripts/ohif.mjs plugin"
+  }
+}

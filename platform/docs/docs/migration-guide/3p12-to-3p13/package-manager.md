@@ -2,7 +2,7 @@
 sidebar_position: 3
 sidebar_label: Package Manager (pnpm)
 title: Yarn / Lerna to pnpm
-summary: 3.13 moves the monorepo from yarn + lerna to pnpm workspaces. This guide covers the new install/run commands, workspace dependency syntax, and changes to CLI-generated extensions and modes.
+summary: 3.13 moves the monorepo from yarn + lerna to pnpm workspaces. This guide covers the new install/run commands, workspace dependency syntax, and the removal of the OHIF CLI.
 ---
 
 # Yarn + Lerna to pnpm
@@ -123,49 +123,14 @@ If you keep an OHIF fork with extra extensions in `extensions/`, you do
 already covers them. Inside your extension's `package.json`, change any
 `@ohif/*` deps from hard versions to `workspace:*`.
 
-## CLI changes
+## OHIF CLI removed
 
-`platform/cli` (`@ohif/cli`) no longer wraps yarn:
-
-- `getYarnInfo` and `uninstallNPMPackage` now shell out via `execa` to
-  `npm` / `pnpm` directly rather than depending on the deprecated
-  `yarn-programmatic` package.
-- The CLI invokes scripts with `pnpm run …` and instructs new extension
-  authors to use pnpm.
-- The yarn dependency was removed from `platform/cli/package.json`.
-
-If you previously ran extension/mode commands as `yarn run cli …`,
-switch to `pnpm run cli …`.
-
-## CLI extension and mode templates
-
-The `extension` and `mode` templates in `platform/cli/templates/*/dependencies.json`
-were updated:
-
-```diff
-  "engines": {
--   "node": ">=14",
--   "npm": ">=6",
--   "yarn": ">=1.18.0"
-+   "node": ">=24",
-+   "pnpm": "11.1.1"
-  },
-  "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
--   "dev:my-extension": "yarn run dev",
-+   "dev:my-extension": "pnpm rundev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
--   "build:package": "yarn run build",
--   "start": "yarn run dev"
-+   "build:package": "pnpm runbuild",
-+   "start": "pnpm rundev"
-  }
-```
-
-> **Heads up**: the template's `pnpm rundev` / `pnpm runbuild` strings are
-> missing the space between `run` and the script name. If you generate a
-> new extension from the CLI, replace those with `pnpm run dev` and
-> `pnpm run build`.
+`platform/cli` (`@ohif/cli`) and the root `cli` script were removed in 3.13.
+If you previously scaffolded or managed extensions and modes with
+`yarn run cli …` (or `pnpm run cli …`), those commands no longer exist. Use
+`pnpm create ohif` to scaffold and the `pnpm run plugin` helper to register
+plugins instead. See [OHIF CLI removal](./cli-removal.md) for the full command
+mapping and the porting guide for CLI-era extensions and modes.
 
 ## Audit and lockfile maintenance
 
@@ -186,5 +151,6 @@ were updated:
 4. Update CI scripts to call `pnpm install --frozen-lockfile` and
    `pnpm run …`.
 5. Update your cache key to `pnpm-lock.yaml`.
-6. Regenerate any extensions you created from the CLI templates and fix
-   the `pnpm rundev` / `pnpm runbuild` script names.
+6. If you previously used the OHIF CLI, migrate off it: re-scaffold with
+   `pnpm create ohif` and register plugins through `pluginConfig.json`. See
+   [OHIF CLI removal](./cli-removal.md).
