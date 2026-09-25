@@ -20,6 +20,13 @@ in the Configuration Files guide. See also the
 [Runtime Extensions](../platform/extensions/runtime-extensions.md) overview. This
 page does not restate the descriptor contract; it only documents deployment.
 
+:::note Requires a 3.14 or later image
+The `/plugins/` location, its cache rules, and `CSP_HEADER` exist only in
+images built from OHIF 3.14 or later. An older `ohif/app` image (including a
+`latest` tag that still points at a 3.13 release) has no runtime loader and
+ignores `extensions`/`modes` descriptors entirely. Pin a 3.14+ tag.
+:::
+
 ## The /plugins/ directory convention
 
 The image serves runtime plugins from a dedicated `/plugins/` location. The
@@ -39,6 +46,12 @@ plugins/<packageName>/<version>/<files>
   `X.Y.Z` directory) are served `Cache-Control: no-cache`, so the browser
   revalidates on every load and a swap is picked up on a normal reload.
 
+These headers come from the nginx config in the official `ohif/app` image
+(`.docker/Viewer-v3.x/default.conf.template`). The caching itself happens in
+each user's browser, which is why restarting the container changes nothing. A
+deployment that serves `/plugins/` through another server or CDN must set
+equivalent `Cache-Control` rules itself.
+
 Missing files under `/plugins/` return `404` — they never fall back to
 `index.html` the way the SPA route does, so the loader can distinguish a real
 bundle from an HTML error page.
@@ -55,10 +68,17 @@ shape is:
 extensions: [{
   packageName: '@acme/ohif-extension-xyz',
   importPath: '/plugins/@acme/ohif-extension-xyz/1.2.3/index.umd.js',
+  globalName: '@acme/ohif-extension-xyz',
   coreVersionRange: '^3.13.0',
   styles: ['/plugins/@acme/ohif-extension-xyz/1.2.3/styles.css'],
 }],
 ```
+
+`globalName` is required for UMD bundles, which is what `pnpm create ohif`
+produces today: after the script runs, the loader reads the plugin from
+`window[globalName]`, and `globalName` is the package name (the bundle's library
+name). Without it the loader treats the file as an ES module, finds no default
+export, and fails with `import-error`. ES module bundles omit `globalName`.
 
 `importPath` must be `PUBLIC_URL`-prefixed when `PUBLIC_URL` is not `/` (e.g.
 `/ohif/plugins/@acme/ohif-extension-xyz/1.2.3/index.umd.js`). Same-origin
@@ -82,8 +102,10 @@ services:
     ports:
       - '3000:80'
     environment:
-      # Optional. Omit the variable entirely to send no CSP header.
-      CSP_HEADER: "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'"
+      # Optional. Omit the variable entirely to send no CSP header. This is the
+      # baseline plus the additions every deployment needs (see "Extending the
+      # baseline"); replace pacs.example.com with your DICOMweb origin.
+      CSP_HEADER: "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://pacs.example.com; connect-src 'self' https://pacs.example.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'"
     volumes:
       # /plugins/<packageName>/<version>/... (read-only)
       - ./plugins:/usr/share/nginx/html/plugins:ro
@@ -97,7 +119,12 @@ behavior. Set it to opt into a CSP.
 
 ### The baseline
 
-The documented baseline value, verbatim, is:
+The baseline is OHIF's own reference minimum, not an external standard. It is
+the strictest policy the viewer's code could run under if it had no inline
+scripts, no inline styles, and a same-origin PACS. It has all three, so no
+deployment runs it unchanged: every real `CSP_HEADER` is this string plus the
+additions in the next two sections. It is written down so the additions have a
+fixed starting point:
 
 ```
 default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'
@@ -109,6 +136,17 @@ Value constraints (the string is spliced into an nginx double-quoted string):
 - Must not contain double quotes, backslashes, or `$` (in an nginx string, `$`
   starts a variable).
 
+:::caution The bare baseline does not boot the viewer
+Set exactly the value above and the viewer's own inline bootstrap scripts, its
+inline styles, and every request to a cross-origin PACS are blocked. A policy
+that works for a typical deployment is the baseline plus the additions listed
+below, with `pacs.example.com` replaced by your DICOMweb origin:
+
+```
+default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://pacs.example.com; connect-src 'self' https://pacs.example.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'
+```
+:::
+
 ### Extending the baseline
 
 The bare baseline is deliberately minimal and does **not** work for most
@@ -118,7 +156,14 @@ deployments as-is. Extend it for your environment:
   at a cross-origin CloudFront DICOMweb PACS, and `default-src 'self'` acts as
   the `connect-src` fallback, so the bare baseline blocks study loading. Add
   every cross-origin DICOMweb origin your data sources use to `connect-src`.
-- **`img-src 'self' data: blob:`** is commonly needed (data/blob image URLs).
+- **`style-src 'self' 'unsafe-inline'` is always required.** React, the toast
+  layer, and the viewport grid set inline styles at runtime; with no
+  `style-src`, `default-src 'self'` applies and blocks them, and the viewer
+  renders broken. This is the standard trade-off for React applications: script
+  injection stays locked down while inline styles are permitted.
+- **`img-src 'self' data: blob: <your PACS origin>`** is commonly needed:
+  data/blob image URLs, plus thumbnails fetched from a cross-origin DICOMweb
+  server.
 - **Cross-origin plugin origins.** Any origin listed in
   `window.config.runtimeExtensionOrigins` must also be added to `script-src`,
   and each such descriptor requires `integrity` per the descriptor contract.
@@ -178,9 +223,14 @@ PowerShell `curl` alias).
    plus an unversioned `ping.js`, under a host `plugins-fixture/` tree.
 3. CSP on:
    ```powershell
-   docker run -d --rm --name ohif-ws8 -p 3300:80 -e CSP_HEADER="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" -v "${PWD}\plugins-fixture:/usr/share/nginx/html/plugins:ro" ohif/viewer:ws8
+   $env:CSP_HEADER = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://d14fa38qiwhyfd.cloudfront.net; connect-src 'self' https://d14fa38qiwhyfd.cloudfront.net; worker-src 'self' blob:; object-src 'none'; base-uri 'self'"
+   docker run -d --rm --name ohif-ws8 -p 3300:80 -e CSP_HEADER -v "${PWD}\plugins-fixture:/usr/share/nginx/html/plugins:ro" ohif/viewer:ws8
    ```
-   - `curl.exe -sI http://localhost:3300/ | findstr /i content-security-policy` -> exact baseline string.
+   (The policy is the working form from the caution above, with the CloudFront
+   demo PACS from the image's default config as the `connect-src`/`img-src`
+   origin. `-e CSP_HEADER` with no value passes the variable through unchanged;
+   PowerShell 5.1 re-quotes inline values and breaks on the embedded quotes.)
+   - `curl.exe -sI http://localhost:3300/ | findstr /i content-security-policy` -> the exact policy string.
    - `curl.exe -sI http://localhost:3300/plugins/@ohif-test/smoke/1.0.0/index.umd.js` -> 200 + `text/javascript` + immutable + CSP header.
    - `curl.exe -sI http://localhost:3300/plugins/ping.js` -> `Cache-Control: no-cache`.
    - `curl.exe -sI http://localhost:3300/plugins/@ohif-test/missing/9.9.9/x.js` -> 404.
@@ -188,8 +238,9 @@ PowerShell `curl` alias).
    `curl.exe -sI http://localhost:3300/ | findstr /i content-security-policy; $LASTEXITCODE`
    -> no output, exit 1.
 5. Runtime extension under CSP: set the `APP_CONFIG` env to a config whose
-   `extensions:[{ packageName, importPath: '/plugins/...' }]` points at a real
-   UMD build in the fixture; open `http://localhost:3300` in a browser; assert
+   `extensions:[{ packageName, globalName, importPath: '/plugins/...' }]` points
+   at a real UMD build in the fixture (`$env:APP_CONFIG = Get-Content -Raw
+   -Encoding UTF8 .\app-config.js`, then `-e APP_CONFIG` with no value); open `http://localhost:3300` in a browser; assert
    DevTools console shows zero CSP violation reports for the plugin script, and
    `window.__ohif.runtimeExtensions` contains a success record for the
    `packageName`.
@@ -212,6 +263,9 @@ PowerShell `curl` alias).
   path is wrong. Confirm the `/plugins/` location exists in the running nginx
   config and that the requested file is actually present; a genuine miss should
   return 404, not HTML.
+- **`import-error: module evaluated but has no default export`.** The
+  descriptor has no `globalName`, so the loader treated a UMD bundle as an ES
+  module. Add `globalName` (the package name) to the descriptor.
 - **Wrong MIME on `.mjs`.** nginx's stock `mime.types` does not map `.mjs`; the
   `/plugins/` location declares `text/javascript` for `js`/`mjs` explicitly.
   If an `.mjs` bundle is served with the wrong type, the request is not being

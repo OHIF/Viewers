@@ -15,6 +15,7 @@ services:
       # entrypoint writes it to app-config.js before nginx starts.
       - APP_CONFIG
     # Optional: serve runtime-loaded plugin bundles (index.umd.js + css) at
-    # /plugins/ and reference them from app-config.js descriptors.
+    # /plugins/<name>/<version>/ and reference them from app-config.js
+    # descriptors. Needs an image built from OHIF 3.14 or later.
     # volumes:
     #   - ./plugins:/usr/share/nginx/html/plugins:ro

@@ -328,10 +328,14 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
       '  edit app-config.js, then: docker compose up'
     );
   } else {
+    // Versioned path: the image serves /plugins/<name>/<version>/ as immutable.
+    const scaffoldedVersion = JSON.parse(
+      fs.readFileSync(path.join(targetDir, 'package.json'), 'utf8')
+    ).version;
     const descriptor = [
       '  {',
       `    "packageName": "${name}",`,
-      `    "importPath": "/plugins/${dirName}/index.umd.js",`,
+      `    "importPath": "/plugins/${dirName}/${scaffoldedVersion}/index.umd.js",`,
       `    "globalName": "${name}",`,
       `    "coreVersionRange": "${hostPeerRange(selfPkg.version)}"`,
       '  }',
@@ -342,6 +346,11 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
       '',
       `Load at runtime (app-config.js, under "${template === 'extension' ? 'extensions' : 'modes'}"):`,
       ...descriptor,
+      '',
+      'The <version>/ path segment is optional. It is the convention the nginx config',
+      'in the ohif/app image keys its cache rules off: versioned paths are sent as',
+      'immutable (browsers keep them for a year; publish changes under a new version),',
+      'unversioned paths as no-cache.',
       '',
       'Or link a local checkout via platform/app/pluginConfig.json (directory mode):',
       `  { "packageName": "${name}", "directory": "~/path/to/${dirName}" }`

@@ -356,10 +356,10 @@ window.config = {
     // Same-origin UMD bundle (UMD builds MUST set globalName):
     {
       packageName: '@acme/ohif-extension-ai',
-      importPath: '/plugins/acme-ai/index.umd.js',
+      importPath: '/plugins/acme-ai/1.2.0/index.umd.js',
       globalName: '@acme/ohif-extension-ai',
       coreVersionRange: '^3.13.0',
-      styles: ['/plugins/acme-ai/index.css'],
+      styles: ['/plugins/acme-ai/1.2.0/index.css'],
     },
     // Cross-origin ESM bundle (globalName omitted; integrity REQUIRED):
     {
@@ -481,7 +481,10 @@ on the audit array instead).
 ### CSP and CORS requirements
 
 The deployment docs describe an optional `CSP_HEADER` for the official
-Docker/nginx image with this baseline value:
+Docker/nginx image. Its baseline is OHIF's own reference minimum, not a
+standard, and no deployment runs it unchanged; the
+[deployment guide](../deployment/runtime-plugins.md#the-baseline) gives the
+working form. The minimum is:
 
 ```
 default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'

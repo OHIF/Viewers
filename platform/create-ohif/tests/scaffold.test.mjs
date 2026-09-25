@@ -204,7 +204,7 @@ test('--scope prepends the scope; the directory uses the unscoped name', () => {
   assert.equal(readPkg(dir).name, '@acme/ext');
   // Runtime descriptor guidance uses the scoped name and unscoped dir path.
   assert.ok(stdout.includes('"packageName": "@acme/ext"'), stdout);
-  assert.ok(stdout.includes('/plugins/ext/index.umd.js'), stdout);
+  assert.ok(stdout.includes('/plugins/ext/0.0.1/index.umd.js'), stdout);
 });
 
 // ---------------------------------------------------------------------------
