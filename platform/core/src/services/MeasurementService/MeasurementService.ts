@@ -543,6 +543,7 @@ class MeasurementService extends PubSubService {
     const newMeasurement = {
       ...oldMeasurement,
       ...measurement,
+      color: measurement.color || oldMeasurement?.color || [255, 255, 0, 255],
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
     };
@@ -900,6 +901,12 @@ class MeasurementService extends PubSubService {
     return measurementUIDs.forEach(uid => this.toggleVisibilityMeasurement(uid, visibility));
   }
 
+  /**
+   * Updates the color of a specific measurement and broadcasts the update event.
+   *
+   * @param {string} measurementUID The unique identifier of the measurement
+   * @param {number[]} color The new color as an RGBA array [r, g, b, a]
+   */
   public updateColorMeasurement(measurementUID: string, color: number[]): void {
     const measurement = this.measurements.get(measurementUID);
 
