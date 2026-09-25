@@ -8,6 +8,11 @@
   "required": ["extensions", "modes"],
   "properties": {
     "$schema": { "type": "string" },
+    "root": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Base for this file's './'-relative `directory` values, and the tree scanned for in-tree extensions/ and modes/ workspaces. Resolved against the directory holding this file. Omit it (the default) to use the OHIF repo root, which is what the in-tree config's values mean. Set it in a config owned by a downstream deployment and selected with PLUGIN_CONFIG / an OHIF_ENV profile, e.g. \".\" for a config sitting at the root of your own repo."
+    },
     "extensions": {
       "type": "array",
       "items": { "$ref": "#/definitions/plugin" }

@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ohif.org/schemas/ohif.schema.json",
+  "title": "OHIF build profile (ohif.config.json)",
+  "description": "Build-time inputs for a customized OHIF build, selected with OHIF_ENV=<path-to-this-file>. Every key supplies a DEFAULT for the matching environment variable, so a profile replaces a pile of `cross-env A=1 B=2 rsbuild build` script lines. An environment variable that is already set always wins over the profile, which keeps one-off CI overrides working. This is the same file the `pnpm create ohif` workspace template commits, so a workspace's manifest and its build profile are one artifact.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "pluginConfig": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path to the pluginConfig.json this build should use (env: PLUGIN_CONFIG). Relative paths resolve against the directory holding this profile. Defaults to platform/app/pluginConfig.json. Declare a `root` inside that file if its `directory` values should resolve against something other than the OHIF repo root."
+    },
+    "appConfig": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Runtime configuration copied to dist as app-config.js (env: APP_CONFIG). Either a path relative to platform/app/public ('config/hospital.js'), or a './'-prefixed path resolved against this profile's directory ('./config/app-config.js') for a deployment that owns its app config outside the OHIF checkout."
+    },
+    "publicUrl": {
+      "type": "string",
+      "pattern": "^/(.*/)?$",
+      "description": "Route the viewer is served from (env: PUBLIC_URL). Must start and end with '/'."
+    },
+    "htmlTemplate": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "description": "Filename under platform/app/public/html-templates to use as the HTML entry (env: HTML_TEMPLATE)."
+    },
+    "entryTarget": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Alternative JS entry module (env: ENTRY_TARGET). Relative paths resolve against the directory holding this profile."
+    },
+    "proxy": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Dev-server proxy (ignored by production builds).",
+      "properties": {
+        "target": { "type": "string", "minLength": 1, "description": "env: PROXY_TARGET" },
+        "domain": { "type": "string", "minLength": 1, "description": "env: PROXY_DOMAIN" },
+        "pathRewriteFrom": {
+          "type": "string",
+          "minLength": 1,
+          "description": "env: PROXY_PATH_REWRITE_FROM"
+        },
+        "pathRewriteTo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "env: PROXY_PATH_REWRITE_TO"
+        }
+      }
+    },
+    "ohifVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "create-ohif workspace harness only: the OHIF tag the gitignored .ohif/ checkout is pinned to. Ignored by the build."
+    },
+    "plugins": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "create-ohif workspace harness only: workspace-owned plugin package names the harness links into the checkout. Ignored by the build — what the build compiles in comes from `pluginConfig`."
+    }
+  }
+}
