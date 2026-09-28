@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-sidebar_label: E2E Testing
+sidebar_label: Playwright Testing
 title: End-to-End Testing with Playwright
 summary: How to run, write, and submit Playwright end-to-end tests for the OHIF Viewer, covering setup, serving the viewer, fixtures, page objects, normalized viewport coordinates, render waits, assertions, screenshot baseline rules, naming, and PR submission.
 ---

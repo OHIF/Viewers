@@ -19,7 +19,7 @@ code linking and execution. The method to link locally using `bun` differs sligh
 
 :::tip
 
-Linking locally with `bun` provides for running the [playwright tests](./e2e-testing.md) locally so as to include (and test) local changes from Cornerstone3D and other libraries like dicom-microscopy-viewer.
+Linking locally with `bun` provides for running the [playwright tests](./playwright-testing.md) locally so as to include (and test) local changes from Cornerstone3D and other libraries like dicom-microscopy-viewer.
 
 :::
 
