@@ -49,17 +49,23 @@ The root `scripts` section was rewritten to use `pnpm --filter @ohif/app run …
 for app-targeted scripts and `pnpm -r run …` for monorepo-wide scripts.
 There is no `preinstall` script anymore.
 
-## `.npmrc`
+## `.npmrc` and the frozen-lockfile default
 
-A new `.npmrc` at the repository root controls install behavior:
+A new `.npmrc` at the repository root controls linking behavior (hoisted
+`node_modules`, workspace package linking, no strict peer checks). The
+frozen-lockfile default lives in `pnpm-workspace.yaml`, not in `.npmrc`:
 
-```ini
-frozen-lockfile=true
+```yaml
+frozenLockfile: true
 ```
 
-CI installs error out if the lockfile would change. To update the lockfile
-locally, use `pnpm install --no-frozen-lockfile` (also exposed as the
-`install:update-lockfile` script).
+With that setting, every plain `pnpm install` in the repo is frozen: it installs
+exactly what `pnpm-lock.yaml` records, transitive versions and integrity hashes
+included, and errors out if the lockfile would change. CI and the Docker image
+builds rely on this; `--no-frozen-lockfile` on the command line overrides it, so
+never use it in a build or CI path. To update the lockfile locally after editing
+a `package.json`, run `pnpm run install:update-lockfile` (which is
+`pnpm install --no-frozen-lockfile`) and commit the result.
 
 ## `pnpm-workspace.yaml`
 
