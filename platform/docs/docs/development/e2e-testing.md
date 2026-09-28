@@ -1,12 +1,12 @@
 ---
-sidebar_position: 11.5
-sidebar_label: Contributing E2E Tests
-title: Contributing Playwright E2E Tests
-summary: Conventions for writing and submitting Playwright end-to-end tests for the OHIF Viewer, covering fixtures, page objects, normalized viewport coordinates, render waits, assertions, screenshot baseline rules, naming, and PR submission.
+sidebar_position: 11
+sidebar_label: E2E Testing
+title: End-to-End Testing with Playwright
+summary: How to run, write, and submit Playwright end-to-end tests for the OHIF Viewer, covering setup, serving the viewer, fixtures, page objects, normalized viewport coordinates, render waits, assertions, screenshot baseline rules, naming, and PR submission.
 ---
 
-This guide covers the conventions for writing and submitting Playwright
-end-to-end tests. The idea behind it is to open the testing effort to the
+This guide covers running, writing, and submitting Playwright end-to-end
+tests. The idea behind it is to open the testing effort to the
 whole community. Every contributed test broadens coverage and raises the
 overall quality of the OHIF Viewer. Following these conventions keeps the
 suite fast, stable, and reviewable, and makes it much more likely your PR
@@ -51,6 +51,20 @@ When passing Playwright flags (`--update-snapshots`, `--reporter`, `-g`),
 invoke Playwright directly as above. `pnpm run test:e2e -- <flags>` inserts a
 `--` separator that can keep Playwright from parsing them.
 
+### Serving the viewer yourself
+
+By default each run builds and serves the viewer on port 3335 before the tests
+start, which is slow when you iterate. Outside CI, Playwright reuses a server
+that is already listening on that port, so you can start one yourself and
+keep it running between runs. It must use the e2e app config and port 3335:
+
+```bash
+APP_CONFIG=config/e2e.js OHIF_PORT=3335 OHIF_OPEN=false pnpm start
+```
+
+A viewer on the default port 3000 is not picked up; Playwright would start
+its own on 3335.
+
 ## Start from a seed spec
 
 This is the single most important habit. The suite follows consistent idioms
@@ -59,6 +73,20 @@ existing spec that covers the same area (measurements, segmentation, MPR/3D,
 hydration, panels, …), read it end to end, and adapt it. When a spec or this
 guide disagrees with the current source under `tests/pages/` or
 `tests/utils/`, the source wins.
+
+### Recording interactions
+
+The [Playwright VS Code extension](https://playwright.dev/docs/getting-started-vscode)
+can record clicks into a new spec, which helps you find the controls a
+workflow touches. The video below walks through it. Treat a recording as a
+starting point only: it emits raw `page.getByTestId(...)` locators and pixel
+coordinates, so rewrite it with page objects and normalized coordinates
+before submitting.
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/949191936?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+    frameBorder="0" allow="cross-origin-isolated" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="Playwright Extension"></iframe>
+</div>
 
 ## The rules at a glance
 
@@ -279,6 +307,22 @@ Conventions that come up in every review:
 - Hoist literals repeated within a spec (e.g. a click-coordinate array) into
   a file-level constant.
 - Shared expectations belong in `tests/utils/assertions.ts`.
+- Specs never call `page.evaluate` directly. The app exposes `services`,
+  `commandsManager`, `extensionManager`, `config`, and the cornerstone
+  libraries on `window` (typed as `AppTypes.Test`); read them through a
+  utility such as `getSUV` or `clearAllAnnotations`. Use this for setup and
+  for values the UI does not show, never as a stand-in for a render
+  assertion (see Screenshots below).
+
+  ```ts
+  // tests/utils/getSUV.ts
+  const getSUV = async page =>
+    page.evaluate(
+      ({ services }: AppTypes.Test) =>
+        services.measurementService.getMeasurements()[0].displayText[2],
+      await page.evaluateHandle('window')
+    );
+  ```
 
 ## Screenshots (visual regression)
 
