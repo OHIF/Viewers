@@ -74,20 +74,6 @@ hydration, panels, …), read it end to end, and adapt it. When a spec or this
 guide disagrees with the current source under `tests/pages/` or
 `tests/utils/`, the source wins.
 
-### Recording interactions
-
-The [Playwright VS Code extension](https://playwright.dev/docs/getting-started-vscode)
-can record clicks into a new spec, which helps you find the controls a
-workflow touches. The video below walks through it. Treat a recording as a
-starting point only: it emits raw `page.getByTestId(...)` locators and pixel
-coordinates, so rewrite it with page objects and normalized coordinates
-before submitting.
-
-<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
-    <iframe src="https://player.vimeo.com/video/949191936?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-    frameBorder="0" allow="cross-origin-isolated" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="Playwright Extension"></iframe>
-</div>
-
 ## The rules at a glance
 
 1. Import `test`, `expect`, and utilities from `./utils`, never from
@@ -396,5 +382,3 @@ Rules for new screenshot assertions:
   (`references/patterns-by-feature.md`) and a failure-triage guide
   (`references/failure-triage.md`). It's useful reading for humans too, and
   an AI coding agent working in this repo follows the same rules.
-- Most test failures are timing or hydration issues, not real regressions,
-  so check `references/failure-triage.md` before debugging deeply.
