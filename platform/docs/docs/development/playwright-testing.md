@@ -8,11 +8,9 @@ summary: Guide to writing and running end-to-end tests for OHIF Viewer using Pla
 
 
 :::note
-**Writing tests?** The conventions for contributing E2E tests — fixtures, page
-objects, normalized coordinates, render waits, and screenshot rules — live next
-to the suite in
-[`tests/CONTRIBUTING.md`](https://github.com/OHIF/Viewers/blob/master/tests/CONTRIBUTING.md).
-This page covers running the tests and the basics.
+**Writing tests?** See [Contributing E2E Tests](./playwright-contributing.md)
+for the conventions: fixtures, page objects, normalized coordinates, render
+waits, and screenshot rules. This page covers running the tests and the basics.
 :::
 
 :::note
