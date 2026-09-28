@@ -41,10 +41,13 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
 COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
 # Run the install before copying the rest of the files.
-# Keep --no-frozen-lockfile here (unlike CI): .dockerignore excludes
-# platform/docs, so the lockfile's docs importer has no manifest in the build
-# context and a frozen install would fail. pnpm reconciles (drops docs) instead.
-RUN pnpm install --no-frozen-lockfile
+# Frozen, like CI, so the image installs exactly the reviewed lockfile --
+# transitive versions and integrity hashes included -- and never re-resolves
+# against the registry. .dockerignore excludes platform/docs, so the lockfile's
+# docs importer has no manifest here; pnpm 11 accepts that under
+# --frozen-lockfile (verified: the install passes, and a tampered manifest is
+# still refused), so no docs manifest or --filter is needed.
+RUN pnpm install --frozen-lockfile
 # Copy the local directory
 COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
