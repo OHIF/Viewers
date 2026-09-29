@@ -15,6 +15,7 @@ import type {
   CustomizationPhaseInput,
   LoadedCustomization,
   LoadOptions,
+  LoadResource,
   PhasedCustomizationConfig,
 } from './customizationUrlTypes';
 
@@ -355,7 +356,10 @@ export default class CustomizationService extends PubSubService {
       return Promise.resolve([]);
     }
 
-    const importFn = overrides?.importFn ?? this._urlDefaultImport.bind(this);
+    const importFn =
+      overrides?.importFn ??
+      this._loadResourceImport() ??
+      ((url: string) => this._urlDefaultImport(url));
     const requestedSet = new Set<string>();
     const newlyLoaded: LoadedCustomization[] = [];
 
@@ -776,11 +780,11 @@ export default class CustomizationService extends PubSubService {
    * executed. Executable modules — plugins, modes and extensions — load only
    * through `pluginConfig.json`, never from the customization URL path.
    */
-  private async _urlDefaultImport(url: string): Promise<any> {
+  private async _urlDefaultImport(url: string, init?: RequestInit): Promise<any> {
     if (typeof fetch !== 'function') {
       throw new Error(`No fetch implementation available to load customization ${url}`);
     }
-    const response = await fetch(url);
+    const response = await (init ? fetch(url, init) : fetch(url));
     if (!response.ok) {
       throw new Error(
         `Failed to fetch customization ${url}: ${response.status} ${response.statusText}`
@@ -788,6 +792,33 @@ export default class CustomizationService extends PubSubService {
     }
     const text = await response.text();
     return JSON5.parse(text);
+  }
+
+  /**
+   * The loader that goes through `appConfig.loadResource`, or `undefined` when the app config
+   * defines no hook. The hook sees each URL after the `customizationUrlPrefixes` policy has
+   * resolved it, so it cannot widen the allowlist. The hook gets the regular load as
+   * `defaultLoad`, so it can add fetch options such as headers, or load the data itself (for
+   * example a JavaScript module). A result of `undefined` falls back to the regular load. A
+   * rejection is a failed load: the caller warns and skips the module.
+   */
+  private _loadResourceImport():
+    | ((url: string, request?: ValidatedCustomization) => Promise<any>)
+    | undefined {
+    const loadResource: LoadResource | undefined = this.extensionManager?.appConfig?.loadResource;
+    if (typeof loadResource !== 'function') {
+      return undefined;
+    }
+    const defaultLoad = (url: string, init?: RequestInit) => this._urlDefaultImport(url, init);
+    return async (url: string, request?: ValidatedCustomization) => {
+      const data = await loadResource({
+        kind: 'customization',
+        name: request?.name ?? url,
+        url,
+        defaultLoad,
+      });
+      return data === undefined ? defaultLoad(url) : data;
+    };
   }
 
   private _normalizeImportedCustomizationModule(imported: any): CustomizationModule {
@@ -835,7 +866,7 @@ export default class CustomizationService extends PubSubService {
   private _urlCustomizationLoadOne(
     request: ValidatedCustomization,
     policy: CustomizationUrlPolicy,
-    importFn: (url: string) => Promise<any>,
+    importFn: (url: string, request?: ValidatedCustomization) => Promise<any>,
     logger: { warn: (...args: any[]) => void; error: (...args: any[]) => void },
     requestedSet: Set<string>,
     newlyLoaded: LoadedCustomization[]
@@ -872,7 +903,7 @@ export default class CustomizationService extends PubSubService {
   private _urlCustomizationLoadOneBody(
     request: ValidatedCustomization,
     policy: CustomizationUrlPolicy,
-    importFn: (url: string) => Promise<any>,
+    importFn: (url: string, request?: ValidatedCustomization) => Promise<any>,
     logger: { warn: (...args: any[]) => void; error: (...args: any[]) => void },
     requestedSet: Set<string>,
     newlyLoaded: LoadedCustomization[]
@@ -889,7 +920,7 @@ export default class CustomizationService extends PubSubService {
       return Promise.resolve(null);
     }
 
-    return importFn(url)
+    return importFn(url, request)
       .catch(err => {
         logger.warn(
           `[customizationUrl] failed to import customization "${request.raw}" (${url})`,

@@ -119,6 +119,23 @@ window.config = ({ servicesManager } = {}) => {
 
 Here are a list of some options available:
 - `customizationService`: An array of customization module references and inline overrides applied at the global scope. This is how deployers enable optional features like the [Appearance & Theming](./ui.md) system and configure UI components without modifying core code. See [Customization Service](../platform/services/customization-service/customizationService.md) for the full syntax reference.
+- `loadResource`: an optional async function that loads each URL customization module in place of the regular load. The `CustomizationService` calls it for every `?customization=` module, every `customizationService.requires` module, and every nested `requires`, after the [`customizationUrlPrefixes`](../platform/services/customization-service/specificCustomizations.md#customizationurlprefixes-app-config) policy resolved the URL. The hook runs before any extension registers, so define it in the app config file. The argument is `{ kind, name, url, defaultLoad }`:
+  - `kind` is `'customization'`.
+  - `defaultLoad(url, init?)` is the regular load (`fetch` and a JSONC parse). `init` takes fetch options, for example headers.
+  - Return the data (an object, or a module whose `default` export is the object), or `undefined` to use the regular load.
+  - A hook that throws or rejects gives the same result as a failed regular load: the module is skipped with a warning.
+
+  For example, to send a token with each customization request to your own server only:
+  ```js
+  loadResource: async ({ url, defaultLoad }) => {
+    const token = sessionStorage.getItem('viewerToken');
+    const target = new URL(url, window.location.href);
+    if (!token || target.origin !== window.location.origin) {
+      return undefined;
+    }
+    return defaultLoad(url, { headers: { Authorization: `Bearer ${token}` } });
+  },
+  ```
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
   panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
