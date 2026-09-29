@@ -101,6 +101,10 @@ export class NextViewportAdapter implements IViewportAdapter {
     return this.viewport.getViewReference?.()?.cameraFocalPoint as CoreTypes.Point3 | undefined;
   }
 
+  getZoom(): number | undefined {
+    return typeof this.viewport.getZoom === 'function' ? this.viewport.getZoom() : undefined;
+  }
+
   // ---- per-display-set appearance ----
 
   getPresentation(dataId?: string): ViewportPresentation {

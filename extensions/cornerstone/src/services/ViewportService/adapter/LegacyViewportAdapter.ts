@@ -26,6 +26,7 @@ type LegacyViewport = {
   getProperties?: (dataId?: string) => ViewportPresentation | undefined;
   setProperties?: (props: ViewportPresentation, dataId?: string) => void;
   getCamera?: () => Record<string, unknown> | undefined;
+  getZoom?: () => number;
   setCamera?: (patch: Record<string, unknown>) => void;
   getAllVolumeIds?: () => string[];
   getImageData?: (volumeId?: string) => {
@@ -105,6 +106,10 @@ export class LegacyViewportAdapter implements IViewportAdapter {
 
   getFocalPoint(): CoreTypes.Point3 | undefined {
     return this.viewport.getCamera?.()?.focalPoint as CoreTypes.Point3 | undefined;
+  }
+
+  getZoom(): number | undefined {
+    return this.viewport.getZoom?.();
   }
 
   // ---- per-display-set appearance ----
