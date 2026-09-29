@@ -381,56 +381,66 @@ describe('DisplaySetService', () => {
       expect(displaySet.extendInstances.mock.calls[0][1].series).toEqual({ count: 3 });
     });
 
-    it('supports declarative rules with compiled expressions (SCOUT example)', () => {
-      // Simulates a JSONC-authored rule after $function markers were compiled
-      // by the CustomizationService read-time resolution.
-      const { compileExpression } = require('@cornerstonejs/metadata');
-      const scoutRule = {
-        priority: -1,
-        viewportTypes: ['stack'],
-        series: {
-          frameCount: compileExpression(
-            'sumOf(instances, defined(NumberOfFrames) ? NumberOfFrames : 1)'
-          ),
-          firstInstanceNumber: compileExpression('minOf(instances, InstanceNumber)'),
+    /**
+     * The SCOUT example, as the JSONC customization writes it: raw selector data
+     * that the @cornerstonejs/metadata compiler turns into a rule. The series is
+     * evaluated first (does it mix localizer and non-localizer images?), and
+     * then each instance is matched with a simple test (is it a localizer?).
+     */
+    const scoutRule = {
+      priority: -1,
+      viewportTypes: ['stack'],
+      series: [
+        {
+          name: 'hasScout',
+          scope: 'mixed',
+          when: { attribute: 'ImageType', contains: 'LOCALIZER' },
         },
-        matches: compileExpression(
-          "Modality === 'CT' && context.series.frameCount >= 10 && InstanceNumber == context.series.firstInstanceNumber"
-        ),
-        groupBy: ['SeriesInstanceUID'],
-        customAttributes: {
-          label: 'SCOUT',
-          SeriesDescription: compileExpression('`SCOUT ${SeriesDescription}`'),
-        },
-      };
+      ],
+      matches: {
+        all: [{ seriesFact: 'hasScout' }, { attribute: 'ImageType', contains: 'LOCALIZER' }],
+      },
+      groupBy: ['SeriesInstanceUID'],
+      customAttributes: {
+        set: { label: 'SCOUT' },
+        fromFirstInstance: { SeriesDescription: { expression: '`SCOUT ${SeriesDescription}`' } },
+      },
+    };
+    const ct = (InstanceNumber: number, imageType: string[]) =>
+      makeInstance({
+        Modality: 'CT',
+        SOPClassUID: '1.2.840.10008.5.1.4.1.1.2',
+        InstanceNumber,
+        ImageType: imageType,
+        SeriesDescription: 'CHEST',
+      });
+    const AXIAL = ['ORIGINAL', 'PRIMARY', 'AXIAL'];
+    const LOCALIZER = ['ORIGINAL', 'PRIMARY', 'LOCALIZER'];
+
+    it('splits a localizer off a CT series with a raw selector rule (SCOUT example)', () => {
       setCustomization({
         enabled: true,
         splitRules: { ...testSplitRules, ctScout: scoutRule },
         createDisplaySetFromGroup,
       });
 
-      const ctInstances = Array.from({ length: 12 }, (_, i) =>
-        makeInstance({
-          Modality: 'CT',
-          SOPClassUID: '1.2.840.10008.5.1.4.1.1.2',
-          InstanceNumber: i + 1,
-          SeriesDescription: 'CHEST',
-        })
-      );
+      const ctInstances = [
+        ct(1, LOCALIZER),
+        ...Array.from({ length: 11 }, (_, i) => ct(i + 2, AXIAL)),
+      ];
       const added = service.makeDisplaySets(ctInstances);
 
       expect(added).toHaveLength(2);
       const scout = added.find(ds => ds.splitRuleId === 'ctScout');
       const rest = added.find(ds => ds.splitRuleId === 'volume3d');
-      expect(scout.instances).toHaveLength(1);
-      expect(scout.instances[0].InstanceNumber).toBe(1);
+      expect(scout.instances.map(instance => instance.InstanceNumber)).toEqual([1]);
       expect(rest.instances).toHaveLength(11);
 
-      // The normalized customAttributes produce the SCOUT labels.
-      const normalizedRule = createDisplaySetFromGroup.mock.calls.find(
+      // The compiled customAttributes produce the SCOUT labels.
+      const compiledRule = createDisplaySetFromGroup.mock.calls.find(
         ([group]) => group.matchedRule.id === 'ctScout'
       )[0].matchedRule;
-      const attributes = normalizedRule.customAttributes(
+      const attributes = compiledRule.customAttributes(
         { instance: scout.instances[0] },
         { instances: scout.instances, splitNumber: 0 }
       );
@@ -438,39 +448,24 @@ describe('DisplaySetService', () => {
       expect(attributes.SeriesDescription).toBe('SCOUT CHEST');
     });
 
-    it('does not split a small CT series with the SCOUT rule', () => {
-      const { compileExpression } = require('@cornerstonejs/metadata');
-      const scoutRule = {
-        priority: -1,
-        viewportTypes: ['stack'],
-        series: {
-          frameCount: compileExpression(
-            'sumOf(instances, defined(NumberOfFrames) ? NumberOfFrames : 1)'
-          ),
-          firstInstanceNumber: compileExpression('minOf(instances, InstanceNumber)'),
-        },
-        matches: compileExpression(
-          "Modality === 'CT' && context.series.frameCount >= 10 && InstanceNumber == context.series.firstInstanceNumber"
-        ),
-        groupBy: ['SeriesInstanceUID'],
-      };
+    it('leaves a series of localizers only, and a series with none, whole', () => {
       setCustomization({
         enabled: true,
         splitRules: { ...testSplitRules, ctScout: scoutRule },
         createDisplaySetFromGroup,
       });
 
-      const ctInstances = Array.from({ length: 5 }, (_, i) =>
-        makeInstance({
-          Modality: 'CT',
-          SOPClassUID: '1.2.840.10008.5.1.4.1.1.2',
-          InstanceNumber: i + 1,
-        })
-      );
-      const added = service.makeDisplaySets(ctInstances);
-      expect(added).toHaveLength(1);
-      expect(added[0].splitRuleId).toBe('volume3d');
-      expect(added[0].instances).toHaveLength(5);
+      const localizersOnly = [1, 2, 3].map(n => ({
+        ...ct(n, LOCALIZER),
+        SeriesInstanceUID: 'loc',
+      }));
+      const noLocalizer = [1, 2, 3].map(n => ({ ...ct(n, AXIAL), SeriesInstanceUID: 'axial' }));
+      const added = service.makeDisplaySets([...localizersOnly, ...noLocalizer]);
+
+      expect(added.map(ds => [ds.SeriesInstanceUID, ds.splitRuleId, ds.instances.length])).toEqual([
+        ['loc', 'volume3d', 3],
+        ['axial', 'volume3d', 3],
+      ]);
     });
 
     describe('keyed rule sets', () => {

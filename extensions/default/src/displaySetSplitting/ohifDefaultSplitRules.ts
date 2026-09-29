@@ -1,34 +1,31 @@
 /**
- * OHIF's default display-set split rules, hand-written as closures.
+ * OHIF's default display-set split rules, as a `@cornerstonejs/metadata` raw
+ * selector: rules as pure data, compiled by `createDisplaySetSplitRules`.
  *
- * **Transitional.** `@cornerstonejs/metadata` now authors its own defaults as a
- * raw selector — rules as pure JSON, compiled by `createDisplaySetSplitRules` —
- * so that a server indexing a study and a viewer splitting a series can read
- * the same rules instead of each implementing them. These rules are not in that
- * form, which means OHIF's *actual* defaults are the ones that cannot cross the
- * wire.
+ * The rules are data so that a server indexing a study and a viewer splitting
+ * a series can read the same rules, and so that a customization (a JSONC URL
+ * module, a JSON app config) edits them in the same vocabulary. The only code
+ * is one named classifier, `stackImage` ({@link isStackImageInstance}), which
+ * the customization supplies to the compiler through
+ * {@link ohifSplitRuleClassifiers}.
  *
- * They are not being converted, because they are on their way out: each exists
- * to reproduce the legacy stack SOP class handler exactly (see
- * {@link isStackImageInstance}), and once that handler is gone the divergences
- * below go with it. Converting them first would mean maintaining the
- * legacy-parity behaviour twice, in two forms.
- *
- * What a conversion would need, when the time comes: the seam is already there.
- * `createDisplaySetSplitRules` takes named `classifiers`, and everything
- * OHIF-specific here reduces to one — `isStackHandledInstance` — so the rules
- * themselves become JSON referencing `{ classifier: 'stackImage' }`.
+ * Each rule exists to reproduce the legacy stack SOP class handler exactly;
+ * see the rule descriptions for where that differs from the upstream defaults.
  *
  * @module ohifDefaultSplitRules
  */
 
 import {
-  defaultDisplaySetSplitRules,
   isEcgInstance,
   isVideoInstance,
   isWsiInstance,
+  rawDisplaySetSelector,
 } from '@cornerstonejs/metadata';
-import type { NaturalizedInstance, SplitRuleSet, SplitRuleSetEntry } from '@cornerstonejs/metadata';
+import type {
+  NaturalizedInstance,
+  RawDisplaySetSelector,
+  RawSplitRule,
+} from '@cornerstonejs/metadata';
 import { isStackHandledInstance } from './stackSopClassUids';
 
 /**
@@ -45,7 +42,8 @@ const isSpecializedInstance = (instance: NaturalizedInstance) =>
   isVideoInstance(instance) || isWsiInstance(instance) || isEcgInstance(instance);
 
 /**
- * The single ownership test every OHIF split rule applies.
+ * The single ownership test every OHIF split rule applies, registered as the
+ * `stackImage` classifier.
  *
  * Split rules run BEFORE any SOP class routing, so a rule that matched on
  * pixel-data signals alone (`Rows`, `NumberOfFrames`) would claim instances the
@@ -56,87 +54,42 @@ const isSpecializedInstance = (instance: NaturalizedInstance) =>
  * (Ultrasound, NM, RT Image, Enhanced US Volume, ophthalmic, ...) that
  * upstream's `isImageInstance` list omits.
  */
-const isStackImageInstance = (instance: NaturalizedInstance) =>
+export const isStackImageInstance = (instance: NaturalizedInstance) =>
   !isSpecializedInstance(instance) && isStackHandledInstance(instance);
 
-/** Adds the stack-ownership guard in front of a rule's matcher. */
-const withStackGuard = (rule: SplitRuleSetEntry): SplitRuleSetEntry => ({
-  ...rule,
-  matches: (instance, context) =>
-    isStackImageInstance(instance) && (rule.matches ? rule.matches(instance, context) : true),
-});
-
 /**
- * One display set PER IMAGE for the single-image modalities (CR/DX/MG) —
- * matching the legacy stack handler.  This replaces the upstream
- * `singleImageModality` rule, which buckets by coarse pixel dimensions and
- * would merge same-resolution mammography views (RCC/LCC/RMLO/LMLO) into a
- * single display set.
+ * The named classifiers the OHIF rules reference, for
+ * `createDisplaySetSplitRules(selector, { classifiers })`.
  */
-const singleImageModality: SplitRuleSetEntry = {
-  priority: 1,
-  viewportTypes: ['stack'],
-  matches: instance =>
-    ['CR', 'DX', 'MG'].includes((instance.Modality as string) ?? '') &&
-    isStackImageInstance(instance),
-  groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
-  customAttributes: (_attributes, options) => {
-    const [instance] = options.instances;
-    return {
-      instanceNumber: instance.InstanceNumber,
-      acquisitionDatetime: instance.AcquisitionDateTime,
-    };
-  },
+export const ohifSplitRuleClassifiers = {
+  stackImage: isStackImageInstance,
 };
 
-/**
- * Legacy-parity multiframe rule: ANY image instance with NumberOfFrames > 1
- * gets its own display set.  The upstream `multiFrame` rule additionally
- * requires `SliceLocation !== undefined`, which would collapse ultrasound
- * clips (US is not a volume modality) into a single stack display set.
- */
-const multiFrame: SplitRuleSetEntry = {
-  priority: 2,
-  viewportTypes: ['stack'],
-  matches: instance => Number(instance.NumberOfFrames) > 1 && isStackImageInstance(instance),
-  groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
-  customAttributes: (_attributes, options) => {
-    const [instance] = options.instances;
-    return {
-      numImageFrames: Number(instance.NumberOfFrames),
-      instanceNumber: instance.InstanceNumber,
-      acquisitionDatetime: instance.AcquisitionDateTime,
-    };
-  },
-};
+const STACK_IMAGE = { classifier: 'stackImage' };
 
 /**
- * An upstream rule reused as-is (behind the stack-ownership guard), under its
- * upstream id and with the OHIF priority.
+ * An upstream rule reused under its upstream id, behind the stack-ownership
+ * guard and with the OHIF priority.
  *
  * Both reused rules apply their own `isImageInstance` test internally, which
  * narrows what they claim relative to the guard.  For
  * `mixedDimensionalityBValue` (MR only) that changes nothing — every MR SOP
  * class is on both lists.  For `volume3d` it means NM series drop through to
- * the catch-all instead, which is equivalent; see {@link defaultImageRule}.
- *
- * Upstream's `defaultImageRule` is deliberately NOT reused: as the catch-all it
- * has to accept every stack-owned image SOP class, including the ones
- * `isImageInstance` omits, so OHIF authors its own below.
+ * the catch-all instead, which is equivalent: both group by
+ * `SeriesInstanceUID` and offer the same viewport types.
  *
  * A missing id means `@cornerstonejs/metadata` renamed a default rule.  This
  * warns and leaves the rule out rather than throwing: this module is imported
  * by `getCustomizationModule`, so a top-level throw would take down the whole
  * `@ohif/extension-default` customization module — and with it the app — over
- * a feature that is OFF by default.  Degrading to fewer rules only affects
- * deployments that opted in, and `ohifDefaultSplitRules.test.ts` fails loudly
- * on the drift in CI, which is where a hard failure belongs.
+ * a feature that is OFF by default.  `ohifDefaultSplitRules.test.ts` fails
+ * loudly on the drift in CI, which is where a hard failure belongs.
  *
  * @returns `{ [ruleId]: rule }`, or `{}` when the upstream rule is missing, so
- *   the result spreads straight into the rule set.
+ *   the result spreads straight into the selector.
  */
-const reuseUpstreamRule = (ruleId: string, priority: number): SplitRuleSet => {
-  const upstream = defaultDisplaySetSplitRules[ruleId];
+const reuseUpstreamRule = (ruleId: string, priority: number): RawDisplaySetSelector => {
+  const upstream = rawDisplaySetSelector[ruleId];
   if (!upstream) {
     console.warn(
       `ohifDefaultSplitRules: @cornerstonejs/metadata default split rule '${ruleId}' not found - ` +
@@ -144,41 +97,24 @@ const reuseUpstreamRule = (ruleId: string, priority: number): SplitRuleSet => {
     );
     return {};
   }
-  return { [ruleId]: withStackGuard({ ...upstream, priority }) };
-};
-
-/**
- * Catch-all: one stack display set per series for every remaining instance the
- * stack handler owns — the legacy behaviour for anything that is not a
- * single-image modality, a multiframe instance, or a recognised volume.
- *
- * Replaces upstream's `defaultImageRule`, whose `isImageInstance` gate rejects
- * Ultrasound, NM, RT Image, Enhanced US Volume and the ophthalmic classes; they
- * would otherwise fall out of the splitter entirely and be picked up by the
- * legacy loop, leaving one series split across both paths.
- *
- * NM series reach this rule rather than `volume3d` for the same reason, which
- * is harmless: both group by `SeriesInstanceUID` and offer the same viewport
- * types, and `isReconstructable` is computed by the display set factory, not by
- * the rule.
- */
-const defaultImageRule: SplitRuleSetEntry = {
-  priority: 5,
-  viewportTypes: ['stack', 'volume', 'volume3d'],
-  matches: instance => isStackImageInstance(instance),
-  groupBy: ['SeriesInstanceUID'],
+  const rule: RawSplitRule = {
+    ...upstream,
+    priority,
+    matches: upstream.matches ? { all: [STACK_IMAGE, upstream.matches] } : STACK_IMAGE,
+  };
+  return { [ruleId]: rule };
 };
 
 /**
  * The OHIF default split rules for the `useMetadataDisplaySet` customization,
  * keyed by rule id.
  *
- * Every rule is gated on {@link isStackImageInstance}, so the set claims
- * exactly the instances the stack SOP class handler would have claimed —
- * no more (SEG / RT Structure Set / Parametric Map / SR / PDF / video /
- * whole-slide / ECG stay with their dedicated handlers) and no less (the
- * image SOP classes upstream's `isImageInstance` list omits are included).
- * Everything else is left unmatched for the legacy SOP class handler loop.
+ * Every rule is gated on the `stackImage` classifier, so the set claims exactly
+ * the instances the stack SOP class handler would have claimed — no more
+ * (SEG / RT Structure Set / Parametric Map / SR / PDF / video / whole-slide /
+ * ECG stay with their dedicated handlers) and no less (the image SOP classes
+ * upstream's `isImageInstance` list omits are included). Everything else is
+ * left unmatched for the legacy SOP class handler loop.
  *
  * Rules are evaluated in ascending `priority`, and the first matching rule
  * wins per instance. The defaults use the priorities `1..n`, fixed per rule, so
@@ -187,10 +123,54 @@ const defaultImageRule: SplitRuleSetEntry = {
  * below `0` runs before every default, above `DEFAULT_SPLIT_RULE_PRIORITY_LIMIT`
  * (10000) after every default, and `null` turns a default rule off.
  */
-export const ohifDefaultSplitRules: SplitRuleSet = {
-  singleImageModality,
-  multiFrame,
+export const ohifDefaultSplitRules: RawDisplaySetSelector = {
+  singleImageModality: {
+    priority: 1,
+    description:
+      'CR / DX / MG - one display set per image, as the legacy stack handler does. ' +
+      'The upstream rule buckets by coarse image size, which merges mammography ' +
+      'views of the same resolution (RCC/LCC/RMLO/LMLO).',
+    viewportTypes: ['stack'],
+    matches: { all: [{ attribute: 'Modality', in: ['CR', 'DX', 'MG'] }, STACK_IMAGE] },
+    groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
+    customAttributes: {
+      fromFirstInstance: {
+        instanceNumber: { attribute: 'InstanceNumber' },
+        acquisitionDatetime: { attribute: 'AcquisitionDateTime' },
+      },
+    },
+  },
+
+  multiFrame: {
+    priority: 2,
+    description:
+      'Any stack image with NumberOfFrames > 1 - one display set per instance. The ' +
+      'upstream rule also requires SliceLocation, which collapses ultrasound clips ' +
+      'into one stack.',
+    viewportTypes: ['stack'],
+    matches: { all: [{ attribute: 'NumberOfFrames', greaterThan: 1 }, STACK_IMAGE] },
+    groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
+    customAttributes: {
+      fromFirstInstance: {
+        numImageFrames: { attribute: 'NumberOfFrames', number: true },
+        instanceNumber: { attribute: 'InstanceNumber' },
+        acquisitionDatetime: { attribute: 'AcquisitionDateTime' },
+      },
+    },
+  },
+
   ...reuseUpstreamRule('mixedDimensionalityBValue', 3),
   ...reuseUpstreamRule('volume3d', 4),
-  defaultImageRule,
+
+  defaultImageRule: {
+    priority: 5,
+    description:
+      'Catch-all - one stack display set per series for every remaining instance ' +
+      'the stack handler owns. Replaces the upstream rule, whose isImageInstance ' +
+      'gate rejects Ultrasound, NM, RT Image, Enhanced US Volume and the ' +
+      'ophthalmic classes.',
+    viewportTypes: ['stack', 'volume', 'volume3d'],
+    matches: STACK_IMAGE,
+    groupBy: ['SeriesInstanceUID'],
+  },
 };

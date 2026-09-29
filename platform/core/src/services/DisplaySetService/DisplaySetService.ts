@@ -1,5 +1,6 @@
 import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
 import type {
+  CreateDisplaySetSplitRulesOptions,
   GroupInstancesOptions,
   InstanceGroup,
   NaturalizedInstance,
@@ -10,10 +11,11 @@ import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../ty
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 import * as displaySetStore from './displaySetStore';
-import { normalizeSplitRules } from './normalizeSplitRules';
+import { compileSplitRules } from './compileSplitRules';
+import type { SplitRuleCustomizationEntry } from './compileSplitRules';
 
-/** Memoizes normalized split rules by the identity of the customization value. */
-const normalizedSplitRulesCache = new WeakMap<SplitRuleSet, SplitRuleSet>();
+/** Memoizes compiled split rules by the identity of the customization value. */
+const compiledSplitRulesCache = new WeakMap<object, SplitRuleSet>();
 
 /**
  * What `createDisplaySetFromGroup` is told about the group it builds.
@@ -44,8 +46,20 @@ export type UseMetadataDisplaySetCustomization = {
    * `priority`: rules run in ascending priority, and the first matching rule
    * wins per instance. The default rules use `1..n`; a priority below 0 runs
    * before them, above 10000 after them, and `null` turns a rule off.
+   *
+   * An entry is `@cornerstonejs/metadata` raw selector data, compiled by
+   * `createDisplaySetSplitRules` (see {@link compileSplitRules}), or a rule
+   * that code has already compiled.
    */
-  splitRules?: SplitRuleSet;
+  splitRules?: Record<string, SplitRuleCustomizationEntry>;
+  /**
+   * Named instance classifiers that raw rules reference with
+   * `{ classifier: '<name>' }`. Code, supplied by an extension - for example
+   * `stackImage` from `@ohif/extension-default`.
+   */
+  classifiers?: CreateDisplaySetSplitRulesOptions['classifiers'];
+  /** Named `customAttributes` recipes that raw rules reference with `preset`. */
+  customAttributePresets?: CreateDisplaySetSplitRulesOptions['customAttributePresets'];
   /** Factory converting a matched instance group into an OHIF display set. */
   createDisplaySetFromGroup?: (
     group: InstanceGroup,
@@ -70,6 +84,11 @@ export type UseMetadataDisplaySetCustomization = {
    * opinion rather than asserting equality.
    */
   compareInstances?: GroupInstancesOptions['compareInstances'];
+};
+
+/** The customization after {@link compileSplitRules}: the rules the engine takes. */
+type CompiledSplitConfig = Omit<UseMetadataDisplaySetCustomization, 'splitRules'> & {
+  splitRules?: SplitRuleSet;
 };
 
 /**
@@ -425,21 +444,24 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
-   * Reads the `useMetadataDisplaySet` customization, when available, with
-   * its split rules normalized from any declarative (JSONC / `$function`)
-   * form into `@cornerstonejs/metadata` engine shape.
+   * Reads the `useMetadataDisplaySet` customization, when available, with its
+   * split rules compiled by the `@cornerstonejs/metadata` raw selector
+   * compiler (see {@link compileSplitRules}).
    */
-  private _getMetadataSplitCustomization(): UseMetadataDisplaySetCustomization | undefined {
+  private _getMetadataSplitCustomization(): CompiledSplitConfig | undefined {
     const config = this.servicesManager?.services?.customizationService?.getCustomization(
       'useMetadataDisplaySet'
     ) as UseMetadataDisplaySetCustomization | undefined;
     if (!config?.enabled || !config.splitRules || typeof config.splitRules !== 'object') {
       return { ...config, splitRules: undefined };
     }
-    let splitRules = normalizedSplitRulesCache.get(config.splitRules);
+    let splitRules = compiledSplitRulesCache.get(config.splitRules);
     if (!splitRules) {
-      splitRules = normalizeSplitRules(config.splitRules);
-      normalizedSplitRulesCache.set(config.splitRules, splitRules);
+      splitRules = compileSplitRules(config.splitRules, {
+        classifiers: config.classifiers,
+        customAttributePresets: config.customAttributePresets,
+      });
+      compiledSplitRulesCache.set(config.splitRules, splitRules);
     }
     return { ...config, splitRules };
   }
@@ -485,7 +507,7 @@ export default class DisplaySetService extends PubSubService {
    */
   private _makeDisplaySetsWithSplitRules(
     instancesSrc: InstanceMetadata[],
-    config: UseMetadataDisplaySetCustomization,
+    config: CompiledSplitConfig,
     settings
   ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
     const bySeries = new Map<string, InstanceMetadata[]>();
@@ -515,7 +537,7 @@ export default class DisplaySetService extends PubSubService {
    */
   private _splitSeriesIntoDisplaySets(
     instancesSrc: InstanceMetadata[],
-    config: UseMetadataDisplaySetCustomization,
+    config: CompiledSplitConfig,
     settings
   ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
     const unmatched: InstanceMetadata[] = [];
@@ -638,7 +660,7 @@ export default class DisplaySetService extends PubSubService {
     displaySet: DisplaySet,
     newInstances: InstanceMetadata[],
     group: InstanceGroup,
-    config: UseMetadataDisplaySetCustomization
+    config: CompiledSplitConfig
   ): DisplaySet | undefined {
     const updated = displaySet.extendInstances?.(
       newInstances,

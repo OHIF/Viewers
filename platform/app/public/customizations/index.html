@@ -206,7 +206,7 @@
         {
           dir: 'split/',
           title: 'Display set splitting',
-          desc: 'Metadata-driven display set splitting (the @cornerstonejs/metadata split-rules engine, `useMetadataDisplaySet`). Rules are data — custom ones can be authored in JSONC with $function expressions; see split/scoutSeries.jsonc for the pattern.',
+          desc: 'Metadata-driven display set splitting (the @cornerstonejs/metadata split-rules engine, `useMetadataDisplaySet`). Rules are @cornerstonejs/metadata raw selector data — custom ones are authored in JSONC with the same conditions and expressions; see split/scoutSeries.jsonc for the pattern.',
           items: [
             {
               value: 'split/enableNewSplit',
@@ -218,7 +218,7 @@
               value: 'split/scoutSeries',
               name: 'CT SCOUT split rule (example)',
               scope: 'global',
-              desc: 'Example custom $function rule: splits the first image (lowest InstanceNumber) off every CT series with at least 10 frames into its own "SCOUT" display set. Pulls in split/enableNewSplit via requires.',
+              desc: 'Example custom raw selector rule: splits the localizer images off a CT series that mixes localizer and other images, into their own "SCOUT" display set. Pulls in split/enableNewSplit via requires.',
             },
           ],
         },

@@ -1,5 +1,14 @@
-import { groupInstancesBySplitRules, resolveSplitRuleSet } from '@cornerstonejs/metadata';
-import { ohifDefaultSplitRules } from './ohifDefaultSplitRules';
+import {
+  createDisplaySetSplitRules,
+  groupInstancesBySplitRules,
+  resolveSplitRuleSet,
+} from '@cornerstonejs/metadata';
+import { ohifDefaultSplitRules, ohifSplitRuleClassifiers } from './ohifDefaultSplitRules';
+
+/** The default rules as the engine takes them: compiled from the raw data. */
+const compiledRules = createDisplaySetSplitRules(ohifDefaultSplitRules, {
+  classifiers: ohifSplitRuleClassifiers,
+});
 
 const MG_FOR_PRESENTATION = '1.2.840.10008.5.1.4.1.1.1.2';
 const US_MULTIFRAME = '1.2.840.10008.5.1.4.1.1.3.1';
@@ -30,7 +39,7 @@ const makeInstance = (overrides: Record<string, unknown> = {}) => ({
 
 const split = instances => {
   const unmatched = [];
-  const groups = groupInstancesBySplitRules(instances as any, ohifDefaultSplitRules, instance =>
+  const groups = groupInstancesBySplitRules(instances as any, compiledRules, instance =>
     unmatched.push(instance)
   );
   return { groups, unmatched };
@@ -42,7 +51,7 @@ describe('ohifDefaultSplitRules', () => {
   });
 
   it('contains the expected rules in order (guards upstream rule-id drift)', () => {
-    expect(resolveSplitRuleSet(ohifDefaultSplitRules).map(rule => rule.id)).toEqual([
+    expect(resolveSplitRuleSet(compiledRules).map(rule => rule.id)).toEqual([
       'singleImageModality',
       'multiFrame',
       'mixedDimensionalityBValue',
