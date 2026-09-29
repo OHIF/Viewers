@@ -15,7 +15,7 @@ use new display set split rules*.
 `@cornerstonejs/metadata`.
 **Related:** [Display Set Splitting](../../../platform/services/customization-service/displaySetSplitting.md)
 — the reference documentation for the rule format.
-[`$function` Expressions](../../../platform/services/customization-service/functionExpressions.md)
+[Split Rule Expressions](../../../platform/services/customization-service/functionExpressions.md)
 — the reference documentation for the expression language.
 
 ---
@@ -75,7 +75,8 @@ implementation that is inconvenient is never a reason to change §4.
 
 - Split rules for the image instances that the stack SOP class handler owns today.
 - The layering of rules from the defaults, a mode, the app config, and a URL module.
-- The `$function` expression language that a data-only rule uses.
+- The rule format: the `@cornerstonejs/metadata` raw selector form (`RawDisplaySetSelector`).
+  This form is the one definitive rule format.
 - The stability of display sets when instances arrive later, or when the rules change during a
   session.
 - The authoring route through an AI assistant (§4.2, §5.5).
@@ -86,8 +87,11 @@ implementation that is inconvenient is never a reason to change §4.
 - **Secondary objects** — SEG, SR, RT Structure Set, Parametric Map, PDF, video, whole-slide, and
   ECG. Their dedicated extensions keep their SOP class handlers. The result-set specification
   (`RS-DS`) covers display sets for secondary results.
-- **One display set from two or more series.** The engine splits one series at a time. See
-  `SP-FIX-7` and §6 item 2.
+- **One display set from two or more series.** This is intended functionality, and it is future
+  work. The engine splits one series at a time today. See `SP-FIX-7` and §6 item 2.
+- **A split of the frames of one multiframe instance** — for example, an MR instance that holds
+  interleaved echo 1 and echo 2 frames. This is intended functionality for a follow-up pull
+  request. See `SP-FIX-8` and §6 item 6.
 - **A graphical rule editor** in the viewer.
 - **Automatic deployment of a generated rule.** A person always applies the rule (`SP-DESC-5`).
 - **Hanging protocols.** A hanging protocol selects display sets. A split rule creates display
@@ -170,8 +174,16 @@ without the custom rules.
 WHERE a deployment needs one display set from the instances of two or more series, the system
 shall let a rule make that display set.
 
-> Deferred. The engine gets one series at a time today. The requirement stays so that the design
-> does not exclude it. See §6 item 2.
+> Deferred. This is intended functionality, and it is future work. The engine gets one series at a
+> time today. The requirement stays so that the design does not exclude it. See §6 item 2.
+
+**SP-FIX-8** *(deferred)*
+WHERE one multiframe instance holds the frames of two or more acquisitions, the system shall let a
+rule split those frames into separate display sets.
+
+> Deferred to a follow-up pull request. The example is an MR instance with interleaved echo 1 and
+> echo 2 frames. The engine claims and groups whole instances today, so a rule cannot separate the
+> frames of one instance. See §6 item 6.
 
 ### 4.2 Describe the problem, get a rule — `SP-DESC`
 
@@ -253,15 +265,29 @@ set, its instances, and its `displaySetInstanceUID`.
 A rule shall not be able to run code other than the expressions of the rule expression language.
 
 **SP-SAFE-2**
-IF a rule has an error, THEN the system shall ignore that rule, keep all of the other rules, and
-show a console warning that names the rule.
+The system shall evaluate every condition of a rule, for every instance, to a definite result:
+the rule applies, or the rule does not apply.
 
-> The failure must be "my rule did nothing", which a user can diagnose. The failure must never be
-> "every series groups wrongly".
+> The safe functions give this guarantee. An expression has no side effects, and an attribute
+> that an instance does not carry gives `undefined`, not an error. So a user can always determine
+> whether a valid rule applies to an instance.
 
 **SP-SAFE-3**
-IF the rule engine fails for a series, THEN the system shall create the display sets of that
-series as it would with no rules.
+IF a rule fails at run time, THEN the system shall create no further display sets for the study,
+and shall show the user an error that names the rule and the series.
+
+> A fallback to the grouping without rules has the same problem as a dropped rule (`SP-SAFE-7`):
+> the grouping looks correct, but it is not the grouping that the deployment intended. A valid raw
+> rule cannot fail at run time (`SP-SAFE-2`). A rule that code supplies as a function can. The
+> display sets that exist before the failure stay, as `SP-DET-3` requires.
+
+**SP-SAFE-7**
+IF a rule in the rule set has an error, THEN the system shall create no display sets for the
+study, and shall show the user an error that names the rule.
+
+> A rule can be critical for the clinician who views the study. A rule that the system drops,
+> silently or with a warning, gives a grouping that looks correct but is not the grouping that the
+> deployment intended. An error that stops the display is safer than a wrong display.
 
 **SP-SAFE-4**
 The default rules shall not claim an instance that a dedicated extension handles.
@@ -270,7 +296,7 @@ The default rules shall not claim an instance that a dedicated extension handles
 WHERE a deployment loads rules from a URL, the system shall load rules only from the URL prefixes
 that the app config names.
 
-**SP-SAFE-6**
+**SP-SAFE-6** *(deferred)*
 WHERE a deployment denies a rule attribute, the system shall not let any rule compute that
 attribute.
 
@@ -310,8 +336,9 @@ The system shall let a tool check a rule for errors without a viewer.
 ### 5.1 The rule form — `SP-FORM`
 
 **SP-FORM-1**
-The rule set shall be an object keyed by rule id (`SplitRuleSet`), in the `splitRules` field of
-the `useMetadataDisplaySet` customization. *Satisfies `SP-READ-3`, `SP-REUSE-4`.*
+The rule set shall be a `RawDisplaySetSelector` from `@cornerstonejs/metadata`: an object keyed by
+rule id, in the `splitRules` field of the `useMetadataDisplaySet` customization. *Satisfies
+`SP-READ-1`, `SP-READ-3`, `SP-REUSE-1`, `SP-REUSE-4`.*
 
 **SP-FORM-2**
 Each rule shall have a numeric `priority`, or `null`. The default rules shall use the priorities
@@ -319,32 +346,41 @@ Each rule shall have a numeric `priority`, or `null`. The default rules shall us
 rule shall use a priority above `10000`. *Satisfies `SP-FIX-5`.*
 
 **SP-FORM-3**
-A rule shall use the fields `matches`, `series`, `groupBy`, `runBy`, `compareInstances`,
-`viewportTypes`, and `customAttributes`. The reference documentation shall define each field and
-its arguments. *Satisfies `SP-DESC-2`.*
+A rule shall use the fields of `RawSplitRule`, and the reference documentation shall define each
+field. *Satisfies `SP-DESC-2`.*
+
+| Field | Form |
+| --- | --- |
+| `description` | Text that states what the rule does |
+| `matches` | A `RawCondition` — `attribute` tests, `classifier`, `seriesFact`, `all` / `any` / `not`, or an `expression` string |
+| `series` | A list of `RawSeriesFact` — a named boolean with `scope` `first`, `every`, `some`, or `mixed`, an optional `gate`, and an optional `minInstances` |
+| `groupBy`, `runBy` | `RawValue` entries — a tag name, `{ attribute, number, absent, bucket }`, `{ condition }`, `{ template }`, `{ join, parts }`, or `{ expression }` |
+| `compareInstances` | `{ attribute, number?, descending? }` |
+| `viewportTypes` | A list of viewport type names |
+| `customAttributes` | `{ set, fromFirstInstance, fromContext, fromOptions, preset }` |
 
 **SP-FORM-4**
-A data-only rule shall write each computed value as a `{ "$function": "<expression>" }` marker.
-*Satisfies `SP-READ-1`.*
+`createDisplaySetSplitRules` shall compile the rule set, and OHIF shall supply its own classifiers
+and presets to it by name. *Satisfies `SP-READ-1`, `SP-REUSE-1`.*
 
 **SP-FORM-5**
-A URL rule module shall be JSONC, so that it can carry comments. *Satisfies `SP-DESC-3`,
-`SP-READ-2`.*
+A URL rule module shall be JSONC, so that it can carry comments, and each rule shall carry a
+`description`. *Satisfies `SP-DESC-3`, `SP-READ-2`.*
 
 **SP-FORM-6**
 A rule module that needs the splitter shall name `split/enableNewSplit` in its `requires` list.
 *Satisfies `SP-DESC-4`.*
 
-> Two data forms exist today. OHIF reads the `$function` form through the customization service.
-> `@cornerstonejs/metadata` also defines a pure-JSON form, `RawDisplaySetSelector`, that
-> `createDisplaySetSplitRules` compiles with named `classifiers`. The two forms describe the same
-> engine rule. §6 item 1 asks which form is the exchange format.
+> The raw selector form is the one definitive rule format, for the viewer and for a server.
+> Commit `1f2911cf4b` removed the earlier OHIF rule layer: the `$function` customization marker,
+> its function-signature registry, and `customizationFunctionPolicy.denyAttributes`. No part of
+> this specification uses them.
 
 ### 5.2 The pipeline — `SP-PIPE`
 
 The flowchart shows every stage that a rule passes through, from its source to a display set. The
-numbers match the requirements below. The stages in box 6 are in `@cornerstonejs/metadata`. The
-other stages are in OHIF.
+numbers match the requirements below. Stage 3 and the stages in box 6 are in
+`@cornerstonejs/metadata`. The other stages are in OHIF.
 
 ```mermaid
 flowchart TD
@@ -353,19 +389,20 @@ flowchart TD
     S1["Defaults<br/>@ohif/extension-default<br/>priority 1..5"]
     S2["Mode<br/>onModeEnter → setCustomizations"]
     S3["App config<br/>customizationService: [ ... ]"]
-    S4["URL module<br/>?customization=split/ctScout<br/>only under customizationUrlPrefixes"]
+    S4["URL module<br/>?customization=split/dwiByBValue<br/>only under customizationUrlPrefixes"]
   end
 
   SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>$merge adds · $set replaces · priority: null turns off<br/>one entry per rule id"]
-  L --> C["3 · Compile — at read time<br/>$function → compileExpression closure<br/>registered call signatures<br/>customizationFunctionPolicy.denyAttributes"]
-  C --> N["4 · normalizeSplitRules<br/>drop a bad priority<br/>drop a rule whose matches or groupBy did not compile<br/>wrap the series and customAttributes maps"]
-  N --> P["5 · Partition the input by SeriesInstanceUID"]
+  L --> C["3 · Compile — createDisplaySetSplitRules<br/>RawCondition → predicate · RawValue → value<br/>series facts → one function per rule<br/>named classifiers and presets from OHIF"]
+  C --> N{"4 · Validate<br/>does every rule compile,<br/>with a valid priority?"}
+  N -- "no" --> STOP["Stop: no display sets for the study<br/>error that names the rule"]
+  N -- "yes" --> P["5 · Partition the input by SeriesInstanceUID"]
 
   P --> E1
   subgraph ENG["6 · groupInstancesBySplitRules — one series, @cornerstonejs/metadata"]
     E1["6a · Rule order<br/>ascending priority, then rule id"]
-    E2["6b · Series facts<br/>rule.series({ instances }), once per rule"]
-    E3["6c · Claim<br/>each instance → the first rule whose matches() is true"]
+    E2["6b · Series facts<br/>named booleans, once per rule"]
+    E3["6c · Claim<br/>each instance → the first rule whose matches is true"]
     E4["6d · Group<br/>groupBy values, then runBy runs<br/>splitKey = [ruleId, ...values, runKey]"]
     E5["6e · Order the instances<br/>acquisition → sortInstances →<br/>rule.compareInstances → host compareInstances"]
     E6["6f · Order the groups<br/>rule order → natural order of key → run ordinal"]
@@ -373,7 +410,7 @@ flowchart TD
   end
 
   E3 -- "no rule matches" --> H["SOP class handlers<br/>SEG · SR · RT · video · WSI · ECG · …"]
-  ENG -.->|a rule throws| H
+  ENG -.->|a rule throws| STOP
 
   E6 --> R{"7 · Reconcile with the display sets<br/>that the series already has"}
   R -- "other instances of the group<br/>already have a display set" --> X["extendInstances<br/>the display set grows"]
@@ -386,40 +423,79 @@ flowchart TD
   O --> V["Study browser · hanging protocol · viewports"]
 ```
 
-**The trace of one rule.** The worked example `split/scoutSeries.jsonc` adds the rule `ctScout`.
-This table follows that rule through each stage, for a CT series of 120 single-frame images.
+**The trace of one rule.** This example rule puts each b-value of a diffusion MR series into its
+own display set. A module `split/dwiByBValue.jsonc` would hold the rule. The module is an example
+for this specification, and it is not in the repository.
 
-| Stage | What happens to `ctScout` |
+```jsonc
+"dwiByBValue": {
+  "priority": -1,
+  "description": "Diffusion MR: one display set for each b-value.",
+  "viewportTypes": ["stack"],
+  "series": [
+    {
+      "name": "isDiffusion",
+      "gate": { "attribute": "Modality", "equals": "MR" },
+      "scope": "some",
+      "when": { "attribute": "DiffusionBValue", "exists": true }
+    }
+  ],
+  "matches": {
+    "all": [
+      { "seriesFact": "isDiffusion" },
+      { "classifier": "image" },
+      { "attribute": "DiffusionBValue", "exists": true }
+    ]
+  },
+  "groupBy": ["SeriesInstanceUID", { "attribute": "DiffusionBValue", "number": true }],
+  "compareInstances": { "attribute": "SliceLocation", "number": true },
+  "customAttributes": {
+    "fromFirstInstance": {
+      "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
+    }
+  }
+}
+```
+
+The table follows the rule through each stage, for an MR series of 90 instances: 30 slices at each
+of the b-values 0, 500, and 1000.
+
+| Stage | What happens to `dwiByBValue` |
 | --- | --- |
-| 1 | The URL `?customization=split/scoutSeries` loads the module. Its `requires` loads `split/enableNewSplit` first. |
-| 2 | `$merge` adds the key `ctScout` with `priority: -1`. The five default rules stay. |
-| 3 | `matches` compiles with the signature `['instance', 'context']`. The template `` `SCOUT ${SeriesDescription}` `` compiles. A deployment that denies `customAttributes.SeriesDescription` gets `undefined` here. |
-| 4 | The `series` map `{ frameCount, firstInstanceNumber }` becomes one function. The rule is valid, so the rule stays. |
-| 6a | The order is `ctScout` (−1), then `singleImageModality` (1) … `defaultImageRule` (5). |
-| 6b | `frameCount = 120`, `firstInstanceNumber = 1`. |
-| 6c | Instance 1 goes to `ctScout`. Instances 2 to 120 fail `ctScout` and go to `volume3d`. |
-| 6d | Two groups: one with the key `["ctScout", <SeriesInstanceUID>]`, and one `volume3d` group. |
-| 6e | The scout group has one instance. The volume group is in acquisition order. |
-| 6f | The `ctScout` group comes first, because its rule comes first. |
-| 7 | Both groups are new. `createDisplaySetFromGroup` makes a display set with the label `SCOUT` and a reconstructable 119-image display set. |
-| 8 | The study browser shows two items. The volume is available for MPR. |
+| 1 | The URL `?customization=split/dwiByBValue` loads the module. Its `requires` loads `split/enableNewSplit` first. |
+| 2 | `$merge` adds the key `dwiByBValue` with `priority: -1`. The default rules stay. |
+| 3 | `createDisplaySetSplitRules` compiles `matches` into one predicate, the series fact into one function, and the template into one value reader. |
+| 4 | The priority is a number, and every rule compiles, so display set creation continues. |
+| 6a | The order is `dwiByBValue` (−1), then the default rules (1 to 5). |
+| 6b | `isDiffusion` is true: the first instance is MR, and some instances have `DiffusionBValue`. |
+| 6c | All 90 instances have `DiffusionBValue`, so `dwiByBValue` claims all of them. |
+| 6d | Three groups, with the keys `["dwiByBValue", <SeriesInstanceUID>, 0]`, `[…, 500]`, and `[…, 1000]`. |
+| 6e | In each group, the order is acquisition order, and then `SliceLocation` in ascending order. |
+| 6f | The natural order of the keys puts the groups in the order b=0, b=500, b=1000. |
+| 7 | The three groups are new. `createDisplaySetFromGroup` makes three display sets, with the descriptions `<description> b=0`, `b=500`, and `b=1000`. |
+| 8 | The study browser shows three items. Each item gets its own window level. |
 
 **SP-PIPE-1**
 The customization service shall merge the rule layers in the order default, mode, global, and a
 later layer shall edit a rule by its id. *Satisfies `SP-FIX-5`, `SP-REUSE-4`.*
 
 **SP-PIPE-2**
-The customization service shall compile each `$function` marker once, when it reads the
-customization. *Satisfies `SP-SAFE-1`, `SP-SAFE-6`.*
+OHIF shall compile a rule set value once, with `createDisplaySetSplitRules`, and use the compiled
+rules again until the customization value changes. *Satisfies `SP-DET-1`.*
 
 **SP-PIPE-3**
-`normalizeSplitRules` shall drop a rule whose `matches` or `groupBy` did not compile, and shall
-drop an entry whose priority is not a number or `null`. *Satisfies `SP-SAFE-2`.*
+The compile step shall compile each rule alone, so that it can name every rule that fails.
+*Satisfies `SP-SAFE-7`.*
 
-> A rule without `matches` matches every instance, and a `groupBy` that did not compile puts
-> every instance in one group. So a rule with a compile error in one of these fields is dangerous,
-> and the normalizer drops it. A failed `series` fact is safe, because the rule then never
-> matches. The normalizer keeps that rule and warns.
+**SP-PIPE-13**
+IF any rule does not compile, or has a priority that is not a number or `null`, THEN the display
+set service shall create no display sets, and shall show an error through the UI notification
+service. *Satisfies `SP-SAFE-7`.*
+
+> **Gap.** `compileSplitRules` (commit `1f2911cf4b`) compiles each rule alone, as `SP-PIPE-3`
+> needs. But `compileSplitRules` then drops a rule that fails, with a console warning, and the
+> other rules stay in charge. `SP-SAFE-7` needs a stop and a visible error instead.
+> `compileSplitRules.test.ts` tests the drop behaviour, so that test must change too.
 
 **SP-PIPE-4**
 The display set service shall give the engine one series at a time. *Satisfies `SP-DET-1`.*
@@ -442,8 +518,14 @@ The engine shall give each instance that no rule claims to the SOP class handler
 *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
 
 **SP-PIPE-9**
-IF the engine throws for a series, THEN the display set service shall give every instance of that
-series to the SOP class handlers. *Satisfies `SP-SAFE-3`.*
+IF the engine throws for a series, THEN the display set service shall create no further display
+sets for the study, and shall show an error through the UI notification service that names the
+rule and the series. *Satisfies `SP-SAFE-3`.*
+
+> **Gap.** `_splitSeriesIntoDisplaySets` in `DisplaySetService.ts` catches the error, warns in the
+> console, and gives every instance of the series to the SOP class handlers. The test "gives the
+> series to the legacy handlers when the split rules throw" in `DisplaySetService.test.ts` tests
+> that fallback, so that test must change too.
 
 **SP-PIPE-10**
 The display set service shall put a new instance into the display set that holds the other
@@ -469,29 +551,26 @@ The default rules shall gate every match on the SOP class list of the stack SOP 
 ### 5.3 The expression language — `SP-EXPR`
 
 > The expression language is not specific to split rules. Its reference documentation is the
-> [`$function` Expressions](../../../platform/services/customization-service/functionExpressions.md)
+> [Split Rule Expressions](../../../platform/services/customization-service/functionExpressions.md)
 > page. The requirements below state only what split rules need from the language.
 
 **SP-EXPR-1**
-The expression language shall live in `@cornerstonejs/metadata` (`compileExpression`), and OHIF
-shall only add the `$function` marker. *Satisfies `SP-REUSE-1`.*
+A rule should use the structured `RawCondition` and `RawValue` forms, and should use an
+`expression` string only where no structured form fits. *Satisfies `SP-READ-1`, `SP-DESC-2`.*
 
 **SP-EXPR-2**
+The expression compiler shall live in `@cornerstonejs/metadata` (`compileExpression`, part of the
+safe functions). *Satisfies `SP-REUSE-1`.*
+
+**SP-EXPR-3**
 The compiler shall not use `eval` or `new Function`, and shall reject `__proto__`, `constructor`,
 and `prototype` when it parses an expression. *Satisfies `SP-SAFE-1`.*
 
-**SP-EXPR-3**
-The code that calls a compiled expression shall declare its parameter names
-(`registerFunctionSignatures`). A marker that states different parameters shall use the
-registered ones and warn. *Satisfies `SP-DET-1`.*
-
 **SP-EXPR-4**
-`customizationFunctionPolicy` shall come from the app config only, and never from a
-customization. *Satisfies `SP-SAFE-5`, `SP-SAFE-6`.*
-
-**SP-EXPR-5**
 `collectIdentifiers` shall report the attributes that an expression reads. *Satisfies
 `SP-READ-5`, `SP-REUSE-5`.*
+
+> `SP-SAFE-6` has no mechanism today. It is a future item. See §6 item 9.
 
 ### 5.4 Rule files in a deployment — `SP-DEPLOY`
 
@@ -505,7 +584,7 @@ the URL that loads the module. *Satisfies `SP-DESC-3`.*
 
 **SP-DEPLOY-3**
 A rule that must take instances before the defaults shall use a priority below `0`, and shall gate
-on `SOPClassUID` or on `Modality`. *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
+on a classifier, on `SOPClassUID`, or on `Modality`. *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
 
 ### 5.5 The assistant route — `SP-GEN` *(proposed)*
 
@@ -522,11 +601,11 @@ sequenceDiagram
 
   U->>V: Opens the study. The grouping is wrong.
   U->>V: Exports the series tags, without patient identifiers
-  U->>A: "The first image of each CT is a scout. MPR is not available."
+  U->>A: "All the b-values are in one stack. The window level is wrong."
   A->>A: Finds the attributes that separate the images
-  A->>F: Writes a keyed rule: id, priority, SOP class gate, comments
-  A->>A: Checks the expressions (compile, collectIdentifiers)
-  U->>V: Loads ?customization=split/ctScout
+  A->>F: Writes a keyed rule: id, priority, gate, description, comments
+  A->>A: Compiles the rule (createDisplaySetSplitRules) and runs it on the tags
+  U->>V: Loads ?customization=split/dwiByBValue
   V-->>U: Shows the new display sets
   alt The grouping is still wrong
     U->>A: Describes what is still wrong
@@ -538,14 +617,14 @@ sequenceDiagram
   D-->>V: All users get the new grouping
 ```
 
-**SP-GEN-1**
+**SP-GEN-1** *(a separate change)*
 The repository should hold an agent skill, in `.agents/skills/`, that tells an assistant how to
 turn a clinical description into a rule module. The skill should cite the reference
 documentation instead of a copy of it. *Satisfies `SP-DESC-1`, `SP-DESC-2`.*
 
 **SP-GEN-2**
 The skill should tell the assistant to use a rule id that names the problem, a priority below
-`0`, an explicit SOP class or modality gate, and a header comment. *Satisfies `SP-DESC-3`,
+`0`, an explicit gate, a `description`, and a header comment. *Satisfies `SP-DESC-3`,
 `SP-SAFE-4`, `SP-REUSE-3`.*
 
 **SP-GEN-3**
@@ -557,16 +636,16 @@ The skill should tell the assistant to replace a rule under its id, and never to
 new id for the same problem. *Satisfies `SP-REUSE-3`, `SP-REUSE-4`.*
 
 **SP-GEN-5**
-The repository should give a unit test pattern that feeds exported series tags to
-`groupInstancesBySplitRules` with a rule, and checks the resulting groups. *Satisfies `SP-DESC-4`,
-`SP-REUSE-5`.*
+The repository should give a unit test pattern that compiles a rule with
+`createDisplaySetSplitRules`, feeds exported series tags to `groupInstancesBySplitRules`, and
+checks the resulting groups. *Satisfies `SP-DESC-4`, `SP-REUSE-5`.*
 
 ### 5.6 Reuse by a server — `SP-SRV` *(proposed)*
 
 ```mermaid
 flowchart LR
   RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set"]
-  LD --> CP["Compile<br/>compileExpression, or<br/>createDisplaySetSplitRules + classifiers"]
+  LD --> CP["Compile<br/>createDisplaySetSplitRules<br/>+ the same named classifiers"]
   CP --> G["groupInstancesBySplitRules<br/>per series"]
   G --> IX["Server index<br/>display sets with splitKey"]
   IX -.->|the viewer reads the index| VW["OHIF viewer"]
@@ -587,7 +666,7 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 > Today the OHIF default rules are closures (`ohifDefaultSplitRules.ts`). A closure cannot go to a
 > server. The header of that file states the conversion path: every OHIF-specific part reduces to
 > the one classifier `isStackHandledInstance`. Until that conversion, a server can reuse a
-> custom rule, but not the OHIF defaults.
+> custom rule in the raw form, but not the OHIF defaults.
 
 ---
 
@@ -595,11 +674,16 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 
 | # | Question | State |
 | --- | --- | --- |
-| 1 | Which data form is the exchange format for a server: the OHIF `$function` form, or the `@cornerstonejs/metadata` `RawDisplaySetSelector` form? The `$function` form needs the OHIF layer merge (`$merge`, `$set`) and the `$function` marker. The raw form needs `classifiers`. | Open |
-| 2 | One display set from two or more series (`SP-FIX-7`). The engine gets one series at a time (`SP-PIPE-4`). A study-level pass must keep `SP-DET-3`. | Deferred |
+| 1 | Which data form is the exchange format for a server? | **Resolved.** The `@cornerstonejs/metadata` `RawDisplaySetSelector` form is definitive, for the viewer and for a server. Commit `1f2911cf4b` removed the OHIF rule layer. |
+| 2 | One display set from two or more series (`SP-FIX-7`). | **Deferred — future work.** This is intended functionality. The work must decide how to order the instances across the series, and what a display set with items from several series means: its series attributes, its `SeriesInstanceUID`, and its reconciliation when one series gets new instances. The engine gets one series at a time today (`SP-PIPE-4`), and a study-level pass must keep `SP-DET-3`. |
 | 3 | Where does the export of series tags without patient identifiers live (`SP-GEN-3`)? It can be a viewer command, a customization, or a separate tool. | Open |
-| 4 | Is the agent skill of `SP-GEN-1` a part of this pull request, or a separate change? | Open |
-| 5 | The prefix `SP` must go into §1 of the specification register (`specs/index.md`). The register is on the branch `feat/study-level-segmentation`, and not on this branch. | Open |
+| 4 | Is the agent skill of `SP-GEN-1` a part of this pull request? | **Resolved.** The skill is a separate change. |
+| 5 | The prefix `SP` must go into §1 of the specification register (`specs/index.md`). | **Deferred.** The register is not on this branch. Add the prefix on a branch that holds the register. |
+| 6 | A split of the frames of one multiframe instance (`SP-FIX-8`), for example an MR instance with interleaved echo 1 and echo 2 frames. | **Deferred — follow-up pull request.** Out of scope for this change, and intended functionality. The engine claims and groups whole instances today, so the work needs a claim and a grouping for each frame. |
+| 7 | A series fact in the raw form is a named boolean only. Can the CT scout example `split/scoutSeries.jsonc` use the raw form? | **Resolved** in commit `1f2911cf4b`. The example uses the boolean series fact `hasScout` (scope `mixed`: the series mixes images with and without `LOCALIZER` in `ImageType`), and then matches each localizer instance. |
+| 8 | What does the system do with a rule that has an error? | **Resolved.** The system does not drop the rule. A dropped rule can be a critical rule for the clinician, so the system creates no display sets and shows an error that names the rule (`SP-SAFE-7`, `SP-PIPE-13`). `SP-SAFE-2` states the guarantee of the safe functions: a valid rule always either applies or does not apply. The code does not do this yet — see the gap under `SP-PIPE-13`. |
+| 9 | What mechanism lets a deployment deny a rule attribute (`SP-SAFE-6`)? | **Deferred — future item.** |
+| 10 | Must a run-time failure of a rule also stop display set creation, as `SP-SAFE-7` does for a rule with an error? | **Resolved — yes.** `SP-SAFE-3` and `SP-PIPE-9` now require the stop and an error that names the rule and the series. The code does not do this yet — see the gap under `SP-PIPE-9`. |
 
 ## 7. Traceability
 
@@ -607,17 +691,20 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | --- | --- |
 | `SP-FIX`, `SP-DET`, `SP-SAFE` | [OHIF/Viewers#6137](https://github.com/OHIF/Viewers/pull/6137), and the reference documentation *Display Set Splitting* |
 | `SP-DESC`, `SP-GEN` | The goal in §1: a clinical user describes the problem, and an assistant writes the rule |
-| `SP-REUSE`, `SP-SRV` | The header of `ohifDefaultSplitRules.ts`, and the statement in the reference documentation that "a server building a study index compiles the same rules the viewer does" |
-| `SP-FORM`, `SP-PIPE`, `SP-EXPR` | The implementation in #6137 |
+| `SP-REUSE`, `SP-SRV` | The header of `ohifDefaultSplitRules.ts`, and the decision that the raw selector form is definitive (§6 item 1) |
+| `SP-FORM`, `SP-PIPE`, `SP-EXPR` | The implementation in #6137, and `RawDisplaySetSelector` in `@cornerstonejs/metadata` |
 
 ## 8. Verification
 
 | Requirement group | Test |
 | --- | --- |
 | `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/ohifDefaultSplitRules.test.ts` |
-| `SP-SAFE-2`, `SP-PIPE-3` | `platform/core/src/services/DisplaySetService/normalizeSplitRules.test.ts` |
-| `SP-DET`, `SP-SAFE-3`, `SP-PIPE-4`, `SP-PIPE-9`..`SP-PIPE-11` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
-| `SP-SAFE-1`, `SP-SAFE-6`, `SP-EXPR` | `platform/core/src/services/CustomizationService/CustomizationService.function.test.ts` |
+| `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10`, `SP-PIPE-11` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
-| `SP-DESC-4`, `SP-FIX-3` | *Pending* — a Playwright test that loads `?customization=split/scoutSeries` and checks the `SCOUT` item in the study browser |
+| `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR` | The safe function and raw selector tests of `@cornerstonejs/metadata` |
+| `SP-PIPE-2`, `SP-PIPE-3` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
+| `SP-SAFE-3`, `SP-PIPE-9` | *Pending* — `DisplaySetService.test.ts` tests the fallback to the SOP class handlers today, and must test the stop instead |
+| `SP-SAFE-7`, `SP-PIPE-13` | *Pending* — `compileSplitRules.test.ts` tests the drop of a bad rule today, and must test the stop instead |
+| `SP-SAFE-6` | *Deferred* — §6 item 9 |
+| `SP-DESC-4`, `SP-FIX-3` | *Pending* — a Playwright test that loads a split rule module and checks the new items in the study browser |
 | `SP-GEN`, `SP-SRV` | *Pending* — proposed work |
