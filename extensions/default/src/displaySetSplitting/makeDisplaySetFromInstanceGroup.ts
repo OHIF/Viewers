@@ -113,6 +113,8 @@ export function makeDisplaySetFromInstanceGroup(
   // Applied from the CURRENT image list, so re-running it after a merge keeps
   // instance-derived attributes (e.g. `instanceNumber`) in step with the new
   // sort order instead of describing the instances of the first batch.
+  // `compileSplitRules` wraps `customAttributes`, so an error here names the
+  // rule and the field; DisplaySetService catches it and stops the study.
   const applyCustomAttributes = () => {
     const currentInstances = imageSet.images;
     const customAttributes = matchedRule.customAttributes?.(

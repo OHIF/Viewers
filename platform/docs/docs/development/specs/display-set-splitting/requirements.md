@@ -282,12 +282,16 @@ and shall show the user an error that names the rule and the series.
 > display sets that exist before the failure stay, as `SP-DET-3` requires.
 
 **SP-SAFE-7**
-IF a rule in the rule set has an error, THEN the system shall create no display sets for the
+IF a rule in the rule set has an error, THEN the system shall create no display sets for any
 study, and shall show the user an error that names the rule.
 
 > A rule can be critical for the clinician who views the study. A rule that the system drops,
 > silently or with a warning, gives a grouping that looks correct but is not the grouping that the
 > deployment intended. An error that stops the display is safer than a wrong display.
+>
+> One rule set applies to every study, so an error in the rule set blocks the load of every
+> study. This is the same as other errors that prevent the load of a study. The error stays until
+> the rule set changes.
 
 **SP-SAFE-4**
 The default rules shall not claim an instance that a dedicated extension handles.
@@ -355,13 +359,30 @@ field. *Satisfies `SP-DESC-2`.*
 | `matches` | A `RawCondition` — `attribute` tests, `classifier`, `seriesFact`, `all` / `any` / `not`, or an `expression` string |
 | `series` | A list of `RawSeriesFact` — a named boolean with `scope` `first`, `every`, `some`, or `mixed`, an optional `gate`, and an optional `minInstances` |
 | `groupBy`, `runBy` | `RawValue` entries — a tag name, `{ attribute, number, absent, bucket }`, `{ condition }`, `{ template }`, `{ join, parts }`, or `{ expression }` |
-| `compareInstances` | `{ attribute, number?, descending? }` |
+| `compareInstances` | `{ attribute, number?, descending? }`, or `{ expression }` that reads only `a`, `b`, and `context` |
 | `viewportTypes` | A list of viewport type names |
 | `customAttributes` | `{ set, fromFirstInstance, fromContext, fromOptions, preset }` |
 
 **SP-FORM-4**
 `createDisplaySetSplitRules` shall compile the rule set, and OHIF shall supply its own classifiers
 and presets to it by name. *Satisfies `SP-READ-1`, `SP-REUSE-1`.*
+
+**SP-FORM-7**
+`createDisplaySetSplitRules` shall reject a rule that has an unknown key, or a form that its field
+does not accept, anywhere in the rule. The error shall name the rule, the path of the key in the
+rule, and the keys or forms that the field accepts. *Satisfies `SP-SAFE-7`, `SP-READ-5`.*
+
+> The table `splitRuleSchema` in `@cornerstonejs/metadata` defines each field of a rule: the forms
+> that the field accepts, and the arguments that the compiled function gets, for example
+> `(instance, context)` for `matches` and `(a, b, context)` for `compareInstances`. The compiler
+> reads this table. A key of `*` in the table accepts any key. `customAttributes.set.*` keeps each
+> value as a literal, and `customAttributes.fromFirstInstance.*` compiles each value. A typo such as
+> `matchs` was accepted before, and the rule then claimed every instance.
+
+**SP-FORM-8**
+A rule that code supplies may hold a function at any place where the data form holds a condition,
+a value, a comparator, series facts, or custom attributes. The compiler shall use the function as
+it is. *Satisfies `SP-REUSE-1`.*
 
 **SP-FORM-5**
 A URL rule module shall be JSONC, so that it can carry comments, and each rule shall carry a
@@ -395,7 +416,7 @@ flowchart TD
   SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>$merge adds · $set replaces · priority: null turns off<br/>one entry per rule id"]
   L --> C["3 · Compile — createDisplaySetSplitRules<br/>RawCondition → predicate · RawValue → value<br/>series facts → one function per rule<br/>named classifiers and presets from OHIF"]
   C --> N{"4 · Validate<br/>does every rule compile,<br/>with a valid priority?"}
-  N -- "no" --> STOP["Stop: no display sets for the study<br/>error that names the rule"]
+  N -- "no" --> STOP["Stop: no display sets for any study<br/>error that names the rule"]
   N -- "yes" --> P["5 · Partition the input by SeriesInstanceUID"]
 
   P --> E1
@@ -410,7 +431,7 @@ flowchart TD
   end
 
   E3 -- "no rule matches" --> H["SOP class handlers<br/>SEG · SR · RT · video · WSI · ECG · …"]
-  ENG -.->|a rule throws| STOP
+  ENG -.->|a rule throws| HALT["Stop: no further display sets for the study<br/>error that names the rule, the field and the series"]
 
   E6 --> R{"7 · Reconcile with the display sets<br/>that the series already has"}
   R -- "other instances of the group<br/>already have a display set" --> X["extendInstances<br/>the display set grows"]
@@ -489,13 +510,22 @@ The compile step shall compile each rule alone, so that it can name every rule t
 
 **SP-PIPE-13**
 IF any rule does not compile, or has a priority that is not a number or `null`, THEN the display
-set service shall create no display sets, and shall show an error through the UI notification
-service. *Satisfies `SP-SAFE-7`.*
+set service shall create no display sets for any study, not even SEG or SR display sets, and shall
+show an error through the UI notification service. *Satisfies `SP-SAFE-7`.*
 
-> **Gap.** `compileSplitRules` (commit `1f2911cf4b`) compiles each rule alone, as `SP-PIPE-3`
-> needs. But `compileSplitRules` then drops a rule that fails, with a console warning, and the
-> other rules stay in charge. `SP-SAFE-7` needs a stop and a visible error instead.
-> `compileSplitRules.test.ts` tests the drop behaviour, so that test must change too.
+> `compileSplitRules` returns `{ rules, errors }`, and it does not drop a rule. While `errors` is
+> not empty, `makeDisplaySetForInstances` returns no display sets, and does not give the instances
+> to the SOP class handlers. The service shows one error notification that stays on screen until
+> the user closes it. The block clears when the `splitRules` value changes, and on mode exit.
+
+**SP-PIPE-14**
+The compile step shall wrap each function of each rule, so that an error at run time names the rule
+and the field, for example `matches`, `groupBy[1]`, `runBy`, or `customAttributes`. The wrap shall
+apply to a rule compiled from data and to a rule that code supplies. *Satisfies `SP-SAFE-3`.*
+
+> The host `sortInstances` and `compareInstances` of the customization are not wrapped. An error in
+> one of them stops display set creation for the study, as `SP-PIPE-9` requires, but the error does
+> not name a rule.
 
 **SP-PIPE-4**
 The display set service shall give the engine one series at a time. *Satisfies `SP-DET-1`.*
@@ -522,10 +552,12 @@ IF the engine throws for a series, THEN the display set service shall create no 
 sets for the study, and shall show an error through the UI notification service that names the
 rule and the series. *Satisfies `SP-SAFE-3`.*
 
-> **Gap.** `_splitSeriesIntoDisplaySets` in `DisplaySetService.ts` catches the error, warns in the
-> console, and gives every instance of the series to the SOP class handlers. The test "gives the
-> series to the legacy handlers when the split rules throw" in `DisplaySetService.test.ts` tests
-> that fallback, so that test must change too.
+> `DisplaySetService` catches an error from the engine, from `createDisplaySetFromGroup`, and from
+> `extendInstances`. It records the failure for the `StudyInstanceUID`, and then creates no further
+> display sets for that study, and gives no further instances of that study to the SOP class
+> handlers. The display sets that exist stay (`SP-DET-3`). Other studies continue. The error is a
+> `SplitRuleRunError` that names the rule and the field (`SP-PIPE-14`), and the notification also
+> names the series. The block clears when the `splitRules` value changes, and on mode exit.
 
 **SP-PIPE-10**
 The display set service shall put a new instance into the display set that holds the other
@@ -569,6 +601,25 @@ and `prototype` when it parses an expression. *Satisfies `SP-SAFE-1`.*
 **SP-EXPR-4**
 `collectIdentifiers` shall report the attributes that an expression reads. *Satisfies
 `SP-READ-5`, `SP-REUSE-5`.*
+
+**SP-EXPR-5**
+Each place of an expression in a rule shall declare the names that the expression can read. In
+`matches`, `groupBy`, `runBy`, a series fact, and `fromFirstInstance`, a bare name reads an
+attribute of the instance. In `compareInstances`, the expression reads only `a`, `b`, and
+`context`, and a bare name that is not one of them is a compile error. *Satisfies `SP-SAFE-2`,
+`SP-FORM-7`.*
+
+> Before this requirement, a bare `SliceLocation` in a comparator read `a.SliceLocation` without a
+> warning.
+
+**SP-EXPR-6**
+The structured forms shall read an attribute of an instance, and a series fact, only as an own
+property. *Satisfies `SP-SAFE-2`.*
+
+> Before this requirement, `{ "seriesFact": "constructor" }` was true, and
+> `{ "attribute": "toString", "exists": true }` was true for an instance without that attribute,
+> because the read followed the prototype chain. A bare name inside an expression can still read a
+> prototype member, for example `toString`. That is a known gap.
 
 > `SP-SAFE-6` has no mechanism today. It is a future item. See §6 item 9.
 
@@ -681,9 +732,9 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | 5 | The prefix `SP` must go into §1 of the specification register (`specs/index.md`). | **Deferred.** The register is not on this branch. Add the prefix on a branch that holds the register. |
 | 6 | A split of the frames of one multiframe instance (`SP-FIX-8`), for example an MR instance with interleaved echo 1 and echo 2 frames. | **Deferred — follow-up pull request.** Out of scope for this change, and intended functionality. The engine claims and groups whole instances today, so the work needs a claim and a grouping for each frame. |
 | 7 | A series fact in the raw form is a named boolean only. Can the CT scout example `split/scoutSeries.jsonc` use the raw form? | **Resolved** in commit `1f2911cf4b`. The example uses the boolean series fact `hasScout` (scope `mixed`: the series mixes images with and without `LOCALIZER` in `ImageType`), and then matches each localizer instance. |
-| 8 | What does the system do with a rule that has an error? | **Resolved.** The system does not drop the rule. A dropped rule can be a critical rule for the clinician, so the system creates no display sets and shows an error that names the rule (`SP-SAFE-7`, `SP-PIPE-13`). `SP-SAFE-2` states the guarantee of the safe functions: a valid rule always either applies or does not apply. The code does not do this yet — see the gap under `SP-PIPE-13`. |
+| 8 | What does the system do with a rule that has an error? | **Resolved.** The system does not drop the rule. A dropped rule can be a critical rule for the clinician, so the system creates no display sets and shows an error that names the rule (`SP-SAFE-7`, `SP-PIPE-13`). `SP-SAFE-2` states the guarantee of the safe functions: a valid rule always either applies or does not apply. An error in the rule set blocks the load of every study, as other errors that prevent a study load do. |
 | 9 | What mechanism lets a deployment deny a rule attribute (`SP-SAFE-6`)? | **Deferred — future item.** |
-| 10 | Must a run-time failure of a rule also stop display set creation, as `SP-SAFE-7` does for a rule with an error? | **Resolved — yes.** `SP-SAFE-3` and `SP-PIPE-9` now require the stop and an error that names the rule and the series. The code does not do this yet — see the gap under `SP-PIPE-9`. |
+| 10 | Must a run-time failure of a rule also stop display set creation, as `SP-SAFE-7` does for a rule with an error? | **Resolved — yes.** `SP-SAFE-3` and `SP-PIPE-9` require the stop and an error that names the rule and the series. `SP-PIPE-14` names the field too. |
 
 ## 7. Traceability
 
@@ -701,10 +752,10 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/ohifDefaultSplitRules.test.ts` |
 | `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10`, `SP-PIPE-11` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
-| `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR` | The safe function and raw selector tests of `@cornerstonejs/metadata` |
-| `SP-PIPE-2`, `SP-PIPE-3` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
-| `SP-SAFE-3`, `SP-PIPE-9` | *Pending* — `DisplaySetService.test.ts` tests the fallback to the SOP class handlers today, and must test the stop instead |
-| `SP-SAFE-7`, `SP-PIPE-13` | *Pending* — `compileSplitRules.test.ts` tests the drop of a bad rule today, and must test the stop instead |
+| `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `rawDisplaySetSelector.test.ts`, `expression.test.ts`) |
+| `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
+| `SP-SAFE-3`, `SP-PIPE-9` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |
+| `SP-SAFE-7`, `SP-PIPE-13` | `compileSplitRules.test.ts` ("a rule that does not compile is reported, not dropped") and `DisplaySetService.test.ts`, the compile part of `split rule errors` |
 | `SP-SAFE-6` | *Deferred* — §6 item 9 |
 | `SP-DESC-4`, `SP-FIX-3` | *Pending* — a Playwright test that loads a split rule module and checks the new items in the study browser |
 | `SP-GEN`, `SP-SRV` | *Pending* — proposed work |

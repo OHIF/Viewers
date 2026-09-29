@@ -156,12 +156,17 @@ useMetadataDisplaySet: {
 ```
 
 `@ohif/extension-default` registers `stackImage`. A rule that references a
-classifier nobody registered is dropped with a warning. Named
-`customAttributePresets` work the same way for custom attributes.
+classifier that no code registered does not compile, and so stops display set
+creation (see [Rule errors](#rule-errors)). Named `customAttributePresets` work
+the same way for custom attributes.
 
 A mode or an extension in TypeScript can also supply a rule that is already
-compiled — plain functions for `matches`, `groupBy` and the other fields. Such a
-rule is used as it is, and only its `priority` is checked.
+compiled — plain functions for `matches`, `groupBy` and the other fields. The
+compiler does not compile such a rule again, and checks only its `id` and its
+`priority`. A raw rule cannot fail at run time, because the safe functions give
+a definite result for every instance. A function that code supplies — a rule
+field or a classifier — can throw. OHIF wraps every function of every rule, so
+the error names the rule and the field.
 
 ### Ordering
 
@@ -197,11 +202,32 @@ what its screens say. Loading rules from the URL is off unless
 somewhere with the same write controls as any other deployed configuration.
 :::
 
+### Rule errors
+
+A rule can be critical for the clinician who views the study. A rule that the
+viewer drops, or a fallback to the SOP class handlers, gives a grouping that
+looks correct but is not the grouping that the deployment intended. So OHIF
+stops display set creation when a rule has an error, and shows an error
+notification. The notification stays on the screen until the user closes it.
+
 :::caution
-A rule that the compiler rejects — an unknown classifier, an invalid
-expression, a missing or non-numeric priority — is **dropped** with a console
-warning naming the rule. The remaining rules stay in charge, so a mistake
-degrades to "my rule did nothing" rather than "every series is grouped wrong".
+**A rule that does not compile** — an unknown classifier, an invalid
+expression, a missing priority, a priority that is not a number or `null`, an
+`id` that differs from the key — stops **all** display set creation. The
+viewer creates no display sets, also not for SEG, SR or other SOP classes that
+no rule matches. The notification names every rule that does not compile,
+because OHIF compiles each rule alone.
+
+**A rule that fails at run time** — a function that code supplies throws for a
+series, in `matches`, a `groupBy` part, `runBy`, `series`, `compareInstances`
+or `customAttributes`, or the display set factory throws — stops display set
+creation for **that study**. The notification names the rule, the field and
+the series. The display sets that exist before the error stay. The series does
+not go to the SOP class handlers, and the later series of the study get no
+display sets.
+
+The stop ends when the `splitRules` value changes (a new customization value
+compiles again), and when the mode exits. The console holds the full error.
 :::
 
 ### Display set identity and re-splits
@@ -335,7 +361,8 @@ take precedence over the defaults needs a priority below `0`.
 
 A keyed rule set cannot hold two rules with one id, so a customization layer
 replaces or edits a rule instead of adding a copy of it. An entry whose
-`priority` is missing or is not a number is dropped with a console warning.
+`priority` is missing or is not a number does not compile, and stops display
+set creation (see [Rule errors](#rule-errors)).
 :::
 
 :::caution

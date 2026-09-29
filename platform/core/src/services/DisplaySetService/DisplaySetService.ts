@@ -11,11 +11,31 @@ import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../ty
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 import * as displaySetStore from './displaySetStore';
-import { compileSplitRules } from './compileSplitRules';
-import type { SplitRuleCustomizationEntry } from './compileSplitRules';
+import { compileSplitRules, SplitRuleRunError } from './compileSplitRules';
+import type {
+  CompiledSplitRules,
+  SplitRuleCompileError,
+  SplitRuleCustomizationEntry,
+} from './compileSplitRules';
 
 /** Memoizes compiled split rules by the identity of the customization value. */
-const compiledSplitRulesCache = new WeakMap<object, SplitRuleSet>();
+const compiledSplitRulesCache = new WeakMap<object, CompiledSplitRules>();
+
+/** The title of the notification that reports a split rule error. */
+const SPLIT_RULE_ERROR_TITLE = 'Display set split rules';
+
+/**
+ * A split rule that failed at run time for a study (SP-SAFE-3). While the
+ * record exists, the service creates no further display sets for the study.
+ */
+type SplitRuleFailure = {
+  /** The `splitRules` customization value that failed; a different value clears the record. */
+  ruleSource: object;
+  ruleId?: string;
+  field?: string;
+  seriesInstanceUID?: string;
+  message: string;
+};
 
 /**
  * What `createDisplaySetFromGroup` is told about the group it builds.
@@ -37,6 +57,20 @@ export type CreateDisplaySetFromGroupContext = {
  * `@cornerstonejs/metadata` split-rules engine before (instead of, for the
  * instances the rules match) the registered SOP class handlers.  Instances
  * not matched by any rule fall through to the legacy handler loop unchanged.
+ *
+ * A rule error stops display set creation, and never falls back to the SOP
+ * class handlers (a fallback gives a grouping that looks correct but is not
+ * the grouping the deployment intended):
+ *
+ * - a rule that does not compile, or has a priority that is not a number or
+ *   null (SP-SAFE-7): no display sets at all - SEG and SR included - while
+ *   that `splitRules` value is in effect;
+ * - a rule that throws at run time, in the engine or in
+ *   `createDisplaySetFromGroup` / `extendInstances` (SP-SAFE-3): no further
+ *   display sets for the study. The display sets that exist stay.
+ *
+ * Either error shows one persistent error notification that names the rule
+ * (and the series, for a run-time error).
  */
 export type UseMetadataDisplaySetCustomization = {
   /** Default false — the legacy SOP class handler path is used exclusively. */
@@ -49,7 +83,8 @@ export type UseMetadataDisplaySetCustomization = {
    *
    * An entry is `@cornerstonejs/metadata` raw selector data, compiled by
    * `createDisplaySetSplitRules` (see {@link compileSplitRules}), or a rule
-   * that code has already compiled.
+   * that code has already compiled. An entry that does not compile is not
+   * dropped: it stops display set creation.
    */
   splitRules?: Record<string, SplitRuleCustomizationEntry>;
   /**
@@ -89,6 +124,10 @@ export type UseMetadataDisplaySetCustomization = {
 /** The customization after {@link compileSplitRules}: the rules the engine takes. */
 type CompiledSplitConfig = Omit<UseMetadataDisplaySetCustomization, 'splitRules'> & {
   splitRules?: SplitRuleSet;
+  /** The `splitRules` customization value the rules came from. */
+  splitRulesSource?: object;
+  /** The rules that did not compile. Not empty means: create no display sets. */
+  compileErrors?: SplitRuleCompileError[];
 };
 
 /**
@@ -131,6 +170,19 @@ export default class DisplaySetService extends PubSubService {
   // Record if the active display sets changed - used to group change events so
   // that fewer events need to be fired when creating multiple display sets
   protected activeDisplaySetsChanged = false;
+
+  /**
+   * The split rule failures at run time, by StudyInstanceUID (SP-SAFE-3). A
+   * study in this map gets no further display sets. A record clears when the
+   * `splitRules` value changes, and on `onModeExit`.
+   */
+  protected splitRuleFailures = new Map<string, SplitRuleFailure>();
+
+  /**
+   * The `splitRules` values whose compile errors this mode already reported,
+   * so that the notification shows once and not once per series.
+   */
+  protected reportedSplitRuleSets = new WeakSet<object>();
 
   constructor({ servicesManager }: { servicesManager?: AppTypes.ServicesManager } = {}) {
     super(EVENTS);
@@ -379,11 +431,16 @@ export default class DisplaySetService extends PubSubService {
    * that is without any display sets.  To avoid recreating display sets,
    * the mode specific onModeExit is called before this method and should
    * store the active display sets and the cached data.
+   *
+   * It also clears the split rule errors: the next mode starts with no
+   * blocked study, and reports a rule set that still has compile errors again.
    */
   public onModeExit(): void {
     displaySetStore.clearDisplaySets();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
+    this.splitRuleFailures.clear();
+    this.reportedSplitRuleSets = new WeakSet();
   }
 
   /**
@@ -392,28 +449,45 @@ export default class DisplaySetService extends PubSubService {
    * with the same sopClassUID, to avoid a series composed by different
    * sopClassUIDs be filtered inside one of the SOPClassHandler functions and
    * didn't appear in the series list.
+   *
+   * With the `useMetadataDisplaySet` customization enabled, a split rule error
+   * stops display set creation here, before the SOP class handlers too:
+   *
+   * - a rule set with a compile error creates no display sets (SP-SAFE-7);
+   * - a study with a rule that failed at run time gets no further display sets
+   *   (SP-SAFE-3).
+   *
    * @param instancesSrc
    * @param settings
    * @returns
    */
   public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
-    let remaining = instancesSrc;
     let allDisplaySets = [];
+
+    const splitConfig = this._getMetadataSplitCustomization();
+    this._clearStaleSplitRuleFailures(splitConfig?.splitRulesSource);
+    if (splitConfig?.compileErrors?.length) {
+      this._reportSplitRuleCompileErrors(splitConfig);
+      return allDisplaySets;
+    }
+
+    let remaining = this._withoutFailedStudies(instancesSrc);
 
     // When the `useMetadataDisplaySet` customization is enabled, split the
     // series with the `@cornerstonejs/metadata` split-rules engine first.
     // The splitter sees a whole series across SOP classes (rules may
     // aggregate series-level facts); instances not matched by any rule fall
     // through to the legacy SOP class handler loop below unchanged.
-    const splitConfig = this._getMetadataSplitCustomization();
-    if (instancesSrc?.length && splitConfig?.enabled && splitConfig.splitRules) {
+    if (remaining.length && splitConfig?.enabled && splitConfig.splitRules) {
       const { displaySets, unmatched } = this._makeDisplaySetsWithSplitRules(
-        instancesSrc,
+        remaining,
         splitConfig,
         settings
       );
       allDisplaySets.push(...displaySets);
-      remaining = unmatched;
+      // A rule that failed during this call stops its study here too: the
+      // unmatched instances of that study do not go to the SOP class handlers.
+      remaining = this._withoutFailedStudies(unmatched);
     }
 
     if (!remaining.length) {
@@ -446,7 +520,8 @@ export default class DisplaySetService extends PubSubService {
   /**
    * Reads the `useMetadataDisplaySet` customization, when available, with its
    * split rules compiled by the `@cornerstonejs/metadata` raw selector
-   * compiler (see {@link compileSplitRules}).
+   * compiler (see {@link compileSplitRules}). The compile errors come back in
+   * `compileErrors`; the caller must not split with an incomplete rule set.
    */
   private _getMetadataSplitCustomization(): CompiledSplitConfig | undefined {
     const config = this.servicesManager?.services?.customizationService?.getCustomization(
@@ -455,15 +530,133 @@ export default class DisplaySetService extends PubSubService {
     if (!config?.enabled || !config.splitRules || typeof config.splitRules !== 'object') {
       return { ...config, splitRules: undefined };
     }
-    let splitRules = compiledSplitRulesCache.get(config.splitRules);
-    if (!splitRules) {
-      splitRules = compileSplitRules(config.splitRules, {
+    let compiled = compiledSplitRulesCache.get(config.splitRules);
+    if (!compiled) {
+      compiled = compileSplitRules(config.splitRules, {
         classifiers: config.classifiers,
         customAttributePresets: config.customAttributePresets,
       });
-      compiledSplitRulesCache.set(config.splitRules, splitRules);
+      compiledSplitRulesCache.set(config.splitRules, compiled);
     }
-    return { ...config, splitRules };
+    return {
+      ...config,
+      splitRules: compiled.rules,
+      splitRulesSource: config.splitRules,
+      compileErrors: compiled.errors,
+    };
+  }
+
+  /**
+   * Shows the compile errors of a rule set, once for each `splitRules` value
+   * in a mode (SP-SAFE-7, SP-PIPE-13). The message names every rule that
+   * failed, because {@link compileSplitRules} compiles each rule alone.
+   */
+  private _reportSplitRuleCompileErrors(config: CompiledSplitConfig): void {
+    const source = config.splitRulesSource;
+    if (!source || this.reportedSplitRuleSets.has(source)) {
+      return;
+    }
+    this.reportedSplitRuleSets.add(source);
+    const details = config.compileErrors
+      .map(({ ruleId, message }) => (ruleId === undefined ? message : `'${ruleId}': ${message}`))
+      .join('; ');
+    const ruleIds = config.compileErrors
+      .map(({ ruleId }) => ruleId)
+      .filter(ruleId => ruleId !== undefined);
+    const names = ruleIds.length
+      ? `${ruleIds.length === 1 ? 'split rule' : 'split rules'} ${ruleIds
+          .map(ruleId => `'${ruleId}'`)
+          .join(', ')} ${ruleIds.length === 1 ? 'has an error' : 'have errors'}`
+      : 'split rules have an error';
+    const message =
+      `No display sets were created, because the useMetadataDisplaySet ${names}. ` +
+      `Correct or remove the rule, then load the study again. ${details}`;
+    console.error(`DisplaySetService: ${message}`, config.compileErrors);
+    this._showSplitRuleError(message);
+  }
+
+  /**
+   * Records a split rule failure at run time for the study of the series, and
+   * shows it once (SP-SAFE-3, SP-PIPE-9). The study then gets no further
+   * display sets; the display sets that exist stay (SP-DET-3).
+   *
+   * @param failedRuleId - the rule of the group that the service placed when
+   *   the error happened, for an error that does not name its rule itself.
+   * @param failedStep - the service step that failed, for the same case.
+   */
+  private _recordSplitRuleFailure(
+    seriesInstances: InstanceMetadata[],
+    config: CompiledSplitConfig,
+    error: unknown,
+    failedRuleId?: string,
+    failedStep?: string
+  ): void {
+    const { StudyInstanceUID, SeriesInstanceUID } = seriesInstances[0] ?? {};
+    if (this.splitRuleFailures.has(StudyInstanceUID)) {
+      return;
+    }
+    const named = error instanceof SplitRuleRunError;
+    const ruleId = named ? error.ruleId : failedRuleId;
+    const field = named ? error.field : failedStep;
+    const reason = named
+      ? error.cause instanceof Error
+        ? error.cause.message
+        : String(error.cause)
+      : error instanceof Error
+        ? error.message
+        : String(error);
+    const where = ruleId
+      ? `The split rule '${ruleId}' failed${field ? ` in '${field}'` : ''}`
+      : `The split rules failed${field ? ` in '${field}'` : ''}`;
+    const message =
+      `${where} for series ${SeriesInstanceUID}: ${reason}. ` +
+      `No further display sets are created for study ${StudyInstanceUID}.`;
+    this.splitRuleFailures.set(StudyInstanceUID, {
+      ruleSource: config.splitRulesSource,
+      ruleId,
+      field,
+      seriesInstanceUID: SeriesInstanceUID,
+      message,
+    });
+    console.error(`DisplaySetService: ${message}`, error);
+    this._showSplitRuleError(message);
+  }
+
+  /**
+   * Removes the run-time failures of a rule set that is no longer in effect:
+   * the corrected rules get a new chance for the study.
+   */
+  private _clearStaleSplitRuleFailures(currentSource: object | undefined): void {
+    for (const [studyInstanceUID, failure] of this.splitRuleFailures) {
+      if (failure.ruleSource !== currentSource) {
+        this.splitRuleFailures.delete(studyInstanceUID);
+      }
+    }
+  }
+
+  /** The instances whose study has no split rule failure. */
+  private _withoutFailedStudies(instances: InstanceMetadata[]): InstanceMetadata[] {
+    if (!instances?.length || !this.splitRuleFailures.size) {
+      return instances ?? [];
+    }
+    return instances.filter(instance => !this.splitRuleFailures.has(instance.StudyInstanceUID));
+  }
+
+  /**
+   * Shows a split rule error that stays on screen until the user closes it.
+   * The notification service is absent in some unit tests.
+   */
+  private _showSplitRuleError(message: string): void {
+    this.servicesManager?.services?.uiNotificationService?.show({
+      title: SPLIT_RULE_ERROR_TITLE,
+      message,
+      type: 'error',
+      // Sonner keeps a toast with an infinite duration until the user closes it.
+      duration: Infinity,
+      autoClose: false,
+      // The service shows each failure once; do not let the provider hide it.
+      allowDuplicates: true,
+    });
   }
 
   /**
@@ -502,6 +695,16 @@ export default class DisplaySetService extends PubSubService {
    * shifts when a new group appears, so it must not be used as a stable
    * identity in `customAttributes`.
    *
+   * ### A rule that fails at run time
+   *
+   * When a rule throws for a series - in the engine, or in the display set
+   * factory, which calls the rule's `customAttributes` - the series does NOT
+   * go to the SOP class handlers. The service records the failure for the
+   * study and shows it (see {@link _recordSplitRuleFailure}); the later series
+   * of the study in this call, and its later calls, create no display sets.
+   * The display sets that exist stay, including those the failing series
+   * created before the error.
+   *
    * @returns the newly created display sets and the instances not matched by
    * any split rule (which must flow to the legacy SOP class handler loop).
    */
@@ -524,6 +727,10 @@ export default class DisplaySetService extends PubSubService {
     const displaySets: DisplaySet[] = [];
     const unmatched: InstanceMetadata[] = [];
     for (const seriesInstances of bySeries.values()) {
+      if (this.splitRuleFailures.has(seriesInstances[0].StudyInstanceUID)) {
+        // An earlier series of this call failed: no further display sets.
+        continue;
+      }
       const result = this._splitSeriesIntoDisplaySets(seriesInstances, config, settings);
       displaySets.push(...result.displaySets);
       unmatched.push(...result.unmatched);
@@ -533,40 +740,60 @@ export default class DisplaySetService extends PubSubService {
 
   /**
    * Splits the instances of a SINGLE series. See
-   * {@link _makeDisplaySetsWithSplitRules} for the reconciliation semantics.
+   * {@link _makeDisplaySetsWithSplitRules} for the reconciliation semantics,
+   * and for what happens when a rule fails.
    */
   private _splitSeriesIntoDisplaySets(
     instancesSrc: InstanceMetadata[],
     config: CompiledSplitConfig,
     settings
   ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
-    const unmatched: InstanceMetadata[] = [];
-    let groups: InstanceGroup[];
+    const added: DisplaySet[] = [];
+    // The group and the step in progress, to name the rule of an error that
+    // the display set factory throws without a rule name.
+    let currentRuleId: string | undefined;
+    let currentStep: string | undefined;
     try {
-      groups = groupInstancesBySplitRules(
-        instancesSrc as unknown as NaturalizedInstance[],
-        config.splitRules,
-        instance => unmatched.push(instance as unknown as InstanceMetadata),
-        // Ordering the engine applies to every rule, so the instance order it
-        // walks runs in - and so which display sets a `runBy` rule produces -
-        // matches the order the display sets end up in. Optional: with neither
-        // supplied the engine's own acquisition order applies, which is what the
-        // legacy handler effectively used for run detection.
-        {
-          sortInstances: config.sortInstances,
-          compareInstances: config.compareInstances,
-        }
-      );
+      return this._placeSeriesGroups(instancesSrc, config, settings, added, (ruleId, step) => {
+        currentRuleId = ruleId;
+        currentStep = step;
+      });
     } catch (error) {
-      // A rule that throws, or a rule set the engine rejects, must not stop the
-      // series from loading. The legacy SOP class handlers get every instance.
-      console.warn(
-        'DisplaySetService: the useMetadataDisplaySet split rules failed for series ' +
-          `${instancesSrc[0]?.SeriesInstanceUID}. The SOP class handlers create its display sets.`,
-        error
-      );
-      return { displaySets: [], unmatched: instancesSrc };
+      this._recordSplitRuleFailure(instancesSrc, config, error, currentRuleId, currentStep);
+      // The display sets made before the error stay; nothing goes to the SOP
+      // class handlers.
+      return { displaySets: added, unmatched: [] };
     }
+  }
+
+  /**
+   * The body of {@link _splitSeriesIntoDisplaySets}: groups the series, and
+   * places each group. It pushes each new display set into `added` as soon as
+   * the service stores it, so the caller keeps them when a later group throws.
+   * `onStep` receives the rule and the service step before each factory call.
+   */
+  private _placeSeriesGroups(
+    instancesSrc: InstanceMetadata[],
+    config: CompiledSplitConfig,
+    settings,
+    added: DisplaySet[],
+    onStep: (ruleId: string | undefined, step: string | undefined) => void
+  ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
+    const unmatched: InstanceMetadata[] = [];
+    const groups: InstanceGroup[] = groupInstancesBySplitRules(
+      instancesSrc as unknown as NaturalizedInstance[],
+      config.splitRules,
+      instance => unmatched.push(instance as unknown as InstanceMetadata),
+      // Ordering the engine applies to every rule, so the instance order it
+      // walks runs in - and so which display sets a `runBy` rule produces -
+      // matches the order the display sets end up in. Optional: with neither
+      // supplied the engine's own acquisition order applies, which is what the
+      // legacy handler effectively used for run detection.
+      {
+        sortInstances: config.sortInstances,
+        compareInstances: config.compareInstances,
+      }
+    );
 
     const uidOf = (instance: { SOPInstanceUID?: string }) => instance.SOPInstanceUID;
     const seriesDisplaySets = this.getDisplaySetsForSeries(instancesSrc[0].SeriesInstanceUID);
@@ -591,8 +818,6 @@ export default class DisplaySetService extends PubSubService {
     const isNew = (instance: InstanceMetadata) =>
       !homeOf.has(uidOf(instance)) && !inOtherDisplaySet.has(uidOf(instance));
 
-    const added: DisplaySet[] = [];
-
     groups.forEach((group, splitNumber) => {
       const groupInstances = group.instances as unknown as InstanceMetadata[];
       const newInstances = groupInstances.filter(isNew);
@@ -611,11 +836,13 @@ export default class DisplaySetService extends PubSubService {
       const target =
         groupInstances.map(instance => homeOf.get(uidOf(instance))).find(Boolean) ??
         byKey.get(group.splitKey);
+      onStep(group.matchedRule.id, 'extendInstances');
       let home = target && this._extendSplitDisplaySet(target, newInstances, group, config);
 
       if (!home) {
         // No display set to extend: the new instances form a display set of
         // their own. The group's older instances stay where they are.
+        onStep(group.matchedRule.id, 'createDisplaySetFromGroup');
         home = config.createDisplaySetFromGroup?.(
           { ...group, instances: newInstances as unknown as NaturalizedInstance[] },
           { splitNumber, compareInstances: config.compareInstances }

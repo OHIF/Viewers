@@ -85,6 +85,7 @@ describe('DisplaySetService', () => {
   let srHandler;
   let unsupportedHandler;
   let customization;
+  let uiNotificationService;
   let legacyCounter = 0;
 
   const setCustomization = value => {
@@ -132,8 +133,10 @@ describe('DisplaySetService', () => {
       [UNSUPPORTED_HANDLER_ID]: unsupportedHandler,
     };
     const extensionManager = { getModuleEntry: id => handlers[id] };
+    uiNotificationService = { show: jest.fn() };
     const servicesManager = {
       services: {
+        uiNotificationService,
         customizationService: {
           getCustomization: jest.fn(id =>
             id === 'useMetadataDisplaySet' ? customization : undefined
@@ -500,29 +503,282 @@ describe('DisplaySetService', () => {
       });
     });
 
-    it('gives the series to the legacy handlers when the split rules throw', () => {
-      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-      setCustomization({
-        enabled: true,
-        splitRules: {
-          throws: {
-            priority: 1,
-            matches: () => {
-              throw new Error('bad rule');
+    describe('split rule errors', () => {
+      let consoleError: jest.SpyInstance;
+
+      beforeEach(() => {
+        consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        consoleError.mockRestore();
+      });
+
+      const srInstance = (overrides: Record<string, unknown> = {}) =>
+        makeInstance({
+          SOPClassUID: BASIC_TEXT_SR,
+          Modality: 'SR',
+          Rows: undefined,
+          SeriesInstanceUID: 'series-sr',
+          ...overrides,
+        });
+      const legacyHandlersCalled = () =>
+        stackHandler.getDisplaySetsFromSeries.mock.calls.length +
+        srHandler.getDisplaySetsFromSeries.mock.calls.length +
+        unsupportedHandler.getDisplaySetsFromSeries.mock.calls.length;
+      const notices = () => uiNotificationService.show.mock.calls.map(([notice]) => notice);
+      const fail = (message = 'bad rule') => {
+        throw new Error(message);
+      };
+
+      describe('a rule that does not compile (SP-SAFE-7, SP-PIPE-13)', () => {
+        const brokenRules = {
+          ...testSplitRules,
+          broken: { priority: 1, matches: { classifier: 'nope' } },
+        };
+
+        beforeEach(() => {
+          setCustomization({ enabled: true, splitRules: brokenRules, createDisplaySetFromGroup });
+        });
+
+        it('creates no display sets at all, SR and SEG included', () => {
+          const added = service.makeDisplaySets([...makeMixedBValueSeries(), srInstance()]);
+          expect(added).toBeUndefined();
+          expect(service.makeDisplaySets([srInstance()])).toBeUndefined();
+          expect(service.getActiveDisplaySets()).toEqual([]);
+          expect(createDisplaySetFromGroup).not.toHaveBeenCalled();
+          expect(legacyHandlersCalled()).toBe(0);
+        });
+
+        it('shows one persistent error notification that names the rule', () => {
+          service.makeDisplaySets(makeMixedBValueSeries());
+          service.makeDisplaySets([srInstance()]);
+          service.makeDisplaySets([[srInstance()], [srInstance()]], { batch: true });
+
+          expect(notices()).toEqual([
+            expect.objectContaining({
+              type: 'error',
+              duration: Infinity,
+              autoClose: false,
+              message: expect.stringContaining("split rule 'broken' has an error"),
+            }),
+          ]);
+        });
+
+        it('names every rule that does not compile', () => {
+          setCustomization({
+            enabled: true,
+            splitRules: { ...brokenRules, textPriority: { priority: 'high' } },
+            createDisplaySetFromGroup,
+          });
+          service.makeDisplaySets(makeMixedBValueSeries());
+          expect(notices()).toHaveLength(1);
+          expect(notices()[0].message).toContain(
+            "split rules 'broken', 'textPriority' have errors"
+          );
+        });
+
+        it('blocks a compiled rule with a priority that is not a number', () => {
+          setCustomization({
+            enabled: true,
+            splitRules: { ...testSplitRules, native: { priority: '1', matches: () => true } },
+            createDisplaySetFromGroup,
+          });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+          expect(notices()[0].message).toContain("'native'");
+        });
+
+        it('clears when the rule set changes', () => {
+          service.makeDisplaySets(makeMixedBValueSeries());
+          setCustomization({
+            enabled: true,
+            splitRules: testSplitRules,
+            createDisplaySetFromGroup,
+          });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toHaveLength(2);
+        });
+
+        it('reports the same rule set again after mode exit', () => {
+          service.makeDisplaySets(makeMixedBValueSeries());
+          service.onModeExit();
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+          expect(notices()).toHaveLength(2);
+        });
+
+        it('does not block the legacy path when the customization is disabled', () => {
+          setCustomization({ enabled: false, splitRules: brokenRules, createDisplaySetFromGroup });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toHaveLength(1);
+          expect(notices()).toEqual([]);
+        });
+      });
+
+      describe('a rule that fails at run time (SP-SAFE-3, SP-PIPE-9)', () => {
+        const failingRuleSet = (fields: Record<string, unknown>) => ({
+          ...testSplitRules,
+          failing: { priority: -1, matches: instance => instance.Modality === 'MR', ...fields },
+        });
+
+        it.each([
+          ['matches', { matches: () => fail() }, 'matches'],
+          ['groupBy', { groupBy: ['SeriesInstanceUID', () => fail()] }, 'groupBy[1]'],
+          ['runBy', { runBy: () => fail() }, 'runBy'],
+        ])('names the rule, the field %s and the series', (_label, fields, field) => {
+          setCustomization({
+            enabled: true,
+            splitRules: failingRuleSet(fields),
+            createDisplaySetFromGroup,
+          });
+          const added = service.makeDisplaySets(makeMixedBValueSeries());
+
+          expect(added).toBeUndefined();
+          expect(legacyHandlersCalled()).toBe(0);
+          expect(notices()).toEqual([
+            expect.objectContaining({ type: 'error', duration: Infinity, autoClose: false }),
+          ]);
+          expect(notices()[0].message).toContain(
+            `The split rule 'failing' failed in '${field}' for series series-1: bad rule`
+          );
+          expect(notices()[0].message).toContain('study-1');
+        });
+
+        it('names the rule and customAttributes when the display set factory calls it', () => {
+          setCustomization({
+            enabled: true,
+            splitRules: failingRuleSet({ customAttributes: () => fail() }),
+            createDisplaySetFromGroup: jest.fn(group =>
+              group.matchedRule.customAttributes({ instance: group.instances[0] }, group)
+            ),
+          });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+          expect(notices()[0].message).toContain(
+            "The split rule 'failing' failed in 'customAttributes' for series series-1"
+          );
+        });
+
+        it('names the rule when the display set factory throws on its own', () => {
+          setCustomization({
+            enabled: true,
+            splitRules: testSplitRules,
+            createDisplaySetFromGroup: jest.fn(() => fail('factory bug')),
+          });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+          expect(notices()[0].message).toContain(
+            "The split rule 'mixedDimensionalityBValue' failed in 'createDisplaySetFromGroup' " +
+              'for series series-1: factory bug'
+          );
+        });
+
+        it('names the rule when extendInstances throws', () => {
+          const instances = makeMixedBValueSeries();
+          const withBValue = service
+            .makeDisplaySets(instances)
+            .find(ds => ds.instances.some(instance => instance.DiffusionBValue !== undefined));
+          (withBValue.extendInstances as jest.Mock).mockImplementation(() => fail('cannot grow'));
+          const later = service.makeDisplaySets([
+            ...instances,
+            makeInstance({ DiffusionBValue: 800 }),
+          ]);
+          expect(later).toBeUndefined();
+          expect(notices()[0].message).toContain(
+            "The split rule 'mixedDimensionalityBValue' failed in 'extendInstances'"
+          );
+        });
+
+        describe('with display sets before the failure', () => {
+          // Fails for an instance that carries `Bad`, as a rule that code
+          // supplies can.
+          const rules = {
+            ...testSplitRules,
+            picky: {
+              priority: -1,
+              matches: instance => (instance.Bad ? fail() : instance.Modality === 'MR'),
+            },
+          };
+          const series = (SeriesInstanceUID: string, overrides = {}) =>
+            [1, 2].map(() => makeInstance({ SeriesInstanceUID, ...overrides }));
+
+          beforeEach(() => {
+            setCustomization({ enabled: true, splitRules: rules, createDisplaySetFromGroup });
+          });
+
+          it('keeps the existing display sets, and later calls add nothing for the study', () => {
+            const [first] = service.makeDisplaySets(series('series-1'));
+            const removed = [];
+            service.subscribe(EVENTS.DISPLAY_SETS_REMOVED, event => removed.push(event));
+
+            expect(service.makeDisplaySets(series('series-2', { Bad: true }))).toBeUndefined();
+            expect(service.makeDisplaySets(series('series-3'))).toBeUndefined();
+            expect(service.makeDisplaySets([srInstance()])).toBeUndefined();
+            // New instances of the first series do not grow its display set.
+            service.makeDisplaySets([...first.instances, makeInstance()]);
+
+            expect(service.getActiveDisplaySets()).toEqual([first]);
+            expect(first.instances).toHaveLength(2);
+            expect(removed).toEqual([]);
+            expect(legacyHandlersCalled()).toBe(0);
+            expect(notices()).toHaveLength(1);
+            expect(notices()[0].message).toContain(
+              "'picky' failed in 'matches' for series series-2"
+            );
+          });
+
+          it('keeps the display sets that the same call made before the failure', () => {
+            const added = service.makeDisplaySets([
+              ...series('series-1'),
+              ...series('series-2', { Bad: true }),
+              ...series('series-3'),
+              srInstance(),
+            ]);
+            expect(added.map(ds => ds.SeriesInstanceUID)).toEqual(['series-1']);
+            expect(service.getActiveDisplaySets()).toHaveLength(1);
+            expect(legacyHandlersCalled()).toBe(0);
+          });
+
+          it('still creates display sets for another study', () => {
+            service.makeDisplaySets(series('series-2', { Bad: true }));
+            const other = service.makeDisplaySets(
+              series('series-9', { StudyInstanceUID: 'study-2' })
+            );
+            expect(other).toHaveLength(1);
+            expect(notices()).toHaveLength(1);
+          });
+
+          it('clears when the rule set changes', () => {
+            service.makeDisplaySets(series('series-2', { Bad: true }));
+            setCustomization({
+              enabled: true,
+              splitRules: testSplitRules,
+              createDisplaySetFromGroup,
+            });
+            expect(service.makeDisplaySets(series('series-3'))).toHaveLength(1);
+          });
+
+          it('clears on mode exit', () => {
+            service.makeDisplaySets(series('series-2', { Bad: true }));
+            service.onModeExit();
+            expect(service.makeDisplaySets(series('series-3'))).toHaveLength(1);
+          });
+        });
+      });
+
+      it('works without a notification service', () => {
+        const bare = new DisplaySetService({
+          servicesManager: {
+            services: {
+              customizationService: {
+                getCustomization: () => ({
+                  enabled: true,
+                  splitRules: { broken: { priority: 'x' } },
+                  createDisplaySetFromGroup,
+                }),
+              },
             },
           },
-        },
-        createDisplaySetFromGroup,
+        } as any);
+        bare.init({ getModuleEntry: () => undefined }, []);
+        expect(bare.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+        expect(consoleError).toHaveBeenCalled();
       });
-      const added = service.makeDisplaySets(makeMixedBValueSeries());
-      expect(added).toHaveLength(1);
-      expect(stackHandler.getDisplaySetsFromSeries).toHaveBeenCalledTimes(1);
-      expect(stackHandler.getDisplaySetsFromSeries.mock.calls[0][0]).toHaveLength(6);
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining('split rules failed'),
-        expect.any(Error)
-      );
-      warn.mockRestore();
     });
 
     it('passes the host comparator to the display set factory', () => {

@@ -61,9 +61,16 @@ reached through `context.series`:
 ## Errors
 
 The metadata compiler parses every expression when it compiles the rule. A
-parse error names the expression, and OHIF then **drops** that one rule with a
-console warning; the other rules stay in charge. An error at run time evaluates
-to `undefined`.
+parse error names the expression. OHIF does not drop the rule: the viewer
+creates **no display sets**, and shows an error notification that names the
+rule (see [Rule errors](./displaySetSplitting.md#rule-errors)). A mistake in a
+rule must stop the display, because a grouping without that rule can look
+correct and still be wrong.
+
+An expression does not fail at run time: an error at run time evaluates to
+`undefined`. Only a function that code supplies, for example a classifier, can
+throw at run time. That error stops display set creation for the study, and
+the notification names the rule, the field and the series.
 
 ## Unknown attributes resolve to `undefined`
 

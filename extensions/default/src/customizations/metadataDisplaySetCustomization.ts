@@ -37,6 +37,13 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * DisplaySetService compiles them with `createDisplaySetSplitRules`, with the
  * `classifiers` below as the named extension points.
  *
+ * A rule error stops display set creation; OHIF does not drop the rule, and
+ * does not fall back to the SOP class handlers. A rule that does not compile
+ * stops every display set, SEG and SR included; a rule that throws at run time
+ * (a classifier, a rule function, or `customAttributes` in the factory below)
+ * stops further display sets for the study. Either error shows a persistent
+ * notification that names the rule. See `DisplaySetService`.
+ *
  * Note: image SOP class instances without `Rows` are unmatched by the default
  * rules and become a separate legacy stack display set (the legacy handler
  * merges them into the series' stackable display set instead).
