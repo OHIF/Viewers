@@ -23,6 +23,7 @@ type NativeViewport = CoreTypes.IViewport & {
     (dataId: string, props: ViewportPresentation): void;
   };
   getViewState?: () => ViewportViewState | undefined;
+  getZoom?: () => number;
   setViewState?: (patch: ViewportViewState) => void;
   getViewReference?: () => CoreTypes.ViewReference | undefined;
   setViewReference?: (ref: CoreTypes.ViewReference) => void;
