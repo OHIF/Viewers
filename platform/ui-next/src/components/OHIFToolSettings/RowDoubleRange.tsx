@@ -8,6 +8,7 @@ interface RowDoubleRangeProps {
   onChange: (values: [number, number]) => void;
   minValue: number;
   maxValue: number;
+  allowTypedExpansion?: boolean | [number, number];
   step: number;
   showLabel?: boolean;
   label?: string;
@@ -20,6 +21,7 @@ const RowDoubleRange: React.FC<RowDoubleRangeProps> = ({
   onChange,
   minValue,
   maxValue,
+  allowTypedExpansion,
   step,
   showLabel = false,
   label = '',
@@ -52,6 +54,7 @@ const RowDoubleRange: React.FC<RowDoubleRangeProps> = ({
       onChange={onChange}
       min={minValue}
       max={maxValue}
+      allowTypedExpansion={allowTypedExpansion}
       step={step}
       className={cn('flex flex-col space-y-2', className)}
     >

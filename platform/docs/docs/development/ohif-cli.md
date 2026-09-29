@@ -7,6 +7,28 @@ summary: Comprehensive guide to the OHIF CLI tool for managing extensions and mo
 
 # OHIF Command Line Interface
 
+:::danger Deprecated
+`ohif-cli` is deprecated as of 3.14 and will be removed in the following
+release.
+
+**To create a new extension or mode**, point an AI coding agent at an existing
+one in `extensions/` or `modes/` and have it generate the new package. The
+in-repo packages are always current; the templates bundled with the CLI are a
+snapshot and drift out of date between releases.
+
+**`link-extension` and `link-mode` no longer affect the default build.** They
+write a `resolve.modules` entry into `platform/app/.webpack/webpack.pwa.js`,
+which is read only by the legacy rspack pipeline — `pnpm run dev`, its
+`dev:orthanc` / `dev:dcm4chee` / `dev:static` variants, `pnpm run build:legacy`,
+and the Playwright e2e server. As of 3.14 the default `pnpm run build` and
+`pnpm run dev:fast` go through `rsbuild.config.ts`, which does not read that
+file. If your linked package resolves dependencies from its own
+`node_modules`, use `pnpm run build:legacy` until the CLI is removed.
+
+To add an extension or mode without the CLI, edit
+[`pluginConfig.json`](../platform/extensions/pluginConfig.md) directly.
+:::
+
 OHIF-v3 architecture has been re-designed to enable building applications that
 are easily extensible to various use cases (Modes) that behind the scene would
 utilize desired functionalities (Extensions) to reach the goal of the use case.
@@ -15,13 +37,6 @@ mode?_
 
 You can use the `cli` script that comes with the OHIF monorepo to achieve these
 goals.
-
-:::note Info
-In the long-term, we envision our `cli` tool to be a separate installable
-package that you can invoke anywhere on your local system to achieve the same
-goals. In the meantime, `cli` will remain as part of the OHIF monorepo and needs
-to be invoked using the `yarn` command.
-:::
 
 
 ## CLI Installation

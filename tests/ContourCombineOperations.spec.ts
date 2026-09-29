@@ -3,6 +3,7 @@ import {
   expect,
   waitForViewportRenderCycle,
   checkForScreenshot,
+  checkForViewportScreenshot,
   screenShotPaths,
   visitStudyAndHydrate,
 } from './utils';
@@ -38,11 +39,13 @@ test.describe('Intersect operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
+
+    await expect(contourSegmentationPanel.panel.rows, '4 initial segments').toHaveCount(4);
 
     const combineContours = rightPanelPageObject.contourSegmentationPanel.combineContours;
 
@@ -83,11 +86,13 @@ test.describe('Subtract operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
+
+    await expect(contourSegmentationPanel.panel.rows, '4 initial segments').toHaveCount(4);
 
     const combineContours = rightPanelPageObject.contourSegmentationPanel.combineContours;
 
@@ -114,5 +119,55 @@ test.describe('Subtract operation', () => {
       viewportPageObject.grid,
       screenShotPaths.contourCombineOperations.subtractBigSphereMinusSmallSphereResult
     );
+  });
+});
+
+test.describe('Merge operation', () => {
+  test('merge Big Sphere with Small Sphere (nested, no edge crossing) produces the Big Sphere shape', async ({
+    page,
+    rightPanelPageObject,
+    viewportPageObject,
+  }) => {
+    const contourSegmentationPanel = rightPanelPageObject.contourSegmentationPanel;
+
+    const activeViewport = await viewportPageObject.active;
+    await activeViewport.pane.dblclick();
+
+    await contourSegmentationPanel.config.open();
+
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
+
+    await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
+
+    await expect(contourSegmentationPanel.panel.rows, '4 initial segments').toHaveCount(4);
+
+    const combineContours = rightPanelPageObject.contourSegmentationPanel.combineContours;
+
+    await combineContours.open();
+    await combineContours.selectOperation('merge');
+    await combineContours.selectSegmentA(segments.bigSphere);
+    await combineContours.selectSegmentB(segments.smallSphere);
+    await combineContours.enableCreateNewSegment();
+    let viewportRenderCycle = waitForViewportRenderCycle(page);
+    await combineContours.apply();
+    await viewportRenderCycle;
+
+    await expect(contourSegmentationPanel.panel.rows).toHaveCount(5);
+    await expect(contourSegmentationPanel.panel.nthSegment(4).title).toHaveText(segments.result);
+
+    await contourSegmentationPanel.segmentsVisibilityToggle.click();
+
+    viewportRenderCycle = waitForViewportRenderCycle(page);
+    await contourSegmentationPanel.panel.segmentByText(segments.result).toggleVisibility();
+    await viewportRenderCycle;
+
+    const resultPaths = activeViewport.svg('path');
+    await expect(resultPaths, 'Expected one contour path for the merge result').toHaveCount(1);
+
+    await checkForViewportScreenshot({
+      page,
+      viewport: activeViewport,
+      screenshotPath: screenShotPaths.contourCombineOperations.mergeBigSphereSmallSphereResult,
+    });
   });
 });

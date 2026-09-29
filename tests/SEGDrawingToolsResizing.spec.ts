@@ -50,6 +50,7 @@ async function performDrawingToolInteraction(
   await page.waitForTimeout(500);
 
   await brushRadiusInput.fill('42');
+  await brushRadiusInput.blur();
   await activeViewport.clickAt([{ x: 500, y: 500 }]);
   radius = parseFloat(await circle.getAttribute('r'));
   expect(radius).toBeGreaterThanOrEqual(108);
@@ -86,12 +87,14 @@ test('should resize segmentation eraser tool', async ({
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
+  await page.getByTestId('brush-radius').locator('input').blur();
   await activeViewport.clickAt([{ x: 400, y: 400 }]);
 
   await page.waitForTimeout(500);
 
   await page.getByTestId('Eraser-btn').click();
   await page.getByTestId('eraser-radius').locator('input').fill('25');
+  await page.getByTestId('eraser-radius').locator('input').blur();
 
   await page.waitForTimeout(500);
 

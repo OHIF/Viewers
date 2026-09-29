@@ -1,3 +1,10 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates - this component kept its
+// pre-transform letters after rotate/flip/reset even though the camera changed.
+'use no memo';
+
 import React, { useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { metaData, Enums, getEnabledElement } from '@cornerstonejs/core';

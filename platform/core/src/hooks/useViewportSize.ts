@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useViewportRef } from './';
+import { useViewportElement } from './';
 
 interface ViewportSize {
   width: number;
@@ -16,7 +16,7 @@ interface ViewportSize {
  * @returns ViewportSize object containing width, height, and visibility info
  */
 function useViewportSize(viewportId: string): ViewportSize {
-  const viewportElementRef = useViewportRef(viewportId);
+  const element = useViewportElement(viewportId);
 
   const [size, setSize] = useState<ViewportSize>({
     width: 0,
@@ -29,11 +29,10 @@ function useViewportSize(viewportId: string): ViewportSize {
 
   // Update viewport dimensions
   const updateViewportSize = useCallback(() => {
-    if (!viewportElementRef?.current) {
+    if (!element) {
       return;
     }
 
-    const element = viewportElementRef.current;
     const clientRect = element.getBoundingClientRect();
     const newWidth = clientRect.width;
     const newHeight = clientRect.height;
@@ -61,32 +60,31 @@ function useViewportSize(viewportId: string): ViewportSize {
         isVisible: newIsVisible,
       };
     });
-  }, [viewportElementRef]);
+  }, [element]);
 
   useEffect(() => {
-    if (!viewportId || !viewportElementRef?.current) {
+    if (!viewportId || !element) {
       return;
     }
 
-    updateViewportSize();
-
+    // observe() fires the callback with the current size, so the initial
+    // measurement happens here too - and measuring in the effect body would set
+    // state synchronously during the effect.
     const resizeObserver = new ResizeObserver(() => {
       updateViewportSize();
     });
 
-    resizeObserver.observe(viewportElementRef.current);
+    resizeObserver.observe(element);
 
     window.addEventListener('resize', updateViewportSize);
 
     return () => {
       window.removeEventListener('resize', updateViewportSize);
 
-      if (viewportElementRef.current) {
-        resizeObserver.unobserve(viewportElementRef.current);
-      }
+      resizeObserver.unobserve(element);
       resizeObserver.disconnect();
     };
-  }, [viewportId, viewportElementRef, updateViewportSize]);
+  }, [viewportId, element, updateViewportSize]);
 
   const memoizedSize = useMemo(() => size, [size]);
 

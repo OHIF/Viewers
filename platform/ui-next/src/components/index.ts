@@ -143,6 +143,7 @@ import {
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
 import { ContextMenuViewport } from './ContextMenuViewport';
+export * from './DataTable';
 export * from './StudyList';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';

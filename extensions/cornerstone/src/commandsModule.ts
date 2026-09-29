@@ -1873,6 +1873,7 @@ function commandsModule({
         placeholder: i18n.t('Tools:Enter new label'),
         defaultValue: label,
       }).then(label => {
+        // The update clears `labelIsGenerated` - the user chose this label.
         segmentationService.addOrUpdateSegmentation({ segmentationId, label });
       });
     },

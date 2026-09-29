@@ -6,24 +6,526 @@ on:
     inputs:
       cs3d_ref:
         description: >-
-          CS3D branch (e.g. main, origin:feat/foo) or version (e.g. 4.18.2, 4.19+, 4.x). Only used
-          when ohif-integration label is present or via workflow_dispatch.
+          Leave empty to just run the test suite against the CS3D version this repo already pins.
+          Give a CS3D branch (e.g. main, feat/foo) or version (e.g. 5.10.3, 5.x) to run the
+          integration path against that instead. Branches resolve against
+          cornerstonejs/cornerstone3D; forks cannot be named. On a pull request, add a line
+          "CS3D_REF: <ref>" to the PR body instead of using this.
         required: false
-        default: '4.19+'
 
 permissions:
   contents: read
   pull-requests: read
-  issues: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # Metadata-only gate on a hosted VM. It deliberately does NOT check out the
+  # repository: everything it decides must be derived from GitHub-supplied event
+  # data and the API, never from code the pull request controls. That is also
+  # why its logic is inline rather than a script under .scripts/ — running a
+  # script from the PR's own checkout would let the PR rewrite its own gate.
+  #
+  # It answers three questions:
+  #   proceed     — may this run reach the shared self-hosted "nashua" box?
+  #   integration — is a CS3D ref requested, and if so which (validated)?
+  #   approval    — must a named reviewer approve before the box is used?
+  #
+  # Most of the protected-path list below is duplicated in .github/CODEOWNERS
+  # and must be kept in sync by hand. Editing one without the other fails
+  # silently. The two lists are NOT identical, and the difference is deliberate:
+  # the workspace manifests (`*/package.json`, `*/.npmrc`) are listed here and
+  # not there. The note in CODEOWNERS gives the reason.
+  #
+  # This job is part of the workflow it protects: a fork PR can delete it, along
+  # with the `needs:` and `if:` below, and dispatch straight to the box. What
+  # stops that is a repository setting —
+  # `actions/permissions/fork-pr-contributor-approval` set to
+  # `all_external_contributors`, so a maintainer approves every fork PR run.
+  # Relaxing it removes that barrier silently, so treat it as part of this file.
+  #
+  # This job's value is catching an approval given without full attention.
+  # Anyone setting out to get past it deletes it instead. Other layers exist
+  # outside this repository; this is not the last line of defence.
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read # list changed files, read the PR body
+    outputs:
+      proceed: ${{ steps.decide.outputs.proceed }}
+      integration: ${{ steps.decide.outputs.integration }}
+      approval: ${{ steps.decide.outputs.approval }}
+      cs3d_ref: ${{ steps.decide.outputs.cs3d_ref }}
+      # `none`, `version` or `branch`. Decided here, off the box, so that one
+      # parser and one grammar answer the question for every consumer: the
+      # steps on the runner and the merge guard both read this rather than
+      # each classifying the ref again.
+      cs3d_kind: ${{ steps.decide.outputs.cs3d_kind }}
+      # The branch name from a `<branch> now <version>` clause, kept only for
+      # log lines; the ref that is acted on is cs3d_ref.
+      cs3d_history: ${{ steps.decide.outputs.cs3d_history }}
+      cs3d_defer: ${{ steps.decide.outputs.cs3d_defer }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - id: decide
+        name: Decide whether this PR may run on the self-hosted runner
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref }}
+          # Whether the PR branch lives in this repo. If it does, someone with
+          # write access pushed it — a fact, unlike anything derivable from the
+          # author's identity. Do NOT substitute
+          # `github.event.pull_request.author_association`: it does not track
+          # repo access in either direction — its MEMBER value only means
+          # "member of the owning org" (no write implied), and a repo admin can
+          # report CONTRIBUTOR. There is no reliable alternative from inside a
+          # fork PR's run either: the authoritative collaborator-permission API
+          # needs a token with push access, and fork PRs get a read-only one.
+          IS_SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          set -euo pipefail
+
+          # ── 1. May this run reach the box at all? ──────────────────────────
+          # Fork PRs that modify CI-defining files are not dispatched to nashua;
+          # they run once the change has been reviewed and merged. Same-repo PRs
+          # always proceed — the branch lives in this repo, so someone with
+          # write access pushed it.
+          proceed=true
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename')
+            count=$(wc -l <<<"$files")
+
+            ci_touched=false
+            while IFS= read -r f; do
+              [ -n "$f" ] || continue
+              case "$f" in
+                # Workflows, and the scripts they exec on the box.
+                .github/*|.scripts/*)
+                  ci_touched=true ;;
+                # The install surface. package.json declares `preinstall`, and
+                # pnpm executes a root pnpmfile, so editing either runs code on
+                # the box during `pnpm install`. The lockfile and workspace file
+                # steer what gets installed and can undo the release-age
+                # quarantine; .npmrc can repoint the registry. Most of these are
+                # untracked today — that is the point: a fork can ADD one, and a
+                # list of only existing files would not notice.
+                package.json|pnpm-lock.yaml|pnpm-workspace.yaml|preinstall.js|.npmrc)
+                  ci_touched=true ;;
+                # Every OTHER manifest in the workspace, at any depth. `pnpm
+                # install` runs the lifecycle scripts of the workspace projects
+                # too, not only the root one, so a `postinstall` added to
+                # extensions/<x>/package.json executes on the box just as
+                # surely as one added to the root. A per-package .npmrc is read
+                # the same way.
+                #
+                # This is deliberately a filename match, not an inspection of
+                # what the change does. Reading the diff to decide whether the
+                # `scripts` block moved would put a parser for attacker-chosen
+                # input in the one job that must be obviously correct. The cost
+                # is real and is accepted: a fork PR that only adds a dependency
+                # to one extension now waits for its merge before Playwright
+                # runs. README.md and the CS3D integration page say so.
+                */package.json|*/.npmrc)
+                  ci_touched=true ;;
+                .pnpmfile.mjs|.pnpmfile.cjs|pnpmfile.mjs|pnpmfile.cjs)
+                  ci_touched=true ;;
+              esac
+            done <<<"$files"
+            # The list endpoint caps at 3000 files; past that we cannot see every
+            # path, so treat the PR as CI-touching.
+            if [ "$count" -ge 3000 ]; then ci_touched=true; fi
+
+            if [ "$ci_touched" = true ] && [ "$IS_SAME_REPO" != "true" ]; then
+              echo "::notice::Playwright deferred: this PR changes CI-defining files and comes from a fork. It will run on the self-hosted runner once the change is reviewed and merged."
+              proceed=false
+            fi
+          fi
+          echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
+          # A deferred PR does NOT stop here. The parse below still has to run:
+          # `cs3d-branch-merge-guard` reads its result, and that job must report
+          # on a fork PR that this gate defers — which is the PR most worth
+          # reporting on. Nothing below reaches the box either way;
+          # `playwright-tests` is skipped on `proceed` alone.
+
+          # ── 2. Is a CS3D ref requested, and which? ─────────────────────────
+          # A `CS3D_REF:` line in the PR body is the request; on a manual run the
+          # workflow input is. Both are optional and absence means the same
+          # thing: run the ordinary suite against the CS3D version this repo
+          # already pins, with no clone, no version rewrite and no preview
+          # deploy. There is deliberately no default ref — one would go stale
+          # against the pinned version and silently downgrade it.
+          #
+          # The body is read live from the API rather than from the event
+          # payload, because a re-run replays the original payload — a line
+          # added after the PR was opened would otherwise be acted on while
+          # escaping the approval below.
+          raw=""
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            raw="${CS3D_REF_INPUT:-}"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            # The body goes into a variable before it is parsed, rather than
+            # straight down a pipe into awk. The parser stops at the first
+            # match, so on a body larger than the pipe buffer it can close the
+            # pipe while `gh` is still writing; `gh` then dies on SIGPIPE, and
+            # `pipefail` turns that into status 141, which `set -e` reads as a
+            # gate failure and skips Playwright for the whole PR.
+            if ! body=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.body'); then
+              echo "::error::Could not read the body of pull request ${PR_NUMBER}, so this gate cannot tell whether a CS3D integration run was requested. Failing instead of running the ordinary suite."
+              exit 1
+            fi
+
+            # A CS3D_REF line is a request only where a reader takes it as one:
+            # at the top level of the body. Three markdown constructs quote text
+            # rather than state it, and a line inside any of them is an example:
+            #
+            #   - a fenced code block (``` or ~~~), so that a PR can document
+            #     this syntax without triggering it;
+            #   - an indented code block, four spaces or more, which is the same
+            #     thing written the other way;
+            #   - an HTML comment, which matters here because the OHIF pull
+            #     request template is almost entirely comment blocks and the
+            #     author writes between them.
+            #
+            # Leading whitespace is therefore NOT stripped before these tests.
+            # Up to three spaces still count as top level, which is what
+            # markdown itself allows in front of a paragraph or a fence.
+            #
+            # The parser also reports a CS3D_REF line that it SKIPPED, and
+            # whether the construct that hid the line was ever closed. An
+            # unclosed fence or comment swallows the whole remainder of the
+            # body, so without that report a real request written below one
+            # would vanish without a word, and the merge guard would then see
+            # nothing to flag on a PR that depends on an unreleased branch.
+            #
+            # Take the WHOLE remainder of a matching line, not just its first
+            # token — the first-token parse silently dropped the rest, so
+            # `CS3D_REF: fix/x (released as 5.25.80)` read as an annotation and
+            # behaved as a live branch directive. Taking the whole line lets the
+            # grammar below reject that instead.
+            #
+            # Output is one record per line, tab separated:
+            #   REF   <value>                   the live request
+            #   SKIP  <reason> <line> <value>   the first skipped CS3D_REF line
+            #   OPENSKIP                        that skip sits in a construct
+            #                                   the body never closes
+            parsed=$(awk '
+              function refval(s,   v) {
+                v = s
+                sub(/^.*CS3D_REF:[ \t]*/, "", v)
+                sub(/[ \t\r]+$/, "", v)
+                gsub(/\t/, " ", v)
+                return v
+              }
+              function note(reason, s) {
+                if (skips == 0) { printf "SKIP\t%s\t%d\t%s\n", reason, NR, refval(s) }
+                skips++
+              }
+              {
+                line = $0
+                sub(/\r$/, "", line)
+
+                # A tab counts as four columns, as markdown reads it.
+                ind = 0
+                for (i = 1; i <= length(line); i++) {
+                  c = substr(line, i, 1)
+                  if (c == " ") ind++
+                  else if (c == "\t") ind += 4
+                  else break
+                }
+                text = line
+                sub(/^[ \t]+/, "", text)
+
+                if (fence != "") {
+                  ch = substr(text, 1, 1)
+                  n = 0
+                  if (ind < 4 && (ch == "`" || ch == "~")) { while (substr(text, n + 1, 1) == ch) n++ }
+                  # A closing fence repeats the opening marker, is at least as
+                  # long, and carries nothing else. Anything else is content:
+                  # a three-backtick line inside a four-backtick block, or a
+                  # tilde line inside a backtick block, must not end it.
+                  if (n >= 3 && ch == fence && n >= flen && substr(text, n + 1) ~ /^[ \t]*$/) {
+                    fence = ""; open_skip = 0; next
+                  }
+                  if (text ~ /^CS3D_REF:/) { note("fence", text); open_skip = 1 }
+                  next
+                }
+
+                if (comment) {
+                  closes = index(line, "-->") ? 1 : 0
+                  if (text ~ /^CS3D_REF:/) { note("comment", text); open_skip = 1 }
+                  if (closes) { comment = 0; open_skip = 0 }
+                  next
+                }
+
+                # An indented code block cannot be left unclosed, so a line
+                # skipped here never sets open_skip.
+                if (ind >= 4) {
+                  if (text ~ /^CS3D_REF:/) note("indent", text)
+                  next
+                }
+
+                ch = substr(text, 1, 1)
+                n = 0
+                if (ch == "`" || ch == "~") { while (substr(text, n + 1, 1) == ch) n++ }
+                if (n >= 3) { fence = ch; flen = n; open_skip = 0; next }
+
+                if (text ~ /^<!--/) {
+                  open_skip = 0
+                  if (!index(line, "-->")) comment = 1
+                  if (text ~ /CS3D_REF:/) { note("comment", text); if (comment) open_skip = 1 }
+                  next
+                }
+
+                if (text ~ /^CS3D_REF:/) {
+                  v = text
+                  sub(/^CS3D_REF:[ \t]*/, "", v)
+                  sub(/[ \t\r]+$/, "", v)
+                  gsub(/\t/, " ", v)
+                  found = 1
+                  printf "REF\t%s\n", v
+                  exit
+                }
+              }
+              END {
+                if (found) exit
+                if ((fence != "" || comment) && open_skip) { print "OPENSKIP" }
+              }' <<<"$body")
+
+            skip_reason=""
+            skip_line=""
+            skip_value=""
+            unclosed=false
+            while IFS=$'\t' read -r kind f2 f3 f4; do
+              case "$kind" in
+                REF) raw="$f2" ;;
+                SKIP)
+                  if [ -z "$skip_reason" ]; then
+                    skip_reason="$f2"; skip_line="$f3"; skip_value="$f4"
+                  fi ;;
+                OPENSKIP) unclosed=true ;;
+              esac
+            done <<<"$parsed"
+
+            # A skipped line is only worth mentioning when nothing live was
+            # found: with a request in hand, the examples above or below it are
+            # exactly what the skipping is for.
+            if [ -z "$raw" ] && [ -n "$skip_reason" ]; then
+              # Same treatment as `shown` below: the text comes from the PR
+              # body, so strip control characters and cap the length before it
+              # reaches a log line.
+              skip_value=$(printf '%s' "$skip_value" | tr -d '\000-\037' | cut -c1-200)
+              case "$skip_reason" in
+                fence) where="inside a fenced code block" ;;
+                indent) where="indented by four spaces or more, which markdown reads as a code block" ;;
+                comment) where="inside an HTML comment" ;;
+                *) where="inside a quoted block" ;;
+              esac
+              if [ "$unclosed" = true ]; then
+                echo "::error::Line ${skip_line} of the pull request body reads [CS3D_REF: ${skip_value}], and that line is ${where} which the body never closes. An unclosed fence or comment hides every line below it, so this gate cannot tell a request from an example, and the merge guard would report all clear. Close the block, or move the line out of it."
+                exit 1
+              fi
+              echo "::warning::Ignored the CS3D_REF line on line ${skip_line} of the pull request body, read as [CS3D_REF: ${skip_value}], because that line is ${where}. No CS3D integration run was requested. Move the line to the top level of the body if you meant it as a request."
+            fi
+          fi
+          raw="${raw#"${raw%%[![:space:]]*}"}"; raw="${raw%"${raw##*[![:space:]]}"}"
+
+          if [ -z "$raw" ]; then
+            echo "No CS3D ref requested; running the ordinary Playwright suite."
+            echo "integration=false" >> "$GITHUB_OUTPUT"
+            echo "approval=false" >> "$GITHUB_OUTPUT"
+            # The merge guard reads cs3d_kind and reports on this value, so it
+            # is written on every path out of this step, not only on success.
+            echo "cs3d_kind=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Three accepted forms:
+          #   <branch>                     a branch or tag in cornerstonejs/cornerstone3D
+          #   <version>                    a published version, e.g. 5.10.3, 5.x
+          #   <branch> now <version>       the branch, and the concrete release it became
+          #
+          # The third is the retiring form: once the cornerstone3D fix ships, the
+          # author changes the line rather than deleting it, and the branch name
+          # stays visible as the reason the pinned version moved. Its version is a
+          # RECORD, not a request — `cs3d_defer` tells the version step to keep
+          # whatever the repo already pins when that is the same or newer, so a
+          # stale note can never drag the pin backwards.
+          #
+          # Anything explicit is obeyed as given: a bare ref in the body, or
+          # anything typed into the workflow_dispatch box. A `now` form typed
+          # into that box parses the same way but does not defer — there is no
+          # stored line there to go stale, so it is a direct request like any
+          # other.
+          history=""
+          defer=false
+          if [[ "$raw" =~ ^(.*[^[:space:]])[[:space:]]+now[[:space:]]+([^[:space:]]+)$ ]]; then
+            history="${BASH_REMATCH[1]}"
+            ref="${BASH_REMATCH[2]}"
+            if [ "$EVENT_NAME" = "pull_request" ]; then defer=true; fi
+          else
+            ref="$raw"
+          fi
+
+          # ── 3. Validate the ref before it goes anywhere ────────────────────
+          # On a fork PR this value is written by someone outside the project:
+          # it is read out of the PR body and later steps put it into a git
+          # clone and into log lines. Validate it against a conservative git-ref
+          # grammar here, off the box, before it is published as a job output.
+          #
+          # The grammar bars whitespace and newlines (which would let the value
+          # append extra entries to GITHUB_OUTPUT, a key=value file), a leading
+          # '-' or '.' (which would make it look like a flag), and '..' (a ref
+          # path escape). It deliberately does NOT permit ':' — a ref no longer
+          # names a repository, only a branch or tag within
+          # cornerstonejs/cornerstone3D.
+          #
+          # Fails loudly rather than falling back to the default, and quotes what
+          # it read, because without that a rejection is undiagnosable — the
+          # author cannot tell a typo from a line picked up somewhere they did
+          # not expect. The value came from the PR body, which anyone can
+          # already read, so quoting it discloses nothing; newlines and control
+          # characters are stripped and the length capped so it cannot be read
+          # as a workflow command of its own.
+          # Quoted in both rejections below, so the author can see what was read.
+          shown=$(printf '%s' "$raw" | tr -d '\000-\037' | cut -c1-200)
+
+          ok=true
+          if [[ ! "$ref" =~ ^[A-Za-z0-9][A-Za-z0-9._/+-]*$ ]] || [[ "$ref" == *..* ]]; then ok=false; fi
+          if [ -n "$history" ]; then
+            if [[ ! "$history" =~ ^[A-Za-z0-9][A-Za-z0-9._/+-]*$ ]] || [[ "$history" == *..* ]]; then ok=false; fi
+          fi
+          if [ "$ok" != true ]; then
+            echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. Write it as one of: <branch>, <version>, or '<branch> now <version>'. Each part must start with a letter or digit, contain only letters, digits and the characters . _ / + - and contain no '..'. Forks cannot be named: give a branch or tag in cornerstonejs/cornerstone3D, or a published version."
+            exit 1
+          fi
+
+          # The grammar above constrains which characters may appear; git also
+          # constrains the shape. A trailing slash, a double slash, a path
+          # component starting with a dot, and a '.lock' suffix all pass the
+          # grammar and are still illegal refs. Without this, such a value
+          # reaches the clone step and fails there with a git error, several
+          # steps away from the typo that caused it. Every accepted version form
+          # (4.19+, 4.x, 5.11.0-beta.1) is also a legal ref name, so one rule
+          # covers both kinds of value.
+          #
+          # `refs/heads/$x` rather than `--branch $x`: the latter also expands
+          # git's previous-branch syntax (@{-1}), which consults repository
+          # state. The grammar already bars '@', so that cannot arise here, but a
+          # validator that only validates is the simpler thing to reason about —
+          # and this form needs no repository, which matters because this job
+          # deliberately has no checkout.
+          for part in "$ref" $history; do
+            if ! git check-ref-format "refs/heads/${part}"; then
+              echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. Git does not accept that ref name — check for a trailing or doubled '/', a path component starting with '.', or a '.lock' suffix."
+              exit 1
+            fi
+          done
+
+          # The version after `now` records what a branch shipped as, so it has
+          # to be one concrete release. A range would resolve to a different
+          # version on a later run and the record would stop meaning what it
+          # said. A bare version request may still be a range.
+          #
+          # The prerelease class is the one semver allows: dot-separated
+          # identifiers of letters, digits and hyphens. The hyphen matters —
+          # `5.11.0-rc-1` is a legal release, and a class without it rejects the
+          # ref and fails the run. `_` is NOT legal and is deliberately absent.
+          # One other copy of this class must agree: the version classifier
+          # below. There were four copies; the merge guard no longer parses or
+          # classifies anything of its own, and reads cs3d_kind instead.
+          if [ -n "$history" ] && [[ ! "$ref" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. The version after 'now' must be one concrete release, e.g. 5.10.6 or 5.11.0-beta.1 — not a range."
+            exit 1
+          fi
+
+          # ── 4. Is it a published version, or a branch? ─────────────────────
+          # Classified here, not on the box. Classification needs no checkout —
+          # only RESOLVING a range does, which is why that stays on the runner —
+          # and deciding here means the malformed cases fail in front of the
+          # author rather than several steps later in a job they have to open.
+          #
+          # The accepted version forms, and no other:
+          #   5.10.3          exact release
+          #   5.11.0-beta.1   exact prerelease
+          #   5.x / 5.10.x    latest of that major, or of that major and minor
+          #   4.19+           latest >=4.19.0 within the same major
+          # `.scripts/cs3d-resolve-version.mjs` accepts exactly these.
+          #
+          # A ref that is written only from the version alphabet — digits, dots,
+          # `x` and `+` — and still does not match is a typed version, not a
+          # branch name, so say so instead of cloning it. `5.10` used to pass as
+          # a version, resolve to itself unchanged, and then fail on the box in
+          # cs3d-set-version.mjs; `5` used to be classified as a branch and fail
+          # in `git clone --branch 5`. A branch whose name merely starts with a
+          # digit, such as `5.x-backport`, contains a character outside that
+          # alphabet and is still treated as a branch.
+          if [[ "$ref" =~ ^[0-9]+(\.[0-9]+(\.([0-9]+(-[0-9A-Za-z.-]+)?|x)|\+)|\.x)$ ]]; then
+            kind=version
+          elif [[ "$ref" =~ ^[0-9][0-9.x+]*$ ]]; then
+            echo "::error::Rejected the requested CS3D ref, read as: [${shown}]. It looks like a version, but it is not one of the accepted forms: 5.10.3, 5.11.0-beta.1, 5.x, 5.10.x or 4.19+. A two-part number such as 5.10 is not one of them — write 5.10.x for the latest 5.10 release, or name the exact release."
+            exit 1
+          else
+            kind=branch
+          fi
+
+          if [ -n "$history" ]; then
+            echo "::notice::CS3D ref: ${ref} (${kind}; was branch ${history})"
+          else
+            echo "::notice::CS3D ref requested: ${ref} (${kind})"
+          fi
+          echo "integration=true" >> "$GITHUB_OUTPUT"
+          echo "cs3d_ref=$ref" >> "$GITHUB_OUTPUT"
+          echo "cs3d_kind=$kind" >> "$GITHUB_OUTPUT"
+          echo "cs3d_history=$history" >> "$GITHUB_OUTPUT"
+          echo "cs3d_defer=$defer" >> "$GITHUB_OUTPUT"
+
+          # ── 5. Does it need a named reviewer's approval? ───────────────────
+          # An integration run clones and builds a CS3D branch on the shared box.
+          # From a fork that is a request, not a decision, so it waits for one of
+          # the reviewers on the `cs3d-integration` environment. A same-repo PR
+          # or a manual run was already started by someone with write access, so
+          # it proceeds unattended.
+          #
+          # Every accepted ref asks for approval, including a retired
+          # `<branch> now <version>` clause that this repo has already moved past
+          # and that will therefore change nothing on the box. Telling those two
+          # apart needs the version the repo pins, and this job has no checkout
+          # by design — so the conservative answer is the only one available
+          # here. A spent line still costs a fork PR one approval per run; the
+          # steps on the box do recognise it, and skip the preview build and the
+          # deploy. Delete the line to stop the approval prompt.
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$IS_SAME_REPO" != "true" ]; then
+            echo "::notice::This fork PR requests a CS3D integration run, so it needs approval from a reviewer on the cs3d-integration environment before it reaches the self-hosted runner."
+            echo "approval=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "approval=false" >> "$GITHUB_OUTPUT"
+          fi
+
   playwright-tests:
+    needs: gate
+    if: needs.gate.outputs.proceed == 'true'
     timeout-minutes: 120
-    environment: fork-pr-approval
+    # `cs3d-integration` carries required reviewers, so naming it makes the job
+    # wait for an approval that shows up on the pull request itself.
+    # `unrestricted` carries no protection rules and is the ordinary path. The
+    # choice comes from the gate rather than from the event payload — see the
+    # note on reading the PR body live, above.
+    #
+    # `unrestricted` replaced an environment named `fork-pr-approval`. That
+    # name promised a gate it never had: it carries no protection rules either,
+    # so it stopped nothing, and the rename adds and removes no control. What
+    # does hold an ordinary fork run is the repository setting recorded at the
+    # top of this file, `fork-pr-contributor-approval`, currently
+    # `all_external_contributors`. Do not read either environment name as a
+    # second barrier.
+    environment:
+      ${{ needs.gate.outputs.approval == 'true' && 'cs3d-integration' || 'unrestricted' }}
     runs-on: [self-hosted, nashua]
     strategy:
       fail-fast: false
@@ -54,53 +556,44 @@ jobs:
           corepack enable
           corepack prepare --activate
 
-      # ── CS3D integration: detect label and ref type ──────────────────────
-      - name: Check for CS3D integration label
-        id: cs3d-check
-        run: bash .scripts/ci/cs3d-check-integration.sh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EVENT_NAME: ${{ github.event_name }}
-          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || '4.19+' }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-
-      - name: Detect CS3D ref type
+      # ── CS3D integration: resolve a version range ────────────────────────
+      # The gate parsed the ref, validated it and classified it as a version or
+      # a branch, all off the box. Only the resolution of a range is left here,
+      # because that reads `.scripts/` and the gate has no checkout by design.
+      # A branch needs no resolution, so this step runs for a version alone.
+      - name: Resolve the CS3D version
         id: cs3d-ref
-        if: steps.cs3d-check.outputs.enabled == 'true'
+        if: needs.gate.outputs.cs3d_kind == 'version'
         run: |
-          REF="${CS3D_REF}"
-          if [[ "$REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
-            echo "type=version" >> "$GITHUB_OUTPUT"
-            RESOLVED=$(node .scripts/cs3d-resolve-version.mjs "$REF")
-            echo "version=$RESOLVED" >> "$GITHUB_OUTPUT"
-            echo "::notice::CS3D version: $REF -> $RESOLVED"
-          else
-            echo "type=branch" >> "$GITHUB_OUTPUT"
-            echo "::notice::CS3D branch: $REF"
-          fi
+          RESOLVED=$(node .scripts/cs3d-resolve-version.mjs "$CS3D_REF")
+          echo "version=$RESOLVED" >> "$GITHUB_OUTPUT"
+          echo "::notice::CS3D version: $CS3D_REF -> $RESOLVED"
         env:
-          CS3D_REF: ${{ steps.cs3d-check.outputs.cs3d_ref }}
+          CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
 
       # ── CS3D branch path: clone and build before OHIF install ───────────
+      # The repository is fixed. A ref names a branch or tag in
+      # cornerstonejs/cornerstone3D and nothing else — it previously accepted an
+      # `owner:branch` form, which let a pull request point this clone at any
+      # GitHub account's fork and then run its install scripts and build on the
+      # shared self-hosted box.
+      #
+      # $CS3D_REF is read as a shell variable, never interpolated as ${{ }}:
+      # GitHub pastes ${{ }} in as literal text before the shell parses the
+      # command, so punctuation in the value would become program structure. The
+      # shell expands an env var only after parsing, so it can only ever be an
+      # argument.
       - name: Clone CS3D
-        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
+        if: needs.gate.outputs.cs3d_kind == 'branch'
         run: |
-          REF="${CS3D_REF}"
-          if [[ "$REF" == *:* ]]; then
-            REPO="https://github.com/${REF%%:*}/cornerstone3D.git"
-            BRANCH="${REF#*:}"
-          else
-            REPO="https://github.com/cornerstonejs/cornerstone3D.git"
-            BRANCH="$REF"
-          fi
-          echo "::notice::Cloning CS3D from $REPO branch $BRANCH"
-          git clone --depth 1 --branch "$BRANCH" "$REPO" libs/@cornerstonejs
+          echo "::notice::Cloning cornerstonejs/cornerstone3D branch $CS3D_REF"
+          git clone --depth 1 --branch "$CS3D_REF" \
+            https://github.com/cornerstonejs/cornerstone3D.git libs/@cornerstonejs
         env:
-          CS3D_REF: ${{ steps.cs3d-check.outputs.cs3d_ref }}
+          CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
 
       - name: Install & Build CS3D
-        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
+        if: needs.gate.outputs.cs3d_kind == 'branch'
         working-directory: libs/@cornerstonejs
         run: pnpm install --frozen-lockfile && pnpm run build:esm
 
@@ -110,18 +603,35 @@ jobs:
 
       # ── CS3D branch path: link packages after OHIF install ──────────────
       - name: Link CS3D packages
-        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
+        if: needs.gate.outputs.cs3d_kind == 'branch'
         working-directory: libs/@cornerstonejs
         run: node scripts/link-ohif-cornerstone-node-modules.mjs "$GITHUB_WORKSPACE"
 
       # ── CS3D version path: update versions after OHIF install ───────────
+      # Split into two steps on purpose. Rewriting the manifests puts them out of
+      # step with the lockfile, so the reinstall cannot be frozen — but that only
+      # applies if something was actually rewritten. When the repo already pins
+      # the requested version (or, for a `now` clause, something newer), nothing
+      # changes and the frozen install from "Install dependencies" above already
+      # describes the tree under test. Reinstalling then would replace a faithful
+      # tree with a re-resolved one, which is the opposite of what an integration
+      # run is for.
       - name: Set CS3D version
-        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'version'
+        id: set-version
+        if: needs.gate.outputs.cs3d_kind == 'version'
         run: |
-          node .scripts/cs3d-set-version.mjs "${CS3D_VERSION}"
-          pnpm install --no-frozen-lockfile
+          if [ "$CS3D_DEFER" = "true" ]; then
+            node .scripts/cs3d-set-version.mjs "$CS3D_VERSION" --only-if-newer
+          else
+            node .scripts/cs3d-set-version.mjs "$CS3D_VERSION"
+          fi
         env:
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
+          CS3D_DEFER: ${{ needs.gate.outputs.cs3d_defer }}
+
+      - name: Reinstall after the version change
+        if: steps.set-version.outputs.changed == 'true'
+        run: pnpm install --no-frozen-lockfile
 
       # ── Common: run tests ───────────────────────────────────────────────
       - name: Install Playwright browsers
@@ -130,7 +640,10 @@ jobs:
         # avoids downloading + dep-validating browsers we never launch (the WebKit
         # validation is what surfaces the "missing libwoff1/libflite1/..." error on
         # hosts without those libs).
-        run: npx playwright install chromium
+        #
+        # `pnpm exec`, not `npx`: this runs the playwright the lockfile pins,
+        # rather than whatever the registry serves at that moment.
+        run: pnpm exec playwright install chromium
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
@@ -163,27 +676,43 @@ jobs:
 
       # ── CS3D: build and deploy preview to Netlify ───────────────────────
       - name: Log build context (OHIF/CS3D branch and version for build diagnosis)
-        if: steps.cs3d-check.outputs.enabled == 'true'
+        if: needs.gate.outputs.integration == 'true'
         run: |
           if [[ "$CS3D_REF_TYPE" == "branch" ]]; then
-            echo "::notice::Build type: ohif-downstream | OHIF: ${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) | CS3D: branch ${{ steps.cs3d-check.outputs.cs3d_ref }}"
+            echo "::notice::Build type: ohif-downstream | OHIF: ${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) | CS3D: branch ${CS3D_REF}"
           else
-            echo "::notice::Build type: ohif-upstream | OHIF: ${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) | CS3D: version ${{ steps.cs3d-ref.outputs.version }}"
+            echo "::notice::Build type: ohif-upstream | OHIF: ${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) | CS3D: version ${CS3D_VERSION}"
           fi
           node .scripts/log-build-context.mjs
         env:
           BUILD_TYPE:
-            ${{ steps.cs3d-ref.outputs.type == 'branch' && 'ohif-downstream' || 'ohif-upstream' }}
-          CS3D_REF_TYPE: ${{ steps.cs3d-ref.outputs.type }}
+            ${{ needs.gate.outputs.cs3d_kind == 'branch' && 'ohif-downstream' || 'ohif-upstream' }}
+          CS3D_REF_TYPE: ${{ needs.gate.outputs.cs3d_kind }}
+          CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
+          CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
 
+      # The preview build and deploy exist to show a tree that differs from an
+      # ordinary run. A branch run always differs. A version run differs only
+      # when the manifests were actually rewritten — which a retired
+      # `<branch> now <version>` clause stops doing once the repo pins that
+      # version or something newer. Without this condition a spent line keeps
+      # building and deploying a preview identical to the ordinary suite on
+      # every re-run, for as long as the line stays in the body as history.
       - name: Build OHIF viewer (CS3D preview)
-        if: steps.cs3d-check.outputs.enabled == 'true'
+        if: needs.gate.outputs.cs3d_kind == 'branch' || steps.set-version.outputs.changed == 'true'
         run: pnpm run build:ci
 
       - name: Deploy CS3D preview to Netlify
-        if: steps.cs3d-check.outputs.enabled == 'true'
+        if: needs.gate.outputs.cs3d_kind == 'branch' || steps.set-version.outputs.changed == 'true'
+        # The version is pinned here rather than in package.json. This ran
+        # `npx netlify-cli`, which fetched whatever the registry served at that
+        # moment and ran it on the self-hosted box with NETLIFY_AUTH_TOKEN in
+        # its environment.
+        #
+        # `--package` is required: its binaries are `netlify` and `ntl`, neither
+        # matching the package name, so pnpm cannot pick a default.
         run: |
-          RESULT=$(npx netlify-cli deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
+          RESULT=$(pnpm dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
             echo "::error::Netlify deploy command failed"
             exit 1
           }
@@ -201,32 +730,76 @@ jobs:
 
       # ── CS3D: log results ───────────────────────────────────────────────
       - name: Log CS3D build used
-        if: steps.cs3d-check.outputs.enabled == 'true'
+        if: needs.gate.outputs.integration == 'true'
         run: |
           if [[ "$CS3D_REF_TYPE" == "branch" ]]; then
             echo "::notice::CS3D integration PASSED with branch ${CS3D_REF} (linked from libs/@cornerstonejs)"
-          else
+          elif [[ "$CS3D_CHANGED" == "true" ]]; then
             echo "::notice::CS3D integration PASSED with @cornerstonejs/*@${CS3D_VERSION}"
+          else
+            # The retired form, now spent: the repo already pins this version or
+            # something newer, so nothing was rewritten and this run tested the
+            # same tree as the ordinary suite. Say so, rather than reporting an
+            # integration run that did not happen.
+            echo "::notice::CS3D_REF names ${CS3D_VERSION}, which this repo already pins (or has moved past), so no version change was made. The line is now a record of history and no longer changes the run; it is safe to leave in place."
           fi
         env:
-          CS3D_REF_TYPE: ${{ steps.cs3d-ref.outputs.type }}
-          CS3D_REF: ${{ steps.cs3d-check.outputs.cs3d_ref }}
+          CS3D_REF_TYPE: ${{ needs.gate.outputs.cs3d_kind }}
+          CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
+          CS3D_CHANGED: ${{ steps.set-version.outputs.changed }}
 
-  # ── Separate job: block merge when using a CS3D branch ─────────────
+  # ── Separate job: flag a merge that would depend on unreleased CS3D ──
+  # A `CS3D_REF:` line naming a branch means the change was validated against
+  # cornerstone3D that npm does not carry, so merging it would leave master
+  # depending on code no released version provides.
+  #
+  # It keys off the presence of the line itself, not off a label and not off
+  # whether the integration tests actually ran — a PR that declares a dependency
+  # on an unreleased branch is worth flagging either way.
+  #
+  # Advisory, deliberately: it reports, it does not block. `master` requires no
+  # status checks, so a red result here leaves the merge button enabled. Making
+  # this a required status check would change that, but it also changes how
+  # every PR in the repo merges, and that is not this workflow's decision to
+  # make. Read a red result as "a human should look", not as a lock.
+  #
+  # It reads the gate's answer rather than parsing the PR body again. Two copies
+  # of that parser drifted apart before: one accepted a prerelease form the
+  # other rejected, and a body shape that defeated one defeated the other only
+  # by accident. This job also no longer checks out the pull request, so there
+  # is no script of the PR's own for a fork to neuter.
+  #
+  # `needs: gate` means a gate failure skips this job. That is intended: the
+  # gate fails only when it rejects the CS3D_REF line outright, and it says so
+  # on the pull request itself.
   cs3d-branch-merge-guard:
     name: 'CS3D Branch Merge Guard'
+    needs: gate
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          persist-credentials: false
       - name: Check for CS3D branch usage
-        run: bash .scripts/ci/cs3d-branch-merge-guard.sh
         env:
-          GH_TOKEN: ${{ github.token }}
-          EVENT_NAME: ${{ github.event_name }}
-          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || '4.19+' }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CS3D_KIND: ${{ needs.gate.outputs.cs3d_kind }}
+          CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
+          CS3D_HISTORY: ${{ needs.gate.outputs.cs3d_history }}
+        run: |
+          set -euo pipefail
+          if [ "$CS3D_KIND" = "none" ]; then
+            echo "::notice::No CS3D_REF line in the pull request body — nothing to flag."
+            exit 0
+          fi
+          if [ "$CS3D_KIND" = "version" ]; then
+            if [ -n "$CS3D_HISTORY" ]; then
+              echo "::notice::CS3D ref '${CS3D_REF}' is a published version (branch '${CS3D_HISTORY}' shipped as it) — merge allowed."
+            else
+              echo "::notice::CS3D ref '${CS3D_REF}' is a published version — merge allowed."
+            fi
+            exit 0
+          fi
+          echo "::error::This pull request declares CS3D_REF '${CS3D_REF}', a branch rather than a published version, so merging it would leave master depending on unreleased cornerstone3D code."
+          echo "::error::Once the cornerstone3D change is released, change the line to '${CS3D_REF} now <version>' to keep the branch name as history while depending on the release."
+          echo "::error::Change the CS3D_REF line to a published version (e.g. 5.x) once the cornerstone3D change has been released, or remove the line if it is stale."
+          exit 1
