@@ -30,7 +30,7 @@
  *     customizationFunctionPolicy: {
  *       denyAttributes: [
  *         // this deployment composes labels centrally, not per split rule
- *         'useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription',
+ *         'useMetadataDisplaySet.splitRules.*.customAttributes.SeriesDescription',
  *       ],
  *     },
  *   };
@@ -42,9 +42,11 @@ export interface CustomizationFunctionPolicy {
    *
    * A path is the chain of object keys from the customization id down to the
    * key holding the marker. **Array indices are not segments**, so a rule at
-   * `splitRules[2]` and one at `splitRules[7]` share the path
-   * `useMetadataDisplaySet.splitRules.matches` — patterns describe shape, not
-   * position, and stay valid when a rule list is reordered.
+   * `rules[2]` and one at `rules[7]` share the path `myList.rules.matches` —
+   * patterns describe shape, not position, and stay valid when a list is
+   * reordered. Object keys are segments: the split rules are keyed by rule id,
+   * so their paths are `useMetadataDisplaySet.splitRules.<ruleId>.matches`,
+   * and `useMetadataDisplaySet.splitRules.*.matches` reaches every rule.
    *
    * Two wildcards:
    *   - `*` matches exactly one segment, for keys the author names (a series

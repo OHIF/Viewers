@@ -172,7 +172,7 @@ export function makeImageSetDisplaySet(
 /**
  * Applies every attribute derived from an ImageSet's current image list.
  *
- * Shared by the initial build and the split-rule `updateInstances` merge hook
+ * Shared by the initial build and the split-rule `extendInstances` growth hook
  * so the two cannot drift: whatever is recomputed here is, by construction,
  * recomputed identically when instances arrive later.
  *

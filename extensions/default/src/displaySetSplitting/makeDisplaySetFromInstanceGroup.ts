@@ -1,5 +1,10 @@
 import { orderInstancesForRule } from '@cornerstonejs/metadata';
-import type { InstanceGroup, SplitRule } from '@cornerstonejs/metadata';
+import type {
+  GroupInstancesOptions,
+  InstanceGroup,
+  SeriesFacts,
+  SplitRule,
+} from '@cornerstonejs/metadata';
 import {
   applyImageListAttributes,
   applyThumbnailSrc,
@@ -18,7 +23,15 @@ const RESERVED_ATTRIBUTES = new Set([
   'uid',
   'displaySetInstanceUID',
   'splitKey',
+  // The growth hook DisplaySetService calls on a re-split.
+  'extendInstances',
 ]);
+
+/** The ordering inputs every sort of one split-rule display set uses. */
+type InstanceOrder = {
+  series?: SeriesFacts;
+  compareInstances?: GroupInstancesOptions['compareInstances'];
+};
 
 /**
  * Puts a split-rule display set's images in the order the rule asks for.
@@ -33,16 +46,28 @@ const RESERVED_ATTRIBUTES = new Set([
  *
  * `orderInstancesForRule` composes them with the engine's own precedence, so the
  * answer is the same one the split engine computed: OHIF's default is the base
- * order, the rule's comparator overrides it where it has an opinion, and a
- * comparator returning 0 leaves the base order alone.
+ * order, the rule's comparator overrides it where it has an opinion, then the
+ * host comparator (the customization's `compareInstances`) where the rule has
+ * none, and a comparator returning 0 leaves the base order alone. The host
+ * comparator must be passed here too: the engine ordered the group with it,
+ * and a re-sort without it discards that order. So must the group's series
+ * facts: computed from the display set alone, a fact such as "this series mixes
+ * b-values" can differ from the value the split saw.
  *
  * Sorted in place, because `imageSet.images` is a non-writable property whose
  * contents are mutable.
  */
-function applyInstanceOrder(imageSet, matchedRule: SplitRule, context: ImageSetFactoryContext) {
+function applyInstanceOrder(
+  imageSet,
+  matchedRule: SplitRule,
+  { series, compareInstances }: InstanceOrder,
+  context: ImageSetFactoryContext
+) {
   const { customizationService } = context.servicesManager.services;
   const ordered = orderInstancesForRule(imageSet.images, matchedRule, {
     sortInstances: list => imageSet.sortInstances(list, customizationService),
+    compareInstances,
+    series,
   });
   imageSet.images.splice(0, imageSet.images.length, ...ordered);
 }
@@ -59,21 +84,27 @@ function applyInstanceOrder(imageSet, matchedRule: SplitRule, context: ImageSetF
  */
 export function makeDisplaySetFromInstanceGroup(
   group: InstanceGroup,
-  { splitNumber }: { splitNumber: number },
+  {
+    splitNumber,
+    compareInstances,
+  }: { splitNumber: number; compareInstances?: GroupInstancesOptions['compareInstances'] },
   context: ImageSetFactoryContext
 ) {
   const { instances, matchedRule, splitKey } = group;
+  // What every re-sort of this display set orders with.
+  const order: InstanceOrder = { series: group.series, compareInstances };
 
   const imageSet = makeImageSetDisplaySet([...instances], context, {
     // The order is applied below, once, with the matched rule folded in.
     skipSort: true,
   });
-  applyInstanceOrder(imageSet, matchedRule, context);
-  const sopClassUids = [...new Set(instances.map(instance => instance.SOPClassUID))];
+  applyInstanceOrder(imageSet, matchedRule, order, context);
+  const sopClassUidsOf = list =>
+    [...new Set(list.map(instance => instance.SOPClassUID))] as string[];
   const viewportTypes = matchedRule.viewportTypes ? [...matchedRule.viewportTypes] : undefined;
 
   imageSet.setAttributes({
-    sopClassUids,
+    sopClassUids: sopClassUidsOf(imageSet.images),
     splitKey,
     splitRuleId: matchedRule.id,
     viewportTypes,
@@ -88,7 +119,7 @@ export function makeDisplaySetFromInstanceGroup(
       {
         instance: currentInstances[0],
         isMultiFrame: Number(currentInstances[0]?.NumberOfFrames) > 1,
-        sopClassUids: sopClassUids as string[],
+        sopClassUids: sopClassUidsOf(currentInstances),
         viewportTypes: matchedRule.viewportTypes,
       },
       { instances: [...currentInstances], splitNumber }
@@ -105,37 +136,57 @@ export function makeDisplaySetFromInstanceGroup(
 
   applyCustomAttributes();
 
-  // Incremental-merge hook used by DisplaySetService when new instances of an
-  // existing split group arrive.  Intentionally NOT named `addInstances` (the
+  // Growth hook used by DisplaySetService when instances that are new to the
+  // series belong with this display set. It only adds: a split-rule display set
+  // never loses an instance. Intentionally NOT named `addInstances` (the
   // SOP-class-handler merge hook) so the legacy handler loop can never feed
   // unmatched instances into split-rule display sets - they share the stack
   // SOPClassHandlerId.
-  imageSet.setAttribute('updateInstances', newInstances => {
-    const knownSOPInstanceUIDs = new Set(
-      imageSet.instances.map(instance => (instance as { SOPInstanceUID?: string }).SOPInstanceUID)
-    );
-    const instancesToAdd = newInstances.filter(
-      instance => !knownSOPInstanceUIDs.has(instance.SOPInstanceUID)
-    );
-    if (!instancesToAdd.length) {
-      return undefined;
+  imageSet.setAttribute(
+    'extendInstances',
+    (
+      newInstances,
+      options: {
+        series?: SeriesFacts;
+        compareInstances?: GroupInstancesOptions['compareInstances'];
+      } = {}
+    ) => {
+      const known = new Set(imageSet.images.map(instance => instance.SOPInstanceUID));
+      const instancesToAdd = newInstances.filter(instance => {
+        if (known.has(instance.SOPInstanceUID)) {
+          return false;
+        }
+        known.add(instance.SOPInstanceUID);
+        return true;
+      });
+      if (!instancesToAdd.length) {
+        return undefined;
+      }
+      // The facts of the re-split, which saw the whole series including the new
+      // instances; a re-split by another rule leaves the earlier facts in place.
+      if (options.series) {
+        order.series = options.series;
+      }
+      if (options.compareInstances) {
+        order.compareInstances = options.compareInstances;
+      }
+
+      // `images` is a non-writable property, but the array contents are mutable.
+      imageSet.images.push(...instancesToAdd);
+      applyInstanceOrder(imageSet, matchedRule, order, context);
+      imageSet.setAttribute('sopClassUids', sopClassUidsOf(imageSet.images));
+
+      // Recompute every image-list-derived attribute through the same helper the
+      // initial build uses (reconstructability, messages, volumeLoaderSchema,
+      // frame count, and the `instance`/thumbnail the new sort order implies).
+      const derived = applyImageListAttributes(imageSet, context);
+      applyThumbnailSrc(imageSet, context, derived);
+      // Last, so a rule's custom attributes still win over the recomputed
+      // defaults - the same precedence as the initial build.
+      applyCustomAttributes();
+
+      return imageSet;
     }
-
-    // `images` is a non-writable property, but the array contents are mutable.
-    imageSet.images.push(...instancesToAdd);
-    applyInstanceOrder(imageSet, matchedRule, context);
-
-    // Recompute every image-list-derived attribute through the same helper the
-    // initial build uses (reconstructability, messages, volumeLoaderSchema,
-    // frame count, and the `instance`/thumbnail the new sort order implies).
-    const derived = applyImageListAttributes(imageSet, context);
-    applyThumbnailSrc(imageSet, context, derived);
-    // Last, so a rule's custom attributes still win over the recomputed
-    // defaults - the same precedence as the initial build.
-    applyCustomAttributes();
-
-    return imageSet;
-  });
-
+  );
   return imageSet;
 }

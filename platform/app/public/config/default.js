@@ -64,7 +64,7 @@ window.config = {
   //
   // customizationFunctionPolicy: {
   //   denyAttributes: [
-  //     'useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription',
+  //     'useMetadataDisplaySet.splitRules.*.customAttributes.SeriesDescription',
   //   ],
   // },
   // ----------------------------------------------------------------------------

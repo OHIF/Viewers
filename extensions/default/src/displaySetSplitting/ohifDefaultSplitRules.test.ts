@@ -1,4 +1,4 @@
-import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
+import { groupInstancesBySplitRules, resolveSplitRuleSet } from '@cornerstonejs/metadata';
 import { ohifDefaultSplitRules } from './ohifDefaultSplitRules';
 
 const MG_FOR_PRESENTATION = '1.2.840.10008.5.1.4.1.1.1.2';
@@ -42,13 +42,29 @@ describe('ohifDefaultSplitRules', () => {
   });
 
   it('contains the expected rules in order (guards upstream rule-id drift)', () => {
-    expect(ohifDefaultSplitRules.map(rule => rule.id)).toEqual([
+    expect(resolveSplitRuleSet(ohifDefaultSplitRules).map(rule => rule.id)).toEqual([
       'singleImageModality',
       'multiFrame',
       'mixedDimensionalityBValue',
       'volume3d',
       'defaultImageRule',
     ]);
+  });
+
+  it('gives the default rules the priorities 1..n', () => {
+    // Customizations place their rules relative to these numbers: below 0 runs
+    // before every default, above 10000 after every default.
+    expect(
+      Object.fromEntries(
+        Object.entries(ohifDefaultSplitRules).map(([id, rule]) => [id, rule.priority])
+      )
+    ).toEqual({
+      singleImageModality: 1,
+      multiFrame: 2,
+      mixedDimensionalityBValue: 3,
+      volume3d: 4,
+      defaultImageRule: 5,
+    });
   });
 
   it('creates one group per image for same-resolution mammography views', () => {

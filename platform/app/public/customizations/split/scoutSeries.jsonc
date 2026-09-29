@@ -11,9 +11,13 @@
 //
 // How it works:
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
-//  - `$unshift` PREPENDS the rule to the default rules: rules are evaluated
-//    in order with first-match-wins per instance, so the scout rule must run
-//    before the generic `volume3d` rule claims the whole CT series.
+//  - `splitRules` is keyed by rule id, so `$merge` adds the rule under its
+//    id. Rules are evaluated in ascending `priority` with first-match-wins per
+//    instance. The default rules use the priorities 1..n, so the priority -1
+//    runs the scout rule before the generic `volume3d` rule claims the whole
+//    CT series. A priority above 10000 runs after every default rule, and
+//    `null` turns a rule off (for example
+//    `"volume3d": { "priority": { "$set": null } }`).
 //  - `series` facts are computed once per series: expressions run with the
 //    series context, so `instances` is in scope and aggregate helpers
 //    (`sumOf`, `minOf`, ...) can fold over it.
@@ -29,9 +33,9 @@
   "global": {
     "useMetadataDisplaySet": {
       "splitRules": {
-        "$unshift": [
-          {
-            "id": "ctScout",
+        "$merge": {
+          "ctScout": {
+            "priority": -1,
             "viewportTypes": ["stack"],
             "series": {
               // Total frame count of the series (multiframe-aware).
@@ -50,7 +54,7 @@
               "SeriesDescription": { "$function": "`SCOUT ${SeriesDescription}`" }
             }
           }
-        ]
+        }
       }
     }
   }

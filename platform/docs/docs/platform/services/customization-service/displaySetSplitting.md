@@ -9,9 +9,10 @@ sidebar_position: 12
 
 The `useMetadataDisplaySet` customization switches display set creation from
 the stack SOP class handler to the split-rules engine of
-`@cornerstonejs/metadata`.  Series instances are matched against an ordered
-list of **split rules** (first matching rule wins per instance), grouped by
-each rule's `groupBy` keys, and every group becomes one display set.
+`@cornerstonejs/metadata`.  Series instances are matched against a set of
+**split rules**, keyed by rule id and evaluated in `priority` order (first
+matching rule wins per instance), grouped by each rule's `groupBy` keys, and
+every group becomes one display set.
 
 Instances that no rule matches — video, whole-slide, ECG, SEG, SR, RT
 Structure Sets, PDFs, and anything else handled by a dedicated extension —
@@ -54,22 +55,32 @@ prefix):
 useMetadataDisplaySet: {
   /** default false */
   enabled: boolean;
-  /** ordered rules; first match wins per instance */
-  splitRules: SplitRule[];
+  /** rules keyed by id; ascending priority, first match wins per instance */
+  splitRules: Record<string, SplitRule & { priority: number | null }>;
   /** builds an OHIF display set from a matched instance group */
-  createDisplaySetFromGroup: (group, { splitNumber }) => DisplaySet;
+  createDisplaySetFromGroup: (group, { splitNumber, compareInstances }) => DisplaySet;
+  /** optional host comparator, consulted after a rule's own compareInstances */
+  compareInstances?: (a, b, context) => number;
 }
 ```
 
-The default `splitRules` (from `@ohif/extension-default`) are, in order:
+The key of each `splitRules` entry is the rule id. `priority` decides the
+evaluation order: rules run in ascending priority, and equal priorities run in
+id order. A priority of `null` turns the rule off.
 
-| Rule id | Behavior |
-|---|---|
-| `singleImageModality` | CR/DX/MG — one display set **per image** (preserves multi-view mammography) |
-| `multiFrame` | any image with `NumberOfFrames > 1` — one display set per instance (including US clips) |
-| `mixedDimensionalityBValue` | MR series mixing instances with and without `DiffusionBValue` — split into separate display sets (fixes mixed-b-value DWI window leveling) |
-| `volume3d` | CT/MR/PT series with more than one instance — a single reconstructable display set |
-| `defaultImageRule` | catch-all: one display set per series for every remaining stack-owned instance |
+The default rules use the priorities `1..n`. A rule with a priority below `0`
+runs before every default rule, and a rule with a priority above `10000` runs
+after every default rule.
+
+The default `splitRules` (from `@ohif/extension-default`) are:
+
+| Priority | Rule id | Behavior |
+|---|---|---|
+| 1 | `singleImageModality` | CR/DX/MG — one display set **per image** (preserves multi-view mammography) |
+| 2 | `multiFrame` | any image with `NumberOfFrames > 1` — one display set per instance (including US clips) |
+| 3 | `mixedDimensionalityBValue` | MR series mixing instances with and without `DiffusionBValue` — split into separate display sets (fixes mixed-b-value DWI window leveling) |
+| 4 | `volume3d` | CT/MR/PT series with more than one instance — a single reconstructable display set |
+| 5 | `defaultImageRule` | catch-all: one display set per series for every remaining stack-owned instance |
 
 Every default rule is gated on the same ownership test: **the instance's SOP
 class must be one the stack SOP class handler is registered for.** Split rules
@@ -89,8 +100,9 @@ engine and the matched rule's `customAttributes`.
 ## Anatomy of a split rule
 
 ```ts
+// splitRules.myRule
 {
-  id: 'myRule',
+  priority: -1,                                // evaluation order; null turns it off
   viewportTypes: ['stack'],                    // preferred viewport hints
   series: ({ instances }) => ({ ... }),        // facts computed once per series
   matches: (instance, { series }) => boolean,  // per-instance predicate
@@ -99,9 +111,9 @@ engine and the matched rule's `customAttributes`.
 }
 ```
 
-Rules are evaluated in order and the **first** matching rule claims the
-instance.  Groups are namespaced per rule, so two rules never merge their
-instances even when their `groupBy` values collide.
+Rules are evaluated in priority order and the **first** matching rule claims
+the instance.  Groups are namespaced per rule id, so two rules never merge
+their instances even when their `groupBy` values collide.
 
 In TypeScript (a mode or extension) rules are written with plain functions.
 In **data-only customizations** — JSONC URL modules or JSON app configs,
@@ -193,12 +205,15 @@ by the data that writes it:
 
 ```ts
 customizationService.registerFunctionSignatures({
-  'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
-  'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+  // `splitRules` is keyed by rule id, so `*` is the rule id.
+  'useMetadataDisplaySet.splitRules.*.matches': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.*.compareInstances': ['a', 'b', 'context'],
+  'useMetadataDisplaySet.compareInstances': ['a', 'b', 'context'],
 });
 ```
 
-`@ohif/extension-default` registers the split-rule signatures, so a rule written
+`@ohif/extension-default` registers the split-rule signatures, and the signature
+of the top-level `compareInstances`, so a rule written
 in JSONC does not state a convention and cannot state a wrong one. A marker that
 declares `params` disagreeing with the registered signature is compiled with the
 registered one and warns — data changing its own calling convention is how a
@@ -210,12 +225,17 @@ This is what makes an ordering comparator declarable as data, since a comparator
 needs both instances in scope:
 
 ```jsonc
-{
-  "id": "spatial",
+"spatial": {
+  "priority": -1,
   "matches": { "$function": "Modality === 'CT'" },
   "compareInstances": { "$function": "a.SliceLocation - b.SliceLocation" }
 }
 ```
+
+The top-level `useMetadataDisplaySet.compareInstances` is a comparator with the
+same arguments. The engine consults it after the rule's own `compareInstances`,
+and the display set factory applies both again whenever it re-sorts a display
+set.
 
 Returning 0 from a comparator declines to have an opinion rather than asserting
 the two instances are interchangeable: OHIF's default order (the
@@ -242,17 +262,19 @@ window.config = {
   customizationFunctionPolicy: {
     denyAttributes: [
       // this deployment composes series labels centrally
-      'useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription',
+      'useMetadataDisplaySet.splitRules.*.customAttributes.SeriesDescription',
     ],
   },
 };
 ```
 
 A path is the chain of object keys from the customization id to the key holding
-the marker. **Array indices are not segments**, so one pattern covers every rule
-in a list and stays valid when the list is reordered. `*` matches exactly one
-segment (useful for author-named keys such as a series fact); a trailing `**`
-matches any remaining segments. A refused marker resolves to `undefined` with a
+the marker. Object keys are segments, so a split rule's id is a segment:
+`useMetadataDisplaySet.splitRules.ctScout.matches`. **Array indices are not
+segments**, so one pattern covers every item in a list and stays valid when the
+list is reordered. `*` matches exactly one segment (useful for author-named keys
+such as a rule id or a series fact); a trailing `**` matches any remaining
+segments. A refused marker resolves to `undefined` with a
 console warning naming the path, and the rest of the rule still applies.
 
 **Nothing is denied by default.** `['**']` switches `$function` off entirely.
@@ -296,18 +318,36 @@ An undefined `series` fact fails closed instead (the rule simply never
 matches); that also warns, since it is otherwise a silent mystery.
 :::
 
-### Identity is not stable across rule changes
+### Display set identity and re-splits
 
-`splitKey` — the key used to reconcile a re-split series against the display
-sets already created for it — is namespaced with the rule's **index** in the
-rules array. Changing the rules after studies have loaded (a mode
-`$unshift`-ing a rule mid-session) retires every previous key, so those display
-sets are recreated under fresh `displaySetInstanceUID`s and lose viewport
-state. Configure split rules before loading studies.
+**Existing display sets only grow.** When new instances of a series arrive, or
+the split rules change during a session, an instance that already has a display
+set stays in it. A display set is never deleted, never loses an instance, and
+keeps its `displaySetInstanceUID`, so viewport state survives. The re-split only
+places the instances that are new to the series:
 
-`splitNumber` is likewise only an index into the engine's key-sorted group
-list, and shifts when a new group appears. Do not use it as a stable identity
-in `customAttributes`.
+1. into the existing display set that holds the other instances of their group,
+   through that display set's `extendInstances` hook;
+2. else into the existing display set with their group's `splitKey`;
+3. else into a new display set of their own.
+
+The result can therefore differ from a split of the complete series from the
+start. For example, an ultrasound series with a `runBy` rule arrives as `img1`,
+`img3` (single images) and `clip4` (a multi-frame clip): two display sets,
+`[img1, img3]` and `[clip4]`. Then `clip2` arrives. A split from the start gives
+four display sets, `[img1] [clip2] [img3] [clip4]`. The re-split gives three:
+`[img1, img3]` stays as it is, `clip2` gets a new display set, and `[clip4]`
+stays as it is.
+
+`splitKey` holds the rule id and the rule's `groupBy` values, and no position:
+a `runBy` run is keyed by its first instance, not by its run number. A display
+set keeps the key of the group that created it.
+
+`extendInstances` receives the rule's series facts from the re-split, so the
+re-sort of the display set uses the facts that the split used.
+
+`splitNumber` is only an index into the engine's group list, and shifts when a
+new group appears. Do not use it as a stable identity in `customAttributes`.
 
 ## Worked example: splitting a CT SCOUT image
 
@@ -323,10 +363,11 @@ at least 10 frames into its own display set labelled `SCOUT`:
   "global": {
     "useMetadataDisplaySet": {
       "splitRules": {
-        // PREPEND: the rule must run before `volume3d` claims the series.
-        "$unshift": [
-          {
-            "id": "ctScout",
+        // Adds the rule under its id. Priority -1 runs it before `volume3d`
+        // (priority 4) claims the series.
+        "$merge": {
+          "ctScout": {
+            "priority": -1,
             "viewportTypes": ["stack"],
             "series": {
               // Computed once per series; multiframe-aware frame count.
@@ -344,7 +385,7 @@ at least 10 frames into its own display set labelled `SCOUT`:
               "SeriesDescription": { "$function": "`SCOUT ${SeriesDescription}`" }
             }
           }
-        ]
+        }
       }
     }
   }
@@ -363,27 +404,35 @@ Split rules resolve through the usual customization scopes
 commands:
 
 ```js
-// Prepend a higher-priority rule (see the SCOUT example above)
-useMetadataDisplaySet: { splitRules: { $unshift: [myRule] } }
+// Add a rule that runs before every default rule (see the SCOUT example above)
+useMetadataDisplaySet: { splitRules: { $merge: { myRule: { ...myRule, priority: -1 } } } }
 
-// Append a fallback rule (only sees instances no default rule matched)
-useMetadataDisplaySet: { splitRules: { $push: [myRule] } }
+// Add a fallback rule (only sees instances no default rule matched)
+useMetadataDisplaySet: { splitRules: { $merge: { myRule: { ...myRule, priority: 20000 } } } }
 
-// Replace one rule in place
+// Replace one rule, and keep its place
 useMetadataDisplaySet: {
-  splitRules: {
-    $apply: rules => rules.map(r => (r.id === 'singleImageModality' ? myRule : r)),
-  },
+  splitRules: { singleImageModality: { $set: { ...myRule, priority: 1 } } },
 }
 
+// Move one rule
+useMetadataDisplaySet: { splitRules: { volume3d: { priority: { $set: 0 } } } }
+
+// Turn one rule off
+useMetadataDisplaySet: { splitRules: { volume3d: { priority: { $set: null } } } }
+
 // Replace the whole rule set
-useMetadataDisplaySet: { splitRules: { $set: [ruleA, ruleB] } }
+useMetadataDisplaySet: { splitRules: { $set: { ruleA: { ...ruleA, priority: 1 } } } }
 ```
 
 :::note
-Because rules are first-match-wins, a `$push`-ed rule only receives
-instances that none of the default rules claimed.  Rules that should take
-precedence over the defaults must be `$unshift`-ed (or the array replaced).
+Because rules are first-match-wins, a rule with a priority above `10000` only
+receives instances that none of the default rules claimed. A rule that must
+take precedence over the defaults needs a priority below `0`.
+
+A keyed rule set cannot hold two rules with one id, so a customization layer
+replaces or edits a rule instead of adding a copy of it. An entry whose
+`priority` is missing or is not a number is dropped with a console warning.
 :::
 
 :::caution

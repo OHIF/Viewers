@@ -1,4 +1,4 @@
-import type { InstanceGroup } from '@cornerstonejs/metadata';
+import type { GroupInstancesOptions, InstanceGroup } from '@cornerstonejs/metadata';
 import { ohifDefaultSplitRules } from '../displaySetSplitting/ohifDefaultSplitRules';
 import { makeDisplaySetFromInstanceGroup } from '../displaySetSplitting/makeDisplaySetFromInstanceGroup';
 import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSetDisplaySet';
@@ -21,6 +21,12 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * or globally via the named module entry
  * `'@ohif/extension-default.customizationModule.metadataDisplaySet'`,
  * or from the URL with `?customization=split/enableNewSplit`.
+ *
+ * `splitRules` is keyed by rule id, and each rule has a `priority` (ascending
+ * order, first match wins). The defaults use `1..n`. A customization adds a
+ * rule with `$merge`, turns a default off with `priority: null`, or moves one
+ * by changing its priority - a priority below 0 runs before every default, and
+ * above 10000 after every default.
  *
  * Split rules may be overridden with immutability-helper specs.  Rules may
  * also be authored declaratively (e.g. in JSONC URL customizations) with
@@ -46,12 +52,16 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * convention provides.
  */
 const SPLIT_RULE_FUNCTION_SIGNATURES: Record<string, string[]> = {
-  'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
-  'useMetadataDisplaySet.splitRules.runBy': ['instance', 'context'],
-  'useMetadataDisplaySet.splitRules.groupBy': ['instance', 'context'],
-  'useMetadataDisplaySet.splitRules.series.*': ['context'],
-  'useMetadataDisplaySet.splitRules.customAttributes.*': ['instance', 'context'],
-  'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+  // `splitRules` is keyed by rule id, so the `*` is the rule id.
+  'useMetadataDisplaySet.splitRules.*.matches': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.*.runBy': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.*.groupBy': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.*.series.*': ['context'],
+  'useMetadataDisplaySet.splitRules.*.customAttributes.*': ['instance', 'context'],
+  'useMetadataDisplaySet.splitRules.*.compareInstances': ['a', 'b', 'context'],
+  // The host comparator, consulted after a rule's own `compareInstances`. The
+  // engine calls it with the same arguments as a rule comparator.
+  'useMetadataDisplaySet.compareInstances': ['a', 'b', 'context'],
 };
 
 export default function getMetadataDisplaySetCustomization(context: ImageSetFactoryContext) {
@@ -65,8 +75,13 @@ export default function getMetadataDisplaySetCustomization(context: ImageSetFact
     useMetadataDisplaySet: {
       enabled: false,
       splitRules: ohifDefaultSplitRules,
-      createDisplaySetFromGroup: (group: InstanceGroup, options: { splitNumber: number }) =>
-        makeDisplaySetFromInstanceGroup(group, options, context),
+      createDisplaySetFromGroup: (
+        group: InstanceGroup,
+        options: {
+          splitNumber: number;
+          compareInstances?: GroupInstancesOptions['compareInstances'];
+        }
+      ) => makeDisplaySetFromInstanceGroup(group, options, context),
     },
   };
 }

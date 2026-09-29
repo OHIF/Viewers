@@ -178,13 +178,23 @@ export type DisplaySet = {
   splitRuleId?: string;
 
   /**
-   * Incremental-merge hook for split-rule display sets.  Intentionally named
-   * differently from `addInstances` (the SOP-class-handler merge hook) so the
-   * legacy handler loop never feeds unmatched instances into split-rule
-   * display sets.  Returns the updated display set, or undefined when the
-   * display set cannot merge the instances.
+   * Growth hook for split-rule display sets: adds instances that are new to
+   * the series. A split-rule display set never loses an instance. `series` is
+   * the display set's rule's series facts from the re-split, when the new
+   * instances matched that same rule, so the re-sort sees the facts the split
+   * saw. Intentionally named differently from `addInstances` (the
+   * SOP-class-handler merge hook) so the legacy handler loop never feeds
+   * unmatched instances into split-rule display sets. Returns the updated
+   * display set, or undefined when the display set cannot take the instances.
    */
-  updateInstances?(instances: InstanceMetadata[], displaySetService): DisplaySet | undefined;
+  extendInstances?(
+    instances: InstanceMetadata[],
+    options: {
+      series?: Record<string, unknown>;
+      compareInstances?: (a: unknown, b: unknown, context: unknown) => number;
+    },
+    displaySetService
+  ): DisplaySet | undefined;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

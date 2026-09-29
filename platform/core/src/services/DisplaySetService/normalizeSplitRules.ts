@@ -1,5 +1,5 @@
 import { compileExpression } from '@cornerstonejs/metadata';
-import type { SplitRule } from '@cornerstonejs/metadata';
+import type { SplitRuleSet, SplitRuleSetEntry } from '@cornerstonejs/metadata';
 
 /**
  * Normalizes declaratively-authored split rules (e.g. JSONC URL
@@ -31,16 +31,68 @@ import type { SplitRule } from '@cornerstonejs/metadata';
  * Rules whose `matches` or `groupBy` was authored but did not resolve to
  * something the engine can call are DROPPED — see {@link isUsableRule} for
  * why silently keeping them is the dangerous option.
+ *
+ * The rules are a keyed {@link SplitRuleSet}: the key is the rule id, and
+ * `priority` sets the evaluation order (`null` turns the rule off). An entry
+ * with an invalid priority is dropped with a warning here, rather than left for
+ * the engine, which throws on it - one bad customization layer must not stop
+ * display set creation for every series.
+ *
+ * @returns a rule set the engine accepts, with the same keys and priorities.
  */
-export function normalizeSplitRules(rules: SplitRule[]): SplitRule[] {
-  if (!Array.isArray(rules)) {
-    return [];
+export function normalizeSplitRules(ruleSet: SplitRuleSet): SplitRuleSet {
+  const normalized: SplitRuleSet = {};
+  if (!ruleSet || typeof ruleSet !== 'object' || Array.isArray(ruleSet)) {
+    console.warn(
+      'normalizeSplitRules: the splitRules customization must be an object keyed by rule id.',
+      ruleSet
+    );
+    return normalized;
   }
-  return rules.filter(isUsableRule).map(normalizeSplitRule);
+  for (const [id, entry] of Object.entries(ruleSet)) {
+    const valid = validEntry(id, entry);
+    if (valid && isUsableRule(id, valid)) {
+      normalized[id] = normalizeSplitRule(id, valid);
+    }
+  }
+  return normalized;
+}
+
+/**
+ * The entry as the engine accepts it, or undefined (with a warning) when the
+ * engine would reject it.
+ */
+function validEntry(id: string, entry: SplitRuleSetEntry): SplitRuleSetEntry | undefined {
+  if (!entry || typeof entry !== 'object') {
+    console.warn(`normalizeSplitRules: dropping split rule '${id}' - the entry is not an object.`);
+    return undefined;
+  }
+  const { priority } = entry;
+  if (priority !== null && (typeof priority !== 'number' || !Number.isFinite(priority))) {
+    console.warn(
+      `normalizeSplitRules: dropping split rule '${id}' - its priority must be a number, or ` +
+        `null to turn the rule off. The default rules use the priorities 1..n: use a priority ` +
+        `below 0 to run before them, or above 10000 to run after them.`,
+      priority
+    );
+    return undefined;
+  }
+  if (entry.id !== undefined && entry.id !== id) {
+    // The key is the id. Keep the rule under its key rather than drop it: a
+    // copied rule that kept its old `id` is still a rule the author wants.
+    console.warn(
+      `normalizeSplitRules: split rule '${id}' states the id '${entry.id}'. The key is the ` +
+        `id, so the rule uses '${id}'. Remove the id from the rule.`
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _statedId, ...rest } = entry;
+    return rest;
+  }
+  return entry;
 }
 
 /** Was `key` written by the rule author (as opposed to simply absent)? */
-const isAuthored = (rule: SplitRule, key: string) =>
+const isAuthored = (rule: SplitRuleSetEntry, key: string) =>
   Object.prototype.hasOwnProperty.call(rule, key);
 
 /**
@@ -52,7 +104,7 @@ const isAuthored = (rule: SplitRule, key: string) =>
  * `groupBy` fail catastrophically OPEN:
  *
  * - `groupInstancesBySplitRules` treats a rule with no `matches` as matching
- *   EVERY instance, so one typo in a `$unshift`-ed rule would silently claim
+ *   EVERY instance, so one typo in a high-priority rule would silently claim
  *   the whole study instead of doing nothing.
  * - a `groupBy` entry that is neither a tag name nor a function reads
  *   `instance[undefined]` for every instance, collapsing them into one group.
@@ -61,13 +113,8 @@ const isAuthored = (rule: SplitRule, key: string) =>
  * degrades to "my custom rule did nothing" — diagnosable — rather than
  * "every series is grouped wrong".
  */
-function isUsableRule(rule: SplitRule): boolean {
-  if (!rule || typeof rule !== 'object') {
-    return false;
-  }
-  const ruleId = (rule as { id?: string }).id ?? '<unnamed>';
-
-  const { matches, groupBy } = rule as Record<string, unknown> & SplitRule;
+function isUsableRule(ruleId: string, rule: SplitRuleSetEntry): boolean {
+  const { matches, groupBy } = rule as Record<string, unknown> & SplitRuleSetEntry;
 
   if (isAuthored(rule, 'matches') && typeof matches !== 'function' && typeof matches !== 'string') {
     console.warn(
@@ -95,11 +142,7 @@ function isUsableRule(rule: SplitRule): boolean {
   return true;
 }
 
-function normalizeSplitRule(rule: SplitRule): SplitRule {
-  if (!rule || typeof rule !== 'object') {
-    return rule;
-  }
-
+function normalizeSplitRule(id: string, rule: SplitRuleSetEntry): SplitRuleSetEntry {
   let normalized = rule;
   const assign = (key: string, value: unknown) => {
     if (normalized === rule) {
@@ -108,7 +151,7 @@ function normalizeSplitRule(rule: SplitRule): SplitRule {
     normalized[key] = value;
   };
 
-  const { matches, series, customAttributes } = rule as Record<string, unknown> & SplitRule;
+  const { matches, series, customAttributes } = rule as Record<string, unknown> & SplitRuleSetEntry;
 
   if (typeof matches === 'string') {
     assign('matches', compileExpression(matches));
@@ -123,7 +166,7 @@ function normalizeSplitRule(rule: SplitRule): SplitRule {
     for (const [factName, factValue] of factEntries) {
       if (factValue === undefined) {
         console.warn(
-          `normalizeSplitRules: split rule '${(rule as { id?: string }).id ?? '<unnamed>'}' has an undefined ` +
+          `normalizeSplitRules: split rule '${id}' has an undefined ` +
             `series fact '${factName}' - the rule will never match. Check its $function expression.`
         );
       }

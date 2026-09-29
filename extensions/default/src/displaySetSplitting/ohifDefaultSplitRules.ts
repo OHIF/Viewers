@@ -28,7 +28,7 @@ import {
   isVideoInstance,
   isWsiInstance,
 } from '@cornerstonejs/metadata';
-import type { NaturalizedInstance, SplitRule } from '@cornerstonejs/metadata';
+import type { NaturalizedInstance, SplitRuleSet, SplitRuleSetEntry } from '@cornerstonejs/metadata';
 import { isStackHandledInstance } from './stackSopClassUids';
 
 /**
@@ -60,7 +60,7 @@ const isStackImageInstance = (instance: NaturalizedInstance) =>
   !isSpecializedInstance(instance) && isStackHandledInstance(instance);
 
 /** Adds the stack-ownership guard in front of a rule's matcher. */
-const withStackGuard = (rule: SplitRule): SplitRule => ({
+const withStackGuard = (rule: SplitRuleSetEntry): SplitRuleSetEntry => ({
   ...rule,
   matches: (instance, context) =>
     isStackImageInstance(instance) && (rule.matches ? rule.matches(instance, context) : true),
@@ -73,8 +73,8 @@ const withStackGuard = (rule: SplitRule): SplitRule => ({
  * would merge same-resolution mammography views (RCC/LCC/RMLO/LMLO) into a
  * single display set.
  */
-const singleImagePerInstanceRule: SplitRule = {
-  id: 'singleImageModality',
+const singleImageModality: SplitRuleSetEntry = {
+  priority: 1,
   viewportTypes: ['stack'],
   matches: instance =>
     ['CR', 'DX', 'MG'].includes((instance.Modality as string) ?? '') &&
@@ -95,8 +95,8 @@ const singleImagePerInstanceRule: SplitRule = {
  * requires `SliceLocation !== undefined`, which would collapse ultrasound
  * clips (US is not a volume modality) into a single stack display set.
  */
-const multiFramePerInstanceRule: SplitRule = {
-  id: 'multiFrame',
+const multiFrame: SplitRuleSetEntry = {
+  priority: 2,
   viewportTypes: ['stack'],
   matches: instance => Number(instance.NumberOfFrames) > 1 && isStackImageInstance(instance),
   groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
@@ -111,42 +111,41 @@ const multiFramePerInstanceRule: SplitRule = {
 };
 
 /**
- * Upstream rules reused as-is (behind the stack-ownership guard).
+ * An upstream rule reused as-is (behind the stack-ownership guard), under its
+ * upstream id and with the OHIF priority.
  *
- * Both apply their own `isImageInstance` test internally, which narrows what
- * they claim relative to the guard.  For `mixedDimensionalityBValue` (MR only)
- * that changes nothing — every MR SOP class is on both lists.  For `volume3d`
- * it means NM series drop through to the catch-all instead, which is
- * equivalent; see {@link defaultStackImageRule}.
+ * Both reused rules apply their own `isImageInstance` test internally, which
+ * narrows what they claim relative to the guard.  For
+ * `mixedDimensionalityBValue` (MR only) that changes nothing — every MR SOP
+ * class is on both lists.  For `volume3d` it means NM series drop through to
+ * the catch-all instead, which is equivalent; see {@link defaultImageRule}.
  *
  * Upstream's `defaultImageRule` is deliberately NOT reused: as the catch-all it
  * has to accept every stack-owned image SOP class, including the ones
  * `isImageInstance` omits, so OHIF authors its own below.
- */
-const REUSED_UPSTREAM_RULE_IDS = ['mixedDimensionalityBValue', 'volume3d'];
-
-/**
- * Resolves the reused upstream rules by id.
  *
  * A missing id means `@cornerstonejs/metadata` renamed a default rule.  This
- * warns and skips rather than throwing: this module is imported by
- * `getCustomizationModule`, so a top-level throw would take down the whole
+ * warns and leaves the rule out rather than throwing: this module is imported
+ * by `getCustomizationModule`, so a top-level throw would take down the whole
  * `@ohif/extension-default` customization module — and with it the app — over
- * a feature that is OFF by default.  Degrading to a shorter rule list only
- * affects deployments that opted in, and `ohifDefaultSplitRules.test.ts`
- * fails loudly on the drift in CI, which is where a hard failure belongs.
+ * a feature that is OFF by default.  Degrading to fewer rules only affects
+ * deployments that opted in, and `ohifDefaultSplitRules.test.ts` fails loudly
+ * on the drift in CI, which is where a hard failure belongs.
+ *
+ * @returns `{ [ruleId]: rule }`, or `{}` when the upstream rule is missing, so
+ *   the result spreads straight into the rule set.
  */
-const reusedUpstreamRules = REUSED_UPSTREAM_RULE_IDS.map(ruleId => {
-  const rule = defaultDisplaySetSplitRules.find(candidate => candidate.id === ruleId);
-  if (!rule) {
+const reuseUpstreamRule = (ruleId: string, priority: number): SplitRuleSet => {
+  const upstream = defaultDisplaySetSplitRules[ruleId];
+  if (!upstream) {
     console.warn(
       `ohifDefaultSplitRules: @cornerstonejs/metadata default split rule '${ruleId}' not found - ` +
         `the upstream rule ids changed. Skipping it; display set splitting will be less specific.`
     );
-    return undefined;
+    return {};
   }
-  return withStackGuard(rule);
-}).filter((rule): rule is SplitRule => rule !== undefined);
+  return { [ruleId]: withStackGuard({ ...upstream, priority }) };
+};
 
 /**
  * Catch-all: one stack display set per series for every remaining instance the
@@ -163,15 +162,16 @@ const reusedUpstreamRules = REUSED_UPSTREAM_RULE_IDS.map(ruleId => {
  * types, and `isReconstructable` is computed by the display set factory, not by
  * the rule.
  */
-const defaultStackImageRule: SplitRule = {
-  id: 'defaultImageRule',
+const defaultImageRule: SplitRuleSetEntry = {
+  priority: 5,
   viewportTypes: ['stack', 'volume', 'volume3d'],
   matches: instance => isStackImageInstance(instance),
   groupBy: ['SeriesInstanceUID'],
 };
 
 /**
- * The OHIF default split rules for the `useMetadataDisplaySet` customization.
+ * The OHIF default split rules for the `useMetadataDisplaySet` customization,
+ * keyed by rule id.
  *
  * Every rule is gated on {@link isStackImageInstance}, so the set claims
  * exactly the instances the stack SOP class handler would have claimed —
@@ -180,11 +180,17 @@ const defaultStackImageRule: SplitRule = {
  * image SOP classes upstream's `isImageInstance` list omits are included).
  * Everything else is left unmatched for the legacy SOP class handler loop.
  *
- * Evaluated in order, first matching rule wins per instance.
+ * Rules are evaluated in ascending `priority`, and the first matching rule
+ * wins per instance. The defaults use the priorities `1..n`, fixed per rule, so
+ * a customization that places a rule between two defaults (priority `2.5`, say)
+ * keeps its place even when a reused upstream rule is missing. A priority
+ * below `0` runs before every default, above `DEFAULT_SPLIT_RULE_PRIORITY_LIMIT`
+ * (10000) after every default, and `null` turns a default rule off.
  */
-export const ohifDefaultSplitRules: SplitRule[] = [
-  singleImagePerInstanceRule,
-  multiFramePerInstanceRule,
-  ...reusedUpstreamRules,
-  defaultStackImageRule,
-];
+export const ohifDefaultSplitRules: SplitRuleSet = {
+  singleImageModality,
+  multiFrame,
+  ...reuseUpstreamRule('mixedDimensionalityBValue', 3),
+  ...reuseUpstreamRule('volume3d', 4),
+  defaultImageRule,
+};

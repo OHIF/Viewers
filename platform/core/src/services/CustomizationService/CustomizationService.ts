@@ -706,8 +706,8 @@ export default class CustomizationService extends PubSubService {
    *
    * ```ts
    * customizationService.registerFunctionSignatures({
-   *   'useMetadataDisplaySet.splitRules.matches': ['instance', 'context'],
-   *   'useMetadataDisplaySet.splitRules.compareInstances': ['a', 'b', 'context'],
+   *   'useMetadataDisplaySet.splitRules.*.matches': ['instance', 'context'],
+   *   'useMetadataDisplaySet.splitRules.*.compareInstances': ['a', 'b', 'context'],
    * });
    * ```
    *

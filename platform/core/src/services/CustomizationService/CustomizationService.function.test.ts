@@ -125,21 +125,21 @@ describe('CustomizationService $function', () => {
       service.setCustomizations(
         {
           useMetadataDisplaySet: {
-            splitRules: [
-              {
-                id: 'ctScout',
+            splitRules: {
+              ctScout: {
+                priority: -1,
                 matches: { $function: "Modality === 'CT'" },
                 series: { firstInstance: { $function: 'minOf(instances, InstanceNumber)' } },
                 customAttributes: {
                   SeriesDescription: { $function: '`SCOUT ${SeriesDescription}`' },
                 },
               },
-            ],
+            },
           },
         },
         CustomizationScope.Global
       );
-      const [rule] = (service.getCustomization('useMetadataDisplaySet') as any).splitRules;
+      const rule = (service.getCustomization('useMetadataDisplaySet') as any).splitRules.ctScout;
       expect(rule.matches({ Modality: 'CT' })).toBe(true);
       expect(rule.series.firstInstance({ instances: [{ InstanceNumber: 3 }] })).toBe(3);
       expect(rule.customAttributes.SeriesDescription({ SeriesDescription: 'CHEST' })).toBe(
@@ -150,33 +150,34 @@ describe('CustomizationService $function', () => {
 
     it('refuses a marker at a denied path, leaving the rest of the rule intact', () => {
       setPolicy({
-        denyAttributes: ['useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription'],
+        // `splitRules` is keyed by rule id, so `*` is the rule id.
+        denyAttributes: ['useMetadataDisplaySet.splitRules.*.customAttributes.SeriesDescription'],
       });
       service.setCustomizations(
         {
           useMetadataDisplaySet: {
-            splitRules: [
-              {
-                id: 'ctScout',
+            splitRules: {
+              ctScout: {
+                priority: -1,
                 matches: { $function: "Modality === 'CT'" },
                 customAttributes: {
                   label: 'SCOUT',
                   SeriesDescription: { $function: '`SCOUT ${SeriesDescription}`' },
                 },
               },
-            ],
+            },
           },
         },
         CustomizationScope.Global
       );
-      const [rule] = (service.getCustomization('useMetadataDisplaySet') as any).splitRules;
+      const rule = (service.getCustomization('useMetadataDisplaySet') as any).splitRules.ctScout;
       expect(rule.customAttributes.SeriesDescription).toBeUndefined();
       // The denial is scoped to the one attribute.
       expect(rule.customAttributes.label).toBe('SCOUT');
       expect(rule.matches({ Modality: 'CT' })).toBe(true);
       expect(warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          'useMetadataDisplaySet.splitRules.customAttributes.SeriesDescription'
+          'useMetadataDisplaySet.splitRules.ctScout.customAttributes.SeriesDescription'
         ),
         expect.anything()
       );
@@ -246,6 +247,32 @@ describe('CustomizationService $function', () => {
   });
 
   describe('registered signatures', () => {
+    it('reaches every rule of a keyed rule set, and the host comparator', () => {
+      service.registerFunctionSignatures({
+        'useMetadataDisplaySet.splitRules.*.compareInstances': ['a', 'b', 'context'],
+        'useMetadataDisplaySet.compareInstances': ['a', 'b', 'context'],
+      });
+      service.setCustomizations(
+        {
+          useMetadataDisplaySet: {
+            compareInstances: { $function: 'a.SliceLocation - b.SliceLocation' },
+            splitRules: {
+              ctScout: {
+                priority: -1,
+                compareInstances: { $function: 'b.InstanceNumber - a.InstanceNumber' },
+              },
+            },
+          },
+        },
+        CustomizationScope.Global
+      );
+      const config = service.getCustomization('useMetadataDisplaySet') as any;
+      expect(config.compareInstances({ SliceLocation: 1 }, { SliceLocation: 3 })).toBe(-2);
+      expect(
+        config.splitRules.ctScout.compareInstances({ InstanceNumber: 1 }, { InstanceNumber: 3 })
+      ).toBe(2);
+    });
+
     it('compiles a marker with the registered params, without the data saying so', () => {
       service.registerFunctionSignatures({
         'rules.compareInstances': ['a', 'b', 'context'],

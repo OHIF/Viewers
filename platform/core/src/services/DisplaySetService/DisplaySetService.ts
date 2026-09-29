@@ -3,7 +3,7 @@ import type {
   GroupInstancesOptions,
   InstanceGroup,
   NaturalizedInstance,
-  SplitRule,
+  SplitRuleSet,
 } from '@cornerstonejs/metadata';
 import { ExtensionManager } from '../../extensions';
 import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../types';
@@ -12,8 +12,22 @@ import EVENTS from './EVENTS';
 import * as displaySetStore from './displaySetStore';
 import { normalizeSplitRules } from './normalizeSplitRules';
 
-/** Memoizes normalized split-rule arrays by identity (rules change rarely). */
-const normalizedSplitRulesCache = new WeakMap<SplitRule[], SplitRule[]>();
+/** Memoizes normalized split rules by the identity of the customization value. */
+const normalizedSplitRulesCache = new WeakMap<SplitRuleSet, SplitRuleSet>();
+
+/**
+ * What `createDisplaySetFromGroup` is told about the group it builds.
+ */
+export type CreateDisplaySetFromGroupContext = {
+  /** Position of the group in the engine's group list for this split. */
+  splitNumber: number;
+  /**
+   * The host comparator the engine used to order the group (the customization's
+   * `compareInstances`). A factory that re-sorts the display set must apply it
+   * again, or the re-sort discards the order the engine computed.
+   */
+  compareInstances?: GroupInstancesOptions['compareInstances'];
+};
 
 /**
  * Value shape of the `useMetadataDisplaySet` customization.  When `enabled`,
@@ -25,12 +39,17 @@ const normalizedSplitRulesCache = new WeakMap<SplitRule[], SplitRule[]>();
 export type UseMetadataDisplaySetCustomization = {
   /** Default false — the legacy SOP class handler path is used exclusively. */
   enabled?: boolean;
-  /** Rules for `groupInstancesBySplitRules`; first matching rule wins per instance. */
-  splitRules?: SplitRule[];
+  /**
+   * Rules for `groupInstancesBySplitRules`, keyed by rule id. Each rule has a
+   * `priority`: rules run in ascending priority, and the first matching rule
+   * wins per instance. The default rules use `1..n`; a priority below 0 runs
+   * before them, above 10000 after them, and `null` turns a rule off.
+   */
+  splitRules?: SplitRuleSet;
   /** Factory converting a matched instance group into an OHIF display set. */
   createDisplaySetFromGroup?: (
     group: InstanceGroup,
-    context: { splitNumber: number }
+    context: CreateDisplaySetFromGroupContext
   ) => DisplaySet | undefined;
   /**
    * The base instance order the engine applies to every rule, before any rule's
@@ -368,7 +387,7 @@ export default class DisplaySetService extends PubSubService {
     // aggregate series-level facts); instances not matched by any rule fall
     // through to the legacy SOP class handler loop below unchanged.
     const splitConfig = this._getMetadataSplitCustomization();
-    if (instancesSrc?.length && splitConfig?.enabled && splitConfig.splitRules?.length) {
+    if (instancesSrc?.length && splitConfig?.enabled && splitConfig.splitRules) {
       const { displaySets, unmatched } = this._makeDisplaySetsWithSplitRules(
         instancesSrc,
         splitConfig,
@@ -414,8 +433,8 @@ export default class DisplaySetService extends PubSubService {
     const config = this.servicesManager?.services?.customizationService?.getCustomization(
       'useMetadataDisplaySet'
     ) as UseMetadataDisplaySetCustomization | undefined;
-    if (!config?.enabled || !Array.isArray(config.splitRules)) {
-      return config;
+    if (!config?.enabled || !config.splitRules || typeof config.splitRules !== 'object') {
+      return { ...config, splitRules: undefined };
     }
     let splitRules = normalizedSplitRulesCache.get(config.splitRules);
     if (!splitRules) {
@@ -430,11 +449,20 @@ export default class DisplaySetService extends PubSubService {
    * split rules, reconciling with display sets created by earlier calls for
    * the same series (keyed by the deterministic, rule-namespaced `splitKey`).
    *
-   * Mirrors the idempotency semantics of `_makeDisplaySetForInstances`:
-   * repeated calls with the same instances add nothing; calls with new
-   * instances update existing display sets (via their `updateInstances`
-   * attribute) and fire the invalidation event; regrouped display sets whose
-   * split key disappears are deleted.
+   * **Existing display sets only grow.** An instance that already has a display
+   * set stays in it. A later call - with new instances, or after the rules
+   * changed - only places the instances that are new to the series:
+   *
+   * - into the existing display set that holds the other instances of their
+   *   group (via its `extendInstances` attribute, which fires the invalidation
+   *   event), else the one with their group's `splitKey`;
+   * - otherwise into a new display set of their own.
+   *
+   * So the result can differ from a split of the complete series from the
+   * start: for example a new clip that lands in the middle of a run of single
+   * images gets its own display set, and the run's display set keeps the
+   * singles on both sides of it. Repeated calls with the same instances add
+   * nothing.
    *
    * Splitting is performed one series at a time: unlike the legacy loop (which
    * partitions by SOP class first), the splitter is handed a whole series so
@@ -445,14 +473,12 @@ export default class DisplaySetService extends PubSubService {
    *
    * ### `splitKey` / `splitNumber` stability
    *
-   * `splitKey` is namespaced with the rule's INDEX in the rules array, so it is
-   * stable only while that array is.  Changing the rules mid-session (a mode
-   * `$unshift`-ing a rule after a first batch has been split) retires every
-   * previous key, and the reconciliation below recreates those display sets
-   * under fresh UIDs — losing viewport state.  Configure split rules before
-   * loading studies.  `splitNumber` is likewise only an index into the
-   * engine's key-sorted group list and shifts when a new group appears, so it
-   * must not be used as a stable identity in `customAttributes`.
+   * `splitKey` is namespaced with the rule's id, and holds no position: a
+   * `runBy` run is keyed by its first instance, not by its ordinal. It is the
+   * key of the group that CREATED the display set; a display set that grew
+   * keeps it. `splitNumber` is only an index into the engine's group list and
+   * shifts when a new group appears, so it must not be used as a stable
+   * identity in `customAttributes`.
    *
    * @returns the newly created display sets and the instances not matched by
    * any split rule (which must flow to the legacy SOP class handler loop).
@@ -493,94 +519,143 @@ export default class DisplaySetService extends PubSubService {
     settings
   ): { displaySets: DisplaySet[]; unmatched: InstanceMetadata[] } {
     const unmatched: InstanceMetadata[] = [];
-    const groups = groupInstancesBySplitRules(
-      instancesSrc as unknown as NaturalizedInstance[],
-      config.splitRules,
-      instance => unmatched.push(instance as unknown as InstanceMetadata),
-      // Ordering the engine applies to every rule, so the instance order it
-      // walks runs in - and so which display sets a `runBy` rule produces -
-      // matches the order the display sets end up in. Optional: with neither
-      // supplied the engine's own acquisition order applies, which is what the
-      // legacy handler effectively used for run detection.
-      {
-        sortInstances: config.sortInstances,
-        compareInstances: config.compareInstances,
-      }
-    );
-
-    if (!groups.length) {
-      return { displaySets: [], unmatched };
+    let groups: InstanceGroup[];
+    try {
+      groups = groupInstancesBySplitRules(
+        instancesSrc as unknown as NaturalizedInstance[],
+        config.splitRules,
+        instance => unmatched.push(instance as unknown as InstanceMetadata),
+        // Ordering the engine applies to every rule, so the instance order it
+        // walks runs in - and so which display sets a `runBy` rule produces -
+        // matches the order the display sets end up in. Optional: with neither
+        // supplied the engine's own acquisition order applies, which is what the
+        // legacy handler effectively used for run detection.
+        {
+          sortInstances: config.sortInstances,
+          compareInstances: config.compareInstances,
+        }
+      );
+    } catch (error) {
+      // A rule that throws, or a rule set the engine rejects, must not stop the
+      // series from loading. The legacy SOP class handlers get every instance.
+      console.warn(
+        'DisplaySetService: the useMetadataDisplaySet split rules failed for series ' +
+          `${instancesSrc[0]?.SeriesInstanceUID}. The SOP class handlers create its display sets.`,
+        error
+      );
+      return { displaySets: [], unmatched: instancesSrc };
     }
 
-    const seriesInstanceUID = instancesSrc[0].SeriesInstanceUID;
-    const existingByKey = new Map<string, DisplaySet>();
-    for (const displaySet of this.getDisplaySetsForSeries(seriesInstanceUID)) {
-      if (displaySet.splitKey) {
-        existingByKey.set(displaySet.splitKey, displaySet);
-      }
-    }
+    const uidOf = (instance: { SOPInstanceUID?: string }) => instance.SOPInstanceUID;
+    const seriesDisplaySets = this.getDisplaySetsForSeries(instancesSrc[0].SeriesInstanceUID);
 
-    const added: DisplaySet[] = [];
-    const seenKeys = new Set<string>();
-
-    groups.forEach((group, splitNumber) => {
-      seenKeys.add(group.splitKey);
-      const existing = existingByKey.get(group.splitKey);
-      if (existing) {
-        const newInstances = filterInstances(group.instances as unknown as InstanceMetadata[], [
-          existing,
-        ]);
-        if (!newInstances.length) {
-          // Idempotent re-run - everything is already present.
-          this._addActiveDisplaySets([existing]);
-          return;
-        }
-        const updated = existing.updateInstances?.(newInstances, this);
-        if (updated) {
-          this.activeDisplaySetsChanged = true;
-          this._addDisplaySetsToCache([updated]);
-          this._addActiveDisplaySets([updated]);
-          this.setDisplaySetMetadataInvalidated(updated.displaySetInstanceUID);
-          return;
-        }
-        // No updateInstances support - fall through and recreate the display
-        // set under a new UID; the stale one is removed below.
-        existingByKey.delete(group.splitKey);
-        this.deleteDisplaySet(existing.displaySetInstanceUID);
-      }
-
-      const displaySet = config.createDisplaySetFromGroup?.(group, { splitNumber });
-      if (!displaySet) {
-        return;
-      }
-      // applying hp-defined viewport settings to the displaysets
-      Object.keys(settings).forEach(key => {
-        displaySet[key] = settings[key];
-      });
-      this._addDisplaySetsToCache([displaySet]);
-      this._addActiveDisplaySets([displaySet]);
-      added.push(displaySet);
-    });
-
-    // Regrouping across batches (e.g. a mixed-b-value split only detectable
-    // once a later batch arrives) can retire previous split keys.  Only
-    // delete a stale display set when all of its instances are present in
-    // this call - i.e. they were genuinely regrouped - so partial-list
-    // callers never delete display sets they cannot see.
-    const incomingSOPInstanceUIDs = new Set(instancesSrc.map(instance => instance.SOPInstanceUID));
-    for (const [splitKey, displaySet] of existingByKey) {
-      if (seenKeys.has(splitKey)) {
+    // Where each instance already lives. An instance never moves: a re-split
+    // only places the instances that are new to the series.
+    const homeOf = new Map<string, DisplaySet>();
+    const inOtherDisplaySet = new Set<string>();
+    const byKey = new Map<string, DisplaySet>();
+    for (const displaySet of seriesDisplaySets) {
+      if (!displaySet.splitKey) {
+        displaySet.instances?.forEach(instance => inOtherDisplaySet.add(uidOf(instance)));
         continue;
       }
-      const covered = displaySet.instances?.every(instance =>
-        incomingSOPInstanceUIDs.has(instance.SOPInstanceUID)
-      );
-      if (covered) {
-        this.deleteDisplaySet(displaySet.displaySetInstanceUID);
-      }
+      byKey.set(displaySet.splitKey, displaySet);
+      displaySet.instances?.forEach(instance => {
+        if (!homeOf.has(uidOf(instance))) {
+          homeOf.set(uidOf(instance), displaySet);
+        }
+      });
     }
+    const isNew = (instance: InstanceMetadata) =>
+      !homeOf.has(uidOf(instance)) && !inOtherDisplaySet.has(uidOf(instance));
 
-    return { displaySets: added, unmatched };
+    const added: DisplaySet[] = [];
+
+    groups.forEach((group, splitNumber) => {
+      const groupInstances = group.instances as unknown as InstanceMetadata[];
+      const newInstances = groupInstances.filter(isNew);
+
+      if (!newInstances.length) {
+        // Idempotent re-run: every instance already has a display set.
+        const homes = new Set(groupInstances.map(instance => homeOf.get(uidOf(instance))));
+        homes.delete(undefined);
+        this._addActiveDisplaySets([...homes]);
+        return;
+      }
+
+      // The display set that already holds the group's other instances, else
+      // the one with the group's key (a caller that passed only the new
+      // instances). Either way the existing display set only grows.
+      const target =
+        groupInstances.map(instance => homeOf.get(uidOf(instance))).find(Boolean) ??
+        byKey.get(group.splitKey);
+      let home = target && this._extendSplitDisplaySet(target, newInstances, group, config);
+
+      if (!home) {
+        // No display set to extend: the new instances form a display set of
+        // their own. The group's older instances stay where they are.
+        home = config.createDisplaySetFromGroup?.(
+          { ...group, instances: newInstances as unknown as NaturalizedInstance[] },
+          { splitNumber, compareInstances: config.compareInstances }
+        );
+        if (!home) {
+          return;
+        }
+        // applying hp-defined viewport settings to the displaysets
+        Object.keys(settings).forEach(key => {
+          home[key] = settings[key];
+        });
+        this._addDisplaySetsToCache([home]);
+        this._addActiveDisplaySets([home]);
+        added.push(home);
+        if (!byKey.has(group.splitKey)) {
+          byKey.set(group.splitKey, home);
+        }
+      }
+      newInstances.forEach(instance => homeOf.set(uidOf(instance), home));
+    });
+
+    // An instance that already has a split display set stays there, even when
+    // the rules no longer match it.
+    return {
+      displaySets: added,
+      unmatched: unmatched.filter(instance => !homeOf.has(uidOf(instance))),
+    };
+  }
+
+  /**
+   * Adds new instances to an existing split-rule display set, through its
+   * `extendInstances` hook, and publishes the change.
+   *
+   * The series facts go with the instances only when the group's rule is the
+   * rule that built the display set: the facts belong to one rule, and a
+   * display set sorts with its own rule.
+   *
+   * @returns the display set, or undefined when it has no `extendInstances`
+   *   hook or the hook declines the instances.
+   */
+  private _extendSplitDisplaySet(
+    displaySet: DisplaySet,
+    newInstances: InstanceMetadata[],
+    group: InstanceGroup,
+    config: UseMetadataDisplaySetCustomization
+  ): DisplaySet | undefined {
+    const updated = displaySet.extendInstances?.(
+      newInstances,
+      {
+        series: displaySet.splitRuleId === group.matchedRule.id ? group.series : undefined,
+        compareInstances: config.compareInstances,
+      },
+      this
+    );
+    if (!updated) {
+      return undefined;
+    }
+    this.activeDisplaySetsChanged = true;
+    this._addDisplaySetsToCache([updated]);
+    this._addActiveDisplaySets([updated]);
+    this.setDisplaySetMetadataInvalidated(updated.displaySetInstanceUID);
+    return updated;
   }
 
   /**

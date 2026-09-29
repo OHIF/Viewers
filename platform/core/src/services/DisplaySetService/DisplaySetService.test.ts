@@ -1,5 +1,5 @@
 import { defaultDisplaySetSplitRules } from '@cornerstonejs/metadata';
-import type { SplitRule } from '@cornerstonejs/metadata';
+import type { SplitRuleSet, SplitRuleSetEntry } from '@cornerstonejs/metadata';
 import DisplaySetService from './DisplaySetService';
 import EVENTS from './EVENTS';
 import * as displaySetStore from './displaySetStore';
@@ -36,28 +36,27 @@ const makeMixedBValueSeries = () => [
   makeInstance(),
 ];
 
-/** One display set PER IMAGE for single-image modalities (CR here). */
-const perImageRule: SplitRule = {
-  id: 'singleImageModality',
-  viewportTypes: ['stack'],
-  matches: instance => instance.Modality === 'CR' && !!instance.Rows,
-  groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
-};
-
-const upstreamRule = (id: string): SplitRule => {
-  const rule = defaultDisplaySetSplitRules.find(candidate => candidate.id === id);
-  if (!rule) {
+/** An upstream default rule, with a test priority. */
+const upstreamRule = (id: string, priority: number): SplitRuleSetEntry => {
+  const entry = defaultDisplaySetSplitRules[id];
+  if (!entry) {
     throw new Error(`upstream rule ${id} missing`);
   }
-  return rule;
+  return { ...entry, priority };
 };
 
-const testSplitRules: SplitRule[] = [
-  perImageRule,
-  upstreamRule('mixedDimensionalityBValue'),
-  upstreamRule('volume3d'),
-  upstreamRule('defaultImageRule'),
-];
+const testSplitRules: SplitRuleSet = {
+  // One display set PER IMAGE for single-image modalities (CR here).
+  singleImageModality: {
+    priority: 1,
+    viewportTypes: ['stack'],
+    matches: instance => instance.Modality === 'CR' && !!instance.Rows,
+    groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
+  },
+  mixedDimensionalityBValue: upstreamRule('mixedDimensionalityBValue', 2),
+  volume3d: upstreamRule('volume3d', 3),
+  defaultImageRule: upstreamRule('defaultImageRule', 4),
+};
 
 const makeCreateDisplaySetFromGroup = () => {
   let counter = 0;
@@ -72,7 +71,7 @@ const makeCreateDisplaySetFromGroup = () => {
       splitRuleId: group.matchedRule.id,
       splitNumber,
     };
-    displaySet.updateInstances = jest.fn(newInstances => {
+    displaySet.extendInstances = jest.fn(newInstances => {
       displaySet.instances.push(...newInstances);
       return displaySet;
     });
@@ -290,41 +289,96 @@ describe('DisplaySetService', () => {
       const withBValue = added.find(ds =>
         ds.instances.some(instance => instance.DiffusionBValue !== undefined)
       );
-      expect(withBValue.updateInstances).toHaveBeenCalledTimes(1);
+      expect(withBValue.extendInstances).toHaveBeenCalledTimes(1);
       expect(withBValue.instances).toHaveLength(4);
       expect(invalidated).toHaveLength(1);
       expect(invalidated[0].displaySetInstanceUID).toBe(withBValue.displaySetInstanceUID);
     });
 
-    it('removes stale display sets when a later batch regroups the series', () => {
+    it('keeps an existing display set when a later batch would regroup the series', () => {
       // Batch 1: uniform b-values - the volume3d rule groups the series.
       const withBValue = [
         makeInstance({ DiffusionBValue: 800 }),
         makeInstance({ DiffusionBValue: 800 }),
         makeInstance({ DiffusionBValue: 800 }),
       ];
-      const firstAdded = service.makeDisplaySets(withBValue);
-      expect(firstAdded).toHaveLength(1);
-      expect(firstAdded[0].splitRuleId).toBe('volume3d');
+      const [volume] = service.makeDisplaySets(withBValue);
+      expect(volume.splitRuleId).toBe('volume3d');
 
       const removed = [];
       service.subscribe(EVENTS.DISPLAY_SETS_REMOVED, event => removed.push(event));
 
-      // Batch 2: the full series now mixes defined/undefined b-values, so the
-      // mixed-b-value rule wins and the volume3d grouping is stale.
-      const fullSeries = [...withBValue, makeInstance(), makeInstance(), makeInstance()];
-      const secondAdded = service.makeDisplaySets(fullSeries);
+      // Batch 2: the full series now mixes defined/undefined b-values. A split
+      // from the start would give two mixed-b-value display sets, but the
+      // existing display set must not change: only the new instances are
+      // placed, in a display set of their own.
+      const withoutBValue = [makeInstance(), makeInstance(), makeInstance()];
+      const secondAdded = service.makeDisplaySets([...withBValue, ...withoutBValue]);
 
-      expect(secondAdded).toHaveLength(2);
-      expect(secondAdded.every(ds => ds.splitRuleId === 'mixedDimensionalityBValue')).toBe(true);
-      expect(removed).toHaveLength(1);
-      expect(removed[0].displaySetInstanceUIDs).toEqual([firstAdded[0].displaySetInstanceUID]);
+      expect(removed).toHaveLength(0);
+      expect(volume.instances).toEqual(withBValue);
+      expect(volume.extendInstances).not.toHaveBeenCalled();
+      expect(secondAdded).toHaveLength(1);
+      expect(secondAdded[0].splitRuleId).toBe('mixedDimensionalityBValue');
+      expect(secondAdded[0].instances).toEqual(withoutBValue);
       expect(service.getActiveDisplaySets()).toHaveLength(2);
-      expect(
-        service
-          .getActiveDisplaySets()
-          .some(ds => ds.displaySetInstanceUID === firstAdded[0].displaySetInstanceUID)
-      ).toBe(false);
+    });
+
+    it('adds a new instance to the display set that holds the rest of its group', () => {
+      const withBValue = [
+        makeInstance({ DiffusionBValue: 800 }),
+        makeInstance({ DiffusionBValue: 800 }),
+      ];
+      const [volume] = service.makeDisplaySets(withBValue);
+      const withoutBValue = [makeInstance(), makeInstance()];
+      service.makeDisplaySets([...withBValue, ...withoutBValue]);
+
+      // A new b-value instance groups with the first batch under the
+      // mixed-b-value rule; those instances live in the volume3d display set.
+      const extra = makeInstance({ DiffusionBValue: 800 });
+      service.makeDisplaySets([...withBValue, ...withoutBValue, extra]);
+
+      expect(volume.instances).toEqual([...withBValue, extra]);
+      expect(service.getActiveDisplaySets()).toHaveLength(2);
+    });
+
+    it('keeps existing display sets when the rules change during a session', () => {
+      const first = [1, 2, 3].map(() => makeInstance());
+      const [volume] = service.makeDisplaySets(first);
+      expect(volume.splitRuleId).toBe('volume3d');
+
+      // A new rule that would claim every instance.
+      setCustomization({
+        enabled: true,
+        splitRules: {
+          ...testSplitRules,
+          everything: { priority: -1, groupBy: ['SOPInstanceUID'] },
+        },
+        createDisplaySetFromGroup,
+      });
+      const extra = makeInstance();
+      const added = service.makeDisplaySets([...first, extra]);
+
+      expect(volume.instances).toEqual(first);
+      expect(added.map(ds => [ds.splitRuleId, ds.instances])).toEqual([['everything', [extra]]]);
+    });
+
+    it('passes the series facts of the re-split to the display set it extends', () => {
+      const factRule = {
+        priority: 1,
+        series: ({ instances }) => ({ count: instances.length }),
+      };
+      setCustomization({
+        enabled: true,
+        splitRules: { counted: factRule },
+        createDisplaySetFromGroup,
+      });
+      const first = [makeInstance(), makeInstance()];
+      const [displaySet] = service.makeDisplaySets(first);
+      expect(createDisplaySetFromGroup.mock.calls[0][0].series).toEqual({ count: 2 });
+
+      service.makeDisplaySets([...first, makeInstance()]);
+      expect(displaySet.extendInstances.mock.calls[0][1].series).toEqual({ count: 3 });
     });
 
     it('supports declarative rules with compiled expressions (SCOUT example)', () => {
@@ -332,7 +386,7 @@ describe('DisplaySetService', () => {
       // by the CustomizationService read-time resolution.
       const { compileExpression } = require('@cornerstonejs/metadata');
       const scoutRule = {
-        id: 'ctScout',
+        priority: -1,
         viewportTypes: ['stack'],
         series: {
           frameCount: compileExpression(
@@ -351,7 +405,7 @@ describe('DisplaySetService', () => {
       };
       setCustomization({
         enabled: true,
-        splitRules: [scoutRule, ...testSplitRules],
+        splitRules: { ...testSplitRules, ctScout: scoutRule },
         createDisplaySetFromGroup,
       });
 
@@ -387,7 +441,7 @@ describe('DisplaySetService', () => {
     it('does not split a small CT series with the SCOUT rule', () => {
       const { compileExpression } = require('@cornerstonejs/metadata');
       const scoutRule = {
-        id: 'ctScout',
+        priority: -1,
         viewportTypes: ['stack'],
         series: {
           frameCount: compileExpression(
@@ -402,7 +456,7 @@ describe('DisplaySetService', () => {
       };
       setCustomization({
         enabled: true,
-        splitRules: [scoutRule, ...testSplitRules],
+        splitRules: { ...testSplitRules, ctScout: scoutRule },
         createDisplaySetFromGroup,
       });
 
@@ -417,6 +471,143 @@ describe('DisplaySetService', () => {
       expect(added).toHaveLength(1);
       expect(added[0].splitRuleId).toBe('volume3d');
       expect(added[0].instances).toHaveLength(5);
+    });
+
+    describe('keyed rule sets', () => {
+      it('evaluates the rules in priority order', () => {
+        setCustomization({
+          enabled: true,
+          splitRules: {
+            ...testSplitRules,
+            firstOnly: {
+              priority: -1,
+              matches: instance => instance.InstanceNumber === 1,
+              groupBy: ['SOPInstanceUID'],
+            },
+          },
+          createDisplaySetFromGroup,
+        });
+        const added = service.makeDisplaySets([1, 2, 3].map(() => makeInstance()));
+        expect(added.map(ds => [ds.splitRuleId, ds.instances.length])).toEqual([
+          ['firstOnly', 1],
+          ['volume3d', 2],
+        ]);
+      });
+
+      it('turns off a rule with a null priority', () => {
+        setCustomization({
+          enabled: true,
+          splitRules: { ...testSplitRules, volume3d: { priority: null } },
+          createDisplaySetFromGroup,
+        });
+        const [displaySet] = service.makeDisplaySets([1, 2, 3].map(() => makeInstance()));
+        expect(displaySet.splitRuleId).toBe('defaultImageRule');
+      });
+    });
+
+    it('gives the series to the legacy handlers when the split rules throw', () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      setCustomization({
+        enabled: true,
+        splitRules: {
+          throws: {
+            priority: 1,
+            matches: () => {
+              throw new Error('bad rule');
+            },
+          },
+        },
+        createDisplaySetFromGroup,
+      });
+      const added = service.makeDisplaySets(makeMixedBValueSeries());
+      expect(added).toHaveLength(1);
+      expect(stackHandler.getDisplaySetsFromSeries).toHaveBeenCalledTimes(1);
+      expect(stackHandler.getDisplaySetsFromSeries.mock.calls[0][0]).toHaveLength(6);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('split rules failed'),
+        expect.any(Error)
+      );
+      warn.mockRestore();
+    });
+
+    it('passes the host comparator to the display set factory', () => {
+      const compareInstances = jest.fn(() => 0);
+      setCustomization({
+        enabled: true,
+        splitRules: testSplitRules,
+        createDisplaySetFromGroup,
+        compareInstances,
+      });
+      service.makeDisplaySets(makeMixedBValueSeries());
+      expect(createDisplaySetFromGroup.mock.calls[0][1]).toEqual({
+        splitNumber: 0,
+        compareInstances,
+      });
+    });
+
+    describe('runBy reconciliation', () => {
+      // Singles and clips, split into runs. A clip that arrives late in the
+      // middle of a run of singles splits that run.
+      const us = (InstanceNumber: number, NumberOfFrames?: number) =>
+        makeInstance({
+          Modality: 'US',
+          SOPInstanceUID: `us-${InstanceNumber}`,
+          InstanceNumber,
+          ...(NumberOfFrames ? { NumberOfFrames } : {}),
+        });
+      const runRule = {
+        priority: 1,
+        matches: instance => instance.Modality === 'US',
+        runBy: instance => Number(instance.NumberOfFrames ?? 1) > 1,
+      };
+
+      beforeEach(() => {
+        setCustomization({
+          enabled: true,
+          splitRules: { usRuns: runRule },
+          createDisplaySetFromGroup,
+        });
+      });
+
+      const uids = displaySet => displaySet.instances.map(instance => instance.SOPInstanceUID);
+      const active = () =>
+        service
+          .getActiveDisplaySets()
+          .map(uids)
+          .sort((a, b) => a[0].localeCompare(b[0]));
+
+      it('only adds display sets when a new run lands inside an existing run', () => {
+        const first = [us(1), us(3), us(4, 60)];
+        service.makeDisplaySets(first);
+        expect(active()).toEqual([['us-1', 'us-3'], ['us-4']]);
+
+        // us-2 is a clip. A split from the start gives [us-1] [us-2] [us-3]
+        // [us-4], but the existing display sets must not change: us-2 gets a
+        // display set of its own, and [us-1, us-3] keeps both singles.
+        service.makeDisplaySets([...first, us(2, 45)]);
+
+        // Each instance is in exactly one display set, and us-2 did not join
+        // the display set of the unrelated clip us-4.
+        expect(active()).toEqual([['us-1', 'us-3'], ['us-2'], ['us-4']]);
+      });
+
+      it('keeps the display set of a later run when a new run appears ahead of it', () => {
+        const first = [us(1), us(3), us(4, 60)];
+        const [, clip] = service.makeDisplaySets(first);
+        service.makeDisplaySets([...first, us(2, 45)]);
+
+        const clipNow = service
+          .getActiveDisplaySets()
+          .find(displaySet => uids(displaySet).includes('us-4'));
+        expect(clipNow.displaySetInstanceUID).toBe(clip.displaySetInstanceUID);
+      });
+
+      it('does not remove instances that the call does not contain', () => {
+        const [displaySet] = service.makeDisplaySets([us(1), us(2)]);
+        // A caller that passes part of the series only.
+        service.makeDisplaySets([us(1)]);
+        expect(uids(displaySet)).toEqual(['us-1', 'us-2']);
+      });
     });
   });
 });
