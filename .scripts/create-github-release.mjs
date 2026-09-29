@@ -106,11 +106,16 @@ async function findExistingRelease() {
     throw new Error(`Could not check for an existing release: HTTP ${published.status}`);
   }
 
-  const recent = await github('GET', '/releases?per_page=100');
-  if (recent.status !== 200) {
-    throw new Error(`Could not list releases: HTTP ${recent.status}`);
+  for (let page = 1; ; page++) {
+    const recent = await github('GET', `/releases?per_page=100&page=${page}`);
+    if (recent.status !== 200) {
+      throw new Error(`Could not list releases: HTTP ${recent.status}`);
+    }
+    const match = recent.data.find(release => release.tag_name === tag);
+    if (match) return match;
+    if (recent.data.length < 100) break;
   }
-  return recent.data.find(release => release.tag_name === tag) ?? null;
+  return null;
 }
 
 async function isOnNpm(version) {
