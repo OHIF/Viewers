@@ -38,7 +38,7 @@ export function validateUndoRedoCacheSize(value: unknown): number | undefined {
  * Cornerstone default size.
  *
  * The `size` setter clears the history, so the size is only assigned when it
- * changes. That makes this safe to call on every customization change.
+ * changes. Called once on each mode entry.
  */
 export function applyUndoRedoCacheSize(
   customizationService: { getCustomization: (id: string) => unknown },

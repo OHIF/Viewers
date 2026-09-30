@@ -124,21 +124,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       customizationService,
     } = servicesManager.services;
 
-    // Apply the undo/redo history size here rather than in preRegistration,
-    // because the global phase of the customizations is applied after the
-    // extensions register. The mode phase is applied after this hook runs,
-    // so apply the size again on each change to a global or mode customization.
-    applyUndoRedoCacheSize(customizationService);
-    [
-      customizationService.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED,
-      customizationService.EVENTS.MODE_CUSTOMIZATION_MODIFIED,
-    ].forEach(event => {
-      const { unsubscribe } = customizationService.subscribe(event, () =>
-        applyUndoRedoCacheSize(customizationService)
-      );
-      unsubscriptions.push(unsubscribe);
-    });
-
     const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
       servicesManager,
       commandsManager,
@@ -161,6 +146,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
+
+    // Apply the undo/redo history size on mode entry rather than in
+    // preRegistration, because the global customizations are applied after
+    // the extensions register.
+    applyUndoRedoCacheSize(customizationService);
 
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
