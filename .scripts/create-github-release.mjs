@@ -10,9 +10,11 @@
  * - Only tags of the form vX.Y.Z or vX.Y.Z-<prerelease> are accepted.
  * - If a release (or draft) already exists for the tag, it is left untouched
  *   and the script exits successfully, so hand-edited notes are never overwritten.
- * - The release is only created once @ohif/app is on npm at that version. It is
- *   the last package publish-package.mjs publishes, so the rest are on npm by
- *   then. This wait is temporary, until npm publishing moves to GitHub Actions.
+ * - The release is only created once the public packages (non-private
+ *   package.json under extensions/, platform/ and modes/ at the tagged commit)
+ *   are on npm at that version. A package npm has never had is skipped with a
+ *   warning, so one that has never been published does not block every release.
+ *   This wait is temporary, until npm publishing moves to GitHub Actions.
  * - A prerelease version (e.g. a beta) is marked as a pre-release and is never
  *   "Latest". A stable version is marked "Latest" only if it is the highest
  *   stable version among all tags, so a 3.12.x patch never takes Latest from 3.13.x.
@@ -38,7 +40,7 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 
 const TAG_PATTERN = /^v(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/;
-const NPM_PACKAGE = '@ohif/app';
+const PACKAGE_JSON_PATTERN = /^(extensions|platform|modes)\/[^/]+\/package\.json$/;
 const CODEOWNERS_PATH = '.github/CODEOWNERS';
 
 const args = process.argv.slice(2);
@@ -112,40 +114,74 @@ async function findExistingRelease() {
       throw new Error(`Could not list releases: HTTP ${recent.status}`);
     }
     const match = recent.data.find(release => release.tag_name === tag);
-    if (match) return match;
-    if (recent.data.length < 100) break;
+    if (match) {
+      return match;
+    }
+    if (recent.data.length < 100) {
+      break;
+    }
   }
   return null;
 }
 
-async function isOnNpm(version) {
-  const url = `https://registry.npmjs.org/${NPM_PACKAGE.replace('/', '%2F')}/${version}`;
+function getPublicPackages() {
+  return git('ls-tree', '-r', '--name-only', tag, '--', 'extensions', 'platform', 'modes')
+    .split('\n')
+    .filter(file => PACKAGE_JSON_PATTERN.test(file))
+    .map(file => JSON.parse(git('show', `${tag}:${file}`)))
+    .filter(packageJson => !packageJson.private)
+    .map(packageJson => packageJson.name);
+}
+
+// Returns the HTTP status for a package (or one version of it) on npm, or null
+// when npm could not be reached.
+async function npmStatus(packageName, version) {
+  const packagePath = packageName.replace('/', '%2F');
+  const url = `https://registry.npmjs.org/${packagePath}${version ? `/${version}` : ''}`;
   try {
-    const response = await fetch(url);
-    return response.status === 200;
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.status;
   } catch (error) {
-    console.warn(`Could not reach npm: ${error.message}`);
-    return false;
+    console.warn(`Could not reach npm for ${packageName}: ${error.message}`);
+    return null;
   }
 }
 
+// The public packages npm has had at least once. A package that has never been
+// published would otherwise make every release wait and then fail.
+async function getPackagesToWaitFor() {
+  const packages = getPublicPackages();
+  const statuses = await Promise.all(packages.map(name => npmStatus(name)));
+  const neverPublished = packages.filter((_, index) => statuses[index] === 404);
+  if (neverPublished.length) {
+    console.warn(`Not waiting for packages npm has never had: ${neverPublished.join(', ')}`);
+  }
+  return packages.filter((_, index) => statuses[index] !== 404);
+}
+
 async function waitForNpm(version) {
+  const packages = await getPackagesToWaitFor();
   const deadline = Date.now() + npmWaitMinutes * 60_000;
 
-  while (!(await isOnNpm(version))) {
+  while (true) {
+    const statuses = await Promise.all(packages.map(name => npmStatus(name, version)));
+    const missing = packages.filter((_, index) => statuses[index] !== 200);
+    if (!missing.length) {
+      console.log(`All ${packages.length} packages are on npm at ${version}.`);
+      return;
+    }
     if (dryRun) {
-      console.log(`Dry run: ${NPM_PACKAGE}@${version} is not on npm yet.`);
+      console.log(`Dry run: not on npm at ${version} yet: ${missing.join(', ')}`);
       return;
     }
     if (Date.now() >= deadline) {
       throw new Error(
-        `Gave up after ${npmWaitMinutes} minutes: ${NPM_PACKAGE}@${version} is not on npm.`
+        `Gave up after ${npmWaitMinutes} minutes. Not on npm at ${version}: ${missing.join(', ')}`
       );
     }
-    console.log(`Waiting for ${NPM_PACKAGE}@${version} on npm...`);
+    console.log(`Waiting for ${missing.length} package(s) on npm: ${missing.join(', ')}`);
     await new Promise(resolve => setTimeout(resolve, npmPollSeconds * 1000));
   }
-  console.log(`${NPM_PACKAGE}@${version} is on npm.`);
 }
 
 function getPreviousTag(version, isMinorRelease) {
