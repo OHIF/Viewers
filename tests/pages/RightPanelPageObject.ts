@@ -534,6 +534,11 @@ export class RightPanelPageObject {
             await open();
             await smoothEdgesButton.click();
           },
+          // Runs the decimateContours command (removes redundant outline points).
+          removePoints: async () => {
+            await open();
+            await page.getByRole('button', { name: 'Remove Points' }).click();
+          },
         };
       },
     };

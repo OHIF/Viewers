@@ -30,6 +30,7 @@ import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgAttribute } from './getSvgAttribute';
+import { countSvgPathPoints } from './countSvgPathPoints';
 import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
@@ -75,6 +76,7 @@ export {
   addLengthMeasurement,
   subscribeToMeasurementAdded,
   getSvgAttribute,
+  countSvgPathPoints,
   getViewportCanvasStats,
   navigateWithViewportArrow,
   contourShowOnlyNthSegment,
