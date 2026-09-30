@@ -65,6 +65,10 @@ overrides:
   react: 19.2.7
   react-dom: 19.2.7
   '@types/react': 19.2.17
+  # react-i18next 12 has an i18next >=19 peer. Without this override, pnpm 12
+  # installs the latest i18next for the extensions that do not list i18next,
+  # next to the 19.9.2 that the rest of OHIF pins.
+  i18next: 19.9.2
   # Synced from origin/master's package.json `resolutions` block during the
   # merge. Keep this list aligned with master so security/version pins from
   # upstream PRs land here too.
@@ -127,10 +131,6 @@ overrides:
   'brace-expansion@>=3.0.0 <3.0.3': 3.0.6
   'brace-expansion@>=4.0.0 <5.0.11': 5.0.11
   'joi@>=17.2.0 <17.13.7': 17.13.7
-  # react-i18next 12 has an i18next >=19 peer. Without this override, pnpm 12
-  # installs the latest i18next for the extensions that do not list i18next,
-  # next to the 19.9.2 that the rest of OHIF pins.
-  i18next: 19.9.2
   'js-yaml@>=3.0.0 <3.15.2': 3.15.2
   'js-yaml@>=4.0.0 <4.3.2': 4.3.2
   'postcss@<8.5.26': 8.5.26
