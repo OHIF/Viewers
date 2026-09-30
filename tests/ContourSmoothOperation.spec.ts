@@ -131,8 +131,8 @@ test('remove points reduces the active segment contour points', async ({
 
   await expect(paths, 'Expected decimation to keep a single contour path').toHaveCount(1);
   const decimatedBigSphereContourPath = paths.first();
-  
-  await expect(decimatedBigSphereContourPath, 'Expected the decimated contour to be visible').toBeVisible();
+
+  await expect(decimatedBigSphereContourPath, 'Expected a visible contour').toBeVisible();
   const bigSphereSvgPathAfter = await getSvgAttribute({
     viewportPageObject,
     svgInnerElement: 'path',
@@ -141,6 +141,10 @@ test('remove points reduces the active segment contour points', async ({
   if (bigSphereSvgPathAfter === null) {
     throw new Error('Expected Big Sphere to render an SVG path after decimating');
   }
+  expect(countSvgPathPoints(bigSphereSvgPathAfter), 'Expected the decimated point count').toBe(
+    BIG_SPHERE_DECIMATED_POINT_COUNT
+  );
+
   await checkForViewportScreenshot({
     page,
     viewport: activeViewport,
