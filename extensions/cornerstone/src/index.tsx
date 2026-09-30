@@ -73,6 +73,7 @@ import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
+import applyUndoRedoCacheSize from './utils/applyUndoRedoCacheSize';
 import update from 'immutability-helper';
 export * from './components';
 
@@ -116,8 +117,27 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   id,
 
   onModeEnter: ({ servicesManager, commandsManager, extensionManager }: withAppTypes): void => {
-    const { cornerstoneViewportService, toolbarService, segmentationService } =
-      servicesManager.services;
+    const {
+      cornerstoneViewportService,
+      toolbarService,
+      segmentationService,
+      customizationService,
+    } = servicesManager.services;
+
+    // Apply the undo/redo history size here rather than in preRegistration,
+    // because the global phase of the customizations is applied after the
+    // extensions register. The mode phase is applied after this hook runs,
+    // so apply the size again on each change to a global or mode customization.
+    applyUndoRedoCacheSize(customizationService);
+    [
+      customizationService.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED,
+      customizationService.EVENTS.MODE_CUSTOMIZATION_MODIFIED,
+    ].forEach(event => {
+      const { unsubscribe } = customizationService.subscribe(event, () =>
+        applyUndoRedoCacheSize(customizationService)
+      );
+      unsubscriptions.push(unsubscribe);
+    });
 
     const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
       servicesManager,
