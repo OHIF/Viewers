@@ -1,0 +1,50 @@
+// URL-loaded customization: mgByView
+//
+// Embeds the `mammoViewSplit` rule of the cornerstone3D `displaySetRules`
+// example (the "Mammo: one series into RCC / RMLO / LCC / LMLO" sample), as
+// @cornerstonejs/metadata raw selector data. The rule is unchanged.
+//
+// A screening mammogram can arrive as one series that holds all four views.
+// The default `singleImageModality` rule splits MG only on a coarse image-size
+// bucket, and the four views have the same size, so without this rule the
+// study is one four-image stack. This rule makes one display set for each
+// laterality and view.
+//
+// `groupBy` puts ViewPosition first, for the vendors that send it.
+// PatientOrientation tells CC from MLO when ViewPosition is absent:
+// RCC P\L, RMLO P\FL, LCC A\R, LMLO A\FR.
+//
+// The example has a second form that names each view through the `mammoView`
+// preset. OHIF does not register that preset, so this module uses the form
+// that needs only flat attributes.
+//
+// Load it with `?customization=split/mgByView`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "mammoViewSplit": {
+            "priority": -1,
+            "description": "Mammography: a screening exam that arrives as a single series still holds four distinct views. Split it by laterality and view so each becomes its own display set — the standard singleImageModality rule only splits MG on a coarse image-size bucket, which is identical across the four.",
+            "viewportTypes": ["stack"],
+            "matches": {
+              "all": [
+                { "attribute": "Modality", "equals": "MG" },
+                { "attribute": "Rows", "exists": true }
+              ]
+            },
+            "groupBy": ["SeriesInstanceUID", "ImageLaterality", "ViewPosition", "PatientOrientation"],
+            "customAttributes": {
+              "fromFirstInstance": {
+                "imageLaterality": "ImageLaterality",
+                "patientOrientation": "PatientOrientation"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
