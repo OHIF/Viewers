@@ -23,6 +23,11 @@ const RESERVED_ATTRIBUTES = new Set([
   'uid',
   'displaySetInstanceUID',
   'splitKey',
+  // The rule and the rule group that made the display set. DisplaySetService
+  // compares splitRuleId with the matched rule when a display set grows, and a
+  // hanging protocol reads splitGroupId, so a rule must not rename either one.
+  'splitRuleId',
+  'splitGroupId',
   // The growth hook DisplaySetService calls on a re-split.
   'extendInstances',
 ]);
@@ -107,6 +112,11 @@ export function makeDisplaySetFromInstanceGroup(
     sopClassUids: sopClassUidsOf(imageSet.images),
     splitKey,
     splitRuleId: matchedRule.id,
+    // The group of rules the rule belongs to; the rule id unless the rule
+    // names a group. Several rules for one kind of display set (breast
+    // tomosynthesis, legacy mammography, mammography already split) share one
+    // group id, so a hanging protocol can match all of them.
+    splitGroupId: matchedRule.groupId ?? matchedRule.id,
     viewportTypes,
   });
 

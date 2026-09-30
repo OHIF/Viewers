@@ -235,6 +235,21 @@ The system shall let a user determine which attributes an expression reads.
 > `SP-READ-5` is for the most common defect: a misspelt attribute. `Modallity === 'CT'` is a
 > valid expression that matches nothing.
 
+**SP-READ-6**
+The system shall let a hanging protocol, or another reader of display sets, determine which
+display sets come from one group of related rules, whichever rule of the group created each
+display set.
+
+> Several rules can make one kind of display set, because the data comes in different forms. For
+> example, mammography can arrive as breast tomosynthesis, as legacy mammography with all its
+> views in one series, and as mammography that the modality already split into one series for
+> each view. A deployment can also have a breast tomosynthesis rule for CT. Each form needs its
+> own rule, but a hanging protocol must find all of these display sets as mammography, and must
+> not list every rule id.
+>
+> A rule is its own group unless the deployment says otherwise. The deployment sets a group only
+> where it must treat several rules as one.
+
 ### 4.4 Deterministic and stable — `SP-DET`
 
 **SP-DET-1**
@@ -356,6 +371,7 @@ field. *Satisfies `SP-DESC-2`.*
 | Field | Form |
 | --- | --- |
 | `description` | Text that states what the rule does |
+| `groupId` | The group of related rules that the rule belongs to (`SP-PIPE-15`). Default: the rule id |
 | `matches` | A `RawCondition` — `attribute` tests, `classifier`, `seriesFact`, `all` / `any` / `not`, or an `expression` string |
 | `series` | A list of `RawSeriesFact` — a named boolean with `scope` `first`, `every`, `some`, or `mixed`, an optional `gate`, and an optional `minInstances` |
 | `groupBy`, `runBy` | `RawValue` entries — a tag name, `{ attribute, number, absent, bucket }`, `{ condition }`, `{ template }`, `{ join, parts }`, or `{ expression }` |
@@ -565,15 +581,22 @@ instances of its group, else into the display set with the same split key, else 
 display set. *Satisfies `SP-DET-3`, `SP-DET-4`.*
 
 **SP-PIPE-11**
-The display set factory shall record `splitKey` and `splitRuleId` on each display set, and shall
-not let `customAttributes` overwrite those two attributes or `extendInstances`.
-*Satisfies `SP-READ-4`, `SP-DET-3`.*
+The display set factory shall record `splitKey`, `splitRuleId`, and `splitGroupId` on each
+display set, and shall not let `customAttributes` overwrite those three attributes or
+`extendInstances`. *Satisfies `SP-READ-4`, `SP-READ-6`, `SP-DET-3`.*
 
-> **Gap.** `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds `splitKey` and
-> `extendInstances`, but not `splitRuleId`. A rule can therefore overwrite `splitRuleId` through
-> `customAttributes`. The reconciliation compares `splitRuleId` with the id of the matched rule,
-> to decide if the series facts go to `extendInstances`. So an overwritten `splitRuleId` changes
-> the sort of a display set that grows.
+> `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds these four names. The
+> reconciliation compares `splitRuleId` with the id of the matched rule, to decide if the series
+> facts go to `extendInstances`, so a rule must not be able to change `splitRuleId`.
+
+**SP-PIPE-15**
+A rule may have a `groupId`. The display set factory shall set `splitGroupId` to the `groupId` of
+the rule, else to the id of the rule. *Satisfies `SP-READ-6`.*
+
+> So `splitGroupId` equals `splitRuleId` unless a deployment groups rules. The group id does not
+> change the split: the groups and the split keys stay per rule id (`SP-PIPE-6`). For example,
+> the rules `mgTomo`, `mgLegacy`, and `mgSplit` can all have `"groupId": "mammo"`, and a hanging
+> protocol then matches `splitGroupId` equal to `mammo`.
 
 **SP-PIPE-12**
 The default rules shall gate every match on the SOP class list of the stack SOP class handler
@@ -750,7 +773,8 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | Requirement group | Test |
 | --- | --- |
 | `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/ohifDefaultSplitRules.test.ts` |
-| `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10`, `SP-PIPE-11` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
+| `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
+| `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `rawDisplaySetSelector.test.ts` of `@cornerstonejs/metadata` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
 | `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `rawDisplaySetSelector.test.ts`, `expression.test.ts`) |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |

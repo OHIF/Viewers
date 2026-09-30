@@ -96,7 +96,7 @@ gate reproduces the legacy routing exactly, and covers the image SOP classes
 The default display set factory (`createDisplaySetFromGroup`) builds the same
 `ImageSet` the stack handler builds — same `label`, `supportsWindowLevel`,
 `FrameOfReferenceUID`, `SOPClassHandlerId`, reconstructability checks and
-messages — plus `splitKey` / `splitRuleId` / `viewportTypes` from the split
+messages — plus `splitKey` / `splitRuleId` / `splitGroupId` / `viewportTypes` from the split
 engine and the matched rule's `customAttributes`.
 
 ## Anatomy of a split rule
@@ -167,6 +167,28 @@ compiler does not compile such a rule again, and checks only its `id` and its
 a definite result for every instance. A function that code supplies — a rule
 field or a classifier — can throw. OHIF wraps every function of every rule, so
 the error names the rule and the field.
+
+### Groups of rules
+
+Each display set records the rule that made it as `splitRuleId`, and the
+group of that rule as `splitGroupId`. `splitGroupId` is the rule's `groupId`,
+else the rule id, so it equals `splitRuleId` unless you group rules.
+
+Group rules when several rules make one kind of display set. Mammography, for
+example, can arrive as breast tomosynthesis, as legacy mammography with all its
+views in one series, and as mammography that the modality already split. Each
+form needs its own rule, and all three can say `"groupId": "mammo"`:
+
+```jsonc
+"mgTomo":   { "priority": -3, "groupId": "mammo", ... },
+"mgLegacy": { "priority": -2, "groupId": "mammo", ... },
+"mgSplit":  { "priority": -1, "groupId": "mammo", ... }
+```
+
+A hanging protocol then matches `splitGroupId` equal to `mammo`, and finds each
+mammography display set, whichever rule made it. The group id does not change
+the split: groups and split keys stay per rule id. A rule's `customAttributes`
+cannot change `splitRuleId`, `splitGroupId` or `splitKey`.
 
 ### Ordering
 

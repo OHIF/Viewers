@@ -178,6 +178,16 @@ export type DisplaySet = {
   splitRuleId?: string;
 
   /**
+   * The group of split rules that the rule belongs to: the rule's `groupId`,
+   * else its id, so it equals `splitRuleId` unless a deployment groups rules.
+   * Several rules can make one kind of display set (for example breast
+   * tomosynthesis, legacy mammography, and mammography already split), and a
+   * hanging protocol or another reader matches this value to find all of them.
+   * Neither this nor `splitRuleId` can be set by a rule's `customAttributes`.
+   */
+  splitGroupId?: string;
+
+  /**
    * Growth hook for split-rule display sets: adds instances that are new to
    * the series. A split-rule display set never loses an instance. `series` is
    * the display set's rule's series facts from the re-split, when the new
