@@ -1,10 +1,10 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
-  "packageManager": "pnpm@11.5.2",
+  "packageManager": "pnpm@12.8.1",
   "engines": {
     "node": ">=24",
-    "pnpm": ">=11"
+    "pnpm": ">=12"
   },
   "scripts": {
     "preinstall": "node preinstall.js",
