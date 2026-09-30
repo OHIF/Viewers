@@ -1,0 +1,64 @@
+// URL-loaded customization: dwiByBValue
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata raw selector data. This is the
+// `dwiByBValue` rule that the display set splitting specification traces
+// (platform/docs/docs/development/specs/display-set-splitting/requirements.md).
+//
+// Puts each b-value of a diffusion MR series into its own stack display set,
+// with the description `<SeriesDescription> b=<DiffusionBValue>`. Without this
+// rule a DWI series is one display set, which the viewer can render as 4D (one
+// time point per b-value).
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `$merge` adds the rule under its id with priority -1, so it runs before
+//    every default rule (the defaults use the priorities 1..n).
+//  - `isDiffusion` is true when the first instance is MR and some instances
+//    carry DiffusionBValue.
+//  - `matches` claims only the instances that carry DiffusionBValue. Frames
+//    without a b-value (for example a trailing ADC or trace set) fall through
+//    to the default `mixedDimensionalityBValue` rule and form one more display
+//    set of their own.
+//  - `groupBy` makes one group for each numeric b-value, and
+//    `compareInstances` orders the slices of each group by SliceLocation.
+//
+// Load it with `?customization=split/dwiByBValue`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "dwiByBValue": {
+            "priority": -1,
+            "description": "Diffusion MR: one display set for each b-value.",
+            "viewportTypes": ["stack"],
+            "series": [
+              {
+                "name": "isDiffusion",
+                "gate": { "attribute": "Modality", "equals": "MR" },
+                "scope": "some",
+                "when": { "attribute": "DiffusionBValue", "exists": true }
+              }
+            ],
+            "matches": {
+              "all": [
+                { "seriesFact": "isDiffusion" },
+                { "classifier": "image" },
+                { "attribute": "DiffusionBValue", "exists": true }
+              ]
+            },
+            "groupBy": ["SeriesInstanceUID", { "attribute": "DiffusionBValue", "number": true }],
+            "compareInstances": { "attribute": "SliceLocation", "number": true },
+            "customAttributes": {
+              "fromFirstInstance": {
+                "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

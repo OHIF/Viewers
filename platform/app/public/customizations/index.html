@@ -220,6 +220,12 @@
               scope: 'global',
               desc: 'Example custom raw selector rule: splits the localizer images off a CT series that mixes localizer and other images, into their own "SCOUT" display set. Pulls in split/enableNewSplit via requires.',
             },
+            {
+              value: 'split/dwiByBValue',
+              name: 'DWI one display set per b-value (example)',
+              scope: 'global',
+              desc: 'Example custom raw selector rule: puts each b-value of a diffusion MR series into its own stack display set ("<description> b=<value>"), in place of one display set that renders as 4D. Pulls in split/enableNewSplit via requires.',
+            },
           ],
         },
         {
