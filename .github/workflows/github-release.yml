@@ -1,5 +1,21 @@
 name: GitHub Release
 
+# The run's title in the Actions list, including why a `create` run is skipped.
+# The skip reasons must match the `if:` of the release job below.
+run-name: >-
+  ${{
+    github.event_name == 'workflow_dispatch' &&
+      format('{0} {1}', inputs.dry_run && 'Dry run' || 'Release', inputs.tag) ||
+    github.event_name == 'pull_request' &&
+      format('Dry run for PR #{0}', github.event.pull_request.number) ||
+    github.ref_type != 'tag' && format('Skipped: branch {0}', github.ref_name) ||
+    !startsWith(github.ref_name, 'v') &&
+      format('Skipped: {0} is not a version tag', github.ref_name) ||
+    github.repository != 'OHIF/Viewers' &&
+      format('Skipped: {0} (not OHIF/Viewers)', github.ref_name) ||
+    format('Release {0}', github.ref_name)
+  }}
+
 # Creates the GitHub Release for each version tag that CircleCI's NPM_PUBLISH
 # job pushes. The logic lives in .scripts/create-github-release.mjs, which
 # waits until the version's packages are on npm before creating the release.
