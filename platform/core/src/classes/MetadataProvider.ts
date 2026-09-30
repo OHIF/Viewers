@@ -279,8 +279,14 @@ class MetadataProvider {
             groupStr = `600${overlayGroup.toString(16)}`;
           }
 
+          // dcmjs >= 0.50 names 60xx tags by keyword (OverlayData, OverlayRows, ...) instead of
+          // by tag. All overlay groups share these keywords, so dcmjs keeps at most one overlay
+          // under them; it is read as group 6000.
+          const getValue = (tag: string, keyword: string) =>
+            instance[tag] ?? (overlayGroup === 0x00 ? instance[keyword] : undefined);
+
           const OverlayDataTag = `${groupStr}3000`;
-          const OverlayData = instance[OverlayDataTag];
+          const OverlayData = getValue(OverlayDataTag, 'OverlayData');
 
           if (!OverlayData) {
             continue;
@@ -295,24 +301,26 @@ class MetadataProvider {
           const ROIAreaTag = `${groupStr}1301`;
           const ROIMeanTag = `${groupStr}1302`;
           const ROIStandardDeviationTag = `${groupStr}1303`;
-          const OverlayOrigin = instance[OverlayOriginTag];
+          const OverlayOrigin = getValue(OverlayOriginTag, 'OverlayOrigin');
+          const OverlayRows = getValue(OverlayRowsTag, 'OverlayRows');
+          const OverlayColumns = getValue(OverlayColumnsTag, 'OverlayColumns');
 
           let rows = 0;
-          if (instance[OverlayRowsTag] instanceof Array) {
+          if (OverlayRows instanceof Array) {
             // The DICOM VR for overlay rows is US (unsigned short).
-            const rowsInt16Array = new Uint16Array(instance[OverlayRowsTag][0]);
+            const rowsInt16Array = new Uint16Array(OverlayRows[0]);
             rows = rowsInt16Array[0];
           } else {
-            rows = instance[OverlayRowsTag];
+            rows = OverlayRows;
           }
 
           let columns = 0;
-          if (instance[OverlayColumnsTag] instanceof Array) {
+          if (OverlayColumns instanceof Array) {
             // The DICOM VR for overlay columns is US (unsigned short).
-            const columnsInt16Array = new Uint16Array(instance[OverlayColumnsTag][0]);
+            const columnsInt16Array = new Uint16Array(OverlayColumns[0]);
             columns = columnsInt16Array[0];
           } else {
-            columns = instance[OverlayColumnsTag];
+            columns = OverlayColumns;
           }
 
           let x = 0;
@@ -330,15 +338,15 @@ class MetadataProvider {
           const overlay = {
             rows: rows,
             columns: columns,
-            type: instance[OverlayType],
+            type: getValue(OverlayType, 'OverlayType'),
             x,
             y,
             pixelData: OverlayData,
-            description: instance[OverlayDescriptionTag],
-            label: instance[OverlayLabelTag],
-            roiArea: instance[ROIAreaTag],
-            roiMean: instance[ROIMeanTag],
-            roiStandardDeviation: instance[ROIStandardDeviationTag],
+            description: getValue(OverlayDescriptionTag, 'OverlayDescription'),
+            label: getValue(OverlayLabelTag, 'OverlayLabel'),
+            roiArea: getValue(ROIAreaTag, 'ROIArea'),
+            roiMean: getValue(ROIMeanTag, 'ROIMean'),
+            roiStandardDeviation: getValue(ROIStandardDeviationTag, 'ROIStandardDeviation'),
           };
 
           overlays.push(overlay);
