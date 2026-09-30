@@ -95,9 +95,10 @@ jobs:
               dry_run="$INPUT_DRY_RUN"
               ;;
             pull_request)
-              # The newest tag in the format the script accepts.
+              # The newest tag in the format the script accepts. `sed -n 1p`
+              # reads to the end, unlike `head`, so grep never hits a closed pipe.
               tag=$(git tag --list 'v[0-9]*' --sort=-creatordate |
-                grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' | head -n 1)
+                grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' | sed -n 1p)
               dry_run=true
               ;;
           esac
