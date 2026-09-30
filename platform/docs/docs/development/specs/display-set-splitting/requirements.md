@@ -524,6 +524,10 @@ rules again until the customization value changes. *Satisfies `SP-DET-1`.*
 The compile step shall compile each rule alone, so that it can name every rule that fails.
 *Satisfies `SP-SAFE-7`.*
 
+> The compile step compiles every rule, also a rule that has functions. The compiler keeps a
+> function as it is, and compiles the data fields next to it. A rule id of `__proto__` is an error,
+> because the id cannot be a key of a plain object.
+
 **SP-PIPE-13**
 IF any rule does not compile, or has a priority that is not a number or `null`, THEN the display
 set service shall create no display sets for any study, not even SEG or SR display sets, and shall
@@ -580,12 +584,24 @@ The display set service shall put a new instance into the display set that holds
 instances of its group, else into the display set with the same split key, else into a new
 display set. *Satisfies `SP-DET-3`, `SP-DET-4`.*
 
+**SP-PIPE-16**
+WHEN a display set grows, the display set factory shall compute the attributes of the grown image
+list before it sorts the images, and shall compute the attributes that depend on the order again
+after the sort. *Satisfies `SP-DET-1`.*
+
+> OHIF's default sort reads `isReconstructable` to choose patient-position order or instance-number
+> order. One slice is not reconstructable, but more slices can be. A sort that reads the value of
+> the earlier image list can give a different order from a load of all of the instances. The
+> `instance`, the `messages`, and the thumbnail depend on the final order. The initial build uses
+> the same sequence, so a display set that grew has the same order as a new one.
+
 **SP-PIPE-11**
 The display set factory shall record `splitKey`, `splitRuleId`, and `splitGroupId` on each
 display set, and shall not let `customAttributes` overwrite those three attributes or
 `extendInstances`. *Satisfies `SP-READ-4`, `SP-READ-6`, `SP-DET-3`.*
 
-> `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds these four names. The
+> `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds these four names, and also
+> `__proto__`, because an assignment of `__proto__` replaces the prototype of the display set. The
 > reconciliation compares `splitRuleId` with the id of the matched rule, to decide if the series
 > facts go to `extendInstances`, so a rule must not be able to change `splitRuleId`.
 
@@ -774,7 +790,7 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | --- | --- |
 | `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/ohifDefaultSplitRules.test.ts` |
 | `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
-| `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `rawDisplaySetSelector.test.ts` of `@cornerstonejs/metadata` |
+| `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `rawDisplaySetSelector.test.ts` of `@cornerstonejs/metadata` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
 | `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `rawDisplaySetSelector.test.ts`, `expression.test.ts`) |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |

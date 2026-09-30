@@ -30,6 +30,9 @@ const RESERVED_ATTRIBUTES = new Set([
   'splitGroupId',
   // The growth hook DisplaySetService calls on a re-split.
   'extendInstances',
+  // `setAttributes` assigns each key, and `imageSet['__proto__'] = value`
+  // replaces the prototype of the ImageSet instead of adding an attribute.
+  '__proto__',
 ]);
 
 /** The ordering inputs every sort of one split-rule display set uses. */
@@ -78,6 +81,27 @@ function applyInstanceOrder(
 }
 
 /**
+ * Orders the images, then refreshes the attributes that depend on the order.
+ *
+ * The image-list attributes must already describe the current images: OHIF's
+ * default sort reads `isReconstructable` to choose patient-position or
+ * instance-number order. `isReconstructable` does not depend on the order, but
+ * `instance`, `messages` and the thumbnail do, so they are applied again from
+ * the final order. The initial build and the growth hook both end here, so a
+ * display set that grew is the same as one built from all of its instances.
+ */
+function orderAndRefreshAttributes(
+  imageSet,
+  matchedRule: SplitRule,
+  order: InstanceOrder,
+  context: ImageSetFactoryContext
+) {
+  applyInstanceOrder(imageSet, matchedRule, order, context);
+  const derived = applyImageListAttributes(imageSet, context);
+  applyThumbnailSrc(imageSet, context, derived);
+}
+
+/**
  * Converts a `@cornerstonejs/metadata` split-rule instance group into a full
  * OHIF ImageSet display set.  This is the default
  * `createDisplaySetFromGroup` of the `useMetadataDisplaySet` customization.
@@ -99,11 +123,12 @@ export function makeDisplaySetFromInstanceGroup(
   // What every re-sort of this display set orders with.
   const order: InstanceOrder = { series: group.series, compareInstances };
 
+  // The factory applies the image-list attributes, which the sort reads.
   const imageSet = makeImageSetDisplaySet([...instances], context, {
     // The order is applied below, once, with the matched rule folded in.
     skipSort: true,
   });
-  applyInstanceOrder(imageSet, matchedRule, order, context);
+  orderAndRefreshAttributes(imageSet, matchedRule, order, context);
   const sopClassUidsOf = list =>
     [...new Set(list.map(instance => instance.SOPClassUID))] as string[];
   const viewportTypes = matchedRule.viewportTypes ? [...matchedRule.viewportTypes] : undefined;
@@ -185,14 +210,14 @@ export function makeDisplaySetFromInstanceGroup(
 
       // `images` is a non-writable property, but the array contents are mutable.
       imageSet.images.push(...instancesToAdd);
-      applyInstanceOrder(imageSet, matchedRule, order, context);
+      // Recompute every image-list-derived attribute through the same helpers
+      // the initial build uses. First for the grown list, because the sort reads
+      // `isReconstructable`: one slice is not reconstructable, but more slices
+      // can be. Then again from the final order, for the `instance`, the
+      // messages and the thumbnail.
+      applyImageListAttributes(imageSet, context);
+      orderAndRefreshAttributes(imageSet, matchedRule, order, context);
       imageSet.setAttribute('sopClassUids', sopClassUidsOf(imageSet.images));
-
-      // Recompute every image-list-derived attribute through the same helper the
-      // initial build uses (reconstructability, messages, volumeLoaderSchema,
-      // frame count, and the `instance`/thumbnail the new sort order implies).
-      const derived = applyImageListAttributes(imageSet, context);
-      applyThumbnailSrc(imageSet, context, derived);
       // Last, so a rule's custom attributes still win over the recomputed
       // defaults - the same precedence as the initial build.
       applyCustomAttributes();
