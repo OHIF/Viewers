@@ -51,8 +51,8 @@ describe('ohifDefaultSplitRules', () => {
   });
 
   it('contains the expected rules in order (guards upstream rule-id drift)', () => {
+    // singleImageModality is off (priority null), so the resolved set omits it.
     expect(resolveSplitRuleSet(compiledRules).map(rule => rule.id)).toEqual([
-      'singleImageModality',
       'multiFrame',
       'mixedDimensionalityBValue',
       'volume3d',
@@ -68,7 +68,7 @@ describe('ohifDefaultSplitRules', () => {
         Object.entries(ohifDefaultSplitRules).map(([id, rule]) => [id, rule.priority])
       )
     ).toEqual({
-      singleImageModality: 1,
+      singleImageModality: null,
       multiFrame: 2,
       mixedDimensionalityBValue: 3,
       volume3d: 4,
@@ -76,12 +76,28 @@ describe('ohifDefaultSplitRules', () => {
     });
   });
 
-  it('creates one group per image for same-resolution mammography views', () => {
-    const views = ['RCC', 'LCC', 'RMLO', 'LMLO'].map(view =>
+  const mammographyViews = () =>
+    ['RCC', 'LCC', 'RMLO', 'LMLO'].map(view =>
       makeInstance({ Modality: 'MG', SOPClassUID: MG_FOR_PRESENTATION, ViewPosition: view })
     );
-    const { groups, unmatched } = split(views);
+
+  it('keeps a single-image modality series together, because singleImageModality is off', () => {
+    const { groups, unmatched } = split(mammographyViews());
     expect(unmatched).toHaveLength(0);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].matchedRule.id).toBe('defaultImageRule');
+    expect(groups[0].instances).toHaveLength(4);
+  });
+
+  it('creates one group per image when a customization turns singleImageModality on', () => {
+    const rules = createDisplaySetSplitRules(
+      {
+        ...ohifDefaultSplitRules,
+        singleImageModality: { ...ohifDefaultSplitRules.singleImageModality, priority: 1 },
+      },
+      { classifiers: ohifSplitRuleClassifiers }
+    );
+    const groups = groupInstancesBySplitRules(mammographyViews() as any, rules);
     expect(groups).toHaveLength(4);
     expect(groups.every(group => group.matchedRule.id === 'singleImageModality')).toBe(true);
     expect(groups.every(group => group.instances.length === 1)).toBe(true);

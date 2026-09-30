@@ -11,6 +11,11 @@
 // series mixing instances with and without DiffusionBValue into separate
 // display sets (the DWI mixed-b-value issue).
 //
+// The default rule `singleImageModality` is off, so a CR, DX or MG series is
+// one display set, and not one display set for each image as with the stack
+// SOP class handler. `split/dxCrSingleImages.jsonc` shows a per-image split
+// for small DX and CR series as a rule.
+//
 // Load it with `?customization=split/enableNewSplit`.
 //
 // Custom rules are @cornerstonejs/metadata raw selector data (conditions,

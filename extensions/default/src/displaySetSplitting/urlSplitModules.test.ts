@@ -56,7 +56,9 @@ describe('split URL modules', () => {
       .readdirSync(SPLIT_DIR)
       .filter(file => file.endsWith('.jsonc'))
       .map(file => file.replace(/\.jsonc$/, ''));
-    expect(names).toEqual(expect.arrayContaining(['enableNewSplit', 'scoutSeries', 'dwiByBValue']));
+    expect(names).toEqual(
+      expect.arrayContaining(['enableNewSplit', 'scoutSeries', 'dwiByBValue', 'dxCrSingleImages'])
+    );
     for (const name of names) {
       const module = readModule(name);
       if (module.global?.useMetadataDisplaySet?.splitRules) {
@@ -95,5 +97,44 @@ describe('split URL modules', () => {
       ['dwiByBValue', 2],
       ['mixedDimensionalityBValue', 2],
     ]);
+  });
+
+  describe('dxCrSingleImages', () => {
+    const SOP_CLASS = {
+      DX: '1.2.840.10008.5.1.4.1.1.1.1',
+      CR: '1.2.840.10008.5.1.4.1.1.1',
+      MG: '1.2.840.10008.5.1.4.1.1.1.2',
+    };
+    const image = (Modality: 'DX' | 'CR' | 'MG') => ({
+      ...mr(),
+      SeriesDescription: Modality,
+      Modality,
+      SOPClassUID: SOP_CLASS[Modality],
+    });
+    const splitSeries = (Modality: 'DX' | 'CR' | 'MG', count: number) =>
+      groupInstancesBySplitRules(
+        Array.from({ length: count }, () => image(Modality)) as any,
+        compileModule('dxCrSingleImages')
+      ).map(group => [group.matchedRule.id, group.instances.length]);
+
+    it.each(['DX', 'CR'] as const)(
+      'makes one display set for each image of a %s series',
+      modality => {
+        expect(splitSeries(modality, 3)).toEqual([
+          ['dxCrSingleImages', 1],
+          ['dxCrSingleImages', 1],
+          ['dxCrSingleImages', 1],
+        ]);
+      }
+    );
+
+    it('splits a series of 9 images, and keeps a series of 10 images together', () => {
+      expect(splitSeries('DX', 9)).toHaveLength(9);
+      expect(splitSeries('DX', 10)).toEqual([['defaultImageRule', 10]]);
+    });
+
+    it('keeps an MG series together', () => {
+      expect(splitSeries('MG', 4)).toEqual([['defaultImageRule', 4]]);
+    });
   });
 });

@@ -11,6 +11,7 @@
  *
  * Each rule exists to reproduce the legacy stack SOP class handler exactly;
  * see the rule descriptions for where that differs from the upstream defaults.
+ * The one exception is `singleImageModality`, which is off by default.
  *
  * @module ohifDefaultSplitRules
  */
@@ -124,12 +125,18 @@ const reuseUpstreamRule = (ruleId: string, priority: number): RawDisplaySetSelec
  * (10000) after every default, and `null` turns a default rule off.
  */
 export const ohifDefaultSplitRules: RawDisplaySetSelector = {
+  // Off by default (priority null), which is the one intended difference from
+  // the legacy stack handler. A per-image split is a decision for each
+  // deployment, and a rule states it better than a fixed modality list: see
+  // the `split/dxCrSingleImages` URL module, which splits only small DX and CR
+  // series. The rule stays in the set, so that
+  // `{ singleImageModality: { priority: { $set: 1 } } }` turns it on again.
   singleImageModality: {
-    priority: 1,
+    priority: null,
     description:
       'CR / DX / MG - one display set per image, as the legacy stack handler does. ' +
-      'The upstream rule buckets by coarse image size, which merges mammography ' +
-      'views of the same resolution (RCC/LCC/RMLO/LMLO).',
+      'Off by default. The upstream rule buckets by coarse image size, which merges ' +
+      'mammography views of the same resolution (RCC/LCC/RMLO/LMLO).',
     viewportTypes: ['stack'],
     matches: { all: [{ attribute: 'Modality', in: ['CR', 'DX', 'MG'] }, STACK_IMAGE] },
     groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],

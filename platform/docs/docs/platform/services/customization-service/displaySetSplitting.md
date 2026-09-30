@@ -78,7 +78,7 @@ The default `splitRules` (from `@ohif/extension-default`) are:
 
 | Priority | Rule id | Behavior |
 |---|---|---|
-| 1 | `singleImageModality` | CR/DX/MG — one display set **per image** (preserves multi-view mammography) |
+| `null` (off) | `singleImageModality` | CR/DX/MG — one display set **per image**, as the legacy stack handler does. Off by default: a CR, DX or MG series is one display set. See [Worked example: one display set per radiograph](#worked-example-one-display-set-per-radiograph) |
 | 2 | `multiFrame` | any image with `NumberOfFrames > 1` — one display set per instance (including US clips) |
 | 3 | `mixedDimensionalityBValue` | MR series mixing instances with and without `DiffusionBValue` — split into separate display sets (fixes mixed-b-value DWI window leveling) |
 | 4 | `volume3d` | CT/MR/PT series with more than one instance — a single reconstructable display set |
@@ -348,6 +348,48 @@ Series D is the limit of this rule: a scanner that does not set `LOCALIZER` in
 series fact that is a number (for example, the lowest `InstanceNumber`), and
 the raw selector has boolean series facts only.
 
+## Worked example: one display set per radiograph
+
+The default rule `singleImageModality` is off, so the new split keeps a CR,
+DX or MG series as one display set. The legacy stack handler always makes one
+display set for each image of these modalities. A deployment that wants a
+per-image split writes the split as a rule, and the rule can say which series
+it applies to.
+
+`platform/app/public/customizations/split/dxCrSingleImages.jsonc` (load with
+`?customization=split/dxCrSingleImages`) splits a DX or CR series of fewer
+than 10 images into one display set for each image. MG is not in the list, and
+a larger series stays one display set:
+
+```jsonc
+"dxCrSingleImages": {
+  "priority": -1,
+  "viewportTypes": ["stack"],
+  // True when the series has 10 instances or more.
+  "series": [
+    { "name": "tenOrMoreImages", "scope": "first", "when": { "expression": "true" }, "minInstances": 10 }
+  ],
+  "matches": {
+    "all": [
+      { "attribute": "Modality", "in": ["DX", "CR"] },
+      { "classifier": "stackImage" },
+      { "not": { "seriesFact": "tenOrMoreImages" } }
+    ]
+  },
+  "groupBy": ["SeriesInstanceUID", "SOPInstanceUID"]
+}
+```
+
+A boolean series fact with `minInstances` is how a rule tests the size of a
+series: the fact is false below the count, so `not` gives "fewer than".
+
+To get the legacy behavior back for all three modalities, turn the default
+rule on again:
+
+```js
+useMetadataDisplaySet: { splitRules: { singleImageModality: { priority: { $set: 1 } } } }
+```
+
 ## Overriding rules
 
 Split rules resolve through the usual customization scopes
@@ -363,7 +405,7 @@ useMetadataDisplaySet: { splitRules: { $merge: { myRule: { ...myRule, priority: 
 
 // Replace one rule, and keep its place
 useMetadataDisplaySet: {
-  splitRules: { singleImageModality: { $set: { ...myRule, priority: 1 } } },
+  splitRules: { multiFrame: { $set: { ...myRule, priority: 2 } } },
 }
 
 // Move one rule
