@@ -14,9 +14,15 @@ const HISTORY_CHANGING_EVENTS = [
   csToolsEnums.Events.HISTORY_UNDO,
   csToolsEnums.Events.HISTORY_REDO,
   csToolsEnums.Events.ANNOTATION_COMPLETED,
+  csToolsEnums.Events.ANNOTATION_MODIFIED,
   csToolsEnums.Events.ANNOTATION_REMOVED,
   csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
 ];
+
+// A drag of an existing annotation fires ANNOTATION_MODIFIED only while the
+// pointer moves; the tool pushes the memo on mouse up and fires no event for
+// it. So also re-read the state after each mouse up / touch end.
+const POINTER_END_EVENTS = ['mouseup', 'touchend'];
 
 /**
  * Tracks whether an undo/redo is currently available so the header buttons can
@@ -49,12 +55,14 @@ export function useUndoRedoState(): { canUndo: boolean; canRedo: boolean } {
     };
 
     HISTORY_CHANGING_EVENTS.forEach(evt => eventTarget.addEventListener(evt, schedule));
+    POINTER_END_EVENTS.forEach(evt => window.addEventListener(evt, schedule, true));
 
     // Sync once on mount in case the history already has content.
     readState();
 
     return () => {
       HISTORY_CHANGING_EVENTS.forEach(evt => eventTarget.removeEventListener(evt, schedule));
+      POINTER_END_EVENTS.forEach(evt => window.removeEventListener(evt, schedule, true));
       if (scheduled !== null) {
         clearTimeout(scheduled);
       }
