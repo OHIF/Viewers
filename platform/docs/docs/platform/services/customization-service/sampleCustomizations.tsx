@@ -837,6 +837,22 @@ window.config = {
     `,
   },
   {
+    id: 'cornerstone.maxUndoRedoCacheSize',
+    description:
+      'The maximum number of undo/redo history items to keep. Segmentation edits record undo memos that hold full labelmap buffers, so a large history can cause memory pressure or out-of-memory errors with large data. Accepts an integer from 1 to 10000; any other value is ignored with a console warning. The viewer applies the value when a mode opens and on each later change of a global or mode customization. A change of the value clears the undo/redo history.',
+    default: 'undefined (the Cornerstone default, 50)',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: {
+    global: {
+      'cornerstone.maxUndoRedoCacheSize': { $set: 10 },
+    },
+  },
+};
+    `,
+  },
+  {
     id: 'autoCineModalities',
     description: 'Specifies the modalities for which the cine player automatically starts.',
     default: ['OT', 'US'],
