@@ -161,9 +161,11 @@ creation (see [Rule errors](#rule-errors)). Named `customAttributePresets` work
 the same way for custom attributes.
 
 A mode or an extension in TypeScript can also supply a rule that is already
-compiled — plain functions for `matches`, `groupBy` and the other fields. The
-compiler does not compile such a rule again, and checks only its `id` and its
-`priority`. A raw rule cannot fail at run time, because the safe functions give
+compiled — plain functions for `matches`, `groupBy` and the other fields — or a
+rule that mixes functions and data, for example a function `matches` with a raw
+`groupBy` entry `{ attribute: 'DiffusionBValue', number: true }`. The compiler
+compiles every rule. It keeps each function as it is, and compiles each data
+field. A raw rule cannot fail at run time, because the safe functions give
 a definite result for every instance. A function that code supplies — a rule
 field or a classifier — can throw. OHIF wraps every function of every rule, so
 the error names the rule and the field.

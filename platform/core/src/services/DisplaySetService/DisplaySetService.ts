@@ -81,9 +81,10 @@ export type UseMetadataDisplaySetCustomization = {
    * wins per instance. The default rules use `1..n`; a priority below 0 runs
    * before them, above 10000 after them, and `null` turns a rule off.
    *
-   * An entry is `@cornerstonejs/metadata` raw selector data, compiled by
-   * `createDisplaySetSplitRules` (see {@link compileSplitRules}), or a rule
-   * that code has already compiled. An entry that does not compile is not
+   * An entry is `@cornerstonejs/metadata` raw selector data, a rule that code
+   * has already compiled, or a mix of functions and data. Every entry is
+   * compiled by `createDisplaySetSplitRules` (see {@link compileSplitRules}),
+   * which keeps a function as is. An entry that does not compile is not
    * dropped: it stops display set creation.
    */
   splitRules?: Record<string, SplitRuleCustomizationEntry>;

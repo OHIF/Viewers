@@ -62,7 +62,63 @@ describe('compileSplitRules', () => {
     expect(rules.native.matches(makeInstance(), context)).toBe(true);
     expect(rules.native.matches(makeInstance({ Modality: 'MR' }), context)).toBe(false);
     expect(matches).toHaveBeenCalledWith(makeInstance(), context);
-    expect(rules.native.groupBy).toEqual(['SeriesInstanceUID']);
+    // The data part is compiled too, and reads the same key.
+    const [seriesKey] = rules.native.groupBy as ((...args: unknown[]) => unknown)[];
+    expect(seriesKey(makeInstance(), context)).toBe('series-1');
+  });
+
+  describe('a rule that mixes functions with data compiles every data field', () => {
+    const mr = (sop: string, bValue: number) =>
+      makeInstance({ SOPInstanceUID: sop, Modality: 'MR', DiffusionBValue: bValue });
+    const bValuesOf = rules =>
+      groupInstancesBySplitRules([mr('b0', 0), mr('b800', 800)] as never, rules).map(group =>
+        group.instances.map(instance => instance.DiffusionBValue)
+      );
+
+    it('a data groupBy part next to a function matches', () => {
+      const { rules, errors } = compileSplitRules({
+        dwi: {
+          priority: 1,
+          matches: instance => instance.Modality === 'MR',
+          groupBy: ['SeriesInstanceUID', { attribute: 'DiffusionBValue', number: true }],
+        } as never,
+      });
+      expect(errors).toEqual([]);
+      expect(bValuesOf(rules)).toEqual([[0], [800]]);
+    });
+
+    it('a data runBy next to a function matches', () => {
+      const { rules, errors } = compileSplitRules({
+        dwi: {
+          priority: 1,
+          matches: instance => instance.Modality === 'MR',
+          runBy: { attribute: 'DiffusionBValue' },
+        } as never,
+      });
+      expect(errors).toEqual([]);
+      expect(bValuesOf(rules)).toEqual([[0], [800]]);
+    });
+
+    it('an invalid data field next to a function is an error', () => {
+      const { errors } = compileSplitRules({
+        dwi: {
+          priority: 1,
+          matches: () => true,
+          groupBy: [{ attribute: 'DiffusionBValue', unknownKey: true }],
+        } as never,
+      });
+      expect(errors).toEqual([{ ruleId: 'dwi', message: expect.any(String) }]);
+    });
+  });
+
+  it('reports a __proto__ rule id instead of losing the rule', () => {
+    // JSON.parse makes `__proto__` a real own key.
+    const { rules, errors } = compileSplitRules(
+      JSON.parse('{"__proto__": {"priority": 1}, "good": {"priority": 2}}')
+    );
+    expect(errors).toEqual([{ ruleId: '__proto__', message: expect.stringContaining('id') }]);
+    expect(Object.getPrototypeOf(rules)).toBe(Object.prototype);
+    expect(Object.keys(rules)).toEqual(['good']);
   });
 
   it('keeps the keys and the priorities, including null', () => {

@@ -9,8 +9,9 @@ import type {
 /**
  * A `useMetadataDisplaySet.splitRules` entry: raw selector data (the
  * `@cornerstonejs/metadata` safe-function vocabulary - conditions, values,
- * `{ expression }`, series facts, custom attribute recipes), or a rule that
- * code has already compiled.
+ * `{ expression }`, series facts, custom attribute recipes), a rule that code
+ * has already compiled, or a mix of the two: a function at any function place
+ * next to data at the others.
  */
 export type SplitRuleCustomizationEntry = RawSplitRule | SplitRuleSetEntry;
 
@@ -34,7 +35,7 @@ export type CompiledSplitRules = {
   errors: SplitRuleCompileError[];
 };
 
-/** The rule fields that hold behaviour, and so tell raw data from a compiled rule. */
+/** The rule fields that hold behaviour; each is a function once compiled. */
 const BEHAVIOUR_FIELDS = [
   'matches',
   'groupBy',
@@ -65,21 +66,6 @@ export class SplitRuleRunError extends Error {
     this.field = field;
     this.cause = cause;
   }
-}
-
-/**
- * Is this entry a rule that code has already compiled? A mode or an extension
- * written in TypeScript can supply plain functions; the compiler only accepts
- * data, so such an entry is not compiled again.
- */
-function isCompiledRule(entry: object): boolean {
-  return BEHAVIOUR_FIELDS.some(field => {
-    const value = entry[field];
-    return (
-      typeof value === 'function' ||
-      (Array.isArray(value) && value.some(part => typeof part === 'function'))
-    );
-  });
 }
 
 /** Wraps one rule function so that an error it throws names the rule and the field. */
@@ -129,16 +115,18 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleS
  * Compiles the `useMetadataDisplaySet.splitRules` customization into the
  * `SplitRuleSet` the split engine takes.
  *
- * Raw entries are compiled by the `@cornerstonejs/metadata`
+ * Every entry is compiled by the `@cornerstonejs/metadata`
  * `createDisplaySetSplitRules` - there is no OHIF rule language. `options`
  * supplies the named extension points the rules reference, for example the
- * `stackImage` classifier of `@ohif/extension-default`. An entry that code has
- * already compiled (function fields) is not compiled again; only its id and
- * its priority are checked.
+ * `stackImage` classifier of `@ohif/extension-default`. The compiler keeps a
+ * function at a function place as is, so an entry that code has compiled, and
+ * an entry that mixes functions with data, go through the same compiler as raw
+ * data. No field is left uncompiled because another field is a function.
  *
  * Each entry is compiled on its own (SP-PIPE-3), so that `errors` names every
  * rule that fails - an unknown classifier, an invalid expression, a missing or
- * non-numeric priority, an id that differs from the key. No rule is dropped:
+ * non-numeric priority, an id that differs from the key, an unsafe id such as
+ * `__proto__`. No rule is dropped:
  * a rule set with an error must stop display set creation (SP-SAFE-7), because
  * the rule that failed can be the rule a clinician depends on. The display set
  * service does that stop.
@@ -164,19 +152,18 @@ export function compileSplitRules(
   }
 
   for (const [id, entry] of Object.entries(ruleSet)) {
+    // `rules['__proto__'] = rule` replaces the prototype of `rules` instead of
+    // adding the rule, and `JSON.parse` makes `__proto__` a real own key.
+    if (id === '__proto__') {
+      errors.push({ ruleId: id, message: 'the rule id is not allowed; give the rule another id' });
+      continue;
+    }
     if (!entry || typeof entry !== 'object') {
       errors.push({ ruleId: id, message: 'the entry is not an object' });
       continue;
     }
     try {
-      let compiled: SplitRuleSetEntry;
-      if (isCompiledRule(entry)) {
-        // Validates the priority and the id the same way the compiler does.
-        createDisplaySetSplitRules({ [id]: { priority: entry.priority, id: entry.id } });
-        compiled = entry as SplitRuleSetEntry;
-      } else {
-        compiled = createDisplaySetSplitRules({ [id]: entry as RawSplitRule }, options)[id];
-      }
+      const compiled = createDisplaySetSplitRules({ [id]: entry as RawSplitRule }, options)[id];
       rules[id] = wrapRuleFunctions(id, compiled);
     } catch (error) {
       errors.push({ ruleId: id, message: (error as Error).message });
