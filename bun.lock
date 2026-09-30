@@ -50,7 +50,7 @@
     },
     "addOns/externals/devDependencies": {
       "name": "@externals/devDependencies",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@kitware/vtk.js": "34.15.1",
@@ -131,14 +131,14 @@
     },
     "addOns/externals/dicom-microscopy-viewer": {
       "name": "@externals/dicom-microscopy-viewer",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "dicom-microscopy-viewer": "0.48.17",
       },
     },
     "extensions/cornerstone": {
       "name": "@ohif/extension-cornerstone",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/adapters": "4.15.29",
@@ -165,8 +165,8 @@
         "@cornerstonejs/codec-openjpeg": "1.3.0",
         "@cornerstonejs/codec-openjph": "2.4.7",
         "@cornerstonejs/dicom-image-loader": "4.15.29",
-        "@ohif/core": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -178,7 +178,7 @@
     },
     "extensions/cornerstone-dicom-pmap": {
       "name": "@ohif/extension-cornerstone-dicom-pmap",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/adapters": "4.15.29",
@@ -186,10 +186,10 @@
         "@kitware/vtk.js": "34.15.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/i18n": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/i18n": "3.12.18",
         "prop-types": "15.8.1",
         "react": "18.3.1",
         "react-dom": "18.3.1",
@@ -200,15 +200,15 @@
     },
     "extensions/cornerstone-dicom-rt": {
       "name": "@ohif/extension-cornerstone-dicom-rt",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/i18n": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/i18n": "3.12.18",
         "prop-types": "15.8.1",
         "react": "18.3.1",
         "react-dom": "18.3.1",
@@ -219,7 +219,7 @@
     },
     "extensions/cornerstone-dicom-seg": {
       "name": "@ohif/extension-cornerstone-dicom-seg",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/adapters": "4.15.29",
@@ -227,10 +227,10 @@
         "@kitware/vtk.js": "34.15.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/i18n": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/i18n": "3.12.18",
         "prop-types": "15.8.1",
         "react": "18.3.1",
         "react-dom": "18.3.1",
@@ -241,7 +241,7 @@
     },
     "extensions/cornerstone-dicom-sr": {
       "name": "@ohif/extension-cornerstone-dicom-sr",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/adapters": "4.15.29",
@@ -250,10 +250,10 @@
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-measurement-tracking": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-measurement-tracking": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -263,7 +263,7 @@
     },
     "extensions/cornerstone-dynamic-volume": {
       "name": "@ohif/extension-cornerstone-dynamic-volume",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/core": "4.15.29",
@@ -271,11 +271,11 @@
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/i18n": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/i18n": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -285,7 +285,7 @@
     },
     "extensions/default": {
       "name": "@ohif/extension-default",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/calculate-suv": "1.1.0",
@@ -294,8 +294,8 @@
         "react-color": "2.19.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/i18n": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/i18n": "3.12.18",
         "dcmjs": "0.49.4",
         "dicomweb-client": "0.10.4",
         "prop-types": "15.8.1",
@@ -309,7 +309,7 @@
     },
     "extensions/dicom-microscopy": {
       "name": "@ohif/extension-dicom-microscopy",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/codec-charls": "1.2.3",
@@ -320,10 +320,10 @@
         "mathjs": "12.4.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/i18n": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/i18n": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "prop-types": "15.8.1",
         "react": "18.3.1",
         "react-dom": "18.3.1",
@@ -334,14 +334,14 @@
     },
     "extensions/dicom-pdf": {
       "name": "@ohif/extension-dicom-pdf",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -352,14 +352,14 @@
     },
     "extensions/dicom-video": {
       "name": "@ohif/extension-dicom-video",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -369,20 +369,20 @@
     },
     "extensions/measurement-tracking": {
       "name": "@ohif/extension-measurement-tracking",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@ohif/ui": "3.12.17",
+        "@ohif/ui": "3.12.18",
         "@xstate/react": "3.2.2",
         "xstate": "4.38.3",
       },
       "peerDependencies": {
         "@cornerstonejs/core": "4.15.29",
         "@cornerstonejs/tools": "4.15.29",
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "classnames": "2.5.1",
         "dcmjs": "0.49.4",
         "lodash.debounce": "4.0.8",
@@ -395,14 +395,14 @@
     },
     "extensions/test-extension": {
       "name": "@ohif/extension-test",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -412,14 +412,14 @@
     },
     "extensions/tmtv": {
       "name": "@ohif/extension-tmtv",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/ui": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/ui": "3.12.18",
         "dcmjs": "0.49.4",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -429,16 +429,16 @@
     },
     "extensions/usAnnotation": {
       "name": "@ohif/extension-ultrasound-pleura-bline",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/core": "4.15.29",
         "@cornerstonejs/tools": "4.15.29",
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/i18n": "3.12.17",
-        "@ohif/ui-next": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/i18n": "3.12.18",
+        "@ohif/ui-next": "3.12.18",
       },
       "devDependencies": {
         "@babel/core": "7.28.0",
@@ -477,7 +477,7 @@
     },
     "modes/basic": {
       "name": "@ohif/mode-basic",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
       },
@@ -486,19 +486,19 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
       },
     },
     "modes/basic-dev-mode": {
       "name": "@ohif/mode-basic-dev-mode",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next": "17.3.1",
@@ -508,17 +508,17 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
       },
     },
     "modes/basic-test-mode": {
       "name": "@ohif/mode-test",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next": "17.3.1",
@@ -528,19 +528,19 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
-        "@ohif/extension-measurement-tracking": "3.12.17",
-        "@ohif/extension-test": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
+        "@ohif/extension-measurement-tracking": "3.12.18",
+        "@ohif/extension-test": "3.12.18",
       },
     },
     "modes/longitudinal": {
       "name": "@ohif/mode-longitudinal",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next": "17.3.1",
@@ -550,33 +550,33 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
-        "@ohif/extension-measurement-tracking": "3.12.17",
-        "@ohif/mode-basic": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
+        "@ohif/extension-measurement-tracking": "3.12.18",
+        "@ohif/mode-basic": "3.12.18",
       },
     },
     "modes/microscopy": {
       "name": "@ohif/mode-microscopy",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next": "17.3.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-dicom-microscopy": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-dicom-microscopy": "3.12.18",
       },
     },
     "modes/preclinical-4d": {
       "name": "@ohif/mode-preclinical-4d",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
       },
@@ -585,17 +585,17 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.17",
-        "@ohif/extension-cornerstone-dynamic-volume": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-tmtv": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.18",
+        "@ohif/extension-cornerstone-dynamic-volume": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-tmtv": "3.12.18",
       },
     },
     "modes/segmentation": {
       "name": "@ohif/mode-segmentation",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next": "17.3.1",
@@ -624,20 +624,20 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
-        "@ohif/mode-basic": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
+        "@ohif/mode-basic": "3.12.18",
       },
     },
     "modes/tmtv": {
       "name": "@ohif/mode-tmtv",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next": "17.3.1",
@@ -647,25 +647,25 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
-        "@ohif/extension-measurement-tracking": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
+        "@ohif/extension-measurement-tracking": "3.12.18",
       },
     },
     "modes/usAnnotation": {
       "name": "@ohif/mode-ultrasound-pleura-bline",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/core": "4.15.29",
         "@cornerstonejs/tools": "4.15.29",
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-ultrasound-pleura-bline": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-ultrasound-pleura-bline": "3.12.18",
         "i18next": "17.3.1",
       },
       "devDependencies": {
@@ -694,7 +694,7 @@
     },
     "platform/app": {
       "name": "@ohif/app",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "@cornerstonejs/codec-charls": "1.2.3",
@@ -703,25 +703,25 @@
         "@cornerstonejs/codec-openjph": "2.4.7",
         "@cornerstonejs/dicom-image-loader": "4.15.29",
         "@emotion/serialize": "1.3.3",
-        "@ohif/core": "3.12.17",
-        "@ohif/extension-cornerstone": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.17",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.17",
-        "@ohif/extension-default": "3.12.17",
-        "@ohif/extension-dicom-microscopy": "3.12.17",
-        "@ohif/extension-dicom-pdf": "3.12.17",
-        "@ohif/extension-dicom-video": "3.12.17",
-        "@ohif/extension-test": "3.12.17",
-        "@ohif/extension-ultrasound-pleura-bline": "3.12.17",
-        "@ohif/i18n": "3.12.17",
-        "@ohif/mode-basic-dev-mode": "3.12.17",
-        "@ohif/mode-longitudinal": "3.12.17",
-        "@ohif/mode-microscopy": "3.12.17",
-        "@ohif/mode-test": "3.12.17",
-        "@ohif/mode-ultrasound-pleura-bline": "3.12.17",
-        "@ohif/ui": "3.12.17",
-        "@ohif/ui-next": "3.12.17",
+        "@ohif/core": "3.12.18",
+        "@ohif/extension-cornerstone": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.18",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.18",
+        "@ohif/extension-default": "3.12.18",
+        "@ohif/extension-dicom-microscopy": "3.12.18",
+        "@ohif/extension-dicom-pdf": "3.12.18",
+        "@ohif/extension-dicom-video": "3.12.18",
+        "@ohif/extension-test": "3.12.18",
+        "@ohif/extension-ultrasound-pleura-bline": "3.12.18",
+        "@ohif/i18n": "3.12.18",
+        "@ohif/mode-basic-dev-mode": "3.12.18",
+        "@ohif/mode-longitudinal": "3.12.18",
+        "@ohif/mode-microscopy": "3.12.18",
+        "@ohif/mode-test": "3.12.18",
+        "@ohif/mode-ultrasound-pleura-bline": "3.12.18",
+        "@ohif/ui": "3.12.18",
+        "@ohif/ui-next": "3.12.18",
         "@svgr/webpack": "8.1.0",
         "@types/react": "18.3.23",
         "classnames": "2.5.1",
@@ -772,7 +772,7 @@
     },
     "platform/cli": {
       "name": "@ohif/cli",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "bin": {
         "ohif-cli": "src/index.js",
       },
@@ -796,7 +796,7 @@
     },
     "platform/core": {
       "name": "@ohif/core",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "dcmjs": "0.49.4",
@@ -822,14 +822,14 @@
         "@cornerstonejs/codec-openjph": "2.4.7",
         "@cornerstonejs/core": "4.15.29",
         "@cornerstonejs/dicom-image-loader": "4.15.29",
-        "@ohif/ui": "3.12.17",
+        "@ohif/ui": "3.12.18",
         "cornerstone-math": "0.1.10",
         "dicom-parser": "1.8.21",
       },
     },
     "platform/i18n": {
       "name": "@ohif/i18n",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@babel/runtime": "7.28.2",
         "i18next-locize-backend": "2.2.2",
@@ -854,7 +854,7 @@
     },
     "platform/ui": {
       "name": "@ohif/ui",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@testing-library/react": "13.4.0",
         "browser-detect": "0.2.28",
@@ -904,7 +904,7 @@
     },
     "platform/ui-next": {
       "name": "@ohif/ui-next",
-      "version": "3.12.17",
+      "version": "3.12.18",
       "dependencies": {
         "@radix-ui/react-accordion": "1.2.11",
         "@radix-ui/react-checkbox": "1.3.2",
@@ -989,6 +989,7 @@
     "trim": "1.0.1",
     "trim-newlines": "5.0.0",
     "webpack": "5.105.0",
+    "webpack-dev-middleware": "7.4.6",
     "websocket-driver": "0.7.5",
     "ws": "8.21.0",
   },
@@ -1505,9 +1506,31 @@
 
     "@jsonjoy.com/base64": ["@jsonjoy.com/base64@1.1.2", "", { "peerDependencies": { "tslib": "2" } }, "sha512-q6XAnWQDIMA3+FTiOYajoYqySkO+JSat0ytXGSuRdq9uXE7o92gzuQwQM14xaCRlBLGq3v5miDGC4vkVTn54xA=="],
 
-    "@jsonjoy.com/json-pack": ["@jsonjoy.com/json-pack@1.4.0", "", { "dependencies": { "@jsonjoy.com/base64": "^1.1.1", "@jsonjoy.com/util": "^1.1.2", "hyperdyperid": "^1.2.0", "thingies": "^1.20.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-Akn8XZqN3xO9YGcgvIiTauBBXTP92QSvw6EcGha+p5nm7brhbwvev5gw4fi+ouLGrBpfPpb72+S5pxl4mkMIGQ=="],
+    "@jsonjoy.com/buffers": ["@jsonjoy.com/buffers@17.67.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-tfExRpYxBvi32vPs9ZHaTjSP4fHAfzSmcahOfNxtvGHcyJel+aibkPlGeBB+7AoC6hL7lXIE++8okecBxx7lcw=="],
 
-    "@jsonjoy.com/util": ["@jsonjoy.com/util@1.8.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-HeR0JQNEdBozt+FrfyM5T0X3R+fIN0D+BRDkxPP5o41fTWzHfeZEqtK16aTW8haU+h+SG7XYq9PP5kobvOmkSA=="],
+    "@jsonjoy.com/codegen": ["@jsonjoy.com/codegen@1.0.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-E8Oy+08cmCf0EK/NMxpaJZmOxPqM+6iSe2S4nlSBrPZOORoDJILxtbSUEDKQyTamm/BVAhIGllOBNU79/dwf0g=="],
+
+    "@jsonjoy.com/fs-core": ["@jsonjoy.com/fs-core@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-node-builtins": "4.80.0", "@jsonjoy.com/fs-node-utils": "4.80.0", "thingies": "^2.5.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-qMKWshnyjbyhm+NbzqGE3w5y1mckFFEMj0aDPU2/JBNh1BzIjVy9esq9lBmRnNVmhMEkxwDzLZ8Gqh5G1P5Dag=="],
+
+    "@jsonjoy.com/fs-fsa": ["@jsonjoy.com/fs-fsa@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-core": "4.80.0", "@jsonjoy.com/fs-node-builtins": "4.80.0", "@jsonjoy.com/fs-node-utils": "4.80.0", "thingies": "^2.5.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-ZBEKl7J6dbkRCfmrFV48Re211A/FHqniTUhsWCsaRteNSOqMgkX3qF1UreVgwB9oSPm81JLAwhIi6Lb/NH/PoA=="],
+
+    "@jsonjoy.com/fs-node": ["@jsonjoy.com/fs-node@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-core": "4.80.0", "@jsonjoy.com/fs-node-builtins": "4.80.0", "@jsonjoy.com/fs-node-utils": "4.80.0", "@jsonjoy.com/fs-print": "4.80.0", "@jsonjoy.com/fs-snapshot": "4.80.0", "glob-to-regex.js": "^1.3.1", "thingies": "^2.5.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-yiBlUfkMMRFFGy8CD/h2zd5rPnrM6bjlF+nx2LRAxNV6hOSiuObQIUEE7m7y2VTMisjxCRtzINH94bFGySWL7g=="],
+
+    "@jsonjoy.com/fs-node-builtins": ["@jsonjoy.com/fs-node-builtins@4.80.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-OIOIhqaWiwUySFMny4epIAoviXsyMaQQ63PTc3zH+5HEOvarl5hpUmZIhp2m5+OfyKAh5ylxXnQIgew1OgJDVw=="],
+
+    "@jsonjoy.com/fs-node-to-fsa": ["@jsonjoy.com/fs-node-to-fsa@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-fsa": "4.80.0", "@jsonjoy.com/fs-node-builtins": "4.80.0", "@jsonjoy.com/fs-node-utils": "4.80.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-ljeaR5xwtX1EyRmB0wvXANUMQZ3mjKcm7z8s2N8D8SLQ04CcAGtUhHFRZQXFb9mhgFyEVMydQGQtSOFS7pcrFQ=="],
+
+    "@jsonjoy.com/fs-node-utils": ["@jsonjoy.com/fs-node-utils@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-node-builtins": "4.80.0", "glob-to-regex.js": "^1.3.1" }, "peerDependencies": { "tslib": "2" } }, "sha512-xwHeVVi3f+Khg/Fmb8i5qoYVmQ08QznE5TWhQokUmIZjz4KBPzU+zt/+bahBI6G1ghtqajt27lWuAciIxApuzA=="],
+
+    "@jsonjoy.com/fs-print": ["@jsonjoy.com/fs-print@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-node-utils": "4.80.0", "tree-dump": "^1.1.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-1ocZLJw/m/xlq0moaIHO7HV9nHRVBUvdc2zMzhsJGkFOrqfwWvexfCv5cYCPPLRhP+9p3yunoi4Ep5YhRORC9Q=="],
+
+    "@jsonjoy.com/fs-snapshot": ["@jsonjoy.com/fs-snapshot@4.80.0", "", { "dependencies": { "@jsonjoy.com/buffers": "^17.65.0", "@jsonjoy.com/fs-node-utils": "4.80.0", "@jsonjoy.com/json-pack": "^17.65.0", "@jsonjoy.com/util": "^17.65.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-3AV23Q1H228KTtJKTUE0nNq8FCtxSvtENOLrEat80wkAJCKHuqQEv8yjhpS8Bei2OEFJAnluGXp9Ri2SWBlROw=="],
+
+    "@jsonjoy.com/json-pack": ["@jsonjoy.com/json-pack@1.21.0", "", { "dependencies": { "@jsonjoy.com/base64": "^1.1.2", "@jsonjoy.com/buffers": "^1.2.0", "@jsonjoy.com/codegen": "^1.0.0", "@jsonjoy.com/json-pointer": "^1.0.2", "@jsonjoy.com/util": "^1.9.0", "hyperdyperid": "^1.2.0", "thingies": "^2.5.0", "tree-dump": "^1.1.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-+AKG+R2cfZMShzrF2uQw34v3zbeDYUqnQ+jg7ORic3BGtfw9p/+N6RJbq/kkV8JmYZaINknaEQ2m0/f693ZPpg=="],
+
+    "@jsonjoy.com/json-pointer": ["@jsonjoy.com/json-pointer@1.0.2", "", { "dependencies": { "@jsonjoy.com/codegen": "^1.0.0", "@jsonjoy.com/util": "^1.9.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-Fsn6wM2zlDzY1U+v4Nc8bo3bVqgfNTGcn6dMgs6FjrEnt4ZCe60o6ByKRjOGlI2gow0aE/Q41QOigdTqkyK5fg=="],
+
+    "@jsonjoy.com/util": ["@jsonjoy.com/util@1.9.0", "", { "dependencies": { "@jsonjoy.com/buffers": "^1.0.0", "@jsonjoy.com/codegen": "^1.0.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-pLuQo+VPRnN8hfPqUTLTHk126wuYdXVxE6aDmjSeV4NCAgyxWbiOIeNJVtID3h1Vzpoi9m4jXezf73I6LgabgQ=="],
 
     "@kitware/vtk.js": ["@kitware/vtk.js@34.15.1", "", { "dependencies": { "@babel/runtime": "^7.28.2", "@types/webxr": "^0.5.5", "commander": "9.2.0", "d3-scale": "4.0.2", "fast-deep-equal": "^3.1.3", "fflate": "0.7.3", "gl-matrix": "3.4.3", "globalthis": "1.0.3", "seedrandom": "3.0.5", "shader-loader": "1.3.1", "shelljs": "0.8.5", "spark-md5": "3.0.2", "stream-browserify": "3.0.0", "utif": "3.1.0", "webworker-promise": "0.5.0", "worker-loader": "3.0.8", "xmlbuilder2": "3.0.2" }, "peerDependencies": { "@babel/preset-env": "^7.17.10", "autoprefixer": "^10.4.7", "wslink": ">=1.1.0 || ^2.0.0" }, "bin": { "vtkDataConverter": "Utilities/DataGenerator/convert-cli.js", "xml2json": "Utilities/XMLConverter/xml2json-cli.js" } }, "sha512-9BH/a++drhclknBKNVzVpcOzDK95nc/OflKpQE8nY+IlaXTB1+Z6WXS6IwkEEUkRRUqSVskcW4ksgWdxihB49w=="],
 
@@ -3235,6 +3258,8 @@
 
     "glob-parent": ["glob-parent@6.0.2", "", { "dependencies": { "is-glob": "^4.0.3" } }, "sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A=="],
 
+    "glob-to-regex.js": ["glob-to-regex.js@1.3.1", "", { "peerDependencies": { "tslib": "2" } }, "sha512-zhWhMRsgnOym+1txhUmYJGD6eUsbUdrZv55gCYKuJX8t2p3+M8My23PD09bEIsreGUs5pnSa/idmcfp2/IlqGg=="],
+
     "glob-to-regexp": ["glob-to-regexp@0.4.1", "", {}, "sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw=="],
 
     "global-cache": ["global-cache@1.2.1", "", { "dependencies": { "define-properties": "^1.1.2", "is-symbol": "^1.0.1" } }, "sha512-EOeUaup5DgWKlCMhA9YFqNRIlZwoxt731jCh47WBV9fQqHgXhr3Fa55hfgIUqilIcPsfdNKN7LHjrNY+Km40KA=="],
@@ -3863,7 +3888,7 @@
 
     "media-typer": ["media-typer@0.3.0", "", {}, "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ=="],
 
-    "memfs": ["memfs@4.23.0", "", { "dependencies": { "@jsonjoy.com/json-pack": "^1.0.3", "@jsonjoy.com/util": "^1.3.0", "tree-dump": "^1.0.1", "tslib": "^2.0.0" } }, "sha512-SucHN2lcWf0jrnw+jP6FoVW6l/zGJiXfNMdApZzG0x/0mAIMdwAeR5mjfsCH5U3BoqpUEtqzz+dSQSO0H/eqxg=="],
+    "memfs": ["memfs@4.80.0", "", { "dependencies": { "@jsonjoy.com/fs-core": "4.80.0", "@jsonjoy.com/fs-fsa": "4.80.0", "@jsonjoy.com/fs-node": "4.80.0", "@jsonjoy.com/fs-node-builtins": "4.80.0", "@jsonjoy.com/fs-node-to-fsa": "4.80.0", "@jsonjoy.com/fs-node-utils": "4.80.0", "@jsonjoy.com/fs-print": "4.80.0", "@jsonjoy.com/fs-snapshot": "4.80.0", "@jsonjoy.com/json-pack": "^1.11.0", "@jsonjoy.com/util": "^1.9.0", "glob-to-regex.js": "^1.3.1", "thingies": "^2.5.0", "tree-dump": "^1.0.3", "tslib": "^2.0.0" } }, "sha512-N70W2isi44XdGn7uPo9NJ4zRukcdkwSFHlnYx42SWOH/+hzqNc8P7+tVoA2up4z7faHvNi1RSNCFjxoYQ71VPQ=="],
 
     "memoize-one": ["memoize-one@5.2.1", "", {}, "sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q=="],
 
@@ -4899,7 +4924,7 @@
 
     "text-table": ["text-table@0.2.0", "", {}, "sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw=="],
 
-    "thingies": ["thingies@1.21.0", "", { "peerDependencies": { "tslib": "^2" } }, "sha512-hsqsJsFMsV+aD4s3CWKk85ep/3I9XzYV/IXaSouJMYIoDlgyi11cBhsqYe9/geRfB0YIikBQg6raRaM+nIMP9g=="],
+    "thingies": ["thingies@2.6.1", "", { "peerDependencies": { "tslib": "^2" } }, "sha512-cV/CMGTK3M4MlnJ/0At6ismOw/A0EEniDNScajjz/Br3c1sqE72YD01rGpPTKwd27wAxI5Pr+6+0w8yofzFRYw=="],
 
     "throttleit": ["throttleit@1.0.1", "", {}, "sha512-vDZpf9Chs9mAdfY046mcPt8fg5QSZr37hEH4TXYBnDF+izxgrbRGUAAaBvIk/fJm9aOFCGFd1EsNg5AZCbnQCQ=="],
 
@@ -5131,7 +5156,7 @@
 
     "webpack-cli": ["webpack-cli@5.1.4", "", { "dependencies": { "@discoveryjs/json-ext": "^0.5.0", "@webpack-cli/configtest": "^2.1.1", "@webpack-cli/info": "^2.0.2", "@webpack-cli/serve": "^2.0.5", "colorette": "^2.0.14", "commander": "^10.0.1", "cross-spawn": "^7.0.3", "envinfo": "^7.7.3", "fastest-levenshtein": "^1.0.12", "import-local": "^3.0.2", "interpret": "^3.1.1", "rechoir": "^0.8.0", "webpack-merge": "^5.7.3" }, "peerDependencies": { "webpack": "5.x.x" }, "bin": { "webpack-cli": "bin/cli.js" } }, "sha512-pIDJHIEI9LR0yxHXQ+Qh95k2EvXpWzZ5l+d+jIo+RdSm9MiHfzazIxwwni/p7+x4eJZuvG1AJwgC4TNQ7NRgsg=="],
 
-    "webpack-dev-middleware": ["webpack-dev-middleware@7.4.2", "", { "dependencies": { "colorette": "^2.0.10", "memfs": "^4.6.0", "mime-types": "^2.1.31", "on-finished": "^2.4.1", "range-parser": "^1.2.1", "schema-utils": "^4.0.0" }, "peerDependencies": { "webpack": "^5.0.0" }, "optionalPeers": ["webpack"] }, "sha512-xOO8n6eggxnwYpy1NlzUKpvrjfJTvae5/D6WOK0S2LSo7vjmo5gCM1DbLUmFqrMTJP+W/0YZNctm7jasWvLuBA=="],
+    "webpack-dev-middleware": ["webpack-dev-middleware@7.4.6", "", { "dependencies": { "colorette": "^2.0.10", "memfs": "^4.43.1", "mime-types": "^3.0.1", "on-finished": "^2.4.1", "range-parser": "^1.2.1", "schema-utils": "^4.0.0" }, "peerDependencies": { "webpack": "^5.0.0" }, "optionalPeers": ["webpack"] }, "sha512-yBWCMvIfUmuhAE8vdqUKzH0vg9kuWN0KeG4vBnqRplUFHRU7lMQjkiJWxVQzvo2BTewqhPhDlMB41rAt2jVA9A=="],
 
     "webpack-dev-server": ["webpack-dev-server@5.2.2", "", { "dependencies": { "@types/bonjour": "^3.5.13", "@types/connect-history-api-fallback": "^1.5.4", "@types/express": "^4.17.21", "@types/express-serve-static-core": "^4.17.21", "@types/serve-index": "^1.9.4", "@types/serve-static": "^1.15.5", "@types/sockjs": "^0.3.36", "@types/ws": "^8.5.10", "ansi-html-community": "^0.0.8", "bonjour-service": "^1.2.1", "chokidar": "^3.6.0", "colorette": "^2.0.10", "compression": "^1.7.4", "connect-history-api-fallback": "^2.0.0", "express": "^4.21.2", "graceful-fs": "^4.2.6", "http-proxy-middleware": "^2.0.9", "ipaddr.js": "^2.1.0", "launch-editor": "^2.6.1", "open": "^10.0.3", "p-retry": "^6.2.0", "schema-utils": "^4.2.0", "selfsigned": "^2.4.1", "serve-index": "^1.9.1", "sockjs": "^0.3.24", "spdy": "^4.0.2", "webpack-dev-middleware": "^7.4.2", "ws": "^8.18.0" }, "peerDependencies": { "webpack": "^5.0.0" }, "optionalPeers": ["webpack"], "bin": { "webpack-dev-server": "bin/webpack-dev-server.js" } }, "sha512-QcQ72gh8a+7JO63TAx/6XZf/CWhgMzu5m0QirvPfGvptOusAxG12w2+aua1Jkjr7hzaWDnJ2n6JFeexMHI+Zjg=="],
 
@@ -5496,6 +5521,18 @@
     "@jest/transform/write-file-atomic": ["write-file-atomic@4.0.2", "", { "dependencies": { "imurmurhash": "^0.1.4", "signal-exit": "^3.0.7" } }, "sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg=="],
 
     "@jest/types/chalk": ["chalk@4.1.2", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA=="],
+
+    "@jsonjoy.com/fs-print/tree-dump": ["tree-dump@1.1.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-rMuvhU4MCDbcbnleZTFezWsaZXRFemSqAM+7jPnzUl1fo9w3YEKOxAeui0fz3OI4EU4hf23iyA7uQRVko+UaBA=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/json-pack": ["@jsonjoy.com/json-pack@17.67.0", "", { "dependencies": { "@jsonjoy.com/base64": "17.67.0", "@jsonjoy.com/buffers": "17.67.0", "@jsonjoy.com/codegen": "17.67.0", "@jsonjoy.com/json-pointer": "17.67.0", "@jsonjoy.com/util": "17.67.0", "hyperdyperid": "^1.2.0", "thingies": "^2.5.0", "tree-dump": "^1.1.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-t0ejURcGaZsn1ClbJ/3kFqSOjlryd92eQY465IYrezsXmPcfHPE/av4twRSxf6WE+TkZgLY+71vCZbiIiFKA/w=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/util": ["@jsonjoy.com/util@17.67.0", "", { "dependencies": { "@jsonjoy.com/buffers": "17.67.0", "@jsonjoy.com/codegen": "17.67.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-6+8xBaz1rLSohlGh68D1pdw3AwDi9xydm8QNlAFkvnavCJYSze+pxoW2VKP8p308jtlMRLs5NTHfPlZLd4w7ew=="],
+
+    "@jsonjoy.com/json-pack/@jsonjoy.com/buffers": ["@jsonjoy.com/buffers@1.2.1", "", { "peerDependencies": { "tslib": "2" } }, "sha512-12cdlDwX4RUM3QxmUbVJWqZ/mrK6dFQH4Zxq6+r1YXKXYBNgZXndx2qbCJwh3+WWkCSn67IjnlG3XYTvmvYtgA=="],
+
+    "@jsonjoy.com/json-pack/tree-dump": ["tree-dump@1.1.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-rMuvhU4MCDbcbnleZTFezWsaZXRFemSqAM+7jPnzUl1fo9w3YEKOxAeui0fz3OI4EU4hf23iyA7uQRVko+UaBA=="],
+
+    "@jsonjoy.com/util/@jsonjoy.com/buffers": ["@jsonjoy.com/buffers@1.2.1", "", { "peerDependencies": { "tslib": "2" } }, "sha512-12cdlDwX4RUM3QxmUbVJWqZ/mrK6dFQH4Zxq6+r1YXKXYBNgZXndx2qbCJwh3+WWkCSn67IjnlG3XYTvmvYtgA=="],
 
     "@lerna/create/chalk": ["chalk@4.1.0", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-qwx12AxXe2Q5xQ43Ac//I6v5aXTipYrSESdOgzrN+9XjgEpyjpKuvSGaN4qE93f7TQTlerQQ8S+EQ0EyDoVL1A=="],
 
@@ -6429,7 +6466,11 @@
 
     "webpack-cli/envinfo": ["envinfo@7.8.1", "", { "bin": { "envinfo": "dist/cli.js" } }, "sha512-/o+BXHmB7ocbHEAs6F2EnG0ogybVVUdkRunTT2glZU9XAaGmhqskrvKwqXuDfNjEO0LZKWdejEEpnq8aM0tOaw=="],
 
+    "webpack-dev-middleware/mime-types": ["mime-types@3.0.2", "", { "dependencies": { "mime-db": "^1.54.0" } }, "sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A=="],
+
     "webpack-dev-middleware/range-parser": ["range-parser@1.2.1", "", {}, "sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg=="],
+
+    "webpack-dev-middleware/schema-utils": ["schema-utils@4.3.3", "", { "dependencies": { "@types/json-schema": "^7.0.9", "ajv": "^8.9.0", "ajv-formats": "^2.1.1", "ajv-keywords": "^5.1.0" } }, "sha512-eflK8wEtyOE6+hsaRVPxvUKYCpRgzLqDTb8krvAsRIwOGlHoSgYLgBXoubGgLd2fT41/OUYdb48v4k4WWHQurA=="],
 
     "webpack-dev-server/compression": ["compression@1.7.4", "", { "dependencies": { "accepts": "~1.3.5", "bytes": "3.0.0", "compressible": "~2.0.16", "debug": "2.6.9", "on-headers": "~1.0.2", "safe-buffer": "5.1.2", "vary": "~1.1.2" } }, "sha512-jaSIDzP9pZVS4ZfQ+TzvtiWhdpFhE2RDHz8QJkpX9SIpLq88VueF5jJw6t+6CUQcAoA6t+x89MLrWAqpfDE8iQ=="],
 
@@ -6640,6 +6681,16 @@
     "@jest/transform/chalk/supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
 
     "@jest/types/chalk/supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/json-pack/@jsonjoy.com/base64": ["@jsonjoy.com/base64@17.67.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-5SEsJGsm15aP8TQGkDfJvz9axgPwAEm98S5DxOuYe8e1EbfajcDmgeXXzccEjh+mLnjqEKrkBdjHWS5vFNwDdw=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/json-pack/@jsonjoy.com/codegen": ["@jsonjoy.com/codegen@17.67.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-idnkUplROpdBOV0HMcwhsCUS5TRUi9poagdGs70A6S4ux9+/aPuKbh8+UYRTLYQHtXvAdNfQWXDqZEx5k4Dj2Q=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/json-pack/@jsonjoy.com/json-pointer": ["@jsonjoy.com/json-pointer@17.67.0", "", { "dependencies": { "@jsonjoy.com/util": "17.67.0" }, "peerDependencies": { "tslib": "2" } }, "sha512-+iqOFInH+QZGmSuaybBUNdh7yvNrXvqR+h3wjXm0N/3JK1EyyFAeGJvqnmQL61d1ARLlk/wJdFKSL+LHJ1eaUA=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/json-pack/tree-dump": ["tree-dump@1.1.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-rMuvhU4MCDbcbnleZTFezWsaZXRFemSqAM+7jPnzUl1fo9w3YEKOxAeui0fz3OI4EU4hf23iyA7uQRVko+UaBA=="],
+
+    "@jsonjoy.com/fs-snapshot/@jsonjoy.com/util/@jsonjoy.com/codegen": ["@jsonjoy.com/codegen@17.67.0", "", { "peerDependencies": { "tslib": "2" } }, "sha512-idnkUplROpdBOV0HMcwhsCUS5TRUi9poagdGs70A6S4ux9+/aPuKbh8+UYRTLYQHtXvAdNfQWXDqZEx5k4Dj2Q=="],
 
     "@lerna/create/chalk/supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
 
@@ -7427,6 +7478,10 @@
 
     "url-loader/schema-utils/ajv-keywords": ["ajv-keywords@3.5.2", "", { "peerDependencies": { "ajv": "^6.9.1" } }, "sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ=="],
 
+    "webpack-dev-middleware/mime-types/mime-db": ["mime-db@1.54.0", "", {}, "sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ=="],
+
+    "webpack-dev-middleware/schema-utils/ajv": ["ajv@8.12.0", "", { "dependencies": { "fast-deep-equal": "^3.1.1", "json-schema-traverse": "^1.0.0", "require-from-string": "^2.0.2", "uri-js": "^4.2.2" } }, "sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA=="],
+
     "webpack-dev-server/compression/bytes": ["bytes@3.0.0", "", {}, "sha512-pMhOfFDPiv9t5jjIXkHosWmkSyQbvsgEVNkz0ERHbuLh2T/7j4Mqqpz523Fe8MVY89KC6Sh/QfS2sM+SjgFDcw=="],
 
     "webpack-dev-server/compression/debug": ["debug@2.6.9", "", { "dependencies": { "ms": "2.0.0" } }, "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="],
@@ -7922,6 +7977,8 @@
     "unused-webpack-plugin/chalk/ansi-styles/color-convert": ["color-convert@1.9.3", "", { "dependencies": { "color-name": "1.1.3" } }, "sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg=="],
 
     "unused-webpack-plugin/chalk/supports-color/has-flag": ["has-flag@3.0.0", "", {}, "sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw=="],
+
+    "webpack-dev-middleware/schema-utils/ajv/json-schema-traverse": ["json-schema-traverse@1.0.0", "", {}, "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug=="],
 
     "webpack-dev-server/compression/debug/ms": ["ms@2.0.0", "", {}, "sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A=="],
 
