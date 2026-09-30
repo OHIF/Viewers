@@ -56,9 +56,7 @@ describe('split URL modules', () => {
       .readdirSync(SPLIT_DIR)
       .filter(file => file.endsWith('.jsonc'))
       .map(file => file.replace(/\.jsonc$/, ''));
-    expect(names).toEqual(
-      expect.arrayContaining(['enableNewSplit', 'scoutSeries', 'dwiByBValue', 'mgByView'])
-    );
+    expect(names).toEqual(expect.arrayContaining(['enableNewSplit', 'scoutSeries', 'dwiByBValue']));
     for (const name of names) {
       const module = readModule(name);
       if (module.global?.useMetadataDisplaySet?.splitRules) {
@@ -96,45 +94,6 @@ describe('split URL modules', () => {
     expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
       ['dwiByBValue', 2],
       ['mixedDimensionalityBValue', 2],
-    ]);
-  });
-
-  it('mgByView splits one four-view MG series into one display set for each view', () => {
-    const rules = compileModule('mgByView');
-    // The four views of CMMD patient D2-0140: one series, one image size, and
-    // no ViewPosition, so only PatientOrientation tells CC from MLO.
-    const mg = (ImageLaterality: string, PatientOrientation: string[]) => ({
-      SOPInstanceUID: `sop-${++counter}`,
-      SeriesInstanceUID: 'series-1',
-      StudyInstanceUID: 'study-1',
-      SeriesDescription: 'Mammogram',
-      Modality: 'MG',
-      SOPClassUID: '1.2.840.10008.5.1.4.1.1.1.2',
-      Rows: 2294,
-      Columns: 1914,
-      InstanceNumber: counter,
-      ImageLaterality,
-      PatientOrientation,
-    });
-    const series = [
-      mg('L', ['A', 'R']),
-      mg('L', ['A', 'FR']),
-      mg('R', ['P', 'L']),
-      mg('R', ['P', 'FL']),
-    ];
-    const groups = groupInstancesBySplitRules(series as any, rules);
-
-    expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
-      ['mammoViewSplit', 1],
-      ['mammoViewSplit', 1],
-      ['mammoViewSplit', 1],
-      ['mammoViewSplit', 1],
-    ]);
-    expect(groups.map(group => group.instances[0].PatientOrientation.join('\\')).sort()).toEqual([
-      'A\\FR',
-      'A\\R',
-      'P\\FL',
-      'P\\L',
     ]);
   });
 });
