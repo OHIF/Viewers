@@ -103,6 +103,38 @@ name the exact release. A branch whose name merely starts with a digit, such as
   `master` depending on unreleased CS3D code. The guard is advisory — it reports, it does
   not block the merge button.
 
+### CircleCI and the Netlify deploy preview
+
+The same `CS3D_REF` line also applies to the CI jobs outside GitHub Actions:
+
+| Job | Where |
+|-----|-------|
+| CircleCI `UNIT_TESTS` (jest) | `.circleci/config.yml` |
+| CircleCI `Cypress Tests` | `.circleci/config.yml` |
+| Netlify `deploy/netlify` preview | `netlify.toml` |
+
+Each job runs `.scripts/ci/cs3d-apply-ref.sh` after its ordinary install. The script reads
+the PR body with `.scripts/cs3d-read-ref.mjs`, and then does what the Playwright workflow
+does: nothing for no line, a version rewrite and a reinstall for a version, or a clone, a
+build and a link for a branch. Before this, those jobs always used the pinned version, so a
+PR that needed an unreleased CS3D change failed there even when Playwright passed.
+
+`cs3d-read-ref.mjs` is a copy of the parser in the Playwright `gate` job, which keeps its
+own copy inline because it runs before any code from the PR. When you change a rule, change
+both, and run `node --test .scripts/cs3d-read-ref.test.mjs`. That test runs the real gate
+script from the workflow file against the same bodies as the copy, and fails when the two
+disagree.
+
+The jobs read the body through the GitHub API. When the API does not answer, for example at
+the unauthenticated rate limit, the job prints a warning and uses the pinned version, so an
+ordinary PR does not fail for that reason. Set a read-only `GITHUB_TOKEN` in the CircleCI
+project and in the Netlify site settings to avoid the limit. The CircleCI job sees the PR only
+when the branch has an open PR at the start of the pipeline; re-run the pipeline after you
+open the PR, or after you change the line.
+
+A branch build adds the CS3D install and build to each job. The Cypress job runs on 8
+parallel containers, and each container builds CS3D.
+
 ### Retiring a branch ref
 
 Once the CS3D change is released, change the line rather than deleting it:
