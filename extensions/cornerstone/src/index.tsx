@@ -73,7 +73,6 @@ import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
-import applyUndoRedoCacheSize from './utils/applyUndoRedoCacheSize';
 import update from 'immutability-helper';
 export * from './components';
 
@@ -150,7 +149,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     // Apply the undo/redo history size on mode entry rather than in
     // preRegistration, because the global customizations are applied after
     // the extensions register.
-    applyUndoRedoCacheSize(customizationService);
+    cornerstone.utilities.HistoryMemo.DefaultHistoryMemo.size =
+      customizationService.getCustomization('cornerstone.maxUndoRedoCacheSize') || 50;
 
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();

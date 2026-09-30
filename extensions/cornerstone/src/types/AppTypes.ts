@@ -47,9 +47,8 @@ declare global {
       /**
        * Maximum number of undo/redo history items to keep. Segmentation memos
        * hold full labelmap buffers, so a large history can cause out-of-memory
-       * or buffer allocation issues. Accepts an integer from 1 to 10000; any
-       * other value is ignored with a warning. When unset or ignored, the
-       * Cornerstone default is used. A change of the value clears the history.
+       * or buffer allocation issues. Applied on mode entry; when unset, the
+       * size is 50. A value that is not a valid array length throws.
        */
       'cornerstone.maxUndoRedoCacheSize': number | undefined;
     }

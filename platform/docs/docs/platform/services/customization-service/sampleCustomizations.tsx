@@ -839,8 +839,8 @@ window.config = {
   {
     id: 'cornerstone.maxUndoRedoCacheSize',
     description:
-      'The maximum number of undo/redo history items to keep. Segmentation edits record undo memos that hold full labelmap buffers, so a large history can cause memory pressure or out-of-memory errors with large data. Accepts an integer from 1 to 10000; any other value is ignored with a console warning. The viewer reads the value once, when a mode opens; a later change of the customization has no effect until the next mode opens. A change of the value clears the undo/redo history.',
-    default: 'undefined (the Cornerstone default, 50)',
+      'The maximum number of undo/redo history items to keep. Segmentation edits record undo memos that hold full labelmap buffers, so a large history can cause memory pressure or out-of-memory errors with large data. The viewer reads the value once, when a mode opens, and that clears the undo/redo history. A later change of the customization has no effect until the next mode opens. A value that is not a positive integer makes the mode entry throw a RangeError.',
+    default: '50',
     configuration: `
 window.config = {
   // rest of window config
