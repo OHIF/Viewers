@@ -139,7 +139,8 @@ async function npmStatus(packageName, version) {
   const packagePath = packageName.replace('/', '%2F');
   const url = `https://registry.npmjs.org/${packagePath}${version ? `/${version}` : ''}`;
   try {
-    const response = await fetch(url, { method: 'HEAD' });
+    // A time limit, so one stuck request cannot hold up the wait's deadline.
+    const response = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(30_000) });
     return response.status;
   } catch (error) {
     console.warn(`Could not reach npm for ${packageName}: ${error.message}`);
