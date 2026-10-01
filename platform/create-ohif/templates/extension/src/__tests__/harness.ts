@@ -1,9 +1,9 @@
 /**
  * Headless registration harness. It deliberately imports NOTHING outside this
  * package: the published @ohif/core UMD requires host-provided externals
- * (dcmjs, @ohif/ui, ...) that a scaffolded package does not install, so this
- * replicates ExtensionManager.registerExtension's observable contract with
- * mock managers instead. It catches the contract mistakes that break loading
+ * (dcmjs, gl-matrix, @cornerstonejs/*, react) that a scaffolded package does
+ * not install, so this replicates ExtensionManager.registerExtension's
+ * observable contract with mock managers instead. It catches the contract mistakes that break loading
  * in the host: a missing `id`, getters that throw, and module entries without
  * a `name`.
  */

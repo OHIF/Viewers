@@ -749,6 +749,33 @@ async function runMigrate(targetDir, dryRun) {
   } else {
     note(false, '.npmrc already sets auto-install-peers=false');
   }
+  // pnpm 12 ignores project settings in .npmrc, so the peer guard must also live
+  // in pnpm-workspace.yaml. No file (the usual CLI-era case): write the current
+  // template's, which also carries its allowBuilds approvals. A file without the
+  // setting: append autoInstallPeers only, leaving the author's other settings
+  // alone. Already set: nothing to do.
+  const workspacePath = path.join(targetDir, 'pnpm-workspace.yaml');
+  if (!fs.existsSync(workspacePath)) {
+    note(
+      true,
+      'add pnpm-workspace.yaml with autoInstallPeers: false + allowBuilds (pnpm 12 reads peer settings only from here)'
+    );
+    fileOps.push(() =>
+      fs.writeFileSync(workspacePath, readTemplateFile(kind, 'pnpm-workspace.yaml'))
+    );
+  } else if (!/^autoInstallPeers:\s*false\s*$/m.test(fs.readFileSync(workspacePath, 'utf8'))) {
+    note(
+      true,
+      'pnpm-workspace.yaml: add autoInstallPeers: false (pnpm 12 reads peer settings only from here)'
+    );
+    fileOps.push(() => {
+      const existing = fs.readFileSync(workspacePath, 'utf8');
+      const prefix = existing && !existing.endsWith('\n') ? `${existing}\n` : existing;
+      fs.writeFileSync(workspacePath, `${prefix}autoInstallPeers: false\n`);
+    });
+  } else {
+    note(false, 'pnpm-workspace.yaml already sets autoInstallPeers: false');
+  }
   const agentsPath = path.join(targetDir, 'AGENTS.md');
   if (!fs.existsSync(agentsPath)) {
     note(true, 'add AGENTS.md (agent-facing contract summary from the current template)');

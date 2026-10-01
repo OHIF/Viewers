@@ -117,6 +117,12 @@ test('standalone extension, default module selection (viewport)', () => {
   assert.ok(exists(dir, 'src/__tests__'), 'src/__tests__ must survive untouched');
 
   assert.equal(fs.readFileSync(path.join(dir, '.npmrc'), 'utf8').trim(), 'auto-install-peers=false');
+  // pnpm 12 reads the peer guard only from pnpm-workspace.yaml.
+  assert.match(
+    fs.readFileSync(path.join(dir, 'pnpm-workspace.yaml'), 'utf8'),
+    /^autoInstallPeers: false$/m,
+    'pnpm-workspace.yaml must set autoInstallPeers: false'
+  );
   assertNoTokens(dir);
 
   // package.json contract: name stamped, working-tree module -> src, publish

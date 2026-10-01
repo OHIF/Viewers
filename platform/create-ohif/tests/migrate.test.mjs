@@ -70,6 +70,7 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
     'write .rspack/rspack.prod.js + .rspack/pluginExternals.js',
     'remove webpack-5 config .webpack/webpack.prod.js',
     'add .npmrc with auto-install-peers=false',
+    'add pnpm-workspace.yaml with autoInstallPeers: false',
     'add AGENTS.md',
     'add tailwind.config.js',
   ]) {
@@ -135,6 +136,10 @@ test('migrate applies the extension rewrites and is idempotent', () => {
   );
   assert.ok(!fs.existsSync(path.join(target, '.webpack')));
   assert.equal(fs.readFileSync(path.join(target, '.npmrc'), 'utf8'), 'auto-install-peers=false\n');
+  assert.equal(
+    fs.readFileSync(path.join(target, 'pnpm-workspace.yaml'), 'utf8'),
+    fs.readFileSync(path.join(templatesRoot, 'extension/pnpm-workspace.yaml'), 'utf8')
+  );
   const agents = fs.readFileSync(path.join(target, 'AGENTS.md'), 'utf8');
   assert.ok(agents.includes('my-cli-extension') && !agents.includes('{{'));
   assert.ok(fs.existsSync(path.join(target, 'tailwind.config.js')));
@@ -142,6 +147,31 @@ test('migrate applies the extension rewrites and is idempotent', () => {
   // Second run: everything already conforms — zero pending rewrites.
   const second = migrate(target, '--dry-run');
   assert.match(second, /\n0 rewrite\(s\) pending/);
+});
+
+test('migrate appends autoInstallPeers to an existing pnpm-workspace.yaml and keeps its settings', () => {
+  const target = scaffoldCliEra('extension', 'my-pnpm-extension');
+  const workspacePath = path.join(target, 'pnpm-workspace.yaml');
+  // An author's own workspace file, deliberately without a trailing newline.
+  const authored = '# authored by the plugin team\nminimumReleaseAge: 1440';
+  fs.writeFileSync(workspacePath, authored);
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(
+    report.includes('pnpm-workspace.yaml: add autoInstallPeers: false'),
+    `dry-run report must name the append\n---\n${report}`
+  );
+  assert.equal(fs.readFileSync(workspacePath, 'utf8'), authored, 'dry-run changes nothing');
+
+  migrate(target);
+  assert.equal(
+    fs.readFileSync(workspacePath, 'utf8'),
+    `${authored}\nautoInstallPeers: false\n`,
+    "the author's content is kept and only the setting is appended"
+  );
+
+  const second = migrate(target, '--dry-run');
+  assert.ok(second.includes('pnpm-workspace.yaml already sets autoInstallPeers: false'), second);
 });
 
 test('migrate adapts the mode template entry to the CLI-era src/index.tsx', () => {

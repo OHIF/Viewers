@@ -94,10 +94,23 @@ try {
     assert.ok(existsSync(path.join(modeDir, 'package.json')));
   });
 
-  // Standalone context: the scaffold's own .npmrc (auto-install-peers=false)
-  // applies; unmet-peer warnings for @ohif/core are expected and non-fatal.
+  // Standalone context: the scaffold's own pnpm-workspace.yaml
+  // (autoInstallPeers: false) applies; unmet-peer warnings for @ohif/core are
+  // expected and non-fatal.
   step('pnpm install (smoke-ext)', () => run('pnpm install', extDir));
   step('pnpm install (smoke-mode)', () => run('pnpm install', modeDir));
+
+  // The host provides @ohif/* at runtime; a scaffold must not install them.
+  // pnpm 12 ignored the old .npmrc guard and fetched @ohif/core from npm while
+  // every other step still passed, so check for absence explicitly.
+  step('host peers not installed', () => {
+    for (const dir of [extDir, modeDir]) {
+      assert.ok(
+        !existsSync(path.join(dir, 'node_modules', '@ohif')),
+        `${dir}: node_modules/@ohif exists; autoInstallPeers is not being honored`
+      );
+    }
+  });
 
   step('pnpm build (smoke-ext)', () => run('pnpm build', extDir));
   step('pnpm build (smoke-mode)', () => run('pnpm build', modeDir));
