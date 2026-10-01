@@ -43,11 +43,10 @@ COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/p
 # Run the install before copying the rest of the files.
 # Frozen, like CI, so the image installs exactly the reviewed lockfile --
 # transitive versions and integrity hashes included -- and never re-resolves
-# against the registry. .dockerignore excludes platform/docs, so the lockfile's
-# docs importer has no manifest here; pnpm 11 accepts that under
-# --frozen-lockfile (verified: the install passes, and a tampered manifest is
-# still refused), so no docs manifest or --filter is needed.
-RUN pnpm install --frozen-lockfile
+# against the registry. pnpm 12 requires a manifest for every importer the
+# lockfile records, so .dockerignore lets platform/docs/package.json in; the
+# filter then skips installing the docs site itself.
+RUN pnpm install --frozen-lockfile --filter '!ohif-docs'
 # Copy the local directory
 COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
