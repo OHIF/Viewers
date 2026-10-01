@@ -212,8 +212,14 @@ const DicomMicroscopyViewport = React.memo(
     useEffect(() => {
       const displaySet = displaySets[0];
 
-      // loading SR - only if not already loaded and not currently loading
-      if (displaySet.isOverlayDisplaySet && !displaySet.isLoaded && !displaySet.isLoading) {
+      // loading SR - only if not already loaded and not currently loading, and only
+      // once this viewport's viewer exists, so its ROIs go to this viewer
+      if (
+        managedViewer &&
+        displaySet.isOverlayDisplaySet &&
+        !displaySet.isLoaded &&
+        !displaySet.isLoading
+      ) {
         const referencedDisplaySet = displaySet.getSourceDisplaySet();
         displaySet.load(referencedDisplaySet);
       }
