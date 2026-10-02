@@ -140,13 +140,11 @@ Two rules apply to a PR from a fork, and to no other PR:
   runner to build and execute CS3D code, so the run pauses on the `cs3d-integration`
   environment until one of the named reviewers approves that specific run.
 - **A PR that changes a CI-defining file does not run Playwright until it is merged.** The
-  paths are `.github/`, `.scripts/`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
-  `preinstall.js`, any root pnpmfile, and every `package.json` and `.npmrc` in the
-  workspace. `pnpm install` runs the lifecycle scripts of each workspace project on the
-  runner, so a `postinstall` added to `extensions/<name>/package.json` executes there
-  before any test starts, exactly as one added to the root manifest does. The cost of that
-  rule is that a fork PR which only adds a dependency to one extension waits for its merge
-  before Playwright runs.
+  paths are `.github/`, `.scripts/`, `pnpm-workspace.yaml`, `preinstall.js`, any root
+  pnpmfile, and every `.npmrc` in the workspace. `package.json` and `pnpm-lock.yaml` are
+  not on the list, so a fork PR that adds a dependency or moves a module between workspace
+  packages runs Playwright as usual; changes to the root `package.json` and
+  `pnpm-lock.yaml` still need a code owner's review before merge.
 
 A PR from a branch in the OHIF repository is unaffected by both rules: the branch lives in
 this repo, so someone with write access pushed it.
