@@ -104,10 +104,10 @@ window.config = {
     },
   ],
   defaultDataSourceName: 'ohif',
-  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
+  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. `origins` (preferred) and/or an ANCHORED `regex` pin the valid configuration sources — at least one is required, an unanchored regex is refused. */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
-  //   regex: /.*/,
+  //   origins: ['https://viewer.ohif.org'],
   // },
   dataSources: [
     {

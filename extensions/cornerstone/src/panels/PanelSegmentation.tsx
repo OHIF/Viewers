@@ -31,12 +31,8 @@ export default function PanelSegmentation({
   segmentationRepresentationTypes,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const {
-    displaySetService,
-    viewportGridService,
-    toolbarService,
-    segmentationService,
-  } = servicesManager.services;
+  const { displaySetService, viewportGridService, toolbarService, segmentationService } =
+    servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
 
   const utilitiesSectionMap = {
@@ -106,9 +102,7 @@ export default function PanelSegmentation({
   const onSegmentationAdd = useCustomization('panelSegmentation.onSegmentationAdd');
   const disableEditing = useCustomization('panelSegmentation.disableEditing');
   const showAddSegment = useCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = useCustomization(
-    'panelSegmentation.customDropdownMenuContent'
-  );
+  const CustomDropdownMenuContent = useCustomization('panelSegmentation.customDropdownMenuContent');
   const CustomSegmentStatisticsHeader = useCustomization(
     'panelSegmentation.customSegmentStatisticsHeader'
   );

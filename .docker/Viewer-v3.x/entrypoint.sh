@@ -2,9 +2,15 @@
 
 if [ -n "$SSL_PORT" ]
   then
-    envsubst '${SSL_PORT}:${PORT}' < /usr/src/default.ssl.conf.template | envsubst '${PUBLIC_URL}' > /etc/nginx/conf.d/default.conf
+    envsubst '${SSL_PORT}:${PORT}:${CSP_HEADER}' < /usr/src/default.ssl.conf.template | envsubst '${PUBLIC_URL}' > /etc/nginx/conf.d/default.conf
   else
-    envsubst '${PORT}:${PUBLIC_URL}' < /usr/src/default.conf.template  > /etc/nginx/conf.d/default.conf
+    envsubst '${PORT}:${PUBLIC_URL}:${CSP_HEADER}' < /usr/src/default.conf.template  > /etc/nginx/conf.d/default.conf
+fi
+
+if [ -n "$CSP_HEADER" ]; then
+  echo "CSP_HEADER set; Content-Security-Policy response header enabled"
+else
+  echo "CSP_HEADER not set; no Content-Security-Policy header will be sent"
 fi
 
 if [ -n "$APP_CONFIG" ]; then

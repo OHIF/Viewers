@@ -37,15 +37,15 @@ window.config = {
       hide: { $set: true },
     },
   },
-  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
+  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. At least one gate is required: `origins` (preferred — an exact origin comparison) and/or an ANCHORED `regex`. There is no default, and an unanchored regex is refused with a console error. */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
-  //   // regex will ensure valid configuration source and default is /.*/ which matches any character. To use this, setup your own regex to choose a specific source of configuration only.
-  //   // Example 1, to allow numbers and letters in an absolute or sub-path only.
-  //   // regex: /(0-9A-Za-z.]+)(\/[0-9A-Za-z.]+)*/
-  //   // Example 2, to restricts to either hosptial.com or othersite.com.
-  //   // regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/
-  //   regex: /.*/,
+  //   // Preferred: exact origin comparison against new URL(configUrl).origin.
+  //   origins: ['https://hospital.com', 'https://othersite.com'],
+  //   // A regex is matched against the RESOLVED absolute URL and must start
+  //   // with '^' — anchor every alternative, or a hostile URL can satisfy the
+  //   // pattern from its own path/query string.
+  //   // regex: /^https:\/\/hospital\.com\/configs\//
   // },
   dataSources: [
     {

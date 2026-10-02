@@ -68,11 +68,11 @@ are configuration objects that will be used by the viewer to load the modules. T
 - cornerstone-core and cornerstone-tools are removed and OHIF v3 is using the new Cornerstone3D rendering library and tools. Moving to Cornerstone3D has enabled us to provide a more robust and stable foundation
   for 3D rendering and 3D annotations and measurements. In addition, Cornerstone3D provides APIs to load
   and stream data into a volume which has huge performance benefits.
-- A new CLI tool to help you create extensions and modes (more [here](../development/ohif-cli.md))
+- A scaffolder, `create-ohif`, to help you create extensions and modes (more [here](../development/create-ohif.md))
 - redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:
-- [OHIF CLI](../development/ohif-cli.md)
+- [create-ohif scaffolder](../development/create-ohif.md)
 - [New Rendering Engine and Toolings](https://www.cornerstonejs.org/)
 - [Modes](../platform/modes/index.md)
 - [Mode Gallery](https://ohif.org/modes)
@@ -365,8 +365,7 @@ for creating a mode with same name as existing one. If you do so, the last one w
 How to remove an "core" extension/mode?
 </summary>
 
-You can use the OHIF cli tool to add/remove/link and unlink extensions and modes. You can find more information
-about the cli tool [here](../development/ohif-cli.md)
+Remove its entry from `platform/app/pluginConfig.json`, or run `pnpm run plugin remove <packageName>`. See the [pluginConfig.json reference](../platform/extensions/pluginConfig.md).
 
 </details>
 
@@ -923,7 +922,7 @@ build.
 How can I enhance the existing build to consume my own webpack script?
 </summary>
 You can't enhance the existing build to consume your own webpack script as of now. However, you can
-modify the webpack.base.js and webpakc.pwa.js files to add your own webpack script/modules if needed.
+modify the rspack.base.js and webpakc.pwa.js files to add your own webpack script/modules if needed.
 
 </details>
 

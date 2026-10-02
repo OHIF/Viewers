@@ -51,11 +51,8 @@ Updated in this release:
 - `package.json` (root) — `engines.node >=24`, `engines.pnpm 11.1.1`.
 - Every workspace package's `engines.node` field, including
   `platform/app`, `platform/core`, `platform/ui`, `platform/ui-next`,
-  `platform/i18n`, `platform/cli`, every `extensions/*` package, and
+  `platform/i18n`, every `extensions/*` package, and
   every `modes/*` package.
-- `platform/cli/templates/extension/dependencies.json` and
-  `platform/cli/templates/mode/dependencies.json` — extensions and
-  modes generated from the CLI now require Node 24 and pnpm 11.1.1.
 - CI config (`.github/workflows/*`, `.circleci/config.yml`,
   `.netlify/build-deploy-preview.sh`) was bumped in lockstep.
 

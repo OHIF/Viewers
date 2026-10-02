@@ -2,6 +2,11 @@
  * Entry point for development and production PWA builds.
  */
 import 'regenerator-runtime/runtime';
+// Assigns the host's shared singletons to window BEFORE any runtime-loaded
+// plugin UMD can evaluate (they resolve their externals from these globals).
+// Must stay directly after regenerator-runtime and before every other
+// application import — see runtimeShared.ts for the sharing contract.
+import './runtimeShared';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';

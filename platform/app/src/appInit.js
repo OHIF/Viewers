@@ -25,6 +25,7 @@ import {
 } from '@ohif/core';
 
 import loadModules, { loadModule as peerImport } from './pluginImports';
+import { reconcileRuntimeRegistrations } from './runtimeExtensionLoader';
 import { publicUrl } from './utils/publicUrl';
 
 /**
@@ -86,6 +87,14 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     }
   };
 
+  // Stash the allowlist so the runtime extension loader can read it even when
+  // the app config is a function (loadDynamicConfig may also have replaced
+  // window.config by now).
+  if (Array.isArray(appConfig.runtimeExtensionOrigins)) {
+    window.__ohif = window.__ohif || {};
+    window.__ohif.runtimeExtensionOrigins = appConfig.runtimeExtensionOrigins;
+  }
+
   /**
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
@@ -121,6 +130,10 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   await customizationService.loadAndApplyBootstrapCustomizations(extensionManager);
 
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+
+  // registerExtensions swallows per-extension errors internally, so diff the
+  // audit records against what actually registered.
+  reconcileRuntimeRegistrations(extensionManager, appConfig.extensions ?? []);
 
   // Merge extension default/global modules, then layer on the `global` phase of
   // the structured config + the URL modules resolved above (so `$apply`-style

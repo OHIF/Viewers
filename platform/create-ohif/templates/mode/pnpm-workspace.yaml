@@ -1,0 +1,21 @@
+# Standalone plugin package. This file only holds pnpm settings; with no
+# `packages:` field it is not a multi-package workspace.
+
+# The host provides the @ohif/* peers at runtime (they are build externals),
+# so never let pnpm fetch them from npm into this package. (react is a peer
+# too, but devDependencies install it on purpose for local tests.) pnpm 12
+# reads this setting only here; the auto-install-peers line in .npmrc is kept
+# for older pnpm.
+autoInstallPeers: false
+
+# pnpm (11 and later) blocks the install-time scripts of dependencies unless
+# the package is named here, and fails the install if any are left unapproved.
+# The dev/test toolchain needs these five (esbuild via vitest downloads its
+# binary; core-js, protobufjs and @scarf/scarf run postinstall steps). Add a
+# package here only if you trust it to run code during install.
+allowBuilds:
+  esbuild: true
+  core-js: true
+  core-js-pure: true
+  protobufjs: true
+  '@scarf/scarf': true
