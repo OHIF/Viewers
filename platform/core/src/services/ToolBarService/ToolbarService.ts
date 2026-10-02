@@ -111,6 +111,12 @@ export default class ToolbarService extends PubSubService {
   _servicesManager: AppTypes.ServicesManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
   _serviceSubscriptions = [];
+  /**
+   * Enhanced option -> the pristine option it was built from, so repeated
+   * refreshes re-wrap the original rather than the previous wrapper. Weak so
+   * discarded wrappers stay collectable.
+   */
+  private _pristineOptions = new WeakMap<ButtonOptions, ButtonOptions>();
 
   constructor(
     commandsManager: CommandsManager,
@@ -596,23 +602,37 @@ export default class ToolbarService extends PubSubService {
       const optionsToUse = Array.isArray(options) ? options : [options];
       const toolProps = this.getButtonProps(itemId);
 
-      return optionsToUse.map(option => {
-        if (typeof option.optionComponent === 'function') {
-          return option;
+      return optionsToUse.map(currentOption => {
+        if (typeof currentOption.optionComponent === 'function') {
+          return currentOption;
         }
 
-        return {
-          ...option,
+        // Enhanced options are written back onto the button props below, so a
+        // refresh sees the previous pass's output here. onChange must close over
+        // the option the button was defined with: closing over the wrapper would
+        // make each refresh's closure retain the previous one, and the button
+        // props keep the newest wrapper reachable — so the chain would grow by
+        // one closure per refresh and never become collectable.
+        const original = this._pristineOptions.get(currentOption) ?? currentOption;
+
+        // Spread the current option rather than the original, because evaluate
+        // functions run before this and write live tool state onto whatever is
+        // on the button props at that moment.
+        const enhancedOption = {
+          ...currentOption,
           onChange: value => {
             // Update the option's value for UI
-            option.value = value;
+            original.value = value;
+            enhancedOption.value = value;
 
-            const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
+            const cmds = Array.isArray(original.commands)
+              ? original.commands
+              : [original.commands];
 
             // Find the parent button and update its options
             if (toolProps && toolProps.options) {
               // Find the option in the button's options array and update its value
-              const optionIndex = toolProps.options.findIndex(opt => opt.id === option.id);
+              const optionIndex = toolProps.options.findIndex(opt => opt.id === original.id);
               if (optionIndex !== -1) {
                 toolProps.options[optionIndex].value = value;
               }
@@ -620,7 +640,7 @@ export default class ToolbarService extends PubSubService {
 
             cmds.forEach(command => {
               const commandOptions = {
-                ...option,
+                ...original,
                 value,
                 options: toolProps.options,
                 servicesManager: this._servicesManager,
@@ -637,6 +657,10 @@ export default class ToolbarService extends PubSubService {
             });
           },
         };
+
+        this._pristineOptions.set(enhancedOption, original);
+
+        return enhancedOption;
       });
     };
 
