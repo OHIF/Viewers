@@ -71,6 +71,10 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
     'remove webpack-5 config .webpack/webpack.prod.js',
     'add .npmrc with auto-install-peers=false',
     'add pnpm-workspace.yaml with autoInstallPeers: false',
+    'peerDependencies["react"]: "^18.3.1" -> "^19.2.7"',
+    'peerDependencies["react-dom"]: "^18.3.1" -> "^19.2.7"',
+    'pin to exact versions (cross-env ^7.0.3 -> 7.0.3)',
+    'devDependencies not pinned to exact versions: dotenv@^14.1.0',
     'add AGENTS.md',
     'add tailwind.config.js',
   ]) {
@@ -101,6 +105,12 @@ test('migrate applies the extension rewrites and is idempotent', () => {
     main: 'dist/index.umd.js',
     module: 'dist/index.umd.js',
   });
+  // React peers follow the template; ranged toolchain entries become exact pins;
+  // ranges migrate has no pin for are flagged, not rewritten.
+  assert.equal(pkg.peerDependencies.react, '^19.2.7');
+  assert.equal(pkg.peerDependencies['react-dom'], '^19.2.7');
+  assert.equal(pkg.devDependencies['cross-env'], '7.0.3');
+  assert.equal(pkg.devDependencies.dotenv, '^14.1.0');
   for (const name of [
     '@ohif/core',
     '@ohif/extension-default',

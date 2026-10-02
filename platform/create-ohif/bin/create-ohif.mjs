@@ -388,6 +388,8 @@ const WEBPACK_TOOLING = [
 // additionally compiles CSS through postcss/tailwind).
 // Exact pins, matching OHIF's convention (ranges only in peerDependencies) and
 // the versions the monorepo itself builds with where it has them.
+// An exact semver version, optionally with a prerelease tag (e.g. 3.14.0-beta.37).
+const EXACT_VERSION = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 const MIGRATE_DEV_DEPS = {
   extension: {
     '@rspack/cli': '2.1.10',
@@ -583,6 +585,21 @@ async function runMigrate(targetDir, dryRun) {
     note(true, `package.json peerDependencies: add "@ohif/core": "${hostRange}"`);
     peers['@ohif/core'] = hostRange;
   }
+  // React peers follow the current template (the 3.14 host runs React 19, and
+  // its compiled components need React 19 APIs at runtime). Only rewritten when
+  // declared; a package that never named React keeps not naming it.
+  const templateReactPeers = JSON.parse(
+    readTemplateFile('extension', 'package.json')
+  ).peerDependencies;
+  for (const name of ['react', 'react-dom']) {
+    if (name in peers && peers[name] !== templateReactPeers[name]) {
+      note(
+        true,
+        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${templateReactPeers[name]}" (the host runs React 19)`
+      );
+      peers[name] = templateReactPeers[name];
+    }
+  }
   for (const name of WEBPACK_TOOLING) {
     if (name in peers) {
       note(
@@ -625,11 +642,23 @@ async function runMigrate(targetDir, dryRun) {
   // -- package.json: devDependencies -----------------------------------------
   const devDeps = next.devDependencies ?? {};
   const addedDevDeps = [];
+  const pinnedDevDeps = [];
   for (const [name, range] of Object.entries(MIGRATE_DEV_DEPS[kind])) {
     if (!(name in devDeps)) {
       devDeps[name] = range;
       addedDevDeps.push(`${name}@${range}`);
+    } else if (!EXACT_VERSION.test(devDeps[name])) {
+      // A ranged entry for a package migrate pins: replace it with the pin. An
+      // exact version the author chose is left alone.
+      pinnedDevDeps.push(`${name} ${devDeps[name]} -> ${range}`);
+      devDeps[name] = range;
     }
+  }
+  if (pinnedDevDeps.length > 0) {
+    note(
+      true,
+      `package.json devDependencies: pin to exact versions (${pinnedDevDeps.join(', ')}) — OHIF uses exact versions outside peerDependencies`
+    );
   }
   if (addedDevDeps.length > 0) {
     note(
@@ -650,6 +679,21 @@ async function runMigrate(targetDir, dryRun) {
     );
   }
   next.devDependencies = devDeps;
+
+  // Ranges migrate has no pin for: flag them by name rather than resolve a
+  // version against the registry. @babel/* is skipped because the report
+  // already recommends removing Babel entirely.
+  for (const section of ['dependencies', 'devDependencies']) {
+    const ranged = Object.entries(next[section] ?? {})
+      .filter(([name, spec]) => !name.startsWith('@babel/') && !EXACT_VERSION.test(spec))
+      .filter(([, spec]) => !spec.startsWith('workspace:'))
+      .map(([name, spec]) => `${name}@${spec}`);
+    if (ranged.length > 0) {
+      flags.push(
+        `package.json ${section} not pinned to exact versions: ${ranged.join(', ')} — OHIF uses exact versions outside peerDependencies; pin them by hand`
+      );
+    }
+  }
 
   // -- build config: .webpack/ -> .rspack/ -----------------------------------
   const webpackDir = path.join(targetDir, '.webpack');
