@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   getAnnotationStats,
   screenShotPaths,
@@ -31,11 +31,11 @@ test('should display the spline tool', async ({
     { x: 383, y: 461 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.spline.splineDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.spline.splineDisplayedCorrectly,
+  });
 
   const splines = await getAnnotationStats(page, { toolName: 'SplineROI' });
   expect(splines.length).toBeGreaterThan(0);

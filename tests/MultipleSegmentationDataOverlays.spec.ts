@@ -1,12 +1,12 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
   waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
-import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -47,9 +47,11 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  await checkForScreenshot({
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
   });
 
@@ -57,22 +59,24 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   await dataOverlayPageObject.toggle(); // hide
   await dataOverlayPageObject.toggle(); // show
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
   });
 
   await dataOverlayPageObject.toggle(); // hide
 
-  // Navigate to image 56.
-  await press({ page, key: 'ArrowDown', nTimes: 55 });
+  // Navigate to image 56. Keyboard navigation is focus-dependent and lossy,
+  // so jump via the app command and pin the landing slice before capturing.
+  await activeViewport.sliceNavigation.toSlice(55);
 
   await waitForViewportsRendered(page);
+  await expect(activeViewport.overlayText.bottomRight.instanceNumber).toContainText('I:56');
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaysDisplayed,
   });
 
@@ -86,9 +90,9 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaySEGsAndRTDisplayed,
   });
 
@@ -96,9 +100,9 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   await dataOverlayPageObject.toggle(); // hide
   await dataOverlayPageObject.toggle(); // show
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaySEGsAndRTDisplayed,
   });
 });

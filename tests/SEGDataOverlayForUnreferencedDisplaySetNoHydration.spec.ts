@@ -1,11 +1,11 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
   waitForViewportRenderCycle,
 } from './utils';
-import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -38,18 +38,31 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 
   await viewportRenderCycle;
 
-  await checkForScreenshot(
-    page,
-    viewportPageObject.grid,
-    screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage
-  );
+  // The four panes stream different series; a pane that has not drawn its
+  // image yet renders black and shows no overlay text. Pin every pane to a
+  // drawn image before capturing.
+  for (const viewport of await viewportPageObject.getAll()) {
+    await expect(viewport.overlayText.bottomRight.instanceNumber).toContainText('I:');
+  }
 
-  // Navigate to the middle image of the default viewport.
-  await press({ page, key: 'ArrowDown', nTimes: 12 });
-
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage
-  );
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage,
+  });
+
+  // Navigate to the middle image of the default viewport. Keyboard
+  // navigation is focus-dependent and lossy, so jump via the app command
+  // and pin the landing slice before capturing.
+  const defaultViewport = await viewportPageObject.getById('default');
+  await defaultViewport.sliceNavigation.toSlice(12);
+  await expect(defaultViewport.overlayText.bottomRight.instanceNumber).toContainText('(13/');
+
+  await checkForGridScreenshot({
+    page,
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage,
+  });
 });

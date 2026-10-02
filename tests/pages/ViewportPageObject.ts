@@ -121,6 +121,15 @@ export interface IViewportPageObject {
   showAllText: () => Promise<void>;
 }
 
+const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
+const annotationTextSelector = 'g[data-annotation-uid] text';
+const orientationMarkerSelector = '.ViewportOrientationMarkers';
+const allViewportTextSelector = [
+  viewportOverlaySelector,
+  annotationTextSelector,
+  orientationMarkerSelector,
+].join(', ');
+
 export class ViewportPageObject {
   readonly page: Page;
 
@@ -180,6 +189,18 @@ export class ViewportPageObject {
   }
 
   /**
+   * Hides all viewport text (overlays, annotations, orientation markers) in one sweep.
+   */
+  async hideAllViewportsText(): Promise<void> {
+    await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /** Re-shows everything {@link hideAllViewportsText} hid. */
+  async showAllViewportsText(): Promise<void> {
+    await this.showLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /**
    * Hides matching elements by adding Tailwind's `hidden` class.
    * Safe when the locator matches nothing (`evaluateAll` is a no-op on an empty set).
    */
@@ -200,12 +221,6 @@ export class ViewportPageObject {
   }
 
   private getTextVisibilityMethods(viewport: Locator) {
-    const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
-
-    const annotationTextSelector = 'g[data-annotation-uid] text';
-
-    const orientationMarkerSelector = '.ViewportOrientationMarkers';
-
     const textVisibilityMethods = {
       hideViewportOverlayText: async () => {
         await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));

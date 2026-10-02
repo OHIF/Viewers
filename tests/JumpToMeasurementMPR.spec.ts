@@ -1,5 +1,7 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
@@ -60,12 +62,18 @@ test('should hydrate in MPR correctly', async ({
 
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
+  // The jumps below target this single tracked bidirectional; pin its panel
+  // entry so a failed draw is caught here rather than as a pixel diff.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
+  const drawnRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(drawnRow.stats.primary.lines).toHaveText(['L: 76.3 mm', 'W: 50.8 mm']);
+
   // scroll away
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.jumpToMeasurementMPR.initialDraw
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.initialDraw,
+  });
 
   // Focus on the canvas first, then use mouse wheel to scroll away
   await page.evaluate(() => {
@@ -89,19 +97,19 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.jumpToMeasurementMPR.scrollAway
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.scrollAway,
+  });
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack,
+  });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
@@ -112,11 +120,11 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(3000);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.jumpToMeasurementMPR.jumpInMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.jumpInMPR,
+  });
 
   const seriesChangeRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 30000 });
 
@@ -130,17 +138,17 @@ test('should hydrate in MPR correctly', async ({
   await page.waitForTimeout(2000);
   await waitForPaintToSettle(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR,
+  });
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementAfterSeriesChange
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementAfterSeriesChange,
+  });
 });

@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   getAnnotationStats,
   screenShotPaths,
@@ -32,11 +32,11 @@ test('should display the livewire tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.livewire.livewireDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.livewire.livewireDisplayedCorrectly,
+  });
 
   const livewires = await getAnnotationStats(page, { toolName: 'LivewireContour' });
   expect(livewires.length).toBeGreaterThan(0);

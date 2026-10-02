@@ -289,12 +289,13 @@ Reach for the cheapest faithful signal, in this order:
 
 Rules for new screenshot assertions:
 
-- Capture viewports with `checkForViewportScreenshot({ page, viewport, screenshotPath })`,
-  which hides overlay text before the shot. Keep text out of baselines;
-  dates, series descriptions, and W/L values drift and make them fragile.
-- Never screenshot the full app. Scope via a locator (a viewport pane or
-  `viewportPageObject.grid`); use `checkForScreenshot` (object form) only for
-  non-viewport locators.
+- Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })`
+  and the grid with `checkForGridScreenshot({ page, viewportPageObject, screenshotPath })`;
+  both hide viewport text before the shot (the grid helper on every pane).
+  Keep text out of baselines; dates, series descriptions, and W/L values
+  drift and make them fragile.
+- Never screenshot the full app. Use `checkForScreenshot` (object form,
+  with a locator) only for non-viewport locators such as panels and dialogs.
 - Name baselines with `screenShotPaths.<category>.<name>` from
   `tests/utils/screenShotPaths.ts`, not hand-typed strings.
 - Pair the screenshot with the DOM assertions that exist for the same outcome
