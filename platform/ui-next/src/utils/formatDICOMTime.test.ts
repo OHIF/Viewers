@@ -29,12 +29,26 @@ describe('formatDICOMTime', () => {
       // format would yield the year 1430, not 14:30.
       expect(formatDICOMTime('1430')).toBe('02:30 PM');
     });
+
+    it('formats HHmmss.SSSSSS (6 fractional digits, e.g. Orthanc)', () => {
+      expect(formatDICOMTime('090323.000000')).toBe('09:03 AM');
+    });
+
+    it('formats HHmmss with variable fractional digit counts', () => {
+      expect(formatDICOMTime('143052.1')).toBe('02:30 PM');
+      expect(formatDICOMTime('143052.12')).toBe('02:30 PM');
+      expect(formatDICOMTime('143052.123456')).toBe('02:30 PM');
+    });
   });
 
   describe('format overrides', () => {
     it('uses strFormat when provided', () => {
       expect(formatDICOMTime('143052', { strFormat: 'HH:mm:ss' })).toBe('14:30:52');
       expect(formatDICOMTime('143052', { strFormat: 'HH:mm' })).toBe('14:30');
+    });
+
+    it('preserves non-zero fractional seconds with strFormat', () => {
+      expect(formatDICOMTime('090323.123456', { strFormat: 'HH:mm:ss.SSS' })).toBe('09:03:23.123');
     });
 
     it('uses fallbackFormat for the locale-key-missing path', () => {
@@ -52,6 +66,11 @@ describe('formatDICOMTime', () => {
       expect(formatDICOMTime('notatime')).toBe('');
       // Out-of-range hour is invalid under strict parsing.
       expect(formatDICOMTime('2530')).toBe('');
+    });
+
+    it('rejects fractional seconds with more than 6 digits', () => {
+      expect(formatDICOMTime('090323.1234567')).toBe('');
+      expect(formatDICOMTime('090323.1234567', { invalidFallback: '--' })).toBe('--');
     });
 
     it('returns invalidFallback when provided', () => {
