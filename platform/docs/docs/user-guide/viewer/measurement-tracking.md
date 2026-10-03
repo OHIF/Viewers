@@ -9,8 +9,8 @@ OHIF-V3's `Basic Viewer` implements a `Measurement Tracking` workflow. Measureme
 tracking allows you to:
 
 - Draw annotations and have them shown in the measurement panel
-- Create a report from the tracked measurement and export them as DICOM SR
-- Use already exported DICOM SR to re-hydrate the measurements in the viewer
+- Create a report from the tracked measurements and save it as DICOM SR, with the `Save` button of the measurement panel
+- Use a saved DICOM SR to re-hydrate the measurements in the viewer
 
 
 ## Status Icon
@@ -31,7 +31,7 @@ In the following, we will discuss each category.
 ![user-measurement-panel-modal](../../assets/img/tracking-workflow1.png)
 
 In summary, when you create an annotation, a prompt will be shown whether to start tracking or not. If you start the tracking, the annotation style will change to a solid line, and annotation details get displayed on the measurement panel.
-On the other hand, if you decline the tracking prompt, the measurement will be considered "temporary," and annotation style remains as a dashed line and not shown on the right panel, and cannot be exported.
+On the other hand, if you decline the tracking prompt, the measurement will be considered "temporary," and annotation style remains as a dashed line and not shown on the right panel, and cannot be saved.
 
 
 Below, you can see different icons that appear for a tracked vs. untracked series in
@@ -62,17 +62,18 @@ Below, you can see different icons that appear for a tracked vs. untracked serie
 ### Reading and Writing DICOM SR
 
 `OHIF-v3` provides full support for reading, writing and mapping the DICOM Structured
-Report (SR) to interactable `Cornerstone Tools`. When you load an already exported
+Report (SR) to interactable `Cornerstone Tools`. When you load a saved
 DICOM SR into the viewer, you will be prompted whether to track the measurements
 for the series or not.
 
 ![SR-exported](../../assets/img/SR-exported.png)
 
 If you click Yes, DICOM SR measurements gets re-hydrated into the viewer and
-the series become a tracked series. However, If you say no and later decide to say track the measurements, you can always click on the SR button that will  prompt you
-with the same message again.
-
-![restore-exported-sr](../../assets/img/restore-exported-sr.png)
+the series become a tracked series. If you click No, the viewer does not ask again
+for this SR while the study stays open. To track its measurements later, open the
+study again and click Yes. This works for an SR that is stored in the data source.
+An SR that was only downloaded, or copied to the clipboard, shows in the viewer
+until the study is closed, and is not there when the study is opened again.
 
 The full workflow for saving measurements to SR and loading SR into the viewer is shown below.
 
