@@ -185,4 +185,59 @@ describe('useToolbar', () => {
     expect(buttonProps.commands).toHaveLength(1);
     expect(toolbarService.recordInteraction).toHaveBeenCalledTimes(2);
   });
+
+  describe('when the buttonSection prop changes', () => {
+    // A split button such as MeasurementTools keeps its component instance when
+    // a new mode re-registers it with a different buttonSection (#6270).
+    const lengthButton = { id: 'Length', componentProps: { id: 'Length' } };
+    const sections: Record<string, any[]> = {
+      measurementSection: [],
+      MeasurementTools: [lengthButton],
+    };
+    let listeners: Map<string, Set<(args?: any) => void>>;
+
+    const emit = (event: string) => {
+      listeners.get(event)?.forEach(listener => listener());
+    };
+
+    const renderSectionHook = () =>
+      renderHook(({ buttonSection }) => useToolbar({ buttonSection } as any), {
+        initialProps: { buttonSection: 'measurementSection' },
+      });
+
+    beforeEach(() => {
+      listeners = new Map();
+      toolbarService.getButtonSection.mockImplementation(section => sections[section] ?? []);
+      toolbarService.subscribe.mockImplementation((event, listener) => {
+        if (!listeners.has(event)) {
+          listeners.set(event, new Set());
+        }
+        listeners.get(event).add(listener);
+        return { unsubscribe: jest.fn(() => listeners.get(event).delete(listener)) };
+      });
+    });
+
+    it('returns the buttons of the new section', () => {
+      const { result, rerender } = renderSectionHook();
+      expect(result.current.toolbarButtons).toEqual([]);
+
+      rerender({ buttonSection: 'MeasurementTools' });
+
+      expect(result.current.toolbarButtons).toEqual([lengthButton]);
+    });
+
+    it('reads the new section when the toolbar is modified', () => {
+      const { result, rerender } = renderSectionHook();
+      rerender({ buttonSection: 'MeasurementTools' });
+      toolbarService.getButtonSection.mockClear();
+
+      act(() => {
+        emit(toolbarService.EVENTS.TOOL_BAR_MODIFIED);
+      });
+
+      expect(toolbarService.getButtonSection).toHaveBeenCalledWith('MeasurementTools');
+      expect(toolbarService.getButtonSection).not.toHaveBeenCalledWith('measurementSection');
+      expect(result.current.toolbarButtons).toEqual([lengthButton]);
+    });
+  });
 });
