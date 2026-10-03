@@ -22,6 +22,7 @@ import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import ColorbarService from './services/ColorbarService';
+import ProjectionService from './services/ProjectionService';
 import ViewedDataService from './services/ViewedDataService';
 import * as CornerstoneExtensionTypes from './types';
 
@@ -215,6 +216,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
     servicesManager.registerService(ColorbarService.REGISTRATION);
+    servicesManager.registerService(ProjectionService.REGISTRATION);
     servicesManager.registerService(ViewedDataService.REGISTRATION);
 
     const { syncGroupService } = servicesManager.services;
