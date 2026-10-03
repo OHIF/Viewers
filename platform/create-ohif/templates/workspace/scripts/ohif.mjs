@@ -9,23 +9,29 @@
 //
 // Subcommands:
 //   dev                    harness ensure, then the harness dev server with
-//                          APP_CONFIG=config/workspace.js (workspace plugins
-//                          are source-compiled with HMR via directory links)
+//                          OHIF_ENV=ohif.config.json (workspace plugins are
+//                          source-compiled with HMR via directory entries)
 //   build                  harness ensure, then a production viewer build
 //                          (output: .ohif/platform/app/dist)
 //   doctor                 plugin config health checks (the harness doctor)
 //   plugin <subcommand>    passthrough to the harness scripts/ohif-plugin.mjs
-//                          (add/remove/list/link/unlink/doctor), which reads
-//                          and writes .ohif/platform/app/pluginConfig.json
+//                          (add/remove/list/link/unlink/doctor), pointed at
+//                          pluginConfig.generated.json
 //   harness ensure         shallow-clone the pinned tag + pnpm install +
-//                          link every manifest plugin + sync the app config
-//   harness upgrade <tag>  re-pin ohif.config.json, re-clone, re-link, doctor
+//                          regenerate pluginConfig.generated.json
+//   harness upgrade <tag>  re-pin ohif.config.json, re-clone, regenerate, doctor
 //
-// Uses node: built-ins only. The pluginConfig.json manipulation is NOT
-// reimplemented here: the harness checkout ships scripts/ohif-plugin.mjs, and
-// because that script resolves every path from its own location, importing it
-// from .ohif/scripts/ points all of its subcommands (and the doctor) at
-// .ohif/platform/app/pluginConfig.json automatically.
+// THE CHECKOUT IS READ-ONLY. ohif.config.json is the committed, authoritative
+// manifest AND the build profile the harness passes as OHIF_ENV; the plugin set
+// it declares is compiled into pluginConfig.generated.json (gitignored, in this
+// workspace) and handed to the build as PLUGIN_CONFIG. Nothing is written inside
+// .ohif/, so it can be deleted and recreated at any time — and an upgrade picks
+// up the new version's default plugin set for free, because the generated file
+// is rebuilt on top of whatever the fresh checkout ships.
+//
+// Uses node: built-ins only. pluginConfig manipulation is NOT reimplemented
+// here: the harness checkout ships scripts/ohif-plugin.mjs, and PLUGIN_CONFIG
+// redirects all of its subcommands (and the doctor) at the generated file.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,14 +42,11 @@ const WORKSPACE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const MANIFEST_PATH = path.join(WORKSPACE_ROOT, 'ohif.config.json');
 const HARNESS_DIR = path.join(WORKSPACE_ROOT, '.ohif');
 const HARNESS_PLUGIN_SCRIPT = path.join(HARNESS_DIR, 'scripts', 'ohif-plugin.mjs');
-const HARNESS_APP_CONFIG = path.join(
-  HARNESS_DIR,
-  'platform',
-  'app',
-  'public',
-  'config',
-  'workspace.js'
-);
+const HARNESS_PLUGIN_CONFIG = path.join(HARNESS_DIR, 'platform', 'app', 'pluginConfig.json');
+// Machine-managed (gitignored): the pluginConfig the harness build compiles
+// from, derived from ohif.config.json on every `harness ensure`. It lives HERE,
+// in the workspace, so nothing is ever written inside .ohif/.
+const GENERATED_PLUGIN_CONFIG = path.join(WORKSPACE_ROOT, 'pluginConfig.generated.json');
 const OHIF_REPO_URL = process.env.OHIF_REPO_URL || 'https://github.com/OHIF/Viewers.git';
 
 const USAGE = `usage: node scripts/ohif.mjs <subcommand>
@@ -53,8 +56,8 @@ subcommands:
   build                  ensure the harness, then build the viewer
   doctor                 plugin config health checks
   plugin <subcommand>    harness plugin helper (add/remove/list/link/unlink/doctor)
-  harness ensure         clone the pinned tag, install, link plugins, sync config
-  harness upgrade <tag>  re-pin the manifest to <tag>, re-clone, re-link, doctor
+  harness ensure         clone the pinned tag, install, regenerate pluginConfig
+  harness upgrade <tag>  re-pin the manifest to <tag>, re-clone, regenerate, doctor
 `;
 
 function die(code, message) {
@@ -128,12 +131,24 @@ async function loadHarnessPluginModule() {
   return import(url.href);
 }
 
-// Write a `directory` pluginConfig entry per manifest plugin so the harness
-// build source-compiles the workspace's plugin folders.
-async function linkManifestPlugins(manifest) {
+// Generate the pluginConfig the harness build should compile from, INTO THE
+// WORKSPACE. The harness checkout is never written to: it is pointed at this
+// file with PLUGIN_CONFIG (see harnessEnv), which is the whole reason .ohif/
+// can stay a read-only, disposable clone.
+//
+// Base = the plugin set the pinned OHIF version ships, so upgrading the pin
+// picks up its new defaults with no merge work here. On top of that, each
+// manifest plugin is declared with an absolute `directory` so the build
+// source-compiles the workspace's own folders (HMR in dev).
+//
+// Derived, not authoritative: ohif.config.json's plugins[] is the source of
+// truth, and this file is regenerated on every `harness ensure`.
+async function generatePluginConfig(manifest) {
   const helper = await loadHarnessPluginModule();
-  const config = helper.readConfig();
-  let changed = false;
+  const base = JSON.parse(fs.readFileSync(HARNESS_PLUGIN_CONFIG, 'utf8'));
+  const config = { ...base, root: HARNESS_DIR.split(path.sep).join('/') };
+  delete config.$schema; // the relative schema path is meaningless outside .ohif/
+
   for (const plugin of manifest.plugins || []) {
     if (!plugin || !plugin.packageName) {
       die(1, 'every ohif.config.json plugins[] entry needs a "packageName"');
@@ -145,7 +160,6 @@ async function linkManifestPlugins(manifest) {
       const bareList = config[section] || (config[section] = []);
       if (!bareList.some(entry => entry && entry.packageName === plugin.packageName)) {
         bareList.push({ packageName: plugin.packageName });
-        changed = true;
       }
       continue;
     }
@@ -158,38 +172,51 @@ async function linkManifestPlugins(manifest) {
     const section =
       helper.sectionFromKeywords(pkg.keywords) ||
       (/(^|\/)modes\//.test(plugin.directory) ? 'modes' : 'extensions');
-    // directoryValueFor emits the harness build's directory grammar with
-    // forward slashes; workspace folders live outside .ohif/, so this is an
-    // absolute path.
-    const directory = helper.directoryValueFor(absDir);
+    // Absolute + forward slashes: the build's directory grammar treats anything
+    // that is not './'- or '~'-prefixed as an absolute path, on every platform.
+    const directory = absDir.split(path.sep).join('/');
     const list = config[section] || (config[section] = []);
     const existing = list.find(entry => entry && entry.packageName === plugin.packageName);
     if (existing) {
-      if (existing.directory !== directory) {
-        existing.directory = directory;
-        changed = true;
-      }
+      existing.directory = directory;
     } else {
       list.push({ packageName: plugin.packageName, directory });
-      changed = true;
     }
     console.log(`linked ${plugin.packageName} -> ${directory}`);
   }
-  if (changed) {
-    helper.writeConfig(config);
-  }
+
+  fs.writeFileSync(GENERATED_PLUGIN_CONFIG, JSON.stringify(config, null, 2) + '\n');
+  console.log(
+    `generated ${path.basename(GENERATED_PLUGIN_CONFIG)} (derived from ohif.config.json)`
+  );
 }
 
-// Sync the committed app config into the harness's public config directory,
-// where the dev server and build resolve APP_CONFIG=config/workspace.js.
-function syncAppConfig(manifest) {
-  const source = path.join(WORKSPACE_ROOT, manifest.appConfig || 'config/app-config.js');
+// Environment for every harness invocation: the committed manifest doubles as
+// the build profile (OHIF_ENV -> appConfig, publicUrl, …), and PLUGIN_CONFIG
+// points at the generated file above. Set explicitly rather than through the
+// profile because the generated file is machine-managed, not user-declared.
+function harnessEnv() {
+  return {
+    ...process.env,
+    OHIF_ENV: MANIFEST_PATH,
+    PLUGIN_CONFIG: GENERATED_PLUGIN_CONFIG,
+  };
+}
+
+// The app config is no longer copied into the checkout: a './'-prefixed
+// `appConfig` in the manifest resolves against the workspace and the build
+// copies it straight to dist/app-config.js. Fail early with a clear message
+// instead of letting the build fail on a missing copy source.
+function assertAppConfig(manifest) {
+  const configured = manifest.appConfig || './config/app-config.js';
+  const source = path.resolve(WORKSPACE_ROOT, configured);
   if (!fs.existsSync(source)) {
-    die(1, `app config not found: ${source} (manifest "appConfig")`);
+    die(
+      1,
+      `app config not found: ${source} (ohif.config.json "appConfig")\n` +
+        'Use a "./"-prefixed path for a file this workspace owns, e.g. "./config/app-config.js".'
+    );
   }
-  fs.mkdirSync(path.dirname(HARNESS_APP_CONFIG), { recursive: true });
-  fs.copyFileSync(source, HARNESS_APP_CONFIG);
-  console.log(`synced ${path.relative(WORKSPACE_ROOT, source)} -> .ohif/platform/app/public/config/workspace.js`);
 }
 
 async function harnessEnsure() {
@@ -213,30 +240,35 @@ async function harnessEnsure() {
     console.log('installing harness dependencies (pnpm install)');
     run('pnpm', ['install'], { cwd: HARNESS_DIR });
   }
-  await linkManifestPlugins(manifest);
-  syncAppConfig(manifest);
+  assertAppConfig(manifest);
+  await generatePluginConfig(manifest);
 }
 
 async function cmdDev() {
   await harnessEnsure();
-  console.log('starting the harness dev server (APP_CONFIG=config/workspace.js)');
-  run('pnpm', ['run', 'dev'], {
-    cwd: HARNESS_DIR,
-    env: { ...process.env, APP_CONFIG: 'config/workspace.js' },
-  });
+  console.log('starting the harness dev server (OHIF_ENV=ohif.config.json)');
+  run('pnpm', ['run', 'dev'], { cwd: HARNESS_DIR, env: harnessEnv() });
 }
 
 async function cmdBuild() {
   await harnessEnsure();
-  console.log('building the viewer (APP_CONFIG=config/workspace.js)');
-  run('pnpm', ['run', 'build'], {
-    cwd: HARNESS_DIR,
-    env: { ...process.env, APP_CONFIG: 'config/workspace.js' },
-  });
+  console.log('building the viewer (OHIF_ENV=ohif.config.json)');
+  run('pnpm', ['run', 'build'], { cwd: HARNESS_DIR, env: harnessEnv() });
   console.log('build output: .ohif/platform/app/dist (the Dockerfile packages it with nginx)');
 }
 
 async function cmdPlugin(args) {
+  // PLUGIN_CONFIG makes the harness helper read and write the GENERATED config,
+  // never the checkout's own. Mutating subcommands therefore edit a derived
+  // file: useful for a quick experiment, but ohif.config.json is authoritative
+  // and the next `harness ensure` regenerates from it.
+  Object.assign(process.env, harnessEnv());
+  if (['add', 'remove', 'link', 'unlink'].includes(args[0])) {
+    console.log(
+      `note: this edits ${path.basename(GENERATED_PLUGIN_CONFIG)}, which is regenerated from ` +
+        'ohif.config.json — add the plugin to its "plugins" array to make the change stick.'
+    );
+  }
   const helper = await loadHarnessPluginModule();
   helper.main(args); // process.exits with the subcommand's status
 }
