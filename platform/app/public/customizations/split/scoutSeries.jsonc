@@ -1,0 +1,63 @@
+// URL-loaded customization: scoutSeries
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata raw selector data (the same safe-function
+// vocabulary the default rules use).
+//
+// Splits the localizer (scout) images of a CT series into their own display
+// set labelled "SCOUT". The rest of the series still matches the default
+// volume/stack rules and forms its own display set.
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `splitRules` is keyed by rule id, so `$merge` adds the rule under its
+//    id. Rules are evaluated in ascending `priority` with first-match-wins per
+//    instance. The default rules use the priorities 1..n, so the priority -1
+//    runs the scout rule before the generic `volume3d` rule claims the whole
+//    CT series. A priority above 10000 runs after every default rule, and
+//    `null` turns a rule off (for example
+//    `"volume3d": { "priority": { "$set": null } }`).
+//  - `series` evaluates the whole series once: `hasScout` is true when the
+//    series MIXES localizer and non-localizer images. A series of localizers
+//    only, or a series with none, is left whole.
+//  - `matches` is then a simple per-instance test: is this image a localizer?
+//  - `customAttributes` sets a literal label, and builds the SeriesDescription
+//    overlay text with an expression template.
+//
+// Load it with `?customization=split/scoutSeries`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "ctScout": {
+            "priority": -1,
+            "viewportTypes": ["stack"],
+            "series": [
+              {
+                "name": "hasScout",
+                "scope": "mixed",
+                "when": { "attribute": "ImageType", "contains": "LOCALIZER" }
+              }
+            ],
+            "matches": {
+              "all": [
+                { "attribute": "Modality", "equals": "CT" },
+                { "seriesFact": "hasScout" },
+                { "attribute": "ImageType", "contains": "LOCALIZER" }
+              ]
+            },
+            "groupBy": ["SeriesInstanceUID"],
+            "customAttributes": {
+              "set": { "label": "SCOUT" },
+              "fromFirstInstance": {
+                "SeriesDescription": { "expression": "`SCOUT ${SeriesDescription}`" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
