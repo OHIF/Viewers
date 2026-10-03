@@ -92,8 +92,8 @@ window.config = {
         thumbnailRendering: 'thumbnail',
         thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
         staticWado: true,
         // Multiframe SEG loads fetch the whole instance as a single Part 10
         // object by default and wait for it: the per-frame endpoint is
