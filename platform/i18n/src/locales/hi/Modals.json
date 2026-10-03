@@ -1,0 +1,19 @@
+{
+  "Active viewport has no displayed image": "सक्रिय दृश्य पोर्ट में कोई प्रदर्शित छवि नहीं है",
+  "Cancel": "$t(Common:Cancel)",
+  "Download": "डाउनलोड करें",
+  "The file name cannot be empty.": "फ़ाइल नाम खाली नहीं हो सकता।",
+  "File Type": "फ़ाइल प्रकार",
+  "File Name": "फ़ाइल नाम",
+  "formTitle": "कृपया आउटपुट छवि के लिए आयाम, फ़ाइल नाम और वांछित प्रकार निर्दिष्ट करें।",
+  "Image height (px)": "छवि ऊंचाई (px)",
+  "Image Preview": "छवि पूर्वावलोकन",
+  "Image preview": "छवि पूर्वावलोकन",
+  "Image width (px)": "छवि चौड़ाई (px)",
+  "keepAspectRatio": "पहलू अनुपात रखें",
+  "loadingPreview": "छवि पूर्वावलोकन लोड हो रहा है...",
+  "The minimum valid height is 100px.": "न्यूनतम मान्य ऊंचाई 100px है।",
+  "The minimum valid width is 100px.": "न्यूनतम मान्य चौड़ाई 100px है।",
+  "Show Annotations": "एनोटेशन दिखाएं",
+  "Please specify the dimensions, filename, and desired type for the output image.": "कृपया आउटपुट छवि के लिए आयाम, फ़ाइल नाम और वांछित प्रकार निर्दिष्ट करें।"
+}
