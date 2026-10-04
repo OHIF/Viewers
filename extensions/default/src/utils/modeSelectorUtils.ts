@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { type ExtensionManager, DicomMetadataStore, utils } from '@ohif/core';
-import { preserveQueryParameters } from '@ohif/app';
+import { preserveQueryParameters, preserveKeys } from '@ohif/app';
 
 const { formatPN } = utils;
 
@@ -140,20 +140,26 @@ export function modeIsValidForOrdering(mode: ModeWithValidityChecker, studyEnvel
 
 /**
  * Runs a mode's `isValidMode` for UI messaging; on success returns its result, on throw returns invalid with a fallback message.
+ * Returns null if the mode validator returns a falsy value (null/undefined).
  */
 export function evaluateModeValidity(
   mode: ModeWithValidityChecker,
   studyEnvelope: StudyEnvelope,
   unevaluableMessage: string
-): ModeValidityResult {
+): ModeValidityResult | null {
   if (typeof mode.isValidMode !== 'function') {
     return { valid: true };
   }
   try {
-    return mode.isValidMode.call(mode, {
+    const result = mode.isValidMode.call(mode, {
       modalities: studyEnvelope.modalitiesToCheck,
       study: studyEnvelope.study,
     });
+    /** Guard against validators that return null/undefined */
+    if (!result) {
+      return null;
+    }
+    return result;
   } catch (_e) {
     return { valid: false, description: unevaluableMessage };
   }
@@ -192,6 +198,13 @@ export function getDataSourcePathSegment(
 export function usePreservedViewerSearch(locationSearch: string): string {
   return useMemo(() => {
     const next = new URLSearchParams(locationSearch);
+    /**
+     * Remove preserved keys first so preserveQueryParameters doesn't append duplicates.
+     * (next was initialised from the same search string that preserveQueryParameters reads).
+     */
+    for (const key of preserveKeys) {
+      next.delete(key);
+    }
     preserveQueryParameters(next);
     const s = next.toString();
     return s ? `?${s}` : '';
