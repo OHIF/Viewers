@@ -1,0 +1,21 @@
+// GPU class: high-texture-4096 — a control, and not a real device
+//
+// States a texture edge of 4096 voxels and 32 GB of texture memory. No known
+// WebGL device holds an edge above 2048, so a deployment must not state this
+// profile in production. Cornerstone3D marks the profile `internal`.
+//
+// The profile is the control of the demonstration. A series of up to 4096
+// images renders with no reduction here, and the same series reduces under
+// `gpu/high`. The pair shows that the reduction comes from the limit of the
+// device and not from a defect.
+//
+// A real device rejects a texture of this edge, so the viewport can fail to
+// allocate. That failure is the expected result on hardware, and it is the
+// reason the profile is a control only.
+//
+// Load it with `?customization=gpu/high-texture-4096`.
+{
+  "bootstrap": {
+    "cornerstone.gpuCapabilityProfile": "high-texture-4096"
+  }
+}

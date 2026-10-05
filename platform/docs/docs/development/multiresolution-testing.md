@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 15
 sidebar_label: Multi-Resolution Volume Testing
 title: Testing the Multi-Resolution Volume Work
 summary: How to run OHIF against the Cornerstone3D multi-resolution volume branch, and what to check.
@@ -33,14 +33,19 @@ The branch changes three things that a tester can see:
 
 ## Running it locally
 
+This repository states `pnpm` in the `packageManager` field of `package.json`, so every
+command uses `pnpm`. A command that starts with `yarn` fails with exit code 1 and the
+message `This project is configured to use pnpm`.
+
 ```bash
-yarn cs3d:checkout feat/multires-voxel-manager-base
-yarn cs3d:install
-yarn cs3d:build
-yarn cs3d:link
+pnpm cs3d:checkout feat/multires-voxel-manager-base
+pnpm cs3d:install
+pnpm cs3d:build
+pnpm cs3d:link
 ```
 
-Then start OHIF as usual. To go back to the published packages, run `yarn cs3d:unlink`.
+Then start OHIF with `pnpm dev`. To go back to the published packages, run
+`pnpm cs3d:unlink`.
 
 ## Running it in CI
 
@@ -53,6 +58,38 @@ CS3D_REF: feat/multires-voxel-manager-base
 
 The branch must live in the `cornerstonejs/cornerstone3D` repository. A branch on a fork
 is rejected.
+
+## Choosing a class of GPU
+
+A viewport reduces its texture to fit the device. To see a reduction on a device that
+needs none, state a smaller class of GPU with the `?customization=` URL parameter. The
+viewer ships one file for each class under
+`platform/app/public/customizations/gpu/`:
+
+| Value | Texture edge | Texture memory | Use |
+| ----- | ------------ | -------------- | --- |
+| `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces. The reduction is easy to see. |
+| `gpu/low` | 2048 | 8 GB | The memory causes the reduction, and not the edge. |
+| `gpu/medium` | 2048 | 16 GB | A device of the middle class. |
+| `gpu/high` | 2048 | 32 GB | The default, and the best real device. |
+| `gpu/high-texture-4096` | 4096 | 32 GB | A control, and not a real device. |
+
+An example URL:
+
+```
+http://localhost:3000/viewer?StudyInstanceUIDs=<uid>&hangingProtocolId=mpr&customization=gpu/low-tablet
+```
+
+Each file sets the `cornerstone.gpuCapabilityProfile` customization. The app config must
+allow the prefix: `config/dev.js` sets `customizationUrlPrefixes` and `config/default.js`
+does not, so a build that serves `config/default.js` rejects the parameter.
+
+**`gpu/high-texture-4096` states an edge of 4096, and no known WebGL device holds an edge
+above 2048.** A real device can therefore fail to allocate the texture. The profile is the
+control of the demonstration: a series of up to 4096 images reduces nothing under
+`gpu/high-texture-4096` and reduces under `gpu/high`, which shows that the reduction comes
+from the limit of the device and not from a defect. Do not state the profile in
+production.
 
 ## What to check
 

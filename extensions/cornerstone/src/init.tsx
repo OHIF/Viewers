@@ -39,6 +39,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
+import initGpuCapabilityProfile from './utils/initGpuCapabilityProfile';
 import { colormaps } from './utils/colormaps';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useLutPresentationStore } from './stores/useLutPresentationStore';
@@ -158,6 +159,10 @@ export default async function init({
     displaySetService,
     toolbarService,
   } = servicesManager.services;
+
+  // A volume viewport reads the capability profile when it adds its actor, so
+  // the profile must apply before a mode opens a viewport.
+  initGpuCapabilityProfile({ customizationService });
 
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
     colorbarService.EVENTS.STATE_CHANGED,
