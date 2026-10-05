@@ -4,6 +4,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -22,12 +23,25 @@ test('should properly display MPR for MR', async ({
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
+
+  // Let the SEG load finish rendering before hydrating; clicking Yes while the
+  // load is still in flight can leave the viewport in a different orientation.
+  const viewportRenderAfterLoad = waitForViewportRenderCycle(page);
+
   await leftPanelPageObject.loadSeriesByDescription('SEG');
+
+  await viewportRenderAfterLoad;
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderCycle;
+  // Hydration adds the labelmap asynchronously after the first render cycle
+  // resolves; wait for it to report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
+
   const activeViewport = await viewportPageObject.active;
 
   await checkForViewportScreenshot({
@@ -36,10 +50,15 @@ test('should properly display MPR for MR', async ({
     screenshotPath: screenShotPaths.segHydrationThenMPR.segPostHydration,
   });
 
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
+
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors
+  // (image + labelmap) to report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
+
   await checkForGridScreenshot({
     page,
     viewportPageObject,

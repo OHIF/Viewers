@@ -4,6 +4,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
@@ -24,6 +25,10 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
     .dataOverlay;
   await dataOverlayPageObject.toggle();
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
   await dataOverlayPageObject.addSegmentation('Segmentation');
 
   // Adding an overlay should not show the LOAD button.
@@ -32,8 +37,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   // Hide the overlay menu.
   await dataOverlayPageObject.toggle();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderCycle;
 
   const activeViewport = await viewportPageObject.active;
 
@@ -44,10 +48,14 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
       screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR,
   });
 
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
+
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors to
+  // report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({
     page,

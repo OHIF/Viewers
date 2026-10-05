@@ -4,7 +4,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForPaintToSettle,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -22,10 +22,13 @@ test('should launch MPR with unhydrated SEG', async ({
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderCycle;
 
   const activeViewport = await viewportPageObject.active;
 
@@ -35,11 +38,14 @@ test('should launch MPR with unhydrated SEG', async ({
     screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR,
   });
 
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
+
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
-  await waitForPaintToSettle(page);
+  await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors to
+  // report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({
     page,

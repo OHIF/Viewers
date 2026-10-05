@@ -4,6 +4,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -22,12 +23,23 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
+
+  // Let the RTSTRUCT load finish rendering before hydrating.
+  const viewportRenderAfterLoad = waitForViewportRenderCycle(page);
+
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
+
+  await viewportRenderAfterLoad;
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderCycle;
+  // Hydration adds the contour representation asynchronously after the first
+  // render cycle resolves; wait for it before settling and capturing.
+  await waitForViewportsRendered(page);
 
   const activeViewport = await viewportPageObject.active;
 
@@ -37,10 +49,18 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
     screenshotPath: screenShotPaths.rtHydrationThenMPR.rtPostHydration,
   });
 
+  // The CT volume behind this RTSTRUCT takes longer than the default 15s to
+  // stream into the MPR viewports, so allow more time for the render to finish.
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page, {
+    renderedTimeout: 60000,
+  });
+
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors to
+  // report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({
     page,

@@ -4,6 +4,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -21,10 +22,13 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderCycle;
 
   const activeViewport = await viewportPageObject.active;
 
@@ -34,10 +38,18 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
     screenshotPath: screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR,
   });
 
+  // The CT volume behind this RTSTRUCT takes longer than the default 15s to
+  // stream into the MPR viewports, so allow more time for the render to finish.
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page, {
+    renderedTimeout: 60000,
+  });
+
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await page.waitForTimeout(5000);
-  await waitForViewportsRendered(page, { timeout: 60000 });
+  await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors to
+  // report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({
     page,
