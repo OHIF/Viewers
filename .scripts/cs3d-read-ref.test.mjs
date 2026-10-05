@@ -17,7 +17,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
-import { parseBody, classify, findPullRequest } from './cs3d-read-ref.mjs';
+import { parseBody, classify, findPullRequest, chooseSource } from './cs3d-read-ref.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const workflow = YAML.parse(readFileSync(join(root, '.github/workflows/playwright.yml'), 'utf8'));
@@ -151,4 +151,17 @@ test('finds the pull request from Netlify', () => {
 
 test('finds no pull request for a branch build', () => {
   assert.equal(findPullRequest({ PULL_REQUEST: 'false', REVIEW_ID: '' }), null);
+});
+
+test('uses the ref file only when the PR body is not readable', () => {
+  const file = 'CS3D_REF: feat/from-file\n';
+  assert.equal(chooseSource(null, file).source, 'file');
+  assert.equal(chooseSource(null, null).source, 'none');
+  assert.equal(chooseSource('CS3D_REF: feat/from-file\n', file).warning, '');
+});
+
+test('warns when the ref file disagrees with the PR body', () => {
+  const r = chooseSource('No line any more.\n', 'CS3D_REF: feat/stale\n');
+  assert.equal(r.source, 'body');
+  assert.match(r.warning, /feat\/stale/);
 });

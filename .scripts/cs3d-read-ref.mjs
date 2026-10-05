@@ -22,12 +22,12 @@
  * it in both places, and run `node --test .scripts/cs3d-read-ref.test.mjs`.
  *
  * Difference from the gate, on purpose: when the body cannot be read (no PR,
- * a GitHub API rate limit, a network fault), this script reports `none` with a
- * warning, and the job runs the ordinary suite. The gate fails instead,
- * because it also decides approval and feeds the merge guard. Neither
- * decision happens here, and a failure here would stop every pull request
- * whenever the shared CI address reaches the unauthenticated rate limit.
- * Set GITHUB_TOKEN (read-only) in the CI settings to avoid that limit.
+ * a GitHub API rate limit, a network fault), this script reads the `.cs3d-ref`
+ * file of the checkout instead, and reports `none` with a warning when there
+ * is no such file. The gate fails instead, because it also decides approval
+ * and feeds the merge guard. Neither decision happens here, and a failure here
+ * would stop every pull request whenever the shared CI address reaches the
+ * unauthenticated rate limit. A read-only GITHUB_TOKEN also avoids that limit.
  */
 
 import { readFileSync } from 'node:fs';
@@ -241,6 +241,41 @@ function fetchBody({ repo, number }) {
   return JSON.parse(json).body || '';
 }
 
+/** The checked-in fallback for a PR body that the API does not return. */
+export const REF_FILE = '.cs3d-ref';
+
+/**
+ * Chooses the text to parse: the PR body when the API returned it, otherwise
+ * the `.cs3d-ref` file. Returns { text, source, warning }.
+ *
+ * The file holds the same `CS3D_REF: <ref>` line as the body, and must be
+ * deleted together with that line. The body always wins when it is readable;
+ * a file that disagrees with it gives a warning, because the file then
+ * describes a ref that the PR no longer requests.
+ */
+export function chooseSource(body, fileText) {
+  if (body === null) {
+    return fileText === null
+      ? { text: '', source: 'none', warning: '' }
+      : { text: fileText, source: 'file', warning: '' };
+  }
+  let warning = '';
+  if (fileText !== null && parseBody(fileText).raw !== parseBody(body).raw) {
+    warning =
+      `${REF_FILE} requests [${parseBody(fileText).raw}], and the PR body requests ` +
+      `[${parseBody(body).raw}]. The body wins. Update or delete ${REF_FILE}.`;
+  }
+  return { text: body, source: 'body', warning };
+}
+
+function readRefFile() {
+  try {
+    return readFileSync(fileURLToPath(new URL(`../${REF_FILE}`, import.meta.url)), 'utf8');
+  } catch {
+    return null;
+  }
+}
+
 function main() {
   const out = (kind, ref = '', history = '', defer = false) =>
     console.log([kind, ref, history, defer].join('\n'));
@@ -255,17 +290,25 @@ function main() {
       console.error('[cs3d-read-ref] This build is not for a pull request: no CS3D_REF to read.');
       return out('none');
     }
+    let fetched = null;
     try {
-      body = fetchBody(pr);
+      fetched = fetchBody(pr);
     } catch (error) {
       console.error(
-        `[cs3d-read-ref] WARNING: could not read the body of ${pr.repo}#${pr.number}, so this ` +
-          'job cannot see a CS3D_REF line. The job runs against the pinned CS3D version. ' +
-          'Set GITHUB_TOKEN in the CI settings if the cause is the API rate limit.'
+        `[cs3d-read-ref] WARNING: could not read the body of ${pr.repo}#${pr.number}. ` +
+          String(error.message || error)
       );
-      console.error(String(error.message || error));
-      return out('none');
     }
+    const { text, source, warning } = chooseSource(fetched, readRefFile());
+    if (warning) console.error(`[cs3d-read-ref] WARNING: ${warning}`);
+    if (source === 'file') {
+      console.error(`[cs3d-read-ref] Using the CS3D_REF line of ${REF_FILE} instead of the PR body.`);
+    } else if (source === 'none') {
+      console.error(
+        `[cs3d-read-ref] No PR body and no ${REF_FILE}: the job runs against the pinned CS3D version.`
+      );
+    }
+    body = text;
   }
 
   const parsed = parseBody(body);
