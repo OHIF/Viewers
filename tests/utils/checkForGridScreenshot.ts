@@ -24,10 +24,9 @@ type CheckForGridScreenshotProps = Omit<CheckForScreenshotProps, 'beforeAttempt'
  * while panes are being added or removed.
  *
  * **Side effect:** `hideText` (default `true`) unconditionally shows all
- * matched text elements (overlay, annotation, and orientation-marker) on
- * every pane again after the comparison, without tracking or restoring the
- * visibility state that existed before this function ran — even on failure
- * (cleanup runs in a `finally`).
+ * matched text elements on every pane again after the comparison, without
+ * tracking or restoring the visibility state that existed before this
+ * function ran — even on failure (cleanup runs in a `finally`).
  *
  * @example
  * await checkForGridScreenshot({

@@ -114,20 +114,30 @@ export interface IViewportPageObject {
   hideViewportOverlayText: () => Promise<void>;
   hideAnnotationText: () => Promise<void>;
   hideOrientationMarkerText: () => Promise<void>;
+  hideViewportNotificationText: () => Promise<void>;
+  hideModalityLoadBadgeText: () => Promise<void>;
   hideAllText: () => Promise<void>;
   showViewportOverlayText: () => Promise<void>;
   showAnnotationText: () => Promise<void>;
   showOrientationMarkerText: () => Promise<void>;
+  showViewportNotificationText: () => Promise<void>;
+  showModalityLoadBadgeText: () => Promise<void>;
   showAllText: () => Promise<void>;
 }
 
 const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
 const annotationTextSelector = 'g[data-annotation-uid] text';
 const orientationMarkerSelector = '.ViewportOrientationMarkers';
+// Hydration / measurement-tracking prompt shown over the viewport.
+const viewportNotificationSelector = '[data-cy="viewport-notification"]';
+// "SEG" / "RTSTRUCT" / "SR" badge (with its LOAD button); rendered only while unhydrated.
+const modalityLoadBadgeSelector = '[data-cy^="ModalityLoadBadge-"]';
 const allViewportTextSelector = [
   viewportOverlaySelector,
   annotationTextSelector,
   orientationMarkerSelector,
+  viewportNotificationSelector,
+  modalityLoadBadgeSelector,
 ].join(', ');
 
 export class ViewportPageObject {
@@ -189,7 +199,8 @@ export class ViewportPageObject {
   }
 
   /**
-   * Hides all viewport text (overlays, annotations, orientation markers) in one sweep.
+   * Hides all viewport text (overlays, annotations, orientation markers, prompts,
+   * modality badges) in one sweep.
    */
   async hideAllViewportGridText(): Promise<void> {
     await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
@@ -231,10 +242,18 @@ export class ViewportPageObject {
       hideOrientationMarkerText: async () => {
         await this.hideLocatorElements(viewport.locator(orientationMarkerSelector));
       },
+      hideViewportNotificationText: async () => {
+        await this.hideLocatorElements(viewport.locator(viewportNotificationSelector));
+      },
+      hideModalityLoadBadgeText: async () => {
+        await this.hideLocatorElements(viewport.locator(modalityLoadBadgeSelector));
+      },
       hideAllText: async () => {
         await textVisibilityMethods.hideViewportOverlayText();
         await textVisibilityMethods.hideAnnotationText();
         await textVisibilityMethods.hideOrientationMarkerText();
+        await textVisibilityMethods.hideViewportNotificationText();
+        await textVisibilityMethods.hideModalityLoadBadgeText();
       },
 
       showViewportOverlayText: async () => {
@@ -246,10 +265,18 @@ export class ViewportPageObject {
       showOrientationMarkerText: async () => {
         await this.showLocatorElements(viewport.locator(orientationMarkerSelector));
       },
+      showViewportNotificationText: async () => {
+        await this.showLocatorElements(viewport.locator(viewportNotificationSelector));
+      },
+      showModalityLoadBadgeText: async () => {
+        await this.showLocatorElements(viewport.locator(modalityLoadBadgeSelector));
+      },
       showAllText: async () => {
         await textVisibilityMethods.showViewportOverlayText();
         await textVisibilityMethods.showAnnotationText();
         await textVisibilityMethods.showOrientationMarkerText();
+        await textVisibilityMethods.showViewportNotificationText();
+        await textVisibilityMethods.showModalityLoadBadgeText();
       },
     };
 

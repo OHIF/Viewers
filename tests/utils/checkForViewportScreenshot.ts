@@ -21,12 +21,12 @@ type CheckForViewportScreenshotProps = Omit<
  *
  * @remarks
  * **Side effect:** `hideText` (default `true`) unconditionally shows all
- * matched text elements (overlay, annotation, and orientation-marker)
- * again after the comparison, via `viewport.showAllText()`. This does
- * not track or restore whatever visibility state existed before this
- * function ran — if a target was already hidden (e.g. by a previous
- * test step or application state), it will be visible after this call
- * returns, even on failure (cleanup runs in a `finally`).
+ * matched text elements again after the comparison, via
+ * `viewport.showAllText()`. This does not track or restore whatever
+ * visibility state existed before this function ran — if a target was
+ * already hidden (e.g. by a previous test step or application state), it
+ * will be visible after this call returns, even on failure (cleanup runs
+ * in a `finally`).
  *
  * @example
  * await checkForViewportScreenshot({
