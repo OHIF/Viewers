@@ -48,19 +48,21 @@ pnpm exec playwright show-report tests/playwright-report
 ```
 
 To pass Playwright flags such as `--update-snapshots`, `--reporter`, or `-g`,
-call `pnpm exec playwright test <flags>` directly. Appending them to a script
-(`pnpm run test:e2e -- <flags>`) forwards a literal `--`, and Playwright then
-treats the flags as test-file filters instead of options.
+call `TEST_ENV=true pnpm exec playwright test <flags>` directly. Appending
+them to a script (`pnpm run test:e2e -- <flags>`) forwards a literal `--`, and
+Playwright then treats the flags as test-file filters instead of options.
 
 ### Serving the viewer yourself
 
 By default each run builds and serves the viewer on port 3335 before the tests
 start, which is slow when you iterate. Outside CI, Playwright reuses a server
 that is already listening on that port, so you can start one yourself and
-keep it running between runs. It must use the e2e app config and port 3335:
+keep it running between runs. It must use the e2e app config, port 3335, and
+`TEST_ENV=true` (the viewer reads it at build time, so setting it only on the
+test command has no effect on a server you started yourself):
 
 ```bash
-APP_CONFIG=config/e2e.js OHIF_PORT=3335 OHIF_OPEN=false pnpm start
+TEST_ENV=true APP_CONFIG=config/e2e.js OHIF_PORT=3335 OHIF_OPEN=false pnpm start
 ```
 
 A viewer on the default port 3000 is not picked up; Playwright would start
@@ -326,8 +328,8 @@ Reach for the cheapest faithful signal, in this order:
 Rules for new screenshot assertions:
 
 - Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })`;
-  it hides viewport text before the shot. Keep text out of baselines; dates, series descriptions, and W/L values
-  drift and make them fragile.
+  it hides viewport text before the shot. Keep text out of baselines; dates,
+  series descriptions, and W/L values drift and make them fragile.
 - Never screenshot the full app. Use `checkForScreenshot` (object form,
   with a locator) only for non-viewport locators such as panels and dialogs.
 - Name baselines with `screenShotPaths.<category>.<name>` from
