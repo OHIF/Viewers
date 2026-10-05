@@ -395,6 +395,11 @@ function makeFakeCheckout() {
   fs.mkdirSync(path.join(root, 'modes'));
   fs.mkdirSync(path.join(root, '.rspack'));
   fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), "packages:\n  - 'extensions/*'\n  - 'modes/*'\n");
+  // Root manifest: in-tree scaffolds take the checkout's lockstep version.
+  fs.writeFileSync(
+    path.join(root, 'package.json'),
+    JSON.stringify({ name: 'fake-viewers-root', private: true, version: '9.9.9-beta.1' }, null, 2)
+  );
   fs.writeFileSync(
     path.join(root, 'platform', 'app', 'pluginConfig.json'),
     JSON.stringify({ extensions: [], modes: [], public: [] }, null, 2)
@@ -419,9 +424,16 @@ test('--in-tree scaffolds into the checkout with workspace peers and minimal dev
   assert.deepEqual(pkg.devDependencies, { 'cross-env': '7.0.3', vitest: '3.2.7' });
   assert.equal(pkg.scripts.typecheck, undefined, 'typecheck dropped in-tree (tsc resolves from root)');
   assert.ok(!exists(dir, '.npmrc'), 'root .npmrc governs in-tree installs');
+  assert.ok(
+    !exists(dir, 'pnpm-workspace.yaml'),
+    'root pnpm-workspace.yaml governs in-tree installs'
+  );
+  assert.equal(pkg.private, true, 'in-tree plugins are app-only (verify-tarballs tier rule)');
+  assert.equal(pkg.version, '9.9.9-beta.1', "in-tree plugins take the checkout's lockstep version");
   assertNoTokens(dir);
 
   // Guidance output: the schema-valid pluginConfig line, never an automatic edit.
+  assert.ok(stdout.includes('pnpm run install:update-lockfile'), stdout);
   assert.ok(stdout.includes('{ "packageName": "tree-ext" }'), stdout);
   assert.ok(stdout.includes('pluginConfig.json'), stdout);
   assert.deepEqual(
@@ -436,7 +448,11 @@ test('--in-tree mode scaffolds into modes/', () => {
   const stdout = scaffold(['tree-mode', '-t', 'mode', '--in-tree', '--yes'], { cwd: root });
   const dir = path.join(root, 'modes', 'tree-mode');
   assert.ok(fs.existsSync(dir));
-  assert.equal(readPkg(dir).peerDependencies['@ohif/extension-default'], 'workspace:*');
+  const pkg = readPkg(dir);
+  assert.equal(pkg.peerDependencies['@ohif/extension-default'], 'workspace:*');
+  assert.equal(pkg.private, true);
+  assert.equal(pkg.version, '9.9.9-beta.1');
+  assert.ok(!exists(dir, 'pnpm-workspace.yaml'));
   assert.ok(stdout.includes('under "modes"'), stdout);
 });
 

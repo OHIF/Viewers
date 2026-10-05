@@ -1774,7 +1774,7 @@ importers:
   platform/create-ohif:
     dependencies:
       '@clack/prompts':
-        specifier: ^0.11.0
+        specifier: 0.11.0
         version: 0.11.0
 
   platform/docs:

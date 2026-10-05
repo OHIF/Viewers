@@ -249,10 +249,24 @@ function pruneModulesPass(targetDir, selectedModules) {
 // In-tree transform pass (WS5.5): monorepo root .npmrc/pnpm-workspace govern
 // installs, and rspack/react/typescript/css tooling resolve from the hoisted
 // root node_modules, so the scaffold keeps only the minimal devDeps.
-function inTreeTransformPass(targetDir) {
+function inTreeTransformPass(targetDir, checkoutRoot) {
+  // The root's .npmrc and pnpm-workspace.yaml govern; a nested copy of the
+  // standalone template's settings could make pnpm treat this folder as its
+  // own workspace root when a command runs from inside it.
   fs.rmSync(path.join(targetDir, '.npmrc'), { force: true });
+  fs.rmSync(path.join(targetDir, 'pnpm-workspace.yaml'), { force: true });
   const pkgPath = path.join(targetDir, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  // In-tree plugins are app-only: verify-tarballs requires every non-SDK
+  // workspace package to be private, and they version in lockstep with the repo.
+  pkg.private = true;
+  const rootPkgPath = path.join(checkoutRoot, 'package.json');
+  if (fs.existsSync(rootPkgPath)) {
+    const rootVersion = JSON.parse(fs.readFileSync(rootPkgPath, 'utf8')).version;
+    if (typeof rootVersion === 'string') {
+      pkg.version = rootVersion;
+    }
+  }
   pkg.devDependencies = { 'cross-env': '7.0.3', vitest: '3.2.7' };
   if (pkg.scripts) {
     delete pkg.scripts.typecheck;
@@ -302,8 +316,8 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
       `  { "packageName": "${name}" }`,
       `Or run the automated alternative: pnpm plugin add ${name}`,
       '',
-      'Then register the new workspace package and start the viewer:',
-      '  pnpm install --no-frozen-lockfile',
+      'Then register the new workspace package (a deliberate lockfile update) and start the viewer:',
+      '  pnpm run install:update-lockfile',
       '  pnpm dev',
       '',
       `(checkout root: ${checkoutRoot})`
@@ -1117,7 +1131,7 @@ async function main() {
     pruneModulesPass(targetDir, modules);
   }
   if (context === 'in-tree') {
-    inTreeTransformPass(targetDir);
+    inTreeTransformPass(targetDir, checkoutRoot);
   }
   assertNoTokensPass(targetDir);
   if (context === 'workspace') {

@@ -409,15 +409,11 @@ function verifyTarball(pkg, tgzPath) {
       `scanned ${bundlesScanned} bundle(s) for React markers`
   );
 
-  // (h) extensions/cornerstone: legacy UI package retired from the peer surface.
-  if (name === '@ohif/extension-cornerstone') {
-    const peers = packed.peerDependencies || {};
-    if ('@ohif/ui' in peers) {
-      fail(name, "peerDependencies still contain '@ohif/ui'");
-    }
-    if (!('@ohif/ui-next' in peers)) {
-      fail(name, "peerDependencies missing '@ohif/ui-next'");
-    }
+  // (h) No published SDK package may peer-depend on the legacy @ohif/ui: the
+  // host never provides it to plugins (it is absent from hostSharedPackages).
+  // Originally a regression test for extensions/cornerstone, which declared it.
+  if ('@ohif/ui' in (packed.peerDependencies || {})) {
+    fail(name, "peerDependencies contain the legacy '@ohif/ui'");
   }
 
   return { mainMissing };
