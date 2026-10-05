@@ -1,7 +1,10 @@
 import type { IViewportPageObject } from '../pages/ViewportPageObject';
 import { checkForScreenshot, type CheckForScreenshotProps } from './checkForScreenshot';
 
-type CheckForViewportScreenshotProps = Omit<CheckForScreenshotProps, 'beforeAttempt'> & {
+type CheckForViewportScreenshotProps = Omit<
+  CheckForScreenshotProps,
+  'beforeAttempt' | 'locator'
+> & {
   viewport: IViewportPageObject;
   /**
    * When true (default), hides all viewport text before each screenshot attempt
@@ -37,13 +40,12 @@ export const checkForViewportScreenshot = async ({
   viewport,
   screenshotPath,
   hideText = true,
-  locator,
   ...rest
 }: CheckForViewportScreenshotProps): Promise<boolean> => {
   try {
     return await checkForScreenshot({
       page,
-      locator: locator ?? viewport.pane,
+      locator: viewport.pane,
       screenshotPath,
       ...rest,
       beforeAttempt: hideText ? () => viewport.hideAllText() : undefined,

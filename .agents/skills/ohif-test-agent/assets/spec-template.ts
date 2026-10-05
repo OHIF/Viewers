@@ -1,4 +1,5 @@
 import {
+  checkForGridScreenshot,
   checkForViewportScreenshot,
   expect,
   screenShotPaths,
@@ -45,6 +46,13 @@ test.describe('FEATURE NAME', () => {
     //    await checkForViewportScreenshot({
     //      page,
     //      viewport,
+    //      screenshotPath: screenShotPaths.YOUR_CATEGORY.YOUR_KEY,
+    //    });
+
+    //    When the assertion spans several panes (MPR, 3D four-up), capture the grid:
+    //    await checkForGridScreenshot({
+    //      page,
+    //      viewportPageObject,
     //      screenshotPath: screenShotPaths.YOUR_CATEGORY.YOUR_KEY,
     //    });
 

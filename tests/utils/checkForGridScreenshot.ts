@@ -1,7 +1,7 @@
 import type { ViewportPageObject } from '../pages/ViewportPageObject';
 import { checkForScreenshot, type CheckForScreenshotProps } from './checkForScreenshot';
 
-type CheckForGridScreenshotProps = Omit<CheckForScreenshotProps, 'beforeAttempt'> & {
+type CheckForGridScreenshotProps = Omit<CheckForScreenshotProps, 'beforeAttempt' | 'locator'> & {
   viewportPageObject: ViewportPageObject;
   /**
    * When true (default), hides all text on every viewport in the grid before
@@ -18,7 +18,7 @@ type CheckForGridScreenshotProps = Omit<CheckForScreenshotProps, 'beforeAttempt'
  *
  * @remarks
  * Text is hidden with a single selector sweep over the grid on every attempt
- * (`hideAllViewportsText`), so a layout change mid-test (e.g. switching to
+ * (`hideAllViewportGridText`), so a layout change mid-test (e.g. switching to
  * MPR or 3D four-up) is picked up and the text of newly added viewports is
  * hidden too — without resolving per-viewport page objects, which can throw
  * while panes are being added or removed.
@@ -41,20 +41,19 @@ export const checkForGridScreenshot = async ({
   viewportPageObject,
   screenshotPath,
   hideText = true,
-  locator,
   ...rest
 }: CheckForGridScreenshotProps): Promise<boolean> => {
   try {
     return await checkForScreenshot({
       page,
-      locator: locator ?? viewportPageObject.grid,
+      locator: viewportPageObject.grid,
       screenshotPath,
       ...rest,
-      beforeAttempt: hideText ? () => viewportPageObject.hideAllViewportsText() : undefined,
+      beforeAttempt: hideText ? () => viewportPageObject.hideAllViewportGridText() : undefined,
     });
   } finally {
     if (hideText) {
-      await viewportPageObject.showAllViewportsText();
+      await viewportPageObject.showAllViewportGridText();
     }
   }
 };

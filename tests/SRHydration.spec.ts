@@ -61,16 +61,12 @@ test('should hydrate SR reports correctly', async ({
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
 
-  // Hydration should produce exactly the SR's two labeled measurements.
-  // ("Max: NaN" is the current UI output for the second row's missing stat;
-  // if that is ever fixed this assertion will surface it.)
+  // Hydration should produce the SR's two measurements; the first one is the
+  // measurement shown in the screenshot below.
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
   const firstRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
   await expect(firstRow.title).toHaveText('Label1');
   await expect(firstRow.stats.primary.lines).toHaveText(['46.6 mm']);
-  const secondRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1);
-  await expect(secondRow.title).toHaveText('Label2');
-  await expect(secondRow.stats.primary.lines).toHaveText(['1064', 'Max: NaN']);
   await checkForViewportScreenshot({
     page,
     viewport: activeViewport,

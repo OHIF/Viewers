@@ -191,12 +191,12 @@ export class ViewportPageObject {
   /**
    * Hides all viewport text (overlays, annotations, orientation markers) in one sweep.
    */
-  async hideAllViewportsText(): Promise<void> {
+  async hideAllViewportGridText(): Promise<void> {
     await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
   }
 
-  /** Re-shows everything {@link hideAllViewportsText} hid. */
-  async showAllViewportsText(): Promise<void> {
+  /** Re-shows everything {@link hideAllViewportGridText} hid. */
+  async showAllViewportGridText(): Promise<void> {
     await this.showLocatorElements(this.grid.locator(allViewportTextSelector));
   }
 
