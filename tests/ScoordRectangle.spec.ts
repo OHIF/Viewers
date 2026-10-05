@@ -55,6 +55,10 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
 
   const activeViewport = await viewportPageObject.active;
 
+  const scoordRectangle = activeViewport.svg('polyline');
+  await expect(scoordRectangle).toHaveCount(1);
+  await expect(scoordRectangle).toHaveAttribute('stroke-dasharray', '4,4');
+
   // Take screenshot before hydration - use viewport locator instead of full page
   await checkForViewportScreenshot({
     page,

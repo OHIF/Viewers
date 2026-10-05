@@ -1,6 +1,8 @@
 import {
   checkForViewportScreenshot,
   expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -64,9 +66,24 @@ test('should hydrate SR reports correctly', async ({
   // Hydration should produce the SR's two measurements; the first one is the
   // measurement shown in the screenshot below.
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
-  const firstRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
-  await expect(firstRow.title).toHaveText('Label1');
-  await expect(firstRow.stats.primary.lines).toHaveText(['46.6 mm']);
+  await expect(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).title).toHaveText(
+    'Label1'
+  );
+
+  const expectedLength = '46.6';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Length',
+    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine(expectedLength)],
+    expectedSvgLines: [measurementTextFormatters.lengthLine(expectedLength)],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect((stats.length as number).toFixed(1)).toBe(expectedLength);
+    },
+  });
   await checkForViewportScreenshot({
     page,
     viewport: activeViewport,

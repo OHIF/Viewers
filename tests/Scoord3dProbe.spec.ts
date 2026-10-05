@@ -1,6 +1,8 @@
 import {
   checkForViewportScreenshot,
   expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -145,6 +147,31 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
     page,
     viewport: activeViewport,
     screenshotPath: screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement,
+  });
+
+  // A hydrated probe computes its stats only once it renders on its slice, so
+  // after the jump the first finding reports its voxel coordinate and pixel
+  // value (MR has no modality unit).
+  const expectedIndex = [151, 173, 5];
+  const expectedValue = '291';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Probe',
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.probeValueLine(expectedValue, ''),
+      'Peripheral zone of the prostate',
+    ],
+    expectedSvgLines: [
+      measurementTextFormatters.probeIndexSvgLine(expectedIndex),
+      measurementTextFormatters.probeValueLine(expectedValue, ''),
+    ],
+    assertStats: stats => {
+      expect(stats.index as number[]).toEqual(expectedIndex);
+      expect(stats.value).toBe(Number(expectedValue));
+    },
   });
 });
 

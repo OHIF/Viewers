@@ -11,7 +11,7 @@ import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-export type SvgInnerElement = 'circle' | 'path' | 'line' | 'g';
+export type SvgInnerElement = 'circle' | 'path' | 'line' | 'polyline' | 'g';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };

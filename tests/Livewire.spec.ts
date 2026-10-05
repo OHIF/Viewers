@@ -1,7 +1,8 @@
 import {
   checkForViewportScreenshot,
   expect,
-  getAnnotationStats,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -18,6 +19,7 @@ test('should display the livewire tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.livewireContour.click();
@@ -38,16 +40,23 @@ test('should display the livewire tool', async ({
     screenshotPath: screenShotPaths.livewire.livewireDisplayedCorrectly,
   });
 
-  const livewires = await getAnnotationStats(page, { toolName: 'LivewireContour' });
-  expect(livewires.length).toBeGreaterThan(0);
+  await rightPanelPageObject.measurementsPanel.select();
 
-  const stats = livewires[0].firstTargetStats!;
-  expect(stats.areaUnit).toBe('mm²');
-  expect(Math.round(stats.area as number)).toBe(30412);
+  const expectedArea = 30412;
 
-  const lines = activeViewport.getSvgAnnotationStatTextLines(livewires[0].annotationUID);
-  await expect(lines).toHaveCount(1);
-  await expect(lines.nth(0)).toHaveText('Area: 30412 mm²');
+  // LivewireContour panel and SVG: area only.
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'LivewireContour',
+    expectedPanelPrimaryLines: [measurementTextFormatters.areaPanelLine(`${expectedArea}`)],
+    expectedSvgLines: [measurementTextFormatters.areaSvgLine(`${expectedArea}`)],
+    assertStats: stats => {
+      expect(stats.areaUnit).toBe('mm²');
+      expect(Math.round(stats.area as number)).toBe(expectedArea);
+    },
+  });
 });
 
 test('should restore viewport interactivity after deleting an in-progress Livewire annotation via context menu', async ({

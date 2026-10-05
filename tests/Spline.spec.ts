@@ -1,7 +1,8 @@
 import {
   checkForViewportScreenshot,
   expect,
-  getAnnotationStats,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -18,6 +19,7 @@ test('should display the spline tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.splineROI.click();
@@ -37,16 +39,23 @@ test('should display the spline tool', async ({
     screenshotPath: screenShotPaths.spline.splineDisplayedCorrectly,
   });
 
-  const splines = await getAnnotationStats(page, { toolName: 'SplineROI' });
-  expect(splines.length).toBeGreaterThan(0);
+  await rightPanelPageObject.measurementsPanel.select();
 
-  const stats = splines[0].firstTargetStats!;
-  expect(stats.areaUnit).toBe('mm²');
-  expect(Math.round(stats.area as number)).toBe(38963);
+  const expectedArea = 38963;
 
-  const lines = activeViewport.getSvgAnnotationStatTextLines(splines[0].annotationUID);
-  await expect(lines).toHaveCount(1);
-  await expect(lines.nth(0)).toHaveText('Area: 38963 mm²');
+  // SplineROI panel and SVG: area only.
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'SplineROI',
+    expectedPanelPrimaryLines: [measurementTextFormatters.areaPanelLine(`${expectedArea}`)],
+    expectedSvgLines: [measurementTextFormatters.areaSvgLine(`${expectedArea}`)],
+    assertStats: stats => {
+      expect(stats.areaUnit).toBe('mm²');
+      expect(Math.round(stats.area as number)).toBe(expectedArea);
+    },
+  });
 });
 
 test('should restore viewport interactivity after deleting an in-progress Spline annotation via context menu', async ({

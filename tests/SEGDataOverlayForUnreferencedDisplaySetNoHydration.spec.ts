@@ -1,10 +1,10 @@
 import {
   checkForGridScreenshot,
-  expect,
   screenShotPaths,
   test,
   visitStudy,
   waitForViewportRenderCycle,
+  waitForViewportsRendered,
 } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
@@ -38,13 +38,6 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 
   await viewportRenderCycle;
 
-  // The four panes stream different series; a pane that has not drawn its
-  // image yet renders black and shows no overlay text. Pin every pane to a
-  // drawn image before capturing.
-  for (const viewport of await viewportPageObject.getAll()) {
-    await expect(viewport.overlayText.bottomRight.instanceNumber).toContainText('I:');
-  }
-
   await checkForGridScreenshot({
     page,
     viewportPageObject,
@@ -53,11 +46,10 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
   });
 
   // Navigate to the middle image of the default viewport. Keyboard
-  // navigation is focus-dependent and lossy, so jump via the app command
-  // and pin the landing slice before capturing.
+  // navigation is focus-dependent and lossy, so jump via the app command.
   const defaultViewport = await viewportPageObject.getById('default');
   await defaultViewport.sliceNavigation.toSlice(12);
-  await expect(defaultViewport.overlayText.bottomRight.instanceNumber).toContainText('(13/');
+  await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({
     page,

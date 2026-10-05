@@ -22,6 +22,13 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 }) => {
   await rightPanelPageObject.toggle();
 
+  const segOverlayLabels = [
+    '2D-TTA_NNU-NET_SEGMENTATION',
+    'SEGMENTATION',
+    '3D_LOWRES-TTA_NNU-NET_SEGMENTATION',
+  ];
+  const segAndRTOverlayLabels = [...segOverlayLabels, 'SERIES 3 - RTSTRUCT'];
+
   // Add multiple segmentation overlays and ensure the overlay menu reflects this change.
   const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
     .dataOverlay;
@@ -47,25 +54,19 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  const activeViewport = await viewportPageObject.active;
+  await expect(dataOverlayPageObject.overlaySegmentationRows).toHaveText(segOverlayLabels);
 
-  await checkForViewportScreenshot({
-    page,
-    viewport: activeViewport,
-    screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
-  });
-
-  // Hide the overlay menu and then show it again. The overlays from before should still be displayed.
+  // Hide the overlay menu and then show it again. The overlays from before should still be listed.
   await dataOverlayPageObject.toggle(); // hide
+  await expect(dataOverlayPageObject.menu).not.toBeVisible();
   await dataOverlayPageObject.toggle(); // show
+  await expect(dataOverlayPageObject.overlaySegmentationRows).toHaveText(segOverlayLabels);
 
-  await checkForViewportScreenshot({
-    page,
-    viewport: activeViewport,
-    screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
-  });
+  // Hide the overlay menu so the baseline holds only the rendered overlays.
+  await dataOverlayPageObject.toggle();
+  await expect(dataOverlayPageObject.menu).not.toBeVisible();
 
-  await dataOverlayPageObject.toggle(); // hide
+  const activeViewport = await viewportPageObject.active;
 
   // Navigate to image 56. Keyboard navigation is focus-dependent and lossy,
   // so jump via the app command and pin the landing slice before capturing.
@@ -90,19 +91,19 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  await checkForViewportScreenshot({
-    page,
-    viewport: activeViewport,
-    screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaySEGsAndRTDisplayed,
-  });
+  await expect(dataOverlayPageObject.overlaySegmentationRows).toHaveText(segAndRTOverlayLabels);
 
-  // Hide the overlay menu and then show it again. The overlays from before should still be displayed.
-  await dataOverlayPageObject.toggle(); // hide
-  await dataOverlayPageObject.toggle(); // show
+  // Hide the overlay menu so the baseline holds only the rendered overlays.
+  await dataOverlayPageObject.toggle();
+  await expect(dataOverlayPageObject.menu).not.toBeVisible();
 
   await checkForViewportScreenshot({
     page,
     viewport: activeViewport,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.overlaySEGsAndRTDisplayed,
   });
+
+  // Show the overlay menu again. The overlays from before should still be listed.
+  await dataOverlayPageObject.toggle();
+  await expect(dataOverlayPageObject.overlaySegmentationRows).toHaveText(segAndRTOverlayLabels);
 });

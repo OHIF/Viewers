@@ -2,6 +2,8 @@ import {
   checkForGridScreenshot,
   checkForViewportScreenshot,
   expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -63,10 +65,32 @@ test('should hydrate in MPR correctly', async ({
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // The jumps below target this single tracked bidirectional; pin its panel
-  // entry so a failed draw is caught here rather than as a pixel diff.
+  // entry, SVG text, and cachedStats so a failed draw is caught here rather
+  // than as a pixel diff.
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
-  const drawnRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
-  await expect(drawnRow.stats.primary.lines).toHaveText(['L: 76.3 mm', 'W: 50.8 mm']);
+
+  const expectedLength = '76.3';
+  const expectedWidth = '50.8';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Bidirectional',
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.bidirectionalLengthLine(expectedLength),
+      measurementTextFormatters.bidirectionalWidthLine(expectedWidth),
+    ],
+    expectedSvgLines: [
+      measurementTextFormatters.bidirectionalLengthLine(expectedLength),
+      measurementTextFormatters.bidirectionalWidthLine(expectedWidth),
+    ],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect((stats.length as number).toFixed(1)).toBe(expectedLength);
+      expect((stats.width as number).toFixed(1)).toBe(expectedWidth);
+    },
+  });
 
   // scroll away
   await checkForViewportScreenshot({
