@@ -369,9 +369,9 @@ The shipped files, one for each class:
 | Value | Texture edge | Texture memory | Use |
 | ----- | ------------ | -------------- | --- |
 | `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces, so the reduction is easy to see. |
-| `gpu/low` | 2048 | 8 GB | The memory causes the reduction, and not the edge. |
-| `gpu/medium` | 2048 | 16 GB | A device of the middle class. |
-| `gpu/high` | 2048 | 32 GB | The default, and the best real device. |
+| `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
+| `gpu/medium` | 2048 | 8 GB | The OHIF default. A device of the middle class. |
+| `gpu/high` | 2048 | 32 GB | The Cornerstone3D default. A device of the middle class can crash under it. |
 | `gpu/high-texture-4096` | 4096 | 32 GB | A control, and not a real device. |
 
 Pick exactly one file. A later value in the `?customization=` list overrides an earlier one.

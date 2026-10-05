@@ -5,9 +5,9 @@
 // profile in production. Cornerstone3D marks the profile `internal`.
 //
 // The profile is the control of the demonstration. A series of up to 4096
-// images renders with no reduction here, and the same series reduces under
-// `gpu/high`. The pair shows that the reduction comes from the limit of the
-// device and not from a defect.
+// images renders with no reduction here, and the same series reduces under the
+// default `gpu/medium`. The pair shows that the reduction comes from the limit
+// of the device and not from a defect.
 //
 // A real device rejects a texture of this edge, so the viewport can fail to
 // allocate. That failure is the expected result on hardware, and it is the

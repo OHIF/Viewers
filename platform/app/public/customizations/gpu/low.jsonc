@@ -1,11 +1,11 @@
 // GPU class: low
 //
-// States a texture edge of 2048 voxels and 8 GB of texture memory. 2048 is the
-// hard limit that every known WebGL device holds, so `low`, `medium` and `high`
-// differ only by memory.
+// States a texture edge of 256 voxels and 2 GB of texture memory, for a weak
+// integrated GPU. Such a device can lose its WebGL context on a large texture
+// before it reaches the edge that it reports, so the profile reduces early.
 //
-// Use this profile to show a reduction that the memory causes and not the edge.
-// A large volume that fits the edge under `gpu/high` may still reduce here.
+// Use this profile for a weak device. It holds more memory than
+// `gpu/low-tablet`, and it shares the same edge.
 //
 // The profile is a stated value and not a measurement. Nothing probes the
 // device, so a real device may hold more or less than this profile states.

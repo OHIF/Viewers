@@ -1,12 +1,12 @@
 // GPU class: medium
 //
-// States a texture edge of 2048 voxels and 16 GB of texture memory. 2048 is the
-// hard limit that every known WebGL device holds, so `low`, `medium` and `high`
+// States a texture edge of 2048 voxels and 8 GB of texture memory. 2048 is the
+// hard limit that every known WebGL device holds, so `medium` and `high`
 // differ only by memory.
 //
-// Use this profile for a device of the middle class. It sits between `gpu/low`
-// and `gpu/high`, and it shows that the memory alone moves the point at which a
-// volume reduces.
+// `medium` is the OHIF default, so this file states in the URL what the viewer
+// already does. Load it to return to the default after another profile. A
+// device of the middle class crashed with more texture memory than 8 GB.
 //
 // The profile is a stated value and not a measurement. Nothing probes the
 // device, so a real device may hold more or less than this profile states.

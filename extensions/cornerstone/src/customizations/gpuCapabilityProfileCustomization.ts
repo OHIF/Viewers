@@ -6,9 +6,10 @@
  * texture edge and the texture memory of the device, and a volume viewport
  * reduces its texture to fit those limits.
  *
- * `null` states no profile, and Cornerstone3D keeps its own default. That
- * default is `high`, which states the limit of 2048 that every known WebGL
- * device holds.
+ * The OHIF default is `medium`: a texture edge of 2048 and 8 GB of texture
+ * memory. A device of the middle class crashed with more memory than that, so
+ * OHIF does not use the Cornerstone3D default of `high` (32 GB). `null` states
+ * no profile, and Cornerstone3D then keeps its own default.
  *
  * Nothing probes the device. A deployment states the profile, because a probe
  * reports what a device claims, and a device can overstate its memory.
@@ -18,5 +19,5 @@
  * `platform/app/public/customizations/gpu/<id>.jsonc`.
  */
 export default {
-  'cornerstone.gpuCapabilityProfile': null,
+  'cornerstone.gpuCapabilityProfile': 'medium',
 };

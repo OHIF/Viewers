@@ -4,10 +4,9 @@
 // hard limit that every known WebGL device holds, and 32 GB is the largest
 // memory of the shipped profiles.
 //
-// `high` is also the default of Cornerstone3D, so this file states in the URL
-// what the viewer already does. Load it to return to the default after another
-// profile, and to show that a series of more than 2048 images still reduces on
-// one axis under the best real device.
+// `high` is the default of Cornerstone3D, and not of OHIF: OHIF uses
+// `gpu/medium`. Load this profile only on a device that holds that much
+// texture memory. A device of the middle class can crash under it.
 //
 // The profile is a stated value and not a measurement. Nothing probes the
 // device, so a real device may hold less than this profile states.

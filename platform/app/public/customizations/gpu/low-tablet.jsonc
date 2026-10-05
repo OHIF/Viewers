@@ -5,8 +5,8 @@
 // reduces its texture, and the reduction is easy to see.
 //
 // Use this profile to show what a reduction looks like. Compare it with
-// `gpu/high`, which reduces far less, and with `gpu/high-texture-4096`, which
-// reduces nothing.
+// `gpu/medium`, the default, which reduces far less, and with
+// `gpu/high-texture-4096`, which reduces nothing.
 //
 // The profile is a stated value and not a measurement. Nothing probes the
 // device, so a real device may hold more than this profile states.
