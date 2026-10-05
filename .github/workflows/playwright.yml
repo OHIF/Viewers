@@ -33,11 +33,10 @@ jobs:
   #   integration — is a CS3D ref requested, and if so which (validated)?
   #   approval    — must a named reviewer approve before the box is used?
   #
-  # Most of the protected-path list below is duplicated in .github/CODEOWNERS
-  # and must be kept in sync by hand. Editing one without the other fails
-  # silently. The two lists are NOT identical, and the difference is deliberate:
-  # the workspace manifests (`*/package.json`, `*/.npmrc`) are listed here and
-  # not there. The note in CODEOWNERS gives the reason.
+  # .github/CODEOWNERS covers an overlapping set of paths but is not a mirror of
+  # the protected-path list below; the two are maintained separately. They act
+  # at different moments: this gate keeps a fork PR off the box before review,
+  # CODEOWNERS puts a code owner in front of the merge.
   #
   # This job is part of the workflow it protects: a fork PR can delete it, along
   # with the `needs:` and `if:` below, and dispatch straight to the box. What
@@ -108,30 +107,22 @@ jobs:
                 # Workflows, and the scripts they exec on the box.
                 .github/*|.scripts/*)
                   ci_touched=true ;;
-                # The install surface. package.json declares `preinstall`, and
-                # pnpm executes a root pnpmfile, so editing either runs code on
-                # the box during `pnpm install`. The lockfile and workspace file
-                # steer what gets installed and can undo the release-age
-                # quarantine; .npmrc can repoint the registry. Most of these are
-                # untracked today — that is the point: a fork can ADD one, and a
-                # list of only existing files would not notice.
-                package.json|pnpm-lock.yaml|pnpm-workspace.yaml|preinstall.js|.npmrc)
+                # The install surface. The root package.json runs preinstall.js
+                # and pnpm executes a root pnpmfile, so editing or adding either
+                # runs code on the box during `pnpm install`. .npmrc can repoint
+                # the registry, and pnpm-workspace.yaml steers what gets
+                # installed: its `allowBuilds` list decides which dependencies
+                # may run install scripts on the box, and `minimumReleaseAge` is
+                # the release-age quarantine. Most of these files are untracked
+                # today — that is the point: a fork can ADD one, and a list of
+                # only existing files would not notice.
+                pnpm-workspace.yaml|preinstall.js|.npmrc)
                   ci_touched=true ;;
-                # Every OTHER manifest in the workspace, at any depth. `pnpm
-                # install` runs the lifecycle scripts of the workspace projects
-                # too, not only the root one, so a `postinstall` added to
-                # extensions/<x>/package.json executes on the box just as
-                # surely as one added to the root. A per-package .npmrc is read
-                # the same way.
-                #
-                # This is deliberately a filename match, not an inspection of
-                # what the change does. Reading the diff to decide whether the
-                # `scripts` block moved would put a parser for attacker-chosen
-                # input in the one job that must be obviously correct. The cost
-                # is real and is accepted: a fork PR that only adds a dependency
-                # to one extension now waits for its merge before Playwright
-                # runs. README.md and the CS3D integration page say so.
-                */package.json|*/.npmrc)
+                # A per-package .npmrc, at any depth: pnpm reads it during a
+                # root install just as it reads the root one. A `case` pattern
+                # is not a path glob — `*` matches `/` too — so `*/.npmrc`
+                # covers extensions/<x>/.npmrc and a project a fork adds.
+                */.npmrc)
                   ci_touched=true ;;
                 .pnpmfile.mjs|.pnpmfile.cjs|pnpmfile.mjs|pnpmfile.cjs)
                   ci_touched=true ;;

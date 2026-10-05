@@ -166,6 +166,7 @@ overrides:
   react: 19.2.7
   react-dom: 19.2.7
   '@types/react': 19.2.17
+  i18next: 19.9.2
   commander: 8.3.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
@@ -178,12 +179,11 @@ overrides:
   package-json: 8.1.1
   rollup: 2.80.0
   body-parser: 1.20.3
-  axios: 1.18.1
+  axios: 1.20.0
   core-js: 3.45.1
   '@babel/runtime-corejs2': 7.26.10
   tapable: 2.2.2
   '@cornerstonejs/codec-openjpeg': 1.3.2
-  node-forge: 1.4.0
   qs: 6.14.1
   lodash: 4.18.1
   lodash-es: 4.18.1
@@ -216,12 +216,12 @@ overrides:
   brace-expansion@>=3.0.0 <3.0.3: 3.0.6
   brace-expansion@>=4.0.0 <5.0.11: 5.0.11
   joi@>=17.2.0 <17.13.7: 17.13.7
-  i18next: 19.9.2
   js-yaml@>=3.0.0 <3.15.2: 3.15.2
   js-yaml@>=4.0.0 <4.3.2: 4.3.2
   postcss@<8.5.26: 8.5.26
   pacote@>=11.2.7 <21.5.1: 21.5.1
   browserslist@<4.28.7: 4.28.8
+  image-size@>=0.6.3 <2.0.4: 2.0.4
 
 importers:
 
@@ -1655,8 +1655,8 @@ importers:
         specifier: 7.29.7
         version: 7.29.7(supports-color@8.1.1)
       axios:
-        specifier: 1.18.1
-        version: 1.18.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+        specifier: 1.20.0
+        version: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       chalk:
         specifier: 5.4.1
         version: 5.4.1
@@ -6647,8 +6647,8 @@ packages:
   aws4@1.13.2:
     resolution: {integrity: sha512-lHe62zvbTB5eEABUVi/AwVh0ZKY9rMMDhmm+eeyuuUQbQ3+J+fONVQOZyj+DdrvD4BY33uYniyRJ4UJIaSKAfw==}
 
-  axios@1.18.1:
-    resolution: {integrity: sha512-3nTvFlvpn9Zu/RkHUqtc7/+al4UpRW5az71ap5zccp6e8RAYEzhMTecX8Dz1wWDYrPpUoB1HAQEGEAEvUr7S9g==}
+  axios@1.20.0:
+    resolution: {integrity: sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==}
 
   babel-jest@29.7.0:
     resolution: {integrity: sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==}
@@ -9031,9 +9031,9 @@ packages:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
 
-  image-size@2.0.2:
-    resolution: {integrity: sha512-IRqXKlaXwgSMAMtpNzZa1ZAe8m+Sa1770Dhk8VkSsP9LS+iHD62Zd8FQKs8fbPiagBE7BzoFX23cxFnwshpV6w==}
-    engines: {node: '>=16.x'}
+  image-size@2.0.4:
+    resolution: {integrity: sha512-QRUkFFsRV/6fuESxb9Vkq+a0LkSrgKXuc2NEqfikiXxxN/G3tjWt5EVUlMaImRBZRZK/jRBEbYvpPYZL8t08Zw==}
+    engines: {node: '>=18'}
     hasBin: true
 
   image-type@4.1.0:
@@ -15887,7 +15887,7 @@ snapshots:
       estree-util-value-to-estree: 3.5.0
       file-loader: 6.2.0(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23)))
       fs-extra: 11.3.3
-      image-size: 2.0.2
+      image-size: 2.0.4
       mdast-util-mdx: 3.0.0(supports-color@8.1.1)
       mdast-util-to-string: 4.0.0
       react: 19.2.7
@@ -16992,7 +16992,7 @@ snapshots:
 
   '@itk-wasm/dam@1.1.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
-      axios: 1.18.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      axios: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       commander: 8.3.0
       decompress: 4.2.1
       files-from-path: 1.1.4
@@ -19771,7 +19771,7 @@ snapshots:
 
   aws4@1.13.2: {}
 
-  axios@1.18.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
+  axios@1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       follow-redirects: 1.16.0(debug@4.4.3(supports-color@8.1.1))
       form-data: 4.0.6
@@ -22624,7 +22624,7 @@ snapshots:
 
   ignore@5.3.2: {}
 
-  image-size@2.0.2: {}
+  image-size@2.0.4: {}
 
   image-type@4.1.0:
     dependencies:
@@ -23090,7 +23090,7 @@ snapshots:
       '@itk-wasm/dam': 1.1.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       '@thewtex/zstddec': 0.2.1
       '@types/emscripten': 1.41.5
-      axios: 1.18.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      axios: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       comlink: 4.4.2
       commander: 8.3.0
       fs-extra: 11.3.3
@@ -23107,7 +23107,7 @@ snapshots:
       '@itk-wasm/dam': 1.1.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       '@thewtex/zstddec': 0.2.1
       '@types/emscripten': 1.41.5
-      axios: 1.18.1(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      axios: 1.20.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       chalk: 5.4.1
       comlink: 4.4.2
       commander: 8.3.0
