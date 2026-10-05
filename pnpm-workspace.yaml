@@ -32,6 +32,12 @@ auditConfig:
     # extract-zip is a transitive dependency of cypress and is only used in dev
     - GHSA-jmr9-qjv8-65gv
     - GHSA-7pqw-9j4j-h8q3
+    # http-cache-semantics is reached only via docusaurus's update-notifier in
+    # platform/docs; it is never used as a shared HTTP cache
+    - GHSA-ch52-4w7c-c8xp
+    # braces is reached only via build/test tooling (webpack, tailwind, jest,
+    # docusaurus), which expands repo-defined globs, never user input
+    - GHSA-vfj7-8cjw-p6xm
 allowBuilds:
   '@scarf/scarf': true
   '@swc/core': true
