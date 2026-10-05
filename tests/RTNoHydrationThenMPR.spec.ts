@@ -1,6 +1,7 @@
 import {
   checkForGridScreenshot,
   checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
@@ -16,6 +17,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated RTSTRUCT', async ({
   page,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -30,6 +32,9 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
 
   await viewportRenderCycle;
 
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
+
   const activeViewport = await viewportPageObject.active;
 
   await checkForViewportScreenshot({
@@ -38,18 +43,22 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
     screenshotPath: screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR,
   });
 
-  // The CT volume behind this RTSTRUCT takes longer than the default 15s to
-  // stream into the MPR viewports, so allow more time for the render to finish.
+  // This loads a large CT study which takes longer than the default 15s to load
+  // hence the 60s to allow more time for the render to finish.
+  const volumeLoadTimeout = 60000;
   const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page, {
-    renderedTimeout: 60000,
+    renderedTimeout: volumeLoadTimeout,
   });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await viewportRenderAfterLayoutChange;
-  // The layout change rebuilds the viewports; wait for their volume actors to
-  // report loaded before settling and capturing.
-  await waitForViewportsRendered(page);
+
+  await waitForViewportsRendered(page, { timeout: volumeLoadTimeout });
+
+  // Switching to MPR does not hydrate the RTSTRUCT.
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
 
   await checkForGridScreenshot({
     page,

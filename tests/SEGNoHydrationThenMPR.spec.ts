@@ -1,6 +1,7 @@
 import {
   checkForGridScreenshot,
   checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
@@ -16,6 +17,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG', async ({
   page,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -30,6 +32,9 @@ test('should launch MPR with unhydrated SEG', async ({
 
   await viewportRenderCycle;
 
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
+
   const activeViewport = await viewportPageObject.active;
 
   await checkForViewportScreenshot({
@@ -43,8 +48,7 @@ test('should launch MPR with unhydrated SEG', async ({
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await viewportRenderAfterLayoutChange;
-  // The layout change rebuilds the viewports; wait for their volume actors to
-  // report loaded before settling and capturing.
+ 
   await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({

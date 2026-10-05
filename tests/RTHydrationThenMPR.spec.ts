@@ -49,18 +49,18 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
     screenshotPath: screenShotPaths.rtHydrationThenMPR.rtPostHydration,
   });
 
-  // The CT volume behind this RTSTRUCT takes longer than the default 15s to
-  // stream into the MPR viewports, so allow more time for the render to finish.
+  // This loads a large CT study which takes longer than the default 15s to load
+  // hence the 60s to allow more time for the render to finish.
+  const volumeLoadTimeout = 60000;
   const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page, {
-    renderedTimeout: 60000,
+    renderedTimeout: volumeLoadTimeout,
   });
 
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
   await viewportRenderAfterLayoutChange;
-  // The layout change rebuilds the viewports; wait for their volume actors to
-  // report loaded before settling and capturing.
-  await waitForViewportsRendered(page);
+
+  await waitForViewportsRendered(page, { timeout: volumeLoadTimeout });
 
   await checkForGridScreenshot({
     page,
