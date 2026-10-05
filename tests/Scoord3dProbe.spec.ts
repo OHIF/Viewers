@@ -11,6 +11,8 @@ import {
   waitForViewportsRendered,
 } from './utils';
 
+const probeFindingCount = 2;
+
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
   const mode = 'viewer';
@@ -103,10 +105,9 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
 
   // The SR carries exactly two probe findings, each labeled "Lesion" with the
   // finding site as its only detail line and no series/instance line.
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBe(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(probeFindingCount);
 
-  for (let i = 0; i < rowCount; i++) {
+  for (let i = 0; i < probeFindingCount; i++) {
     const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
     await expect(measurement.title).toHaveText('Lesion');
     await expect(measurement.stats.primary.lines).toHaveText(['Peripheral zone of the prostate']);
@@ -232,9 +233,8 @@ test('should display SCOORD3D probe measurements correctly', async ({
 
   // The SR carries exactly two probe findings, each labeled "Lesion" with the
   // finding site as its only detail line and no series/instance line.
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBe(2);
-  for (let i = 0; i < rowCount; i++) {
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(probeFindingCount);
+  for (let i = 0; i < probeFindingCount; i++) {
     const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
     await expect(measurement.title).toHaveText('Lesion');
     await expect(measurement.stats.primary.lines).toHaveText(['Peripheral zone of the prostate']);

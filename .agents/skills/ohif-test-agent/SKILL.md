@@ -68,9 +68,8 @@ Pixel coordinates (`clickAt`, `doubleClickAt`) exist but prefer normalized for p
 For DOM-rendered state (panel counts, dialog text, overlay text values, button enabled states), assert directly:
 
 ```ts
-await expect(activeViewport.overlayText.bottomRight.instanceNumber).toContainText('17/');
-const count = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-expect(count).toBe(1);
+await expect(activeViewport.overlayText.bottomRight.instanceNumber).toHaveText('I:17 (17/94)');
+await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
 ```
 
 ## Study loading lifecycle
@@ -143,6 +142,7 @@ When to use which:
 |-----------|--------|
 | Click that triggers a re-render and you want to assert after | `waitForViewportRenderCycle(page)` started before the click |
 | Layout switch / series load — render already in flight | `await waitForViewportsRendered(page)` after the call |
+| Slice navigation (`sliceNavigation.toSlice(...)`, `scrollBy`, …) | `await waitForViewportsRendered(page)` after the call (per the `getSliceNavigation` docstring) |
 | Compose with another await (e.g. screenshot the same time as load) | Save the promise, `await` it later |
 
 Replace patterns like this:
@@ -255,7 +255,7 @@ Reach for the cheapest *faithful* signal, in this order:
    it passes even when rendering is broken. `page.evaluate(() => window.services...)` is an
    escape hatch for *setup*, not for *appearance* assertions.
 
-For a screenshot comparison scoped to a specific viewport, use `checkForViewportScreenshot` — it hides the viewport's overlay text for the capture:
+For a screenshot comparison scoped to a specific viewport, use `checkForViewportScreenshot` — it hides all of the viewport's text for the capture, including hydration/tracking prompts and the unhydrated modality badge (assert those through `DOMOverlayPageObject` instead):
 
 ```ts
 await checkForViewportScreenshot({

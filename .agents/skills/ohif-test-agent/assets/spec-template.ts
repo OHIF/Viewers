@@ -57,7 +57,6 @@ test.describe('FEATURE NAME', () => {
     //    });
 
     // 5. Assert DOM state directly
-    //    const count = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-    //    expect(count).toBe(1);
+    //    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
   });
 });

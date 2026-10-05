@@ -9,6 +9,8 @@ import {
   waitForViewportsRendered,
 } from './utils';
 
+const lesionRowCount = 8;
+
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
   const mode = 'viewer';
@@ -111,8 +113,7 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   // The SR carries eight "Lesion" rows: row 0 is the measured rectangle, and
   // rows 1-7 are the zero-area frames with the finding site only, on
   // descending instance numbers.
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBe(8);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(lesionRowCount);
 
   const firstRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
   await expect(firstRow.title).toHaveText('Lesion');
@@ -123,7 +124,7 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   ]);
   await expect(firstRow.stats.secondary.lines).toHaveText(['S: 3 I: 20']);
 
-  for (let i = 1; i < rowCount; i++) {
+  for (let i = 1; i < lesionRowCount; i++) {
     const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
     await expect(measurement.title).toHaveText('Lesion');
     await expect(measurement.stats.primary.lines).toHaveText(['0', 'Lung structure']);
@@ -217,8 +218,7 @@ test('should display SCOORD rectangle measurements correctly', async ({
   });
 
   // Verify the measurements list has the correct rectangle measurements and not others
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBe(8);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(lesionRowCount);
 
   const firstMeasurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
   await expect(firstMeasurement.title).toHaveText('Lesion');
@@ -253,7 +253,7 @@ test('should display SCOORD rectangle measurements correctly', async ({
 
   // Rows 1-7 are the zero-area SR frames with the finding site only, on
   // descending instance numbers.
-  for (let i = 1; i < rowCount; i++) {
+  for (let i = 1; i < lesionRowCount; i++) {
     const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
     await expect(measurement.title).toHaveText('Lesion');
     await expect(measurement.stats.primary.lines).toHaveText(['0', 'Lung structure']);

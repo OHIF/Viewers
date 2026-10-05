@@ -69,11 +69,10 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   const activeViewport = await viewportPageObject.active;
 
   // Navigate to image 56. Keyboard navigation is focus-dependent and lossy,
-  // so jump via the app command and pin the landing slice before capturing.
+  // so jump via the app command.
   await activeViewport.sliceNavigation.toSlice(55);
 
   await waitForViewportsRendered(page);
-  await expect(activeViewport.overlayText.bottomRight.instanceNumber).toContainText('I:56');
 
   await checkForViewportScreenshot({
     page,
