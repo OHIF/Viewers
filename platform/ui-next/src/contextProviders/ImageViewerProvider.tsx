@@ -1,4 +1,4 @@
-import React, { ReactNode, createContext, useContext, useMemo } from 'react';
+import React, { ReactNode, createContext, useContext } from 'react';
 
 interface ImageViewerProviderProps {
   StudyInstanceUIDs: string[];
@@ -9,9 +9,7 @@ export const ImageViewerContext = createContext(null);
 export const useImageViewer = () => useContext(ImageViewerContext);
 
 export function ImageViewerProvider({ StudyInstanceUIDs, children }: ImageViewerProviderProps) {
-  const value = useMemo(() => {
-    return { StudyInstanceUIDs };
-  }, [StudyInstanceUIDs]);
+  const value = { StudyInstanceUIDs };
 
   return <ImageViewerContext.Provider value={value}>{children}</ImageViewerContext.Provider>;
 }

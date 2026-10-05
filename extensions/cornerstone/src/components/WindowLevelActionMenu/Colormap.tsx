@@ -1,9 +1,9 @@
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useTranslation } from 'react-i18next';
 
-export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { viewportDisplaySets } = useViewportRendering(viewportId);
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -21,13 +21,6 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
   const [currentColormap, setCurrentColormap] = useState(null);
-
-  const showPreviewRef = useRef(showPreview);
-  showPreviewRef.current = showPreview;
-  const prePreviewColormapRef = useRef(prePreviewColormap);
-  prePreviewColormapRef.current = prePreviewColormap;
-  const currentColormapRef = useRef(currentColormap);
-  currentColormapRef.current = currentColormap;
 
   useEffect(() => {
     setCurrentColormap(null);
@@ -83,8 +76,8 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
           onCheckedChange={checked => {
             setShowPreview(checked);
 
-            if (!checked && currentColormapRef.current) {
-              handleSetColorLUT(currentColormapRef.current);
+            if (!checked && currentColormap) {
+              handleSetColorLUT(currentColormap);
             }
           }}
         />
@@ -106,16 +99,16 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
                   setPrePreviewColormap(null);
                 }}
                 onMouseEnter={() => {
-                  if (showPreviewRef.current) {
-                    if (!prePreviewColormapRef.current) {
+                  if (showPreview) {
+                    if (!prePreviewColormap) {
                       setPrePreviewColormap(colormap);
                     }
                     handleSetColorLUT(colormap);
                   }
                 }}
                 onMouseLeave={() => {
-                  if (showPreviewRef.current && prePreviewColormapRef.current) {
-                    handleSetColorLUT(prePreviewColormapRef.current);
+                  if (showPreview && prePreviewColormap) {
+                    handleSetColorLUT(prePreviewColormap);
                   }
                 }}
               />

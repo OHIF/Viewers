@@ -72,3 +72,6 @@ libs/
 link-cs3d.js
 unlink-cs3d.js
 auth.json
+
+# platform/ui-next UMD build emits font assets at the package root
+platform/ui-next/*.woff2

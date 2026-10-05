@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 8
 sidebar_label: Save/report dialog
 title: Save/report dialog destination
 ---

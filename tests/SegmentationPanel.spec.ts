@@ -1,7 +1,5 @@
 import { expect, test, visitStudy } from './utils';
 
-const nonNumericError = 'Cannot type text into input[type=number]';
-
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -88,24 +86,21 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
   test.beforeEach(async ({ rightPanelPageObject }) => {
     await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-    await rightPanelPageObject.labelMapSegmentationPanel.config.toggle.click();
+    await rightPanelPageObject.labelMapSegmentationPanel.config.open();
   });
 
   test.describe('opacity', () => {
     test('should accept valid values', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('0');
-      await opacity.input.blur();
-      await expect(opacity.input).toHaveValue('0');
+      await opacity.setValue('0');
+      await expect(opacity.numberInput).toHaveValue('0');
 
-      await opacity.fill('0.5');
-      await opacity.input.blur();
-      await expect(opacity.input).toHaveValue('0.5');
+      await opacity.setValue('0.5');
+      await expect(opacity.numberInput).toHaveValue('0.5');
 
-      await opacity.fill('1');
-      await opacity.input.blur();
-      await expect(opacity.input).toHaveValue('1');
+      await opacity.setValue('1');
+      await expect(opacity.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity to max (1) when a value above the maximum is entered', async ({
@@ -113,9 +108,8 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('500');
-      await opacity.input.blur();
-      await expect(opacity.input).toHaveValue('1');
+      await opacity.setValue('500');
+      await expect(opacity.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity to min (0) when a value below the minimum is entered', async ({
@@ -123,20 +117,17 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('-1');
-      await opacity.input.press('Enter');
-      await expect(opacity.input).toHaveValue('0');
+      await opacity.setValue('-1');
+      await expect(opacity.numberInput).toHaveValue('0');
     });
 
     test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('0.5');
-      await opacity.input.blur();
-      await opacity.fill('abc');
-      await opacity.input.press('Enter');
+      await opacity.setValue('0.5');
+      await opacity.setValue('abc');
       // confirm that previous value was restored
-      await expect(opacity.input).toHaveValue('0.5');
+      await expect(opacity.numberInput).toHaveValue('0.5');
     });
   });
 
@@ -144,17 +135,14 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should accept valid values', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('0');
-      await border.input.blur();
-      await expect(border.input).toHaveValue('0');
+      await border.setValue('0');
+      await expect(border.numberInput).toHaveValue('0');
 
-      await border.fill('5');
-      await border.input.blur();
-      await expect(border.input).toHaveValue('5');
+      await border.setValue('5');
+      await expect(border.numberInput).toHaveValue('5');
 
-      await border.fill('10');
-      await border.input.blur();
-      await expect(border.input).toHaveValue('10');
+      await border.setValue('10');
+      await expect(border.numberInput).toHaveValue('10');
     });
 
     test('should clamp border to max (10) when a value above the maximum is entered', async ({
@@ -162,9 +150,8 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('500');
-      await border.input.blur();
-      await expect(border.input).toHaveValue('10');
+      await border.setValue('500');
+      await expect(border.numberInput).toHaveValue('10');
     });
 
     test('should clamp border to min (0) when a value below the minimum is entered', async ({
@@ -172,20 +159,17 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('-1');
-      await border.input.blur();
-      await expect(border.input).toHaveValue('0');
+      await border.setValue('-1');
+      await expect(border.numberInput).toHaveValue('0');
     });
 
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('3');
-      await border.input.blur();
-      await border.fill('abc');
-      await border.input.press('Enter');
+      await border.setValue('3');
+      await border.setValue('abc');
       // confirm that previous value was restored
-      await expect(border.input).toHaveValue('3');
+      await expect(border.numberInput).toHaveValue('3');
     });
   });
 
@@ -193,17 +177,14 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should accept valid values', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('0');
-      await opacityInactive.input.blur();
-      await expect(opacityInactive.input).toHaveValue('0');
+      await opacityInactive.setValue('0');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
 
-      await opacityInactive.fill('0.5');
-      await opacityInactive.input.blur();
-      await expect(opacityInactive.input).toHaveValue('0.5');
+      await opacityInactive.setValue('0.5');
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
 
-      await opacityInactive.fill('1');
-      await opacityInactive.input.blur();
-      await expect(opacityInactive.input).toHaveValue('1');
+      await opacityInactive.setValue('1');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity inactive to max (1) when a value above the maximum is entered', async ({
@@ -211,9 +192,8 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('500');
-      await opacityInactive.input.blur();
-      await expect(opacityInactive.input).toHaveValue('1');
+      await opacityInactive.setValue('500');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity inactive to min (0) when a value below the minimum is entered', async ({
@@ -221,20 +201,17 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('-1');
-      await opacityInactive.input.blur();
-      await expect(opacityInactive.input).toHaveValue('0');
+      await opacityInactive.setValue('-1');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
     });
 
     test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('0.5');
-      await opacityInactive.input.blur();
-      await opacityInactive.fill('abc');
-      await opacityInactive.input.press('Enter');
+      await opacityInactive.setValue('0.5');
+      await opacityInactive.setValue('abc');
       // confirm that previous value was restored
-      await expect(opacityInactive.input).toHaveValue('0.5');
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
     });
   });
 });
