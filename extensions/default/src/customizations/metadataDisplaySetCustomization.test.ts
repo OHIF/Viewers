@@ -5,14 +5,16 @@ describe('getMetadataDisplaySetCustomization', () => {
     getMetadataDisplaySetCustomization({ servicesManager: { services: {} } } as never)
       .useMetadataDisplaySet;
 
-  it('defaults to a keyed raw selector with the priorities 1..n', () => {
+  it('defaults to a keyed raw selector, with singleImageModality off', () => {
     const { splitRules } = customization();
     expect(Array.isArray(splitRules)).toBe(false);
+    expect(splitRules.singleImageModality.priority).toBeNull();
     expect(
       Object.values(splitRules)
         .map(rule => rule.priority)
+        .filter(priority => priority !== null)
         .sort()
-    ).toEqual([1, 2, 3, 4, 5]);
+    ).toEqual([2, 3, 4, 5]);
   });
 
   it('holds the default rules as data, with no functions in them', () => {
