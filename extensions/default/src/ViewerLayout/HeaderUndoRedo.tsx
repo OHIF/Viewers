@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
+import { useUndoRedoState } from './useUndoRedoState';
 
 /**
  * Undo/redo buttons, shipped as one of the `ohif.headerRightSide` items. Like
@@ -9,13 +11,17 @@ import { useSystem } from '@ohif/core';
  */
 function HeaderUndoRedo() {
   const { commandsManager } = useSystem();
+  const { t } = useTranslation();
+  const { canUndo, canRedo } = useUndoRedoState();
 
   return (
-    <div className="text-primary flex cursor-pointer items-center">
+    <div className="text-primary flex items-center">
       <Button
         variant="ghost"
-        className="hover:bg-muted"
+        className="hover:bg-muted cursor-pointer"
         data-cy="undo-btn"
+        disabled={!canUndo}
+        aria-label={t('Header:Undo')}
         onClick={() => {
           commandsManager.run('undo');
         }}
@@ -24,8 +30,10 @@ function HeaderUndoRedo() {
       </Button>
       <Button
         variant="ghost"
-        className="hover:bg-muted"
+        className="hover:bg-muted cursor-pointer"
         data-cy="redo-btn"
+        disabled={!canRedo}
+        aria-label={t('Header:Redo')}
         onClick={() => {
           commandsManager.run('redo');
         }}
