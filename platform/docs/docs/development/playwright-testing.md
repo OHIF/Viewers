@@ -47,9 +47,10 @@ pnpm run test:e2e:headed                          # headed browser
 pnpm exec playwright show-report tests/playwright-report
 ```
 
-When passing Playwright flags (`--update-snapshots`, `--reporter`, `-g`),
-invoke Playwright directly as above. `pnpm run test:e2e -- <flags>` inserts a
-`--` separator that can keep Playwright from parsing them.
+To pass Playwright flags such as `--update-snapshots`, `--reporter`, or `-g`,
+call `pnpm exec playwright test <flags>` directly. Appending them to a script
+(`pnpm run test:e2e -- <flags>`) forwards a literal `--`, and Playwright then
+treats the flags as test-file filters instead of options.
 
 ### Serving the viewer yourself
 
@@ -254,7 +255,7 @@ inlining `page.*` calls:
 | --- | --- |
 | A toolbar button or tool | `MainToolbarPageObject` |
 | A menu, prompt, or small dialog | `DOMOverlayPageObject` |
-| A substantial dialog with its own fields | Its own page object, reached through `DOMOverlayPageObject` (see `DicomTagBrowserPageObject`) |
+| A substantial dialog with its own fields | Its own page object, reached through `DOMOverlayPageObject` (see `DicomTagBrowserPageObject` for an example) |
 | A side-panel control | `LeftPanelPageObject` / `RightPanelPageObject` |
 | Anything inside a viewport | `ViewportPageObject` |
 
@@ -324,10 +325,8 @@ Reach for the cheapest faithful signal, in this order:
 
 Rules for new screenshot assertions:
 
-- Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })`
-  and the grid with `checkForGridScreenshot({ page, viewportPageObject, screenshotPath })`;
-  both hide viewport text before the shot (the grid helper on every pane).
-  Keep text out of baselines; dates, series descriptions, and W/L values
+- Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })`;
+  it hides viewport text before the shot. Keep text out of baselines; dates, series descriptions, and W/L values
   drift and make them fragile.
 - Never screenshot the full app. Use `checkForScreenshot` (object form,
   with a locator) only for non-viewport locators such as panels and dialogs.
@@ -358,8 +357,9 @@ Rules for new screenshot assertions:
 - Remember there are two segmentation representations, contour and labelmap.
   Don't give a helper a generic name if it only handles one, and encode the
   representation type in signatures and `data-cy` values where it matters.
-  The inverse holds too. A feature that isn't segmentation-specific shouldn't
-  carry segmentation in its name.
+  Conversely, a helper that works for both representations shouldn't name
+  one, and a feature that isn't segmentation-specific shouldn't carry
+  segmentation in its name.
 
 ## Submitting your PR
 
