@@ -125,12 +125,23 @@ both, and run `node --test .scripts/cs3d-read-ref.test.mjs`. That test runs the 
 script from the workflow file against the same bodies as the copy, and fails when the two
 disagree.
 
-The jobs read the body through the GitHub API. When the API does not answer, for example at
-the unauthenticated rate limit, the job prints a warning and uses the pinned version, so an
-ordinary PR does not fail for that reason. Set a read-only `GITHUB_TOKEN` in the CircleCI
-project and in the Netlify site settings to avoid the limit. The CircleCI job sees the PR only
-when the branch has an open PR at the start of the pipeline; re-run the pipeline after you
-open the PR, or after you change the line.
+The jobs read the body through the GitHub API, without a token. Neither CircleCI nor Netlify
+gives the body to the build, only the PR number. When the API does not answer, for example at
+the unauthenticated rate limit, the job uses the `.cs3d-ref` file at the repository root, if
+the branch has one. The file holds the same line as the body:
+
+```
+CS3D_REF: feat/my-feature
+```
+
+Without the file, the job prints a warning and uses the pinned version, so an ordinary PR
+does not fail for that reason. The body wins whenever the API answers, and the job prints a
+warning when the file and the body disagree. Delete `.cs3d-ref` in the same change that
+deletes or retires the `CS3D_REF` line. A `GITHUB_TOKEN` in the CircleCI or Netlify settings
+also avoids the limit, but it is optional.
+
+The CircleCI job sees the PR only when the branch has an open PR at the start of the
+pipeline; re-run the pipeline after you open the PR, or after you change the line.
 
 A branch build adds the CS3D install and build to each job. The Cypress job runs on 8
 parallel containers, and each container builds CS3D.
