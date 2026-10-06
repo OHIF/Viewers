@@ -22,7 +22,9 @@
     "dev:dicom-pdf": "pnpm run dev",
     "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
     "build:package-1": "pnpm run build",
-    "start": "pnpm run dev"
+    "start": "pnpm run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
     "@ohif/core": "workspace:*",
