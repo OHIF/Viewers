@@ -3436,6 +3436,29 @@ describe('SegmentationService', () => {
         );
       });
 
+      it('keeps every viewport highlighted when one jump highlights several viewports', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+        jest.mocked(cstSegmentation.config.style.getStyle).mockReturnValue({ fillAlpha: 0.5 });
+        jest.mocked(cstSegmentation.state.getSegmentation).mockReturnValue({
+          segments: { 1: { cachedStats: { center: { world: [10, 10, 10] } } } },
+        } as unknown as cstTypes.Segmentation);
+        jest
+          .spyOn(service, 'getViewportIdsWithSegmentation')
+          .mockReturnValue(['viewportId1', 'viewportId2']);
+        // @ts-expect-error - mock only needed properties
+        getEnabledElementByViewportId.mockReturnValue({ viewport: { jumpToWorld: jest.fn() } });
+
+        service.jumpToSegmentCenter(segmentationId, 1);
+        runFrame(0);
+
+        expect(frames).toHaveLength(2);
+        expect(cstSegmentation.config.style.setStyle).not.toHaveBeenCalledWith(
+          { segmentationId, segmentIndex: 1, type: 'Labelmap' },
+          {},
+          false
+        );
+      });
+
       it('runs a single highlight to completion and resets its style', () => {
         mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
         jest.mocked(cstSegmentation.config.style.getStyle).mockReturnValue({ fillAlpha: 0.5 });

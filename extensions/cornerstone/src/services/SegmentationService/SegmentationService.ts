@@ -121,10 +121,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
   private readonly _nextSegBackend: ISegmentationBackend;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
-  // Bumped by every highlightSegment call. Each highlight runs as a
-  // requestAnimationFrame loop; a running loop whose generation is no longer the
-  // current one supersedes itself on its next frame instead of stacking up.
-  private _highlightGeneration = 0;
+  // Per viewport, bumped by every highlightSegment call on that viewport. Each
+  // highlight runs as a requestAnimationFrame loop; a running loop whose generation
+  // is no longer its viewport's current one supersedes itself on its next frame
+  // instead of stacking up. Keyed by viewport so that highlighting one viewport
+  // (e.g. a multi-viewport jumpToSegmentCenter) does not stop another's highlight.
+  private _highlightGenerations = new Map<string, number>();
   readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
@@ -1628,13 +1630,6 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       clearInterval(this.highlightIntervalId);
     }
 
-    // Supersede any highlight still animating from a previous selection. The
-    // clearInterval above never applied — the highlight is a requestAnimationFrame
-    // loop, not a setInterval — so without this every segment click stacked another
-    // 750ms animation, flooding SEGMENTATION_REPRESENTATION_MODIFIED and leaving
-    // several style loops resetting styles at once.
-    const generation = ++this._highlightGeneration;
-
     const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
 
     const viewportIds = viewportId
@@ -1642,6 +1637,14 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       : this.getViewportIdsWithSegmentation(segmentationId);
 
     viewportIds.forEach(viewportId => {
+      // Supersede any highlight still animating from a previous selection. The
+      // clearInterval above never applied — the highlight is a requestAnimationFrame
+      // loop, not a setInterval — so without this every segment click stacked another
+      // 750ms animation, flooding SEGMENTATION_REPRESENTATION_MODIFIED and leaving
+      // several style loops resetting styles at once.
+      const generation = (this._highlightGenerations.get(viewportId) ?? 0) + 1;
+      this._highlightGenerations.set(viewportId, generation);
+
       const segmentationRepresentation = this.getSegmentationRepresentations(viewportId, {
         segmentationId,
       });
@@ -1973,7 +1976,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     animationLength: number,
     representation: cstTypes.SegmentationRepresentation,
     animationFunctionType: EasingFunctionEnum,
-    generation = this._highlightGeneration
+    generation = this._highlightGenerations.get(viewportId)
   ) {
     const { segmentationId } = representation;
     const newSegmentSpecificConfig = {
@@ -2005,7 +2008,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     let startTime: number = null;
     const animation = (timestamp: number) => {
       // A newer highlight has taken over: drop the temporary fill and stop.
-      if (generation !== this._highlightGeneration) {
+      if (generation !== this._highlightGenerations.get(viewportId)) {
         resetStyle();
         return;
       }
@@ -2049,7 +2052,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     animationLength: number,
     representation: cstTypes.SegmentationRepresentation,
     animationFunctionType: EasingFunctionEnum,
-    generation = this._highlightGeneration
+    generation = this._highlightGenerations.get(viewportId)
   ) {
     const { segmentationId } = representation;
     const startTime = performance.now();
@@ -2062,7 +2065,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
 
     const animate = (currentTime: number) => {
       // A newer highlight has taken over: drop the temporary outline and stop.
-      if (generation !== this._highlightGeneration) {
+      if (generation !== this._highlightGenerations.get(viewportId)) {
         cstSegmentation.config.style.resetToGlobalStyle();
         return;
       }
