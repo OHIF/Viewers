@@ -475,14 +475,15 @@ export class RightPanelPageObject {
           await toggleButton.click();
           await applyButton.waitFor({ state: 'visible' });
         };
+        const close = async () => {
+          await page.keyboard.press('Escape');
+          await applyButton.waitFor({ state: 'hidden' });
+        };
         return {
           toggleButton,
           open,
           // Dismisses the popover so it no longer overlaps the viewport.
-          close: async () => {
-            await page.keyboard.press('Escape');
-            await applyButton.waitFor({ state: 'hidden' });
-          },
+          close,
           selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
             await open();
             await page.getByTestId(`logical-contour-operation-${operation}`).click();
@@ -500,6 +501,7 @@ export class RightPanelPageObject {
           apply: async () => {
             await open();
             await applyButton.click();
+            await close();
           },
           enableCreateNewSegment: async () => {
             await open();
@@ -531,9 +533,6 @@ export class RightPanelPageObject {
           open,
           // Dismisses the popover so it no longer overlaps the viewport.
           close,
-          // Each action dismisses the popover afterwards, since it stays open after
-          // the click and would otherwise overlap the viewport.
-          // Runs the smoothContours command (b-spline resample of the outline).
           smoothEdges: async () => {
             await open();
             await smoothEdgesButton.click();
