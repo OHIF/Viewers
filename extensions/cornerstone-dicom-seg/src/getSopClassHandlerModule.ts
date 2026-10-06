@@ -3,11 +3,15 @@ import i18n from '@ohif/i18n';
 import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
+import dcmjs from 'dcmjs';
 
 import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 import { getSegmentationParserType } from './utils/segmentationConfig';
 import { dicomLoaderService } from '@ohif/extension-cornerstone';
+
+const { DicomMetaDictionary } = dcmjs.data;
+const { naturalizeDataset } = DicomMetaDictionary;
 import {
   getFrameIndexFromImageId,
   isLocalSchemeImageId,
@@ -481,12 +485,66 @@ async function _loadSegments({
    * Some DICOMweb servers (e.g. IDC's static WADO) omit large sequences like
    * PerFrameFunctionalGroupsSequence from the JSON metadata to save bandwidth.
    * The metadata-based loader (createFromDicomSegImageId) requires this sequence
-   * to map frames to segments. When it's missing, we fall back to the buffer-based
-   * loader (createFromDICOMSegBuffer) which parses the full DICOM Part 10 file.
+   * to map frames to segments.
+   *
+   * Loading strategy (in order of preference):
+   * 1. If PerFrameFunctionalGroupsSequence is inline (array) → use metadata-based loader
+   * 2. If PerFrameFunctionalGroupsSequence has BulkDataURI → fetch bulk data, then use metadata-based loader
+   * 3. If bulk data fetch fails or no BulkDataURI → fall back to buffer-based loader (full Part 10 file)
    */
-  const hasPerFrameFunctionalGroups =
+  let hasPerFrameFunctionalGroups =
     Array.isArray(instance.PerFrameFunctionalGroupsSequence) &&
     instance.PerFrameFunctionalGroupsSequence.length > 0;
+
+  /**
+   * Check if PerFrameFunctionalGroupsSequence is available via bulk data.
+   * Some servers return it as { BulkDataURI: '...' } instead of inline array.
+   */
+  const perFrameValue = instance.PerFrameFunctionalGroupsSequence as
+    | unknown[]
+    | { BulkDataURI?: string; retrieveBulkData?: () => Promise<ArrayBuffer> }
+    | undefined;
+
+  if (
+    !hasPerFrameFunctionalGroups &&
+    perFrameValue &&
+    typeof perFrameValue === 'object' &&
+    !Array.isArray(perFrameValue) &&
+    (perFrameValue.BulkDataURI || typeof perFrameValue.retrieveBulkData === 'function')
+  ) {
+    try {
+      let buffer: ArrayBuffer | undefined;
+
+      if (typeof perFrameValue.retrieveBulkData === 'function') {
+        buffer = await perFrameValue.retrieveBulkData();
+      } else if (perFrameValue.BulkDataURI && dataSource.retrieve?.bulkDataURI) {
+        buffer = await dataSource.retrieve.bulkDataURI({
+          StudyInstanceUID: instance.StudyInstanceUID,
+          BulkDataURI: perFrameValue.BulkDataURI,
+        });
+      }
+
+      if (buffer && buffer.byteLength > 0) {
+        /**
+         * Parse the bulk data as JSON. The server returns the sequence as a JSON array
+         * following the DICOMweb JSON model (denaturalized form).
+         */
+        const jsonText = new TextDecoder().decode(buffer);
+        const denaturalizedSequence = JSON.parse(jsonText);
+
+        if (Array.isArray(denaturalizedSequence) && denaturalizedSequence.length > 0) {
+          /** Naturalize each item in the sequence to match OHIF's internal format */
+          const naturalizedSequence = denaturalizedSequence.map(item => naturalizeDataset(item));
+
+          /** Update the instance metadata with the fetched sequence */
+          instance.PerFrameFunctionalGroupsSequence = naturalizedSequence;
+          hasPerFrameFunctionalGroups = true;
+        }
+      }
+    } catch {
+      /** Bulk data fetch failed; fall back to buffer-based loader */
+    }
+  }
 
   let results;
   try {
