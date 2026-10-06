@@ -27,7 +27,6 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
 
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-
   // Verify hydration prompt is visible
   const hydrationPrompt = DOMOverlayPageObject.viewport.segmentationHydration.locator;
   await expect(hydrationPrompt).toBeVisible({ timeout: 10000 });
