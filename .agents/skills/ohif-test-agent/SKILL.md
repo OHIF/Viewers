@@ -265,7 +265,7 @@ await checkForViewportScreenshot({
 });
 ```
 
-For a multi-viewport layout, `checkForGridScreenshot({ page, viewportPageObject, screenshotPath })` captures the grid with the text of *every* pane hidden (panes are re-resolved each attempt, so a mid-test layout change is covered).
+For a multi-viewport layout, `checkForGridScreenshot({ page, viewportPageObject, screenshotPath })` captures the grid with the text of *every* pane hidden. It hides the text with one selector sweep over the whole grid (`hideAllViewportGridText`), so panes added by a mid-test layout change are covered too.
 
 All these helpers retry up to 10 times at 1250 ms intervals by default (`attempts` and `delay` are configurable); the viewport and grid helpers delegate to `checkForScreenshot` — use that one directly only for non-viewport locators such as a panel or dialog. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
 
