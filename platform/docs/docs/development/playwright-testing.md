@@ -95,8 +95,8 @@ guide disagrees with the current source under `tests/pages/` or
    (`waitForViewportRenderCycle`) instead of sleeping.
 8. Assert the actual effect (the image zoomed, the segment is gone), not a
    proxy attribute like `data-active` or a bare count.
-9. Screenshots only for canvas-only output: viewport-scoped, text-free
-   baselines, named via `screenShotPaths`.
+9. Screenshots only for canvas-only output: viewport- or grid-scoped,
+   text-free baselines, named via `screenShotPaths`.
 10. `await` every locator action and every assertion.
 
 The sections below explain each rule briefly.
@@ -192,7 +192,8 @@ Capture the promise immediately before the step that triggers the render.
 Captured ahead of a multi-step sequence, it resolves on an intermediate
 render and the final await becomes a no-op. Use
 `waitForViewportsRendered(page)` when the render is already in flight (layout
-switch, series load). For DOM-side state (panel rows, dialogs), rely on
+switch, series load, `sliceNavigation.toSlice(...)`). For DOM-side state
+(panel rows, dialogs), rely on
 auto-retrying assertions instead; they wait for you.
 
 Every remaining `waitForTimeout`, `hover`, or non-obvious interaction in your
@@ -235,6 +236,9 @@ await expect(segmentRow.title).toHaveText('Segment 5');
   the button changed, not that the tool does anything to the canvas.
   Assert the side-panel state too (e.g. the clicked segment is highlighted,
   not only that the viewport navigated).
+- For a measurement, assert its panel row, its SVG text, and its cached stats
+  in one call with `expectAnnotationStatsText`, building the expected lines
+  with `measurementTextFormatters` (see `Length.spec.ts`).
 - A drawn annotation must be visible, not merely present. `toHaveCount(n)`
   plus a non-null `d` still passes when a regression hides the path, so add
   `toBeVisible()` after drawing and after navigating back.
@@ -327,9 +331,15 @@ Reach for the cheapest faithful signal, in this order:
 
 Rules for new screenshot assertions:
 
-- Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })`;
-  it hides viewport text before the shot. Keep text out of baselines; dates,
-  series descriptions, and W/L values drift and make them fragile.
+- Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })`
+  and the grid with `checkForGridScreenshot({ page, viewportPageObject, screenshotPath })`;
+  both hide viewport text before the shot (the grid helper on every pane).
+  Keep text out of baselines; dates, series descriptions, and W/L values
+  drift and make them fragile.
+- The helpers also hide hydration and tracking prompts and the unhydrated
+  `SEG`/`RTSTRUCT`/`SR` badge, so assert those through `DOMOverlayPageObject`
+  instead. Close menus (e.g. the data overlay menu) before a capture and
+  assert their contents through the DOM.
 - Never screenshot the full app. Use `checkForScreenshot` (object form,
   with a locator) only for non-viewport locators such as panels and dialogs.
 - Name baselines with `screenShotPaths.<category>.<name>` from
@@ -344,7 +354,8 @@ Rules for new screenshot assertions:
 - A missing baseline is written on the spot by Playwright. Because
   `checkForScreenshot` retries, the first run then compares against the file it
   just wrote and usually **passes** — an unreviewed baseline can slip in
-  silently. Always open the new PNG under `tests/screenshots/chromium/<spec>/`
+  silently. It is also the very first capture, so it can catch a mid-load
+  frame. Always open the new PNG under `tests/screenshots/chromium/<spec>/`
   and confirm it shows what you expect before committing it.
 
 ## Naming
