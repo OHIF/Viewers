@@ -1,4 +1,4 @@
-import { utils, Types as OhifTypes, DicomMetadataStore, classes, log } from '@ohif/core';
+import { utils, Types as OhifTypes, DicomMetadataStore, classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
@@ -7,6 +7,7 @@ import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 import { getSegmentationParserType } from './utils/segmentationConfig';
+import { dicomLoaderService } from '@ohif/extension-cornerstone';
 import {
   getFrameIndexFromImageId,
   isLocalSchemeImageId,
@@ -17,8 +18,6 @@ const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4', '1.2.840.10008.5.1.4.1.1.6
 const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.7';
 
 const loadPromises = {};
-
-const SEG_LOAD_LOG_PREFIX = '[SEG load]';
 
 // Max number of SEG frames fetched/decoded concurrently by the segmentation
 // loader. Hard-coded to 16 for now; intended to become configurable (and to
@@ -203,35 +202,6 @@ function _resolveFrameImageIds(
   return frameImageIds.length ? frameImageIds : [segImageIdStr];
 }
 
-function _logSegImageIds({
-  segDisplaySet,
-  segImageIdStr,
-  frameImageIds,
-  referencedImageIds,
-}: {
-  segDisplaySet: AppTypes.DisplaySet;
-  segImageIdStr: string;
-  frameImageIds: string[];
-  referencedImageIds: string[];
-}) {
-  const instance = segDisplaySet.instance as Record<string, unknown>;
-  const numberOfFrames = Number(instance?.NumberOfFrames) || 1;
-
-  log.debug(SEG_LOAD_LOG_PREFIX, 'Loading SEG pixel data', {
-    SOPInstanceUID: segDisplaySet.SOPInstanceUID,
-    SeriesInstanceUID: segDisplaySet.SeriesInstanceUID,
-    SOPClassUID: segDisplaySet.SOPClassUID,
-    NumberOfFrames: numberOfFrames,
-    segmentCount: Object.keys(segDisplaySet.segments || {}).length,
-    referencedDisplaySetInstanceUID: segDisplaySet.referencedDisplaySetInstanceUID,
-    referencedImageIdCount: referencedImageIds.length,
-    referencedImageIds,
-    segImageIdForMetadata: segImageIdStr,
-    frameImageIds,
-    loadSegFramesIndividually: frameImageIds.length > 1,
-  });
-}
-
 function _getDisplaySetsFromSeries(
   instances,
   servicesManager: AppTypes.ServicesManager,
@@ -410,7 +380,8 @@ async function _loadSegments({
   extensionManager,
   servicesManager,
   segDisplaySet,
-}: withAppTypes<{ segDisplaySet: AppTypes.DisplaySet }>) {
+  headers,
+}: withAppTypes<{ segDisplaySet: AppTypes.DisplaySet; headers?: Record<string, string> }>) {
   const { segmentationService, uiNotificationService, customizationService } =
     servicesManager.services;
   const instance = segDisplaySet.instance as Record<string, unknown>;
@@ -465,13 +436,6 @@ async function _loadSegments({
     ? stripFrameFromImageId(segImageIdStr)
     : segImageIdStr;
 
-  _logSegImageIds({
-    segDisplaySet,
-    segImageIdStr: segImageIdForMetadata,
-    frameImageIds,
-    referencedImageIds: imageIds,
-  });
-
   _ensureSegInstanceMetadataAvailable(segImageIdForMetadata, instance);
   frameImageIds.forEach(id => _ensureSegInstanceMetadataAvailable(id, instance));
 
@@ -513,22 +477,46 @@ async function _loadSegments({
     }
   }
 
+  /**
+   * Some DICOMweb servers (e.g. IDC's static WADO) omit large sequences like
+   * PerFrameFunctionalGroupsSequence from the JSON metadata to save bandwidth.
+   * The metadata-based loader (createFromDicomSegImageId) requires this sequence
+   * to map frames to segments. When it's missing, we fall back to the buffer-based
+   * loader (createFromDICOMSegBuffer) which parses the full DICOM Part 10 file.
+   */
+  const hasPerFrameFunctionalGroups =
+    Array.isArray(instance.PerFrameFunctionalGroupsSequence) &&
+    instance.PerFrameFunctionalGroupsSequence.length > 0;
+
   let results;
   try {
-    results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDicomSegImageId(
-      imageIds,
-      segImageIdForMetadata,
-      {
-        metadataProvider: metaData,
-        tolerance,
-        parserType: getSegmentationParserType(
-          segDisplaySet.SOPClassUID,
-          customizationService
-        ),
-        frameImageIds,
-        concurrency: SEG_FRAME_DECODE_CONCURRENCY,
-      }
-    );
+    if (!hasPerFrameFunctionalGroups) {
+      const arrayBuffer = await dicomLoaderService.findDicomDataPromise(
+        segDisplaySet,
+        null,
+        headers
+      );
+      results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
+        imageIds,
+        arrayBuffer,
+        { metadataProvider: metaData, tolerance }
+      );
+    } else {
+      results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDicomSegImageId(
+        imageIds,
+        segImageIdForMetadata,
+        {
+          metadataProvider: metaData,
+          tolerance,
+          parserType: getSegmentationParserType(
+            segDisplaySet.SOPClassUID,
+            customizationService
+          ),
+          frameImageIds,
+          concurrency: SEG_FRAME_DECODE_CONCURRENCY,
+        }
+      );
+    }
   } finally {
     eventTarget.removeEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
     prefetch?.cancel?.();
@@ -563,17 +551,6 @@ async function _loadSegments({
   }
 
   Object.assign(segDisplaySet, results);
-
-  const labelMapImageIds = (results as { labelMapImages?: { imageId: string }[][] })
-    .labelMapImages?.flat()
-    .map(image => image.imageId);
-
-  log.debug(SEG_LOAD_LOG_PREFIX, 'SEG parse complete', {
-    SOPInstanceUID: segDisplaySet.SOPInstanceUID,
-    labelMapImageCount: labelMapImageIds?.length ?? 0,
-    labelMapImageIds,
-    segmentIndices: Object.keys(segDisplaySet.segments || {}),
-  });
 }
 
 function _segmentationExists(segDisplaySet) {
