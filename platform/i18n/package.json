@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.14.0-beta.37",
+  "version": "3.14.0-beta.45",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "test:unit:ci": "echo 'platform/i18n: missing unit tests'"
   },
   "peerDependencies": {
-    "i18next": "17.3.1",
+    "i18next": "19.9.2",
     "i18next-browser-languagedetector": "3.1.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "i18next": "17.3.1",
+    "i18next": "19.9.2",
     "i18next-browser-languagedetector": "3.1.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",

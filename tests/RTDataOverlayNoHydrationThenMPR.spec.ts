@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
   screenShotPaths,
   test,
   visitStudy,
@@ -33,21 +33,30 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   await dataOverlayPageObject.toggle();
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPreMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPreMPR,
+  });
+
+  // This loads a large CT study which takes longer than the default 15s to load
+  // hence the 60s to allow more time for the render to finish.
+  const volumeLoadTimeout = 60000;
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page, {
+    renderedTimeout: volumeLoadTimeout,
+  });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  // Waiting for the render via waitForViewportRenderCycle appears to wait 'forever', so instead
-  // we use the baked in wait for screenshot comparisons.
-  await checkForScreenshot(
+  await viewportRenderAfterLayoutChange;
+
+  await waitForViewportsRendered(page, { timeout: volumeLoadTimeout });
+
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPostMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPostMPR,
+  });
 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
