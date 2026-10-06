@@ -3356,6 +3356,102 @@ describe('SegmentationService', () => {
       expect(window.clearInterval).toHaveBeenCalledTimes(1);
       expect(window.clearInterval).toHaveBeenCalledWith('intervalId');
     });
+
+    describe('when a newer highlight starts', () => {
+      const segmentationId = 'segmentationId';
+      let frames: FrameRequestCallback[];
+
+      // Runs every queued animation frame once; the callbacks queue the next frames.
+      const runFrame = (timestamp: number) => {
+        const pending = frames;
+        frames = [];
+        pending.forEach(callback => callback(timestamp));
+      };
+
+      const mockRepresentation = (type: csToolsEnums.SegmentationRepresentations) => {
+        jest
+          .spyOn(service, 'getSegmentationRepresentations')
+          .mockReturnValue([{ segmentationId, type }] as SegmentationRepresentation[]);
+      };
+
+      beforeEach(() => {
+        frames = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+          frames.push(callback);
+          return frames.length;
+        });
+        jest.mocked(cstSegmentation.state.getSegmentation).mockReturnValue({
+          segments: {},
+        } as unknown as cstTypes.Segmentation);
+      });
+
+      afterEach(() => {
+        jest.mocked(window.requestAnimationFrame).mockRestore();
+      });
+
+      it('stops a superseded labelmap highlight instead of stacking a second animation', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+        jest.mocked(cstSegmentation.config.style.getStyle).mockReturnValue({ fillAlpha: 0.5 });
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        service.highlightSegment(segmentationId, 2, viewportId, 0.9, 750, false);
+        jest.mocked(cstSegmentation.config.style.setStyle).mockClear();
+
+        runFrame(16);
+
+        expect(frames).toHaveLength(1);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          { segmentationId, segmentIndex: 1, type: 'Labelmap' },
+          {},
+          false
+        );
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          { segmentationId, segmentIndex: 2, type: 'Labelmap' },
+          expect.objectContaining({ fillAlpha: expect.any(Number) })
+        );
+        expect(cstSegmentation.config.style.setStyle).not.toHaveBeenCalledWith(
+          { segmentationId, segmentIndex: 1, type: 'Labelmap' },
+          expect.objectContaining({ fillAlpha: expect.any(Number) })
+        );
+      });
+
+      it('stops a superseded contour highlight instead of stacking a second animation', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Contour);
+        jest.mocked(cstSegmentation.config.style.getStyle).mockReturnValue({ outlineWidth: 2 });
+
+        service.highlightSegment(segmentationId, 1, viewportId);
+        runFrame(performance.now());
+        service.highlightSegment(segmentationId, 2, viewportId);
+        jest.mocked(cstSegmentation.config.style.setStyle).mockClear();
+
+        runFrame(performance.now());
+
+        expect(frames).toHaveLength(1);
+        expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          { segmentationId, segmentIndex: 2, type: 'Contour' },
+          expect.objectContaining({ outlineWidth: expect.any(Number) })
+        );
+      });
+
+      it('runs a single highlight to completion and resets its style', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+        jest.mocked(cstSegmentation.config.style.getStyle).mockReturnValue({ fillAlpha: 0.5 });
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        runFrame(750);
+
+        expect(frames).toHaveLength(0);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenLastCalledWith(
+          { segmentationId, segmentIndex: 1, type: 'Labelmap' },
+          {},
+          false
+        );
+      });
+    });
   });
 
   describe('_onSegmentationDataModifiedFromSource', () => {
