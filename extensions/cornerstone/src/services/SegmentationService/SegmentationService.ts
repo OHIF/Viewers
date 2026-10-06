@@ -106,6 +106,20 @@ const EVENTS = {
 
 const VALUE_TYPES = {};
 
+// A selected segment's highlight: animating, or finished and still selected.
+type SegmentHighlight = {
+  segmentationId: string;
+  segmentIndex: number;
+  type: csToolsEnums.SegmentationRepresentations;
+  state: 'highlighting' | 'selected';
+};
+
+const segmentHighlightKey = (
+  segmentationId: string,
+  segmentIndex: number,
+  type: csToolsEnums.SegmentationRepresentations
+) => `${segmentationId}:${segmentIndex}:${type}`;
+
 class SegmentationService extends PubSubService implements ISegmentationServiceInternals {
   static REGISTRATION = {
     name: 'segmentationService',
@@ -120,13 +134,10 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
   private readonly _legacySegBackend: ISegmentationBackend;
   private readonly _nextSegBackend: ISegmentationBackend;
   readonly servicesManager: AppTypes.ServicesManager;
-  highlightIntervalId = null;
-  // Per viewport, bumped by every highlightSegment call on that viewport. Each
-  // highlight runs as a requestAnimationFrame loop; a running loop whose generation
-  // is no longer its viewport's current one supersedes itself on its next frame
-  // instead of stacking up. Keyed by viewport so that highlighting one viewport
-  // (e.g. a multi-viewport jumpToSegmentCenter) does not stop another's highlight.
-  private _highlightGenerations = new Map<string, number>();
+  // The highlighted segment's animation state, keyed by segmentHighlightKey. A
+  // segment that is not selected has no entry. Each highlight runs as a
+  // requestAnimationFrame loop that stops as soon as its entry is no longer current.
+  private _segmentHighlights = new Map<string, SegmentHighlight>();
   readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
@@ -1626,25 +1637,15 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     hideOthers = true,
     animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT
   ): void {
-    if (this.highlightIntervalId) {
-      clearInterval(this.highlightIntervalId);
-    }
-
     const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
+
+    this._endSegmentHighlightsOtherThan(segmentationId, segmentIndex);
 
     const viewportIds = viewportId
       ? [viewportId]
       : this.getViewportIdsWithSegmentation(segmentationId);
 
     viewportIds.forEach(viewportId => {
-      // Supersede any highlight still animating from a previous selection. The
-      // clearInterval above never applied — the highlight is a requestAnimationFrame
-      // loop, not a setInterval — so without this every segment click stacked another
-      // 750ms animation, flooding SEGMENTATION_REPRESENTATION_MODIFIED and leaving
-      // several style loops resetting styles at once.
-      const generation = (this._highlightGenerations.get(viewportId) ?? 0) + 1;
-      this._highlightGenerations.set(viewportId, generation);
-
       const segmentationRepresentation = this.getSegmentationRepresentations(viewportId, {
         segmentationId,
       });
@@ -1652,6 +1653,19 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       const representation = segmentationRepresentation[0];
       const { type } = representation;
       const segments = csSegmentation.segments;
+
+      // Viewports showing the same representation type share the segment's style, and
+      // so one animation. Selecting the segment again while it animates continues it.
+      const key = segmentHighlightKey(segmentationId, segmentIndex, type);
+      if (this._segmentHighlights.get(key)?.state === 'highlighting') {
+        return;
+      }
+      const highlight: SegmentHighlight = {
+        segmentationId,
+        segmentIndex,
+        type,
+        state: 'highlighting',
+      };
 
       const highlightFn =
         type === LABELMAP ? this._highlightLabelmap.bind(this) : this._highlightContour.bind(this);
@@ -1667,9 +1681,46 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
         animationLength,
         representation,
         animationFunctionType,
-        generation
+        highlight
       );
+      // Registered only once the animation is set up, so a highlight that throws
+      // does not leave the segment looking as if it were still animating.
+      this._segmentHighlights.set(key, highlight);
     });
+  }
+
+  /**
+   * Deselects every highlighted segment but the given one. A segment still
+   * animating has its temporary style reset now, not on its loop's next frame,
+   * so a highlight that starts right after reads the segment's real style.
+   */
+  private _endSegmentHighlightsOtherThan(segmentationId: string, segmentIndex: number): void {
+    this._segmentHighlights.forEach((highlight, key) => {
+      if (highlight.segmentationId === segmentationId && highlight.segmentIndex === segmentIndex) {
+        return;
+      }
+      this._segmentHighlights.delete(key);
+      if (highlight.state === 'highlighting') {
+        this._resetSegmentHighlightStyle(highlight);
+      }
+    });
+  }
+
+  private _isCurrentSegmentHighlight(highlight: SegmentHighlight): boolean {
+    const { segmentationId, segmentIndex, type } = highlight;
+    return (
+      this._segmentHighlights.get(segmentHighlightKey(segmentationId, segmentIndex, type)) ===
+      highlight
+    );
+  }
+
+  private _completeSegmentHighlight(highlight: SegmentHighlight): void {
+    highlight.state = 'selected';
+    this._resetSegmentHighlightStyle(highlight);
+  }
+
+  private _resetSegmentHighlightStyle({ segmentationId, segmentIndex, type }: SegmentHighlight) {
+    cstSegmentation.config.style.setStyle({ segmentationId, segmentIndex, type }, {}, false);
   }
 
   private getAndValidateViewport(viewportId: string) {
@@ -1976,7 +2027,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     animationLength: number,
     representation: cstTypes.SegmentationRepresentation,
     animationFunctionType: EasingFunctionEnum,
-    generation = this._highlightGenerations.get(viewportId)
+    highlight: SegmentHighlight
   ) {
     const { segmentationId } = representation;
     const newSegmentSpecificConfig = {
@@ -1994,22 +2045,9 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       segmentIndex,
     }) as cstTypes.LabelmapStyle;
 
-    const resetStyle = () =>
-      cstSegmentation.config.style.setStyle(
-        {
-          segmentationId,
-          segmentIndex,
-          type: LABELMAP,
-        },
-        {},
-        false
-      );
-
     let startTime: number = null;
     const animation = (timestamp: number) => {
-      // A newer highlight has taken over: drop the temporary fill and stop.
-      if (generation !== this._highlightGenerations.get(viewportId)) {
-        resetStyle();
+      if (!this._isCurrentSegmentHighlight(highlight)) {
         return;
       }
 
@@ -2036,7 +2074,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       if (progress < 1) {
         requestAnimationFrame(animation);
       } else {
-        resetStyle();
+        this._completeSegmentHighlight(highlight);
       }
     };
 
@@ -2052,7 +2090,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     animationLength: number,
     representation: cstTypes.SegmentationRepresentation,
     animationFunctionType: EasingFunctionEnum,
-    generation = this._highlightGenerations.get(viewportId)
+    highlight: SegmentHighlight
   ) {
     const { segmentationId } = representation;
     const startTime = performance.now();
@@ -2064,15 +2102,13 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     const prevOutlineWidth = prevStyle.outlineWidth;
 
     const animate = (currentTime: number) => {
-      // A newer highlight has taken over: drop the temporary outline and stop.
-      if (generation !== this._highlightGenerations.get(viewportId)) {
-        cstSegmentation.config.style.resetToGlobalStyle();
+      if (!this._isCurrentSegmentHighlight(highlight)) {
         return;
       }
 
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
-        cstSegmentation.config.style.resetToGlobalStyle();
+        this._completeSegmentHighlight(highlight);
         return;
       }
 
