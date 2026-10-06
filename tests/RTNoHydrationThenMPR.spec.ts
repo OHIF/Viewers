@@ -25,15 +25,14 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
 }) => {
   await rightPanelPageObject.toggle();
 
-  // start watching for viewports to render
-  const viewportRenderCycle = waitForViewportRenderCycle(page);
-
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-  await viewportRenderCycle;
 
-  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  // Verify hydration prompt is visible
+  const hydrationPrompt = DOMOverlayPageObject.viewport.segmentationHydration.locator;
+  await expect(hydrationPrompt).toBeVisible({ timeout: 10000 });
   await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
+  await waitForViewportsRendered(page);
 
   const activeViewport = await viewportPageObject.active;
 
@@ -57,7 +56,7 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({
   await waitForViewportsRendered(page, { timeout: volumeLoadTimeout });
 
   // Switching to MPR does not hydrate the RTSTRUCT.
-  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await expect(hydrationPrompt).toBeVisible();
   await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
 
   await checkForGridScreenshot({

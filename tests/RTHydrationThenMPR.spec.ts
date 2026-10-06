@@ -1,6 +1,7 @@
 import {
   checkForGridScreenshot,
   checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
@@ -24,12 +25,12 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({
 }) => {
   await rightPanelPageObject.toggle();
 
-  // Let the RTSTRUCT load finish rendering before hydrating.
-  const viewportRenderAfterLoad = waitForViewportRenderCycle(page);
-
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-  await viewportRenderAfterLoad;
+  // Verify hydration prompt is visible
+  const hydrationPrompt = DOMOverlayPageObject.viewport.segmentationHydration.locator;
+  await expect(hydrationPrompt).toBeVisible({ timeout: 10000 });
+  await waitForViewportsRendered(page);
 
   // start watching for viewports to render
   const viewportRenderCycle = waitForViewportRenderCycle(page);
