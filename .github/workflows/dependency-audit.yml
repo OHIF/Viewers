@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      checks: write # the "Dependency audit: new ignores" check
+      statuses: write # the "New dependency audit ignores" status
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -78,11 +78,13 @@ jobs:
             --base "$RUNNER_TEMP/audit/base-lock.yaml" \
             --head "$RUNNER_TEMP/audit/head-lock.yaml" \
             --base-workspace "$RUNNER_TEMP/audit/base-workspace.yaml" \
-            --head-workspace "$RUNNER_TEMP/audit/head-workspace.yaml" \
-            --ignores-report "$RUNNER_TEMP/audit/new-ignores.md"
-      # Ignores the PR adds get their own neutral check, so they show in the
-      # PR's checks list and not only on this run's page. Runs even when the
-      # audit failed; never blocks a merge.
+            --head-workspace "$RUNNER_TEMP/audit/head-workspace.yaml"
+      # Ignores the PR adds also get a line of their own in the PR's checks
+      # list, not only on this run's page. A commit status rather than a check
+      # run: an API-created check run joins whichever check suite GitHub picks
+      # for the commit, and when that suite is a skipped one the PR hides it.
+      # Statuses always show. State is success, so it never blocks a merge.
+      # Runs even when the audit failed.
       - name: Flag new ignores in the PR's checks list
         if: ${{ !cancelled() && steps.audit.outputs.new_ignores != '' && steps.audit.outputs.new_ignores != '0' }}
         env:
@@ -92,13 +94,9 @@ jobs:
           COUNT: ${{ steps.audit.outputs.new_ignores }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          set -euo pipefail
-          jq -n \
-            --arg sha "$HEAD_SHA" \
-            --arg url "$RUN_URL" \
-            --arg title "⚠️ $COUNT GHSA(s) added to auditConfig.ignoreGhsas: review pnpm-workspace.yaml" \
-            --rawfile summary "$RUNNER_TEMP/audit/new-ignores.md" \
-            '{name: "Dependency audit: new ignores", head_sha: $sha, details_url: $url,
-              status: "completed", conclusion: "neutral",
-              output: {title: $title, summary: $summary}}' |
-            gh api --method POST "repos/$REPO/check-runs" --input - --jq .html_url
+          gh api --method POST "repos/$REPO/statuses/$HEAD_SHA" \
+            -f state=success \
+            -f context='New dependency audit ignores' \
+            -f description="⚠️ $COUNT GHSA(s) added to auditConfig.ignoreGhsas: review pnpm-workspace.yaml" \
+            -f target_url="$RUN_URL" \
+            --jq '"\(.context): \(.description)"'
