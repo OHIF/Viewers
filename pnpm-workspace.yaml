@@ -21,8 +21,8 @@ verifyDepsBeforeRun: false
 
 # Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
 # risk: minimatch/picomatch advisories reached only via build/CI tooling, never
-# fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
-# job and the root `audit` script.
+# fed user-supplied expressions. Read by `pnpm audit` and by the PR check in
+# .github/workflows/dependency-audit.yml (from the PR's own copy of this file).
 auditConfig:
   ignoreGhsas:
     # decompress is called only ever decompresses a hash-pinned, hardcoded
