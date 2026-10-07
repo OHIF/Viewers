@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "description": "PR check: audit only the package versions a PR adds to pnpm-lock.yaml. Run by .github/workflows/dependency-audit.yml.",
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "yaml": "2.9.1"
   }

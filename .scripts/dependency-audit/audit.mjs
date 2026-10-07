@@ -26,6 +26,7 @@
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parseAllDocuments, parse } from 'yaml';
 
@@ -46,7 +47,7 @@ function readText(file) {
  * writes two YAML documents (pnpm's own lock for `packageManager`, then the
  * project lock); both are read. Keys of `packages:` are `name@version`.
  */
-function lockfilePackages(text) {
+export function lockfilePackages(text) {
   const packages = new Map();
   for (const doc of parseAllDocuments(text)) {
     if (doc.errors.length) {
@@ -67,7 +68,8 @@ function lockfilePackages(text) {
   return packages;
 }
 
-function addedPackages(base, head) {
+/** The name@version entries in `head` that `base` does not have, sorted. */
+export function addedPackages(base, head) {
   const added = [];
   for (const [name, versions] of head) {
     for (const version of versions) {
@@ -142,7 +144,7 @@ async function lookUpAdvisories(packages) {
 }
 
 // Workflow-command escaping, so outside text cannot start another command.
-function escapeCommand(text) {
+export function escapeCommand(text) {
   return String(text).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
 }
 
@@ -165,13 +167,19 @@ function readIgnoreGhsas(file) {
  * Whether an ignore entry can match an advisory: a GHSA ID, or the
  * `npm-<id>` name lookUpAdvisories gives an advisory without one.
  */
-function isIgnoreId(entry) {
+export function isIgnoreId(entry) {
   return GHSA_ID.test(entry) || /^npm-\d+$/.test(entry);
 }
 
 /** An ignore entry safe to show: anything else is PR text, cut to [A-Za-z0-9-]. */
-function ignoreLabel(entry) {
+export function ignoreLabel(entry) {
   return isIgnoreId(entry) ? entry : entry.replace(/[^A-Za-z0-9-]/g, '') || '(empty)';
+}
+
+/** Ignore entries the PR adds: in its list, not in the target branch's. */
+export function addedIgnores(baseList, headList) {
+  const base = new Set(baseList);
+  return [...new Set(headList)].filter(entry => !base.has(entry));
 }
 
 /** Ignores the PR adds, with what each one silences in this PR. */
@@ -278,9 +286,9 @@ async function main() {
     );
   }
 
-  const ignoreGhsas = new Set(readIgnoreGhsas(values['head-workspace']));
-  const baseIgnoreGhsas = new Set(readIgnoreGhsas(values['base-workspace']));
-  const newIgnores = [...ignoreGhsas].filter(ghsa => !baseIgnoreGhsas.has(ghsa));
+  const headIgnoreList = readIgnoreGhsas(values['head-workspace']);
+  const ignoreGhsas = new Set(headIgnoreList);
+  const newIgnores = addedIgnores(readIgnoreGhsas(values['base-workspace']), headIgnoreList);
 
   const lines = ['## Dependency audit', ''];
   let findings = [];
@@ -367,10 +375,13 @@ async function main() {
   return blocking.length || cannotAudit ? 1 : 0;
 }
 
-main().then(
-  code => process.exit(code),
-  error => {
-    console.error(`::error title=Dependency audit failed::${escapeCommand(error.message)}`);
-    process.exit(2);
-  }
-);
+// Run only when started directly; audit.test.mjs imports the helpers above.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().then(
+    code => process.exit(code),
+    error => {
+      console.error(`::error title=Dependency audit failed::${escapeCommand(error.message)}`);
+      process.exit(2);
+    }
+  );
+}

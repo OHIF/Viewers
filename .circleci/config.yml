@@ -48,6 +48,12 @@ jobs:
       - run:
           name: 'React Compiler coverage budget'
           command: pnpm run compiler:coverage:ci
+      # The PR's copy of the dependency-audit script. The GitHub workflow that
+      # uses it always runs master's copy, so changes are tested here.
+      - run:
+          name: 'Dependency audit script tests'
+          working_directory: .scripts/dependency-audit
+          command: npm ci --ignore-scripts --no-audit --no-fund && npm test
       # platform/app
       - run:
           name: 'VIEWER: Combine report output'
