@@ -52,8 +52,33 @@ export interface LoadedCustomization {
   url: string;
 }
 
+/**
+ * The regular load of a resource: `fetch(url, init)`, then a parse of the body. `init` takes the
+ * fetch options, for example `{ headers }`.
+ */
+export type DefaultResourceLoad = (url: string, init?: RequestInit) => Promise<any>;
+
+/** The argument of {@link LoadResource}. */
+export interface LoadResourceRequest {
+  /** The kind of resource. The CustomizationService uses `'customization'`. */
+  kind: 'customization' | (string & {});
+  /** The name of the resource, for example the customization module name. */
+  name: string;
+  /** The URL of the resource, after the `customizationUrlPrefixes` policy resolved it. */
+  url: string;
+  /** The regular load, which the hook can call with its own fetch options. */
+  defaultLoad: DefaultResourceLoad;
+}
+
+/**
+ * The `appConfig.loadResource` hook. It returns the data of the resource (an object, or a
+ * module whose `default` export is the object), or `undefined` to use the regular load.
+ * A rejection is a failed load.
+ */
+export type LoadResource = (request: LoadResourceRequest) => Promise<any> | any;
+
 export interface LoadOptions {
   policy?: CustomizationUrlPolicy;
-  importFn?: (url: string) => Promise<any>;
+  importFn?: (url: string, request?: ValidatedCustomization) => Promise<any>;
   logger?: { warn: (...args: any[]) => void; error: (...args: any[]) => void };
 }
