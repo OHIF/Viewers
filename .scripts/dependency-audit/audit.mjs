@@ -21,8 +21,10 @@
  * The number of ignores the PR adds goes to $GITHUB_OUTPUT as `new_ignores`
  * when set. Writes a Markdown report
  * to $GITHUB_STEP_SUMMARY when set. Exits 1 when the PR adds a blocking
- * advisory, 2 on errors.
+ * advisory, deletes the lockfile, or adds many entries it cannot audit; 2 on
+ * errors.
  */
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { parseArgs } from 'node:util';
 import { parseAllDocuments, parse } from 'yaml';
@@ -159,6 +161,19 @@ function readIgnoreGhsas(file) {
   return Array.isArray(list) ? list.map(String) : [];
 }
 
+/**
+ * Whether an ignore entry can match an advisory: a GHSA ID, or the
+ * `npm-<id>` name lookUpAdvisories gives an advisory without one.
+ */
+function isIgnoreId(entry) {
+  return GHSA_ID.test(entry) || /^npm-\d+$/.test(entry);
+}
+
+/** An ignore entry safe to show: anything else is PR text, cut to [A-Za-z0-9-]. */
+function ignoreLabel(entry) {
+  return isIgnoreId(entry) ? entry : entry.replace(/[^A-Za-z0-9-]/g, '') || '(empty)';
+}
+
 /** Ignores the PR adds, with what each one silences in this PR. */
 function newIgnoresSection(newIgnores, findings) {
   const lines = [
@@ -168,9 +183,15 @@ function newIgnoresSection(newIgnores, findings) {
     '',
   ];
   for (const ghsa of newIgnores) {
+    if (!isIgnoreId(ghsa)) {
+      lines.push(
+        `- invalid entry \`${ignoreLabel(ghsa)}\`: not a GHSA ID or \`npm-<number>\`, so it matches no advisory`
+      );
+      continue;
+    }
     const id = GHSA_ID.test(ghsa)
       ? `[${ghsa}](https://github.com/advisories/${ghsa})`
-      : `\`${ghsa.replace(/`/g, '')}\``;
+      : `\`${ghsa}\``;
     const silenced = [
       ...new Set(findings.filter(f => f.ghsa === ghsa).map(f => `\`${f.name}@${f.version}\``)),
     ];
@@ -184,7 +205,7 @@ function newIgnoresSection(newIgnores, findings) {
   return lines;
 }
 
-function lockfileSection({ added, notAudited, blocking, allowed, other, baseMissing }) {
+function lockfileSection({ added, notAudited, blocking, allowed, other, baseMissing, partial }) {
   const lines = [];
   if (baseMissing) {
     lines.push(
@@ -204,7 +225,12 @@ function lockfileSection({ added, notAudited, blocking, allowed, other, baseMiss
       ''
     );
   } else {
-    lines.push('### ✅ No new high or critical advisories', '');
+    lines.push(
+      partial
+        ? 'No high or critical advisories among the entries that could be audited.'
+        : '### ✅ No new high or critical advisories',
+      ''
+    );
   }
   if (allowed.length) {
     lines.push(
@@ -228,8 +254,9 @@ function lockfileSection({ added, notAudited, blocking, allowed, other, baseMiss
     lines.push(
       `<details><summary>${notAudited.length} added entry(ies) not from the npm registry, not audited</summary>`,
       '',
-      // Unvalidated lockfile keys: drop backticks so they stay inside the code span.
-      ...notAudited.map(p => `- \`${`${p.name}@${p.version}`.replace(/`/g, '')}\``),
+      // Unvalidated lockfile keys: drop control characters (one entry, one
+      // line) and backticks (it stays inside the code span).
+      ...notAudited.map(p => `- \`${`${p.name}@${p.version}`.replace(/[\x00-\x1f\x7f`]/g, '')}\``),
       '',
       '</details>',
       ''
@@ -258,10 +285,18 @@ async function main() {
   const lines = ['## Dependency audit', ''];
   let findings = [];
   let blocking = [];
+  // Set when the check cannot do its job; it then fails rather than pass.
+  let cannotAudit = null;
   const headText = readText(values.head);
   const baseText = readText(values.base);
-  if (headText === null) {
-    lines.push('The PR has no `pnpm-lock.yaml`; nothing to audit.', '');
+  if (headText === null && baseText !== null) {
+    cannotAudit = 'This PR deletes pnpm-lock.yaml, so its dependencies cannot be audited.';
+    lines.push(`### ❌ ${cannotAudit}`, '');
+  } else if (headText === null) {
+    lines.push(
+      'Neither the PR nor its target branch has a `pnpm-lock.yaml`; nothing to audit.',
+      ''
+    );
   } else if (baseText === headText) {
     lines.push('`pnpm-lock.yaml` is unchanged; nothing to audit.', '');
   } else {
@@ -269,17 +304,28 @@ async function main() {
     const auditable = added.filter(
       p => PACKAGE_NAME.test(p.name) && REGISTRY_VERSION.test(p.version)
     );
+    const notAudited = added.filter(p => !auditable.includes(p));
+    // A few git or tarball entries are normal. Many means the lockfile format
+    // probably changed and nothing is being audited, so fail instead.
+    if (notAudited.length > 5 && notAudited.length > added.length * 0.1) {
+      cannotAudit =
+        `${notAudited.length} of the ${added.length} entries this PR adds are not ` +
+        'name@version from the npm registry. The pnpm-lock.yaml format may have changed; ' +
+        'update .scripts/dependency-audit/audit.mjs.';
+      lines.push(`### ❌ ${cannotAudit}`, '');
+    }
     findings = await lookUpAdvisories(auditable);
     const serious = findings.filter(f => BLOCKING_SEVERITIES.has(f.severity));
     blocking = serious.filter(f => !ignoreGhsas.has(f.ghsa));
     lines.push(
       ...lockfileSection({
         added: added.length,
-        notAudited: added.filter(p => !auditable.includes(p)),
+        notAudited,
         blocking,
         allowed: serious.filter(f => ignoreGhsas.has(f.ghsa)),
         other: findings.filter(f => !BLOCKING_SEVERITIES.has(f.severity)),
         baseMissing: baseText === null,
+        partial: cannotAudit !== null,
       })
     );
   }
@@ -293,13 +339,19 @@ async function main() {
   }
 
   const markdown = lines.join('\n');
+  // The report holds text from the PR. Pause workflow commands while it is
+  // printed, so no line of it can act as one (e.g. hide the annotations
+  // below). The token is random, so the PR cannot resume them early.
+  const resumeToken = crypto.randomUUID();
+  console.log(`::stop-commands::${resumeToken}`);
   console.log(markdown);
+  console.log(`::${resumeToken}::`);
   if (process.env.GITHUB_STEP_SUMMARY) {
     fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${markdown}\n`);
   }
   for (const ghsa of newIgnores) {
     console.log(
-      `::warning title=New audit ignore::${escapeCommand(`${ghsa} added to auditConfig.ignoreGhsas`)}`
+      `::warning title=New audit ignore::${escapeCommand(`${ignoreLabel(ghsa)} added to auditConfig.ignoreGhsas`)}`
     );
   }
   for (const f of blocking) {
@@ -309,7 +361,10 @@ async function main() {
       `::error title=${title.replace(/[:,]/g, ' ')}::${escapeCommand(`${f.ghsa} ${f.title}`)}`
     );
   }
-  return blocking.length ? 1 : 0;
+  if (cannotAudit) {
+    console.log(`::error title=Dependency audit not possible::${escapeCommand(cannotAudit)}`);
+  }
+  return blocking.length || cannotAudit ? 1 : 0;
 }
 
 main().then(
