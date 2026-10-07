@@ -3479,6 +3479,38 @@ describe('SegmentationService', () => {
         expect(frames).toHaveLength(1);
       });
 
+      it('resets the temporary style when a frame fails after an earlier frame applied it', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        expect(styles.get(labelmapKey(1))).not.toEqual({});
+
+        jest.mocked(cstSegmentation.config.style.setStyle).mockImplementationOnce(() => {
+          throw new Error('frame failed');
+        });
+        expect(() => runFrame(375)).toThrow('frame failed');
+
+        expect(styles.get(labelmapKey(1))).toEqual({});
+      });
+
+      it('reports the frame error when resetting the style also fails', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        jest
+          .mocked(cstSegmentation.config.style.setStyle)
+          .mockImplementationOnce(() => {
+            throw new Error('frame failed');
+          })
+          .mockImplementationOnce(() => {
+            throw new Error('reset failed');
+          });
+
+        expect(() => runFrame(375)).toThrow('frame failed');
+      });
+
       it('forgets the highlights of a removed segmentation', () => {
         mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
 

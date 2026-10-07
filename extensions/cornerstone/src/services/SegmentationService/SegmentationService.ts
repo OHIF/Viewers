@@ -1717,7 +1717,8 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
   /**
    * Wraps a highlight's animation frame so it runs only while the highlight is
    * current. A frame that throws ends the highlight, so the segment can be
-   * highlighted again.
+   * highlighted again, and resets the temporary style an earlier frame may have
+   * applied, since nothing else will once the highlight is forgotten.
    */
   private _segmentHighlightFrame(
     highlight: SegmentHighlight,
@@ -1732,6 +1733,13 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       } catch (error) {
         const { segmentationId, segmentIndex, type } = highlight;
         this._segmentHighlights.delete(segmentHighlightKey(segmentationId, segmentIndex, type));
+        if (this.getCornerstoneSegmentation(segmentationId)) {
+          try {
+            this._resetSegmentHighlightStyle(highlight);
+          } catch {
+            // The frame's error is the one to report.
+          }
+        }
         throw error;
       }
     };
