@@ -122,47 +122,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT - only when pnpm-lock.yaml has changed
-      - run:
-          name: 'Security Audit - High Risk Vulnerabilities'
-          command: |
-            git fetch origin master 2>/dev/null || true
-            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
-            if [[ -z "$BASE_REF" ]]; then
-              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
-              exit 0
-            fi
-            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
-            if ! echo "$CHANGED_FILES" | grep -qx 'pnpm-lock.yaml'; then
-              echo "pnpm-lock.yaml unchanged - skipping security audit."
-              exit 0
-            fi
-            echo "pnpm-lock.yaml changed - running pnpm audit for security vulnerabilities..."
-            echo "Checking for HIGH-RISK vulnerabilities..."
-
-            if pnpm audit --audit-level high; then
-              echo "No high-risk vulnerabilities found"
-              echo "Security audit passed!"
-            else
-              echo ""
-              echo "HIGH-RISK VULNERABILITIES DETECTED!"
-              echo "======================================"
-              echo ""
-              echo "To fix these issues:"
-              echo "  1. Run: pnpm audit"
-              echo "  2. Review the vulnerability details"
-              echo "  3. Update affected packages to secure versions"
-              echo "  4. Test your changes"
-              echo "  5. Re-run: pnpm audit --audit-level high"
-              echo ""
-              echo "Full audit report:"
-
-              pnpm audit || true
-
-              echo ""
-              echo "This build cannot proceed until high-risk vulnerabilities are resolved."
-              exit 1
-            fi
+      # The dependency audit is the GitHub "Dependency Audit" workflow
+      # (.github/workflows/dependency-audit.yml).
       - run:
           name: Install Dependencies
           command: pnpm install

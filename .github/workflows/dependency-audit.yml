@@ -1,0 +1,78 @@
+name: Dependency Audit
+
+# Fails a PR that adds a package version with a high or critical advisory to
+# pnpm-lock.yaml. Only versions the PR adds count, compared with the point where
+# it branched off its target branch, so advisories already on the target never
+# block an unrelated PR. The logic is .scripts/dependency-audit/audit.mjs.
+#
+# Runs on pull_request_target so the workflow and script always come from the
+# default branch: a PR cannot edit its own check. The PR's files are only
+# downloaded and read as data (lockfile, pnpm-workspace.yaml); none of its code is
+# checked out or run. Keep it that way — never check out the PR head here.
+# Changes to this file or the script take effect once they are on master.
+#
+# No `edited` trigger: a title edit would start a run that cancels the real one
+# and is then skipped, and a skipped check counts as passing. After retargeting
+# a PR to another branch, push a commit (or close and reopen) to rerun.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: .scripts/dependency-audit
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24.15.0
+      - name: Download the PR's lockfile and the target branch's lockfile
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/audit"
+          # Compare against where the PR branched off, not the target's tip, so
+          # packages the target changed since then are not credited to the PR.
+          merge_base=$(gh api "repos/$REPO/compare/$BASE_SHA...$HEAD_SHA" --jq .merge_base_commit.sha)
+          echo "Target branch point: $merge_base"
+          # <path> <ref> <dest>. Only a 404 means "no such file" (dest left
+          # absent); any other error fails the job rather than skip the audit.
+          fetch() {
+            if ! gh api -H 'Accept: application/vnd.github.raw' "repos/$REPO/contents/$1?ref=$2" > "$3" 2> "$3.err"; then
+              grep -q 'HTTP 404' "$3.err" || { cat "$3.err" >&2; exit 1; }
+              rm -f "$3"
+            fi
+          }
+          fetch pnpm-lock.yaml "$merge_base" "$RUNNER_TEMP/audit/base-lock.yaml"
+          fetch pnpm-lock.yaml "$HEAD_SHA" "$RUNNER_TEMP/audit/head-lock.yaml"
+          fetch pnpm-workspace.yaml "$merge_base" "$RUNNER_TEMP/audit/base-workspace.yaml"
+          fetch pnpm-workspace.yaml "$HEAD_SHA" "$RUNNER_TEMP/audit/head-workspace.yaml"
+      - name: Install the audit script's dependencies
+        working-directory: .scripts/dependency-audit
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Audit the package versions this PR adds
+        run: |
+          node .scripts/dependency-audit/audit.mjs \
+            --base "$RUNNER_TEMP/audit/base-lock.yaml" \
+            --head "$RUNNER_TEMP/audit/head-lock.yaml" \
+            --base-workspace "$RUNNER_TEMP/audit/base-workspace.yaml" \
+            --head-workspace "$RUNNER_TEMP/audit/head-workspace.yaml"
