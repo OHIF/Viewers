@@ -17,7 +17,10 @@
  *
  * "base" is the PR's branch point on its target branch, "head" the PR. Any file
  * may be missing; a missing base lockfile (target branch without a pnpm
- * lockfile) makes every package in the head lockfile count as added. Writes a Markdown report
+ * lockfile) makes every package in the head lockfile count as added.
+ * --ignores-report <file> (optional) receives the new-ignores section as
+ * Markdown when the PR adds ignores; the count goes to $GITHUB_OUTPUT as
+ * `new_ignores` when set. Writes a Markdown report
  * to $GITHUB_STEP_SUMMARY when set. Exits 1 when the PR adds a blocking
  * advisory, 2 on errors.
  */
@@ -239,7 +242,10 @@ function lockfileSection({ added, notAudited, blocking, allowed, other, baseMiss
 async function main() {
   const { values } = parseArgs({
     options: Object.fromEntries(
-      ['base', 'head', 'base-workspace', 'head-workspace'].map(name => [name, { type: 'string' }])
+      ['base', 'head', 'base-workspace', 'head-workspace', 'ignores-report'].map(name => [
+        name,
+        { type: 'string' },
+      ])
     ),
   });
   if (!values.base || !values.head || !values['base-workspace'] || !values['head-workspace']) {
@@ -281,9 +287,18 @@ async function main() {
       })
     );
   }
-  // New ignores go right under the heading, ahead of the lockfile results.
+  // New ignores go right under the heading, ahead of the lockfile results. The
+  // workflow also turns them into a separate neutral check, so they show in the
+  // PR's checks list.
   if (newIgnores.length) {
-    lines.splice(2, 0, ...newIgnoresSection(newIgnores, findings));
+    const section = newIgnoresSection(newIgnores, findings);
+    lines.splice(2, 0, ...section);
+    if (values['ignores-report']) {
+      fs.writeFileSync(values['ignores-report'], section.slice(2).join('\n'));
+    }
+  }
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `new_ignores=${newIgnores.length}\n`);
   }
 
   const markdown = lines.join('\n');
