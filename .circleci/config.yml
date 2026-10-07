@@ -23,7 +23,7 @@ commands:
             # The cimg/node global modules dir (/usr/local/lib/node_modules) is
             # root-owned, so a plain `npm install -g` fails with EACCES. Install
             # with sudo so the global pnpm binary lands in the shared prefix.
-            sudo npm install -g pnpm@11.5.2
+            sudo npm install -g pnpm@12.8.1
             echo 'export PATH="$(pnpm store path)/../.bin:$PATH"' >> $BASH_ENV
             source $BASH_ENV
 
@@ -48,6 +48,12 @@ jobs:
       - run:
           name: 'React Compiler coverage budget'
           command: pnpm run compiler:coverage:ci
+      # The PR's copy of the dependency-audit script. The GitHub workflow that
+      # uses it always runs master's copy, so changes are tested here.
+      - run:
+          name: 'Dependency audit script tests'
+          working_directory: .scripts/dependency-audit
+          command: npm ci --ignore-scripts --no-audit --no-fund && npm test
       # platform/app
       - run:
           name: 'VIEWER: Combine report output'
@@ -122,67 +128,14 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT - only when pnpm-lock.yaml has changed
-      - run:
-          name: 'Security Audit - High Risk Vulnerabilities'
-          command: |
-            git fetch origin master 2>/dev/null || true
-            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
-            if [[ -z "$BASE_REF" ]]; then
-              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
-              exit 0
-            fi
-            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
-            if ! echo "$CHANGED_FILES" | grep -qx 'pnpm-lock.yaml'; then
-              echo "pnpm-lock.yaml unchanged - skipping security audit."
-              exit 0
-            fi
-            echo "pnpm-lock.yaml changed - running pnpm audit for security vulnerabilities..."
-            echo "Checking for HIGH-RISK vulnerabilities..."
-
-            if pnpm audit --audit-level high; then
-              echo "No high-risk vulnerabilities found"
-              echo "Security audit passed!"
-            else
-              echo ""
-              echo "HIGH-RISK VULNERABILITIES DETECTED!"
-              echo "======================================"
-              echo ""
-              echo "To fix these issues:"
-              echo "  1. Run: pnpm audit"
-              echo "  2. Review the vulnerability details"
-              echo "  3. Update affected packages to secure versions"
-              echo "  4. Test your changes"
-              echo "  5. Re-run: pnpm audit --audit-level high"
-              echo ""
-              echo "Full audit report:"
-
-              pnpm audit || true
-
-              echo ""
-              echo "This build cannot proceed until high-risk vulnerabilities are resolved."
-              exit 1
-            fi
+      # The dependency audit is the GitHub "Dependency Audit" workflow
+      # (.github/workflows/dependency-audit.yml).
       - run:
           name: Install Dependencies
           command: pnpm install
-      - run:
-          name: Avoid hosts unknown for github
-          command: |
-            rm -rf ~/.ssh
-            mkdir ~/.ssh/
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-            git config --global user.name "ohif-bot"
-      - run:
-          name: Authenticate with NPM registry
-          # Write the auth token to npm's per-user config (~/.npmrc), not the
-          # repo root. publish-package.mjs chdir's into each package dir to run
-          # `npm publish`, and npm only reads the project .npmrc from that dir
-          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
-          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
-          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      # No git identity or NPM token here: this job only builds the packages for
+      # PRs and never pushes or publishes. Keep publish credentials in NPM_PUBLISH
+      # so third-party build code on PR branches never runs with them on disk.
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -442,8 +395,11 @@ jobs:
           # WebGL. Newer Chromium deprecated that implicit fallback (canvas
           # rendering degrades and races with element clicks). ELECTRON_EXTRA_LAUNCH_ARGS
           # is the reliable way to pass the opt-in flag to Cypress's Electron browser.
+          # Wait for the dev server with curl rather than `npx wait-on`: npx would
+          # fetch wait-on and its dependencies unpinned, outside the lockfile, in a
+          # job that holds the Cypress record key.
           cypress-command: |
-            npx wait-on@latest http://localhost:3000 && cd platform/app && ELECTRON_EXTRA_LAUNCH_ARGS="--enable-unsafe-swiftshader" npx cypress run --record --parallel
+            timeout 600 bash -c 'until curl -sf -o /dev/null http://localhost:3000; do sleep 2; done' && cd platform/app && ELECTRON_EXTRA_LAUNCH_ARGS="--enable-unsafe-swiftshader" npx cypress run --record --parallel
           start-command: pnpm run test:data && pnpm run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:
