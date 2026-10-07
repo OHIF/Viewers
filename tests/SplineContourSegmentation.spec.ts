@@ -33,6 +33,17 @@ const overlappingClickShape = [
   { x: 0.5, y: 0.7 },
 ];
 
+// Fully inside clickShape, so a Shift stroke cuts a hole instead of carving an edge.
+const holeClickShape = [
+  { x: 0.45, y: 0.45 },
+  { x: 0.55, y: 0.45 },
+  { x: 0.55, y: 0.55 },
+  { x: 0.45, y: 0.55 },
+];
+
+// A path `d` with exactly two subpaths (two M commands): the outline and its hole.
+const twoSubpathsD = /^M[^M]*M[^M]*$/;
+
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
   await waitForViewportsRendered(page);
@@ -181,6 +192,43 @@ test('should carve out overlapping spline contours drawn into one segment when s
     page,
     viewport: activeViewport,
     screenshotPath: screenShotPaths.splineContourSegmentation.overlappingContourCarvedOut,
+  });
+});
+
+test('should cut a hole into a spline contour when drawing with Shift held', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const activeViewport = await viewportPageObject.active;
+  const paths = activeViewport.svg('path');
+
+  await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
+  await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
+  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await expect(paths, 'Expected the outer spline contour to be added').toHaveCount(1);
+
+  // A Shift stroke fully inside the contour cuts a hole into it.
+  await withKeyHeld({
+    page,
+    key: 'Shift',
+    action: async () => {
+      await activeViewport.normalizedPathClickAt({ path: holeClickShape });
+    },
+  });
+
+  // The hole is cut into the contour's path as a subpath rather than added as a
+  // second path element; the screenshot then verifies the fill is actually cut.
+  await expect(paths, 'Expected the contour and hole to render as one path').toHaveCount(1);
+  await expect(paths.nth(0), 'Expected the hole as a subpath').toHaveAttribute('d', twoSubpathsD);
+  await expect(paths.nth(0), 'Expected the contour with its hole to be visible').toBeVisible();
+
+  await waitForViewportsRendered(page);
+
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.splineContourSegmentation.contourWithHole,
   });
 });
 
