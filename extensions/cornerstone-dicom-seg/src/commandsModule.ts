@@ -1,6 +1,6 @@
 import dcmjs from 'dcmjs';
 import { classes, Types, utils } from '@ohif/core';
-import { cache, Enums as csEnums, metaData } from '@cornerstonejs/core';
+import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
@@ -341,9 +341,12 @@ const commandsModule = ({
         throw new Error('No segmentation found');
       }
 
-      const { label, predecessorImageId } = segmentation;
+      const { label, predecessorImageId, labelIsGenerated } = segmentation;
+      // Only a name the user chose goes to `itemName`, which the dialog offers
+      // first; a generated one goes to `defaultSeriesDescription`, offered last.
+      const chosenLabel = labelIsGenerated ? '' : label || '';
       const defaultSeriesDescription =
-        label || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
+        (labelIsGenerated && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
 
       const {
         value: reportName,
@@ -357,6 +360,7 @@ const commandsModule = ({
         predecessorImageId,
         title: modality === 'RTSTRUCT' ? 'Save Contours' : 'Save Segmentation',
         modality,
+        itemName: chosenLabel,
         defaultSeriesDescription,
         enableDownload: true,
       });
@@ -383,7 +387,7 @@ const commandsModule = ({
           options: {
             // Resolve store overrides against the data source we are storing into.
             dataSource: dataSourceName,
-            SeriesDescription: series ? undefined : reportName || defaultSeriesDescription,
+            SeriesDescription: series ? undefined : reportName || label || defaultSeriesDescription,
             SeriesNumber: series ? undefined : seriesNumber,
             predecessorImageId: series,
           },
@@ -399,27 +403,7 @@ const commandsModule = ({
 
         const { dataset: naturalizedReport } = generatedData;
 
-        // The SEG adapter's `generateSegmentation` assigns the predecessor's
-        // series data to the derivation it returns rather than to the dataset
-        // inside it, so the stored instance would keep the series dcmjs made up
-        // for it - a new series named `Research Derived series` numbered 99,
-        // with no predecessor sequence - however this dialog was answered.
-        // Applying it to the dataset puts the instance in the series that was
-        // chosen, with that series' number and description.  It is the same data
-        // the adapter resolves, so this stays correct once the adapter does.
-        if (series) {
-          Object.assign(
-            naturalizedReport,
-            metaData.get(csEnums.MetadataModules.PREDECESSOR_SEQUENCE, series)
-          );
-        }
-
-        // A segmentation saved into an existing series inherits that series'
-        // date and time, and its instance number is derived from the one
-        // predecessor instance, which is not necessarily the highest in the
-        // series.  Stamp both so this segmentation is identifiable as the most
-        // recent instance.  After the predecessor series data above, which is
-        // what names the series whose instances are numbered here.
+        // After the generation, which is what names the series numbered here.
         utils.updateNewInstanceMetadata(naturalizedReport);
 
         // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out

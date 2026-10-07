@@ -11,7 +11,7 @@ import { Icons } from '../Icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 import { useDataTable } from './context';
-import { useUnfitColumnIds } from './useResponsiveColumns';
+import { useUnfitColumnIds, useToggleColumnVisibility } from './useResponsiveColumns';
 import type { ColumnMeta } from './types';
 
 type ViewOptionsProps = {
@@ -22,7 +22,14 @@ export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
   const { t } = useTranslation('DataTable');
   const { table } = useDataTable<TData>();
   const unfitColumnIds = useUnfitColumnIds();
+  const toggleColumnVisibility = useToggleColumnVisibility();
   const columns = table.getAllColumns().filter(c => c.getCanHide());
+  // Visibility is read from table.state — the reactive path — rather than
+  // column.getIsVisible(): column objects are identity-stable across renders,
+  // so a compiled read through their methods would freeze at mount. The
+  // state object is replaced on every visibility change, so the compiler
+  // re-derives everything below exactly when it should.
+  const columnVisibility = table.state.columnVisibility;
 
   return (
     <DropdownMenu>
@@ -40,12 +47,15 @@ export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
         {columns.map(column => {
           const meta = (column.columnDef.meta as ColumnMeta | undefined) ?? undefined;
           const label = meta?.label ?? column.id;
-          const isUnfit = !column.getIsVisible() && unfitColumnIds.has(column.id);
+          const isVisible = columnVisibility[column.id] !== false;
+          const isUnfit = !isVisible && unfitColumnIds.has(column.id);
           const checkbox = (
             <DropdownMenuCheckboxItem
-              checked={column.getIsVisible()}
+              checked={isVisible}
               disabled={isUnfit}
-              onCheckedChange={v => column.toggleVisibility(!!v)}
+              // The funnel both records the toggle as a sticky user decision
+              // and writes the table state. See useToggleColumnVisibility.
+              onCheckedChange={v => toggleColumnVisibility(column.id, !!v)}
               className="capitalize"
             >
               {label}

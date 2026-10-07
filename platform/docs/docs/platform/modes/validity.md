@@ -15,6 +15,15 @@ There are two mechanism for checking the validity of a mode for a study.
      validity based on the modalities in the study.
 - `validTags`
 
+:::note
+
+Both mechanisms run in the work list, before the user enters the mode. The mode
+route runs a separate check when the user enters the mode. That check is the
+`validateModeEntry` hook - see
+[Lifecycle Hooks](./lifecycle.md#validatemodeentry).
+
+:::
+
 
 
 ## isValidMode

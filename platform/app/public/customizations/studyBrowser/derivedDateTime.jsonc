@@ -6,7 +6,7 @@
 //
 // Derived series are listed newest first, and the date/time they are sorted by
 // is the creation date/time of the instance each display set shows (see
-// `getSeriesDateTime`). The default thumbnail shows only the series number and
+// `getLatestInstanceDateTime`). The default thumbnail shows only the series number and
 // the instance count, so several reports saved on the same day give no sign of
 // which is which and their order reads as arbitrary. This shows it.
 //

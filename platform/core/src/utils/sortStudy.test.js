@@ -7,7 +7,7 @@ import {
   seriesInfoSortingCriteria,
   sortByInstanceNumber,
 } from './sortStudy';
-import { getSeriesDateTime } from './seriesDateTime';
+import { getLatestInstanceDateTime } from './latestInstanceDateTime';
 
 addSameSeriesCompare('default', (a, b) => compare(a.default, b.default), 5);
 const altCompare = 'altCompare';
@@ -202,7 +202,7 @@ describe('compareSeriesDateTime', () => {
       SeriesInstanceUID,
       instance,
       ...seriesDateTime,
-      ...getSeriesDateTime(instance),
+      ...getLatestInstanceDateTime(instance),
     };
   };
 

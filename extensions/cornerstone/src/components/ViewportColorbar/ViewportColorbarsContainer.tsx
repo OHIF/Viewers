@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, memo, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
@@ -23,10 +23,7 @@ type ColorbarData = {
  * Container component that manages multiple colorbars for a viewport
  * It interacts with the colorbarService to get/set colorbar states
  */
-const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
-  viewportId,
-  location,
-}: ViewportColorbarsContainerProps) {
+function ViewportColorbarsContainer({ viewportId, location }: ViewportColorbarsContainerProps) {
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
   const { colorbarService, customizationService, displaySetService } = servicesManager.services;
@@ -37,17 +34,13 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
   });
 
   // Memoize the customization to prevent recomputation
-  const colorbarCustomization = useMemo(() => {
-    return customizationService.getCustomization(
-      'cornerstone.colorbar'
-    ) as unknown as ColorbarCustomization;
-  }, [customizationService]);
+  const colorbarCustomization = customizationService.getCustomization(
+    'cornerstone.colorbar'
+  ) as unknown as ColorbarCustomization;
 
   // Memoize tick position
-  const tickPosition = useMemo(() => {
-    const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
-    return colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
-  }, [colorbarCustomization]);
+  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
+  const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
 
   // Initial load of colorbars
   useEffect(() => {
@@ -127,6 +120,6 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
       </div>
     </div>
   );
-});
+}
 
 export default ViewportColorbarsContainer;

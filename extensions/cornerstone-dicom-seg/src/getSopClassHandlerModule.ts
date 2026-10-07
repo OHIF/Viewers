@@ -261,7 +261,7 @@ function _getDisplaySetsFromSeries(
   // typically the content or structure set date/time rather than the series
   // one, and for a SEG saved into an existing series only the instance level
   // date/time reflects the save.
-  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
   const displaySet = {
     Modality: 'SEG',

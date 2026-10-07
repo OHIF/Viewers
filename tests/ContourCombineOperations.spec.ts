@@ -2,7 +2,6 @@ import {
   test,
   expect,
   waitForViewportRenderCycle,
-  checkForScreenshot,
   checkForViewportScreenshot,
   screenShotPaths,
   visitStudyAndHydrate,
@@ -39,9 +38,9 @@ test.describe('Intersect operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 
@@ -67,11 +66,11 @@ test.describe('Intersect operation', () => {
     await contourSegmentationPanel.panel.segmentByText(segments.result).toggleVisibility();
     await viewportRenderCycle;
 
-    await checkForScreenshot(
+    await checkForViewportScreenshot({
       page,
-      viewportPageObject.grid,
-      screenShotPaths.contourCombineOperations.intersectBigSphereSmallSphereResult
-    );
+      viewport: activeViewport,
+      screenshotPath: screenShotPaths.contourCombineOperations.intersectBigSphereSmallSphereResult,
+    });
   });
 });
 
@@ -86,9 +85,9 @@ test.describe('Subtract operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 
@@ -114,11 +113,12 @@ test.describe('Subtract operation', () => {
     await contourSegmentationPanel.panel.segmentByText(segments.result).toggleVisibility();
     await viewportRenderCycle;
 
-    await checkForScreenshot(
+    await checkForViewportScreenshot({
       page,
-      viewportPageObject.grid,
-      screenShotPaths.contourCombineOperations.subtractBigSphereMinusSmallSphereResult
-    );
+      viewport: activeViewport,
+      screenshotPath:
+        screenShotPaths.contourCombineOperations.subtractBigSphereMinusSmallSphereResult,
+    });
   });
 });
 
@@ -133,9 +133,9 @@ test.describe('Merge operation', () => {
     const activeViewport = await viewportPageObject.active;
     await activeViewport.pane.dblclick();
 
-    await contourSegmentationPanel.config.toggle.click();
+    await contourSegmentationPanel.config.open();
 
-    await contourSegmentationPanel.config.display.fillAndOutline();
+    await contourSegmentationPanel.config.display.fillAndOutline.click();
 
     await contourSegmentationPanel.panel.segmentByText(segments.bigSphere).click();
 

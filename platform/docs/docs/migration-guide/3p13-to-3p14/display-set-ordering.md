@@ -18,7 +18,7 @@ the date/time of a display set is chosen and what it is used for.
 `compareSeriesDateTime` still compares the `SeriesDate`/`SeriesTime` of the two
 sides, and `dateTimeSortKey` still reads them from the display set. What changed
 is the value the SOP class handler puts there. The handler now writes
-`getSeriesDateTime` of the instance the display set shows, chosen from every
+`getLatestInstanceDateTime` of the instance the display set shows, chosen from every
 creation attribute that instance carries - `InstanceCreationDate`/`Time`,
 `ContentDate`/`Time`, `AcquisitionDate`/`Time` (or `AcquisitionDateTime`),
 `StructureSetDate`/`Time`, `PresentationCreationDate`/`Time` and
@@ -68,7 +68,7 @@ the series and register an `addSameSeriesCompare` comparison to order them.
 ## A DT that declares a UTC offset is read in the viewer's own offset
 
 `AcquisitionDateTime` is a DICOM DT, and a DT may end with the `&ZZXX` UTC
-offset the rest of it is written in. `getSeriesDateTime` used to take the first
+offset the rest of it is written in. `getLatestInstanceDateTime` used to take the first
 8 characters as the date and everything after as the time, which read the offset
 digits as time digits: `20260819+0500` became five in the morning, and the `05`
 of `202608191030-0500` became the seconds.
@@ -147,7 +147,7 @@ them. The creation date/time of the object itself depends on the modality:
 
 The RTSTRUCT and PR IODs define no content date/time at all, so a
 `ContentDate`/`Time` on one of them is an attribute a strict validator or
-archive can reject the instance for. `getSeriesDateTime` reads all three pairs,
+archive can reject the instance for. `getLatestInstanceDateTime` reads all three pairs,
 so the ordering is the same whichever pair the modality gets.
 
 The date/time are read as wall clock values in the dataset's own timezone -
@@ -164,3 +164,35 @@ zone rather than the UTC values dcmjs and the adapters default to.
 not have before. If you post-process saved instances and relied on the instance
 number coming from a single predecessor instance, note that it is now derived
 from the highest instance number in the whole series.
+
+## The exported name is `getLatestInstanceDateTime`
+
+`platform/core` exported this function as `getSeriesDateTime` in
+3.14.0-beta.25. The name says that the function gives the date and the time of
+the series, and the function does not do that. The function gives the latest
+date of the attributes that the instance carries, together with the latest time
+that carries the same date. The export is `getLatestInstanceDateTime` now, and
+the sort key export is `getLatestInstanceDateTimeSortKey`.
+
+**What changes for you:** change the name at every call. The behaviour of both
+functions is exactly the same as before.
+
+| Before | Now |
+| --- | --- |
+| `utils.getSeriesDateTime` | `utils.getLatestInstanceDateTime` |
+| `utils.getSeriesDateTimeSortKey` | `utils.getLatestInstanceDateTimeSortKey` |
+| the type `SeriesDateTime` | the type `LatestInstanceDateTime` |
+| the module `platform/core/src/utils/seriesDateTime` | the module `platform/core/src/utils/latestInstanceDateTime` |
+
+The two fields of the type keep the names `SeriesDate` and `SeriesTime`,
+because a handler assigns the two fields to a display set, and the display set
+holds the two fields under those names.
+
+`getSeriesDateTime` gets no alias, because the name was in no stable release of
+OHIF. The name was in the 3.14.0-beta.25 line only.
+
+`extensions/default/src/utils/getCurrentDicomDateTime.ts` also exported a
+`getSeriesDateTime`, and that function gave the current date and time. No module
+imports that file, and this release deletes the file. Use
+`utils.getCurrentDicomDateTime` of `platform/core` for the current date and
+time.

@@ -365,14 +365,12 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUID: instance.SOPInstanceUID,
-          // Used, with the instance number below, to reference an instance as
-          // the predecessor of a newly created one.
-          sopClassUID: instance.SOPClassUID,
+          // No SOPClassUID here - it belongs to the SOP Common module.
           instanceNumber: toNumber(instance.InstanceNumber),
           // The instance level date/time is the only one that distinguishes a
           // newly saved instance from the rest of its series, whose
           // SeriesDate/SeriesTime it inherits, so it has to be carried through
-          // to instances derived from this one.  See `getSeriesDateTime`.
+          // to instances derived from this one.  See `getLatestInstanceDateTime`.
           instanceCreationDate: instance.InstanceCreationDate,
           instanceCreationTime: instance.InstanceCreationTime,
           contentDate: instance.ContentDate,

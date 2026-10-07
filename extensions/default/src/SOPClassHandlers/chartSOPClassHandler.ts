@@ -25,7 +25,7 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
 
   // The date/time of a display set is the date/time of the instance it shows,
   // chosen from all the attributes that instance carries.
-  const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(instance);
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
   return {
     Modality: CHART_MODALITY,
@@ -58,7 +58,7 @@ const makeChartDataDisplaySet = (instance, sopClassUids) => {
       // The date/time shown and sorted by is that of the instance the display
       // set shows, so it moves with that instance rather than staying on the
       // one the chart was first created with.
-      const { SeriesDate, SeriesTime } = utils.getSeriesDateTime(this.instance);
+      const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(this.instance);
       this.SeriesDate = SeriesDate;
       this.SeriesTime = SeriesTime;
 
