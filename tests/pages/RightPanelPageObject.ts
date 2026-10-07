@@ -222,6 +222,38 @@ export class RightPanelPageObject {
     };
   }
 
+  /**
+   * The statistics computed for a segment. They show in a hover card that opens while the
+   * segment row is hovered, once the stats are computed. The card has no data-cy, so it is
+   * located by the class the SegmentStatistics component renders.
+   */
+  private getSegmentStats(rowTitle: Locator) {
+    const locator = this.page.locator('.segment-statistics');
+    const entries = locator.locator('.segment-statistics-body > div > div');
+    // Each entry is a name cell followed by a cell holding the value and unit spans.
+    const valueSpans = (label: string) =>
+      entries
+        .filter({ has: this.page.getByText(label, { exact: true }) })
+        .locator(':scope > div:last-child > span');
+
+    return {
+      locator,
+      // The stat names, in the order the card lists them
+      labels: entries.locator(':scope > div:first-child'),
+      value: (label: string) => valueSpans(label).first(),
+      unit: (label: string) => valueSpans(label).last(),
+      open: async () => {
+        await rowTitle.hover();
+        await locator.waitFor({ state: 'visible' });
+      },
+    };
+  }
+
+  /** Adds the segment's computed statistics to a segmentation panel row. */
+  private withSegmentStats<T extends { title: Locator }>(row: T) {
+    return { ...row, stats: this.getSegmentStats(row.title) };
+  }
+
   private getPanelRowByIdx(index: number) {
     const row = this.page.getByTestId('data-row').nth(index);
     return this.getPanelRowDataObject(row);
@@ -364,8 +396,8 @@ export class RightPanelPageObject {
 
   private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
-    const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getSegmentByText = (text: string) => this.getPanelRowByText(text);
+    const getSegmentByIdx = (index: number) => this.withSegmentStats(this.getPanelRowByIdx(index));
+    const getSegmentByText = (text: string) => this.withSegmentStats(this.getPanelRowByText(text));
     const moreMenu = this.getCollapsedMoreMenu(typeSuffix);
 
     return {
