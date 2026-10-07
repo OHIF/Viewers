@@ -1,6 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
+import { waitForViewportsRendered } from '../utils/waitForViewportsRendered';
 
 /** The segmentation selector (dropdown) returned by the segmentation panels. */
 export type SegmentationSelect = {
@@ -328,11 +329,18 @@ export class RightPanelPageObject {
     };
   }
 
+  /**
+   * The "Add segmentation" row. The add command does nothing when it runs before the
+   * viewport grid has registered the active viewport, and it shows no error. So the
+   * click waits until a viewport has rendered.
+   */
   private get addSegmentationButton() {
-    const button = this.page.getByTestId('addSegmentation');
+    const page = this.page;
+    const button = page.getByTestId('addSegmentation');
     return {
       button,
       click: async () => {
+        await waitForViewportsRendered(page, { waitVolumeLoad: false, settle: false });
         await button.click();
       },
     };

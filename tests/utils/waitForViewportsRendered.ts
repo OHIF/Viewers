@@ -110,7 +110,20 @@ const waitForViewportsRendered = async (
 ) => {
   const { timeout = 15000, waitVolumeLoad = true, settle = true } = options;
 
-  await page.waitForFunction(
+  try {
+    await waitForAllViewportsRendered(page, waitVolumeLoad, timeout);
+  } catch (error) {
+    const state = await describeViewportState(page).catch(() => 'unavailable');
+    throw new Error(`${error.message}\nViewport state at timeout: ${state}`, { cause: error });
+  }
+
+  if (settle) {
+    await waitForPaintToSettle(page);
+  }
+};
+
+const waitForAllViewportsRendered = (page: Page, waitVolumeLoad: boolean, timeout: number) =>
+  page.waitForFunction(
     ({ waitVolumeLoad }) => {
       const cornerstone = (window as any).cornerstone;
       if (!cornerstone?.getRenderingEngines) {
@@ -174,10 +187,27 @@ const waitForViewportsRendered = async (
     { timeout }
   );
 
-  if (settle) {
-    await waitForPaintToSettle(page);
-  }
-};
+/**
+ * Describes each viewport's status and every volume that has not loaded, so that a
+ * render timeout shows which condition did not become true.
+ */
+const describeViewportState = (page: Page) =>
+  page.evaluate(() => {
+    const cornerstone = (window as any).cornerstone;
+    const viewports = (cornerstone?.getRenderingEngines?.() ?? []).flatMap(engine =>
+      engine.getViewports ? engine.getViewports() : []
+    );
+    const state = viewports.map(viewport => {
+      const unloadedVolumes = (viewport.getActors?.() ?? [])
+        .map(actorEntry => actorEntry?.referencedId || actorEntry?.uid)
+        .filter(id => {
+          const loadStatus = id && cornerstone.cache?.getVolume?.(id)?.loadStatus;
+          return loadStatus && loadStatus.loaded === false;
+        });
+      return { id: viewport.id, status: viewport.viewportStatus, unloadedVolumes };
+    });
+    return JSON.stringify(state);
+  });
 
 /**
  * After the render-cycle predicate has resolved, give the browser two animation
