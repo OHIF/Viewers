@@ -16,6 +16,7 @@ import {
   ignoreLabel,
   isIgnoreId,
   lockfilePackages,
+  packageChanges,
   tableCell,
 } from './audit.mjs';
 
@@ -98,6 +99,19 @@ test('addedPackages lists only the versions the PR adds', () => {
   ]);
 });
 
+test('packageChanges pairs before and after versions by package', () => {
+  const base = lockfilePackages(
+    lockfile(['left-pad@1.3.0', 'old-dep@0.9.1', 'ms@2.0.0', 'ms@2.1.2'])
+  );
+  const head = lockfilePackages(lockfile(['left-pad@1.4.0', 'new-dep@1.2.0', 'ms@2.1.3']));
+  assert.deepEqual(packageChanges(base, head), [
+    { name: 'left-pad', before: ['1.3.0'], after: ['1.4.0'] },
+    { name: 'ms', before: ['2.0.0', '2.1.2'], after: ['2.1.3'] },
+    { name: 'new-dep', before: [], after: ['1.2.0'] },
+    { name: 'old-dep', before: ['0.9.1'], after: [] },
+  ]);
+});
+
 test('addedIgnores lists the ignores the PR adds, once each', () => {
   assert.deepEqual(
     addedIgnores(['GHSA-aaaa-bbbb-cccc'], ['GHSA-aaaa-bbbb-cccc', 'npm-123', 'npm-123']),
@@ -177,4 +191,7 @@ test('fails when many added entries cannot be audited', () => {
   });
   assert.equal(code, 1);
   assert.match(stdout, /format may have changed/);
+  // The changes table lists them too, one row per package.
+  assert.match(stdout, /Packages changed \(6\)/);
+  assert.ok(stdout.includes('| `pkg0` | – | `git+https://example.com/pkg0.git` |'));
 });

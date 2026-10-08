@@ -37,6 +37,8 @@ const SEVERITY_ORDER = ['critical', 'high', 'moderate', 'low', 'info'];
 const PACKAGE_NAME = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
 const REGISTRY_VERSION = /^\d+\.\d+\.\d+(-[0-9a-z.-]+)?(\+[0-9a-z.-]+)?$/i;
 const GHSA_ID = /^GHSA(-[23456789cfghjmpqrvwx]{4}){3}$/;
+// Rows in the "Packages changed" table; a first lockfile has thousands.
+const MAX_CHANGE_ROWS = 300;
 
 function readText(file) {
   return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
@@ -79,6 +81,28 @@ export function addedPackages(base, head) {
     }
   }
   return added.sort((a, b) => a.name.localeCompare(b.name) || a.version.localeCompare(b.version));
+}
+
+/**
+ * The packages whose versions differ between `base` and `head`, one entry per
+ * name: `before` holds the versions only `base` has, `after` the versions only
+ * `head` has. A new package has no `before`, a removed one no `after`.
+ */
+export function packageChanges(base, head) {
+  const changes = new Map();
+  const change = name => {
+    if (!changes.has(name)) {
+      changes.set(name, { name, before: [], after: [] });
+    }
+    return changes.get(name);
+  };
+  for (const { name, version } of addedPackages(head, base)) {
+    change(name).before.push(version);
+  }
+  for (const { name, version } of addedPackages(base, head)) {
+    change(name).after.push(version);
+  }
+  return [...changes.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 async function postWithRetry(body) {
@@ -223,7 +247,43 @@ function newIgnoresSection(newIgnores, findings) {
   return lines;
 }
 
-function lockfileSection({ added, notAudited, blocking, allowed, other, baseMissing, partial }) {
+/**
+ * Lockfile text (unvalidated) safe inside a code span in a table cell: no
+ * control characters (one row, one line), backticks, pipes or backslashes.
+ */
+function lockfileCell(text) {
+  const clean = text.replace(/[\x00-\x1f\x7f`|\\]/g, '');
+  return clean ? `\`${clean}\`` : '';
+}
+
+/** Collapsed "Packages changed" table, so reviewers see what the lockfile change does. */
+function changesSection(changes) {
+  const versions = list => (list.length ? list.map(lockfileCell).join(', ') : '–');
+  const shown = changes.slice(0, MAX_CHANGE_ROWS);
+  const lines = [
+    `<details><summary>Packages changed (${changes.length})</summary>`,
+    '',
+    '| Package | Before | After |',
+    '|---|---|---|',
+    ...shown.map(c => `| ${lockfileCell(c.name)} | ${versions(c.before)} | ${versions(c.after)} |`),
+  ];
+  if (changes.length > shown.length) {
+    lines.push('', `…and ${changes.length - shown.length} more.`);
+  }
+  lines.push('', '</details>', '');
+  return lines;
+}
+
+function lockfileSection({
+  added,
+  changes,
+  notAudited,
+  blocking,
+  allowed,
+  other,
+  baseMissing,
+  partial,
+}) {
   const lines = [];
   if (baseMissing) {
     lines.push(
@@ -232,6 +292,9 @@ function lockfileSection({ added, notAudited, blocking, allowed, other, baseMiss
     );
   }
   lines.push(`This PR adds ${added} package version(s) to \`pnpm-lock.yaml\`.`, '');
+  if (changes.length) {
+    lines.push(...changesSection(changes));
+  }
   if (blocking.length) {
     lines.push(
       `### ❌ ${blocking.length} new high or critical advisory(ies)`,
@@ -318,7 +381,9 @@ async function main() {
   } else if (baseText === headText) {
     lines.push('`pnpm-lock.yaml` is unchanged; nothing to audit.', '');
   } else {
-    const added = addedPackages(lockfilePackages(baseText ?? ''), lockfilePackages(headText));
+    const basePackages = lockfilePackages(baseText ?? '');
+    const headPackages = lockfilePackages(headText);
+    const added = addedPackages(basePackages, headPackages);
     const auditable = added.filter(
       p => PACKAGE_NAME.test(p.name) && REGISTRY_VERSION.test(p.version)
     );
@@ -338,6 +403,7 @@ async function main() {
     lines.push(
       ...lockfileSection({
         added: added.length,
+        changes: packageChanges(basePackages, headPackages),
         notAudited,
         blocking,
         allowed: serious.filter(f => ignoreGhsas.has(f.ghsa)),
