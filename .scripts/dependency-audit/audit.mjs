@@ -30,17 +30,19 @@ import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parseAllDocuments, parse } from 'yaml';
 
+// npm's bulk advisory endpoint: the one `pnpm audit` and `npm audit` use. If a
+// request fails, the check fails; it never passes silently.
 const BULK_ADVISORY_URL = 'https://registry.npmjs.org/-/npm/v1/security/advisories/bulk';
 const BLOCKING_SEVERITIES = new Set(['critical', 'high']);
 const SEVERITY_ORDER = ['critical', 'high', 'moderate', 'low', 'info'];
 // npm package names; anything else in a lockfile key is reported, not queried.
-const PACKAGE_NAME = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
-const REGISTRY_VERSION = /^\d+\.\d+\.\d+(-[0-9a-z.-]+)?(\+[0-9a-z.-]+)?$/i;
+export const PACKAGE_NAME = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
+export const REGISTRY_VERSION = /^\d+\.\d+\.\d+(-[0-9a-z.-]+)?(\+[0-9a-z.-]+)?$/i;
 const GHSA_ID = /^GHSA(-[23456789cfghjmpqrvwx]{4}){3}$/;
 // Rows in the "Packages changed" table; a first lockfile has thousands.
 const MAX_CHANGE_ROWS = 300;
 
-function readText(file) {
+export function readText(file) {
   return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
 }
 
@@ -131,7 +133,7 @@ async function postWithRetry(body) {
  * package. Sending one version per package per request keeps each advisory tied
  * to the exact version it affects, without semver range matching here.
  */
-async function lookUpAdvisories(packages) {
+export async function lookUpAdvisories(packages) {
   const remaining = [...packages];
   const findings = [];
   while (remaining.length) {
@@ -191,7 +193,7 @@ function table(findings) {
 }
 
 /** `auditConfig.ignoreGhsas` of a pnpm-workspace.yaml; [] when the file is missing. */
-function readIgnoreGhsas(file) {
+export function readIgnoreGhsas(file) {
   const text = readText(file);
   const list = text ? parse(text)?.auditConfig?.ignoreGhsas : null;
   return Array.isArray(list) ? list.map(String) : [];
