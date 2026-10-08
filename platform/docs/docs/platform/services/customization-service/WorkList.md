@@ -154,7 +154,7 @@ A column can only display data that's already on the study row. The default DICO
 
 Now any column can read `row.requestingPhysician` (e.g. `StudyList.textColumn('requestingPhysician', 'Requesting Physician')`). Note that **`StudyRow` does not need editing** — it carries an index signature, so data-source-mapped fields are readable without a type change.
 
-Two caveats: the server must actually return the tag (it has to support `includefield` — see the data source's `qidoSupportsIncludeField` — and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
+Two caveats: the server must actually return the tag (it has to support `includefield`, and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
 
 ### Gotchas and limitations
 

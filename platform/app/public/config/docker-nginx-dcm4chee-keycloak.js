@@ -20,7 +20,6 @@ window.config = {
         wadoUriRoot: 'http://127.0.0.1/pacs',
         qidoRoot: 'http://127.0.0.1/pacs',
         wadoRoot: 'http://127.0.0.1/pacs',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         dicomUploadEnabled: true,

@@ -44,7 +44,6 @@ window.config = {
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -94,7 +93,6 @@ window.config = ({ servicesManager } = {}) => {
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -224,7 +222,6 @@ Example usage:<br/>
      configuration: {
        friendlyName: 'GCP DICOMWeb Server',
        name: 'gcpdicomweb',
-       qidoSupportsIncludeField: false,
        imageRendering: 'wadors',
        thumbnailRendering: 'wadors',
        enableStudyLazyLoad: true,
