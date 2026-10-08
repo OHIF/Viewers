@@ -47,11 +47,22 @@ const rsbuildArgs = command => {
   return args;
 };
 
-test('the build:viewer:ci script still builds through the app `build` script', () => {
+// Nothing else may run around the build: a command that copies files into dist
+// after rsbuild (e.g. `&& cp -r node_modules/x dist/x`) would put a package in
+// dist that the check can't see.
+test('the build:viewer:ci script still builds through the app `build` script only', () => {
   assert.match(
     scripts['build:viewer:ci'],
-    /cross-env [^&]*pnpm run build$/,
+    /^pnpm run version:update && cross-env [^&|;]*pnpm run build$/,
     `build:viewer:ci changed shape. ${FIX}`
+  );
+});
+
+test('the app `build` script runs rsbuild only', () => {
+  assert.match(
+    scripts.build,
+    /^cross-env (\S+=\S+ )*rsbuild build [^&|;]*$/,
+    `The build script changed shape. ${FIX}`
   );
 });
 

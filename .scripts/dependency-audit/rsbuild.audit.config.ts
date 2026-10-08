@@ -17,9 +17,10 @@ import base from '../../rsbuild.config.ts';
 export default async (ctx: any) => {
   const config: any = typeof base === 'function' ? await (base as any)(ctx) : base;
   // Caution: relies on `output.distPath.root` and on `output.copy` being a list
-  // of `{ from, to }` (or strings), as in OHIF's rsbuild.config.ts (same shape on
-  // #6168). If copies move elsewhere, dist-packages.mjs finds no copied package
-  // and fails the run (loudly).
+  // of `{ from, to }` (or strings), as in OHIF's rsbuild.config.ts. A package
+  // copied into dist some other way (e.g. a copy plugin outside output.copy) isn't
+  // seen as in the build: its findings show as "Review promptly"/"Review soon"
+  // rather than "Review immediately".
   const distRoot = path.resolve(config.output.distPath.root);
   const copyRules = (config.output.copy ?? []).map((rule: any) => {
     const { from, to } = typeof rule === 'string' ? { from: rule, to: undefined } : rule;

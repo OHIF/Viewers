@@ -133,7 +133,7 @@ test('distPackages combines our source maps with copied packages and their lockf
     'viewer-lib': one(['1.0.0']),
   });
   assert.equal(fromMaps, 2); // axios and the inlined deepmerge-ts
-  assert.equal(copied, 1);
+  assert.deepEqual(copied, ['viewer-lib']);
 
   // Maps whose paths don't show node_modules yield nothing: the caller fails
   // rather than report "nothing in the build".
@@ -144,4 +144,19 @@ test('distPackages combines our source maps with copied packages and their lockf
     },
   });
   assert.equal(changed.fromMaps, 0);
+
+  // Only CSS maps (JavaScript maps turned off): their packages are listed, but
+  // the count stays 0 so the caller fails.
+  const cssOnly = {
+    [path.join(dist, 'app.bundle.css.map')]: [webpack('node_modules/axios/a.css')],
+  };
+  const css = distPackages(record, LOCKFILE, {
+    fsx: {
+      ...fsx,
+      listMaps: () => Object.keys(cssOnly),
+      readJson: p => (cssOnly[p] ? { sources: cssOnly[p] } : fsx.readJson(p)),
+    },
+  });
+  assert.equal(css.fromMaps, 0);
+  assert.ok(css.packages.axios);
 });

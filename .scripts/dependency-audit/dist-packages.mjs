@@ -15,9 +15,9 @@
  *    with its whole dependency tree from pnpm-lock.yaml, at the lockfile's
  *    versions (the same limit as pnpm audit).
  *
- * It fails (exit 2) only when it can't answer: no packages in the maps, no
- * copied package (the copy list moved), or a copied package missing from the
- * lockfile.
+ * It fails (exit 2) only when it can't answer: no packages in our JavaScript
+ * maps (CSS maps alone don't count), no copied package, or a copied package
+ * missing from the lockfile.
  *
  * Usage:
  *   node dist-packages.mjs --record <record.json> --lockfile <pnpm-lock.yaml> --out <dist-packages.json>
@@ -140,8 +140,10 @@ const realFs = {
 
 /**
  * The packages in the build. Returns { packages, fromMaps, copied }: the
- * caller fails when fromMaps (package entries read from our maps) or copied
- * (packages copied in whole) is zero. `fsx` is injectable for tests.
+ * caller fails when fromMaps (package entries read from our JavaScript maps;
+ * the CSS maps also add packages but are left out of this count, so they
+ * can't hide JavaScript maps being turned off) is zero or copied (names of
+ * packages copied in whole) is empty. `fsx` is injectable for tests.
  */
 export function distPackages(record, lockText, { fsx = realFs } = {}) {
   const packages = new Map();
@@ -178,7 +180,9 @@ export function distPackages(record, lockText, { fsx = realFs } = {}) {
       if (!pkg) {
         continue;
       }
-      fromMaps++;
+      if (mapFile.endsWith('.js.map')) {
+        fromMaps++;
+      }
       // Package folder installed: its version (the file itself may be the
       // package's unpublished original source, listed in its own map). Not
       // installed: code a library inlined from another package. Path artifacts
@@ -211,7 +215,7 @@ export function distPackages(record, lockText, { fsx = realFs } = {}) {
         .map(([name, e]) => [name, { versions: [...e.versions].sort(), anyVersion: e.anyVersion }])
     ),
     fromMaps,
-    copied: roots.length,
+    copied: roots.map(root => root.name),
   };
 }
 
@@ -233,11 +237,12 @@ function main() {
   // so zero of either means the build changed shape, not that there's nothing.
   if (fromMaps === 0) {
     throw new Error(
-      "No npm packages were found in the build's source maps; their path format may have " +
-        'changed. Update sourcePath() in .scripts/dependency-audit/dist-packages.mjs.'
+      "No npm packages were found in the build's JavaScript source maps. Production builds " +
+        'may no longer write .js.map files (see output.sourceMap in rsbuild.config.ts), or ' +
+        'their path format changed (see sourcePath() in .scripts/dependency-audit/dist-packages.mjs).'
     );
   }
-  if (copied === 0) {
+  if (copied.length === 0) {
     throw new Error(
       'No package copied in whole was found in the build config; the copy list may have moved. ' +
         'Update .scripts/dependency-audit/rsbuild.audit.config.ts.'
@@ -246,7 +251,7 @@ function main() {
   fs.writeFileSync(values.out, JSON.stringify({ packages }, null, 1));
   console.log(
     `Found ${Object.keys(packages).length} package(s) in the build ` +
-      `(${copied} copied in whole).`
+      `(${copied.length} copied in whole: ${copied.join(', ')}).`
   );
 }
 
