@@ -152,7 +152,8 @@ function mapParams(params, options = {}) {
   }
   const commaSeparatedFields = [
     '00081030', // Study Description
-    '00080060', // Modality
+    // Not Modality (00080060): it is a series-level attribute. Modalities come from
+    // ModalitiesInStudy (00080061), which servers return at study level by default.
     '00080090', // Referring Physician's Name
     '00100030', // Patient's Birth Date
     // Add more fields here if you want them in the result
