@@ -80,13 +80,14 @@ jobs:
       # placed in the branch's checkout before the build.
       # Caution: the env and the rsbuild command mirror platform/app's
       # `build:viewer:ci` script (minus version:update). If that script changes
-      # how the production build is made, update this step to match.
+      # how the production build is made, update this step to match;
+      # .scripts/dependency-audit/build-step.test.mjs fails until they match.
       - name: Build the viewer and list the packages in dist
         working-directory: target/platform/app
         env:
           NODE_ENV: production
           QUICK_BUILD: 'false'
-          APP_CONFIG: config/default.js
+          APP_CONFIG: config/netlify.js
           PUBLIC_URL: /
           NODE_OPTIONS: --max-old-space-size=12288
           AUDIT_RECORD: ${{ runner.temp }}/record.json
