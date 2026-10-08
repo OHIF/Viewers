@@ -13,14 +13,14 @@ This document describes the customizations and configuration options implemented
 The viewer has been white-labeled to match the SmartCarePlus ecosystem.
 
 ### Meta Tags & Title
-Updated in [index.html](file:///srv/smartcareplus/imaging/viewer-lts/platform/app/public/html-templates/index.html):
+Updated in [index.html](file:///srv/smartcareplus/imaging/ohif-viewer/platform/app/public/html-templates/index.html):
 - **Page Title**: `SmartCarePlus Imaging`
 - **Application Name**: `SmartCarePlus Imaging`
 - **Meta Description**: `SmartCarePlus Advanced Medical Imaging Viewer`
 - **Apple Mobile App Title**: `SmartCarePlus`
 
 ### Web App Manifest
-Updated in [manifest.json](file:///srv/smartcareplus/imaging/viewer-lts/platform/app/public/manifest.json):
+Updated in [manifest.json](file:///srv/smartcareplus/imaging/ohif-viewer/platform/app/public/manifest.json):
 - **Name**: `SmartCarePlus Imaging`
 - **Short Name**: `SC+ Imaging`
 - **Icons**: Restored structure using `assets/sc-logo-[SIZE].png`.
