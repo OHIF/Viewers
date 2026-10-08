@@ -148,10 +148,20 @@ export function escapeCommand(text) {
   return String(text).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
 }
 
+/**
+ * Text safe inside a Markdown table cell. Backslashes first, so a trailing
+ * `\` cannot combine with the cell's closing `|`; then pipes.
+ */
+export function tableCell(text) {
+  return String(text ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/\|/g, '\\|');
+}
+
 function table(findings) {
   const rows = findings.map(
     f =>
-      `| ${f.severity} | \`${f.name}@${f.version}\` | [${f.ghsa}](${f.url}) | ${f.title.replace(/\|/g, '\\|')} |`
+      `| ${f.severity} | \`${f.name}@${f.version}\` | [${f.ghsa}](${f.url}) | ${tableCell(f.title)} |`
   );
   return ['| Severity | Package | Advisory | Title |', '|---|---|---|---|', ...rows].join('\n');
 }

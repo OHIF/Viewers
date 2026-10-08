@@ -16,6 +16,7 @@ import {
   ignoreLabel,
   isIgnoreId,
   lockfilePackages,
+  tableCell,
 } from './audit.mjs';
 
 const SCRIPT = fileURLToPath(new URL('./audit.mjs', import.meta.url));
@@ -115,6 +116,14 @@ test('only GHSA IDs and npm-<number> are valid ignore entries', () => {
 
 test('escapeCommand encodes the characters that end a workflow command', () => {
   assert.equal(escapeCommand('a%b\r\nc'), 'a%25b%0D%0Ac');
+});
+
+test('tableCell keeps advisory titles inside their Markdown table cell', () => {
+  assert.equal(tableCell('a|b'), 'a\\|b');
+  // A trailing backslash must not escape the cell's closing pipe.
+  assert.equal(tableCell('ends in \\'), 'ends in \\\\');
+  assert.equal(tableCell('\\|'), '\\\\\\|');
+  assert.equal(tableCell(undefined), '');
 });
 
 test('PR text cannot inject workflow commands into the log', () => {
