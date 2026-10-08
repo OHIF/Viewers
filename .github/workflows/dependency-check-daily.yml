@@ -7,9 +7,12 @@ name: Daily Dependency Check
 # advisory link and a package name. The logic and the reasoning are in
 # .scripts/dependency-audit/dist-packages.mjs and daily.mjs.
 #
-# Findings never fail the run. A check that can't do its job (build broken,
-# no packages readable from the build's source maps or copy list, npm
-# unreachable) fails and writes no summary.
+# Only "Review immediately" findings fail the run (after writing the summary),
+# so GitHub emails the failure: for a scheduled run, to whoever last changed
+# the cron line below. A check that can't do its job (build broken, no
+# packages readable from the build's source maps or copy list, npm
+# unreachable) also fails, with a "Dependency check failed" error and no
+# summary.
 #
 # The workflow and the scripts always come from the default branch; only the
 # lockfile, pnpm-workspace.yaml and the build come from the branch being

@@ -17,8 +17,10 @@
  *
  * The summary ($GITHUB_STEP_SUMMARY) is public: each row shows only the
  * advisory link and the package name, and nothing says why or when. The log
- * shows counts only. Findings never fail the run; if the check can't do its
- * job, it fails (exit 2) and writes no summary.
+ * shows counts only. Only "Review immediately" findings fail the run (exit 1,
+ * after the summary is written), so GitHub sends its failed-run email; the
+ * other groups never do. If the check can't do its job, it fails (exit 2) and
+ * writes no summary.
  *
  * Usage:
  *   node daily.mjs --lockfile <pnpm-lock.yaml> --workspace <pnpm-workspace.yaml>
@@ -190,6 +192,13 @@ async function main() {
       `review soon, ${updates.length} ignored with an update available. ` +
       'Details: the run summary.'
   );
+  if (groups.immediately.length) {
+    console.error(
+      `::error title=Review immediately::${groups.immediately.length} finding(s) in the viewer ` +
+        'build to review immediately. Details: the run summary.'
+    );
+    process.exitCode = 1;
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
