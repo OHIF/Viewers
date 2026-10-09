@@ -165,6 +165,46 @@ export type DisplaySet = {
    * sets that are coming from same series instanceUID.
    */
   compareSameSeries?: string;
+
+  /**
+   * The deterministic, rule-namespaced group key assigned by the
+   * `@cornerstonejs/metadata` split-rules engine when this display set was
+   * created via the `useMetadataDisplaySet` customization.  Used to reconcile
+   * re-splits of the same series with already-created display sets.
+   */
+  splitKey?: string;
+
+  /** The id of the split rule that created this display set, when applicable. */
+  splitRuleId?: string;
+
+  /**
+   * The group of split rules that the rule belongs to: the rule's `groupId`,
+   * else its id, so it equals `splitRuleId` unless a deployment groups rules.
+   * Several rules can make one kind of display set (for example breast
+   * tomosynthesis, legacy mammography, and mammography already split), and a
+   * hanging protocol or another reader matches this value to find all of them.
+   * Neither this nor `splitRuleId` can be set by a rule's `customAttributes`.
+   */
+  splitGroupId?: string;
+
+  /**
+   * Growth hook for split-rule display sets: adds instances that are new to
+   * the series. A split-rule display set never loses an instance. `series` is
+   * the display set's rule's series facts from the re-split, when the new
+   * instances matched that same rule, so the re-sort sees the facts the split
+   * saw. Intentionally named differently from `addInstances` (the
+   * SOP-class-handler merge hook) so the legacy handler loop never feeds
+   * unmatched instances into split-rule display sets. Returns the updated
+   * display set, or undefined when the display set cannot take the instances.
+   */
+  extendInstances?(
+    instances: InstanceMetadata[],
+    options: {
+      series?: Record<string, unknown>;
+      compareInstances?: (a: unknown, b: unknown, context: unknown) => number;
+    },
+    displaySetService
+  ): DisplaySet | undefined;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

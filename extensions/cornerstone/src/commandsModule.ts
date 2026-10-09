@@ -1494,6 +1494,11 @@ function commandsModule({
     updateVolumeData: ({ volume }) => {
       // update vtkOpenGLTexture and imageData of computed volume
       const { imageData, vtkOpenGLTexture } = volume;
+      // No texture exists until a viewport mounts the volume at full resolution.
+      if (!vtkOpenGLTexture) {
+        imageData.modified();
+        return;
+      }
       const numSlices = imageData.getDimensions()[2];
       const slicesToUpdate = [...Array(numSlices).keys()];
       slicesToUpdate.forEach(i => {

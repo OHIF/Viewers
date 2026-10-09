@@ -20,6 +20,10 @@ export default [
       '**/dist/**',
       '**/build/**',
       'platform/docs/**',
+      // A local CS3D checkout, and the CS3D branch that CI clones for a
+      // `CS3D_REF` line (.scripts/ci/cs3d-apply-ref.sh). Neither is OHIF code,
+      // so neither counts against the lint budget.
+      'libs/**',
       ...compilerScope.ignoreGlobs,
     ],
   },
