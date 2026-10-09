@@ -69,9 +69,7 @@ export function WorkflowsProvider({
   const navigate = useNavigate();
 
   // Get valid workflow IDs from loaded modes (for validation)
-  const validWorkflowIds = React.useMemo(() => {
-    return loadedModes.filter(m => !m.hide && m.displayName).map(m => m.id);
-  }, [loadedModes]);
+  const validWorkflowIds = loadedModes.filter(m => !m.hide && m.displayName).map(m => m.id);
 
   // Use localStorage-backed hook for persistence
   const [storedDefaultWorkflowId, setStoredDefaultWorkflowId] =
@@ -81,107 +79,79 @@ export function WorkflowsProvider({
   const defaultWorkflowId = storedDefaultWorkflowId ?? undefined;
 
   // Wrapper that persists to localStorage
-  const setDefaultWorkflowId = React.useCallback(
-    (workflowId?: string) => {
-      setStoredDefaultWorkflowId(workflowId ?? null);
-    },
-    [setStoredDefaultWorkflowId]
-  );
+  const setDefaultWorkflowId = (workflowId?: string) => {
+    setStoredDefaultWorkflowId(workflowId ?? null);
+  };
 
-  const workflows = React.useMemo(() => {
-    const workflowList: Workflow[] = [];
+  const workflows: Workflow[] = [];
 
-    for (const mode of loadedModes) {
-      // Filter out hidden modes
-      if (mode.hide) {
-        continue;
-      }
-
-      // Skip modes without displayName
-      if (!mode.displayName) {
-        continue;
-      }
-
-      const isDefault = mode.id === defaultWorkflowId;
-
-      const workflow: Workflow = {
-        get id() {
-          return mode.id;
-        },
-        get displayName() {
-          return mode.displayName;
-        },
-        launchWithStudy: (studyRow: StudyRow) => {
-          if (!studyRow.studyInstanceUid) {
-            console.warn('Cannot launch workflow: study has no studyInstanceUid');
-            return;
-          }
-
-          const query = new URLSearchParams();
-          query.append('StudyInstanceUIDs', studyRow.studyInstanceUid);
-          preserveQueryParameters(query);
-
-          const route = `${mode.routeName}${dataPath || ''}?${query.toString()}`;
-          navigate(route);
-        },
-        isApplicableToStudy: (studyRow: StudyRow) => {
-          if (!mode.isValidMode) {
-            // If no validation function, assume applicable
-            return true;
-          }
-
-          const modalitiesToCheck = String(studyRow.modalities ?? '').replaceAll('/', '\\');
-          const result = mode.isValidMode({
-            modalities: modalitiesToCheck,
-            study: studyRow,
-          });
-
-          // Return true only if valid is explicitly true
-          // null means hide (not applicable), false means disabled but visible
-          return result.valid === true;
-        },
-        get isDefault() {
-          return isDefault;
-        },
-      };
-
-      workflowList.push(workflow);
+  for (const mode of loadedModes) {
+    // Filter out hidden modes
+    if (mode.hide) {
+      continue;
     }
 
-    return workflowList;
-  }, [loadedModes, defaultWorkflowId, dataPath, navigate, preserveQueryParameters]);
+    // Skip modes without displayName
+    if (!mode.displayName) {
+      continue;
+    }
 
-  const getWorkflowsForStudy = React.useCallback(
-    (studyRow: StudyRow): Workflow[] => {
-      return workflows.filter(workflow => workflow.isApplicableToStudy(studyRow));
-    },
-    [workflows]
-  );
+    const isDefault = mode.id === defaultWorkflowId;
 
-  const getDefaultWorkflowForStudy = React.useCallback(
-    (studyRow: StudyRow): Workflow | undefined => {
-      const applicableWorkflows = getWorkflowsForStudy(studyRow);
-      return applicableWorkflows.find(workflow => workflow.isDefault);
-    },
-    [getWorkflowsForStudy]
-  );
+    const workflow: Workflow = {
+      id: mode.id,
+      displayName: mode.displayName,
+      launchWithStudy: (studyRow: StudyRow) => {
+        if (!studyRow.studyInstanceUid) {
+          console.warn('Cannot launch workflow: study has no studyInstanceUid');
+          return;
+        }
 
-  const value: WorkflowsContextValue = React.useMemo(
-    () => ({
-      workflows,
-      getWorkflowsForStudy,
-      getDefaultWorkflowForStudy,
-      defaultWorkflowId,
-      setDefaultWorkflowId,
-    }),
-    [
-      workflows,
-      getWorkflowsForStudy,
-      getDefaultWorkflowForStudy,
-      defaultWorkflowId,
-      setDefaultWorkflowId,
-    ]
-  );
+        const query = new URLSearchParams();
+        query.append('StudyInstanceUIDs', studyRow.studyInstanceUid);
+        preserveQueryParameters(query);
+
+        const route = `${mode.routeName}${dataPath || ''}?${query.toString()}`;
+        navigate(route);
+      },
+      isApplicableToStudy: (studyRow: StudyRow) => {
+        if (!mode.isValidMode) {
+          // If no validation function, assume applicable
+          return true;
+        }
+
+        const modalitiesToCheck = String(studyRow.modalities ?? '').replaceAll('/', '\\');
+        const result = mode.isValidMode({
+          modalities: modalitiesToCheck,
+          study: studyRow,
+        });
+
+        // Return true only if valid is explicitly true
+        // null means hide (not applicable), false means disabled but visible
+        return result.valid === true;
+      },
+      isDefault,
+    };
+
+    workflows.push(workflow);
+  }
+
+  const getWorkflowsForStudy = (studyRow: StudyRow): Workflow[] => {
+    return workflows.filter(workflow => workflow.isApplicableToStudy(studyRow));
+  };
+
+  const getDefaultWorkflowForStudy = (studyRow: StudyRow): Workflow | undefined => {
+    const applicableWorkflows = getWorkflowsForStudy(studyRow);
+    return applicableWorkflows.find(workflow => workflow.isDefault);
+  };
+
+  const value: WorkflowsContextValue = {
+    workflows,
+    getWorkflowsForStudy,
+    getDefaultWorkflowForStudy,
+    defaultWorkflowId,
+    setDefaultWorkflowId,
+  };
 
   return <WorkflowsContext.Provider value={value}>{children}</WorkflowsContext.Provider>;
 }

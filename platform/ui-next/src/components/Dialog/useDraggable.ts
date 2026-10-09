@@ -16,8 +16,8 @@ interface UseDraggableProps {
 }
 
 interface UseDraggableReturn {
-  offset: React.RefObject<Offset>;
-  internalRef: React.RefObject<HTMLDivElement>;
+  offset: React.RefObject<Offset | null>;
+  internalRef: React.RefObject<HTMLDivElement | null>;
   handlePointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
   setRefs: (node: HTMLDivElement) => void;
   initialTransform: string | undefined;

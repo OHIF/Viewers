@@ -26,6 +26,14 @@ const screenShotPaths = {
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },
+  freehandContourSegmentation: {
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
+  },
   labelMapSegLocking: {
     globalLockedSegPreEdit: 'lockedSegPreEdit.png',
     globalLockedSegPostEdit: 'lockedSegPostEdit.png',
@@ -43,6 +51,12 @@ const screenShotPaths = {
   },
   livewire: {
     livewireDisplayedCorrectly: 'livewireDisplayedCorrectly.png',
+  },
+  livewireContourSegmentation: {
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    contourWithHole: 'contourWithHole.png',
+    differentSegmentsContoursSeparate: 'differentSegmentsContoursSeparate.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
@@ -86,6 +100,14 @@ const screenShotPaths = {
   },
   spline: {
     splineDisplayedCorrectly: 'splineDisplayedCorrectly.png',
+  },
+  splineContourSegmentation: {
+    contourPersistedAfterNavigation: 'contourPersistedAfterNavigation.png',
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
@@ -177,6 +199,9 @@ const screenShotPaths = {
     brushTool: 'brushTool.png',
     eraserTool: 'eraserTool.png',
   },
+  thresholdRange: {
+    expandedRangePaint: 'expandedRangePaint.png',
+  },
   mprThenRTOverlayNoHydration: {
     mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
     mprPostRTOverlayNoHydration: 'mprPostRTOverlayNoHydration.png',
@@ -223,16 +248,19 @@ const screenShotPaths = {
     noOverlay: 'noOverlay.png',
   },
   multipleSegmentationDataOverlays: {
-    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
   overlappingSegmentationRendering: {
     overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
   },
+  contourSmoothOperation: {
+    smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+  },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
     intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
+    mergeBigSphereSmallSphereResult: 'mergeBigSphereSmallSphereResult.png',
   },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useContext } from 'react';
 import { MenuContext, MenuProps } from './Menu';
 import { Icons } from '@ohif/ui-next';
 export interface SubMenuProps extends MenuProps {
@@ -10,10 +10,10 @@ export interface SubMenuProps extends MenuProps {
 const SubMenu = (props: SubMenuProps) => {
   const { showSubMenu } = useContext(MenuContext);
 
-  const onClickHandler = useCallback(() => {
+  const onClickHandler = () => {
     showSubMenu(props);
     props.onClick?.();
-  }, [showSubMenu, props]);
+  };
 
   return (
     <div

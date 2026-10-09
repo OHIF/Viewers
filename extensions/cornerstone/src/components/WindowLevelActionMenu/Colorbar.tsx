@@ -1,15 +1,15 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement } from 'react';
 import { Switch } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useTranslation } from 'react-i18next';
 
-export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
   const { t } = useTranslation('WindowLevelActionMenu');
 
-  const handleToggle = useCallback(() => {
+  const handleToggle = () => {
     toggleColorbar();
-  }, [toggleColorbar]);
+  };
 
   return (
     <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded">

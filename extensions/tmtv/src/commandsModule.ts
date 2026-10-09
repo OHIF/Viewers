@@ -146,6 +146,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       const segmentationId = await segmentationService.createLabelmapForDisplaySet(displaySet, {
         label: `Segmentation ${currentSegmentations.length + 1}`,
+        labelIsGenerated: true,
         segments: { 1: { label: `${i18n.t('Segment')} 1`, active: true } },
       });
 

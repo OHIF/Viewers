@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { DataTableFeatures } from '../../../../ui-next/src/components/DataTable';
 
 function DataTablePageContent() {
   const { DataTable } = require('../../../../ui-next/src/components/DataTable');
@@ -33,8 +35,9 @@ function DataTablePageContent() {
     { studyInstanceUid: '1.2.840.7', patientName: 'Chen, Wei', mrn: '78901234', modality: 'US', date: 'Mar 10, 2024', description: 'US Abdomen Complete', instances: 48 },
     { studyInstanceUid: '1.2.840.8', patientName: 'Johnson, Sarah', mrn: '89012345', modality: 'MR', date: 'Mar 09, 2024', description: 'MR Lumbar Spine', instances: 220 },
   ];
+  type DemoStudy = (typeof studies)[number];
 
-  const columns = [
+  const columns: ColumnDef<DataTableFeatures, DemoStudy, unknown>[] = [
     {
       id: 'patientName',
       accessorFn: row => row.patientName,
@@ -68,7 +71,7 @@ function DataTablePageContent() {
       accessorFn: row => row.description,
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
-        const desc = row.getValue('description');
+        const desc = row.getValue<string>('description');
         return (
           <div className={!desc ? 'text-muted-foreground/40' : 'truncate'}>
             {desc || 'No Description'}
@@ -82,7 +85,7 @@ function DataTablePageContent() {
       accessorFn: row => Number(row.instances),
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => <div className="text-right">{row.getValue('instances')}</div>,
-      sortingFn: (a, b) => a.getValue('instances') - b.getValue('instances'),
+      sortFn: (a, b) => (a.getValue('instances') as number) - (b.getValue('instances') as number),
       meta: { label: 'Instances', align: 'right', minWidth: 80, priority: 50 },
     },
   ];

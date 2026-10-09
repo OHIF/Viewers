@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import merge from 'lodash.merge';
 
-import PropTypes from 'prop-types';
 // NOTE: `@ohif/core` is intentionally NOT declared in this package's
 // package.json (neither as a dependency nor a peerDependency). It is treated as
 // an implicit peer, satisfied by the consuming application via the monorepo
@@ -550,10 +549,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
   );
 }
 
-ViewportGridProvider.propTypes = {
-  children: PropTypes.any,
-  service: PropTypes.instanceOf(ViewportGridService).isRequired,
-};
+
 
 // Update the useViewportGrid hook
 export const useViewportGrid = (): [AppTypes.ViewportGrid.State, ViewportGridApi] =>

@@ -1,5 +1,10 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
 function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
@@ -77,9 +82,6 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   return null;
 }
 
-ViewportImageSliceLoadingIndicator.propTypes = {
-  error: PropTypes.object,
-  element: PropTypes.object,
-};
+
 
 export default ViewportImageSliceLoadingIndicator;

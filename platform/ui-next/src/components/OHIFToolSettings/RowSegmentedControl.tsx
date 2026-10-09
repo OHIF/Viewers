@@ -62,6 +62,7 @@ export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({
               <TabsTrigger
                 value={itemValue}
                 key={`button-${option.id}-${index}`}
+                data-cy={`${option.id}-${itemValue}`}
               >
                 {label}
               </TabsTrigger>
