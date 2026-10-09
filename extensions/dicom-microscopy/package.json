@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "3.14.0-beta.40",
+  "version": "3.14.0-beta.49",
   "private": true,
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
@@ -23,7 +23,9 @@
     "dev:dicom-pdf": "pnpm run dev",
     "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package-1": "pnpm run build",
-    "start": "pnpm run dev"
+    "start": "pnpm run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
     "@ohif/core": "workspace:*",
