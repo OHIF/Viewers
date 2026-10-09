@@ -353,7 +353,7 @@ const connectMeasurementServiceToTools = ({
 }) => {
   const { measurementService, cornerstoneViewportService, viewportGridService } =
     servicesManager.services;
-  const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
+  const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED, MEASUREMENT_ADDED } =
     measurementService.EVENTS;
 
   measurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements, trackingContext }) => {
@@ -421,7 +421,7 @@ const connectMeasurementServiceToTools = ({
         return;
       }
 
-      const { uid, label, isLocked, isVisible } = measurement;
+      const { uid, label, isLocked, isVisible, color } = measurement;
       const sourceAnnotation = annotation.state.getAnnotation(uid);
       const { data, metadata } = sourceAnnotation;
 
@@ -440,9 +440,13 @@ const connectMeasurementServiceToTools = ({
       // update the isVisible state
       annotation.visibility.setAnnotationVisibility(uid, isVisible);
 
-      // annotation.config.style.setAnnotationStyles(uid, {
-      //   color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-      // });
+      if (color) {
+        annotation.config.style.setAnnotationStyles(uid, {
+          color: `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${
+            (color[3] !== undefined ? color[3] : 255) / 255.0
+          })`,
+        });
+      }
 
       // I don't like this but will fix later
       const renderingEngine =
@@ -451,6 +455,24 @@ const connectMeasurementServiceToTools = ({
       // viewport itself, but the removeAnnotation does not include that info...
       const viewportIds = renderingEngine.getViewports().map(viewport => viewport.id);
       triggerAnnotationRenderForViewportIds(viewportIds);
+    }
+  );
+
+  measurementService.subscribe(
+    MEASUREMENT_ADDED,
+    ({ source, measurement }) => {
+      if (!source || source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
+        return;
+      }
+
+      const { uid, color } = measurement;
+      if (color) {
+        annotation.config.style.setAnnotationStyles(uid, {
+          color: `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${
+            (color[3] !== undefined ? color[3] : 255) / 255.0
+          })`,
+        });
+      }
     }
   );
 
@@ -515,6 +537,15 @@ const connectMeasurementServiceToTools = ({
         },
       };
       annotationManager.addAnnotation(newAnnotation);
+
+      if (measurement.color) {
+        annotation.config.style.setAnnotationStyles(measurement.uid, {
+          color: `rgba(${measurement.color[0]}, ${measurement.color[1]}, ${measurement.color[2]}, ${
+            (measurement.color[3] !== undefined ? measurement.color[3] : 255) / 255.0
+          })`,
+        });
+      }
+
       commandsManager.run('triggerCreateAnnotationMemo', {
         annotation: newAnnotation,
         FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
