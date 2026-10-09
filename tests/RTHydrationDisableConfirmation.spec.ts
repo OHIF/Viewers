@@ -1,12 +1,12 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
   screenShotPaths,
   test,
   visitStudy,
   addOHIFConfiguration,
+  waitForViewportsRendered,
 } from './utils';
-import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page }) => {
   await addOHIFConfiguration(page, {
@@ -35,24 +35,27 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
     await DOMOverlayPageObject.viewport.getModalityLoadBadgeCount();
   expect(loadBadgeCountAfterFirstLoad).toBe(0);
 
-  await press({ page, key: 'ArrowDown', nTimes: 12 });
+  // Navigate to the 12th image. Keyboard navigation is focus-dependent (the
+  // arrow presses were landing nowhere here), so jump via the app command.
+  await activeViewport.sliceNavigation.toSlice(11);
+  await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.rtHydrationDisableConfirmation.firstLoadPostHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.rtHydrationDisableConfirmation.firstLoadPostHydration,
+  });
 
   await rightPanelPageObject.toggle();
 
   await rightPanelPageObject.noToolsSegmentationPanel.panel.moreMenu.delete();
   await page.waitForTimeout(2000);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.rtHydrationDisableConfirmation.viewportAfterFirstDelete
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.rtHydrationDisableConfirmation.viewportAfterFirstDelete,
+  });
 
   // Second load
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
@@ -63,21 +66,23 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
     await DOMOverlayPageObject.viewport.getModalityLoadBadgeCount();
   expect(loadBadgeCountAfterSecondLoad).toBe(0);
 
-  await press({ page, key: 'ArrowDown', nTimes: 12 });
+  // Same deterministic navigation as the first load.
+  await activeViewport.sliceNavigation.toSlice(11);
+  await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.rtHydrationDisableConfirmation.secondLoadPostHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.rtHydrationDisableConfirmation.secondLoadPostHydration,
+  });
 
   await rightPanelPageObject.noToolsSegmentationPanel.panel.moreMenu.delete();
 
   await page.waitForTimeout(2000);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.rtHydrationDisableConfirmation.viewportAfterSecondDelete
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.rtHydrationDisableConfirmation.viewportAfterSecondDelete,
+  });
 });

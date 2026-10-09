@@ -248,7 +248,6 @@ const screenShotPaths = {
     noOverlay: 'noOverlay.png',
   },
   multipleSegmentationDataOverlays: {
-    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
@@ -257,6 +256,7 @@ const screenShotPaths = {
   },
   contourSmoothOperation: {
     smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+    removePointsBigSphereResult: 'removePointsBigSphereResult.png',
   },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',

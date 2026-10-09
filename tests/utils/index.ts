@@ -1,6 +1,7 @@
 import { visitStudy, visitStudyOptions } from './visitStudy';
 import { addOHIFConfiguration, addOHIFGlobalCustomizations } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
+import { checkForGridScreenshot } from './checkForGridScreenshot';
 import { checkForViewportScreenshot } from './checkForViewportScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -30,6 +31,7 @@ import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgAttribute } from './getSvgAttribute';
+import { countSvgPathPoints } from './countSvgPathPoints';
 import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
@@ -50,6 +52,7 @@ export {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,
+  checkForGridScreenshot,
   checkForViewportScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
@@ -75,6 +78,7 @@ export {
   addLengthMeasurement,
   subscribeToMeasurementAdded,
   getSvgAttribute,
+  countSvgPathPoints,
   getViewportCanvasStats,
   navigateWithViewportArrow,
   contourShowOnlyNthSegment,
