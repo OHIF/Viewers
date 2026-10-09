@@ -65,6 +65,10 @@ check fails if a bundle carries its own copy. The components in these bundles ar
 compiled with the React Compiler and read `useMemoCache` off that host React, an API
 that exists only in React 19.
 
+Each compiled bundle also carries the React Compiler's small
+`react/compiler-runtime` helper. That is intentional: the helper holds no copy of
+React and reads everything from the host's React.
+
 This failure surfaces at **runtime, not install time** — a React 18 host loads the
 bundle and breaks when a compiled component first renders, with no package-manager
 warning beforehand. If you load OHIF UMD bundles against a global `React`, confirm that
@@ -131,6 +135,24 @@ own components covers yours:
 
 Both gates fail CI until their budget file matches, and both print exactly which file
 and which entry is involved, so the fix is never a guess.
+
+**You scaffolded with `pnpm create ohif@beta`.** Where the scaffolder put your
+plugin decides whether it is compiled:
+
+- **A standalone extension or mode** (`-t extension` or `-t mode`). Not compiled.
+  Its `.rspack/rspack.prod.js` builds with `builtin:swc-loader` only, the same as
+  the "consume OHIF from npm" case above. A package migrated with
+  `create-ohif migrate` gets the same build.
+- **A plugin inside a workspace** (`-t workspace`). Not compiled, even though the
+  workspace builds the viewer from a copy of OHIF in `.ohif/`. The compiler only
+  covers directories inside that copy (see `react-compiler.scope.cjs`), and
+  workspace plugins live outside it.
+- **An in-tree plugin** (`--in-tree`, run inside an OHIF checkout). Compiled, and
+  covered by the same two gates as the fork case above. Adding the plugin can move
+  the counts either gate tracks, so expect to update `.react-compiler-lint-budget.json`
+  or `.react-compiler-budget.json` in the same pull request; the lint budget fails
+  when counts drop as well as when they rise, so a cleaner plugin needs the update
+  too.
 
 ### Opting a file out
 

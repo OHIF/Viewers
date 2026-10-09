@@ -193,7 +193,7 @@ Extensions and modes are explicitly declared in `platform/app/pluginConfig.json`
 - **Never bundle host-provided packages.** The canonical externals list is `.rspack/pluginExternals.js`: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`, `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. The host exposes these as globals via `platform/app/src/runtimeShared.ts`.
 - Working-tree `package.json` entries point at `src/*`; `publishConfig` rewrites them to `dist/*` in the tarball — **publish with `pnpm publish` only** (the npm CLI ignores the rewrites).
 - Keywords `ohif-extension` / `ohif-mode` are the discovery convention.
-- Scaffold with `pnpm create ohif`; manage `platform/app/pluginConfig.json` by hand or with `pnpm run plugin add|remove|list|link|unlink|doctor`.
+- Scaffold with `pnpm create ohif@beta` (until 3.14 is stable); manage `platform/app/pluginConfig.json` by hand or with `pnpm run plugin add|remove|list|link|unlink|doctor`.
 - Register at build time via `pluginConfig.json`, or at runtime via a `window.config.extensions[]` descriptor (`{ packageName, importPath, globalName?, coreVersionRange?, integrity?, styles? }`).
 
 ## Medical Imaging Specifics

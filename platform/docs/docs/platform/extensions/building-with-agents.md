@@ -20,7 +20,7 @@ Run `pnpm create ohif@beta` and treat its output as the canonical
 implementation of everything below. The always-green reference is
 [https://github.com/OHIF/extension-example](https://github.com/OHIF/extension-example).
 
-When this page and generated code disagree, the scaffolder output wins — it is
+When this page and generated code disagree, the `create-ohif` output wins — it is
 built and tested against the current host; this page describes it.
 
 ## The extension object (default export)
@@ -225,7 +225,7 @@ audit record shape, and the CSP/CORS requirements is
 
 ## AGENTS.md
 
-The scaffolder ships an `AGENTS.md` at the package root that restates these
+`create-ohif` ships an `AGENTS.md` at the package root that restates these
 rules for a coding agent working inside the generated project. The canonical
 content is below (kept byte-identical to
 `platform/create-ohif/templates/extension/AGENTS.md`):
@@ -310,7 +310,7 @@ Playwright flow.
 
 ## Testing
 
-The scaffolder ships a headless contract smoke test. It constructs the real
+`create-ohif` ships a headless contract smoke test. It constructs the real
 `@ohif/core` manager stack (or mock managers mirroring the same registration
 contract), registers the extension exactly as the app does, and asserts that:
 

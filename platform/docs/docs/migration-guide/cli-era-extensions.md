@@ -156,11 +156,15 @@ The contract:
   does not hand it to runtime plugins; port UI to `@ohif/ui-next` (the APIs
   differ — this is a `[flag]`, migrate will not rewrite your imports).
 
-### `.npmrc`
+### `pnpm-workspace.yaml` and `.npmrc`
 
-The migration adds an `.npmrc` with `auto-install-peers=false`. The peers above
-are provided by the host at runtime; pnpm must not auto-install its own copies,
-which would produce duplicate React/`@ohif/core` instances.
+The migration adds `autoInstallPeers: false` to the package's
+`pnpm-workspace.yaml` (creating the file, with the template's `allowBuilds`
+list, if there is none), and an `.npmrc` with
+`auto-install-peers=false` for pnpm older than 12, which ignores the setting in
+`.npmrc`. The peers above are provided by the host at runtime; pnpm must not
+auto-install its own copies, which would produce duplicate React/`@ohif/core`
+instances.
 
 ---
 
@@ -249,8 +253,9 @@ host's single copy, which is the point.
 
 The vendored `pluginExternals.js` is a verbatim copy of the monorepo's
 `.rspack/pluginExternals.js`; `create-ohif` keeps the two in sync. See
-[Webpack to Rspack v2](./3p12-to-3p13/build-tooling.md) for the app-level side
-of the same bundler move.
+[Webpack to Rspack v2](./3p12-to-3p13/build-tooling.md) and the 3.14
+[.rspack and Rsbuild changes](./3p13-to-3p14/build-tooling.md) for the app-level
+side of the same bundler move.
 
 ### babel / other build files
 
@@ -320,7 +325,7 @@ pnpm plugin doctor   # peer-range and keyword checks
 then load the plugin in the viewer and confirm it registers (for a
 runtime-loaded plugin, check `window.__ohif.runtimeExtensions` for its audit
 record). The `pnpm plugin` helpers replace the deleted CLI; see the
-[OHIF CLI removal](./3p12-to-3p13/cli-removal.md) for the full command
+[OHIF CLI removal](./3p13-to-3p14/cli-removal.md) for the full command
 mapping.
 
 ---
@@ -331,5 +336,6 @@ mapping.
   fork of the Viewers repo rather than as standalone plugins, start there; it
   walks you to a workspace and then sends each plugin back through this page.
 - **[Package manager (yarn → pnpm)](./3p12-to-3p13/package-manager.md)** and
-  **[Build tooling (Webpack → Rspack)](./3p12-to-3p13/build-tooling.md)** — the
-  monorepo-level moves the plugin contract mirrors.
+  **[Build tooling (Webpack → Rspack)](./3p12-to-3p13/build-tooling.md)**, with
+  its 3.14 follow-up **[.rspack and Rsbuild](./3p13-to-3p14/build-tooling.md)** —
+  the monorepo-level moves the plugin contract mirrors.

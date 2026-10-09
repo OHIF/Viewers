@@ -74,7 +74,7 @@ extensions: [{
 }],
 ```
 
-`globalName` is required for UMD bundles, which is what `pnpm create ohif`
+`globalName` is required for UMD bundles, which is what `pnpm create ohif@beta`
 produces today: after the script runs, the loader reads the plugin from
 `window[globalName]`, and `globalName` is the package name (the bundle's library
 name). Without it the loader treats the file as an ES module, finds no default

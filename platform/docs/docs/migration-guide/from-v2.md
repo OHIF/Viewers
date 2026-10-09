@@ -72,7 +72,7 @@ are configuration objects that will be used by the viewer to load the modules. T
 - redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:
-- [create-ohif scaffolder](../development/create-ohif.md)
+- [create-ohif](../development/create-ohif.md), the tool for creating extensions and modes
 - [New Rendering Engine and Toolings](https://www.cornerstonejs.org/)
 - [Modes](../platform/modes/index.md)
 - [Mode Gallery](https://ohif.org/modes)

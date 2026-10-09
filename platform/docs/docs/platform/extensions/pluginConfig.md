@@ -142,7 +142,7 @@ listed here are compiled in; workspace packages that are not listed are ignored.
    by `packageName`; the build scans those workspaces and maps the declared name
    to its source directory.
 2. **External, out-of-tree source** — a checkout outside this repo (e.g. an
-   extension scaffolded with `pnpm create ohif`). Add a `directory` field. The path may
+   extension scaffolded with `pnpm create ohif@beta`). Add a `directory` field. The path may
    be absolute, `~`-relative to the home directory, or `.`-relative to the repo
    root.
 
@@ -161,4 +161,6 @@ listed here are compiled in; workspace packages that are not listed are ignored.
 
 For the build internals behind these (alias generation, asset copying, the
 pnpm + Rspack migration), see the
-[build tooling migration guide](../../migration-guide/3p12-to-3p13/build-tooling.md#plugin-resolution-from-source-writepluginimportsfilejs).
+[build tooling migration guide](../../migration-guide/3p12-to-3p13/build-tooling.md#plugin-resolution-from-source-writepluginimportsfilejs);
+in 3.14 the plugin aliases are merged in the root `rsbuild.config.ts` (see
+[the 3.14 build tooling notes](../../migration-guide/3p13-to-3p14/build-tooling.md#the-app-builds-and-serves-through-one-rsbuild-config)).

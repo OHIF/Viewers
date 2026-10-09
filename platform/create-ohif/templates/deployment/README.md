@@ -47,7 +47,7 @@ extensions: [
   {
     packageName: '@my-scope/my-ohif-extension',
     importPath: '/plugins/my-ohif-extension/1.0.0/index.umd.js',
-    // Required for UMD bundles (what pnpm create ohif builds): the package name.
+    // Required for UMD bundles (what pnpm create ohif@beta builds): the package name.
     globalName: '@my-scope/my-ohif-extension',
     coreVersionRange: '{{coreRange}}',
     styles: ['/plugins/my-ohif-extension/1.0.0/index.css'],
@@ -56,4 +56,4 @@ extensions: [
 ```
 
 If you also author your own extensions or modes, scaffold a workspace
-instead: `pnpm create ohif my-workspace -t workspace`.
+instead: `pnpm create ohif@beta my-workspace -t workspace`.

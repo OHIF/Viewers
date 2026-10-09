@@ -10,7 +10,7 @@ summary: Package and publish an OHIF extension or mode to npm — the package.js
 Publishing an extension or mode lets other teams install it from npm and load
 it either at build time (declared in `pluginConfig.json`) or at runtime (a
 descriptor in `app-config.js`). A package scaffolded with
-[`pnpm create ohif`](./create-ohif.md) is already publish-ready; this page
+[`pnpm create ohif@beta`](./create-ohif.md) is already publish-ready; this page
 explains the shape it produces and the one publishing rule you must not miss.
 
 ## package.json requirements
@@ -111,6 +111,52 @@ pnpm pack
 Confirm that the `package.json` inside the tarball has `main` and `module`
 pointing at `dist/index.umd.js` (the `publishConfig` rewrite applied), and that
 `dist/`, `src/`, and `public/` are all present.
+
+Then check the three things that most often break a published plugin:
+
+- **No `workspace:` versions.** Inside a monorepo, dependencies on sibling
+  packages are written `workspace:*`. `pnpm pack` and `pnpm publish` replace them
+  with real versions; npm does not. A tarball whose `package.json` still contains
+  `workspace:` cannot be installed.
+- **The bundle exists.** `dist/index.umd.js` must be in the tarball. If it is
+  missing, the build did not run before packing.
+- **No copy of React inside the bundle.** React must come from the host page
+  (see the externals list above). A bundle that carries its own React loads, but
+  breaks hooks and context as soon as it renders next to the viewer's React. This
+  search should print `0`:
+
+  ```bash
+  tar -xOzf acme-extension-foo-1.0.0.tgz package/dist/index.umd.js \
+    | grep -c "__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE ="
+  ```
+
+  The string only exists inside React's own code. The small
+  `react/compiler-runtime` helper the React Compiler adds to compiled components
+  does not contain it, and is fine to bundle: it reads from the host's React.
+
+### How OHIF checks its own published packages
+
+The OHIF monorepo runs the same checks, and more, on its own published packages
+with `scripts/verify-tarballs.mjs` (`pnpm run verify:tarballs`, after building
+the packages). CI runs it on every pull request and again just before each npm
+release, and any failure stops the release. It:
+
+- Allows only the published SDK packages to be published (`@ohif/core`,
+  `@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
+  `@ohif/extension-cornerstone`, plus the `create-ohif` tool); every other
+  workspace package must be `private: true`. It also checks that the release
+  script's publish list matches.
+- Packs each SDK package and checks that its entry points exist in the tarball,
+  `workspace:` versions were replaced, the `publishConfig` rewrites were applied,
+  the UMD bundle is present, and no SDK package declares the legacy `@ohif/ui` as
+  a peer.
+- Checks that no bundle contains a copy of React or react-dom, both through the
+  bundle's source map and by searching the bundle text, allowing only the
+  `react/compiler-runtime` helper.
+
+Published OHIF tarballs ship without source maps, because the release build skips
+them. The source-map part of the React check therefore runs only in the pull
+request build; at release time the bundle-text search covers it.
 
 ## Discovery
 

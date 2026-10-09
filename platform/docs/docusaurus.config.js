@@ -83,7 +83,7 @@ module.exports = {
         redirects: [
           {
             from: '/development/ohif-cli',
-            to: '/migration-guide/3p12-to-3p13/cli-removal',
+            to: '/migration-guide/3p13-to-3p14/cli-removal',
           },
         ],
       },

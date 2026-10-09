@@ -76,7 +76,7 @@ packages:
   - platform/*
   - extensions/*
   - modes/*
-shamefullyHoist: true
+nodeLinker: hoisted
 allowBuilds:
   '@scarf/scarf': true
   '@swc/core': true
@@ -91,13 +91,16 @@ overrides:
 
 Two settings worth highlighting:
 
-- **`shamefullyHoist: true`** keeps the install layout flat, the way yarn
-  v1 produced it. This is required because some OHIF dependencies expect
-  to resolve transitive packages directly from `node_modules`.
+- **`nodeLinker: hoisted`** installs a plain, flat `node_modules`, the way
+  npm and yarn v1 lay it out, instead of pnpm's default linked layout. This is
+  required because some OHIF dependencies expect to resolve packages they never
+  declared directly from `node_modules`. (It mirrors the cornerstone3D setup;
+  pnpm's `shamefullyHoist` is a different, partly-flat option and is not used.)
 - **`allowBuilds`** is pnpm's allow-list for packages whose install scripts
   are allowed to run. If you add a dependency that ships a postinstall
-  script (native bindings, optimized binaries, etc.) you must add it here
-  or pnpm will skip the build.
+  script (native bindings, optimized binaries, etc.) you must add it here;
+  current pnpm versions fail the install while any such script is left
+  unapproved.
 
 The `addOns/externals/*` workspace entry from 3.12 is **removed**. The
 `dicom-microscopy-viewer` and externals devDependencies are now installed
@@ -134,8 +137,8 @@ already covers them. Inside your extension's `package.json`, change any
 `platform/cli` (`@ohif/cli`) and the root `cli` script were removed in 3.13.
 If you previously scaffolded or managed extensions and modes with
 `yarn run cli …` (or `pnpm run cli …`), those commands no longer exist. Use
-`pnpm create ohif` to scaffold and the `pnpm run plugin` helper to register
-plugins instead. See [OHIF CLI removal](./cli-removal.md) for the full command
+`pnpm create ohif@beta` to scaffold and the `pnpm run plugin` helper to register
+plugins instead. See [OHIF CLI removal](../3p13-to-3p14/cli-removal.md) for the full command
 mapping and the porting guide for CLI-era extensions and modes.
 
 ## Audit and lockfile maintenance
@@ -158,5 +161,5 @@ mapping and the porting guide for CLI-era extensions and modes.
    `pnpm run …`.
 5. Update your cache key to `pnpm-lock.yaml`.
 6. If you previously used the OHIF CLI, migrate off it: re-scaffold with
-   `pnpm create ohif` and register plugins through `pluginConfig.json`. See
-   [OHIF CLI removal](./cli-removal.md).
+   `pnpm create ohif@beta` and register plugins through `pluginConfig.json`. See
+   [OHIF CLI removal](../3p13-to-3p14/cli-removal.md).

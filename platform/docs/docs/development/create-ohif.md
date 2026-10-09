@@ -7,23 +7,27 @@ summary: Scaffold OHIF workspaces, extensions, modes, and deployment configs wit
 
 # Create an Extension or Mode
 
+:::note Use `@beta` until OHIF 3.14 is released
+`create-ohif` is published under the `beta` dist-tag until 3.14.0 ships as a
+stable release, so every command on these pages uses `pnpm create ohif@beta`.
+Plain `pnpm create ohif` asks for the `latest` tag, which has no 3.14 version
+yet, and fails with "No matching version found".
+Once 3.14.0 is stable, `@beta` is dropped from the docs and the plain command
+works.
+:::
+
 `create-ohif` is a published scaffolder that replaces the removed OHIF CLI's
 `create-extension` / `create-mode` commands. It generates a ready-to-build
 package (or a whole workspace) that already matches the plugin contract: the
-`.rspack/` UMD build config, the correct `package.json` shape, an `.npmrc` that
-keeps the host-provided peers external, and an `AGENTS.md` contract summary.
+`.rspack/` UMD build config, the correct `package.json` shape, pnpm settings
+that keep the host-provided peers from being installed, and an `AGENTS.md`
+contract summary.
 
 ## Quick start
 
 ```bash
 pnpm create ohif@beta
 ```
-
-:::note
-Use the `@beta` tag until a `latest` dist-tag is published. Plain
-`pnpm create ohif` resolves `create-ohif@latest` and fails with
-"No matching version found" while only the beta tag exists.
-:::
 
 The first prompt is **"What are you building?"** with four templates:
 
@@ -85,7 +89,8 @@ A standalone extension scaffold:
 
 ```
 extension-foo/
-├── .npmrc                 # auto-install-peers=false (prevents a second React)
+├── pnpm-workspace.yaml    # autoInstallPeers: false (prevents a second React)
+├── .npmrc                 # the same setting for pnpm older than 12
 ├── .prettierrc  .gitignore
 ├── package.json  tsconfig.json  README.md  AGENTS.md
 ├── tailwind.config.js     # self-contained CSS; Tailwind preflight off
@@ -127,11 +132,14 @@ globs pick it up automatically, but you still declare it in
 
 ```bash
 pnpm run plugin add @acme/extension-foo
-pnpm install --no-frozen-lockfile
+pnpm run install:update-lockfile
 ```
 
 In-tree scaffolds use `workspace:*` peer ranges and minimal devDependencies —
-the monorepo's hoisted toolchain resolves the rest.
+the monorepo's hoisted toolchain resolves the rest. They are marked
+`private: true` and take the checkout's version, like every other app-only
+package in the repo, and they carry no `.npmrc` or `pnpm-workspace.yaml` of their
+own: the repo root's settings govern.
 
 ## Non-interactive (agents and CI)
 

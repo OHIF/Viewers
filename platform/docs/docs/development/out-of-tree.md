@@ -112,9 +112,11 @@ Consequences for your plugin:
 
 - **Do not install `react`, `react-dom`, `@ohif/*`, or `@cornerstonejs/*` into
   your plugin folder.** Declare them as `peerDependencies` instead.
-- Keep `auto-install-peers=false` in your plugin's `.npmrc` (the scaffolder
-  template ships this) so a `pnpm install` inside your plugin does not silently
-  pull a second copy of a singleton in as a peer.
+- Keep `autoInstallPeers: false` in your plugin's `pnpm-workspace.yaml`
+  (packages created with [`create-ohif`](./create-ohif.md) include it; pnpm 12
+  ignores the older `auto-install-peers` line in `.npmrc`) so a `pnpm install`
+  inside your plugin does not silently pull a second copy of a singleton in as a
+  peer.
 
 :::note One gap the exact-match aliases do not close
 The alias covers the bare `react-dom` specifier but not the `react-dom/client`
@@ -197,7 +199,8 @@ A quick three-step check that the wiring is correct:
 
 - **"Invalid hook call"** — your plugin folder carries its own `react`/`react-dom`
   copy (often via `react-dom/client`). Remove the local install and declare
-  React as a `peerDependency`; keep `.npmrc` `auto-install-peers=false`.
+  React as a `peerDependency`; keep `autoInstallPeers: false` in your plugin's
+  `pnpm-workspace.yaml`.
 - **Components render unstyled** — your class-bearing files are not under the
   declared `<directory>/src/`, or the `directory` path has a typo. Fix the path
   or move the files under `src/`.
@@ -209,7 +212,7 @@ A quick three-step check that the wiring is correct:
   extension, whose `@ohif/*` dependencies use `workspace:*`. The `workspace:`
   protocol is only valid inside the OHIF monorepo. Replace those with real
   semver ranges under `peerDependencies` (`"@ohif/core": ">=3.13.0-beta.0 <4"`).
-  The scaffolder templates already do this.
+  Packages created with [`create-ohif`](./create-ohif.md) already do this.
 - **Asset copy warnings (robocopy on Windows)** — robocopy exit codes 0-7 are
   success, not failure.
 

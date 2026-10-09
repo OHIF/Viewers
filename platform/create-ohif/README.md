@@ -54,8 +54,8 @@ The scaffold lands in `extensions/<name>` or `modes/<name>` with
 
 1. Add the printed entry to `platform/app/pluginConfig.json` (or run
    `pnpm plugin add <packageName>`).
-2. Run `pnpm install --no-frozen-lockfile` to register the new workspace
-   package.
+2. Run `pnpm run install:update-lockfile` to register the new workspace
+   package (a deliberate lockfile update).
 
 Standalone scaffolds instead stamp `^<version>` peer ranges matching the
 create-ohif release, and print the runtime-descriptor and directory-mode

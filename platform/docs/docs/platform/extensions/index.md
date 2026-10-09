@@ -181,7 +181,7 @@ the top level [`extensions/`][ext-source] directory.
 You can register extensions by editing the `pluginConfig.json` file directly,
 or with the `pnpm run plugin add/remove/link/unlink` helper. Scaffold a new
 extension with [`create-ohif`](../../development/create-ohif.md). The former
-OHIF CLI has been removed — see [OHIF CLI removal](../../migration-guide/3p12-to-3p13/cli-removal.md).
+OHIF CLI has been removed — see [OHIF CLI removal](../../migration-guide/3p13-to-3p14/cli-removal.md).
 :::
 
 For the full set of fields (`packageName`, `version`, `default`, `directory`,
@@ -217,7 +217,7 @@ node platform/create-ohif/bin/create-ohif.mjs my-extension --template extension 
 ```
 
 Afterwards, add the printed entry to `platform/app/pluginConfig.json` (or run
-`pnpm plugin add <packageName>`) and run `pnpm install --no-frozen-lockfile` to
+`pnpm plugin add <packageName>`) and run `pnpm run install:update-lockfile` to
 register the new workspace package. See
 [`platform/create-ohif/README.md`](https://github.com/OHIF/Viewers/tree/master/platform/create-ohif)
 for the full argument grammar, the extension module table, and the dist-tag

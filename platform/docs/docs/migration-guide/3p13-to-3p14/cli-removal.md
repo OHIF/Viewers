@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 11
 sidebar_label: 'OHIF CLI removal'
 title: 'OHIF CLI removal'
 summary: The old OHIF CLI has been removed; this page maps every CLI command to its replacement (pnpm add + pluginConfig.json, create-ohif, the pnpm run plugin helper, and directory entries) and links the porting guide for CLI-era extensions and modes.
