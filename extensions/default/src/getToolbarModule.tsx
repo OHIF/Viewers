@@ -1,6 +1,7 @@
 import { utils } from '@ohif/ui-next';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
+import ToolbarModeSelectorWithServices from './Toolbar/ToolbarModeSelector';
 
 // legacy
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
@@ -41,6 +42,11 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'ohif.layoutSelector',
       defaultComponent: props =>
         ToolbarLayoutSelectorWithServices({ ...props, commandsManager, servicesManager }),
+    },
+    {
+      name: 'ohif.modeSelector',
+      defaultComponent: props =>
+        ToolbarModeSelectorWithServices({ ...props, commandsManager, servicesManager }),
     },
     {
       name: 'ohif.progressDropdown',
