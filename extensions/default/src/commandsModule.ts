@@ -1,6 +1,7 @@
 import { Types, DicomMetadataStore, utils } from '@ohif/core';
 import { datasetToDicomBlob, setNonEnumerableInstanceProperty } from './utils/dicomWriter';
 import { registerNaturalizedDatasetsForLocalWadouri } from './utils/registerNaturalizedDatasetForLocalWadouri';
+import { registerStoredInstanceImageIds } from './utils/registerStoredInstanceImageId';
 
 const { downloadBlob } = utils;
 
@@ -35,6 +36,7 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
   reset?: false;
+  restoreCachedLayout?: boolean;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -102,6 +104,17 @@ const commandsModule = ({
         return;
       }
 
+      // Adding a layer is a per-viewport action: it shows the display set in the
+      // one viewport it is given, and leaves `isHydrated` and the segmentation
+      // presentation store alone. Those two are display-set-global ("show this
+      // wherever it logically belongs"), so a viewport re-created after a
+      // per-viewport add re-applies whatever hydration says rather than
+      // inheriting the add. The global statement is made by the hydration
+      // commands (hydrateSecondaryDisplaySet / loadSegmentationDisplaySetsForViewport
+      // in extensions/cornerstone), which record it themselves; the removal
+      // counterpart here is `removeDisplaySetLayer`'s `unhydrate` flag, which
+      // exists because removal has callers that are themselves global.
+      //
       // Add the display set to the viewport
       const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportId,
@@ -135,8 +148,10 @@ const commandsModule = ({
      *
      * @param options.viewportId - The ID of the viewport to remove the layer from
      * @param options.displaySetInstanceUID - The UID of the display set to remove
+     * @param options.unhydrate - Whether this removal also means "stop showing
+     *   this display set anywhere" (see the note below).
      */
-    removeDisplaySetLayer: ({ viewportId, displaySetInstanceUID }) => {
+    removeDisplaySetLayer: ({ viewportId, displaySetInstanceUID, unhydrate = false }) => {
       if (!viewportId || !displaySetInstanceUID) {
         console.warn('Missing required parameters for removeDisplaySetLayer command');
         return;
@@ -166,6 +181,33 @@ const commandsModule = ({
         segmentationService.removeRepresentationsFromViewport(viewportId, {
           segmentationId: displaySetInstanceUID,
         });
+
+        // By default this command is the single-viewport primitive: it removes
+        // the layer from the one viewport it is given and leaves
+        // `displaySet.isHydrated` and the segmentation presentation store alone,
+        // both of which are display-set-global ("show this wherever it
+        // logically belongs"). That is what the viewport overlay menu wants -
+        // its Remove hides the overlay here, and a viewport re-created later
+        // re-applies whatever hydration says. Clearing them unconditionally
+        // would also let a layer *replacement* (remove + add) silently
+        // un-hydrate the display set everywhere.
+        //
+        // `unhydrate: true` is the global statement, used by the removal paths
+        // that are themselves global - the segmentation panel's Remove from
+        // Viewport, and the SEGMENTATION_REMOVED handler in
+        // extensions/cornerstone/src/utils/setUpSegmentationEventHandlers.ts
+        // (which records it itself, before this loop over viewports). Recording
+        // `hydrated: false` rather than dropping the entry keeps the store a
+        // statement of desired state, so a viewport created later converges on
+        // "not shown" instead of replaying an earlier `hydrated: true`.
+        if (unhydrate) {
+          displaySet.isHydrated = false;
+
+          commandsManager.runCommand('updateStoredSegmentationPresentation', {
+            displaySet,
+            hydrated: false,
+          });
+        }
       }
 
       // Get current display sets for the viewport
@@ -344,6 +386,7 @@ const commandsModule = ({
       stageId,
       stageIndex,
       reset = false,
+      restoreCachedLayout = true,
     }: HangingProtocolParams): boolean => {
       const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
@@ -382,7 +425,8 @@ const commandsModule = ({
         }`;
 
         const { viewportGridState } = useViewportGridStore.getState();
-        const restoreProtocol = !reset && viewportGridState[storedHanging];
+        // An explicit preset selection passes restoreCachedLayout: false so the stage layout wins over a stale cached grid
+        const restoreProtocol = !reset && restoreCachedLayout && viewportGridState[storedHanging];
 
         if (
           reset ||
@@ -428,6 +472,9 @@ const commandsModule = ({
           `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
           null
         );
+
+        // An applied protocol is an explicit layout change, so abandon any pending one-up toggle
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
         return true;
       } catch (e) {
         console.error(e);
@@ -505,6 +552,9 @@ const commandsModule = ({
         // Don't apply the layout if the run command returns false
         return;
       }
+
+      // An explicit grid selection abandons any pending one-up toggle; clear only past the onLayoutChange veto
+      useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
@@ -599,6 +649,9 @@ const commandsModule = ({
           findOrCreateViewport,
           isHangingProtocolLayout: true,
         });
+
+        // Toggled back, so drop the stored layout; the store only holds a currently active one-up
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
         // Reset crosshairs after restoring the layout
         setTimeout(() => {
@@ -805,9 +858,7 @@ const commandsModule = ({
           }
           const reportBlob = datasetToDicomBlob(instances[0]);
           const type = defaultContentType || 'application/dicom';
-          await navigator.clipboard.write([
-            new ClipboardItem({ [type]: reportBlob }),
-          ]);
+          await navigator.clipboard.write([new ClipboardItem({ [type]: reportBlob })]);
         };
       }
 
@@ -831,6 +882,11 @@ const commandsModule = ({
             });
           }
         }
+
+        // Identify the stored instances before they reach the metadata store, so
+        // that the display sets made from them know which instance they came
+        // from, and a later save of the same data can extend this series.
+        registerStoredInstanceImageIds(instances, resolvedDataSource);
 
         DicomMetadataStore.addInstances(instances, true);
         for (const instance of instances) {

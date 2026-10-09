@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '../../components';
@@ -122,17 +121,6 @@ function PatientInfo({
   );
 }
 
-PatientInfo.propTypes = {
-  patientName: PropTypes.string,
-  patientSex: PropTypes.string,
-  patientAge: PropTypes.string,
-  MRN: PropTypes.string,
-  thickness: PropTypes.string,
-  thicknessUnits: PropTypes.string,
-  spacing: PropTypes.string,
-  scanner: PropTypes.string,
-  isOpen: PropTypes.bool,
-  showPatientInfoRef: PropTypes.object,
-};
+
 
 export { PatientInfo };

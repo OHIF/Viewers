@@ -199,6 +199,9 @@ const screenShotPaths = {
     brushTool: 'brushTool.png',
     eraserTool: 'eraserTool.png',
   },
+  thresholdRange: {
+    expandedRangePaint: 'expandedRangePaint.png',
+  },
   mprThenRTOverlayNoHydration: {
     mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
     mprPostRTOverlayNoHydration: 'mprPostRTOverlayNoHydration.png',
@@ -245,16 +248,20 @@ const screenShotPaths = {
     noOverlay: 'noOverlay.png',
   },
   multipleSegmentationDataOverlays: {
-    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
   overlappingSegmentationRendering: {
     overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
   },
+  contourSmoothOperation: {
+    smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+    removePointsBigSphereResult: 'removePointsBigSphereResult.png',
+  },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
     intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
+    mergeBigSphereSmallSphereResult: 'mergeBigSphereSmallSphereResult.png',
   },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',

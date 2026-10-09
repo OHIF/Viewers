@@ -25,6 +25,8 @@ yalc.lock
 .npm
 npm-debug.log
 package-lock.json
+# The dependency-audit PR check installs its own dependency with `npm ci`.
+!.scripts/dependency-audit/package-lock.json
 yarn-error.log
 .DS_Store
 .env
@@ -72,3 +74,6 @@ libs/
 link-cs3d.js
 unlink-cs3d.js
 auth.json
+
+# platform/ui-next UMD build emits font assets at the package root
+platform/ui-next/*.woff2

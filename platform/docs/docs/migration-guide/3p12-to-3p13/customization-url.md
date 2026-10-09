@@ -119,6 +119,12 @@ window.config = {
 };
 ```
 
+:::warning Deprecated
+The example uses `workList.variant`, which is still a valid id in 3.14 but will
+be removed in a future release. The phases and the syntax do not change. See the
+[3.13 to 3.14 WorkList guide](../3p13-to-3p14/work-list.md).
+:::
+
 How the phases map onto the boot sequence:
 
 | Phase | When | Scope |

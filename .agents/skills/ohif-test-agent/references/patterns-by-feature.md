@@ -128,8 +128,9 @@ Don't add a stub section here for an untested area. When your target isn't liste
    - One page object per new control. Dialogs follow `DicomTagBrowserPageObject` (reached
      through `DOMOverlayPageObject`); toolbar buttons get a getter on `MainToolbarPageObject`.
    - Add a `data-cy` to any control that lacks one.
-   - **Verify the real effect, not a proxy** — drag and screenshot that the image moved via
-     `locator: viewportPageObject.grid`, not just that a button gained `data-active`.
+   - **Verify the real effect, not a proxy** — drag, then capture the pane with
+     `checkForViewportScreenshot` to show the image moved, not just that a button gained
+     `data-active`.
 
 **Example — user preferences / hotkeys (no seed today):** open the options menu and User
 Preferences dialog (options-menu accessor on `DOMOverlayPageObject` + a `userPreferences`

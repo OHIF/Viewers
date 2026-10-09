@@ -2,16 +2,14 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Header, Icons, useModal } from '@ohif/ui-next';
+import { Header, useModal } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
-import HeaderPatientInfo from './HeaderPatientInfo';
-import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
 import { preserveQueryParameters } from '@ohif/app';
 import { Types } from '@ohif/core';
 
 function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
-  const { servicesManager, extensionManager, commandsManager } = useSystem();
+  const { servicesManager, extensionManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   const navigate = useNavigate();
@@ -50,6 +48,12 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   const UserPreferencesModal = customizationService.getCustomization(
     'ohif.userPreferencesModal'
   ) as Types.MenuComponentCustomization;
+
+  // Whatever fills the right side of the menu bar, in order: undo/redo then
+  // patient info by default. Each item is rendered as a component, so it can
+  // bring its own hooks, and reordering the list reorders the header.
+  const rightSideItems =
+    customizationService.getCustomization('ohif.headerRightSide')?.items ?? [];
 
   const menuOptions = [
     {
@@ -105,38 +109,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
       Secondary={<Toolbar buttonSection="secondary" />}
-      PatientInfo={
-        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
-          <HeaderPatientInfo
-            servicesManager={servicesManager}
-            appConfig={appConfig}
-          />
-        )
-      }
-      UndoRedo={
-        <div className="text-primary flex cursor-pointer items-center">
-          <Button
-            variant="ghost"
-            className="hover:bg-muted"
-            data-cy="undo-btn"
-            onClick={() => {
-              commandsManager.run('undo');
-            }}
-          >
-            <Icons.Undo className="" />
-          </Button>
-          <Button
-            variant="ghost"
-            className="hover:bg-muted"
-            data-cy="redo-btn"
-            onClick={() => {
-              commandsManager.run('redo');
-            }}
-          >
-            <Icons.Redo className="" />
-          </Button>
-        </div>
-      }
+      RightSide={rightSideItems.map((Item, index) => (
+        // The list is static per configuration, so the index is a stable key.
+        <Item key={index} />
+      ))}
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar buttonSection="primary" />

@@ -72,11 +72,13 @@ function InputMultiSelectRoot({ options, value, onChange, children }: InputMulti
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
 
-  const selectedSet = React.useMemo(() => new Set(value), [value]);
-  const normalized = React.useMemo(() => options.map(normalizeOption), [options]);
-  const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return normalized;
+  const selectedSet = new Set(value);
+  const normalized = options.map(normalizeOption);
+  const q = query.trim().toLowerCase();
+  let filtered: NormalizedOption[];
+  if (!q) {
+    filtered = normalized;
+  } else {
     // Prefix matches rank above substring matches (typing "PT" lists PT before CTPT).
     const prefixMatches: NormalizedOption[] = [];
     const substringMatches: NormalizedOption[] = [];
@@ -89,8 +91,8 @@ function InputMultiSelectRoot({ options, value, onChange, children }: InputMulti
         substringMatches.push(opt);
       }
     }
-    return [...prefixMatches, ...substringMatches];
-  }, [normalized, query]);
+    filtered = [...prefixMatches, ...substringMatches];
+  }
 
   React.useEffect(() => {
     function handleDoc(event: MouseEvent) {
@@ -107,7 +109,7 @@ function InputMultiSelectRoot({ options, value, onChange, children }: InputMulti
   const [coords, setCoords] = React.useState<Coords | null>(null);
 
   // Prefer placing the overlay below the field; flip above if there's more space upward.
-  const measure = React.useCallback(() => {
+  const measure = () => {
     const anchor = fieldRef.current;
     if (!anchor) return;
     const rect = anchor.getBoundingClientRect();
@@ -119,7 +121,7 @@ function InputMultiSelectRoot({ options, value, onChange, children }: InputMulti
     const maxHeight = Math.max(120, Math.min(300, available - gutter));
     const top = preferBelow ? rect.bottom : Math.max(0, rect.top - maxHeight);
     setCoords({ left: rect.left, top, width: rect.width, maxHeight });
-  }, []);
+  };
 
   React.useLayoutEffect(() => {
     if (open) measure();
@@ -137,21 +139,15 @@ function InputMultiSelectRoot({ options, value, onChange, children }: InputMulti
     };
   }, [open, measure]);
 
-  const remove = React.useCallback(
-    (val: string) => onChange(value.filter(v => v !== val)),
-    [value, onChange]
-  );
+  const remove = (val: string) => onChange(value.filter(v => v !== val));
 
-  const toggle = React.useCallback(
-    (val: string) => {
-      const next = selectedSet.has(val) ? value.filter(v => v !== val) : [...value, val];
-      onChange(next);
-      setQuery('');
-    },
-    [selectedSet, value, onChange]
-  );
+  const toggle = (val: string) => {
+    const next = selectedSet.has(val) ? value.filter(v => v !== val) : [...value, val];
+    onChange(next);
+    setQuery('');
+  };
 
-  const clear = React.useCallback(() => onChange([]), [onChange]);
+  const clear = () => onChange([]);
 
   const ctx: IMSContext = {
     value,

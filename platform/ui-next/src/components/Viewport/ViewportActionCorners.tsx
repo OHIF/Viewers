@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 export enum ViewportActionCornersLocations {
@@ -72,21 +65,18 @@ function Container({ children }: { children: ReactNode }) {
     [ViewportActionCornersLocations.rightMiddle]: null,
   });
 
-  const registerCorner = useCallback(
-    (location: ViewportActionCornersLocations, children: ReactNode) => {
-      setCorners(prev => {
-        // Only update if the children are different to avoid unnecessary renders
-        if (prev[location] === children) {
-          return prev;
-        }
-        return {
-          ...prev,
-          [location]: children,
-        };
-      });
-    },
-    []
-  );
+  const registerCorner = (location: ViewportActionCornersLocations, children: ReactNode) => {
+    setCorners(prev => {
+      // Only update if the children are different to avoid unnecessary renders
+      if (prev[location] === children) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [location]: children,
+      };
+    });
+  };
 
   return (
     <ViewportActionCornersContext.Provider value={{ registerCorner }}>

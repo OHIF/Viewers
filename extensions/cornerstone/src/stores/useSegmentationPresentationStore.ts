@@ -56,16 +56,66 @@ type SegmentationPresentationStore = {
   ) => string | undefined;
 
   /**
-   * Adds a new segmentation presentation state.
+   * Adds or replaces a segmentation presentation item.
+   *
+   * Items are identified by their `segmentationId`: an existing entry for the
+   * same segmentation is replaced rather than appended.  Appending would let
+   * hydrate -> remove -> hydrate accumulate duplicate entries for one
+   * segmentation, and the viewport applies every entry, so the same
+   * representation would be added more than once.
    *
    * @param presentationId - The presentation ID.
-   * @param segmentationPresentation - The `SegmentationPresentation` to add.
-   * @param servicesManager - The services manager instance.
+   * @param segmentationPresentationItem - The item to add or replace.
    */
   addSegmentationPresentationItem: (
     presentationId: string,
     segmentationPresentationItem: SegmentationPresentationItem
   ) => void;
+
+  /**
+   * Updates the recorded hydration of one segmentation in every presentation
+   * that already holds an entry for it, creating none.
+   *
+   * The store is keyed by the display set a segmentation is hydrated against,
+   * so a segmentation with no referenced display set - one drawn in the client -
+   * has no key of its own to be written under. It is still recorded, under the
+   * key of whatever viewport it was drawn in (see `_getInitialHydrationForSync`
+   * in CornerstoneViewportService), and nothing supersedes that record on its
+   * own - `syncSegmentationPresentation` only ever merges. So a removal
+   * converges the store by rewriting the entries that exist, rather than
+   * inventing a key that every such segmentation would collide under.
+   *
+   * @param segmentationId - The segmentation to restate.
+   * @param value.hydrated - The hydration to record for it.
+   * @param value.type - The representation type, if the caller knows it;
+   *   otherwise each entry keeps the type it has.
+   */
+  setHydrationForSegmentation: (
+    segmentationId: string,
+    value: { hydrated: boolean | null; type?: SegmentationPresentationItem['type'] }
+  ) => void;
+
+  /**
+   * Records the representations a viewport is currently rendering, without
+   * changing hydration.
+   *
+   * `hydrated` is display-set-global ("show this wherever it logically
+   * belongs") and is owned by the hydration paths, which write it through
+   * `addSegmentationPresentationItem`. A viewport's live representations are
+   * not: a segmentation added from the viewport data overlay menu is meant for
+   * that one pane, and the presentation id is shared by every pane over the
+   * same background. So for a segmentation the store already knows about this
+   * keeps the recorded `hydrated` and only refreshes `type`/`config`; the
+   * caller's `hydrated` applies only to a segmentation with no entry yet.
+   *
+   * Entries the viewport is not rendering are kept as they are - a pane that
+   * was gated out of automatic hydration, or one the user removed the overlay
+   * from, must not erase the record the other panes resolve against.
+   *
+   * @param presentationId - The presentation ID.
+   * @param items - One item per representation the viewport renders.
+   */
+  syncSegmentationPresentation: (presentationId: string, items: SegmentationPresentation) => void;
 
   /**
    * Gets the current segmentation presentation ID.
@@ -163,6 +213,11 @@ const _getSegmentationPresentationId = ({
 
   const segmentationPresentationArr = [];
 
+  // Keyed by the exact display set UIDs. Two display sets can share a frame of
+  // reference while being unrelated series, so the frame of reference is not
+  // usable as a key - which viewports a hydrated segmentation belongs in is a
+  // relation, resolved at read time by getViewportPresentations rather than
+  // encoded here.
   segmentationPresentationArr.push(...nonOverlayUIDs);
 
   // Uncomment if unique indexing is needed
@@ -193,7 +248,8 @@ const createSegmentationPresentationStore = set => ({
     set({ segmentationPresentationStore: {} }, false, 'clearSegmentationPresentationStore'),
 
   /**
-   * Adds a new segmentation presentation item to the store.
+   * Adds a new segmentation presentation item to the store, replacing any
+   * existing item for the same segmentation.
    *
    * segmentationPresentationItem: {
    *   segmentationId: string;
@@ -207,18 +263,112 @@ const createSegmentationPresentationStore = set => ({
     segmentationPresentationItem: SegmentationPresentationItem
   ) =>
     set(
-      state => ({
-        segmentationPresentationStore: {
-          ...state.segmentationPresentationStore,
-          [presentationId]: [
-            ...(state.segmentationPresentationStore[presentationId] || []),
-            segmentationPresentationItem,
-          ],
-        },
-      }),
+      state => {
+        const existingItems = state.segmentationPresentationStore[presentationId] || [];
+
+        // Upsert by segmentationId: the store records the desired state of a
+        // segmentation for this presentation, so there is exactly one entry per
+        // segmentation and a later write (hydrate, or remove-from-viewport)
+        // supersedes an earlier one.
+        const otherItems = existingItems.filter(
+          item => item.segmentationId !== segmentationPresentationItem.segmentationId
+        );
+
+        return {
+          segmentationPresentationStore: {
+            ...state.segmentationPresentationStore,
+            [presentationId]: [...otherItems, segmentationPresentationItem],
+          },
+        };
+      },
       false,
       'addSegmentationPresentationItem'
     ),
+
+  /**
+   * Restates the hydration of a segmentation wherever it is already recorded.
+   * See the type declaration for why this updates in place instead of writing
+   * an entry of its own.
+   */
+  setHydrationForSegmentation: (
+    segmentationId: string,
+    { hydrated, type }: { hydrated: boolean | null; type?: SegmentationPresentationItem['type'] }
+  ) =>
+    set(
+      state => {
+        const updated: Record<string, SegmentationPresentation> = {};
+        const entries = Object.entries(state.segmentationPresentationStore) as [
+          string,
+          SegmentationPresentation,
+        ][];
+
+        for (const [presentationId, items] of entries) {
+          if (!items?.some(item => item.segmentationId === segmentationId)) {
+            continue;
+          }
+
+          updated[presentationId] = items.map(item =>
+            item.segmentationId === segmentationId
+              ? { ...item, hydrated, type: type ?? item.type }
+              : item
+          );
+        }
+
+        // Nothing recorded for this segmentation is not something to state, and
+        // returning the state unchanged leaves subscribers alone.
+        if (!Object.keys(updated).length) {
+          return state;
+        }
+
+        return {
+          segmentationPresentationStore: { ...state.segmentationPresentationStore, ...updated },
+        };
+      },
+      false,
+      'setHydrationForSegmentation'
+    ),
+
+  /**
+   * Records the representations a viewport is currently rendering, keeping the
+   * hydration already recorded for each of them. See the type declaration for
+   * why hydration is not the viewport's to state.
+   */
+  syncSegmentationPresentation: (presentationId: string, items: SegmentationPresentation) => {
+    // Nothing rendered is not a statement that nothing belongs here, and
+    // storePresentation runs on every viewport teardown, so skip the write
+    // rather than notifying subscribers of an unchanged store.
+    if (!items?.length) {
+      return;
+    }
+
+    set(
+      state => {
+        const merged = [...(state.segmentationPresentationStore[presentationId] || [])];
+
+        for (const item of items) {
+          const index = merged.findIndex(
+            existing => existing.segmentationId === item.segmentationId
+          );
+
+          if (index === -1) {
+            merged.push(item);
+            continue;
+          }
+
+          merged[index] = { ...item, hydrated: merged[index].hydrated };
+        }
+
+        return {
+          segmentationPresentationStore: {
+            ...state.segmentationPresentationStore,
+            [presentationId]: merged,
+          },
+        };
+      },
+      false,
+      'syncSegmentationPresentation'
+    );
+  },
 
   /**
    * Sets the segmentation presentation for a given presentation ID. A segmentation
