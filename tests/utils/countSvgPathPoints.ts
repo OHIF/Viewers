@@ -4,10 +4,9 @@ import type { Locator } from '@playwright/test';
 const UNSUPPORTED_PATH_CHARACTER = /[^MLZ\d\s.,-]/;
 
 /**
- * Counts the vertices of an SVG path by counting its M and L commands, one per point
- * in Cornerstone's `drawPath` output. Throws if the path uses any other command, such
- * as a curve, since the count would be wrong. A path without a `d` counts as 0.
- * Pass it to `expect.poll` so the count retries.
+ * Counts the vertices of an SVG path by counting its M and L commands. Throws on any
+ * other command. A path without a `d` counts as 0. Pass it to `expect.poll` so the
+ * count retries.
  */
 const countSvgPathPoints = async ({ path }: { path: Locator }): Promise<number> => {
   const d = (await path.getAttribute('d')) ?? '';
