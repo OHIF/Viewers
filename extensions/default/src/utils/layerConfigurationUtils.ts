@@ -145,10 +145,24 @@ export function configureViewportForLayerRemoval(params: {
 
   const { viewportId } = viewport;
 
-  // Filter out the display set to remove
-  viewport.displaySetInstanceUIDs = currentDisplaySetUIDs.filter(
+  // Filter out the display set to remove.
+  const remainingDisplaySetUIDs = currentDisplaySetUIDs.filter(
     uid => uid !== displaySetInstanceUID
   );
+  const removedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const referencedDisplaySetInstanceUID = removedDisplaySet?.referencedDisplaySetInstanceUID;
+
+  // An unhydrated overlay can be the viewport's only configured display set even
+  // though it renders its referenced images underneath. Preserve those images
+  // when the overlay itself is removed.
+  viewport.displaySetInstanceUIDs =
+    remainingDisplaySetUIDs.length === 0 &&
+    removedDisplaySet?.isOverlayDisplaySet &&
+    referencedDisplaySetInstanceUID &&
+    referencedDisplaySetInstanceUID !== displaySetInstanceUID &&
+    displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID)
+      ? [referencedDisplaySetInstanceUID]
+      : remainingDisplaySetUIDs;
 
   if (!viewport.viewportOptions) {
     viewport.viewportOptions = {};
