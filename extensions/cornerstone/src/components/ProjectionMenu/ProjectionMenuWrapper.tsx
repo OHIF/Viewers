@@ -1,0 +1,95 @@
+import React, { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSystem } from '@ohif/core';
+import {
+  Button,
+  Icons,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  useIconPresentation,
+} from '@ohif/ui-next';
+import ProjectionMenu from './ProjectionMenu';
+
+type ProjectionMenuWrapperProps = {
+  viewportId: string;
+  location: string;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+  disabled?: boolean;
+};
+
+export function ProjectionMenuWrapper(props: ProjectionMenuWrapperProps): ReactNode {
+  const { viewportId, location, isOpen = false, onOpen, onClose, disabled, ...rest } = props;
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
+  const { t } = useTranslation('Buttons');
+
+  const handleOpenChange = (openState: boolean) => {
+    if (openState) {
+      onOpen?.();
+    } else {
+      onClose?.();
+    }
+  };
+
+  const { servicesManager } = useSystem();
+  const { toolbarService } = servicesManager.services;
+
+  const { align, side } = toolbarService.getAlignAndSide(location);
+
+  const Icon = (
+    <Icons.ByName
+      name="viewport-projection"
+      className={iconClassName}
+    />
+  );
+
+  return (
+    <Popover
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+    >
+      <PopoverTrigger
+        asChild
+        className="flex items-center justify-center"
+      >
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              disabled={disabled}
+              icon="viewport-projection"
+              {...rest}
+              {...containerProps}
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('Projection')}
+              disabled={disabled}
+            >
+              {Icon}
+            </Button>
+          )}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent
+        className="border-none bg-transparent p-0 shadow-none"
+        side={side}
+        align={align}
+        alignOffset={0}
+        sideOffset={5}
+      >
+        <ProjectionMenu
+          className="w-full"
+          viewportId={viewportId}
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+export default ProjectionMenuWrapper;
