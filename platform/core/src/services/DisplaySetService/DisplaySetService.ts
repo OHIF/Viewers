@@ -94,6 +94,12 @@ export type UseMetadataDisplaySetCustomization = {
    * `stackImage` from `@ohif/extension-default`.
    */
   classifiers?: CreateDisplaySetSplitRulesOptions['classifiers'];
+  /**
+   * Named series functions that raw series facts reference with
+   * `{ name, function: '<name>' }`, in addition to the built-in
+   * `planeGeometry` and `timeClusters`. Code, supplied by an extension.
+   */
+  seriesFunctions?: CreateDisplaySetSplitRulesOptions['seriesFunctions'];
   /** Named `customAttributes` recipes that raw rules reference with `preset`. */
   customAttributePresets?: CreateDisplaySetSplitRulesOptions['customAttributePresets'];
   /** Factory converting a matched instance group into an OHIF display set. */
@@ -535,6 +541,7 @@ export default class DisplaySetService extends PubSubService {
     if (!compiled) {
       compiled = compileSplitRules(config.splitRules, {
         classifiers: config.classifiers,
+        seriesFunctions: config.seriesFunctions,
         customAttributePresets: config.customAttributePresets,
       });
       compiledSplitRulesCache.set(config.splitRules, compiled);
@@ -877,9 +884,9 @@ export default class DisplaySetService extends PubSubService {
    * Adds new instances to an existing split-rule display set, through its
    * `extendInstances` hook, and publishes the change.
    *
-   * The series facts go with the instances only when the group's rule is the
-   * rule that built the display set: the facts belong to one rule, and a
-   * display set sorts with its own rule.
+   * The series context of the re-split goes with the instances. Every rule of
+   * the split shares one context, so the context fits the display set even
+   * when another rule placed the new instances.
    *
    * @returns the display set, or undefined when it has no `extendInstances`
    *   hook or the hook declines the instances.
@@ -893,7 +900,7 @@ export default class DisplaySetService extends PubSubService {
     const updated = displaySet.extendInstances?.(
       newInstances,
       {
-        series: displaySet.splitRuleId === group.matchedRule.id ? group.series : undefined,
+        series: group.series,
         compareInstances: config.compareInstances,
       },
       this

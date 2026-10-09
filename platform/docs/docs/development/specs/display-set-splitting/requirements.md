@@ -114,7 +114,8 @@ groups them, how it orders them, and what attributes the resulting display sets 
 **Claim.** An instance is claimed by the first rule, in priority order, that matches the instance.
 
 **Series fact.** A value that a rule computes once from all of the instances of a series, for
-example the frame count of the series.
+example the frame count of the series. All rules of a split share the series facts. The
+[series context](./series-context.md) specification defines them.
 
 **Split key.** The identity of the group that created a display set. The split key holds the rule
 id and the rule's grouping values. The split key holds no position.
@@ -373,7 +374,7 @@ field. *Satisfies `SP-DESC-2`.*
 | `description` | Text that states what the rule does |
 | `groupId` | The group of related rules that the rule belongs to (`SP-PIPE-15`). Default: the rule id |
 | `matches` | A `RawCondition` — `attribute` tests, `classifier`, `seriesFact`, `all` / `any` / `not`, or an `expression` string |
-| `series` | A list of `RawSeriesFact` — a named boolean with `scope` `first`, `every`, `some`, or `mixed`, an optional `gate`, and an optional `minInstances` |
+| `series` | A list of `RawSeriesFact` — a named boolean with `scope` `first`, `every`, `some`, or `mixed`, an optional `gate`, and an optional `minInstances`; a named `expression` value; or a named series `function` with `args`. See [series context](./series-context.md) |
 | `groupBy`, `runBy` | `RawValue` entries — a tag name, `{ attribute, number, absent, bucket }`, `{ condition }`, `{ template }`, `{ join, parts }`, or `{ expression }` |
 | `compareInstances` | `{ attribute, number?, descending? }`, or `{ expression }` that reads only `a`, `b`, and `context` |
 | `viewportTypes` | A list of viewport type names |
@@ -438,7 +439,7 @@ flowchart TD
   P --> E1
   subgraph ENG["6 · groupInstancesBySplitRules — one series, @cornerstonejs/metadata"]
     E1["6a · Rule order<br/>ascending priority, then rule id"]
-    E2["6b · Series facts<br/>named booleans, once per rule"]
+    E2["6b · Series context<br/>named values, one context for all rules<br/>the first rule that computes a name wins"]
     E3["6c · Claim<br/>each instance → the first rule whose matches is true"]
     E4["6d · Group<br/>groupBy values, then runBy runs<br/>splitKey = [ruleId, ...values, runKey]"]
     E5["6e · Order the instances<br/>acquisition → sortInstances →<br/>rule.compareInstances → host compareInstances"]
@@ -601,9 +602,9 @@ display set, and shall not let `customAttributes` overwrite those three attribut
 `extendInstances`. *Satisfies `SP-READ-4`, `SP-READ-6`, `SP-DET-3`.*
 
 > `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds these four names, and also
-> `__proto__`, because an assignment of `__proto__` replaces the prototype of the display set. The
-> reconciliation compares `splitRuleId` with the id of the matched rule, to decide if the series
-> facts go to `extendInstances`, so a rule must not be able to change `splitRuleId`.
+> `__proto__`, because an assignment of `__proto__` replaces the prototype of the display set. A
+> user and a hanging protocol read `splitRuleId` to find the rule that made a display set
+> (`SP-READ-4`), so a rule must not be able to change `splitRuleId`.
 
 **SP-PIPE-15**
 A rule may have a `groupId`. The display set factory shall set `splitGroupId` to the `groupId` of
@@ -770,7 +771,7 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | 4 | Is the agent skill of `SP-GEN-1` a part of this pull request? | **Resolved.** The skill is a separate change. |
 | 5 | The prefix `SP` must go into §1 of the specification register (`specs/index.md`). | **Deferred.** The register is not on this branch. Add the prefix on a branch that holds the register. |
 | 6 | A split of the frames of one multiframe instance (`SP-FIX-8`), for example an MR instance with interleaved echo 1 and echo 2 frames. | **Deferred — follow-up pull request.** Out of scope for this change, and intended functionality. The engine claims and groups whole instances today, so the work needs a claim and a grouping for each frame. |
-| 7 | A series fact in the raw form is a named boolean only. Can the CT scout example `split/scoutSeries.jsonc` use the raw form? | **Resolved** in commit `1f2911cf4b`. The example uses the boolean series fact `hasScout` (scope `mixed`: the series mixes images with and without `LOCALIZER` in `ImageType`), and then matches each localizer instance. |
+| 7 | A series fact in the raw form is a named boolean only. Can the CT scout example `split/scoutSeries.jsonc` use the raw form? | **Resolved** in commit `1f2911cf4b`. The example uses the boolean series fact `hasScout` (scope `mixed`: the series mixes images with and without `LOCALIZER` in `ImageType`), and then matches each localizer instance. The [series context](./series-context.md) specification adds series facts that hold any value. |
 | 8 | What does the system do with a rule that has an error? | **Resolved.** The system does not drop the rule. A dropped rule can be a critical rule for the clinician, so the system creates no display sets and shows an error that names the rule (`SP-SAFE-7`, `SP-PIPE-13`). `SP-SAFE-2` states the guarantee of the safe functions: a valid rule always either applies or does not apply. An error in the rule set blocks the load of every study, as other errors that prevent a study load do. |
 | 9 | What mechanism lets a deployment deny a rule attribute (`SP-SAFE-6`)? | **Deferred — future item.** |
 | 10 | Must a run-time failure of a rule also stop display set creation, as `SP-SAFE-7` does for a rule with an error? | **Resolved — yes.** `SP-SAFE-3` and `SP-PIPE-9` require the stop and an error that names the rule and the series. `SP-PIPE-14` names the field too. |
@@ -793,6 +794,7 @@ use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 | `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `rawDisplaySetSelector.test.ts` of `@cornerstonejs/metadata` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
 | `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `rawDisplaySetSelector.test.ts`, `expression.test.ts`) |
+| `SP-SUM`, `SP-CTX`, `SP-SFN`, `SP-EXM` | See §8 of the [series context](./series-context.md) specification |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
 | `SP-SAFE-3`, `SP-PIPE-9` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |
 | `SP-SAFE-7`, `SP-PIPE-13` | `compileSplitRules.test.ts` ("a rule that does not compile is reported, not dropped") and `DisplaySetService.test.ts`, the compile part of `split rule errors` |

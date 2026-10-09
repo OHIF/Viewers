@@ -159,7 +159,7 @@ export function makeDisplaySetFromInstanceGroup(
         sopClassUids: sopClassUidsOf(currentInstances),
         viewportTypes: matchedRule.viewportTypes,
       },
-      { instances: [...currentInstances], splitNumber }
+      { instances: [...currentInstances], splitNumber, series: order.series }
     );
     if (!customAttributes) {
       return;
@@ -199,8 +199,8 @@ export function makeDisplaySetFromInstanceGroup(
       if (!instancesToAdd.length) {
         return undefined;
       }
-      // The facts of the re-split, which saw the whole series including the new
-      // instances; a re-split by another rule leaves the earlier facts in place.
+      // The series context of the re-split, which saw the whole series
+      // including the new instances.
       if (options.series) {
         order.series = options.series;
       }

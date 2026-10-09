@@ -59,6 +59,8 @@ useMetadataDisplaySet: {
   splitRules: Record<string, RawSplitRule>;
   /** named instance classifiers the rules reference, e.g. { stackImage } (code) */
   classifiers?: Record<string, (instance) => boolean>;
+  /** named series functions the series facts reference, in addition to planeGeometry and timeClusters (code) */
+  seriesFunctions?: Record<string, (instances, { series, args }) => unknown>;
   /** builds an OHIF display set from a matched instance group */
   createDisplaySetFromGroup: (group, { splitNumber, compareInstances }) => DisplaySet;
   /** optional host comparator (code), consulted after a rule's own compareInstances */
@@ -112,7 +114,7 @@ viewer loads from the URL:
 {
   "priority": -1,                                  // evaluation order; null turns it off
   "viewportTypes": ["stack"],                      // preferred viewport hints
-  "series": [                                      // facts, evaluated once per series
+  "series": [                                      // facts, once per series, shared by every rule
     { "name": "hasScout", "scope": "mixed",
       "when": { "attribute": "ImageType", "contains": "LOCALIZER" } }
   ],
@@ -158,7 +160,8 @@ useMetadataDisplaySet: {
 `@ohif/extension-default` registers `stackImage`. A rule that references a
 classifier that no code registered does not compile, and so stops display set
 creation (see [Rule errors](#rule-errors)). Named `customAttributePresets` work
-the same way for custom attributes.
+the same way for custom attributes, and named `seriesFunctions` for series
+facts (see [The series context](#the-series-context)).
 
 A mode or an extension in TypeScript can also supply a rule that is already
 compiled — plain functions for `matches`, `groupBy` and the other fields — or a
@@ -206,6 +209,106 @@ The top-level `useMetadataDisplaySet.compareInstances` is a comparator function
 `(a, b, context)` that code supplies. The engine consults it after the rule's
 own `compareInstances`, and the display set factory applies both again whenever
 it re-sorts a display set.
+
+### The series context
+
+Some splits need a value of the whole series in a test of one instance: the
+slice spacing, the position of each slice on a regular lattice, the time
+sweeps of an ultrasound series. A rule computes such a value once, in its
+`series` list, and every part of the rule reads it as `context.series.<name>`.
+
+A series fact has one of three forms:
+
+| Form | Value |
+|---|---|
+| `{ "name", "scope", "when", "gate"?, "minInstances"? }` | A boolean: `when` applied to the first instance, to every instance, to some instances, or `mixed` (some pass and some fail). |
+| `{ "name", "expression" }` | Any value. The expression gets `instances` (the whole series) and `series` (the facts so far), for example `"minOf(instances, InstanceNumber)"` or `"series.geometry.spacing * 2"`. |
+| `{ "name", "function", "args"? }` | The value of a named series function. |
+
+Two series functions are built in:
+
+- **`planeGeometry`** — the dominant image plane, the slice spacing (the most
+  frequent gap), and the slices on a regular lattice of that spacing. It
+  returns `normal`, `origin`, `spacing`, `regularCount`, `irregularCount`,
+  `positions`, `complete` (no missing lattice position), `duplicates`,
+  `distance` (mm along the normal, for each slice) and `index` (the lattice
+  position of each regular slice). `distance` and `index` are keyed by
+  `SOPInstanceUID`. `args.tolerance` (default `0.1`) is the fraction of the
+  spacing a slice may be off the lattice.
+- **`timeClusters`** — clusters of contiguous acquisition time. It returns
+  `time` and `start` (the start time of the cluster of each instance), both
+  keyed by `SOPInstanceUID`, and `first`, `clusters` and `untimedCount`. A
+  gap of more than `args.maxGap` seconds (default `30`) starts a new cluster.
+
+A per-instance expression reads a map with an index:
+`"defined(context.series.geometry.index[SOPInstanceUID])"`. A
+`customAttributes.fromFirstInstance` expression reads the context too, for
+example to put the spacing in the `SeriesDescription`.
+
+**All rules share one series context, and the first rule that computes a name
+wins.** The rules compute their facts in priority order. A later rule that
+declares a name that is already in the context reads the earlier value, and does
+not compute the name again. So:
+
+- a rule declares every fact it reads, and still works alone, for example when
+  the earlier rule is turned off;
+- two rules that divide one series, such as "the regular slices" and "the other
+  images", read one computed lattice, so each instance goes to exactly one of
+  them;
+- two declarations of one name must mean the same value. Give a fact a name
+  that says what it computes.
+
+#### Writing a series function
+
+Write a series function when a summary needs a sort, a mode, or geometry that
+an expression cannot compute. Code registers it by name, and a rule names it:
+
+```ts
+import type { SeriesFunction } from '@cornerstonejs/metadata';
+
+// The most frequent image size of the series, e.g. "512x512".
+// A tie goes to the smaller text, so the result does not depend on input order.
+const dominantSize: SeriesFunction = instances => {
+  const counts = new Map<string, number>();
+  for (const { Rows, Columns } of instances) {
+    const size = `${Rows}x${Columns}`;
+    counts.set(size, (counts.get(size) ?? 0) + 1);
+  }
+  const [best] = [...counts].sort(([a, n], [b, m]) => m - n || (a < b ? -1 : 1));
+  return best?.[0];
+};
+
+customizationService.setCustomizations({
+  useMetadataDisplaySet: { seriesFunctions: { $merge: { dominantSize } } },
+});
+```
+
+```jsonc
+"series": [{ "name": "dominantSize", "function": "dominantSize" }],
+"matches": { "expression": "`${Rows}x${Columns}` === context.series.dominantSize" }
+```
+
+A series function must:
+
+- be pure, and give the same result for any order of `instances`. Break each
+  tie with a value of the instance, for example its `SOPInstanceUID`;
+- return plain data. For a result for each instance, return a map keyed by
+  `SOPInstanceUID` (`instanceKey` from `@cornerstonejs/metadata` gives the key),
+  so that a rule reads it as `context.series.<name>[SOPInstanceUID]`;
+- not return an ordinal for use in `groupBy`. Return a value that stays the
+  same when later instances arrive, for example the start time of a cluster;
+- read its options from `args`, and earlier facts from `series`.
+
+A rule that names a function that no code registered does not compile (see
+[Rule errors](#rule-errors)).
+
+Three URL modules show the forms:
+
+| Module | Case |
+|---|---|
+| `split/regularVolume` | A volume series with some irregular images: the regular slices become one volume display set, and the other images stay with the default rules. |
+| `split/volumeProjectionOrder` | Replaces `volume3d` under its own id, and orders its slices by the distance along the normal from one origin. |
+| `split/usTimeClusters` | An ultrasound series of several sweeps: one display set for each run of images with no gap longer than 20 seconds. |
 
 :::note Composing text from attributes is intended
 A rule can build a display set's `label` or `SeriesDescription` out of any
@@ -279,8 +382,11 @@ stays as it is.
 a `runBy` run is keyed by its first instance, not by its run number. A display
 set keeps the key of the group that created it.
 
-`extendInstances` receives the rule's series facts from the re-split, so the
-re-sort of the display set uses the facts that the split used.
+`extendInstances` receives the series context of the re-split, so the re-sort
+of the display set uses the facts that the split used. The re-split computes
+the context again from the whole series, but an instance never moves: a late
+slice that changes the slice lattice, or a late image that joins two time
+clusters, does not take instances out of an existing display set.
 
 `splitNumber` is only an index into the engine's group list, and shifts when a
 new group appears. Do not use it as a stable identity in `customAttributes`.
@@ -346,9 +452,10 @@ Result, for four CT series:
 | D | 12 axial, the first one an unflagged scout | `volume3d` [all 12] |
 
 Series D is the limit of this rule: a scanner that does not set `LOCALIZER` in
-`ImageType` gives the rule nothing to detect. Recognizing its scout needs a
-series fact that is a number (for example, the lowest `InstanceNumber`), and
-the raw selector has boolean series facts only.
+`ImageType` gives the rule nothing to detect. A value fact can help there, for
+example `{ "name": "firstNumber", "expression": "minOf(instances, InstanceNumber)" }`,
+or the `planeGeometry` series function, which leaves an image off the slice
+lattice (see [The series context](#the-series-context)).
 
 ## Worked example: one display set per radiograph
 

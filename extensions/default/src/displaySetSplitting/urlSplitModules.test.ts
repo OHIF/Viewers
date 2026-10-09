@@ -57,7 +57,15 @@ describe('split URL modules', () => {
       .filter(file => file.endsWith('.jsonc'))
       .map(file => file.replace(/\.jsonc$/, ''));
     expect(names).toEqual(
-      expect.arrayContaining(['enableNewSplit', 'scoutSeries', 'dwiByBValue', 'dxCrSingleImages'])
+      expect.arrayContaining([
+        'enableNewSplit',
+        'scoutSeries',
+        'dwiByBValue',
+        'dxCrSingleImages',
+        'regularVolume',
+        'volumeProjectionOrder',
+        'usTimeClusters',
+      ])
     );
     for (const name of names) {
       const module = readModule(name);
@@ -135,6 +143,85 @@ describe('split URL modules', () => {
 
     it('keeps an MG series together', () => {
       expect(splitSeries('MG', 4)).toEqual([['defaultImageRule', 4]]);
+    });
+  });
+
+  describe('series context modules', () => {
+    const CT_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.2';
+    const US_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.6.1';
+    const ct = (z: number, InstanceNumber: number) => ({
+      ...mr(),
+      Modality: 'CT',
+      SeriesDescription: 'AX',
+      SOPClassUID: CT_IMAGE_STORAGE,
+      InstanceNumber,
+      ImageOrientationPatient: [1, 0, 0, 0, 1, 0],
+      ImagePositionPatient: [0, 0, z],
+    });
+    const rows = groups =>
+      groups.map(group => [group.matchedRule.id, group.instances.map(i => i.InstanceNumber)]);
+
+    it('regularVolume makes a volume of the regular slices, and leaves the extra slice', () => {
+      // Slices every 2 mm, and one extra slice at 3.1 mm.
+      const series = [ct(0, 1), ct(2, 2), ct(4, 3), ct(6, 4), ct(3.1, 5)];
+
+      expect(
+        rows(groupInstancesBySplitRules(series as any, compileModule('regularVolume')))
+      ).toEqual([
+        ['regularVolume', [1, 2, 3, 4]],
+        ['volume3d', [5]],
+      ]);
+    });
+
+    it('regularVolume keeps a fully regular series as the default volume', () => {
+      const series = [ct(0, 1), ct(2, 2), ct(4, 3)];
+
+      expect(
+        rows(groupInstancesBySplitRules(series as any, compileModule('regularVolume')))
+      ).toEqual([['volume3d', [1, 2, 3]]]);
+    });
+
+    it('volumeProjectionOrder orders the slices by position, not by InstanceNumber', () => {
+      const series = [ct(4, 1), ct(0, 2), ct(2, 3)];
+
+      expect(
+        rows(groupInstancesBySplitRules(series as any, compileModule('volumeProjectionOrder')))
+      ).toEqual([['volume3d', [2, 3, 1]]]);
+    });
+
+    it('usTimeClusters makes one display set for each sweep, in time order', () => {
+      const us = (AcquisitionTime: string, InstanceNumber: number) => ({
+        ...mr(),
+        Modality: 'US',
+        SeriesDescription: 'Liver',
+        SOPClassUID: US_IMAGE_STORAGE,
+        AcquisitionDate: '20260101',
+        AcquisitionTime,
+        InstanceNumber,
+      });
+      // Two sweeps, 5 minutes apart; the instance numbers do not follow time.
+      const series = [
+        us('100500', 1),
+        us('100505', 2),
+        us('100000', 3),
+        us('100003', 4),
+        us('100006', 5),
+      ];
+      const groups = groupInstancesBySplitRules(series as any, compileModule('usTimeClusters'));
+
+      expect(rows(groups)).toEqual([
+        ['usTimeClusters', [3, 4, 5]],
+        ['usTimeClusters', [1, 2]],
+      ]);
+      expect(
+        groups.map(
+          group =>
+            group.matchedRule.customAttributes(
+              { instance: group.instances[0] },
+              { instances: group.instances, series: group.series }
+            ).SeriesDescription
+        )
+      ).toEqual(['Liver +0 s', 'Liver +300 s']);
     });
   });
 });

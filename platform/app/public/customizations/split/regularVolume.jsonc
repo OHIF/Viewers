@@ -1,0 +1,101 @@
+// URL-loaded customization: regularVolume
+//
+// Problem: a CT, MR, PT or NM series is a volume, except for some images that
+// are not on the regular slice spacing - an extra slice, a slice at another
+// angle, or a re-acquired slice between two positions. The default `volume3d`
+// rule puts all of them in one display set, which is then not reconstructable,
+// so MPR is not available.
+//
+// Fix: the regular slices become one volume display set. The other images
+// stay with the default rules, as if this module were not loaded.
+//
+// How it works:
+//  - `series` computes the series context once. `geometry` uses the built-in
+//    series function `planeGeometry`: the dominant image plane, the slice
+//    spacing (the most frequent gap), and the lattice index of each regular
+//    slice, keyed by SOPInstanceUID. `mixesIrregular` is an expression over
+//    the earlier fact: the series has a complete regular lattice of 3 or more
+//    slices, and also other images. Remove `&& series.geometry.complete` to
+//    accept a lattice with a missing slice.
+//  - `matches` claims an instance only when the series mixes the two kinds,
+//    and the instance has a lattice index. `defined` is needed, because the
+//    index 0 is a valid index.
+//  - `compareInstances` orders the slices by their distance along the normal.
+//  - `customAttributes` adds the spacing to the SeriesDescription.
+//  - `irregularImages` is off (priority null). With priority -1 it puts the
+//    other images into one stack. It declares the same `geometry` fact, but
+//    the first rule that computes a name wins, so `planeGeometry` runs once.
+//
+// Series that this module changes: only series that mix a regular lattice with
+// other images. A fully regular series, and a series with no lattice, keep the
+// default display sets.
+//
+// Load it with `?customization=split/regularVolume`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "regularVolume": {
+            "priority": -2,
+            "description": "Volume series with some irregular images: the regular slices become one volume display set.",
+            "viewportTypes": ["volume", "volume3d", "stack"],
+            "series": [
+              { "name": "geometry", "function": "planeGeometry", "args": { "tolerance": 0.1 } },
+              {
+                "name": "mixesIrregular",
+                "expression": "series.geometry.regularCount >= 3 && series.geometry.irregularCount > 0 && series.geometry.complete"
+              }
+            ],
+            "matches": {
+              "all": [
+                { "classifier": "stackImage" },
+                { "attribute": "Modality", "in": ["CT", "MR", "PT", "NM"] },
+                { "seriesFact": "mixesIrregular" },
+                { "expression": "defined(context.series.geometry.index[SOPInstanceUID])" }
+              ]
+            },
+            "groupBy": ["SeriesInstanceUID"],
+            "compareInstances": {
+              "expression": "context.series.geometry.distance[a.SOPInstanceUID] - context.series.geometry.distance[b.SOPInstanceUID]"
+            },
+            "customAttributes": {
+              "fromFirstInstance": {
+                "SeriesDescription": {
+                  "expression": "`${SeriesDescription} (${context.series.geometry.spacing} mm)`"
+                }
+              }
+            }
+          },
+          "irregularImages": {
+            "priority": null,
+            "description": "Off. With priority -1: the images that regularVolume leaves become one stack.",
+            "viewportTypes": ["stack"],
+            "series": [
+              { "name": "geometry", "function": "planeGeometry", "args": { "tolerance": 0.1 } },
+              {
+                "name": "mixesIrregular",
+                "expression": "series.geometry.regularCount >= 3 && series.geometry.irregularCount > 0 && series.geometry.complete"
+              }
+            ],
+            "matches": {
+              "all": [
+                { "classifier": "stackImage" },
+                { "attribute": "Modality", "in": ["CT", "MR", "PT", "NM"] },
+                { "seriesFact": "mixesIrregular" },
+                { "not": { "expression": "defined(context.series.geometry.index[SOPInstanceUID])" } }
+              ]
+            },
+            "groupBy": ["SeriesInstanceUID"],
+            "customAttributes": {
+              "fromFirstInstance": {
+                "SeriesDescription": { "expression": "`${SeriesDescription} (other images)`" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
