@@ -248,7 +248,6 @@ const screenShotPaths = {
     noOverlay: 'noOverlay.png',
   },
   multipleSegmentationDataOverlays: {
-    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
