@@ -1,5 +1,11 @@
-export default displaySet => {
-  const ViewCodeSequence = displaySet?.images[0]?.ViewCodeSequence[0];
+import type { Types } from '@ohif/core';
+
+type CodeSequenceItem = { CodingSchemeDesignator?: string; CodeValue?: string };
+
+export default (displaySet: Types.DisplaySet) => {
+  const ViewCodeSequence = (
+    displaySet?.instance?.ViewCodeSequence as CodeSequenceItem[] | undefined
+  )?.[0];
   if (!ViewCodeSequence) {
     return undefined;
   }
