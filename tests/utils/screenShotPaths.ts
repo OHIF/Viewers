@@ -256,6 +256,7 @@ const screenShotPaths = {
   },
   contourSmoothOperation: {
     smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+    removePointsBigSphereResult: 'removePointsBigSphereResult.png',
   },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
