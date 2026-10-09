@@ -429,9 +429,10 @@ export class ViewportPageObject {
       },
       normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
         const { path } = params;
+        // Skip the last vertex; the double-click below places it, so it isn't added twice.
         await simulateNormalizedClicksOnElement({
           locator: viewport,
-          normalizedPoints: path,
+          normalizedPoints: path.slice(0, -1),
         });
         await simulateNormalizedDoubleClickOnElement({
           locator: viewport,
