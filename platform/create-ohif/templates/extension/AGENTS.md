@@ -20,10 +20,19 @@ artifact is `dist/index.umd.js` (the extension's CSS is injected by that bundle 
    `<id>.<moduleType>.<name>`.
 3. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`,
    `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. They are externals
-   (see `.rspack/pluginExternals.js`); the host provides all of them as runtime
-   globals EXCEPT `vtk.js`, which is externalized with no host global — a known v1
-   gap. A runtime-loaded plugin that imports `vtk.js` resolves it to `undefined`
-   at load and breaks, so do not depend on `vtk.js` in a runtime extension.
+   (see `.rspack/pluginExternals.js`): the build leaves them for the host to provide.
+   The host provides as runtime globals the stable shared set (`react`, `react-dom`,
+   `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
+   `@ohif/extension-default`, `@ohif/extension-cornerstone`, `@cornerstonejs/core`,
+   `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`) plus every extension and mode compiled
+   into the viewer once it has loaded, shared as-is with no compatibility promise.
+   Most extensions load only when a mode needs them; for a runtime extension to
+   import one, the deployer also lists it by name in `window.config.extensions`,
+   which loads it first. Anything
+   else these patterns match, such as other `@cornerstonejs/*` packages or `vtk.js`,
+   has no host global: a runtime-loaded extension that imports it resolves it to
+   `undefined` at load and breaks. To use code another extension registers, prefer
+   `extensionManager.getModuleEntry(...)` over importing it.
 4. Never import `@ohif/ui` — it is legacy and the host does not provide it to runtime plugins.
    Use `@ohif/ui-next`.
 5. Do not edit `output.library` / `externals` in `.rspack/` — that is the host contract.

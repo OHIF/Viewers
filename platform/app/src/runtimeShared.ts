@@ -19,6 +19,12 @@
 // package breaks already-published plugins. Treat additions as permanent and
 // coordinate any change with a major version of the contract.
 //
+// Every extension and mode compiled into the viewer is ALSO put on window, by
+// the generated plugin loader once it has loaded (sharePlugin in
+// runtimeExtensionLoader.ts; extensions loaded on demand appear only then).
+// Those globals are a second tier with no compatibility promise; this list is
+// the stable one, assigned at startup.
+//
 // @ohif/i18n is shared because runtime extensions dereference it during
 // module evaluation (e.g. dicom-pdf). @ohif/ui is intentionally NOT shared:
 // it is legacy and a forbidden import for runtime plugins.

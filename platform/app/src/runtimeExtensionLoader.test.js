@@ -2,7 +2,7 @@
 // runtimeExtensionLoader.ts and is tested directly (no string-eval of emitted
 // code). Runs under jsdom, origin http://localhost. WS7 extends this suite
 // with the descriptor/cache/audit behaviors.
-import { isUrlLike, loadExternalModule } from './runtimeExtensionLoader';
+import { isUrlLike, loadExternalModule, loadInPhases, sharePlugin } from './runtimeExtensionLoader';
 
 describe('isUrlLike', () => {
   test.each([
@@ -482,5 +482,100 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
       loader.surfaceRuntimeExtensionFailures({ show });
       expect(show).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe('sharePlugin', () => {
+  afterEach(() => {
+    delete window['@fixture/ext-shared'];
+  });
+
+  test('puts the whole module, named exports included, on window under its package name', () => {
+    const module = { default: { id: '@fixture/ext-shared' }, toolNames: { A: 'A' } };
+    expect(sharePlugin('@fixture/ext-shared', module)).toBe(module);
+    expect(window['@fixture/ext-shared']).toBe(module);
+    expect(window['@fixture/ext-shared'].toolNames).toEqual({ A: 'A' });
+  });
+
+  test('never overwrites an existing global (e.g. an SDK package from runtimeShared.ts)', () => {
+    const existing = { default: { id: 'existing' } };
+    window['@fixture/ext-shared'] = existing;
+    const module = { default: { id: 'other' } };
+    expect(sharePlugin('@fixture/ext-shared', module)).toBe(module);
+    expect(window['@fixture/ext-shared']).toBe(existing);
+  });
+});
+
+describe('loadInPhases', () => {
+  const descriptor = { packageName: '@fixture/runtime', importPath: '/plugins/runtime.umd.js' };
+
+  test('loads every compiled-in entry before any runtime descriptor starts', async () => {
+    const events = [];
+    const load = jest.fn(async entry => {
+      const name = typeof entry === 'string' ? entry : (entry.packageName ?? entry[0].packageName);
+      events.push(`start ${name}`);
+      await new Promise(resolve => setTimeout(resolve, name === 'slow-compiled' ? 20 : 0));
+      events.push(`end ${name}`);
+      return name;
+    });
+
+    await loadInPhases(['slow-compiled', descriptor, 'fast-compiled'], load);
+
+    const firstRuntimeStart = events.indexOf('start @fixture/runtime');
+    expect(firstRuntimeStart).toBeGreaterThan(events.indexOf('end slow-compiled'));
+    expect(firstRuntimeStart).toBeGreaterThan(events.indexOf('end fast-compiled'));
+  });
+
+  test('treats a [descriptor, config] tuple as a runtime entry', async () => {
+    const events = [];
+    const load = jest.fn(async entry => {
+      events.push(Array.isArray(entry) ? 'tuple' : entry);
+    });
+
+    await loadInPhases([[descriptor, { option: true }], 'compiled'], load);
+
+    expect(events).toEqual(['compiled', 'tuple']);
+  });
+
+  test('returns results in input order, whatever the phase', async () => {
+    const load = async entry => (typeof entry === 'string' ? `loaded ${entry}` : 'loaded runtime');
+    await expect(loadInPhases([descriptor, 'a', 'b'], load)).resolves.toEqual([
+      'loaded runtime',
+      'loaded a',
+      'loaded b',
+    ]);
+  });
+});
+
+// The documented recipe for a runtime plugin that imports an extension loaded on
+// demand: the deployer also lists that extension by name in
+// window.config.extensions, so it is loaded and shared before the plugin runs,
+// wherever it sits in the list.
+describe('listing an on-demand extension alongside a runtime plugin', () => {
+  afterEach(() => {
+    delete window['@fixture/on-demand-ext'];
+  });
+
+  test('the extension is on window when the runtime plugin loads', async () => {
+    const extensionModule = { default: { id: '@fixture/on-demand-ext' }, toolNames: {} };
+    const descriptor = {
+      packageName: '@fixture/runtime',
+      importPath: '/plugins/runtime.umd.js',
+      globalName: '@fixture/runtime',
+    };
+    let seenByRuntimePlugin;
+    const load = async entry => {
+      if (typeof entry === 'string') {
+        // What the generated loadModule does for a compiled-in plugin.
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return sharePlugin(entry, extensionModule).default;
+      }
+      seenByRuntimePlugin = window['@fixture/on-demand-ext'];
+      return { id: entry.packageName };
+    };
+
+    await loadInPhases([descriptor, '@fixture/on-demand-ext'], load);
+
+    expect(seenByRuntimePlugin).toBe(extensionModule);
   });
 });

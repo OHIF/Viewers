@@ -28,7 +28,12 @@ module.exports = [
 // module evaluation. @ohif/ui is intentionally absent — it is legacy and a
 // forbidden import for runtime plugins.
 // Regex externals above (/^@ohif/, /^@cornerstonejs/, vtk.js) intentionally
-// match MORE than this list; vtk.js is externalized with no host global — a
+// match MORE than this list. Every extension and mode compiled into the viewer
+// shares itself on window once it has loaded (sharePlugin in
+// platform/app/src/runtimeExtensionLoader.ts, with no compatibility promise);
+// extensions loaded on demand are on window only after a mode, or the app
+// config's extensions list, has loaded them. vtk.js and the @cornerstonejs/*
+// packages other than core and tools are externalized with no host global — a
 // known v1 gap.
 const hostSharedPackages = [
   'react',

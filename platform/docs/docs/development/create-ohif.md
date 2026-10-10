@@ -149,8 +149,10 @@ All prompts have flag equivalents; a non-TTY stdin implies `--yes` semantics:
 pnpm create ohif@beta my-ext --template extension --modules viewport,panel --yes
 ```
 
-`--scope @acme` prepends a scope to an unscoped name, and `--dir <path>` sets
-the parent directory for standalone output.
+`--scope '@acme'` prepends a scope to an unscoped name, and `--dir <path>` sets
+the parent directory for standalone output. Keep the quotes around the scope:
+some shells treat an unquoted word starting with `@` specially and pass nothing
+in its place.
 
 ## Register with the viewer
 

@@ -31,13 +31,15 @@ describe('writePluginImportsFile codegen', () => {
     src = fs.readFileSync(path.join(tmp, 'pluginImports.js'), 'utf8');
   });
 
-  test('emits the runtimeExtensionLoader import (all four names) before loadModule', () => {
+  test('emits the runtimeExtensionLoader import (all six names) before loadModule', () => {
     expect(src).toContain("} from './runtimeExtensionLoader';");
     for (const name of [
       'isRuntimeDescriptor',
       'loadRuntimeDescriptor',
       'resolveRuntimeModule',
       'loadExternalModule',
+      'sharePlugin',
+      'loadInPhases',
     ]) {
       expect(src).toContain(name);
       expect(src.indexOf(name)).toBeLessThan(src.indexOf('async function loadModule'));
@@ -99,6 +101,20 @@ describe('writePluginImportsFile codegen', () => {
     expect(src).toContain("window.browserImportFunction('/plugins/ext-url/index.umd.js')");
     expect(src).toContain('window["fixtureExtUrl"]');
     expect(src).toContain('export { loadModule, modes, extensions, importItems };');
+  });
+
+  test('every compiled-in extension and mode shares itself', () => {
+    expect(src).toContain('return sharePlugin("@fixture/ext-a", imported).default;');
+    expect(src).toContain('return sharePlugin("@fixture/mode-a", imported).default;');
+  });
+
+  test('an importPath entry does not share itself (its own script sets its global)', () => {
+    expect(src).not.toContain('sharePlugin("@fixture/ext-url"');
+  });
+
+  test('importItems loads in phases instead of all at once', () => {
+    expect(src).toContain('  return loadInPhases(modules, loadModule);');
+    expect(src).not.toContain('Promise.all(modules.map(loadModule))');
   });
 });
 

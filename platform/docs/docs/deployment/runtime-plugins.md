@@ -80,6 +80,30 @@ produces today: after the script runs, the loader reads the plugin from
 name). Without it the loader treats the file as an ES module, finds no default
 export, and fails with `import-error`. ES module bundles omit `globalName`.
 
+A UMD bundle reads the libraries it does not bundle from `window` when its script
+runs, at startup: the viewer's stable shared set, plus every extension and mode
+compiled into the viewer that has loaded by then. Most extensions built into the
+viewer load only when a mode needs them. If a runtime plugin imports one, for example
+`@ohif/extension-cornerstone-dicom-sr`, also list that extension by name; its
+position in the list does not matter:
+
+```js
+extensions: [
+  '@ohif/extension-cornerstone-dicom-sr',
+  {
+    packageName: '@acme/ohif-extension-xyz',
+    importPath: '/plugins/@acme/ohif-extension-xyz/1.2.3/index.umd.js',
+    globalName: '@acme/ohif-extension-xyz',
+  },
+],
+```
+
+The viewer loads the built-in extensions in the list before the runtime plugins,
+so the import finds its global. The extension is then registered from
+startup instead of when its mode first opens. See the
+[build contract](../platform/extensions/building-with-agents.md) for the exact
+list of globals and what has none.
+
 `importPath` must be `PUBLIC_URL`-prefixed when `PUBLIC_URL` is not `/` (e.g.
 `/ohif/plugins/@acme/ohif-extension-xyz/1.2.3/index.umd.js`). Same-origin
 `/plugins/` URLs need no `integrity` and no entry in `runtimeExtensionOrigins`;

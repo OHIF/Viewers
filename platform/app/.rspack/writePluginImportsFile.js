@@ -185,6 +185,7 @@ const publicURL = process.env.PUBLIC_URL || '/';
 const RUNTIME_LOADER_IMPORT =
   'import {\n' +
   '  isRuntimeDescriptor,\n  loadRuntimeDescriptor,\n  resolveRuntimeModule,\n  loadExternalModule,\n' +
+  '  sharePlugin,\n  loadInPhases,\n' +
   "} from './runtimeExtensionLoader';\n\n";
 
 function isAbsolutePath(path) {
@@ -283,10 +284,12 @@ function getRuntimeLoadModesExtensions(modules) {
       );
       return;
     }
+    // Compiled-in plugins share themselves on window (see sharePlugin in
+    // runtimeExtensionLoader.ts) so UMD runtime plugins can import them.
     dynamicLoad.push(
       `  if( module==="${packageName}") {`,
       `    const imported = await import("${packageName}");`,
-      '    return imported.default;',
+      `    return sharePlugin("${packageName}", imported).default;`,
       '  }'
     );
   });
@@ -299,10 +302,11 @@ function getRuntimeLoadModesExtensions(modules) {
     '  // names throw a descriptive error (see runtimeExtensionLoader.ts).',
     '  return loadExternalModule(module);',
     '}\n',
-    '// Import a list of items (modules or string names)',
-    '// @return a Promise evaluating to a list of modules',
+    '// Import a list of items (modules or string names): compiled-in plugins',
+    '// first, then runtime descriptors (see loadInPhases).',
+    '// @return a Promise evaluating to a list of modules, in input order',
     'export default function importItems(modules) {',
-    '  return Promise.all(modules.map(loadModule));',
+    '  return loadInPhases(modules, loadModule);',
     '}\n',
     'export { loadModule, modes, extensions, importItems };\n\n'
   );

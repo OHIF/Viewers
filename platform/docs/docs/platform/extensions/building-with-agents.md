@@ -136,16 +136,19 @@ A v1 plugin is a UMD bundle. The build sets `output.library` to:
 so the bundle assigns the extension's default export to
 `window['@scope/name']` (the global keyed by the full package name).
 
-The following are **externals** — the host provides them as globals (with one
-exception, `vtk.js`, noted below); a plugin must never bundle or import its own
-copy:
+The following are **externals**: the build leaves them for the host to provide,
+and a plugin must never bundle or import its own copy. The host provides most of
+them as globals; the exceptions are noted below.
 
 ```js
 [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/, 'react', 'react-dom', 'react/jsx-runtime']
 ```
 
-The host assigns its singleton copies to `window`, keyed by full package name.
-The complete shared set is (`platform/app/src/runtimeShared.ts`):
+The host assigns its singleton copies to `window`, keyed by full package name,
+in two tiers.
+
+**The stable shared set** (`platform/app/src/runtimeShared.ts`) is assigned at
+startup and is the contract runtime plugins can rely on across releases:
 
 `react`, `react-dom`, `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`,
 `@ohif/i18n`, `@ohif/extension-default`, `@ohif/extension-cornerstone`,
@@ -155,10 +158,38 @@ The complete shared set is (`platform/app/src/runtimeShared.ts`):
 evaluation. `@ohif/ui` is intentionally **not** shared: it is legacy and a
 forbidden import for runtime plugins — use `@ohif/ui-next`.
 
-`vtk.js` is externalized (never bundle it) but is **not** in the shared set
-above — it has no host global, a known v1 gap. A runtime-loaded plugin that
-imports `vtk.js` resolves it to `undefined` at load and breaks, so do not depend
-on `vtk.js` in a runtime plugin.
+**Every extension and mode compiled into the viewer** is also shared, by the
+generated plugin loader, once it has loaded: the whole module, default and named
+exports, under its package name. These carry **no compatibility promise**; an
+extension's exports can change between releases.
+
+Most extensions built into the viewer (those marked `"default": false` in
+`pluginConfig.json`, such as `@ohif/extension-cornerstone-dicom-sr`) load only
+when a mode that needs them opens, so they are not on `window` at startup, when a
+runtime plugin's file runs. Within one list of plugins, the viewer loads the
+built-in ones before the runtime ones. So for a runtime plugin to `import` an
+extension that loads on demand, also list that extension by name in
+`window.config.extensions`; it then loads, and is shared, at startup (see
+[Runtime plugins](../../deployment/runtime-plugins.md)).
+
+Code that runs once a mode is open can instead look things up when it needs
+them, with no `import` and no config change. Where an extension registers what
+you need (a utility module, a command), use
+`extensionManager.getModuleEntry(...)` or `commandsManager.runCommand(...)`. If
+an extension does not register what you need, ask for it to be exposed as a
+utility module (as `@ohif/extension-cornerstone-dicom-sr` does for its tool
+names), or build your plugin inside an OHIF checkout or a `create-ohif`
+workspace.
+
+Anything else the externals match has **no host global**: `vtk.js` (a known v1
+gap), and `@cornerstonejs/*` packages other than `core` and `tools`. A
+runtime-loaded plugin that imports one resolves it to `undefined` at load and
+breaks, so do not depend on them in a runtime plugin.
+
+These globals serve UMD runtime plugins, which read them from `window`. They do
+not change how an ES module plugin's imports resolve, and they do not provide
+types: to compile against an extension's exports, build inside an OHIF checkout
+or a `create-ohif` workspace.
 
 Do not edit `output.library` or `externals` in the build config (`.rspack/`) —
 that is the host contract, not plugin-tunable.
@@ -238,7 +269,7 @@ content is below (kept byte-identical to
 
 An OHIF v3 extension built as a UMD bundle (plugin Contract v1). The default export of
 `src/index.tsx` is the extension object; its `id` MUST equal package.json `name`. The deployable
-artifacts are `dist/index.umd.js` and `dist/index.css`.
+artifact is `dist/index.umd.js` (the extension's CSS is injected by that bundle at runtime).
 
 ## Commands
 
@@ -254,7 +285,19 @@ artifacts are `dist/index.umd.js` and `dist/index.css`.
    `<id>.<moduleType>.<name>`.
 3. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`,
    `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. They are externals
-   (see `.rspack/pluginExternals.js`); the host provides them.
+   (see `.rspack/pluginExternals.js`): the build leaves them for the host to provide.
+   The host provides as runtime globals the stable shared set (`react`, `react-dom`,
+   `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
+   `@ohif/extension-default`, `@ohif/extension-cornerstone`, `@cornerstonejs/core`,
+   `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`) plus every extension and mode compiled
+   into the viewer once it has loaded, shared as-is with no compatibility promise.
+   Most extensions load only when a mode needs them; for a runtime extension to
+   import one, the deployer also lists it by name in `window.config.extensions`,
+   which loads it first. Anything
+   else these patterns match, such as other `@cornerstonejs/*` packages or `vtk.js`,
+   has no host global: a runtime-loaded extension that imports it resolves it to
+   `undefined` at load and breaks. To use code another extension registers, prefer
+   `extensionManager.getModuleEntry(...)` over importing it.
 4. Never import `@ohif/ui` — it is legacy and the host does not provide it to runtime plugins.
    Use `@ohif/ui-next`.
 5. Do not edit `output.library` / `externals` in `.rspack/` — that is the host contract.
@@ -262,8 +305,8 @@ artifacts are `dist/index.umd.js` and `dist/index.css`.
    host refuses to load on range mismatch.
 7. Keep package.json `module` pointing at `src/index.tsx` — directory-mode loading
    (pluginConfig `directory`) resolves the package through that field.
-8. CSS must be compiled into `dist/index.css`, self-contained (Tailwind scans only this package;
-   preflight stays off). Never rely on host stylesheets.
+8. CSS is injected at runtime by the bundle (style-loader), self-contained (Tailwind scans only
+   this package; preflight stays off). Never rely on host stylesheets.
 9. Publish with `pnpm publish` (publishConfig field rewrites do not work with the npm CLI).
 
 ## Module map

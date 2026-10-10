@@ -11,6 +11,16 @@ Until a stable (latest-tagged) release exists, always pin the beta dist-tag:
 `pnpm create ohif` (no tag) resolves create-ohif@latest and will fail with
 "No matching version found" while only the beta tag exists.
 
+## Running a local copy
+
+`pnpm create ohif` always downloads create-ohif from npm. To run the copy in an
+OHIF checkout instead (to test unreleased changes, or before a version is
+published), call its entry point with Node:
+
+    node <checkout>/platform/create-ohif/bin/create-ohif.mjs my-ext --template extension
+
+The options are the same, and edits to the checkout take effect on the next run.
+
 ## Arguments
 
 ```

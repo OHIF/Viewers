@@ -84,6 +84,57 @@ export function resolveRuntimeModule(name: string): unknown | undefined {
 }
 
 /**
+ * Plugin self-sharing: the generated loadModule passes every compiled-in
+ * extension and mode through here, which puts the whole module (its default
+ * export and every named export) on window under its package name. A UMD
+ * runtime plugin built with .rspack/pluginExternals.js leaves every @ohif/*
+ * import for the host to provide, and reads it from that global.
+ *
+ * Never overwrites an existing global, so the SDK packages assigned by
+ * runtimeShared.ts stay as they are. Unlike that list, these globals carry no
+ * compatibility promise: a plugin's exports can change between releases.
+ */
+export function sharePlugin<T>(packageName: string, module: T): T {
+  const globals = window as unknown as Record<string, unknown>;
+  if (globals[packageName] === undefined) {
+    globals[packageName] = module;
+  }
+  return module;
+}
+
+function isRuntimeEntry(entry: unknown): boolean {
+  return isRuntimeDescriptor(entry) || (Array.isArray(entry) && isRuntimeDescriptor(entry[0]));
+}
+
+/**
+ * Loads plugin entries in two phases: compiled-in plugins first, then runtime
+ * descriptors. A UMD runtime plugin reads its dependencies from window once,
+ * when its file runs, so the compiled-in plugins in the same list must already
+ * be shared (see sharePlugin) by then. Compiled-in extensions marked
+ * `default: false` in pluginConfig.json load only when a mode needs them, so a
+ * runtime plugin that imports one relies on the deployer also listing it, by
+ * name, in window.config.extensions. Within a phase entries load in
+ * parallel; results keep the input order.
+ */
+export async function loadInPhases<T>(
+  entries: unknown[],
+  load: (entry: unknown) => Promise<T>
+): Promise<T[]> {
+  const results: T[] = new Array(entries.length);
+  const loadPhase = (runtime: boolean) =>
+    Promise.all(
+      entries.map(async (entry, i) => {
+        if (isRuntimeEntry(entry) === runtime) {
+          results[i] = await load(entry);
+        }
+      })
+    );
+  await loadPhase(false);
+  await loadPhase(true);
+  return results;
+}
+
+/**
  * URL-shaped module specifiers: absolute http(s) URLs or explicit paths.
  * Anything else is treated as a bare package name.
  */
