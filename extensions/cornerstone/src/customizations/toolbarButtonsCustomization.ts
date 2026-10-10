@@ -576,7 +576,7 @@ const toolbarButtons: Button[] = [
         'evaluate.cornerstoneTool',
         {
           name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['wholeSlide'],
+          unsupportedViewportTypes: ['wholeSlide', 'ecg', 'ecgNext'],
         },
       ],
     },
