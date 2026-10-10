@@ -21,7 +21,6 @@ window.config = {
         wadoUriRoot: 'http://localhost/dicom-web',
         qidoRoot: 'http://localhost/dicom-web',
         wadoRoot: 'http://localhost/dicom-web',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         dicomUploadEnabled: true,
         imageRendering: 'wadors',
