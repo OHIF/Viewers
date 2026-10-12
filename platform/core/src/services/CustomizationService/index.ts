@@ -4,6 +4,9 @@ export { GENERAL_MODE_KEY, normalizeCustomizationConfig } from './CustomizationS
 export type {
   CustomizationModule,
   CustomizationPhaseInput,
+  DefaultResourceLoad,
+  LoadResource,
+  LoadResourceRequest,
   ModePhaseCustomizations,
   PhasedCustomizationConfig,
 } from './customizationUrlTypes';

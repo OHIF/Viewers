@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import HangingProtocolServiceType from '../services/HangingProtocolService';
 import CustomizationServiceType from '../services/CustomizationService';
-import type { PhasedCustomizationConfig } from '../services/CustomizationService';
+import type {
+  LoadResource,
+  PhasedCustomizationConfig,
+} from '../services/CustomizationService';
 import MeasurementServiceType from '../services/MeasurementService';
 import ViewportGridServiceType from '../services/ViewportGridService';
 import ToolbarServiceType from '../services/ToolBarService';
@@ -151,6 +154,15 @@ declare global {
        * allowlist. Absent (the default) means `?customization=` is disabled.
        */
       customizationUrlPrefixes?: Record<string, string>;
+      /**
+       * Optional hook for every URL customization load, including a nested
+       * `requires`. It runs after the `customizationUrlPrefixes` policy, gets
+       * `{ kind: 'customization', name, url, defaultLoad }`, and returns the
+       * data, or `undefined` to use the regular load. `defaultLoad(url, init?)`
+       * is the regular load (`fetch` + JSONC parse) and accepts fetch options
+       * such as headers. A rejection is a failed load (warned and skipped).
+       */
+      loadResource?: LoadResource;
       extensions?: string[];
       modes?: string[];
       experimentalStudyBrowserSort?: boolean;
