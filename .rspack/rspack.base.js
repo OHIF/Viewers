@@ -108,7 +108,9 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       children: false,
       warnings: true,
     },
-    cache: isProdBuild ? false : { type: 'filesystem' },
+    // Disk cache for development builds. rspack 2 takes it as a persistent cache
+    // with filesystem storage; webpack's `{ type: 'filesystem' }` form is refused.
+    cache: isProdBuild ? false : { type: 'persistent', storage: { type: 'filesystem' } },
     module: {
       noParse: [/(dicomicc)/],
       rules: [
