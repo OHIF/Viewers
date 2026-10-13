@@ -426,6 +426,27 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
       expect(lastRecord().error).toBe('modeFactory blew up');
     });
 
+    test('recordRegistrationError adds a record for a built-in extension, and it is surfaced', () => {
+      // A built-in extension has no audit record of its own; before this, its
+      // registration failure was dropped silently.
+      const before = window.__ohif?.runtimeExtensions?.length ?? 0;
+      loader.recordRegistrationError('@fixture/built-in-ext', new Error('preRegistration threw'));
+      const records = window.__ohif.runtimeExtensions;
+      expect(records.length).toBe(before + 1);
+      expect(lastRecord()).toMatchObject({
+        packageName: '@fixture/built-in-ext',
+        importPath: '(built-in)',
+        status: 'registration-error',
+        error: 'preRegistration threw',
+      });
+
+      const show = jest.fn();
+      loader.surfaceRuntimeExtensionFailures({ show });
+      const shown = show.mock.calls.filter(([n]) => n.message.includes('@fixture/built-in-ext'));
+      expect(shown).toHaveLength(1);
+      expect(shown[0][0].message).toContain('preRegistration threw');
+    });
+
     test('reconcileRuntimeRegistrations flips a loaded-but-unregistered descriptor to registration-error', async () => {
       mockUmdImport();
       await loader.loadRuntimeDescriptor(umdDescriptor());

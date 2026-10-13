@@ -478,6 +478,10 @@ diagnosable from the console. Failures additionally surface one error toast
 each once the UI mounts (toasts are suppressed in test environments — assert
 on the audit array instead).
 
+A built-in extension (from `pluginConfig.json`) that fails to register when its
+mode opens also appends a record, with `importPath: '(built-in)'` and status
+`'registration-error'`, so its failure is surfaced the same way.
+
 ### CSP and CORS requirements
 
 The deployment docs describe an optional `CSP_HEADER` for the official

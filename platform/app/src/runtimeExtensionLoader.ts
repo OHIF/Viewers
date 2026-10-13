@@ -468,16 +468,31 @@ export function reconcileRuntimeRegistrations(
   }
 }
 
-/** Used by Mode.tsx where registration is per-extension and not swallowed. */
+/**
+ * Used by Mode.tsx where registration is per-extension and not swallowed.
+ * A runtime plugin already has an audit record, which is flipped. A built-in
+ * extension (compiled in through pluginConfig.json) has none, so one is added;
+ * otherwise its failure would be dropped without a log or a notification.
+ */
 export function recordRegistrationError(packageName: string, error: unknown): void {
   const audit = getAudit() as any;
+  const message = (error as any)?.message || String(error);
   const record: RuntimeExtensionAuditRecord | undefined =
     audit.findLast?.((r: RuntimeExtensionAuditRecord) => r.packageName === packageName) ??
     [...getAudit()].reverse().find(r => r.packageName === packageName);
   if (record) {
     record.status = 'registration-error';
-    record.error = (error as any)?.message || String(error);
+    record.error = message;
+    return;
   }
+  getAudit().push({
+    packageName,
+    importPath: '(built-in)',
+    status: 'registration-error',
+    hostVersion: (process.env.VERSION_NUMBER || '').trim(),
+    error: message,
+    timestamp: new Date().toISOString(),
+  });
 }
 
 /** Show one error toast per unsurfaced failure. Safe to call repeatedly. */
