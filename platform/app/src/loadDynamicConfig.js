@@ -117,7 +117,11 @@ export default async config => {
       // Rebuilt without g/y so a shared RegExp instance cannot carry lastIndex
       // state across calls to .test().
       const flags = (regex instanceof RegExp ? regex.flags : '').replace(/[gy]/g, '');
-      pattern = new RegExp(patternSource, flags);
+      // Wrapped so the anchor covers every alternative: in '^a|b' the "^" binds
+      // to "a" only, and "b" would still match anywhere in the URL (e.g. in a
+      // hostile URL's query string). The group is non-capturing, so the
+      // pattern's own groups and backreferences keep their numbers.
+      pattern = new RegExp(`^(?:${patternSource})`, flags);
     } catch (e) {
       return refuse(`dangerouslyUseDynamicConfig.regex is not a valid pattern — ${e.message}`);
     }

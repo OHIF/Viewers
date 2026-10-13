@@ -112,6 +112,44 @@ describe('loadDynamicConfig', () => {
       expect(result).toBe(null);
       expect(errorSpy.mock.calls[0][0]).toContain('"m" flag');
     });
+
+    describe('alternation', () => {
+      // In '^a|b' the "^" binds to "a" only, so "b" could match anywhere in the
+      // URL. The pattern is wrapped so the anchor covers every alternative.
+      const regex = /^https:\/\/hospital\.com\/|https:\/\/othersite\.com\//;
+
+      test('a later alternative cannot match mid-URL', async () => {
+        setConfigUrl('https://evil.example/c.json?x=https://othersite.com/');
+        const result = await loadDynamicConfig({
+          dangerouslyUseDynamicConfig: { enabled: true, regex },
+        });
+        expect(result).toBe(null);
+        expect(global.fetch).not.toHaveBeenCalled();
+      });
+
+      test.each(['https://hospital.com/c.json', 'https://othersite.com/c.json'])(
+        'each alternative still matches at the start: %s',
+        async configUrl => {
+          setConfigUrl(configUrl);
+          expect(
+            await loadDynamicConfig({ dangerouslyUseDynamicConfig: { enabled: true, regex } })
+          ).toEqual({ fetched: true });
+          expect(global.fetch).toHaveBeenCalledWith(configUrl);
+        }
+      );
+
+      test('a string pattern is anchored the same way', async () => {
+        setConfigUrl('https://evil.example/c.json?x=https://othersite.com/');
+        const result = await loadDynamicConfig({
+          dangerouslyUseDynamicConfig: {
+            enabled: true,
+            regex: '^https://hospital\\.com/|https://othersite\\.com/',
+          },
+        });
+        expect(result).toBe(null);
+        expect(global.fetch).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('origins allowlist', () => {
