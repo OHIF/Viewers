@@ -9,16 +9,12 @@ sidebar_position: 10
 
 The `workList.*` namespace customizes the WorkList study-list route used as the default landing page in OHIF.
 
-:::warning Removed in 3.14: `workList.variant`
-`workList.variant` and the `LegacyWorkList` route it selected were removed in
-3.14. The ui-next WorkList is now always mounted at `/`, and every
-customization on this page applies unconditionally.
-
-If you set `workList.variant` to `'legacy'` as a migration opt-out in 3.13,
-remove it — an unrecognized customization id is ignored, so no error surfaces,
-but the legacy study list is gone and you will get the new one either way. See
-the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/work-list.md)
-for what to do instead.
+:::warning Deprecated: `workList.variant`
+`workList.variant: 'legacy'` still mounts the `LegacyWorkList` route in 3.14, but
+it is deprecated: a future release removes the route and the customization id
+together. The other customizations on this page apply to the ui-next WorkList.
+See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/work-list.md)
+for how to move off the legacy list.
 :::
 
 ### Turning on the legacy list
