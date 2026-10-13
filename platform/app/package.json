@@ -6,8 +6,6 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "repository": "OHIF/Viewers",
-  "main": "dist/index.umd.js",
-  "module": "src/index.js",
   "engines": {
     "node": ">=24"
   },

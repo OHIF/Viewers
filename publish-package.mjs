@@ -27,9 +27,9 @@ async function run() {
     'platform/ui-next',
     'extensions/default',
     'extensions/cornerstone',
-    // @ohif/app: publish status flagged-not-decided (B6) -- its npm tarball
-    // may be consumed as a prebuilt-viewer artifact by existing deployments,
-    // so keep publishing it unchanged until that is verified.
+    // @ohif/app: published as the prebuilt viewer (the built dist folder,
+    // served as-is with a deployment's own app-config.js). It sits outside
+    // the plugin contract.
     'platform/app',
     // create-ohif scaffolder: published tooling alongside the SDK set (the
     // "plus tooling" half of B6). Ships raw .mjs + templates, no dist UMD, so

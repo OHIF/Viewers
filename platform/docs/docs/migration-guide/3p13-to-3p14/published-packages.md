@@ -23,7 +23,7 @@ if your project installs OHIF packages from npm.
 | `@ohif/extension-default` | The default extension |
 | `@ohif/extension-cornerstone` | The Cornerstone rendering extension |
 | `create-ohif` | The tool that creates OHIF extensions, modes and workspaces (`pnpm create ohif@beta`). See [Create an Extension or Mode](../../development/create-ohif.md). |
-| `@ohif/app` | The viewer application. Still published in 3.14; whether it stays published is not yet decided. |
+| `@ohif/app` | The viewer application, published as a prebuilt viewer: the built `dist` folder, served as-is with your own `app-config.js`. For deployments, the Docker image is the supported route. |
 
 The five SDK packages are the ones a third-party extension or mode builds
 against, and the ones the viewer shares with runtime plugins.
@@ -64,7 +64,8 @@ If your project depends on one of the packages that are no longer published:
      extensions a mode lists, are resolved by the running viewer from the
      extensions it has loaded.
    - For code an extension registers, ask the viewer for it instead of importing
-     the package. For example, instead of
+     the package (see [Utility module](../../platform/extensions/modules/utility.md)).
+     For example, instead of
      `import { toolNames } from '@ohif/extension-cornerstone-dicom-sr'`:
 
      ```js

@@ -86,7 +86,7 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 
 - **[Published packages](./published-packages.md)** — npm releases narrow to
   `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
-  `@ohif/extension-cornerstone`, `create-ohif` and, for now, `@ohif/app`. The
+  `@ohif/extension-cornerstone`, `create-ohif` and `@ohif/app`. The
   other extensions and modes, and `@ohif/ui`, are no longer published; their
   3.13.x releases stay on npm.
 

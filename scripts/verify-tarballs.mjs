@@ -46,9 +46,9 @@ const SDK_PUBLISHED = hostSharedPackages.filter(
 const PUBLISHED_TOOLING = ['create-ohif'];
 
 // platform/app is the host application, out of the plugin contract (WS1.6
-// step 1). B6 leaves @ohif/app's publish status flagged-not-decided (its npm
-// tarball may be consumed as a prebuilt-viewer artifact), so it is neither
-// packed nor required to be private here.
+// step 1). @ohif/app is published as the prebuilt viewer (the built dist
+// folder), which the SDK tarball checks do not fit, so it is neither packed
+// nor required to be private here.
 const SKIP_DIRS = new Set(['platform/app']);
 
 const PACKAGE_ROOTS = ['extensions', 'modes', 'platform'];
@@ -146,7 +146,7 @@ function checkPublishListParity(packages) {
   const publishedNames = new Set();
   for (const dir of publishDirs) {
     if (SKIP_DIRS.has(dir)) {
-      continue; // platform/app: publish status flagged-not-decided (B6)
+      continue; // platform/app: published as the prebuilt viewer, outside the SDK set
     }
     const pkg = byDir.get(dir);
     if (!pkg) {

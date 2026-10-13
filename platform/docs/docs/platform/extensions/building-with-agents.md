@@ -175,9 +175,10 @@ extension that loads on demand, also list that extension by name in
 Code that runs once a mode is open can instead look things up when it needs
 them, with no `import` and no config change. Where an extension registers what
 you need (a utility module, a command), use
-`extensionManager.getModuleEntry(...)` or `commandsManager.runCommand(...)`. If
-an extension does not register what you need, ask for it to be exposed as a
-utility module (as `@ohif/extension-cornerstone-dicom-sr` does for its tool
+`extensionManager.getModuleEntry(...)` or `commandsManager.runCommand(...)` (see
+[Utility module](./modules/utility.md)). If an extension does not register what
+you need, ask for it to be exposed as a utility module (as
+`@ohif/extension-cornerstone-dicom-sr` does for its tool
 names), or build your plugin inside an OHIF checkout or a `create-ohif`
 workspace.
 
