@@ -269,7 +269,9 @@ test('standalone mode scaffold follows the WS5.4 deltas', () => {
     assert.ok(!fs.readFileSync(file, 'utf8').includes('i18next'), `${file} must not import i18next`);
   }
   const stampedIndex = fs.readFileSync(path.join(dir, 'src/index.ts'), 'utf8');
-  assert.ok(stampedIndex.includes(`'@ohif/extension-default': '^${selfPkg.version}'`));
+  // extensionDependencies uses the same range as the package.json peers.
+  assert.ok(stampedIndex.includes(`'@ohif/extension-default': '${hostRange}'`));
+  assert.ok(stampedIndex.includes(`'@ohif/extension-cornerstone': '${hostRange}'`));
 
   // Runtime descriptor guidance: modes have no styles entry.
   assert.ok(stdout.includes('under "modes"'), stdout);
@@ -302,7 +304,7 @@ test('workspace scaffold emits the committed manifest and the managed-harness la
   const pkg = readPkg(dir);
   assert.equal(pkg.name, 'my-workspace');
   assert.equal(pkg.private, true, 'a workspace is the user repo, never published');
-  for (const script of ['dev', 'build', 'doctor', 'plugin']) {
+  for (const script of ['dev', 'build', 'doctor', 'plugin', 'harness']) {
     assert.ok(String(pkg.scripts[script]).includes('scripts/ohif.mjs'), `script ${script}`);
   }
 

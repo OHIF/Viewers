@@ -302,8 +302,10 @@ artifact is `dist/index.umd.js` (the extension's CSS is injected by that bundle 
 4. Never import `@ohif/ui` — it is legacy and the host does not provide it to runtime plugins.
    Use `@ohif/ui-next`.
 5. Do not edit `output.library` / `externals` in `.rspack/` — that is the host contract.
-6. Keep `keywords: ["ohif-extension"]` and the `@ohif/core` peerDependency range accurate — the
-   host refuses to load on range mismatch.
+6. Keep `keywords: ["ohif-extension"]` and the `@ohif/core` peerDependency range accurate. The
+   host does not read the peer range; it refuses to load a runtime extension whose
+   `coreVersionRange` (in its runtime descriptor, see README.md) does not match the host
+   version, so keep that value in step with the peer range.
 7. Keep package.json `module` pointing at `src/index.tsx` — directory-mode loading
    (pluginConfig `directory`) resolves the package through that field.
 8. CSS is injected at runtime by the bundle (style-loader), self-contained (Tailwind scans only

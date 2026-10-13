@@ -57,26 +57,37 @@ git diff --stat v3.13.0-beta.116..HEAD
   do **not** move (see the notice above). Mark each one "upstream" or "keep a
   minimal fork" now, before you go further.
 
-The base tag you find here is the tag you pin the workspace to in Step 2 — the
-workspace must start life at parity with the OHIF your fork was built on, not
-at whatever is newest.
+Note the base tag you find here; you compare against it in Step 5. The
+workspace does not reuse your fork's code, so it does not have to stay on that
+version: it runs whichever OHIF version its manifest names (Step 2), with your
+plugins and config added on top. Workspaces need OHIF 3.14 or later (before the
+3.14.0 release, a 3.14 beta that includes workspace support). If your fork's
+base is older, the workspace runs a newer OHIF than your fork did; there is
+nothing to merge or rebase. When you compare in Step 5, not every difference
+means something went wrong in the move: some are changes OHIF made between the
+two versions, which the migration guides for those versions describe.
 
 ---
 
-## Step 2 — Scaffold a workspace at the fork's base tag
+## Step 2 — Scaffold a workspace
 
 ```bash
 pnpm create ohif@beta -t workspace
 ```
 
-Answer the prompts, then pin the workspace to the tag from Step 1 by setting
-`ohifVersion` in the generated `ohif.config.json` (the committed manifest):
+Answer the prompts. The scaffold writes `ohifVersion` into the generated
+`ohif.config.json` (the committed manifest): the OHIF version the workspace
+runs. It is set to the version of the `create-ohif` you ran, because the two are
+released together, so it already supports workspaces; before the 3.14.0 release
+it is a 3.14 beta. Keep it, unless your fork's base tag from Step 1 is 3.14.0 or
+later and you want the workspace to start on exactly that version. In that case
+set `ohifVersion` to the tag, without the leading `v`:
 
 ```json title="ohif.config.json"
 {
-  "ohifVersion": "3.13.0-beta.116",
+  "ohifVersion": "3.14.0",
   "plugins": [],
-  "appConfig": {}
+  "appConfig": "config/app-config.js"
 }
 ```
 
@@ -113,11 +124,20 @@ why behind each `[rewrite]` and what each `[flag]` asks you to do by hand
 (notably `@ohif/ui` → `@ohif/ui-next` source changes, which migrate never
 rewrites).
 
-Register each plugin in the workspace manifest and link it into the harness:
+Register each plugin by adding it to `plugins` in `ohif.config.json`, then run
+`pnpm dev`, which links every listed plugin into the harness:
 
-```bash
-pnpm plugin add my-extension
+```json title="ohif.config.json"
+{
+  "plugins": [
+    { "packageName": "@acme/my-extension", "directory": "./extensions/my-extension" }
+  ]
+}
 ```
+
+Don't use `pnpm plugin add` for this: in a workspace it changes only the
+harness's copy of `pluginConfig.json` inside `.ohif/`, which is lost the next
+time `.ohif/` is re-cloned.
 
 For a plugin scaffolded fresh, running `create-ohif` **inside** the workspace
 places it under `extensions/`/`modes/`, appends it to the manifest, and links
@@ -156,9 +176,10 @@ Once parity holds:
 
 - The workspace repo is now the source of truth for your extensions, modes, and
   config. Commit it.
-- **Upgrading OHIF** is `pnpm plugin`-managed: change `ohifVersion` (or run
-  `harness upgrade <tag>`) and re-run `pnpm dev`; the harness re-clones and
-  re-links. No merge conflicts.
+- **Upgrading OHIF** is one command: `pnpm run harness upgrade <tag>` re-pins
+  `ohifVersion` in `ohif.config.json`, re-clones `.ohif/` at that tag, and
+  re-links your plugins. No merge conflicts. Editing `ohifVersion` by hand is
+  not enough: `pnpm dev` then stops and tells you to run the upgrade.
 - For any **core patch** you decided to keep: reduce the old fork to just that
   patch, or upstream it and delete the fork entirely.
 - Deployment moves to the workspace's built `dist` (its `Dockerfile`) or a

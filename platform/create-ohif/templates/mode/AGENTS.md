@@ -35,8 +35,10 @@ no CSS — components come from extensions).
 3. Never import `@ohif/ui` — it is legacy and the host does not provide it to runtime plugins.
    Use `@ohif/ui-next`.
 4. Do not edit `output.library` / `externals` in `.rspack/` — that is the host contract.
-5. Keep `keywords: ["ohif-mode"]` and the `@ohif/core` peerDependency range accurate — the host
-   refuses to load on range mismatch.
+5. Keep `keywords: ["ohif-mode"]` and the `@ohif/core` peerDependency range accurate. The host
+   does not read the peer range; it refuses to load a runtime mode whose `coreVersionRange`
+   (in its runtime descriptor, see README.md) does not match the host version, so keep that
+   value in step with the peer range.
 6. Keep package.json `module` pointing at `src/index.ts` — directory-mode loading
    (pluginConfig `directory`) resolves the package through that field.
 7. Every extension listed in `extensionDependencies` must be present in the host (bundled into

@@ -9,6 +9,7 @@
     "dev": "node scripts/ohif.mjs dev",
     "build": "node scripts/ohif.mjs build",
     "doctor": "node scripts/ohif.mjs doctor",
-    "plugin": "node scripts/ohif.mjs plugin"
+    "plugin": "node scripts/ohif.mjs plugin",
+    "harness": "node scripts/ohif.mjs harness"
   }
 }

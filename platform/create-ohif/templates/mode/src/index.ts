@@ -17,11 +17,12 @@ const cs3d = {
 /**
  * Every extension named here must be present in the host — bundled into the
  * viewer build or itself loaded as a runtime extension. The host validates
- * these before the mode becomes routable.
+ * these before the mode becomes routable. The version ranges are not checked
+ * at present.
  */
 const extensionDependencies = {
-  '@ohif/extension-default': '^{{ohifVersion}}',
-  '@ohif/extension-cornerstone': '^{{ohifVersion}}',
+  '@ohif/extension-default': '{{coreRange}}',
+  '@ohif/extension-cornerstone': '{{coreRange}}',
 };
 
 function modeFactory({ modeConfiguration }) {
