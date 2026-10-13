@@ -3,6 +3,7 @@ import type { Button } from '@ohif/core/types';
 import { EVENTS } from '@cornerstonejs/core';
 import { ViewportGridService, ToolbarService } from '@ohif/core';
 import i18n from 'i18next';
+import { UNSUPPORTED_WINDOW_LEVEL_VIEWPORT_TYPES } from '../constants';
 
 const { TOOLBAR_SECTIONS } = ToolbarService;
 
@@ -576,7 +577,7 @@ const toolbarButtons: Button[] = [
         'evaluate.cornerstoneTool',
         {
           name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['wholeSlide', 'ecg', 'ecgNext'],
+          unsupportedViewportTypes: ['wholeSlide', ...UNSUPPORTED_WINDOW_LEVEL_VIEWPORT_TYPES],
         },
       ],
     },

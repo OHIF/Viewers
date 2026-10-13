@@ -48,8 +48,8 @@ describe('WindowLevelTool', () => {
     expect(cornerstoneDrag).not.toHaveBeenCalled();
   });
 
-  it('applies window/level on other viewports', () => {
-    dragOn({ type: 'stack' });
+  it.each(['stack', 'wholeSlide'])('applies window/level on %s viewports', type => {
+    dragOn({ type });
     expect(cornerstoneDrag).toHaveBeenCalledWith(evt);
   });
 });
