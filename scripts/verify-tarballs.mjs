@@ -352,7 +352,16 @@ function verifyTarball(pkg, tgzPath) {
       }
       if (COMPILER_RUNTIME_SHIM.test(source)) {
         const content = sourcesContent[index];
-        const size = typeof content === 'string' ? content.length : 0;
+        // Without the content the size limit below can't be checked, so the
+        // exemption can't be granted: a map may omit sourcesContent, or leave
+        // a null entry, and either would otherwise pass as size 0.
+        if (typeof content !== 'string') {
+          offenders.push(
+            `${source} (no source content in the map: cannot confirm it is the compiler-runtime shim)`
+          );
+          return;
+        }
+        const size = content.length;
         if (size <= COMPILER_RUNTIME_SHIM_MAX_CHARS) {
           shimsAllowed += 1;
           return;
