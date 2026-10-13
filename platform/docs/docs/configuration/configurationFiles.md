@@ -358,7 +358,7 @@ window.config = {
       packageName: '@acme/ohif-extension-ai',
       importPath: '/plugins/acme-ai/1.2.0/index.umd.js',
       globalName: '@acme/ohif-extension-ai',
-      coreVersionRange: '^3.13.0',
+      coreVersionRange: '>=3.14.0-beta.0 <4',
       styles: ['/plugins/acme-ai/1.2.0/index.css'],
     },
     // Cross-origin ESM bundle (globalName omitted; integrity REQUIRED):
@@ -462,8 +462,8 @@ Every runtime load attempt — success AND failure — appends a record to
   importPath: '/plugins/acme-ai/index.umd.js',
   resolvedUrl: 'https://viewer.example.com/plugins/acme-ai/index.umd.js',
   status: 'loaded',        // see the status enum below
-  hostVersion: '3.13.0-beta.116',   // the host build's version.txt value
-  requiredRange: '^3.13.0',         // the descriptor's coreVersionRange
+  hostVersion: '3.14.0-beta.49',    // the host build's version.txt value
+  requiredRange: '>=3.14.0-beta.0 <4', // the descriptor's coreVersionRange
   format: 'umd',           // derived from the globalName discriminator
   error: undefined,        // failure message when status is not 'loaded'
   durationMs: 142,

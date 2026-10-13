@@ -109,7 +109,7 @@ window.config = {
     requires: ['worklist/patientBirthDate'],   // resolves ./customizations/worklist/patientBirthDate.jsonc
     global: [                                  // mixes string references and inline maps
       '@ohif/extension-default.customizationModule.datasources',
-      { 'workList.previewSeriesView': 'all' },
+      { 'workList.variant': 'default' },
     ],
     mode: {
       '*': { 'someId': { $set: 'all modes' } },
@@ -118,6 +118,12 @@ window.config = {
   },
 };
 ```
+
+:::warning Deprecated
+The example uses `workList.variant`, which is still a valid id in 3.14 but will
+be removed in a future release. The phases and the syntax do not change. See the
+[3.13 to 3.14 WorkList guide](../3p13-to-3p14/work-list.md).
+:::
 
 How the phases map onto the boot sequence:
 
@@ -199,7 +205,7 @@ complete data-source list are available while developing without editing
 
 ### `APP_CONFIG` is honored, not clobbered
 
-The default config is selected by the build (`rspack.pwa.js` / `rsbuild.config.ts`),
+The default config is selected by the build (`webpack.pwa.js` / `rsbuild.config.ts`),
 **not** hard-coded into the npm scripts, so an explicit `APP_CONFIG` always wins:
 
 - `pnpm run dev` (no `APP_CONFIG`) → `config/dev.js`
