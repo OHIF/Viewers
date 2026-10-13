@@ -517,6 +517,13 @@ their own copies: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/core`,
 `dcmjs`, `gl-matrix`. `@ohif/ui` is NOT shared: it is legacy and a forbidden
 import for runtime plugins (use `@ohif/ui-next`).
 
+Every extension and mode built into the viewer is also shared on `window`
+under its package name once it has loaded (the whole module, named exports
+included). These globals carry no compatibility promise. Extensions marked
+`"default": false` in `pluginConfig.json` load only when a mode needs them; to
+import one from a runtime plugin, also list it by name in `extensions`. See
+[Runtime plugins](../deployment/runtime-plugins.md).
+
 ## Environment Variables
 
 We use environment variables at build and dev time to change the Viewer's
