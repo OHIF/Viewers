@@ -65,17 +65,19 @@ So: pick `10000` when the mode is `tmtv`, `2000` otherwise, and only ramp up if 
 **Hard rules for new screenshots:**
 
 1. Use the object form.
-2. Scope by passing a `locator` — `viewportPageObject.grid` for the whole grid, or a panel locator; a single viewport pane goes through `checkForViewportScreenshot` instead (rule 3). **Never screenshot the full app.** `normalizedClip` is computed *relative to the locator* (and defaults to the full page when no locator is given), so `{ x: 0, y: 0, width: 1, height: 1 }` alone does not scope anything — reserve `normalizedClip` for clipping to a sub-region of a locator. `fullPage: true` only takes effect when no `locator` is passed — that *is* the full-app capture this rule forbids, so pass a `locator` instead. (Through `checkForViewportScreenshot` the flag is inert: the capture is always scoped to the viewport pane.)
-3. **No text in baselines.** Capture viewports with `checkForViewportScreenshot({ page, viewport, screenshotPath })` — it hides all viewport text (overlays, annotation text, orientation markers) for the capture, then delegates to `checkForScreenshot` for the retry/compare. A raw `checkForScreenshot` on a viewport pane bakes overlay text (date, series description, W/L, slice index) into the baseline, which drifts with data, locale, and font rendering. Reserve raw `checkForScreenshot` for non-viewport locators (grid, panels).
+2. Scope to what's under test: a single viewport pane goes through `checkForViewportScreenshot`, the whole grid through `checkForGridScreenshot` (rule 3), and only a non-viewport locator (a panel, a dialog) through raw `checkForScreenshot` with a `locator`. **Never screenshot the full app.** `normalizedClip` is computed *relative to the locator* (and defaults to the full page when no locator is given), so `{ x: 0, y: 0, width: 1, height: 1 }` alone does not scope anything — reserve `normalizedClip` for clipping to a sub-region of a locator. `fullPage: true` only takes effect when no `locator` is passed — that *is* the full-app capture this rule forbids, so pass a `locator` instead. (Through the viewport/grid helpers the flag is inert: the capture is always scoped.)
+3. **No text in baselines.** Capture a viewport with `checkForViewportScreenshot({ page, viewport, screenshotPath })` and the grid with `checkForGridScreenshot({ page, viewportPageObject, screenshotPath })` — both hide all viewport text (overlays, annotation text, orientation markers, hydration/tracking prompts, and the unhydrated `SEG`/`RTSTRUCT`/`SR` badge) for the capture (the grid helper with one selector sweep over the whole grid, so panes added by a layout change are covered), then delegate to `checkForScreenshot` for the retry/compare. Raw `checkForScreenshot` does no text handling: it leaves the viewport or grid untouched before and after the capture, so any overlay text visible at that moment (date, series description, W/L, slice index) ends up in the baseline, where it drifts with data, locale, and font rendering. Reserve raw `checkForScreenshot` for non-viewport locators (panels, dialogs).
 
 Do not tune `maxDiffPixelRatio` or `threshold` to make a screenshot pass — those are intentionally rarely touched and not the right knob for flakes. If a baseline mismatches, regenerate it (`--update-snapshots`) after a human review of the diff, or fix the underlying instability. Check the current signature in `tests/utils/checkForScreenshot.ts` if something looks off.
 
 ### `screenShotPaths` — use keys, not raw strings
 
 ```ts
-await checkForScreenshot({
+const viewport = await viewportPageObject.active;
+
+await checkForViewportScreenshot({
   page,
-  locator: viewportPageObject.grid,
+  viewport,
   screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
 });
 ```
@@ -94,7 +96,8 @@ Read the one-line signature at the top of the utility's source file before calli
 
 Most utilities are obvious once you read the source; these earn a mention:
 
-- **`waitForViewportRenderCycle(page, options?)`** — preferred replacement for `page.waitForTimeout(...)` after any viewport-mutating action (hydration confirm, layout change, segmentation add, series load, etc.). Start it **before** the action, await it after — it captures the `needsRender → rendered` transition the action triggers. Use `waitForViewportsRendered(page)` (the second-half-only variant) when the render is already in flight before you can attach a watcher. Source: `tests/utils/waitForViewportsRendered.ts`. Seed: `tests/SEGHydrationFromMPR.spec.ts`. The "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) covers the idiom in full.
+- **`waitForViewportRenderCycle(page, options?)`** — preferred replacement for `page.waitForTimeout(...)` after any viewport-mutating action (hydration confirm, layout change, segmentation add, series load, etc.). Start it **before** the action, await it after — it captures the `needsRender → rendered` transition the action triggers. Use `waitForViewportsRendered(page)` (the second-half-only variant) when the render is already in flight before you can attach a watcher, and after `sliceNavigation.to*()` / `scrollBy` (their docstring says so). Source: `tests/utils/waitForViewportsRendered.ts`. Seed: `tests/SEGHydrationFromMPR.spec.ts`. The "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) covers the idiom in full.
+- **`expectAnnotationStatsText({ page, activeViewport, rightPanelPageObject, toolName, expectedPanelPrimaryLines, expectedSvgLines, assertStats? })`** — asserts a measurement's panel row, its SVG text, and its `cachedStats` in one call. Build the expected lines with `measurementTextFormatters`. Seeds: `tests/Length.spec.ts`, `tests/Probe.spec.ts`. Source: `tests/utils/expectAnnotationText.ts`.
 - **`subscribeToMeasurementAdded(page)`** — returns `{ waitFired(timeout?), unsubscribe() }`. Use in freehand/livewire/spline specs to assert the event fired. Always wrap in `try { ... } finally { await sub.unsubscribe() }` so a failing assertion doesn't leak the listener across tests.
 - **`attemptAction(action, attempts?, delay?)`** — retries a flaky async action without masking real failures. Mainly used to stabilize 3D scenes (`attemptAction(() => reduce3DViewportSize(page), 10, 100)`).
 

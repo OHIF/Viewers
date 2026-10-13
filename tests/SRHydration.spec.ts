@@ -1,5 +1,8 @@
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -30,11 +33,13 @@ test('should hydrate SR reports correctly', async ({
   await waitForViewportsRendered(page);
   await page.waitForTimeout(2000);
   await waitForPaintToSettle(page);
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.srHydration.srPreHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srPreHydration,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -57,11 +62,33 @@ test('should hydrate SR reports correctly', async ({
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
-  await checkForScreenshot(
-    page,
-    viewportPageObject.grid,
-    screenShotPaths.srHydration.srPostHydration
+
+  // Hydration should produce the SR's two measurements; the first one is the
+  // measurement shown in the screenshot below.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).title).toHaveText(
+    'Label1'
   );
+
+  const expectedLength = '46.6';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Length',
+    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine(expectedLength)],
+    expectedSvgLines: [measurementTextFormatters.lengthLine(expectedLength)],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect((stats.length as number).toFixed(1)).toBe(expectedLength);
+    },
+  });
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srPostHydration,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -84,9 +111,9 @@ test('should hydrate SR reports correctly', async ({
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.srHydration.srJumpToMeasurement
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srJumpToMeasurement,
+  });
 });

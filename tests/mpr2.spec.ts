@@ -1,7 +1,7 @@
 import {
   test,
   visitStudy,
-  checkForScreenshot,
+  checkForGridScreenshot,
   screenShotPaths,
   waitForViewportsRendered,
 } from './utils';
@@ -16,9 +16,9 @@ test.beforeEach(async ({ page }) => {
 test('should properly display MPR for MR', async ({ page, viewportPageObject }) => {
   await page.getByTestId('side-panel-header-right').click();
   // await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
-  await checkForScreenshot({
+  await checkForGridScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewportPageObject,
     screenshotPath: screenShotPaths.mpr2.mprDisplayedCorrectly,
   });
 
@@ -46,9 +46,9 @@ test('should properly display MPR for MR', async ({ page, viewportPageObject }) 
 
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot({
+  await checkForGridScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewportPageObject,
     screenshotPath: screenShotPaths.mpr2.mprDisplayedCorrectlyZoomed,
   });
 });

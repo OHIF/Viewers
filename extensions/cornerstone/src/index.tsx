@@ -116,8 +116,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   id,
 
   onModeEnter: ({ servicesManager, commandsManager, extensionManager }: withAppTypes): void => {
-    const { cornerstoneViewportService, toolbarService, segmentationService } =
-      servicesManager.services;
+    const {
+      cornerstoneViewportService,
+      toolbarService,
+      segmentationService,
+      customizationService,
+    } = servicesManager.services;
 
     const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
       servicesManager,
@@ -141,6 +145,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
+
+    // Apply the undo/redo history size on mode entry rather than in
+    // preRegistration, because the global customizations are applied after
+    // the extensions register.
+    cornerstone.utilities.HistoryMemo.DefaultHistoryMemo.size =
+      customizationService.getCustomization('cornerstone.maxUndoRedoCacheSize') || 50;
 
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
