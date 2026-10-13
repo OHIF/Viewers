@@ -6,6 +6,7 @@
   "keywords": ["ohif-mode"],
   "main": "dist/index.umd.js",
   "module": "src/index.ts",
+  "packageManager": "pnpm@12.8.1",
   "engines": { "node": ">=24" },
   "files": ["dist", "src", "README.md"],
   "publishConfig": {

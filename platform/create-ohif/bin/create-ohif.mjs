@@ -271,6 +271,8 @@ function inTreeTransformPass(targetDir, checkoutRoot) {
   if (pkg.scripts) {
     delete pkg.scripts.typecheck;
   }
+  // The checkout's root package.json pins pnpm for every package in it.
+  delete pkg.packageManager;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 }
 
@@ -707,6 +709,22 @@ async function runMigrate(targetDir, dryRun) {
         `package.json ${section} not pinned to exact versions: ${ranged.join(', ')} — OHIF uses exact versions outside peerDependencies; pin them by hand`
       );
     }
+  }
+
+  // packageManager: flagged, never written. migrate can't tell whether the
+  // package is its own project or sits inside a repo that already pins pnpm.
+  // The version to suggest comes from the workspace template, which declares it.
+  const templatePackageManager = JSON.parse(
+    readTemplateFile('workspace', 'package.json')
+  ).packageManager;
+  if (!next.packageManager) {
+    flags.push(
+      `package.json has no "packageManager" — the pnpm settings above assume ${templatePackageManager}; add "packageManager": "${templatePackageManager}" unless a parent repo already pins pnpm`
+    );
+  } else if (next.packageManager !== templatePackageManager) {
+    flags.push(
+      `package.json "packageManager" is "${next.packageManager}" — the pnpm settings above assume ${templatePackageManager}; check that your package manager reads them`
+    );
   }
 
   // -- build config: .webpack/ -> .rspack/ -----------------------------------

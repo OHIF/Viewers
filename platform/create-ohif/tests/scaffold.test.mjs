@@ -425,6 +425,7 @@ test('--in-tree scaffolds into the checkout with workspace peers and minimal dev
   assert.equal(pkg.peerDependencies['@ohif/core'], 'workspace:*');
   assert.deepEqual(pkg.devDependencies, { 'cross-env': '7.0.3', vitest: '3.2.7' });
   assert.equal(pkg.scripts.typecheck, undefined, 'typecheck dropped in-tree (tsc resolves from root)');
+  assert.equal(pkg.packageManager, undefined, "the checkout root's packageManager governs in-tree");
   assert.ok(!exists(dir, '.npmrc'), 'root .npmrc governs in-tree installs');
   assert.ok(
     !exists(dir, 'pnpm-workspace.yaml'),
@@ -454,6 +455,7 @@ test('--in-tree mode scaffolds into modes/', () => {
   assert.equal(pkg.peerDependencies['@ohif/extension-default'], 'workspace:*');
   assert.equal(pkg.private, true);
   assert.equal(pkg.version, '9.9.9-beta.1');
+  assert.equal(pkg.packageManager, undefined);
   assert.ok(!exists(dir, 'pnpm-workspace.yaml'));
   assert.ok(stdout.includes('under "modes"'), stdout);
 });

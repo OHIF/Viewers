@@ -8,6 +8,7 @@
   ],
   "main": "dist/index.umd.js",
   "module": "src/index.tsx",
+  "packageManager": "pnpm@12.8.1",
   "engines": {
     "node": ">=24"
   },

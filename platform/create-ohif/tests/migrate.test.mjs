@@ -228,3 +228,36 @@ test('migrate flags @ohif/ui imports, internal imports, and custom build config 
   assert.ok(fs.existsSync(path.join(target, '.webpack', 'custom-plugin.js')));
   assert.ok(!fs.existsSync(path.join(target, '.webpack', 'webpack.prod.js')), 'recognized config still replaced');
 });
+test('migrate flags a missing or different packageManager without writing it', () => {
+  const expected = JSON.parse(
+    fs.readFileSync(path.join(templatesRoot, 'workspace', 'package.json'), 'utf8')
+  ).packageManager;
+  const readPm = target =>
+    JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8')).packageManager;
+  const setPm = (target, value) => {
+    const pkgPath = path.join(target, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    pkg.packageManager = value;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+  };
+
+  // Missing: flagged with the version to add, and never written.
+  const missing = scaffoldCliEra('extension', 'pm-missing');
+  const report = migrate(missing, '--dry-run');
+  assert.ok(report.includes(`[flag]    package.json has no "packageManager"`), report);
+  assert.ok(report.includes(`add "packageManager": "${expected}"`), report);
+  migrate(missing);
+  assert.equal(readPm(missing), undefined, 'migrate must not write packageManager');
+
+  // Different: flagged, and left as the author set it.
+  const different = scaffoldCliEra('extension', 'pm-different');
+  setPm(different, 'yarn@1.22.22');
+  assert.ok(migrate(different, '--dry-run').includes('"packageManager" is "yarn@1.22.22"'));
+  migrate(different);
+  assert.equal(readPm(different), 'yarn@1.22.22');
+
+  // Matching: no packageManager flag at all.
+  const matching = scaffoldCliEra('extension', 'pm-matching');
+  setPm(matching, expected);
+  assert.ok(!migrate(matching, '--dry-run').includes('packageManager'));
+});
