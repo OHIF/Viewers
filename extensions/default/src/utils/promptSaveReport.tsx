@@ -21,7 +21,8 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       filterMeasurementsByStudyUID(StudyInstanceUID),
       filterMeasurementsBySeriesUID(trackedSeries)
     ),
-    defaultSaveTitle = 'Create Report',
+    defaultSaveTitle = 'Save Measurements',
+    defaultSeriesDescription = 'Measurements',
   } = ctx;
   let displaySetInstanceUIDs;
 
@@ -32,6 +33,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     const promptResult = await createReportDialogPrompt({
       title: defaultSaveTitle,
       predecessorImageId,
+      defaultSeriesDescription,
       minSeriesNumber: 3000,
       extensionManager,
       servicesManager,
@@ -39,8 +41,8 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     });
 
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
-      const { series, priorSeriesNumber, value: reportName, dataSourceName } = promptResult;
-      const SeriesDescription = reportName || defaultSaveTitle;
+      const { series, seriesNumber, value: reportName, dataSourceName } = promptResult;
+      const SeriesDescription = reportName || defaultSeriesDescription;
 
       const getReport = async () =>
         commandsManager.runCommand(
@@ -51,7 +53,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
             additionalFindingTypes: ['ArrowAnnotate'],
             options: {
               SeriesDescription,
-              SeriesNumber: 1 + priorSeriesNumber,
+              SeriesNumber: seriesNumber,
               predecessorImageId: series,
             },
           },
@@ -62,6 +64,21 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
         servicesManager,
         getReport,
       });
+
+      // The report just written is what these measurements are now stored as, so
+      // saving them again offers to extend that series rather than making
+      // another one.  Measurements are not reloaded from the report they were
+      // stored into, so this is recorded on them directly.
+      const storedDisplaySet = displaySetInstanceUIDs?.length
+        ? displaySetService.getDisplaySetByUID(displaySetInstanceUIDs[0])
+        : undefined;
+
+      if (storedDisplaySet?.predecessorImageId) {
+        commandsManager.runCommand('recordMeasurementsPredecessor', {
+          measurements: measurementData,
+          predecessorImageId: storedDisplaySet.predecessorImageId,
+        });
+      }
     } else if (promptResult.action === PROMPT_RESPONSES.CANCEL) {
       // Do nothing
     }

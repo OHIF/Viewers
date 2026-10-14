@@ -1,3 +1,9 @@
+// React Compiler opt-out: these hooks read and mutate external cornerstone3D
+// state (the image cache, the enabled element) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling them silently drops updates.
+'use no memo';
+
 import { useEffect, useRef, useState } from 'react';
 import { cache as cornerstoneCache, Enums, eventTarget, utilities } from '@cornerstonejs/core';
 import { useByteArray } from '@ohif/ui-next';

@@ -223,6 +223,12 @@
               scope: 'global',
               desc: 'Adds a "Birth Date" column to the study list, immediately after the Patient column. Shipped configs load this by default via customizationService.requires.',
             },
+            {
+              value: 'worklist/legacyWorkList',
+              name: 'Legacy study list (deprecated)',
+              scope: 'global',
+              desc: 'Mounts the pre-3.13 LegacyWorkList at / in place of the ui-next study list, by setting workList.variant to "legacy". Deprecated: a future release removes the component and the customization id.',
+            },
           ],
         },
         {

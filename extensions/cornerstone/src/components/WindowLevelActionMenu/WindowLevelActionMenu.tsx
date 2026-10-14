@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AllInOneMenu } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
@@ -21,7 +21,7 @@ export function WindowLevelActionMenu({
   align,
   side,
   onVisibilityChange,
-}: WindowLevelActionMenuProps): ReactElement {
+}: WindowLevelActionMenuProps): ReactElement<any> {
   return (
     <WindowLevelActionMenuContent
       viewportId={viewportId}
@@ -42,10 +42,10 @@ export function WindowLevelActionMenuContent({
   align?: string;
   side?: string;
   onVisibilityChange?: (isVisible: boolean) => void;
-}): ReactElement {
+}): ReactElement<any> {
   const { t } = useTranslation('WindowLevelActionMenu');
   // Use a stable key for the menu to avoid infinite re-renders
-  const menuKey = useMemo(() => `${viewportId}`, [viewportId]);
+  const menuKey = `${viewportId}`;
 
   const {
     is3DVolume,

@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useState, createContext, useContext, useEffect, useRef } from 'react';
 import ManagedDialog, { ManagedDialogProps, ManagedDialogRef } from './ManagedDialog';
 
 interface DialogContextType {
@@ -46,41 +38,38 @@ const DialogProvider: React.FC<DialogProviderProps> = ({
   const [dialogs, setDialogs] = useState<(ManagedDialogProps & { id: string })[]>([]);
   const dialogRefs = useRef<Map<string, ManagedDialogRef>>(new Map());
 
-  const show = useCallback((options: ManagedDialogProps) => {
+  const show = (options: ManagedDialogProps) => {
     const id = options.id;
     setDialogs(prev => [...prev, { ...options, id }]);
     return id;
-  }, []);
+  };
 
-  const hide = useCallback((id: string) => {
+  const hide = (id: string) => {
     setDialogs(prev => prev.filter(dialog => dialog.id !== id));
     dialogRefs.current.delete(id);
-  }, []);
+  };
 
-  const hideAll = useCallback(() => {
+  const hideAll = () => {
     setDialogs([]);
     dialogRefs.current.clear();
-  }, []);
+  };
 
-  const isEmpty = useCallback(() => dialogs.length === 0, [dialogs]);
+  const isEmpty = () => dialogs.length === 0;
 
-  const updatePosition = useCallback((id: string, position: { x: number; y: number }) => {
+  const updatePosition = (id: string, position: { x: number; y: number }) => {
     const dialogRef = dialogRefs.current.get(id);
     if (dialogRef) {
       dialogRef.updatePosition(position);
     }
-  }, []);
+  };
 
-  const contextValue = useMemo(
-    () => ({
-      show,
-      hide,
-      hideAll,
-      isEmpty,
-      updatePosition,
-    }),
-    [show, hide, hideAll, isEmpty, updatePosition]
-  );
+  const contextValue = {
+    show,
+    hide,
+    hideAll,
+    isEmpty,
+    updatePosition,
+  };
 
   useEffect(() => {
     if (service) {

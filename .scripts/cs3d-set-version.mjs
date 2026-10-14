@@ -3,43 +3,126 @@
 /**
  * Updates all @cornerstonejs/* package versions across the OHIF workspace.
  *
- * Usage: node .scripts/cs3d-set-version.mjs <version>
+ * Usage: node .scripts/cs3d-set-version.mjs <version> [--only-if-newer]
  *
- * Only updates the 8 main CS3D packages (not codec packages):
- *   adapters, ai, core, dicom-image-loader, labelmap-interpolation,
- *   nifti-volume-loader, polymorphic-segmentation, tools
+ * Only updates the packages that the cornerstone3D monorepo releases together
+ * (not the codec packages, and not calculate-suv):
+ *   adapters, ai, core, dicom-image-loader, labelmap-interpolation, metadata,
+ *   nifti-volume-loader, polymorphic-segmentation, tools, utils
+ *
+ * An @cornerstonejs/* dependency that is in neither group stops the run with an
+ * error, so that a new package cannot be left silently at an old version.
+ *
+ * --only-if-newer
+ *   Do nothing when the version already committed is the same as, or newer
+ *   than, <version>. Used for the `CS3D_REF: <branch> now <version>` form,
+ *   where the version is a record of what the branch became rather than a
+ *   request — so a stale note cannot drag the pinned version backwards. An
+ *   explicit request (a bare ref, or anything typed into the workflow_dispatch
+ *   box) omits the flag and is obeyed as given, downgrades included.
+ *
+ * Reports whether anything changed, on stdout and — when GITHUB_OUTPUT is set —
+ * as a `changed` step output. The caller needs this because rewriting the
+ * manifests forces the following install to drop --frozen-lockfile; when
+ * nothing changed, the frozen install already done earlier in the job stands
+ * and no reinstall is needed at all.
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, appendFileSync } from 'fs';
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import semver from 'semver';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 
-const version = process.argv[2];
+const args = process.argv.slice(2);
+const onlyIfNewer = args.includes('--only-if-newer');
+const version = args.find(a => !a.startsWith('--'));
 if (!version) {
-  console.error('Usage: cs3d-set-version.mjs <version>');
-  console.error('  e.g. 4.18.2, 4.19.0-beta.1');
+  console.error('Usage: cs3d-set-version.mjs <version> [--only-if-newer]');
+  console.error('  e.g. 5.10.3, 5.11.0-beta.1');
   process.exit(1);
 }
 
-// The 8 CS3D packages that are built from source (not codecs)
+if (!semver.valid(version)) {
+  console.error(`"${version}" is not a concrete semver version.`);
+  console.error('Ranges must be resolved first (see cs3d-resolve-version.mjs).');
+  process.exit(1);
+}
+
+/** Tell the calling workflow step whether the manifests were rewritten. */
+function reportChanged(changed) {
+  if (process.env.GITHUB_OUTPUT) {
+    appendFileSync(process.env.GITHUB_OUTPUT, `changed=${changed}\n`);
+  }
+}
+
+// The packages the cornerstone3D monorepo releases together, all carrying the
+// same version. These are the ones this script rewrites.
+//
+// `@cornerstonejs/metadata` was missing from this list while the workspace
+// pinned it, so a run rewrote the others and left metadata behind.
+// `@cornerstonejs/core` peer-depends on metadata at its own exact version, so
+// the run then tested a mixed tree and still reported a passing integration.
+// `scanManifests` below rejects an unrecognised @cornerstonejs/* package for
+// that reason: the next addition cannot go missing quietly.
 const CS3D_PACKAGES = [
   '@cornerstonejs/adapters',
   '@cornerstonejs/ai',
   '@cornerstonejs/core',
   '@cornerstonejs/dicom-image-loader',
   '@cornerstonejs/labelmap-interpolation',
+  '@cornerstonejs/metadata',
   '@cornerstonejs/nifti-volume-loader',
   '@cornerstonejs/polymorphic-segmentation',
   '@cornerstonejs/tools',
+  '@cornerstonejs/utils',
 ];
 
-// Read root package.json to get workspace globs
+// Packages under the same npm scope that the cornerstone3D monorepo does NOT
+// release: the WASM codecs and calculate-suv each have their own repository and
+// their own version line (1.2.5, 2.4.9, 1.1.0 today). Rewriting them to a CS3D
+// version would ask npm for releases that do not exist.
+const INDEPENDENT_PACKAGES = [/^@cornerstonejs\/codec-/, /^@cornerstonejs\/calculate-suv$/];
+
+// Workspace globs. This repo declares them in pnpm-workspace.yaml; the
+// package.json `workspaces` field is read too, for repos that use it.
+//
+// Reading only package.json was a silent failure: this repo has no
+// `workspaces` field, so the glob list came back empty, only the root manifest
+// was scanned, and the root carries no @cornerstonejs/* dependency. The script
+// then rewrote nothing and reported success — "0 version(s) updated" reads like
+// a no-op rather than a fault. The checks at the end of this file exist so that
+// cannot happen quietly again.
+function readPnpmWorkspaceGlobs() {
+  const p = resolve(rootDir, 'pnpm-workspace.yaml');
+  if (!existsSync(p)) return [];
+  const globs = [];
+  let inPackages = false;
+  for (const line of readFileSync(p, 'utf8').split(/\r?\n/)) {
+    if (/^packages:\s*$/.test(line)) {
+      inPackages = true;
+      continue;
+    }
+    if (inPackages) {
+      const m = line.match(/^\s+-\s*['"]?([^'"#]+?)['"]?\s*$/);
+      if (m) {
+        globs.push(m[1]);
+        continue;
+      }
+      if (/^\S/.test(line)) inPackages = false; // next top-level key
+    }
+  }
+  return globs;
+}
+
 const rootPkgPath = resolve(rootDir, 'package.json');
 const rootPkg = JSON.parse(readFileSync(rootPkgPath, 'utf8'));
-const workspaceGlobs = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
+const workspaceGlobs = [
+  ...readPnpmWorkspaceGlobs(),
+  ...(rootPkg.workspaces?.packages || rootPkg.workspaces || []),
+];
 
 // Collect all package.json paths from workspace globs
 function findWorkspacePackageJsons() {
@@ -97,6 +180,126 @@ function updateDeps(deps, targetVersion) {
 }
 
 const pkgPaths = findWorkspacePackageJsons();
+
+const relToRoot = p => p.replace(rootDir + '/', '').replace(rootDir + '\\', '');
+
+const DEP_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'resolutions'];
+
+/**
+ * Scans every manifest once and sorts the @cornerstonejs/* dependencies it
+ * finds into two lists.
+ *
+ * `found` holds every occurrence of a tracked package, with where it was
+ * found. All of them, not the first match: one manifest already carrying the
+ * requested version would otherwise satisfy the no-change check below, leaving
+ * every other manifest stale and skipping the reinstall.
+ *
+ * `unknown` holds every @cornerstonejs/* dependency that is neither tracked nor
+ * known to be released separately. A package this script does not recognise is
+ * a question it cannot answer, not a package to leave alone — leaving one alone
+ * is exactly how the workspace came to pin a metadata version that no longer
+ * matched the core version beside it.
+ */
+function scanManifests() {
+  const found = [];
+  const unknown = [];
+  for (const pkgPath of pkgPaths) {
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+    for (const field of DEP_FIELDS) {
+      const deps = pkg[field];
+      if (!deps) continue;
+      for (const name of Object.keys(deps)) {
+        if (!name.startsWith('@cornerstonejs/')) continue;
+        const where = { file: relToRoot(pkgPath), field, name, value: deps[name] };
+        if (CS3D_PACKAGES.includes(name)) {
+          found.push(where);
+        } else if (!INDEPENDENT_PACKAGES.some(re => re.test(name))) {
+          unknown.push(where);
+        }
+      }
+    }
+  }
+  return { found, unknown };
+}
+
+const { found: occurrences, unknown } = scanManifests();
+
+// Fail on an unrecognised @cornerstonejs/* package rather than skipping it. The
+// caller must decide which of the two lists at the top of this file the package
+// belongs in: CS3D_PACKAGES when the cornerstone3D monorepo releases it, and
+// INDEPENDENT_PACKAGES when it has a version line of its own.
+if (unknown.length > 0) {
+  console.error(
+    `Found ${unknown.length} @cornerstonejs/* dependency/dependencies that this script does not recognise:`
+  );
+  for (const o of unknown) {
+    console.error(`  ${o.file}  ${o.field}.${o.name} = ${o.value}`);
+  }
+  console.error(
+    'Add each one to CS3D_PACKAGES in this file when cornerstone3D releases it with the other\n' +
+      'packages, or to INDEPENDENT_PACKAGES when it carries its own version. Guessing would\n' +
+      'either leave the package behind at an old version or ask npm for a release that does\n' +
+      'not exist.'
+  );
+  process.exit(1);
+}
+
+// No @cornerstonejs/* dependency anywhere means the discovery above is wrong or
+// the repository has changed shape — not that there is nothing to do. Say so
+// rather than reporting a successful no-op, which is how this went unnoticed
+// before.
+if (occurrences.length === 0) {
+  console.error(
+    `Found no @cornerstonejs/* dependency in any of the ${pkgPaths.length} manifest(s) scanned.`
+  );
+  console.error('Workspace globs used: ' + (workspaceGlobs.join(', ') || '(none)'));
+  console.error('Expected at least one; check the globs in pnpm-workspace.yaml.');
+  process.exit(1);
+}
+
+// The comparisons below only mean something if the workspace speaks with one
+// voice. Mixed values, or a range where a pin belongs, leave no baseline to
+// compare the request against, so name the offenders rather than pick one and
+// treat the rest as agreed.
+const distinct = [...new Set(occurrences.map(o => o.value))];
+if (distinct.length > 1 || !semver.valid(distinct[0])) {
+  console.error(
+    distinct.length > 1
+      ? `@cornerstonejs/* is not pinned consistently: found ${distinct.join(', ')}.`
+      : `@cornerstonejs/* is pinned at "${distinct[0]}", which is not one concrete version.`
+  );
+  for (const o of occurrences) {
+    console.error(`  ${o.file}  ${o.field}.${o.name} = ${o.value}`);
+  }
+  console.error('Pin every occurrence to the same concrete version, then run this again.');
+  process.exit(1);
+}
+
+const committed = distinct[0];
+
+if (semver.eq(committed, version)) {
+  console.log(`@cornerstonejs/* already pinned at ${version}; nothing to change.`);
+  reportChanged(false);
+  process.exit(0);
+}
+
+if (onlyIfNewer && semver.gt(committed, version)) {
+  console.log(
+    `@cornerstonejs/* is pinned at ${committed}, which is newer than the recorded ${version}.\n` +
+      'Keeping the committed version: a "now" clause records what a branch became, so it never ' +
+      'moves the pin backwards. Use a bare CS3D_REF to request an older version deliberately.'
+  );
+  reportChanged(false);
+  process.exit(0);
+}
+
+if (semver.lt(version, committed)) {
+  // Reached only without --only-if-newer, i.e. someone asked for this outright.
+  console.log(
+    `::warning::Requested ${version} is older than the committed ${committed}; downgrading as requested.`
+  );
+}
+
 let totalChanges = 0;
 
 for (const pkgPath of pkgPaths) {
@@ -114,18 +317,29 @@ for (const pkgPath of pkgPaths) {
     // we don't accidentally capture a CRLF newline as part of the indent string)
     const indent = content.match(/^([ \t]+)/m)?.[1] || '  ';
     writeFileSync(pkgPath, JSON.stringify(pkg, null, indent) + '\n');
-    const rel = pkgPath.replace(rootDir + '/', '').replace(rootDir + '\\', '');
+    const rel = relToRoot(pkgPath);
     console.log(`  Updated ${rel} (${changes} packages)`);
     totalChanges += changes;
   }
 }
 
+// Reaching here means the committed version differs from the requested one, so
+// at least one manifest had to change. Zero means the write loop and the
+// version lookup disagree — a fault, not a no-op.
+if (totalChanges === 0) {
+  console.error(
+    `Found @cornerstonejs/* pinned at ${committed} but updated nothing when asked for ${version}.`
+  );
+  console.error(`Scanned ${pkgPaths.length} manifest(s) from globs: ${workspaceGlobs.join(', ')}`);
+  process.exit(1);
+}
+
 console.log(
   `\nDone: ${totalChanges} version(s) updated to ${version} across ${pkgPaths.length} package files.`
 );
+reportChanged(true);
 console.log(
-  'This step changes package.json; the following install must not use a frozen Bun lockfile ' +
-    '(OHIF+CS3D combined “version” CI does: `bun install --config=./bunfig.update-lockfile.toml`). ' +
-    'Other installs stay frozen. Locally after this script, use that bun command and/or ' +
-    '`bun run install:update-lockfile` when you intend to commit lockfile updates.\n'
+  'This rewrites package.json, so the lockfile no longer matches it and the next install cannot ' +
+    'be frozen. In CI the workflow handles that. Locally, run `pnpm run install:update-lockfile` ' +
+    '(pnpm install --no-frozen-lockfile) when you intend to commit the lockfile update.\n'
 );

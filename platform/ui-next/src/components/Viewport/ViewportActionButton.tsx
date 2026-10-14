@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * A button that can trigger commands when clicked.
@@ -21,11 +20,6 @@ function ViewportActionButton({ onInteraction, commands, id, children }) {
   );
 }
 
-ViewportActionButton.propTypes = {
-  id: PropTypes.string,
-  onInteraction: PropTypes.func.isRequired,
-  commands: PropTypes.array,
-  children: PropTypes.node,
-};
+
 
 export { ViewportActionButton };

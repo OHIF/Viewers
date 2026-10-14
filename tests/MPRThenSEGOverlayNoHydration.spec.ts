@@ -1,4 +1,4 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import { checkForGridScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -19,11 +19,11 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.mprThenSEGOverlayNoHydration.mprPreSEGOverlayNoHydration
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.mprThenSEGOverlayNoHydration.mprPreSEGOverlayNoHydration,
+  });
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
   const axialViewport = await viewportPageObject.getById('mpr-axial');
@@ -40,9 +40,9 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.mprThenSEGOverlayNoHydration.mprPostSEGOverlayNoHydration
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.mprThenSEGOverlayNoHydration.mprPostSEGOverlayNoHydration,
+  });
 });

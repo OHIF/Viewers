@@ -4,8 +4,6 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useCallback,
-  useMemo,
   Children,
   isValidElement,
 } from 'react';
@@ -132,18 +130,15 @@ export function SmartScrollbar({
 }: SmartScrollbarProps) {
   validateChildren(children);
 
-  const resolvedIndicator = useMemo(() => {
-    const defaultIndicatorConfig = DEFAULT_INDICATOR_CONFIG;
-    const parsed = normalizeIndicatorRecord(indicator);
-    if (parsed.totalWidth && parsed.totalHeight && parsed.renderIndicator) {
-      return {
-        totalWidth: parsed.totalWidth,
-        totalHeight: parsed.totalHeight,
-        renderIndicator: parsed.renderIndicator,
-      };
-    }
-    return defaultIndicatorConfig;
-  }, [indicator]);
+  const parsedIndicator = normalizeIndicatorRecord(indicator);
+  const resolvedIndicator =
+    parsedIndicator.totalWidth && parsedIndicator.totalHeight && parsedIndicator.renderIndicator
+      ? {
+          totalWidth: parsedIndicator.totalWidth,
+          totalHeight: parsedIndicator.totalHeight,
+          renderIndicator: parsedIndicator.renderIndicator,
+        }
+      : DEFAULT_INDICATOR_CONFIG;
 
   // ── ResizeObserver for trackHeight ───────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
@@ -197,121 +192,96 @@ export function SmartScrollbar({
   const [stableLayerEl, setStableLayerEl] = useState<HTMLDivElement | null>(null);
 
   // ── Pointer helpers ──────────────────────────────────────────
-  const clamp = useCallback((val: number) => Math.max(0, Math.min(total - 1, val)), [total]);
+  const clamp = (val: number) => Math.max(0, Math.min(total - 1, val));
 
-  const indexFromPointerY = useCallback(
-    (clientY: number) => {
-      if (trackHeight <= 0) {
-        return 0;
-      }
+  const indexFromPointerY = (clientY: number) => {
+    if (trackHeight <= 0) {
+      return 0;
+    }
 
-      // Map pointer Y within the same padded fill strip used by fill/indicator.
-      const fillTop = trackTopRef.current + FILL_PADDING;
-      const fillHeight = trackHeight - FILL_PADDING * 2;
-      if (fillHeight <= 0) {
-        return 0;
-      }
-      const ratio = Math.max(0, Math.min(1, (clientY - fillTop) / fillHeight));
-      return Math.round(ratio * (total - 1));
-    },
-    [trackHeight, total]
-  );
+    // Map pointer Y within the same padded fill strip used by fill/indicator.
+    const fillTop = trackTopRef.current + FILL_PADDING;
+    const fillHeight = trackHeight - FILL_PADDING * 2;
+    if (fillHeight <= 0) {
+      return 0;
+    }
+    const ratio = Math.max(0, Math.min(1, (clientY - fillTop) / fillHeight));
+    return Math.round(ratio * (total - 1));
+  };
 
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      trackTopRef.current = e.currentTarget.getBoundingClientRect().top;
-      if (trackHeight <= 0) {
-        return;
-      }
+  const handlePointerDown = (e: React.PointerEvent) => {
+    trackTopRef.current = e.currentTarget.getBoundingClientRect().top;
+    if (trackHeight <= 0) {
+      return;
+    }
 
-      isDraggingRef.current = true;
-      setIsDragging(true);
-      e.currentTarget.setPointerCapture(e.pointerId);
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
 
-      onValueChange(clamp(indexFromPointerY(e.clientY)));
-    },
-    [clamp, indexFromPointerY, onValueChange, trackHeight]
-  );
+    onValueChange(clamp(indexFromPointerY(e.clientY)));
+  };
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDraggingRef.current) return;
-      onValueChange(clamp(indexFromPointerY(e.clientY)));
-    },
-    [clamp, indexFromPointerY, onValueChange]
-  );
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    onValueChange(clamp(indexFromPointerY(e.clientY)));
+  };
 
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+  const handlePointerUp = (e: React.PointerEvent) => {
     isDraggingRef.current = false;
     setIsDragging(false);
     e.currentTarget.releasePointerCapture(e.pointerId);
-  }, []);
+  };
 
   // ── Keyboard interaction (WAI-ARIA slider spec) ────────────
   const PAGE_STEP = 10;
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      let next: number | null = null;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    let next: number | null = null;
 
-      switch (e.key) {
-        case 'ArrowUp':
-        case 'ArrowLeft':
-          next = value - 1;
-          break;
-        case 'ArrowDown':
-        case 'ArrowRight':
-          next = value + 1;
-          break;
-        case 'PageUp':
-          next = value - PAGE_STEP;
-          break;
-        case 'PageDown':
-          next = value + PAGE_STEP;
-          break;
-        case 'Home':
-          next = 0;
-          break;
-        case 'End':
-          next = total - 1;
-          break;
-        default:
-          return;
-      }
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        next = value - 1;
+        break;
+      case 'ArrowDown':
+      case 'ArrowRight':
+        next = value + 1;
+        break;
+      case 'PageUp':
+        next = value - PAGE_STEP;
+        break;
+      case 'PageDown':
+        next = value + PAGE_STEP;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = total - 1;
+        break;
+      default:
+        return;
+    }
 
-      e.preventDefault();
-      onValueChange(clamp(next));
-    },
-    [value, total, clamp, onValueChange]
-  );
+    e.preventDefault();
+    onValueChange(clamp(next));
+  };
 
   // ── Context values ───────────────────────────────────────────
-  const layoutCtx = useMemo<SmartScrollbarLayoutContextValue>(
-    () => ({
-      total,
-      trackHeight,
-      isLoading,
-      isDragging,
-      effectiveWidth,
-      trackWidth: TRACK_WIDTH,
-      fillPadding: FILL_PADDING,
-      stableLayerEl,
-      indicatorTotalWidth: resolvedIndicator.totalWidth,
-      indicatorTotalHeight: resolvedIndicator.totalHeight,
-      renderIndicator: resolvedIndicator.renderIndicator,
-    }),
-    [
-      total,
-      trackHeight,
-      isLoading,
-      isDragging,
-      effectiveWidth,
-      stableLayerEl,
-      resolvedIndicator.totalWidth,
-      resolvedIndicator.totalHeight,
-      resolvedIndicator.renderIndicator,
-    ]
-  );
+  const layoutCtx: SmartScrollbarLayoutContextValue = {
+    total,
+    trackHeight,
+    isLoading,
+    isDragging,
+    effectiveWidth,
+    trackWidth: TRACK_WIDTH,
+    fillPadding: FILL_PADDING,
+    stableLayerEl,
+    indicatorTotalWidth: resolvedIndicator.totalWidth,
+    indicatorTotalHeight: resolvedIndicator.totalHeight,
+    renderIndicator: resolvedIndicator.renderIndicator,
+  };
   return (
     <SmartScrollbarLayoutContext.Provider value={layoutCtx}>
       <SmartScrollbarScrollContext.Provider value={value}>

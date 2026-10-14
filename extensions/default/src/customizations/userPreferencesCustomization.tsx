@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
 import { UserPreferencesModal, FooterAction } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +67,30 @@ function getModifierFromBindings(
   return modifierBinding?.modifierKey != null ? String(modifierBinding.modifierKey) : null;
 }
 
+/**
+ * Resolves a localized language name, or null when Intl cannot produce one that
+ * differs from the raw locale code.
+ *
+ * Module scope on purpose: the conditional inside this try/catch is a React
+ * Compiler limitation ("value blocks within a try/catch") that bails the whole
+ * component when inlined. Plain functions are never compiled.
+ */
+function resolveLocalizedLanguageName(
+  displayNames: Intl.DisplayNames,
+  languageValue: string
+): string | null {
+  try {
+    const localized = displayNames.of(languageValue);
+    if (localized && localized.toLowerCase() !== languageValue.toLowerCase()) {
+      return localized.charAt(0).toUpperCase() + localized.slice(1);
+    }
+  } catch (error) {
+    console.debug(`Unable to resolve display name for ${languageValue}`, error);
+  }
+
+  return null;
+}
+
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
@@ -74,13 +98,9 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
-  const fallbackHotkeyDefinitions = useMemo(
-    () =>
-      hotkeysManager.getValidHotkeyDefinitions(
-        hotkeysModule.defaults.hotkeyBindings
-      ) as HotkeyDefinitions,
-    [hotkeysManager]
-  );
+  const fallbackHotkeyDefinitions = hotkeysManager.getValidHotkeyDefinitions(
+    hotkeysModule.defaults.hotkeyBindings
+  ) as HotkeyDefinitions;
 
   useEffect(() => {
     if (!Object.keys(hotkeyDefaults).length) {
@@ -102,13 +122,10 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
 
   const currentLanguage = currentLanguageFn();
 
-  const initialCrosshairModifier = useMemo(
-    () => getToolModifier(toolGroupService, 'mpr', 'Crosshairs', 1),
-    [toolGroupService]
-  );
-  const defaultCrosshairBindings = useMemo(
-    () => toolGroupService?.getDefaultToolBindings?.('mpr', 'Crosshairs'),
-    [toolGroupService]
+  const initialCrosshairModifier = getToolModifier(toolGroupService, 'mpr', 'Crosshairs', 1);
+  const defaultCrosshairBindings = toolGroupService?.getDefaultToolBindings?.(
+    'mpr',
+    'Crosshairs'
   );
 
   const [state, setState] = useState({
@@ -177,13 +194,9 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
       }
 
       if (displayNames) {
-        try {
-          const localized = displayNames.of(languageValue);
-          if (localized && localized.toLowerCase() !== languageValue.toLowerCase()) {
-            return localized.charAt(0).toUpperCase() + localized.slice(1);
-          }
-        } catch (error) {
-          console.debug(`Unable to resolve display name for ${languageValue}`, error);
+        const localized = resolveLocalizedLanguageName(displayNames, languageValue);
+        if (localized) {
+          return localized;
         }
       }
 

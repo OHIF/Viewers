@@ -9,23 +9,13 @@ const CAP_HEIGHT = CAP_SIZE / 2 + 1; // 3
 const CAP_COLOR = 'hsl(var(--neutral) / 1.0)';
 
 interface SmartScrollbarEndpointsProps {
+  /** Marked positions. MUST change identity whenever its contents change. */
   marked: Uint8Array;
-  /**
-   * Change token that MUST be bumped when the contents of `marked` change while
-   * the `marked` array reference stays the same (in-place mutation).
-   *
-   * Recommended: manage `marked` + `version` together via `useByteArray()`.
-   */
-  version: number;
   className?: string;
 }
 
 export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoints({
   marked,
-  // `marked` is mutated in-place (stable reference). We accept `version` only to
-  // invalidate React.memo and force a re-render when the bytes change. The
-  // leading underscore indicates the value is intentionally unused in this component.
-  version: _version,
   className,
 }: SmartScrollbarEndpointsProps) {
   const { trackHeight, trackWidth, fillPadding, stableLayerEl } =

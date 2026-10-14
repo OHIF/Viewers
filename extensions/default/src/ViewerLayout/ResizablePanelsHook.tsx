@@ -66,6 +66,27 @@ const useResizablePanels = (
   // The total width of both handles.
   const resizableHandlesWidth = useRef(null);
 
+  /**
+   * Gets the percentage size corresponding to the given pixel size.
+   * Note that the width attributed to the handles must be taken into account.
+   */
+  const getPercentageSize = pixelSize => {
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current?.getBoundingClientRect();
+    return (pixelSize / (panelGroupWidth - resizableHandlesWidth.current)) * 100;
+  };
+
+  /**
+   * Gets the width in pixels for an expanded panel given its percentage size/width.
+   * Note that the width attributed to the handles must be taken into account.
+   */
+  const getExpandedPixelWidth = percentageSize => {
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current?.getBoundingClientRect();
+    const expandedWidth =
+      (percentageSize / 100) * (panelGroupWidth - resizableHandlesWidth.current) -
+      panelGroupDefinition.shared.expandedInsideBorderSize;
+    return expandedWidth;
+  };
+
   // This useLayoutEffect is used to...
   // - Grab a reference to the various resizable panel elements needed for
   //   converting between percentages and pixels in various callbacks.
@@ -178,33 +199,30 @@ const useResizablePanels = (
   /**
    * Handles dragging of either side panel resize handle.
    */
-  const onHandleDragging = useCallback(
-    isStartDrag => {
-      if (isStartDrag) {
-        isResizableHandleDraggingRef.current = true;
+  const onHandleDragging = isStartDrag => {
+    if (isStartDrag) {
+      isResizableHandleDraggingRef.current = true;
 
-        setMinMaxWidth(resizableLeftPanelElemRef.current);
-        setMinMaxWidth(resizableRightPanelElemRef.current);
-      } else {
-        isResizableHandleDraggingRef.current = false;
+      setMinMaxWidth(resizableLeftPanelElemRef.current);
+      setMinMaxWidth(resizableRightPanelElemRef.current);
+    } else {
+      isResizableHandleDraggingRef.current = false;
 
-        if (resizableLeftPanelAPIRef?.current?.isExpanded()) {
-          setMinMaxWidth(
-            resizableLeftPanelElemRef.current,
-            leftPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
-          );
-        }
-
-        if (resizableRightPanelAPIRef?.current?.isExpanded()) {
-          setMinMaxWidth(
-            resizableRightPanelElemRef.current,
-            rightPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
-          );
-        }
+      if (resizableLeftPanelAPIRef?.current?.isExpanded()) {
+        setMinMaxWidth(
+          resizableLeftPanelElemRef.current,
+          leftPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
+        );
       }
-    },
-    [leftPanelExpandedWidth, rightPanelExpandedWidth]
-  );
+
+      if (resizableRightPanelAPIRef?.current?.isExpanded()) {
+        setMinMaxWidth(
+          resizableRightPanelElemRef.current,
+          rightPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
+        );
+      }
+    }
+  };
 
   const onLeftPanelClose = useCallback(() => {
     setLeftPanelClosed(true);
@@ -212,14 +230,14 @@ const useResizablePanels = (
     resizableLeftPanelAPIRef?.current?.collapse();
   }, [setLeftPanelClosed]);
 
-  const onLeftPanelOpen = useCallback(() => {
+  const onLeftPanelOpen = () => {
     resizableLeftPanelAPIRef?.current?.expand(
       getPercentageSize(panelGroupDefinition.left.initialExpandedOffsetWidth)
     );
     setLeftPanelClosed(false);
-  }, [setLeftPanelClosed]);
+  };
 
-  const onLeftPanelResize = useCallback(size => {
+  const onLeftPanelResize = size => {
     if (!resizablePanelGroupElemRef?.current || resizableLeftPanelAPIRef.current?.isCollapsed()) {
       return;
     }
@@ -233,7 +251,7 @@ const useResizablePanels = (
       // because here we know the size of the expanded panel.
       setMinMaxWidth(resizableLeftPanelElemRef.current, newExpandedWidth);
     }
-  }, []);
+  };
 
   const onRightPanelClose = useCallback(() => {
     setRightPanelClosed(true);
@@ -241,14 +259,14 @@ const useResizablePanels = (
     resizableRightPanelAPIRef?.current?.collapse();
   }, [setRightPanelClosed]);
 
-  const onRightPanelOpen = useCallback(() => {
+  const onRightPanelOpen = () => {
     resizableRightPanelAPIRef?.current?.expand(
       getPercentageSize(panelGroupDefinition.right.initialExpandedOffsetWidth)
     );
     setRightPanelClosed(false);
-  }, [setRightPanelClosed]);
+  };
 
-  const onRightPanelResize = useCallback(size => {
+  const onRightPanelResize = size => {
     if (!resizablePanelGroupElemRef?.current || resizableRightPanelAPIRef?.current?.isCollapsed()) {
       return;
     }
@@ -262,27 +280,6 @@ const useResizablePanels = (
       // because here we know the size of the expanded panel.
       setMinMaxWidth(resizableRightPanelElemRef.current, newExpandedWidth);
     }
-  }, []);
-
-  /**
-   * Gets the percentage size corresponding to the given pixel size.
-   * Note that the width attributed to the handles must be taken into account.
-   */
-  const getPercentageSize = pixelSize => {
-    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current?.getBoundingClientRect();
-    return (pixelSize / (panelGroupWidth - resizableHandlesWidth.current)) * 100;
-  };
-
-  /**
-   * Gets the width in pixels for an expanded panel given its percentage size/width.
-   * Note that the width attributed to the handles must be taken into account.
-   */
-  const getExpandedPixelWidth = percentageSize => {
-    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current?.getBoundingClientRect();
-    const expandedWidth =
-      (percentageSize / 100) * (panelGroupWidth - resizableHandlesWidth.current) -
-      panelGroupDefinition.shared.expandedInsideBorderSize;
-    return expandedWidth;
   };
 
   return [

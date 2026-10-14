@@ -1,6 +1,7 @@
 import { visitStudy, visitStudyOptions } from './visitStudy';
 import { addOHIFConfiguration, addOHIFGlobalCustomizations } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
+import { checkForGridScreenshot } from './checkForGridScreenshot';
 import { checkForViewportScreenshot } from './checkForViewportScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -8,6 +9,7 @@ import {
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
 } from './simulateClicksOnElement';
 import {
   simulateNormalizedDragOnElement,
@@ -24,15 +26,18 @@ import {
   measurementTextFormatters,
 } from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
+import { drawFreehandContour } from './drawFreehandContour';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgAttribute } from './getSvgAttribute';
+import { countSvgPathPoints } from './countSvgPathPoints';
 import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
 import { visitStudyAndHydrate } from './visitStudyAndHydrate';
 import { test, expect } from './fixture';
+import { press, withKeyHeld } from './keyboardUtils';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 import {
   waitForAnyViewportNeedsRender,
@@ -47,12 +52,14 @@ export {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,
+  checkForGridScreenshot,
   checkForViewportScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
   reduce3DViewportSize,
@@ -65,11 +72,13 @@ export {
   expectAnnotationStatsText,
   measurementTextFormatters,
   clearAllAnnotations,
+  drawFreehandContour,
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
   subscribeToMeasurementAdded,
   getSvgAttribute,
+  countSvgPathPoints,
   getViewportCanvasStats,
   navigateWithViewportArrow,
   contourShowOnlyNthSegment,
@@ -78,6 +87,8 @@ export {
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   waitForPaintToSettle,
+  press,
+  withKeyHeld,
   test,
   expect,
 };

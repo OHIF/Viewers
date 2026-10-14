@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Enums, log } from '@ohif/core';
 import { Button } from '@ohif/ui-next';
@@ -9,6 +9,80 @@ const DEFAULT_DATA = {
   studies: [],
   queryFilterValues: null,
 };
+
+/**
+ * Clears the cached result and re-arms the first-fetch gate, so the next render
+ * re-queries.
+ */
+function resetQueryState({ setData, setIsLoading, setHasFetchedOnce }) {
+  setIsLoading(false);
+  setHasFetchedOnce(false);
+  setData(DEFAULT_DATA);
+}
+
+/**
+ * Runs one study-list query and folds the outcome back into the caller's state.
+ * Lives at module scope because the compiler cannot yet lower a `try` with a
+ * `finally`, and the finally clause is what clears the loading flags.
+ */
+async function fetchStudies({
+  dataSource,
+  queryFilterValues,
+  servicesManager,
+  setData,
+  setIsLoading,
+  setHasFetchedOnce,
+}) {
+  setIsLoading(true);
+  log.time(Enums.TimingEnum.SEARCH_TO_LIST);
+  try {
+    const studies = await dataSource.query.studies.search(queryFilterValues);
+    setData({
+      studies: studies || [],
+      queryFilterValues,
+    });
+    log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
+    log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
+  } catch (e) {
+    console.error(e);
+    // Record that we attempted these filter values even though the fetch
+    // failed. Without this, the effect's `filtersChanged` check would
+    // remain true on the next render and immediately retry the same
+    // failing query in a tight loop.
+    setData(prev => ({ ...prev, queryFilterValues }));
+
+    // If there is a data source configuration API, the Worklist will pop
+    // up its own dialog to attempt to configure it. Otherwise surface the
+    // failure via a modal with a Retry action.
+    const { configurationAPI, friendlyName } = dataSource.getConfig();
+    if (!configurationAPI) {
+      const { uiModalService } = servicesManager.services;
+      uiModalService.show({
+        title: 'Data Source Connection Error',
+        content: () => (
+          <div className="text-foreground">
+            <p className="text-red-600">Error: {(e as Error).message}</p>
+            <p>Please ensure the following data source is configured correctly or is running:</p>
+            <div className="mt-2 font-bold">{friendlyName}</div>
+            <div className="mt-4 flex justify-end">
+              <Button
+                onClick={() => {
+                  uiModalService.hide();
+                  resetQueryState({ setData, setIsLoading, setHasFetchedOnce });
+                }}
+              >
+                Retry
+              </Button>
+            </div>
+          </div>
+        ),
+      });
+    }
+  } finally {
+    setIsLoading(false);
+    setHasFetchedOnce(true);
+  }
+}
 
 /**
  * Queries the data source for the study list and manages the result lifecycle:
@@ -41,11 +115,7 @@ export function useStudyListQuery({
   const [isLoading, setIsLoading] = useState(false);
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
-  const refresh = useCallback(() => {
-    setIsLoading(false);
-    setHasFetchedOnce(false);
-    setData(DEFAULT_DATA);
-  }, []);
+  const refresh = () => resetQueryState({ setData, setIsLoading, setHasFetchedOnce });
 
   useEffect(() => {
     if (!isDataSourceInitialized) {
@@ -56,61 +126,6 @@ export function useStudyListQuery({
     // query parameter. Defaults to 101 when the data source doesn't set it.
     const studiesLimit = dataSource.getConfig?.()?.queryLimit ?? 101;
     const queryFilterValues = _getQueryFilterValues(location.search, studiesLimit);
-
-    // 204: no content
-    async function getData() {
-      setIsLoading(true);
-      log.time(Enums.TimingEnum.SEARCH_TO_LIST);
-      try {
-        const studies = await dataSource.query.studies.search(queryFilterValues);
-        setData({
-          studies: studies || [],
-          queryFilterValues,
-        });
-        log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
-        log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
-      } catch (e) {
-        console.error(e);
-        // Record that we attempted these filter values even though the fetch
-        // failed. Without this, the effect's `filtersChanged` check would
-        // remain true on the next render and immediately retry the same
-        // failing query in a tight loop.
-        setData(prev => ({ ...prev, queryFilterValues }));
-
-        // If there is a data source configuration API, the Worklist will pop
-        // up its own dialog to attempt to configure it. Otherwise surface the
-        // failure via a modal with a Retry action.
-        const { configurationAPI, friendlyName } = dataSource.getConfig();
-        if (!configurationAPI) {
-          const { uiModalService } = servicesManager.services;
-          uiModalService.show({
-            title: 'Data Source Connection Error',
-            content: () => (
-              <div className="text-foreground">
-                <p className="text-red-600">Error: {(e as Error).message}</p>
-                <p>
-                  Please ensure the following data source is configured correctly or is running:
-                </p>
-                <div className="mt-2 font-bold">{friendlyName}</div>
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    onClick={() => {
-                      uiModalService.hide();
-                      refresh();
-                    }}
-                  >
-                    Retry
-                  </Button>
-                </div>
-              </div>
-            ),
-          });
-        }
-      } finally {
-        setIsLoading(false);
-        setHasFetchedOnce(true);
-      }
-    }
 
     // Refetch when the filter set has actually changed. Filters can include
     // array-valued fields like `modalitiesInStudy` whose element order
@@ -126,10 +141,16 @@ export function useStudyListQuery({
     const isDataInvalid = !isLoading && filtersChanged;
 
     if (isDataInvalid) {
-      getData();
+      fetchStudies({
+        dataSource,
+        queryFilterValues,
+        servicesManager,
+        setData,
+        setIsLoading,
+        setHasFetchedOnce,
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, location, params, isLoading, dataSource, isDataSourceInitialized]);
+  }, [data, location, params, isLoading, dataSource, isDataSourceInitialized, servicesManager]);
 
   return {
     studies: data.studies,

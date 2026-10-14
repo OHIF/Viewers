@@ -29,8 +29,9 @@ function NumericPageContent() {
     { name: 'values', type: '[number, number]', default: '—', description: 'Controlled range values (doubleRange mode)' },
     { name: 'defaultValues', type: '[number, number]', default: '[30%, 70%]', description: 'Initial uncontrolled range values' },
     { name: 'onChange', type: '(val: number | [number, number]) => void', default: '—', description: 'Called when any value changes' },
-    { name: 'min', type: 'number', default: '0', description: 'Minimum allowed value' },
-    { name: 'max', type: 'number', default: '100', description: 'Maximum allowed value' },
+    { name: 'min', type: 'number', default: '0', description: 'Minimum value and default lower bound for typed doubleRange values' },
+    { name: 'max', type: 'number', default: '100', description: 'Maximum value and default upper bound for typed doubleRange values' },
+    { name: 'allowTypedExpansion', type: 'boolean | [number, number]', default: 'false', description: 'Allows typed doubleRange values beyond min/max, optionally within explicit bounds' },
     { name: 'step', type: 'number', default: '1', description: 'Step increment' },
   ];
 
@@ -63,6 +64,13 @@ function NumericPageContent() {
             <strong className="text-foreground">cine playback frame rate</strong>. The{' '}
             <strong className="text-foreground">mode</strong> prop on the Container determines which
             input type renders.
+          </p>
+          <p>
+            Editable number fields preserve intermediate text such as an empty value, a minus
+            sign, or a decimal point, and commit on Enter or blur. In double-range mode, typed
+            values are limited by min and max by default. Set allowTypedExpansion to true to accept
+            any finite typed value, or provide [minimum, maximum] to constrain the expansion. A
+            committed out-of-range value expands the slider domain.
           </p>
         </div>
       </div>
@@ -205,7 +213,7 @@ function NumericPageContent() {
               step={1}
               className="space-y-1"
             >
-              <Numeric.Label showValue>Window Width/Level</Numeric.Label>
+              <Numeric.Label showValue>Default bounded range</Numeric.Label>
               <Numeric.DoubleRange />
             </Numeric.Container>
 
@@ -213,11 +221,12 @@ function NumericPageContent() {
               mode="doubleRange"
               min={0}
               max={100}
+              allowTypedExpansion
               step={1}
               defaultValues={[30, 70]}
               className="space-y-1"
             >
-              <Numeric.Label>With number inputs</Numeric.Label>
+              <Numeric.Label>Expandable typed range</Numeric.Label>
               <Numeric.DoubleRange showNumberInputs />
             </Numeric.Container>
           </div>
@@ -275,6 +284,17 @@ function NumericPageContent() {
 // Double range slider
 <Numeric.Container mode="doubleRange" min={-1000} max={3000} step={10}>
   <Numeric.Label showValue>CT Window</Numeric.Label>
+  <Numeric.DoubleRange showNumberInputs />
+</Numeric.Container>
+
+// Allow typed values to expand beyond the slider's initial limits
+<Numeric.Container
+  mode="doubleRange"
+  min={0}
+  max={100}
+  allowTypedExpansion
+>
+  <Numeric.Label>Expandable range</Numeric.Label>
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>`}
         />

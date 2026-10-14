@@ -30,21 +30,17 @@ export const CustomDropdownMenuContent = () => {
     disableEditing,
   } = useSegmentationTableContext('CustomDropdownMenu');
 
-  // Try to get segmentation data from expanded context first, fall back to table context
-  let segmentation;
-  let segmentationId;
+  // Prefer the expanded context when rendered inside one, otherwise fall back to
+  // the active segmentation from the table context. useSegmentationExpanded returns
+  // undefined outside a provider rather than throwing, so no try/catch is needed -
+  // catching it would put a hook call inside a try block, which breaks the rules of
+  // hooks and makes the React Compiler bail on the whole component.
+  const expandedContext = useSegmentationExpanded();
+  const segmentation = expandedContext ? expandedContext.segmentation : activeSegmentation;
+  const segmentationId = expandedContext
+    ? expandedContext.segmentation.segmentationId
+    : activeSegmentationId;
   let allowExport = false;
-
-  try {
-    // Try to get from expanded context
-    const context = useSegmentationExpanded();
-    segmentation = context.segmentation;
-    segmentationId = segmentation.segmentationId;
-  } catch (e) {
-    // If not in expanded context, fallback to active segmentation from table context
-    segmentation = activeSegmentation;
-    segmentationId = activeSegmentationId;
-  }
 
   if (!segmentation || !segmentationId) {
     return null;

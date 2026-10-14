@@ -32,8 +32,8 @@ const DicomMicroscopyViewport = React.memo(
     const [isLoaded, setIsLoaded] = useState(false);
     const [viewer, setViewer] = useState(null);
     const [managedViewer, setManagedViewer] = useState(null);
-    const overlayElement = useRef();
-    const container = useRef();
+    const overlayElement = useRef(undefined);
+    const container = useRef(undefined);
     const { microscopyService, customizationService } = servicesManager.services;
 
     const overlayData = customizationService.getCustomization('microscopyViewport.overlay');

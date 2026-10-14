@@ -1,5 +1,5 @@
 import { id } from './id';
-import React, { Suspense, useCallback, useMemo } from 'react';
+import React, { Suspense } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
 import getCustomizationModule from './getCustomizationModule';
@@ -56,24 +56,27 @@ const extension: Types.Extensions.Extension = {
      * @param props.displaySetOptions
      * @returns
      */
+    // Declared here rather than inside the component. It closes over
+    // `servicesManager`, which belongs to this factory and not to render, and the
+    // compiler will hoist a render-scope callback it believes captures nothing
+    // all the way to module scope - where `servicesManager` does not resolve.
+    // It also addresses every managed viewer, so one shared debounce is right.
+    const onResize = debounce(() => {
+      const { microscopyService } = servicesManager.services;
+      const managedViewer = microscopyService.getAllManagedViewers();
+
+      if (managedViewer && managedViewer.length > 0) {
+        managedViewer[0].viewer.resize();
+      }
+    }, 100);
+
     const ExtendedMicroscopyViewport = props => {
       const { viewportOptions } = props;
 
       const [viewportGrid, viewportGridService] = useViewportGrid();
       const { activeViewportId } = viewportGrid;
 
-      const displaySetsKey = useMemo(() => {
-        return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
-      }, [props.displaySets]);
-
-      const onResize = debounce(() => {
-        const { microscopyService } = servicesManager.services;
-        const managedViewer = microscopyService.getAllManagedViewers();
-
-        if (managedViewer && managedViewer.length > 0) {
-          managedViewer[0].viewer.resize();
-        }
-      }, 100);
+      const displaySetsKey = props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
 
       const { ref: resizeRef } = useResizeDetector({
         onResize,
@@ -81,12 +84,9 @@ const extension: Types.Extensions.Extension = {
         handleWidth: true,
       });
 
-      const setViewportActive = useCallback(
-        (viewportId: string) => {
-          viewportGridService.setActiveViewportId(viewportId);
-        },
-        [viewportGridService]
-      );
+      const setViewportActive = (viewportId: string) => {
+        viewportGridService.setActiveViewportId(viewportId);
+      };
 
       return (
         <MicroscopyViewport
