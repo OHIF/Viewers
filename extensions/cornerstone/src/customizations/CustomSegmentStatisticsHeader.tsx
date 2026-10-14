@@ -42,6 +42,7 @@ export const CustomSegmentStatisticsHeader = ({
                 variant="ghost"
                 size="sm"
                 className="text-primary flex items-center gap-2"
+                dataCY="segment-bidirectional-compute"
                 onClick={() => {
                   commandsManager.run('runSegmentBidirectional', {
                     segmentationId,
@@ -76,10 +77,10 @@ export const CustomSegmentStatisticsHeader = ({
     <div className="-mt-2 space-y-2">
       <div className="flex items-center justify-between">
         <div className="text-foreground">
-          <div>
+          <div data-cy="segment-bidirectional-length">
             L: {roundNumber(max)} {unit}
           </div>
-          <div>
+          <div data-cy="segment-bidirectional-width">
             W: {roundNumber(min)} {unit}
           </div>
         </div>
@@ -90,6 +91,7 @@ export const CustomSegmentStatisticsHeader = ({
                 size="icon"
                 variant="ghost"
                 className={`h-6 w-6 transition-opacity`}
+                dataCY="segment-bidirectional-visibility"
                 onClick={e => {
                   e.stopPropagation();
                   cornerstoneTools.annotation.visibility.setAnnotationVisibility(
@@ -117,6 +119,7 @@ export const CustomSegmentStatisticsHeader = ({
               <Button
                 variant="ghost"
                 size="icon"
+                dataCY="segment-bidirectional-jump"
                 onClick={() => {
                   if (bidirectional.annotationUID) {
                     commandsManager.run('jumpToMeasurement', {
