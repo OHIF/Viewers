@@ -429,15 +429,13 @@ export class ViewportPageObject {
       },
       normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
         const { path } = params;
-        // Skip the last vertex; the double-click below places it, so it isn't added twice.
+        // Clicking the first vertex again closes the spline.
         await simulateNormalizedClicksOnElement({
           locator: viewport,
-          normalizedPoints: path.slice(0, -1),
+          normalizedPoints: [...path, path[0]],
         });
-        await simulateNormalizedDoubleClickOnElement({
-          locator: viewport,
-          normalizedPoint: path[path.length - 1],
-        });
+        // Wait out the 400ms double-click threshold so the click registers as a single click.
+        await this.getSvg(viewport, 'circle').first().waitFor({ state: 'detached' });
       },
       normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
         await simulateNormalizedPathDragOnElement({
