@@ -21,6 +21,10 @@ export type LabelRemap = {
  * rebuild `labelToSegmentIndex` of each layer. A layer that has no remap keeps
  * its voxel values.
  *
+ * cornerstonejs/cornerstone3D#2988 lets the SEG adapter take
+ * `labelmap3D.labelToSegmentIndex`. After OHIF moves to that release, the export
+ * can set that map on each labelmap3D, and this file can be removed.
+ *
  * @returns The label remap for each `labelmapId` that needs one.
  */
 export function getLabelRemaps(labelmapData): Map<string, LabelRemap> {

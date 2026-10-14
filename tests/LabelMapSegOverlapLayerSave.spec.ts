@@ -8,6 +8,10 @@ import { expect, test, visitStudy } from './utils';
  * separate labelmap layer, where it is stored under another label value. The
  * DICOM SEG save must still write each segment under its own segment number,
  * label and color.
+ *
+ * With cornerstonejs/cornerstone3D#2988 a lock stops the brush and creates no
+ * layer. After OHIF moves to that release, the test must create the overlap with
+ * the explicit option (for example `segmentation.overwriteMode: 'none'`).
  */
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -38,7 +42,8 @@ test('should save each segment of an overlap layer under its own segment number'
   await labelMapPanel.panel.nthSegment(0).actions.toggleLock();
   await viewport.normalizedDragAt({ start: { x: 0.5, y: 0.3 }, end: { x: 0.5, y: 0.7 } });
 
-  // The test covers the remap only when segment 2 is in a separate layer.
+  // The test covers the remap only when segment 2 is in a separate layer. This
+  // check fails when a lock stops the brush (see the comment at the top).
   const layerCount = await page.evaluate(() => {
     const [segmentation] = (window as any).cornerstoneTools.segmentation.state.getSegmentations();
     return Object.keys(segmentation.representationData.Labelmap.labelmaps ?? {}).length;
