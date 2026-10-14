@@ -17,6 +17,7 @@ import {
   isIgnoreId,
   lockfilePackages,
   packageChanges,
+  stripLockfileText,
   tableCell,
 } from './audit.mjs';
 
@@ -82,10 +83,14 @@ function runAudit({ baseLock, headLock, baseIgnores = [], headIgnores = [] }) {
 }
 
 test('lockfilePackages reads both YAML documents and splits scoped names', () => {
-  const packages = lockfilePackages(lockfile(['@babel/core@7.28.0', 'left-pad@1.3.0']));
+  const packages = lockfilePackages(
+    lockfile(['@babel/core@7.28.0', 'left-pad@1.3.0', 'foo@git+ssh://git@github.com/o/r.git#abc'])
+  );
   assert.deepEqual([...packages.get('pnpm')], ['12.8.1']);
   assert.deepEqual([...packages.get('@babel/core')], ['7.28.0']);
   assert.deepEqual([...packages.get('left-pad')], ['1.3.0']);
+  // A git+ssh version has an @ of its own.
+  assert.deepEqual([...packages.get('foo')], ['git+ssh://git@github.com/o/r.git#abc']);
 });
 
 test('addedPackages lists only the versions the PR adds', () => {
@@ -101,12 +106,16 @@ test('addedPackages lists only the versions the PR adds', () => {
 
 test('packageChanges pairs before and after versions by package', () => {
   const base = lockfilePackages(
-    lockfile(['left-pad@1.3.0', 'old-dep@0.9.1', 'ms@2.0.0', 'ms@2.1.2'])
+    lockfile(['left-pad@1.3.0', 'old-dep@0.9.1', 'ms@2.0.0', 'ms@2.1.2', 'zz-top@1.0.0'])
   );
-  const head = lockfilePackages(lockfile(['left-pad@1.4.0', 'new-dep@1.2.0', 'ms@2.1.3']));
+  const head = lockfilePackages(
+    lockfile(['left-pad@1.4.0', 'new-dep@1.2.0', 'ms@2.1.3', 'zz-top@2.0.0', 'aa-new@0.1.0'])
+  );
   assert.deepEqual(packageChanges(base, head), [
     { name: 'left-pad', before: ['1.3.0'], after: ['1.4.0'] },
     { name: 'ms', before: ['2.0.0', '2.1.2'], after: ['2.1.3'] },
+    { name: 'zz-top', before: ['1.0.0'], after: ['2.0.0'] },
+    { name: 'aa-new', before: [], after: ['0.1.0'] },
     { name: 'new-dep', before: [], after: ['1.2.0'] },
     { name: 'old-dep', before: ['0.9.1'], after: [] },
   ]);
@@ -138,6 +147,16 @@ test('tableCell keeps advisory titles inside their Markdown table cell', () => {
   assert.equal(tableCell('ends in \\'), 'ends in \\\\');
   assert.equal(tableCell('\\|'), '\\\\\\|');
   assert.equal(tableCell(undefined), '');
+});
+
+test('stripLockfileText removes what could break a row or disguise lockfile text', () => {
+  // Pipe, backtick, backslash, newline, right-to-left override, zero-width
+  // space, C1 control (NEL) and line separator.
+  assert.equal(stripLockfileText('a|b`c\\d\ne\u202ef\u200bg\u0085h\u2028i'), 'abcdefghi');
+  assert.equal(
+    stripLockfileText('@scope/pkg@1.2.3-beta.1+build.5'),
+    '@scope/pkg@1.2.3-beta.1+build.5'
+  );
 });
 
 test('PR text cannot inject workflow commands into the log', () => {
@@ -194,4 +213,23 @@ test('fails when many added entries cannot be audited', () => {
   // The changes table lists them too, one row per package.
   assert.match(stdout, /Packages changed \(6\)/);
   assert.ok(stdout.includes('| `pkg0` | – | `git+https://example.com/pkg0.git` |'));
+});
+
+test('the changes table keeps lockfile text in its cell and stops at 300 rows', () => {
+  const gitEntries = Array.from(
+    { length: 301 },
+    (_, i) => `pkg${i}@git+https://example.com/pkg${i}.git`
+  );
+  // A key a PR could write: a pipe, backslash, newline and right-to-left
+  // override in the version. JSON is valid YAML double-quoted text.
+  const evil = JSON.stringify('evil@1.0|x\\y\n\u202ez');
+  const { stdout } = runAudit({
+    baseLock: lockfile([]),
+    headLock: `${lockfile(gitEntries)}  ${evil}:\n    resolution: {integrity: sha512-x}\n`,
+  });
+  assert.match(stdout, /Packages changed \(302\)/);
+  assert.ok(stdout.includes('\n| `evil` | – | `1.0xyz` |\n'));
+  assert.equal(stdout.split('\n').filter(line => line.startsWith('| `')).length, 300);
+  assert.match(stdout, /Packages changed \(302\): 0 updated, 302 new, 0 removed/);
+  assert.ok(stdout.includes('…and 2 more (see the `pnpm-lock.yaml` diff).'));
 });

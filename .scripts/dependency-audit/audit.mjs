@@ -58,8 +58,10 @@ export function lockfilePackages(text) {
       throw new Error(`pnpm-lock.yaml does not parse: ${doc.errors[0].message}`);
     }
     for (const key of Object.keys(doc.toJS()?.packages ?? {})) {
-      const at = key.lastIndexOf('@');
-      if (at <= 0) {
+      // The first @ after a scope's leading @: a git+ssh version has its own @
+      // (foo@git+ssh://git@github.com/o/r.git#sha).
+      const at = key.indexOf('@', 1);
+      if (at < 0) {
         continue;
       }
       const name = key.slice(0, at);
@@ -89,6 +91,8 @@ export function addedPackages(base, head) {
  * The packages whose versions differ between `base` and `head`, one entry per
  * name: `before` holds the versions only `base` has, `after` the versions only
  * `head` has. A new package has no `before`, a removed one no `after`.
+ * Updated packages come first, then new ones, then removed ones (the table is
+ * capped, so removals drop off first); by name within each group.
  */
 export function packageChanges(base, head) {
   const changes = new Map();
@@ -104,7 +108,8 @@ export function packageChanges(base, head) {
   for (const { name, version } of addedPackages(base, head)) {
     change(name).after.push(version);
   }
-  return [...changes.values()].sort((a, b) => a.name.localeCompare(b.name));
+  const group = c => (!c.before.length ? 1 : !c.after.length ? 2 : 0);
+  return [...changes.values()].sort((a, b) => group(a) - group(b) || a.name.localeCompare(b.name));
 }
 
 async function postWithRetry(body) {
@@ -175,8 +180,10 @@ export function escapeCommand(text) {
 }
 
 /**
- * Text safe inside a Markdown table cell. Backslashes first, so a trailing
- * `\` cannot combine with the cell's closing `|`; then pipes.
+ * Advisory text (from npm) safe inside a Markdown table cell: escaped, not
+ * stripped, so it still reads correctly. Backslashes first, so a trailing `\`
+ * cannot combine with the cell's closing `|`; then pipes. Text from the PR's
+ * lockfile goes through stripLockfileText() instead.
  */
 export function tableCell(text) {
   return String(text ?? '')
@@ -250,11 +257,19 @@ function newIgnoresSection(newIgnores, findings) {
 }
 
 /**
- * Lockfile text (unvalidated) safe inside a code span in a table cell: no
- * control characters (one row, one line), backticks, pipes or backslashes.
+ * Text from the PR's lockfile (unvalidated), safe to show in the report.
+ * Removes control, format (e.g. bidi overrides, zero-width) and line or
+ * paragraph separator characters, so it stays on one line and displays as its
+ * bytes; and backticks, pipes and backslashes, so it stays inside a code span
+ * and a table cell. Real npm names and versions never contain any of these.
  */
+export function stripLockfileText(text) {
+  return String(text).replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}`|\\]/gu, '');
+}
+
+/** Lockfile text as a code span in a table cell; empty when nothing is left. */
 function lockfileCell(text) {
-  const clean = text.replace(/[\x00-\x1f\x7f`|\\]/g, '');
+  const clean = stripLockfileText(text);
   return clean ? `\`${clean}\`` : '';
 }
 
@@ -262,15 +277,19 @@ function lockfileCell(text) {
 function changesSection(changes) {
   const versions = list => (list.length ? list.map(lockfileCell).join(', ') : '–');
   const shown = changes.slice(0, MAX_CHANGE_ROWS);
+  const added = changes.filter(c => !c.before.length).length;
+  const removed = changes.filter(c => !c.after.length).length;
+  const updated = changes.length - added - removed;
   const lines = [
-    `<details><summary>Packages changed (${changes.length})</summary>`,
+    `<details><summary>Packages changed (${changes.length}): ${updated} updated, ` +
+      `${added} new, ${removed} removed</summary>`,
     '',
     '| Package | Before | After |',
     '|---|---|---|',
     ...shown.map(c => `| ${lockfileCell(c.name)} | ${versions(c.before)} | ${versions(c.after)} |`),
   ];
   if (changes.length > shown.length) {
-    lines.push('', `…and ${changes.length - shown.length} more.`);
+    lines.push('', `…and ${changes.length - shown.length} more (see the \`pnpm-lock.yaml\` diff).`);
   }
   lines.push('', '</details>', '');
   return lines;
@@ -294,9 +313,6 @@ function lockfileSection({
     );
   }
   lines.push(`This PR adds ${added} package version(s) to \`pnpm-lock.yaml\`.`, '');
-  if (changes.length) {
-    lines.push(...changesSection(changes));
-  }
   if (blocking.length) {
     lines.push(
       `### ❌ ${blocking.length} new high or critical advisory(ies)`,
@@ -337,13 +353,15 @@ function lockfileSection({
     lines.push(
       `<details><summary>${notAudited.length} added entry(ies) not from the npm registry, not audited</summary>`,
       '',
-      // Unvalidated lockfile keys: drop control characters (one entry, one
-      // line) and backticks (it stays inside the code span).
-      ...notAudited.map(p => `- \`${`${p.name}@${p.version}`.replace(/[\x00-\x1f\x7f`]/g, '')}\``),
+      ...notAudited.map(p => `- \`${stripLockfileText(`${p.name}@${p.version}`)}\``),
       '',
       '</details>',
       ''
     );
+  }
+  // Last, so the result above stays in view when the table is opened.
+  if (changes.length) {
+    lines.push(...changesSection(changes));
   }
   return lines;
 }
