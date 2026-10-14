@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      statuses: write # the "New dependency audit ignores" status
+      statuses: write # the "New dependency audit ignores" and "Dependency changes" statuses
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -98,5 +98,24 @@ jobs:
             -f state=success \
             -f context='New dependency audit ignores' \
             -f description="⚠️ $COUNT GHSA(s) added to auditConfig.ignoreGhsas: review pnpm-workspace.yaml" \
+            -f target_url="$RUN_URL" \
+            --jq '"\(.context): \(.description)"'
+      # Packages the PR changes, in the same way: so the code owner who reviews
+      # the lockfile looks at the list even when no advisory turns up.
+      - name: Flag the PR's dependency changes in its checks list
+        if: ${{ !cancelled() && steps.audit.outputs.changes_total != '' && steps.audit.outputs.changes_total != '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          UPDATED: ${{ steps.audit.outputs.changes_updated }}
+          NEW: ${{ steps.audit.outputs.changes_new }}
+          REMOVED: ${{ steps.audit.outputs.changes_removed }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh api --method POST "repos/$REPO/statuses/$HEAD_SHA" \
+            -f state=success \
+            -f context='Dependency changes' \
+            -f description="ℹ️ $UPDATED updated, $NEW new, $REMOVED removed: review the Packages changed list" \
             -f target_url="$RUN_URL" \
             --jq '"\(.context): \(.description)"'

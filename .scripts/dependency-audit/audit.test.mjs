@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import {
   addedIgnores,
   addedPackages,
+  countChanges,
   escapeCommand,
   ignoreLabel,
   isIgnoreId,
@@ -61,7 +62,7 @@ function runAudit({ baseLock, headLock, baseIgnores = [], headIgnores = [] }) {
     return target;
   };
   const env = { ...process.env };
-  delete env.GITHUB_OUTPUT;
+  env.GITHUB_OUTPUT = file('github-output.txt', '');
   delete env.GITHUB_STEP_SUMMARY;
   const result = spawnSync(
     process.execPath,
@@ -78,8 +79,14 @@ function runAudit({ baseLock, headLock, baseIgnores = [], headIgnores = [] }) {
     ],
     { encoding: 'utf8', env }
   );
+  const output = fs.readFileSync(env.GITHUB_OUTPUT, 'utf8');
   fs.rmSync(dir, { recursive: true, force: true });
-  return { code: result.status, lines: result.stdout.split(/\r?\n/), stdout: result.stdout };
+  return {
+    code: result.status,
+    lines: result.stdout.split(/\r?\n/),
+    stdout: result.stdout,
+    output,
+  };
 }
 
 test('lockfilePackages reads both YAML documents and splits scoped names', () => {
@@ -119,6 +126,18 @@ test('packageChanges pairs before and after versions by package', () => {
     { name: 'new-dep', before: [], after: ['1.2.0'] },
     { name: 'old-dep', before: ['0.9.1'], after: [] },
   ]);
+});
+
+test('countChanges counts updated, new and removed packages', () => {
+  assert.deepEqual(
+    countChanges([
+      { name: 'a', before: ['1.0.0'], after: ['2.0.0'] },
+      { name: 'b', before: [], after: ['1.0.0'] },
+      { name: 'c', before: [], after: ['1.0.0'] },
+      { name: 'd', before: ['1.0.0'], after: [] },
+    ]),
+    { updated: 1, added: 2, removed: 1 }
+  );
 });
 
 test('addedIgnores lists the ignores the PR adds, once each', () => {
@@ -193,9 +212,11 @@ test('fails when the PR deletes the lockfile', () => {
 });
 
 test('passes when neither side has a lockfile', () => {
-  const { code, stdout } = runAudit({ baseLock: null, headLock: null });
+  const { code, stdout, output } = runAudit({ baseLock: null, headLock: null });
   assert.equal(code, 0);
   assert.match(stdout, /nothing to audit/);
+  // No changes: the workflow posts no "Dependency changes" status.
+  assert.ok(output.includes('changes_total=0\n'));
 });
 
 test('fails when many added entries cannot be audited', () => {
@@ -223,7 +244,7 @@ test('the changes table keeps lockfile text in its cell and stops at 300 rows', 
   // A key a PR could write: a pipe, backslash, newline and right-to-left
   // override in the version. JSON is valid YAML double-quoted text.
   const evil = JSON.stringify('evil@1.0|x\\y\n\u202ez');
-  const { stdout } = runAudit({
+  const { stdout, output } = runAudit({
     baseLock: lockfile([]),
     headLock: `${lockfile(gitEntries)}  ${evil}:\n    resolution: {integrity: sha512-x}\n`,
   });
@@ -232,4 +253,8 @@ test('the changes table keeps lockfile text in its cell and stops at 300 rows', 
   assert.equal(stdout.split('\n').filter(line => line.startsWith('| `')).length, 300);
   assert.match(stdout, /Packages changed \(302\): 0 updated, 302 new, 0 removed/);
   assert.ok(stdout.includes('…and 2 more (see the `pnpm-lock.yaml` diff).'));
+  // Counts for the "Dependency changes" status.
+  assert.ok(
+    output.includes('changes_updated=0\nchanges_new=302\nchanges_removed=0\nchanges_total=302\n')
+  );
 });
