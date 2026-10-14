@@ -11,6 +11,11 @@ import {
   LABELMAP_SEG_SOP_CLASS_UID,
   BITMAP_SEG_SOP_CLASS_UID,
 } from './utils/segmentationConfig';
+import {
+  getLabelRemaps,
+  toSegmentIndexPixels,
+  type LabelRemap,
+} from './utils/labelmapLayerSegmentIndices';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -110,28 +115,8 @@ const commandsModule = ({
 
       const labelmapData = segmentation.representationData.Labelmap;
 
-      // A labelmap layer stores each segment under a label value, and
-      // `labelToSegmentIndex` maps that value to the segment index. A private
-      // overlap layer stores its segment as label value 1, while the SEG adapter
-      // reads every voxel value as a segment number. Map the values to segment
-      // indices; a value without an entry keeps its value. The cached labelmap
-      // image is not changed: the data is copied only when the map changes a value.
-      const toSegmentIndexPixels = (pixelData, labelToSegmentIndex?: Record<number, number>) => {
-        const remaps = Object.entries(labelToSegmentIndex ?? {}).some(
-          ([labelValue, segmentIndex]) => Number(labelValue) !== segmentIndex
-        );
-        if (!remaps) {
-          return pixelData;
-        }
-
-        const segmentIndexPixels = new pixelData.constructor(pixelData.length);
-        for (let i = 0; i < pixelData.length; i++) {
-          const labelValue = pixelData[i];
-          segmentIndexPixels[i] =
-            labelValue === 0 ? 0 : (labelToSegmentIndex[labelValue] ?? labelValue);
-        }
-        return segmentIndexPixels;
-      };
+      const labelRemaps = getLabelRemaps(labelmapData);
+      let unmappedVoxels = 0;
 
       // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
       // derived labelmap image ids. When `referencedImageIds` is supplied (the
@@ -142,7 +127,7 @@ const commandsModule = ({
         segImageIds: string[],
         metadata,
         referencedImageIds?: string[],
-        labelToSegmentIndex?: Record<number, number>
+        labelRemap?: LabelRemap
       ) => {
         const segImages = segImageIds.map(imageId => cache.getImage(imageId));
         const labelmaps2D = [];
@@ -156,17 +141,9 @@ const commandsModule = ({
         let z = 0;
 
         for (const segImage of segImages) {
-          const segmentsOnLabelmap = new Set();
-          const pixelData = toSegmentIndexPixels(segImage.getPixelData(), labelToSegmentIndex);
+          const slice = toSegmentIndexPixels(segImage.getPixelData(), labelRemap);
+          unmappedVoxels += slice.unmappedVoxels;
           const { rows, columns } = segImage;
-
-          // Use a single pass through the pixel data
-          for (let i = 0; i < pixelData.length; i++) {
-            const segment = pixelData[i];
-            if (segment !== 0) {
-              segmentsOnLabelmap.add(segment);
-            }
-          }
 
           const frameIndex = referencedFrameIndexById
             ? (referencedFrameIndexById.get(segImage.referencedImageId) ?? -1)
@@ -177,8 +154,8 @@ const commandsModule = ({
           }
 
           labelmaps2D[frameIndex] = {
-            segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
-            pixelData,
+            segmentsOnLabelmap: slice.segmentsOnLabelmap,
+            pixelData: slice.pixelData,
             rows,
             columns,
           };
@@ -272,22 +249,30 @@ const commandsModule = ({
             layer.imageIds ?? [],
             metadata,
             referencedImageIds,
-            layer.labelToSegmentIndex
+            labelRemaps.get(layer.labelmapId)
           )
         );
       } else {
-        const { imageIds } = labelmapData;
+        // The only layer can be a private overlap layer. Read its own image ids,
+        // so that the pixels and the remap come from the same layer.
+        const layer = layers?.[0];
+        const imageIds = layer?.imageIds ?? labelmapData.imageIds;
         const segImages = imageIds.map(imageId => cache.getImage(imageId));
         referencedImages = segImages.map((image, sliceIndex) =>
           resolveReferencedImage(image.referencedImageId, sliceIndex)
         );
-        // The only layer can be a private overlap layer, for example after the
-        // user deletes the segments of the original layer.
         labelmaps3D = buildLabelmap3D(
           imageIds,
           metadata,
           undefined,
-          layers?.[0]?.labelToSegmentIndex
+          layer && labelRemaps.get(layer.labelmapId)
+        );
+      }
+
+      if (unmappedVoxels) {
+        console.warn(
+          `generateSegmentation: ${unmappedVoxels} labelmap voxels have a label value ` +
+            'that is bound to no segment; the SEG does not include them.'
         );
       }
 

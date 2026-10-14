@@ -38,6 +38,13 @@ test('should save each segment of an overlap layer under its own segment number'
   await labelMapPanel.panel.nthSegment(0).actions.toggleLock();
   await viewport.normalizedDragAt({ start: { x: 0.5, y: 0.3 }, end: { x: 0.5, y: 0.7 } });
 
+  // The test covers the remap only when segment 2 is in a separate layer.
+  const layerCount = await page.evaluate(() => {
+    const [segmentation] = (window as any).cornerstoneTools.segmentation.state.getSegmentations();
+    return Object.keys(segmentation.representationData.Labelmap.labelmaps ?? {}).length;
+  });
+  expect(layerCount).toBeGreaterThan(1);
+
   // The save needs every source image of the series in the cache.
   await expect
     .poll(
