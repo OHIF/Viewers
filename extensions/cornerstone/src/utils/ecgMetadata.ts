@@ -4,6 +4,48 @@ export type EcgModule = NonNullable<
   ReturnType<typeof csMetadataUtilities.buildEcgModuleFromInstance>
 >;
 
+type BuildEcgModuleFromInstance = (
+  instance: Record<string, unknown>,
+  imageId?: string,
+  // Released @cornerstonejs/metadata versions ignore this argument.
+  options?: { getHeaders?: () => Record<string, string> | undefined }
+) => EcgModule | null;
+
+const buildEcgModuleFromInstance = (...args: Parameters<BuildEcgModuleFromInstance>) =>
+  (csMetadataUtilities.buildEcgModuleFromInstance as BuildEcgModuleFromInstance)(...args);
+
+/** Returns the items of a naturalized sequence: an array, an array-like, or one item. */
+function toList(value: any): any[] {
+  if (!value) {
+    return [];
+  }
+  return typeof value.length === 'number' ? Array.from(value) : [value];
+}
+
+/** Returns the first item of a naturalized value, but keeps binary data whole. */
+function firstItem(value: any): any {
+  if (!value || value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+    return value;
+  }
+  return typeof value.length === 'number' ? value[0] : value;
+}
+
+/** Copies the bytes of a typed array into an ArrayBuffer, which every Cornerstone version decodes. */
+function toArrayBuffer(bytes: unknown): unknown {
+  return ArrayBuffer.isView(bytes)
+    ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+    : bytes;
+}
+
+async function decodeBulkData(group: any, waveformData: any): Promise<Int16Array[]> {
+  let bytes = waveformData.Value;
+  if (bytes === undefined) {
+    bytes = await waveformData.retrieveBulkData();
+  }
+  const loaded = { WaveformSequence: [{ ...group, WaveformData: toArrayBuffer(bytes) }] };
+  return buildEcgModuleFromInstance(loaded).waveformData.retrieveBulkData();
+}
+
 /**
  * Parse the naturalized DICOM instance's WaveformSequence and build the ecgModule
  * that Cornerstone's ECGViewport.setEcg() expects via
@@ -12,6 +54,9 @@ export type EcgModule = NonNullable<
  * Cornerstone decodes the waveform. When the data source attached a
  * `retrieveBulkData` to `WaveformData`, that method fetches the bytes, so the
  * data source handles multipart/related, auth and relative bulkdata URIs.
+ * The bytes come from `WaveformData.Value` when the data source already
+ * cached them there. The decoded channels are kept, so a re-mount of the
+ * same display set does not fetch or decode again; a failed load is retried.
  *
  * Returns null if the instance has no WaveformSequence.
  */
@@ -20,19 +65,32 @@ export function buildEcgModule(instance: any, userAuthenticationService?: any): 
     return null;
   }
 
-  const ecgModule = csMetadataUtilities.buildEcgModuleFromInstance(instance, instance.imageId, {
+  const ecgModule = buildEcgModuleFromInstance(instance, instance.imageId, {
     getHeaders: () => userAuthenticationService?.getAuthorizationHeader?.(),
   });
-  const [group] = instance.WaveformSequence;
-  const waveformData = Array.isArray(group.WaveformData)
-    ? group.WaveformData[0]
-    : group.WaveformData;
+  if (!ecgModule) {
+    return null;
+  }
 
-  if (ecgModule && typeof waveformData?.retrieveBulkData === 'function') {
-    ecgModule.waveformData.retrieveBulkData = async () => {
-      const bytes = await waveformData.retrieveBulkData();
-      const loaded = { WaveformSequence: [{ ...group, WaveformData: bytes }] };
-      return csMetadataUtilities.buildEcgModuleFromInstance(loaded).waveformData.retrieveBulkData();
+  const group = firstItem(instance.WaveformSequence);
+  const channelDefinitions = toList(group.ChannelDefinitionSequence);
+  ecgModule.channelDefinitionSequence.forEach((definition, index) => {
+    const source = definition.channelSourceSequence;
+    if (source && !source.codeMeaning) {
+      source.codeMeaning =
+        firstItem(channelDefinitions[index]?.ChannelSourceSequence)?.codeMeaning ?? '';
+    }
+  });
+
+  const waveformData = firstItem(group.WaveformData ?? group.waveformData);
+  if (typeof waveformData?.retrieveBulkData === 'function') {
+    let channels: Promise<Int16Array[]> | undefined;
+    ecgModule.waveformData.retrieveBulkData = () => {
+      channels ??= decodeBulkData(group, waveformData).catch(error => {
+        channels = undefined;
+        throw error;
+      });
+      return channels;
     };
   }
 

@@ -910,7 +910,17 @@ class CornerstoneViewportService
       return;
     }
 
-    return this.backend.mountEcg(viewport, displaySet, imageId);
+    try {
+      await this.backend.mountEcg(viewport, displaySet, imageId);
+    } catch (error) {
+      // No caller handles a rejected mount, so report the failed waveform load here.
+      console.error('[CornerstoneViewportService] Failed to load the ECG waveform', error);
+      this.servicesManager.services.uiNotificationService?.show({
+        title: 'ECG',
+        message: 'The ECG waveform could not be loaded.',
+        type: 'error',
+      });
+    }
   }
 
   // Public so the viewport backends (IViewportServiceInternals) can dispatch to it.
