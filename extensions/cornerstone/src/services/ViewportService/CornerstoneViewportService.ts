@@ -45,6 +45,7 @@ import {
 import { BlendModes } from '@cornerstonejs/core/enums';
 import { isNextViewportsEnabled } from '../../utils/nextViewports';
 import { isAutoHydrateViewportType } from '../../utils/autoHydrateViewportTypes';
+import { applyEcgTraceLayout } from '../../utils/applyEcgTraceLayout';
 import type { IViewportBackend } from './backends/IViewportBackend';
 import type { IViewportServiceInternals } from './backends/IViewportServiceInternals';
 import { LegacyViewportBackend } from './backends/LegacyViewportBackend';
@@ -564,6 +565,7 @@ class CornerstoneViewportService
     const background = viewportInfo.getBackground();
     const orientation = viewportInfo.getOrientation();
     const displayArea = viewportInfo.getDisplayArea();
+    const traceLayout = viewportInfo.getTraceLayout();
 
     const viewportInput: Types.PublicViewportInput = {
       viewportId,
@@ -573,7 +575,9 @@ class CornerstoneViewportService
         background,
         orientation,
         displayArea,
-      },
+        // An ECG viewport reads the trace layout; other viewports ignore it.
+        ...(traceLayout !== undefined && { traceLayout }),
+      } as Types.ViewportInputOptions,
     };
 
     // Rendering Engine Id set should happen before enabling the element
@@ -912,6 +916,7 @@ class CornerstoneViewportService
 
     try {
       await this.backend.mountEcg(viewport, displaySet, imageId);
+      applyEcgTraceLayout(viewport, this.viewportsById.get(viewport.id)?.getTraceLayout());
     } catch (error) {
       // No caller handles a rejected mount, so report the failed waveform load here.
       console.error('[CornerstoneViewportService] Failed to load the ECG waveform', error);

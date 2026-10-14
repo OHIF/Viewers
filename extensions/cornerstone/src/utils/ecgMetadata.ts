@@ -74,12 +74,18 @@ export function buildEcgModule(instance: any, userAuthenticationService?: any): 
 
   const group = firstItem(instance.WaveformSequence);
   const channelDefinitions = toList(group.ChannelDefinitionSequence);
+  // Older @cornerstonejs/metadata versions read only an upper-case CodeMeaning,
+  // and pass no lead code. An ECG trace layout names a lead by its code value,
+  // and falls back to the code meaning when the code value is missing.
   ecgModule.channelDefinitionSequence.forEach((definition, index) => {
-    const source = definition.channelSourceSequence;
-    if (source && !source.codeMeaning) {
-      source.codeMeaning =
-        firstItem(channelDefinitions[index]?.ChannelSourceSequence)?.codeMeaning ?? '';
+    const source = definition.channelSourceSequence as Record<string, string> | undefined;
+    const raw = firstItem(channelDefinitions[index]?.ChannelSourceSequence);
+    if (!source || !raw) {
+      return;
     }
+    source.codeMeaning ||= raw.codeMeaning ?? raw.CodeMeaning ?? '';
+    source.codeValue ??= raw.CodeValue ?? raw.codeValue;
+    source.codingSchemeDesignator ??= raw.CodingSchemeDesignator ?? raw.codingSchemeDesignator;
   });
 
   const waveformData = firstItem(group.WaveformData ?? group.waveformData);

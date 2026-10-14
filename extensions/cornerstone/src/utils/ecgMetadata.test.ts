@@ -119,4 +119,19 @@ describe('buildEcgModule', () => {
 
     expect(module!.channelDefinitionSequence[0].channelSourceSequence.codeMeaning).toBe('Lead I');
   });
+
+  it('passes the lead code value, which a trace layout uses to find a lead', () => {
+    const instance = makeInstance({});
+    instance.WaveformSequence[0].ChannelDefinitionSequence[1].ChannelSourceSequence = [
+      { CodeValue: '5.6.3-9-2', CodingSchemeDesignator: 'SCPECG', CodeMeaning: 'Lead II' } as never,
+    ];
+
+    const source = buildEcgModule(instance)!.channelDefinitionSequence[1].channelSourceSequence as {
+      codeValue?: string;
+      codingSchemeDesignator?: string;
+    };
+
+    expect(source.codeValue).toBe('5.6.3-9-2');
+    expect(source.codingSchemeDesignator).toBe('SCPECG');
+  });
 });
