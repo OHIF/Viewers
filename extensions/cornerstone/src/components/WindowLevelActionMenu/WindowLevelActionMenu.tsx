@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AllInOneMenu } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
@@ -11,22 +11,23 @@ import i18n from 'i18next';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
-  element?: HTMLElement;
   align?: 'start' | 'end' | 'center';
   side?: 'top' | 'bottom' | 'left' | 'right';
+  onVisibilityChange?: (isVisible: boolean) => void;
 };
 
 export function WindowLevelActionMenu({
   viewportId,
-  element,
   align,
   side,
-}: WindowLevelActionMenuProps): ReactElement {
+  onVisibilityChange,
+}: WindowLevelActionMenuProps): ReactElement<any> {
   return (
     <WindowLevelActionMenuContent
       viewportId={viewportId}
       align={align}
       side={side}
+      onVisibilityChange={onVisibilityChange}
     />
   );
 }
@@ -35,14 +36,16 @@ export function WindowLevelActionMenuContent({
   viewportId,
   align,
   side,
+  onVisibilityChange,
 }: {
   viewportId: string;
   align?: string;
   side?: string;
-}): ReactElement {
+  onVisibilityChange?: (isVisible: boolean) => void;
+}): ReactElement<any> {
   const { t } = useTranslation('WindowLevelActionMenu');
   // Use a stable key for the menu to avoid infinite re-renders
-  const menuKey = useMemo(() => `${viewportId}`, [viewportId]);
+  const menuKey = `${viewportId}`;
 
   const {
     is3DVolume,
@@ -60,6 +63,7 @@ export function WindowLevelActionMenuContent({
       align={align}
       side={side}
       backLabel={i18n.t('WindowLevelActionMenu:Back to Display Options')}
+      onVisibilityChange={onVisibilityChange}
     >
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && <Colorbar viewportId={viewportId} />}

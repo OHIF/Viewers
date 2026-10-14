@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useCallback, useEffect, ReactNode, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  ReactNode,
+  useState,
+  useRef,
+} from 'react';
 import { Toaster, toast } from '../components';
 
 const NotificationContext = createContext(null);
@@ -18,26 +25,39 @@ interface NotificationProviderProps {
   deduplicationInterval?: number;
 }
 
+// Constant: hoisted to module scope so it has a stable identity. Built inside the
+// component it was a new object every render, which made it unusable as a
+// dependency of the memoized show() below.
+const DEFAULT_OPTIONS = {
+  title: '',
+  message: '',
+  duration: 5000,
+  position: 'bottom-right',
+  type: 'info',
+  visible: true,
+};
+
 const NotificationProvider = ({
   children,
   service,
   deduplicationInterval = 10000, // Default to 10 seconds
 }: NotificationProviderProps) => {
-  const DEFAULT_OPTIONS = {
-    title: '',
-    message: '',
-    duration: 5000,
-    position: 'bottom-right', // Aligning to Sonner's positioning system
-    type: 'info', // info, success, error
-  };
+  const [options, setOptions] = useState([]);
 
   // Cache for recent notifications to prevent duplicates
   // Structure: { [title_message_type]: { timestamp, id } }
   const recentNotificationsRef = useRef<Record<string, NotificationCacheEntry>>({});
 
+  const CustomNotification = service?.getCustomComponent();
+
   // Use the configurable deduplication interval from props
 
   const show = useCallback(options => {
+    const newNotification = {
+      ...DEFAULT_OPTIONS,
+      ...options,
+    };
+
     const {
       title,
       message,
@@ -48,10 +68,7 @@ const NotificationProvider = ({
       allowDuplicates = false,
       deduplicationInterval: optionsDeduplicationInterval,
       action,
-    } = {
-      ...DEFAULT_OPTIONS,
-      ...options,
-    };
+    } = newNotification;
 
     // Use the provider's deduplicationInterval by default, but allow it to be overridden per notification
     const notificationDeduplicationInterval = optionsDeduplicationInterval || deduplicationInterval;
@@ -143,10 +160,13 @@ const NotificationProvider = ({
       // The entry will be checked against the deduplication interval
     }
 
+    setOptions(prev => [...prev, { ...newNotification, id: id }]);
+
     return id;
-  }, []);
+  }, [deduplicationInterval]);
 
   const hide = useCallback(id => {
+    setOptions(state => [...state.filter(item => item.id !== id)]);
     toast.dismiss(id);
 
     // Remove from cache if present
@@ -160,6 +180,7 @@ const NotificationProvider = ({
   }, []);
 
   const hideAll = useCallback(() => {
+    setOptions([]);
     toast.dismiss();
     // Clear notification cache
     recentNotificationsRef.current = {};
@@ -198,17 +219,17 @@ const NotificationProvider = ({
 
   return (
     <NotificationContext.Provider value={{ show, hide, hideAll, getNotificationCache }}>
-      <Toaster position="bottom-right" />
+      {CustomNotification ? (
+        <CustomNotification options={options} />
+      ) : (
+        <Toaster position="bottom-right" />
+      )}
       {children}
     </NotificationContext.Provider>
   );
 };
 
-NotificationProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  service: PropTypes.object,
-  deduplicationInterval: PropTypes.number,
-};
+
 
 export const withNotification = Component => {
   return function WrappedComponent(props) {

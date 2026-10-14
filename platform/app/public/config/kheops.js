@@ -18,7 +18,7 @@ window.config = {
   groupEnabledModesFirst: true,
   maxNumRequests: {
     interaction: 100,
-    thumbnail: 75,
+    thumbnail: 5,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
@@ -120,6 +120,29 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'video',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+      },
+    },
+    {
+      friendlyName: 'StaticWado default data',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: '/dicomweb',
+        qidoRoot: '/dicomweb',
+        wadoRoot: '/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',

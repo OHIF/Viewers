@@ -17,7 +17,7 @@ import { ExportSegmentationSubMenuItem } from '../components/ExportSegmentationS
  */
 export const CustomDropdownMenuContent = () => {
   const { commandsManager } = useSystem();
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     onSegmentationAdd,
     onSegmentationRemoveFromViewport,
@@ -26,49 +26,39 @@ export const CustomDropdownMenuContent = () => {
     exportOptions,
     activeSegmentation,
     activeSegmentationId,
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
     disableEditing,
   } = useSegmentationTableContext('CustomDropdownMenu');
 
-  // Try to get segmentation data from expanded context first, fall back to table context
-  let segmentation;
-  let segmentationId;
+  // Prefer the expanded context when rendered inside one, otherwise fall back to
+  // the active segmentation from the table context. useSegmentationExpanded returns
+  // undefined outside a provider rather than throwing, so no try/catch is needed -
+  // catching it would put a hook call inside a try block, which breaks the rules of
+  // hooks and makes the React Compiler bail on the whole component.
+  const expandedContext = useSegmentationExpanded();
+  const segmentation = expandedContext ? expandedContext.segmentation : activeSegmentation;
+  const segmentationId = expandedContext
+    ? expandedContext.segmentation.segmentationId
+    : activeSegmentationId;
   let allowExport = false;
-
-  try {
-    // Try to get from expanded context
-    const context = useSegmentationExpanded();
-    segmentation = context.segmentation;
-    segmentationId = segmentation.segmentationId;
-  } catch (e) {
-    // If not in expanded context, fallback to active segmentation from table context
-    segmentation = activeSegmentation;
-    segmentationId = activeSegmentationId;
-  }
-
-  // Determine if export is allowed for this segmentation
-  if (exportOptions && segmentationId) {
-    const exportOption = exportOptions.find(opt => opt.segmentationId === segmentationId);
-    allowExport = exportOption?.isExportable || false;
-  }
 
   if (!segmentation || !segmentationId) {
     return null;
   }
 
+  // Determine if export is allowed for this segmentation
+  if (exportOptions) {
+    const exportOption = exportOptions.find(opt => opt.segmentationId === segmentationId);
+    allowExport = exportOption?.isExportable || false;
+  }
+
   const actions = {
-    storeSegmentation: async segmentationId => {
+    storeSegmentation: async (segmentationId, modality = 'SEG') => {
       commandsManager.run({
         commandName: 'storeSegmentation',
-        commandOptions: { segmentationId },
+        commandOptions: { segmentationId, modality },
         context: 'CORNERSTONE',
       });
-    },
-    onSegmentationDownloadRTSS: segmentationId => {
-      commandsManager.run('downloadRTSS', { segmentationId });
-    },
-    onSegmentationDownload: segmentationId => {
-      commandsManager.run('downloadSegmentation', { segmentationId });
     },
     downloadCSVSegmentationReport: segmentationId => {
       commandsManager.run('downloadCSVSegmentationReport', { segmentationId });
@@ -79,7 +69,12 @@ export const CustomDropdownMenuContent = () => {
     <DropdownMenuContent align="start">
       {!disableEditing && (
         <DropdownMenuItem
-          onClick={() => onSegmentationAdd({ segmentationId, segmentationRepresentationType })}
+          onClick={() =>
+            onSegmentationAdd({
+              segmentationId,
+              segmentationRepresentationType: segmentationRepresentationTypes?.[0],
+            })
+          }
         >
           <Icons.Add className="text-foreground" />
           <span className="pl-2">{t('Create New Segmentation')}</span>
@@ -97,7 +92,7 @@ export const CustomDropdownMenuContent = () => {
       </DropdownMenuItem>
       <ExportSegmentationSubMenuItem
         segmentationId={segmentationId}
-        segmentationRepresentationType={segmentationRepresentationType}
+        segmentationRepresentationType={segmentationRepresentationTypes?.[0]}
         allowExport={allowExport}
         actions={actions}
       />

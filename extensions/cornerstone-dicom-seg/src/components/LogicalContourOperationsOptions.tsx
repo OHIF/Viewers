@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRunCommand, useSystem } from '@ohif/core';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import {
@@ -19,6 +19,7 @@ import {
 } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import { contourSegmentation } from '@cornerstonejs/tools/utilities';
+import { useTranslation } from 'react-i18next';
 import { Segment } from '@cornerstonejs/tools/types';
 
 const { LogicalOperation } = contourSegmentation;
@@ -60,6 +61,7 @@ function SegmentSelector({
   segments: Segment[];
   placeholder?: string;
 }) {
+  const { t } = useTranslation('SegmentationPanel');
   return (
     <div className="flex justify-between gap-6">
       <div>{label}</div>
@@ -68,8 +70,11 @@ function SegmentSelector({
         onValueChange={onValueChange}
         value={value}
       >
-        <SelectTrigger className="overflow-hidden">
-          <SelectValue placeholder={placeholder} />
+        <SelectTrigger
+          className="overflow-hidden"
+          data-cy={`logical-contour-segment-${label.toLowerCase()}-trigger`}
+        >
+          <SelectValue placeholder={t(placeholder)} />
         </SelectTrigger>
         <SelectContent>
           {segments.map(segment => (
@@ -89,6 +94,7 @@ function SegmentSelector({
 function LogicalContourOperationOptions() {
   const { servicesManager } = useSystem();
   const { segmentationService } = servicesManager.services;
+  const { t } = useTranslation('SegmentationPanel');
   const { segmentationsWithRepresentations } = useActiveViewportSegmentationRepresentations();
 
   const activeRepresentation = segmentationsWithRepresentations?.find(
@@ -105,6 +111,8 @@ function LogicalContourOperationOptions() {
         activeRepresentation.segmentation.segmentationId
       )
     : 1;
+
+  const segmentationId = activeRepresentation?.segmentation?.segmentationId;
 
   const activeSegment = segments.find(segment => segment.active);
 
@@ -126,12 +134,12 @@ function LogicalContourOperationOptions() {
 
   const runCommand = useRunCommand();
 
-  const applyLogicalContourOperation = useCallback(() => {
+  const applyLogicalContourOperation = () => {
     let resultSegmentIndex = segmentA;
     if (createNewSegment) {
       resultSegmentIndex = nextSegmentIndex.toString();
       runCommand('addSegment', {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         config: {
           label: newSegmentName,
           segmentIndex: nextSegmentIndex,
@@ -140,29 +148,20 @@ function LogicalContourOperationOptions() {
     }
     runCommand('applyLogicalContourOperation', {
       segmentAInfo: {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         segmentIndex: parseInt(segmentA),
       },
       segmentBInfo: {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         segmentIndex: parseInt(segmentB),
       },
       resultSegmentInfo: {
-        segmentationId: activeRepresentation.segmentation.segmentationId,
+        segmentationId,
         segmentIndex: parseInt(resultSegmentIndex),
       },
       logicalOperation: operation.logicalOperation,
     });
-  }, [
-    activeRepresentation?.segmentation?.segmentationId,
-    createNewSegment,
-    newSegmentName,
-    nextSegmentIndex,
-    operation.logicalOperation,
-    runCommand,
-    segmentA,
-    segmentB,
-  ]);
+  };
 
   return (
     <div className="flex w-[245px] flex-col gap-4">
@@ -177,6 +176,7 @@ function LogicalContourOperationOptions() {
                     value={value}
                     key={`logical-contour-operation-${value}`}
                     onClick={() => setOperation(option)}
+                    data-cy={`logical-contour-operation-${value}`}
                   >
                     <Icons.ByName name={icon}></Icons.ByName>
                   </TabsTrigger>
@@ -184,9 +184,9 @@ function LogicalContourOperationOptions() {
               })}
             </TabsList>
           </Tabs>
-          <div>{operation.label}</div>
+          <div>{t(operation.label)}</div>
         </div>
-        <div className="bg-primary-dark flex h-[62px] w-[88px] items-center justify-center rounded-lg">
+        <div className="bg-muted flex h-[62px] w-[88px] items-center justify-center rounded-lg">
           <Icons.ByName name={operation.helperIcon}></Icons.ByName>
         </div>
       </div>
@@ -204,13 +204,14 @@ function LogicalContourOperationOptions() {
       />
       <div className="flex justify-end pl-[34px]">
         <Button
+          data-cy="apply-logical-contour-operation"
           className="border-primary/60 grow border"
           variant="ghost"
           onClick={() => {
             applyLogicalContourOperation();
           }}
         >
-          {operation.label}
+          {t(operation.label)}
         </Button>
       </div>
       <Separator className="bg-input mt-2 h-[1px]" />
@@ -218,10 +219,11 @@ function LogicalContourOperationOptions() {
         <div className="flex items-center justify-start gap-2">
           <Switch
             id="logical-contour-operations-create-new-segment-switch"
+            data-cy="logical-contour-create-new-segment-switch"
             onCheckedChange={setCreateNewSegment}
           ></Switch>
           <Label htmlFor="logical-contour-operations-create-new-segment-switch">
-            Create a new segment
+            {t('Create a new segment')}
           </Label>
         </div>
         <div className="pl-9">
@@ -230,7 +232,7 @@ function LogicalContourOperationOptions() {
             disabled={!createNewSegment}
             id="logical-contour-operations-create-new-segment-input"
             type="text"
-            placeholder="New segment name"
+            placeholder={t('New segment name')}
             value={newSegmentName}
             onChange={e => setNewSegmentName(e.target.value)}
           />

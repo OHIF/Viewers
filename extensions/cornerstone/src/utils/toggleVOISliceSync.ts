@@ -84,6 +84,10 @@ function groupViewportsByModality(
   return viewportsArray.reduce((acc, viewport) => {
     const { displaySetInstanceUIDs } = viewport;
     // Todo: add proper fusion support
+    // Fix: Skip processing if the viewport is empty.
+    if (!displaySetInstanceUIDs?.length) {
+      return acc;
+    }
     const displaySetInstanceUID = displaySetInstanceUIDs[0];
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 

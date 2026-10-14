@@ -43,7 +43,7 @@ const DefaultStatsList = () => {
           >
             <div>{label}</div>
             <div>
-              <span className="text-white">{handleNumber(value)}</span>{' '}
+              <span className="text-foreground">{handleNumber(value)}</span>{' '}
               <span className="">{unit && unit !== 'none' ? unit : ''}</span>
             </div>
           </div>
@@ -79,7 +79,7 @@ const SegmentStatisticsHeader = ({ children = null }: { children?: React.ReactNo
   return (
     <div className="mb-3">
       {children &&
-        React.cloneElement(children as React.ReactElement, { segmentationId, segmentIndex })}
+        React.cloneElement(children as React.ReactElement<any>, { segmentationId, segmentIndex })}
     </div>
   );
 };

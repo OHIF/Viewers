@@ -6,24 +6,22 @@ import path from 'path';
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
   console.log('Current branch:', branchName);
-  const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf-8'));
 
   // read the current version from ./version.txt
-  const nextVersion = await fs.readFile('./version.txt', 'utf-8');
-  const packages = lernaJson.packages;
+  const nextVersion = (await fs.readFile('./version.txt', 'utf-8')).trim();
+  const packages = ['extensions/*', 'platform/*', 'modes/*'];
 
-  if (!packages) {
-    throw new Error('Could not find packages in lerna.json');
-  }
+  // Track only the files this script writes, so the release commit stages
+  // exactly the version bump and never sweeps in unrelated local edits or
+  // generated artifacts via `git add -A`.
+  const updatedFiles = [];
 
-  // for each package's package.json file, see if there is a peerdependency,
-  // and for each peer dependency see if it includes a package that
-  // starts with @ohif/, if so update the version to the
-  // next version since lerna will not handle this for us
+  // For each package's package.json file, update:
+  // 1. The package version
+  // 2. Any @ohif/* peerDependencies to the next version
+  // 3. Any @ohif/* dependencies to the next version
 
-  // Iterate over each package path pattern
   for (const packagePathPattern of packages) {
-    // Use glob to find all matching directories
     const matchingDirectories = glob.sync(packagePathPattern);
 
     for (const packageDirectory of matchingDirectories) {
@@ -32,15 +30,15 @@ async function run() {
       try {
         const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 
-        // lerna will take care of updating the dependencies, but it does not
-        // update the peerDependencies, so we need to do that manually
-        for (const peerDependency of Object.keys(packageJson.peerDependencies)) {
-          if (peerDependency.startsWith('@ohif/')) {
-            packageJson.peerDependencies[peerDependency] = nextVersion;
-          }
-        }
+        // Bump only the package's own version. Internal @ohif/* references stay
+        // as workspace:* in the committed manifests (and therefore the lockfile,
+        // which records them as links), so pnpm-lock.yaml never drifts on a
+        // version bump and frozen installs keep working. pnpm publish rewrites
+        // workspace:* to the exact version in the published tarball only.
+        packageJson.version = nextVersion;
 
         await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+        updatedFiles.push(packageJsonPath);
 
         console.log(`Updated ${packageJsonPath}`);
       } catch (err) {
@@ -50,39 +48,39 @@ async function run() {
     }
   }
 
-  // remove the .npmrc to not accidentally publish to npm
-  await fs.unlink('.npmrc');
+  // Update root package.json version
+  const rootPackageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'));
+  rootPackageJson.version = nextVersion;
+  await fs.writeFile('package.json', JSON.stringify(rootPackageJson, null, 2) + '\n');
+  updatedFiles.push('package.json');
+  console.log('Updated root package.json');
 
-  // rm -f ./.npmrc again
-  await execa('rm', ['-f', '.npmrc']);
+  // NOTE: Do not delete .npmrc here. It is tracked and holds pnpm workspace
+  // config (node-linker, workspace linking) with no npm credentials, so
+  // removing it would commit the loss of needed install config. This script
+  // does not publish, so there is no accidental-publish risk to guard against.
 
-  // Todo: Do we really need to run the build command here?
-  // Maybe we need to hook the netlify deploy preview
-  // await execa('yarn', ['run', 'build']);
+  console.log('Setting the version...');
 
-  console.log('Committing and pushing changes...');
-  await execa('git', ['add', '-A']);
-  await execa('git', ['commit', '-m', 'chore(version): version.json [skip ci]']);
+  // Stage only the package.json files this script updated, so the release
+  // commit is deterministic and doesn't pick up unrelated worktree changes.
+  await execa('git', ['add', '--', ...updatedFiles]);
+
+  // Create the version commit
+  const commitMessage = `chore(version): Update package versions to ${nextVersion} [skip ci]`;
+  await execa('git', ['commit', '-m', commitMessage]);
+
+  // Create the version tag
+  const tagName = `v${nextVersion}`;
+  await execa('git', ['tag', '-f', tagName]);
+
+  console.log('Pushing changes...');
   await execa('git', ['push', 'origin', branchName]);
 
-  console.log('Setting the version using lerna...');
+  console.log('Pushing tag...');
+  await execa('git', ['push', 'origin', tagName]);
 
-  // add a message to the commit to indicate that the version was set using lerna
-  await execa('npx', [
-    'lerna',
-    'version',
-    nextVersion,
-    '--yes',
-    '--exact',
-    '--force-publish',
-    '--message',
-    'chore(version): Update package versions [skip ci]',
-    '--conventional-commits',
-    '--create-release',
-    'github',
-  ]);
-
-  console.log('Version set using lerna');
+  console.log('Version set successfully');
 }
 
 run().catch(err => {

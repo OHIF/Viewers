@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForGridScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';
@@ -8,17 +7,17 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Axial Primary Test', async () => {
-  test('should render Axial Primary correctly.', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^Axial Primary$/ })
-      .first()
-      .click();
-    await checkForScreenshot(
+  test('should render Axial Primary correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.axialPrimary.click();
+
+    await checkForGridScreenshot({
       page,
-      page,
-      screenShotPaths.axialPrimary.axialPrimaryDisplayedCorrectly
-    );
+      viewportPageObject,
+      screenshotPath: screenShotPaths.axialPrimary.axialPrimaryDisplayedCorrectly,
+    });
   });
 });

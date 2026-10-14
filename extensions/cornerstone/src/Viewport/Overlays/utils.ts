@@ -1,5 +1,7 @@
 import moment from 'moment';
+import i18n from 'i18next';
 import { metaData } from '@cornerstonejs/core';
+import { formatDICOMDate } from '@ohif/ui-next';
 
 /**
  * Checks if value is valid.
@@ -22,17 +24,6 @@ export function formatNumberPrecision(number, precision = 0) {
   if (number !== null) {
     return parseFloat(number).toFixed(precision);
   }
-}
-
-/**
- * Formats DICOM date.
- *
- * @param {string} date
- * @param {string} strFormat
- * @returns {string} formatted date.
- */
-export function formatDICOMDate(date, strFormat = 'MMM D, YYYY') {
-  return moment(date, 'YYYYMMDD').format(strFormat);
 }
 
 /**
@@ -71,3 +62,5 @@ export function getCompression(imageId) {
 
   return 'Lossless / Uncompressed';
 }
+
+export { formatDICOMDate };

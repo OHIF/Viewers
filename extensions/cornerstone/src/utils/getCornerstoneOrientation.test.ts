@@ -8,6 +8,9 @@ jest.mock('@cornerstonejs/core', () => ({
       SAGITTAL: 'sagittal',
       CORONAL: 'coronal',
       ACQUISITION: 'acquisition',
+      AXIAL_REFORMAT: 'axial_reformat',
+      SAGITTAL_REFORMAT: 'sagittal_reformat',
+      CORONAL_REFORMAT: 'coronal_reformat',
     },
   },
 }));
@@ -31,6 +34,21 @@ describe('getCornerstoneOrientation', () => {
   it('should return CORONAL when orientation is coronal', () => {
     const result = getCornerstoneOrientation('coronal');
     expect(result).toBe(Enums.OrientationAxis.CORONAL);
+  });
+
+  it('should return AXIAL_REFORMAT when orientation is axial_reformat', () => {
+    const result = getCornerstoneOrientation('axial_reformat');
+    expect(result).toBe(Enums.OrientationAxis.AXIAL_REFORMAT);
+  });
+
+  it('should return SAGITTAL_REFORMAT when orientation is sagittal_reformat', () => {
+    const result = getCornerstoneOrientation('sagittal_reformat');
+    expect(result).toBe(Enums.OrientationAxis.SAGITTAL_REFORMAT);
+  });
+
+  it('should return CORONAL_REFORMAT when orientation is coronal_reformat', () => {
+    const result = getCornerstoneOrientation('coronal_reformat');
+    expect(result).toBe(Enums.OrientationAxis.CORONAL_REFORMAT);
   });
 
   it('should return ACQUISITION for unknown orientation', () => {

@@ -91,14 +91,14 @@ function DefaultAccordion(props) {
     return null;
   }
 
-  if (Boolean(asChild)) {
+  if (asChild) {
     return React.cloneElement(props.children, props);
   }
 
   return (
     <Accordion
       type={grouping.type || 'multiple'}
-      className="text-white"
+      className="text-foreground"
       defaultValue={defaultValue}
     >
       {[...groups.entries()].map(([key, group]) => {

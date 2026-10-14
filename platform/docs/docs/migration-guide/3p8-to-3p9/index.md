@@ -7,8 +7,7 @@ summary: Migration guide for upgrading from OHIF 3.8 to 3.9, covering segmentati
 
 
 import DocCardList from '@theme/DocCardList';
-import {useCurrentSidebarCategory} from '@docusaurus/theme-common';
 
 ## Migration Guide Sections
 
-<DocCardList items={useCurrentSidebarCategory().items}/>
+<DocCardList />

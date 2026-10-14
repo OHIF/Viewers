@@ -94,14 +94,17 @@ services:
       KC_DB_URL: 'jdbc:postgresql://postgres:5432/keycloak'
       KC_DB_SCHEMA: public
       KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: password
+      # Keycloak authenticates to Postgres as the keycloak role provisioned
+      # below, so this must be the same value as POSTGRES_PASSWORD. Sourced
+      # from the single POSTGRES_PASSWORD variable to keep them in lockstep.
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your .env}
       KC_HOSTNAME_ADMIN_URL: http://YOUR_DOMAIN/keycloak/
       KC_HOSTNAME_URL: http://YOUR_DOMAIN/keycloak/
       KC_HOSTNAME_STRICT_BACKCHANNEL: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
       KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in your .env}
       KC_HEALTH_ENABLED: true
       KC_METRICS_ENABLED: true
       KC_PROXY: edge
@@ -139,7 +142,7 @@ services:
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in your .env}
     restart: unless-stopped
     networks:
       - default

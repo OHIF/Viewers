@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 
 function CallbackPage({ userManager, onRedirectSuccess }) {
   const onRedirectError = error => {
@@ -16,8 +15,6 @@ function CallbackPage({ userManager, onRedirectSuccess }) {
   return null;
 }
 
-CallbackPage.propTypes = {
-  userManager: PropTypes.object.isRequired,
-};
+
 
 export default CallbackPage;

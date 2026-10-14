@@ -1,4 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
+import i18n from '@ohif/i18n';
+import { getViewportAdapter, isVolumeRenderingViewport } from './services/ViewportService/adapter';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -14,7 +16,7 @@ import AdvancedRenderingControls from './components/AdvancedRenderingControls';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
-  disabledText: disabledText ?? 'Not available on the current viewport',
+  disabledText: disabledText ?? i18n.t('Buttons:Not available on the current viewport'),
 });
 
 export default function getToolbarModule({ servicesManager, extensionManager }: withAppTypes) {
@@ -308,7 +310,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           };
         }
 
-        if (viewport.type !== 'orthographic') {
+        // Recognize native "next" volume viewports too. A next MPR/volume viewport
+        // runs as PLANAR_NEXT (requestedType PLANAR_NEXT, not ORTHOGRAPHIC), so this
+        // checks volume content via getCurrentMode(). Without it the PT threshold
+        // control stayed disabled on the next backend (e.g. TMTV fusion/PT).
+        if (!isVolumeRenderingViewport(viewport)) {
           return {
             disabled: true,
           };
@@ -331,7 +337,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport || viewport.type !== 'orthographic') {
+        if (!viewport || !isVolumeRenderingViewport(viewport)) {
           return {
             disabled: true,
           };
@@ -396,7 +402,9 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           );
 
           if (!hasAnySupportedModality) {
-            return getDisabledState(disabledText || 'Tool not available for this modality');
+            return getDisabledState(
+              disabledText || i18n.t('Buttons:Tool not available for this modality')
+            );
           }
         }
       },
@@ -423,6 +431,39 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         return {
           disabled: false,
           isActive: isPrimaryActive,
+        };
+      },
+    },
+    {
+      name: 'evaluate.cornerstoneTool.toggleWithModifier',
+      evaluate: ({ viewportId, button, disabledText, toggledOnIcon, defaultIcon }) => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        if (!toolGroup) {
+          return;
+        }
+
+        const toolName = toolbarService.getToolNameForButton(button);
+        if (!toolGroup.hasTool(toolName)) {
+          return getDisabledState(disabledText);
+        }
+
+        const { mode } = toolGroup.getToolOptions(toolName) ?? {};
+        const isToggled =
+          mode === Enums.ToolModes.Passive ||
+          mode === Enums.ToolModes.Active ||
+          mode === Enums.ToolModes.Enabled;
+
+        const toolBindings = toolGroupService.getToolBindings(toolGroup.id, toolName);
+        const hasModifierKey = toolBindings?.some(binding => binding.modifierKey != null) ?? false;
+
+        return {
+          disabled: false,
+          isActive: false,
+          isToggled,
+          icon:
+            isToggled && hasModifierKey && toggledOnIcon
+              ? toggledOnIcon
+              : (defaultIcon ?? button.props.icon),
         };
       },
     },
@@ -506,8 +547,9 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         const propId = button.id;
 
-        const properties = viewport.getProperties();
-        const camera = viewport.getCamera();
+        const adapter = getViewportAdapter(viewport);
+        const properties = adapter.getPresentation();
+        const camera = adapter.getViewState();
 
         const prop = camera?.[propId] || properties?.[propId];
 

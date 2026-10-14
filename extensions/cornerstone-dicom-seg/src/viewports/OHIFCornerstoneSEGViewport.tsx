@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
@@ -49,8 +49,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   });
 
   // refs
-  const referencedDisplaySetRef = useRef(null);
-
   const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
@@ -60,34 +58,40 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   // In such cases, we attempt to handle this scenario gracefully by
   // invoking a custom handler. Ideally, if a user tries to launch a series that isn't viewable,
   // (eg.: we can prompt them with an explanation and provide a link to the full study).
+
+  // Additional guard: If no customization handler is registered for missing
+  // referenced display sets, skip SEG rendering to avoid a viewport crash.
+  // Only the *returns* move below the hooks; the handler still runs here, at the
+  // same point in the render it always did.
+  let skipRendering = false;
   if (!referencedDisplaySetInstanceUID) {
     const missingReferenceDisplaySetHandler = customizationService.getCustomization(
       'missingReferenceDisplaySetHandler'
     );
-    const { handled } = missingReferenceDisplaySetHandler();
-    if (handled) {
-      return;
+    if (typeof missingReferenceDisplaySetHandler === 'function') {
+      ({ handled: skipRendering } = missingReferenceDisplaySetHandler());
+    } else {
+      console.log(
+        "No customization 'missingReferenceDisplaySetHandler' registered. Skipping SEG rendering."
+      );
+      skipRendering = true;
     }
   }
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-    referencedDisplaySetInstanceUID
-  );
 
-  const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
-    referencedDisplaySet,
-    segDisplaySet
-  );
+  // getDisplaySetByUID throws on a non-string, and the UID is absent on exactly
+  // the path handled above - reachable whenever a handler returns handled:false.
+  const referencedDisplaySet = referencedDisplaySetInstanceUID
+    ? displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID)
+    : undefined;
 
-  referencedDisplaySetRef.current = {
-    displaySet: referencedDisplaySet,
-    metadata: referencedDisplaySetMetadata,
-  };
-
-  const getCornerstoneViewport = useCallback(() => {
+  const getCornerstoneViewport = () => {
+    // Stack uses the referenced series (data[0]); SEG is applied as an overlay (data[1]).
+    // Passing only the SEG display set leaves the stack with derived labelmap imageIds,
+    // which are not displayable without the underlying grayscale series.
     return (
       <OHIFCornerstoneViewport
         {...props}
-        displaySets={[segDisplaySet]}
+        displaySets={[referencedDisplaySet, segDisplaySet]}
         viewportOptions={{
           viewportType: viewportOptions.viewportType,
           toolGroupId: toolGroupId,
@@ -100,7 +104,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         }}
       />
     );
-  }, [viewportId, segDisplaySet, toolGroupId, props, viewportOptions]);
+  };
 
   useEffect(() => {
     if (segIsLoading) {
@@ -134,7 +138,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
+        if (evt.segDisplaySet?.displaySetInstanceUID === segDisplaySet?.displaySetInstanceUID) {
           setSegIsLoading(false);
         }
 
@@ -234,11 +238,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
-  if (
-    !referencedDisplaySetRef.current ||
-    referencedDisplaySet.displaySetInstanceUID !==
-      referencedDisplaySetRef.current.displaySet.displaySetInstanceUID
-  ) {
+  if (skipRendering || !referencedDisplaySet) {
     return null;
   }
 
@@ -270,39 +270,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       </div>
     </>
   );
-}
-
-function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
-  const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;
-
-  const SharedFunctionalGroup = Array.isArray(SharedFunctionalGroupsSequence)
-    ? SharedFunctionalGroupsSequence[0]
-    : SharedFunctionalGroupsSequence;
-
-  const { PixelMeasuresSequence } = SharedFunctionalGroup;
-
-  const PixelMeasures = Array.isArray(PixelMeasuresSequence)
-    ? PixelMeasuresSequence[0]
-    : PixelMeasuresSequence;
-
-  const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
-
-  const image0 = referencedDisplaySet.images[0];
-  const referencedDisplaySetMetadata = {
-    PatientID: image0.PatientID,
-    PatientName: image0.PatientName,
-    PatientSex: image0.PatientSex,
-    PatientAge: image0.PatientAge,
-    SliceThickness: image0.SliceThickness || SliceThickness,
-    StudyDate: image0.StudyDate,
-    SeriesDescription: image0.SeriesDescription,
-    SeriesInstanceUID: image0.SeriesInstanceUID,
-    SeriesNumber: image0.SeriesNumber,
-    ManufacturerModelName: image0.ManufacturerModelName,
-    SpacingBetweenSlices: image0.SpacingBetweenSlices || SpacingBetweenSlices,
-  };
-
-  return referencedDisplaySetMetadata;
 }
 
 export default OHIFCornerstoneSEGViewport;

@@ -1,4 +1,4 @@
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
 
@@ -32,10 +32,12 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-mode-basic',
+        type: 'umd',
+        export: 'default',
+      },
       path: ROOT_DIR,
-      library: 'ohif-mode-basic',
-      libraryTarget: 'umd',
-      libraryExport: 'default',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],

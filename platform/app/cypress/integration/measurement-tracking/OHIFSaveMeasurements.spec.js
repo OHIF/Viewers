@@ -34,7 +34,6 @@
 
     // Visual test comparison
     cy.screenshot('Save Measurements - new measurement added');
-    cy.percyCanvasSnapshot('Save Measurements - new measurement added');
   });
 
   // it('retrieves saved measurements', function() {

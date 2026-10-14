@@ -1,5 +1,14 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import {
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportsRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7695.4007.324475281161490036195179843543';
@@ -7,12 +16,30 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate SR reports correctly', async ({ page }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('trackedMeasurements-btn').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+test('should hydrate SR reports correctly', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
+  await leftPanelPageObject.loadSeriesByModality('SR');
+  // The DICOMSRDisplayTool bails out when the viewport has no actors yet
+  // (see DICOMSRDisplayTool's hasActors guard), so we must wait until the
+  // underlying image has rendered an actor before screenshotting the SR
+  // overlay (line/rectangle).
+  await waitForViewportsRendered(page);
   await page.waitForTimeout(2000);
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
+  await waitForPaintToSettle(page);
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srPreHydration,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -33,9 +60,35 @@ test('should hydrate SR reports correctly', async ({ page }) => {
     }
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
+
+  // Hydration should produce the SR's two measurements; the first one is the
+  // measurement shown in the screenshot below.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).title).toHaveText(
+    'Label1'
+  );
+
+  const expectedLength = '46.6';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Length',
+    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine(expectedLength)],
+    expectedSvgLines: [measurementTextFormatters.lengthLine(expectedLength)],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect((stats.length as number).toFixed(1)).toBe(expectedLength);
+    },
+  });
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srPostHydration,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -56,7 +109,11 @@ test('should hydrate SR reports correctly', async ({ page }) => {
     }
   });
 
-  await page.getByTestId('data-row').first().click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.srHydration.srJumpToMeasurement,
+  });
 });

@@ -1,0 +1,59 @@
+// URL-loaded customization: segmentationEditing
+//
+// Adds segmentation editing to the basic and longitudinal (viewer) modes by
+// composing the capability packs the cornerstone extension already exports:
+//
+//   - the segmentation editing toolbar buttons and toolbox section wiring
+//     (`cornerstone.segmentationToolbarButtons` / `cornerstone.segmentationToolbarSections`),
+//   - the segmentation editing tools for the modes' tool groups
+//     (`cornerstone.segmentationTools`),
+//   - the segmentation panels that render the editing toolbox
+//     (`panelSegmentationWithToolsLabelMap` / `panelSegmentationWithToolsContour`),
+//   - and enables editing in the segmentation panel.
+//
+// Composition is per-mode, so every patch lives in the `mode` phase keyed by
+// the target mode's route name (`basic`, `viewer`). Each mode seeds its own
+// `toolbarButtons` / `toolbarSections` / `toolGroupAdditions` / `rightPanels`
+// onto the Mode scope on enter; these blocks `$push` / `$set` on top of that,
+// exactly like the panel swaps. No app-wide `global` keys are needed.
+//
+// Load it with `?customization=segmentation/segmentationEditing`.
+{
+  "mode": {
+    "basic": {
+      "toolbarButtons": { "$push": [{ "$reference": "cornerstone.segmentationToolbarButtons" }] },
+      "toolbarSections": { "$push": [{ "$reference": "cornerstone.segmentationToolbarSections" }] },
+      "toolGroupAdditions": {
+        "default": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] },
+        "mpr": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] }
+      },
+      // The basic/longitudinal modes seed `panelSegmentation.disableEditing: true`
+      // from their own `modeCustomizations`; this `mode` phase value is applied
+      // after that (both Mode scope) and enables editing.
+      "panelSegmentation.disableEditing": { "$set": false },
+      "rightPanels": {
+        "$set": [
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
+          "@ohif/extension-cornerstone.panelModule.panelMeasurement"
+        ]
+      }
+    },
+    "viewer": {
+      "toolbarButtons": { "$push": [{ "$reference": "cornerstone.segmentationToolbarButtons" }] },
+      "toolbarSections": { "$push": [{ "$reference": "cornerstone.segmentationToolbarSections" }] },
+      "toolGroupAdditions": {
+        "default": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] },
+        "mpr": { "$push": [{ "$reference": "cornerstone.segmentationTools" }] }
+      },
+      "panelSegmentation.disableEditing": { "$set": false },
+      "rightPanels": {
+        "$set": [
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap",
+          "@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour",
+          "@ohif/extension-measurement-tracking.panelModule.trackedMeasurements"
+        ]
+      }
+    }
+  }
+}

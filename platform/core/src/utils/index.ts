@@ -15,6 +15,7 @@ import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatTime from './formatTime';
 import formatPN from './formatPN';
+import formatValue from './formatValue';
 import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
@@ -34,10 +35,18 @@ import {
   sortStudy,
   sortStudySeries,
   sortStudyInstances,
+  sortDisplaySetsCopy,
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
 } from './sortStudy';
+import {
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+} from './latestInstanceDateTime';
+import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
@@ -47,6 +56,15 @@ import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
+import { thumbnailNoImageModalities } from './thumbnailNoImageModalities';
+import {
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
+} from './resolveBulkDataTags';
+
+import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -61,13 +79,21 @@ const utils = {
   sortStudy,
   sortStudySeries,
   sortStudyInstances,
+  sortDisplaySetsCopy,
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
   writeScript,
   formatDate,
   formatTime,
   formatPN,
+  formatValue,
   b64toBlob,
   urlUtil,
   imageIdToURI,
@@ -99,6 +125,15 @@ const utils = {
   getClosestOrientationFromIOP,
   calculateScanAxisNormal,
   areAllImageOrientationsEqual,
+  thumbnailNoImageModalities,
+  downloadBlob,
+  downloadUrl,
+  downloadCsv,
+  downloadDicom,
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
 };
 
 export {
@@ -107,6 +142,13 @@ export {
   absoluteUrl,
   sortBy,
   formatDate,
+  formatValue,
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
   writeScript,
   b64toBlob,
   urlUtil,
@@ -137,6 +179,15 @@ export {
   MeasurementFilters,
   getClosestOrientationFromIOP,
   buildButtonCommands,
+  thumbnailNoImageModalities,
+  downloadBlob,
+  downloadUrl,
+  downloadCsv,
+  downloadDicom,
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
 };
 
 export default utils;

@@ -1,0 +1,5 @@
+// Example chaining module: ensures `veterinary/veterinaryOverlay` is loaded and
+// applied first when using `?customization=veterinary/veterinary` alone.
+{
+  "requires": ["veterinary/veterinaryOverlay"]
+}

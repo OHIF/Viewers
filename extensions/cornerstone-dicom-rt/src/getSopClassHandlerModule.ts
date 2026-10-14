@@ -1,5 +1,6 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
+import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
 
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
@@ -8,8 +9,6 @@ const { sopClassDictionary } = utils;
 
 const sopClassUids = [sopClassDictionary.RTStructureSetStorage];
 
-const cachedRTStructsSEG = new Set<string>();
-
 const loadPromises = {};
 
 function _getDisplaySetsFromSeries(
@@ -17,20 +16,30 @@ function _getDisplaySetsFromSeries(
   servicesManager: AppTypes.ServicesManager,
   extensionManager
 ) {
-  const instance = instances[0];
+  utils.sortStudyInstances(instances);
+  // Choose the LAST instance in the list as the most recently created one.
+  const instance = instances[instances.length - 1];
 
   const {
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,
-    SeriesDescription,
+    SeriesDescription = '',
     SeriesNumber,
-    SeriesDate,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
+    imageId: predecessorImageId,
   } = instance;
+
+  /**
+   * The "SeriesDate" for a display set is really the display set date, which
+   * should be the date of the instance being used - for a structure set that is
+   * usually the structure set date/time, and for one saved into an existing
+   * series only the instance level date/time reflects the save.
+   */
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
   const displaySet = {
     Modality: 'RTSTRUCT',
@@ -40,11 +49,13 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId,
     SOPClassUID,
+    FrameOfReferenceUID: null,
     referencedImages: null,
     referencedSeriesInstanceUID: null,
     referencedDisplaySetInstanceUID: null,
@@ -54,6 +65,8 @@ function _getDisplaySetsFromSeries(
     structureSet: null,
     sopClassUids,
     instance,
+    instances,
+    predecessorImageId,
     wadoRoot,
     wadoUriRoot,
     wadoUri,
@@ -62,7 +75,10 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
+  if (
+    instance.ReferencedFrameOfReferenceSequence?.RTReferencedStudySequence &&
+    !instance.ReferencedSeriesSequence
+  ) {
     instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
       instance.ReferencedFrameOfReferenceSequence
     );
@@ -70,7 +86,8 @@ function _getDisplaySetsFromSeries(
   }
 
   if (!referencedSeriesSequence) {
-    throw new Error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    console.error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    return;
   }
 
   const referencedSeries = referencedSeriesSequence[0];
@@ -78,10 +95,17 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
+  displaySet.FrameOfReferenceUID =
+    instance.ReferencedFrameOfReferenceSequence?.[0]?.FrameOfReferenceUID;
+
   const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
-    displaySet.referencedSeriesInstanceUID
-  );
+  const referencedDisplaySets =
+    displaySetService.getDisplaySetsForReferences(referencedSeriesSequence);
+  if (referencedDisplaySets?.length > 1) {
+    console.warn(
+      'Reference applies to more than 1 display set for Contours, applying only to first display set'
+    );
+  }
 
   if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
     // Instead of throwing error, subscribe to display sets added
@@ -92,14 +116,16 @@ function _getDisplaySetsFromSeries(
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
           displaySet.isReconstructable = addedDisplaySet.isReconstructable;
+          displaySet.FrameOfReferenceUID = addedDisplaySet.FrameOfReferenceUID;
           unsubscribe();
         }
       }
     );
   } else {
-    const referencedDisplaySet = referencedDisplaySets[0];
+    const [referencedDisplaySet] = referencedDisplaySets;
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
+    displaySet.FrameOfReferenceUID = referencedDisplaySet.FrameOfReferenceUID;
   }
 
   displaySet.load = ({ headers, createSegmentation = true }) =>
@@ -121,22 +147,12 @@ function _load(
   if (
     (rtDisplaySet.loading || rtDisplaySet.isLoaded) &&
     loadPromises[SOPInstanceUID] &&
-    cachedRTStructsSEG.has(rtDisplaySet.displaySetInstanceUID)
+    _segmentationExists(rtDisplaySet)
   ) {
     return loadPromises[SOPInstanceUID];
   }
 
   rtDisplaySet.loading = true;
-
-  const { unsubscribe } = segmentationService.subscribe(
-    segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
-    (evt: { rtDisplaySet: { displaySetInstanceUID: string } }) => {
-      if (evt.rtDisplaySet?.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
-        cachedRTStructsSEG.add(rtDisplaySet.displaySetInstanceUID);
-        unsubscribe();
-      }
-    }
-  );
 
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
@@ -195,6 +211,10 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   });
 
   return ReferencedSeriesSequence;
+}
+
+function _segmentationExists(segDisplaySet) {
+  return !!cstSegmentation.state.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
 function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {

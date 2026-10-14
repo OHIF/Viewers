@@ -13,7 +13,6 @@ const supportedTools = [
   'LivewireContour',
   'UltrasoundDirectionalTool',
   'UltrasoundPleuraBLineTool',
-  'SCOORD3DPoint',
   'SegmentBidirectional',
 ];
 

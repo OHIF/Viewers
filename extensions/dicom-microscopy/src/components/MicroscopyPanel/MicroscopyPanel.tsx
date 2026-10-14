@@ -1,15 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { callInputDialog } from '@ohif/extension-default';
-import { ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
+import { ExtensionManager, CommandsManager, DicomMetadataStore, utils } from '@ohif/core';
 import { DataRow } from '@ohif/ui-next';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
 import constructSR from '../../utils/constructSR';
-import { saveByteArray } from '../../utils/saveByteArray';
+
+const { downloadDicom } = utils;
 
 let saving = false;
+
+/**
+ * Writes the constructed SR dataset out - to a file when the data source is the
+ * download pseudo-source, otherwise to the data source itself - and reports the
+ * outcome. Always clears the `saving` re-entrancy guard.
+ *
+ * Lives at module scope so it can keep a real `finally`: the compiler cannot yet
+ * lower a `try` with a finalizer, and moving the reset after the `try`/`catch`
+ * instead would leave the guard stuck if the `catch` itself threw.
+ */
+async function storeDataset(dataset, dataSource, onSaveComplete) {
+  try {
+    if (!dataSource) {
+      console.error('Server unspecified');
+      return;
+    }
+
+    if (dataSource.wadoRoot == 'saveDicom') {
+      // download as DICOM file
+      const part10Buffer = datasetToBuffer(dataset);
+      downloadDicom(part10Buffer, { filename: `sr-microscopy.dcm` });
+    } else {
+      // Save into Web Data source
+      const { StudyInstanceUID } = dataset;
+      await dataSource.store.dicom(dataset);
+      if (StudyInstanceUID) {
+        dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
+      }
+    }
+
+    onSaveComplete({
+      title: 'SR Saved',
+      message: 'Measurements downloaded successfully',
+      type: 'success',
+    });
+  } catch (error) {
+    onSaveComplete({
+      title: 'SR Save Failed',
+      message: error.message || error.toString(),
+      type: 'error',
+    });
+  } finally {
+    saving = false;
+  }
+}
 const { datasetToBuffer } = dcmjs.data;
 
 const formatArea = area => {
@@ -45,12 +90,12 @@ const formatLength = (length, unit) => {
 };
 
 interface IMicroscopyPanelProps extends WithTranslation {
-  viewports: PropTypes.array;
-  activeViewportId: PropTypes.string;
+  viewports: unknown[];
+  activeViewportId: string;
 
   //
-  onSaveComplete?: PropTypes.func; // callback when successfully saved annotations
-  onRejectComplete?: PropTypes.func; // callback when rejected annotations
+  onSaveComplete?: (...args: unknown[]) => void; // callback when successfully saved annotations
+  onRejectComplete?: (...args: unknown[]) => void; // callback when rejected annotations
 
   //
   servicesManager: AppTypes.ServicesManager;
@@ -191,38 +236,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     // construct SR dataset
     const dataset = constructSR(metadata, { SeriesDescription, SeriesNumber }, annotations);
 
-    // Save in DICOM format
-    try {
-      if (dataSource) {
-        if (dataSource.wadoRoot == 'saveDicom') {
-          // download as DICOM file
-          const part10Buffer = datasetToBuffer(dataset);
-          saveByteArray(part10Buffer, `sr-microscopy.dcm`);
-        } else {
-          // Save into Web Data source
-          const { StudyInstanceUID } = dataset;
-          await dataSource.store.dicom(dataset);
-          if (StudyInstanceUID) {
-            dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
-          }
-        }
-        onSaveComplete({
-          title: 'SR Saved',
-          message: 'Measurements downloaded successfully',
-          type: 'success',
-        });
-      } else {
-        console.error('Server unspecified');
-      }
-    } catch (error) {
-      onSaveComplete({
-        title: 'SR Save Failed',
-        message: error.message || error.toString(),
-        type: 'error',
-      });
-    } finally {
-      saving = false;
-    }
+    await storeDataset(dataset, dataSource, onSaveComplete);
   };
 
   /**
@@ -277,11 +291,11 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * Handler for "Edit" action of an annotation item
    * @param param0
    */
-  const onMeasurementItemEditHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
+  const onMeasurementItemEditHandler = ({ uid }: { uid: string; isActive: boolean }) => {
     props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
   };
 
-  const onMeasurementDeleteHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
+  const onMeasurementDeleteHandler = ({ uid }: { uid: string; isActive: boolean }) => {
     const roiAnnotation = microscopyService.getAnnotation(uid);
     microscopyService.removeAnnotation(roiAnnotation);
   };

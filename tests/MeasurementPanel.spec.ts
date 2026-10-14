@@ -1,5 +1,12 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy, addLengthMeasurement, scrollVolumeViewport } from './utils';
+import {
+  addLengthMeasurement,
+  addOHIFConfiguration,
+  expect,
+  scrollVolumeViewport,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -8,144 +15,126 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('checks if Measurements right panel can be hidden/displayed', async ({ page }) => {
-  const measurementsPanel = page.getByTestId('trackedMeasurements-panel').last();
-  const rightCollapseBtn = page.getByTestId('side-panel-header-right');
-
-  // No data-cy exists in this panel, using Segmentation header button
-  const segmentationPanel = page.getByRole('button', { name: 'Segmentations' });
-  const measurementsBtn = page.getByTestId('trackedMeasurements-btn');
-  const segmentationsBtn = page.getByTestId('panelSegmentation-btn');
+test('checks if Measurements right panel can be hidden/displayed', async ({
+  rightPanelPageObject,
+}) => {
+  const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.panel.locator;
 
   // Assert the measurements panel and segmentation panel is hidden initially
   await expect(measurementsPanel).toBeHidden();
   await expect(segmentationPanel).toBeHidden();
 
   // Click the collapse button to show the panel container
-  await rightCollapseBtn.click({ force: true });
+  await rightPanelPageObject.toggle();
 
   // The segmentation panel should now be visible by default
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to the measurements tab
-  await measurementsBtn.click();
+  await rightPanelPageObject.measurementsPanel.select();
 
   // Assert the measurements panel is visible, and segmentation invisible
   await expect(measurementsPanel).toBeVisible();
   await expect(segmentationPanel).toBeHidden();
 
   // Switch back to segmentations panel
-  await segmentationsBtn.click();
+  await rightPanelPageObject.noToolsSegmentationPanel.select();
 
   // Assert the segmentations panel is now visible, measurements panel invisible
   await expect(segmentationPanel).toBeVisible();
   await expect(measurementsPanel).toBeHidden();
 
   // Click the collapse button to hide the panel
-  await rightCollapseBtn.click();
+  await rightPanelPageObject.toggle();
 
   // Assert the measurements and segmentation panel is now hidden
   await expect(measurementsPanel).toBeHidden();
   await expect(segmentationPanel).toBeHidden();
 });
 
-test('checks if measurement item can be relabeled under Measurements panel', async ({ page }) => {
+test('checks if measurement item can be relabeled under Measurements panel', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+}) => {
   const relabelText = 'Relabel 12345';
-  const measurementsBtn = page.getByTestId('trackedMeasurements-btn');
-
   // Add measurement
   await addLengthMeasurement(page);
 
-  const viewportNotification = page.getByTestId('viewport-notification');
+  const viewportNotification = DOMOverlayPageObject.viewport.measurementTracking.locator;
   await expect(viewportNotification).toBeVisible();
 
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Open measurement panel confirm default empty
-  await measurementsBtn.click();
-  const measurementRow = page.getByTestId('data-row').first();
-  await expect(measurementRow).toContainText('(empty)');
+  await rightPanelPageObject.measurementsPanel.select();
+  const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(measurementRow.title).toHaveText('(empty)');
 
   // Expand and click rename
-  const actionsButton = measurementRow.getByRole('button', { name: 'Actions' });
-  await actionsButton.click();
-
-  const renameButton = page.getByRole('menuitem', { name: 'Rename' });
-  await renameButton.click();
-
-  // Interact with dialog
-  const renameDialog = page.getByRole('dialog', { name: 'Edit Measurement Label' });
-  const renameInput = renameDialog.getByPlaceholder('Enter new label');
-  const saveButton = renameDialog.getByRole('button', { name: 'Save' });
-
-  await expect(renameDialog).toBeVisible();
-  await expect(renameInput).toBeVisible();
-  await expect(saveButton).toBeEnabled();
-
-  await renameInput.fill(relabelText);
-  await saveButton.click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.rename(relabelText);
 
   // Check dialog closed and renamed
-  await expect(renameDialog).toBeHidden();
-  await expect(measurementRow).toContainText(relabelText);
+  await expect(DOMOverlayPageObject.dialog.input.locator).toBeHidden();
+  await expect(measurementRow.title).toHaveText(relabelText);
 });
 
 test('checks if measurement item can be relabeled through the context menu on the viewport', async ({
   page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
 }) => {
   const relabelText = 'Relabel 12345';
-  const measurementsBtn = page.getByTestId('trackedMeasurements-btn');
 
   // Add measurement
   await addLengthMeasurement(page);
 
-  const viewportNotification = page.getByTestId('viewport-notification');
+  const viewportNotification = DOMOverlayPageObject.viewport.measurementTracking.locator;
   await expect(viewportNotification).toBeVisible();
 
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Open measurement panel confirm default empty
-  await measurementsBtn.click();
-  const measurementRow = page.getByTestId('data-row').first();
-  await expect(measurementRow).toContainText('(empty)');
+  await rightPanelPageObject.measurementsPanel.select();
+  const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(measurementRow.title).toHaveText('(empty)');
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu
-  const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
-  await measurementAnnotation.click({ button: 'right', force: true });
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
-  const addLabelButton = page.getByTestId('context-menu-item').filter({ hasText: 'Add Label' });
-  await expect(addLabelButton).toBeVisible();
+  const addLabelButton = DOMOverlayPageObject.viewport.annotationContextMenu.addLabel;
+  await expect(addLabelButton.locator).toBeVisible();
   await addLabelButton.click();
 
   // Interact with dialog
-  const renameDialog = page.getByRole('dialog', { name: 'Edit Measurement Label' });
-  const renameInput = renameDialog.getByPlaceholder('Enter new label');
-  const saveButton = renameDialog.getByRole('button', { name: 'Save' });
-
-  await expect(renameDialog).toBeVisible();
-  await expect(renameInput).toBeVisible();
-  await expect(saveButton).toBeEnabled();
-
-  await renameInput.fill(relabelText);
-  await saveButton.click();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Edit Measurement Label');
+  await DOMOverlayPageObject.dialog.input.fillAndSave(relabelText);
 
   // Check dialog closed and renamed
-  await expect(renameDialog).toBeHidden();
-  await expect(measurementRow).toContainText(relabelText);
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+  await expect(measurementRow.title).toHaveText(relabelText);
 });
 
-test('checks if image would jump when clicked on a measurement item', async ({ page }) => {
-  const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
+test('checks if image would jump when clicked on a measurement item', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const activeViewport = await viewportPageObject.active;
+  const viewportInfoBottomRight = activeViewport.overlayText.bottomRight.instanceNumber;
 
   // Image loads on slice 1, confirm on slice 1 then add measurement
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
   await addLengthMeasurement(page);
 
-  const viewportNotification = page.getByTestId('viewport-notification');
-  await expect(viewportNotification).toBeVisible();
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Change to slice 2
   await scrollVolumeViewport(page, 'default', 1);
@@ -155,90 +144,209 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await addLengthMeasurement(page);
 
   // Open measurement panel and click first measurement
-  const measurementsBtn = page.getByTestId('trackedMeasurements-btn');
-  await measurementsBtn.click();
-  const measurementRow = page.getByTestId('data-row').first();
-  await measurementRow.click();
+  await rightPanelPageObject.measurementsPanel.select();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   // Confirm jumped to slice 1
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
   await expect(viewportInfoBottomRight).not.toContainText('2/');
 });
 
-test('checks if measurement item can be deleted under Measurements panel', async ({ page }) => {
-  const measurementsBtn = page.getByTestId('trackedMeasurements-btn');
-
+test('checks if measurement item can be deleted under Measurements panel', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+}) => {
   // Add 3 measurements
   await addLengthMeasurement(page);
 
-  const viewportNotification = page.getByTestId('viewport-notification');
-  await expect(viewportNotification).toBeVisible();
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   await addLengthMeasurement(page, { firstClick: [170, 100], secondClick: [150, 170] });
   await addLengthMeasurement(page, { firstClick: [190, 100], secondClick: [170, 170] });
 
   // Open measurement panel, confirm 3 measurements
-  await measurementsBtn.click();
-  await expect(page.getByTestId('data-row')).toHaveCount(3);
+  await rightPanelPageObject.measurementsPanel.select();
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(3);
 
   // Delete from measurement
-  const measurementRow = page.getByTestId('data-row').first();
-  const actionsButton = measurementRow.getByRole('button', { name: 'Actions' });
-  await actionsButton.click();
-
-  const menuDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
-  await menuDeleteButton.click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.delete();
+  await page.waitForTimeout(200);
 
   // Confirm one measurement is gone
-  await expect(page.getByTestId('data-row')).toHaveCount(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
 
   // Delete all measurements via main Measurement Panel delete button and untrack
-  const deleteButton = page.getByRole('button', { name: 'Delete' });
-  deleteButton.click();
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
 
   // Interact with dialog
-  const untrackDialog = page.getByRole('dialog', { name: 'Untrack Study' });
-  const untrackButton = untrackDialog.getByRole('button', { name: 'Untrack' });
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
 
-  await expect(untrackDialog).toBeVisible();
-  await expect(untrackButton).toBeEnabled();
+  await expect(DOMOverlayPageObject.dialog.confirmation.confirm.button).toBeEnabled();
 
-  await untrackButton.click();
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
 
   // Check dialog closed and measurements gone
-  await expect(untrackDialog).toBeHidden();
-  await expect(page.getByTestId('data-row')).toHaveCount(0);
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
 
-  const measurementsPanel = page.getByTestId('trackedMeasurements-panel').last();
+  const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
   await expect(measurementsPanel).toContainText('No tracked measurements');
 });
 
 test('checks if measurement item can be deleted through the context menu on the viewport', async ({
   page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
 }) => {
-  const measurementsBtn = page.getByTestId('trackedMeasurements-btn');
-
   // Add measurement
   await addLengthMeasurement(page);
-
-  const viewportNotification = page.getByTestId('viewport-notification');
-  await expect(viewportNotification).toBeVisible();
-
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu
-  const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
-  await measurementAnnotation.click({ button: 'right', force: true });
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
-  const deleteButton = page.getByTestId('context-menu-item').filter({ hasText: 'Delete' });
-  await expect(deleteButton).toBeVisible();
+  const deleteButton = DOMOverlayPageObject.viewport.annotationContextMenu.delete;
+  await expect(deleteButton.locator).toBeVisible();
   await deleteButton.click();
 
   // Open measurement panel and confirm measurement is gone
-  await measurementsBtn.click();
-  await expect(measurementAnnotation).toBeHidden();
-  await expect(page.getByTestId('data-row')).toHaveCount(0);
+  await rightPanelPageObject.measurementsPanel.select();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
+});
+
+test('checks that undo after delete-all restores measurements as tracked', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+  mainToolbarPageObject,
+}) => {
+  await addLengthMeasurement(page, {
+    firstClick: [450, 180],
+    secondClick: [550, 180],
+  });
+
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
+  await addLengthMeasurement(page, {
+    firstClick: [450, 260],
+    secondClick: [550, 260],
+  });
+
+  await rightPanelPageObject.measurementsPanel.select();
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
+
+  await mainToolbarPageObject.undo.click();
+
+  await waitForViewportsRendered(page);
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+
+  const activeViewport = await viewportPageObject.active;
+
+  const firstMeasurementLine = activeViewport.svg('line').first();
+  await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+
+  const secondMeasurementLine = activeViewport.svg('line').nth(2);
+  await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+});
+
+test('checks that delete-all prompt reappears after undo', async ({
+  page,
+  DOMOverlayPageObject,
+  rightPanelPageObject,
+  mainToolbarPageObject,
+}) => {
+  await addLengthMeasurement(page, {
+    firstClick: [450, 180],
+    secondClick: [550, 180],
+  });
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+
+  await mainToolbarPageObject.undo.click();
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
+
+  await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
+});
+
+test.describe('simplified tracking mode', () => {
+  test.beforeEach(async ({ page }) => {
+    await addOHIFConfiguration(page, {
+      measurementTrackingMode: 'simplified',
+    });
+    const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
+    await visitStudy(page, studyInstanceUID, 'viewer', 2000);
+  });
+
+  test('checks that undo after delete-all restores measurements as tracked (simplified mode)', async ({
+    page,
+    DOMOverlayPageObject,
+    rightPanelPageObject,
+    viewportPageObject,
+    mainToolbarPageObject,
+  }) => {
+    await addLengthMeasurement(page, {
+      firstClick: [450, 180],
+      secondClick: [550, 180],
+    });
+
+    await addLengthMeasurement(page, {
+      firstClick: [450, 260],
+      secondClick: [550, 260],
+    });
+
+    await rightPanelPageObject.measurementsPanel.select();
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+
+    await rightPanelPageObject.measurementsPanel.panel.deleteAll();
+    await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
+    await DOMOverlayPageObject.dialog.confirmation.confirm.click();
+    await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
+
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
+
+    await mainToolbarPageObject.undo.click();
+
+    await waitForViewportsRendered(page);
+
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
+
+    const activeViewport = await viewportPageObject.active;
+
+    const firstMeasurementLine = activeViewport.svg('line').first();
+    await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+
+    const secondMeasurementLine = activeViewport.svg('line').nth(2);
+    await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray');
+  });
 });

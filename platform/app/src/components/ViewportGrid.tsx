@@ -168,7 +168,7 @@ function ViewerViewportGrid(props: withAppTypes) {
     viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
-  const getViewportPanes = useCallback(() => {
+  const getViewportPanes = () => {
     const viewportPanes = [];
 
     const numViewportPanes = viewportGridService.getNumViewportPanes();
@@ -273,6 +273,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         >
           <div
             data-cy="viewport-pane"
+            data-is-active={isActive}
             className="flex h-full w-full min-w-[5px] flex-col"
           >
             <ViewportComponent
@@ -294,7 +295,7 @@ function ViewerViewportGrid(props: withAppTypes) {
     }
 
     return viewportPanes;
-  }, [viewports, activeViewportId, viewportComponents, dataSource]);
+  };
 
   /**
    * Loading indicator until numCols and numRows are gotten from the HangingProtocolService

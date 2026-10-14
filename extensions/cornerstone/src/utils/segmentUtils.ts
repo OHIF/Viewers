@@ -41,6 +41,6 @@ export const handleSegmentChange = ({
   const segmentIndex = Object.values(segments)[newSelectedSegmentIndex]?.segmentIndex;
 
   segmentationService.setActiveSegment(segmentationId, segmentIndex);
-  segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
+  segmentationService.jumpToSegmentNext(segmentationId, segmentIndex, undefined, direction);
   selectedSegmentObjectIndex = newSelectedSegmentIndex;
 };

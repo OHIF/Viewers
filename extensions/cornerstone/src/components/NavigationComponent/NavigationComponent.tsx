@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
 import { utils } from '../..';
 import { useViewportSegmentations } from '../../hooks';
 import { useMeasurementTracking } from '../../hooks/useMeasurementTracking';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 /**
  * NavigationComponent provides navigation controls for viewports containing
@@ -27,7 +28,11 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
     viewportId,
   });
 
-  const hasSegmentations = segmentationsWithRepresentations.length > 0;
+  const hasSegmentations =
+    segmentationsWithRepresentations.length > 0 &&
+    segmentationsWithRepresentations.some(
+      segmentation => segmentation?.representation?.type !== SegmentationRepresentations.Surface
+    );
 
   // prefer segment navigation if available
   const navigationMode = hasSegmentations
@@ -38,79 +43,61 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
         ? 'measurement'
         : null;
 
-  const handleMeasurementNavigation = useCallback(
-    (direction: number) => {
-      const measurementDisplaySet = viewportDisplaySets.find(
-        displaySet => displaySet?.Modality === 'SR'
-      );
+  const handleMeasurementNavigation = (direction: number) => {
+    const measurementDisplaySet = viewportDisplaySets.find(
+      displaySet => displaySet?.Modality === 'SR'
+    );
 
-      if (measurementDisplaySet) {
-        const measurements = measurementDisplaySet.measurements;
-        if (measurements.length <= 0) {
-          return;
-        }
-
-        const newIndex = getNextIndex(measurementSelected, direction, measurements.length);
-        setMeasurementSelected(newIndex);
-
-        const measurement = measurements[newIndex];
-        cornerstoneViewport.setViewReference({
-          referencedImageId: measurement.imageId,
-        });
+    if (measurementDisplaySet) {
+      const measurements = measurementDisplaySet.measurements;
+      if (measurements.length <= 0) {
         return;
       }
 
-      if (isTracked && trackedMeasurementUIDs.length > 0) {
-        const newIndex = getNextIndex(
-          measurementSelected,
-          direction,
-          trackedMeasurementUIDs.length
-        );
-        setMeasurementSelected(newIndex);
-        measurementService.jumpToMeasurement(viewportId, trackedMeasurementUIDs[newIndex]);
-      }
-    },
-    [
-      viewportId,
-      cornerstoneViewport,
-      measurementSelected,
-      measurementService,
-      isTracked,
-      trackedMeasurementUIDs,
-      viewportDisplaySets,
-    ]
-  );
+      const newIndex = getNextIndex(measurementSelected, direction, measurements.length);
+      setMeasurementSelected(newIndex);
 
-  const handleSegmentNavigation = useCallback(
-    (direction: number) => {
-      if (!segmentationsWithRepresentations.length) {
-        return;
-      }
-
-      const segmentationId = segmentationsWithRepresentations[0].segmentation.segmentationId;
-
-      utils.handleSegmentChange({
-        direction,
-        segmentationId,
-        viewportId,
-        selectedSegmentObjectIndex: 0,
-        segmentationService,
+      const measurement = measurements[newIndex];
+      cornerstoneViewport.setViewReference({
+        referencedImageId: measurement.imageId,
       });
-    },
-    [segmentationsWithRepresentations, viewportId, segmentationService]
-  );
+      return;
+    }
+
+    if (isTracked && trackedMeasurementUIDs.length > 0) {
+      const newIndex = getNextIndex(measurementSelected, direction, trackedMeasurementUIDs.length);
+      setMeasurementSelected(newIndex);
+      measurementService.jumpToMeasurement(viewportId, trackedMeasurementUIDs[newIndex]);
+    }
+  };
+
+  const handleSegmentNavigation = (direction: number) => {
+    if (!segmentationsWithRepresentations.length) {
+      return;
+    }
+
+    const activeSegmentationWithRepresentation = segmentationsWithRepresentations.find(
+      segmentation => segmentation?.representation?.active
+    );
+    const segmentationId = activeSegmentationWithRepresentation.segmentation.segmentationId;
+
+    utils.handleSegmentChange({
+      direction,
+      segmentationId,
+      viewportId,
+      selectedSegmentObjectIndex: 0,
+      segmentationService,
+    });
+  };
 
   // Handle navigation between segments/measurements
-  const handleNavigate = useCallback(
-    (direction: number) => {
-      if (navigationMode === 'segment') {
-        handleSegmentNavigation(direction);
-      } else if (navigationMode === 'measurement') {
-        handleMeasurementNavigation(direction);
-      }
-    },
-    [navigationMode, handleSegmentNavigation, handleMeasurementNavigation]
-  );
+  const handleNavigate = (direction: number) => {
+    if (navigationMode === 'segment') {
+      handleSegmentNavigation(direction);
+    } else if (navigationMode === 'measurement') {
+      handleMeasurementNavigation(direction);
+    }
+  };
 
   // Only render if we have a navigation mode
   if (!navigationMode) {

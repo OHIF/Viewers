@@ -5,6 +5,7 @@ import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
 import LegacyClient from './legacyOIDCClient';
 import NextClient from './nextOIDCClient';
+import { sanitizeSameOriginRedirect } from './sanitizeRedirect';
 
 function _isAbsoluteUrl(url) {
   return url.includes('http://') || url.includes('https://');
@@ -55,7 +56,10 @@ function LogoutComponent(props) {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   userManager.signoutRedirect({
-    post_logout_redirect_uri: query.get('redirect_uri'),
+    post_logout_redirect_uri: sanitizeSameOriginRedirect(
+      query.get('redirect_uri'),
+      window.location.origin
+    ),
   });
   return null;
 }

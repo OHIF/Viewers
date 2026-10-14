@@ -5,5 +5,9 @@
   "Last 7 days": "Last 7 days",
   "Last 30 days": "Last 30 days",
   "Start Date": "Start Date",
-  "Today": "Today"
+  "Today": "Today",
+  "Previous Month": "Previous Month",
+  "Next Month": "Next Month",
+  "Select Month": "Select Month",
+  "Select Year": "Select Year"
 }

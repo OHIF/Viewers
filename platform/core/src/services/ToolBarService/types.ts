@@ -36,6 +36,7 @@ export type ButtonOptions = {
   id: string;
   type: 'range' | 'radio' | 'double-range' | 'custom' | 'checkbox' | 'select' | 'button';
   name?: string;
+  tooltip?: string;
   min?: number;
   max?: number;
   step?: number;

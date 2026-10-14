@@ -1,3 +1,18 @@
+// 'use no memo' - this component triggers a runtime hook-order error when the
+// React Compiler processes it:
+//   "React has detected a change in the order of Hooks called by PanelStudyBrowser"
+//
+// Ruled out, each by testing the built app:
+//   - hot-module reload (survives a hard reload and a fresh tab)
+//   - the hook count (occurs whether the double-click useCallback is kept or not)
+//   - the dependency contents (occurs with extensionManager.appConfig or useAppConfig)
+//   - a stale prebuilt dist/ copy of this extension (renaming it changes nothing)
+//
+// The emitted output is structurally sound - 24 hooks, all top level, one return
+// at the end - and 46 other files compiled without this. The cause is unknown and
+// narrowing it needs runtime bisection, not reading.
+'use no memo';
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
@@ -8,10 +23,10 @@ import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
 import { type TabsProps } from '@ohif/core/src/utils/createStudyBrowserTabs';
+import { thumbnailNoImageModalities } from '@ohif/core/src/utils/thumbnailNoImageModalities';
+import { resolveThumbnailDetails } from './resolveThumbnailDetails';
 
-const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
-
-const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
+const { sortStudyInstances, formatDate, formatTime, createStudyBrowserTabs } = utils;
 
 /**
  * Study Browser component that displays and manages studies and their display sets
@@ -28,7 +43,8 @@ function PanelStudyBrowser({
   const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
-  const studyMode = (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
+  const studyMode =
+    (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
 
   const internalImageViewer = useImageViewer();
   const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
@@ -73,7 +89,39 @@ function PanelStudyBrowser({
     setViewPresets(newViewPresets);
   };
 
-  const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
+  const mapDisplaySets = customMapDisplaySets || _mapDisplaySets;
+
+  // The detail line of each thumbnail is customizable, and is added to whatever
+  // the mapping produced so that a panel supplying its own mapping - the
+  // measurement tracking one does - gets it too.
+  const mapDisplaySetsWithState = useCallback(
+    (displaySetsToMap, ...args) => {
+      const mapped = mapDisplaySets(displaySetsToMap, ...args);
+      const items = customizationService.getCustomization('studyBrowser.thumbnailDetails');
+      const sources = customizationService.getCustomization('studyBrowser.thumbnailDetailSources');
+      const tests = customizationService.getCustomization('studyBrowser.thumbnailDetailTests');
+
+      return mapped.map(thumbnail => {
+        const displaySet = displaySetService.getDisplaySetByUID(thumbnail.displaySetInstanceUID);
+        if (!displaySet) {
+          // Leave `details` unset so the thumbnail keeps showing the series
+          // number and instance count it was given.
+          return thumbnail;
+        }
+        return {
+          ...thumbnail,
+          details: resolveThumbnailDetails({
+            items,
+            displaySet,
+            sources,
+            tests,
+            formatters: { formatDate, formatTime },
+          }),
+        };
+      });
+    },
+    [mapDisplaySets, customizationService, displaySetService]
+  );
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -86,7 +134,7 @@ function PanelStudyBrowser({
         commandsManager,
         servicesManager,
         isHangingProtocolLayout,
-        appConfig: extensionManager._appConfig,
+        appConfig: extensionManager.appConfig,
       };
 
       const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
@@ -102,6 +150,8 @@ function PanelStudyBrowser({
       servicesManager,
       isHangingProtocolLayout,
       customizationService,
+      extensionManager.appConfig,
+      onDoubleClickThumbnailHandlerCallBack,
     ]
   );
 
@@ -120,11 +170,6 @@ function PanelStudyBrowser({
       const qidoForStudyUID = await dataSource.query.studies.search({
         studyInstanceUid: StudyInstanceUID,
       });
-
-      if (!qidoForStudyUID?.length) {
-        navigate('/notfoundstudy', '_self');
-        throw new Error('Invalid study URL');
-      }
 
       let qidoStudiesForPatient = qidoForStudyUID;
 
@@ -240,6 +285,7 @@ function PanelStudyBrowser({
     viewports,
     thumbnailImageSrcMap,
     customMapDisplaySets,
+    mapDisplaySetsWithState,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -343,6 +389,7 @@ function PanelStudyBrowser({
     viewports,
     displaySetService,
     customMapDisplaySets,
+    mapDisplaySetsWithState,
   ]);
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
@@ -384,7 +431,11 @@ function PanelStudyBrowser({
 
     const displaySetInstanceUID = jumpToDisplaySet;
     // It is possible to navigate to a study not currently in view
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs, activeTabName);
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
+      displaySetInstanceUID,
+      tabs,
+      activeTabName
+    );
     if (!thumbnailLocation) {
       return;
     }
@@ -410,7 +461,7 @@ function PanelStudyBrowser({
         />
         <Separator
           orientation="horizontal"
-          className="bg-black"
+          className="bg-background"
           thickness="2px"
         />
       </>
@@ -489,7 +540,7 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         seriesNumber: ds.SeriesNumber,
         modality: ds.Modality,
         seriesDate: formatDate(ds.SeriesDate),
-        numInstances: ds.numImageFrames,
+        numInstances: ds.numImageFrames ?? ds.instances?.length,
         loadingProgress,
         countIcon: ds.countIcon,
         messages: ds.messages,
@@ -538,11 +589,13 @@ function _findTabAndStudyOfDisplaySet(
   tabs: TabsProps,
   currentTabName: string
 ) {
-  const current = tabs.find(tab => tab.name===currentTabName) || tabs[0];
+  const current = tabs.find(tab => tab.name === currentTabName) || tabs[0];
   const biasedTabs = [current, ...tabs];
 
   for (let t = 0; t < biasedTabs.length; t++) {
-    const study = biasedTabs[t].studies.find(study => study.displaySets.find(ds => ds.displaySetInstanceUID ===displaySetInstanceUID));
+    const study = biasedTabs[t].studies.find(study =>
+      study.displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID)
+    );
     if (study) {
       return {
         tabName: biasedTabs[t].name,

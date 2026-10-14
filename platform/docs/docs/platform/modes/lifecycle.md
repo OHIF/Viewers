@@ -2,17 +2,18 @@
 sidebar_position: 2
 sidebar_label: Lifecycle Hooks
 title: Mode Lifecycle Hooks
-summary: Documentation for OHIF Mode's lifecycle hooks (onModeInit, onModeEnter, and onModeExit), which allow customization of initialization, resource setup, and cleanup when entering or exiting viewer modes.
+summary: Documentation for OHIF Mode's lifecycle hooks (onModeInit, onModeEnter, onModeExit, and validateModeEntry), which allow customization of initialization, resource setup, validation, and cleanup when entering or exiting viewer modes.
 ---
 
 # Modes: Lifecycle Hooks
 
 ## Overview
 
-Currently, there are two hooks that are called for modes:
+The mode route calls these hooks for modes:
 
 - onModeInit
 - onModeEnter
+- validateModeEntry
 - onModeExit
 
 ## onModeInit
@@ -75,6 +76,75 @@ function modeFactory() {
   };
 }
 ```
+
+## validateModeEntry
+
+This hook checks that the mode can run with the data that the URL asks for. The
+mode route calls this hook after `onModeInit`, after the `onModeEnter` of the
+extensions, after the `onModeEnter` of the mode, and after `route.init`. A mode
+that sets a custom authentication token in one of those hooks has set that token
+before this hook runs.
+
+The mode route does not wait for this hook. The hook runs at the same time as
+the retrieve of the metadata, so the hook adds no delay to the retrieve.
+
+The hook can be an async function. The hook receives `navigate`, and the hook
+navigates away on its own when the data is not valid. A `navigate` call after
+the user leaves the route does nothing.
+
+The mode route calls this hook with these properties:
+
+| Property | Description |
+| --- | --- |
+| `studyInstanceUIDs` | The studies that the URL asks for. |
+| `dataSource` | The active data source. |
+| `navigate` | Navigates to another route. |
+| `servicesManager` | The services manager. |
+| `extensionManager` | The extension manager. |
+| `commandsManager` | The commands manager. |
+| `appConfig` | The application configuration. |
+| `query` | The URL query parameters. |
+
+A mode that does not declare this hook gets the default hook. The default hook
+queries the data source for each StudyInstanceUID in the URL, and the default
+hook navigates to `/notfoundstudy` when a study is absent or when the query
+fails.
+
+A mode that does not load its data by StudyInstanceUID must declare this hook.
+Such a mode either runs its own check, or the mode gives an empty function to
+skip the check.
+
+```js
+function modeFactory() {
+  return {
+    id: '',
+    displayName: '',
+    // This mode loads the data from a URL parameter, and not from a study,
+    // so the default study check does not apply.
+    validateModeEntry: async ({ query, navigate }) => {
+      if (!query.get('datasetId')) {
+        navigate('/notfoundstudy');
+      }
+    },
+    /*
+    ...
+    */
+  };
+}
+```
+
+The retrieve of the metadata starts before this hook completes, and the mode
+route does not wait for this hook before the mode route calls
+`onSetupRouteComplete`. Put the work that must complete before the viewer
+renders in `onModeEnter` instead.
+
+:::note
+
+`validateModeEntry` runs when the user enters the mode. `isValidMode` runs in
+the work list, when the work list decides which modes to offer for a study. The
+two hooks are separate. See [Validity](./validity.md).
+
+:::
 
 ## onModeExit
 

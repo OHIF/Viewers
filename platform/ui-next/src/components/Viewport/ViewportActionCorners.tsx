@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 export enum ViewportActionCornersLocations {
@@ -27,7 +20,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.topRight]: classNames(
     commonClasses,
-    'absolute top-[4px] right-[16px] right-viewport-scrollbar'
+    'absolute top-[4px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,
@@ -35,7 +28,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.bottomRight]: classNames(
     commonClasses,
-    'absolute bottom-[3px] right-[16px] right-viewport-scrollbar'
+    'absolute bottom-[3px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.topMiddle]: classNames(
     commonClasses,
@@ -52,7 +45,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.rightMiddle]: classNames(
     commonClasses,
-    'absolute right-[16px] top-1/2 -translate-y-1/2 right-viewport-scrollbar'
+    'absolute top-1/2 -translate-y-1/2 right-viewport-scrollbar'
   ),
 };
 
@@ -72,21 +65,18 @@ function Container({ children }: { children: ReactNode }) {
     [ViewportActionCornersLocations.rightMiddle]: null,
   });
 
-  const registerCorner = useCallback(
-    (location: ViewportActionCornersLocations, children: ReactNode) => {
-      setCorners(prev => {
-        // Only update if the children are different to avoid unnecessary renders
-        if (prev[location] === children) {
-          return prev;
-        }
-        return {
-          ...prev,
-          [location]: children,
-        };
-      });
-    },
-    []
-  );
+  const registerCorner = (location: ViewportActionCornersLocations, children: ReactNode) => {
+    setCorners(prev => {
+      // Only update if the children are different to avoid unnecessary renders
+      if (prev[location] === children) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [location]: children,
+      };
+    });
+  };
 
   return (
     <ViewportActionCornersContext.Provider value={{ registerCorner }}>

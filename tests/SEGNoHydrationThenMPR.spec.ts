@@ -1,5 +1,13 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import {
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
@@ -7,18 +15,45 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should launch MPR with unhydrated SEG', async ({ page }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+test('should launch MPR with unhydrated SEG', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  mainToolbarPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
 
-  await page.waitForTimeout(5000);
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
 
-  await checkForScreenshot(page, page, screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR);
+  await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-  await page.getByTestId('Layout').click();
-  await page.getByTestId('MPR').click();
+  await viewportRenderCycle;
 
-  await page.waitForTimeout(5000);
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
 
-  await checkForScreenshot(page, page, screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR);
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR,
+  });
+
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
+
+  await mainToolbarPageObject.layoutSelection.MPR.click();
+
+  await viewportRenderAfterLayoutChange;
+ 
+  await waitForViewportsRendered(page);
+
+  await checkForGridScreenshot({
+    page,
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR,
+  });
 });

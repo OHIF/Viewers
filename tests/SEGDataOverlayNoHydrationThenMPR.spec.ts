@@ -1,5 +1,12 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import {
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -10,37 +17,52 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG chosen from the data overlay menu', async ({
   page,
+  mainToolbarPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
 }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
-  await page.getByTestId('AddSegmentationDataOverlay-default').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('Segmentation').click();
+  await rightPanelPageObject.toggle();
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
+    .dataOverlay;
+  await dataOverlayPageObject.toggle();
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
+  await dataOverlayPageObject.addSegmentation('Segmentation');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await dataOverlayPageObject.toggle();
 
-  await page.waitForTimeout(5000);
+  await viewportRenderCycle;
 
-  await checkForScreenshot(
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    page,
-    screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR
-  );
+    viewport: activeViewport,
+    screenshotPath:
+      screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR,
+  });
 
-  await page.getByTestId('Layout').click();
-  await page.getByTestId('MPR').click();
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
 
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await checkForScreenshot(
+  await viewportRenderAfterLayoutChange;
+  // The layout change rebuilds the viewports; wait for their volume actors to
+  // report loaded before settling and capturing.
+  await waitForViewportsRendered(page);
+
+  await checkForGridScreenshot({
     page,
-    page,
-    screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPostMPR
-  );
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPostMPR,
+  });
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });

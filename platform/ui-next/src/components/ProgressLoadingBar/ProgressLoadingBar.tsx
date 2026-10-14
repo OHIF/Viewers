@@ -11,14 +11,14 @@ export type ProgressLoadingBarProps = {
  * If progress is provided, it will render a progress bar
  * The progress text can be optionally displayed to the left of the bar.
  */
-function ProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement {
+function ProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement<any> {
   return (
     <div className="loading">
       {progress === undefined || progress === null ? (
-        <div className="infinite-loading-bar bg-primary-light"></div>
+        <div className="infinite-loading-bar bg-highlight"></div>
       ) : (
         <div
-          className="bg-primary-light"
+          className="bg-highlight"
           style={{
             width: `${progress}%`,
             height: '8px',

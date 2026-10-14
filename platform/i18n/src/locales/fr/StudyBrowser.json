@@ -1,0 +1,12 @@
+{
+  "Primary": "Principal",
+  "Recent": "Récents",
+  "All": "Tous",
+  "Tracked Series": "Séries suivies",
+  "Tag Browser": "Explorateur DICOM",
+  "Add as Layer": "Ajouter en tant que couche",
+  "Series Number": "Numéro de série",
+  "Series Date": "Date de la série",
+  "Thumbnail Double Click": "Double-clic sur la vignette",
+  "The selected display sets could not be added to the viewport.": "Les ensembles d'affichage sélectionnés n'ont pas pu être ajoutés à la fenêtre."
+}

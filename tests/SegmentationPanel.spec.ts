@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy } from './utils';
+import { expect, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -8,93 +7,211 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('checks basic add, rename, delete segments from panel', async ({ page }) => {
+test('checks basic add, rename, delete segments from panel', async ({ rightPanelPageObject }) => {
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to labelmap tab.
-  segmentationPanel.click();
+  await segmentationPanel.click();
 
   // Add segmentation
-  const addSegmentationBtn = page.getByTestId('addSegmentation');
-  await addSegmentationBtn.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-  // Expect new segmentation and blank segment named "Segment 1"
-  await expect(page.getByTestId('data-row')).toHaveCount(1);
-  await expect(page.getByTestId('data-row')).toContainText('Segment 1');
+  // Expect new segmentation and blank segment named "Segment 1". Use a retrying
+  // toHaveCount assertion: the segment row renders asynchronously after the add,
+  // so a one-shot getSegmentCount() races the render and was intermittently 0.
+  const { panel } = rightPanelPageObject.labelMapSegmentationPanel;
+  const segment1 = panel.nthSegment(0);
+  await expect(panel.rows).toHaveCount(1);
+  await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
-  const segment1Dropdown = page
-    .getByTestId('data-row')
-    .first()
-    .getByRole('button', { name: 'Actions' });
-  await segment1Dropdown.click();
+  await segment1.actions.rename('Segment One');
 
-  const renameButton = page.getByRole('menuitem', { name: 'Rename' });
-  await expect(renameButton).toBeVisible();
-  await renameButton.click();
-
-  const renameDialog = page.getByRole('dialog', { name: 'Edit Segment Label' });
-  await expect(renameDialog).toBeVisible();
-
-  const renameInput = page.getByRole('textbox', { name: 'Enter new label' });
-  await renameInput.fill('Segment One');
-
-  await page.getByTestId('input-dialog-save-button').click();
-
-  await expect(page.getByTestId('data-row')).toContainText('Segment One');
-  await expect(page.getByTestId('data-row')).not.toContainText('Segment 1');
+  await expect(segment1.locator).toContainText('Segment One');
+  await expect(segment1.locator).not.toContainText('Segment 1');
 
   // Delete
-  await segment1Dropdown.click();
-  const deleteButton = page.getByRole('menuitem', { name: 'Delete' });
-  await expect(deleteButton).toBeVisible();
-  await deleteButton.click();
+  await segment1.actions.delete();
 
-  await expect(page.getByTestId('data-row')).toHaveCount(0);
+  // Retrying assertion: row removal is async too.
+  await expect(panel.rows).toHaveCount(0);
 });
 
-test('checks saved segmentations loads and jumps to slices', async ({ page }) => {
-  const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
-
+test('checks saved segmentations loads and jumps to slices', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const activeViewport = await viewportPageObject.active;
+  const viewportInfoBottomRight = activeViewport.overlayText.bottomRight.instanceNumber;
   // Image loads on slice 1, confirm on slice 1
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
 
   // Add Segmentations
-  const segmentationsThumbnail = page
-    .getByTestId('study-browser-thumbnail-no-image')
-    .getByRole('button', { name: 'Segmentation' });
-  await segmentationsThumbnail.dblclick();
+  await leftPanelPageObject.loadSeriesByModality('SEG');
 
   await page.waitForTimeout(3000);
 
   // Confirm open segmentation
-  const viewportNotification = page.getByTestId('viewport-notification');
-  await expect(viewportNotification).toBeVisible();
-  await page.getByTestId('yes-hydrate-btn').click();
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;
   await expect(segmentationPanel).toBeVisible();
 
   // Confirm spleen jumps to slice 17
   // First iteration repeat to account for segmentation loading delays
-  const spleenRow = page.getByTestId('data-row').filter({ hasText: 'Spleen' });
   await expect(async () => {
-    await spleenRow.click();
+    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Spleen').click();
     await expect(viewportInfoBottomRight).toContainText('17/');
   }).toPass({
     timeout: 10000,
   });
 
   // Esophagus - 5
-  const esophagusRow = page.getByTestId('data-row').filter({ hasText: 'Esophagus' });
-  await esophagusRow.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Esophagus').click();
   await expect(viewportInfoBottomRight).toContainText('5/');
 
   // Pancreas - 22
-  const pancreasRow = page.getByTestId('data-row').filter({ hasText: 'Pancreas' });
-  await pancreasRow.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Pancreas').click();
   await expect(viewportInfoBottomRight).toContainText('22/');
+});
+
+test.describe('Segmentation panel config input validation for labelmap', () => {
+  test.beforeEach(async ({ rightPanelPageObject }) => {
+    await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
+
+    await rightPanelPageObject.labelMapSegmentationPanel.config.open();
+  });
+
+  test.describe('opacity', () => {
+    test('should accept valid values', async ({ rightPanelPageObject }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('0');
+      await expect(opacity.numberInput).toHaveValue('0');
+
+      await opacity.setValue('0.5');
+      await expect(opacity.numberInput).toHaveValue('0.5');
+
+      await opacity.setValue('1');
+      await expect(opacity.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity to max (1) when a value above the maximum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('500');
+      await expect(opacity.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity to min (0) when a value below the minimum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('-1');
+      await expect(opacity.numberInput).toHaveValue('0');
+    });
+
+    test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('0.5');
+      await opacity.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacity.numberInput).toHaveValue('0.5');
+    });
+  });
+
+  test.describe('border', () => {
+    test('should accept valid values', async ({ rightPanelPageObject }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('0');
+      await expect(border.numberInput).toHaveValue('0');
+
+      await border.setValue('5');
+      await expect(border.numberInput).toHaveValue('5');
+
+      await border.setValue('10');
+      await expect(border.numberInput).toHaveValue('10');
+    });
+
+    test('should clamp border to max (10) when a value above the maximum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('500');
+      await expect(border.numberInput).toHaveValue('10');
+    });
+
+    test('should clamp border to min (0) when a value below the minimum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('-1');
+      await expect(border.numberInput).toHaveValue('0');
+    });
+
+    test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('3');
+      await border.setValue('abc');
+      // confirm that previous value was restored
+      await expect(border.numberInput).toHaveValue('3');
+    });
+  });
+
+  test.describe('opacity inactive', () => {
+    test('should accept valid values', async ({ rightPanelPageObject }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('0');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
+
+      await opacityInactive.setValue('0.5');
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
+
+      await opacityInactive.setValue('1');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity inactive to max (1) when a value above the maximum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('500');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity inactive to min (0) when a value below the minimum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('-1');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
+    });
+
+    test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('0.5');
+      await opacityInactive.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
+    });
+  });
 });

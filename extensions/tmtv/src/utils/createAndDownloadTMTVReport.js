@@ -1,3 +1,7 @@
+import { utils } from '@ohif/core';
+
+const { downloadCsv } = utils;
+
 export default function createAndDownloadTMTVReport(segReport, additionalReportRows, options = {}) {
   const firstReport = segReport[Object.keys(segReport)[0]];
   const columns = Object.keys(firstReport);
@@ -44,14 +48,7 @@ export default function createAndDownloadTMTVReport(segReport, additionalReportR
     csv.push(temp.join(','));
   });
 
-  const blob = new Blob([csv.join('\n')], {
-    type: 'text/csv;charset=utf-8',
+  downloadCsv(csv.join('\n'), {
+    filename: options.filename ?? `${firstReport.PatientID}_tmtv.csv`,
   });
-
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = options.filename ?? `${firstReport.PatientID}_tmtv.csv`;
-  a.click();
 }

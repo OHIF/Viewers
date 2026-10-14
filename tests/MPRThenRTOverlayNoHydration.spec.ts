@@ -1,7 +1,12 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import {
+  checkForGridScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
-import { viewportLocator } from './utils/locators';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
@@ -11,37 +16,40 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
+  mainToolbarPageObject,
+  viewportPageObject,
 }) => {
-  await page.getByTestId('Layout').click();
-  await page.getByTestId('MPR').click();
+  await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
-  await page.waitForTimeout(10000);
+  // The MPR volume load can exceed the 15s default on slower machines.
+  await waitForViewportsRendered(page, { timeout: 60000 });
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    page,
-    screenShotPaths.mprThenRTOverlayNoHydration.mprPreRTOverlayNoHydration
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.mprThenRTOverlayNoHydration.mprPreRTOverlayNoHydration,
+  });
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
-  await viewportLocator({ viewportId: 'mpr-sagittal', page }).hover();
-  await page.getByTestId('dataOverlayMenu-mpr-sagittal-btn').click();
-  await page.getByTestId('AddSegmentationDataOverlay-mpr-sagittal').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('ARIA RadOnc Structure Sets').click();
+  const sagittalViewport = await viewportPageObject.getById('mpr-sagittal');
+  await sagittalViewport.pane.hover();
+  const dataOverlayPageObject = sagittalViewport.overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
+
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+  await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-mpr-sagittal-btn').click();
+  await dataOverlayPageObject.toggle();
 
   // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+  await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  // Wait 5 seconds for RT to load. This is necessary in particular when screen shots are added or replaced.
-  await page.waitForTimeout(5000);
+  await viewportRenderCycle;
 
-  await checkForScreenshot({
+  await checkForGridScreenshot({
     page,
+    viewportPageObject,
     screenshotPath: screenShotPaths.mprThenRTOverlayNoHydration.mprPostRTOverlayNoHydration,
     normalizedClip: { x: 0, y: 0, width: 1.0, height: 0.75 }, // clip to avoid any popups concerning surface creation and clipping
   });

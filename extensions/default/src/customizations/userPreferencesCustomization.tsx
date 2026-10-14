@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
 import { UserPreferencesModal, FooterAction } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
@@ -17,17 +17,121 @@ interface HotkeyDefinitions {
   [key: string]: HotkeyDefinition;
 }
 
+const MODIFIER_OPTIONS = [
+  { value: '16', label: 'Shift' },
+  { value: '17', label: 'Ctrl' },
+  { value: '18', label: 'Alt' },
+  { value: '91', label: 'Meta' },
+];
+
+const DEFAULT_TOOL_BINDINGS_STORAGE_KEY = 'user-preferred-tool-bindings';
+
+function getToolModifier(
+  toolGroupService: any,
+  toolGroupId: string,
+  toolName: string,
+  mouseButton: number
+): string | null {
+  if (!toolGroupService) {
+    return null;
+  }
+  const bindings = toolGroupService.getToolBindings(toolGroupId, toolName);
+  if (!bindings?.length) {
+    return null;
+  }
+  const modifierBinding = bindings.find(
+    binding =>
+      binding.mouseButton === mouseButton &&
+      binding.modifierKey != null &&
+      binding.numTouchPoints == null
+  );
+
+  return modifierBinding?.modifierKey != null ? String(modifierBinding.modifierKey) : null;
+}
+
+function getModifierFromBindings(
+  bindings: Array<Record<string, unknown>> | undefined,
+  mouseButton: number
+): string | null {
+  if (!bindings?.length) {
+    return null;
+  }
+
+  const modifierBinding = bindings.find(
+    binding =>
+      binding.mouseButton === mouseButton &&
+      binding.modifierKey != null &&
+      binding.numTouchPoints == null
+  );
+
+  return modifierBinding?.modifierKey != null ? String(modifierBinding.modifierKey) : null;
+}
+
+/**
+ * Resolves a localized language name, or null when Intl cannot produce one that
+ * differs from the raw locale code.
+ *
+ * Module scope on purpose: the conditional inside this try/catch is a React
+ * Compiler limitation ("value blocks within a try/catch") that bails the whole
+ * component when inlined. Plain functions are never compiled.
+ */
+function resolveLocalizedLanguageName(
+  displayNames: Intl.DisplayNames,
+  languageValue: string
+): string | null {
+  try {
+    const localized = displayNames.of(languageValue);
+    if (localized && localized.toLowerCase() !== languageValue.toLowerCase()) {
+      return localized.charAt(0).toUpperCase() + localized.slice(1);
+    }
+  } catch (error) {
+    console.debug(`Unable to resolve display name for ${languageValue}`, error);
+  }
+
+  return null;
+}
+
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
-  const { hotkeysManager } = useSystem();
-  const { t } = useTranslation('UserPreferencesModal');
+  const { hotkeysManager, servicesManager } = useSystem();
+  const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
+  const toolGroupService = (servicesManager as any)?.services?.toolGroupService;
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
+  const fallbackHotkeyDefinitions = hotkeysManager.getValidHotkeyDefinitions(
+    hotkeysModule.defaults.hotkeyBindings
+  ) as HotkeyDefinitions;
+
+  useEffect(() => {
+    if (!Object.keys(hotkeyDefaults).length) {
+      hotkeysManager.setDefaultHotKeys(hotkeysModule.defaults.hotkeyBindings);
+    }
+
+    if (!Object.keys(hotkeyDefinitions).length) {
+      hotkeysManager.setHotkeys(fallbackHotkeyDefinitions);
+    }
+  }, [hotkeysManager, hotkeyDefaults, hotkeyDefinitions, fallbackHotkeyDefinitions]);
+
+  const resolvedHotkeyDefaults = Object.keys(hotkeyDefaults).length
+    ? (hotkeyDefaults as HotkeyDefinitions)
+    : fallbackHotkeyDefinitions;
+
+  const initialHotkeyDefinitions = Object.keys(hotkeyDefinitions).length
+    ? (hotkeyDefinitions as HotkeyDefinitions)
+    : resolvedHotkeyDefaults;
+
   const currentLanguage = currentLanguageFn();
 
+  const initialCrosshairModifier = getToolModifier(toolGroupService, 'mpr', 'Crosshairs', 1);
+  const defaultCrosshairBindings = toolGroupService?.getDefaultToolBindings?.(
+    'mpr',
+    'Crosshairs'
+  );
+
   const [state, setState] = useState({
-    hotkeyDefinitions: hotkeyDefinitions as HotkeyDefinitions,
+    hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
+    crosshairModifier: initialCrosshairModifier,
   });
 
   const onLanguageChangeHandler = (value: string) => {
@@ -51,11 +155,55 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     setState(state => ({
       ...state,
       languageValue: defaultLanguage.value,
-      hotkeyDefinitions: hotkeyDefaults as HotkeyDefinitions,
+      hotkeyDefinitions: resolvedHotkeyDefaults,
+      crosshairModifier: getModifierFromBindings(defaultCrosshairBindings, 1),
     }));
 
     hotkeysManager.restoreDefaultBindings();
+    if (toolGroupService && defaultCrosshairBindings?.length) {
+      toolGroupService.setToolBindings('mpr', 'Crosshairs', defaultCrosshairBindings);
+      toolGroupService.applyToolBindings('mpr', 'Crosshairs', {
+        replaceExisting: true,
+      });
+    }
+    toolGroupService?.removePersistedToolBindings('mpr', 'Crosshairs');
   };
+
+  const displayNames = React.useMemo(() => {
+    if (typeof Intl === 'undefined' || typeof Intl.DisplayNames !== 'function') {
+      return null;
+    }
+
+    const locales = [state.languageValue, currentLanguage.value, i18nextInstance.language, 'en'];
+    const uniqueLocales = Array.from(new Set(locales.filter(Boolean)));
+
+    try {
+      return new Intl.DisplayNames(uniqueLocales, { type: 'language', fallback: 'none' });
+    } catch (error) {
+      console.warn('Intl.DisplayNames not supported for locales', uniqueLocales, error);
+    }
+
+    return null;
+  }, [state.languageValue, currentLanguage.value, i18nextInstance.language]);
+
+  const getLanguageLabel = React.useCallback(
+    (languageValue: string, fallbackLabel: string) => {
+      const translationKey = `LanguageName.${languageValue}`;
+      if (i18nextInstance.exists(translationKey, { ns: 'UserPreferencesModal' })) {
+        return t(translationKey);
+      }
+
+      if (displayNames) {
+        const localized = resolveLocalizedLanguageName(displayNames, languageValue);
+        if (localized) {
+          return localized;
+        }
+      }
+
+      return fallbackLabel;
+    },
+    [displayNames, i18nextInstance, t]
+  );
 
   return (
     <UserPreferencesModal>
@@ -79,7 +227,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                   key={lang.value}
                   value={lang.value}
                 >
-                  {lang.label}
+                  {getLanguageLabel(lang.value, lang.label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -99,6 +247,44 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             />
           ))}
         </UserPreferencesModal.HotkeysGrid>
+
+        {state.crosshairModifier != null && (
+          <>
+            <UserPreferencesModal.SubHeading>
+              {t('ModifierKeys', { defaultValue: 'Modifier Keys' })}
+            </UserPreferencesModal.SubHeading>
+            <UserPreferencesModal.HotkeysGrid>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-foreground text-base">
+                  {t('CrosshairsModifier', { defaultValue: 'Crosshairs' })}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground text-sm">
+                    {t('PlusLeftClick', { defaultValue: 'Left Click +' })}
+                  </span>
+                  <Select
+                    value={state.crosshairModifier}
+                    onValueChange={val => setState(s => ({ ...s, crosshairModifier: val }))}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MODIFIER_OPTIONS.map(opt => (
+                        <SelectItem
+                          key={opt.value}
+                          value={opt.value}
+                        >
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </UserPreferencesModal.HotkeysGrid>
+          </>
+        )}
       </UserPreferencesModal.Body>
       <FooterAction>
         <FooterAction.Left>
@@ -120,8 +306,23 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             onClick={() => {
               if (state.languageValue !== currentLanguage.value) {
                 i18n.changeLanguage(state.languageValue);
+                // Force page reload after language change to ensure all translations are applied
+                window.location.reload();
+                return; // Exit early since we're reloading
               }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
+
+              if (toolGroupService && state.crosshairModifier != null) {
+                const bindings = [
+                  { mouseButton: 1, modifierKey: Number(state.crosshairModifier) },
+                ];
+                toolGroupService.setToolBindings('mpr', 'Crosshairs', bindings);
+                toolGroupService.applyToolBindings('mpr', 'Crosshairs', {
+                  replaceExisting: true,
+                });
+                toolGroupService.persistToolBindings('mpr', 'Crosshairs', bindings);
+              }
+
               hotkeysModule.stopRecord();
               hotkeysModule.unpause();
               hide();
@@ -137,4 +338,5 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
 
 export default {
   'ohif.userPreferencesModal': UserPreferencesModalDefault,
+  'ohif.userPreferences.toolBindingsStorageKey': DEFAULT_TOOL_BINDINGS_STORAGE_KEY,
 };

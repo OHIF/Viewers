@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { Button } from '@ohif/ui-next';
 import ROIThresholdConfiguration, {
   ROI_STAT,
@@ -6,6 +6,7 @@ import ROIThresholdConfiguration, {
 import * as cs3dTools from '@cornerstonejs/tools';
 import { useSystem } from '@ohif/core';
 import { useSegmentations } from '@ohif/extension-cornerstone';
+import { useTranslation } from 'react-i18next';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -46,13 +47,11 @@ function RectangleROIOptions() {
   const { commandsManager } = useSystem();
   const segmentations = useSegmentations();
   const activeSegmentation = segmentations[0];
+  const { t } = useTranslation('ROIThresholdConfiguration');
 
-  const runCommand = useCallback(
-    (commandName, commandOptions = {}) => {
-      return commandsManager.runCommand(commandName, commandOptions);
-    },
-    [commandsManager]
-  );
+  const runCommand = (commandName, commandOptions = {}) => {
+    return commandsManager.runCommand(commandName, commandOptions);
+  };
 
   const [config, dispatch] = useReducer(reducer, {
     strategy: DEFAULT_STRATEGY,
@@ -63,7 +62,7 @@ function RectangleROIOptions() {
     weight: WEIGHT_DEFAULT,
   });
 
-  const handleROIThresholding = useCallback(() => {
+  const handleROIThresholding = () => {
     if (!activeSegmentation) {
       return;
     }
@@ -77,7 +76,7 @@ function RectangleROIOptions() {
       config,
       segmentIndex: activeSegmentIndex,
     });
-  }, [activeSegmentation, config]);
+  };
 
   return (
     <div className="invisible-scrollbar mb-1 flex flex-col overflow-y-auto overflow-x-hidden">
@@ -92,7 +91,7 @@ function RectangleROIOptions() {
           className="my-3 mr-auto w-20"
           onClick={handleROIThresholding}
         >
-          Run
+          {t('Run')}
         </Button>
       )}
     </div>

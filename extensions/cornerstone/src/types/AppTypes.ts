@@ -5,6 +5,7 @@ import SegmentationServiceType from '../services/SegmentationService';
 import SyncGroupServiceType from '../services/SyncGroupService';
 import ToolGroupServiceType from '../services/ToolGroupService';
 import ColorbarServiceType from '../services/ColorbarService';
+import ViewedDataServiceType from '../services/ViewedDataService';
 import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 
@@ -23,6 +24,7 @@ declare global {
     export type SyncGroupService = SyncGroupServiceType;
     export type ToolGroupService = ToolGroupServiceType;
     export type ColorbarService = ColorbarServiceType;
+    export type ViewedDataService = ViewedDataServiceType;
 
     export interface Services {
       cornerstoneViewportService?: CornerstoneViewportServiceType;
@@ -31,6 +33,7 @@ declare global {
       segmentationService?: SegmentationServiceType;
       cornerstoneCacheService?: CornerstoneCacheServiceType;
       colorbarService?: ColorbarServiceType;
+      viewedDataService?: ViewedDataServiceType;
     }
 
     export namespace Segmentation {
@@ -38,6 +41,16 @@ declare global {
       export type SegmentationData = SegData;
       export type SegmentationRepresentation = SegRep;
       export type SegmentationInfo = SegInfo;
+    }
+
+    export interface Customizations {
+      /**
+       * Maximum number of undo/redo history items to keep. Segmentation memos
+       * hold full labelmap buffers, so a large history can cause out-of-memory
+       * or buffer allocation issues. Applied on mode entry; when unset, the
+       * size is 50. A value that is not a valid array length throws.
+       */
+      'cornerstone.maxUndoRedoCacheSize': number | undefined;
     }
 
     export interface PresentationIds {

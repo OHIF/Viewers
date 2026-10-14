@@ -1,10 +1,11 @@
-import { test } from 'playwright-test-coverage';
 import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  reduce3DViewportSize,
   attemptAction,
+  checkForGridScreenshot,
+  reduce3DViewportSize,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,20 +15,22 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D primary Test', async () => {
-  test('should render 3D primary correctly.', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^3D primary$/ })
-      .first()
-      .click();
+  test('should render 3D primary correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await page.waitForTimeout(5000);
-    await checkForScreenshot(
+    await waitForViewportsRendered(page);
+    await checkForGridScreenshot({
       page,
-      page,
-      screenShotPaths.threeDPrimary.threeDPrimaryDisplayedCorrectly
-    );
+      viewportPageObject,
+      // Volume-3D ray-cast output is GPU/driver-noisy run-to-run; match the
+      // tolerance already used by the sibling 3DOnly test.
+      maxDiffPixelRatio: 0.03,
+      screenshotPath: screenShotPaths.threeDPrimary.threeDPrimaryDisplayedCorrectly,
+    });
   });
 });

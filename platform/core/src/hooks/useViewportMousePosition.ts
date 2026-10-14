@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useViewportRef } from './useViewportRef';
+import { useViewportElement } from './useViewportElement';
 import { useViewportSize } from './useViewportSize';
 
 interface NormalizedBox {
@@ -19,7 +19,7 @@ interface MousePosition {
 }
 
 function useViewportMousePosition(viewportId: string): MousePosition {
-  const viewportRef = useViewportRef(viewportId);
+  const element = useViewportElement(viewportId);
   const { width, height, clientRect } = useViewportSize(viewportId);
 
   const [mousePosition, setMousePosition] = useState<MousePosition>({
@@ -32,7 +32,7 @@ function useViewportMousePosition(viewportId: string): MousePosition {
   });
 
   useEffect(() => {
-    if (!viewportRef.current) {
+    if (!element) {
       return;
     }
 
@@ -74,7 +74,7 @@ function useViewportMousePosition(viewportId: string): MousePosition {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [viewportRef, height, clientRect, width]);
+  }, [element, height, clientRect, width]);
 
   return mousePosition;
 }

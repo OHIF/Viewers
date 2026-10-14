@@ -150,7 +150,13 @@ function _getSegmentationData(
     referencedDynamicVolume.imageIds[0]
   );
 
-  const segmentationVolume = segmentationService.getLabelmapVolume(segmentation.segmentationId);
+  // Labelmaps are image (stack) based by default, so they may not have a cached
+  // volume with a volumeId. getOrCreateSegmentationVolume returns the cached mask
+  // volume when one exists or builds it from the labelmap imageIds, which is what
+  // getDataInTime needs to sample the segment across the dynamic volume time points.
+  const segmentationVolume = csToolsUtils.segmentation.getOrCreateSegmentationVolume(
+    segmentation.segmentationId
+  );
   const maskVolumeId = segmentationVolume?.volumeId;
 
   const [timeData, _] = csToolsUtils.dynamicVolume.getDataInTime(referencedDynamicVolume, {
@@ -262,7 +268,8 @@ function _getInstanceFromSegmentations(segmentations, { servicesManager }) {
 }
 
 function updateSegmentationsChartDisplaySet({ servicesManager }: withAppTypes): void {
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, displaySetService, hangingProtocolService } =
+    servicesManager.services;
   const segmentations = segmentationService.getSegmentations();
   const { seriesMetadata, instance } =
     _getInstanceFromSegmentations(segmentations, { servicesManager }) ?? {};
@@ -271,6 +278,25 @@ function updateSegmentationsChartDisplaySet({ servicesManager }: withAppTypes): 
     // An event is triggered after adding the instance and the displaySet is created
     DicomMetadataStore.addSeriesMetadata([seriesMetadata], true);
     DicomMetadataStore.addInstances([instance], true);
+
+    // The hanging protocol seeds its display-set list once at study load (a copy),
+    // and does not refresh it when derived display sets are created later. This
+    // command runs on the Kinetic Analysis onEnter, right before the hanging
+    // protocol stage is applied, so make the protocol aware of the freshly created
+    // chart display set(s); otherwise the chart viewport has nothing to match.
+    const chartDisplaySets = displaySetService
+      .getActiveDisplaySets()
+      .filter(ds => ds.Modality === CHART_MODALITY);
+
+    chartDisplaySets.forEach(ds => {
+      const alreadyKnown = hangingProtocolService.displaySets.some(
+        knownDs => knownDs.displaySetInstanceUID === ds.displaySetInstanceUID
+      );
+
+      if (!alreadyKnown) {
+        hangingProtocolService.displaySets.push(ds);
+      }
+    });
   }
 }
 

@@ -1,13 +1,20 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useEffect, useState } from 'react';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
+import ViewportSliceProgressScrollbar from './ViewportSliceProgressScrollbar/ViewportSliceProgressScrollbar';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
 
 function CornerstoneOverlays(props: withAppTypes) {
   const { viewportId, element, scrollbarHeight, servicesManager } = props;
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, customizationService } = servicesManager.services;
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -43,17 +50,31 @@ function CornerstoneOverlays(props: withAppTypes) {
     }
   }
 
+  const viewportScrollbarVariant = customizationService.getCustomization('viewportScrollbar.variant');
+  const useProgressScrollbar = viewportScrollbarVariant !== 'legacy';
+
   return (
     <div className="noselect">
-      <ViewportImageScrollbar
-        viewportId={viewportId}
-        viewportData={viewportData}
-        element={element}
-        imageSliceData={imageSliceData}
-        setImageSliceData={setImageSliceData}
-        scrollbarHeight={scrollbarHeight}
-        servicesManager={servicesManager}
-      />
+      {useProgressScrollbar ? (
+        <ViewportSliceProgressScrollbar
+          viewportId={viewportId}
+          viewportData={viewportData}
+          element={element}
+          imageSliceData={imageSliceData}
+          setImageSliceData={setImageSliceData}
+          servicesManager={servicesManager}
+        />
+      ) : (
+        <ViewportImageScrollbar
+          viewportId={viewportId}
+          viewportData={viewportData}
+          element={element}
+          imageSliceData={imageSliceData}
+          setImageSliceData={setImageSliceData}
+          scrollbarHeight={scrollbarHeight}
+          servicesManager={servicesManager}
+        />
+      )}
 
       <CustomizableViewportOverlay
         imageSliceData={imageSliceData}

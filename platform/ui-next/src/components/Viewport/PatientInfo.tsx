@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '../../components';
 
 const classes = {
-  infoHeader: 'text-base text-primary-light',
+  infoHeader: 'text-base text-highlight',
   infoText: 'text-base text-white max-w-24 truncate',
   firstRow: 'flex flex-col',
   row: 'flex flex-col ml-4',
@@ -37,7 +36,7 @@ function PatientInfo({
     <div ref={showPatientInfoRef}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Icons.Info className="hover:text-primary-light cursor-pointer text-white" />
+          <Icons.Info className="hover:text-highlight cursor-pointer text-white" />
         </TooltipTrigger>
         {isOpen && (
           <TooltipContent
@@ -122,17 +121,6 @@ function PatientInfo({
   );
 }
 
-PatientInfo.propTypes = {
-  patientName: PropTypes.string,
-  patientSex: PropTypes.string,
-  patientAge: PropTypes.string,
-  MRN: PropTypes.string,
-  thickness: PropTypes.string,
-  thicknessUnits: PropTypes.string,
-  spacing: PropTypes.string,
-  scanner: PropTypes.string,
-  isOpen: PropTypes.bool,
-  showPatientInfoRef: PropTypes.object,
-};
+
 
 export { PatientInfo };

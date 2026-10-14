@@ -16,7 +16,6 @@ import { useViewportRendering } from '../../hooks';
 export function WindowLevelActionMenuWrapper(
   props: withAppTypes<{
     viewportId: string;
-    element?: HTMLElement;
     location?: number;
     isOpen?: boolean;
     onOpen?: () => void;
@@ -28,7 +27,6 @@ export function WindowLevelActionMenuWrapper(
 ): ReactNode {
   const {
     viewportId,
-    element,
     location,
     isOpen = false,
     onOpen,
@@ -123,9 +121,9 @@ export function WindowLevelActionMenuWrapper(
       >
         <WindowLevelActionMenu
           viewportId={viewportIdToUse}
-          element={element}
           align={align}
           side={side}
+          onVisibilityChange={handleOpenChange}
         />
       </PopoverContent>
     </Popover>

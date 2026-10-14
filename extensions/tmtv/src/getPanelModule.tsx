@@ -2,6 +2,7 @@ import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
 import { Toolbox } from '@ohif/extension-default';
 import PanelTMTV from './Panels/PanelTMTV';
+import i18n from '@ohif/i18n';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const { toolbarService } = servicesManager.services;
@@ -14,7 +15,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     return (
       <Toolbox
         buttonSectionId={toolbarService.sections.roiThresholdToolbox}
-        title="Threshold Tools"
+        title={i18n.t('ROIThresholdConfiguration:Threshold Tools')}
       />
     );
   };
@@ -28,7 +29,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       <>
         <Toolbox
           buttonSectionId={toolbarService.sections.roiThresholdToolbox}
-          title="Threshold Tools"
+          title={i18n.t('ROIThresholdConfiguration:Threshold Tools')}
         />
         <PanelTMTV
           commandsManager={commandsManager}

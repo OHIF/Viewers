@@ -3,7 +3,8 @@ import classnames from 'classnames';
 
 import listComponentGenerator from './listComponentGenerator';
 import './ViewportOverlay.css';
-import { formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
+import { formatDICOMDate } from '@ohif/ui-next';
+import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
 
 const { formatPN } = utils;
@@ -36,10 +37,10 @@ export const generateFromConfig = ({ config, overlayData, ...props }) => {
     bottomLeft?: OverlayItem[];
     bottomRight?: OverlayItem[];
   } = overlayData ?? {};
-  const topLeftClass = 'top-viewport left-viewport text-primary-light';
-  const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
-  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';
-  const bottomLeftClass = 'bottom-viewport left-viewport text-primary-light';
+  const topLeftClass = 'top-viewport left-viewport text-highlight';
+  const topRightClass = 'top-viewport right-viewport-scrollbar text-highlight';
+  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-highlight';
+  const bottomLeftClass = 'bottom-viewport left-viewport text-highlight';
   const overlay = 'absolute pointer-events-none microscopy-viewport-overlay';
 
   return (

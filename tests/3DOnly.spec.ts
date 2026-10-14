@@ -1,10 +1,11 @@
-import { test } from 'playwright-test-coverage';
 import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  reduce3DViewportSize,
   attemptAction,
+  checkForViewportScreenshot,
+  reduce3DViewportSize,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,19 +15,20 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D only Test', async () => {
-  test('should render 3D only correctly.', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^3D only$/ })
-      .first()
-      .click();
+  test('should render 3D only correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDOnly.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await page.waitForTimeout(5000);
+    await waitForViewportsRendered(page);
     // Use a 4 percent diff pixel ratio to account for slight color differences in the 3D viewport
-    await checkForScreenshot({
+    const activeViewport = await viewportPageObject.active;
+
+    await checkForViewportScreenshot({
       page,
-      locator: page,
+      viewport: activeViewport,
       screenshotPath: screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
       maxDiffPixelRatio: 0.04,
     });

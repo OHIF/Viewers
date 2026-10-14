@@ -191,7 +191,7 @@ export class MultiMonitorService {
    * Try moving the screen to the correct location - this will only work with
    * screens opened with openWindow containing no more than 1 tab.
    */
-  public async onModeEnter() {
+  public onModeEnter() {
     this.setBasePath();
 
     if (

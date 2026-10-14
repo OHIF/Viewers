@@ -13,7 +13,7 @@ window.config = {
   groupEnabledModesFirst: true,
   maxNumRequests: {
     interaction: 100,
-    thumbnail: 75,
+    thumbnail: 5,
     prefetch: 25,
   },
   defaultDataSourceName: 'dicomweb',

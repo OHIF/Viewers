@@ -1,6 +1,7 @@
 import areaOfPolygon from './areaOfPolygon';
 
 import { PubSubService } from '@ohif/core';
+import i18n from '@ohif/i18n';
 
 const EVENTS = {
   LABEL_UPDATED: 'labelUpdated',
@@ -168,7 +169,8 @@ class RoiAnnotation extends PubSubService {
    * @returns {String} Text with geometry type and label
    */
   getDetailedLabel() {
-    const label = this.label ? `${this.label}` : '(empty)';
+    const translatedEmpty = i18n?.t('MeasurementTable:empty') || '(empty)';
+    const label = this.label ? `${this.label}` : translatedEmpty;
     return label;
   }
 

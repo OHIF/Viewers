@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "De bestandsnaam kan niet leeg zijn.",
+  "fileType": "Bestandstype",
+  "filename": "Bestandsnaam",
+  "formTitle": "Geef de afmetingen, bestandsnaam en gewenst type op voor de uitvoerafbeelding.",
+  "imageHeight": "Afbeelding hoogte (px)",
+  "imagePreview": "Afbeelding voorvertoning",
+  "imageWidth": "Afbeelding breedte (px)",
+  "keepAspectRatio": "Behoud aspectverhouding",
+  "loadingPreview": "Afbeelding voorvertoning laden...",
+  "minHeightError": "De minimum geldige hoogte is 100px.",
+  "minWidthError": "De minimum geldige breedte is 100px.",
+  "showAnnotations": "Annotaties tonen"
+}

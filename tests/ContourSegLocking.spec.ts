@@ -1,25 +1,29 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy } from './utils';
-import { viewportSVGPathLocator } from './utils/locators';
+import { addOHIFGlobalCustomizations, expect, test, visitStudy } from './utils';
 import { simulateNormalizedDragOnElement } from './utils/simulateDragOnElement';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
-test('should not allow contours to be edited in basic viewer mode', async ({ page }) => {
+test('should not allow contours to be edited in basic viewer mode', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportSVGPathLocator({ page, viewportId: 'default' });
+  const svgPathLocatorPreEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -35,7 +39,7 @@ test('should not allow contours to be edited in basic viewer mode', async ({ pag
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportSVGPathLocator({ page, viewportId: 'default' });
+  const svgPathLocatorPostEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),
@@ -45,31 +49,30 @@ test('should not allow contours to be edited in basic viewer mode', async ({ pag
 
 test('should not allow contours to be edited when panelSegmentation.disableEditing is true', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
 }) => {
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
   // disable editing of segmentations via the customization service
-  await page.evaluate(() => {
-    window.services.customizationService.setGlobalCustomization(
-      'panelSegmentation.disableEditing',
-      {
-        $set: true,
-      }
-    );
+  await addOHIFGlobalCustomizations(page, {
+    'panelSegmentation.disableEditing': true,
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportSVGPathLocator({ page, viewportId: 'default' });
+  const svgPathLocatorPreEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -85,7 +88,7 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportSVGPathLocator({ page, viewportId: 'default' });
+  const svgPathLocatorPostEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),
@@ -95,31 +98,30 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
 
 test('should allow contours to be edited when panelSegmentation.disableEditing is false', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
 }) => {
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
   // disable editing of segmentations via the customization service
-  await page.evaluate(() => {
-    window.services.customizationService.setGlobalCustomization(
-      'panelSegmentation.disableEditing',
-      {
-        $set: false,
-      }
-    );
+  await addOHIFGlobalCustomizations(page, {
+    'panelSegmentation.disableEditing': false,
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportSVGPathLocator({ page, viewportId: 'default' });
+  const svgPathLocatorPreEdit = (await viewportPageObject.getById('default')).svg('path');
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -135,7 +137,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportSVGPathLocator({ page, viewportId: 'default' });
+  const svgPathLocatorPostEdit = (await viewportPageObject.getById('default')).svg('path');
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),

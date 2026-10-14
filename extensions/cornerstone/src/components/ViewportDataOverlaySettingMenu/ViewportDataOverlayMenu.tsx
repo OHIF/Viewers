@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Icons,
@@ -14,6 +14,7 @@ import {
   Switch,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import SelectItemWithModality from '../SelectItemWithModality';
@@ -21,6 +22,7 @@ import { useViewportRendering } from '../../hooks';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
+  const { t } = useTranslation();
   const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
   const [pendingSegmentations, setPendingSegmentations] = useState<string[]>([]);
   const { toggleColorbar } = useViewportRendering(viewportId);
@@ -40,6 +42,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     useState(overlayDisplaySets);
 
   const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
+
+  useEffect(() => {
+    setOptimisticOverlayDisplaySets(overlayDisplaySets);
+  }, [backgroundDisplaySet?.displaySetInstanceUID, overlayDisplaySets]);
 
   /**
    * Change the background display set
@@ -230,7 +236,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           disabled={potentialForegroundDisplaySets.length === 0}
         >
           <Icons.Plus className="h-4 w-4" />
-          Foreground
+          {t('Common:Foreground')}
         </Button>
         <Button
           variant="ghost"
@@ -242,7 +248,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           dataCY={`AddSegmentationDataOverlay-${viewportId}`}
         >
           <Icons.Plus className="h-4 w-4" />
-          Segmentation
+          {t('Tools:Segmentation')}
         </Button>
       </div>
 
@@ -320,7 +326,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 onValueChange={value => handlePendingSegmentationSelection(pendingId, value)}
               >
                 <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="SELECT A SEGMENTATION" />
+                  <SelectValue placeholder={t('Common:SELECT A SEGMENTATION')} />
                 </SelectTrigger>
                 <SelectContent>
                   {potentialOverlayDisplaySets.map(item => (
@@ -428,7 +434,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 onValueChange={value => handlePendingForegroundSelection(pendingId, value)}
               >
                 <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="SELECT A FOREGROUND" />
+                  <SelectValue placeholder={t('Common:SELECT A FOREGROUND')} />
                 </SelectTrigger>
                 <SelectContent>
                   {potentialForegroundDisplaySets.map(item => (
@@ -480,7 +486,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               }
             }}
           >
-            <SelectTrigger className="flex-1">
+            <SelectTrigger
+              className="flex-1"
+              data-cy={`overlay-background-ds-select-${viewportId}`}
+            >
               <SelectValue>
                 {(
                   backgroundDisplaySet?.SeriesDescription ||

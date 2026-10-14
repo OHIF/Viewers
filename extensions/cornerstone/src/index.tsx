@@ -7,6 +7,7 @@ import {
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 import { Types } from '@ohif/core';
 import Enums from './enums';
 
@@ -21,6 +22,7 @@ import SegmentationService from './services/SegmentationService';
 import CornerstoneCacheService from './services/CornerstoneCacheService';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import ColorbarService from './services/ColorbarService';
+import ViewedDataService from './services/ViewedDataService';
 import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
@@ -35,6 +37,18 @@ import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+import {
+  getViewportAdapter,
+  getViewportFocalPoint,
+  isNextViewport,
+  isVolumeRenderingViewport,
+} from './services/ViewportService/adapter';
+import { isNextViewportsEnabled } from './utils/nextViewports';
+import {
+  NEXT_FUSION_PT_OPACITY,
+  NEXT_OVERLAY_OPACITY,
+  getHydrationViewportTypeForModality,
+} from './utils/nextViewportPolicies';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
@@ -59,6 +73,7 @@ import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
+import update from 'immutability-helper';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -75,7 +90,7 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
-const stackRetrieveOptions = {
+const DEFAULT_STACK_RETRIEVE_OPTIONS = {
   retrieveOptions: {
     single: {
       streaming: true,
@@ -83,6 +98,12 @@ const stackRetrieveOptions = {
     },
   },
 };
+
+/** Normalize to immutability-helper spec: plain object → $merge, otherwise use as-is. */
+const toUpdateSpec = (obj: object) =>
+  obj != null && typeof obj === 'object' && Object.keys(obj).some(k => k.startsWith('$'))
+    ? obj
+    : { $merge: (obj ?? {}) as object };
 
 const unsubscriptions = [];
 /**
@@ -94,9 +115,13 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({ servicesManager, commandsManager }: withAppTypes): void => {
-    const { cornerstoneViewportService, toolbarService, segmentationService } =
-      servicesManager.services;
+  onModeEnter: ({ servicesManager, commandsManager, extensionManager }: withAppTypes): void => {
+    const {
+      cornerstoneViewportService,
+      toolbarService,
+      segmentationService,
+      customizationService,
+    } = servicesManager.services;
 
     const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
       servicesManager,
@@ -121,6 +146,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
 
+    // Apply the undo/redo history size on mode entry rather than in
+    // preRegistration, because the global customizations are applied after
+    // the extensions register.
+    cornerstone.utilities.HistoryMemo.DefaultHistoryMemo.size =
+      customizationService.getCustomization('cornerstone.maxUndoRedoCacheSize') || 50;
+
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
     // The default volume interleaved options are to interleave the
@@ -131,10 +162,20 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       'volume',
       cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
     );
-    // The default stack loading option is to progressive load HTJ2K images
-    // There are other possible options, but these need more thought about
-    // how to define them.
-    imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
+
+    /**
+     * Stack retrieve options: read from active data source configuration.
+     * Pass an immutability-helper spec (e.g. { $merge: {...} } or { $set: {...} }) in
+     * stackRetrieveOptions to customize. Plain object is treated as $merge for backward compat.
+     * Set streaming: false for uncompressed DICOM that requires full file before decode.
+     */
+    const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
+    const config = sourceConfig.stackRetrieveOptions ?? {};
+    const stackOptions = update(
+      DEFAULT_STACK_RETRIEVE_OPTIONS,
+      toUpdateSpec(config)
+    ) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
+    imageRetrieveMetadataProvider.add('stack', stackOptions);
   },
   getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
@@ -150,6 +191,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       imageRetrievalPoolManager.clearRequestStack(type);
     });
 
+    // Release the typed metadata registry (NATURALIZED instances registered via
+    // prefetchPart10Instance hold full compressed Part 10 buffers that live
+    // outside the size-capped cornerstone image cache)
+    csMetadataUtilities.clearCacheData();
+
     cineService.setIsCineEnabled(false);
 
     enabledElementReset();
@@ -162,6 +208,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     useSelectedSegmentationsForViewportStore
       .getState()
       .clearSelectedSegmentationsForViewportStore();
+    servicesManager.services.viewedDataService?.clearViewedData();
     segmentationService.removeAllSegmentations();
   },
 
@@ -178,6 +225,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
     servicesManager.registerService(ColorbarService.REGISTRATION);
+    servicesManager.registerService(ViewedDataService.REGISTRATION);
 
     const { syncGroupService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
@@ -259,6 +307,14 @@ export {
   getEnabledElement,
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
+  getViewportAdapter,
+  getViewportFocalPoint,
+  isNextViewport,
+  isVolumeRenderingViewport,
+  isNextViewportsEnabled,
+  NEXT_FUSION_PT_OPACITY,
+  NEXT_OVERLAY_OPACITY,
+  getHydrationViewportTypeForModality,
   dicomLoaderService,
   // Export all stores
   useLutPresentationStore,
