@@ -327,6 +327,9 @@ importers:
       cypress-file-upload:
         specifier: 5.0.8
         version: 5.0.8(cypress@14.5.2)
+      dcmjs:
+        specifier: 0.52.0
+        version: 0.52.0
       eslint:
         specifier: 10.7.0
         version: 10.7.0(jiti@2.7.0)(supports-color@8.1.1)

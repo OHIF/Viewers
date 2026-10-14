@@ -2,11 +2,11 @@ type SegmentBinding = { labelmapId: string; labelValue: number };
 
 /**
  * A label remap of one labelmap layer: the map from a label value in the voxels
- * to the segment index, and the typed array that holds every mapped index.
+ * to the segment index, and the largest segment index in the map.
  */
 export type LabelRemap = {
   segmentIndexByLabel: Map<number, number>;
-  SegmentIndexArray: Uint8ArrayConstructor | Uint16ArrayConstructor;
+  maxSegmentIndex: number;
 };
 
 /**
@@ -45,10 +45,9 @@ export function getLabelRemaps(labelmapData): Map<string, LabelRemap> {
   const remaps = new Map<string, LabelRemap>();
   remappedLayerIds.forEach(labelmapId => {
     const segmentIndexByLabel = segmentIndexByLabelByLayer.get(labelmapId);
-    const maxSegmentIndex = Math.max(...segmentIndexByLabel.values());
     remaps.set(labelmapId, {
       segmentIndexByLabel,
-      SegmentIndexArray: maxSegmentIndex > 255 ? Uint16Array : Uint8Array,
+      maxSegmentIndex: Math.max(...segmentIndexByLabel.values()),
     });
   });
   return remaps;
@@ -58,10 +57,13 @@ export function getLabelRemaps(labelmapData): Map<string, LabelRemap> {
  * Maps the label values of one labelmap slice to segment indices, and collects
  * the segments on the slice, in one pass.
  *
+ * A label value that has no entry in the remap keeps its value. The cs3D
+ * renderer and `getSegmentIndexForLabelValue` use the same fallback, so the SEG
+ * holds the segments that the viewport shows.
+ *
  * The cached labelmap image does not change. The function copies the slice only
- * when a voxel value changes, so an empty slice is never copied. A non-zero
- * label value that has no entry in the remap belongs to no segment: the function
- * writes 0 for that voxel and counts it in `unmappedVoxels`.
+ * when a voxel value changes, so an empty slice is never copied. The copy is a
+ * `Uint16Array` when a segment index does not fit in the source array type.
  *
  * @param pixelData - The voxel values of the labelmap slice.
  * @param remap - The label remap of the layer, or undefined to keep the values.
@@ -69,27 +71,22 @@ export function getLabelRemaps(labelmapData): Map<string, LabelRemap> {
 export function toSegmentIndexPixels(pixelData, remap?: LabelRemap) {
   const segmentsOnLabelmap = new Set<number>();
   let segmentIndexPixels = pixelData;
-  let unmappedVoxels = 0;
 
   for (let i = 0; i < pixelData.length; i++) {
     const labelValue = pixelData[i];
     if (labelValue === 0) {
       continue;
     }
-    if (!remap) {
-      segmentsOnLabelmap.add(labelValue);
-      continue;
-    }
 
-    const segmentIndex = remap.segmentIndexByLabel.get(labelValue) ?? 0;
-    if (segmentIndex === 0) {
-      unmappedVoxels++;
-    } else {
-      segmentsOnLabelmap.add(segmentIndex);
-    }
+    const segmentIndex = remap?.segmentIndexByLabel.get(labelValue) ?? labelValue;
+    segmentsOnLabelmap.add(segmentIndex);
     if (segmentIndex !== labelValue) {
       if (segmentIndexPixels === pixelData) {
-        segmentIndexPixels = new remap.SegmentIndexArray(pixelData);
+        const SegmentIndexArray =
+          remap.maxSegmentIndex > 255 && pixelData.BYTES_PER_ELEMENT < 2
+            ? Uint16Array
+            : pixelData.constructor;
+        segmentIndexPixels = new SegmentIndexArray(pixelData);
       }
       segmentIndexPixels[i] = segmentIndex;
     }
@@ -98,6 +95,5 @@ export function toSegmentIndexPixels(pixelData, remap?: LabelRemap) {
   return {
     pixelData: segmentIndexPixels,
     segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
-    unmappedVoxels,
   };
 }

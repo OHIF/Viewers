@@ -116,13 +116,12 @@ const commandsModule = ({
       const labelmapData = segmentation.representationData.Labelmap;
 
       const labelRemaps = getLabelRemaps(labelmapData);
-      let unmappedVoxels = 0;
 
       // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
-      // derived labelmap image ids. When `referencedImageIds` is supplied (the
-      // multi-layer/overlap path) each frame is indexed by its source slice so the
-      // layers align to the same frames; otherwise frames are sequential (the legacy
-      // single-layer behavior, kept byte-identical).
+      // derived labelmap image ids, with the label values mapped to segment indices.
+      // When `referencedImageIds` is supplied (the multi-layer/overlap path) each
+      // frame is indexed by its source slice so the layers align to the same frames;
+      // otherwise frames are sequential.
       const buildLabelmap3D = (
         segImageIds: string[],
         metadata,
@@ -141,10 +140,6 @@ const commandsModule = ({
         let z = 0;
 
         for (const segImage of segImages) {
-          const slice = toSegmentIndexPixels(segImage.getPixelData(), labelRemap);
-          unmappedVoxels += slice.unmappedVoxels;
-          const { rows, columns } = segImage;
-
           const frameIndex = referencedFrameIndexById
             ? (referencedFrameIndexById.get(segImage.referencedImageId) ?? -1)
             : z++;
@@ -152,6 +147,9 @@ const commandsModule = ({
           if (frameIndex < 0) {
             continue;
           }
+
+          const slice = toSegmentIndexPixels(segImage.getPixelData(), labelRemap);
+          const { rows, columns } = segImage;
 
           labelmaps2D[frameIndex] = {
             segmentsOnLabelmap: slice.segmentsOnLabelmap,
@@ -220,7 +218,7 @@ const commandsModule = ({
       // source series, so cornerstone writes overlapping segments as separate frames
       // that reference the same source slice (the DICOM SEG overlap encoding). The
       // cs3D adapter's fillSegmentation accepts an array of labelmap3D for exactly
-      // this. Single-layer SEGs keep the original single-labelmap3D path unchanged.
+      // this. A single-layer SEG uses one labelmap3D with sequential frames.
       const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
 
       // The referenced source images must be fully loaded (in cache) before we can
@@ -253,8 +251,8 @@ const commandsModule = ({
           )
         );
       } else {
-        // The only layer can be a private overlap layer. Read its own image ids,
-        // so that the pixels and the remap come from the same layer.
+        // The only layer can be a private overlap layer. Apply its remap only to
+        // its own image ids, so that the pixels and the remap match.
         const layer = layers?.[0];
         const imageIds = layer?.imageIds ?? labelmapData.imageIds;
         const segImages = imageIds.map(imageId => cache.getImage(imageId));
@@ -265,14 +263,7 @@ const commandsModule = ({
           imageIds,
           metadata,
           undefined,
-          layer && labelRemaps.get(layer.labelmapId)
-        );
-      }
-
-      if (unmappedVoxels) {
-        console.warn(
-          `generateSegmentation: ${unmappedVoxels} labelmap voxels have a label value ` +
-            'that is bound to no segment; the SEG does not include them.'
+          layer?.imageIds ? labelRemaps.get(layer.labelmapId) : undefined
         );
       }
 
