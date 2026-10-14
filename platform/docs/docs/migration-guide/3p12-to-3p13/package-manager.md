@@ -21,13 +21,13 @@ the `addOns/` directory, and `preinstall.js` have all been removed.
 | yarn | `>=1.20.0`    | _(removed)_ |
 | npm  | `>=6`         | _(removed)_ |
 
-The root `package.json` declares `"packageManager": "pnpm@11.1.1"`. If you use
+The root `package.json` declares the pnpm version to use in its
+`packageManager` field. If you use
 [Corepack](https://nodejs.org/api/corepack.html), running any pnpm command in
-the repo will pick the correct version automatically:
+the repo picks up that version automatically once Corepack is enabled:
 
 ```bash
 corepack enable
-corepack prepare pnpm@11.1.1 --activate
 ```
 
 ## Install and run commands
