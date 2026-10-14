@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 
 import { RightPanelPageObject, ViewportPageObject } from './pages';
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import { checkForViewportScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
@@ -70,11 +70,11 @@ test('should resize segmentation brush tool', async ({
 
   await performDrawingToolInteraction(page, 'brush', rightPanelPageObject, viewportPageObject);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.segDrawingToolsResizing.brushTool
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segDrawingToolsResizing.brushTool,
+  });
 });
 
 test('should resize segmentation eraser tool', async ({
@@ -100,11 +100,11 @@ test('should resize segmentation eraser tool', async ({
 
   await performDrawingToolInteraction(page, 'eraser', rightPanelPageObject, viewportPageObject);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.segDrawingToolsResizing.eraserTool
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segDrawingToolsResizing.eraserTool,
+  });
 });
 
 test('should resize segmentation threshold tool', async ({
