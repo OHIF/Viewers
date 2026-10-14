@@ -224,8 +224,7 @@ export class RightPanelPageObject {
 
   /**
    * The statistics computed for a segment. They show in a hover card that opens while the
-   * segment row is hovered, once the stats are computed. The card has no data-cy, so it is
-   * located by the class the SegmentStatistics component renders.
+   * segment row is hovered, once the stats are computed. 
    */
   private getSegmentStats(rowTitle: Locator) {
     const locator = this.page.locator('.segment-statistics');
@@ -250,7 +249,7 @@ export class RightPanelPageObject {
   }
 
   /** Adds the segment's computed statistics to a segmentation panel row. */
-  private withSegmentStats<T extends { title: Locator }>(row: T) {
+  private getRowWithSegmentStats<T extends { title: Locator }>(row: T) {
     return { ...row, stats: this.getSegmentStats(row.title) };
   }
 
@@ -396,8 +395,10 @@ export class RightPanelPageObject {
 
   private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
-    const getSegmentByIdx = (index: number) => this.withSegmentStats(this.getPanelRowByIdx(index));
-    const getSegmentByText = (text: string) => this.withSegmentStats(this.getPanelRowByText(text));
+    const getSegmentByIdx = (index: number) =>
+      this.getRowWithSegmentStats(this.getPanelRowByIdx(index));
+    const getSegmentByText = (text: string) =>
+      this.getRowWithSegmentStats(this.getPanelRowByText(text));
     const moreMenu = this.getCollapsedMoreMenu(typeSuffix);
 
     return {
