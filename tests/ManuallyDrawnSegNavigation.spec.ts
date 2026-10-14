@@ -22,6 +22,19 @@ const secondDrawnSlice = { index: 40, text: 'I:41 (41/128)' };
 // Kept on the left of the viewport, clear of the stats hover card that opens over its right side.
 const brushStroke = { start: { x: 0.3, y: 0.3 }, end: { x: 0.4, y: 0.35 } };
 const secondBrushStroke = { start: { x: 0.3, y: 0.6 }, end: { x: 0.4, y: 0.65 } };
+// Longer than the first stroke, so a segment painted with it measures differently.
+const longBrushStroke = { start: { x: 0.3, y: 0.6 }, end: { x: 0.45, y: 0.65 } };
+// Paints over the first stroke and past it, changing the segment's shape.
+const growingBrushStroke = { start: { x: 0.25, y: 0.2 }, end: { x: 0.45, y: 0.5 } };
+
+// The largest bidirectional of each fixed stroke measures the same on every run.
+const brushStrokeBidirectional = ['L: 77.0 mm', 'W: 49.7 mm'];
+const longBrushStrokeBidirectional = ['L: 89.9 mm', 'W: 50.5 mm'];
+const grownBidirectional = ['L: 135 mm', 'W: 60.8 mm'];
+
+// A measurement's text box is drawn green while it is selected and yellow otherwise.
+const selectedTextColor = 'rgb(0, 255, 0)';
+const unselectedTextColor = 'rgb(255, 255, 0)';
 
 const contourShape = [
   { x: 0.4, y: 0.4 },
@@ -150,6 +163,121 @@ test.describe('Drawn labelmap segmentation', () => {
     await expect
       .poll(async () => Number(await segment.stats.value('Voxel Count').innerText()))
       .toBeGreaterThan(voxelCount);
+  });
+
+  test('should draw the largest bidirectional of a drawn labelmap segment', async ({
+    page,
+    rightPanelPageObject,
+    viewportPageObject,
+  }) => {
+    const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
+    const activeViewport = await viewportPageObject.active;
+    const textBoxes = activeViewport.annotationTextBoxes;
+
+    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.normalizedDragAt(brushStroke);
+
+    await segment.stats.open();
+    await expect(textBoxes, 'Expected no measurement before computing it').toHaveCount(0);
+    await segment.stats.bidirectional.compute();
+
+    // Drawn on the painted slice, with its length and width beside it.
+    await expect(activeViewport.bidirectionalAxes).toHaveCount(2);
+    await expect(textBoxes.locator('tspan')).toHaveText(brushStrokeBidirectional);
+    await expect(activeViewport.overlayText.bottomRight.instanceNumber).toHaveText(
+      firstDrawnSlice.text
+    );
+
+    // The card swaps its compute button for the same values.
+    await segment.stats.open();
+    await expect(segment.stats.bidirectional.computeButton).toBeHidden();
+    await expect(segment.stats.bidirectional.length).toHaveText(brushStrokeBidirectional[0]);
+    await expect(segment.stats.bidirectional.width).toHaveText(brushStrokeBidirectional[1]);
+  });
+
+  test('should update the bidirectional values when a drawn segment changes shape', async ({
+    page,
+    rightPanelPageObject,
+    viewportPageObject,
+  }) => {
+    const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
+    const activeViewport = await viewportPageObject.active;
+    const textBoxes = activeViewport.annotationTextBoxes;
+
+    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.normalizedDragAt(brushStroke);
+    await segment.stats.open();
+    await segment.stats.bidirectional.compute();
+    await expect(textBoxes.locator('tspan')).toHaveText(brushStrokeBidirectional);
+
+    // Painting more of the segment measures it again, replacing the old measurement.
+    await activeViewport.normalizedDragAt(growingBrushStroke);
+    await expect(textBoxes.locator('tspan')).toHaveText(grownBidirectional);
+    await expect(activeViewport.bidirectionalAxes).toHaveCount(2);
+
+    await segment.stats.open();
+    await expect(segment.stats.bidirectional.length).toHaveText(grownBidirectional[0]);
+    await expect(segment.stats.bidirectional.width).toHaveText(grownBidirectional[1]);
+  });
+
+  test('should jump to and highlight the bidirectional of a segment that is not selected', async ({
+    page,
+    rightPanelPageObject,
+    viewportPageObject,
+  }) => {
+    const labelMapPanel = rightPanelPageObject.labelMapSegmentationPanel;
+    const { panel } = labelMapPanel;
+    const firstSegment = panel.nthSegment(0);
+    const secondSegment = panel.nthSegment(1);
+    const activeViewport = await viewportPageObject.active;
+    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
+    const textBoxes = activeViewport.annotationTextBoxes;
+
+    // Paint Segment 1 and Segment 2 on different slices, then measure each.
+    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.normalizedDragAt(brushStroke);
+    await labelMapPanel.addSegmentButton.click();
+    await expect(panel.rows, 'Expected a second segment row').toHaveCount(2);
+    await goToSlice({ page, viewport: activeViewport, slice: secondDrawnSlice });
+    await activeViewport.normalizedDragAt(longBrushStroke);
+
+    // Its card opens once Segment 2's stats are in, so no painting is still being processed.
+    await secondSegment.stats.open();
+
+    await firstSegment.stats.open();
+    await firstSegment.stats.bidirectional.compute();
+    await expect(sliceIndicator, 'Expected the Segment 1 slice').toHaveText(firstDrawnSlice.text);
+    await expect(textBoxes.locator('tspan')).toHaveText(brushStrokeBidirectional);
+
+    await secondSegment.stats.open();
+    await secondSegment.stats.bidirectional.compute();
+    await expect(sliceIndicator, 'Expected the Segment 2 slice').toHaveText(secondDrawnSlice.text);
+    await expect(textBoxes.locator('tspan')).toHaveText(longBrushStrokeBidirectional);
+    await expect(textBoxes).toHaveAttribute('fill', selectedTextColor);
+
+    await expectRowSelected(secondSegment);
+    await activeViewport.sliceNavigation.toFirstSlice();
+    await waitForViewportsRendered(page);
+    await expect(sliceIndicator, 'Expected to leave the painted slices').toHaveText(firstSliceText);
+    await expect(textBoxes, 'Expected no measurement on the first slice').toHaveCount(0);
+
+    // Jump to Segment 1's measurement while Segment 2 is the selected segment.
+    await firstSegment.stats.open();
+    await firstSegment.stats.bidirectional.jumpTo();
+    await expect(sliceIndicator, 'Expected the Segment 1 slice').toHaveText(firstDrawnSlice.text);
+    await expect(textBoxes.locator('tspan')).toHaveText(brushStrokeBidirectional);
+    await expect(textBoxes, 'Expected Segment 1 measurement highlighted').toHaveAttribute(
+      'fill',
+      selectedTextColor
+    );
+
+    // Segment 2's measurement is no longer the highlighted one.
+    await goToSlice({ page, viewport: activeViewport, slice: secondDrawnSlice });
+    await expect(textBoxes.locator('tspan')).toHaveText(longBrushStrokeBidirectional);
+    await expect(textBoxes, 'Expected Segment 2 measurement not highlighted').toHaveAttribute(
+      'fill',
+      unselectedTextColor
+    );
   });
 });
 

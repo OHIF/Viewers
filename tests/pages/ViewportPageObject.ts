@@ -93,6 +93,10 @@ export interface IViewportPageObject {
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
+  /** The text box of each annotation drawn in the viewport. */
+  annotationTextBoxes: Locator;
+  /** The two axes of each bidirectional measurement drawn in the viewport. */
+  bidirectionalAxes: Locator;
   navigationArrows: {
     locator: Locator;
     prev: {
@@ -457,6 +461,10 @@ export class ViewportPageObject {
       getSvgAnnotationStatTextLines: (uid: string) => {
         return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
       },
+      annotationTextBoxes: this.getSvg(viewport).locator('g[data-annotation-uid] > text'),
+      bidirectionalAxes: this.getSvg(viewport).locator(
+        'line[data-id$="-line-1"], line[data-id$="-line-2"]'
+      ),
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
       magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),

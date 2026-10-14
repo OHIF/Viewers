@@ -224,7 +224,7 @@ export class RightPanelPageObject {
 
   /**
    * The statistics computed for a segment. They show in a hover card that opens while the
-   * segment row is hovered, once the stats are computed. 
+   * segment row is hovered, once the stats are computed.
    */
   private getSegmentStats(rowTitle: Locator) {
     const locator = this.page.locator('.segment-statistics');
@@ -235,15 +235,36 @@ export class RightPanelPageObject {
         .filter({ has: this.page.getByText(label, { exact: true }) })
         .locator(':scope > div:last-child > span');
 
+    // Moves the pointer off the panel and waits for the card to close.
+    const close = async () => {
+      await this.page.mouse.move(0, 0);
+      await locator.waitFor({ state: 'hidden' });
+    };
+
     return {
       locator,
       // The stat names, in the order the card lists them
       labels: entries.locator(':scope > div:first-child'),
       value: (label: string) => valueSpans(label).first(),
       unit: (label: string) => valueSpans(label).last(),
+      // Every row shares one card, and it only re-renders when it reopens, so close it first.
       open: async () => {
+        await close();
         await rowTitle.hover();
         await locator.waitFor({ state: 'visible' });
+      },
+      close,
+      // The segment's largest bidirectional measurement, at the top of the card
+      bidirectional: {
+        computeButton: locator.getByTestId('segment-bidirectional-compute'),
+        length: locator.getByTestId('segment-bidirectional-length'),
+        width: locator.getByTestId('segment-bidirectional-width'),
+        compute: async () => {
+          await locator.getByTestId('segment-bidirectional-compute').click();
+        },
+        jumpTo: async () => {
+          await locator.getByTestId('segment-bidirectional-jump').click();
+        },
       },
     };
   }
