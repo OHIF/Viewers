@@ -18,7 +18,11 @@ export const hasExportableLabelMapData = (
     return false;
   }
 
-  const imageIds = labelmap?.imageIds;
+  // A segment can be in an overlap layer only, so check the images of every layer.
+  const layers = Object.values(labelmap.labelmaps ?? {});
+  const imageIds = layers.length
+    ? layers.flatMap(layer => layer.imageIds ?? [])
+    : labelmap.imageIds;
   if (!imageIds?.length) {
     return false;
   }
