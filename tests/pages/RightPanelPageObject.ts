@@ -241,28 +241,33 @@ export class RightPanelPageObject {
       await locator.waitFor({ state: 'hidden' });
     };
 
+    const open = async () => {
+      await close();
+      await rowTitle.hover();
+      await locator.waitFor({ state: 'visible' });
+    };
+
+    const computeButton = locator.getByTestId('segment-bidirectional-compute');
+
     return {
       locator,
       // The stat names, in the order the card lists them
       labels: entries.locator(':scope > div:first-child'),
       value: (label: string) => valueSpans(label).first(),
       unit: (label: string) => valueSpans(label).last(),
-      // Every row shares one card, and it only re-renders when it reopens, so close it first.
-      open: async () => {
-        await close();
-        await rowTitle.hover();
-        await locator.waitFor({ state: 'visible' });
-      },
+      open,
       close,
       // The segment's largest bidirectional measurement, at the top of the card
       bidirectional: {
-        computeButton: locator.getByTestId('segment-bidirectional-compute'),
+        computeButton,
         length: locator.getByTestId('segment-bidirectional-length'),
         width: locator.getByTestId('segment-bidirectional-width'),
         compute: async () => {
-          await locator.getByTestId('segment-bidirectional-compute').click();
+          await open();
+          await computeButton.click();
         },
         jumpTo: async () => {
+          await open();
           await locator.getByTestId('segment-bidirectional-jump').click();
         },
       },

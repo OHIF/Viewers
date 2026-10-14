@@ -91,7 +91,6 @@ export const CustomSegmentStatisticsHeader = ({
                 size="icon"
                 variant="ghost"
                 className={`h-6 w-6 transition-opacity`}
-                dataCY="segment-bidirectional-visibility"
                 onClick={e => {
                   e.stopPropagation();
                   cornerstoneTools.annotation.visibility.setAnnotationVisibility(
