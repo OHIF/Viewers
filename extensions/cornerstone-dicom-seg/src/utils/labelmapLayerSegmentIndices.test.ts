@@ -1,7 +1,6 @@
 import {
   getExportedLabelValues,
   getExportLabelToSegmentIndex,
-  getSingleLayerExportSource,
 } from './labelmapLayerSegmentIndices';
 
 // Segment 2 is in a private layer under label value 1.
@@ -32,23 +31,5 @@ describe('getExportLabelToSegmentIndex', () => {
       1: 2,
       5: 0,
     });
-  });
-});
-
-describe('getSingleLayerExportSource', () => {
-  it('applies the label map of the only layer when the layer has no image ids', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-
-    const source = getSingleLayerExportSource({
-      imageIds: ['labelmap:1'],
-      labelmaps: {
-        private: { labelmapId: 'private', volumeId: 'v', labelToSegmentIndex: { 1: 2 } },
-      },
-    });
-
-    expect(source.imageIds).toEqual(['labelmap:1']);
-    expect(source.labelToSegmentIndex).toEqual({ 1: 2 });
-    expect(warn).toHaveBeenCalledTimes(1);
-    warn.mockRestore();
   });
 });

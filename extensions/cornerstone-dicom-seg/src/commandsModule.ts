@@ -4,6 +4,7 @@ import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
+import { utils as cornerstoneUtils } from '@ohif/extension-cornerstone';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 import {
@@ -14,7 +15,6 @@ import {
 import {
   getExportedLabelValues,
   getExportLabelToSegmentIndex,
-  getSingleLayerExportSource,
   type LabelToSegmentIndex,
 } from './utils/labelmapLayerSegmentIndices';
 
@@ -118,9 +118,9 @@ const commandsModule = ({
 
       // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
       // derived labelmap image ids. The voxels keep their label values, and the
-      // adapter maps them with `labelToSegmentIndex`. When `referencedImageIds` is supplied (the multi-layer/overlap path) each
-      // frame is indexed by its source slice so the layers align to the same frames;
-      // otherwise frames are sequential.
+      // adapter maps them with `labelToSegmentIndex`. When `referencedImageIds` is
+      // supplied (the multi-layer/overlap path) each frame is indexed by its source
+      // slice so the layers align to the same frames; otherwise frames are sequential.
       const buildLabelmap3D = (
         segImageIds: string[],
         metadata,
@@ -267,7 +267,13 @@ const commandsModule = ({
           )
         );
       } else {
-        const { imageIds, labelToSegmentIndex } = getSingleLayerExportSource(labelmapData);
+        const { imageIds, labelToSegmentIndex, layerWithoutImageIds } =
+          cornerstoneUtils.getSingleLayerExportSource(labelmapData);
+        if (layerWithoutImageIds) {
+          console.warn(
+            `Labelmap layer ${layerWithoutImageIds.labelmapId} has no image ids. The SEG export uses the segmentation image ids with the label map of that layer.`
+          );
+        }
         const segImages = imageIds.map(imageId => cache.getImage(imageId));
         referencedImages = segImages.map((image, sliceIndex) =>
           resolveReferencedImage(image.referencedImageId, sliceIndex)

@@ -1,35 +1,6 @@
 /** The map from a label value in the voxels of a labelmap layer to the segment index. */
 export type LabelToSegmentIndex = { [labelValue: number]: number };
 
-type LabelmapLayer = {
-  labelmapId?: string;
-  imageIds?: string[];
-  labelToSegmentIndex?: LabelToSegmentIndex;
-};
-
-/**
- * Gets the image ids and the label map that the export of a single-layer
- * segmentation uses.
- *
- * The only layer can be a private overlap layer, so its label map applies also
- * when the layer has no image ids of its own and the legacy `imageIds` are used.
- */
-export function getSingleLayerExportSource(labelmapData): {
-  imageIds: string[];
-  labelToSegmentIndex?: LabelToSegmentIndex;
-} {
-  const layer: LabelmapLayer | undefined = Object.values(labelmapData.labelmaps ?? {})[0];
-  if (layer && !layer.imageIds) {
-    console.warn(
-      `Labelmap layer ${layer.labelmapId} has no image ids. The SEG export uses the segmentation image ids with the label map of that layer.`
-    );
-  }
-  return {
-    imageIds: layer?.imageIds ?? labelmapData.imageIds,
-    labelToSegmentIndex: layer?.labelToSegmentIndex,
-  };
-}
-
 /**
  * Gets the label values of one labelmap slice that the SEG export includes, in
  * one pass. The result is the `segmentsOnLabelmap` of a labelmap2D, which the

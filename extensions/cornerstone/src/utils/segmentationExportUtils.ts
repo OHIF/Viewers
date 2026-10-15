@@ -28,6 +28,43 @@ const listenForChanges = () => {
   eventTarget.addEventListener(cstEnums.Events.SEGMENTATION_MODIFIED, forget as EventListener);
 };
 
+type LabelmapLayer = NonNullable<cstTypes.LabelmapSegmentationData['labelmaps']>[string];
+
+/**
+ * Gets the image ids and the label map that the SEG export of a single-layer
+ * labelmap uses.
+ *
+ * The only layer can be a private overlap layer, so its label map applies also
+ * when the layer has no image ids of its own (missing or empty) and the
+ * top-level `imageIds` are used.
+ *
+ * @returns `layerWithoutImageIds` is the layer when its image ids are not used.
+ */
+export function getSingleLayerExportSource(labelmap: cstTypes.LabelmapSegmentationData): {
+  imageIds: string[];
+  labelToSegmentIndex?: LabelmapLayer['labelToSegmentIndex'];
+  layerWithoutImageIds?: LabelmapLayer;
+} {
+  const layer: LabelmapLayer | undefined = Object.values(labelmap.labelmaps ?? {})[0];
+  if (layer?.imageIds?.length) {
+    return { imageIds: layer.imageIds, labelToSegmentIndex: layer.labelToSegmentIndex };
+  }
+  return {
+    imageIds: (labelmap as { imageIds?: string[] }).imageIds ?? [],
+    labelToSegmentIndex: layer?.labelToSegmentIndex,
+    layerWithoutImageIds: layer,
+  };
+}
+
+/** Gets the labelmap image ids of every layer that the SEG export uses. */
+const getExportImageIds = (labelmap: cstTypes.LabelmapSegmentationData): string[] => {
+  const layers = Object.values(labelmap.labelmaps ?? {});
+  if (layers.length > 1) {
+    return layers.flatMap(layer => layer.imageIds ?? []);
+  }
+  return getSingleLayerExportSource(labelmap).imageIds;
+};
+
 /**
  * Scans the voxels of every layer of a labelmap.
  *
@@ -37,17 +74,10 @@ const listenForChanges = () => {
  */
 const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): boolean | undefined => {
   // A segment can be in an overlap layer only, so check the images of every layer.
-  // A single layer without image ids exports the top-level image ids, so scan those.
-  const layers = Object.values(labelmap.labelmaps ?? {});
-  const imageIds =
-    layers.length > 1
-      ? layers.flatMap(layer => layer.imageIds ?? [])
-      : layers[0]?.imageIds?.length
-        ? layers[0].imageIds
-        : labelmap.imageIds;
+  const imageIds = getExportImageIds(labelmap);
 
   let isImageMissing = false;
-  const hasPixelData = !!imageIds?.some(imageId => {
+  const hasPixelData = imageIds.some(imageId => {
     const pixelData = cache.getImage(imageId)?.getPixelData();
     if (!pixelData) {
       isImageMissing = true;

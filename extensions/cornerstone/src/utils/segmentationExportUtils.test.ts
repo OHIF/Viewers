@@ -1,6 +1,6 @@
 import { cache, eventTarget, metaData } from '@cornerstonejs/core';
 import { Enums as cstEnums, segmentation as cstSegmentation } from '@cornerstonejs/tools';
-import { hasExportableLabelMapData } from './segmentationExportUtils';
+import { getSingleLayerExportSource, hasExportableLabelMapData } from './segmentationExportUtils';
 
 jest.mock('@cornerstonejs/core', () => {
   const listeners = {};
@@ -69,7 +69,7 @@ describe('hasExportableLabelMapData', () => {
 
   it('scans the top-level image ids when the only layer has none', () => {
     const singleLayerLabelmap = {
-      labelmaps: { layer: { labelmapId: 'layer' } },
+      labelmaps: { layer: { labelmapId: 'layer', imageIds: [] } },
       imageIds: ['labelmap:3'],
       referencedImageIds: ['source:1'],
     };
@@ -79,5 +79,22 @@ describe('hasExportableLabelMapData', () => {
     );
 
     expect(hasExportableLabelMapData(singleLayerLabelmap, displaySetService)).toBe(true);
+  });
+});
+
+describe('getSingleLayerExportSource', () => {
+  it('applies the label map of the only layer when the layer has no image ids', () => {
+    const layer = { labelmapId: 'private', labelToSegmentIndex: { 1: 2 } };
+
+    const source = getSingleLayerExportSource({
+      imageIds: ['labelmap:1'],
+      labelmaps: { private: layer },
+    } as never);
+
+    expect(source).toEqual({
+      imageIds: ['labelmap:1'],
+      labelToSegmentIndex: { 1: 2 },
+      layerWithoutImageIds: layer,
+    });
   });
 });
