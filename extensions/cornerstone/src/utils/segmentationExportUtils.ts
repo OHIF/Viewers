@@ -1,5 +1,54 @@
-import { cache, metaData } from '@cornerstonejs/core';
-import { Types as cstTypes } from '@cornerstonejs/tools';
+import { cache, eventTarget, metaData } from '@cornerstonejs/core';
+import {
+  Enums as cstEnums,
+  segmentation as cstSegmentation,
+  Types as cstTypes,
+} from '@cornerstonejs/tools';
+
+/**
+ * The result of the voxel scan of each labelmap, kept until the segmentation
+ * changes. The panel asks on each render, and a scan reads every voxel.
+ */
+const hasPixelDataByLabelmap = new WeakMap<cstTypes.LabelmapSegmentationData, boolean>();
+let isListeningForChanges = false;
+
+const listenForChanges = () => {
+  if (isListeningForChanges) {
+    return;
+  }
+  isListeningForChanges = true;
+  const forget = (evt: CustomEvent<{ segmentationId: string }>) => {
+    const labelmap = cstSegmentation.state.getSegmentation(evt.detail?.segmentationId)
+      ?.representationData?.Labelmap;
+    if (labelmap) {
+      hasPixelDataByLabelmap.delete(labelmap);
+    }
+  };
+  eventTarget.addEventListener(cstEnums.Events.SEGMENTATION_DATA_MODIFIED, forget as EventListener);
+  eventTarget.addEventListener(cstEnums.Events.SEGMENTATION_MODIFIED, forget as EventListener);
+};
+
+const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): boolean => {
+  // A segment can be in an overlap layer only, so check the images of every layer.
+  const layers = Object.values(labelmap.labelmaps ?? {});
+  const imageIds = layers.length
+    ? layers.flatMap(layer => layer.imageIds ?? [])
+    : labelmap.imageIds;
+
+  return !!imageIds?.some(imageId => {
+    const pixelData = cache.getImage(imageId)?.getPixelData();
+    if (!pixelData) {
+      return false;
+    }
+
+    for (let i = 0; i < pixelData.length; i++) {
+      if (pixelData[i] !== 0) {
+        return true;
+      }
+    }
+    return false;
+  });
+};
 
 /**
  * Checks if a labelmap segmentation has exportable data
@@ -18,27 +67,12 @@ export const hasExportableLabelMapData = (
     return false;
   }
 
-  // A segment can be in an overlap layer only, so check the images of every layer.
-  const layers = Object.values(labelmap.labelmaps ?? {});
-  const imageIds = layers.length
-    ? layers.flatMap(layer => layer.imageIds ?? [])
-    : labelmap.imageIds;
-  if (!imageIds?.length) {
-    return false;
+  listenForChanges();
+  let hasPixelData = hasPixelDataByLabelmap.get(labelmap);
+  if (hasPixelData === undefined) {
+    hasPixelData = hasLabelmapPixelData(labelmap);
+    hasPixelDataByLabelmap.set(labelmap, hasPixelData);
   }
-
-  const hasPixelData = imageIds.some(imageId => {
-    const pixelData = cache.getImage(imageId)?.getPixelData();
-    if (!pixelData) {
-      return false;
-    }
-
-    for (let i = 0; i < pixelData.length; i++) {
-      if (pixelData[i] !== 0) {
-        return true;
-      }
-    }
-  });
 
   if (!hasPixelData) {
     return false;
