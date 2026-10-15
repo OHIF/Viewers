@@ -12,9 +12,9 @@ import {
   BITMAP_SEG_SOP_CLASS_UID,
 } from './utils/segmentationConfig';
 import {
-  getLabelRemaps,
+  getSingleLayerExportSource,
   toSegmentIndexPixels,
-  type LabelRemap,
+  type LabelToSegmentIndex,
 } from './utils/labelmapLayerSegmentIndices';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
@@ -115,8 +115,6 @@ const commandsModule = ({
 
       const labelmapData = segmentation.representationData.Labelmap;
 
-      const labelRemaps = getLabelRemaps(labelmapData);
-
       // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
       // derived labelmap image ids, with the label values mapped to segment indices.
       // When `referencedImageIds` is supplied (the multi-layer/overlap path) each
@@ -126,7 +124,7 @@ const commandsModule = ({
         segImageIds: string[],
         metadata,
         referencedImageIds?: string[],
-        labelRemap?: LabelRemap
+        labelToSegmentIndex?: LabelToSegmentIndex
       ) => {
         const segImages = segImageIds.map(imageId => cache.getImage(imageId));
         const labelmaps2D = [];
@@ -138,6 +136,7 @@ const commandsModule = ({
           : undefined;
 
         let z = 0;
+        const unboundLabels = new Set<number>();
 
         for (const segImage of segImages) {
           const frameIndex = referencedFrameIndexById
@@ -148,7 +147,11 @@ const commandsModule = ({
             continue;
           }
 
-          const slice = toSegmentIndexPixels(segImage.getPixelData(), labelRemap);
+          const slice = toSegmentIndexPixels(
+            segImage.getPixelData(),
+            labelToSegmentIndex,
+            labelValue => unboundLabels.add(labelValue)
+          );
           const { rows, columns } = segImage;
 
           labelmaps2D[frameIndex] = {
@@ -158,6 +161,12 @@ const commandsModule = ({
             columns,
           };
         }
+
+        unboundLabels.forEach(labelValue =>
+          console.warn(
+            `Label value ${labelValue} of segmentation ${segmentationId} has no segment. The SEG export does not include its voxels.`
+          )
+        );
 
         const allSegmentsOnLabelmap = labelmaps2D
           .filter(Boolean)
@@ -247,24 +256,16 @@ const commandsModule = ({
             layer.imageIds ?? [],
             metadata,
             referencedImageIds,
-            labelRemaps.get(layer.labelmapId)
+            layer.labelToSegmentIndex
           )
         );
       } else {
-        // The only layer can be a private overlap layer. Apply its remap only to
-        // its own image ids, so that the pixels and the remap match.
-        const layer = layers?.[0];
-        const imageIds = layer?.imageIds ?? labelmapData.imageIds;
+        const { imageIds, labelToSegmentIndex } = getSingleLayerExportSource(labelmapData);
         const segImages = imageIds.map(imageId => cache.getImage(imageId));
         referencedImages = segImages.map((image, sliceIndex) =>
           resolveReferencedImage(image.referencedImageId, sliceIndex)
         );
-        labelmaps3D = buildLabelmap3D(
-          imageIds,
-          metadata,
-          undefined,
-          layer?.imageIds ? labelRemaps.get(layer.labelmapId) : undefined
-        );
+        labelmaps3D = buildLabelmap3D(imageIds, metadata, undefined, labelToSegmentIndex);
       }
 
       // `...generateOptions` has the last word on the predecessor: the store
