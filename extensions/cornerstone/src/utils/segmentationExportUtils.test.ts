@@ -66,4 +66,18 @@ describe('hasExportableLabelMapData', () => {
     getImage.mockReturnValue({ getPixelData: () => new Uint8Array([0, 1]) });
     expect(hasExportableLabelMapData(loadingLabelmap, displaySetService)).toBe(true);
   });
+
+  it('scans the top-level image ids when the only layer has none', () => {
+    const singleLayerLabelmap = {
+      labelmaps: { layer: { labelmapId: 'layer' } },
+      imageIds: ['labelmap:3'],
+      referencedImageIds: ['source:1'],
+    };
+    const getImage = cache.getImage as jest.Mock;
+    getImage.mockImplementation(imageId =>
+      imageId === 'labelmap:3' ? { getPixelData: () => new Uint8Array([0, 2]) } : undefined
+    );
+
+    expect(hasExportableLabelMapData(singleLayerLabelmap, displaySetService)).toBe(true);
+  });
 });

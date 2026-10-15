@@ -37,10 +37,14 @@ const listenForChanges = () => {
  */
 const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): boolean | undefined => {
   // A segment can be in an overlap layer only, so check the images of every layer.
+  // A single layer without image ids exports the top-level image ids, so scan those.
   const layers = Object.values(labelmap.labelmaps ?? {});
-  const imageIds = layers.length
-    ? layers.flatMap(layer => layer.imageIds ?? [])
-    : labelmap.imageIds;
+  const imageIds =
+    layers.length > 1
+      ? layers.flatMap(layer => layer.imageIds ?? [])
+      : layers[0]?.imageIds?.length
+        ? layers[0].imageIds
+        : labelmap.imageIds;
 
   let isImageMissing = false;
   const hasPixelData = !!imageIds?.some(imageId => {
