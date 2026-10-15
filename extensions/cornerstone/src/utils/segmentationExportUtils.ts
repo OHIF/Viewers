@@ -28,16 +28,25 @@ const listenForChanges = () => {
   eventTarget.addEventListener(cstEnums.Events.SEGMENTATION_MODIFIED, forget as EventListener);
 };
 
-const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): boolean => {
+/**
+ * Scans the voxels of every layer of a labelmap.
+ *
+ * @returns true when a voxel is set, false when no voxel is set, and undefined
+ *   when no voxel is set but an image is not in the cache yet. An undefined
+ *   result must not be kept: no segmentation event follows when the image loads.
+ */
+const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): boolean | undefined => {
   // A segment can be in an overlap layer only, so check the images of every layer.
   const layers = Object.values(labelmap.labelmaps ?? {});
   const imageIds = layers.length
     ? layers.flatMap(layer => layer.imageIds ?? [])
     : labelmap.imageIds;
 
-  return !!imageIds?.some(imageId => {
+  let isImageMissing = false;
+  const hasPixelData = !!imageIds?.some(imageId => {
     const pixelData = cache.getImage(imageId)?.getPixelData();
     if (!pixelData) {
+      isImageMissing = true;
       return false;
     }
 
@@ -48,6 +57,8 @@ const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): bool
     }
     return false;
   });
+
+  return hasPixelData || (isImageMissing ? undefined : false);
 };
 
 /**
@@ -71,7 +82,9 @@ export const hasExportableLabelMapData = (
   let hasPixelData = hasPixelDataByLabelmap.get(labelmap);
   if (hasPixelData === undefined) {
     hasPixelData = hasLabelmapPixelData(labelmap);
-    hasPixelDataByLabelmap.set(labelmap, hasPixelData);
+    if (hasPixelData !== undefined) {
+      hasPixelDataByLabelmap.set(labelmap, hasPixelData);
+    }
   }
 
   if (!hasPixelData) {

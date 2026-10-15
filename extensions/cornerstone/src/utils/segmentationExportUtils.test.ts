@@ -55,4 +55,15 @@ describe('hasExportableLabelMapData', () => {
     expect(hasExportableLabelMapData(labelmap, displaySetService)).toBe(true);
     expect(getImage).toHaveBeenCalledTimes(2);
   });
+
+  it('scans the voxels again while a labelmap image is not in the cache', () => {
+    const loadingLabelmap = { imageIds: ['labelmap:2'], referencedImageIds: ['source:1'] };
+    const getImage = cache.getImage as jest.Mock;
+    getImage.mockReturnValue(undefined);
+
+    expect(hasExportableLabelMapData(loadingLabelmap, displaySetService)).toBe(false);
+
+    getImage.mockReturnValue({ getPixelData: () => new Uint8Array([0, 1]) });
+    expect(hasExportableLabelMapData(loadingLabelmap, displaySetService)).toBe(true);
+  });
 });
