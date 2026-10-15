@@ -2,6 +2,7 @@ import { Locator, Page } from '@playwright/test';
 import {
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
+  simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
@@ -17,6 +18,11 @@ type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathClickParams = {
+  path: { x: number; y: number }[];
+  closePath?: boolean;
 };
 
 type NormalizedPathDragParams = {
@@ -65,7 +71,7 @@ export interface IViewportPageObject {
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
-  normalizedPathClickAt: (params: { path: { x: number; y: number }[] }) => Promise<void>;
+  normalizedPathClickAt: (params: NormalizedPathClickParams) => Promise<void>;
   normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
@@ -427,15 +433,20 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
-      normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
-        const { path } = params;
-        // Clicking the first vertex again closes the spline.
+      normalizedPathClickAt: async (params: NormalizedPathClickParams) => {
+        const { path, closePath = false } = params;
         await simulateNormalizedClicksOnElement({
           locator: viewport,
-          normalizedPoints: [...path, path[0]],
+          normalizedPoints: path,
         });
-        // Wait out the 400ms double-click threshold so the click registers as a single click.
-        await this.getSvg(viewport, 'circle').first().waitFor({ state: 'detached' });
+        if (closePath) {
+          // Click the first point to close the path, held past the 400ms double-click window.
+          await simulateNormalizedClickOnElement({
+            locator: viewport,
+            normalizedPoint: path[0],
+            delay: 500,
+          });
+        }
       },
       normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
         await simulateNormalizedPathDragOnElement({
