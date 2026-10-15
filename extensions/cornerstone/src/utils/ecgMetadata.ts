@@ -43,7 +43,11 @@ async function decodeBulkData(group: any, waveformData: any): Promise<Int16Array
     bytes = await waveformData.retrieveBulkData();
   }
   const loaded = { WaveformSequence: [{ ...group, WaveformData: toArrayBuffer(bytes) }] };
-  return buildEcgModuleFromInstance(loaded).waveformData.retrieveBulkData();
+  const decoded = buildEcgModuleFromInstance(loaded);
+  if (!decoded) {
+    throw new Error('[ECGViewport] Failed to decode the waveform bulkdata');
+  }
+  return decoded.waveformData.retrieveBulkData();
 }
 
 /**
@@ -74,9 +78,10 @@ export function buildEcgModule(instance: any, userAuthenticationService?: any): 
 
   const group = firstItem(instance.WaveformSequence);
   const channelDefinitions = toList(group.ChannelDefinitionSequence);
-  // Older @cornerstonejs/metadata versions read only an upper-case CodeMeaning,
-  // and pass no lead code. An ECG trace layout names a lead by its code value,
-  // and falls back to the code meaning when the code value is missing.
+  // Works around a Cornerstone bug: buildEcgModuleFromInstance reads only an
+  // upper-case CodeMeaning, and drops CodeValue and CodingSchemeDesignator.
+  // No released Cornerstone viewport reads the lead code yet, so only the unit
+  // test covers it.
   ecgModule.channelDefinitionSequence.forEach((definition, index) => {
     const source = definition.channelSourceSequence as Record<string, string> | undefined;
     const raw = firstItem(channelDefinitions[index]?.ChannelSourceSequence);

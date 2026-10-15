@@ -18,12 +18,6 @@ export type InitialImageOptions = {
   useOnce?: boolean;
 };
 
-/**
- * Trace layout of an ECG viewport: a registered layout name, or a full layout
- * definition. Cornerstone versions without trace layouts ignore it.
- */
-export type TraceLayout = string | { regions: unknown[] };
-
 export type ViewportOptions = {
   id?: string;
   viewportType: Enums.ViewportType;
@@ -32,7 +26,6 @@ export type ViewportOptions = {
   // Presentation ID to store/load presentation state from
   presentationIds?: AppTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
-  traceLayout?: TraceLayout;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
@@ -55,7 +48,6 @@ export type PublicViewportOptions = {
   presentationIds?: string[];
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
-  traceLayout?: TraceLayout;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
@@ -329,10 +321,6 @@ class ViewportInfo {
 
   public getOrientation(): Enums.OrientationAxis {
     return this.viewportOptions.orientation;
-  }
-
-  public getTraceLayout(): TraceLayout | undefined {
-    return this.viewportOptions.traceLayout;
   }
 
   public setOrientation(orientation: Enums.OrientationAxis): void {

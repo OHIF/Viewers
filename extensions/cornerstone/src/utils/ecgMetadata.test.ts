@@ -120,7 +120,7 @@ describe('buildEcgModule', () => {
     expect(module!.channelDefinitionSequence[0].channelSourceSequence.codeMeaning).toBe('Lead I');
   });
 
-  it('passes the lead code value, which a trace layout uses to find a lead', () => {
+  it('passes the lead code value and coding scheme', () => {
     const instance = makeInstance({});
     instance.WaveformSequence[0].ChannelDefinitionSequence[1].ChannelSourceSequence = [
       { CodeValue: '5.6.3-9-2', CodingSchemeDesignator: 'SCPECG', CodeMeaning: 'Lead II' } as never,

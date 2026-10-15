@@ -188,11 +188,6 @@ export type ViewportOptions = {
   viewportType?: CustomOption<string>;
   id?: string;
   orientation?: CustomOption<string>;
-  /**
-   * Trace layout of an ECG viewport: a registered layout name such as
-   * `'3x4+1'`, or a full layout definition with its trace regions.
-   */
-  traceLayout?: CustomOption<string | Record<string, unknown>>;
   background?: CustomOption<[number, number, number]>;
   viewportId?: string;
   displayArea?: DisplayArea;
