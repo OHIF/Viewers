@@ -101,21 +101,33 @@ jobs:
             -f target_url="$RUN_URL" \
             --jq '"\(.context): \(.description)"'
       # Packages the PR changes, in the same way: so the code owner who reviews
-      # the lockfile looks at the list even when no advisory turns up.
+      # the lockfile looks at the list even when no advisory turns up. With no
+      # changes, it only replaces a status an earlier run left on this commit
+      # (for example before a retarget), so the counts are never stale.
       - name: Flag the PR's dependency changes in its checks list
-        if: ${{ !cancelled() && steps.audit.outputs.changes_total != '' && steps.audit.outputs.changes_total != '0' }}
+        if: ${{ !cancelled() && steps.audit.outputs.changes_total != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TOTAL: ${{ steps.audit.outputs.changes_total }}
           UPDATED: ${{ steps.audit.outputs.changes_updated }}
           NEW: ${{ steps.audit.outputs.changes_new }}
           REMOVED: ${{ steps.audit.outputs.changes_removed }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -euo pipefail
+          if [ "$TOTAL" = 0 ]; then
+            earlier=$(gh api "repos/$REPO/commits/$HEAD_SHA/status?per_page=100" \
+              --jq '[.statuses[] | select(.context == "Dependency changes")] | length')
+            [ "$earlier" = 0 ] && exit 0
+            description='No package changes against the target branch'
+          else
+            description="ℹ️ $UPDATED updated, $NEW new, $REMOVED removed: review the Packages changed list"
+          fi
           gh api --method POST "repos/$REPO/statuses/$HEAD_SHA" \
             -f state=success \
             -f context='Dependency changes' \
-            -f description="ℹ️ $UPDATED updated, $NEW new, $REMOVED removed: review the Packages changed list" \
+            -f description="$description" \
             -f target_url="$RUN_URL" \
             --jq '"\(.context): \(.description)"'

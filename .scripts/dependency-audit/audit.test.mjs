@@ -12,13 +12,12 @@ import { fileURLToPath } from 'node:url';
 import {
   addedIgnores,
   addedPackages,
-  countChanges,
   escapeCommand,
   ignoreLabel,
   isIgnoreId,
   lockfilePackages,
   packageChanges,
-  stripLockfileText,
+  showLockfileText,
   tableCell,
 } from './audit.mjs';
 
@@ -119,24 +118,29 @@ test('packageChanges pairs before and after versions by package', () => {
     lockfile(['left-pad@1.4.0', 'new-dep@1.2.0', 'ms@2.1.3', 'zz-top@2.0.0', 'aa-new@0.1.0'])
   );
   assert.deepEqual(packageChanges(base, head), [
-    { name: 'left-pad', before: ['1.3.0'], after: ['1.4.0'] },
-    { name: 'ms', before: ['2.0.0', '2.1.2'], after: ['2.1.3'] },
-    { name: 'zz-top', before: ['1.0.0'], after: ['2.0.0'] },
-    { name: 'aa-new', before: [], after: ['0.1.0'] },
-    { name: 'new-dep', before: [], after: ['1.2.0'] },
-    { name: 'old-dep', before: ['0.9.1'], after: [] },
+    { name: 'left-pad', kind: 'updated', before: ['1.3.0'], after: ['1.4.0'] },
+    {
+      name: 'ms',
+      kind: 'updated',
+      before: ['2.0.0', '2.1.2'],
+      after: ['2.1.3'],
+    },
+    { name: 'zz-top', kind: 'updated', before: ['1.0.0'], after: ['2.0.0'] },
+    { name: 'aa-new', kind: 'new', before: [], after: ['0.1.0'] },
+    { name: 'new-dep', kind: 'new', before: [], after: ['1.2.0'] },
+    { name: 'old-dep', kind: 'removed', before: ['0.9.1'], after: [] },
   ]);
 });
 
-test('countChanges counts updated, new and removed packages', () => {
-  assert.deepEqual(
-    countChanges([
-      { name: 'a', before: ['1.0.0'], after: ['2.0.0'] },
-      { name: 'b', before: [], after: ['1.0.0'] },
-      { name: 'c', before: [], after: ['1.0.0'] },
-      { name: 'd', before: ['1.0.0'], after: [] },
-    ]),
-    { updated: 1, added: 2, removed: 1 }
+test('a package that gains or drops one of its versions counts as updated', () => {
+  const { stdout, output } = runAudit({
+    baseLock: lockfile(['ms@2.0.0', 'debug@4.3.4', 'debug@4.4.0']),
+    // A git version, so there is nothing to look up.
+    headLock: lockfile(['ms@2.0.0', 'ms@git+https://example.com/ms.git', 'debug@4.4.0']),
+  });
+  assert.match(stdout, /Packages changed \(2\): 2 updated, 0 new, 0 removed/);
+  assert.ok(
+    output.includes('changes_updated=2\nchanges_new=0\nchanges_removed=0\nchanges_total=2\n')
   );
 });
 
@@ -168,12 +172,19 @@ test('tableCell keeps advisory titles inside their Markdown table cell', () => {
   assert.equal(tableCell(undefined), '');
 });
 
-test('stripLockfileText removes what could break a row or disguise lockfile text', () => {
-  // Pipe, backtick, backslash, newline, right-to-left override, zero-width
-  // space, C1 control (NEL) and line separator.
-  assert.equal(stripLockfileText('a|b`c\\d\ne\u202ef\u200bg\u0085h\u2028i'), 'abcdefghi');
+test('showLockfileText shows what could break a row or disguise lockfile text', () => {
+  // A zero-width or trailing space must not make a key look like the real
+  // left-pad.
+  assert.equal(showLockfileText('left-pad\u200b'), 'left-pad[U+200B]');
+  assert.equal(showLockfileText('left-pad '), 'left-pad[U+0020]');
+  // Pipe, backtick, backslash, newline, right-to-left override, C1 control
+  // (NEL), line separator and a Cyrillic look-alike of "a".
   assert.equal(
-    stripLockfileText('@scope/pkg@1.2.3-beta.1+build.5'),
+    showLockfileText('|`\\\n\u202e\u0085\u2028\u0430'),
+    '[U+007C][U+0060][U+005C][U+000A][U+202E][U+0085][U+2028][U+0430]'
+  );
+  assert.equal(
+    showLockfileText('@scope/pkg@1.2.3-beta.1+build.5'),
     '@scope/pkg@1.2.3-beta.1+build.5'
   );
 });
@@ -205,10 +216,16 @@ test('PR text cannot inject workflow commands into the log', () => {
   assert.match(lines[warning], /xnoticeINJECTED added/);
 });
 
-test('fails when the PR deletes the lockfile', () => {
-  const { code, stdout } = runAudit({ baseLock: lockfile(['left-pad@1.3.0']), headLock: null });
+test('fails when the PR deletes the lockfile, and lists every package as removed', () => {
+  const { code, stdout, output } = runAudit({
+    baseLock: lockfile(['left-pad@1.3.0']),
+    headLock: null,
+  });
   assert.equal(code, 1);
   assert.match(stdout, /deletes pnpm-lock.yaml/);
+  // pnpm itself and left-pad.
+  assert.match(stdout, /Packages changed \(2\): 0 updated, 0 new, 2 removed/);
+  assert.ok(output.includes('changes_removed=2\nchanges_total=2\n'));
 });
 
 test('passes when neither side has a lockfile', () => {
@@ -236,6 +253,19 @@ test('fails when many added entries cannot be audited', () => {
   assert.ok(stdout.includes('| `pkg0` | – | `git+https://example.com/pkg0.git` |'));
 });
 
+test('a very long lockfile key cannot push the report over the summary limit', () => {
+  // 150,000 zero-width spaces are 1.2 MB once shown as [U+200B]. An explicit
+  // YAML key, because an implicit key has at most 1024 characters.
+  const key = JSON.stringify(`big@1.0.0${'​'.repeat(150_000)}`);
+  const { stdout } = runAudit({
+    baseLock: lockfile([]),
+    headLock: `${lockfile([])}  ? ${key}\n  : resolution: {integrity: sha512-x}\n`,
+  });
+  assert.match(stdout, /Packages changed \(1\)/);
+  assert.ok(stdout.includes('[U+200B]…`'));
+  assert.ok(stdout.length < 10_000);
+});
+
 test('the changes table keeps lockfile text in its cell and stops at 300 rows', () => {
   const gitEntries = Array.from(
     { length: 301 },
@@ -249,7 +279,7 @@ test('the changes table keeps lockfile text in its cell and stops at 300 rows', 
     headLock: `${lockfile(gitEntries)}  ${evil}:\n    resolution: {integrity: sha512-x}\n`,
   });
   assert.match(stdout, /Packages changed \(302\)/);
-  assert.ok(stdout.includes('\n| `evil` | – | `1.0xyz` |\n'));
+  assert.ok(stdout.includes('\n| `evil` | – | `1.0[U+007C]x[U+005C]y[U+000A][U+202E]z` |\n'));
   assert.equal(stdout.split('\n').filter(line => line.startsWith('| `')).length, 300);
   assert.match(stdout, /Packages changed \(302\): 0 updated, 302 new, 0 removed/);
   assert.ok(stdout.includes('…and 2 more (see the `pnpm-lock.yaml` diff).'));
