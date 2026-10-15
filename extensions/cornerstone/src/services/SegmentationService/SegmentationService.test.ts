@@ -1377,6 +1377,8 @@ describe('SegmentationService', () => {
           data: {
             imageIds: ['imageId'],
             referencedImageIds: 'timePoint2',
+            // Without a loaded dynamic volume, the middle time point.
+            stackId: '2',
           },
           type: 'Labelmap',
         },
@@ -1384,6 +1386,37 @@ describe('SegmentationService', () => {
       });
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+
+    it('should create a dynamic volume labelmap on the time point that the volume shows', async () => {
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: true,
+        dynamicVolumeInfo: {
+          timePoints: ['timePoint1', 'timePoint2', 'timePoint3'],
+        },
+      } as unknown as AppTypes.DisplaySet;
+
+      jest.spyOn(cache, 'getVolumeContainingImageId').mockReturnValue({
+        volume: { isDynamicVolume: () => true, dimensionGroupNumber: 3 },
+        imageIdIndex: 0,
+      } as never);
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest.spyOn(cstSegmentation.state, 'getSegmentations').mockReturnValue([]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+      await service.createLabelmapForDisplaySet(displaySet, { segmentationId: 'seg' });
+
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledWith('timePoint3');
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          representation: expect.objectContaining({
+            data: expect.objectContaining({ referencedImageIds: 'timePoint3', stackId: '3' }),
+          }),
+        })
+      );
     });
 
     it('should create a dedicated color LUT and remember its index so every viewport representation reuses it', async () => {
