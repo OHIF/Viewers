@@ -31,70 +31,61 @@ export function getSingleLayerExportSource(labelmapData): {
 }
 
 /**
- * Maps the label values of one labelmap slice to segment indices, and collects
- * the segments on the slice, in one pass.
+ * Gets the label values of one labelmap slice that the SEG export includes, in
+ * one pass. The result is the `segmentsOnLabelmap` of a labelmap2D, which the
+ * SEG adapter reads as label values.
  *
  * cs3D stores a segment in a private overlap layer under a label value that is
- * not its segment index (usually 1). Each layer keeps the map in
- * `labelToSegmentIndex`. The SEG adapter reads each voxel value as a segment
- * number, so the export must map the label values first.
- *
- * A label value that has no entry in the map belongs to no segment, so the SEG
- * has no segment metadata for it. Such voxels are written as 0 (not exported),
- * and `onUnboundLabel` is called for each such label value. Without a map, the
- * label values are kept.
- *
- * The cached labelmap image does not change. The function copies the slice only
- * when a voxel value changes. The copy is a `Uint8Array` when all segment
- * indices are 255 or less, else a `Uint16Array`.
- *
- * cornerstonejs/cornerstone3D#2988 lets the SEG adapter take
- * `labelmap3D.labelToSegmentIndex`. After OHIF moves to that release, the export
- * can set that map on each labelmap3D, and this function can be removed.
+ * not its segment index (usually 1), and keeps the map in `labelToSegmentIndex`
+ * of each layer. A label value that has no entry in that map belongs to no
+ * segment: it is not returned, and it is added to `unboundLabels`. Without a
+ * map, every label value is its own segment index.
  *
  * @param pixelData - The voxel values of the labelmap slice.
- * @param labelToSegmentIndex - The label map of the layer, or undefined to keep the values.
- * @param onUnboundLabel - Called with each label value that has no entry in the map.
+ * @param labelToSegmentIndex - The label map of the layer, or undefined.
+ * @param unboundLabels - Gets each label value that has no entry in the map.
  */
-export function toSegmentIndexPixels(
+export function getExportedLabelValues(
   pixelData,
   labelToSegmentIndex?: LabelToSegmentIndex,
-  onUnboundLabel?: (labelValue: number) => void
-) {
-  const segmentsOnLabelmap = new Set<number>();
-  const unboundLabels = new Set<number>();
-  let segmentIndexPixels = pixelData;
-
+  unboundLabels?: Set<number>
+): number[] {
+  const labelValues = new Set<number>();
   for (let i = 0; i < pixelData.length; i++) {
     const labelValue = pixelData[i];
-    if (labelValue === 0) {
-      continue;
-    }
-
-    let segmentIndex = labelValue;
-    if (labelToSegmentIndex) {
-      segmentIndex = labelToSegmentIndex[labelValue] ?? 0;
-      if (segmentIndex === 0) {
-        unboundLabels.add(labelValue);
-      }
-    }
-    if (segmentIndex !== 0) {
-      segmentsOnLabelmap.add(segmentIndex);
-    }
-    if (segmentIndex !== labelValue) {
-      if (segmentIndexPixels === pixelData) {
-        const maxSegmentIndex = Math.max(0, ...Object.values(labelToSegmentIndex));
-        const SegmentIndexArray = maxSegmentIndex > 255 ? Uint16Array : Uint8Array;
-        segmentIndexPixels = new SegmentIndexArray(pixelData);
-      }
-      segmentIndexPixels[i] = segmentIndex;
+    if (labelValue !== 0) {
+      labelValues.add(labelValue);
     }
   }
+  if (!labelToSegmentIndex) {
+    return Array.from(labelValues);
+  }
+  return Array.from(labelValues).filter(labelValue => {
+    if (labelToSegmentIndex[labelValue]) {
+      return true;
+    }
+    unboundLabels?.add(labelValue);
+    return false;
+  });
+}
 
-  unboundLabels.forEach(labelValue => onUnboundLabel?.(labelValue));
-
-  return {
-    pixelData: segmentIndexPixels,
-    segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
-  };
+/**
+ * Gets the `labelToSegmentIndex` of a labelmap3D for the SEG adapter.
+ *
+ * The adapter reads a label value that is not in the map as its own segment
+ * index. The export must not include a label value that has no segment, so the
+ * map gives segment index 0 (no segment) to each such label value.
+ */
+export function getExportLabelToSegmentIndex(
+  labelToSegmentIndex: LabelToSegmentIndex | undefined,
+  unboundLabels: Set<number>
+): LabelToSegmentIndex | undefined {
+  if (!labelToSegmentIndex) {
+    return undefined;
+  }
+  const exportMap = { ...labelToSegmentIndex };
+  unboundLabels.forEach(labelValue => {
+    exportMap[labelValue] = 0;
+  });
+  return exportMap;
 }

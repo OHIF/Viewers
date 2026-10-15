@@ -1,50 +1,37 @@
-import { getSingleLayerExportSource, toSegmentIndexPixels } from './labelmapLayerSegmentIndices';
+import {
+  getExportedLabelValues,
+  getExportLabelToSegmentIndex,
+  getSingleLayerExportSource,
+} from './labelmapLayerSegmentIndices';
 
 // Segment 2 is in a private layer under label value 1.
 const privateLabelToSegmentIndex = { 1: 2 };
 
-describe('toSegmentIndexPixels', () => {
-  it('maps label values to segment indices, and keeps the cached pixels', () => {
-    const pixelData = new Uint8Array([0, 1, 1, 0]);
-
-    const slice = toSegmentIndexPixels(pixelData, privateLabelToSegmentIndex);
-
-    expect(Array.from(slice.pixelData)).toEqual([0, 2, 2, 0]);
-    expect(slice.segmentsOnLabelmap).toEqual([2]);
-    expect(Array.from(pixelData)).toEqual([0, 1, 1, 0]);
+describe('getExportedLabelValues', () => {
+  it('keeps every label value when the layer has no label map', () => {
+    expect(getExportedLabelValues(new Uint8Array([0, 1, 3, 3]))).toEqual([1, 3]);
   });
 
-  it('keeps the values when the layer has no label map', () => {
-    const slice = toSegmentIndexPixels(new Uint8Array([0, 1, 3]));
+  it('does not export a label value that has no segment, and reports it', () => {
+    const unboundLabels = new Set<number>();
 
-    expect(Array.from(slice.pixelData)).toEqual([0, 1, 3]);
-    expect(slice.segmentsOnLabelmap).toEqual([1, 3]);
-  });
-
-  it('does not export a label value that has no segment, and reports it once', () => {
-    const onUnboundLabel = jest.fn();
-
-    const slice = toSegmentIndexPixels(
+    const labelValues = getExportedLabelValues(
       new Uint8Array([1, 5, 5]),
       privateLabelToSegmentIndex,
-      onUnboundLabel
+      unboundLabels
     );
 
-    expect(Array.from(slice.pixelData)).toEqual([2, 0, 0]);
-    expect(slice.segmentsOnLabelmap).toEqual([2]);
-    expect(onUnboundLabel.mock.calls).toEqual([[5]]);
+    expect(labelValues).toEqual([1]);
+    expect(Array.from(unboundLabels)).toEqual([5]);
   });
+});
 
-  it('writes segment indices up to 255 from an Int8Array without overflow', () => {
-    const slice = toSegmentIndexPixels(new Int8Array([0, 1]), { 1: 200 });
-
-    expect(Array.from(slice.pixelData)).toEqual([0, 200]);
-  });
-
-  it('writes a segment index above 255', () => {
-    const slice = toSegmentIndexPixels(new Uint8Array([0, 1]), { 1: 300 });
-
-    expect(Array.from(slice.pixelData)).toEqual([0, 300]);
+describe('getExportLabelToSegmentIndex', () => {
+  it('maps a label value that has no segment to 0, so the adapter does not export it', () => {
+    expect(getExportLabelToSegmentIndex(privateLabelToSegmentIndex, new Set([5]))).toEqual({
+      1: 2,
+      5: 0,
+    });
   });
 });
 

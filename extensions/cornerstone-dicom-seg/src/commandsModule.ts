@@ -12,8 +12,9 @@ import {
   BITMAP_SEG_SOP_CLASS_UID,
 } from './utils/segmentationConfig';
 import {
+  getExportedLabelValues,
+  getExportLabelToSegmentIndex,
   getSingleLayerExportSource,
-  toSegmentIndexPixels,
   type LabelToSegmentIndex,
 } from './utils/labelmapLayerSegmentIndices';
 
@@ -116,8 +117,8 @@ const commandsModule = ({
       const labelmapData = segmentation.representationData.Labelmap;
 
       // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
-      // derived labelmap image ids, with the label values mapped to segment indices.
-      // When `referencedImageIds` is supplied (the multi-layer/overlap path) each
+      // derived labelmap image ids. The voxels keep their label values, and the
+      // adapter maps them with `labelToSegmentIndex`. When `referencedImageIds` is supplied (the multi-layer/overlap path) each
       // frame is indexed by its source slice so the layers align to the same frames;
       // otherwise frames are sequential.
       const buildLabelmap3D = (
@@ -147,16 +148,21 @@ const commandsModule = ({
             continue;
           }
 
-          const slice = toSegmentIndexPixels(
-            segImage.getPixelData(),
+          const pixelData = segImage.getPixelData();
+          const segmentsOnLabelmap = getExportedLabelValues(
+            pixelData,
             labelToSegmentIndex,
-            labelValue => unboundLabels.add(labelValue)
+            unboundLabels
           );
+          // A slice with only unbound label values would give an empty LABELMAP frame.
+          if (!segmentsOnLabelmap.length) {
+            continue;
+          }
           const { rows, columns } = segImage;
 
           labelmaps2D[frameIndex] = {
-            segmentsOnLabelmap: slice.segmentsOnLabelmap,
-            pixelData: slice.pixelData,
+            segmentsOnLabelmap,
+            pixelData,
             rows,
             columns,
           };
@@ -176,6 +182,7 @@ const commandsModule = ({
           segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
           metadata,
           labelmaps2D,
+          labelToSegmentIndex: getExportLabelToSegmentIndex(labelToSegmentIndex, unboundLabels),
         };
       };
 
