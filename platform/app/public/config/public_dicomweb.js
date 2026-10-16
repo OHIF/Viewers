@@ -13,7 +13,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         supportsFuzzyMatching: true,
