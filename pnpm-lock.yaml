@@ -392,11 +392,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/adapters':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/ai':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/codec-charls':
         specifier: 1.2.5
         version: 1.2.5
@@ -410,23 +410,23 @@ importers:
         specifier: 2.4.9
         version: 2.4.9
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/dicom-image-loader':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(dicom-parser@1.8.21)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(dicom-parser@1.8.21)
       '@cornerstonejs/labelmap-interpolation':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       '@cornerstonejs/metadata':
-        specifier: 5.10.3
-        version: 5.10.3
+        specifier: 5.12.0
+        version: 5.12.0
       '@cornerstonejs/polymorphic-segmentation':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))
       '@cornerstonejs/tools':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@icr/polyseg-wasm':
         specifier: 0.4.0
         version: 0.4.0
@@ -492,11 +492,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/adapters':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@kitware/vtk.js':
         specifier: 36.4.1
         version: 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
@@ -575,11 +575,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/adapters':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@kitware/vtk.js':
         specifier: 36.4.1
         version: 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
@@ -621,14 +621,14 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/adapters':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/tools':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -661,11 +661,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/tools':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -870,11 +870,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/tools':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -975,11 +975,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/tools':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -1416,11 +1416,11 @@ importers:
         specifier: 7.29.7
         version: 7.29.7
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/tools':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -1504,8 +1504,8 @@ importers:
         specifier: 2.4.9
         version: 2.4.9
       '@cornerstonejs/dicom-image-loader':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(dicom-parser@1.8.21)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(dicom-parser@1.8.21)
       '@emotion/serialize':
         specifier: 1.3.3
         version: 1.3.3
@@ -1712,14 +1712,14 @@ importers:
         specifier: 2.4.9
         version: 2.4.9
       '@cornerstonejs/core':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@cornerstonejs/dicom-image-loader':
-        specifier: 5.10.3
-        version: 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(dicom-parser@1.8.21)
+        specifier: 5.12.0
+        version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(dicom-parser@1.8.21)
       '@cornerstonejs/metadata':
-        specifier: 5.10.3
-        version: 5.10.3
+        specifier: 5.12.0
+        version: 5.12.0
       cornerstone-math:
         specifier: 0.1.10
         version: 0.1.10
@@ -3081,18 +3081,18 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@cornerstonejs/adapters@5.10.3':
-    resolution: {integrity: sha512-tsZiv45qNQCPOzNkLlo+RRLlZVsm5VV1s1jFrJddDOUvWCGx38WGc9Ou1axF+w3KkcMkfnnKivmhZ9YmtRmQRw==}
+  '@cornerstonejs/adapters@5.12.0':
+    resolution: {integrity: sha512-X+cwHxj8LYcaI1AA8mrPDTZzdgh6GZ6qDdrgkBEP4rQWrQ2n3uLWkql/oi6Rk+CqtDPMFAerio5qgD348wffaQ==}
     peerDependencies:
-      '@cornerstonejs/core': 5.10.3
-      '@cornerstonejs/metadata': 5.10.3
-      '@cornerstonejs/tools': 5.10.3
+      '@cornerstonejs/core': 5.12.0
+      '@cornerstonejs/metadata': 5.12.0
+      '@cornerstonejs/tools': 5.12.0
 
-  '@cornerstonejs/ai@5.10.3':
-    resolution: {integrity: sha512-P/OWKq/eE+YK5ftEg1JIPQFfeY3NVXa1mqsFaex1x0pUQCVueKpFS4BXpD88hkOdR+crdG5JaLvkN5QBvMV3MQ==}
+  '@cornerstonejs/ai@5.12.0':
+    resolution: {integrity: sha512-gLZUS347hWbETsbveXAFnQvA3knru4R15yF+Gqa+epuDSqqUht7BS9Mejn99I3RyTeMurY3MCIwmBjZmPaduMg==}
     peerDependencies:
-      '@cornerstonejs/core': 5.10.3
-      '@cornerstonejs/tools': 5.10.3
+      '@cornerstonejs/core': 5.12.0
+      '@cornerstonejs/tools': 5.12.0
 
   '@cornerstonejs/calculate-suv@1.0.3':
     resolution: {integrity: sha512-2SwVJKzC1DzyxdxJtCht9dhTND2GFjLwhhkDyyC7vJq5tIgbhxgPk1CSwovO1pxmoybAXzjOxnaubllxLgoT+w==}
@@ -3106,52 +3106,71 @@ packages:
     resolution: {integrity: sha512-BoENE2cXfzQ2RMxPfMMJxyv7E78iErTCB8b8lod/qv3dsYfCmSOUQKiRsuOZJM24JrjCFnyzbkxhAnF8gAKQnQ==}
     engines: {node: '>=0.14'}
 
+  '@cornerstonejs/codec-charls@1.2.7':
+    resolution: {integrity: sha512-kNfQ7J8LIrfQUbt56fPJ0SEvevLlAAbsLHjqPS4DUDWVSuAHb5Fn0cMIV/U0SYkJRJqKvzyLJYF1hl7/xQGqLQ==}
+    engines: {node: '>=0.14'}
+
   '@cornerstonejs/codec-libjpeg-turbo-8bit@1.2.4':
     resolution: {integrity: sha512-k5e2/EjE9gV7dkg2x3CzId6mp6P7tTya/AmnLzbN3fZTW6skTMrOTJfqowgGQBzX7styLdcsnjlqwEVqeqaaHQ==}
     engines: {node: '>=0.14'}
 
+  '@cornerstonejs/codec-libjpeg-turbo-8bit@1.2.7':
+    resolution: {integrity: sha512-TINxDtm+RQuMvWNyNR6z8lCkqDKguZBMrPJ3+oAvLc1XQ3tQsIGIIUWzveedpyr8gp7DYsQqoPLhCl2mYTSv3w==}
+    engines: {node: '>=0.14'}
+
+  '@cornerstonejs/codec-libjxl@1.1.1':
+    resolution: {integrity: sha512-Gp5AXNDuqX9CggJ6VJzjEuPowL2IsKGkvUPo3I7ZmCaY1vNDTwOdJUFrHACl3RIMDm+EL9EUw0Lhsmbs5b0fvA==}
+    engines: {node: '>=24'}
+
   '@cornerstonejs/codec-openjpeg@1.3.2':
     resolution: {integrity: sha512-IsvhGRZ/3LzoNQFyAsKKzPw/S769b9JrKhpufU8uEEalOBn+D1OLetzZ48pvpbwxR4J7ZFrnK0FBIYtl8Hdt9Q==}
+    engines: {node: '>=0.14'}
+
+  '@cornerstonejs/codec-openjph@2.4.11':
+    resolution: {integrity: sha512-NzwCYevGSj2JOuP7BztxrOd5WnJ86gOGLv3sq36jZxxHUXoDo1YhzizHiYz+T7GQqkzbfaQcwSyxsRogzGFIPQ==}
     engines: {node: '>=0.14'}
 
   '@cornerstonejs/codec-openjph@2.4.9':
     resolution: {integrity: sha512-iUGvF8r4SMHFrHGjwhNsTlHDPm+fIcGw3fUYm4vzhsf2J6VR9DqHtynXwUVOCBMSG9YTyWkcsD4db++0kMffMw==}
     engines: {node: '>=0.14'}
 
-  '@cornerstonejs/core@5.10.3':
-    resolution: {integrity: sha512-Pu+EZwqpAHlDukek5GQv4EJNAOq2OzCHX2Fyw/9pAR4wlJ8AqyJZN5ggvl8eBdLhBK/IUGnF/WOUPZap9dY8YQ==}
+  '@cornerstonejs/core@5.12.0':
+    resolution: {integrity: sha512-tnjJYCcrmUdnjk2suFprcR4mkrfJZ3NOAHlml0vo23EqePHgDWNiVCbAkootJ9rGaaKBiCz99VWLUL1+sBbefw==}
     peerDependencies:
-      '@cornerstonejs/metadata': 5.10.3
-      '@cornerstonejs/utils': 5.10.3
+      '@cornerstonejs/metadata': 5.12.0
+      '@cornerstonejs/utils': 5.12.0
 
-  '@cornerstonejs/dicom-image-loader@5.10.3':
-    resolution: {integrity: sha512-X54YXP+OXRdzTP0kK3x2IZKk2c3fE2jcIk50jZzbr06crVURbw493yPI0VAwi4BI2XP8Suw3gFVxG6qvdOsivw==}
+  '@cornerstonejs/dicom-image-loader@5.12.0':
+    resolution: {integrity: sha512-UfBJoNSM+L4SzTZfhxOHRQUIuL0LO8SApeysrYsZdwwQWBomLzqiQ1BlLIwsIfpfb7h9gHOSYt2RKHqidVRmDQ==}
     peerDependencies:
-      '@cornerstonejs/core': 5.10.3
-      '@cornerstonejs/metadata': 5.10.3
+      '@cornerstonejs/core': 5.12.0
+      '@cornerstonejs/metadata': 5.12.0
       dicom-parser: 1.8.21
 
-  '@cornerstonejs/labelmap-interpolation@5.10.3':
-    resolution: {integrity: sha512-fY1VHAXDIHEhWdI866d7D/qaZjZJucoD6oVvjyh0tYoMocImMtJqZ3ldaLJq9IkK2r37JBadNaRQji21VpCIgQ==}
+  '@cornerstonejs/jpeg-lossless-decoder-js@2.2.1':
+    resolution: {integrity: sha512-cDCv7dm3qw9kbxCydvj0UGbNQcsPmTwcyd9SQXkBt34CDgSBeb8Xvj0Gz9HlJ+7DIKOFMTazF1oDJSu0pcCKmg==}
+
+  '@cornerstonejs/labelmap-interpolation@5.12.0':
+    resolution: {integrity: sha512-y3gjCxrG1OYay/mLQ6sv/29dKqlnny2EW55M03pS+tw4Q9yMcS6/jlHOopgSA0Y4/pzq+KWKZtikLygz8m1Sxw==}
     peerDependencies:
-      '@cornerstonejs/core': 5.10.3
-      '@cornerstonejs/tools': 5.10.3
+      '@cornerstonejs/core': 5.12.0
+      '@cornerstonejs/tools': 5.12.0
       '@kitware/vtk.js': 36.4.1
 
-  '@cornerstonejs/metadata@5.10.3':
-    resolution: {integrity: sha512-+wgDUt5QDc0YldesFcp6weNma80Vg9Mjg8xIjR4659GZsSM1TFguGtyMd4tQPZaJrzM9vggjjFn4KHD9FQZF4g==}
+  '@cornerstonejs/metadata@5.12.0':
+    resolution: {integrity: sha512-0wucYfpVy5IFWxvVJ+yUpFI0Scjw3wMhAtM5jKy/XT+TPrNpEzlBVFSaHO2VR2xj8ZUjGnE/UFMQAkVWf/WATg==}
 
-  '@cornerstonejs/polymorphic-segmentation@5.10.3':
-    resolution: {integrity: sha512-+9TZsXmUE57u/fsc5AlJpHcSn9jP94QmzhuIVd3t6afQ+q9Fk04TCAb9xpTSc6CS0PECRJAi7SOBMWjZrydkpA==}
+  '@cornerstonejs/polymorphic-segmentation@5.12.0':
+    resolution: {integrity: sha512-ybJfIPGk1t7wAcSpyKYSsT6GCkpqDFltucC4liK8F25vTUPy0ZlRVnMS84wABIZj1jOFgl12grrc6m/gx3234Q==}
     peerDependencies:
-      '@cornerstonejs/core': 5.10.3
-      '@cornerstonejs/tools': 5.10.3
+      '@cornerstonejs/core': 5.12.0
+      '@cornerstonejs/tools': 5.12.0
       '@kitware/vtk.js': 36.4.1
 
-  '@cornerstonejs/tools@5.10.3':
-    resolution: {integrity: sha512-ON1ZtAWMmrmkKldNTcwBBfPI9dItqaGQt9xcFw5mSUSpxow4z0I3Jb2tObV+RPLQkK5ultzNX2Lql+2nAV6dWA==}
+  '@cornerstonejs/tools@5.12.0':
+    resolution: {integrity: sha512-ZdQrd15m3pIahGjU6+gzukUl1Vc0PxXcxU52SvtPTN4i2z1pcDU0SbHQAAGmMieaEdUmZMl5w4mQax3/8Tmc/w==}
     peerDependencies:
-      '@cornerstonejs/core': 5.10.3
+      '@cornerstonejs/core': 5.12.0
       '@kitware/vtk.js': 36.4.1
       '@types/d3-array': 3.2.1
       '@types/d3-interpolate': 3.0.4
@@ -3159,8 +3178,8 @@ packages:
       d3-interpolate: 3.0.1
       gl-matrix: 3.4.3
 
-  '@cornerstonejs/utils@5.10.3':
-    resolution: {integrity: sha512-45rIXR3ynJrlmrykjG0ijn0qRA4MrXxv7es++e28dRZo0eZMjkKQLoYB1Ng41PFd5zJr5QpowDoquGGQ5h4DcA==}
+  '@cornerstonejs/utils@5.12.0':
+    resolution: {integrity: sha512-vJXYHLbBHV9uM/9391KQAJTYcUbgENFpQt2IvegVJglrBWdkthDZ1HPPq01V9hcFLmBbv4zH86Fmu6XxjmcS7g==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -5195,12 +5214,6 @@ packages:
     peerDependenciesMeta:
       rollup:
         optional: true
-
-  '@rollup/rollup-linux-x64-gnu@4.13.0':
-    resolution: {integrity: sha512-yUD/8wMffnTKuiIsl6xU+4IA8UNhQ/f1sAnQebmE/lyQ8abjsVyDkyRkWop0kdMhKMprpNIhPmYlCxgHrPoXoA==}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
 
   '@rsbuild/core@2.1.6':
     resolution: {integrity: sha512-w2WxblstOgHnDElkqJZVO/jM/EqPaEhg7zqQhON3Xu3Mj9FlVOJx+SgimOtghFzxLt8x7atX4oMUtMTNSZGf0Q==}
@@ -9683,9 +9696,6 @@ packages:
 
   joi@17.13.7:
     resolution: {integrity: sha512-MF80Dm5Y2veNy8QWVx9Bj3ui4mo7+VPSPsR1M+oaHXV0Gx6zGX9a2F+OZG3Blby9tOlzU9Rs5FUimlEhbKtfnQ==}
-
-  jpeg-lossless-decoder-js@2.1.2:
-    resolution: {integrity: sha512-fYf/plymnuKwVw+s8gJ8O/BPw8y8OLaN11MBvEcT05kuy3m45o7BEC4J0JbxMNUYyO+MdK/I/jq0q1gkVYZm2Q==}
 
   js-sha3@0.9.3:
     resolution: {integrity: sha512-BcJPCQeLg6WjEx3FE591wVAevlli8lxsxm9/FzV4HXkV49TmBH38Yvrpce6fjbADGMKFrBMGTqrVz3qPIZ88Gg==}
@@ -15158,22 +15168,22 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@cornerstonejs/adapters@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
+  '@cornerstonejs/adapters@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
     dependencies:
       '@babel/runtime-corejs2': 7.26.10
-      '@cornerstonejs/core': 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
-      '@cornerstonejs/metadata': 5.10.3
-      '@cornerstonejs/tools': 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@cornerstonejs/metadata': 5.12.0
+      '@cornerstonejs/tools': 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       buffer: 6.0.3
       dcmjs: 0.52.0
       gl-matrix: 3.4.3
       ndarray: 1.0.19
 
-  '@cornerstonejs/ai@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
+  '@cornerstonejs/ai@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))':
     dependencies:
       '@babel/runtime-corejs2': 7.26.10
-      '@cornerstonejs/core': 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
-      '@cornerstonejs/tools': 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@cornerstonejs/tools': 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       buffer: 6.0.3
       dcmjs: 0.52.0
       gl-matrix: 3.4.3
@@ -15188,16 +15198,24 @@ snapshots:
 
   '@cornerstonejs/codec-charls@1.2.5': {}
 
+  '@cornerstonejs/codec-charls@1.2.7': {}
+
   '@cornerstonejs/codec-libjpeg-turbo-8bit@1.2.4': {}
+
+  '@cornerstonejs/codec-libjpeg-turbo-8bit@1.2.7': {}
+
+  '@cornerstonejs/codec-libjxl@1.1.1': {}
 
   '@cornerstonejs/codec-openjpeg@1.3.2': {}
 
+  '@cornerstonejs/codec-openjph@2.4.11': {}
+
   '@cornerstonejs/codec-openjph@2.4.9': {}
 
-  '@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)':
+  '@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)':
     dependencies:
-      '@cornerstonejs/metadata': 5.10.3
-      '@cornerstonejs/utils': 5.10.3
+      '@cornerstonejs/metadata': 5.12.0
+      '@cornerstonejs/utils': 5.12.0
       '@kitware/vtk.js': 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       comlink: 4.4.2
       gl-matrix: 3.4.3
@@ -15206,24 +15224,27 @@ snapshots:
       - autoprefixer
       - wslink
 
-  '@cornerstonejs/dicom-image-loader@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.10.3)(dicom-parser@1.8.21)':
+  '@cornerstonejs/dicom-image-loader@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(dicom-parser@1.8.21)':
     dependencies:
-      '@cornerstonejs/codec-charls': 1.2.5
-      '@cornerstonejs/codec-libjpeg-turbo-8bit': 1.2.4
+      '@cornerstonejs/codec-charls': 1.2.7
+      '@cornerstonejs/codec-libjpeg-turbo-8bit': 1.2.7
+      '@cornerstonejs/codec-libjxl': 1.1.1
       '@cornerstonejs/codec-openjpeg': 1.3.2
-      '@cornerstonejs/codec-openjph': 2.4.9
-      '@cornerstonejs/core': 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
-      '@cornerstonejs/metadata': 5.10.3
+      '@cornerstonejs/codec-openjph': 2.4.11
+      '@cornerstonejs/core': 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@cornerstonejs/jpeg-lossless-decoder-js': 2.2.1
+      '@cornerstonejs/metadata': 5.12.0
       comlink: 4.4.2
       dicom-parser: 1.8.21
-      jpeg-lossless-decoder-js: 2.1.2
       pako: 2.1.0
       uuid: 9.0.1
 
-  '@cornerstonejs/labelmap-interpolation@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)':
+  '@cornerstonejs/jpeg-lossless-decoder-js@2.2.1': {}
+
+  '@cornerstonejs/labelmap-interpolation@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
-      '@cornerstonejs/core': 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
-      '@cornerstonejs/tools': 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@cornerstonejs/tools': 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@itk-wasm/morphological-contour-interpolation': 1.1.0(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       '@kitware/vtk.js': 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       itk-wasm: 1.0.0-b.165(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
@@ -15231,23 +15252,23 @@ snapshots:
       - debug
       - supports-color
 
-  '@cornerstonejs/metadata@5.10.3':
+  '@cornerstonejs/metadata@5.12.0':
     dependencies:
       '@cornerstonejs/calculate-suv': 1.0.3
-      '@cornerstonejs/utils': 5.10.3
+      '@cornerstonejs/utils': 5.12.0
       dcmjs: 0.52.0
       gl-matrix: 3.4.3
 
-  '@cornerstonejs/polymorphic-segmentation@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))':
+  '@cornerstonejs/polymorphic-segmentation@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))':
     dependencies:
-      '@cornerstonejs/core': 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
-      '@cornerstonejs/tools': 5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/core': 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@cornerstonejs/tools': 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
       '@icr/polyseg-wasm': 0.4.0
       '@kitware/vtk.js': 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
 
-  '@cornerstonejs/tools@5.10.3(@cornerstonejs/core@5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)':
+  '@cornerstonejs/tools@5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)':
     dependencies:
-      '@cornerstonejs/core': 5.10.3(@cornerstonejs/metadata@5.10.3)(@cornerstonejs/utils@5.10.3)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@cornerstonejs/core': 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@kitware/vtk.js': 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
       '@types/d3-array': 3.2.1
       '@types/d3-interpolate': 3.0.4
@@ -15259,7 +15280,7 @@ snapshots:
       gl-matrix: 3.4.3
       lodash.get: 4.4.2
 
-  '@cornerstonejs/utils@5.10.3':
+  '@cornerstonejs/utils@5.12.0':
     dependencies:
       dcmjs: 0.52.0
 
@@ -18263,9 +18284,6 @@ snapshots:
       picomatch: 4.0.4
     optionalDependencies:
       rollup: 2.80.0
-
-  '@rollup/rollup-linux-x64-gnu@4.13.0':
-    optional: true
 
   '@rsbuild/core@2.1.6(core-js@3.45.1)':
     dependencies:
@@ -23498,10 +23516,6 @@ snapshots:
       '@sideway/address': 4.1.5
       '@sideway/formula': 3.0.1
       '@sideway/pinpoint': 2.0.0
-
-  jpeg-lossless-decoder-js@2.1.2:
-    optionalDependencies:
-      '@rollup/rollup-linux-x64-gnu': 4.13.0
 
   js-sha3@0.9.3: {}
 
