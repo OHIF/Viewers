@@ -169,6 +169,7 @@ import Pause from './Sources/Pause';
 import Play from './Sources/Play';
 import PanelRight from './Sources/PanelRight';
 import ViewportWindowLevel from './Sources/ViewportWindowLevel';
+import ViewportProjection from './Sources/ViewportProjection';
 import Search from './Sources/Search';
 import Clear from './Sources/Clear';
 import {
@@ -608,6 +609,7 @@ export const Icons = {
     );
   },
   ViewportWindowLevel,
+  ViewportProjection,
   Search,
   Clear,
   LayoutCommon2x3,
@@ -692,6 +694,7 @@ export const Icons = {
   'icon-clear': (props: IconProps) => Clear(props),
   'icon-search': (props: IconProps) => Search(props),
   'viewport-window-level': (props: IconProps) => ViewportWindowLevel(props),
+  'viewport-projection': (props: IconProps) => ViewportProjection(props),
   'action-new-dialog': (props: IconProps) => ActionNewDialog(props),
   'arrow-left': (props: IconProps) => Icons.ArrowLeft(props),
   'arrow-right': (props: IconProps) => Icons.ArrowRight(props),
