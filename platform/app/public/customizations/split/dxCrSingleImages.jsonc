@@ -1,0 +1,61 @@
+// URL-loaded customization: dxCrSingleImages
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata raw selector data.
+//
+// With the new split on, the default rule `singleImageModality` is off, so a
+// CR, DX or MG series is one display set. This rule splits a small DX or CR
+// series into one display set for each image, which is what a radiograph
+// series usually needs: each image is a separate view. MG is not in the list,
+// and a series of 10 images or more stays one display set.
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `$merge` adds the rule under its id with priority -1, so it runs before
+//    every default rule (the defaults use the priorities 1..n).
+//  - The series fact `tenOrMoreImages` is true when the series has at least
+//    10 instances (`minInstances`). `matches` claims an instance only when
+//    that fact is false.
+//  - `stackImage` is the OHIF classifier that keeps the rule to the images
+//    that the stack SOP class handler owns.
+//  - `groupBy` makes one group for each SOPInstanceUID.
+//
+// Load it with `?customization=split/dxCrSingleImages`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "dxCrSingleImages": {
+            "priority": -1,
+            "description": "DX / CR series of fewer than 10 images: one display set for each image.",
+            "viewportTypes": ["stack"],
+            "series": [
+              {
+                "name": "tenOrMoreImages",
+                "scope": "first",
+                "when": { "expression": "true" },
+                "minInstances": 10
+              }
+            ],
+            "matches": {
+              "all": [
+                { "attribute": "Modality", "in": ["DX", "CR"] },
+                { "classifier": "stackImage" },
+                { "not": { "seriesFact": "tenOrMoreImages" } }
+              ]
+            },
+            "groupBy": ["SeriesInstanceUID", "SOPInstanceUID"],
+            "customAttributes": {
+              "fromFirstInstance": {
+                "instanceNumber": { "attribute": "InstanceNumber" },
+                "acquisitionDatetime": { "attribute": "AcquisitionDateTime" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

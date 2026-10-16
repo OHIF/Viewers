@@ -1,0 +1,33 @@
+// URL-loaded customization: enableNewSplit
+//
+// Enables metadata-driven display set splitting: series instances are split
+// into display sets by the @cornerstonejs/metadata split-rules engine
+// (`useMetadataDisplaySet` customization) instead of the stack SOP class
+// handler.  Instances not matched by any split rule (video, whole-slide,
+// ECG, SEG, SR, RT, PDF, ...) still go through the registered SOP class
+// handlers, so specialized extensions keep working unchanged.
+//
+// The default rules include `mixedDimensionalityBValue`, which splits MR
+// series mixing instances with and without DiffusionBValue into separate
+// display sets (the DWI mixed-b-value issue).
+//
+// The default rule `singleImageModality` is off, so a CR, DX or MG series is
+// one display set, and not one display set for each image as with the stack
+// SOP class handler. `split/dxCrSingleImages.jsonc` shows a per-image split
+// for small DX and CR series as a rule.
+//
+// Load it with `?customization=split/enableNewSplit`.
+//
+// Custom rules are @cornerstonejs/metadata raw selector data (conditions,
+// `{ "expression": "..." }`, series facts) - see `split/scoutSeries.jsonc` for
+// a complete example.  `splitRules` is keyed by
+// rule id: add a rule with `$merge`.  Rules are evaluated in ascending
+// `priority` with first-match-wins per instance.  The default rules use the
+// priorities 1..n, so a priority below 0 runs before every default rule, a
+// priority above 10000 runs after every default rule (it only sees instances
+// no default rule matched), and a priority of null turns a rule off.
+{
+  "global": {
+    "useMetadataDisplaySet": { "enabled": { "$set": true } }
+  }
+}

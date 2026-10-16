@@ -38,6 +38,12 @@ jobs:
       - run:
           name: Install Dependencies
           command: pnpm install --frozen-lockfile
+      # A `CS3D_REF:` line in the PR body selects the CS3D build to test, as it
+      # does for the Playwright workflow. Without the line, nothing changes.
+      - run:
+          name: Apply the CS3D_REF of the pull request
+          command: bash .scripts/ci/cs3d-apply-ref.sh
+          no_output_timeout: 30m
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
@@ -390,6 +396,13 @@ jobs:
           command: export DISPLAY=:99
       - cypress/install:
           install-command: pnpm install
+      # After cypress/install, on purpose: node/install-packages inside it has
+      # already saved the dependency cache, so a linked CS3D branch cannot
+      # reach a cache that another pull request restores.
+      - run:
+          name: Apply the CS3D_REF of the pull request
+          command: bash .scripts/ci/cs3d-apply-ref.sh
+          no_output_timeout: 30m
       - cypress/run-tests:
           # CI runs headless under Xvfb with no GPU, so Electron uses software
           # WebGL. Newer Chromium deprecated that implicit fallback (canvas
