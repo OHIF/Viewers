@@ -919,10 +919,30 @@ function commandsModule({
       if (visibility === undefined && items?.length) {
         visibility = !items[0].isVisible;
       }
+
+      const toggleSingle = (measurementUid: string, vis?: boolean) => {
+        const measurement = measurementService.getMeasurement(measurementUid);
+        if (measurement) {
+          measurementService.toggleVisibilityMeasurement(measurementUid, vis);
+        } else {
+          /**
+           * Fallback for SR preview annotations not in MeasurementService.
+           * Directly toggle the Cornerstone annotation visibility.
+           */
+          const sourceAnnotation = annotation.state.getAnnotation(measurementUid);
+          if (sourceAnnotation) {
+            const currentVisibility = annotation.visibility.isAnnotationVisible(measurementUid);
+            const newVisibility = vis !== undefined ? vis : !currentVisibility;
+            annotation.visibility.setAnnotationVisibility(measurementUid, newVisibility);
+            cornerstoneViewportService.getRenderingEngine()?.render();
+          }
+        }
+      };
+
       if (Array.isArray(uid)) {
-        measurementService.toggleVisibilityMeasurementMany(uid, visibility);
+        uid.forEach(u => toggleSingle(u, visibility));
       } else {
-        measurementService.toggleVisibilityMeasurement(uid, visibility);
+        toggleSingle(uid, visibility);
       }
     },
 
