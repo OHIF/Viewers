@@ -302,8 +302,6 @@ const commandsModule = ({
         predecessorImageId,
         ContentDate: creationDate,
         ContentTime: creationTime,
-        // The time point of a 4D segmentation, written as the SEG StackID.
-        ...(labelmapData.stackId !== undefined && { stackId: labelmapData.stackId }),
         ...(storeIntoSeriesImageId ? {} : { SeriesDate: creationDate, SeriesTime: creationTime }),
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,

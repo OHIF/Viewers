@@ -474,27 +474,6 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
    * @param options - Optional parameters for creating the segmentation
    * @returns A promise that resolves to the created segmentation ID
    */
-  /**
-   * The time point of a 4D display set that a new segmentation belongs to: the
-   * one that the loaded dynamic volume shows now, else the middle one. The
-   * stack id is the 1-based dimension group number of that time point, which
-   * cornerstone tools uses to show the labelmap on that time point only. The
-   * dynamic volume groups its images as `dynamicVolumeInfo.timePoints` does.
-   */
-  private _getDynamicVolumeStack(displaySet: AppTypes.DisplaySet): {
-    referenceImageIds: string[];
-    stackId: string;
-  } {
-    const { timePoints } = displaySet.dynamicVolumeInfo;
-    const volume = cache.getVolumeContainingImageId(displaySet.imageIds[0])?.volume as
-      | csTypes.IDynamicImageVolume
-      | undefined;
-    const index = volume?.isDynamicVolume?.()
-      ? volume.dimensionGroupNumber - 1
-      : Math.floor(timePoints.length / 2);
-    return { referenceImageIds: timePoints[index], stackId: String(index + 1) };
-  }
-
   private async _createSegmentationForDisplaySet(
     displaySet: AppTypes.DisplaySet,
     segmentationType: SegmentationRepresentations,
@@ -514,10 +493,11 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     const isDynamicVolume = displaySet.isDynamicVolume;
 
     let referenceImageIds = displaySet.imageIds;
-    // A 4D segmentation belongs to one time point: its stack of source images.
-    let stackId: string | undefined;
     if (isDynamicVolume) {
-      ({ referenceImageIds, stackId } = this._getDynamicVolumeStack(displaySet));
+      // get the middle timepoint for referenceImageIds
+      const timePoints = displaySet.dynamicVolumeInfo.timePoints;
+      const middleTimePoint = timePoints[Math.floor(timePoints.length / 2)];
+      referenceImageIds = middleTimePoint;
     }
 
     const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
@@ -535,7 +515,6 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
           imageIds: segImageIds,
           // referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
           referencedImageIds: referenceImageIds,
-          ...(stackId !== undefined && { stackId }),
         },
       },
       config: {
