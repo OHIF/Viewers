@@ -1,0 +1,20 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 24
+        - nvm use 24
+        - export NODE_OPTIONS="--max-old-space-size=6144"
+        - corepack enable
+        - rm -rf node_modules
+        - pnpm install --no-frozen-lockfile
+    build:
+      commands:
+        - export NODE_OPTIONS="--max-old-space-size=6144"
+        - export GENERATE_SOURCEMAP=false
+        - APP_CONFIG=config/smartcareplus.js pnpm run build
+  artifacts:
+    baseDirectory: platform/app/dist
+    files:
+      - '**/*'
