@@ -23,6 +23,7 @@ import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 import CaptureViewportModal from './CaptureViewportModal.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import ToolbarModeSelector from './ToolbarModeSelector.json';
 import Tools from './Tools.json';
 
 export default {
@@ -52,6 +53,7 @@ export default {
     CaptureViewportModal,
     Hps,
     ToolbarLayoutSelector,
+    ToolbarModeSelector,
     Tools,
   },
 };
