@@ -107,4 +107,54 @@ describe('MetadataProvider', () => {
       });
     });
   });
+
+  describe('the overlay plane module', () => {
+    it('reads an overlay that dcmjs named by keyword', () => {
+      // What dcmjs >= 0.50 makes of group 6000 in DICOMweb metadata.
+      const instance = {
+        OverlayRows: 512,
+        OverlayColumns: 256,
+        OverlayType: 'G',
+        OverlayOrigin: [1, 1],
+        OverlayBitsAllocated: 1,
+        OverlayBitPosition: 0,
+        OverlayData: { BulkDataURI: 'http://localhost/bulk/overlay-6000' },
+      };
+
+      const { overlays } = metadataProvider.getTagFromInstance('overlayPlaneModule', instance);
+
+      expect(overlays).toHaveLength(1);
+      expect(overlays[0]).toMatchObject({
+        rows: 512,
+        columns: 256,
+        type: 'G',
+        x: 1,
+        y: 1,
+        pixelData: { BulkDataURI: 'http://localhost/bulk/overlay-6000' },
+      });
+    });
+
+    it('reads overlays that dcmjs kept under their tag', () => {
+      // dcmjs < 0.50 keeps the hex tag as the key.
+      const instance = {
+        '60000010': 512,
+        '60000011': 256,
+        '60000040': 'G',
+        '60000050': [1, 1],
+        '60003000': { BulkDataURI: 'http://localhost/bulk/overlay-6000' },
+        '60020010': 64,
+        '60020011': 32,
+        '60020040': 'R',
+        '60020050': [5, 7],
+        '60023000': { BulkDataURI: 'http://localhost/bulk/overlay-6002' },
+      };
+
+      const { overlays } = metadataProvider.getTagFromInstance('overlayPlaneModule', instance);
+
+      expect(overlays).toMatchObject([
+        { rows: 512, columns: 256, type: 'G', x: 1, y: 1 },
+        { rows: 64, columns: 32, type: 'R', x: 5, y: 7 },
+      ]);
+    });
+  });
 });
