@@ -1,0 +1,18 @@
+// GPU class: low
+//
+// States a texture edge of 256 voxels and 2 GB of texture memory, for a weak
+// integrated GPU. Such a device can lose its WebGL context on a large texture
+// before it reaches the edge that it reports, so the profile reduces early.
+//
+// Use this profile for a weak device. It holds more memory than
+// `gpu/low-tablet`, and it shares the same edge.
+//
+// The profile is a stated value and not a measurement. Nothing probes the
+// device, so a real device may hold more or less than this profile states.
+//
+// Load it with `?customization=gpu/low`.
+{
+  "bootstrap": {
+    "cornerstone.gpuCapabilityProfile": "low"
+  }
+}
