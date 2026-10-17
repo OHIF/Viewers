@@ -13,6 +13,15 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     toolbarService.getButtonSection(buttonSection as string).filter(Boolean)
   );
 
+  // A component can be handed a different section while it stays mounted, e.g.
+  // a split button that a new mode registers under a new section id. Re-read
+  // the buttons for the new section instead of keeping the previous one's.
+  const [currentButtonSection, setCurrentButtonSection] = useState(buttonSection);
+  if (currentButtonSection !== buttonSection) {
+    setCurrentButtonSection(buttonSection);
+    setToolbarButtons(toolbarService.getButtonSection(buttonSection as string).filter(Boolean));
+  }
+
   // Store state of open/closed menu items
   // Note: We keep this in local state to avoid re-evaluating the toolbar on every interaction
   const [openItemIds, setOpenItemIds] = useState<Record<string, boolean>>({});
@@ -44,7 +53,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     return () => {
       subs.forEach(sub => sub.unsubscribe());
     };
-  }, [toolbarService]);
+  }, [toolbarService, buttonSection]);
 
   // Effect to handle active viewportId change event
   useEffect(() => {
