@@ -1541,12 +1541,15 @@ class CornerstoneViewportService
       return;
     }
 
-    displaySetPromise.then(() => {
-      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-        viewportData,
-        viewportId,
-      });
-    });
+    displaySetPromise.then(
+      () => {
+        this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+          viewportData,
+          viewportId,
+        });
+      },
+      error => console.error('[CornerstoneViewportService] Failed to update the viewport', error)
+    );
   }
 
   _setDisplaySets(
