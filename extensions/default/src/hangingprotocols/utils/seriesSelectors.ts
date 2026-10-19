@@ -35,14 +35,15 @@ export const seriesWithImages: MatchingRule[] = [
 
 /**
  * Display sets that a grid protocol shows alone in a 1x1 layout when the
- * study has no image display set. Their SOP class handlers set
- * numImageFrames to 0, so seriesWithImages does not match them.
+ * study has no image display set: ECG waveforms, whole slide images and
+ * PDF documents. Their SOP class handlers set numImageFrames to 0, so
+ * seriesWithImages does not match them.
  */
 export const seriesShownAlone: MatchingRule[] = [
   {
     attribute: 'Modality',
     constraint: {
-      includes: ['ECG', 'SM'],
+      includes: ['ECG', 'SM', 'DOC'],
     },
     required: true,
   },

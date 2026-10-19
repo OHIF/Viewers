@@ -215,7 +215,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
       ],
     },
 
-    // A 1x1 stage for a study with no image display set, for example an ECG study
+    // A 1x1 stage for a study with no image display set, for example an ECG, SM or PDF study
     {
       name: '1x1 shown alone',
       stageActivation: {
