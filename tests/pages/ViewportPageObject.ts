@@ -2,6 +2,7 @@ import { Locator, Page } from '@playwright/test';
 import {
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
+  simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
@@ -17,6 +18,11 @@ type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathClickParams = {
+  path: { x: number; y: number }[];
+  closePath?: boolean;
 };
 
 type NormalizedPathDragParams = {
@@ -65,7 +71,7 @@ export interface IViewportPageObject {
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
-  normalizedPathClickAt: (params: { path: { x: number; y: number }[] }) => Promise<void>;
+  normalizedPathClickAt: (params: NormalizedPathClickParams) => Promise<void>;
   normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
@@ -427,16 +433,20 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
-      normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
-        const { path } = params;
+      normalizedPathClickAt: async (params: NormalizedPathClickParams) => {
+        const { path, closePath = false } = params;
         await simulateNormalizedClicksOnElement({
           locator: viewport,
           normalizedPoints: path,
         });
-        await simulateNormalizedDoubleClickOnElement({
-          locator: viewport,
-          normalizedPoint: path[path.length - 1],
-        });
+        if (closePath) {
+          // Click the first point to close the path, held past the 400ms double-click window.
+          await simulateNormalizedClickOnElement({
+            locator: viewport,
+            normalizedPoint: path[0],
+            delay: 500,
+          });
+        }
       },
       normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
         await simulateNormalizedPathDragOnElement({
