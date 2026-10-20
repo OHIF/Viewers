@@ -357,18 +357,32 @@ descriptors, the descriptor `styles: []` field. migrate adds a
 
 ## Verify
 
-After the rewrites:
+After the rewrites, build the plugin in its own folder:
 
 ```bash
 pnpm install
-pnpm build
-pnpm plugin doctor   # peer-range and keyword checks
+pnpm run build
 ```
 
-then load the plugin in the viewer and confirm it registers (for a
+`doctor` isn't part of the plugin itself; it runs from an OHIF checkout. Link
+the plugin there and check it:
+
+```bash
+pnpm run plugin link ../path/to/your-plugin
+pnpm run plugin doctor
+```
+
+`doctor` checks that the link resolves, that the plugin's `@ohif/core` range
+covers this viewer's version, that the plugin has no copy of its own of React
+or another package the viewer provides, and, for a mode, that the extensions it
+needs are installed and declared. In a create-ohif workspace, run
+`pnpm run doctor` at the workspace root instead.
+
+Then load the plugin in the viewer and confirm it registers (for a
 runtime-loaded plugin, check `window.__ohif.runtimeExtensions` for its audit
-record). The `pnpm plugin` helpers replace the deleted CLI; see the
-[OHIF CLI removal](./3p13-to-3p14/cli-removal.md) for the full command
+record). Run `pnpm run plugin unlink <name>` when you're done if you don't
+want to keep the link. The `pnpm run plugin` helpers replace the deleted CLI;
+see the [OHIF CLI removal](./3p13-to-3p14/cli-removal.md) for the full command
 mapping.
 
 ---
