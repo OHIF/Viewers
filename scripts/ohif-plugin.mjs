@@ -244,24 +244,81 @@ function die(code, message) {
 // Subcommands
 // ---------------------------------------------------------------------------
 
+// Install `spec` to the root workspace (where the build's node_modules
+// fallback resolves from) unless `name` is already a root dependency.
+function installToRoot(name, spec, ctx) {
+  if (isRootDependency(name, ctx.rootPkgPath)) {
+    console.log(`${name} is already a root dependency — skipping pnpm add`);
+    return;
+  }
+  try {
+    ctx.runPnpm(['add', '-w', spec]);
+  } catch (e) {
+    process.exit(typeof e.status === 'number' ? e.status : 1);
+  }
+}
+
+const isDeclared = (config, name) =>
+  ['extensions', 'modes'].some(section =>
+    (config[section] || []).some(entry => entry && entry.packageName === name)
+  );
+
+// A peer the package marks optional in peerDependenciesMeta: never added for
+// it, and doctor doesn't report it.
+const isOptionalPeer = (pkg, name) =>
+  ((pkg.peerDependenciesMeta || {})[name] || {}).optional === true;
+
+// Declare `name` in `section`; true when the config changed.
+function declare(config, section, name, configPath, reason = '') {
+  const list = config[section] || (config[section] = []);
+  if (list.some(entry => entry && entry.packageName === name)) {
+    console.log(`${name} is already declared in "${section}" — leaving the entry untouched`);
+    return false;
+  }
+  list.push({ packageName: name });
+  console.log(`added { "packageName": "${name}" } to "${section}" in ${configPath}${reason}`);
+  return true;
+}
+
+// The old CLI's add-mode also installed and declared the OHIF plugins a mode
+// lists as peers. Do the same for the peers pnpm has installed: a peer counts
+// as a plugin when its package carries the ohif-extension or ohif-mode keyword
+// (an uninstalled peer can't be told apart from a library; doctor warns about
+// those). Each one also becomes a root dependency, so a later install or
+// removal can't take it away while it is still declared. In-tree plugins are
+// left to their own entries, and optional peers are skipped. A peer added here
+// gets the same treatment for its own peers; each is declared before its peers
+// are visited, so the isDeclared check also stops a cycle.
+// Finding the peer at <root>/node_modules/<peer> relies on two root settings:
+// pnpm's default auto-install-peers, and nodeLinker: hoisted (an isolated
+// layout keeps a peer-only install under .pnpm/). If either changes, peers are
+// skipped here and doctor's "isn't installed" warning takes over.
+export function addPluginPeers(pkg, config, ctx, workspaceDirs = getWorkspacePluginDirs()) {
+  let changed = false;
+  for (const [peerName, range] of Object.entries(pkg.peerDependencies || {})) {
+    if (isDeclared(config, peerName) || workspaceDirs[peerName]) continue;
+    if (isOptionalPeer(pkg, peerName)) continue;
+    const peerPkgPath = path.join(ctx.nodeModulesDir, peerName, 'package.json');
+    const peerPkg = readJsonSafe(peerPkgPath);
+    const section = peerPkg && sectionFromKeywords(peerPkg.keywords);
+    if (!section) continue;
+    const peerSpec = `${peerName}@${range}`;
+    assertSafeSpec(peerSpec);
+    installToRoot(peerName, peerSpec, ctx);
+    changed = declare(config, section, peerName, ctx.configPath, ` (a peer of ${pkg.name})`) || changed;
+    changed = addPluginPeers(readJsonSafe(peerPkgPath) || peerPkg, config, ctx, workspaceDirs) || changed;
+  }
+  return changed;
+}
+
 export function cmdAdd(args, ctx = defaultCtx()) {
   const spec = args.find(a => !a.startsWith('--'));
-  if (!spec) die(2, 'usage: plugin add <pkg>[@range] [--extension|--mode]');
+  if (!spec) die(2, 'usage: plugin add <pkg>[@range] [--extension|--mode] [--no-peers]');
   const flagSection = sectionFromFlags(args);
   // Validate before anything reaches pnpm's argv (see assertSafeSpec/runPnpm).
   const { name } = assertSafeSpec(spec);
 
-  // One-command form: install to the root workspace (where the build's
-  // node_modules fallback resolves from) only when not already a root dep.
-  if (!isRootDependency(name, ctx.rootPkgPath)) {
-    try {
-      ctx.runPnpm(['add', '-w', spec]);
-    } catch (e) {
-      process.exit(typeof e.status === 'number' ? e.status : 1);
-    }
-  } else {
-    console.log(`${name} is already a root dependency — skipping pnpm add`);
-  }
+  installToRoot(name, spec, ctx);
 
   const pkg = readJsonSafe(path.join(ctx.nodeModulesDir, name, 'package.json'));
   if (!pkg) {
@@ -270,13 +327,12 @@ export function cmdAdd(args, ctx = defaultCtx()) {
   const section = requireSection(name, pkg.keywords, flagSection);
 
   const config = readConfig(ctx.configPath);
-  const list = config[section] || (config[section] = []);
-  if (list.some(entry => entry && entry.packageName === name)) {
-    console.log(`${name} is already declared in "${section}" — leaving the entry untouched`);
-  } else {
-    list.push({ packageName: name });
+  let changed = declare(config, section, name, ctx.configPath);
+  if (!args.includes('--no-peers')) {
+    changed = addPluginPeers(pkg, config, ctx) || changed;
+  }
+  if (changed) {
     writeConfig(config, ctx.configPath);
-    console.log(`added { "packageName": "${name}" } to "${section}" in ${ctx.configPath}`);
   }
   return cmdDoctor([], ctx);
 }
@@ -551,6 +607,7 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
     if (!pkg) continue;
     for (const peerName of Object.keys(pkg.peerDependencies || {})) {
       if (peerName === entry.packageName || declared.has(peerName)) continue;
+      if (isOptionalPeer(pkg, peerName)) continue;
       const peerSource = classifySource({ packageName: peerName }, workspaceDirs);
       const peerPkg = peerSource.dir
         ? readJsonSafe(path.join(peerSource.dir, 'package.json'))
@@ -559,9 +616,20 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
         (peerPkg && sectionFromKeywords(peerPkg.keywords)) ||
         workspaceDirs[peerName] ||
         /^@ohif\/(extension|mode)-/.test(peerName);
-      if (!isPlugin) continue; // library peer (react, @ohif/core, ...)
+      if (!isPlugin) {
+        // A peer that isn't installed at all can't be told apart from a
+        // library by its keywords. Third-party extensions are rarely named
+        // @ohif/extension-*, so say so rather than staying silent.
+        if (!peerSource.dir) {
+          warn(
+            `${entry.packageName} peer-requires ${peerName}, which isn't installed — if it is ` +
+              `an OHIF extension or mode, add it (pnpm plugin add ${peerName})`
+          );
+        }
+        continue; // library peer (react, @ohif/core, ...)
+      }
       const detail = peerSource.dir
-        ? 'installed but no longer declared in pluginConfig.json'
+        ? 'installed but not declared in pluginConfig.json'
         : 'neither declared nor resolvable';
       fail(
         `dangling reference: ${entry.packageName} peer-requires ${peerName}, which is ` +
@@ -628,9 +696,12 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
 const USAGE = `usage: node scripts/ohif-plugin.mjs <subcommand>
 
 subcommands:
-  add <pkg>[@range] [--extension|--mode]   install to the root workspace (pnpm add -w)
+  add <pkg>[@range] [--extension|--mode] [--no-peers]
+                                           install to the root workspace (pnpm add -w)
                                            when absent, declare it in pluginConfig.json,
-                                           then run doctor
+                                           also install and declare the OHIF plugins it
+                                           lists as peers (unless --no-peers), then run
+                                           doctor
   remove <pkg>                             remove the declaration; pnpm remove -w when it
                                            is a root dependency; then run doctor
   list                                     print declared extensions/modes with source

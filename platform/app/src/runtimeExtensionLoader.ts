@@ -406,8 +406,12 @@ export async function loadExternalModule(specifier: string): Promise<unknown> {
     timestamp: new Date().toISOString(),
   };
   if (!isUrlLike(specifier)) {
+    // The record's error is what the on-screen notification shows, so it
+    // carries the fix as well as the problem.
     record.error =
-      `unknown module "${specifier}": not a plugin name declared in pluginConfig.json and not a URL`;
+      `unknown module "${specifier}": not a plugin name declared in pluginConfig.json and not a URL — ` +
+      'add it to pluginConfig.json and rebuild, or load it with a descriptor in ' +
+      'window.config.extensions / window.config.modes';
     getAudit().push(record);
     throw new Error(
       `OHIF plugin loader: unknown module "${specifier}". It is not a plugin name ` +

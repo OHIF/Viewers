@@ -33,9 +33,10 @@ Everything the CLI did is now covered by four things you can use directly:
 | `list` | `pnpm run plugin list` |
 | `search` | `npm search keywords:ohif-extension` / `npm search keywords:ohif-mode` |
 
-The mode → extension auto-install is gone: adding a mode no longer pulls in the
-extensions it depends on. Declare a mode's peer extensions yourself in
-`pluginConfig.json` (`pnpm run plugin doctor` flags missing ones). See
+`pnpm run plugin add` still brings in a mode's extensions: it installs and
+declares the OHIF extensions and modes the package lists as peers (`--no-peers`
+to skip). `plugin remove` removes only the package you name;
+`pnpm run plugin doctor` flags anything left missing or undeclared. See
 [Extension installation](../../platform/extensions/installation.md) for the
 from-npm, from-checkout, and in-tree forms of a registration entry.
 

@@ -42,6 +42,15 @@ describe('loadExternalModule', () => {
     expect(window.browserImportFunction).not.toHaveBeenCalled();
   });
 
+  test('the audit record for an unknown name says how to fix it (the notification shows it)', async () => {
+    await expect(loadExternalModule('ohif-extension-missing')).rejects.toThrow();
+    const record = window.__ohif.runtimeExtensions.find(
+      r => r.packageName === 'ohif-extension-missing'
+    );
+    expect(record.error).toMatch(/add it to pluginConfig\.json and rebuild/);
+    expect(record.error).toMatch(/window\.config\.extensions \/ window\.config\.modes/);
+  });
+
   test('data: and blob: URIs are refused by the bare-name throw', async () => {
     await expect(loadExternalModule('data:text/javascript,alert(1)')).rejects.toThrow(
       /unknown module/

@@ -31,7 +31,10 @@ pnpm run plugin add @acme/mode-bar
 
 The extensions a mode lists in its `peerDependencies` must also be installed
 and declared in the `extensions` array — the build does not add them
-automatically. `pnpm run plugin doctor` flags missing ones.
+automatically. `pnpm run plugin add` does: it installs and declares the OHIF
+extensions and modes the package lists as peers (pass `--no-peers` to add only
+the package you named). If you install by hand or link a checkout,
+`pnpm run plugin doctor` flags missing ones.
 
 ---
 

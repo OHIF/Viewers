@@ -31,6 +31,9 @@ Or do both in one step with the helper:
 pnpm run plugin add @acme/extension-foo
 ```
 
+`plugin add` also installs and declares any OHIF extensions or modes the
+package lists as peers (pass `--no-peers` to add only the package you named).
+
 ## From a local checkout (out-of-tree)
 
 Point the config at a checkout on disk:
