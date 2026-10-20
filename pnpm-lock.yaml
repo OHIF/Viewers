@@ -1253,6 +1253,88 @@ importers:
         specifier: 5.10.0
         version: 5.10.0
 
+  modes/niivue:
+    dependencies:
+      '@babel/runtime':
+        specifier: 7.29.7
+        version: 7.29.7
+      '@niivue/nv-ohif':
+        specifier: 1.0.0-rc.14
+        version: 1.0.0-rc.14(@niivue/niivue@1.0.0-rc.26)(react@19.2.7)
+      '@ohif/core':
+        specifier: workspace:*
+        version: link:../../platform/core
+      '@ohif/extension-cornerstone':
+        specifier: workspace:*
+        version: link:../../extensions/cornerstone
+      '@ohif/extension-default':
+        specifier: workspace:*
+        version: link:../../extensions/default
+      '@ohif/extension-dicom-pdf':
+        specifier: workspace:*
+        version: link:../../extensions/dicom-pdf
+      '@ohif/extension-dicom-video':
+        specifier: workspace:*
+        version: link:../../extensions/dicom-video
+      '@ohif/mode-basic':
+        specifier: workspace:*
+        version: link:../basic
+      i18next:
+        specifier: 19.9.2
+        version: 19.9.2
+    devDependencies:
+      '@babel/core':
+        specifier: 7.29.7
+        version: 7.29.7(supports-color@8.1.1)
+      '@babel/plugin-syntax-dynamic-import':
+        specifier: 7.8.3
+        version: 7.8.3(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-arrow-functions':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-class-properties':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/plugin-transform-object-rest-spread':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/plugin-transform-private-methods':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/plugin-transform-regenerator':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
+      '@babel/plugin-transform-runtime':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/plugin-transform-typescript':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/preset-env':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/preset-react':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@babel/preset-typescript':
+        specifier: 7.29.7
+        version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@svgr/webpack':
+        specifier: 8.1.0
+        version: 8.1.0(supports-color@8.1.1)(typescript@5.5.4)
+      babel-loader:
+        specifier: 8.4.1
+        version: 8.4.1(@babel/core@7.29.7(supports-color@8.1.1))(webpack@5.105.0(@swc/core@1.15.13(@swc/helpers@0.5.23)))
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
+      dotenv:
+        specifier: 8.6.0
+        version: 8.6.0
+      webpack-merge:
+        specifier: 5.10.0
+        version: 5.10.0
+
   modes/preclinical-4d:
     dependencies:
       '@babel/runtime':
@@ -1514,6 +1596,15 @@ importers:
       '@emotion/serialize':
         specifier: 1.3.3
         version: 1.3.3
+      '@niivue/niivue':
+        specifier: 1.0.0-rc.26
+        version: 1.0.0-rc.26
+      '@niivue/nv-ohif':
+        specifier: 1.0.0-rc.14
+        version: 1.0.0-rc.14(@niivue/niivue@1.0.0-rc.26)(react@19.2.7)
+      '@niivue/uikit':
+        specifier: 1.0.0-rc.14
+        version: 1.0.0-rc.14(@niivue/niivue@1.0.0-rc.26)
       '@ohif/core':
         specifier: workspace:*
         version: link:../core
@@ -3082,6 +3173,36 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
+  '@cbor-extract/cbor-extract-darwin-arm64@2.2.2':
+    resolution: {integrity: sha512-ZKZ/F8US7JR92J4DMct6cLW/Y66o2K576+zjlEN/MevH70bFIsB10wkZEQPLzl2oNh2SMGy55xpJ9JoBRl5DOA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@cbor-extract/cbor-extract-darwin-x64@2.2.2':
+    resolution: {integrity: sha512-32b1mgc+P61Js+KW9VZv/c+xRw5EfmOcPx990JbCBSkYJFY0l25VinvyyWfl+3KjibQmAcYwmyzKF9J4DyKP/Q==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@cbor-extract/cbor-extract-linux-arm64@2.2.2':
+    resolution: {integrity: sha512-wfqgzqCAy/Vn8i6WVIh7qZd0DdBFaWBjPdB6ma+Wihcjv0gHqD/mw3ouVv7kbbUNrab6dKEx/w3xQZEdeXIlzg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@cbor-extract/cbor-extract-linux-arm@2.2.2':
+    resolution: {integrity: sha512-tNg0za41TpQfkhWjptD+0gSD2fggMiDCSacuIeELyb2xZhr7PrhPe5h66Jc67B/5dmpIhI2QOUtv4SBsricyYQ==}
+    cpu: [arm]
+    os: [linux]
+
+  '@cbor-extract/cbor-extract-linux-x64@2.2.2':
+    resolution: {integrity: sha512-rpiLnVEsqtPJ+mXTdx1rfz4RtUGYIUg2rUAZgd1KjiC1SehYUSkJN7Yh+aVfSjvCGtVP0/bfkQkXpPXKbmSUaA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@cbor-extract/cbor-extract-win32-x64@2.2.2':
+    resolution: {integrity: sha512-dI+9P7cfWxkTQ+oE+7Aa6onEn92PHgfWXZivjNheCRmTBDBf2fx6RyTi0cmgpYLnD1KLZK9ZYrMxaPZ4oiXhGA==}
+    cpu: [x64]
+    os: [win32]
+
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
@@ -4485,6 +4606,23 @@ packages:
     peerDependencies:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
+
+  '@niivue/dcm2niix@1.3.20260724':
+    resolution: {integrity: sha512-iLb2wsF/NgoEP9TNAULIn985CJ5TI0Ps2g5AVYEeDjoA116Ge340cNzN5atSftwS3lRtX1Dc+G/EdYvUckl6Ag==}
+
+  '@niivue/niivue@1.0.0-rc.26':
+    resolution: {integrity: sha512-nGKRQm3MaFoDmBuV/prTXGokbQTdUpx/mMXOKdbWzXUaGMXfGySmToq9Ccza2sCaOk3Zn7CSWdSdtkcZIdJHoQ==}
+
+  '@niivue/nv-ohif@1.0.0-rc.14':
+    resolution: {integrity: sha512-7QkgMP/1l29FVOZxTGemK4DzBexeIB4Y9Y1H5qWQvPJV6elTRmvVu+QnsaNK1+if9b4ItNC7ag4An62ECP9sCw==}
+    peerDependencies:
+      '@niivue/niivue': 1.0.0-rc.26
+      react: 19.2.7
+
+  '@niivue/uikit@1.0.0-rc.14':
+    resolution: {integrity: sha512-9n4xtY8e3BLtK/wmdI1ZQrZf84a0nN+pA2wMZodhSIvMdJI8bGe+GRrEdY5cpD4ll20irGJtIyETvs4zOX+izQ==}
+    peerDependencies:
+      '@niivue/niivue': 1.0.0-rc.26
 
   '@noble/hashes@1.4.0':
     resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
@@ -7007,6 +7145,13 @@ packages:
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
+
+  cbor-extract@2.2.2:
+    resolution: {integrity: sha512-hlSxxI9XO2yQfe9g6msd3g4xCfDqK5T5P0fRMLuaLHhxn4ViPrm+a+MUfhrvH2W962RGxcBwEGzLQyjbDG1gng==}
+    hasBin: true
+
+  cbor-x@1.6.7:
+    resolution: {integrity: sha512-awPOwYNadWn58tijAREeRCVCgUXxFEShVkk3AEYf6/Q0pqFTTS15PQ3eDo+iJLHrlHCtYZQDNVNU1V/ABgQRRA==}
 
   cborg@4.5.8:
     resolution: {integrity: sha512-6/viltD51JklRhq4L7jC3zgy6gryuG5xfZ3kzpE+PravtyeQLeQmCYLREhQH7pWENg5pY4Yu/XCd6a7dKScVlw==}
@@ -10627,6 +10772,9 @@ packages:
       react: 19.2.7
       react-dom: 19.2.7
 
+  nifti-reader-js@0.8.0:
+    resolution: {integrity: sha512-iO1iIhQDfKniy+l/86HfOPte7So+SxBmBiMSiUB2VXU7z4hSewMTlE3h0fCgfzfXvMUa+ilzLTJ2ZHmtFw6EWw==}
+
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
@@ -10642,6 +10790,10 @@ packages:
   node-fetch@3.3.2:
     resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  node-gyp-build-optional-packages@5.1.1:
+    resolution: {integrity: sha512-+P72GAjVAbTxjjwUmwjVrqrdZROD4nf8KgpBoDxqXXTiYZZt/ud60dE5yvCSr9lRO8e8yv6kgJIC0K0PfZFVQw==}
+    hasBin: true
 
   node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
@@ -15170,6 +15322,24 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
+  '@cbor-extract/cbor-extract-darwin-arm64@2.2.2':
+    optional: true
+
+  '@cbor-extract/cbor-extract-darwin-x64@2.2.2':
+    optional: true
+
+  '@cbor-extract/cbor-extract-linux-arm64@2.2.2':
+    optional: true
+
+  '@cbor-extract/cbor-extract-linux-arm@2.2.2':
+    optional: true
+
+  '@cbor-extract/cbor-extract-linux-x64@2.2.2':
+    optional: true
+
+  '@cbor-extract/cbor-extract-win32-x64@2.2.2':
+    optional: true
+
   '@colors/colors@1.5.0':
     optional: true
 
@@ -17482,6 +17652,29 @@ snapshots:
       '@emnapi/runtime': 1.11.3
       '@tybys/wasm-util': 0.10.4
     optional: true
+
+  '@niivue/dcm2niix@1.3.20260724': {}
+
+  '@niivue/niivue@1.0.0-rc.26':
+    dependencies:
+      cbor-x: 1.6.7
+      clipper2-ts: 2.0.1
+      earcut: 3.0.2
+      gl-matrix: 3.4.4
+      nifti-reader-js: 0.8.0
+      zarrita: 0.7.3
+
+  '@niivue/nv-ohif@1.0.0-rc.14(@niivue/niivue@1.0.0-rc.26)(react@19.2.7)':
+    dependencies:
+      '@niivue/dcm2niix': 1.3.20260724
+      '@niivue/niivue': 1.0.0-rc.26
+      '@niivue/uikit': 1.0.0-rc.14(@niivue/niivue@1.0.0-rc.26)
+      dcmjs: 0.52.0
+      react: 19.2.7
+
+  '@niivue/uikit@1.0.0-rc.14(@niivue/niivue@1.0.0-rc.26)':
+    dependencies:
+      '@niivue/niivue': 1.0.0-rc.26
 
   '@noble/hashes@1.4.0': {}
 
@@ -20233,6 +20426,22 @@ snapshots:
   caniuse-lite@1.0.30001810: {}
 
   caseless@0.12.0: {}
+
+  cbor-extract@2.2.2:
+    dependencies:
+      node-gyp-build-optional-packages: 5.1.1
+    optionalDependencies:
+      '@cbor-extract/cbor-extract-darwin-arm64': 2.2.2
+      '@cbor-extract/cbor-extract-darwin-x64': 2.2.2
+      '@cbor-extract/cbor-extract-linux-arm': 2.2.2
+      '@cbor-extract/cbor-extract-linux-arm64': 2.2.2
+      '@cbor-extract/cbor-extract-linux-x64': 2.2.2
+      '@cbor-extract/cbor-extract-win32-x64': 2.2.2
+    optional: true
+
+  cbor-x@1.6.7:
+    optionalDependencies:
+      cbor-extract: 2.2.2
 
   cborg@4.5.8: {}
 
@@ -24853,6 +25062,10 @@ snapshots:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
 
+  nifti-reader-js@0.8.0:
+    dependencies:
+      fflate: 0.8.3
+
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
@@ -24872,6 +25085,11 @@ snapshots:
       data-uri-to-buffer: 4.0.1
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
+
+  node-gyp-build-optional-packages@5.1.1:
+    dependencies:
+      detect-libc: 2.1.2
+    optional: true
 
   node-int64@0.4.0: {}
 
