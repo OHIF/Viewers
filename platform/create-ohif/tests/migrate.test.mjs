@@ -154,6 +154,58 @@ test('migrate drops the CLI dev alias, rewrites yarn scripts and flags jest', ()
   );
 });
 
+test('migrate removes other lockfiles and the CLI build output', () => {
+  const target = scaffoldCliEra('extension', 'leftovers-extension');
+  const write = (rel, text = 'x') => {
+    fs.mkdirSync(path.dirname(path.join(target, rel)), { recursive: true });
+    fs.writeFileSync(path.join(target, rel), text);
+  };
+  write('yarn.lock');
+  write('package-lock.json', '{}');
+  write('bun.lock', '{}');
+  write('bun.lockb');
+  write('dist/umd/leftovers-extension/index.umd.js');
+  write('dist/keep.txt');
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    'remove yarn.lock, package-lock.json, bun.lock, bun.lockb (this package now uses pnpm',
+    'remove dist/umd/leftovers-extension/ (the CLI-era build output',
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  assert.ok(fs.existsSync(path.join(target, 'yarn.lock')), 'dry run deletes nothing');
+  assert.ok(fs.existsSync(path.join(target, 'dist/umd/leftovers-extension/index.umd.js')));
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'yarn.lock')));
+  assert.ok(!fs.existsSync(path.join(target, 'package-lock.json')));
+  assert.ok(!fs.existsSync(path.join(target, 'bun.lock')));
+  assert.ok(!fs.existsSync(path.join(target, 'bun.lockb')));
+  assert.ok(!fs.existsSync(path.join(target, 'dist/umd')), 'the emptied dist/umd/ is removed too');
+  assert.ok(fs.existsSync(path.join(target, 'dist/keep.txt')), 'the rest of dist/ is untouched');
+});
+
+test('migrate removes a scoped CLI build output and flags other dist/umd files', () => {
+  const target = scaffoldCliEra('extension', 'scoped-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.name = '@acme/scoped-extension';
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+  for (const rel of ['dist/umd/@acme/scoped-extension/index.umd.js', 'dist/umd/something-else.js']) {
+    fs.mkdirSync(path.dirname(path.join(target, rel)), { recursive: true });
+    fs.writeFileSync(path.join(target, rel), 'x');
+  }
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(report.includes('remove dist/umd/@acme/scoped-extension/ (the CLI-era build output'), report);
+  assert.ok(report.includes('dist/umd/ holds files other than the CLI build output (1)'), report);
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'dist/umd/@acme')), 'the emptied scope folder is removed');
+  assert.ok(fs.existsSync(path.join(target, 'dist/umd/something-else.js')), 'unrecognised files stay');
+});
+
 test('migrate keeps a dev alias the author changed', () => {
   const target = scaffoldCliEra('extension', 'alias-extension');
   const pkgPath = path.join(target, 'package.json');

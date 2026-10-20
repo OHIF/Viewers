@@ -284,6 +284,13 @@ build file (`webpack.config.js`, a `vite.*`/`rollup.*` config, extra files in
 `.webpack/`) is **flagged, not rewritten**: migrate leaves it in place and you
 port any custom settings into `.rspack/rspack.prod.js` by hand.
 
+migrate also removes two kinds of leftover: other package managers' lockfiles,
+`yarn.lock`, `package-lock.json`, `bun.lock` and `bun.lockb` (pnpm writes its
+own `pnpm-lock.yaml`), and the CLI-era build output in
+`dist/umd/<package name>/`, which would otherwise ship in a published package
+next to the new `dist/index.umd.js`. Anything else under `dist/umd/` is flagged
+and left in place.
+
 ---
 
 ## The extension object: id and default export

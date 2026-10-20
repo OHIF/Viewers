@@ -863,6 +863,55 @@ async function runMigrate(targetDir, dryRun) {
     );
   }
 
+  // -- leftovers: other package managers' lockfiles, the CLI build output -----
+  // pnpm ignores these lockfiles and writes pnpm-lock.yaml, so leaving them
+  // means two lockfiles that disagree. (bun.lock / bun.lockb date from OHIF
+  // 3.10–3.12, which kept a bun lockfile alongside yarn.lock.)
+  const staleLockfiles = ['yarn.lock', 'package-lock.json', 'bun.lock', 'bun.lockb'].filter(name =>
+    fs.existsSync(path.join(targetDir, name))
+  );
+  if (staleLockfiles.length > 0) {
+    note(
+      true,
+      `remove ${staleLockfiles.join(', ')} (this package now uses pnpm, which writes pnpm-lock.yaml)`
+    );
+    fileOps.push(() => {
+      for (const name of staleLockfiles) {
+        fs.rmSync(path.join(targetDir, name), { force: true });
+      }
+    });
+  }
+  // The CLI built to dist/umd/<package name>/. Nothing reads it any more (main
+  // now points at dist/index.umd.js), and because files includes dist it would
+  // ship in a published package. Only that folder is removed; anything else
+  // under dist/umd/ is flagged and left in place.
+  const umdDir = path.join(targetDir, 'dist', 'umd');
+  if (fs.existsSync(umdDir)) {
+    const cliOutputDir = path.join(umdDir, ...pkg.name.split('/'));
+    const cliOutputRel = path.relative(targetDir, cliOutputDir).split(path.sep).join('/');
+    const others = listFiles(umdDir).filter(file => !file.startsWith(cliOutputDir + path.sep));
+    if (fs.existsSync(cliOutputDir)) {
+      note(
+        true,
+        `remove ${cliOutputRel}/ (the CLI-era build output; the .rspack build writes dist/index.umd.js)`
+      );
+      fileOps.push(() => {
+        fs.rmSync(cliOutputDir, { recursive: true, force: true });
+        // Remove the now-empty scope folder (for @scope/name) and dist/umd/.
+        for (let dir = path.dirname(cliOutputDir); dir.startsWith(umdDir); dir = path.dirname(dir)) {
+          if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) {
+            fs.rmdirSync(dir);
+          }
+        }
+      });
+    }
+    if (others.length > 0) {
+      flags.push(
+        `dist/umd/ holds files other than the CLI build output (${others.length}) — left in place; delete them if they are old build output`
+      );
+    }
+  }
+
   // -- companion files: .npmrc / AGENTS.md / tailwind.config.js --------------
   const npmrcPath = path.join(targetDir, '.npmrc');
   const npmrcHasLine =
