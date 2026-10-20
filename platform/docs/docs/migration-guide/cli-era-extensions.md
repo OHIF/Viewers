@@ -97,15 +97,16 @@ The contract requires:
     "module": "dist/index.umd.js"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.13.0-beta.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@ohif/core": ">=3.14.0-beta.0 <4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }
 ```
 
-This is the `create-ohif` extension template output verbatim (the template is
-normative). Note what is **not** here:
+These are the `create-ohif` extension template's fields, as written for 3.14
+(the template is normative: if this page and the template ever differ,
+follow the template). Note what is **not** here:
 
 - **No `publishConfig.types` and no `exports` map.** The plugin toolchain does
   not emit `.d.ts` files, so there is nothing to point a `types` field at, and
@@ -148,10 +149,15 @@ The contract:
 - **Build tooling is never a peer.** `webpack` / `webpack-merge` are dropped;
   the `.rspack` toolchain lives in `devDependencies`. A consumer installing
   your plugin should not be asked to satisfy a bundler.
-- **`@ohif/*` peers pin to the host range** (`^3.13.0-beta.0`, one convention
-  for the whole plugin). The runtime loader refuses to load a plugin whose
-  declared `@ohif/*` range does not admit the host version, so a stale range is
-  a load-time failure, not a warning.
+- **`@ohif/*` peers use the host range**, `>=<major>.<minor>.0-beta.0 <<major+1>`
+  taken from the `create-ohif` version (for 3.14, `>=3.14.0-beta.0 <4`).
+  Starting at `beta.0` keeps the range open to a viewer on an earlier beta than
+  `create-ohif`. `pnpm run plugin doctor` checks the `@ohif/core` peer against
+  the viewer's version; the runtime loader checks a descriptor's
+  `coreVersionRange`, not peer ranges.
+- **React is a peer, never a dependency.** If `react` or `react-dom` is under
+  `dependencies`, migrate moves it to `peerDependencies` at the template's
+  range. The host provides React, and an installed copy would be a second React.
 - **Drop the `@ohif/ui` peer** if present. `@ohif/ui` is legacy and the host
   does not hand it to runtime plugins; port UI to `@ohif/ui-next` (the APIs
   differ — this is a `[flag]`, migrate will not rewrite your imports).

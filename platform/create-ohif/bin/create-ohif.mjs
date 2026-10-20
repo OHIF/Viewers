@@ -592,7 +592,7 @@ async function runMigrate(targetDir, dryRun) {
     if (name.startsWith('@ohif/') && peers[name] !== hostRange) {
       note(
         true,
-        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${hostRange}" (host peer range; the loader refuses to load on range mismatch)`
+        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${hostRange}" (the OHIF versions this plugin supports, taken from create-ohif's version)`
       );
       peers[name] = hostRange;
     }
@@ -615,6 +615,23 @@ async function runMigrate(targetDir, dryRun) {
       );
       peers[name] = templateReactPeers[name];
     }
+  }
+  // React under dependencies is always moved: the host provides React, so an
+  // installed copy would be a second React. It becomes a peer at the
+  // template's range.
+  const deps = next.dependencies ?? {};
+  for (const name of ['react', 'react-dom']) {
+    if (name in deps) {
+      note(
+        true,
+        `package.json dependencies: move "${name}" ${JSON.stringify(deps[name])} to peerDependencies "${templateReactPeers[name]}" (the host provides React; an installed copy would be a second React)`
+      );
+      delete deps[name];
+      peers[name] = templateReactPeers[name];
+    }
+  }
+  if (next.dependencies) {
+    next.dependencies = deps;
   }
   for (const name of WEBPACK_TOOLING) {
     if (name in peers) {

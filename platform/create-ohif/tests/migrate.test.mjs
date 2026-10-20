@@ -91,6 +91,29 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
   assert.equal(pkg.main, 'dist/umd/my-cli-extension/index.umd.js');
 });
 
+test('migrate moves react from dependencies to peerDependencies', () => {
+  const target = scaffoldCliEra('extension', 'react-dep-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  delete scaffolded.peerDependencies.react;
+  scaffolded.dependencies = { ...scaffolded.dependencies, react: '^17.0.2' };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(
+    report.includes('dependencies: move "react" "^17.0.2" to peerDependencies "^19.2.7"'),
+    report
+  );
+  assert.ok(!report.includes('react@^17.0.2'), 'react is moved, not flagged for pinning');
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('react' in pkg.dependencies));
+  assert.equal(pkg.peerDependencies.react, '^19.2.7');
+
+  assert.ok(!migrate(target, '--dry-run').includes('move "react"'), 'second run moves nothing');
+});
+
 test('migrate applies the extension rewrites and is idempotent', () => {
   const target = scaffoldCliEra('extension', 'my-cli-extension');
   migrate(target);
