@@ -670,6 +670,48 @@ async function runMigrate(targetDir, dryRun) {
     note(true, 'package.json scripts["build:package"]: -> "pnpm run build"');
     scripts['build:package'] = 'pnpm run build';
   }
+  // The CLI templates added an alias for dev (dev:my-extension in extensions,
+  // dev:cornerstone in modes). The create-ohif templates have none and nothing
+  // calls them, so drop them while they are still the unchanged alias.
+  for (const alias of ['dev:my-extension', 'dev:cornerstone']) {
+    if (typeof scripts[alias] === 'string' && /^(yarn|pnpm) run dev$/.test(scripts[alias])) {
+      note(true, `package.json scripts["${alias}"]: drop (the CLI template's alias for dev; nothing calls it)`);
+      delete scripts[alias];
+    }
+  }
+  // The package now uses pnpm, so any remaining yarn call becomes pnpm run.
+  // The `yarn <name>` shorthand is only rewritten when <name> is one of the
+  // package's own scripts, so yarn commands like `yarn install` are left alone.
+  for (const [name, command] of Object.entries(scripts)) {
+    const match = typeof command === 'string' && command.match(/^yarn(?: run)? ([\w:.-]+)(.*)$/);
+    if (match && (command.startsWith('yarn run ') || match[1] in scripts)) {
+      const rewritten = `pnpm run ${match[1]}${match[2]}`;
+      note(true, `package.json scripts["${name}"]: "${command}" -> "${rewritten}"`);
+      scripts[name] = rewritten;
+    }
+  }
+  // Any yarn call still left (a yarn command such as `yarn install`, or yarn
+  // later in a command) has no safe automatic translation, so flag it.
+  for (const [name, command] of Object.entries(scripts)) {
+    if (typeof command === 'string' && /(^|[\s&;|])yarn(\s|$)/.test(command)) {
+      flags.push(
+        `package.json scripts["${name}"] still calls yarn ("${command}") — this package now uses pnpm; translate it by hand`
+      );
+    }
+  }
+  // A test script that runs jest without jest installed can only fail. Flag it
+  // rather than delete it: the author may want tests (create-ohif scaffolds use
+  // vitest).
+  const declaresJest = 'jest' in (next.dependencies ?? {}) || 'jest' in (next.devDependencies ?? {});
+  if (!declaresJest) {
+    for (const [name, command] of Object.entries(scripts)) {
+      if (typeof command === 'string' && /(^|[\s&;|])jest(\s|$)/.test(command)) {
+        flags.push(
+          `package.json scripts["${name}"] runs jest, which isn't a dependency — remove it, or set up tests with vitest as a new create-ohif scaffold does`
+        );
+      }
+    }
+  }
   next.scripts = scripts;
 
   // -- package.json: devDependencies -----------------------------------------

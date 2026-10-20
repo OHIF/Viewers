@@ -114,6 +114,58 @@ test('migrate moves react from dependencies to peerDependencies', () => {
   assert.ok(!migrate(target, '--dry-run').includes('move "react"'), 'second run moves nothing');
 });
 
+test('migrate drops the CLI dev alias, rewrites yarn scripts and flags jest', () => {
+  const target = scaffoldCliEra('mode', 'scripts-mode');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.scripts.start = 'yarn run dev';
+  scaffolded.scripts.serve = 'yarn dev';
+  scaffolded.scripts.setup = 'yarn install';
+  scaffolded.scripts.release = 'pnpm run build && yarn publish';
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    `scripts["dev:cornerstone"]: drop (the CLI template's alias for dev`,
+    'scripts["start"]: "yarn run dev" -> "pnpm run dev"',
+    'scripts["serve"]: "yarn dev" -> "pnpm run dev"',
+    'scripts["setup"] still calls yarn ("yarn install")',
+    'scripts["release"] still calls yarn ("pnpm run build && yarn publish")',
+    `scripts["test:unit"] runs jest, which isn't a dependency`,
+    `scripts["test:unit:ci"] runs jest, which isn't a dependency`,
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  assert.ok(!report.includes('scripts["setup"]: "yarn install" ->'), 'yarn commands are flagged, not rewritten');
+
+  migrate(target);
+  const { scripts } = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('dev:cornerstone' in scripts));
+  assert.equal(scripts.start, 'pnpm run dev');
+  assert.equal(scripts.serve, 'pnpm run dev');
+  assert.equal(scripts.setup, 'yarn install');
+  assert.equal(scripts.release, 'pnpm run build && yarn publish');
+  assert.equal(scripts['test:unit'], 'jest --watchAll', 'jest scripts are flagged, not changed');
+
+  const again = migrate(target, '--dry-run');
+  assert.ok(
+    !again.includes(': drop (') && !again.includes('"yarn run') && !again.includes('"yarn dev" ->'),
+    again
+  );
+});
+
+test('migrate keeps a dev alias the author changed', () => {
+  const target = scaffoldCliEra('extension', 'alias-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.scripts['dev:my-extension'] = 'node tools/watch.js';
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  migrate(target);
+  const { scripts } = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.equal(scripts['dev:my-extension'], 'node tools/watch.js');
+});
+
 test('migrate applies the extension rewrites and is idempotent', () => {
   const target = scaffoldCliEra('extension', 'my-cli-extension');
   migrate(target);

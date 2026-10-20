@@ -162,6 +162,19 @@ The contract:
   does not hand it to runtime plugins; port UI to `@ohif/ui-next` (the APIs
   differ — this is a `[flag]`, migrate will not rewrite your imports).
 
+### scripts
+
+migrate rewrites `dev`, `build` and `build:package` to the `.rspack` builds.
+It also:
+
+- drops `dev:my-extension` and `dev:cornerstone`, the CLI templates' aliases
+  for `dev`, while they are unchanged (nothing calls them);
+- rewrites any remaining `yarn run …` call, or `yarn <script>`, to
+  `pnpm run …`, and flags any other yarn call (for example `yarn install`, or
+  yarn later in a command) for you to translate by hand;
+- flags scripts that run jest when jest isn't a dependency. New scaffolds use
+  vitest for tests.
+
 ### `pnpm-workspace.yaml` and `.npmrc`
 
 The migration adds `autoInstallPeers: false` to the package's
