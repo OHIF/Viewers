@@ -240,7 +240,7 @@ function getFormattedWindowBlock(addToWindowLines) {
   return content;
 }
 
-function getRuntimeLoadModesExtensions(modules) {
+function getRuntimeLoadModesExtensions(modules, builtInNames) {
   const dynamicLoad = [];
   // Branch ORDER is load-bearing: (1) the descriptor branch must come BEFORE the
   // `typeof module !== 'string'` passthrough (descriptors are objects and would
@@ -250,12 +250,16 @@ function getRuntimeLoadModesExtensions(modules) {
   // gated fallthrough so Mode.tsx bare names hit the cache instead of a 404
   // import.
   dynamicLoad.push(
-    '\n\n// Add a dynamic runtime loader',
+    '\n\n// The extensions and modes declared in pluginConfig.json. A runtime',
+    '// descriptor reusing one of these names is refused before anything is',
+    '// fetched, so the built-in copy always wins (see loadRuntimeDescriptor).',
+    `const builtInPlugins = new Set(${JSON.stringify(builtInNames)});`,
+    '\n// Add a dynamic runtime loader',
     'async function loadModule(module) {',
     '  // Track B: app-config runtime descriptors ({ packageName, importPath, ... })',
-    '  if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module);',
+    '  if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins);',
     '  if (Array.isArray(module) && isRuntimeDescriptor(module[0])) {',
-    '    return [await loadRuntimeDescriptor(module[0]), module[1]];',
+    '    return [await loadRuntimeDescriptor(module[0], builtInPlugins), module[1]];',
     '  }',
     "  if (typeof module !== 'string') return module;"
   );
@@ -502,11 +506,10 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR, config = pluginConfig) {
     ...modeLines.addToWindowLines,
   ]);
 
-  pluginImportsJsContent += getRuntimeLoadModesExtensions([
-    ...config.extensions,
-    ...config.modes,
-    ...(config.public || []),
-  ]);
+  pluginImportsJsContent += getRuntimeLoadModesExtensions(
+    [...config.extensions, ...config.modes, ...(config.public || [])],
+    [...config.extensions, ...config.modes].map(extractName).filter(Boolean)
+  );
 
   fs.writeFileSync(`${SRC_DIR}/pluginImports.js`, pluginImportsJsContent, { flag: 'w+' }, err => {
     if (err) {

@@ -472,7 +472,8 @@ Every runtime load attempt — success AND failure — appends a record to
 ```
 
 `status` is one of `'loaded'`, `'refused-origin'`, `'integrity-failed'`,
-`'version-mismatch'`, `'import-error'`, `'registration-error'`. Records carry
+`'version-mismatch'`, `'import-error'`, `'registration-error'`,
+`'duplicate-of-built-in'`. Records carry
 both the host version and the descriptor's required range so version skew is
 diagnosable from the console. Failures additionally surface one error toast
 each once the UI mounts (toasts are suppressed in test environments — assert
@@ -481,6 +482,13 @@ on the audit array instead).
 A built-in extension (from `pluginConfig.json`) that fails to register when its
 mode opens also appends a record, with `importPath: '(built-in)'` and status
 `'registration-error'`, so its failure is surfaced the same way.
+
+A descriptor whose `packageName` is also declared in `pluginConfig.json` is
+refused before anything is fetched: the built-in copy is always the one used.
+Its record has status `'duplicate-of-built-in'` and says how to resolve the
+conflict, and it is surfaced as a warning rather than an error, since the viewer
+still works. To use the runtime bundle instead, remove the `pluginConfig.json`
+entry and rebuild.
 
 ### CSP and CORS requirements
 

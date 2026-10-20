@@ -49,7 +49,7 @@ describe('writePluginImportsFile codegen', () => {
   test('branch order: descriptor < string passthrough < static branches < cache < gated fallthrough', () => {
     const order = [
       "} from './runtimeExtensionLoader';",
-      'if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module);',
+      'if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins);',
       "if (typeof module !== 'string') return module;",
       'if( module==="@fixture/ext-a")',
       'const runtimeModule = resolveRuntimeModule(module);',
@@ -66,10 +66,17 @@ describe('writePluginImportsFile codegen', () => {
 
   test('emits the tuple-descriptor branch ahead of the string passthrough', () => {
     expect(src).toContain('if (Array.isArray(module) && isRuntimeDescriptor(module[0])) {');
-    expect(src).toContain('return [await loadRuntimeDescriptor(module[0]), module[1]];');
+    expect(src).toContain('return [await loadRuntimeDescriptor(module[0], builtInPlugins), module[1]];');
     expect(src.indexOf('Array.isArray(module)')).toBeLessThan(
       src.indexOf("if (typeof module !== 'string') return module;")
     );
+  });
+
+  test('declares every pluginConfig extension and mode as built in, before loadModule', () => {
+    const declaration =
+      'const builtInPlugins = new Set(["@fixture/ext-a","@fixture/ext-url","@fixture/mode-a"]);';
+    expect(src).toContain(declaration);
+    expect(src.indexOf(declaration)).toBeLessThan(src.indexOf('async function loadModule'));
   });
 
   test('the cache lookup returns before the fallthrough', () => {

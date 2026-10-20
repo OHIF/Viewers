@@ -36,7 +36,8 @@ export type RuntimeExtensionStatus =
   | 'integrity-failed'
   | 'version-mismatch'
   | 'import-error'
-  | 'registration-error';
+  | 'registration-error'
+  | 'duplicate-of-built-in';
 
 export interface RuntimeExtensionAuditRecord {
   packageName: string;
@@ -241,15 +242,41 @@ function injectStyles(styles: string[] | undefined): void {
 
 /** Loads one app-config descriptor. Returns the module or null (never throws):
  *  appInit's registerExtensions catches per-extension and appInit skips null
- *  modes, so a bad plugin cannot take down the app. */
+ *  modes, so a bad plugin cannot take down the app.
+ *
+ *  builtInPlugins holds the names declared in pluginConfig.json (passed by the
+ *  generated loadModule). A descriptor reusing one is refused before anything
+ *  is fetched: otherwise an extension's bundle would run only to be discarded
+ *  at registration (overwriting the window global sharePlugin set), and a
+ *  mode's would replace the built-in mode, since appInit keeps the first mode
+ *  of each id and runtime modes come first. */
 export async function loadRuntimeDescriptor(
-  descriptor: RuntimeExtensionDescriptor
+  descriptor: RuntimeExtensionDescriptor,
+  builtInPlugins?: ReadonlySet<string>
 ): Promise<unknown | null> {
   const { packageName, importPath, globalName, coreVersionRange, integrity, styles } = descriptor;
   if (runtimeModules.has(packageName)) {
     return runtimeModules.get(packageName); // idempotent
   }
   const hostVersion = (process.env.VERSION_NUMBER || '').trim();
+  if (builtInPlugins?.has(packageName)) {
+    const error =
+      `"${packageName}" is already compiled into this viewer (pluginConfig.json), so the ` +
+      'built-in copy is used and this descriptor was not loaded — remove the descriptor, or ' +
+      'remove the pluginConfig.json entry and rebuild to use the runtime bundle';
+    getAudit().push({
+      packageName,
+      importPath,
+      status: 'duplicate-of-built-in',
+      hostVersion,
+      requiredRange: coreVersionRange,
+      format: globalName ? 'umd' : 'esm',
+      error,
+      timestamp: new Date().toISOString(),
+    });
+    console.warn(`OHIF runtime extension "${packageName}": duplicate-of-built-in — ${error}`);
+    return null;
+  }
   const started = performance.now();
   const record: RuntimeExtensionAuditRecord = {
     packageName,
@@ -511,13 +538,16 @@ export function surfaceRuntimeExtensionFailures(uiNotificationService?: {
       continue;
     }
     record.surfaced = true;
+    // A skipped descriptor leaves the viewer working (the built-in copy is in
+    // use), so it is a warning rather than a failure.
+    const skipped = record.status === 'duplicate-of-built-in';
     uiNotificationService.show({
-      title: 'Plugin failed to load',
+      title: skipped ? 'Runtime plugin skipped' : 'Plugin failed to load',
       message:
         `${record.packageName}: ${record.status}` +
         `${record.error ? ` — ${record.error}` : ''}` +
         ` (host ${record.hostVersion}${record.requiredRange ? `, requires ${record.requiredRange}` : ''})`,
-      type: 'error',
+      type: skipped ? 'warning' : 'error',
       autoClose: false,
     });
   }

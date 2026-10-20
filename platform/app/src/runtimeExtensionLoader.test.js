@@ -415,6 +415,45 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
     });
   });
 
+  describe('a descriptor for a plugin declared in pluginConfig.json', () => {
+    test('is refused before anything is fetched, and the record says why', async () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      mockUmdImport();
+      const result = await loader.loadRuntimeDescriptor(umdDescriptor(), new Set([PKG]));
+
+      expect(result).toBeNull();
+      expect(window.browserImportFunction).not.toHaveBeenCalled();
+      expect(window[PKG]).toBeUndefined();
+      expect(lastRecord()).toMatchObject({ packageName: PKG, status: 'duplicate-of-built-in' });
+      expect(lastRecord().error).toMatch(/already compiled into this viewer/);
+      expect(loader.resolveRuntimeModule(PKG)).toBeUndefined();
+      warn.mockRestore();
+    });
+
+    test('a name that is not built in loads as before', async () => {
+      mockUmdImport();
+      const result = await loader.loadRuntimeDescriptor(umdDescriptor(), new Set(['@other/ext']));
+      expect(result).toBe(extModule);
+      expect(lastRecord().status).toBe('loaded');
+    });
+
+    test('is surfaced as a warning, not a failure', async () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await loader.loadRuntimeDescriptor(umdDescriptor(), new Set([PKG]));
+      const show = jest.fn();
+      loader.surfaceRuntimeExtensionFailures({ show });
+      expect(show).toHaveBeenCalledTimes(1);
+      expect(show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Runtime plugin skipped',
+          type: 'warning',
+          message: expect.stringContaining('duplicate-of-built-in'),
+        })
+      );
+      warn.mockRestore();
+    });
+  });
+
   describe('loadExternalModule audit + failure surfacing', () => {
     test('cross-origin non-allowlisted URL rejects AND pushes a refused-origin audit record', async () => {
       await expect(
