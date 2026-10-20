@@ -19,6 +19,11 @@ it will make (each line tagged `[rewrite]`, `[ok]`, or `[flag]`), and — when
 you re-run it without `--dry-run` — applies the `[rewrite]` items. That report
 **is** the migration checklist.
 
+It covers packaging and the build only: migrate doesn't change your source.
+Update your code for the OHIF version you're moving to with the
+[version migration guides](./index.md), for example 3.7 → 3.8 through
+3.13 → 3.14 for a plugin written for 3.7.
+
 **This page is the why behind the report.** Each section below names a report
 item, quotes the CLI-era template it came from, and explains what the 2026
 contract requires and the failure it prevents. Read it when a report line is
