@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "OHIF",
   "repository": "OHIF/Viewers",
-  "keywords": ["ohif", "create", "scaffold", "ohif-extension", "ohif-mode"],
+  "keywords": ["ohif", "create", "scaffold"],
   "bin": { "create-ohif": "bin/create-ohif.mjs" },
   "engines": { "node": ">=24" },
   "files": ["bin", "templates", "README.md"],

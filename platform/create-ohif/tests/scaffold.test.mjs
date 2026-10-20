@@ -522,6 +522,15 @@ test('refusal: --yes without a name or template', () => {
   }
 });
 
+// The plugin keywords mark installable extensions and modes: plugin doctor
+// treats any installed package carrying one as a plugin to declare, and npm
+// search lists it. create-ohif is a scaffolding tool, so it carries neither.
+test('create-ohif itself does not carry the plugin keywords', () => {
+  for (const keyword of ['ohif-extension', 'ohif-mode']) {
+    assert.ok(!(selfPkg.keywords ?? []).includes(keyword), keyword);
+  }
+});
+
 test('refusal: migrate needs a package.json at the target', () => {
   const result = run(['migrate', path.join(tmp(), 'nothing-here')]);
   assert.notEqual(result.status, 0);
