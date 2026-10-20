@@ -74,7 +74,7 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
     'peerDependencies["react"]: "^18.3.1" -> "^19.2.7"',
     'peerDependencies["react-dom"]: "^18.3.1" -> "^19.2.7"',
     'pin to exact versions (cross-env ^7.0.3 -> 7.0.3)',
-    'devDependencies not pinned to exact versions: dotenv@^14.1.0',
+    "devDependencies: dotenv isn't used by any script, config or source file — remove it",
     'add AGENTS.md',
     'add tailwind.config.js',
   ]) {
@@ -152,6 +152,63 @@ test('migrate keeps a higher engines.node floor and other engines', () => {
     node: '>=99.1',
     pnpm: '>=12',
   });
+});
+
+// Write extra devDependencies (and optionally files) into a CLI-era scaffold.
+function withDevDeps(target, devDependencies, extraPkg = {}) {
+  const pkgPath = path.join(target, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  Object.assign(pkg.devDependencies, devDependencies);
+  Object.assign(pkg, extraPkg, { scripts: { ...pkg.scripts, ...extraPkg.scripts } });
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+}
+
+test('migrate says to remove dead devDependencies instead of pinning them', () => {
+  const target = scaffoldCliEra('extension', 'dead-dev-deps-extension');
+  // The extra devDependencies older CLI-era packages carry.
+  withDevDeps(target, {
+    'babel-eslint': '9.x',
+    'babel-plugin-inline-react-svg': '^2.0.2',
+    'babel-plugin-module-resolver': '^5.0.0',
+    eslint: '^5.0.1',
+    'eslint-loader': '^2.0.0',
+  });
+  fs.writeFileSync(path.join(target, 'babel.config.js'), 'module.exports = {};\n');
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    'eslint-loader) — superseded by .rspack/',
+    "devDependencies: eslint, babel-eslint, dotenv aren't used by any script, config or source file — remove them",
+    'babel.config.js and the Babel packages (@babel/*, babel-plugin-inline-react-svg, babel-plugin-module-resolver) are no longer used',
+  ]) {
+    assert.ok(report.includes(needle), `report missing: ${needle}\n${report}`);
+  }
+  const pinLine = report.split('\n').find(line => line.includes('not pinned to exact versions')) ?? '';
+  for (const name of ['babel-', 'eslint', 'dotenv', '@babel/']) {
+    assert.ok(!pinLine.includes(name), `${name} must not be in the pin flag: ${pinLine}`);
+  }
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.ok(!('eslint-loader' in pkg.devDependencies), 'eslint-loader is removed');
+  assert.equal(pkg.devDependencies.eslint, '^5.0.1', 'eslint is flagged, not removed');
+});
+
+test('migrate still asks to pin eslint and dotenv when the package uses them', () => {
+  const target = scaffoldCliEra('extension', 'used-tools-extension');
+  withDevDeps(target, { eslint: '^8.0.0' }, { scripts: { lint: 'eslint src' } });
+  fs.writeFileSync(path.join(target, '.eslintrc.json'), '{}\n');
+  fs.mkdirSync(path.join(target, 'src', 'config'), { recursive: true });
+  fs.writeFileSync(path.join(target, 'src', 'config', 'env.ts'), "import 'dotenv/config';\n");
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(!report.includes("used by any script, config or source file"), report);
+  assert.ok(
+    report.includes('devDependencies not pinned to exact versions: ') &&
+      report.includes('dotenv@^14.1.0') &&
+      report.includes('eslint@^8.0.0'),
+    report
+  );
 });
 
 test('migrate drops the CLI dev alias, rewrites yarn scripts and flags jest', () => {

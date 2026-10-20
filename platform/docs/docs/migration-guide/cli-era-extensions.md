@@ -290,11 +290,16 @@ side of the same bundler move.
 
 ### babel / other build files
 
-`babel.config.js` and the `@babel/*` dependencies are no longer used — the
-`.rspack` build compiles TS/JSX with `builtin:swc-loader`. Any other custom
-build file (`webpack.config.js`, a `vite.*`/`rollup.*` config, extra files in
-`.webpack/`) is **flagged, not rewritten**: migrate leaves it in place and you
-port any custom settings into `.rspack/rspack.prod.js` by hand.
+`babel.config.js` and the Babel packages (`@babel/*`, `babel-plugin-*`,
+`babel-preset-*`) are no longer used — the `.rspack` build compiles TS/JSX with
+`builtin:swc-loader`. migrate flags them for removal rather than pinning, and
+removes `eslint-loader` with the rest of the webpack tooling. It also flags
+`eslint`, `babel-eslint` and `dotenv` for removal when no script, config or
+source file uses them (the CLI templates listed them but never ran them).
+
+Any other custom build file (`webpack.config.js`, a `vite.*`/`rollup.*` config,
+extra files in `.webpack/`) is **flagged, not rewritten**: migrate leaves it in
+place and you port any custom settings into `.rspack/rspack.prod.js` by hand.
 
 migrate also removes two kinds of leftover: other package managers' lockfiles,
 `yarn.lock`, `package-lock.json`, `bun.lock` and `bun.lockb` (pnpm writes its

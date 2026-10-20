@@ -399,7 +399,12 @@ const WEBPACK_TOOLING = [
   'clean-webpack-plugin',
   'copy-webpack-plugin',
   '@svgr/webpack',
+  'eslint-loader',
 ];
+// Babel packages only babel.config.js uses, which the .rspack build ignores.
+// They are named in the babel flag, never pinned. (babel-loader is in
+// WEBPACK_TOOLING; babel-jest is left alone, since tests may still use Babel.)
+const isBabelPackage = name => name.startsWith('@babel/') || /^babel-(plugin|preset)-/.test(name);
 // devDependencies the vendored .rspack config needs at build time (extension
 // additionally compiles CSS through postcss/tailwind).
 // Exact pins, matching OHIF's convention (ranges only in peerDependencies) and
@@ -496,6 +501,21 @@ function scanSourceImports(targetDir, flags) {
 
 function readTemplateFile(kind, rel) {
   return fs.readFileSync(new URL(`../templates/${kind}/${rel}`, import.meta.url), 'utf8');
+}
+
+// Whether a JS/TS file under src/ or at the package root matches pattern.
+// node_modules, dist and the .webpack/ config migrate replaces are not read.
+function sourceMentions(targetDir, pattern) {
+  const srcDir = path.join(targetDir, 'src');
+  const files = [
+    ...(fs.existsSync(srcDir)
+      ? fs.readdirSync(srcDir, { recursive: true }).map(rel => path.join(srcDir, rel))
+      : []),
+    ...fs.readdirSync(targetDir).map(name => path.join(targetDir, name)),
+  ];
+  return files
+    .filter(file => /\.[cm]?[jt]sx?$/.test(file) && fs.statSync(file).isFile())
+    .some(file => pattern.test(fs.readFileSync(file, 'utf8')));
 }
 
 async function runMigrate(targetDir, dryRun) {
@@ -781,12 +801,38 @@ async function runMigrate(targetDir, dryRun) {
   }
   next.devDependencies = devDeps;
 
+  // The CLI templates listed eslint, babel-eslint and dotenv, but nothing in
+  // them ran those. When nothing in the package does either, say to remove
+  // them instead of asking for a pin.
+  const scriptsMention = pattern =>
+    Object.values(scripts).some(command => typeof command === 'string' && pattern.test(command));
+  const rootFiles = fs.readdirSync(targetDir);
+  const eslintUsed =
+    scriptsMention(/(^|[\s&;|])eslint(\s|$)/) ||
+    'eslintConfig' in next ||
+    rootFiles.some(name => /^\.eslintrc(\..+)?$|^eslint\.config\.[cm]?[jt]s$/.test(name));
+  const dotenvUsed = scriptsMention(/\bdotenv\b/) || sourceMentions(targetDir, /\bdotenv\b/);
+  const unusedTools = [
+    ...(eslintUsed ? [] : ['eslint', 'babel-eslint']),
+    ...(dotenvUsed ? [] : ['dotenv']),
+  ];
+  for (const section of ['dependencies', 'devDependencies']) {
+    const unused = unusedTools.filter(name => name in (next[section] ?? {}));
+    if (unused.length > 0) {
+      const [verb, them] = unused.length === 1 ? ["isn't", 'it'] : ["aren't", 'them'];
+      flags.push(
+        `package.json ${section}: ${unused.join(', ')} ${verb} used by any script, config or source file — remove ${them} (or pin ${them} if you do use ${them})`
+      );
+    }
+  }
+
   // Ranges migrate has no pin for: flag them by name rather than resolve a
-  // version against the registry. @babel/* is skipped because the report
-  // already recommends removing Babel entirely.
+  // version against the registry. Babel packages and the unused tools above
+  // are skipped because the report already says to remove them.
   for (const section of ['dependencies', 'devDependencies']) {
     const ranged = Object.entries(next[section] ?? {})
-      .filter(([name, spec]) => !name.startsWith('@babel/') && !EXACT_VERSION.test(spec))
+      .filter(([name]) => !isBabelPackage(name) && !unusedTools.includes(name))
+      .filter(([, spec]) => !EXACT_VERSION.test(spec))
       .filter(([, spec]) => !spec.startsWith('workspace:'))
       .map(([name, spec]) => `${name}@${spec}`);
     if (ranged.length > 0) {
@@ -883,9 +929,26 @@ async function runMigrate(targetDir, dryRun) {
       );
     }
   }
-  if (fs.existsSync(path.join(targetDir, 'babel.config.js'))) {
+  const hasBabelConfig = fs.existsSync(path.join(targetDir, 'babel.config.js'));
+  const babelPackages = [
+    ...new Set(
+      ['dependencies', 'devDependencies'].flatMap(section =>
+        Object.keys(next[section] ?? {}).filter(isBabelPackage)
+      )
+    ),
+  ];
+  if (hasBabelConfig || babelPackages.length > 0) {
+    // Listed as one @babel/* entry: CLI-era packages have a dozen of them.
+    const named = [
+      ...(babelPackages.some(name => name.startsWith('@babel/')) ? ['@babel/*'] : []),
+      ...babelPackages.filter(name => !name.startsWith('@babel/')),
+    ];
+    const what = [
+      ...(hasBabelConfig ? ['babel.config.js'] : []),
+      ...(named.length > 0 ? [`the Babel packages (${named.join(', ')})`] : []),
+    ].join(' and ');
     flags.push(
-      'babel.config.js (and the @babel/* dependencies) are no longer used — the .rspack build compiles TS/JSX with builtin:swc-loader; remove them when convenient'
+      `${what} ${hasBabelConfig && named.length === 0 ? 'is' : 'are'} no longer used — the .rspack build compiles TS/JSX with builtin:swc-loader; remove ${hasBabelConfig && named.length === 0 ? 'it' : 'them'} when convenient`
     );
   }
 
