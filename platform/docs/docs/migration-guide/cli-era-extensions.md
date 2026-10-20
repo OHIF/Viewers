@@ -127,6 +127,13 @@ tarball points consumers at the built UMD while the working tree keeps pointing
 at source. **This rewrite only happens under `pnpm publish`** — the `npm` CLI
 ignores `publishConfig` field overrides, so publish with pnpm.
 
+### engines
+
+Older CLI-era packages declare `"engines": { "node": ">=14", "npm": ">=6", "yarn": ">=1.x" }`.
+`migrate` sets `engines.node` to the template's value (`>=24` for 3.14),
+unless you already require a higher Node, and drops the `npm` and `yarn`
+entries because the package uses pnpm now. Other entries are left alone.
+
 ### peerDependencies
 
 **Before** (`dependencies.json`, lines 16–28): the CLI-era peer set wrongly

@@ -114,6 +114,46 @@ test('migrate moves react from dependencies to peerDependencies', () => {
   assert.ok(!migrate(target, '--dry-run').includes('move "react"'), 'second run moves nothing');
 });
 
+test('migrate raises engines.node to the template and drops the npm and yarn engines', () => {
+  const target = scaffoldCliEra('mode', 'old-engines-mode');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  // Some old CLI templates' engines.
+  scaffolded.engines = { node: '>=14', npm: '>=6', yarn: '>=1.16.0' };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+  const templateNode = JSON.parse(
+    fs.readFileSync(path.join(templatesRoot, 'mode', 'package.json'), 'utf8')
+  ).engines.node;
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    `engines.node: ">=14" -> "${templateNode}"`,
+    'engines.npm: drop ">=6"',
+    'engines.yarn: drop ">=1.16.0"',
+  ]) {
+    assert.ok(report.includes(needle), `report missing: ${needle}\n${report}`);
+  }
+
+  migrate(target);
+  assert.deepEqual(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).engines, { node: templateNode });
+  assert.ok(!migrate(target, '--dry-run').includes('engines.node: "'), 'second run changes nothing');
+});
+
+test('migrate keeps a higher engines.node floor and other engines', () => {
+  const target = scaffoldCliEra('extension', 'strict-engines-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.engines = { node: '>=99.1', pnpm: '>=12' };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  assert.ok(migrate(target, '--dry-run').includes('engines.node: keep ">=99.1"'));
+  migrate(target);
+  assert.deepEqual(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).engines, {
+    node: '>=99.1',
+    pnpm: '>=12',
+  });
+});
+
 test('migrate drops the CLI dev alias, rewrites yarn scripts and flags jest', () => {
   const target = scaffoldCliEra('mode', 'scripts-mode');
   const pkgPath = path.join(target, 'package.json');

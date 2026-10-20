@@ -577,6 +577,32 @@ async function runMigrate(targetDir, dryRun) {
     note(false, 'package.json publishConfig already carries the dist overrides');
   }
 
+  // -- package.json: engines -------------------------------------------------
+  // engines.node follows the template unless the package already asks for a
+  // higher floor (a single ">=" range at or above the template's major). The
+  // CLI-era npm and yarn entries go: the package uses pnpm now.
+  const templateNode = JSON.parse(readTemplateFile(kind, 'package.json')).engines.node;
+  const engines = next.engines ?? {};
+  const floorMajor = range => {
+    const match = typeof range === 'string' && range.trim().match(/^>=\s*(\d+)(?:\.\d+){0,2}$/);
+    return match ? Number(match[1]) : null;
+  };
+  if (engines.node === templateNode) {
+    note(false, `package.json engines.node already "${templateNode}"`);
+  } else if (floorMajor(engines.node) !== null && floorMajor(engines.node) >= floorMajor(templateNode)) {
+    note(false, `package.json engines.node: keep ${JSON.stringify(engines.node)} (at or above the template's "${templateNode}")`);
+  } else {
+    note(true, `package.json engines.node: ${JSON.stringify(engines.node)} -> "${templateNode}" (the template's value)`);
+    engines.node = templateNode;
+  }
+  for (const name of ['npm', 'yarn']) {
+    if (name in engines) {
+      note(true, `package.json engines.${name}: drop ${JSON.stringify(engines[name])} (the package uses pnpm)`);
+      delete engines[name];
+    }
+  }
+  next.engines = engines;
+
   // -- package.json: peerDependencies ---------------------------------------
   const peers = next.peerDependencies ?? {};
   if ('@ohif/ui' in peers) {
