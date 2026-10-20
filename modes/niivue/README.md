@@ -42,6 +42,10 @@ around them where it can.
   multiplanar, so hanging protocols cannot ask for a single orientation
   (`viewportOptions.orientation`) or a 3D render (`viewportType: 'volume3d'`).
   This is why this mode hides the MPR / 3D layout presets.
+- **Some DICOM-WSI tiles fail to decode.** On study
+  `1.3.6.1.4.1.5962.99.1.1123.9231.1620326176300.1.2.1` the tiles are fetched
+  but every one fails with `InvalidStateError: The source image could not be
+  decoded`, so the slide stays blank. Other SM studies (e.g. C3L-00088) render.
 - **npm `latest` dist-tags are stale** (`@niivue/niivue` 0.69.0,
   `@niivue/nv-ohif` 0.1.0-rc.0, `@niivue/uikit` 1.0.0-rc.1); the 1.0 release
   candidates are only on `next`, so dependencies must pin exact versions.
