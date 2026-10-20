@@ -40,6 +40,8 @@ window.config = {
   `pluginConfig.json` `importPath` entries are trusted outright, and the URL
   fallthrough / `peerImport` path is gated by the origin allowlist alone — see
   [Where integrity is enforced](../../configuration/configurationFiles.md#where-integrity-is-enforced).
+  For the commands that produce the value, see
+  [Computing the `integrity` value](../../configuration/configurationFiles.md#computing-the-integrity-value).
 - **CSP:** the viewer's two inline bootstrap scripts mean a deployment
   `CSP_HEADER` must interim-add `'unsafe-inline'` to `script-src` (until the
   inline-script hash handshake ships), and cross-origin integrity loads run
