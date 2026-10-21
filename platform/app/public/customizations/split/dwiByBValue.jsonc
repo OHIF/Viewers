@@ -14,14 +14,15 @@
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
 //  - `$merge` adds the rule under its id with priority -1, so it runs before
 //    every default rule (the defaults use the priorities 1..n).
-//  - `isDiffusion` is true when the first instance is MR and some instances
-//    carry DiffusionBValue.
-//  - `matches` claims only the instances that carry DiffusionBValue. Frames
+//  - The rule `context` defines two names for this rule only. `isDiffusion`
+//    is true when some instances of the series carry DiffusionBValue.
+//    `bValue` is the numeric b-value of the instance.
+//  - `matches` claims only the MR images that carry DiffusionBValue. Frames
 //    without a b-value (for example a trailing ADC or trace set) fall through
 //    to the default `mixedDimensionalityBValue` rule and form one more display
 //    set of their own.
-//  - `groupBy` makes one group for each numeric b-value, and
-//    `compareInstances` orders the slices of each group by SliceLocation.
+//  - `groupBy` makes one group for each numeric b-value, and `sortBy` orders
+//    the slices of each group by SliceLocation.
 //
 // Load it with `?customization=split/dwiByBValue`.
 {
@@ -34,27 +35,20 @@
             "priority": -1,
             "description": "Diffusion MR: one display set for each b-value.",
             "viewportTypes": ["stack"],
-            "series": [
-              {
-                "name": "isDiffusion",
-                "gate": { "attribute": "Modality", "equals": "MR" },
-                "scope": "some",
-                "when": { "attribute": "DiffusionBValue", "exists": true }
-              }
-            ],
-            "matches": {
-              "all": [
-                { "seriesFact": "isDiffusion" },
-                { "classifier": "image" },
-                { "attribute": "DiffusionBValue", "exists": true }
-              ]
+            "context": {
+              "isDiffusion": "series.instances.count(DiffusionBValue) > 0",
+              "bValue": "Number(DiffusionBValue)"
             },
-            "groupBy": ["SeriesInstanceUID", { "attribute": "DiffusionBValue", "number": true }],
-            "compareInstances": { "attribute": "SliceLocation", "number": true },
-            "customAttributes": {
-              "fromFirstInstance": {
-                "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
-              }
+            "matches": {
+              "Modality": "MR",
+              "isDiffusion": true,
+              "isImage": true,
+              "DiffusionBValue": { "notNull": true }
+            },
+            "groupBy": ["SeriesInstanceUID", "bValue"],
+            "sortBy": ["SliceLocation"],
+            "attributes": {
+              "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
             }
           }
         }

@@ -3,11 +3,11 @@ import {
   groupInstancesBySplitRules,
   resolveSplitRuleSet,
 } from '@cornerstonejs/metadata';
-import { ohifDefaultSplitRules, ohifSplitRuleClassifiers } from './ohifDefaultSplitRules';
+import { ohifDefaultSplitRules, ohifDisplaySetContext } from './ohifDefaultSplitRules';
 
 /** The default rules as the engine takes them: compiled from the raw data. */
 const compiledRules = createDisplaySetSplitRules(ohifDefaultSplitRules, {
-  classifiers: ohifSplitRuleClassifiers,
+  displaySetContext: ohifDisplaySetContext,
 });
 
 const MG_FOR_PRESENTATION = '1.2.840.10008.5.1.4.1.1.1.2';
@@ -95,7 +95,7 @@ describe('ohifDefaultSplitRules', () => {
         ...ohifDefaultSplitRules,
         singleImageModality: { ...ohifDefaultSplitRules.singleImageModality, priority: 1 },
       },
-      { classifiers: ohifSplitRuleClassifiers }
+      { displaySetContext: ohifDisplaySetContext }
     );
     const groups = groupInstancesBySplitRules(mammographyViews() as any, rules);
     expect(groups).toHaveLength(4);
@@ -164,8 +164,8 @@ describe('ohifDefaultSplitRules', () => {
     expect(unmatched).toHaveLength(1);
   });
 
-  // These are all in the stack handler's registration list but absent from
-  // upstream's `isImageInstance` SOP class list, so they must be matched via
+  // These are all in the stack handler's registration list. RT Dose is not in
+  // upstream's `isImageInstance` SOP class list, so it must be matched via
   // stack ownership rather than that list.
   it.each([
     ['Ultrasound still', { Modality: 'US', SOPClassUID: US_IMAGE }],
@@ -174,7 +174,7 @@ describe('ohifDefaultSplitRules', () => {
     ['RT Image', { Modality: 'RTIMAGE', SOPClassUID: RT_IMAGE }],
     ['RT Dose', { Modality: 'RTDOSE', SOPClassUID: RT_DOSE }],
     ['Ophthalmic tomography', { Modality: 'OPT', SOPClassUID: OPHTHALMIC_TOMOGRAPHY }],
-  ])('claims %s instances that upstream isImageInstance omits', (_label, overrides) => {
+  ])('claims %s instances, which the stack handler owns', (_label, overrides) => {
     const { groups, unmatched } = split([makeInstance(overrides)]);
     expect(unmatched).toHaveLength(0);
     expect(groups).toHaveLength(1);

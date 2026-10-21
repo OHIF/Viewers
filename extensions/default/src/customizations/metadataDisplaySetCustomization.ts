@@ -1,7 +1,7 @@
 import type { GroupInstancesOptions, InstanceGroup } from '@cornerstonejs/metadata';
 import {
   ohifDefaultSplitRules,
-  ohifSplitRuleClassifiers,
+  ohifDisplaySetContext,
 } from '../displaySetSplitting/ohifDefaultSplitRules';
 import { makeDisplaySetFromInstanceGroup } from '../displaySetSplitting/makeDisplaySetFromInstanceGroup';
 import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSetDisplaySet';
@@ -32,15 +32,15 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * above 10000 after every default.
  *
  * The rules are `@cornerstonejs/metadata` raw selector data - the same
- * safe-function vocabulary (`{ attribute, equals }`, `{ expression }`, series
- * facts, custom attribute recipes) a JSONC URL customization writes.
+ * vocabulary (a map of name to test in `matches`, names in `groupBy`,
+ * `attributes`, context entries) a JSONC URL customization writes.
  * DisplaySetService compiles them with `createDisplaySetSplitRules`, with the
- * `classifiers` below as the named extension points.
+ * `displaySetContext` below over the default display set context.
  *
  * A rule error stops display set creation; OHIF does not drop the rule, and
  * does not fall back to the SOP class handlers. A rule that does not compile
  * stops every display set, SEG and SR included; a rule that throws at run time
- * (a classifier, a rule function, or `customAttributes` in the factory below)
+ * (a code context entry, a rule function, or `attributes` in the factory below)
  * stops further display sets for the study. Either error shows a persistent
  * notification that names the rule. See `DisplaySetService`.
  *
@@ -53,9 +53,9 @@ export default function getMetadataDisplaySetCustomization(context: ImageSetFact
     useMetadataDisplaySet: {
       enabled: false,
       splitRules: ohifDefaultSplitRules,
-      // `{ classifier: 'stackImage' }` in a rule: the stack SOP class
-      // handler's ownership test, which data cannot express.
-      classifiers: ohifSplitRuleClassifiers,
+      // `isStackImage: true` in a rule: the stack SOP class handler's
+      // ownership test, which data cannot express.
+      displaySetContext: ohifDisplaySetContext,
       createDisplaySetFromGroup: (
         group: InstanceGroup,
         options: {

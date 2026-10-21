@@ -1,5 +1,5 @@
-import { defaultDisplaySetSplitRules } from '@cornerstonejs/metadata';
-import type { SplitRuleSet, SplitRuleSetEntry } from '@cornerstonejs/metadata';
+import { displaySet as metadataDisplaySet, rawDisplaySetSelector } from '@cornerstonejs/metadata';
+import type { RawSplitRule } from '@cornerstonejs/metadata';
 import DisplaySetService from './DisplaySetService';
 import EVENTS from './EVENTS';
 import * as displaySetStore from './displaySetStore';
@@ -37,15 +37,15 @@ const makeMixedBValueSeries = () => [
 ];
 
 /** An upstream default rule, with a test priority. */
-const upstreamRule = (id: string, priority: number): SplitRuleSetEntry => {
-  const entry = defaultDisplaySetSplitRules[id];
+const upstreamRule = (id: string, priority: number): RawSplitRule => {
+  const entry = rawDisplaySetSelector[id];
   if (!entry) {
     throw new Error(`upstream rule ${id} missing`);
   }
   return { ...entry, priority };
 };
 
-const testSplitRules: SplitRuleSet = {
+const testSplitRules: Record<string, RawSplitRule> = {
   // One display set PER IMAGE for single-image modalities (CR here).
   singleImageModality: {
     priority: 1,
@@ -367,10 +367,8 @@ describe('DisplaySetService', () => {
     });
 
     it('passes the series facts of the re-split to the display set it extends', () => {
-      const factRule = {
-        priority: 1,
-        series: ({ instances }) => ({ count: instances.length }),
-      };
+      const factRule = { priority: 1 };
+      const seriesCount = series => series[metadataDisplaySet.DISPLAY_SET_CONTEXT_FACT].instances.length;
       setCustomization({
         enabled: true,
         splitRules: { counted: factRule },
@@ -378,35 +376,32 @@ describe('DisplaySetService', () => {
       });
       const first = [makeInstance(), makeInstance()];
       const [displaySet] = service.makeDisplaySets(first);
-      expect(createDisplaySetFromGroup.mock.calls[0][0].series).toEqual({ count: 2 });
+      expect(seriesCount(createDisplaySetFromGroup.mock.calls[0][0].series)).toBe(2);
 
       service.makeDisplaySets([...first, makeInstance()]);
-      expect(displaySet.extendInstances.mock.calls[0][1].series).toEqual({ count: 3 });
+      expect(seriesCount(displaySet.extendInstances.mock.calls[0][1].series)).toBe(3);
     });
 
     /**
      * The SCOUT example, as the JSONC customization writes it: raw selector data
-     * that the @cornerstonejs/metadata compiler turns into a rule. The series is
-     * evaluated first (does it mix localizer and non-localizer images?), and
-     * then each instance is matched with a simple test (is it a localizer?).
+     * that the @cornerstonejs/metadata compiler turns into a rule. A series
+     * value tests if the series mixes localizer and non-localizer images, and
+     * an instance value tests if the instance is a localizer.
      */
-    const scoutRule = {
+    const scoutRule: RawSplitRule = {
       priority: -1,
       viewportTypes: ['stack'],
-      series: [
-        {
-          name: 'hasScout',
-          scope: 'mixed',
-          when: { attribute: 'ImageType', contains: 'LOCALIZER' },
-        },
-      ],
-      matches: {
-        all: [{ seriesFact: 'hasScout' }, { attribute: 'ImageType', contains: 'LOCALIZER' }],
+      context: {
+        isLocalizer: "includes(ImageType, 'LOCALIZER')",
+        hasScout:
+          'series.instances.count(isLocalizer) > 0 && ' +
+          'series.instances.count(isLocalizer) < series.instances.count()',
       },
+      matches: { hasScout: true, isLocalizer: true },
       groupBy: ['SeriesInstanceUID'],
-      customAttributes: {
-        set: { label: 'SCOUT' },
-        fromFirstInstance: { SeriesDescription: { expression: '`SCOUT ${SeriesDescription}`' } },
+      attributes: {
+        label: { template: 'SCOUT' },
+        SeriesDescription: { template: 'SCOUT {SeriesDescription}' },
       },
     };
     const ct = (InstanceNumber: number, imageType: string[]) =>
@@ -534,7 +529,7 @@ describe('DisplaySetService', () => {
       describe('a rule that does not compile (SP-SAFE-7, SP-PIPE-13)', () => {
         const brokenRules = {
           ...testSplitRules,
-          broken: { priority: 1, matches: { classifier: 'nope' } },
+          broken: { priority: 1, matches: { nope: true } },
         };
 
         beforeEach(() => {
@@ -621,7 +616,6 @@ describe('DisplaySetService', () => {
         it.each([
           ['matches', { matches: () => fail() }, 'matches'],
           ['groupBy', { groupBy: ['SeriesInstanceUID', () => fail()] }, 'groupBy[1]'],
-          ['runBy', { runBy: () => fail() }, 'runBy'],
         ])('names the rule, the field %s and the series', (_label, fields, field) => {
           setCustomization({
             enabled: true,
@@ -644,7 +638,7 @@ describe('DisplaySetService', () => {
         it('names the rule and customAttributes when the display set factory calls it', () => {
           setCustomization({
             enabled: true,
-            splitRules: failingRuleSet({ customAttributes: () => fail() }),
+            splitRules: failingRuleSet({ attributes: () => fail() }),
             createDisplaySetFromGroup: jest.fn(group =>
               group.matchedRule.customAttributes({ instance: group.instances[0] }, group)
             ),
@@ -796,69 +790,14 @@ describe('DisplaySetService', () => {
       });
     });
 
-    describe('runBy reconciliation', () => {
-      // Singles and clips, split into runs. A clip that arrives late in the
-      // middle of a run of singles splits that run.
-      const us = (InstanceNumber: number, NumberOfFrames?: number) =>
-        makeInstance({
-          Modality: 'US',
-          SOPInstanceUID: `us-${InstanceNumber}`,
-          InstanceNumber,
-          ...(NumberOfFrames ? { NumberOfFrames } : {}),
-        });
-      const runRule = {
-        priority: 1,
-        matches: instance => instance.Modality === 'US',
-        runBy: instance => Number(instance.NumberOfFrames ?? 1) > 1,
-      };
-
-      beforeEach(() => {
-        setCustomization({
-          enabled: true,
-          splitRules: { usRuns: runRule },
-          createDisplaySetFromGroup,
-        });
-      });
-
+    it('does not remove instances that the call does not contain', () => {
       const uids = displaySet => displaySet.instances.map(instance => instance.SOPInstanceUID);
-      const active = () =>
-        service
-          .getActiveDisplaySets()
-          .map(uids)
-          .sort((a, b) => a[0].localeCompare(b[0]));
-
-      it('only adds display sets when a new run lands inside an existing run', () => {
-        const first = [us(1), us(3), us(4, 60)];
-        service.makeDisplaySets(first);
-        expect(active()).toEqual([['us-1', 'us-3'], ['us-4']]);
-
-        // us-2 is a clip. A split from the start gives [us-1] [us-2] [us-3]
-        // [us-4], but the existing display sets must not change: us-2 gets a
-        // display set of its own, and [us-1, us-3] keeps both singles.
-        service.makeDisplaySets([...first, us(2, 45)]);
-
-        // Each instance is in exactly one display set, and us-2 did not join
-        // the display set of the unrelated clip us-4.
-        expect(active()).toEqual([['us-1', 'us-3'], ['us-2'], ['us-4']]);
-      });
-
-      it('keeps the display set of a later run when a new run appears ahead of it', () => {
-        const first = [us(1), us(3), us(4, 60)];
-        const [, clip] = service.makeDisplaySets(first);
-        service.makeDisplaySets([...first, us(2, 45)]);
-
-        const clipNow = service
-          .getActiveDisplaySets()
-          .find(displaySet => uids(displaySet).includes('us-4'));
-        expect(clipNow.displaySetInstanceUID).toBe(clip.displaySetInstanceUID);
-      });
-
-      it('does not remove instances that the call does not contain', () => {
-        const [displaySet] = service.makeDisplaySets([us(1), us(2)]);
-        // A caller that passes part of the series only.
-        service.makeDisplaySets([us(1)]);
-        expect(uids(displaySet)).toEqual(['us-1', 'us-2']);
-      });
+      const instance = (InstanceNumber: number) =>
+        makeInstance({ SOPInstanceUID: `ds-${InstanceNumber}`, InstanceNumber });
+      const [displaySet] = service.makeDisplaySets([instance(1), instance(2)]);
+      // A caller that passes part of the series only.
+      service.makeDisplaySets([instance(1)]);
+      expect(uids(displaySet)).toEqual(['ds-1', 'ds-2']);
     });
   });
 });

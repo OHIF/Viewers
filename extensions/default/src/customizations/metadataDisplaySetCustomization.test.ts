@@ -19,12 +19,12 @@ describe('getMetadataDisplaySetCustomization', () => {
 
   it('holds the default rules as data, with no functions in them', () => {
     // The rules go through the @cornerstonejs/metadata compiler; only the
-    // classifiers are code.
+    // context entries are code.
     const { splitRules } = customization();
     expect(JSON.parse(JSON.stringify(splitRules))).toEqual(splitRules);
   });
 
-  it('supplies the stackImage classifier the default rules reference', () => {
-    expect(typeof customization().classifiers.stackImage).toBe('function');
+  it('supplies the isStackImage context entry the default rules reference', () => {
+    expect(typeof customization().displaySetContext.isStackImage).toBe('function');
   });
 });

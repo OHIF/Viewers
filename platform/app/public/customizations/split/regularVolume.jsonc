@@ -10,21 +10,22 @@
 // stay with the default rules, as if this module were not loaded.
 //
 // How it works:
-//  - `series` computes the series context once. `geometry` uses the built-in
-//    series function `planeGeometry`: the dominant image plane, the slice
-//    spacing (the most frequent gap), and the lattice index of each regular
-//    slice, keyed by SOPInstanceUID. `mixesIrregular` is an expression over
-//    the earlier fact: the series has a complete regular lattice of 3 or more
-//    slices, and also other images. Remove `&& series.geometry.complete` to
-//    accept a lattice with a missing slice.
+//  - The default display set context has the group `planeGeometry` (the
+//    built-in series function): the dominant image plane, the slice spacing
+//    (the most frequent gap), and the lattice index of each regular slice.
+//    `sliceIndex`, `sliceDistance` and `sliceSpacing` are its aliases.
+//  - The rule `context` defines `mixesIrregular`: the series has a complete
+//    regular lattice of 3 or more slices, and also other images. Remove
+//    `&& planeGeometry.complete` to accept a lattice with a missing slice.
+//    `isRegularSlice` is true when the instance has a lattice index. The test
+//    is `!= null`, because the index 0 is a valid index.
 //  - `matches` claims an instance only when the series mixes the two kinds,
-//    and the instance has a lattice index. `defined` is needed, because the
-//    index 0 is a valid index.
-//  - `compareInstances` orders the slices by their distance along the normal.
-//  - `customAttributes` adds the spacing to the SeriesDescription.
+//    and the instance is a regular slice.
+//  - `sortBy` orders the slices by their distance along the normal.
+//  - `attributes` adds the spacing to the SeriesDescription.
 //  - `irregularImages` is off (priority null). With priority -1 it puts the
-//    other images into one stack. It declares the same `geometry` fact, but
-//    the first rule that computes a name wins, so `planeGeometry` runs once.
+//    other images into one stack. Both rules read the same `planeGeometry`
+//    group, so the engine computes it once for each series.
 //
 // Series that this module changes: only series that mix a regular lattice with
 // other images. A fully regular series, and a series with no lattice, keep the
@@ -41,57 +42,39 @@
             "priority": -2,
             "description": "Volume series with some irregular images: the regular slices become one volume display set.",
             "viewportTypes": ["volume", "volume3d", "stack"],
-            "series": [
-              { "name": "geometry", "function": "planeGeometry", "args": { "tolerance": 0.1 } },
-              {
-                "name": "mixesIrregular",
-                "expression": "series.geometry.regularCount >= 3 && series.geometry.irregularCount > 0 && series.geometry.complete"
-              }
-            ],
+            "context": {
+              "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
+              "isRegularSlice": "sliceIndex != null"
+            },
             "matches": {
-              "all": [
-                { "classifier": "stackImage" },
-                { "attribute": "Modality", "in": ["CT", "MR", "PT", "NM"] },
-                { "seriesFact": "mixesIrregular" },
-                { "expression": "defined(context.series.geometry.index[SOPInstanceUID])" }
-              ]
+              "isStackImage": true,
+              "Modality": ["CT", "MR", "PT", "NM"],
+              "mixesIrregular": true,
+              "isRegularSlice": true
             },
             "groupBy": ["SeriesInstanceUID"],
-            "compareInstances": {
-              "expression": "context.series.geometry.distance[a.SOPInstanceUID] - context.series.geometry.distance[b.SOPInstanceUID]"
-            },
-            "customAttributes": {
-              "fromFirstInstance": {
-                "SeriesDescription": {
-                  "expression": "`${SeriesDescription} (${context.series.geometry.spacing} mm)`"
-                }
-              }
+            "sortBy": ["sliceDistance"],
+            "attributes": {
+              "SeriesDescription": { "template": "{SeriesDescription} ({sliceSpacing} mm)" }
             }
           },
           "irregularImages": {
             "priority": null,
             "description": "Off. With priority -1: the images that regularVolume leaves become one stack.",
             "viewportTypes": ["stack"],
-            "series": [
-              { "name": "geometry", "function": "planeGeometry", "args": { "tolerance": 0.1 } },
-              {
-                "name": "mixesIrregular",
-                "expression": "series.geometry.regularCount >= 3 && series.geometry.irregularCount > 0 && series.geometry.complete"
-              }
-            ],
+            "context": {
+              "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
+              "isRegularSlice": "sliceIndex != null"
+            },
             "matches": {
-              "all": [
-                { "classifier": "stackImage" },
-                { "attribute": "Modality", "in": ["CT", "MR", "PT", "NM"] },
-                { "seriesFact": "mixesIrregular" },
-                { "not": { "expression": "defined(context.series.geometry.index[SOPInstanceUID])" } }
-              ]
+              "isStackImage": true,
+              "Modality": ["CT", "MR", "PT", "NM"],
+              "mixesIrregular": true,
+              "isRegularSlice": false
             },
             "groupBy": ["SeriesInstanceUID"],
-            "customAttributes": {
-              "fromFirstInstance": {
-                "SeriesDescription": { "expression": "`${SeriesDescription} (other images)`" }
-              }
+            "attributes": {
+              "SeriesDescription": { "template": "{SeriesDescription} (other images)" }
             }
           }
         }

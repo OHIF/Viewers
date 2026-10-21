@@ -39,7 +39,6 @@ export type CompiledSplitRules = {
 const BEHAVIOUR_FIELDS = [
   'matches',
   'groupBy',
-  'runBy',
   'series',
   'compareInstances',
   'customAttributes',
@@ -49,7 +48,7 @@ const BEHAVIOUR_FIELDS = [
  * The error a split rule function throws at run time, with the rule and the
  * field that failed. The display set service adds the series.
  *
- * `field` is a rule field name (`matches`, `runBy`, `series`,
+ * `field` is a rule field name (`matches`, `series`,
  * `compareInstances`, `customAttributes`), or `groupBy[<index>]` for one part
  * of `groupBy`. `cause` holds the original error.
  */
@@ -117,14 +116,15 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleS
  *
  * Every entry is compiled by the `@cornerstonejs/metadata`
  * `createDisplaySetSplitRules` - there is no OHIF rule language. `options`
- * supplies the named extension points the rules reference, for example the
- * `stackImage` classifier of `@ohif/extension-default`. The compiler keeps a
+ * supplies the display set context and the named functions the rules
+ * reference, for example the `isStackImage` code entry of
+ * `@ohif/extension-default`. The compiler keeps a
  * function at a function place as is, so an entry that code has compiled, and
  * an entry that mixes functions with data, go through the same compiler as raw
  * data. No field is left uncompiled because another field is a function.
  *
  * Each entry is compiled on its own (SP-PIPE-3), so that `errors` names every
- * rule that fails - an unknown classifier, an invalid expression, a missing or
+ * rule that fails - an unknown name, an invalid expression, a missing or
  * non-numeric priority, an id that differs from the key, an unsafe id such as
  * `__proto__`. No rule is dropped:
  * a rule set with an error must stop display set creation (SP-SAFE-7), because

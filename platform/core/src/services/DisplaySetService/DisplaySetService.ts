@@ -18,7 +18,11 @@ import type {
   SplitRuleCustomizationEntry,
 } from './compileSplitRules';
 
-/** Memoizes compiled split rules by the identity of the customization value. */
+/**
+ * Memoizes compiled split rules by the identity of the `splitRules` value. A
+ * mode that defines other rules, or another context, gives a new `splitRules`
+ * object, and that object compiles again.
+ */
 const compiledSplitRulesCache = new WeakMap<object, CompiledSplitRules>();
 
 /** The title of the notification that reports a split rule error. */
@@ -89,19 +93,20 @@ export type UseMetadataDisplaySetCustomization = {
    */
   splitRules?: Record<string, SplitRuleCustomizationEntry>;
   /**
-   * Named instance classifiers that raw rules reference with
-   * `{ classifier: '<name>' }`. Code, supplied by an extension - for example
-   * `stackImage` from `@ohif/extension-default`.
+   * Context entries over the `@cornerstonejs/metadata` default display set
+   * context. A rule reads an entry by its name. A data entry is JSON; a code
+   * entry is a function supplied by an extension - for example `isStackImage`
+   * from `@ohif/extension-default`.
    */
-  classifiers?: CreateDisplaySetSplitRulesOptions['classifiers'];
+  displaySetContext?: CreateDisplaySetSplitRulesOptions['displaySetContext'];
   /**
-   * Named series functions that raw series facts reference with
-   * `{ name, function: '<name>' }`, in addition to the built-in
-   * `planeGeometry` and `timeClusters`. Code, supplied by an extension.
+   * Named series functions that a context group references with
+   * `{ function: '<name>' }`, in addition to the built-in `planeGeometry` and
+   * `timeClusters`. Code, supplied by an extension.
    */
   seriesFunctions?: CreateDisplaySetSplitRulesOptions['seriesFunctions'];
-  /** Named `customAttributes` recipes that raw rules reference with `preset`. */
-  customAttributePresets?: CreateDisplaySetSplitRulesOptions['customAttributePresets'];
+  /** Named comparators that a `sortBy` entry references with `{ sortFunction }`. */
+  sortFunctions?: CreateDisplaySetSplitRulesOptions['sortFunctions'];
   /** Factory converting a matched instance group into an OHIF display set. */
   createDisplaySetFromGroup?: (
     group: InstanceGroup,
@@ -115,9 +120,9 @@ export type UseMetadataDisplaySetCustomization = {
    *
    * Optional. The display set factory applies OHIF's default order itself (it
    * needs `isReconstructable`, which only exists once the display set is built),
-   * so supplying this changes the order the *engine* walks runs in — and hence
-   * which display sets a `runBy` rule produces — rather than the final frame
-   * order. Unset, the engine's acquisition order applies.
+   * so supplying this changes the order of the instances in each group, not
+   * which display sets the rules produce: only `groupBy` groups. Unset, the
+   * engine's acquisition order applies.
    */
   sortInstances?: GroupInstancesOptions['sortInstances'];
   /**
@@ -540,9 +545,9 @@ export default class DisplaySetService extends PubSubService {
     let compiled = compiledSplitRulesCache.get(config.splitRules);
     if (!compiled) {
       compiled = compileSplitRules(config.splitRules, {
-        classifiers: config.classifiers,
+        displaySetContext: config.displaySetContext,
         seriesFunctions: config.seriesFunctions,
-        customAttributePresets: config.customAttributePresets,
+        sortFunctions: config.sortFunctions,
       });
       compiledSplitRulesCache.set(config.splitRules, compiled);
     }
@@ -696,10 +701,9 @@ export default class DisplaySetService extends PubSubService {
    *
    * ### `splitKey` / `splitNumber` stability
    *
-   * `splitKey` is namespaced with the rule's id, and holds no position: a
-   * `runBy` run is keyed by its first instance, not by its ordinal. It is the
-   * key of the group that CREATED the display set; a display set that grew
-   * keeps it. `splitNumber` is only an index into the engine's group list and
+   * `splitKey` is the rule id and the rule's `groupBy` values, and holds no
+   * position. It is the key of the group that CREATED the display set; a
+   * display set that grew keeps it. `splitNumber` is only an index into the engine's group list and
    * shifts when a new group appears, so it must not be used as a stable
    * identity in `customAttributes`.
    *
@@ -792,11 +796,8 @@ export default class DisplaySetService extends PubSubService {
       instancesSrc as unknown as NaturalizedInstance[],
       config.splitRules,
       instance => unmatched.push(instance as unknown as InstanceMetadata),
-      // Ordering the engine applies to every rule, so the instance order it
-      // walks runs in - and so which display sets a `runBy` rule produces -
-      // matches the order the display sets end up in. Optional: with neither
-      // supplied the engine's own acquisition order applies, which is what the
-      // legacy handler effectively used for run detection.
+      // Ordering the engine applies to the instances of every group. Optional:
+      // with neither supplied the engine's own acquisition order applies.
       {
         sortInstances: config.sortInstances,
         compareInstances: config.compareInstances,

@@ -11,15 +11,15 @@
 // How it works:
 //  - The module replaces the default `volume3d` rule under its own id, so the
 //    rule keeps its place (priority 4) and claims the same instances. The
-//    `series` fact `supportsVolume3d` and the `matches` are those of the
-//    default rule.
-//  - `geometry` uses the built-in series function `planeGeometry`. It picks
-//    the origin and the normal once for the series, and gives the distance of
-//    each slice from the origin in `distance`, keyed by SOPInstanceUID. The
-//    origin does not depend on the order in which the instances arrive.
-//  - `compareInstances` compares two distances. An image that is not in the
-//    dominant plane has no distance: the result is NaN, which is "no opinion",
-//    so OHIF's default order decides for that image.
+//    `matches` are those of the default rule.
+//  - `sliceDistance` is an alias of the default display set context for the
+//    group `planeGeometry` (the built-in series function). It picks the
+//    origin and the normal once for the series, and gives the distance of
+//    each slice from the origin. The origin does not depend on the order in
+//    which the instances arrive.
+//  - `sortBy` orders the slices by that distance. An image that is not in the
+//    dominant plane has no distance, so it goes after the images that have
+//    one.
 //
 // Series that this module changes: the order of the images of CT, MR, PT and
 // NM series that `volume3d` claims. The grouping does not change.
@@ -35,27 +35,15 @@
             "priority": 4,
             "description": "Multi-slice CT / MR / PT / NM, as the default volume3d rule, in the order of the distance along the normal.",
             "viewportTypes": ["volume", "volume3d", "stack"],
-            "series": [
-              {
-                "name": "supportsVolume3d",
-                "scope": "first",
-                "when": { "attribute": "Modality", "in": ["CT", "MR", "PT", "NM"] },
-                "minInstances": 2
-              },
-              { "name": "geometry", "function": "planeGeometry" }
-            ],
             "matches": {
-              "all": [
-                { "classifier": "stackImage" },
-                { "seriesFact": "supportsVolume3d" },
-                { "classifier": "image" },
-                { "attribute": "Rows", "exists": true }
-              ]
+              "isStackImage": true,
+              "Modality": ["CT", "MR", "PT", "NM"],
+              "seriesInstanceCount": { "greaterThan": 1 },
+              "isImage": true,
+              "Rows": { "notNull": true }
             },
             "groupBy": ["SeriesInstanceUID"],
-            "compareInstances": {
-              "expression": "context.series.geometry.distance[a.SOPInstanceUID] - context.series.geometry.distance[b.SOPInstanceUID]"
-            }
+            "sortBy": ["sliceDistance"]
           }
         }
       }

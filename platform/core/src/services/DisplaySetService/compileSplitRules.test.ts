@@ -24,10 +24,11 @@ describe('compileSplitRules', () => {
     const { rules, errors } = compileSplitRules({
       ctOnly: {
         priority: 1,
-        matches: { expression: "Modality === 'CT' && Rows > 100" },
-        customAttributes: {
-          set: { label: 'CT' },
-          fromFirstInstance: { SeriesDescription: { expression: '`CT ${SeriesDescription}`' } },
+        context: { isLargeCt: "Modality == 'CT' && Rows > 100" },
+        matches: { isLargeCt: true },
+        attributes: {
+          label: { template: 'CT' },
+          SeriesDescription: { template: 'CT {SeriesDescription}' },
         },
       },
     });
@@ -43,10 +44,10 @@ describe('compileSplitRules', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it('resolves named classifiers from the options', () => {
+  it('resolves code entries of the display set context from the options', () => {
     const { rules } = compileSplitRules(
-      { stack: { priority: 1, matches: { classifier: 'stackImage' } } },
-      { classifiers: { stackImage: instance => instance.Modality === 'US' } }
+      { stack: { priority: 1, matches: { isStackImage: true } } },
+      { displaySetContext: { isStackImage: instance => instance.Modality === 'US' } }
     );
     expect(rules.stack.matches(makeInstance({ Modality: 'US' }), { series: {} })).toBe(true);
     expect(rules.stack.matches(makeInstance(), { series: {} })).toBe(false);
@@ -80,19 +81,7 @@ describe('compileSplitRules', () => {
         dwi: {
           priority: 1,
           matches: instance => instance.Modality === 'MR',
-          groupBy: ['SeriesInstanceUID', { attribute: 'DiffusionBValue', number: true }],
-        } as never,
-      });
-      expect(errors).toEqual([]);
-      expect(bValuesOf(rules)).toEqual([[0], [800]]);
-    });
-
-    it('a data runBy next to a function matches', () => {
-      const { rules, errors } = compileSplitRules({
-        dwi: {
-          priority: 1,
-          matches: instance => instance.Modality === 'MR',
-          runBy: { attribute: 'DiffusionBValue' },
+          groupBy: ['SeriesInstanceUID', 'DiffusionBValue'],
         } as never,
       });
       expect(errors).toEqual([]);
@@ -124,7 +113,7 @@ describe('compileSplitRules', () => {
   it('keeps the keys and the priorities, including null', () => {
     const { rules, errors } = compileSplitRules({
       volume3d: { priority: 4 },
-      ctScout: { priority: -1, matches: { attribute: 'Modality', equals: 'CT' } },
+      ctScout: { priority: -1, matches: { Modality: 'CT' } },
       off: { priority: null },
     });
     expect(errors).toEqual([]);
@@ -138,16 +127,19 @@ describe('compileSplitRules', () => {
 
   describe('a rule that does not compile is reported, not dropped (SP-SAFE-7)', () => {
     it.each([
-      ['an unknown classifier', { priority: 1, matches: { classifier: 'nope' } }],
-      ['an invalid expression', { priority: 1, matches: { expression: "Modality === 'CT" } }],
-      ['a missing priority', { matches: { attribute: 'Modality', equals: 'CT' } }],
-      ['a text priority', { priority: 'high', matches: { attribute: 'Modality', equals: 'CT' } }],
+      ['an unknown name', { priority: 1, matches: { nope: true } }],
+      [
+        'an invalid expression',
+        { priority: 1, context: { isCt: "Modality == 'CT" }, matches: { isCt: true } },
+      ],
+      ['a missing priority', { matches: { Modality: 'CT' } }],
+      ['a text priority', { priority: 'high', matches: { Modality: 'CT' } }],
       ['an id that differs from the key', { id: 'other', priority: 1 }],
       ['an entry that is not an object', 'not a rule'],
     ])('%s', (_label, entry) => {
       const { rules, errors } = compileSplitRules({
         broken: entry as never,
-        good: { priority: 2, matches: { attribute: 'Modality', equals: 'MR' } },
+        good: { priority: 2, matches: { Modality: 'MR' } },
       });
       expect(errors).toEqual([{ ruleId: 'broken', message: expect.any(String) }]);
       expect(errors[0].message).not.toBe('');
@@ -163,7 +155,7 @@ describe('compileSplitRules', () => {
 
     it('names every rule that fails, because each rule compiles alone (SP-PIPE-3)', () => {
       const { errors } = compileSplitRules({
-        first: { priority: 1, matches: { classifier: 'nope' } },
+        first: { priority: 1, matches: { nope: true } },
         good: { priority: 2 },
         second: { priority: 'high' } as never,
       });
@@ -201,9 +193,7 @@ describe('compileSplitRules', () => {
     it.each([
       ['matches', { matches: fail }, 'matches'],
       ['a groupBy part', { groupBy: ['SeriesInstanceUID', fail] }, 'groupBy[1]'],
-      ['runBy', { runBy: fail }, 'runBy'],
-      ['series', { series: fail }, 'series'],
-      ['compareInstances', { compareInstances: fail }, 'compareInstances'],
+      ['a sortBy function', { sortBy: [fail] }, 'compareInstances'],
     ])('in %s of a rule that code supplies, through the engine', (_label, fields, field) => {
       const { rules } = compileSplitRules({ native: { priority: 1, ...fields } as never });
       expectRunError(
@@ -217,9 +207,9 @@ describe('compileSplitRules', () => {
       );
     });
 
-    it('in customAttributes, which the display set factory calls', () => {
+    it('in an attributes function, which the display set factory calls', () => {
       const { rules } = compileSplitRules({
-        native: { priority: 1, matches: () => true, customAttributes: fail } as never,
+        native: { priority: 1, matches: () => true, attributes: fail } as never,
       });
       expectRunError(
         () => rules.native.customAttributes({} as never, { instances: [] }),
@@ -228,10 +218,10 @@ describe('compileSplitRules', () => {
       );
     });
 
-    it('in a named classifier that a raw rule references', () => {
+    it('in a code entry of the display set context that a raw rule references', () => {
       const { rules } = compileSplitRules(
-        { raw: { priority: 1, matches: { classifier: 'throws' } } },
-        { classifiers: { throws: fail } }
+        { raw: { priority: 1, matches: { throws: true } } },
+        { displaySetContext: { throws: fail } }
       );
       expectRunError(
         () => groupInstancesBySplitRules([makeInstance()] as never, rules),

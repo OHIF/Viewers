@@ -8,13 +8,14 @@
 // seconds - becomes its own display set, in time order.
 //
 // How it works:
-//  - `series` computes the series context once. `usTime` uses the built-in
-//    series function `timeClusters`. It reads AcquisitionDateTime, else
+//  - The default display set context has the group `timeClusters` (the
+//    built-in series function). It reads AcquisitionDateTime, else
 //    AcquisitionDate and AcquisitionTime, else ContentDate and ContentTime,
 //    sorts the times, and starts a new cluster after a gap of more than
-//    `maxGap` seconds. `usTime.start` gives the start time of the cluster of
-//    each instance, keyed by SOPInstanceUID. `severalSweeps` is an expression
-//    over the earlier fact.
+//    `timeClustersMaxGap` seconds. `sweepStart` is the start time of the
+//    cluster of the instance, and `sweepCount` is the number of clusters.
+//  - The rule `context` sets `timeClustersMaxGap` to 20 for this rule only.
+//    Other rules keep the default gap of 30 seconds.
 //  - `matches` claims the single-frame US images that have a time, and only
 //    in a series with two or more sweeps. Multi-frame clips stay with the
 //    default `multiFrame` rule. The clips still count in the time clusters,
@@ -22,9 +23,9 @@
 //  - `groupBy` uses the start time of the cluster. A cluster keeps its key
 //    when a later cluster gets new instances. The natural order of the keys
 //    puts the display sets in time order.
-//  - `compareInstances` orders the images of a sweep by time.
-//  - `customAttributes` adds the start of the sweep, in seconds from the first
-//    image of the series, to the SeriesDescription.
+//  - `sortBy` orders the images of a sweep by time.
+//  - `attributes` adds the start of the sweep (`sweepOffset`, in seconds from
+//    the first image of the series) to the SeriesDescription.
 //
 // Series that this module changes: US series whose single images form two or
 // more sweeps. A series of one sweep keeps the default display sets.
@@ -40,32 +41,18 @@
             "priority": -1,
             "description": "Ultrasound single images: one display set for each sweep of contiguous acquisition time.",
             "viewportTypes": ["stack"],
-            "series": [
-              { "name": "usTime", "function": "timeClusters", "args": { "maxGap": 20 } },
-              { "name": "severalSweeps", "expression": "series.usTime.clusters > 1" }
-            ],
+            "context": { "timeClustersMaxGap": 20 },
             "matches": {
-              "all": [
-                { "classifier": "stackImage" },
-                { "attribute": "Modality", "equals": "US" },
-                { "not": { "attribute": "NumberOfFrames", "greaterThan": 1 } },
-                { "seriesFact": "severalSweeps" },
-                { "expression": "defined(context.series.usTime.start[SOPInstanceUID])" }
-              ]
+              "isStackImage": true,
+              "Modality": "US",
+              "isMultiFrame": false,
+              "sweepCount": { "greaterThan": 1 },
+              "sweepStart": { "notNull": true }
             },
-            "groupBy": [
-              "SeriesInstanceUID",
-              { "expression": "context.series.usTime.start[SOPInstanceUID]" }
-            ],
-            "compareInstances": {
-              "expression": "context.series.usTime.time[a.SOPInstanceUID] - context.series.usTime.time[b.SOPInstanceUID]"
-            },
-            "customAttributes": {
-              "fromFirstInstance": {
-                "SeriesDescription": {
-                  "expression": "`${SeriesDescription} +${round(context.series.usTime.start[SOPInstanceUID] - context.series.usTime.first)} s`"
-                }
-              }
+            "groupBy": ["SeriesInstanceUID", "sweepStart"],
+            "sortBy": ["acquisitionSeconds"],
+            "attributes": {
+              "SeriesDescription": { "template": "{SeriesDescription} +{sweepOffset} s" }
             }
           }
         }

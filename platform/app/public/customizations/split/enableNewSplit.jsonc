@@ -18,9 +18,9 @@
 //
 // Load it with `?customization=split/enableNewSplit`.
 //
-// Custom rules are @cornerstonejs/metadata raw selector data (conditions,
-// `{ "expression": "..." }`, series facts) - see `split/scoutSeries.jsonc` for
-// a complete example.  `splitRules` is keyed by
+// Custom rules are @cornerstonejs/metadata raw selector data (a map of name to
+// test in `matches`, names in `groupBy` and `sortBy`, a rule `context`, and
+// `attributes`) - see `split/scoutSeries.jsonc` for a complete example.  `splitRules` is keyed by
 // rule id: add a rule with `$merge`.  Rules are evaluated in ascending
 // `priority` with first-match-wins per instance.  The default rules use the
 // priorities 1..n, so a priority below 0 runs before every default rule, a

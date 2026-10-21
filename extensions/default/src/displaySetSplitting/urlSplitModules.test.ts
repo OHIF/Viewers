@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createDisplaySetSplitRules, groupInstancesBySplitRules } from '@cornerstonejs/metadata';
-import { ohifDefaultSplitRules, ohifSplitRuleClassifiers } from './ohifDefaultSplitRules';
+import { ohifDefaultSplitRules, ohifDisplaySetContext } from './ohifDefaultSplitRules';
 
 /**
  * The `split/*.jsonc` URL modules in platform/app/public are data that no
@@ -26,7 +26,7 @@ const compileModule = (name: string) => {
   const added = readModule(name).global.useMetadataDisplaySet.splitRules.$merge;
   return createDisplaySetSplitRules(
     { ...ohifDefaultSplitRules, ...added },
-    { classifiers: ohifSplitRuleClassifiers }
+    { displaySetContext: ohifDisplaySetContext }
   );
 };
 

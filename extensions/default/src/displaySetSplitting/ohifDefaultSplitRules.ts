@@ -5,9 +5,10 @@
  * The rules are data so that a server indexing a study and a viewer splitting
  * a series can read the same rules, and so that a customization (a JSONC URL
  * module, a JSON app config) edits them in the same vocabulary. The only code
- * is one named classifier, `stackImage` ({@link isStackImageInstance}), which
+ * is one context entry, `isStackImage` ({@link isStackImageInstance}), which
  * the customization supplies to the compiler through
- * {@link ohifSplitRuleClassifiers}.
+ * {@link ohifDisplaySetContext}. It replaces the `isStackImage` entry of the
+ * `@cornerstonejs/metadata` default context.
  *
  * Each rule exists to reproduce the legacy stack SOP class handler exactly;
  * see the rule descriptions for where that differs from the upstream defaults.
@@ -44,40 +45,35 @@ const isSpecializedInstance = (instance: NaturalizedInstance) =>
 
 /**
  * The single ownership test every OHIF split rule applies, registered as the
- * `stackImage` classifier.
+ * `isStackImage` context entry.
  *
  * Split rules run BEFORE any SOP class routing, so a rule that matched on
  * pixel-data signals alone (`Rows`, `NumberOfFrames`) would claim instances the
  * legacy loop routes elsewhere: SEG, RT Dose and Parametric Map are multiframe
  * image objects with `Rows`, but belong to `cornerstone-dicom-seg` /
  * `cornerstone-dicom-pmap`.  Gating on the stack handler's own SOP class list
- * reproduces the legacy routing exactly — and picks up the image SOP classes
- * (Ultrasound, NM, RT Image, Enhanced US Volume, ophthalmic, ...) that
- * upstream's `isImageInstance` list omits.
+ * reproduces the legacy routing exactly. The stack list also holds two SOP
+ * classes that upstream's `isImageInstance` list does not: Corneal Topography
+ * Map and RT Dose.
  */
 export const isStackImageInstance = (instance: NaturalizedInstance) =>
   !isSpecializedInstance(instance) && isStackHandledInstance(instance);
 
 /**
- * The named classifiers the OHIF rules reference, for
- * `createDisplaySetSplitRules(selector, { classifiers })`.
+ * The context entries the OHIF rules read, for
+ * `createDisplaySetSplitRules(selector, { displaySetContext })`.
  */
-export const ohifSplitRuleClassifiers = {
-  stackImage: isStackImageInstance,
+export const ohifDisplaySetContext = {
+  isStackImage: isStackImageInstance,
 };
-
-const STACK_IMAGE = { classifier: 'stackImage' };
 
 /**
  * An upstream rule reused under its upstream id, behind the stack-ownership
  * guard and with the OHIF priority.
  *
- * Both reused rules apply their own `isImageInstance` test internally, which
- * narrows what they claim relative to the guard.  For
- * `mixedDimensionalityBValue` (MR only) that changes nothing — every MR SOP
- * class is on both lists.  For `volume3d` it means NM series drop through to
- * the catch-all instead, which is equivalent: both group by
- * `SeriesInstanceUID` and offer the same viewport types.
+ * Both reused rules also test `isImage`, which narrows what they claim
+ * relative to the guard. Every MR, CT, PT and NM SOP class is on both lists, so
+ * that changes nothing for these two rules.
  *
  * A missing id means `@cornerstonejs/metadata` renamed a default rule.  This
  * warns and leaves the rule out rather than throwing: this module is imported
@@ -101,7 +97,7 @@ const reuseUpstreamRule = (ruleId: string, priority: number): RawDisplaySetSelec
   const rule: RawSplitRule = {
     ...upstream,
     priority,
-    matches: upstream.matches ? { all: [STACK_IMAGE, upstream.matches] } : STACK_IMAGE,
+    matches: { ...(upstream.matches as Record<string, unknown>), isStackImage: true },
   };
   return { [ruleId]: rule };
 };
@@ -110,12 +106,12 @@ const reuseUpstreamRule = (ruleId: string, priority: number): RawDisplaySetSelec
  * The OHIF default split rules for the `useMetadataDisplaySet` customization,
  * keyed by rule id.
  *
- * Every rule is gated on the `stackImage` classifier, so the set claims exactly
+ * Every rule is gated on the `isStackImage` context entry, so the set claims exactly
  * the instances the stack SOP class handler would have claimed — no more
  * (SEG / RT Structure Set / Parametric Map / SR / PDF / video / whole-slide /
- * ECG stay with their dedicated handlers) and no less (the image SOP classes
- * upstream's `isImageInstance` list omits are included). Everything else is
- * left unmatched for the legacy SOP class handler loop.
+ * ECG stay with their dedicated handlers) and no less. The upstream
+ * `unsupported` catch-all is not in the set, so everything else is left
+ * unmatched for the legacy SOP class handler loop.
  *
  * Rules are evaluated in ascending `priority`, and the first matching rule
  * wins per instance. The defaults use the priorities `1..n`, fixed per rule, so
@@ -138,13 +134,11 @@ export const ohifDefaultSplitRules: RawDisplaySetSelector = {
       'Off by default. The upstream rule buckets by coarse image size, which merges ' +
       'mammography views of the same resolution (RCC/LCC/RMLO/LMLO).',
     viewportTypes: ['stack'],
-    matches: { all: [{ attribute: 'Modality', in: ['CR', 'DX', 'MG'] }, STACK_IMAGE] },
+    matches: { Modality: ['CR', 'DX', 'MG'], isStackImage: true },
     groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
-    customAttributes: {
-      fromFirstInstance: {
-        instanceNumber: { attribute: 'InstanceNumber' },
-        acquisitionDatetime: { attribute: 'AcquisitionDateTime' },
-      },
+    attributes: {
+      instanceNumber: 'InstanceNumber',
+      acquisitionDatetime: 'AcquisitionDateTime',
     },
   },
 
@@ -155,14 +149,12 @@ export const ohifDefaultSplitRules: RawDisplaySetSelector = {
       'upstream rule also requires SliceLocation, which collapses ultrasound clips ' +
       'into one stack.',
     viewportTypes: ['stack'],
-    matches: { all: [{ attribute: 'NumberOfFrames', greaterThan: 1 }, STACK_IMAGE] },
+    matches: { isMultiFrame: true, isStackImage: true },
     groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
-    customAttributes: {
-      fromFirstInstance: {
-        numImageFrames: { attribute: 'NumberOfFrames', number: true },
-        instanceNumber: { attribute: 'InstanceNumber' },
-        acquisitionDatetime: { attribute: 'AcquisitionDateTime' },
-      },
+    attributes: {
+      numImageFrames: { expression: 'Number(NumberOfFrames)' },
+      instanceNumber: 'InstanceNumber',
+      acquisitionDatetime: 'AcquisitionDateTime',
     },
   },
 
@@ -173,11 +165,10 @@ export const ohifDefaultSplitRules: RawDisplaySetSelector = {
     priority: 5,
     description:
       'Catch-all - one stack display set per series for every remaining instance ' +
-      'the stack handler owns. Replaces the upstream rule, whose isImageInstance ' +
-      'gate rejects Ultrasound, NM, RT Image, Enhanced US Volume and the ' +
-      'ophthalmic classes.',
+      'the stack handler owns. Replaces the upstream rule, which also requires ' +
+      'Rows and rejects Corneal Topography Map and RT Dose.',
     viewportTypes: ['stack', 'volume', 'volume3d'],
-    matches: STACK_IMAGE,
+    matches: { isStackImage: true },
     groupBy: ['SeriesInstanceUID'],
   },
 };

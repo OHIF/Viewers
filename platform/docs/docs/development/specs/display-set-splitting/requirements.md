@@ -373,16 +373,17 @@ field. *Satisfies `SP-DESC-2`.*
 | --- | --- |
 | `description` | Text that states what the rule does |
 | `groupId` | The group of related rules that the rule belongs to (`SP-PIPE-15`). Default: the rule id |
-| `matches` | A `RawCondition` — `attribute` tests, `classifier`, `seriesFact`, `all` / `any` / `not`, or an `expression` string |
-| `series` | A list of `RawSeriesFact` — a named boolean with `scope` `first`, `every`, `some`, or `mixed`, an optional `gate`, and an optional `minInstances`; a named `expression` value; or a named series `function` with `args`. See [series context](./series-context.md) |
-| `groupBy`, `runBy` | `RawValue` entries — a tag name, `{ attribute, number, absent, bucket }`, `{ condition }`, `{ template }`, `{ join, parts }`, or `{ expression }` |
-| `compareInstances` | `{ attribute, number?, descending? }`, or `{ expression }` that reads only `a`, `b`, and `context` |
+| `context` | Context entries for this rule only — a fixed value, an expression string, `{ template }`, a group `{ function, args }`, or a declaration `{ attribute }`. See [series context](./series-context.md) |
+| `matches` | A map of name to test, and every entry must hold. A name is a DICOM keyword or a context name. There is no `all`, `any` or `not` |
+| `groupBy` | A list of names |
+| `sortBy` | A list of names, in ascending order, or `{ sortFunction }` |
 | `viewportTypes` | A list of viewport type names |
-| `customAttributes` | `{ set, fromFirstInstance, fromContext, fromOptions, preset }` |
+| `attributes` | Attribute values keyed by attribute name — a name, a fixed value, `{ template }`, or `{ expression }` |
 
 **SP-FORM-4**
-`createDisplaySetSplitRules` shall compile the rule set, and OHIF shall supply its own classifiers
-and presets to it by name. *Satisfies `SP-READ-1`, `SP-REUSE-1`.*
+`createDisplaySetSplitRules` shall compile the rule set. OHIF shall supply its own code context
+entries (`isStackImage`), series functions and sort functions to it by name. *Satisfies `SP-READ-1`,
+`SP-REUSE-1`.*
 
 **SP-FORM-7**
 `createDisplaySetSplitRules` shall reject a rule that has an unknown key, or a form that its field
@@ -391,15 +392,15 @@ rule, and the keys or forms that the field accepts. *Satisfies `SP-SAFE-7`, `SP-
 
 > The table `splitRuleSchema` in `@cornerstonejs/metadata` defines each field of a rule: the forms
 > that the field accepts, and the arguments that the compiled function gets, for example
-> `(instance, context)` for `matches` and `(a, b, context)` for `compareInstances`. The compiler
-> reads this table. A key of `*` in the table accepts any key. `customAttributes.set.*` keeps each
-> value as a literal, and `customAttributes.fromFirstInstance.*` compiles each value. A typo such as
-> `matchs` was accepted before, and the rule then claimed every instance.
+> `(instance, context)` for `matches` and `(a, b, context)` for a `sortBy` function. The compiler
+> reads this table, and it also checks each name. A typo such as `matchs` or `Modallity` was
+> accepted before, and the rule then claimed every instance or no instance.
 
 **SP-FORM-8**
-A rule that code supplies may hold a function at any place where the data form holds a condition,
-a value, a comparator, series facts, or custom attributes. The compiler shall use the function as
-it is. *Satisfies `SP-REUSE-1`.*
+A rule that code supplies may hold a function at a function place of the data form: a whole
+`matches`, the test of one `matches` entry, a `groupBy` entry, a `sortBy` entry, a whole
+`attributes`, or one attribute value. The compiler shall use the function as it is. A rule that the
+compiler has already compiled is not a valid entry. *Satisfies `SP-REUSE-1`.*
 
 **SP-FORM-5**
 A URL rule module shall be JSONC, so that it can carry comments, and each rule shall carry a
@@ -431,7 +432,7 @@ flowchart TD
   end
 
   SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>$merge adds · $set replaces · priority: null turns off<br/>one entry per rule id"]
-  L --> C["3 · Compile — createDisplaySetSplitRules<br/>RawCondition → predicate · RawValue → value<br/>series facts → one function per rule<br/>named classifiers and presets from OHIF"]
+  L --> C["3 · Compile — createDisplaySetSplitRules<br/>matches → predicate · names → readers<br/>context entries → one program for the rule set<br/>code context entries and functions from OHIF"]
   C --> N{"4 · Validate<br/>does every rule compile,<br/>with a valid priority?"}
   N -- "no" --> STOP["Stop: no display sets for any study<br/>error that names the rule"]
   N -- "yes" --> P["5 · Partition the input by SeriesInstanceUID"]
@@ -439,10 +440,10 @@ flowchart TD
   P --> E1
   subgraph ENG["6 · groupInstancesBySplitRules — one series, @cornerstonejs/metadata"]
     E1["6a · Rule order<br/>ascending priority, then rule id"]
-    E2["6b · Series context<br/>named values, one context for all rules<br/>the first rule that computes a name wins"]
+    E2["6b · Display set context<br/>an entry is computed at its first read, once per series<br/>a rule context replaces an entry for that rule"]
     E3["6c · Claim<br/>each instance → the first rule whose matches is true"]
-    E4["6d · Group<br/>groupBy values, then runBy runs<br/>splitKey = [ruleId, ...values, runKey]"]
-    E5["6e · Order the instances<br/>acquisition → sortInstances →<br/>rule.compareInstances → host compareInstances"]
+    E4["6d · Group<br/>groupBy values only<br/>splitKey = [ruleId, ...values]"]
+    E5["6e · Order the instances<br/>acquisition → sortInstances →<br/>rule.sortBy → host compareInstances"]
     E6["6f · Order the groups<br/>rule order → natural order of key → run ordinal"]
     E1 --> E2 --> E3 --> E4 --> E5 --> E6
   end
@@ -453,7 +454,7 @@ flowchart TD
   E6 --> R{"7 · Reconcile with the display sets<br/>that the series already has"}
   R -- "other instances of the group<br/>already have a display set" --> X["extendInstances<br/>the display set grows"]
   R -- "a display set has the<br/>same splitKey" --> X
-  R -- "new group" --> F["createDisplaySetFromGroup<br/>ImageSet + splitKey, splitRuleId, viewportTypes<br/>+ customAttributes: label, SeriesDescription, …<br/>re-sort: OHIF default order + comparators"]
+  R -- "new group" --> F["createDisplaySetFromGroup<br/>ImageSet + splitKey, splitRuleId, viewportTypes<br/>+ attributes: label, SeriesDescription, …<br/>re-sort: OHIF default order + comparators"]
 
   X --> O["8 · DISPLAY_SETS_ADDED<br/>or display set metadata invalidated"]
   F --> O
@@ -462,35 +463,27 @@ flowchart TD
 ```
 
 **The trace of one rule.** This example rule puts each b-value of a diffusion MR series into its
-own display set. A module `split/dwiByBValue.jsonc` would hold the rule. The module is an example
-for this specification, and it is not in the repository.
+own display set. The module `split/dwiByBValue.jsonc` holds the rule.
 
 ```jsonc
 "dwiByBValue": {
   "priority": -1,
   "description": "Diffusion MR: one display set for each b-value.",
   "viewportTypes": ["stack"],
-  "series": [
-    {
-      "name": "isDiffusion",
-      "gate": { "attribute": "Modality", "equals": "MR" },
-      "scope": "some",
-      "when": { "attribute": "DiffusionBValue", "exists": true }
-    }
-  ],
-  "matches": {
-    "all": [
-      { "seriesFact": "isDiffusion" },
-      { "classifier": "image" },
-      { "attribute": "DiffusionBValue", "exists": true }
-    ]
+  "context": {
+    "isDiffusion": "series.instances.count(DiffusionBValue) > 0",
+    "bValue": "Number(DiffusionBValue)"
   },
-  "groupBy": ["SeriesInstanceUID", { "attribute": "DiffusionBValue", "number": true }],
-  "compareInstances": { "attribute": "SliceLocation", "number": true },
-  "customAttributes": {
-    "fromFirstInstance": {
-      "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
-    }
+  "matches": {
+    "Modality": "MR",
+    "isDiffusion": true,
+    "isImage": true,
+    "DiffusionBValue": { "notNull": true }
+  },
+  "groupBy": ["SeriesInstanceUID", "bValue"],
+  "sortBy": ["SliceLocation"],
+  "attributes": {
+    "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
   }
 }
 ```
@@ -502,10 +495,10 @@ of the b-values 0, 500, and 1000.
 | --- | --- |
 | 1 | The URL `?customization=split/dwiByBValue` loads the module. Its `requires` loads `split/enableNewSplit` first. |
 | 2 | `$merge` adds the key `dwiByBValue` with `priority: -1`. The default rules stay. |
-| 3 | `createDisplaySetSplitRules` compiles `matches` into one predicate, the series fact into one function, and the template into one value reader. |
+| 3 | `createDisplaySetSplitRules` compiles `matches` into one predicate, the rule `context` into entries of the context program, and the template into one value reader. |
 | 4 | The priority is a number, and every rule compiles, so display set creation continues. |
 | 6a | The order is `dwiByBValue` (−1), then the default rules (1 to 5). |
-| 6b | `isDiffusion` is true: the first instance is MR, and some instances have `DiffusionBValue`. |
+| 6b | `isDiffusion` is true: some instances of the series have `DiffusionBValue`. |
 | 6c | All 90 instances have `DiffusionBValue`, so `dwiByBValue` claims all of them. |
 | 6d | Three groups, with the keys `["dwiByBValue", <SeriesInstanceUID>, 0]`, `[…, 500]`, and `[…, 1000]`. |
 | 6e | In each group, the order is acquisition order, and then `SliceLocation` in ascending order. |
@@ -519,7 +512,11 @@ later layer shall edit a rule by its id. *Satisfies `SP-FIX-5`, `SP-REUSE-4`.*
 
 **SP-PIPE-2**
 OHIF shall compile a rule set value once, with `createDisplaySetSplitRules`, and use the compiled
-rules again until the customization value changes. *Satisfies `SP-DET-1`.*
+rules again until the `splitRules` value changes. *Satisfies `SP-DET-1`.*
+
+> A mode that defines other rules gives a new `splitRules` object, and that object compiles
+> again. A change of `displaySetContext`, `seriesFunctions` or `sortFunctions` alone does not
+> compile the rules again, so a mode that changes them must also give a new `splitRules` object.
 
 **SP-PIPE-3**
 The compile step shall compile each rule alone, so that it can name every rule that fails.
@@ -541,7 +538,8 @@ show an error through the UI notification service. *Satisfies `SP-SAFE-7`.*
 
 **SP-PIPE-14**
 The compile step shall wrap each function of each rule, so that an error at run time names the rule
-and the field, for example `matches`, `groupBy[1]`, `runBy`, or `customAttributes`. The wrap shall
+and the field, for example `matches`, `groupBy[1]`, `compareInstances` (the compiled
+`sortBy`), or `customAttributes` (the compiled `attributes`). The wrap shall
 apply to a rule compiled from data and to a rule that code supplies. *Satisfies `SP-SAFE-3`.*
 
 > The host `sortInstances` and `compareInstances` of the customization are not wrapped. An error in
@@ -561,7 +559,7 @@ groups. *Satisfies `SP-READ-4`, `SP-DET-1`.*
 
 **SP-PIPE-7**
 The engine shall order the instances of a group by acquisition order, then by `sortInstances`,
-then by the rule's `compareInstances`, then by the host `compareInstances`. A comparator that
+then by the rule's `sortBy`, then by the host `compareInstances`. A comparator that
 returns `0` shall leave the earlier order. *Satisfies `SP-FIX-4`, `SP-DET-2`.*
 
 **SP-PIPE-8**
@@ -598,7 +596,7 @@ after the sort. *Satisfies `SP-DET-1`.*
 
 **SP-PIPE-11**
 The display set factory shall record `splitKey`, `splitRuleId`, and `splitGroupId` on each
-display set, and shall not let `customAttributes` overwrite those three attributes or
+display set, and shall not let the `attributes` of a rule overwrite those three attributes or
 `extendInstances`. *Satisfies `SP-READ-4`, `SP-READ-6`, `SP-DET-3`.*
 
 > `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds these four names, and also
@@ -627,8 +625,8 @@ The default rules shall gate every match on the SOP class list of the stack SOP 
 > page. The requirements below state only what split rules need from the language.
 
 **SP-EXPR-1**
-A rule should use the structured `RawCondition` and `RawValue` forms, and should use an
-`expression` string only where no structured form fits. *Satisfies `SP-READ-1`, `SP-DESC-2`.*
+A rule should use a name and a test in `matches`, and should put an expression in a context entry
+only where no test fits. *Satisfies `SP-READ-1`, `SP-DESC-2`.*
 
 **SP-EXPR-2**
 The expression compiler shall live in `@cornerstonejs/metadata` (`compileExpression`, part of the
@@ -643,17 +641,16 @@ and `prototype` when it parses an expression. *Satisfies `SP-SAFE-1`.*
 `SP-READ-5`, `SP-REUSE-5`.*
 
 **SP-EXPR-5**
-Each place of an expression in a rule shall declare the names that the expression can read. In
-`matches`, `groupBy`, `runBy`, a series fact, and `fromFirstInstance`, a bare name reads an
-attribute of the instance. In `compareInstances`, the expression reads only `a`, `b`, and
-`context`, and a bare name that is not one of them is a compile error. *Satisfies `SP-SAFE-2`,
-`SP-FORM-7`.*
+Each name in an expression shall be a DICOM keyword or a context name, and any other name shall be
+a compile error. A bare keyword reads an attribute of the instance. `series.instances.count(x)` and
+the other aggregates run over the instances of the series, and in `attributes` only,
+`displaySet.instances.*` runs over the display set. *Satisfies `SP-SAFE-2`, `SP-FORM-7`.*
 
 > Before this requirement, a bare `SliceLocation` in a comparator read `a.SliceLocation` without a
 > warning.
 
 **SP-EXPR-6**
-The structured forms shall read an attribute of an instance, and a series fact, only as an own
+The compiled readers shall read an attribute of an instance, and a context value, only as an own
 property. *Satisfies `SP-SAFE-2`.*
 
 > Before this requirement, `{ "seriesFact": "constructor" }` was true, and
@@ -675,7 +672,8 @@ the URL that loads the module. *Satisfies `SP-DESC-3`.*
 
 **SP-DEPLOY-3**
 A rule that must take instances before the defaults shall use a priority below `0`, and shall gate
-on a classifier, on `SOPClassUID`, or on `Modality`. *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
+on a code context entry such as `isStackImage`, on `SOPClassUID`, or on `Modality`. *Satisfies
+`SP-FIX-6`, `SP-SAFE-4`.*
 
 ### 5.5 The assistant route — `SP-GEN` *(proposed)*
 
@@ -736,7 +734,7 @@ checks the resulting groups. *Satisfies `SP-DESC-4`, `SP-REUSE-5`.*
 ```mermaid
 flowchart LR
   RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set"]
-  LD --> CP["Compile<br/>createDisplaySetSplitRules<br/>+ the same named classifiers"]
+  LD --> CP["Compile<br/>createDisplaySetSplitRules<br/>+ the same code context entries"]
   CP --> G["groupInstancesBySplitRules<br/>per series"]
   G --> IX["Server index<br/>display sets with splitKey"]
   IX -.->|the viewer reads the index| VW["OHIF viewer"]
@@ -751,13 +749,13 @@ A server index shall record the `splitKey` of each display set, so that the view
 display sets to the index. *Satisfies `SP-REUSE-2`, `SP-DET-3`.*
 
 **SP-SRV-3**
-The ownership test for SOP classes shall be a named classifier (`stackImage`), so that a server can
-use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
+The ownership test for SOP classes shall be a named code context entry (`isStackImage`), so that a
+server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
 
-> Today the OHIF default rules are closures (`ohifDefaultSplitRules.ts`). A closure cannot go to a
-> server. The header of that file states the conversion path: every OHIF-specific part reduces to
-> the one classifier `isStackHandledInstance`. Until that conversion, a server can reuse a
-> custom rule in the raw form, but not the OHIF defaults.
+> The OHIF default rules are raw data (`ohifDefaultSplitRules.ts`). The only code is the context
+> entry `isStackImage` (`isStackImageInstance`). A server must register the same entry. The
+> upstream `isStackImage` entry of `@cornerstonejs/metadata` differs from it for two SOP classes:
+> Corneal Topography Map and RT Dose.
 
 ---
 
