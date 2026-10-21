@@ -15,7 +15,7 @@ header.
 For the descriptor object itself (field-by-field reference, the
 `runtimeExtensionOrigins` allowlist, and the `window.__ohif.runtimeExtensions`
 audit surface) the normative reference is
-[Runtime Extensions and Modes (Track B)](../configuration/configurationFiles.md#runtime-extensions-and-modes-track-b)
+[Runtime Extensions and Modes](../configuration/configurationFiles.md#runtime-extensions-and-modes)
 in the Configuration Files guide. See also the
 [Runtime Extensions](../platform/extensions/runtime-extensions.md) overview. This
 page does not restate the descriptor contract; it only documents deployment.
@@ -114,6 +114,60 @@ build-time `pluginConfig.json` `importPath` entries and the `peerImport` URL
 fallthrough are treated differently, per
 [Where integrity is enforced](../configuration/configurationFiles.md#where-integrity-is-enforced).
 
+## Loading a published plugin from a CDN
+
+A plugin published to npm can also be loaded straight from a CDN that mirrors
+npm, with nothing hosted by you. The bundle is the file the published package's
+`main` points at, `dist/index.umd.js`:
+
+- jsDelivr: `https://cdn.jsdelivr.net/npm/<package>@<version>/dist/index.umd.js`
+- unpkg: `https://unpkg.com/<package>@<version>/dist/index.umd.js`
+
+Always give an exact version. A URL without one starts serving the new file at
+the next publish, and the descriptor's `integrity` no longer matches.
+
+```js title="app-config.js"
+window.config = {
+  // ...
+  runtimeExtensionOrigins: ['https://cdn.jsdelivr.net'],
+  extensions: [
+    {
+      packageName: '@acme/ohif-extension-xyz',
+      importPath: 'https://cdn.jsdelivr.net/npm/@acme/ohif-extension-xyz@1.2.3/dist/index.umd.js',
+      globalName: '@acme/ohif-extension-xyz',
+      coreVersionRange: '>=3.14.0-beta.0 <4',
+      integrity: 'sha384-...',
+    },
+  ],
+};
+```
+
+The CDN is a different origin from the viewer, so:
+
+- its origin must be listed in `runtimeExtensionOrigins`;
+- the descriptor needs `integrity`, computed from the `dist/index.umd.js` you
+  built and published (see
+  [Computing the `integrity` value](../configuration/configurationFiles.md#computing-the-integrity-value));
+- the CDN must send CORS headers, because the loader fetches the file to verify
+  it. jsDelivr and unpkg do;
+- if you set `CSP_HEADER`, extend it as described under "Cross-origin plugin
+  origins" in [Extending the baseline](#extending-the-baseline).
+
+:::caution Before relying on a CDN
+- **Availability.** The viewer now depends on the CDN being up and still serving
+  that version. `integrity` protects against altered content, not against an
+  outage.
+- **A public origin on the allowlist.** Anyone can publish to npm, and an
+  allowlisted origin may also serve code through the URL fallthrough path,
+  which has no integrity check (see
+  [Where integrity is enforced](../configuration/configurationFiles.md#where-integrity-is-enforced)).
+  Allowlisting a public CDN therefore allows every package it mirrors on that
+  path.
+
+For production, hosting the bundle under `/plugins/` (above) remains the
+recommended route; a CDN suits trials and quick deployments.
+:::
+
 ## docker-compose example
 
 Mount the host `plugins/` tree read-only into the image's plugins root and
@@ -189,8 +243,15 @@ deployments as-is. Extend it for your environment:
   data/blob image URLs, plus thumbnails fetched from a cross-origin DICOMweb
   server.
 - **Cross-origin plugin origins.** Any origin listed in
-  `window.config.runtimeExtensionOrigins` must also be added to `script-src`,
-  and each such descriptor requires `integrity` per the descriptor contract.
+  `window.config.runtimeExtensionOrigins` must also be in the policy, under the
+  directive that matches how its code is loaded:
+  - a **descriptor** fetches the bundle to verify its `integrity`, so add the
+    origin to `connect-src` (plus `script-src blob:`, below), and to
+    `style-src` if the descriptor's `styles` come from it. Each such descriptor
+    requires `integrity` per the descriptor contract;
+  - a **plain URL string** in `extensions` or `modes` (instead of a
+    descriptor), or a URL passed to `peerImport`, is imported directly, so add
+    the origin to `script-src`.
 - **`script-src blob:` for cross-origin integrity loads.** A cross-origin
   integrity-pinned plugin is loaded by fetching the bundle, verifying its
   digest, and importing it through a `blob:` URL. That import needs
@@ -295,9 +356,10 @@ PowerShell `curl` alias).
   If an `.mjs` bundle is served with the wrong type, the request is not being
   handled by the `/plugins/` location.
 - **CSP violation in the console.** Read the violated directive: a blocked
-  `connect-src` means your DICOMweb origin is missing from the header; a blocked
-  `script-src` for a cross-origin plugin means the origin (and possibly `blob:`)
-  is missing; a blocked inline script at boot means the interim `'unsafe-inline'`
+  `connect-src` means your DICOMweb origin, or the origin a plugin descriptor
+  loads from, is missing from the header; a blocked `script-src` for a
+  cross-origin plugin means `blob:` is missing (descriptors) or the origin is
+  (the URL fallthrough path); a blocked inline script at boot means the interim `'unsafe-inline'`
   note above has not been applied. See
   [Extending the baseline](#extending-the-baseline).
 - **Stale plugin after an update.** Check the `Cache-Control` on the plugin URL.

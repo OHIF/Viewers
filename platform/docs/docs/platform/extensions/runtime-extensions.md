@@ -42,13 +42,13 @@ window.config = {
   [Where integrity is enforced](../../configuration/configurationFiles.md#where-integrity-is-enforced).
   For the commands that produce the value, see
   [Computing the `integrity` value](../../configuration/configurationFiles.md#computing-the-integrity-value).
-- **CSP:** the viewer's two inline bootstrap scripts mean a deployment
-  `CSP_HEADER` must interim-add `'unsafe-inline'` to `script-src` (until the
-  inline-script hash handshake ships), and cross-origin integrity loads run
-  through a `blob:` URL, so `script-src` must also include `blob:`.
+- **CSP:** a deployment that sets `CSP_HEADER` must extend the baseline, both
+  for the viewer itself and for cross-origin plugins; see
+  [Content-Security-Policy (CSP_HEADER)](../../deployment/runtime-plugins.md#content-security-policy-csp_header).
 
 The **normative reference** for the descriptor fields, the
-`runtimeExtensionOrigins` allowlist, the audit record shape, and the CSP/CORS
-requirements is
-[Runtime Extensions and Modes (Track B)](../../configuration/configurationFiles.md#runtime-extensions-and-modes-track-b)
-in the Configuration Files guide.
+`runtimeExtensionOrigins` allowlist and the audit record shape is
+[Runtime Extensions and Modes](../../configuration/configurationFiles.md#runtime-extensions-and-modes)
+in the Configuration Files guide. CSP and CORS setup is covered in the
+deployment guide under
+[Extending the baseline](../../deployment/runtime-plugins.md#extending-the-baseline).

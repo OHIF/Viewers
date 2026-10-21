@@ -223,7 +223,7 @@ Add an explicit entry to
 `pnpm plugin add <pkg>` in a Viewers checkout, then rebuild. See
 [Extension Installation](./installation.md).
 
-### Runtime (Track B)
+### Runtime
 
 Add a descriptor to `window.config.extensions` in `app-config.js` — no viewer
 rebuild. See [Runtime Extensions](./runtime-extensions.md). The full descriptor:
@@ -253,7 +253,7 @@ rebuild. See [Runtime Extensions](./runtime-extensions.md). The full descriptor:
 
 The **normative reference** for descriptor fields, the origin allowlist, the
 audit record shape, and the CSP/CORS requirements is
-[Runtime Extensions and Modes (Track B)](../../configuration/configurationFiles.md#runtime-extensions-and-modes-track-b).
+[Runtime Extensions and Modes](../../configuration/configurationFiles.md#runtime-extensions-and-modes).
 
 ## AGENTS.md
 
@@ -391,7 +391,7 @@ and drive it with Playwright:
 - **Build-time:** in a Viewers checkout, `pnpm plugin add <pkg>` then
   `pnpm dev`.
 - **Runtime:** serve the built bundle against the released docker image with a
-  `/plugins/` mount and a Track B descriptor.
+  `/plugins/` mount and a runtime descriptor.
 
 Contributors working inside the Viewers monorepo should follow
 `.agents/skills/ohif-test-agent/SKILL.md` for the fixture system and page

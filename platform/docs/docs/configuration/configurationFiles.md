@@ -334,7 +334,7 @@ configuration: {
 }
 ```
 
-## Runtime Extensions and Modes (Track B)
+## Runtime Extensions and Modes
 
 :::note Normative reference
 This section is the normative reference for the runtime extension descriptor
@@ -554,12 +554,11 @@ default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob
 
 Two caveats for runtime plugins:
 
-1. **Cross-origin loads need `blob:`.** Cross-origin integrity loads execute
-   through a `blob:` URL (the loader fetches the bundle, verifies the digest,
-   then imports a blob URL), so a deployment CSP needs `script-src blob:` —
-   the baseline above does not include it. The plugin's origin must also send
-   CORS headers (the integrity fetch uses `mode: 'cors'`). Same-origin plugins
-   work without either.
+1. **Cross-origin plugins need more.** A plugin loaded from another origin
+   needs extra CSP directives, and that origin must send CORS headers; the
+   deployment guide's
+   [Extending the baseline](../deployment/runtime-plugins.md#extending-the-baseline)
+   says which. Same-origin plugins need neither.
 2. **Interim `'unsafe-inline'` note.** As written, the baseline's
    `script-src 'self' 'wasm-unsafe-eval'` also blocks the viewer's own two
    inline bootstrap scripts in `index.html` (the `window.PUBLIC_URL` bootstrap

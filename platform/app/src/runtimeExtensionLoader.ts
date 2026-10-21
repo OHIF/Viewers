@@ -191,9 +191,11 @@ function resolveImportUrl(importPath: string): URL {
 }
 
 /** Cross-origin path: fetch -> SubtleCrypto digest -> blob URL for import().
- *  CSP caveat: importing the blob URL requires `script-src blob:`; the baseline
- *  deployment CSP does NOT include it — deployments using cross-origin runtime
- *  extensions must extend CSP_HEADER (documented in WS7.8). Server must send CORS. */
+ *  CSP caveat: the fetch needs the plugin's origin in `connect-src`, and
+ *  importing the blob URL needs `script-src blob:`; the baseline deployment
+ *  CSP includes neither — deployments using cross-origin runtime extensions
+ *  must extend CSP_HEADER (see deployment/runtime-plugins.md). Server must send
+ *  CORS. */
 async function fetchWithIntegrity(url: URL, integrity: string): Promise<string> {
   const m = /^(sha256|sha384|sha512)-(.+)$/.exec(integrity);
   if (!m) {
