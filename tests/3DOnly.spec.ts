@@ -1,6 +1,6 @@
 import {
   attemptAction,
-  checkForScreenshot,
+  checkForViewportScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -24,9 +24,11 @@ test.describe('3D only Test', async () => {
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     await waitForViewportsRendered(page);
     // Use a 4 percent diff pixel ratio to account for slight color differences in the 3D viewport
-    await checkForScreenshot({
+    const activeViewport = await viewportPageObject.active;
+
+    await checkForViewportScreenshot({
       page,
-      locator: viewportPageObject.grid,
+      viewport: activeViewport,
       screenshotPath: screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
       maxDiffPixelRatio: 0.04,
     });

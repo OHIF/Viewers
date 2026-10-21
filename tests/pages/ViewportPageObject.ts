@@ -2,6 +2,7 @@ import { Locator, Page } from '@playwright/test';
 import {
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
+  simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
@@ -11,12 +12,17 @@ import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-export type SvgInnerElement = 'circle' | 'path' | 'line' | 'g';
+export type SvgInnerElement = 'circle' | 'path' | 'line' | 'polyline' | 'g';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathClickParams = {
+  path: { x: number; y: number }[];
+  closePath?: boolean;
 };
 
 type NormalizedPathDragParams = {
@@ -65,7 +71,7 @@ export interface IViewportPageObject {
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
-  normalizedPathClickAt: (params: { path: { x: number; y: number }[] }) => Promise<void>;
+  normalizedPathClickAt: (params: NormalizedPathClickParams) => Promise<void>;
   normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
@@ -114,12 +120,31 @@ export interface IViewportPageObject {
   hideViewportOverlayText: () => Promise<void>;
   hideAnnotationText: () => Promise<void>;
   hideOrientationMarkerText: () => Promise<void>;
+  hideViewportNotificationText: () => Promise<void>;
+  hideModalityLoadBadgeText: () => Promise<void>;
   hideAllText: () => Promise<void>;
   showViewportOverlayText: () => Promise<void>;
   showAnnotationText: () => Promise<void>;
   showOrientationMarkerText: () => Promise<void>;
+  showViewportNotificationText: () => Promise<void>;
+  showModalityLoadBadgeText: () => Promise<void>;
   showAllText: () => Promise<void>;
 }
+
+const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
+const annotationTextSelector = 'g[data-annotation-uid] text';
+const orientationMarkerSelector = '.ViewportOrientationMarkers';
+// Hydration / measurement-tracking prompt shown over the viewport.
+const viewportNotificationSelector = '[data-cy="viewport-notification"]';
+// "SEG" / "RTSTRUCT" / "SR" badge (with its LOAD button); rendered only while unhydrated.
+const modalityLoadBadgeSelector = '[data-cy^="ModalityLoadBadge-"]';
+const allViewportTextSelector = [
+  viewportOverlaySelector,
+  annotationTextSelector,
+  orientationMarkerSelector,
+  viewportNotificationSelector,
+  modalityLoadBadgeSelector,
+].join(', ');
 
 export class ViewportPageObject {
   readonly page: Page;
@@ -180,6 +205,19 @@ export class ViewportPageObject {
   }
 
   /**
+   * Hides all viewport text (overlays, annotations, orientation markers, prompts,
+   * modality badges) in one sweep.
+   */
+  async hideAllViewportGridText(): Promise<void> {
+    await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /** Re-shows everything {@link hideAllViewportGridText} hid. */
+  async showAllViewportGridText(): Promise<void> {
+    await this.showLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /**
    * Hides matching elements by adding Tailwind's `hidden` class.
    * Safe when the locator matches nothing (`evaluateAll` is a no-op on an empty set).
    */
@@ -200,12 +238,6 @@ export class ViewportPageObject {
   }
 
   private getTextVisibilityMethods(viewport: Locator) {
-    const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
-
-    const annotationTextSelector = 'g[data-annotation-uid] text';
-
-    const orientationMarkerSelector = '.ViewportOrientationMarkers';
-
     const textVisibilityMethods = {
       hideViewportOverlayText: async () => {
         await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
@@ -216,10 +248,18 @@ export class ViewportPageObject {
       hideOrientationMarkerText: async () => {
         await this.hideLocatorElements(viewport.locator(orientationMarkerSelector));
       },
+      hideViewportNotificationText: async () => {
+        await this.hideLocatorElements(viewport.locator(viewportNotificationSelector));
+      },
+      hideModalityLoadBadgeText: async () => {
+        await this.hideLocatorElements(viewport.locator(modalityLoadBadgeSelector));
+      },
       hideAllText: async () => {
         await textVisibilityMethods.hideViewportOverlayText();
         await textVisibilityMethods.hideAnnotationText();
         await textVisibilityMethods.hideOrientationMarkerText();
+        await textVisibilityMethods.hideViewportNotificationText();
+        await textVisibilityMethods.hideModalityLoadBadgeText();
       },
 
       showViewportOverlayText: async () => {
@@ -231,10 +271,18 @@ export class ViewportPageObject {
       showOrientationMarkerText: async () => {
         await this.showLocatorElements(viewport.locator(orientationMarkerSelector));
       },
+      showViewportNotificationText: async () => {
+        await this.showLocatorElements(viewport.locator(viewportNotificationSelector));
+      },
+      showModalityLoadBadgeText: async () => {
+        await this.showLocatorElements(viewport.locator(modalityLoadBadgeSelector));
+      },
       showAllText: async () => {
         await textVisibilityMethods.showViewportOverlayText();
         await textVisibilityMethods.showAnnotationText();
         await textVisibilityMethods.showOrientationMarkerText();
+        await textVisibilityMethods.showViewportNotificationText();
+        await textVisibilityMethods.showModalityLoadBadgeText();
       },
     };
 
@@ -385,16 +433,20 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
-      normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
-        const { path } = params;
+      normalizedPathClickAt: async (params: NormalizedPathClickParams) => {
+        const { path, closePath = false } = params;
         await simulateNormalizedClicksOnElement({
           locator: viewport,
           normalizedPoints: path,
         });
-        await simulateNormalizedDoubleClickOnElement({
-          locator: viewport,
-          normalizedPoint: path[path.length - 1],
-        });
+        if (closePath) {
+          // Click the first point to close the path, held past the 400ms double-click window.
+          await simulateNormalizedClickOnElement({
+            locator: viewport,
+            normalizedPoint: path[0],
+            delay: 500,
+          });
+        }
       },
       normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
         await simulateNormalizedPathDragOnElement({

@@ -173,8 +173,11 @@ export class DOMOverlayPageObject {
           },
         };
       },
+      get modalityLoadBadges() {
+        return page.locator('css=div[data-cy^="ModalityLoadBadge-"]');
+      },
       async getModalityLoadBadgeCount() {
-        return await page.locator('css=div[data-cy^="ModalityLoadBadge-"]').count();
+        return await this.modalityLoadBadges.count();
       },
     };
   }
