@@ -368,7 +368,8 @@ describe('DisplaySetService', () => {
 
     it('passes the series facts of the re-split to the display set it extends', () => {
       const factRule = { priority: 1 };
-      const seriesCount = series => series[metadataDisplaySet.DISPLAY_SET_CONTEXT_FACT].instances.length;
+      const seriesCount = series =>
+        series[metadataDisplaySet.DISPLAY_SET_CONTEXT_FACT].instances.length;
       setCustomization({
         enabled: true,
         splitRules: { counted: factRule },
@@ -573,7 +574,7 @@ describe('DisplaySetService', () => {
           );
         });
 
-        it('blocks a compiled rule with a priority that is not a number', () => {
+        it('blocks a rule with functions and a priority that is not a number', () => {
           setCustomization({
             enabled: true,
             splitRules: { ...testSplitRules, native: { priority: '1', matches: () => true } },

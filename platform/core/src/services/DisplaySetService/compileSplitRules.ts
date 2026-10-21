@@ -7,13 +7,15 @@ import type {
 } from '@cornerstonejs/metadata';
 
 /**
- * A `useMetadataDisplaySet.splitRules` entry: raw selector data (the
- * `@cornerstonejs/metadata` safe-function vocabulary - conditions, values,
- * `{ expression }`, series facts, custom attribute recipes), a rule that code
- * has already compiled, or a mix of the two: a function at any function place
- * next to data at the others.
+ * A `useMetadataDisplaySet.splitRules` entry: a `@cornerstonejs/metadata` raw
+ * rule. A raw field can hold a function at a function place (a whole
+ * `matches`, a `groupBy` entry, a `sortBy` entry, `attributes`, ...).
+ *
+ * A rule that `createDisplaySetSplitRules` has already compiled is not a valid
+ * entry: its `series`, `compareInstances` and `customAttributes` fields are
+ * not raw fields, so it does not compile again.
  */
-export type SplitRuleCustomizationEntry = RawSplitRule | SplitRuleSetEntry;
+export type SplitRuleCustomizationEntry = RawSplitRule;
 
 /** A rule that did not compile, or a rule set that is not a keyed object. */
 export type SplitRuleCompileError = {
@@ -119,9 +121,9 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleS
  * supplies the display set context and the named functions the rules
  * reference, for example the `isStackImage` code entry of
  * `@ohif/extension-default`. The compiler keeps a
- * function at a function place as is, so an entry that code has compiled, and
- * an entry that mixes functions with data, go through the same compiler as raw
- * data. No field is left uncompiled because another field is a function.
+ * function at a function place as is, so an entry that mixes functions with
+ * data goes through the same compiler as raw data. No field is left
+ * uncompiled because another field is a function.
  *
  * Each entry is compiled on its own (SP-PIPE-3), so that `errors` names every
  * rule that fails - an unknown name, an invalid expression, a missing or
@@ -131,8 +133,8 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleS
  * the rule that failed can be the rule a clinician depends on. The display set
  * service does that stop.
  *
- * Every function field of a compiled rule - from raw data or from code - is
- * wrapped, so that an error at run time is a {@link SplitRuleRunError} that
+ * Every function field of a compiled rule - from data or from a function in a
+ * raw field - is wrapped, so that an error at run time is a {@link SplitRuleRunError} that
  * names the rule and the field.
  *
  * @returns the compiled rules with the same keys and priorities, and one error

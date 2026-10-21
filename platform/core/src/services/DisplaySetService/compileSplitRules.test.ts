@@ -1,4 +1,4 @@
-import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
+import { defaultDisplaySetSplitRules, groupInstancesBySplitRules } from '@cornerstonejs/metadata';
 import { compileSplitRules, SplitRuleRunError } from './compileSplitRules';
 
 const makeInstance = (overrides: Record<string, unknown> = {}) => ({
@@ -53,7 +53,7 @@ describe('compileSplitRules', () => {
     expect(rules.stack.matches(makeInstance(), { series: {} })).toBe(false);
   });
 
-  it('uses a rule that code has already compiled, with the same behaviour', () => {
+  it('keeps a function in a raw field, and compiles the data next to it', () => {
     const matches = jest.fn(instance => instance.Modality === 'CT');
     const { rules, errors } = compileSplitRules({
       native: { priority: 1, matches, groupBy: ['SeriesInstanceUID'] },
@@ -98,6 +98,17 @@ describe('compileSplitRules', () => {
       });
       expect(errors).toEqual([{ ruleId: 'dwi', message: expect.any(String) }]);
     });
+  });
+
+  it('rejects a rule that the compiler has already compiled', () => {
+    // A compiled rule has the hook `series`, which is not a raw field.
+    const { rules, errors } = compileSplitRules({
+      volume3d: defaultDisplaySetSplitRules.volume3d as never,
+    });
+    expect(errors).toEqual([
+      { ruleId: 'volume3d', message: expect.stringContaining("unknown field 'series'") },
+    ]);
+    expect(rules).toEqual({});
   });
 
   it('reports a __proto__ rule id instead of losing the rule', () => {
@@ -148,7 +159,7 @@ describe('compileSplitRules', () => {
       expect(warn).not.toHaveBeenCalled();
     });
 
-    it('also for a compiled rule with no usable priority', () => {
+    it('also for a rule with functions and no usable priority', () => {
       const { errors } = compileSplitRules({ native: { matches: () => true } as never });
       expect(errors).toEqual([{ ruleId: 'native', message: expect.stringContaining('priority') }]);
     });
