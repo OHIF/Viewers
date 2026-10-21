@@ -154,6 +154,34 @@ test('migrate keeps a higher engines.node floor and other engines', () => {
   });
 });
 
+test("migrate drops the CLI template's OHIF/Viewers repository", () => {
+  const target = scaffoldCliEra('extension', 'ohif-repo-extension');
+  const pkgPath = path.join(target, 'package.json');
+  assert.equal(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).repository, 'OHIF/Viewers');
+
+  assert.ok(migrate(target, '--dry-run').includes('package.json repository: drop "OHIF/Viewers"'));
+  migrate(target);
+  assert.ok(!('repository' in JSON.parse(fs.readFileSync(pkgPath, 'utf8'))));
+  assert.ok(!migrate(target, '--dry-run').includes('repository'), 'second run reports nothing');
+});
+
+test("migrate keeps the author's own repository", () => {
+  for (const repository of [
+    'acme/ohif-extension-foo',
+    { type: 'git', url: 'https://github.com/OHIF/Viewers.git', directory: 'extensions/foo' },
+  ]) {
+    const target = scaffoldCliEra('extension', 'own-repo-extension');
+    const pkgPath = path.join(target, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    pkg.repository = repository;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+
+    assert.ok(!migrate(target, '--dry-run').includes('repository'));
+    migrate(target);
+    assert.deepEqual(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).repository, repository);
+  }
+});
+
 // Write extra devDependencies (and optionally files) into a CLI-era scaffold.
 function withDevDeps(target, devDependencies, extraPkg = {}) {
   const pkgPath = path.join(target, 'package.json');

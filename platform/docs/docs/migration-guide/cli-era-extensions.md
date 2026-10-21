@@ -121,6 +121,9 @@ follow the template). Note what is **not** here:
   compile from source.
 - `keywords` carries `ohif-extension` (or `ohif-mode` for a mode) — registry
   discovery and `pnpm plugin doctor` key off it.
+- No `repository`. The CLI template set it to `"OHIF/Viewers"`, so npm linked
+  every generated package to OHIF's repo; migrate drops that value. Add your own
+  `repository` if you want npm to link to your source.
 
 `publishConfig` rewrites only `main`/`module` at publish time so the published
 tarball points consumers at the built UMD while the working tree keeps pointing

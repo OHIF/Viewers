@@ -585,6 +585,28 @@ async function runMigrate(targetDir, dryRun) {
   } else {
     note(false, `package.json keywords already contains "${keyword}"`);
   }
+  // The CLI template set repository to OHIF's own repo, so npm would link a
+  // third-party plugin to OHIF/Viewers. Drop that value (a new scaffold has no
+  // repository); any other value, or one with a directory (a package that does
+  // live in that repo), is the author's and stays.
+  const repoUrl =
+    typeof next.repository === 'string'
+      ? next.repository
+      : next.repository && !next.repository.directory
+        ? next.repository.url
+        : undefined;
+  const isOhifRepo =
+    typeof repoUrl === 'string' &&
+    /^(github:)?OHIF\/Viewers$|^(git\+)?https?:\/\/github\.com\/OHIF\/Viewers(\.git)?\/?$/i.test(
+      repoUrl.trim()
+    );
+  if (isOhifRepo) {
+    note(
+      true,
+      `package.json repository: drop ${JSON.stringify(repoUrl)} (the CLI template's value; npm would link to OHIF's repo) — add your own repository if you want npm to link to your source`
+    );
+    delete next.repository;
+  }
   const publishConfig = { access: 'public', main: CONTRACT_UMD, module: CONTRACT_UMD };
   const mergedPublishConfig = { ...(next.publishConfig ?? {}), ...publishConfig };
   if (JSON.stringify(next.publishConfig) !== JSON.stringify(mergedPublishConfig)) {
