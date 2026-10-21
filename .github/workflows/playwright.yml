@@ -702,8 +702,13 @@ jobs:
         #
         # `--package` is required: its binaries are `netlify` and `ntl`, neither
         # matching the package name, so pnpm cannot pick a default.
+        #
+        # `--dir` points pnpm outside the workspace. Inside it, dlx applies the
+        # workspace overrides, and `commander: 8.3.0` breaks the CLI at startup
+        # ("conflicts is not a function"). The command still runs in the repo root.
         run: |
-          RESULT=$(pnpm dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
+          mkdir -p "$RUNNER_TEMP/netlify-cli"
+          RESULT=$(pnpm --dir "$RUNNER_TEMP/netlify-cli" dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
             echo "::error::Netlify deploy command failed"
             exit 1
           }
