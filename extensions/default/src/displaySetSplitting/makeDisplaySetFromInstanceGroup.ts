@@ -23,9 +23,9 @@ const RESERVED_ATTRIBUTES = new Set([
   'uid',
   'displaySetInstanceUID',
   'splitKey',
-  // The rule and the rule group that made the display set. DisplaySetService
-  // compares splitRuleId with the matched rule when a display set grows, and a
-  // hanging protocol reads splitGroupId, so a rule must not rename either one.
+  // The rule and the rule group that made the display set. A user and a
+  // hanging protocol read them to find the rule that made a display set, so a
+  // rule must not rename either one.
   'splitRuleId',
   'splitGroupId',
   // The growth hook DisplaySetService calls on a re-split.

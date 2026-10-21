@@ -44,9 +44,11 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * stops further display sets for the study. Either error shows a persistent
  * notification that names the rule. See `DisplaySetService`.
  *
- * Note: image SOP class instances without `Rows` are unmatched by the default
- * rules and become a separate legacy stack display set (the legacy handler
- * merges them into the series' stackable display set instead).
+ * Note: an image SOP class instance without `Rows` is claimed by
+ * `defaultImageRule`, which has no `Rows` test. The rules that need `Rows`
+ * (`mixedDimensionalityBValue`, `volume3d`) skip it, so a series in which only
+ * some instances have `Rows` gives two display sets. The legacy handler merges
+ * such instances into the stackable display set of the series.
  */
 export default function getMetadataDisplaySetCustomization(context: ImageSetFactoryContext) {
   return {
