@@ -9,10 +9,10 @@
 // AppTypes.Config CANNOT be widened from here (interface merging requires
 // same-name members to be declared identically), so runtime extension
 // descriptor entries remain untyped in AppTypes.Config. That widening to
-// `(string | RuntimeExtensionDescriptor)[]` belongs to the separately-flagged
+// `(string | RuntimePluginDescriptor)[]` belongs to the separately-flagged
 // optional core type fix and is deliberately NOT done in this workstream.
 
-import type { RuntimeExtensionAuditRecord } from '../runtimeExtensionLoader';
+import type { RuntimePluginAuditRecord } from '../runtimeExtensionLoader';
 
 declare global {
   namespace AppTypes {
@@ -21,13 +21,13 @@ declare global {
        * Extra origins allowed to serve runtime extensions/modes/styles.
        * Same-origin is always implicitly allowed; everything else is denied.
        */
-      runtimeExtensionOrigins?: string[];
+      runtimePluginOrigins?: string[];
     }
   }
   interface Window {
     __ohif?: {
-      runtimeExtensions?: RuntimeExtensionAuditRecord[];
-      runtimeExtensionOrigins?: string[];
+      runtimePlugins?: RuntimePluginAuditRecord[];
+      runtimePluginOrigins?: string[];
     };
   }
 }

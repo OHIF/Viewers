@@ -13,7 +13,7 @@ those bundles, how to mount them, and the optional Content-Security-Policy
 header.
 
 For the descriptor object itself (field-by-field reference, the
-`runtimeExtensionOrigins` allowlist, and the `window.__ohif.runtimeExtensions`
+`runtimePluginOrigins` allowlist, and the `window.__ohif.runtimePlugins`
 audit surface) the normative reference is
 [Runtime Extensions and Modes](../configuration/configurationFiles.md#runtime-extensions-and-modes)
 in the Configuration Files guide. See also the
@@ -106,7 +106,7 @@ list of globals and what has none.
 
 `importPath` must be `PUBLIC_URL`-prefixed when `PUBLIC_URL` is not `/` (e.g.
 `/ohif/plugins/@acme/ohif-extension-xyz/1.2.3/index.umd.js`). Same-origin
-`/plugins/` URLs need no `integrity` and no entry in `runtimeExtensionOrigins`;
+`/plugins/` URLs need no `integrity` and no entry in `runtimePluginOrigins`;
 cross-origin bundles require both — see the
 [descriptor fields](../configuration/configurationFiles.md#descriptor-fields)
 reference. That `integrity` requirement applies to descriptors specifically;
@@ -129,7 +129,7 @@ the next publish, and the descriptor's `integrity` no longer matches.
 ```js title="app-config.js"
 window.config = {
   // ...
-  runtimeExtensionOrigins: ['https://cdn.jsdelivr.net'],
+  runtimePluginOrigins: ['https://cdn.jsdelivr.net'],
   extensions: [
     {
       packageName: '@acme/ohif-extension-xyz',
@@ -144,7 +144,7 @@ window.config = {
 
 The CDN is a different origin from the viewer, so:
 
-- its origin must be listed in `runtimeExtensionOrigins`;
+- its origin must be listed in `runtimePluginOrigins`;
 - the descriptor needs `integrity`, computed from the `dist/index.umd.js` you
   built and published (see
   [Computing the `integrity` value](../configuration/configurationFiles.md#computing-the-integrity-value));
@@ -243,7 +243,7 @@ deployments as-is. Extend it for your environment:
   data/blob image URLs, plus thumbnails fetched from a cross-origin DICOMweb
   server.
 - **Cross-origin plugin origins.** Any origin listed in
-  `window.config.runtimeExtensionOrigins` must also be in the policy, under the
+  `window.config.runtimePluginOrigins` must also be in the policy, under the
   directive that matches how its code is loaded:
   - a **descriptor** fetches the bundle to verify its `integrity`, so add the
     origin to `connect-src` (plus `script-src blob:`, below), and to
@@ -327,7 +327,7 @@ PowerShell `curl` alias).
    at a real UMD build in the fixture (`$env:APP_CONFIG = Get-Content -Raw
    -Encoding UTF8 .\app-config.js`, then `-e APP_CONFIG` with no value); open `http://localhost:3300` in a browser; assert
    DevTools console shows zero CSP violation reports for the plugin script, and
-   `window.__ohif.runtimeExtensions` contains a success record for the
+   `window.__ohif.runtimePlugins` contains a success record for the
    `packageName`.
 6. No stale plugin bytes after a swap:
    - Assert no service worker controls the page today: DevTools console

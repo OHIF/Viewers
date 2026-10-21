@@ -339,7 +339,7 @@ replacements:
 - **Load without a rebuild** — declare the plugin as a runtime descriptor in
   `app-config.js` instead. See
   [Runtime Extensions](../platform/extensions/runtime-extensions.md); the load
-  is recorded at `window.__ohif.runtimeExtensions` for auditing.
+  is recorded at `window.__ohif.runtimePlugins` for auditing.
 - `yarn cli search` → the [extension gallery] plus `npm search ohif-extension`
   (the registry keyword query the CLI search ran).
 
@@ -382,7 +382,7 @@ needs are installed and declared. In a create-ohif workspace, run
 `pnpm run doctor` at the workspace root instead.
 
 Then load the plugin in the viewer and confirm it registers (for a
-runtime-loaded plugin, check `window.__ohif.runtimeExtensions` for its audit
+runtime-loaded plugin, check `window.__ohif.runtimePlugins` for its audit
 record). Run `pnpm run plugin unlink <name>` when you're done if you don't
 want to keep the link. The `pnpm run plugin` helpers replace the deleted CLI;
 see the [OHIF CLI removal](./3p13-to-3p14/cli-removal.md) for the full command

@@ -1,7 +1,7 @@
 // Deployment-gated `?configUrl=` loading.
 //
 // This is the highest-value target in the whole configuration surface: the
-// fetched document controls `dataSources`, `runtimeExtensionOrigins`, and the
+// fetched document controls `dataSources`, `runtimePluginOrigins`, and the
 // `extensions`/`modes` descriptors, so whoever controls it controls which code
 // the viewer loads. Every check below is therefore fail-closed and loud — a
 // misconfiguration refuses the load and says why, rather than silently

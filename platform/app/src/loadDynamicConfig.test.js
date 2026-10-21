@@ -77,7 +77,7 @@ describe('loadDynamicConfig', () => {
     // The finding: `regex: 'config\\.example\\.com'` reads like a host
     // allowlist but matching is unanchored, so a hostile URL satisfies it from
     // its own query string — and a hostile config document can set
-    // runtimeExtensionOrigins + extensions[] descriptors.
+    // runtimePluginOrigins + extensions[] descriptors.
     test('an unanchored pattern is refused loudly instead of matching mid-URL', async () => {
       setConfigUrl('https://evil.example.com/c.json?x=config.example.com');
       const result = await loadDynamicConfig({

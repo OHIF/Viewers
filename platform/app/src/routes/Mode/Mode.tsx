@@ -163,7 +163,7 @@ export default function ModeRoute({
               await extensionManager.registerExtension(extension);
             } catch (error) {
               console.error(`OHIF: extension "${extensionId}" failed to register`, error);
-              recordRegistrationError(extensionId, error);
+              recordRegistrationError(extensionId, error, 'extension');
             }
           }
         }

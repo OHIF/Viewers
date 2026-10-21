@@ -44,7 +44,7 @@ describe('loadExternalModule', () => {
 
   test('the audit record for an unknown name says how to fix it (the notification shows it)', async () => {
     await expect(loadExternalModule('ohif-extension-missing')).rejects.toThrow();
-    const record = window.__ohif.runtimeExtensions.find(
+    const record = window.__ohif.runtimePlugins.find(
       r => r.packageName === 'ohif-extension-missing'
     );
     expect(record.error).toMatch(/add it to pluginConfig\.json and rebuild/);
@@ -71,7 +71,7 @@ describe('loadExternalModule', () => {
 
   test('cross-origin is denied by default with an actionable message', async () => {
     await expect(loadExternalModule('https://evil.example.com/x.js')).rejects.toThrow(
-      /refusing to load plugin code .* runtimeExtensionOrigins/s
+      /refusing to load plugin code .* runtimePluginOrigins/s
     );
     expect(window.browserImportFunction).not.toHaveBeenCalled();
   });
@@ -86,8 +86,8 @@ describe('loadExternalModule', () => {
     );
   });
 
-  test('window.config.runtimeExtensionOrigins allowlists an origin (with normalization)', async () => {
-    window.config = { runtimeExtensionOrigins: ['https://cdn.example.com/any/path'] };
+  test('window.config.runtimePluginOrigins allowlists an origin (with normalization)', async () => {
+    window.config = { runtimePluginOrigins: ['https://cdn.example.com/any/path'] };
     await expect(loadExternalModule('https://cdn.example.com/plugins/ext.js')).resolves.toBe(
       loadedModule.default
     );
@@ -96,24 +96,24 @@ describe('loadExternalModule', () => {
     );
   });
 
-  test('window.__ohif.runtimeExtensionOrigins is the canonical stash and takes precedence over window.config', async () => {
+  test('window.__ohif.runtimePluginOrigins is the canonical stash and takes precedence over window.config', async () => {
     // Function-style app configs cannot carry the array on window.config, so
     // the loader reads the __ohif stash first.
-    window.__ohif = { runtimeExtensionOrigins: ['https://cdn.example.com'] };
+    window.__ohif = { runtimePluginOrigins: ['https://cdn.example.com'] };
     await expect(loadExternalModule('https://cdn.example.com/plugins/ext.js')).resolves.toBe(
       loadedModule.default
     );
 
     // When the stash exists, window.config's list is not consulted.
-    window.__ohif = { runtimeExtensionOrigins: [] };
-    window.config = { runtimeExtensionOrigins: ['https://cdn.example.com'] };
+    window.__ohif = { runtimePluginOrigins: [] };
+    window.config = { runtimePluginOrigins: ['https://cdn.example.com'] };
     await expect(loadExternalModule('https://cdn.example.com/plugins/ext.js')).rejects.toThrow(
       /not allowlisted/
     );
   });
 
   test('malformed allowlist entries are ignored, not fatal', async () => {
-    window.config = { runtimeExtensionOrigins: [null, 42, '%%%'] };
+    window.config = { runtimePluginOrigins: [null, 42, '%%%'] };
     await expect(loadExternalModule('https://cdn.example.com/x.js')).rejects.toThrow(
       /not allowlisted/
     );
@@ -140,7 +140,7 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
   let loader;
   let extModule; // fresh per test so toBe assertions prove identity, not equality
 
-  const audit = () => (window.__ohif && window.__ohif.runtimeExtensions) || [];
+  const audit = () => (window.__ohif && window.__ohif.runtimePlugins) || [];
   const lastRecord = () => audit()[audit().length - 1];
 
   // UMD contract: dynamic import of the script has the side effect of assigning
@@ -308,7 +308,7 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
       'sha384-' + nodeCrypto.createHash('sha384').update(scriptBytes).digest('base64');
 
     const allowCdn = () => {
-      window.__ohif = { runtimeExtensionOrigins: ['https://cdn.example.com'] };
+      window.__ohif = { runtimePluginOrigins: ['https://cdn.example.com'] };
     };
     const mockFetchScript = () => {
       global.fetch.mockResolvedValue({
@@ -415,6 +415,28 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
     });
   });
 
+  describe('kind', () => {
+    test('records whether the descriptor was an extension or a mode', async () => {
+      mockUmdImport();
+      await loader.loadRuntimeDescriptor(umdDescriptor(), undefined, 'mode');
+      expect(lastRecord()).toMatchObject({ packageName: PKG, kind: 'mode', status: 'loaded' });
+    });
+
+    test('is recorded on a refused descriptor too', async () => {
+      await loader.loadRuntimeDescriptor(
+        umdDescriptor({ importPath: 'https://evil.example.com/x.js' }),
+        undefined,
+        'extension'
+      );
+      expect(lastRecord()).toMatchObject({ kind: 'extension', status: 'refused-origin' });
+    });
+
+    test("a built-in plugin's registration-error record takes the caller's kind", () => {
+      loader.recordRegistrationError('@fixture/kind-built-in', new Error('boom'), 'mode');
+      expect(lastRecord()).toMatchObject({ packageName: '@fixture/kind-built-in', kind: 'mode' });
+    });
+  });
+
   describe('a descriptor for a plugin declared in pluginConfig.json', () => {
     test('is refused before anything is fetched, and the record says why', async () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -469,7 +491,7 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
       mockUmdImport();
       await loader.loadRuntimeDescriptor(umdDescriptor());
       expect(lastRecord().status).toBe('loaded');
-      loader.recordRegistrationError(PKG, new Error('modeFactory blew up'));
+      loader.recordRegistrationError(PKG, new Error('modeFactory blew up'), 'extension');
       expect(lastRecord().status).toBe('registration-error');
       expect(lastRecord().error).toBe('modeFactory blew up');
     });
@@ -477,9 +499,9 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
     test('recordRegistrationError adds a record for a built-in extension, and it is surfaced', () => {
       // A built-in extension has no audit record of its own; before this, its
       // registration failure was dropped silently.
-      const before = window.__ohif?.runtimeExtensions?.length ?? 0;
-      loader.recordRegistrationError('@fixture/built-in-ext', new Error('preRegistration threw'));
-      const records = window.__ohif.runtimeExtensions;
+      const before = window.__ohif?.runtimePlugins?.length ?? 0;
+      loader.recordRegistrationError('@fixture/built-in-ext', new Error('preRegistration threw'), 'extension');
+      const records = window.__ohif.runtimePlugins;
       expect(records.length).toBe(before + 1);
       expect(lastRecord()).toMatchObject({
         packageName: '@fixture/built-in-ext',

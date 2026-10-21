@@ -255,11 +255,13 @@ function getRuntimeLoadModesExtensions(modules, builtInNames) {
     '// fetched, so the built-in copy always wins (see loadRuntimeDescriptor).',
     `const builtInPlugins = new Set(${JSON.stringify(builtInNames)});`,
     '\n// Add a dynamic runtime loader',
-    'async function loadModule(module) {',
+    '// kind (\'extension\' | \'mode\') says which app-config list a descriptor came',
+    '// from; it is recorded on the descriptor\'s audit record.',
+    'async function loadModule(module, kind) {',
     '  // Track B: app-config runtime descriptors ({ packageName, importPath, ... })',
-    '  if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins);',
+    '  if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins, kind);',
     '  if (Array.isArray(module) && isRuntimeDescriptor(module[0])) {',
-    '    return [await loadRuntimeDescriptor(module[0], builtInPlugins), module[1]];',
+    '    return [await loadRuntimeDescriptor(module[0], builtInPlugins, kind), module[1]];',
     '  }',
     "  if (typeof module !== 'string') return module;"
   );
@@ -308,9 +310,10 @@ function getRuntimeLoadModesExtensions(modules, builtInNames) {
     '}\n',
     '// Import a list of items (modules or string names): compiled-in plugins',
     '// first, then runtime descriptors (see loadInPhases).',
+    '// @param kind \'extension\' or \'mode\', recorded on runtime descriptors\' audit records',
     '// @return a Promise evaluating to a list of modules, in input order',
-    'export default function importItems(modules) {',
-    '  return loadInPhases(modules, loadModule);',
+    'export default function importItems(modules, kind) {',
+    '  return loadInPhases(modules, module => loadModule(module, kind));',
     '}\n',
     'export { loadModule, modes, extensions, importItems };\n\n'
   );

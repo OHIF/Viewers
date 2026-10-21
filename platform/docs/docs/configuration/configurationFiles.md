@@ -198,11 +198,11 @@ if auth headers are used, a preflight request is required.
 - `autoPlayCine`: (default to false), if set to true, data sets with the DICOM frame time tag (i.e. (0018,1063)) will auto play when displayed
 - `addWindowLevelActionMenu`: (default to true), if set to false, the window level action menu item is NOT added to the viewport action corners
 - `showErrorDetails`: determines which runtime environments can display exception and error details caught at the `ErrorBoundary`; acceptable values include: `always`, `dev`, and `production`
-- `runtimeExtensionOrigins`: (default `[]`) array of origins allowed to serve runtime-loaded extension/mode code referenced by URL in `extensions`/`modes` (e.g. `['https://cdn.example.com']`). Same-origin URLs and relative paths are always allowed. Any other origin is refused unless listed here.
+- `runtimePluginOrigins`: (default `[]`) array of origins allowed to serve runtime-loaded extension/mode code referenced by URL in `extensions`/`modes` (e.g. `['https://cdn.example.com']`). Same-origin URLs and relative paths are always allowed. Any other origin is refused unless listed here.
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
-  - **At least one gate is required** when `enabled: true` — `origins`, `regex`, or both. If neither is configured, OHIF refuses to load any `configUrl`, logs a console error, and starts with the built-in configuration. Whichever you set, remember the fetched document controls `dataSources`, `runtimeExtensionOrigins`, and the `extensions`/`modes` descriptors, so it is as trusted as the viewer's own build.
+  - **At least one gate is required** when `enabled: true` — `origins`, `regex`, or both. If neither is configured, OHIF refuses to load any `configUrl`, logs a console error, and starts with the built-in configuration. Whichever you set, remember the fetched document controls `dataSources`, `runtimePluginOrigins`, and the `extensions`/`modes` descriptors, so it is as trusted as the viewer's own build.
   - `origins` (**preferred**): an array of origins allowed to serve the config document, compared for **equality** against `new URL(configUrl).origin`. Ports are part of the origin; a full-URL entry allowlists that URL's origin; malformed entries are skipped. There is no pattern subtlety to get wrong.
   - `regex`: matched against the **resolved absolute URL** (not the raw query-string value, so a relative or protocol-relative `configUrl` cannot dodge it). It **must be anchored** — start the pattern with `^` — because matching is unanchored: a pattern like `config\.example\.com` also accepts `https://evil.example/?x=config.example.com`. An unanchored pattern (including the old `/.*/` catch-all) is refused with a console error rather than honored. The `m` flag is rejected for the same reason. To knowingly accept any URL (strongly discouraged), use the anchored `regex: /^/`.
   - Non-`http(s)` schemes (e.g. `javascript:`) are always refused.
@@ -338,7 +338,7 @@ configuration: {
 
 :::note Normative reference
 This section is the normative reference for the runtime extension descriptor
-and the `runtimeExtensionOrigins` allowlist. Other pages (the Runtime
+and the `runtimePluginOrigins` allowlist. Other pages (the Runtime
 Extensions page, deployment docs, plugin author guides) link here; if wording
 differs, this section wins.
 :::
@@ -351,7 +351,7 @@ be **descriptor objects** instead of plain strings:
 ```js title="app-config.js"
 window.config = {
   // ...
-  runtimeExtensionOrigins: ['https://plugins.example.com'],
+  runtimePluginOrigins: ['https://plugins.example.com'],
   extensions: [
     // Same-origin UMD bundle (UMD builds MUST set globalName):
     {
@@ -402,14 +402,14 @@ built. There is **no fallback chain** and the loader never defaults
 The audit record's `format` field (`'umd'` or `'esm'`) derives from this
 discriminator.
 
-### Origin allowlist: runtimeExtensionOrigins
+### Origin allowlist: runtimePluginOrigins
 
 Runtime plugin code (and stylesheets) may only be served from allowlisted
 origins. The allowlist is **deny-by-default**:
 
 - The viewer's own origin is always implicitly allowed.
 - Every other origin must be listed in
-  `window.config.runtimeExtensionOrigins` (an array of origin strings, e.g.
+  `window.config.runtimePluginOrigins` (an array of origin strings, e.g.
   `['https://plugins.example.com']`). Ports are part of the origin. Full-URL
   entries allowlist that URL's origin; malformed entries are skipped, never
   fatal.
@@ -417,9 +417,9 @@ origins. The allowlist is **deny-by-default**:
   code is fetched.
 
 Function-style app configs are supported: at init the viewer stashes
-`appConfig.runtimeExtensionOrigins` onto
-`window.__ohif.runtimeExtensionOrigins`, which takes precedence over
-`window.config.runtimeExtensionOrigins` when both exist.
+`appConfig.runtimePluginOrigins` onto
+`window.__ohif.runtimePluginOrigins`, which takes precedence over
+`window.config.runtimePluginOrigins` when both exist.
 
 ### Where integrity is enforced
 
@@ -445,7 +445,7 @@ The rationale:
 - A descriptor has somewhere to put a digest and the result is registered as an
   extension/mode, so it gets the strictest treatment.
 
-**Deployment consequence:** adding an origin to `runtimeExtensionOrigins` grants
+**Deployment consequence:** adding an origin to `runtimePluginOrigins` grants
 it unverified script execution through the fallthrough path, even though a
 descriptor pointing at that same origin would be refused without an `integrity`
 value. Allowlist only origins you control or otherwise trust to serve code, and
@@ -501,14 +501,15 @@ against the process's folder, not PowerShell's current location.
   the hash no longer matches. Pin the version in `importPath` (`@1.2.3`) and
   update the URL and the hash together.
 
-### Audit surface: `window.__ohif.runtimeExtensions`
+### Audit surface: `window.__ohif.runtimePlugins`
 
 Every runtime load attempt — success AND failure — appends a record to
-`window.__ohif.runtimeExtensions`:
+`window.__ohif.runtimePlugins`:
 
 ```js
 {
   packageName: '@acme/ohif-extension-ai',
+  kind: 'extension',       // or 'mode': which list the descriptor came from
   importPath: '/plugins/acme-ai/index.umd.js',
   resolvedUrl: 'https://viewer.example.com/plugins/acme-ai/index.umd.js',
   status: 'loaded',        // see the status enum below
@@ -525,7 +526,9 @@ Every runtime load attempt — success AND failure — appends a record to
 `'version-mismatch'`, `'import-error'`, `'registration-error'`,
 `'duplicate-of-built-in'`. Records carry
 both the host version and the descriptor's required range so version skew is
-diagnosable from the console. Failures additionally surface one error toast
+diagnosable from the console. `kind` is `'extension'` or `'mode'` for a
+descriptor, and absent on records from the URL fallthrough path, which loads
+libraries rather than plugins. Failures additionally surface one error toast
 each once the UI mounts (toasts are suppressed in test environments — assert
 on the audit array instead).
 

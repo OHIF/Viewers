@@ -49,7 +49,7 @@ describe('writePluginImportsFile codegen', () => {
   test('branch order: descriptor < string passthrough < static branches < cache < gated fallthrough', () => {
     const order = [
       "} from './runtimeExtensionLoader';",
-      'if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins);',
+      'if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins, kind);',
       "if (typeof module !== 'string') return module;",
       'if( module==="@fixture/ext-a")',
       'const runtimeModule = resolveRuntimeModule(module);',
@@ -66,7 +66,7 @@ describe('writePluginImportsFile codegen', () => {
 
   test('emits the tuple-descriptor branch ahead of the string passthrough', () => {
     expect(src).toContain('if (Array.isArray(module) && isRuntimeDescriptor(module[0])) {');
-    expect(src).toContain('return [await loadRuntimeDescriptor(module[0], builtInPlugins), module[1]];');
+    expect(src).toContain('return [await loadRuntimeDescriptor(module[0], builtInPlugins, kind), module[1]];');
     expect(src.indexOf('Array.isArray(module)')).toBeLessThan(
       src.indexOf("if (typeof module !== 'string') return module;")
     );
@@ -120,8 +120,13 @@ describe('writePluginImportsFile codegen', () => {
   });
 
   test('importItems loads in phases instead of all at once', () => {
-    expect(src).toContain('  return loadInPhases(modules, loadModule);');
+    expect(src).toContain('  return loadInPhases(modules, module => loadModule(module, kind));');
     expect(src).not.toContain('Promise.all(modules.map(loadModule))');
+  });
+
+  test('importItems and loadModule pass the kind through to the descriptor loader', () => {
+    expect(src).toContain('export default function importItems(modules, kind) {');
+    expect(src).toContain('async function loadModule(module, kind) {');
   });
 });
 

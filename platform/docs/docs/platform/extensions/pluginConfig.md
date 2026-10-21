@@ -104,7 +104,7 @@ surfaces as a config error rather than as broken generated code.
 :::warning `importPath` is trusted build-time configuration
 An `importPath` is compiled into the bundle by the codegen as a direct
 `import()` of that URL. It is **not** subject to the
-[`runtimeExtensionOrigins` allowlist](../../configuration/configurationFiles.md#origin-allowlist-runtimeextensionorigins)
+[`runtimePluginOrigins` allowlist](../../configuration/configurationFiles.md#origin-allowlist-runtimepluginorigins)
 and gets **no `integrity`/SRI check**, even when the URL is absolute and
 cross-origin — changing it requires editing this file and rebuilding, which is
 the same trust level as editing the app's source, so the build-time value is

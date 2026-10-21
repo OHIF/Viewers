@@ -8,7 +8,7 @@
 
 import satisfies from 'semver/functions/satisfies';
 
-export interface RuntimeExtensionDescriptor {
+export interface RuntimePluginDescriptor {
   /** MUST equal the extension/mode id exported by the package (settled contract). */
   packageName: string;
   /** Absolute URL, '/rooted' path, or path relative to PUBLIC_URL. */
@@ -30,7 +30,7 @@ export interface RuntimeExtensionDescriptor {
   styles?: string[];
 }
 
-export type RuntimeExtensionStatus =
+export type RuntimePluginStatus =
   | 'loaded'
   | 'refused-origin'
   | 'integrity-failed'
@@ -39,11 +39,14 @@ export type RuntimeExtensionStatus =
   | 'registration-error'
   | 'duplicate-of-built-in';
 
-export interface RuntimeExtensionAuditRecord {
+export interface RuntimePluginAuditRecord {
   packageName: string;
+  /** Which list the descriptor came from: window.config.extensions or .modes.
+   *  Absent on URL-fallthrough records, which load libraries, not plugins. */
+  kind?: 'extension' | 'mode';
   importPath: string;
   resolvedUrl?: string;
-  status: RuntimeExtensionStatus;
+  status: RuntimePluginStatus;
   hostVersion: string; // trimmed process.env.VERSION_NUMBER
   requiredRange?: string; // descriptor.coreVersionRange
   /** Derived from the descriptor discriminator: globalName present = 'umd', absent = 'esm'. */
@@ -62,14 +65,14 @@ export interface RuntimeExtensionAuditRecord {
  */
 const runtimeModules = new Map<string, unknown>();
 
-function getAudit(): RuntimeExtensionAuditRecord[] {
+function getAudit(): RuntimePluginAuditRecord[] {
   const w = window as any;
   w.__ohif = w.__ohif || {};
-  w.__ohif.runtimeExtensions = w.__ohif.runtimeExtensions || [];
-  return w.__ohif.runtimeExtensions;
+  w.__ohif.runtimePlugins = w.__ohif.runtimePlugins || [];
+  return w.__ohif.runtimePlugins;
 }
 
-export function isRuntimeDescriptor(x: unknown): x is RuntimeExtensionDescriptor {
+export function isRuntimeDescriptor(x: unknown): x is RuntimePluginDescriptor {
   return (
     !!x &&
     typeof x === 'object' &&
@@ -152,13 +155,13 @@ export function isUrlLike(name: string): boolean {
 /**
  * Origins allowed to serve runtime-loaded plugin code. Same-origin is always
  * allowed; every other origin must be listed in
- * window.config.runtimeExtensionOrigins (array of origin strings).
+ * window.config.runtimePluginOrigins (array of origin strings).
  * Function-style app configs cannot carry the array on window.config, so the
- * canonical stash window.__ohif.runtimeExtensionOrigins takes precedence.
+ * canonical stash window.__ohif.runtimePluginOrigins takes precedence.
  */
 export function getAllowedRuntimeOrigins(): string[] {
   const w = window as any;
-  const configured = w.__ohif?.runtimeExtensionOrigins ?? w.config?.runtimeExtensionOrigins ?? [];
+  const configured = w.__ohif?.runtimePluginOrigins ?? w.config?.runtimePluginOrigins ?? [];
   const extra = Array.isArray(configured) ? configured : [];
   return [window.location.origin, ...extra]; // same-origin implicit, deny-by-default
 }
@@ -251,10 +254,14 @@ function injectStyles(styles: string[] | undefined): void {
  *  is fetched: otherwise an extension's bundle would run only to be discarded
  *  at registration (overwriting the window global sharePlugin set), and a
  *  mode's would replace the built-in mode, since appInit keeps the first mode
- *  of each id and runtime modes come first. */
+ *  of each id and runtime modes come first.
+ *
+ *  kind is recorded on the audit record so it says whether the descriptor was
+ *  an extension or a mode (appInit loads the two lists separately). */
 export async function loadRuntimeDescriptor(
-  descriptor: RuntimeExtensionDescriptor,
-  builtInPlugins?: ReadonlySet<string>
+  descriptor: RuntimePluginDescriptor,
+  builtInPlugins?: ReadonlySet<string>,
+  kind?: 'extension' | 'mode'
 ): Promise<unknown | null> {
   const { packageName, importPath, globalName, coreVersionRange, integrity, styles } = descriptor;
   if (runtimeModules.has(packageName)) {
@@ -268,6 +275,7 @@ export async function loadRuntimeDescriptor(
       'remove the pluginConfig.json entry and rebuild to use the runtime bundle';
     getAudit().push({
       packageName,
+      kind,
       importPath,
       status: 'duplicate-of-built-in',
       hostVersion,
@@ -276,12 +284,13 @@ export async function loadRuntimeDescriptor(
       error,
       timestamp: new Date().toISOString(),
     });
-    console.warn(`OHIF runtime extension "${packageName}": duplicate-of-built-in — ${error}`);
+    console.warn(`OHIF runtime plugin "${packageName}": duplicate-of-built-in — ${error}`);
     return null;
   }
   const started = performance.now();
-  const record: RuntimeExtensionAuditRecord = {
+  const record: RuntimePluginAuditRecord = {
     packageName,
+    kind,
     importPath,
     status: 'import-error',
     hostVersion,
@@ -291,11 +300,11 @@ export async function loadRuntimeDescriptor(
     timestamp: new Date().toISOString(),
   };
   getAudit().push(record);
-  const fail = (status: RuntimeExtensionStatus, message: string): null => {
+  const fail = (status: RuntimePluginStatus, message: string): null => {
     record.status = status;
     record.error = message;
     record.durationMs = Math.round(performance.now() - started);
-    console.error(`OHIF runtime extension "${packageName}": ${status} — ${message}`);
+    console.error(`OHIF runtime plugin "${packageName}": ${status} — ${message}`);
     return null;
   };
   try {
@@ -311,7 +320,7 @@ export async function loadRuntimeDescriptor(
     if (!isAllowedRuntimeOrigin(url)) {
       return fail(
         'refused-origin',
-        `origin "${url.origin}" is not allowlisted; add it to window.config.runtimeExtensionOrigins`
+        `origin "${url.origin}" is not allowlisted; add it to window.config.runtimePluginOrigins`
       );
     }
     if (coreVersionRange && !satisfies(hostVersion, coreVersionRange, { includePrerelease: true })) {
@@ -420,14 +429,14 @@ export async function loadRuntimeDescriptor(
  *      because a descriptor has somewhere to put the digest and the loaded
  *      module is registered as an extension/mode. That requirement does not
  *      generalize backwards to tier 2.
- * Deployment consequence: allowlisting an origin in runtimeExtensionOrigins
+ * Deployment consequence: allowlisting an origin in runtimePluginOrigins
  * grants it unverified script execution through this path, even though the
  * descriptor path would demand a digest from the same origin. Documented in
  * platform/docs/docs/configuration/configurationFiles.md ("Where integrity is
  * enforced") — keep the two in sync.
  */
 export async function loadExternalModule(specifier: string): Promise<unknown> {
-  const record: RuntimeExtensionAuditRecord = {
+  const record: RuntimePluginAuditRecord = {
     packageName: specifier,
     importPath: specifier,
     status: 'import-error',
@@ -458,8 +467,8 @@ export async function loadExternalModule(specifier: string): Promise<unknown> {
     throw new Error(
       `OHIF plugin loader: refusing to load plugin code from "${resolved.href}": ` +
         `origin "${resolved.origin}" is not allowlisted. Same-origin is always allowed; ` +
-        'to allow this origin add it to window.config.runtimeExtensionOrigins in ' +
-        `app-config.js, e.g. runtimeExtensionOrigins: ["${resolved.origin}"].`
+        'to allow this origin add it to window.config.runtimePluginOrigins in ' +
+        `app-config.js, e.g. runtimePluginOrigins: ["${resolved.origin}"].`
     );
   }
   try {
@@ -503,15 +512,20 @@ export function reconcileRuntimeRegistrations(
 
 /**
  * Used by Mode.tsx where registration is per-extension and not swallowed.
- * A runtime plugin already has an audit record, which is flipped. A built-in
- * extension (compiled in through pluginConfig.json) has none, so one is added;
- * otherwise its failure would be dropped without a log or a notification.
+ * A runtime plugin already has an audit record, which is flipped (its kind is
+ * already set). A built-in plugin (compiled in through pluginConfig.json) has
+ * none, so one is added with the caller's kind; otherwise its failure would be
+ * dropped without a log or a notification.
  */
-export function recordRegistrationError(packageName: string, error: unknown): void {
+export function recordRegistrationError(
+  packageName: string,
+  error: unknown,
+  kind: 'extension' | 'mode'
+): void {
   const audit = getAudit() as any;
   const message = (error as any)?.message || String(error);
-  const record: RuntimeExtensionAuditRecord | undefined =
-    audit.findLast?.((r: RuntimeExtensionAuditRecord) => r.packageName === packageName) ??
+  const record: RuntimePluginAuditRecord | undefined =
+    audit.findLast?.((r: RuntimePluginAuditRecord) => r.packageName === packageName) ??
     [...getAudit()].reverse().find(r => r.packageName === packageName);
   if (record) {
     record.status = 'registration-error';
@@ -520,6 +534,7 @@ export function recordRegistrationError(packageName: string, error: unknown): vo
   }
   getAudit().push({
     packageName,
+    kind,
     importPath: '(built-in)',
     status: 'registration-error',
     hostVersion: (process.env.VERSION_NUMBER || '').trim(),

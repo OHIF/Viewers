@@ -18,7 +18,7 @@ The v1 contract shipped in WS7. It is the live contract today and stays the
 contract until every gate box below is checked.
 
 - Runtime descriptors are `{ packageName, importPath, globalName?, coreVersionRange?,
-  integrity?, styles? }` (`RuntimeExtensionDescriptor` in
+  integrity?, styles? }` (`RuntimePluginDescriptor` in
   `platform/app/src/runtimeExtensionLoader.ts`).
 - **Strict format discriminator (C3-strict, shipped).** `globalName` presence IS
   the format discriminator, with no fallback chain:
@@ -33,7 +33,7 @@ contract until every gate box below is checked.
   makes the descriptor shape forward-compatible with v2 at zero schema cost — a
   v2 (ESM) plugin's descriptor differs from a v1 (UMD) plugin's by exactly the
   presence of `globalName`.
-- The audit record `window.__ohif.runtimeExtensions[]` carries
+- The audit record `window.__ohif.runtimePlugins[]` carries
   `format: 'umd' | 'esm'` derived from that discriminator
   (`runtimeExtensionLoader.ts`), giving v2-rollout telemetry for free.
 - Per-package UMD builds stay raw rspack for v1

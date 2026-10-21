@@ -245,11 +245,11 @@ rebuild. See [Runtime Extensions](./runtime-extensions.md). The full descriptor:
   export. The loader **never** defaults `globalName` to `packageName` — omitting
   it on a UMD bundle yields a blank/undefined global and the load fails.
 - Origins are **deny-by-default**: same-origin is implicit; any other origin
-  must be listed in `window.config.runtimeExtensionOrigins`.
+  must be listed in `window.config.runtimePluginOrigins`.
 - `coreVersionRange` is checked **before any network import**; a mismatch
   refuses the load.
 - Every attempt — success **and** failure, with host-vs-required versions — is
-  recorded on `window.__ohif.runtimeExtensions` for agent self-diagnosis.
+  recorded on `window.__ohif.runtimePlugins` for agent self-diagnosis.
 
 The **normative reference** for descriptor fields, the origin allowlist, the
 audit record shape, and the CSP/CORS requirements is
@@ -405,8 +405,8 @@ extension's own UI (for the reference extension, its overlay text) is visible.
 | Bundle loads but `window[globalName]` is `undefined` / blank | `output.library.name` wrong, or a UMD runtime descriptor omitted `globalName` | Set `output.library.name = pkg.name`; set `globalName` on UMD runtime descriptors (never on ESM) |
 | Throws `Extension ID not set` | Default export has no `id` (or `id` is falsy) | Derive `id` from `package.json` `name` in `src/id.ts` |
 | Throws `... module <type> element has no name` | A module getter returned an element without `name` | Add a `name` to every element (all types except `commandsModule`) |
-| Load refused before any network request | `coreVersionRange` (runtime) or `peerDependencies["@ohif/core"]` (build) does not satisfy the host version | Widen/correct the range to include the host `@ohif/core` version; inspect `window.__ohif.runtimeExtensions` for host-vs-required versions |
-| Runtime load refused with an origin message | Bundle origin not in the allowlist | Add the origin to `window.config.runtimeExtensionOrigins` (same-origin is implicit) |
+| Load refused before any network request | `coreVersionRange` (runtime) or `peerDependencies["@ohif/core"]` (build) does not satisfy the host version | Widen/correct the range to include the host `@ohif/core` version; inspect `window.__ohif.runtimePlugins` for host-vs-required versions |
+| Runtime load refused with an origin message | Bundle origin not in the allowlist | Add the origin to `window.config.runtimePluginOrigins` (same-origin is implicit) |
 | Extension registers build-time but is not found as a Mode dependency or by the runtime loader | `id !== package.json name` | Make `id` equal the package name |
 | UI renders unstyled | Tailwind content gap — CSS not compiled into a self-contained `dist/index.css`, or reliance on host stylesheets | Compile self-contained CSS into `dist/index.css`; do not depend on host styles |
 | Duplicate/missing modules after registering twice | Duplicate `id` is skipped with a warning, not an error | Ensure each extension `id` is unique |
