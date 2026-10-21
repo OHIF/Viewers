@@ -687,10 +687,9 @@ export default class DisplaySetService extends PubSubService {
    * - otherwise into a new display set of their own.
    *
    * So the result can differ from a split of the complete series from the
-   * start: for example a new clip that lands in the middle of a run of single
-   * images gets its own display set, and the run's display set keeps the
-   * singles on both sides of it. Repeated calls with the same instances add
-   * nothing.
+   * start: for example a late image that joins two time sweeps goes into the
+   * display set of its own group, and the display set of the other sweep keeps
+   * its instances. Repeated calls with the same instances add nothing.
    *
    * Splitting is performed one series at a time: unlike the legacy loop (which
    * partitions by SOP class first), the splitter is handed a whole series so
