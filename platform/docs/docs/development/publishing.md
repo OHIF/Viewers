@@ -65,61 +65,33 @@ Host-provided packages must stay **externals** — React (`react`, `react-dom`,
 not bundle them, or the plugin ships a second copy of React and fails to load.
 See [Develop Out-of-Tree](./out-of-tree.md) for the shared-package rationale.
 
-## Publish with pnpm — not npm
-
-:::danger
-The npm CLI ignores `publishConfig` field rewrites. Publishing with
-`npm publish` ships a tarball whose `main`/`module` still target `src/*`, which
-cannot be consumed as a prebuilt bundle. Always publish with **pnpm**.
-:::
-
-```bash
-pnpm publish --access public
-```
-
-## dist-tags
-
-Publish prereleases under the `beta` tag and reserve `latest` for stable
-releases:
-
-```bash
-pnpm publish --tag beta
-```
-
-This mirrors how `create-ohif` itself is distributed — until a `latest` release
-exists, consumers pin `@beta`.
-
-## Versioning with changesets
-
-OHIF versions its own packages in lockstep, but a third-party package versions
-independently. [`@changesets/cli`](https://github.com/changesets/changesets) is
-the recommended tool in your own repo:
-
-```bash
-pnpm add -D @changesets/cli
-pnpm changeset init
-```
-
 ## Verify the tarball
 
 Before publishing, inspect what will actually ship:
 
 ```bash
-pnpm pack
+pnpm pack                                                    # writes acme-extension-foo-1.0.0.tgz
+tar -tzf acme-extension-foo-1.0.0.tgz                        # list what will ship
+tar -xOzf acme-extension-foo-1.0.0.tgz package/package.json  # print the packed package.json
 ```
 
-Confirm that the `package.json` inside the tarball has `main` and `module`
-pointing at `dist/index.umd.js` (the `publishConfig` rewrite applied), and that
-`dist/`, `src/`, and `public/` are all present.
+`pnpm pack` prints the file name it writes; a scoped package becomes
+`<scope>-<name>-<version>.tgz`. The `tar` commands work in bash and in
+PowerShell (Windows 10 and later ship `tar`).
+
+Confirm that the packed `package.json` has `main` and `module` pointing at
+`dist/index.umd.js` (the `publishConfig` rewrite applied), and that the listing
+includes `dist/` and `src/`, plus `public/` if your package has one.
 
 Then check the three things that most often break a published plugin:
 
 - **No `workspace:` versions.** Inside a monorepo, dependencies on sibling
   packages are written `workspace:*`. `pnpm pack` and `pnpm publish` replace them
   with real versions; npm does not. A tarball whose `package.json` still contains
-  `workspace:` cannot be installed.
-- **The bundle exists.** `dist/index.umd.js` must be in the tarball. If it is
-  missing, the build did not run before packing.
+  `workspace:` cannot be installed, so the packed `package.json` printed above
+  must not contain it.
+- **The bundle exists.** The listing must include `package/dist/index.umd.js`.
+  If it is missing, the build did not run before packing.
 - **No copy of React inside the bundle.** React must come from the host page
   (see the externals list above). A bundle that carries its own React loads, but
   breaks hooks and context as soon as it renders next to the viewer's React. This
@@ -157,6 +129,42 @@ release, and any failure stops the release. It:
 Published OHIF tarballs ship without source maps, because the release build skips
 them. The source-map part of the React check therefore runs only in the pull
 request build; at release time the bundle-text search covers it.
+
+## Publish with pnpm — not npm
+
+:::danger
+The npm CLI ignores `publishConfig` field rewrites. Publishing with
+`npm publish` ships a tarball whose `main`/`module` still target `src/*`, which
+cannot be consumed as a prebuilt bundle. Always publish with **pnpm**.
+:::
+
+```bash
+pnpm publish --dry-run   # last check: shows what would be uploaded, uploads nothing
+pnpm publish --access public
+```
+
+## dist-tags
+
+Publish prereleases under the `beta` tag and reserve `latest` for stable
+releases:
+
+```bash
+pnpm publish --tag beta
+```
+
+This mirrors how `create-ohif` itself is distributed — until a `latest` release
+exists, consumers pin `@beta`.
+
+## Versioning with changesets
+
+OHIF versions its own packages in lockstep, but a third-party package versions
+independently. [`@changesets/cli`](https://github.com/changesets/changesets) is
+the recommended tool in your own repo:
+
+```bash
+pnpm add -D @changesets/cli
+pnpm changeset init
+```
 
 ## Discovery
 
