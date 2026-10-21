@@ -1,7 +1,7 @@
-// WS2.3 (as revised by Appendix A C1): the runtime-loading gate logic lives in
+// The runtime-loading gate logic lives in
 // runtimeExtensionLoader.ts and is tested directly (no string-eval of emitted
-// code). Runs under jsdom, origin http://localhost. WS7 extends this suite
-// with the descriptor/cache/audit behaviors.
+// code). Runs under jsdom, origin http://localhost. Later sections cover the
+// descriptor/cache/audit behaviors.
 import { isUrlLike, loadExternalModule, loadInPhases, sharePlugin } from './runtimeExtensionLoader';
 
 describe('isUrlLike', () => {
@@ -121,8 +121,8 @@ describe('loadExternalModule', () => {
 });
 
 // ---------------------------------------------------------------------------
-// WS7.7 — descriptor loader behaviors (C3 STRICT globalName discriminator per
-// the WS10.7 matrix: globalName present = UMD global lookup, absent = ESM
+// Descriptor loader behaviors (the strict globalName format discriminator in
+// platform/app/.rspack/CONTRACT.md: globalName present = UMD global lookup, absent = ESM
 // .default, no fallback chain in either direction), Mode bare-name cache
 // resolution, audit records, integrity, styles, and failure surfacing.
 //
@@ -136,7 +136,7 @@ const HOST_VERSION = '3.13.0-beta.89';
 const PKG = '@test/runtime-ext';
 const ORIGINAL_VERSION_NUMBER = process.env.VERSION_NUMBER;
 
-describe('loadRuntimeDescriptor (WS7.7)', () => {
+describe('loadRuntimeDescriptor', () => {
   let loader;
   let extModule; // fresh per test so toBe assertions prove identity, not equality
 
@@ -203,7 +203,7 @@ describe('loadRuntimeDescriptor (WS7.7)', () => {
     process.env.VERSION_NUMBER = ORIGINAL_VERSION_NUMBER;
   });
 
-  describe('C3 strict format discriminator', () => {
+  describe('strict globalName format discriminator', () => {
     test('UMD happy path: globalName set returns the window global and audits loaded/umd', async () => {
       mockUmdImport();
       const mod = await loader.loadRuntimeDescriptor(umdDescriptor());

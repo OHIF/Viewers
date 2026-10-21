@@ -1,6 +1,6 @@
-// WS2.3 (as revised by Appendix A C1) + WS7.3: the generated pluginImports.js
+// The generated pluginImports.js
 // is codegen and gitignored, so test the GENERATOR against a fixture config in
-// a temp dir and assert on the emitted source. Per C1, all runtime-loading
+// a temp dir and assert on the emitted source. All runtime-loading
 // logic (descriptor detection/loading, the runtimeModules cache, the origin
 // allowlist gate) lives in platform/app/src/runtimeExtensionLoader.ts (tested
 // directly in its own suite); the codegen emits the loader import, the
@@ -130,11 +130,11 @@ describe('writePluginImportsFile codegen', () => {
   });
 });
 
-// WS7.7(2): the same generator run against the REAL pluginConfig.json (the
+// The same generator run against the REAL pluginConfig.json (the
 // default third argument), still writing to a temp dir so the checked-out tree
 // is untouched. Proves the shipped codegen shape: branch order, the absent
 // ungated fallthrough, the dicom-microscopy-viewer importPath branch, exports.
-describe('writePluginImportsFile codegen against the real pluginConfig.json (WS7.7)', () => {
+describe('writePluginImportsFile codegen against the real pluginConfig.json', () => {
   let src;
   beforeAll(() => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ohif-codegen-real-'));

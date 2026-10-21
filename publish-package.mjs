@@ -9,7 +9,7 @@ const RETRY_DELAY = 10000; // 10 seconds
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 
-  // Tiered publish surface (B6): only the published SDK packages -- the
+  // Tiered publish surface: only the published SDK packages -- the
   // @ohif/* contract surface third-party plugin authors compile and run
   // against (the @ohif/* members of the host shared-singleton set) -- plus
   // tooling are published to npm. App-only extensions/modes/platform packages
@@ -31,8 +31,8 @@ async function run() {
     // served as-is with a deployment's own app-config.js). It sits outside
     // the plugin contract.
     'platform/app',
-    // create-ohif scaffolder: published tooling alongside the SDK set (the
-    // "plus tooling" half of B6). Ships raw .mjs + templates, no dist UMD, so
+    // create-ohif scaffolder: published tooling alongside the SDK set.
+    // Ships raw .mjs + templates, no dist UMD, so
     // verify-tarballs.mjs lists it under PUBLISHED_TOOLING (allowed
     // non-private, exempt from the SDK tarball assertions).
     'platform/create-ohif',

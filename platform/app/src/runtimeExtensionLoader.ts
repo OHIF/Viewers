@@ -401,7 +401,7 @@ export async function loadRuntimeDescriptor(
 
 /**
  * Gated URL fallthrough consumed by the generated loadModule for module
- * specifiers that are not declared in pluginConfig.json (the WS2 shared
+ * specifiers that are not declared in pluginConfig.json (the shared
  * helper, replacing the previous ungated browserImportFunction fallthrough).
  * Pushes audit records so failures here also surface. Throws on refusal or
  * failure (preserves the fallthrough failure semantics for peerImport callers).

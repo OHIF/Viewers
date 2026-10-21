@@ -1,4 +1,4 @@
-// B3: `create-ohif migrate` ports a CLI-era standalone extension/mode to the
+// `create-ohif migrate` ports a CLI-era standalone extension/mode to the
 // current plugin contract. These tests scaffold a package from the captured
 // CLI-era template fixture (test/fixtures/cli-era/, snapshotted from
 // platform/cli/templates before its deletion) exactly the way the old CLI's
@@ -57,7 +57,7 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
   const target = scaffoldCliEra('extension', 'my-cli-extension');
   const report = migrate(target, '--dry-run');
 
-  // The report IS the migration checklist — every B3-mandated rewrite by name.
+  // The report IS the migration checklist — every required rewrite by name.
   for (const needle of [
     'publishConfig: field overrides -> {"access":"public","main":"dist/index.umd.js","module":"dist/index.umd.js"}',
     'files: -> ["dist","src","public","README.md"]',

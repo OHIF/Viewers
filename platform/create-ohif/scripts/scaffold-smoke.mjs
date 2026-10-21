@@ -1,4 +1,4 @@
-// WS5.8: end-to-end scaffold smoke — scaffold → install → build → UMD global
+// End-to-end scaffold smoke — scaffold → install → build → UMD global
 // assert → vitest. Repo-side manual gate (scripts/ is outside the published
 // `files` list; requires network for the scaffolds' pnpm install):
 //

@@ -1,7 +1,6 @@
 // scripts/verify-tarballs.mjs
 //
-// Tarball verification harness for the published OHIF SDK packages (WS1.6,
-// narrowed by B6 to the tiered publish surface).
+// Tarball verification harness for the published OHIF SDK packages.
 //
 // Two jobs:
 //   1. Tier check: exactly the SDK set below is publishable. Every other
@@ -27,11 +26,11 @@ import { fileURLToPath } from 'node:url';
 const require = createRequire(import.meta.url);
 
 // The published SDK: the contract surface third-party plugin authors compile
-// and run against (B6). Derived (WS7.5) from the @ohif/* members of
+// and run against. Derived from the @ohif/* members of
 // .rspack/pluginExternals.js hostSharedPackages -- the same list that drives
 // the externals contract and the runtimeShared window globals -- so the
 // externals list, the window-global list, and the npm publish set cannot
-// drift (B6 machine-checked invariant). @ohif/ui is filtered defensively:
+// drift (a machine-checked invariant). @ohif/ui is filtered defensively:
 // it is a forbidden runtime-plugin import and must never be published as
 // part of the SDK even if it ever leaks into hostSharedPackages.
 const { hostSharedPackages } = require('../.rspack/pluginExternals.js');
@@ -39,14 +38,14 @@ const SDK_PUBLISHED = hostSharedPackages.filter(
   name => name.startsWith('@ohif/') && name !== '@ohif/ui'
 );
 
-// Published tooling outside the SDK contract surface (the "plus tooling" half
-// of B6, mirrored in publish-package.mjs). create-ohif ships raw .mjs +
+// Published tooling outside the SDK contract surface (mirrored in
+// publish-package.mjs). create-ohif ships raw .mjs +
 // templates with no dist UMD bundle, so it is allowed to be non-private and
 // listed in publish-package.mjs but exempt from the SDK tarball assertions.
 const PUBLISHED_TOOLING = ['create-ohif'];
 
-// platform/app is the host application, out of the plugin contract (WS1.6
-// step 1). @ohif/app is published as the prebuilt viewer (the built dist
+// platform/app is the host application, out of the plugin contract.
+// @ohif/app is published as the prebuilt viewer (the built dist
 // folder), which the SDK tarball checks do not fit, so it is neither packed
 // nor required to be private here.
 const SKIP_DIRS = new Set(['platform/app']);
@@ -86,7 +85,7 @@ function enumeratePackages() {
 }
 
 // ---------------------------------------------------------------------------
-// Tier check (B6): publishable set == SDK_PUBLISHED, everything else private.
+// Tier check: publishable set == SDK_PUBLISHED, everything else private.
 // ---------------------------------------------------------------------------
 function checkPublishTier(packages) {
   const foundSdk = new Set();
@@ -120,7 +119,7 @@ function checkPublishTier(packages) {
 }
 
 // ---------------------------------------------------------------------------
-// Publish-list parity (B6 machine-checked invariant, publish-script half):
+// Publish-list parity (the publish-script half of the invariant):
 // the directories publish-package.mjs publishes must name exactly the
 // SDK_PUBLISHED packages. Without this, deleting an entry from
 // publish-package.mjs silently stops publishing that package while the tier
@@ -235,7 +234,7 @@ function targetSatisfied(target, entrySet, entries) {
 }
 
 // ---------------------------------------------------------------------------
-// Per-tarball assertions (WS1.6 step 3, narrowed to the SDK set by B6).
+// Per-tarball assertions, for the SDK set.
 // ---------------------------------------------------------------------------
 function verifyTarball(pkg, tgzPath) {
   const name = pkg.manifest.name;

@@ -4,23 +4,23 @@ This file is the decision record for the third-party plugin loading contract. It
 is referenced by shipped code (`platform/app/src/runtimeExtensionLoader.ts`, see
 the `globalName` doc comment) as the home of the loader behavior matrix.
 
-Scope of this record (WS10.8): the **rslib adoption gate** that must clear before
+Scope of this record: the **rslib adoption gate** that must clear before
 the third-party plugin contract flips from UMD (v1) to ESM + import map (v2), and
 the explicit **non-goals** of the v2 preparation work. The v2 shim-generation,
-import-map injection, and CSP-hash machinery (WS10.1–WS10.6) is intentionally NOT
+import-map injection, and CSP-hash machinery is intentionally NOT
 built; this document only records the gate and the shipped v1 shape.
 
 ---
 
 ## v1 UMD descriptor path — SHIPPED, and the contract until the gate clears
 
-The v1 contract shipped in WS7. It is the live contract today and stays the
+The v1 contract is the live contract today and stays the
 contract until every gate box below is checked.
 
 - Runtime descriptors are `{ packageName, importPath, globalName?, coreVersionRange?,
   integrity?, styles? }` (`RuntimePluginDescriptor` in
   `platform/app/src/runtimeExtensionLoader.ts`).
-- **Strict format discriminator (C3-strict, shipped).** `globalName` presence IS
+- **Strict format discriminator (shipped).** `globalName` presence IS
   the format discriminator, with no fallback chain:
   - `globalName` present ⇒ **UMD**: loader returns `window[globalName]`
     (normally `globalName === packageName`, matching the plugin build's
@@ -29,7 +29,7 @@ contract until every gate box below is checked.
   - `globalName` absent ⇒ **ESM**: loader returns the `import()` namespace's
     `.default`.
   The loader NEVER defaults `globalName` to `packageName`. This is the binding
-  "no globalName defaulting" constraint that WS10.7 placed on WS7, and it is what
+  "no globalName defaulting" constraint that the v2 preparation placed on v1, and it is what
   makes the descriptor shape forward-compatible with v2 at zero schema cost — a
   v2 (ESM) plugin's descriptor differs from a v1 (UMD) plugin's by exactly the
   presence of `globalName`.
@@ -58,12 +58,12 @@ repo does not depend on rslib at all today.
   import (verify the emitted `.mjs` contains `from "react"` etc.).
   **Current: FALSE.** rslib is pre-1.0 (0.23.2) and is not a dependency. This box
   alone blocks the flip.
-- [ ] **2. Shim experiment concluded.** The WS10.3-chosen shim-generation
+- [ ] **2. Shim experiment concluded.** The chosen shim-generation
   mechanism meets its success criteria for ALL 11 shared modules (including
-  whatever jsdom/WebGL findings WS10.1 records); `sharedModules.json`
+  whatever jsdom/WebGL findings the runtime enumeration experiment records); `sharedModules.json`
   regeneration is byte-reproducible on CI and the staleness check
   (`generatedFrom` vs installed versions) is wired into `pnpm plugin doctor`.
-  **Current: NOT STARTED — WS10.1–WS10.3 machinery is out of scope this run.**
+  **Current: NOT STARTED — the shim experiments are out of scope for this release.**
 - [ ] **3. Import-map integrity decision RECORDED.** Choose one and record it:
   (a) require the import map `integrity` key and publish the minimum-browser
   matrix — support MUST be re-verified at gate time against caniuse/MDN, do not
@@ -75,15 +75,15 @@ repo does not depend on rslib at all today.
   re-verified then, not now.**
 - [ ] **4. CSP handshake landed.** `dist/csp-inline-hashes.json` →
   `CSP_HEADER __INLINE_SCRIPT_HASHES__` substitution shipped in
-  `.docker/Viewer-v3.x` (deployment workstream) and covered by an e2e smoke that
-  boots the container with CSP on. **Current: NOT STARTED — WS10.6 machinery is
-  out of scope this run.**
+  `.docker/Viewer-v3.x` and covered by an e2e smoke that
+  boots the container with CSP on. **Current: NOT STARTED — the CSP-hash handshake is
+  out of scope for this release.**
 - [ ] **5. Pipeline parity proof.** Historically this required both HTML
   pipelines to emit an identical import-map tag. After the single-rsbuild
   cutover there is now ONE HTML pipeline (`rsbuild.config.ts`; `rspack.pwa.js` is
   gone). This box reduces to: the shared import-map helper emits a deterministic
   (LF, sorted, no timestamps) tag, byte-reproducible across builds.
-  **Current: N/A until box 2 exists — no import-map helper is built this run.**
+  **Current: N/A until box 2 exists — no import-map helper is built in this release.**
 - [ ] **6. UMD deprecation comms plan executed BEFORE the flip.** Docs page
   describing both formats and migration (plugin-author action: rebuild with the
   new template config — the descriptor change is only "delete `globalName`");
@@ -97,10 +97,10 @@ repo does not depend on rslib at all today.
 Re-open this gate only when all three hold:
 
 1. **rslib >= 1.0** (box 1) — the hard blocker today.
-2. **A named-export enumeration mechanism is decided** (box 2) — the WS10.1
-   runtime vs WS10.2 static comparison must conclude with a chosen, CI-reproducible
+2. **A named-export enumeration mechanism is decided** (box 2) — the
+   runtime vs static enumeration comparison must conclude with a chosen, CI-reproducible
    mechanism for all 11 shared modules.
-3. **Descriptor shape stable** — ALREADY TRUE. WS7 shipped the C3-strict
+3. **Descriptor shape stable** — ALREADY TRUE. v1 shipped the strict
    `globalName` discriminator, so a future ESM plugin needs zero descriptor schema
    change (it simply omits `globalName`). This criterion is met now and is not a
    blocker; it is recorded here so a future reader does not re-litigate the
@@ -108,7 +108,7 @@ Re-open this gate only when all three hold:
 
 ---
 
-## Non-goals of v2 prep (this workstream)
+## Non-goals of v2 prep
 
 Paths below are stated against the post-cutover single-pipeline layout
 (`.webpack/` → `.rspack/`; `rspack.pwa.js` removed; `rsbuild.config.ts` at repo
@@ -126,10 +126,10 @@ the current equivalent is given.
   (`platform/core/package.json`) and its UMD-only prod build
   (`platform/core/.rspack/rspack.prod.js`, formerly
   `platform/core/.webpack/webpack.prod.js`).
-- NO changes to `writePluginImportsFile.js` loader codegen from this workstream —
-  WS7 owns that file; WS10 only constrains it (the discriminator above).
+- NO changes to `writePluginImportsFile.js` loader codegen from the v2 prep —
+  it belongs to the v1 loader; v2 only constrains it (the discriminator above).
 - create-ohif templates keep UMD as the default until every gate box above is
   checked.
 - `.rspack/sharedModules.json` (status: prototype, when it exists) is consumed by
   NO production build path; shims under `platform/app/public/shared/` are
-  generated, gitignored prototype output — none of which is built this run.
+  generated, gitignored prototype output — none of which is built in this release.

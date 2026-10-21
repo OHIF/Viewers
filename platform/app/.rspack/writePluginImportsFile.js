@@ -258,7 +258,7 @@ function getRuntimeLoadModesExtensions(modules, builtInNames) {
     '// kind (\'extension\' | \'mode\') says which app-config list a descriptor came',
     '// from; it is recorded on the descriptor\'s audit record.',
     'async function loadModule(module, kind) {',
-    '  // Track B: app-config runtime descriptors ({ packageName, importPath, ... })',
+    '  // Runtime descriptors from window.config.extensions / .modes ({ packageName, importPath, ... })',
     '  if (isRuntimeDescriptor(module)) return loadRuntimeDescriptor(module, builtInPlugins, kind);',
     '  if (Array.isArray(module) && isRuntimeDescriptor(module[0])) {',
     '    return [await loadRuntimeDescriptor(module[0], builtInPlugins, kind), module[1]];',
@@ -301,10 +301,10 @@ function getRuntimeLoadModesExtensions(modules, builtInNames) {
   });
   // TODO - handle more cases for import than just default
   dynamicLoad.push(
-    '  // Track B: bare-name resolution for runtime-loaded packages (Mode.tsx dependencies)',
+    '  // A plugin a runtime descriptor already loaded, looked up by bare name (Mode.tsx dependencies)',
     '  const runtimeModule = resolveRuntimeModule(module);',
     '  if (runtimeModule !== undefined) return runtimeModule;',
-    '  // WS2: gated fallthrough — deny-by-default origin allowlist; unknown bare',
+    '  // Fallthrough: a URL on an allowlisted origin is imported directly; unknown bare',
     '  // names throw a descriptive error (see runtimeExtensionLoader.ts).',
     '  return loadExternalModule(module);',
     '}\n',

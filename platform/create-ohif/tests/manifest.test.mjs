@@ -1,6 +1,6 @@
-// WS5.1 skeleton invariants. Also keeps `node --test tests/` (the package's
+// Package skeleton invariants. Also keeps `node --test tests/` (the package's
 // test / test:unit:ci scripts, fanned out by the root `pnpm -r run
-// test:unit:ci`) green before WS5.7 lands the scaffold/parity suites --
+// test:unit:ci`) from ever running with no test files --
 // node --test exits nonzero when the tests directory has no test files.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';

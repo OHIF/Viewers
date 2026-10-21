@@ -1,8 +1,8 @@
 <#
-WS4.3 — Windows HMR/watch + duplicate-React verification recipe for a `directory` plugin (~ path).
+Windows HMR/watch + duplicate-React verification recipe for a `directory` plugin (~ path).
 
-Validates WS4.1 (dedupe aliases in .rspack/resolveConfig.js) and WS4.2 (Tailwind content
-globs for declared directory plugins, platform/app/tailwind.config.js:24) by running
+Validates the dedupe aliases in .rspack/resolveConfig.js and the Tailwind content
+globs for declared directory plugins (platform/app/tailwind.config.js:24) by running
 @ohif/extension-cornerstone as an out-of-tree copy under $env:USERPROFILE\ohif-plugins.
 
 What the recipe exercises:
@@ -31,7 +31,7 @@ reversed, and the out-of-tree copy is deleted. Hard gates (the recipe IS the ver
   - step 5 computed font-size of the probe is exactly 13.7px on both pipelines
   - step 6a grep count is exactly 0 with no 'Invalid hook call' in the console
   - step 6b grep count is > 0 AND 'Invalid hook call' observed (the test can fail)
-  - step 7 leaves `git status` clean except intended WS4 files
+  - step 7 leaves `git status` clean except files you meant to change
 #>
 
 [CmdletBinding()]
@@ -56,7 +56,7 @@ $DistGlobs = @(
 # lives inside the out-of-tree plugin's own node_modules.
 $DupPattern = 'ohif-plugins[\\/](.*[\\/])?node_modules[\\/]react'
 $AliasSpread = '  ...dedupeAlias,'
-$AliasSpreadOff = '  // ...dedupeAlias, // WS4.3 step 6b negative control - restore before finishing'
+$AliasSpreadOff = '  // ...dedupeAlias, // step 6b negative control - restore before finishing'
 $OverlayRelPath = 'src\Viewport\Overlays\CustomizableViewportOverlay.tsx'
 
 $script:Gates = [System.Collections.Generic.List[object]]::new()
@@ -110,7 +110,7 @@ function Invoke-Setup {
     Write-Host "  added directory: ~/ohif-plugins/cornerstone (backup: $PluginConfigBak)"
   }
 
-  Write-Host '== Static check: Tailwind content glob for the external copy (WS4.2) =='
+  Write-Host '== Static check: Tailwind content glob for the external copy =='
   Push-Location $RepoRoot
   try {
     $globs = node -e "const path=require('path');const c=require(path.resolve('platform/app/tailwind.config.js'));console.log(c.content.filter(g=>String(g).includes('ohif-plugins')).join('\n'))"
@@ -182,7 +182,7 @@ function Invoke-Cleanup {
   if ((Test-Path $pluginsRoot) -and -not (Get-ChildItem -Force $pluginsRoot)) {
     Remove-Item -Force $pluginsRoot
   }
-  Write-Host '  git status (must be clean except intended WS4 files):'
+  Write-Host '  git status (must be clean except files you meant to change):'
   git -C $RepoRoot status --short
 }
 
@@ -248,7 +248,7 @@ function Invoke-All {
 
   Write-Host ''
   Invoke-Cleanup
-  Confirm-Gate 'step7-clean-tree' 'Is git status clean except intended WS4 files'
+  Confirm-Gate 'step7-clean-tree' 'Is git status clean except files you meant to change'
 
   Write-Host ''
   Write-Host '== Summary =='

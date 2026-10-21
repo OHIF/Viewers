@@ -1,4 +1,4 @@
-// WS5.7: the sync mechanism for the embedded externals copies. Templates
+// The sync mechanism for the embedded externals copies. Templates
 // cannot require files outside the scaffolded package, so each template
 // vendors a copy of the repo's .rspack/pluginExternals.js; this test failing
 // is the intended tripwire whenever the contract externals change.
@@ -27,7 +27,8 @@ test('canonical pluginExternals is a non-empty array (guards the require path)',
   assert.ok(Array.isArray(canonical) && canonical.length > 0);
 });
 
-// B6's fourth invariant leg: a scaffolded plugin may only peer-depend on
+// One more side of the shared-package invariant (see .rspack/pluginExternals.js):
+// a scaffolded plugin may only peer-depend on
 // packages the host actually shares at runtime (runtimeShared.ts globals,
 // pinned to pluginExternals.hostSharedPackages by runtimeShared.test.js).
 // A peer outside that list would be externalized by the build (the /^@ohif/

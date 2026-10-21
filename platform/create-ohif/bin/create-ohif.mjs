@@ -23,7 +23,7 @@ const TEMPLATES = ['workspace', 'extension', 'mode', 'deployment'];
 const NAME_RE = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
 const SCOPE_RE = /^@[a-z0-9-~][a-z0-9-._~]*$/;
 
-// WS5.6 authoritative table: multiselect options, --modules validation,
+// The module table: multiselect options, --modules validation,
 // marker pruning, and file deletion all key off this map.
 const MODULES = {
   viewport: {
@@ -92,7 +92,7 @@ function findAncestor(startDir, predicate) {
   }
 }
 
-// OHIF checkout detection (WS5.2): a directory containing BOTH markers.
+// OHIF checkout detection: a directory containing BOTH markers.
 function findCheckoutRoot(from) {
   return findAncestor(
     from,
@@ -102,7 +102,7 @@ function findCheckoutRoot(from) {
   );
 }
 
-// B2 workspace detection: a directory containing the committed manifest.
+// Workspace detection: a directory containing the committed manifest.
 function findWorkspaceRoot(from) {
   return findAncestor(from, dir => fs.existsSync(path.join(dir, 'ohif.config.json')));
 }
@@ -191,7 +191,7 @@ function substitutePass(root, tokens) {
   }
 }
 
-// Module pruning pass (extension only, WS5.6): delete unselected module files,
+// Module pruning pass (extension only): delete unselected module files,
 // drop their marker blocks from src/index.tsx wholesale, and strip the bare
 // marker lines of selected modules.
 function pruneModulesPass(targetDir, selectedModules) {
@@ -246,7 +246,7 @@ function pruneModulesPass(targetDir, selectedModules) {
   fs.writeFileSync(indexPath, result);
 }
 
-// In-tree transform pass (WS5.5): monorepo root .npmrc/pnpm-workspace govern
+// In-tree transform pass: monorepo root .npmrc/pnpm-workspace govern
 // installs, and rspack/react/typescript/css tooling resolve from the hoisted
 // root node_modules, so the scaffold keeps only the minimal devDeps.
 function inTreeTransformPass(targetDir, checkoutRoot) {
@@ -286,7 +286,7 @@ function assertNoTokensPass(targetDir) {
   }
 }
 
-// B2: scaffolding an extension/mode inside a workspace appends it to the
+// Scaffolding an extension/mode inside a workspace appends it to the
 // committed manifest so the harness links it on the next `pnpm dev`.
 function appendToWorkspaceManifest(workspaceRoot, name, pluginFolder) {
   const manifestPath = path.join(workspaceRoot, 'ohif.config.json');
@@ -376,7 +376,7 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
 }
 
 // ---------------------------------------------------------------------------
-// migrate subcommand (B3): port a CLI-era standalone extension/mode to the
+// migrate subcommand: port a CLI-era standalone extension/mode to the
 // current plugin contract. Two report categories:
 //   [rewrite] / [ok] — items migrate owns and applies automatically
 //   [flag]           — items migrate must never rewrite (manual follow-up)
@@ -1167,7 +1167,7 @@ async function main() {
     return;
   }
 
-  // migrate subcommand (B3): handled before the scaffold flow.
+  // migrate subcommand: handled before the scaffold flow.
   if (positionals[0] === 'migrate') {
     if (positionals.length !== 2) {
       fail(`Usage: create-ohif migrate <path> [--dry-run]`);
@@ -1348,7 +1348,7 @@ async function main() {
     fail(`Template "${template}" is not available in this create-ohif build (missing ${templateDir})`);
   }
 
-  // Copy engine (WS5.2 steps 1-6).
+  // Copy engine.
   fs.mkdirSync(path.dirname(targetDir), { recursive: true });
   fs.cpSync(templateDir, targetDir, { recursive: true });
   renamePass(targetDir);

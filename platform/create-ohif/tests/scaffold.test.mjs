@@ -1,8 +1,8 @@
-// WS5.7: scaffold-behavior tests. Runs the real bin (no network, no install)
+// Scaffold-behavior tests. Runs the real bin (no network, no install)
 // into mkdtemp dirs and asserts the emitted trees for every template:
-// extension (module selection per the WS5.6 table), mode, workspace (B2),
-// deployment (B2), the in-tree and inside-a-workspace contexts, and the
-// refusal cases. The migrate subcommand (B3) is covered by migrate.test.mjs.
+// extension (module selection per the MODULES table in the bin), mode,
+// workspace, deployment, the in-tree and inside-a-workspace contexts, and the
+// refusal cases. The migrate subcommand is covered by migrate.test.mjs.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const bin = fileURLToPath(new URL('../bin/create-ohif.mjs', import.meta.url));
 const selfPkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-// Standalone peer range mirrors hostPeerRange() in the bin (B3 range shape).
+// Standalone peer range mirrors hostPeerRange() in the bin.
 const [major, minor] = selfPkg.version.split('.');
 const hostRange = `>=${major}.${minor}.0-beta.0 <${Number(major) + 1}`;
 
@@ -89,7 +89,7 @@ test('standalone extension, default module selection (viewport)', () => {
   scaffold(['my-extension', '--template', 'extension', '--yes', '--dir', parent]);
   const dir = path.join(parent, 'my-extension');
 
-  // Always-emitted tree (WS5.6) + build/config files.
+  // Always-emitted tree + build/config files.
   for (const rel of [
     'package.json',
     'README.md',
@@ -148,7 +148,7 @@ test('standalone extension, default module selection (viewport)', () => {
   assert.ok(index.includes("from './id'"), 'index.tsx must import the id');
 
   // Default selection = viewport only: the other five getters leave neither
-  // files nor index.tsx references (WS5.6 verification).
+  // files nor index.tsx references.
   for (const rel of GETTER_FILES.viewport) {
     assert.ok(exists(dir, rel), `missing selected-module file ${rel}`);
   }
@@ -214,10 +214,10 @@ test('--scope prepends the scope; the directory uses the unscoped name', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Mode template (WS5.4 deltas)
+// Mode template (how it differs from the extension template)
 // ---------------------------------------------------------------------------
 
-test('standalone mode scaffold follows the WS5.4 deltas', () => {
+test('standalone mode scaffold: TS entry, no CSS or Tailwind, no React toolchain', () => {
   const parent = tmp();
   const stdout = scaffold(['my-mode', '--template', 'mode', '--yes', '--dir', parent]);
   const dir = path.join(parent, 'my-mode');
@@ -279,7 +279,7 @@ test('standalone mode scaffold follows the WS5.4 deltas', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Workspace template (B2)
+// Workspace template
 // ---------------------------------------------------------------------------
 
 test('workspace scaffold emits the committed manifest and the managed-harness layout', () => {
@@ -357,7 +357,7 @@ test('scaffolding inside a workspace lands in extensions|modes and appends to oh
 });
 
 // ---------------------------------------------------------------------------
-// Deployment template (B2)
+// Deployment template
 // ---------------------------------------------------------------------------
 
 test('deployment scaffold is config-only', () => {
@@ -387,7 +387,7 @@ test('deployment scaffold is config-only', () => {
 });
 
 // ---------------------------------------------------------------------------
-// In-tree context (WS5.5) against a fake checkout
+// In-tree context against a fake checkout
 // ---------------------------------------------------------------------------
 
 function makeFakeCheckout() {

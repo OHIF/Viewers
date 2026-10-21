@@ -23,8 +23,8 @@ module.exports = [
 // assigns to window, keyed by full package name. Exported here so the parity
 // test (platform/app/src/runtimeShared.test.js) compares both sides from one
 // require(), and so scripts/verify-tarballs.mjs derives the published @ohif
-// SDK set from the same list (B6 machine-checked invariant).
-// @ohif/i18n is shared (GAP-1): runtime extensions dereference it during
+// SDK set from the same list (a machine-checked invariant).
+// @ohif/i18n is shared because runtime extensions dereference it during
 // module evaluation. @ohif/ui is intentionally absent — it is legacy and a
 // forbidden import for runtime plugins.
 // Regex externals above (/^@ohif/, /^@cornerstonejs/, vtk.js) intentionally

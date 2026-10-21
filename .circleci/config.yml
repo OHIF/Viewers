@@ -196,7 +196,7 @@ jobs:
       # contract before any version bump or upload happens. The extra
       # `pnpm publish --dry-run` exercises the real publish code path (tarball
       # staging without upload) under the exact flags publish-package.mjs uses,
-      # on one representative package from the published SDK set (B6: the
+      # on one representative package from the published SDK set (the
       # app-only extensions such as dicom-pdf are private and no longer
       # publishable, so the probe runs in extensions/default).
       - run:

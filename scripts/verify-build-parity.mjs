@@ -2,10 +2,10 @@
 /**
  * Production build smoke test (single rsbuild pipeline).
  *
- * WS0.4 consolidated the app onto ONE production pipeline: repo-root
+ * The app builds through ONE production pipeline: repo-root
  * `rsbuild.config.ts`, invoked by `pnpm --filter @ohif/app run build`. The
  * former dual-pipeline parity harness (rspack.pwa.js vs rsbuild) has been
- * repurposed into this single-pipeline smoke test per WS0 acceptance #3.
+ * repurposed into this single-pipeline smoke test.
  *
  * Builds the production output once and asserts the contract facts that the
  * cutover must preserve:

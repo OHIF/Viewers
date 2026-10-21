@@ -26,7 +26,7 @@ export const SCHEMA_PATH = path.join(REPO_ROOT, 'platform', 'app', 'pluginConfig
 const APP_SRC_DIR = path.join(REPO_ROOT, 'platform', 'app', 'src');
 const WRITE_PLUGIN_IMPORTS = path.join(REPO_ROOT, 'platform', 'app', '.rspack', 'writePluginImportsFile.js');
 
-// Packages the host must own as singletons (the WS4 dedupe-alias set:
+// Packages the host must own as singletons (the dedupe-alias set in .rspack/resolveConfig.js:
 // react, react-dom, react/jsx-runtime resolve under the react/react-dom
 // directories). A copy inside a directory-linked plugin's own node_modules
 // can still be picked up through subpath imports (e.g. react-dom/client),
@@ -571,7 +571,7 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
     }
   }
 
-  // (d2) GAP-4: a directory-linked plugin carrying its own copy of a
+  // (d2) a directory-linked plugin carrying its own copy of a
   // host-singleton package can duplicate it through subpath imports
   // (e.g. react-dom/client) that the exact-match dedupe aliases do not cover.
   for (const { entry, source } of resolved) {
@@ -595,7 +595,7 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
       .filter(Boolean)
   );
 
-  // (d3) B1: dangling references after `plugin remove` — a declared mode
+  // (d3) dangling references after `plugin remove` — a declared mode
   // peer-requiring a plugin that is no longer declared (or no longer
   // resolvable at all) only breaks later, at build/mode-registration time.
   // A peer counts as a plugin when it resolves to a package carrying an

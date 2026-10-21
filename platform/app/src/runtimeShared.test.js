@@ -1,5 +1,5 @@
 // Parity test: runtimeShared.ts <-> .rspack/pluginExternals.hostSharedPackages
-// (WS7.5). runtimeShared.ts is TS with side effects and heavy imports
+// runtimeShared.ts is TS with side effects and heavy imports
 // (@cornerstonejs/* map through moduleNameMapper to dist/esm), so this test
 // PARSES ITS SOURCE instead of importing it, and requires the CJS externals
 // file directly.
@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const externals = require('../../../.rspack/pluginExternals');
 
-// The settled v1 contract list (12 names; @ohif/i18n included per GAP-1,
+// The settled v1 contract list (12 names; @ohif/i18n included, see .rspack/pluginExternals.js;
 // @ohif/ui deliberately absent -- forbidden runtime-plugin import).
 const SETTLED_LIST = [
   'react',
