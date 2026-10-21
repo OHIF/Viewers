@@ -8,7 +8,9 @@ summary: Scaffold OHIF workspaces, extensions, modes, and deployment configs wit
 # Create an Extension or Mode
 
 :::note Use `@beta` until OHIF 3.14 is released
-`create-ohif` is published under the `beta` dist-tag until 3.14.0 ships as a
+`pnpm create ohif` downloads and runs the npm package `create-ohif` (pnpm adds
+the `create-` prefix), and `@beta` picks the version carrying the `beta`
+dist-tag. `create-ohif` is published under that tag until 3.14.0 ships as a
 stable release, so every command on these pages uses `pnpm create ohif@beta`.
 Plain `pnpm create ohif` asks for the `latest` tag, which has no 3.14 version
 yet, and fails with "No matching version found".
@@ -146,13 +148,60 @@ own: the repo root's settings govern.
 All prompts have flag equivalents; a non-TTY stdin implies `--yes` semantics:
 
 ```bash
-pnpm create ohif@beta my-ext --template extension --modules viewport,panel --yes
+pnpm create ohif@beta my-ext --scope '@acme' --template extension --modules viewport,panel --yes
 ```
 
-`--scope '@acme'` prepends a scope to an unscoped name, and `--dir <path>` sets
-the parent directory for standalone output. Keep the quotes around the scope:
-some shells treat an unquoted word starting with `@` specially and pass nothing
-in its place.
+This creates `@acme/my-ext`. Every flag is listed under [Options](#options).
+
+## Options
+
+```bash
+pnpm create ohif@beta [name] [options]
+pnpm create ohif@beta migrate <path> [--dry-run]
+```
+
+| Option | Meaning |
+| --- | --- |
+| `[name]` | The package name, for example `extension-foo` or `@acme/extension-foo`. For an extension it is also the extension `id`. Prompted for if omitted. |
+| `-t`, `--template <workspace\|extension\|mode\|deployment>` | What to scaffold (see [Quick start](#quick-start)). Prompted for if omitted; the prompt defaults to `workspace`. |
+| `--scope <@scope>` | Prepended to an unscoped name: `--scope '@acme'` turns `extension-foo` into `@acme/extension-foo`. Keep the quotes: some shells treat an unquoted word starting with `@` specially and pass nothing in its place. |
+| `--modules <csv>` | Extension only. The modules to generate, any of `viewport`, `panel`, `commands`, `sopClassHandler`, `toolbar`, `hangingProtocol`. Default: `viewport`. |
+| `--in-tree` | Extension or mode only. Write into `extensions/` or `modes/` of the enclosing OHIF checkout (see [Scaffold into a checkout](#scaffold-into-a-checkout-in-tree)). |
+| `--dir <path>` | The parent folder the new package's folder is created in. In general the default is the current folder; see [Where an extension or mode is created](#where-an-extension-or-mode-is-created) for details. A relative path is resolved from the current folder. The new folder is named after the package without its scope, so `@acme/extension-foo` with `--dir C:\work` becomes `C:\work\extension-foo`. Ignored with `--in-tree`. |
+| `-y`, `--yes` | Don't prompt. Needs a name and `--template`; the description defaults to `OHIF <template>` and the modules to `viewport`. A non-TTY stdin implies it. |
+| `--help` | Print the usage. |
+| `--version` | Print the `create-ohif` version. |
+
+`migrate <path>` ports a CLI-era (OHIF CLI) standalone extension or mode at
+`<path>` to the current plugin contract: it applies the rewrites it can and
+lists the rest as flags to handle by hand. `--dry-run` prints the same report
+without changing any file; that report is the migration checklist. See
+[CLI-era extension → 2026 plugin contract](../migration-guide/cli-era-extensions.md)
+for what each item means.
+
+### Where an extension or mode is created
+
+A new extension or mode is set up for the place its folder lands:
+
+| If the new folder lands in… | It is set up as | What `create-ohif` does |
+| --- | --- | --- |
+| a workspace's `extensions/` or `modes/` | a workspace plugin | Adds it to the workspace's `ohif.config.json`, so `pnpm dev` links it |
+| an OHIF checkout's `extensions/` or `modes/` | an in-tree package | Prints the `pluginConfig.json` entry to add and the lockfile step |
+| anywhere else | its own package | Prints how to link or load it in a viewer |
+
+Where the folder lands:
+
+- **With `--dir`:** in `--dir`.
+- **With `--in-tree`:** in the enclosing OHIF checkout's `extensions/` or `modes/`.
+- **Otherwise, run from inside a workspace:** in the workspace's `extensions/` or
+  `modes/`.
+- **Otherwise, run from inside an OHIF checkout:** you're asked whether to put it
+  in-tree. With `--yes`, or if you answer no, it goes in the current folder.
+- **Anywhere else:** in the current folder.
+
+"Inside a workspace" means the current folder, or one above it, contains
+`ohif.config.json`. "Inside an OHIF checkout" means it contains both
+`pnpm-workspace.yaml` and `platform/app/pluginConfig.json`.
 
 ## Register with the viewer
 

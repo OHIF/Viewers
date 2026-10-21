@@ -25,14 +25,23 @@ The options are the same, and edits to the checkout take effect on the next run.
 
 ```
 create-ohif [name] [options]
-  -t, --template <extension|mode>
-      --scope <@scope>        prepended when the positional name is unscoped
-      --modules <csv>         extension only; subset of: viewport,panel,commands,sopClassHandler,toolbar,hangingProtocol
-      --in-tree               scaffold into extensions/|modes/ of the enclosing OHIF checkout
-      --dir <path>            parent directory for standalone output (default: cwd)
-  -y, --yes                   non-interactive; requires name and --template; defaults: modules=viewport, description auto
-      --help, --version
+create-ohif migrate <path> [--dry-run]
+
+  -t, --template <workspace|extension|mode|deployment>
+      --scope <@scope>   prepended when the positional name is unscoped; quote it ('@acme')
+      --modules <csv>    extension only; subset of: viewport,panel,commands,sopClassHandler,toolbar,hangingProtocol
+      --in-tree          scaffold into extensions/|modes/ of the enclosing OHIF checkout
+      --dir <path>       parent folder for the new package's folder (default: the
+                         current folder); ignored with --in-tree
+  -y, --yes              non-interactive; requires name and --template;
+                         defaults: modules=viewport, description auto
+      --help             print this message
+      --version          print the create-ohif version
 ```
+
+`migrate` ports a CLI-era (OHIF CLI) standalone extension or mode at `<path>`
+to the current plugin contract. `--dry-run` prints the full migration report
+without touching any file; that report is the migration checklist.
 
 When arguments are omitted (and stdin is a TTY), an interactive prompt flow
 collects the name, template, extension modules, and description. Non-TTY

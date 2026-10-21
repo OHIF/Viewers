@@ -356,6 +356,43 @@ test('scaffolding inside a workspace lands in extensions|modes and appends to oh
   assert.equal(after.plugins.filter(p => p.packageName === 'ws-ext').length, 1);
 });
 
+test('--dir into a workspace extensions|modes folder registers it like a workspace scaffold', () => {
+  const parent = tmp();
+  scaffold(['dir-ws', '-t', 'workspace', '--yes', '--dir', parent]);
+  const wsDir = path.join(parent, 'dir-ws');
+
+  // A relative --dir resolves from the current folder.
+  const extOut = scaffold(['dir-ext', '-t', 'extension', '--yes', '--dir', 'extensions'], {
+    cwd: wsDir,
+  });
+  const modeOut = scaffold(['dir-mode', '-t', 'mode', '--yes', '--dir', path.join(wsDir, 'modes')]);
+
+  assert.ok(fs.existsSync(path.join(wsDir, 'extensions', 'dir-ext', 'package.json')));
+  assert.ok(fs.existsSync(path.join(wsDir, 'modes', 'dir-mode', 'package.json')));
+  const manifest = JSON.parse(fs.readFileSync(path.join(wsDir, 'ohif.config.json'), 'utf8'));
+  assert.deepEqual(manifest.plugins, [
+    { packageName: 'dir-ext', directory: './extensions/dir-ext' },
+    { packageName: 'dir-mode', directory: './modes/dir-mode' },
+  ]);
+  assert.ok(extOut.includes('Added to ohif.config.json'), extOut);
+  assert.ok(modeOut.includes('Added to ohif.config.json'), modeOut);
+});
+
+test('--dir elsewhere, run from inside a workspace, leaves the workspace alone', () => {
+  const parent = tmp();
+  scaffold(['dir-ws2', '-t', 'workspace', '--yes', '--dir', parent]);
+  const wsDir = path.join(parent, 'dir-ws2');
+  const elsewhere = tmp();
+
+  const stdout = scaffold(['own-ext', '-t', 'extension', '--yes', '--dir', elsewhere], {
+    cwd: wsDir,
+  });
+  assert.ok(fs.existsSync(path.join(elsewhere, 'own-ext', 'package.json')));
+  const manifest = JSON.parse(fs.readFileSync(path.join(wsDir, 'ohif.config.json'), 'utf8'));
+  assert.deepEqual(manifest.plugins, []);
+  assert.ok(!stdout.includes('Added to ohif.config.json'), stdout);
+});
+
 // ---------------------------------------------------------------------------
 // Deployment template
 // ---------------------------------------------------------------------------
@@ -458,6 +495,30 @@ test('--in-tree mode scaffolds into modes/', () => {
   assert.equal(pkg.packageManager, undefined);
   assert.ok(!exists(dir, 'pnpm-workspace.yaml'));
   assert.ok(stdout.includes('under "modes"'), stdout);
+});
+
+test('--dir into a checkout extensions folder scaffolds in-tree, and says so', () => {
+  const root = makeFakeCheckout();
+  const stdout = scaffold(['dir-tree-ext', '-t', 'extension', '--yes', '--dir', 'extensions'], {
+    cwd: root,
+  });
+  const dir = path.join(root, 'extensions', 'dir-tree-ext');
+  assert.ok(fs.existsSync(dir));
+  const pkg = readPkg(dir);
+  assert.equal(pkg.peerDependencies['@ohif/core'], 'workspace:*', 'set up as an in-tree package');
+  assert.equal(pkg.private, true);
+  assert.ok(!exists(dir, '.npmrc'));
+  assert.ok(stdout.includes('scaffolding in-tree, as with --in-tree'), stdout);
+  assert.ok(stdout.includes('{ "packageName": "dir-tree-ext" }'), stdout);
+});
+
+test('--dir elsewhere, run from inside a checkout, creates its own package', () => {
+  const root = makeFakeCheckout();
+  const elsewhere = tmp();
+  scaffold(['own-tree-ext', '-t', 'extension', '--yes', '--dir', elsewhere], { cwd: root });
+  const pkg = readPkg(path.join(elsewhere, 'own-tree-ext'));
+  assert.equal(pkg.peerDependencies['@ohif/core'], hostRange);
+  assert.ok(exists(path.join(elsewhere, 'own-tree-ext'), '.npmrc'));
 });
 
 // ---------------------------------------------------------------------------

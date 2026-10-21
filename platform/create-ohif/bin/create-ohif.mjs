@@ -59,10 +59,11 @@ Usage: create-ohif [name] [options]
        create-ohif migrate <path> [--dry-run]
 
   -t, --template <workspace|extension|mode|deployment>
-      --scope <@scope>   prepended when the positional name is unscoped
+      --scope <@scope>   prepended when the positional name is unscoped; quote it ('@acme')
       --modules <csv>    extension only; subset of: ${MODULE_KEYS.join(',')}
       --in-tree          scaffold into extensions/|modes/ of the enclosing OHIF checkout
-      --dir <path>       parent directory for standalone output (default: cwd)
+      --dir <path>       parent folder for the new package's folder (default: the
+                         current folder); ignored with --in-tree
   -y, --yes              non-interactive; requires name and --template;
                          defaults: modules=viewport, description auto
       --help             print this message
@@ -1337,6 +1338,27 @@ async function main() {
     targetDir = path.join(workspaceRoot, pluginSection, dirName);
   } else {
     targetDir = path.join(path.resolve(values.dir ?? '.'), dirName);
+    // --dir only says where the folder goes. An extension or mode whose folder
+    // lands in a workspace's or an OHIF checkout's extensions/ or modes/ is set
+    // up for that place, exactly as if it had been scaffolded there without
+    // --dir (workspace) or with --in-tree (checkout).
+    if (values.dir !== undefined && (template === 'extension' || template === 'mode')) {
+      const parentDir = path.dirname(targetDir);
+      const isSection = root =>
+        root !== null && path.relative(path.join(root, pluginSection), parentDir) === '';
+      const dirWorkspace = findWorkspaceRoot(parentDir);
+      const dirCheckout = findCheckoutRoot(parentDir);
+      if (isSection(dirWorkspace)) {
+        context = 'workspace';
+        workspaceRoot = dirWorkspace;
+      } else if (isSection(dirCheckout)) {
+        context = 'in-tree';
+        checkoutRoot = dirCheckout;
+        console.log(
+          `${values.dir} is the ${pluginSection}/ folder of the OHIF checkout at ${dirCheckout}; scaffolding in-tree, as with --in-tree.`
+        );
+      }
+    }
   }
 
   if (fs.existsSync(targetDir)) {
