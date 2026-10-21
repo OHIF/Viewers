@@ -93,7 +93,9 @@ describe('NiiVue mode', () => {
     expect(primary).toEqual(
       expect.arrayContaining(['NiivueViews', 'NiivueCapture', 'NiivueCrosshair', 'NiivueLayout'])
     );
-    expect(primary).not.toEqual(expect.arrayContaining(['Capture', 'Crosshairs', 'Layout']));
+    for (const stockButton of ['Capture', 'Crosshairs', 'Layout']) {
+      expect(primary).not.toContain(stockButton);
+    }
 
     const layoutButton = modeInstance.toolbarButtons.find(button => button.id === 'NiivueLayout');
     expect(layoutButton.uiType).toBe('ohif.layoutSelector');
