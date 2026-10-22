@@ -33,6 +33,17 @@ const overlappingClickShape = [
   { x: 0.5, y: 0.7 },
 ];
 
+// Fully inside clickShape, so a Shift stroke cuts a hole instead of carving an edge.
+const holeClickShape = [
+  { x: 0.45, y: 0.45 },
+  { x: 0.55, y: 0.45 },
+  { x: 0.55, y: 0.55 },
+  { x: 0.45, y: 0.55 },
+];
+
+// A path `d` with exactly two subpaths (two M commands): the outline and its hole.
+const twoSubpathsD = /^M[^M]*M[^M]*$/;
+
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
   await waitForViewportsRendered(page);
@@ -55,7 +66,7 @@ test('should keep a spline contour drawn on a slice after navigating away and ba
 
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
   await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
-  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
   await expect(paths, 'Expected the contour to be added on the drawing slice').toHaveCount(1);
   await expect(paths.nth(0), 'Expected the drawn contour to be visible').toBeVisible();
 
@@ -105,10 +116,10 @@ test('should keep multiple spline contours drawn into one segment separate', asy
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
 
   await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
-  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
   await expect(paths, 'Expected the first spline contour to be added').toHaveCount(1);
 
-  await activeViewport.normalizedPathClickAt({ path: secondClickShape });
+  await activeViewport.normalizedPathClickAt({ path: secondClickShape, closePath: true });
   await expect(paths, 'Expected both spline contours to render separately').toHaveCount(2);
   await expect(paths.nth(0), 'Expected the first spline contour to be visible').toBeVisible();
   await expect(paths.nth(1), 'Expected the second spline contour to be visible').toBeVisible();
@@ -132,11 +143,11 @@ test('should merge overlapping spline contours drawn into one segment', async ({
 
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
   await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
-  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
   await expect(paths, 'Expected the first spline contour to be added').toHaveCount(1);
 
   // An overlapping second contour is unioned into a single contour
-  await activeViewport.normalizedPathClickAt({ path: overlappingClickShape });
+  await activeViewport.normalizedPathClickAt({ path: overlappingClickShape, closePath: true });
   await expect(paths, 'Expected the overlapping contours to merge into one').toHaveCount(1);
 
   await waitForViewportsRendered(page);
@@ -158,7 +169,7 @@ test('should carve out overlapping spline contours drawn into one segment when s
 
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
   await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
-  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
   await expect(paths, 'Expected the first spline contour to be added').toHaveCount(1);
 
   // hold Shift
@@ -166,7 +177,7 @@ test('should carve out overlapping spline contours drawn into one segment when s
     page,
     key: 'Shift',
     action: async () => {
-      await activeViewport.normalizedPathClickAt({ path: overlappingClickShape });
+      await activeViewport.normalizedPathClickAt({ path: overlappingClickShape, closePath: true });
     },
   });
 
@@ -184,6 +195,43 @@ test('should carve out overlapping spline contours drawn into one segment when s
   });
 });
 
+test('should cut a hole into a spline contour when drawing with Shift held', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const activeViewport = await viewportPageObject.active;
+  const paths = activeViewport.svg('path');
+
+  await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
+  await rightPanelPageObject.contourSegmentationPanel.tools.splineContour.click();
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
+  await expect(paths, 'Expected the outer spline contour to be added').toHaveCount(1);
+
+  // A Shift stroke fully inside the contour cuts a hole into it.
+  await withKeyHeld({
+    page,
+    key: 'Shift',
+    action: async () => {
+      await activeViewport.normalizedPathClickAt({ path: holeClickShape, closePath: true });
+    },
+  });
+
+  // The hole is cut into the contour's path as a subpath rather than added as a
+  // second path element; the screenshot then verifies the fill is actually cut.
+  await expect(paths, 'Expected the contour and hole to render as one path').toHaveCount(1);
+  await expect(paths.nth(0), 'Expected the hole as a subpath').toHaveAttribute('d', twoSubpathsD);
+  await expect(paths.nth(0), 'Expected the contour with its hole to be visible').toBeVisible();
+
+  await waitForViewportsRendered(page);
+
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.splineContourSegmentation.contourWithHole,
+  });
+});
+
 test('should not merge overlapping spline contours drawn into separate segments', async ({
   page,
   rightPanelPageObject,
@@ -196,14 +244,14 @@ test('should not merge overlapping spline contours drawn into separate segments'
 
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
   await contourPanel.tools.splineContour.click();
-  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
   await expect(paths, 'Expected the first spline contour to be added').toHaveCount(1);
 
   await contourPanel.addSegmentButton.click();
   await expect(panel.rows, 'Expected a second segment row to be added').toHaveCount(2);
   await panel.nthSegment(1).click();
 
-  await activeViewport.normalizedPathClickAt({ path: overlappingClickShape });
+  await activeViewport.normalizedPathClickAt({ path: overlappingClickShape, closePath: true });
   await expect(paths, 'Expected the overlapping contours to stay separate').toHaveCount(2);
 
   await waitForViewportsRendered(page);
@@ -228,7 +276,7 @@ test('should not carve out overlapping spline contours drawn into separate segme
 
   await expect(paths, 'Expected the starting number of paths to be 0').toHaveCount(0);
   await contourPanel.tools.splineContour.click();
-  await activeViewport.normalizedPathClickAt({ path: clickShape });
+  await activeViewport.normalizedPathClickAt({ path: clickShape, closePath: true });
   await expect(paths, 'Expected the first spline contour to be added').toHaveCount(1);
 
   await contourPanel.addSegmentButton.click();
@@ -242,7 +290,7 @@ test('should not carve out overlapping spline contours drawn into separate segme
     page,
     key: 'Shift',
     action: async () => {
-      await activeViewport.normalizedPathClickAt({ path: overlappingClickShape });
+      await activeViewport.normalizedPathClickAt({ path: overlappingClickShape, closePath: true });
     },
   });
 
