@@ -309,6 +309,38 @@ test('migrate removes other lockfiles and the CLI build output', () => {
   assert.ok(!fs.existsSync(path.join(target, 'bun.lockb')));
   assert.ok(!fs.existsSync(path.join(target, 'dist/umd')), 'the emptied dist/umd/ is removed too');
   assert.ok(fs.existsSync(path.join(target, 'dist/keep.txt')), 'the rest of dist/ is untouched');
+  assert.ok(
+    report.includes('dist/ holds 1 file(s) besides the .rspack build output (dist/keep.txt)'),
+    `the leftover is flagged\n${report}`
+  );
+});
+
+test('migrate removes dist/ once the CLI build output was the only thing in it', () => {
+  const target = scaffoldCliEra('extension', 'empty-dist-extension');
+  const bundle = path.join(target, 'dist/umd/empty-dist-extension/index.umd.js');
+  fs.mkdirSync(path.dirname(bundle), { recursive: true });
+  fs.writeFileSync(bundle, 'x');
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'dist')), 'the emptied dist/ is removed');
+
+  // A dist/ that is already empty (nothing of the CLI's left) goes too.
+  fs.mkdirSync(path.join(target, 'dist'));
+  assert.ok(migrate(target, '--dry-run').includes('remove the empty dist/'));
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'dist')));
+
+  // After pnpm build, dist/ holds the .rspack output: a re-run says nothing about it.
+  fs.mkdirSync(path.join(target, 'dist'));
+  fs.writeFileSync(path.join(target, 'dist/index.umd.js'), 'x');
+  fs.writeFileSync(path.join(target, 'dist/index.umd.js.map'), 'x');
+  const again = migrate(target, '--dry-run');
+  assert.ok(
+    !again.includes('remove the empty dist/') && !again.includes('dist/ holds'),
+    `a built dist/ is left alone and not flagged\n${again}`
+  );
+  migrate(target);
+  assert.ok(fs.existsSync(path.join(target, 'dist/index.umd.js')));
 });
 
 test('migrate removes a scoped CLI build output and flags other dist/umd files', () => {
@@ -324,7 +356,12 @@ test('migrate removes a scoped CLI build output and flags other dist/umd files',
 
   const report = migrate(target, '--dry-run');
   assert.ok(report.includes('remove dist/umd/@acme/scoped-extension/ (the CLI-era build output'), report);
-  assert.ok(report.includes('dist/umd/ holds files other than the CLI build output (1)'), report);
+  assert.ok(
+    report.includes(
+      'dist/ holds 1 file(s) besides the .rspack build output (dist/umd/something-else.js)'
+    ),
+    report
+  );
 
   migrate(target);
   assert.ok(!fs.existsSync(path.join(target, 'dist/umd/@acme')), 'the emptied scope folder is removed');

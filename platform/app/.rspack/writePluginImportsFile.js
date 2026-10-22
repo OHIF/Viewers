@@ -459,6 +459,17 @@ function getPluginContentGlobs() {
   return globs;
 }
 
+// True when dir holds at least one file, at any depth. An empty folder (or one
+// holding only empty folders) is skipped: the copy step would otherwise ask the
+// bundler to copy `<dir>/**/*`, which it reports as "unable to locate … glob".
+// `migrate` used to leave an empty dist/ behind, and nothing stops a plugin
+// having an empty public/.
+function hasFiles(dir) {
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .some(entry => entry.isFile() || (entry.isDirectory() && hasFiles(path.join(dir, entry.name))));
+}
+
 // Build CopyPlugin patterns for a set of plugins.
 //
 // For `public`-section entries (literalDirectory=true) a `directory` is the
@@ -480,7 +491,7 @@ const createCopyPluginToDist = (distDir, plugins, folderName, { literalDirectory
         const dir = pluginAssetDir(plugin);
         from = dir && path.join(dir, folderName);
       }
-      return from && fs.existsSync(from)
+      return from && fs.existsSync(from) && hasFiles(from)
         ? {
             from,
             to: `${distDir}${plugin.to || ''}`,

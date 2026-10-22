@@ -995,13 +995,28 @@ async function runMigrate(targetDir, dryRun) {
   }
   // The CLI built to dist/umd/<package name>/. Nothing reads it any more (main
   // now points at dist/index.umd.js), and because files includes dist it would
-  // ship in a published package. Only that folder is removed; anything else
-  // under dist/umd/ is flagged and left in place.
-  const umdDir = path.join(targetDir, 'dist', 'umd');
-  if (fs.existsSync(umdDir)) {
+  // ship in a published package. Only that folder is removed, along with any
+  // folders it leaves empty up to and including dist/ itself: an empty dist/
+  // makes a viewer that directory-links the plugin report "unable to locate
+  // dist/**/* glob". Anything else in dist/ is flagged and left in place,
+  // except the .rspack build's own output, so a re-run after pnpm build stays
+  // quiet.
+  const distDir = path.join(targetDir, 'dist');
+  if (fs.existsSync(distDir)) {
+    const umdDir = path.join(distDir, 'umd');
     const cliOutputDir = path.join(umdDir, ...pkg.name.split('/'));
     const cliOutputRel = path.relative(targetDir, cliOutputDir).split(path.sep).join('/');
-    const others = listFiles(umdDir).filter(file => !file.startsWith(cliOutputDir + path.sep));
+    const buildOutputs = new Set(['index.umd.js', 'index.umd.js.map', 'index.css', 'index.css.map']);
+    const others = listFiles(distDir).filter(
+      file =>
+        !file.startsWith(cliOutputDir + path.sep) &&
+        !(path.dirname(file) === distDir && buildOutputs.has(path.basename(file)))
+    );
+    const removeIfEmpty = dir => {
+      if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) {
+        fs.rmdirSync(dir);
+      }
+    };
     if (fs.existsSync(cliOutputDir)) {
       note(
         true,
@@ -1009,17 +1024,23 @@ async function runMigrate(targetDir, dryRun) {
       );
       fileOps.push(() => {
         fs.rmSync(cliOutputDir, { recursive: true, force: true });
-        // Remove the now-empty scope folder (for @scope/name) and dist/umd/.
-        for (let dir = path.dirname(cliOutputDir); dir.startsWith(umdDir); dir = path.dirname(dir)) {
-          if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) {
-            fs.rmdirSync(dir);
-          }
+        // Remove the now-empty scope folder (for @scope/name), dist/umd/ and dist/.
+        for (let dir = path.dirname(cliOutputDir); dir.startsWith(distDir); dir = path.dirname(dir)) {
+          removeIfEmpty(dir);
         }
+      });
+    } else if (listFiles(distDir).length === 0) {
+      note(true, 'remove the empty dist/ (a viewer that directory-links the plugin trips over it)');
+      fileOps.push(() => {
+        fs.rmSync(distDir, { recursive: true, force: true });
       });
     }
     if (others.length > 0) {
+      const shown = others
+        .slice(0, 3)
+        .map(file => path.relative(targetDir, file).split(path.sep).join('/'));
       flags.push(
-        `dist/umd/ holds files other than the CLI build output (${others.length}) — left in place; delete them if they are old build output`
+        `dist/ holds ${others.length} file(s) besides the .rspack build output (${shown.join(', ')}${others.length > 3 ? ', …' : ''}) — left in place. Everything in dist/ ships in the published package (package.json "files" lists dist), so delete these if they are stale`
       );
     }
   }

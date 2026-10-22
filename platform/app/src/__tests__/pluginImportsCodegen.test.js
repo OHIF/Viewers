@@ -179,3 +179,40 @@ describe('writePluginImportsFile codegen against the real pluginConfig.json', ()
     expect(src).toContain('export { loadModule, modes, extensions, importItems };');
   });
 });
+
+describe('copying plugin public/ and dist/ assets', () => {
+  test('empty folders are skipped; folders with files are copied', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ohif-copy-'));
+    const plugin = name => {
+      const dir = path.join(tmp, name);
+      fs.mkdirSync(dir, { recursive: true });
+      return dir;
+    };
+    // Empty dist/ (what migrate used to leave), and an empty public/ holding only an empty folder.
+    const emptyExt = plugin('empty-ext');
+    fs.mkdirSync(path.join(emptyExt, 'dist'));
+    fs.mkdirSync(path.join(emptyExt, 'public', 'nested'), { recursive: true });
+    // A plugin with real assets in both.
+    const fullExt = plugin('full-ext');
+    fs.mkdirSync(path.join(fullExt, 'dist'));
+    fs.writeFileSync(path.join(fullExt, 'dist', 'worker.js'), '');
+    fs.mkdirSync(path.join(fullExt, 'public', 'img'), { recursive: true });
+    fs.writeFileSync(path.join(fullExt, 'public', 'img', 'logo.png'), '');
+
+    const forward = dir => dir.split(path.sep).join('/');
+    const copies = writePluginImportsFile(tmp, path.join(tmp, 'out'), {
+      extensions: [
+        { packageName: '@fixture/empty-ext', directory: forward(emptyExt) },
+        { packageName: '@fixture/full-ext', directory: forward(fullExt) },
+      ],
+      modes: [],
+      public: [],
+    });
+    const sources = copies.map(copy => path.resolve(copy.from));
+
+    expect(sources).toContain(path.join(fullExt, 'dist'));
+    expect(sources).toContain(path.join(fullExt, 'public'));
+    expect(sources).not.toContain(path.join(emptyExt, 'dist'));
+    expect(sources).not.toContain(path.join(emptyExt, 'public'));
+  });
+});

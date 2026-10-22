@@ -124,6 +124,17 @@ why behind each `[rewrite]` and what each `[flag]` asks you to do by hand
 (notably `@ohif/ui` → `@ohif/ui-next` source changes, which migrate never
 rewrites).
 
+`migrate` changes a plugin's packaging and build only; it never edits source. A
+plugin written for an older OHIF usually needs code changes too, for the
+version the workspace runs. Work through the [migration guides](./index.md)
+from the version the plugin was written for up to the pinned one. Anything you
+miss shows up in the parity check (Step 5).
+
+The harness installs OHIF's own dependencies, not your plugins'. If a plugin
+lists anything under `dependencies` in its `package.json`, run `pnpm install`
+in its folder before `pnpm dev`; a plugin with only `peerDependencies` needs
+nothing.
+
 Register each plugin by adding it to `plugins` in `ohif.config.json`, then run
 `pnpm dev`, which links every listed plugin into the harness:
 
