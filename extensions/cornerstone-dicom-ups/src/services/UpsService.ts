@@ -114,13 +114,67 @@ export class UpsService {
     return this.client.cancelWorkitem(workitemUid, dataset);
   }
 
-  /** Subscribes to a workitem's events and forwards each report to `listener`. */
-  watch(workitemUid: string, listener: (event: WorkitemEvent) => void): SubscriptionHandle {
+  /**
+   * Watches a workitem: subscribes to its notification channel and forwards
+   * each report to `listener`. When the origin has no WebSocket channel (the
+   * subscribe never opens - e.g. dcm4chee-arc), it falls back to polling
+   * Retrieve Workitem every `pollSeconds` and emits a synthesized event on
+   * each state change, mirroring the Weasis `ups:watch --poll` behavior.
+   */
+  watch(
+    workitemUid: string,
+    listener: (event: WorkitemEvent) => void,
+    pollSeconds = 2
+  ): SubscriptionHandle {
+    let closed = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let wsHandle: SubscriptionHandle | undefined;
+    let lastState: string | undefined;
+
+    const startPolling = () => {
+      if (closed) {
+        return;
+      }
+      const poll = () => {
+        if (closed) {
+          return;
+        }
+        void this.client
+          .retrieveWorkitem(workitemUid)
+          .then(workitem => {
+            if (closed) {
+              return;
+            }
+            const state = getString(workitem, TAG.ProcedureStepState);
+            if (state !== lastState) {
+              lastState = state;
+              listener({ eventTypeId: 1, affectedSopInstanceUid: workitemUid, dataset: workitem });
+            }
+          })
+          .catch(() => {
+            // A transient poll error is not terminal; try again on the next tick.
+          });
+      };
+      poll();
+      timer = setInterval(poll, pollSeconds * 1000);
+    };
+
     const aeTitle = this.aeTitle;
     if (!aeTitle) {
-      throw new Error('An AE Title is required to subscribe to a workitem');
+      startPolling();
+    } else {
+      wsHandle = this.client.subscribe(workitemUid, aeTitle, listener, startPolling);
     }
-    return this.client.subscribe(workitemUid, aeTitle, listener);
+
+    return {
+      close: () => {
+        closed = true;
+        if (timer) {
+          clearInterval(timer);
+        }
+        wsHandle?.close();
+      },
+    };
   }
 
   /** Removes this AE Title from a workitem's subscribers (PS3.18 11.10.4). */

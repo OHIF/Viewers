@@ -86,4 +86,25 @@ describe('UpsClient', () => {
     );
     expect(events).toEqual([1]);
   });
+
+  it('reports an error when the channel closes without opening', () => {
+    const ws: {
+      onopen?: () => void;
+      onmessage?: (event: { data: unknown }) => void;
+      onerror?: () => void;
+      onclose?: () => void;
+      close: () => void;
+    } = { close: jest.fn() };
+    const openWebSocket = jest.fn(() => ws);
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: jest.fn(), openWebSocket }
+    );
+    const onError = jest.fn();
+
+    client.subscribe('1.2.3', 'OHIF', jest.fn(), onError);
+    ws.onclose?.();
+
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
 });

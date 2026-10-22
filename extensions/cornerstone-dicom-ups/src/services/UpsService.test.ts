@@ -107,4 +107,33 @@ describe('UpsService', () => {
       })
     ).toBe(true);
   });
+
+  it('falls back to polling when the notification channel never opens', async () => {
+    jest.useFakeTimers();
+    try {
+      const client = makeClient();
+      const workitem = {
+        [TAG.ProcedureStepState]: { vr: 'CS', Value: [ProcedureStepState.COMPLETED] },
+      } as DicomJsonDataset;
+      (client.retrieveWorkitem as jest.Mock).mockResolvedValue(workitem);
+      (client.subscribe as jest.Mock).mockImplementation(
+        (_uid: string, _ae: string, _onEvent: unknown, onError?: () => void) => {
+          onError?.();
+          return { close: jest.fn() };
+        }
+      );
+
+      const service = new UpsService(client, 'OHIF');
+      const events: number[] = [];
+      const handle = service.watch('9.9.9', event => events.push(event.eventTypeId));
+
+      await jest.advanceTimersByTimeAsync(0);
+
+      expect(client.retrieveWorkitem).toHaveBeenCalledTimes(1);
+      expect(events).toEqual([1]);
+      handle.close();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });

@@ -115,17 +115,28 @@ export class UpsClient {
     });
   }
 
-  /** Opens the notification channel of a workitem (PS3.18 11.10, RAD-86). */
+  /**
+   * Opens the notification channel of a workitem (PS3.18 11.10, RAD-86).
+   * `onError` fires when the channel never opens - an origin without a
+   * WebSocket notification channel (e.g. dcm4chee-arc) rejects the handshake
+   * and the browser exposes no status code - so the caller can fall back to
+   * polling.
+   */
   subscribe(
     workitemUid: string,
     aeTitle: string,
-    onEvent: (event: WorkitemEvent) => void
+    onEvent: (event: WorkitemEvent) => void,
+    onError?: () => void
   ): SubscriptionHandle {
+    let opened = false;
     const ws = this.deps.openWebSocket(
       this.wsUrl(
         `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`
       )
     );
+    ws.onopen = () => {
+      opened = true;
+    };
     ws.onmessage = event => {
       const dataset = JSON.parse(String(event.data)) as DicomJsonDataset;
       const raw = getString(dataset, TAG.EventTypeID);
@@ -134,6 +145,15 @@ export class UpsClient {
         affectedSopInstanceUid: getString(dataset, TAG.AffectedSOPInstanceUID),
         dataset,
       });
+    };
+    ws.onerror = () => {
+      // The browser WebSocket API exposes no status code; a channel that never
+      // opens is the only signal, and onclose forwards it once.
+    };
+    ws.onclose = () => {
+      if (!opened) {
+        onError?.();
+      }
     };
     return { close: () => ws.close() };
   }
