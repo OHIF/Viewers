@@ -59,6 +59,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
   });
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
+  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
   await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
 
   await checkForGridScreenshot({
@@ -71,6 +72,8 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
   // series into it again turns it back into a stack viewport.
   await mainToolbarPageObject.layoutSelection.grid(1, 1).click();
   await expect(viewportPageObject.getNthLocator(1)).toHaveCount(0);
+  await expect(viewportPageObject.getNthLocator(2)).toHaveCount(0);
+
   await waitForViewportsRendered(page);
 
   await switchLayout(page, () => leftPanelPageObject.loadSeriesByModality('CT'));
@@ -97,6 +100,7 @@ test('keeps every segment when switching from 3D to MPR', async ({
   await expect(rows).toHaveCount(SEGMENT_COUNT);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
+  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
   await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
 
   await expect(rows).toHaveCount(SEGMENT_COUNT);
