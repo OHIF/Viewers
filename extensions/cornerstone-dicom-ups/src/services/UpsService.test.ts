@@ -136,4 +136,51 @@ describe('UpsService', () => {
       jest.useRealTimers();
     }
   });
+
+  it('sends the cancellation reason as free text', async () => {
+    const client = makeClient();
+    const service = new UpsService(client);
+
+    await service.cancel('9.9.9', 'no longer needed');
+
+    expect(client.cancelWorkitem).toHaveBeenCalledWith('9.9.9', {
+      [TAG.ReasonForCancellation]: { vr: 'LO', Value: ['no longer needed'] },
+    });
+  });
+
+  it('deduplicates overlapping run calls for the same study and code', async () => {
+    let resolveCreate: (value: string) => void = () => {};
+    const createPromise = new Promise<string>(resolve => {
+      resolveCreate = resolve;
+    });
+    const client = makeClient({ createWorkitem: jest.fn(() => createPromise) });
+    const service = new UpsService(client);
+
+    const first = service.run(CODE, study(), []);
+    const second = service.run(CODE, study(), []);
+    resolveCreate('7.7.7');
+
+    await expect(first).resolves.toBe('7.7.7');
+    await expect(second).resolves.toBe('7.7.7');
+    expect(client.createWorkitem).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets PatientName with VR PN and PatientID with VR LO', async () => {
+    const client = makeClient();
+    const service = new UpsService(client);
+
+    await service.run(
+      CODE,
+      {
+        [TAG.StudyInstanceUID]: { vr: 'UI', Value: ['1.2.3'] },
+        [TAG.PatientID]: { vr: 'LO', Value: ['P1'] },
+        [TAG.PatientName]: { vr: 'PN', Value: ['Doe^John'] },
+      },
+      []
+    );
+
+    const dataset = (client.createWorkitem as jest.Mock).mock.calls[0][1] as DicomJsonDataset;
+    expect(dataset[TAG.PatientID]).toEqual({ vr: 'LO', Value: ['P1'] });
+    expect(dataset[TAG.PatientName]).toEqual({ vr: 'PN', Value: ['Doe^John'] });
+  });
 });

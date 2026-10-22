@@ -18,6 +18,9 @@ import {
  * Manager, never here. Ported from the Weasis `weasis-dicom-aiw` module.
  */
 export class UpsService {
+  /** In-flight `run` calls, keyed by study + code, to avoid duplicate workitems. */
+  private readonly inflight = new Map<string, Promise<string>>();
+
   constructor(
     private readonly client: UpsClient,
     private readonly aeTitle?: string
@@ -48,17 +51,39 @@ export class UpsService {
   /**
    * Creates the workitem of a task when the study has none for that code
    * (PS3.18 11.4, RAD-80). Non-terminal means SCHEDULED or IN PROGRESS;
-   * COMPLETED and CANCELED do not suppress a new task.
+   * COMPLETED and CANCELED do not suppress a new task. Overlapping calls for
+   * the same study and code share one workitem (a double click must not
+   * duplicate inference work).
    */
-  async run(
+  run(
     catalogEntry: WorkitemCode,
     study: DicomJsonDataset,
     instances: DicomJsonDataset[]
   ): Promise<string> {
     const studyUid = getString(study, TAG.StudyInstanceUID);
     if (!studyUid) {
-      throw new Error('The study has no Study Instance UID');
+      return Promise.reject(new Error('The study has no Study Instance UID'));
     }
+    const key = `${studyUid}\u0000${catalogEntry.codeValue}\u0000${catalogEntry.codingSchemeDesignator}`;
+    const existing = this.inflight.get(key);
+    if (existing) {
+      return existing;
+    }
+    const task = this.createIfAbsent(studyUid, catalogEntry, study, instances);
+    this.inflight.set(key, task);
+    void task.then(
+      () => this.inflight.delete(key),
+      () => this.inflight.delete(key)
+    );
+    return task;
+  }
+
+  private async createIfAbsent(
+    studyUid: string,
+    catalogEntry: WorkitemCode,
+    study: DicomJsonDataset,
+    instances: DicomJsonDataset[]
+  ): Promise<string> {
     const pending = await this.nonTerminalWorkitem(studyUid, catalogEntry);
     if (pending) {
       const uid = getString(pending, TAG.SOPInstanceUID);
@@ -90,26 +115,15 @@ export class UpsService {
     return state === ProcedureStepState.SCHEDULED || state === ProcedureStepState.IN_PROGRESS;
   }
 
-  /** Requests the cancellation of a SCHEDULED workitem (PS3.18 11.8). */
-  cancel(workitemUid: string, reasonCode?: WorkitemCode): Promise<void> {
-    const dataset: DicomJsonDataset = reasonCode
-      ? {
-          [TAG.ReasonForCancellation]: {
-            vr: 'SQ',
-            Value: [
-              {
-                [TAG.CodeValue]: { vr: 'SH', Value: [reasonCode.codeValue] },
-                [TAG.CodingSchemeDesignator]: {
-                  vr: 'SH',
-                  Value: [reasonCode.codingSchemeDesignator],
-                },
-                ...(reasonCode.codeMeaning
-                  ? { [TAG.CodeMeaning]: { vr: 'LO', Value: [reasonCode.codeMeaning] } }
-                  : {}),
-              },
-            ],
-          },
-        }
+  /**
+   * Requests the cancellation of a SCHEDULED workitem (PS3.18 11.8). Reason
+   * For Cancellation (0074,1238) is free text (LO), not a coded sequence; a
+   * coded reason would go in the Procedure Step Discontinuation Reason Code
+   * Sequence (0074,100E).
+   */
+  cancel(workitemUid: string, reason?: string): Promise<void> {
+    const dataset: DicomJsonDataset = reason
+      ? { [TAG.ReasonForCancellation]: { vr: 'LO', Value: [reason] } }
       : {};
     return this.client.cancelWorkitem(workitemUid, dataset);
   }
@@ -342,11 +356,13 @@ function buildWorkitem(
     requestItem[TAG.AccessionNumber] = { vr: 'SH', Value: [accessionNumber] };
   }
   dataset[TAG.ReferencedRequestSequence] = { vr: 'SQ', Value: [requestItem] };
-  for (const tag of [TAG.PatientID, TAG.PatientName]) {
-    const value = getString(study, tag);
-    if (value) {
-      dataset[tag] = { vr: 'LO', Value: [value] };
-    }
+  const patientId = getString(study, TAG.PatientID);
+  if (patientId) {
+    dataset[TAG.PatientID] = { vr: 'LO', Value: [patientId] };
+  }
+  const patientName = getString(study, TAG.PatientName);
+  if (patientName) {
+    dataset[TAG.PatientName] = { vr: 'PN', Value: [patientName] };
   }
   dataset[TAG.ProcedureStepState] = { vr: 'CS', Value: [ProcedureStepState.SCHEDULED] };
   dataset[TAG.UPSPriority] = { vr: 'CS', Value: ['MEDIUM'] };

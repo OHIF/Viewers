@@ -95,6 +95,10 @@ export class UpsClient {
     const response = await this.request(`/workitems?${params.join('&')}`, {
       headers: { Accept: 'application/dicom+json' },
     });
+    if (response.status === 204) {
+      // PS3.18 11.9: an empty result may be 204 No Content with no body.
+      return [];
+    }
     return (await response.json()) as DicomJsonDataset[];
   }
 

@@ -173,10 +173,7 @@ async function main() {
     case 'cancel': {
       const [workitemUid, reason] = rest;
       if (!workitemUid) usage();
-      await service.cancel(
-        workitemUid,
-        reason ? { codeValue: reason, codingSchemeDesignator: '99CLARUS' } : undefined
-      );
+      await service.cancel(workitemUid, reason);
       console.log(`canceled ${workitemUid}`);
       break;
     }

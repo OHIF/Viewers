@@ -107,4 +107,13 @@ describe('UpsClient', () => {
 
     expect(onError).toHaveBeenCalledTimes(1);
   });
+
+  it('returns an empty list for a 204 No Content search response', async () => {
+    const fetchImpl = jest.fn(async () => jsonResponse(204, null));
+    const client = makeClient(fetchImpl as unknown as typeof fetch);
+
+    const items = await client.searchWorkitems({ studyInstanceUid: '1.2.3' });
+
+    expect(items).toEqual([]);
+  });
 });
