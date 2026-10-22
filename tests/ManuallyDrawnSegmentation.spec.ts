@@ -2,14 +2,18 @@ import type { Locator, Page } from '@playwright/test';
 import {
   drawFreehandContour,
   expect,
+  getAnnotationStats,
+  getSegmentStats,
   getSvgAttribute,
-  goToSlice,
+  measurementTextFormatters,
+  roundNumber,
   test,
   visitStudy,
   waitForViewportsRendered,
 } from './utils';
 import { expectRowSelected } from './utils/assertions';
 import type { RightPanelPageObject, ViewportPageObject } from './pages';
+import type { IViewportPageObject } from './pages/ViewportPageObject';
 
 const studyInstanceUID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
 const mode = 'segmentation';
@@ -51,11 +55,48 @@ const secondContourShape = [
   { x: 0.65, y: 0.15 },
 ];
 
+type LabelMapSegment = ReturnType<
+  RightPanelPageObject['labelMapSegmentationPanel']['panel']['nthSegment']
+>;
+
 /**
  * Reads the number from a stat value or a bidirectional label line, such as 'L: 77.0 mm'.
  */
 async function readNumber(locator: Locator) {
   return parseFloat(((await locator.textContent()) ?? '').replace(/^[LW]: /, ''));
+}
+
+/**
+ * Checks that the viewport label and the stats card of a measured segment show the length and
+ * width Cornerstone computed for its bidirectional measurement.
+ */
+async function expectBidirectionalFromCornerstone({
+  page,
+  viewport,
+  segment,
+}: {
+  page: Page;
+  viewport: IViewportPageObject;
+  segment: LabelMapSegment;
+}) {
+  const measurements = await getAnnotationStats(page, { toolName: 'SegmentBidirectional' });
+  expect(measurements, 'Expected one bidirectional measurement').toHaveLength(1);
+  const [{ annotationUID, firstTargetStats }] = measurements;
+  const { length, width, unit } = firstTargetStats as {
+    length: number;
+    width: number;
+    unit: string;
+  };
+  const lengthLine = measurementTextFormatters.bidirectionalLengthLine(roundNumber(length), unit);
+  const widthLine = measurementTextFormatters.bidirectionalWidthLine(roundNumber(width), unit);
+
+  await expect(viewport.getSvgAnnotationStatTextLines(annotationUID)).toHaveText([
+    lengthLine,
+    widthLine,
+  ]);
+  await segment.stats.open();
+  await expect(segment.stats.bidirectional.length).toHaveText(lengthLine);
+  await expect(segment.stats.bidirectional.width).toHaveText(widthLine);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -83,22 +124,24 @@ test.describe('Drawn labelmap segmentation', () => {
     const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
 
     // Paint Segment 1 on one slice and Segment 2 on another.
-    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     await labelMapPanel.addSegmentButton.click();
     await expect(panel.rows, 'Expected a second segment row').toHaveCount(2);
     await expectRowSelected(panel.nthSegment(1));
 
-    await goToSlice({ page, viewport: activeViewport, slice: secondDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     await activeViewport.sliceNavigation.toFirstSlice();
-    await waitForViewportsRendered(page);
     await expect(sliceIndicator, 'Expected to leave the painted slices').toHaveText(firstSliceText);
 
-    // The jump needs the segment's stats, and its stats card opens only once they are computed.
-    await panel.nthSegment(1).stats.open();
+    // Clicking a labelmap segment jumps to the center in its stats, which are computed in the
+    // background after painting.
+    await getSegmentStats({ page, segmentIndex: 2 });
     await panel.nthSegment(1).click();
     await expect(sliceIndicator, 'Expected the Segment 2 slice').toHaveText(secondDrawnSlice.text);
     await expectRowSelected(panel.nthSegment(1));
@@ -116,8 +159,16 @@ test.describe('Drawn labelmap segmentation', () => {
   }) => {
     const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
     const activeViewport = await viewportPageObject.active;
+    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
 
-    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    // The card shows each stat Cornerstone computed for the segment, rounded for display.
+    const expectStatsFromCornerstone = async () => {
+      const stats = await getSegmentStats({ page, segmentIndex: 1 });
+      await expect(segment.stats.values).toHaveText(stats.map(stat => roundNumber(stat.value)));
+    };
+
+    await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     // The card opens once the stats of the painted voxels are computed.
@@ -137,9 +188,8 @@ test.describe('Drawn labelmap segmentation', () => {
       'Center',
     ]);
     await expect(segment.stats.unit('Volume')).toHaveText('mm³');
-    await expect(segment.stats.value('Center')).toHaveText(/^(-?[\d.]+, ){2}-?[\d.]+$/);
+    await expectStatsFromCornerstone();
 
-    // The values come from Cornerstone's computation, so they are checked against each other.
     const voxelCount = () => readNumber(segment.stats.value('Voxel Count'));
     const volume = () => readNumber(segment.stats.value('Volume'));
     await expect.poll(voxelCount, 'Expected painted voxels').toBeGreaterThan(0);
@@ -156,6 +206,7 @@ test.describe('Drawn labelmap segmentation', () => {
     await expect(segment.stats.value('Center'), 'Expected the center to move').not.toHaveText(
       centerBefore
     );
+    await expectStatsFromCornerstone();
   });
 
   test('should draw the largest bidirectional of a drawn labelmap segment', async ({
@@ -165,10 +216,12 @@ test.describe('Drawn labelmap segmentation', () => {
   }) => {
     const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
     const activeViewport = await viewportPageObject.active;
+    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
     const textBoxes = activeViewport.annotationTextBoxes;
     const labelLines = textBoxes.locator('tspan');
 
-    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     await expect(textBoxes, 'Expected no measurement before computing it').toHaveCount(0);
@@ -178,16 +231,12 @@ test.describe('Drawn labelmap segmentation', () => {
     await expect(activeViewport.bidirectionalAxes).toHaveCount(2);
     await expect(textBoxes, 'Expected the measurement to be visible').toBeVisible();
     await expect(labelLines).toHaveText(bidirectionalLabelLines);
-    await expect(activeViewport.overlayText.bottomRight.instanceNumber).toHaveText(
-      firstDrawnSlice.text
-    );
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
 
-    // The card swaps its compute button for the same values.
-    const [length, width] = await labelLines.allTextContents();
-    await segment.stats.open();
+    // The label and the card, which swaps its compute button for the values, show the
+    // measurement Cornerstone computed.
+    await expectBidirectionalFromCornerstone({ page, viewport: activeViewport, segment });
     await expect(segment.stats.bidirectional.computeButton).toBeHidden();
-    await expect(segment.stats.bidirectional.length).toHaveText(length);
-    await expect(segment.stats.bidirectional.width).toHaveText(width);
   });
 
   test('should update the bidirectional values when a drawn segment changes shape', async ({
@@ -197,10 +246,12 @@ test.describe('Drawn labelmap segmentation', () => {
   }) => {
     const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
     const activeViewport = await viewportPageObject.active;
+    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
     const labelLines = activeViewport.annotationTextBoxes.locator('tspan');
     const labelLength = () => readNumber(labelLines.first());
 
-    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
     await segment.stats.bidirectional.compute();
     await expect(labelLines).toHaveText(bidirectionalLabelLines);
@@ -210,12 +261,7 @@ test.describe('Drawn labelmap segmentation', () => {
     await activeViewport.normalizedDragAt(growingBrushStroke);
     await expect.poll(labelLength, 'Expected a longer measurement').toBeGreaterThan(lengthBefore);
     await expect(activeViewport.bidirectionalAxes).toHaveCount(2);
-    await expect(labelLines).toHaveText(bidirectionalLabelLines);
-
-    const [length, width] = await labelLines.allTextContents();
-    await segment.stats.open();
-    await expect(segment.stats.bidirectional.length).toHaveText(length);
-    await expect(segment.stats.bidirectional.width).toHaveText(width);
+    await expectBidirectionalFromCornerstone({ page, viewport: activeViewport, segment });
   });
 
   test('should jump to and highlight the bidirectional of a segment that is not selected', async ({
@@ -233,20 +279,27 @@ test.describe('Drawn labelmap segmentation', () => {
     const labelLines = textBoxes.locator('tspan');
 
     // Paint Segment 1 and Segment 2 on different slices, then measure each.
-    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
     await labelMapPanel.addSegmentButton.click();
     await expect(panel.rows, 'Expected a second segment row').toHaveCount(2);
-    await goToSlice({ page, viewport: activeViewport, slice: secondDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await activeViewport.normalizedDragAt(longBrushStroke);
 
-    // Its card opens once Segment 2's stats are in, so no painting is still being processed.
-    await secondSegment.stats.open();
+    // Segment 2's stats are computed in the background after painting. Wait for them, so no
+    // painting is still being processed when measuring.
+    await getSegmentStats({ page, segmentIndex: 2 });
 
     await firstSegment.stats.bidirectional.compute();
     await expect(sliceIndicator, 'Expected the Segment 1 slice').toHaveText(firstDrawnSlice.text);
     await expect(labelLines).toHaveText(bidirectionalLabelLines);
     const firstLabel = await labelLines.allTextContents();
+    await expect(textBoxes, 'Expected Segment 1 measurement highlighted').toHaveAttribute(
+      'fill',
+      selectedTextColor
+    );
 
     // The longer stroke measures differently, so each label identifies its segment.
     await secondSegment.stats.bidirectional.compute();
@@ -254,11 +307,13 @@ test.describe('Drawn labelmap segmentation', () => {
     await expect(labelLines, 'Expected a different Segment 2 label').not.toHaveText(firstLabel);
     await expect(labelLines).toHaveText(bidirectionalLabelLines);
     const secondLabel = await labelLines.allTextContents();
-    await expect(textBoxes).toHaveAttribute('fill', selectedTextColor);
+    await expect(textBoxes, 'Expected Segment 2 measurement highlighted').toHaveAttribute(
+      'fill',
+      selectedTextColor
+    );
 
     await expectRowSelected(secondSegment);
     await activeViewport.sliceNavigation.toFirstSlice();
-    await waitForViewportsRendered(page);
     await expect(sliceIndicator, 'Expected to leave the painted slices').toHaveText(firstSliceText);
     await expect(textBoxes, 'Expected no measurement on the first slice').toHaveCount(0);
 
@@ -273,7 +328,8 @@ test.describe('Drawn labelmap segmentation', () => {
     );
 
     // Segment 2's measurement is no longer the highlighted one.
-    await goToSlice({ page, viewport: activeViewport, slice: secondDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await expect(labelLines).toHaveText(secondLabel);
     await expect(textBoxes, 'Expected Segment 2 measurement not highlighted').toHaveAttribute(
       'fill',
@@ -305,9 +361,11 @@ test.describe('Drawn contour segmentation', () => {
   }) {
     const contourPanel = rightPanelPageObject.contourSegmentationPanel;
     const activeViewport = await viewportPageObject.active;
+    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
     const paths = activeViewport.svg('path');
 
-    await goToSlice({ page, viewport: activeViewport, slice: firstDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await drawFreehandContour({
       segmentationPanel: contourPanel,
       viewport: activeViewport,
@@ -326,7 +384,8 @@ test.describe('Drawn contour segmentation', () => {
     await expect(contourPanel.panel.rows, 'Expected a second segment row').toHaveCount(2);
     await expectRowSelected(contourPanel.panel.nthSegment(1));
 
-    await goToSlice({ page, viewport: activeViewport, slice: secondDrawnSlice });
+    await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
+    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await expect(paths, 'Expected no contour on the second slice yet').toHaveCount(0);
     await drawFreehandContour({
       segmentationPanel: contourPanel,
@@ -362,7 +421,6 @@ test.describe('Drawn contour segmentation', () => {
     });
 
     await activeViewport.sliceNavigation.toFirstSlice();
-    await waitForViewportsRendered(page);
     await expect(sliceIndicator, 'Expected to leave the drawn slices').toHaveText(firstSliceText);
     await expect(paths, 'Expected no contour on the first slice').toHaveCount(0);
 

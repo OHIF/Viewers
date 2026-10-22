@@ -6,6 +6,7 @@ import {
   simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
+  waitForViewportsRendered,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
@@ -337,9 +338,8 @@ export class ViewportPageObject {
   }
 
   /**
-   * Note: awaiting the returned methods (toSlice, toFirstSlice, toLastSlice, scrollBy)
-   * does not guarantee the viewport has finished rendering. Follow up with
-   * `waitForViewportsRendered` if you need pixel-stable state.
+   * toSlice, toFirstSlice and toLastSlice wait for the viewport to render the slice. scrollBy does
+   * not wait; follow it with `waitForViewportsRendered` if you need pixel-stable state.
    */
   private getSliceNavigation(viewport: Locator) {
     const page = this.page;
@@ -381,10 +381,15 @@ export class ViewportPageObject {
       );
     };
 
+    const toSlice = async (imageIndex: number) => {
+      await jumpToImage(imageIndex);
+      await waitForViewportsRendered(page);
+    };
+
     return {
-      toSlice: jumpToImage,
-      toFirstSlice: () => jumpToImage(0),
-      toLastSlice: () => jumpToImage(-1),
+      toSlice,
+      toFirstSlice: () => toSlice(0),
+      toLastSlice: () => toSlice(-1),
       scrollBy,
     };
   }

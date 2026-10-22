@@ -253,6 +253,8 @@ export class RightPanelPageObject {
       locator,
       // The stat names, in the order the card lists them
       labels: entries.locator(':scope > div:first-child'),
+      // The stat values, in the same order
+      values: entries.locator(':scope > div:last-child > span:first-child'),
       value: (label: string) => valueSpans(label).first(),
       unit: (label: string) => valueSpans(label).last(),
       open,

@@ -20,6 +20,8 @@ import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
+import { getSegmentStats } from './getSegmentStats';
+import { roundNumber } from './roundNumber';
 import {
   expectAnnotationLabelText,
   expectAnnotationStatsText,
@@ -27,7 +29,6 @@ import {
 } from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { drawFreehandContour } from './drawFreehandContour';
-import { goToSlice } from './goToSlice';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
@@ -69,12 +70,13 @@ export {
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
+  getSegmentStats,
+  roundNumber,
   expectAnnotationLabelText,
   expectAnnotationStatsText,
   measurementTextFormatters,
   clearAllAnnotations,
   drawFreehandContour,
-  goToSlice,
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
