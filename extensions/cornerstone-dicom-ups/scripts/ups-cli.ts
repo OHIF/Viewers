@@ -9,7 +9,7 @@
  * Verbs:
  *   search   <studyUid> [patientId] [accessionNumber]
  *   run      <studyUid> <codeValue> [codeDesignator] [codeMeaning]
- *   watch    <workitemUid>            (polls until COMPLETED/CANCELED)
+ *   watch    <workitemUid>            (subscribes with --ae, else polls)
  *   outputs  <workitemUid>
  *   cancel   <workitemUid>
  */
@@ -43,6 +43,7 @@ function cliFetch(input: string | URL, init: RequestInit = {}): Promise<Response
       },
       res => {
         let data = '';
+        res.setEncoding('utf8');
         res.on('data', chunk => (data += chunk));
         res.on('end', () => {
           resolve({
@@ -59,6 +60,7 @@ function cliFetch(input: string | URL, init: RequestInit = {}): Promise<Response
   });
 }
 
+/** Prints the CLI usage to stderr and exits with code 2. */
 function usage(): never {
   console.error(
     'usage: ups-cli.ts <search|run|watch|outputs|cancel> --url <base> [--ae <ae>] [args]'
@@ -66,6 +68,7 @@ function usage(): never {
   process.exit(2);
 }
 
+/** Parses the verb and the --url/--ae flags out of the CLI arguments. */
 function parseArgs(argv: string[]): { verb: string; url: string; ae?: string; rest: string[] } {
   if (argv.length === 0) usage();
   const verb = argv[0];
@@ -84,6 +87,7 @@ function parseArgs(argv: string[]): { verb: string; url: string; ae?: string; re
   return { verb, url: url.replace(/\/+$/, ''), ae, rest };
 }
 
+/** Fetches the instances of a study via QIDO-RS (PS3.18 10.6) for the `run` verb. */
 async function qidoInstances(baseUrl: string, studyUid: string): Promise<DicomJsonDataset[]> {
   const res = await fetch(`${baseUrl}/studies/${encodeURIComponent(studyUid)}/instances`, {
     headers: { Accept: 'application/dicom+json' },
@@ -92,10 +96,12 @@ async function qidoInstances(baseUrl: string, studyUid: string): Promise<DicomJs
   return (await res.json()) as DicomJsonDataset[];
 }
 
+/** Reads the Procedure Step State (0074,1000) of a workitem, or '?' when absent. */
 function stateOf(wi: DicomJsonDataset): string {
   return getString(wi, TAG.ProcedureStepState) ?? '?';
 }
 
+/** Reads the Code Value (0008,0100) of a workitem's Scheduled Workitem Code Sequence. */
 function codeOf(wi: DicomJsonDataset): string {
   const codes = wi[TAG.ScheduledWorkitemCodeSequence]?.Value;
   if (Array.isArray(codes) && codes.length > 0) {
@@ -104,6 +110,7 @@ function codeOf(wi: DicomJsonDataset): string {
   return '?';
 }
 
+/** CLI entry point: dispatches the verb to the matching UpsClient/UpsService call. */
 async function main() {
   const { verb, url, ae, rest } = parseArgs(process.argv.slice(2));
   const client = new UpsClient(
@@ -141,26 +148,47 @@ async function main() {
     case 'watch': {
       const [workitemUid] = rest;
       if (!workitemUid) usage();
-      let state = '';
-      for (let i = 0; i < 60; i++) {
-        const wi = await client.retrieveWorkitem(workitemUid);
-        const next = stateOf(wi);
-        if (next !== state) {
-          state = next;
-          console.log(`${workitemUid} -> ${state}`);
-        }
-        if (state === 'COMPLETED' || state === 'CANCELED') {
-          if (state === 'CANCELED') {
-            console.log(`reason: ${getString(wi, TAG.ReasonForCancellation) ?? '?'}`);
+      let timedOut = false;
+      await new Promise<void>(resolve => {
+        let finished = false;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const finish = (onTimeout: boolean) => {
+          if (finished) {
+            return;
           }
-          const outputs = await service.outputInstanceUids(workitemUid);
-          console.log(`outputs: ${outputs.length ? outputs.join(', ') : '(none)'}`);
-          return;
-        }
-        await new Promise(resolve => setTimeout(resolve, 2000));
+          finished = true;
+          if (timer) {
+            clearTimeout(timer);
+          }
+          timedOut = onTimeout;
+          resolve();
+        };
+        const handle = service.watch(workitemUid, event => {
+          const state = getString(event.dataset, TAG.ProcedureStepState);
+          if (!state) {
+            return;
+          }
+          console.log(`${workitemUid} -> ${state}`);
+          if (state === 'COMPLETED' || state === 'CANCELED') {
+            if (state === 'CANCELED') {
+              console.log(`reason: ${getString(event.dataset, TAG.ReasonForCancellation) ?? '?'}`);
+            }
+            handle.close();
+            finish(false);
+          }
+        });
+        timer = setTimeout(() => {
+          handle.close();
+          finish(true);
+        }, 120000);
+      });
+      if (timedOut) {
+        console.error('timed out waiting for a terminal state');
+        process.exitCode = 1;
+        break;
       }
-      console.error('timed out waiting for a terminal state');
-      process.exit(1);
+      const outputs = await service.outputInstanceUids(workitemUid);
+      console.log(`outputs: ${outputs.length ? outputs.join(', ') : '(none)'}`);
       break;
     }
     case 'outputs': {

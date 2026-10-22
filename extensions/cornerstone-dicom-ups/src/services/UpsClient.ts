@@ -1,4 +1,4 @@
-import { DicomJsonDataset, TAG, UpsConfig, getString } from './types';
+import { DicomJsonDataset, TAG, UpsConfig } from './types';
 
 /** The searchable keys of a study's workitems (PS3.18 11.9, RAD-81). */
 export interface WorkitemSearch {
@@ -8,7 +8,7 @@ export interface WorkitemSearch {
   includeAllFields?: boolean;
 }
 
-/** A parsed N-EVENT-REPORT delivered over the notification channel. */
+/** One workitem state notification delivered to a watcher. */
 export interface WorkitemEvent {
   eventTypeId: number;
   affectedSopInstanceUid?: string;
@@ -40,11 +40,13 @@ const defaultDeps: UpsClientDeps = {
  * Subscribe / Unsubscribe (11.10). It carries no role logic.
  */
 export class UpsClient {
+  /** Injects the DICOMweb settings and the transport used for all requests. */
   constructor(
     private readonly config: UpsConfig,
     private readonly deps: UpsClientDeps = defaultDeps
   ) {}
 
+  /** The DICOMweb base URL with any trailing slashes stripped. */
   private get baseUrl(): string {
     return this.config.baseUrl.replace(/\/+$/, '');
   }
@@ -54,6 +56,7 @@ export class UpsClient {
     return `${this.baseUrl.replace(/^http/, 'ws')}${path}`;
   }
 
+  /** Sends a request to the origin and throws when the response is not 2xx. */
   private async request(path: string, init: RequestInit = {}): Promise<Response> {
     const response = await this.deps.fetchImpl(`${this.baseUrl}${path}`, init);
     if (!response.ok) {
@@ -120,46 +123,59 @@ export class UpsClient {
   }
 
   /**
-   * Opens the notification channel of a workitem (PS3.18 11.10, RAD-86).
-   * `onError` fires when the channel never opens - an origin without a
-   * WebSocket notification channel (e.g. dcm4chee-arc) rejects the handshake
-   * and the browser exposes no status code - so the caller can fall back to
-   * polling.
+   * Subscribes to a workitem (PS3.18 11.10) and opens its notification
+   * channel (PS3.18 8.10.4). The subscription is created with POST first - a
+   * conformant origin requires it before the channel can carry events - then
+   * the WebSocket is opened at the Open Notification Connection resource,
+   * not on the subscription resource itself. `onError` fires when either
+   * step fails, so the caller can fall back to polling.
    */
   subscribe(
     workitemUid: string,
     aeTitle: string,
     onEvent: (event: WorkitemEvent) => void,
     onError?: () => void
-  ): SubscriptionHandle {
-    let opened = false;
-    const ws = this.deps.openWebSocket(
-      this.wsUrl(
-        `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`
-      )
-    );
-    ws.onopen = () => {
-      opened = true;
-    };
-    ws.onmessage = event => {
-      const dataset = JSON.parse(String(event.data)) as DicomJsonDataset;
-      const raw = getString(dataset, TAG.EventTypeID);
-      onEvent({
-        eventTypeId: raw ? parseInt(raw, 10) : 0,
-        affectedSopInstanceUid: getString(dataset, TAG.AffectedSOPInstanceUID),
-        dataset,
-      });
-    };
-    ws.onerror = () => {
-      // The browser WebSocket API exposes no status code; a channel that never
-      // opens is the only signal, and onclose forwards it once.
-    };
-    ws.onclose = () => {
-      if (!opened) {
+  ): Promise<SubscriptionHandle> {
+    // 1. Create the subscription (PS3.18 11.10). POST, no payload. Written as
+    // a then/catch chain rather than try/await: this project's Babel config
+    // cannot transpile an optional catch binding inside an async body.
+    return this.request(
+      `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
+      { method: 'POST' }
+    ).then(
+      () => {
+        // 2. Open the notification channel (PS3.18 8.10.4).
+        let opened = false;
+        const ws = this.deps.openWebSocket(
+          this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`)
+        );
+        ws.onopen = () => {
+          opened = true;
+        };
+        ws.onmessage = event => {
+          onEvent(parseWorkitemEvent(String(event.data)));
+        };
+        ws.onerror = () => {
+          // The browser WebSocket API exposes no status code; a channel that
+          // never opens is the only signal, and onclose forwards it once.
+        };
+        ws.onclose = () => {
+          if (!opened) {
+            onError?.();
+          }
+        };
+        return {
+          close: () => {
+            ws.close();
+            void this.unsubscribe(workitemUid, aeTitle).catch(() => {});
+          },
+        };
+      },
+      () => {
         onError?.();
+        return { close: () => {} };
       }
-    };
-    return { close: () => ws.close() };
+    );
   }
 
   /** Removes the subscription of this AE Title (PS3.18 11.10.4). */
@@ -169,4 +185,24 @@ export class UpsClient {
       { method: 'DELETE' }
     );
   }
+}
+
+/**
+ * Normalizes one notification-channel frame into a WorkitemEvent.
+ *
+ * The origin (Clarus) delivers its own envelope `{workitem_uid,
+ * previous_state, new_state, timestamp, event_id}`, not a DICOM JSON
+ * N-EVENT-REPORT. The state is the only thing the watcher reads, so it is the
+ * only thing normalized here; the envelope's `event_id` is a sequence number,
+ * not a DICOM EventTypeID, so no EventTypeID is fabricated.
+ */
+function parseWorkitemEvent(payload: string): WorkitemEvent {
+  const frame = JSON.parse(payload) as { workitem_uid?: string; new_state?: string };
+  return {
+    eventTypeId: 0,
+    affectedSopInstanceUid: frame.workitem_uid,
+    dataset: frame.new_state
+      ? { [TAG.ProcedureStepState]: { vr: 'CS', Value: [frame.new_state] } }
+      : {},
+  };
 }

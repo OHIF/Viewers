@@ -1,6 +1,7 @@
-import { UpsClient } from './UpsClient';
+import { UpsClient, WorkitemEvent } from './UpsClient';
 import { TAG } from './types';
 
+/** Builds a minimal Response stub with the given status and JSON body. */
 function jsonResponse(status: number, body: unknown): Response {
   return {
     ok: status >= 200 && status < 300,
@@ -10,6 +11,7 @@ function jsonResponse(status: number, body: unknown): Response {
   } as Response;
 }
 
+/** Builds an UpsClient wired to the given fetch stub and a mocked WebSocket. */
 function makeClient(fetchImpl: typeof fetch) {
   return new UpsClient(
     { baseUrl: 'http://origin/dicomweb/' },
@@ -67,27 +69,34 @@ describe('UpsClient', () => {
     await expect(client.retrieveWorkitem('1.2.3')).rejects.toThrow(/404/);
   });
 
-  it('subscribes over a WebSocket and parses the event report', () => {
+  it('creates the subscription then opens the notification channel and parses the state', async () => {
     const ws: { onmessage?: (event: { data: unknown }) => void; close: () => void } = {
       close: jest.fn(),
     };
     const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
     const client = new UpsClient(
       { baseUrl: 'http://origin/dicomweb' },
-      { fetchImpl: jest.fn(), openWebSocket }
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
     );
 
-    const events: number[] = [];
-    client.subscribe('1.2.3', 'OHIF', event => events.push(event.eventTypeId));
-    ws.onmessage?.({ data: JSON.stringify({ [TAG.EventTypeID]: { vr: 'US', Value: [1] } }) });
+    const events: WorkitemEvent[] = [];
+    const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
+    ws.onmessage?.({
+      data: JSON.stringify({ workitem_uid: '1.2.3', new_state: 'IN PROGRESS', event_id: 1 }),
+    });
 
-    expect(openWebSocket).toHaveBeenCalledWith(
-      'ws://origin/dicomweb/workitems/1.2.3/subscribers/OHIF'
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'http://origin/dicomweb/workitems/1.2.3/subscribers/OHIF',
+      expect.objectContaining({ method: 'POST' })
     );
-    expect(events).toEqual([1]);
+    expect(openWebSocket).toHaveBeenCalledWith('ws://origin/dicomweb/subscribers/OHIF');
+    expect(events[0].affectedSopInstanceUid).toBe('1.2.3');
+    expect(events[0].dataset[TAG.ProcedureStepState]).toEqual({ vr: 'CS', Value: ['IN PROGRESS'] });
+    handle.close();
   });
 
-  it('reports an error when the channel closes without opening', () => {
+  it('reports an error when the channel closes without opening', async () => {
     const ws: {
       onopen?: () => void;
       onmessage?: (event: { data: unknown }) => void;
@@ -96,16 +105,33 @@ describe('UpsClient', () => {
       close: () => void;
     } = { close: jest.fn() };
     const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
     const client = new UpsClient(
       { baseUrl: 'http://origin/dicomweb' },
-      { fetchImpl: jest.fn(), openWebSocket }
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
     );
     const onError = jest.fn();
 
-    client.subscribe('1.2.3', 'OHIF', jest.fn(), onError);
+    await client.subscribe('1.2.3', 'OHIF', jest.fn(), onError);
     ws.onclose?.();
 
     expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back when the subscription POST fails', async () => {
+    const fetchImpl = jest.fn(async () => jsonResponse(400, null));
+    const openWebSocket = jest.fn();
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+    const onError = jest.fn();
+
+    const handle = await client.subscribe('1.2.3', 'OHIF', jest.fn(), onError);
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(openWebSocket).not.toHaveBeenCalled();
+    handle.close();
   });
 
   it('returns an empty list for a 204 No Content search response', async () => {

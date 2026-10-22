@@ -4,18 +4,20 @@ import { DicomJsonDataset, ProcedureStepState, TAG, WorkitemCode } from './types
 
 const CODE: WorkitemCode = { codeValue: 'CT-ORGAN-SEG', codingSchemeDesignator: '99CLARUS' };
 
+/** Builds a mocked UpsClient whose methods can be overridden per test. */
 function makeClient(overrides: Partial<UpsClient> = {}): jest.Mocked<UpsClient> {
   return {
     createWorkitem: jest.fn(async () => '1.2.3'),
     searchWorkitems: jest.fn(async () => []),
     retrieveWorkitem: jest.fn(async () => ({})),
     cancelWorkitem: jest.fn(async () => {}),
-    subscribe: jest.fn(),
+    subscribe: jest.fn(async () => ({ close: jest.fn() })),
     unsubscribe: jest.fn(async () => {}),
     ...overrides,
   } as unknown as jest.Mocked<UpsClient>;
 }
 
+/** A minimal study dataset carrying only its Study Instance UID. */
 const study = (): DicomJsonDataset => ({
   [TAG.StudyInstanceUID]: { vr: 'UI', Value: ['1.2.3'] },
 });
@@ -119,7 +121,7 @@ describe('UpsService', () => {
       (client.subscribe as jest.Mock).mockImplementation(
         (_uid: string, _ae: string, _onEvent: unknown, onError?: () => void) => {
           onError?.();
-          return { close: jest.fn() };
+          return Promise.resolve({ close: jest.fn() });
         }
       );
 
@@ -174,13 +176,16 @@ describe('UpsService', () => {
       {
         [TAG.StudyInstanceUID]: { vr: 'UI', Value: ['1.2.3'] },
         [TAG.PatientID]: { vr: 'LO', Value: ['P1'] },
-        [TAG.PatientName]: { vr: 'PN', Value: ['Doe^John'] },
+        [TAG.PatientName]: { vr: 'PN', Value: [{ Alphabetic: 'Doe^John' }] },
       },
       []
     );
 
     const dataset = (client.createWorkitem as jest.Mock).mock.calls[0][1] as DicomJsonDataset;
     expect(dataset[TAG.PatientID]).toEqual({ vr: 'LO', Value: ['P1'] });
-    expect(dataset[TAG.PatientName]).toEqual({ vr: 'PN', Value: ['Doe^John'] });
+    expect(dataset[TAG.PatientName]).toEqual({
+      vr: 'PN',
+      Value: [{ Alphabetic: 'Doe^John' }],
+    });
   });
 });

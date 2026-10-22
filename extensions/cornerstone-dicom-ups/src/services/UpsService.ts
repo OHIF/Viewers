@@ -21,6 +21,7 @@ export class UpsService {
   /** In-flight `run` calls, keyed by study + code, to avoid duplicate workitems. */
   private readonly inflight = new Map<string, Promise<string>>();
 
+  /** Injects the wire layer and this user agent's AE Title (subscriber). */
   constructor(
     private readonly client: UpsClient,
     private readonly aeTitle?: string
@@ -78,6 +79,7 @@ export class UpsService {
     return task;
   }
 
+  /** Reuses the pending workitem for the code, or creates a new one when none exists. */
   private async createIfAbsent(
     studyUid: string,
     catalogEntry: WorkitemCode,
@@ -95,6 +97,7 @@ export class UpsService {
     return this.client.createWorkitem(workitemUid, buildWorkitem(catalogEntry, study, instances));
   }
 
+  /** The first SCHEDULED/IN PROGRESS workitem of the study carrying the code, if any. */
   private async nonTerminalWorkitem(
     studyUid: string,
     catalogEntry: WorkitemCode
@@ -177,7 +180,15 @@ export class UpsService {
     if (!aeTitle) {
       startPolling();
     } else {
-      wsHandle = this.client.subscribe(workitemUid, aeTitle, listener, startPolling);
+      void this.client
+        .subscribe(workitemUid, aeTitle, listener, startPolling)
+        .then(handle => {
+          if (closed) {
+            handle.close();
+          } else {
+            wsHandle = handle;
+          }
+        });
     }
 
     return {

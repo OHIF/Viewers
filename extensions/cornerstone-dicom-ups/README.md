@@ -67,6 +67,10 @@ A dev/E2E CLI mirrors the Weasis `ups:` verbs against a live origin
     outputs  <workitemUid>
     cancel   <workitemUid> [reason]
 
+`watch` subscribes through the notification channel when `--ae` is given
+(PS3.18 11.10 subscribe, then the 8.10.4 WebSocket) and falls back to polling
+Retrieve Workitem when the origin has no WebSocket channel (e.g. dcm4chee-arc).
+
 If the runner resolves the script as ESM, force CommonJS first:
 `TS_NODE_TRANSPILE_ONLY=1 TS_NODE_COMPILER_OPTIONS='{"module":"commonjs","moduleResolution":"node"}'`.
 
