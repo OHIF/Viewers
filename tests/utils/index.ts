@@ -21,7 +21,7 @@ import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
 import { getSegmentStats } from './getSegmentStats';
-import { roundNumber } from './roundNumber';
+import { roundNumbers } from './roundNumbers';
 import {
   expectAnnotationLabelText,
   expectAnnotationStatsText,
@@ -71,7 +71,7 @@ export {
   getTMTVModalityUnit,
   getAnnotationStats,
   getSegmentStats,
-  roundNumber,
+  roundNumbers,
   expectAnnotationLabelText,
   expectAnnotationStatsText,
   measurementTextFormatters,

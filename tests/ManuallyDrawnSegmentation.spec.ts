@@ -6,7 +6,7 @@ import {
   getSegmentStats,
   getSvgAttribute,
   measurementTextFormatters,
-  roundNumber,
+  roundNumbers,
   test,
   visitStudy,
   waitForViewportsRendered,
@@ -87,8 +87,9 @@ async function expectBidirectionalFromCornerstone({
     width: number;
     unit: string;
   };
-  const lengthLine = measurementTextFormatters.bidirectionalLengthLine(roundNumber(length), unit);
-  const widthLine = measurementTextFormatters.bidirectionalWidthLine(roundNumber(width), unit);
+  const [lengthText, widthText] = await roundNumbers(page, [length, width]);
+  const lengthLine = measurementTextFormatters.bidirectionalLengthLine(lengthText, unit);
+  const widthLine = measurementTextFormatters.bidirectionalWidthLine(widthText, unit);
 
   await expect(viewport.getSvgAnnotationStatTextLines(annotationUID)).toHaveText([
     lengthLine,
@@ -164,7 +165,8 @@ test.describe('Drawn labelmap segmentation', () => {
     // The card shows each stat Cornerstone computed for the segment, rounded for display.
     const expectStatsFromCornerstone = async () => {
       const stats = await getSegmentStats({ page, segmentIndex: 1 });
-      await expect(segment.stats.values).toHaveText(stats.map(stat => roundNumber(stat.value)));
+      const values = stats.map(stat => stat.value);
+      await expect(segment.stats.values).toHaveText(await roundNumbers(page, values));
     };
 
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
