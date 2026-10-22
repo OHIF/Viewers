@@ -120,13 +120,13 @@ export class UpsService {
 
   /**
    * Requests the cancellation of a SCHEDULED workitem (PS3.18 11.8). Reason
-   * For Cancellation (0074,1238) is free text (LO), not a coded sequence; a
+   * For Cancellation (0074,1238) is free text (LT), not a coded sequence; a
    * coded reason would go in the Procedure Step Discontinuation Reason Code
    * Sequence (0074,100E).
    */
   cancel(workitemUid: string, reason?: string): Promise<void> {
     const dataset: DicomJsonDataset = reason
-      ? { [TAG.ReasonForCancellation]: { vr: 'LO', Value: [reason] } }
+      ? { [TAG.ReasonForCancellation]: { vr: 'LT', Value: [reason] } }
       : {};
     return this.client.cancelWorkitem(workitemUid, dataset);
   }

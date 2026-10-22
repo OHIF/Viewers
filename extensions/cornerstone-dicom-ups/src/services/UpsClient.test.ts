@@ -134,6 +134,82 @@ describe('UpsClient', () => {
     handle.close();
   });
 
+  it('falls back when opening the WebSocket throws', async () => {
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
+    const openWebSocket = jest.fn(() => {
+      throw new Error('mixed-content ws:// URL');
+    });
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+    const onError = jest.fn();
+
+    const handle = await client.subscribe('1.2.3', 'OHIF', jest.fn(), onError);
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    handle.close();
+  });
+
+  it('drops notifications for other workitems', async () => {
+    const ws: { onmessage?: (event: { data: unknown }) => void; close: () => void } = {
+      close: jest.fn(),
+    };
+    const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const events: WorkitemEvent[] = [];
+    const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
+    ws.onmessage?.({
+      data: JSON.stringify({ workitem_uid: '9.9.9', new_state: 'IN PROGRESS', event_id: 1 }),
+    });
+
+    expect(events).toEqual([]);
+    handle.close();
+  });
+
+  it('drops a frame that names no workitem', async () => {
+    const ws: { onmessage?: (event: { data: unknown }) => void; close: () => void } = {
+      close: jest.fn(),
+    };
+    const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const events: WorkitemEvent[] = [];
+    const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
+    ws.onmessage?.({ data: JSON.stringify({ new_state: 'IN PROGRESS', event_id: 1 }) });
+
+    expect(events).toEqual([]);
+    handle.close();
+  });
+
+  it('drops a malformed notification frame', async () => {
+    const ws: { onmessage?: (event: { data: unknown }) => void; close: () => void } = {
+      close: jest.fn(),
+    };
+    const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const events: WorkitemEvent[] = [];
+    const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
+    expect(() => ws.onmessage?.({ data: 'not json' })).not.toThrow();
+
+    expect(events).toEqual([]);
+    handle.close();
+  });
+
   it('returns an empty list for a 204 No Content search response', async () => {
     const fetchImpl = jest.fn(async () => jsonResponse(204, null));
     const client = makeClient(fetchImpl as unknown as typeof fetch);

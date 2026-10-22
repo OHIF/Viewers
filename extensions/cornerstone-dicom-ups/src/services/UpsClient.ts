@@ -142,9 +142,11 @@ export class UpsClient {
     return this.request(
       `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
       { method: 'POST' }
-    ).then(
-      () => {
-        // 2. Open the notification channel (PS3.18 8.10.4).
+    )
+      .then(() => {
+        // 2. Open the notification channel (PS3.18 8.10.4). The channel is
+        // scoped to the AE Title, not to one workitem, so a frame is
+        // forwarded only when it names the subscribed workitem.
         let opened = false;
         const ws = this.deps.openWebSocket(
           this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`)
@@ -153,7 +155,14 @@ export class UpsClient {
           opened = true;
         };
         ws.onmessage = event => {
-          onEvent(parseWorkitemEvent(String(event.data)));
+          const parsed = parseWorkitemEvent(String(event.data));
+          if (!parsed) {
+            return;
+          }
+          if (parsed.affectedSopInstanceUid !== workitemUid) {
+            return;
+          }
+          onEvent(parsed);
         };
         ws.onerror = () => {
           // The browser WebSocket API exposes no status code; a channel that
@@ -170,12 +179,11 @@ export class UpsClient {
             void this.unsubscribe(workitemUid, aeTitle).catch(() => {});
           },
         };
-      },
-      () => {
+      })
+      .catch(() => {
         onError?.();
         return { close: () => {} };
-      }
-    );
+      });
   }
 
   /** Removes the subscription of this AE Title (PS3.18 11.10.4). */
@@ -196,8 +204,16 @@ export class UpsClient {
  * only thing normalized here; the envelope's `event_id` is a sequence number,
  * not a DICOM EventTypeID, so no EventTypeID is fabricated.
  */
-function parseWorkitemEvent(payload: string): WorkitemEvent {
-  const frame = JSON.parse(payload) as { workitem_uid?: string; new_state?: string };
+function parseWorkitemEvent(payload: string): WorkitemEvent | undefined {
+  let frame: { workitem_uid?: string; new_state?: string } | undefined;
+  try {
+    frame = JSON.parse(payload) as { workitem_uid?: string; new_state?: string };
+  } catch {
+    return undefined;
+  }
+  if (!frame || typeof frame !== 'object') {
+    return undefined;
+  }
   return {
     eventTypeId: 0,
     affectedSopInstanceUid: frame.workitem_uid,

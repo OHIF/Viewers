@@ -146,7 +146,7 @@ describe('UpsService', () => {
     await service.cancel('9.9.9', 'no longer needed');
 
     expect(client.cancelWorkitem).toHaveBeenCalledWith('9.9.9', {
-      [TAG.ReasonForCancellation]: { vr: 'LO', Value: ['no longer needed'] },
+      [TAG.ReasonForCancellation]: { vr: 'LT', Value: ['no longer needed'] },
     });
   });
 
