@@ -196,29 +196,57 @@ export class UpsClient {
 }
 
 /**
+ * Reads the first string of a DICOM JSON attribute value, e.g.
+ * `{ "00741000": { "vr": "CS", "Value": ["IN PROGRESS"] } }`.
+ */
+function dicomJsonString(attribute: unknown): string | undefined {
+  if (attribute && typeof attribute === 'object') {
+    const value = (attribute as { Value?: unknown }).Value;
+    if (Array.isArray(value) && typeof value[0] === 'string') {
+      return value[0];
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Reads the first numeric value of a DICOM JSON attribute, e.g.
+ * `{ "00001002": { "vr": "US", "Value": [1] } }`.
+ */
+function dicomJsonNumber(attribute: unknown): number | undefined {
+  if (attribute && typeof attribute === 'object') {
+    const value = (attribute as { Value?: unknown }).Value;
+    if (Array.isArray(value) && typeof value[0] === 'number') {
+      return value[0];
+    }
+  }
+  return undefined;
+}
+
+/**
  * Normalizes one notification-channel frame into a WorkitemEvent.
  *
- * The origin (Clarus) delivers its own envelope `{workitem_uid,
- * previous_state, new_state, timestamp, event_id}`, not a DICOM JSON
- * N-EVENT-REPORT. The state is the only thing the watcher reads, so it is the
- * only thing normalized here; the envelope's `event_id` is a sequence number,
- * not a DICOM EventTypeID, so no EventTypeID is fabricated.
+ * The payload is a DICOM JSON Event Report (PS3.18 8.10.5.1.1): the affected
+ * workitem is (0000,1000) Affected SOP Instance UID, the event type is
+ * (0000,1002) Event Type ID, and the state is (0074,1000) Procedure Step
+ * State. Only those three are normalized.
  */
 function parseWorkitemEvent(payload: string): WorkitemEvent | undefined {
-  let frame: { workitem_uid?: string; new_state?: string } | undefined;
+  let frame: Record<string, unknown> | undefined;
   try {
-    frame = JSON.parse(payload) as { workitem_uid?: string; new_state?: string };
+    frame = JSON.parse(payload) as Record<string, unknown>;
   } catch {
     return undefined;
   }
   if (!frame || typeof frame !== 'object') {
     return undefined;
   }
+  const affectedSopInstanceUid = dicomJsonString(frame['00001000']);
+  const eventTypeId = dicomJsonNumber(frame['00001002']) ?? 0;
+  const state = dicomJsonString(frame['00741000']);
   return {
-    eventTypeId: 0,
-    affectedSopInstanceUid: frame.workitem_uid,
-    dataset: frame.new_state
-      ? { [TAG.ProcedureStepState]: { vr: 'CS', Value: [frame.new_state] } }
-      : {},
+    eventTypeId,
+    affectedSopInstanceUid,
+    dataset: state ? { [TAG.ProcedureStepState]: { vr: 'CS', Value: [state] } } : {},
   };
 }

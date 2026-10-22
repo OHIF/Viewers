@@ -83,7 +83,11 @@ describe('UpsClient', () => {
     const events: WorkitemEvent[] = [];
     const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
     ws.onmessage?.({
-      data: JSON.stringify({ workitem_uid: '1.2.3', new_state: 'IN PROGRESS', event_id: 1 }),
+      data: JSON.stringify({
+        '00001000': { vr: 'UI', Value: ['1.2.3'] },
+        '00001002': { vr: 'US', Value: [1] },
+        '00741000': { vr: 'CS', Value: ['IN PROGRESS'] },
+      }),
     });
 
     expect(fetchImpl).toHaveBeenCalledWith(
@@ -92,6 +96,7 @@ describe('UpsClient', () => {
     );
     expect(openWebSocket).toHaveBeenCalledWith('ws://origin/dicomweb/subscribers/OHIF');
     expect(events[0].affectedSopInstanceUid).toBe('1.2.3');
+    expect(events[0].eventTypeId).toBe(1);
     expect(events[0].dataset[TAG.ProcedureStepState]).toEqual({ vr: 'CS', Value: ['IN PROGRESS'] });
     handle.close();
   });
@@ -165,7 +170,10 @@ describe('UpsClient', () => {
     const events: WorkitemEvent[] = [];
     const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
     ws.onmessage?.({
-      data: JSON.stringify({ workitem_uid: '9.9.9', new_state: 'IN PROGRESS', event_id: 1 }),
+      data: JSON.stringify({
+        '00001000': { vr: 'UI', Value: ['9.9.9'] },
+        '00741000': { vr: 'CS', Value: ['IN PROGRESS'] },
+      }),
     });
 
     expect(events).toEqual([]);
@@ -185,7 +193,9 @@ describe('UpsClient', () => {
 
     const events: WorkitemEvent[] = [];
     const handle = await client.subscribe('1.2.3', 'OHIF', event => events.push(event));
-    ws.onmessage?.({ data: JSON.stringify({ new_state: 'IN PROGRESS', event_id: 1 }) });
+    ws.onmessage?.({
+      data: JSON.stringify({ '00741000': { vr: 'CS', Value: ['IN PROGRESS'] } }),
+    });
 
     expect(events).toEqual([]);
     handle.close();
