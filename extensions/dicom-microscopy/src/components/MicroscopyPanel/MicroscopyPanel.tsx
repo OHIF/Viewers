@@ -90,7 +90,7 @@ const formatLength = (length, unit) => {
 };
 
 interface IMicroscopyPanelProps extends WithTranslation {
-  viewports: unknown[];
+  viewports: AppTypes.ViewportGrid.Viewports;
   activeViewportId: string;
 
   //
@@ -130,8 +130,21 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   }, [props.viewports, props.activeViewportId]);
 
   useEffect(() => {
+    // The service keeps the annotations of every series in the study; list only
+    // those of the series shown in a viewport, so each row belongs to a visible slide.
+    const shownSeriesInstanceUIDs = new Set(
+      Array.from(props.viewports.values()).flatMap(viewport =>
+        viewport.displaySetInstanceUIDs.map(
+          displaySetInstanceUID =>
+            displaySetService.getDisplaySetByUID(displaySetInstanceUID)?.SeriesInstanceUID
+        )
+      )
+    );
+
     const onAnnotationUpdated = () => {
-      const roiAnnotations = microscopyService.getAnnotationsForStudy(studyInstanceUID);
+      const roiAnnotations = microscopyService
+        .getAnnotationsForStudy(studyInstanceUID)
+        .filter(roiAnnotation => shownSeriesInstanceUIDs.has(roiAnnotation.seriesInstanceUID));
       setRoiAnnotations(roiAnnotations);
     };
 
@@ -165,7 +178,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       unsubscribeAnnotationSelected();
       unsubscribeAnnotationRemoved();
     };
-  }, [studyInstanceUID]);
+  }, [studyInstanceUID, props.viewports, displaySetService]);
 
   /**
    * On clicking "Save Annotations" button, prompt an input modal for the
