@@ -7,6 +7,7 @@ import { NotFoundStudyPageObject } from './NotFoundStudyPageObject';
 import { DicomTagBrowserPageObject } from './DicomTagBrowserPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 import { ThumbnailPageObject } from './ThumbnailPageObject';
+import { HeaderPageObject } from './HeaderPageObject';
 
 export {
   DOMOverlayPageObject,
@@ -18,4 +19,5 @@ export {
   DicomTagBrowserPageObject,
   MagnifyGlassPageObject,
   ThumbnailPageObject,
+  HeaderPageObject,
 };
