@@ -106,6 +106,7 @@ const screenShotPaths = {
     disjointContoursSeparate: 'disjointContoursSeparate.png',
     overlappingContoursMerged: 'overlappingContoursMerged.png',
     overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
     overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
     overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
@@ -248,7 +249,6 @@ const screenShotPaths = {
     noOverlay: 'noOverlay.png',
   },
   multipleSegmentationDataOverlays: {
-    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
@@ -257,6 +257,7 @@ const screenShotPaths = {
   },
   contourSmoothOperation: {
     smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+    removePointsBigSphereResult: 'removePointsBigSphereResult.png',
   },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',

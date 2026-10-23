@@ -55,7 +55,7 @@ Every `rightPanelPageObject` sub-panel follows the same three-step idiom: **open
 ```ts
 await rightPanelPageObject.toggle();
 await rightPanelPageObject.measurementsPanel.select();
-const count = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
 ```
 
 The exact row/action methods vary by panel — check the source file for the one you need.
