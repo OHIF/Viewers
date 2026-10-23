@@ -20,9 +20,11 @@ const LIVER_ROW = 5;
 const NEW_LIVER_HEX = '#1E90FF';
 const NEW_LIVER_CSS_RGB = 'rgb(30, 144, 255)';
 
-// Each layout switch rebuilds the viewports and their segmentation representations.
 async function switchLayout(page: Page, selectLayout: () => Promise<void>) {
-  const renderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 60000 });
+  const renderCycle = waitForViewportRenderCycle(page, {
+    needsRenderTimeout: 20000,
+    renderedTimeout: 60000,
+  });
   await selectLayout();
   await renderCycle;
   await waitForViewportsRendered(page, { timeout: 60000 });
@@ -62,15 +64,17 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
   await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
   await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
 
+  await expect(rightPanelPageObject.labelMapSegmentationPanel.panel.rows).toHaveCount(
+    SEGMENT_COUNT
+  );
   await checkForGridScreenshot({
     page,
     viewportPageObject,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.mprFromStack,
   });
 
-  // A 1x1 grid keeps the axial MPR pane as a volume viewport; loading the
-  // series into it again turns it back into a stack viewport.
-  await mainToolbarPageObject.layoutSelection.grid(1, 1).click();
+  // Load series into 1x1 grid again to return to a stack viewport.
+  await switchLayout(page, () => mainToolbarPageObject.layoutSelection.grid(1, 1).click());
   await expect(viewportPageObject.getNthLocator(1)).toHaveCount(0);
   await expect(viewportPageObject.getNthLocator(2)).toHaveCount(0);
 
@@ -118,6 +122,7 @@ test('keeps a changed segment color after switching to MPR', async ({
   viewportPageObject,
 }) => {
   const liver = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(LIVER_ROW);
+  await expect(liver.title).toHaveText('Liver');
 
   const colorChangeCycle = waitForViewportRenderCycle(page);
   await liver.actions.changeColor(NEW_LIVER_HEX);
@@ -125,6 +130,7 @@ test('keeps a changed segment color after switching to MPR', async ({
   await expect(liver.rowDataColorHex).toHaveCSS('background-color', NEW_LIVER_CSS_RGB);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
+  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
   await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
 
   await expect(liver.rowDataColorHex).toHaveCSS('background-color', NEW_LIVER_CSS_RGB);
@@ -139,23 +145,31 @@ test('keeps the selected segment selected across viewport types', async ({
   page,
   mainToolbarPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   const { panel } = rightPanelPageObject.labelMapSegmentationPanel;
   const spleen = panel.nthSegment(0);
   const liver = panel.nthSegment(LIVER_ROW);
+  await expect(spleen.title).toHaveText('Spleen');
+  await expect(liver.title).toHaveText('Liver');
 
   // Hydration makes the first segment active.
   await expectRowSelected(spleen);
 
+  const segmentClickCycle = waitForViewportRenderCycle(page);
   await liver.click();
+  await segmentClickCycle;
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
+  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
+  await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.threeDOnly.click());
+  await expect(viewportPageObject.getNthLocator(1)).toHaveCount(0);
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 });
