@@ -139,11 +139,16 @@ export class UpsClient {
     // 1. Create the subscription (PS3.18 11.10). POST, no payload. Written as
     // a then/catch chain rather than try/await: this project's Babel config
     // cannot transpile an optional catch binding inside an async body.
+    let subscribed = false;
     return this.request(
       `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
       { method: 'POST' }
     )
       .then(() => {
+        // The POST succeeded, so the origin now holds the subscription. If the
+        // channel step below throws, the catch must DELETE it - otherwise the
+        // subscription leaks until something else removes it.
+        subscribed = true;
         // 2. Open the notification channel (PS3.18 8.10.4). The channel is
         // scoped to the AE Title, not to one workitem, so a frame is
         // forwarded only when it names the subscribed workitem.
@@ -183,7 +188,17 @@ export class UpsClient {
         };
       })
       .catch(() => {
-        onError?.();
+        // The POST succeeded but the channel step threw (a browser throws for
+        // a mixed-content ws:// or an invalid URL). Remove the subscription the
+        // origin still holds BEFORE signalling, so a retry that POSTs the same
+        // resource cannot be undone by this DELETE landing after it.
+        if (subscribed) {
+          void this.unsubscribe(workitemUid, aeTitle)
+            .catch(() => {})
+            .then(() => onError?.());
+        } else {
+          onError?.();
+        }
         return { close: () => {} };
       });
   }

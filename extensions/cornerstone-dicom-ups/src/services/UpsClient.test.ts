@@ -152,7 +152,11 @@ describe('UpsClient', () => {
 
     const handle = await client.subscribe('1.2.3', 'OHIF', jest.fn(), onError);
 
+    // The origin subscription is deleted BEFORE the fallback callback fires, so
+    // a retry cannot race the cleanup; flush the delete -> signal chain.
+    await new Promise(resolve => setTimeout(resolve, 0));
     expect(onError).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2); // POST (subscribe) + DELETE
     handle.close();
   });
 
