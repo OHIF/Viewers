@@ -46,6 +46,17 @@ export class UpsClient {
     private readonly deps: UpsClientDeps = defaultDeps
   ) {}
 
+  /**
+   * Best-effort subscription cleanups, serialized per resource. Each entry is
+   * the TAIL of that resource's cleanup chain: a subscribe or retry chains its
+   * POST after this tail, so no stale DELETE - however many failed setups or
+   * closes happened in between - can remove a renewed subscription.
+   */
+  private readonly cleanupChain = new Map<string, Promise<void>>();
+
+  /** How long a subscribe waits for a pending cleanup before giving up. */
+  private static readonly CLEANUP_WAIT_MS = 5000;
+
   /** The DICOMweb base URL with any trailing slashes stripped. */
   private get baseUrl(): string {
     return this.config.baseUrl.replace(/\/+$/, '');
@@ -54,6 +65,46 @@ export class UpsClient {
   /** http(s) base rewritten to ws(s) for the notification channel. */
   private wsUrl(path: string): string {
     return `${this.baseUrl.replace(/^http/, 'ws')}${path}`;
+  }
+
+  /** The map key for one subscription resource: workitem UID + AE Title. */
+  private resourceKey(workitemUid: string, aeTitle: string): string {
+    return `${workitemUid}\u0000${aeTitle}`;
+  }
+
+  /** Appends a best-effort DELETE to the resource's cleanup chain. */
+  private enqueueCleanup(workitemUid: string, aeTitle: string): void {
+    const key = this.resourceKey(workitemUid, aeTitle);
+    const prev = this.cleanupChain.get(key) ?? Promise.resolve();
+    const next = prev
+      .catch(() => {})
+      .then(() => this.unsubscribe(workitemUid, aeTitle))
+      .catch(() => {});
+    this.cleanupChain.set(key, next);
+    // A settled tail removes itself, but only while it is still the tail: a
+    // newer queued cleanup must stay in the map.
+    void next.then(() => {
+      if (this.cleanupChain.get(key) === next) {
+        this.cleanupChain.delete(key);
+      }
+    });
+  }
+
+  /** Resolves true once the tail settles, false after `ms` elapses. */
+  private settleOrTimeout(tail: Promise<void>, ms: number): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      const timer = setTimeout(() => resolve(false), ms);
+      tail.then(
+        () => {
+          clearTimeout(timer);
+          resolve(true);
+        },
+        () => {
+          clearTimeout(timer);
+          resolve(true);
+        }
+      );
+    });
   }
 
   /** Sends a request to the origin and throws when the response is not 2xx. */
@@ -139,68 +190,99 @@ export class UpsClient {
     // 1. Create the subscription (PS3.18 11.10). POST, no payload. Written as
     // a then/catch chain rather than try/await: this project's Babel config
     // cannot transpile an optional catch binding inside an async body.
+    //
+    // A pending best-effort cleanup of this SAME resource is awaited (bounded)
+    // before the POST, so a retry lands only after the stale subscription is
+    // gone and the cleanup cannot delete a renewed subscription.
+    const key = this.resourceKey(workitemUid, aeTitle);
+    const post = () =>
+      this.request(
+        `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
+        { method: 'POST' }
+      );
     let subscribed = false;
-    return this.request(
-      `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
-      { method: 'POST' }
-    )
-      .then(() => {
-        // The POST succeeded, so the origin now holds the subscription. If the
-        // channel step below throws, the catch must DELETE it - otherwise the
-        // subscription leaks until something else removes it.
-        subscribed = true;
-        // 2. Open the notification channel (PS3.18 8.10.4). The channel is
-        // scoped to the AE Title, not to one workitem, so a frame is
-        // forwarded only when it names the subscribed workitem.
-        let intentional = false;
-        const ws = this.deps.openWebSocket(
-          this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`)
-        );
-        ws.onmessage = event => {
-          const parsed = parseWorkitemEvent(String(event.data));
-          if (!parsed) {
-            return;
-          }
-          if (parsed.affectedSopInstanceUid !== workitemUid) {
-            return;
-          }
-          onEvent(parsed);
-        };
-        ws.onerror = () => {
-          // The browser WebSocket API exposes no status code; onclose forwards
-          // both a failed handshake and a mid-watch drop to onError exactly once.
-        };
-        ws.onclose = () => {
-          // A failed handshake and an unexpected mid-watch close both signal a
-          // channel that is no longer usable, so the caller falls back to
-          // polling. A deliberate close() sets `intentional` first and stays
-          // silent here.
-          if (!intentional) {
-            onError?.();
-          }
-        };
-        return {
-          close: () => {
-            intentional = true;
-            ws.close();
-            void this.unsubscribe(workitemUid, aeTitle).catch(() => {});
-          },
-        };
-      })
-      .catch(() => {
-        // The POST succeeded but the channel step threw (a browser throws for
-        // a mixed-content ws:// or an invalid URL). Remove the subscription the
-        // origin still holds BEFORE signalling, so a retry that POSTs the same
-        // resource cannot be undone by this DELETE landing after it.
-        if (subscribed) {
-          void this.unsubscribe(workitemUid, aeTitle)
-            .catch(() => {})
-            .then(() => onError?.());
-        } else {
-          onError?.();
+    // Wait until the per-resource cleanup chain is quiet: re-read the tail
+    // after each settle, because a close() or failure-path cleanup queued
+    // during the wait must be drained too. One overall deadline bounds it.
+    const waitForQuiet = async (): Promise<boolean> => {
+      const deadline = Date.now() + UpsClient.CLEANUP_WAIT_MS;
+      for (;;) {
+        const tail = this.cleanupChain.get(key);
+        if (!tail) {
+          return true;
         }
+        const remaining = deadline - Date.now();
+        if (remaining <= 0 || !(await this.settleOrTimeout(tail, remaining))) {
+          return false;
+        }
+      }
+    };
+    return waitForQuiet().then(settled => {
+      if (!settled) {
+        // A stale cleanup is still in flight after the bound: do not POST, or
+        // the outstanding DELETE could later remove the renewed subscription.
+        // Signal failure so the caller falls back to polling.
+        onError?.();
         return { close: () => {} };
-      });
+      }
+      return post()
+        .then(() => {
+          // The POST succeeded, so the origin now holds the subscription. If the
+          // channel step below throws, the catch must DELETE it - otherwise the
+          // subscription leaks until something else removes it.
+          subscribed = true;
+          // 2. Open the notification channel (PS3.18 8.10.4). The channel is
+          // scoped to the AE Title, not to one workitem, so a frame is
+          // forwarded only when it names the subscribed workitem.
+          let intentional = false;
+          const ws = this.deps.openWebSocket(
+            this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`)
+          );
+          ws.onmessage = event => {
+            const parsed = parseWorkitemEvent(String(event.data));
+            if (!parsed) {
+              return;
+            }
+            if (parsed.affectedSopInstanceUid !== workitemUid) {
+              return;
+            }
+            onEvent(parsed);
+          };
+          ws.onerror = () => {
+            // The browser WebSocket API exposes no status code; onclose forwards
+            // both a failed handshake and a mid-watch drop to onError exactly once.
+          };
+          ws.onclose = () => {
+            // A failed handshake and an unexpected mid-watch close both signal a
+            // channel that is no longer usable, so the caller falls back to
+            // polling. A deliberate close() sets `intentional` first and stays
+            // silent here.
+            if (!intentional) {
+              onError?.();
+            }
+          };
+          return {
+            close: () => {
+              if (intentional) {
+                return;
+              }
+              intentional = true;
+              ws.close();
+              this.enqueueCleanup(workitemUid, aeTitle);
+            },
+          };
+        })
+        .catch(() => {
+          // Record the cleanup BEFORE signalling: a synchronous retry then sees
+          // the pending DELETE and chains its POST after it. The cleanup is
+          // still fire-and-forget, so the polling fallback does not wait for it.
+          if (subscribed) {
+            this.enqueueCleanup(workitemUid, aeTitle);
+          }
+          onError?.();
+          return { close: () => {} };
+        });
+    });
   }
 
   /** Removes the subscription of this AE Title (PS3.18 11.10.4). */
