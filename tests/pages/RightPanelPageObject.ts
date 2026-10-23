@@ -475,14 +475,15 @@ export class RightPanelPageObject {
           await toggleButton.click();
           await applyButton.waitFor({ state: 'visible' });
         };
+        const close = async () => {
+          await page.keyboard.press('Escape');
+          await applyButton.waitFor({ state: 'hidden' });
+        };
         return {
           toggleButton,
           open,
           // Dismisses the popover so it no longer overlaps the viewport.
-          close: async () => {
-            await page.keyboard.press('Escape');
-            await applyButton.waitFor({ state: 'hidden' });
-          },
+          close,
           selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
             await open();
             await page.getByTestId(`logical-contour-operation-${operation}`).click();
@@ -500,6 +501,7 @@ export class RightPanelPageObject {
           apply: async () => {
             await open();
             await applyButton.click();
+            await close();
           },
           enableCreateNewSegment: async () => {
             await open();
@@ -514,6 +516,7 @@ export class RightPanelPageObject {
       get smoothContours() {
         const toggleButton = page.getByTestId('SmoothContours');
         const smoothEdgesButton = page.getByRole('button', { name: 'Smooth Edges' });
+        const removePointsButton = page.getByRole('button', { name: 'Remove Points' });
         const open = async () => {
           if (await smoothEdgesButton.isVisible()) {
             return;
@@ -521,18 +524,25 @@ export class RightPanelPageObject {
           await toggleButton.click();
           await smoothEdgesButton.waitFor({ state: 'visible' });
         };
+        const close = async () => {
+          await page.keyboard.press('Escape');
+          await smoothEdgesButton.waitFor({ state: 'hidden' });
+        };
         return {
           toggleButton,
           open,
           // Dismisses the popover so it no longer overlaps the viewport.
-          close: async () => {
-            await page.keyboard.press('Escape');
-            await smoothEdgesButton.waitFor({ state: 'hidden' });
-          },
-          // Runs the smoothContours command (b-spline resample of the outline).
+          close,
           smoothEdges: async () => {
             await open();
             await smoothEdgesButton.click();
+            await close();
+          },
+          // Runs the decimateContours command (removes redundant outline points).
+          removePoints: async () => {
+            await open();
+            await removePointsButton.click();
+            await close();
           },
         };
       },

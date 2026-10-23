@@ -230,15 +230,14 @@ The [Playwright workflow](.github/workflows/playwright.yml) runs three jobs:
 
 A PR from a fork that changes a CI-defining file does not run Playwright on the
 self-hosted runner. It runs once the change is reviewed and merged. The affected
-paths are `.github/`, `.scripts/`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
-`preinstall.js`, any root pnpmfile, and **every** `package.json` and `.npmrc` in
-the workspace, not only the ones in the root directory.
+paths are `.github/`, `.scripts/`, `pnpm-workspace.yaml`, `preinstall.js`, any
+root pnpmfile, and **every** `.npmrc` in the workspace, not only the one in the
+root directory.
 
-Those manifests are on the list deliberately: `pnpm install` runs the lifecycle
-scripts of each workspace project on the runner, so a `postinstall` added to
-`extensions/<name>/package.json` executes there before any test starts. The cost
-is that a fork PR which only adds a dependency to one extension waits for its
-merge before Playwright runs. A PR from a branch in this repository is not
+`package.json` and `pnpm-lock.yaml` are not on the list, so a fork PR that adds
+a dependency or moves a module between workspace packages runs Playwright as
+usual. Changes to the root `package.json` and `pnpm-lock.yaml` still need a code
+owner's review before merge. A PR from a branch in this repository is not
 affected by either rule.
 
 #### Testing changes that span both repos
