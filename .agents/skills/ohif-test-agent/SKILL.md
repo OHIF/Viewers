@@ -142,8 +142,6 @@ When to use which:
 |-----------|--------|
 | Click that triggers a re-render and you want to assert after | `waitForViewportRenderCycle(page)` started before the click |
 | Layout switch / series load — render already in flight | `await waitForViewportsRendered(page)` after the call |
-| Slice jump (`sliceNavigation.toSlice(...)`, `toFirstSlice`, `toLastSlice`) | None — they wait until the viewport is on the slice and has rendered it, so don't re-check the slice overlay as a wait |
-| `sliceNavigation.scrollBy(...)` | `await waitForViewportsRendered(page)` after the call |
 | Compose with another await (e.g. screenshot the same time as load) | Save the promise, `await` it later |
 
 Replace patterns like this:

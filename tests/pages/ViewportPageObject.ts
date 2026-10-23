@@ -344,9 +344,8 @@ export class ViewportPageObject {
   }
 
   /**
-   * toSlice, toFirstSlice and toLastSlice wait until the viewport is on the slice and has rendered
-   * it. scrollBy does not wait; follow it with `waitForViewportsRendered` if you need pixel-stable
-   * state.
+   * toSlice, toFirstSlice, toLastSlice and scrollBy wait until the viewport is on the slice and has
+   * rendered it.
    */
   private getSliceNavigation(viewport: Locator) {
     const page = this.page;
@@ -370,15 +369,20 @@ export class ViewportPageObject {
 
     const scrollBy = async (delta: number) => {
       const viewportId = await this.getViewportId(viewport);
-      await page.evaluate(
+      // Returns the slice the scroll is headed to. A stack viewport may load it after a short
+      // delay, so its target is read from getTargetImageIdIndex; a volume viewport is already on it.
+      const targetSliceIndex = await page.evaluate(
         ({ services, viewportId, delta }) => {
           const cornerstoneViewport = (
             services as any
           ).cornerstoneViewportService.getCornerstoneViewport(viewportId);
           if (!cornerstoneViewport) {
-            return;
+            throw new Error(`No Cornerstone viewport found for ${viewportId}`);
           }
-          return cornerstoneViewport.scroll(delta);
+          cornerstoneViewport.scroll(delta);
+          return (
+            cornerstoneViewport.getTargetImageIdIndex?.() ?? cornerstoneViewport.getSliceIndex()
+          );
         },
         {
           viewportId,
@@ -386,6 +390,8 @@ export class ViewportPageObject {
           services: await page.evaluateHandle('window.services'),
         }
       );
+      await waitForSliceIndex(targetSliceIndex);
+      await waitForViewportsRendered(page);
     };
 
     // A negative index counts back from the last slice, as it does for jumpToImage.
