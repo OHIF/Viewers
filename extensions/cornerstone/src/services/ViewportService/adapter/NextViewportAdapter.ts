@@ -23,6 +23,7 @@ type NativeViewport = CoreTypes.IViewport & {
     (dataId: string, props: ViewportPresentation): void;
   };
   getViewState?: () => ViewportViewState | undefined;
+  getZoom?: () => number;
   setViewState?: (patch: ViewportViewState) => void;
   getViewReference?: () => CoreTypes.ViewReference | undefined;
   setViewReference?: (ref: CoreTypes.ViewReference) => void;
@@ -99,6 +100,10 @@ export class NextViewportAdapter implements IViewportAdapter {
   getFocalPoint(): CoreTypes.Point3 | undefined {
     // The native view state carries no focalPoint; it comes from the view reference.
     return this.viewport.getViewReference?.()?.cameraFocalPoint as CoreTypes.Point3 | undefined;
+  }
+
+  getZoom(): number | undefined {
+    return typeof this.viewport.getZoom === 'function' ? this.viewport.getZoom() : undefined;
   }
 
   // ---- per-display-set appearance ----
