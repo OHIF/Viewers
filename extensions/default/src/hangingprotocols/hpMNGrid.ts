@@ -1,6 +1,6 @@
 import { Types } from '@ohif/core';
 import { studyWithImages } from './utils/studySelectors';
-import { seriesWithImages } from './utils/seriesSelectors';
+import { seriesShownAlone, seriesWithImages } from './utils/seriesSelectors';
 import { viewportOptions } from './utils/viewportOptions';
 
 /**
@@ -34,6 +34,9 @@ export const hpMN: Types.HangingProtocol.Protocol = {
     defaultDisplaySetId: {
       allowUnmatchedView: true,
       seriesMatchingRules: seriesWithImages,
+    },
+    shownAloneDisplaySetId: {
+      seriesMatchingRules: seriesShownAlone,
     },
   },
   defaultViewport: {
@@ -206,6 +209,33 @@ export const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+            },
+          ],
+        },
+      ],
+    },
+
+    // A 1x1 stage for a study with no image display set, for example an ECG, SM or PDF study
+    {
+      name: '1x1 shown alone',
+      stageActivation: {
+        enabled: {
+          minViewportsMatched: 1,
+        },
+      },
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 1,
+          columns: 1,
+        },
+      },
+      viewports: [
+        {
+          viewportOptions,
+          displaySets: [
+            {
+              id: 'shownAloneDisplaySetId',
             },
           ],
         },
