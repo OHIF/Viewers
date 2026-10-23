@@ -344,8 +344,9 @@ export class ViewportPageObject {
   }
 
   /**
-   * toSlice, toFirstSlice and toLastSlice wait for the viewport to render the slice. scrollBy does
-   * not wait; follow it with `waitForViewportsRendered` if you need pixel-stable state.
+   * toSlice, toFirstSlice and toLastSlice wait until the viewport is on the slice and has rendered
+   * it. scrollBy does not wait; follow it with `waitForViewportsRendered` if you need pixel-stable
+   * state.
    */
   private getSliceNavigation(viewport: Locator) {
     const page = this.page;
@@ -387,8 +388,28 @@ export class ViewportPageObject {
       );
     };
 
+    // A negative index counts back from the last slice, as it does for jumpToImage.
+    const waitForSliceIndex = async (imageIndex: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      await page.waitForFunction(
+        ({ viewportId, imageIndex }) => {
+          const cornerstoneViewport = (
+            window as any
+          ).services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!cornerstoneViewport) {
+            return false;
+          }
+          const sliceIndex =
+            imageIndex < 0 ? cornerstoneViewport.getNumberOfSlices() + imageIndex : imageIndex;
+          return cornerstoneViewport.getSliceIndex() === sliceIndex;
+        },
+        { viewportId, imageIndex }
+      );
+    };
+
     const toSlice = async (imageIndex: number) => {
       await jumpToImage(imageIndex);
+      await waitForSliceIndex(imageIndex);
       await waitForViewportsRendered(page);
     };
 

@@ -126,7 +126,6 @@ test.describe('Drawn labelmap segmentation', () => {
 
     // Paint Segment 1 on one slice and Segment 2 on another.
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     await labelMapPanel.addSegmentButton.click();
@@ -134,7 +133,6 @@ test.describe('Drawn labelmap segmentation', () => {
     await expectRowSelected(panel.nthSegment(1));
 
     await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     await activeViewport.sliceNavigation.toFirstSlice();
@@ -160,7 +158,6 @@ test.describe('Drawn labelmap segmentation', () => {
   }) => {
     const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
     const activeViewport = await viewportPageObject.active;
-    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
 
     // The card shows each stat Cornerstone computed for the segment, rounded for display.
     const expectStatsFromCornerstone = async () => {
@@ -170,7 +167,6 @@ test.describe('Drawn labelmap segmentation', () => {
     };
 
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     // The card opens once the stats of the painted voxels are computed.
@@ -223,7 +219,6 @@ test.describe('Drawn labelmap segmentation', () => {
     const labelLines = textBoxes.locator('tspan');
 
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
 
     await expect(textBoxes, 'Expected no measurement before computing it').toHaveCount(0);
@@ -248,12 +243,10 @@ test.describe('Drawn labelmap segmentation', () => {
   }) => {
     const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
     const activeViewport = await viewportPageObject.active;
-    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
     const labelLines = activeViewport.annotationTextBoxes.locator('tspan');
     const labelLength = () => readNumber(labelLines.first());
 
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
     await segment.stats.bidirectional.compute();
     await expect(labelLines).toHaveText(bidirectionalLabelLines);
@@ -282,12 +275,10 @@ test.describe('Drawn labelmap segmentation', () => {
 
     // Paint Segment 1 and Segment 2 on different slices, then measure each.
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await activeViewport.normalizedDragAt(brushStroke);
     await labelMapPanel.addSegmentButton.click();
     await expect(panel.rows, 'Expected a second segment row').toHaveCount(2);
     await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await activeViewport.normalizedDragAt(longBrushStroke);
 
     // Segment 2's stats are computed in the background after painting. Wait for them, so no
@@ -331,7 +322,6 @@ test.describe('Drawn labelmap segmentation', () => {
 
     // Segment 2's measurement is no longer the highlighted one.
     await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await expect(labelLines).toHaveText(secondLabel);
     await expect(textBoxes, 'Expected Segment 2 measurement not highlighted').toHaveAttribute(
       'fill',
@@ -363,11 +353,9 @@ test.describe('Drawn contour segmentation', () => {
   }) {
     const contourPanel = rightPanelPageObject.contourSegmentationPanel;
     const activeViewport = await viewportPageObject.active;
-    const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
     const paths = activeViewport.svg('path');
 
     await activeViewport.sliceNavigation.toSlice(firstDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(firstDrawnSlice.text);
     await drawFreehandContour({
       segmentationPanel: contourPanel,
       viewport: activeViewport,
@@ -387,7 +375,6 @@ test.describe('Drawn contour segmentation', () => {
     await expectRowSelected(contourPanel.panel.nthSegment(1));
 
     await activeViewport.sliceNavigation.toSlice(secondDrawnSlice.index);
-    await expect(sliceIndicator).toHaveText(secondDrawnSlice.text);
     await expect(paths, 'Expected no contour on the second slice yet').toHaveCount(0);
     await drawFreehandContour({
       segmentationPanel: contourPanel,

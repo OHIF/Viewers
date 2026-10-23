@@ -59,7 +59,7 @@ const getSegmentStats = async ({
       return stats;
     }
 
-    await new Promise(resolve => setTimeout(resolve, intervalMs));
+    await page.waitForTimeout(intervalMs);
   }
 
   throw new Error(`No computed stats found for segment ${segmentIndex}`);
