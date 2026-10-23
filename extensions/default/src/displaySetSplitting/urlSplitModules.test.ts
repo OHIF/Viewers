@@ -107,6 +107,16 @@ describe('split URL modules', () => {
     ]);
   });
 
+  it('dwiByBValue leaves a series of b=0 frames only to the default rules', () => {
+    const rules = compileModule('dwiByBValue');
+    const series = [1, 2, 3].map(() => mr({ SeriesDescription: 'T2W', DiffusionBValue: 0 }));
+    const groups = groupInstancesBySplitRules(series as any, rules);
+
+    expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
+      ['volume3d', 3],
+    ]);
+  });
+
   describe('dxCrSingleImages', () => {
     const SOP_CLASS = {
       DX: '1.2.840.10008.5.1.4.1.1.1.1',

@@ -14,9 +14,11 @@
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
 //  - `$merge` adds the rule under its id with priority -1, so it runs before
 //    every default rule (the defaults use the priorities 1..n).
-//  - The rule `context` defines two names for this rule only. `isDiffusion`
-//    is true when some instances of the series carry DiffusionBValue.
-//    `bValue` is the numeric b-value of the instance.
+//  - The rule `context` defines two names for this rule only. `bValue` is the
+//    numeric b-value of the instance. `isDiffusion` is true when some instance
+//    of the series has a b-value above 0. Some scanners write
+//    DiffusionBValue = 0 into every MR series, so a series of b=0 frames only
+//    is not a diffusion series.
 //  - `matches` claims only the MR images that carry DiffusionBValue. Frames
 //    without a b-value (for example a trailing ADC or trace set) fall through
 //    to the default `mixedDimensionalityBValue` rule and form one more display
@@ -36,8 +38,8 @@
             "description": "Diffusion MR: one display set for each b-value.",
             "viewportTypes": ["stack"],
             "context": {
-              "isDiffusion": "series.instances.count(DiffusionBValue) > 0",
-              "bValue": "Number(DiffusionBValue)"
+              "bValue": "Number(DiffusionBValue)",
+              "isDiffusion": "series.instances.max(bValue) > 0"
             },
             "matches": {
               "Modality": "MR",
