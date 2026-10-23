@@ -18,7 +18,7 @@ specific to the multi-resolution work.
 ## What the branch changes
 
 A volume of many images cannot always fit in one GPU texture. A series of 2464 images
-exceeds the limit of 2048 voxels on one axis that every known device states, so before
+exceeds the limit of 2048 voxels on one axis that the shipped profiles assume, so before
 this branch such a series could not be drawn at all on some devices, and the allocation
 failed.
 
@@ -84,8 +84,9 @@ Each file sets the `cornerstone.gpuCapabilityProfile` customization. The app con
 allow the prefix: `config/dev.js` sets `customizationUrlPrefixes` and `config/default.js`
 does not, so a build that serves `config/default.js` rejects the parameter.
 
-**`gpu/high-texture-4096` states an edge of 4096, and no known WebGL device holds an edge
-above 2048.** A real device can therefore fail to allocate the texture. The profile is the
+**`gpu/high-texture-4096` states an edge of 4096, and no device is tested to render an edge
+above 2048.** Some devices report a `MAX_3D_TEXTURE_SIZE` of 4096 or more, but a reported
+size is not a reliable limit. A real device can therefore fail to allocate the texture. The profile is the
 control of the demonstration: a series of up to 4096 images reduces nothing under
 `gpu/high-texture-4096` and reduces under `gpu/high`, which shows that the reduction comes
 from the limit of the device and not from a defect. Do not state the profile in

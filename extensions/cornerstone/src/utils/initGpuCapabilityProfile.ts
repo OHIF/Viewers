@@ -22,9 +22,16 @@ export default function initGpuCapabilityProfile({ customizationService }): void
   let appliedId = null;
 
   const apply = () => {
-    const profileId = customizationService.getValue(CUSTOMIZATION_ID);
+    const profileId = customizationService.getValue(CUSTOMIZATION_ID) ?? null;
 
-    if (!profileId || profileId === appliedId) {
+    if (profileId === appliedId) {
+      return;
+    }
+
+    if (!profileId) {
+      // A profile that changes to null returns Cornerstone3D to its own default.
+      cornerstone.resetActiveGpuCapabilityProfile?.();
+      appliedId = null;
       return;
     }
 

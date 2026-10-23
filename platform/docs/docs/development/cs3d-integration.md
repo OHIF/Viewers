@@ -125,7 +125,8 @@ both, and run `node --test .scripts/cs3d-read-ref.test.mjs`. That test runs the 
 script from the workflow file against the same bodies as the copy, and fails when the two
 disagree.
 
-The jobs read the body through the GitHub API, without a token. Neither CircleCI nor Netlify
+The jobs read the body through the GitHub API. The request sends `GITHUB_TOKEN` when the
+CircleCI or Netlify settings set it, and is unauthenticated otherwise. Neither CircleCI nor Netlify
 gives the body to the build, only the PR number. When the API does not answer, for example at
 the unauthenticated rate limit, the job uses the `.cs3d-ref` file at the repository root, if
 the branch has one. The file holds the same line as the body:
