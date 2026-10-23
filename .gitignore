@@ -25,6 +25,8 @@ yalc.lock
 .npm
 npm-debug.log
 package-lock.json
+# The dependency-audit PR check installs its own dependency with `npm ci`.
+!.scripts/dependency-audit/package-lock.json
 yarn-error.log
 .DS_Store
 .env
