@@ -1,9 +1,4 @@
-import {
-  Types,
-  Enums,
-  getEnabledElementByViewportId,
-  utilities,
-} from '@cornerstonejs/core';
+import { Types, Enums, getEnabledElementByViewportId, utilities } from '@cornerstonejs/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { isOrthographicViewportType } from '../../utils/getLegacyViewportType';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
@@ -70,8 +65,10 @@ export type PublicDisplaySetOptions = {
   id?: string;
   voi?: VOI;
   voiInverted?: boolean;
+  /** Projection mode vocabulary: 'MIP' | 'MinIP' | 'AIP' (legacy 'avg'); see projectionRegistry. */
   blendMode?: string;
-  slabThickness?: number;
+  /** Engine-native slab value for the lane (see ProjectionService README), or 'fullVolume'. */
+  slabThickness?: number | 'fullVolume';
   colormap?: string;
   displayPreset?: string;
 };
@@ -81,7 +78,8 @@ export type DisplaySetOptions = {
   voi?: VOI;
   voiInverted: boolean;
   blendMode?: Enums.BlendModes;
-  slabThickness?: number;
+  /** Raw protocol value; CornerstoneViewportService._getSlabThickness resolves 'fullVolume'. */
+  slabThickness?: number | 'fullVolume';
   colormap?: { name: string; opacity?: number };
   displayPreset?: string;
 };
