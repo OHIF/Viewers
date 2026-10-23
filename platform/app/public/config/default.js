@@ -87,7 +87,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'thumbnail',
         thumbnailRequestStrategy: 'fetch',
