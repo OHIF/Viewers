@@ -227,6 +227,15 @@ sweeps of an ultrasound series. These values are entries of the **display set
 context**. The engine computes an entry at the first read, one time for each
 series, and every rule of the split reads the same value.
 
+A rule tests the full series, and describes each display set. In `context`,
+`matches` and `groupBy`, every series function runs over the series. In
+`sortBy` and `attributes`, `planeGeometry` runs over the instances of the
+display set, so `sliceSpacing` and `sliceDistance` describe the display set.
+`timeClusters` runs over the series in every place, so `sweepOffset` stays the
+offset from the start of the series. A group entry can choose with `"over":
+"series"` or `"over": "displaySet"`, for example to put the spacing of the
+series in a label.
+
 A context entry has one of these forms:
 
 | Form | Value |
