@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 import type { RightPanelPageObject } from './pages';
@@ -24,29 +24,40 @@ function lengthValueAt(rightPanelPageObject: RightPanelPageObject, index: number
   return row.stats.primary.lines.first();
 }
 
-function lineEnd(viewport: IViewportPageObject) {
-  const line = viewport.svg('line').first();
-  return line.evaluate(element => [element.getAttribute('x2'), element.getAttribute('y2')]);
+type LineEnd = { x2: string; y2: string };
+
+async function lineEnd(line: Locator): Promise<LineEnd> {
+  const x2 = await line.getAttribute('x2');
+  const y2 = await line.getAttribute('y2');
+  if (x2 === null || y2 === null) {
+    throw new Error('Expected the length line to have an end point');
+  }
+  return { x2, y2 };
 }
 
-async function drawLength(page: Page, viewport: IViewportPageObject, [start, end]: [Point, Point]) {
-  await viewport.normalizedClickAt([start, end]);
-  // Cornerstone holds a click for its 400ms double-click window before acting on it.
-  // Undoing inside that window races the drawing tool and leaves a stale panel row.
-  await page.waitForTimeout(500);
+async function expectLineEnd(line: Locator, { x2, y2 }: LineEnd, message: string) {
+  await expect(line, message).toHaveAttribute('x2', x2);
+  await expect(line, message).toHaveAttribute('y2', y2);
+}
+
+async function drawLength(viewport: IViewportPageObject, [start, end]: [Point, Point]) {
+  await viewport.normalizedClickAt([start]);
+  // Hold the closing click past Cornerstone's 400ms double-click window, so the line is
+  // finished when the click returns and an undo right after it can't race the tool.
+  await viewport.normalizedClickAt([end], 'left', 500);
 }
 
 test.beforeEach(async ({ page, mainToolbarPageObject, rightPanelPageObject }) => {
   await visitStudy(page, STUDY_UID, 'viewer', 2000);
-  await waitForViewportPainted(page);
+  await waitForViewportPainted({ page });
 
   await rightPanelPageObject.toggle();
   await rightPanelPageObject.measurementsPanel.select();
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
   await mainToolbarPageObject.measurementTools.length.click();
 });
 
 test('should undo and redo a new measurement', async ({
-  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -58,7 +69,7 @@ test('should undo and redo a new measurement', async ({
   await expect(mainToolbarPageObject.undo.button).toBeDisabled();
   await expect(mainToolbarPageObject.redo.button).toBeDisabled();
 
-  await drawLength(page, viewport, LONG_LINE);
+  await drawLength(viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
@@ -76,7 +87,6 @@ test('should undo and redo a new measurement', async ({
 });
 
 test('should undo and redo a handle move', async ({
-  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -84,31 +94,34 @@ test('should undo and redo a handle move', async ({
 }) => {
   const viewport = await viewportPageObject.active;
   const value = lengthValueAt(rightPanelPageObject, 0);
+  const line = viewport.svg('line').first();
 
-  await drawLength(page, viewport, LONG_LINE);
+  await drawLength(viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
   const drawnValue = await value.innerText();
-  const drawnEnd = await lineEnd(viewport);
+  const drawnEnd = await lineEnd(line);
 
   await viewport.normalizedDragAt({ start: LONG_LINE[1], end: MOVED_LONG_LINE_END });
   await expect(value, 'Expected the handle move to change the length').not.toHaveText(drawnValue);
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
+  await expect(line, 'Expected the handle move to move the line end').not.toHaveAttribute(
+    'x2',
+    drawnEnd.x2
+  );
   const movedValue = await value.innerText();
-  const movedEnd = await lineEnd(viewport);
-  expect(movedEnd).not.toEqual(drawnEnd);
+  const movedEnd = await lineEnd(line);
 
   await mainToolbarPageObject.undo.click();
   await expect(value, 'Expected undo to restore the drawn length').toHaveText(drawnValue);
-  expect(await lineEnd(viewport)).toEqual(drawnEnd);
+  await expectLineEnd(line, drawnEnd, 'Expected undo to restore the line end');
 
   await mainToolbarPageObject.redo.click();
   await expect(value, 'Expected redo to reapply the moved length').toHaveText(movedValue);
-  expect(await lineEnd(viewport)).toEqual(movedEnd);
+  await expectLineEnd(line, movedEnd, 'Expected redo to move the line end again');
 });
 
 test('should undo and redo a measurement deleted from the panel', async ({
-  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -117,7 +130,7 @@ test('should undo and redo a measurement deleted from the panel', async ({
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await drawLength(page, viewport, LONG_LINE);
+  await drawLength(viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
@@ -137,7 +150,6 @@ test('should undo and redo a measurement deleted from the panel', async ({
 });
 
 test('should undo measurements one at a time, newest first', async ({
-  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -148,15 +160,15 @@ test('should undo measurements one at a time, newest first', async ({
   const firstValue = lengthValueAt(rightPanelPageObject, 0);
   const secondValue = lengthValueAt(rightPanelPageObject, 1);
 
-  await drawLength(page, viewport, LONG_LINE);
+  await drawLength(viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const longValue = await firstValue.innerText();
 
-  await drawLength(page, viewport, SHORT_LINE);
+  await drawLength(viewport, SHORT_LINE);
   await expect(rows).toHaveCount(2);
+  await expect(secondValue).not.toHaveText(longValue);
   const shortValue = await secondValue.innerText();
-  expect(shortValue).not.toBe(longValue);
 
   await mainToolbarPageObject.undo.click();
   await expect(rows).toHaveCount(1);
@@ -184,7 +196,7 @@ test('should drop the redo history when a new measurement is drawn after undo', 
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await drawLength(page, viewport, LONG_LINE);
+  await drawLength(viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const longValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
@@ -193,10 +205,10 @@ test('should drop the redo history when a new measurement is drawn after undo', 
   await expect(rows).toHaveCount(0);
   await expect(mainToolbarPageObject.redo.button).toBeEnabled();
 
-  await drawLength(page, viewport, SHORT_LINE);
+  await drawLength(viewport, SHORT_LINE);
   await expect(rows).toHaveCount(1);
+  await expect(lengthValueAt(rightPanelPageObject, 0)).not.toHaveText(longValue);
   const shortValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
-  expect(shortValue).not.toBe(longValue);
   await expect(mainToolbarPageObject.redo.button, 'Expected redo to be cleared').toBeDisabled();
 
   // The redo hotkey must not bring back the undone measurement either.
@@ -215,7 +227,7 @@ test('should undo and redo with Ctrl+Z and Ctrl+Y like the header buttons', asyn
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await drawLength(page, viewport, LONG_LINE);
+  await drawLength(viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await lengthValueAt(rightPanelPageObject, 0).innerText();

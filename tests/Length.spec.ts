@@ -10,11 +10,17 @@ import {
   waitForViewportPainted,
 } from './utils';
 
+// Both ends of the length line, in viewport pixels.
+const LENGTH_POINTS = [
+  { x: 364, y: 234 },
+  { x: 544, y: 232 },
+];
+
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
-  await waitForViewportPainted(page);
+  await waitForViewportPainted({ page });
 });
 
 test('should display the length tool', async ({
@@ -26,10 +32,7 @@ test('should display the length tool', async ({
 }) => {
   await mainToolbarPageObject.measurementTools.length.click();
   const activeViewport = await viewportPageObject.active;
-  await activeViewport.clickAt([
-    { x: 364, y: 234 },
-    { x: 544, y: 232 },
-  ]);
+  await activeViewport.clickAt(LENGTH_POINTS);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   await checkForViewportScreenshot({
@@ -75,10 +78,7 @@ test('should ignore the undo and redo shortcuts when there is nothing to undo or
 
   await mainToolbarPageObject.measurementTools.length.click();
   const activeViewport = await viewportPageObject.active;
-  await activeViewport.clickAt([
-    { x: 364, y: 234 },
-    { x: 544, y: 232 },
-  ]);
+  await activeViewport.clickAt(LENGTH_POINTS);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await value.first().innerText();
