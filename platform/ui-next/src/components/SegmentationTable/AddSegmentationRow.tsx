@@ -14,13 +14,13 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
     disableEditing,
     mode,
     disabled,
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
   } = useSegmentationTableContext('AddSegmentationRow');
 
   // Check if we have at least one segmentation of the representation type for the panel this component is contained in.
   const hasRepresentationType =
-    (!segmentationRepresentationType && data.length > 0) ||
-    data.some(info => segmentationRepresentationType === info.representation?.type);
+    (!segmentationRepresentationTypes && data.length > 0) ||
+    data.some(info => segmentationRepresentationTypes?.includes(info.representation?.type));
 
   if (hasRepresentationType && mode === 'collapsed') {
     return null;
@@ -35,11 +35,15 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
       data-cy="addSegmentation"
       className={`group ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
       onClick={() =>
-        !disabled && onSegmentationAdd({ segmentationId: '', segmentationRepresentationType })
+        !disabled &&
+        onSegmentationAdd({
+          segmentationId: '',
+          segmentationRepresentationType: segmentationRepresentationTypes?.[0],
+        })
       }
     >
       {children}
-      <div className="text-primary group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
+      <div className="text-primary group-hover:bg-popover flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
         <div className="grid h-[28px] w-[28px] place-items-center">
           {disabled ? <Icons.Info /> : <Icons.Add />}
         </div>

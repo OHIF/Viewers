@@ -1,5 +1,6 @@
 {
   "Capture": "Capture",
+  "Copy to Clipboard": "Copier dans le presse-papiers",
   "Cancel": "$t(Common:Cancel)",
   "Download": "$t(Common:Download)",
   "Image size": "Taille de l'image",

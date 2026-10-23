@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   IconPresentationProvider,
   Popover,
@@ -8,7 +8,7 @@ import {
   ToolSettings,
 } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
-import { useActiveToolOptions, useSystem } from '@ohif/core/src';
+import { useActiveToolOptions, useCustomization, useSystem } from '@ohif/core/src';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { Toolbar, useUIStateStore } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
@@ -21,17 +21,17 @@ import {
 type PanelSegmentationProps = {
   children?: React.ReactNode;
 
-  // The representation type for this segmentation panel. Undefined means all types.
-  segmentationRepresentationType?: SegmentationRepresentations;
+  // The representation types for this segmentation panel. Undefined means all types.
+  // The first element is the primary type. Additional elements are secondary types.
+  segmentationRepresentationTypes?: SegmentationRepresentations[];
 } & withAppTypes;
 
 export default function PanelSegmentation({
   children,
-  segmentationRepresentationType,
+  segmentationRepresentationTypes,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
   const {
-    customizationService,
     displaySetService,
     viewportGridService,
     toolbarService,
@@ -48,11 +48,20 @@ export default function PanelSegmentation({
     store => store.selectedSegmentationsForViewport[activeViewportId]
   );
 
-  const selectedSegmentationIdForType = segmentationRepresentationType
-    ? selectedSegmentationsForViewportMap?.get(segmentationRepresentationType)
+  const selectedSegmentationIdForType = segmentationRepresentationTypes
+    ? segmentationRepresentationTypes.reduce(
+        (selectedSegmentation, type) =>
+          selectedSegmentation ||
+          (selectedSegmentationsForViewportMap?.has(type)
+            ? selectedSegmentationsForViewportMap?.get(type)
+            : undefined),
+        undefined
+      )
     : segmentationService?.getActiveSegmentation(activeViewportId)?.segmentationId;
 
-  const buttonSection = utilitiesSectionMap[segmentationRepresentationType];
+  const buttonSection = segmentationRepresentationTypes?.[0]
+    ? utilitiesSectionMap[segmentationRepresentationTypes[0]]
+    : undefined;
 
   const { activeToolOptions: activeUtilityOptions } = useActiveToolOptions({
     buttonSectionId: buttonSection,
@@ -77,30 +86,30 @@ export default function PanelSegmentation({
   // The Popover is made visible whenever the options associated with the
   // activeSegmentationUtility exist. Thus clearing the activeSegmentationUtility
   // clears the associated options and will keep the Popover closed.
-  const handlePopoverOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        setUIState('activeSegmentationUtility', null);
-        toolbarService.refreshToolbarState({ viewportId: activeViewportId });
-      }
-    },
-    [activeViewportId, setUIState, toolbarService]
-  );
+  const handlePopoverOpenChange = (open: boolean) => {
+    if (!open) {
+      setUIState('activeSegmentationUtility', null);
+      toolbarService.refreshToolbarState({ viewportId: activeViewportId });
+    }
+  };
 
-  // Extract customization options
-  const segmentationTableMode = customizationService.getCustomization(
-    'panelSegmentation.tableMode'
-  ) as unknown as string;
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
-  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
-  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = customizationService.getCustomization(
+  // Customizations are read through useCustomization rather than calling
+  // customizationService.getCustomization during render. Modes register these in
+  // onModeEnter, which can land after this panel has already mounted, and a
+  // render-time getCustomization call gets memoized by the React Compiler on the
+  // (stable) service reference - so it would serve the pre-registration default
+  // for the life of the panel. useCustomization subscribes to the service's
+  // change events instead. TMTV hit this twice: its 'expanded' tableMode stayed
+  // stuck on the 'collapsed' default, and its create-labelmap-from-PT
+  // onSegmentationAdd handler was ignored in favour of the default.
+  const segmentationTableMode = useCustomization('panelSegmentation.tableMode') as string;
+  const onSegmentationAdd = useCustomization('panelSegmentation.onSegmentationAdd');
+  const disableEditing = useCustomization('panelSegmentation.disableEditing');
+  const showAddSegment = useCustomization('panelSegmentation.showAddSegment');
+  const CustomDropdownMenuContent = useCustomization(
     'panelSegmentation.customDropdownMenuContent'
   );
-
-  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
+  const CustomSegmentStatisticsHeader = useCustomization(
     'panelSegmentation.customSegmentStatisticsHeader'
   );
 
@@ -129,7 +138,7 @@ export default function PanelSegmentation({
       commandsManager.run('deleteSegment', { segmentationId, segmentIndex });
     },
     onSegmentCopy:
-      segmentationRepresentationType === SegmentationRepresentations.Contour
+      segmentationRepresentationTypes?.[0] === SegmentationRepresentations.Contour
         ? (segmentationId, segmentIndex) => {
             commandsManager.run('copyContourSegment', {
               sourceSegmentInfo: { segmentationId, segmentIndex },
@@ -227,13 +236,13 @@ export default function PanelSegmentation({
     disabled,
     data: segmentationsWithRepresentations,
     mode: segmentationTableMode,
-    title: `${segmentationRepresentationType ? `${segmentationRepresentationType} ` : ''}Segmentations`,
+    title: `${segmentationRepresentationTypes?.[0] ? `${segmentationRepresentationTypes[0]} ` : ''}Segmentations`,
     exportOptions,
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
     selectedSegmentationIdForType,
     ...handlers,
   };

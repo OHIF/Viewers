@@ -1,5 +1,5 @@
 import { Icons, FooterAction } from '@ohif/ui-next';
-import React, { ReactElement, useState, useCallback } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { PresetDialog } from '@ohif/ui-next';
 import { ViewportPreset, VolumeRenderingPresetsContentProps } from '../../types/ViewportPresets';
 import { useSystem } from '@ohif/core';
@@ -9,24 +9,21 @@ interface Props extends VolumeRenderingPresetsContentProps {
   hide: () => void;
 }
 
-export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Props): ReactElement {
+export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Props): ReactElement<any> {
   const { commandsManager } = useSystem();
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);
   const { t } = useTranslation('WindowLevelActionMenu');
 
-  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
-  }, []);
+  };
 
-  const handleApply = useCallback(
-    props => {
-      commandsManager.runCommand('setViewportPreset', {
-        ...props,
-      });
-    },
-    [commandsManager]
-  );
+  const handleApply = props => {
+    commandsManager.runCommand('setViewportPreset', {
+      ...props,
+    });
+  };
 
   const filteredPresets = searchValue
     ? presets.filter(preset => preset.name.toLowerCase().includes(searchValue.toLowerCase()))
@@ -61,7 +58,7 @@ export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Pro
                 className={
                   selectedPreset?.name === preset.name
                     ? 'border-highlight h-[75px] w-[95px] max-w-none rounded border-2'
-                    : 'hover:border-highlight h-[75px] w-[95px] max-w-none rounded border-2 border-black'
+                    : 'hover:border-highlight h-[75px] w-[95px] max-w-none rounded border-2 border-background'
                 }
               />
               <label className="text-muted-foreground mt-1 text-left text-xs">

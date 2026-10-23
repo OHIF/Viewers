@@ -14,5 +14,6 @@
   "12": "Display set has inconsistent position information.",
   "13": "Unsupported display set.",
   "14": "SOP Class UID {{ sopClassUid }} is not supported.",
-  "15": "Display Set is missing a SOP Class UID. Please check the file."
+  "15": "Display Set is missing a SOP Class UID. Please check the file.",
+  "16": "Report has no content to display."
 }

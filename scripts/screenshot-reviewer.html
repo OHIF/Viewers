@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Screenshot Review</title>
+    <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #101214;
+        --panel: #191d21;
+        --panel-2: #22272e;
+        --line: #38414a;
+        --text: #eef2f5;
+        --muted: #a8b3bd;
+        --accent: #4cb5ae;
+        --accent-2: #d7a84d;
+        --danger: #d85f68;
+        --ok: #6fca7f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--text);
+        border-radius: 6px;
+        padding: 7px 10px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--accent);
+      }
+
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #061110;
+        font-weight: 700;
+      }
+
+      button.ghost {
+        background: transparent;
+      }
+
+      button.active {
+        background: #293d3d;
+        border-color: var(--accent);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 330px minmax(0, 1fr);
+        height: 100vh;
+        min-height: 620px;
+      }
+
+      .sidebar {
+        min-width: 0;
+        border-right: 1px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-header {
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        gap: 10px;
+      }
+
+      .title-row,
+      .toolbar,
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .title-row {
+        justify-content: space-between;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.2;
+      }
+
+      .count {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .search {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #0d0f11;
+        color: var(--text);
+        padding: 8px 10px;
+      }
+
+      .check-row {
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+
+      .list {
+        overflow: auto;
+        padding: 8px;
+      }
+
+      .item {
+        display: grid;
+        gap: 5px;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 6px;
+        padding: 9px;
+        border-radius: 6px;
+      }
+
+      .item.active {
+        outline: 1px solid var(--accent);
+        background: #203030;
+      }
+
+      .item-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .item-path {
+        color: var(--muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+
+      .section-title {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0;
+        margin: 12px 4px 7px;
+        text-transform: uppercase;
+      }
+
+      .badge {
+        border-radius: 999px;
+        padding: 2px 7px;
+        font-size: 11px;
+        color: #07100b;
+        background: var(--ok);
+        font-weight: 700;
+      }
+
+      .badge.warn {
+        background: var(--accent-2);
+      }
+
+      .main {
+        min-width: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        background: #0b0d0f;
+      }
+
+      .topbar {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 14px;
+        background: var(--panel);
+        display: grid;
+        gap: 10px;
+      }
+
+      .toolbar {
+        flex-wrap: wrap;
+      }
+
+      .segmented {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .segmented button {
+        border: 0;
+        border-radius: 0;
+        border-right: 1px solid var(--line);
+      }
+
+      .segmented button:last-child {
+        border-right: 0;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .path {
+        color: var(--muted);
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+      }
+
+      .viewer {
+        min-height: 0;
+        overflow: auto;
+        padding: 14px;
+      }
+
+      .side-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        min-height: 0;
+        align-items: start;
+      }
+
+      .frame {
+        min-width: 0;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto auto;
+        border: 1px solid var(--line);
+        background: #050607;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .frame-label {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--line);
+        background: #111418;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .image-wrap {
+        min-height: 0;
+        display: grid;
+        place-items: center;
+        overflow: auto;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        image-rendering: auto;
+      }
+
+      .image-wrap img {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: calc(100vh - 250px);
+        object-fit: contain;
+      }
+
+      .compare {
+        width: min(100%, 1280px);
+        margin: 0 auto;
+        display: grid;
+        gap: 10px;
+      }
+
+      .slider-stage,
+      .blink-stage {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #050607;
+      }
+
+      .slider-stage img,
+      .blink-stage img {
+        width: 100%;
+        max-width: none;
+      }
+
+      .slider-stage .after {
+        position: absolute;
+        inset: 0 auto 0 0;
+        overflow: hidden;
+        border-right: 2px solid var(--accent);
+      }
+
+      .slider-stage .after img {
+        width: var(--image-width, 100%);
+      }
+
+      .slider-range,
+      .blink-range {
+        width: 100%;
+      }
+
+      .empty {
+        color: var(--muted);
+        display: grid;
+        place-items: center;
+        height: 100%;
+        text-align: center;
+      }
+
+      .notes {
+        border-top: 1px solid var(--line);
+        background: var(--panel);
+        padding: 12px 14px;
+        display: grid;
+        gap: 8px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 88px;
+        resize: vertical;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #0d0f11;
+        color: var(--text);
+        padding: 10px;
+      }
+
+      .status {
+        min-height: 18px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .error {
+        color: var(--danger);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app" x-data="reviewer()" x-init="init()">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="title-row">
+            <h1>Screenshot Review</h1>
+            <button class="ghost" @click="refresh()">Refresh</button>
+          </div>
+          <input class="search" type="search" placeholder="Filter" x-model="query" />
+          <label class="check-row">
+            <input type="checkbox" x-model="hideStaged" />
+            <span>Hide staged</span>
+          </label>
+          <div class="count" x-text="`${filteredEntries.length} changed screenshots`"></div>
+        </div>
+        <div class="list">
+          <div class="section-title" x-show="unstagedEntries.length">Unstaged</div>
+          <template x-for="entry in unstagedEntries" :key="entry.path">
+            <button
+              class="item"
+              :class="{ active: selected?.path === entry.path }"
+              @click="select(entry)"
+            >
+              <div class="meta-row">
+                <div class="item-name" x-text="entry.name"></div>
+                <span class="badge warn" x-show="entry.partiallyStaged">partial</span>
+              </div>
+              <div class="item-path" x-text="entry.spec"></div>
+            </button>
+          </template>
+
+          <div class="section-title" x-show="stagedEntries.length">Staged</div>
+          <template x-for="entry in stagedEntries" :key="entry.path">
+            <button
+              class="item"
+              :class="{ active: selected?.path === entry.path }"
+              @click="select(entry)"
+            >
+              <div class="item-name" x-text="entry.name"></div>
+              <div class="item-path" x-text="entry.spec"></div>
+            </button>
+          </template>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="toolbar">
+            <div class="segmented">
+              <button :class="{ active: mode === 'side' }" @click="mode = 'side'">Side by side</button>
+              <button :class="{ active: mode === 'slider' }" @click="mode = 'slider'">Slider</button>
+              <button :class="{ active: mode === 'blink' }" @click="mode = 'blink'">Blink</button>
+            </div>
+            <template x-if="mode === 'blink'">
+              <label class="check-row">
+                <span>Seconds</span>
+                <input class="blink-range" type="range" min="0.15" max="3" step="0.05" x-model.number="blinkSeconds" />
+                <span x-text="blinkSeconds.toFixed(2)"></span>
+              </label>
+            </template>
+            <div class="spacer"></div>
+            <button class="primary" :disabled="!selected || selected.staged" @click="stageSelected()">git add</button>
+            <button @click="copyCurrentNote()" :disabled="!selected">Copy note</button>
+            <button @click="copyAllNotes()">Copy all notes</button>
+          </div>
+          <div class="path" x-text="selected?.path || 'No screenshot selected'"></div>
+          <div class="status" :class="{ error: statusIsError }" x-text="status"></div>
+        </header>
+
+        <section class="viewer" x-show="selected">
+          <template x-if="mode === 'side'">
+            <div class="side-grid">
+              <div class="frame">
+                <div class="frame-label">Before</div>
+                <div class="image-wrap">
+                  <img :src="beforeUrl()" alt="Before screenshot" />
+                </div>
+              </div>
+              <div class="frame">
+                <div class="frame-label">After</div>
+                <div class="image-wrap">
+                  <img :src="afterUrl()" alt="After screenshot" />
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template x-if="mode === 'slider'">
+            <div class="compare">
+              <div class="slider-stage" x-ref="sliderStage" :style="`--image-width: ${sliderWidth}px`">
+                <img :src="beforeUrl()" alt="Before screenshot" @load="syncSliderWidth()" />
+                <div class="after" :style="`width: ${slider}%`">
+                  <img :src="afterUrl()" alt="After screenshot" />
+                </div>
+              </div>
+              <input class="slider-range" type="range" min="0" max="100" x-model.number="slider" />
+            </div>
+          </template>
+
+          <template x-if="mode === 'blink'">
+            <div class="compare">
+              <div class="blink-stage">
+                <img :src="blinkShowAfter ? afterUrl() : beforeUrl()" alt="Blink screenshot" />
+              </div>
+              <div class="meta-row">
+                <span class="badge" x-text="blinkShowAfter ? 'after' : 'before'"></span>
+                <button @click="blinkPaused = !blinkPaused" x-text="blinkPaused ? 'Resume' : 'Pause'"></button>
+              </div>
+            </div>
+          </template>
+        </section>
+
+        <section class="empty" x-show="!selected">
+          <div>No changed screenshots found.</div>
+        </section>
+
+        <footer class="notes">
+          <div class="meta-row">
+            <strong>Notes</strong>
+            <span class="count" x-show="selected" x-text="selected.name"></span>
+          </div>
+          <textarea
+            :disabled="!selected"
+            x-model="currentNote"
+            @input="saveNote()"
+            placeholder="Review note"
+          ></textarea>
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      function reviewer() {
+        return {
+          entries: [],
+          selected: null,
+          query: '',
+          hideStaged: false,
+          mode: 'side',
+          slider: 50,
+          sliderWidth: 1280,
+          blinkSeconds: 0.6,
+          blinkShowAfter: false,
+          blinkPaused: false,
+          blinkTimer: null,
+          status: '',
+          statusIsError: false,
+          cacheKey: Date.now(),
+          notes: JSON.parse(localStorage.getItem('screenshot-review-notes') || '{}'),
+
+          get filteredEntries() {
+            const q = this.query.trim().toLowerCase();
+            return this.entries.filter((entry) => {
+              if (this.hideStaged && entry.staged) {
+                return false;
+              }
+              if (!q) {
+                return true;
+              }
+              return `${entry.path} ${entry.name} ${entry.spec}`.toLowerCase().includes(q);
+            });
+          },
+
+          get unstagedEntries() {
+            return this.filteredEntries.filter((entry) => !entry.staged);
+          },
+
+          get stagedEntries() {
+            return this.hideStaged
+              ? []
+              : this.filteredEntries.filter((entry) => entry.staged);
+          },
+
+          get currentNote() {
+            return this.selected ? this.notes[this.selected.path] || '' : '';
+          },
+
+          set currentNote(value) {
+            if (!this.selected) {
+              return;
+            }
+            this.notes[this.selected.path] = value;
+          },
+
+          async init() {
+            await this.refresh();
+            this.startBlinkTimer();
+            this.$watch('hideStaged', () => this.ensureVisibleSelection());
+            this.$watch('query', () => this.ensureVisibleSelection());
+            this.$watch('blinkSeconds', () => this.startBlinkTimer());
+            this.$watch('mode', () => {
+              if (this.mode === 'slider') {
+                this.$nextTick(() => this.syncSliderWidth());
+              }
+            });
+          },
+
+          async refresh() {
+            this.setStatus('Loading screenshots...');
+            const response = await fetch('/api/list');
+            if (!response.ok) {
+              this.setStatus('Could not load screenshots', true);
+              return;
+            }
+            const data = await response.json();
+            this.entries = data.entries;
+            this.cacheKey = Date.now();
+            this.ensureVisibleSelection();
+            this.setStatus(this.entries.length ? 'Ready' : 'No changed screenshots');
+          },
+
+          select(entry) {
+            this.selected = entry;
+            this.cacheKey = Date.now();
+            this.$nextTick(() => this.syncSliderWidth());
+          },
+
+          ensureVisibleSelection() {
+            const currentPath = this.selected?.path;
+            const visibleEntries = this.filteredEntries;
+            this.selected =
+              visibleEntries.find((entry) => entry.path === currentPath) ||
+              visibleEntries[0] ||
+              null;
+          },
+
+          beforeUrl() {
+            return this.selected
+              ? `/api/image?version=head&path=${encodeURIComponent(this.selected.path)}&t=${this.cacheKey}`
+              : '';
+          },
+
+          afterUrl() {
+            return this.selected
+              ? `/api/image?version=worktree&path=${encodeURIComponent(this.selected.path)}&t=${this.cacheKey}`
+              : '';
+          },
+
+          syncSliderWidth() {
+            const stage = this.$refs.sliderStage;
+            if (!stage) {
+              return;
+            }
+            this.sliderWidth = stage.getBoundingClientRect().width || 1280;
+          },
+
+          startBlinkTimer() {
+            if (this.blinkTimer) {
+              clearInterval(this.blinkTimer);
+            }
+            this.blinkTimer = setInterval(() => {
+              if (!this.blinkPaused) {
+                this.blinkShowAfter = !this.blinkShowAfter;
+              }
+            }, Math.max(150, this.blinkSeconds * 1000));
+          },
+
+          saveNote() {
+            localStorage.setItem('screenshot-review-notes', JSON.stringify(this.notes));
+          },
+
+          notesMarkdown(paths = Object.keys(this.notes)) {
+            return paths
+              .filter((path) => (this.notes[path] || '').trim())
+              .map((path) => `## ${path}\n\n${this.notes[path].trim()}`)
+              .join('\n\n');
+          },
+
+          async copyCurrentNote() {
+            if (!this.selected) {
+              return;
+            }
+            await navigator.clipboard.writeText(this.notesMarkdown([this.selected.path]));
+            this.setStatus('Copied current note');
+          },
+
+          async copyAllNotes() {
+            await navigator.clipboard.writeText(this.notesMarkdown());
+            this.setStatus('Copied all notes');
+          },
+
+          async stageSelected() {
+            if (!this.selected) {
+              return;
+            }
+            const stagedPath = this.selected.path;
+            const visibleBeforeStage = this.filteredEntries;
+            const stagedIndex = visibleBeforeStage.findIndex((entry) => entry.path === stagedPath);
+            const nextPath =
+              visibleBeforeStage[stagedIndex + 1]?.path ||
+              visibleBeforeStage[stagedIndex - 1]?.path ||
+              null;
+
+            this.setStatus(`Staging ${this.selected.name}...`);
+            const response = await fetch('/api/stage', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ path: this.selected.path }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+              this.setStatus(data.error || 'git add failed', true);
+              return;
+            }
+            this.setStatus(`Staged ${this.selected.name}`);
+            await this.refresh();
+            this.selected =
+              this.filteredEntries.find((entry) => entry.path === nextPath) ||
+              this.unstagedEntries[0] ||
+              this.filteredEntries[0] ||
+              null;
+          },
+
+          setStatus(message, isError = false) {
+            this.status = message;
+            this.statusIsError = isError;
+          },
+        };
+      }
+    </script>
+  </body>
+</html>

@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '../Popover/Popover';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons';
-import * as PropTypes from 'prop-types';
 
 // Types
 type LayoutCommandOptions = {
@@ -65,27 +64,21 @@ const LayoutSelector = ({
   const isOpen = isControlled ? open : isOpenInternal;
   const setIsOpen = isControlled ? onOpenChange! : setIsOpenInternal;
 
-  const handleSelection = useCallback(
-    (commandOptions: LayoutCommandOptions) => {
-      onSelection(commandOptions);
-      if (onSelectionChange) {
-        onSelectionChange(commandOptions, false);
-      }
-      setIsOpen(false);
-    },
-    [onSelection, onSelectionChange, setIsOpen]
-  );
+  const handleSelection = (commandOptions: LayoutCommandOptions) => {
+    onSelection(commandOptions);
+    if (onSelectionChange) {
+      onSelectionChange(commandOptions, false);
+    }
+    setIsOpen(false);
+  };
 
-  const handlePresetSelection = useCallback(
-    (commandOptions: LayoutCommandOptions) => {
-      onSelectionPreset(commandOptions);
-      if (onSelectionChange) {
-        onSelectionChange(commandOptions, true);
-      }
-      setIsOpen(false);
-    },
-    [onSelectionPreset, onSelectionChange, setIsOpen]
-  );
+  const handlePresetSelection = (commandOptions: LayoutCommandOptions) => {
+    onSelectionPreset(commandOptions);
+    if (onSelectionChange) {
+      onSelectionChange(commandOptions, true);
+    }
+    setIsOpen(false);
+  };
 
   return (
     <LayoutSelectorContext.Provider
@@ -131,7 +124,7 @@ const Trigger = ({
       className={cn(
         'inline-flex h-10 w-10 items-center justify-center !rounded-lg',
         disabled
-          ? 'text-common-bright hover:bg-primary-dark hover:text-primary-light cursor-not-allowed opacity-40'
+          ? 'text-foreground/80 hover:bg-muted hover:text-highlight cursor-not-allowed opacity-40'
           : isOpen
             ? 'bg-background text-foreground/80'
             : 'text-foreground/80 hover:bg-background hover:text-highlight bg-transparent',
@@ -320,7 +313,7 @@ const GridSelector = ({ rows = 3, columns = 4, className }: GridSelectorProps) =
       {Array.from(Array(rows * columns).keys()).map(index => (
         <div
           key={index}
-          className={cn('cursor-pointer', isHovered(index) ? 'bg-primary-active' : 'bg-[#04225b]')}
+          className={cn('cursor-pointer', isHovered(index) ? 'bg-primary' : 'bg-accent')}
           data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
           onClick={() => handleSelection(index)}
           onMouseEnter={() => setHoveredIndex(index)}
@@ -332,7 +325,7 @@ const GridSelector = ({ rows = 3, columns = 4, className }: GridSelectorProps) =
 };
 
 const Divider = ({ className }: { className?: string }) => (
-  <div className={cn('h-px bg-black', className)}></div>
+  <div className={cn('h-px bg-background', className)}></div>
 );
 
 const HelpText = ({ children, className }: { children: React.ReactNode; className?: string }) => (
@@ -347,17 +340,6 @@ LayoutSelector.Preset = Preset;
 LayoutSelector.GridSelector = GridSelector;
 LayoutSelector.Divider = Divider;
 LayoutSelector.HelpText = HelpText;
-
-// PropTypes
-LayoutSelector.propTypes = {
-  onSelectionChange: PropTypes.func,
-  onSelection: PropTypes.func,
-  onSelectionPreset: PropTypes.func,
-  children: PropTypes.node.isRequired,
-  open: PropTypes.bool,
-  onOpenChange: PropTypes.func,
-  tooltipDisabled: PropTypes.bool,
-};
 
 export { LayoutSelector };
 export default LayoutSelector;

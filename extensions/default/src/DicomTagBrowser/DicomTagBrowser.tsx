@@ -3,7 +3,14 @@ import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
 import { classes, Types } from '@ohif/core';
 import { InputFilter } from '@ohif/ui-next';
-import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Slider,
+} from '@ohif/ui-next';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -38,7 +45,6 @@ const DicomTagBrowser = ({
   const [selectedDisplaySetInstanceUID, setSelectedDisplaySetInstanceUID] =
     useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
-  const [shouldShowInstanceList, setShouldShowInstanceList] = useState(false);
   const [filterValue, setFilterValue] = useState('');
 
   const onSelectChange = value => {
@@ -85,11 +91,16 @@ const DicomTagBrowser = ({
     [activeDisplaySet, instanceNumber]
   );
 
+  // Derived, not state: it is a pure function of the active display set, and
+  // computing it inside the rows memo meant the JSX below read the previous
+  // render's value.
+  const shouldShowInstanceList =
+    activeDisplaySet instanceof ImageSet && activeDisplaySet.images.length > 1;
+
   const rows = useMemo(() => {
     const isImageStack = activeDisplaySet instanceof ImageSet;
     const metadata = getMetadata(isImageStack);
 
-    setShouldShowInstanceList(isImageStack && activeDisplaySet.images.length > 1);
     const tags = getSortedTags(metadata);
     const rows = getFormattedRowsFromTags({ tags, metadata });
     return rows;
@@ -126,7 +137,7 @@ const DicomTagBrowser = ({
   return (
     <div className="dicom-tag-browser-content bg-muted">
       <div className="mb-6 flex flex-row items-start pl-1">
-        <div className="flex w-full flex-row items-start gap-4">
+        <div className="flex w-full flex-row items-start gap-6">
           <div className="flex w-1/3 flex-col">
             <span className="text-muted-foreground flex h-6 items-center pb-2 text-base">
               Series
@@ -135,9 +146,11 @@ const DicomTagBrowser = ({
               value={selectedDisplaySetInstanceUID}
               onValueChange={value => onSelectChange({ value })}
             >
-              <SelectTrigger>
-                {displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)?.label ||
-                  'Select Series'}
+              <SelectTrigger data-cy="dicom-tag-series-select-trigger">
+                <SelectValue data-cy="dicom-tag-series-select-value">
+                  {displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)?.label ||
+                    'Select Series'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {displaySetList.map(item => {
@@ -156,8 +169,11 @@ const DicomTagBrowser = ({
           </div>
           {shouldShowInstanceList && (
             <div className="mx-auto mt-0.5 flex w-1/4 flex-col">
-              <span className="text-muted-foreground flex h-6 items-center pb-2 text-base">
-                Instance Number ({instanceNumber} of {activeDisplaySet?.images?.length})
+              <span className="text-muted-foreground flex h-6 min-w-0 items-center whitespace-nowrap pb-2 text-base">
+                <span className="truncate">Instance Number</span>
+                <span className="shrink-0">
+                  &nbsp;({instanceNumber} of {activeDisplaySet?.images?.length})
+                </span>
               </span>
               <Slider
                 value={[instanceNumber]}
@@ -167,7 +183,7 @@ const DicomTagBrowser = ({
                 min={1}
                 max={activeDisplaySet?.images?.length}
                 step={1}
-                className="pt-4"
+                className="pt-3"
               />
             </div>
           )}

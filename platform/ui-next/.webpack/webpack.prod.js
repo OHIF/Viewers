@@ -1,6 +1,7 @@
 const { merge } = require('webpack-merge');
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const rspack = require('@rspack/core');
+const MiniCssExtractPlugin = rspack.CssExtractRspackPlugin;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
@@ -36,9 +37,11 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-ui',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-ui',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [

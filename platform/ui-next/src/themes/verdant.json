@@ -1,0 +1,31 @@
+{
+  "name": "verdant",
+  "label": "Tonal: Verdant",
+  "cssVars": {
+    "dark": {
+      "highlight": "152 79% 52%",
+      "neutral": "150 15% 52%",
+      "neutral-light": "145 30% 72%",
+      "neutral-dark": "155 18% 24%",
+      "background": "155 40% 5%",
+      "foreground": "140 15% 95%",
+      "card": "152 35% 9%",
+      "card-foreground": "140 15% 95%",
+      "popover": "167 65% 10%",
+      "popover-foreground": "140 15% 95%",
+      "primary": "152 75% 40%",
+      "primary-foreground": "155 50% 8%",
+      "secondary": "150 40% 26%",
+      "secondary-foreground": "145 40% 85%",
+      "muted": "152 35% 9%",
+      "muted-foreground": "148 25% 55%",
+      "accent": "150 45% 16%",
+      "accent-foreground": "140 15% 95%",
+      "destructive": "0 65% 38%",
+      "destructive-foreground": "0 0% 98%",
+      "border": "150 25% 16%",
+      "input": "150 35% 22%",
+      "ring": "152 75% 40%"
+    }
+  }
+}

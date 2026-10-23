@@ -1,4 +1,15 @@
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForViewportScreenshot,
+  expect,
+  getAnnotationStats,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportsRendered,
+} from './utils';
+
+const lesionRowCount = 8;
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
@@ -36,17 +47,26 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
 
   // Double-click on the study browser thumbnail to load the SR
   await leftPanelPageObject.loadSeriesByModality('SR');
-  await page.waitForTimeout(2000);
+  // The DICOMSRDisplayTool only draws the SCOORD rectangle once the
+  // underlying image has been rendered (it bails out when the viewport
+  // has no actors). Wait for the image to render before checking the
+  // overlay, otherwise the screenshot captures a blank canvas.
+  await waitForViewportsRendered(page);
+  await page.waitForTimeout(3000);
+  await waitForPaintToSettle(page);
 
-  // Wait for the SR to load and stabilize before taking screenshot
-  await page.waitForTimeout(1000);
+  const activeViewport = await viewportPageObject.active;
+
+  const scoordRectangle = activeViewport.svg('polyline');
+  await expect(scoordRectangle).toHaveCount(1);
+  await expect(scoordRectangle).toHaveAttribute('stroke-dasharray', '4,4');
 
   // Take screenshot before hydration - use viewport locator instead of full page
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.active.pane,
-    screenShotPaths.scoordRectangle.scoordRectanglePreHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoordRectangle.scoordRectanglePreHydration,
+  });
 
   // Zoom in to better see the measurements
   await page.evaluate(() => {
@@ -84,23 +104,31 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   await page.waitForTimeout(3000);
 
   // Take screenshot after hydration showing the rectangle measurements - use viewport locator
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.active.pane,
-    screenShotPaths.scoordRectangle.scoordRectanglePostHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoordRectangle.scoordRectanglePostHydration,
+  });
 
-  // Verify the measurements list has the correct rectangle measurements
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBeGreaterThan(0);
+  // The SR carries eight "Lesion" rows: row 0 is the measured rectangle, and
+  // rows 1-7 are the zero-area frames with the finding site only, on
+  // descending instance numbers.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(lesionRowCount);
 
-  // Verify that the measurements are rectangle measurements (not other types)
-  for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Rectangle measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+  const firstRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(firstRow.title).toHaveText('Lesion');
+  await expect(firstRow.stats.primary.lines).toHaveText([
+    '276 mm²',
+    'Max: 598 HU',
+    'Lung structure',
+  ]);
+  await expect(firstRow.stats.secondary.lines).toHaveText(['S: 3 I: 20']);
+
+  for (let i = 1; i < lesionRowCount; i++) {
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).toHaveText('Lesion');
+    await expect(measurement.stats.primary.lines).toHaveText(['0', 'Lung structure']);
+    await expect(measurement.stats.secondary.lines).toHaveText([`S: 3 I: ${20 - i}`]);
   }
 
   // Test jumping to a specific measurement by scrolling and clicking
@@ -127,11 +155,11 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   // Take screenshot showing the jump to measurement functionality - use viewport locator
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.active.pane,
-    screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement,
+  });
 });
 
 test('should display SCOORD rectangle measurements correctly', async ({
@@ -180,23 +208,55 @@ test('should display SCOORD rectangle measurements correctly', async ({
   // Wait for rendering to complete before taking screenshot
   await page.waitForTimeout(2000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot showing the SCOORD rectangle measurements rendered correctly - use viewport locator
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.active.pane,
-    screenShotPaths.scoordRectangle.scoordRectangleDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoordRectangle.scoordRectangleDisplayedCorrectly,
+  });
 
   // Verify the measurements list has the correct rectangle measurements and not others
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBeGreaterThan(0);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(lesionRowCount);
 
-  // Verify that the measurements are rectangle measurements (not other types like probe)
-  for (let i = 0; i < rowCount; i++) {
-    const measurementText = await rightPanelPageObject.measurementsPanel.panel
-      .nthMeasurement(i)
-      .locator.textContent();
-    // Rectangle measurements should be present, verify they're not other measurement types
-    expect(measurementText).toBeTruthy();
+  const firstMeasurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  await expect(firstMeasurement.title).toHaveText('Lesion');
+  const expectedFirstPrimaryDetailLines = ['276 mm²', 'Max: 598 HU', 'Lung structure'];
+  await expect(firstMeasurement.stats.primary.lines).toHaveCount(
+    expectedFirstPrimaryDetailLines.length
+  );
+  for (let lineIndex = 0; lineIndex < expectedFirstPrimaryDetailLines.length; lineIndex++) {
+    await expect(firstMeasurement.stats.primary.lines.nth(lineIndex)).toHaveText(
+      expectedFirstPrimaryDetailLines[lineIndex]
+    );
+  }
+
+  // Assert against the source-of-truth cachedStats on the cornerstone annotation,
+  // independent of UI label formatting. Values should match the displayed labels
+  // after rounding ("276 mm²", "Max: 598 HU").
+  const rectangles = await getAnnotationStats(page, { toolName: 'RectangleROI' });
+  expect(rectangles.length).toBeGreaterThan(0);
+
+  const stats = rectangles[0].firstTargetStats!;
+  expect(stats.areaUnit).toBe('mm²');
+  expect(Math.round(stats.area as number)).toBe(276);
+  expect(Math.round(stats.max as number)).toBe(598);
+  expect(stats.Modality).toBe('CT');
+  expect(stats.modalityUnit).toBe('HU');
+
+  const lines = activeViewport.getSvgAnnotationStatTextLines(rectangles[0].annotationUID);
+  await expect(lines).toHaveCount(5);
+  await expect(lines.nth(0)).toHaveText('Area: 276 mm²');
+
+  await expect(firstMeasurement.stats.secondary.lines).toHaveText(['S: 3 I: 20']);
+
+  // Rows 1-7 are the zero-area SR frames with the finding site only, on
+  // descending instance numbers.
+  for (let i = 1; i < lesionRowCount; i++) {
+    const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
+    await expect(measurement.title).toHaveText('Lesion');
+    await expect(measurement.stats.primary.lines).toHaveText(['0', 'Lung structure']);
+    await expect(measurement.stats.secondary.lines).toHaveText([`S: 3 I: ${20 - i}`]);
   }
 });

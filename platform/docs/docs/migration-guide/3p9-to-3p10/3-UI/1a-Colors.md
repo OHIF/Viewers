@@ -12,7 +12,7 @@ summary: Migration guide for OHIF 3.10's new color system, explaining the transi
 *   **Component Abstraction:** Some styling, especially for interactive elements like buttons, has been abstracted into components (e.g., `ViewportActionButton`, UI library buttons) which use predefined variants (`default`, `secondary`, `ghost`) instead of manual style combinations.
 
 :::note
-You can look at the set of colors in the [Color System](/colors-and-type)
+You can look at the set of colors in the [Color System](/colors-and-theming)
 :::
 
 

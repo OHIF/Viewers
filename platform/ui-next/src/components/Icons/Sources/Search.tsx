@@ -16,7 +16,7 @@ export const Search = (props: IconProps) => (
       <path d="M0 0h18v18H0z" />
       <g
         transform="translate(1 1)"
-        stroke="#348CFD"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"

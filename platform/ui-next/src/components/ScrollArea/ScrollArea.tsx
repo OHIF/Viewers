@@ -8,7 +8,7 @@ import { Icons } from '../Icons';
  * Props interface for the ScrollArea component.
  * Extends Radix UI ScrollArea root props.
  */
-interface ScrollAreaProps extends React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> {
+interface ScrollAreaProps extends React.ComponentProps<typeof ScrollAreaPrimitive.Root> {
   /** Flag to show/hide scroll indicator arrows at top and bottom */
   showArrows?: boolean;
   type?: 'auto' | 'always' | 'scroll';
@@ -31,21 +31,24 @@ interface ScrollAreaProps extends React.ComponentPropsWithoutRef<typeof ScrollAr
  * </ScrollArea>
  * ```
  */
-const ScrollArea = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.Root>,
-  ScrollAreaProps
->(({ className, children, showArrows = false, ...props }, ref) => {
+const ScrollArea = ({
+  className,
+  children,
+  showArrows = false,
+  ref,
+  ...props
+}: ScrollAreaProps) => {
   const [showBottomArrow, setShowBottomArrow] = React.useState(false);
   const [showTopArrow, setShowTopArrow] = React.useState(false);
   const viewportRef = React.useRef<HTMLDivElement>(null);
 
-  const checkScroll = React.useCallback(() => {
+  const checkScroll = () => {
     if (viewportRef.current) {
       const { scrollHeight, clientHeight, scrollTop } = viewportRef.current;
       setShowBottomArrow(scrollHeight > clientHeight && scrollTop < scrollHeight - clientHeight);
       setShowTopArrow(scrollTop > 0);
     }
-  }, []);
+  };
 
   React.useEffect(() => {
     checkScroll();
@@ -81,7 +84,7 @@ const ScrollArea = React.forwardRef<
       )}
     </ScrollAreaPrimitive.Root>
   );
-});
+};
 
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
@@ -99,10 +102,12 @@ ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
  * <ScrollBar orientation="vertical" />
  * ```
  */
-const ScrollBar = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>
->(({ className, orientation = 'vertical', ...props }, ref) => (
+const ScrollBar = ({
+  className,
+  orientation = 'vertical',
+  ref,
+  ...props
+}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) => (
   <ScrollAreaPrimitive.ScrollAreaScrollbar
     ref={ref}
     orientation={orientation}
@@ -116,7 +121,7 @@ const ScrollBar = React.forwardRef<
   >
     <ScrollAreaPrimitive.ScrollAreaThumb className="bg-neutral/50 relative flex-1 rounded-full" />
   </ScrollAreaPrimitive.ScrollAreaScrollbar>
-));
+);
 ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;
 
 export { ScrollArea, ScrollBar };

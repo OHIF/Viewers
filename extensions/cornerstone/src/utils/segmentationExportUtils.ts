@@ -1,5 +1,99 @@
-import { cache, metaData } from '@cornerstonejs/core';
-import { Types as cstTypes } from '@cornerstonejs/tools';
+import { cache, eventTarget, metaData } from '@cornerstonejs/core';
+import {
+  Enums as cstEnums,
+  segmentation as cstSegmentation,
+  Types as cstTypes,
+} from '@cornerstonejs/tools';
+
+/**
+ * The result of the voxel scan of each labelmap, kept until the segmentation
+ * changes. The panel asks on each render, and a scan reads every voxel.
+ */
+const hasPixelDataByLabelmap = new WeakMap<cstTypes.LabelmapSegmentationData, boolean>();
+let isListeningForChanges = false;
+
+const listenForChanges = () => {
+  if (isListeningForChanges) {
+    return;
+  }
+  isListeningForChanges = true;
+  const forget = (evt: CustomEvent<{ segmentationId: string }>) => {
+    const labelmap = cstSegmentation.state.getSegmentation(evt.detail?.segmentationId)
+      ?.representationData?.Labelmap;
+    if (labelmap) {
+      hasPixelDataByLabelmap.delete(labelmap);
+    }
+  };
+  eventTarget.addEventListener(cstEnums.Events.SEGMENTATION_DATA_MODIFIED, forget as EventListener);
+  eventTarget.addEventListener(cstEnums.Events.SEGMENTATION_MODIFIED, forget as EventListener);
+};
+
+type LabelmapLayer = NonNullable<cstTypes.LabelmapSegmentationData['labelmaps']>[string];
+
+/**
+ * Gets the image ids and the label map that the SEG export of a single-layer
+ * labelmap uses.
+ *
+ * The only layer can be a private overlap layer, so its label map applies also
+ * when the layer has no image ids of its own (missing or empty) and the
+ * top-level `imageIds` are used.
+ *
+ * @returns `layerWithoutImageIds` is the layer when its image ids are not used.
+ */
+export function getSingleLayerExportSource(labelmap: cstTypes.LabelmapSegmentationData): {
+  imageIds: string[];
+  labelToSegmentIndex?: LabelmapLayer['labelToSegmentIndex'];
+  layerWithoutImageIds?: LabelmapLayer;
+} {
+  const layer: LabelmapLayer | undefined = Object.values(labelmap.labelmaps ?? {})[0];
+  if (layer?.imageIds?.length) {
+    return { imageIds: layer.imageIds, labelToSegmentIndex: layer.labelToSegmentIndex };
+  }
+  return {
+    imageIds: (labelmap as { imageIds?: string[] }).imageIds ?? [],
+    labelToSegmentIndex: layer?.labelToSegmentIndex,
+    layerWithoutImageIds: layer,
+  };
+}
+
+/** Gets the labelmap image ids of every layer that the SEG export uses. */
+const getExportImageIds = (labelmap: cstTypes.LabelmapSegmentationData): string[] => {
+  const layers = Object.values(labelmap.labelmaps ?? {});
+  if (layers.length > 1) {
+    return layers.flatMap(layer => layer.imageIds ?? []);
+  }
+  return getSingleLayerExportSource(labelmap).imageIds;
+};
+
+/**
+ * Scans the voxels of every layer of a labelmap.
+ *
+ * @returns true when a voxel is set, false when no voxel is set, and undefined
+ *   when no voxel is set but an image is not in the cache yet. An undefined
+ *   result must not be kept: no segmentation event follows when the image loads.
+ */
+const hasLabelmapPixelData = (labelmap: cstTypes.LabelmapSegmentationData): boolean | undefined => {
+  // A segment can be in an overlap layer only, so check the images of every layer.
+  const imageIds = getExportImageIds(labelmap);
+
+  let isImageMissing = false;
+  const hasPixelData = imageIds.some(imageId => {
+    const pixelData = cache.getImage(imageId)?.getPixelData();
+    if (!pixelData) {
+      isImageMissing = true;
+      return false;
+    }
+
+    for (let i = 0; i < pixelData.length; i++) {
+      if (pixelData[i] !== 0) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+  return hasPixelData || (isImageMissing ? undefined : false);
+};
 
 /**
  * Checks if a labelmap segmentation has exportable data
@@ -18,23 +112,14 @@ export const hasExportableLabelMapData = (
     return false;
   }
 
-  const imageIds = labelmap?.imageIds;
-  if (!imageIds?.length) {
-    return false;
+  listenForChanges();
+  let hasPixelData = hasPixelDataByLabelmap.get(labelmap);
+  if (hasPixelData === undefined) {
+    hasPixelData = hasLabelmapPixelData(labelmap);
+    if (hasPixelData !== undefined) {
+      hasPixelDataByLabelmap.set(labelmap, hasPixelData);
+    }
   }
-
-  const hasPixelData = imageIds.some(imageId => {
-    const pixelData = cache.getImage(imageId)?.getPixelData();
-    if (!pixelData) {
-      return false;
-    }
-
-    for (let i = 0; i < pixelData.length; i++) {
-      if (pixelData[i] !== 0) {
-        return true;
-      }
-    }
-  });
 
   if (!hasPixelData) {
     return false;

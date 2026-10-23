@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import ProgressItemDetail from './ProgressItemDetail';
-import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
+import { ProgressDropdownOption } from './types';
 
 const ProgressItem = ({
   option,
@@ -9,13 +8,13 @@ const ProgressItem = ({
 }: {
   option: ProgressDropdownOption;
   onSelect: (option: ProgressDropdownOption) => void;
-}): ReactElement => {
+}): ReactElement<any> => {
   const { value } = option;
 
   return (
     <div
       key={value}
-      className={'hover:bg-secondary-main flex cursor-pointer py-1 transition duration-1000'}
+      className={'hover:bg-accent mx-1 flex cursor-pointer rounded-sm py-1'}
       onClick={() => onSelect(option)}
     >
       <ProgressItemDetail option={option} />
@@ -23,9 +22,6 @@ const ProgressItem = ({
   );
 };
 
-ProgressItem.propTypes = {
-  option: ProgressDropdownOptionPropType.isRequired,
-  onSelect: PropTypes.func,
-};
+
 
 export default ProgressItem;

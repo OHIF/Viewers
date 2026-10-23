@@ -1,0 +1,118 @@
+name: GitHub Release
+
+# The run's title in the Actions list, including why a `create` run is skipped.
+# The skip reasons must match the `if:` of the release job below.
+run-name: >-
+  ${{
+    github.event_name == 'workflow_dispatch' &&
+      format('{0} {1}', inputs.dry_run && 'Dry run' || 'Release', inputs.tag) ||
+    github.event_name == 'pull_request' &&
+      format('Dry run for PR #{0}', github.event.pull_request.number) ||
+    github.ref_type != 'tag' && format('Skipped: branch {0}', github.ref_name) ||
+    !startsWith(github.ref_name, 'v') &&
+      format('Skipped: {0} is not a version tag', github.ref_name) ||
+    github.repository != 'OHIF/Viewers' &&
+      format('Skipped: {0} (not OHIF/Viewers)', github.ref_name) ||
+    format('Release {0}', github.ref_name)
+  }}
+
+# Creates the GitHub Release for each version tag that CircleCI's NPM_PUBLISH
+# job pushes. The logic lives in .scripts/create-github-release.mjs, which
+# waits until the version's packages are on npm before creating the release.
+#
+# When npm publishing moves to GitHub Actions, the npm wait can be replaced by
+# `needs:` on the publish job.
+on:
+  # Not `push: tags`: CircleCI tags its `[skip ci]` version commit, and GitHub
+  # skips push workflows for such a commit. `create` also fires for new
+  # branches, so the job below only runs for new version tags.
+  create:
+  # Manual runs, for testing and for retrying a tag that was missed.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag, e.g. v3.14.0-beta.37'
+        required: true
+        type: string
+      dry_run:
+        description: 'Only report what would be created'
+        required: true
+        type: boolean
+        default: true
+  # A dry run against the newest tag whenever the release logic changes.
+  pull_request:
+    branches: [master, release/*]
+    paths:
+      - .github/workflows/github-release.yml
+      - .scripts/create-github-release.mjs
+
+permissions:
+  contents: read
+
+# One run at a time per tag, whether it came from the tag or the button.
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # For `create`, only new version tags, and only in the OHIF repository
+    # (forks copy OHIF's tags). Manual and pull request runs work anywhere.
+    if: >-
+      github.event_name != 'create' ||
+      (github.ref_type == 'tag' && startsWith(github.ref_name, 'v') &&
+      github.repository == 'OHIF/Viewers')
+    runs-on: ubuntu-latest
+    # The script waits up to 60 minutes for npm.
+    timeout-minutes: 75
+    permissions:
+      contents: write # create the release and generate its notes
+      issues: write # open the review issue for a minor release draft
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # All history and tags, to find the previous tag and decide Latest.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24.15.0
+
+      - name: Choose the tag
+        id: choose
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          case "$EVENT_NAME" in
+            create)
+              tag="$GITHUB_REF_NAME"
+              dry_run=false
+              ;;
+            workflow_dispatch)
+              tag="$INPUT_TAG"
+              dry_run="$INPUT_DRY_RUN"
+              ;;
+            pull_request)
+              # The newest tag in the format the script accepts. `sed -n 1p`
+              # reads to the end, unlike `head`, so grep never hits a closed pipe.
+              tag=$(git tag --list 'v[0-9]*' --sort=-creatordate |
+                grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' | sed -n 1p)
+              dry_run=true
+              ;;
+          esac
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "dry_run=$dry_run" >> "$GITHUB_OUTPUT"
+
+      - name: Create the release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.choose.outputs.tag }}
+          DRY_RUN: ${{ steps.choose.outputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            node .scripts/create-github-release.mjs "$TAG" --dry-run
+          else
+            node .scripts/create-github-release.mjs "$TAG"
+          fi

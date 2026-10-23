@@ -1,5 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useLayoutEffect, useState, useRef, type JSX } from 'react';
 import classnames from 'classnames';
 import * as d3Selection from 'd3-selection';
 import { lineChart } from './d3LineChart';
@@ -84,15 +83,9 @@ const LineChart = ({
   return (
     <div
       className={classnames(
-        'LineChart text-white',
-        {
-          [`w-[${widthProp}px]`]: !!widthProp,
-          [`h-[${heightProp}px]`]: !!heightProp,
-        },
-        {
-          'w-full': !widthProp,
-          'h-full': !heightProp,
-        },
+        'LineChart text-foreground',
+        widthProp ? `w-[${widthProp}px]` : 'w-full',
+        heightProp ? `h-[${heightProp}px]` : 'h-full',
         containerClassName
       )}
     >
@@ -103,19 +96,6 @@ const LineChart = ({
       ></div>
     </div>
   );
-};
-
-LineChart.propTypes = {
-  title: PropTypes.string,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  showAxisLabels: PropTypes.bool,
-  showAxisGrid: PropTypes.bool,
-  showLegend: PropTypes.bool,
-  legendWidth: PropTypes.number,
-  transparentChartBackground: PropTypes.bool,
-  containerClassName: PropTypes.string,
-  chartContainerClassName: PropTypes.string,
 };
 
 export default LineChart;

@@ -13,14 +13,17 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to labelmap tab.
-  segmentationPanel.click();
+  await segmentationPanel.click();
 
   // Add segmentation
   await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-  // Expect new segmentation and blank segment named "Segment 1"
-  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegmentation(0);
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(1);
+  // Expect new segmentation and blank segment named "Segment 1". Use a retrying
+  // toHaveCount assertion: the segment row renders asynchronously after the add,
+  // so a one-shot getSegmentCount() races the render and was intermittently 0.
+  const { panel } = rightPanelPageObject.labelMapSegmentationPanel;
+  const segment1 = panel.nthSegment(0);
+  await expect(panel.rows).toHaveCount(1);
   await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
@@ -32,7 +35,8 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   // Delete
   await segment1.actions.delete();
 
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(0);
+  // Retrying assertion: row removal is async too.
+  await expect(panel.rows).toHaveCount(0);
 });
 
 test('checks saved segmentations loads and jumps to slices', async ({
@@ -42,7 +46,8 @@ test('checks saved segmentations loads and jumps to slices', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight;
+  const activeViewport = await viewportPageObject.active;
+  const viewportInfoBottomRight = activeViewport.overlayText.bottomRight.instanceNumber;
   // Image loads on slice 1, confirm on slice 1
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
 
@@ -62,19 +67,151 @@ test('checks saved segmentations loads and jumps to slices', async ({
   // Confirm spleen jumps to slice 17
   // First iteration repeat to account for segmentation loading delays
   await expect(async () => {
-    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Spleen').click();
+    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Spleen').click();
     await expect(viewportInfoBottomRight).toContainText('17/');
   }).toPass({
     timeout: 10000,
   });
 
   // Esophagus - 5
-  await rightPanelPageObject.labelMapSegmentationPanel.panel
-    .segmentationByText('Esophagus')
-    .click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Esophagus').click();
   await expect(viewportInfoBottomRight).toContainText('5/');
 
   // Pancreas - 22
-  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Pancreas').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Pancreas').click();
   await expect(viewportInfoBottomRight).toContainText('22/');
+});
+
+test.describe('Segmentation panel config input validation for labelmap', () => {
+  test.beforeEach(async ({ rightPanelPageObject }) => {
+    await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
+
+    await rightPanelPageObject.labelMapSegmentationPanel.config.open();
+  });
+
+  test.describe('opacity', () => {
+    test('should accept valid values', async ({ rightPanelPageObject }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('0');
+      await expect(opacity.numberInput).toHaveValue('0');
+
+      await opacity.setValue('0.5');
+      await expect(opacity.numberInput).toHaveValue('0.5');
+
+      await opacity.setValue('1');
+      await expect(opacity.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity to max (1) when a value above the maximum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('500');
+      await expect(opacity.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity to min (0) when a value below the minimum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('-1');
+      await expect(opacity.numberInput).toHaveValue('0');
+    });
+
+    test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
+      const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacity.setValue('0.5');
+      await opacity.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacity.numberInput).toHaveValue('0.5');
+    });
+  });
+
+  test.describe('border', () => {
+    test('should accept valid values', async ({ rightPanelPageObject }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('0');
+      await expect(border.numberInput).toHaveValue('0');
+
+      await border.setValue('5');
+      await expect(border.numberInput).toHaveValue('5');
+
+      await border.setValue('10');
+      await expect(border.numberInput).toHaveValue('10');
+    });
+
+    test('should clamp border to max (10) when a value above the maximum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('500');
+      await expect(border.numberInput).toHaveValue('10');
+    });
+
+    test('should clamp border to min (0) when a value below the minimum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('-1');
+      await expect(border.numberInput).toHaveValue('0');
+    });
+
+    test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
+      const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await border.setValue('3');
+      await border.setValue('abc');
+      // confirm that previous value was restored
+      await expect(border.numberInput).toHaveValue('3');
+    });
+  });
+
+  test.describe('opacity inactive', () => {
+    test('should accept valid values', async ({ rightPanelPageObject }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('0');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
+
+      await opacityInactive.setValue('0.5');
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
+
+      await opacityInactive.setValue('1');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity inactive to max (1) when a value above the maximum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('500');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
+    });
+
+    test('should clamp opacity inactive to min (0) when a value below the minimum is entered', async ({
+      rightPanelPageObject,
+    }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('-1');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
+    });
+
+    test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
+      const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
+
+      await opacityInactive.setValue('0.5');
+      await opacityInactive.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
+    });
+  });
 });

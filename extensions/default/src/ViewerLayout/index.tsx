@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
 import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
@@ -9,7 +8,7 @@ import SidePanelWithServices from '../Components/SidePanelWithServices';
 import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
 
-const resizableHandleClassName = 'mt-[1px] bg-black';
+const resizableHandleClassName = 'mt-[1px] bg-background';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -79,11 +78,11 @@ function ViewerLayout({
    * is sized to our viewport.
    */
   useEffect(() => {
-    document.body.classList.add('bg-black');
+    document.body.classList.add('bg-background');
     document.body.classList.add('overflow-hidden');
 
     return () => {
-      document.body.classList.remove('bg-black');
+      document.body.classList.remove('bg-background');
       document.body.classList.remove('overflow-hidden');
     };
   }, []);
@@ -158,11 +157,11 @@ function ViewerLayout({
         appConfig={appConfig}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
-        style={{ height: 'calc(100vh - 52px' }}
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-background"
+        style={{ height: 'calc(100vh - 52px)' }}
       >
         <React.Fragment>
-          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
+          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-background" />}
           <ResizablePanelGroup {...resizablePanelGroupProps}>
             {/* LEFT SIDEPANELS */}
             {hasLeftPanels ? (
@@ -186,7 +185,7 @@ function ViewerLayout({
             <ResizablePanel {...resizableViewportGridPanelProps}>
               <div className="flex h-full flex-1 flex-col">
                 <div
-                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-background"
                   onMouseEnter={handleMouseEnter}
                 >
                   <ViewportGridComp
@@ -223,21 +222,6 @@ function ViewerLayout({
   );
 }
 
-ViewerLayout.propTypes = {
-  // From extension module params
-  extensionManager: PropTypes.shape({
-    getModuleEntry: PropTypes.func.isRequired,
-  }).isRequired,
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object.isRequired,
-  // From modes
-  leftPanels: PropTypes.array,
-  rightPanels: PropTypes.array,
-  leftPanelClosed: PropTypes.bool.isRequired,
-  rightPanelClosed: PropTypes.bool.isRequired,
-  /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  viewports: PropTypes.array,
-};
+
 
 export default ViewerLayout;

@@ -1,8 +1,10 @@
 import AboutModal from './AboutModal.json';
+import AppearanceModal from './AppearanceModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
 import DataSourceConfiguration from './DataSourceConfiguration.json';
+import DataTable from './DataTable.json';
 import DatePicker from './DatePicker.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
@@ -31,14 +33,17 @@ import Colormaps from './Colormaps.json';
 import PanelSUV from './PanelSUV.json';
 import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
 import USAnnotationPanel from './USAnnotationPanel.json';
+import EncapsulatedDocument from './EncapsulatedDocument.json';
 
 export default {
   'en-US': {
     AboutModal,
+    AppearanceModal,
     Buttons,
     CineDialog,
     Common,
     DataSourceConfiguration,
+    DataTable,
     DatePicker,
     ErrorBoundary,
     Header,
@@ -67,5 +72,6 @@ export default {
     PanelSUV,
     ROIThresholdConfiguration,
     USAnnotationPanel,
+    EncapsulatedDocument,
   },
 };

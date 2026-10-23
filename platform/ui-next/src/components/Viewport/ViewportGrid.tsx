@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * A minimal top-level container that organizes multiple <ViewportPane>
@@ -20,11 +19,6 @@ function ViewportGrid({ numRows, numCols, layoutType, children }) {
   );
 }
 
-ViewportGrid.propTypes = {
-  numRows: PropTypes.number.isRequired,
-  numCols: PropTypes.number.isRequired,
-  layoutType: PropTypes.string,
-  children: PropTypes.arrayOf(PropTypes.node).isRequired,
-};
+
 
 export { ViewportGrid };

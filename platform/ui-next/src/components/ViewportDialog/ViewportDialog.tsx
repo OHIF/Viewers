@@ -69,7 +69,7 @@ const ViewportDialog: React.FC<ViewportDialogProps> = ({
     },
     info: {
       icon: 'notifications-info',
-      color: 'text-primary-main',
+      color: 'text-primary/60',
     },
     success: {
       icon: 'info',

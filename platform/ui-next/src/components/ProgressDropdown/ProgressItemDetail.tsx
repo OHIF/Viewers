@@ -1,12 +1,12 @@
-import React, { useState, useMemo, ReactElement } from 'react';
+import React, { useState, ReactElement } from 'react';
 import { Icons } from '../Icons';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../Tooltip';
-import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
+import { ProgressDropdownOption } from './types';
 
 const MAX_TOOLTIP_LENGTH = 150;
-const iconClassNames = 'grow-0 text-primary-light h-4 w-4 mt-1 mr-2 mb-0 ml-1';
+const iconClassNames = 'grow-0 text-highlight h-4 w-4 mt-1 mr-2 mb-0 ml-1';
 
-const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): ReactElement => {
+const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): ReactElement<any> => {
   const { label, info, completed } = option;
   const [truncate, setTruncate] = useState(true);
   const handleOnHideTooltip = () => setTruncate(true);
@@ -18,29 +18,26 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
     icon = 'launch-info';
   }
 
-  const tooltipText = useMemo(() => {
-    if (!truncate || !info || info.length <= MAX_TOOLTIP_LENGTH) {
-      return info;
-    }
+  const handleReadMoreClick = e => {
+    setTruncate(false);
+    e.stopPropagation();
+    e.preventDefault();
+  };
 
-    const handleReadMoreClick = e => {
-      setTruncate(false);
-      e.stopPropagation();
-      e.preventDefault();
-    };
-
-    return (
+  const tooltipText =
+    !truncate || !info || info.length <= MAX_TOOLTIP_LENGTH ? (
+      info
+    ) : (
       <>
         {info.slice(0, MAX_TOOLTIP_LENGTH)}
         <button
-          className="text-primary-active font-bold"
+          className="text-primary font-bold"
           onClick={handleReadMoreClick}
         >
           &nbsp;Read more...
         </button>
       </>
     );
-  }, [info, truncate]);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -87,8 +84,6 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
   );
 };
 
-ProgressItemDetail.propTypes = {
-  option: ProgressDropdownOptionPropType.isRequired,
-};
+
 
 export default ProgressItemDetail;

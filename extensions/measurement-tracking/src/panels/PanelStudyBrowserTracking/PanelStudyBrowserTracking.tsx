@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
+import { thumbnailNoImageModalities } from '@ohif/core/src/utils/thumbnailNoImageModalities';
 import PanelStudyBrowser from '@ohif/extension-default/src/Panels/StudyBrowser/PanelStudyBrowser';
 import { UntrackSeriesModal } from './untrackSeriesModal';
 import { useTrackedMeasurements } from '../../getContextModule';
-
-const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'PMAP'];
 
 /**
  * Panel component for the Study Browser with tracking capabilities
@@ -139,11 +137,4 @@ export default function PanelStudyBrowserTracking({
   );
 }
 
-PanelStudyBrowserTracking.propTypes = {
-  dataSource: PropTypes.shape({
-    getImageIdsForDisplaySet: PropTypes.func.isRequired,
-  }).isRequired,
-  getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByMRN: PropTypes.func.isRequired,
-  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
-};
+

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { cn, ToolButton } from '@ohif/ui-next';
 import { useUIStateStore } from '@ohif/extension-default';
 
@@ -34,22 +34,19 @@ function SegmentationUtilityButton(props: SegmentationUtilityButtonProps) {
     isActive && 'bg-primary/30'
   );
 
-  const handleMouseDownCapture = useCallback(
-    event => {
-      if (activeSegmentationUtility === id) {
-        // If this active button is clicked, prevent the default Popover
-        // behaviour of closing the Popover on a pointer/mouse down.
-        // Not doing this will cause the Popover to close and then reopen again.
-        // Why? Because propagating this event will cause PanelSegmentation to
-        // close the Popover by clearing the activeSegmentationUtility. Then
-        // this button will set the activeSegmentationUtility again and the
-        // Popover will reopen.
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    },
-    [activeSegmentationUtility, id]
-  );
+  const handleMouseDownCapture = event => {
+    if (activeSegmentationUtility === id) {
+      // If this active button is clicked, prevent the default Popover
+      // behaviour of closing the Popover on a pointer/mouse down.
+      // Not doing this will cause the Popover to close and then reopen again.
+      // Why? Because propagating this event will cause PanelSegmentation to
+      // close the Popover by clearing the activeSegmentationUtility. Then
+      // this button will set the activeSegmentationUtility again and the
+      // Popover will reopen.
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
 
   return (
     <div onPointerDownCapture={handleMouseDownCapture}>

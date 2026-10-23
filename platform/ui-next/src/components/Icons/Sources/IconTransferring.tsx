@@ -10,7 +10,7 @@ export const IconTransferring = (props: IconProps) => (
     {...props}
   >
     <g
-      stroke="#5ACCE6"
+      stroke="currentColor"
       fill="none"
       fillRule="evenodd"
       strokeLinecap="round"

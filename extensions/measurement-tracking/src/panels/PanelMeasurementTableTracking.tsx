@@ -13,8 +13,7 @@ import {
 import { useTrackedMeasurements } from '../getContextModule';
 import { UntrackSeriesModal } from './PanelStudyBrowserTracking/untrackSeriesModal';
 
-const { filterMeasurementsBySeriesUID, filterAny } =
-  utils.MeasurementFilters;
+const { filterMeasurementsBySeriesUID, filterAny } = utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking(props) {
   const [viewportGrid] = useViewportGrid();
@@ -23,28 +22,26 @@ function PanelMeasurementTableTracking(props) {
 
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
-  const measurementFilter = trackedStudy
-    ? filterMeasurementsBySeriesUID(trackedSeries)
-    : filterAny;
+  const measurementFilter = trackedStudy ? filterMeasurementsBySeriesUID(trackedSeries) : filterAny;
 
   const onUntrackConfirm = () => {
-    sendTrackedMeasurementsEvent('UNTRACK_ALL', {});
+    sendTrackedMeasurementsEvent('UNTRACK_ALL', { trackedStudy, trackedSeries });
   };
 
   const onDelete = () => {
-    const hasDirtyMeasurements = measurementService
-      .getMeasurements()
-      .some(measurement => measurement.isDirty);
-    hasDirtyMeasurements
-      ? uiModalService.show({
-          title: 'Untrack Study',
-          content: UntrackSeriesModal,
-          contentProps: {
-            onConfirm: onUntrackConfirm,
-            message: 'Are you sure you want to untrack study and delete all measurements?',
-          },
-        })
-      : onUntrackConfirm();
+    const hasMeasurements = measurementService.getMeasurements().length > 0;
+    if (hasMeasurements) {
+      uiModalService.show({
+        title: 'Untrack Study',
+        content: UntrackSeriesModal,
+        contentProps: {
+          onConfirm: onUntrackConfirm,
+          message: 'Are you sure you want to untrack study and delete all measurements?',
+        },
+      });
+    } else {
+      onUntrackConfirm();
+    }
   };
 
   const EmptyComponent = () => (
