@@ -86,6 +86,9 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
   test.beforeEach(async ({ rightPanelPageObject }) => {
     await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
+    // The config section renders nothing until a segmentation exists.
+    await expect(rightPanelPageObject.labelMapSegmentationPanel.panel.rows).toHaveCount(1);
+
     await rightPanelPageObject.labelMapSegmentationPanel.config.open();
   });
 
