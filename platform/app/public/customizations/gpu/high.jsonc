@@ -1,7 +1,7 @@
 // GPU class: high
 //
 // States a texture edge of 2048 voxels and 32 GB of texture memory. 2048 is the
-// hard limit that every known WebGL device holds, and 32 GB is the largest
+// largest edge that the shipped profiles assume a device can render, and 32 GB is the largest
 // memory of the shipped profiles.
 //
 // `high` is the default of Cornerstone3D, and not of OHIF: OHIF uses

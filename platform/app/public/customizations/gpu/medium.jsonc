@@ -1,7 +1,8 @@
 // GPU class: medium
 //
 // States a texture edge of 2048 voxels and 8 GB of texture memory. 2048 is the
-// hard limit that every known WebGL device holds, so `medium` and `high`
+// largest edge that the shipped profiles assume a device can render, so
+// `medium` and `high`
 // differ only by memory.
 //
 // `medium` is the OHIF default, so this file states in the URL what the viewer

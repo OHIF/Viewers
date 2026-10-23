@@ -376,7 +376,8 @@ The shipped files, one for each class:
 
 Pick exactly one file. A later value in the `?customization=` list overrides an earlier one.
 
-**`gpu/high-texture-4096` is a control.** No known WebGL device holds a texture edge above 2048, so
+**`gpu/high-texture-4096` is a control.** No device is tested to render a texture edge above 2048.
+Some devices report a larger `MAX_3D_TEXTURE_SIZE`, but a reported size is not a reliable limit, so
 a real device can fail to allocate the texture. The profile exists to show that a reduction comes
 from the limit of the device and not from a defect: a series renders with no reduction under
 `gpu/high-texture-4096` and with a reduction under `gpu/high`. Do not state the profile in
