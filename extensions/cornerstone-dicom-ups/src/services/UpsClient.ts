@@ -147,13 +147,10 @@ export class UpsClient {
         // 2. Open the notification channel (PS3.18 8.10.4). The channel is
         // scoped to the AE Title, not to one workitem, so a frame is
         // forwarded only when it names the subscribed workitem.
-        let opened = false;
+        let intentional = false;
         const ws = this.deps.openWebSocket(
           this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`)
         );
-        ws.onopen = () => {
-          opened = true;
-        };
         ws.onmessage = event => {
           const parsed = parseWorkitemEvent(String(event.data));
           if (!parsed) {
@@ -165,16 +162,21 @@ export class UpsClient {
           onEvent(parsed);
         };
         ws.onerror = () => {
-          // The browser WebSocket API exposes no status code; a channel that
-          // never opens is the only signal, and onclose forwards it once.
+          // The browser WebSocket API exposes no status code; onclose forwards
+          // both a failed handshake and a mid-watch drop to onError exactly once.
         };
         ws.onclose = () => {
-          if (!opened) {
+          // A failed handshake and an unexpected mid-watch close both signal a
+          // channel that is no longer usable, so the caller falls back to
+          // polling. A deliberate close() sets `intentional` first and stays
+          // silent here.
+          if (!intentional) {
             onError?.();
           }
         };
         return {
           close: () => {
+            intentional = true;
             ws.close();
             void this.unsubscribe(workitemUid, aeTitle).catch(() => {});
           },

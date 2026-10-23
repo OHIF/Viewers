@@ -147,15 +147,23 @@ export class UpsService {
     let timer: ReturnType<typeof setInterval> | undefined;
     let wsHandle: SubscriptionHandle | undefined;
     let lastState: string | undefined;
+    let inFlight = false;
 
     const startPolling = () => {
       if (closed) {
         return;
       }
       const poll = () => {
-        if (closed) {
+        // Skip the tick while the previous retrieval is still in flight: a slow
+        // Retrieve Workitem must not stack, or an older state could arrive
+        // after a newer one and report a regression.
+        if (closed || inFlight) {
           return;
         }
+        inFlight = true;
+        const settle = () => {
+          inFlight = false;
+        };
         void this.client
           .retrieveWorkitem(workitemUid)
           .then(workitem => {
@@ -170,7 +178,8 @@ export class UpsService {
           })
           .catch(() => {
             // A transient poll error is not terminal; try again on the next tick.
-          });
+          })
+          .then(settle, settle);
       };
       poll();
       timer = setInterval(poll, pollSeconds * 1000);
