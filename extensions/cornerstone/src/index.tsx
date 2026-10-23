@@ -154,13 +154,14 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
-    // The default volume interleaved options are to interleave the
-    // image retrieve, but don't perform progressive loading per image
-    // This interleaves images and replicates them for low-resolution depth volume
-    // reconstruction, which progressively improves
+    // Volumes load every 64th image first and replicate it to the empty frames
+    // around it, then refine. A Cornerstone3D without the coarse stages keeps
+    // the stock interleaved stages.
+    const { ProgressiveRetrieveImages } = cornerstone;
     imageRetrieveMetadataProvider.add(
       'volume',
-      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+      ProgressiveRetrieveImages.coarseInterleavedRetrieveStages ??
+        ProgressiveRetrieveImages.interleavedRetrieveStages
     );
 
     /**
