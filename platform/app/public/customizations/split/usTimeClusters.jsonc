@@ -1,0 +1,62 @@
+// URL-loaded customization: usTimeClusters
+//
+// Problem: an ultrasound series holds single images from several sweeps, and
+// each image records its acquisition time. The default rules put all of the
+// single images in one stack, so the sweeps mix.
+//
+// Fix: each sweep - a run of images with no gap in time longer than 20
+// seconds - becomes its own display set, in time order.
+//
+// How it works:
+//  - The default display set context has the group `timeClusters` (the
+//    built-in series function). It reads AcquisitionDateTime, else
+//    AcquisitionDate and AcquisitionTime, else ContentDate and ContentTime,
+//    sorts the times, and starts a new cluster after a gap of more than
+//    `timeClustersMaxGap` seconds. `sweepStart` is the start time of the
+//    cluster of the instance, and `sweepCount` is the number of clusters.
+//  - The rule `context` sets `timeClustersMaxGap` to 20 for this rule only.
+//    Other rules keep the default gap of 30 seconds.
+//  - `matches` claims the single-frame US images that have a time, and only
+//    in a series with two or more sweeps. Multi-frame clips stay with the
+//    default `multiFrame` rule. The clips still count in the time clusters,
+//    so a clip can join two sweeps into one.
+//  - `groupBy` uses the start time of the cluster. A cluster keeps its key
+//    when a later cluster gets new instances. The natural order of the keys
+//    puts the display sets in time order.
+//  - `sortBy` orders the images of a sweep by time.
+//  - `attributes` adds the start of the sweep (`sweepOffset`, in seconds from
+//    the first image of the series) to the SeriesDescription.
+//
+// Series that this module changes: US series whose single images form two or
+// more sweeps. A series of one sweep keeps the default display sets.
+//
+// Load it with `?customization=split/usTimeClusters`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "usTimeClusters": {
+            "priority": -1,
+            "description": "Ultrasound single images: one display set for each sweep of contiguous acquisition time.",
+            "viewportTypes": ["stack"],
+            "context": { "timeClustersMaxGap": 20 },
+            "matches": {
+              "isStackImage": true,
+              "Modality": "US",
+              "isMultiFrame": false,
+              "sweepCount": { "greaterThan": 1 },
+              "sweepStart": { "notNull": true }
+            },
+            "groupBy": ["SeriesInstanceUID", "sweepStart"],
+            "sortBy": ["acquisitionSeconds"],
+            "attributes": {
+              "SeriesDescription": { "template": "{SeriesDescription} +{sweepOffset} s" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

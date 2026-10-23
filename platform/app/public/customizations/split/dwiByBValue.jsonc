@@ -1,0 +1,60 @@
+// URL-loaded customization: dwiByBValue
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata raw selector data. This is the
+// `dwiByBValue` rule that the display set splitting specification traces
+// (platform/docs/docs/development/specs/display-set-splitting/requirements.md).
+//
+// Puts each b-value of a diffusion MR series into its own stack display set,
+// with the description `<SeriesDescription> b=<DiffusionBValue>`. Without this
+// rule a DWI series is one display set, which the viewer can render as 4D (one
+// time point per b-value).
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `$merge` adds the rule under its id with priority -1, so it runs before
+//    every default rule (the defaults use the priorities 1..n).
+//  - The rule `context` defines two names for this rule only. `bValue` is the
+//    numeric b-value of the instance. `isDiffusion` is true when some instance
+//    of the series has a b-value above 0. Some scanners write
+//    DiffusionBValue = 0 into every MR series, so a series of b=0 frames only
+//    is not a diffusion series.
+//  - `matches` claims only the MR images that carry DiffusionBValue. Frames
+//    without a b-value (for example a trailing ADC or trace set) fall through
+//    to the default `mixedDimensionalityBValue` rule and form one more display
+//    set of their own.
+//  - `groupBy` makes one group for each numeric b-value, and `sortBy` orders
+//    the slices of each group by SliceLocation.
+//
+// Load it with `?customization=split/dwiByBValue`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "dwiByBValue": {
+            "priority": -1,
+            "description": "Diffusion MR: one display set for each b-value.",
+            "viewportTypes": ["stack"],
+            "context": {
+              "bValue": "Number(DiffusionBValue)",
+              "isDiffusion": "series.instances.max(bValue) > 0"
+            },
+            "matches": {
+              "Modality": "MR",
+              "isDiffusion": true,
+              "isImage": true,
+              "DiffusionBValue": { "notNull": true }
+            },
+            "groupBy": ["SeriesInstanceUID", "bValue"],
+            "sortBy": ["SliceLocation"],
+            "attributes": {
+              "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

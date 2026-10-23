@@ -9,7 +9,10 @@
 
 [build]
   base = ""
-  command = "pnpm run build:ci"
+  # A `CS3D_REF:` line in the PR body selects the CS3D build of a deploy
+  # preview, as it does for the Playwright workflow. Without the line, or on a
+  # build that is not a deploy preview, the script changes nothing.
+  command = "bash .scripts/ci/cs3d-apply-ref.sh && pnpm run build:ci"
   publish = "platform/app/dist"
 
 [build.environment]
