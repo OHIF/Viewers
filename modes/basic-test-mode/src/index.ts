@@ -89,6 +89,7 @@ const toolbarSections = {
     'WindowLevelGroup',
     'Pan',
     'Capture',
+    'Mode',
     'Layout',
     'MPR',
     'Crosshairs',
