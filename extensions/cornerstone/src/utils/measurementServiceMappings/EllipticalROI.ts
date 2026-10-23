@@ -203,15 +203,20 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  const roundedArea = utils.roundNumber(area, 2);
-  displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  // Area and stats are undefined when the ellipse extends outside the image.
+  if (!isNaN(area)) {
+    const roundedArea = utils.roundNumber(area, 2);
+    displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  }
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
     const { unit, max, SeriesNumber } = mappedAnnotation;
 
-    const maxStr = getStatisticDisplayString(max, unit, 'max');
-    displayText.primary.push(maxStr);
+    if (!isNaN(max)) {
+      const maxStr = getStatisticDisplayString(max, unit, 'max');
+      displayText.primary.push(maxStr);
+    }
     displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   });
 
