@@ -270,6 +270,10 @@ const screenShotPaths = {
   wsi: {
     wsiDisplayedCorrectly: 'wsiDisplayedCorrectly.png',
   },
+  niivue: {
+    multiplanarDisplayedCorrectly: 'multiplanarDisplayedCorrectly.png',
+    axialDisplayedCorrectly: 'axialDisplayedCorrectly.png',
+  },
 };
 
 export { screenShotPaths };

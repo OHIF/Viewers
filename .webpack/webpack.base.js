@@ -228,6 +228,11 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         fs: false,
         path: false,
         zlib: false,
+        // Emscripten glue (e.g. @niivue/dcm2niix) references these Node builtins
+        // inside `if (ENVIRONMENT_IS_NODE)` branches that never run in the browser.
+        module: false,
+        url: false,
+        crypto: false,
         buffer: require.resolve('buffer'),
       },
     },
