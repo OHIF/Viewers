@@ -37,7 +37,11 @@ describe('getSopClassHandlerModule', () => {
       splittingTag: null,
     }));
     const dataSource = {
-      getImageIdsForDisplaySet: jest.fn(() => frameImageIds),
+      getImageIdsForDisplaySet: jest.fn(imageSet => {
+        expect(imageSet.StudyInstanceUID).toBe('study');
+        expect(imageSet.SeriesInstanceUID).toBe('series');
+        return frameImageIds;
+      }),
       retrieve: {
         getGetThumbnailSrc: jest.fn(),
       },
