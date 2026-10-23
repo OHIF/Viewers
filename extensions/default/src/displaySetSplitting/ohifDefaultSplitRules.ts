@@ -23,11 +23,7 @@ import {
   isWsiInstance,
   displaySetRules,
 } from '@cornerstonejs/metadata';
-import type {
-  NaturalizedInstance,
-  DisplaySetRules,
-  RawSplitRule,
-} from '@cornerstonejs/metadata';
+import type { NaturalizedInstance, DisplaySetRules, RawSplitRule } from '@cornerstonejs/metadata';
 import { isStackHandledInstance } from './stackSopClassUids';
 
 /**
@@ -146,8 +142,9 @@ export const ohifDefaultSplitRules: DisplaySetRules = {
     priority: 2,
     description:
       'Any stack image with NumberOfFrames > 1 - one display set per instance. The ' +
-      'upstream rule also requires SliceLocation, which collapses ultrasound clips ' +
-      'into one stack.',
+      'upstream rule claims only cine clips (a SliceLocation, or a US, XA, RF, ES ' +
+      'or XC multi-frame that is not a volume) and groups them by InstanceNumber; ' +
+      'this rule claims every multi-frame stack image and groups by SOPInstanceUID.',
     viewportTypes: ['stack'],
     matches: { isMultiFrame: true, isStackImage: true },
     groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
