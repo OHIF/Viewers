@@ -232,4 +232,136 @@ describe('UpsClient', () => {
 
     expect(items).toEqual([]);
   });
+
+  it('shares one subscription and one channel between watchers of the same pair', async () => {
+    const ws: { onmessage?: (event: { data: unknown }) => void; close: () => void } = {
+      close: jest.fn(),
+    };
+    const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const eventsA: WorkitemEvent[] = [];
+    const eventsB: WorkitemEvent[] = [];
+    const handleA = await client.subscribe('1.2.3', 'OHIF', event => eventsA.push(event));
+    const handleB = await client.subscribe('1.2.3', 'OHIF', event => eventsB.push(event));
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(openWebSocket).toHaveBeenCalledTimes(1);
+
+    ws.onmessage?.({
+      data: JSON.stringify({
+        '00001000': { vr: 'UI', Value: ['1.2.3'] },
+        '00741000': { vr: 'CS', Value: ['IN PROGRESS'] },
+      }),
+    });
+    expect(eventsA).toHaveLength(1);
+    expect(eventsB).toHaveLength(1);
+
+    handleA.close();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(fetchImpl).toHaveBeenCalledTimes(1); // no DELETE while B still watches
+    expect(ws.close).not.toHaveBeenCalled();
+
+    handleB.close();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(ws.close).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2); // POST + the single DELETE
+    expect(fetchImpl).toHaveBeenLastCalledWith(
+      'http://origin/dicomweb/workitems/1.2.3/subscribers/OHIF',
+      expect.objectContaining({ method: 'DELETE' })
+    );
+  });
+
+  it('joins a subscription whose setup is still in flight', async () => {
+    const ws: { close: () => void } = { close: jest.fn() };
+    const openWebSocket = jest.fn(() => ws);
+    let settlePost: (response: Response) => void = () => {};
+    const fetchImpl = jest.fn(
+      () =>
+        new Promise<Response>(resolve => {
+          settlePost = resolve;
+        })
+    );
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const pendingA = client.subscribe('1.2.3', 'OHIF', jest.fn());
+    const pendingB = client.subscribe('1.2.3', 'OHIF', jest.fn());
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    settlePost(jsonResponse(201, null));
+    const [handleA, handleB] = await Promise.all([pendingA, pendingB]);
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(openWebSocket).toHaveBeenCalledTimes(1);
+    handleA.close();
+    handleB.close();
+  });
+
+  it('notifies every watcher of the pair when the channel drops', async () => {
+    const ws: { onclose?: () => void; close: () => void } = { close: jest.fn() };
+    const openWebSocket = jest.fn(() => ws);
+    const fetchImpl = jest.fn(async () => jsonResponse(201, null));
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const onErrorA = jest.fn();
+    const onErrorB = jest.fn();
+    await client.subscribe('1.2.3', 'OHIF', jest.fn(), onErrorA);
+    await client.subscribe('1.2.3', 'OHIF', jest.fn(), onErrorB);
+
+    ws.onclose?.();
+
+    expect(onErrorA).toHaveBeenCalledTimes(1);
+    expect(onErrorB).toHaveBeenCalledTimes(1);
+    // An unexpected drop leaves the origin subscription alone.
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+
+    // The entry is gone, so the next watcher subscribes again.
+    await client.subscribe('1.2.3', 'OHIF', jest.fn());
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(openWebSocket).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports a failed setup to a watcher that joined before the POST settled', async () => {
+    const openWebSocket = jest.fn();
+    let settlePost: (response: Response) => void = () => {};
+    const fetchImpl = jest.fn(
+      () =>
+        new Promise<Response>(resolve => {
+          settlePost = resolve;
+        })
+    );
+    const client = new UpsClient(
+      { baseUrl: 'http://origin/dicomweb' },
+      { fetchImpl: fetchImpl as unknown as typeof fetch, openWebSocket }
+    );
+
+    const onErrorA = jest.fn();
+    const onErrorB = jest.fn();
+    const pendingA = client.subscribe('1.2.3', 'OHIF', jest.fn(), onErrorA);
+    const pendingB = client.subscribe('1.2.3', 'OHIF', jest.fn(), onErrorB);
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    settlePost(jsonResponse(400, null));
+    const handleA = await pendingA;
+    const handleB = await pendingB;
+
+    expect(onErrorA).toHaveBeenCalledTimes(1);
+    expect(onErrorB).toHaveBeenCalledTimes(1);
+    expect(openWebSocket).not.toHaveBeenCalled();
+    // Nothing was subscribed, so nothing is deleted.
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    handleA.close();
+    handleB.close();
+  });
 });

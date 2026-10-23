@@ -26,6 +26,33 @@ export interface UpsClientDeps {
   openWebSocket: (url: string) => WebSocket;
 }
 
+/**
+ * One caller watching a subscription resource. The handle resolves only when
+ * the shared subscription is ready, so a joiner never waits less than the
+ * first subscriber did.
+ */
+interface Watcher {
+  onEvent: (event: WorkitemEvent) => void;
+  onError: () => void;
+  /** Set by `close()`; a closed watcher receives neither event nor error. */
+  closed: boolean;
+  resolveHandle: (handle: SubscriptionHandle) => void;
+}
+
+/**
+ * The live subscription of one (workitem UID, AE Title) pair: one POST and one
+ * notification channel shared by every watcher of that pair.
+ */
+interface SubscriptionEntry {
+  uid: string;
+  aeTitle: string;
+  ws: WebSocket | undefined;
+  /** Set before a deliberate close, so `onclose` stays silent about it. */
+  intentional: boolean;
+  ready: boolean;
+  watchers: Watcher[];
+}
+
 // Lazy by design: the globals are only read when a caller relies on the
 // defaults, so importing this module never throws in an environment without
 // `fetch`/`WebSocket` (e.g. jest + jsdom).
@@ -53,6 +80,16 @@ export class UpsClient {
    * closes happened in between - can remove a renewed subscription.
    */
   private readonly cleanupChain = new Map<string, Promise<void>>();
+
+  /**
+   * Live subscriptions keyed by `resourceKey`. A subscription belongs to the
+   * resource `/workitems/{workitemUid}/subscribers/{aeTitle}` (PS3.18 11.10.2),
+   * and the channel belongs to the AE Title (PS3.18 8.10.4), so every watcher
+   * of one pair must share a single POST and a single channel: a per-watcher
+   * subscription would let one watcher's cleanup remove the other's origin
+   * subscription.
+   */
+  private readonly registry = new Map<string, SubscriptionEntry>();
 
   /** How long a subscribe waits for a pending cleanup before giving up. */
   private static readonly CLEANUP_WAIT_MS = 5000;
@@ -174,12 +211,35 @@ export class UpsClient {
   }
 
   /**
+   * Waits until the per-resource cleanup chain is quiet: re-reads the tail
+   * after each settle, because a close() or failure-path cleanup queued
+   * during the wait must be drained too. One overall deadline bounds it.
+   */
+  private async waitForQuiet(key: string): Promise<boolean> {
+    const deadline = Date.now() + UpsClient.CLEANUP_WAIT_MS;
+    for (;;) {
+      const tail = this.cleanupChain.get(key);
+      if (!tail) {
+        return true;
+      }
+      const remaining = deadline - Date.now();
+      if (remaining <= 0 || !(await this.settleOrTimeout(tail, remaining))) {
+        return false;
+      }
+    }
+  }
+
+  /**
    * Subscribes to a workitem (PS3.18 11.10) and opens its notification
    * channel (PS3.18 8.10.4). The subscription is created with POST first - a
    * conformant origin requires it before the channel can carry events - then
    * the WebSocket is opened at the Open Notification Connection resource,
-   * not on the subscription resource itself. `onError` fires when either
-   * step fails, so the caller can fall back to polling.
+   * not on the subscription resource itself.
+   *
+   * The first subscriber of a (workitem UID, AE Title) pair performs both
+   * steps; later subscribers of the same pair join the shared channel instead
+   * of creating a second subscription. `onError` fires when the setup or the
+   * channel fails, so every watcher can fall back to polling.
    */
   subscribe(
     workitemUid: string,
@@ -187,102 +247,217 @@ export class UpsClient {
     onEvent: (event: WorkitemEvent) => void,
     onError?: () => void
   ): Promise<SubscriptionHandle> {
-    // 1. Create the subscription (PS3.18 11.10). POST, no payload. Written as
-    // a then/catch chain rather than try/await: this project's Babel config
-    // cannot transpile an optional catch binding inside an async body.
-    //
+    const key = this.resourceKey(workitemUid, aeTitle);
+    const entry = this.registry.get(key);
+    const handlePromise = new Promise<SubscriptionHandle>(resolveHandle => {
+      const watcher: Watcher = {
+        onEvent,
+        onError: onError ?? (() => {}),
+        closed: false,
+        resolveHandle,
+      };
+      if (entry) {
+        entry.watchers.push(watcher);
+        if (entry.ready) {
+          resolveHandle(this.watcherHandle(key, entry, watcher));
+        }
+        return;
+      }
+      const created = this.createEntry(key, workitemUid, aeTitle);
+      created.watchers.push(watcher);
+      this.startEntry(key, created);
+    });
+    return handlePromise;
+  }
+
+  /** The handle of one watcher; `close()` releases only that watcher's slot. */
+  private watcherHandle(
+    key: string,
+    entry: SubscriptionEntry,
+    watcher: Watcher
+  ): SubscriptionHandle {
+    if (watcher.closed) {
+      // The setup resolved the same watcher after a close() that ran while the
+      // entry was still pending: the no-op handle mirrors that closed state.
+      return { close: () => {} };
+    }
+    return { close: () => this.releaseWatcher(key, entry, watcher) };
+  }
+
+  /** Registers a pending entry before any request is issued. */
+  private createEntry(key: string, uid: string, aeTitle: string): SubscriptionEntry {
+    const entry: SubscriptionEntry = {
+      uid,
+      aeTitle,
+      ws: undefined,
+      intentional: false,
+      ready: false,
+      watchers: [],
+    };
+    // Registered before the setup starts: a concurrent subscribe of the same
+    // pair must observe this entry and join it rather than issue a second POST.
+    this.registry.set(key, entry);
+    return entry;
+  }
+
+  /** Drops one watcher; the last one closes the channel and deletes the subscription. */
+  private releaseWatcher(
+    key: string,
+    entry: SubscriptionEntry,
+    watcher: Watcher
+  ): void {
+    if (watcher.closed) {
+      return;
+    }
+    watcher.closed = true;
+    this.removeWatcher(entry, watcher);
+    if (entry.watchers.length === 0) {
+      this.releaseEntry(key, entry);
+    }
+  }
+
+  /** Closes and prunes an entry whose last watcher is gone. */
+  private releaseEntry(key: string, entry: SubscriptionEntry): void {
+    // Everything below is synchronous on purpose: the window between "no
+    // watchers" and "entry pruned" must not admit a join on a dying entry.
+    this.forgetEntry(key, entry);
+    entry.intentional = true;
+    entry.ws?.close();
+    if (entry.ready) {
+      // Only a subscription the origin actually holds needs the DELETE; a
+      // setup that never completed cleans up on its own failure path.
+      this.enqueueCleanup(entry.uid, entry.aeTitle);
+    }
+  }
+
+  /** Removes one watcher from the entry's list. */
+  private removeWatcher(entry: SubscriptionEntry, watcher: Watcher): void {
+    const index = entry.watchers.indexOf(watcher);
+    if (index >= 0) {
+      entry.watchers.splice(index, 1);
+    }
+  }
+
+  /** Prunes an entry, unless the registry already holds a newer one for the key. */
+  private forgetEntry(key: string, entry: SubscriptionEntry): void {
+    if (this.registry.get(key) === entry) {
+      this.registry.delete(key);
+    }
+  }
+
+  /**
+   * Runs the setup of a fresh entry: bounded quiet-wait, POST, channel, then
+   * handle resolution. Written as a then/catch chain rather than try/await:
+   * this project's Babel config cannot transpile an optional catch binding
+   * inside an async body.
+   */
+  private startEntry(key: string, entry: SubscriptionEntry): void {
+    const aeTitle = entry.aeTitle;
+    const workitemUid = entry.uid;
     // A pending best-effort cleanup of this SAME resource is awaited (bounded)
     // before the POST, so a retry lands only after the stale subscription is
     // gone and the cleanup cannot delete a renewed subscription.
-    const key = this.resourceKey(workitemUid, aeTitle);
-    const post = () =>
-      this.request(
-        `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
-        { method: 'POST' }
-      );
-    let subscribed = false;
-    // Wait until the per-resource cleanup chain is quiet: re-read the tail
-    // after each settle, because a close() or failure-path cleanup queued
-    // during the wait must be drained too. One overall deadline bounds it.
-    const waitForQuiet = async (): Promise<boolean> => {
-      const deadline = Date.now() + UpsClient.CLEANUP_WAIT_MS;
-      for (;;) {
-        const tail = this.cleanupChain.get(key);
-        if (!tail) {
-          return true;
+    this.waitForQuiet(key)
+      .then(settled => {
+        if (!settled) {
+          // A stale cleanup is still in flight after the bound: do not POST,
+          // or the outstanding DELETE could later remove the renewed
+          // subscription. Signal failure so every watcher polls instead.
+          throw new Error('UPS-RS cleanup did not settle before the subscribe deadline');
         }
-        const remaining = deadline - Date.now();
-        if (remaining <= 0 || !(await this.settleOrTimeout(tail, remaining))) {
-          return false;
+        // 1. Create the subscription (PS3.18 11.10.2). POST, no payload.
+        return this.request(
+          `/workitems/${encodeURIComponent(workitemUid)}/subscribers/${encodeURIComponent(aeTitle)}`,
+          { method: 'POST' }
+        );
+      })
+      .then(() => {
+        // The POST succeeded, so the origin now holds the subscription. A
+        // failure below must DELETE it, or it leaks until something else
+        // removes it.
+        entry.ready = true;
+        entry.ws = this.openChannel(key, entry);
+        for (const watcher of [...entry.watchers]) {
+          this.settleWatcher(key, entry, watcher);
+        }
+      })
+      .catch(() => {
+        // Record the cleanup BEFORE signalling: a synchronous retry then sees
+        // the pending DELETE and chains its POST after it. The cleanup is
+        // still fire-and-forget, so the polling fallback does not wait for it.
+        const hadSubscription = this.registry.get(key) === entry && entry.ready;
+        this.forgetEntry(key, entry);
+        if (hadSubscription) {
+          this.enqueueCleanup(workitemUid, aeTitle);
+        }
+        const watchers = [...entry.watchers];
+        entry.watchers.length = 0;
+        for (const watcher of watchers) {
+          this.failWatcher(watcher);
+        }
+      });
+  }
+
+  /** Opens the AE Title's channel and wires it to the entry's watchers. */
+  private openChannel(key: string, entry: SubscriptionEntry): WebSocket {
+    const aeTitle = entry.aeTitle;
+    // 2. Open the notification channel (PS3.18 8.10.4). The channel is scoped
+    // to the AE Title, not to one workitem, so a frame is forwarded only when
+    // it names the entry's workitem.
+    const ws = this.deps.openWebSocket(this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`));
+    ws.onmessage = event => {
+      // Parsed once per frame, then fanned out: the subscription is shared,
+      // so every live watcher of the pair sees the same notification.
+      const parsed = parseWorkitemEvent(String(event.data));
+      if (!parsed) {
+        return;
+      }
+      if (parsed.affectedSopInstanceUid !== entry.uid) {
+        return;
+      }
+      for (const watcher of [...entry.watchers]) {
+        if (!watcher.closed) {
+          watcher.onEvent(parsed);
         }
       }
     };
-    return waitForQuiet().then(settled => {
-      if (!settled) {
-        // A stale cleanup is still in flight after the bound: do not POST, or
-        // the outstanding DELETE could later remove the renewed subscription.
-        // Signal failure so the caller falls back to polling.
-        onError?.();
-        return { close: () => {} };
+    ws.onerror = () => {
+      // The browser WebSocket API exposes no status code; onclose forwards
+      // both a failed handshake and a mid-watch drop to onError exactly once.
+    };
+    ws.onclose = () => {
+      // A failed handshake and an unexpected mid-watch close both leave the
+      // channel unusable, so every watcher falls back to polling. The origin
+      // subscription is deliberately left in place: a renewed subscribe POSTs
+      // again, which is idempotent, and a DELETE here could race that POST.
+      if (entry.intentional) {
+        return;
       }
-      return post()
-        .then(() => {
-          // The POST succeeded, so the origin now holds the subscription. If the
-          // channel step below throws, the catch must DELETE it - otherwise the
-          // subscription leaks until something else removes it.
-          subscribed = true;
-          // 2. Open the notification channel (PS3.18 8.10.4). The channel is
-          // scoped to the AE Title, not to one workitem, so a frame is
-          // forwarded only when it names the subscribed workitem.
-          let intentional = false;
-          const ws = this.deps.openWebSocket(
-            this.wsUrl(`/subscribers/${encodeURIComponent(aeTitle)}`)
-          );
-          ws.onmessage = event => {
-            const parsed = parseWorkitemEvent(String(event.data));
-            if (!parsed) {
-              return;
-            }
-            if (parsed.affectedSopInstanceUid !== workitemUid) {
-              return;
-            }
-            onEvent(parsed);
-          };
-          ws.onerror = () => {
-            // The browser WebSocket API exposes no status code; onclose forwards
-            // both a failed handshake and a mid-watch drop to onError exactly once.
-          };
-          ws.onclose = () => {
-            // A failed handshake and an unexpected mid-watch close both signal a
-            // channel that is no longer usable, so the caller falls back to
-            // polling. A deliberate close() sets `intentional` first and stays
-            // silent here.
-            if (!intentional) {
-              onError?.();
-            }
-          };
-          return {
-            close: () => {
-              if (intentional) {
-                return;
-              }
-              intentional = true;
-              ws.close();
-              this.enqueueCleanup(workitemUid, aeTitle);
-            },
-          };
-        })
-        .catch(() => {
-          // Record the cleanup BEFORE signalling: a synchronous retry then sees
-          // the pending DELETE and chains its POST after it. The cleanup is
-          // still fire-and-forget, so the polling fallback does not wait for it.
-          if (subscribed) {
-            this.enqueueCleanup(workitemUid, aeTitle);
-          }
-          onError?.();
-          return { close: () => {} };
-        });
-    });
+      this.forgetEntry(key, entry);
+      const watchers = [...entry.watchers];
+      entry.watchers.length = 0;
+      for (const watcher of watchers) {
+        this.failWatcher(watcher);
+      }
+    };
+    return ws;
+  }
+
+  /** Hands a watcher its handle once the shared subscription is ready. */
+  private settleWatcher(key: string, entry: SubscriptionEntry, watcher: Watcher): void {
+    if (!watcher.closed) {
+      watcher.resolveHandle(this.watcherHandle(key, entry, watcher));
+    }
+  }
+
+  /** Signals one watcher's fallback and settles it with a no-op handle. */
+  private failWatcher(watcher: Watcher): void {
+    if (watcher.closed) {
+      return;
+    }
+    watcher.closed = true;
+    watcher.resolveHandle({ close: () => {} });
+    watcher.onError();
   }
 
   /** Removes the subscription of this AE Title (PS3.18 11.10.4). */
