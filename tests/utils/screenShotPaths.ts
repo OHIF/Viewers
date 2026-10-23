@@ -156,6 +156,13 @@ const screenShotPaths = {
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
   },
+  segAcrossViewportTypes: {
+    stackBeforeMPR: 'segAcrossViewportTypes-stackBeforeMPR.png',
+    mprFromStack: 'segAcrossViewportTypes-mprFromStack.png',
+    stackAfterMPR: 'segAcrossViewportTypes-stackAfterMPR.png',
+    mprAfter3D: 'segAcrossViewportTypes-mprAfter3D.png',
+    mprAfterColorChange: 'segAcrossViewportTypes-mprAfterColorChange.png',
+  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',
