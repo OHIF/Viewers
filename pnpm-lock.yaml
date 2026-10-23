@@ -168,6 +168,7 @@ overrides:
   '@types/react': 19.2.17
   i18next: 19.9.2
   commander: 8.3.0
+  netlify-cli>commander: 12.1.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
   dcmjs: 0.52.0
