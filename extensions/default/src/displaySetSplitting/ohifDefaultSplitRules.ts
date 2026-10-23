@@ -21,11 +21,11 @@ import {
   isEcgInstance,
   isVideoInstance,
   isWsiInstance,
-  rawDisplaySetSelector,
+  displaySetRules,
 } from '@cornerstonejs/metadata';
 import type {
   NaturalizedInstance,
-  RawDisplaySetSelector,
+  DisplaySetRules,
   RawSplitRule,
 } from '@cornerstonejs/metadata';
 import { isStackHandledInstance } from './stackSopClassUids';
@@ -85,8 +85,8 @@ export const ohifDisplaySetContext = {
  * @returns `{ [ruleId]: rule }`, or `{}` when the upstream rule is missing, so
  *   the result spreads straight into the selector.
  */
-const reuseUpstreamRule = (ruleId: string, priority: number): RawDisplaySetSelector => {
-  const upstream = rawDisplaySetSelector[ruleId];
+const reuseUpstreamRule = (ruleId: string, priority: number): DisplaySetRules => {
+  const upstream = displaySetRules[ruleId];
   if (!upstream) {
     console.warn(
       `ohifDefaultSplitRules: @cornerstonejs/metadata default split rule '${ruleId}' not found - ` +
@@ -120,7 +120,7 @@ const reuseUpstreamRule = (ruleId: string, priority: number): RawDisplaySetSelec
  * below `0` runs before every default, above `DEFAULT_SPLIT_RULE_PRIORITY_LIMIT`
  * (10000) after every default, and `null` turns a default rule off.
  */
-export const ohifDefaultSplitRules: RawDisplaySetSelector = {
+export const ohifDefaultSplitRules: DisplaySetRules = {
   // Off by default (priority null), which is the one intended difference from
   // the legacy stack handler. A per-image split is a decision for each
   // deployment, and a rule states it better than a fixed modality list: see

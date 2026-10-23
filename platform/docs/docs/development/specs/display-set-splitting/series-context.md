@@ -419,16 +419,16 @@ and the series keeps the default `volume3d` display set (`SP-FIX-6`).
 
 ## 8. Verification
 
-The tests fall in two groups: "the API must do this" (`rawDisplaySetSelector.test.ts` and
+The tests fall in two groups: "the API must do this" (`displaySetRules.test.ts` and
 `seriesContext.test.ts` of `@cornerstonejs/metadata`), and "the user must see this"
 (`urlSplitModules.test.ts`).
 
 | Requirement | Test |
 | --- | --- |
-| `SP-CTX-1`, `SP-CTX-2`, `SP-SUM-5` | `rawDisplaySetSelector.test.ts`: "computes an entry one time for each series for all rules that do not replace it" |
-| `SP-SUM-10`, `SP-CTX-3` | `rawDisplaySetSelector.test.ts`: "lets a rule context replace an argument for that rule only, also inside the global entries" |
-| `SP-CTX-4` | `rawDisplaySetSelector.test.ts`: "runs min, max, sum and count over the series in a series entry" |
-| `SP-SUM-9`, `SP-CTX-5` | `rawDisplaySetSelector.test.ts`: "rejects a loop of entries, an unknown group field, and a group replaced by a value" |
+| `SP-CTX-1`, `SP-CTX-2`, `SP-SUM-5` | `displaySetRules.test.ts`: "computes an entry one time for each series for all rules that do not replace it" |
+| `SP-SUM-10`, `SP-CTX-3` | `displaySetRules.test.ts`: "lets a rule context replace an argument for that rule only, also inside the global entries" |
+| `SP-CTX-4` | `displaySetRules.test.ts`: "runs min, max, sum and count over the series in a series entry" |
+| `SP-SUM-9`, `SP-CTX-5` | `displaySetRules.test.ts`: "rejects a loop of entries, an unknown group field, and a group replaced by a value" |
 | `SP-SUM-7`, `SP-CTX-7` | `seriesContext.test.ts`: "splits the lattice from the other images, and labels each display set from the whole series" |
 | `SP-SFN-2`, `SP-SFN-3` | `seriesContext.test.ts`: the `planeGeometry` tests, one of them with the instances in reverse order |
 | `SP-SFN-4` | `seriesContext.test.ts`: the `timeClusters` test |

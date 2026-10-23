@@ -75,7 +75,7 @@ implementation that is inconvenient is never a reason to change §4.
 
 - Split rules for the image instances that the stack SOP class handler owns today.
 - The layering of rules from the defaults, a mode, the app config, and a URL module.
-- The rule format: the `@cornerstonejs/metadata` raw selector form (`RawDisplaySetSelector`).
+- The rule format: the `@cornerstonejs/metadata` raw selector form (`DisplaySetRules`).
   This form is the one definitive rule format.
 - The stability of display sets when instances arrive later, or when the rules change during a
   session.
@@ -356,7 +356,7 @@ The system shall let a tool check a rule for errors without a viewer.
 ### 5.1 The rule form — `SP-FORM`
 
 **SP-FORM-1**
-The rule set shall be a `RawDisplaySetSelector` from `@cornerstonejs/metadata`: an object keyed by
+The rule set shall be a `DisplaySetRules` from `@cornerstonejs/metadata`: an object keyed by
 rule id, in the `splitRules` field of the `useMetadataDisplaySet` customization. *Satisfies
 `SP-READ-1`, `SP-READ-3`, `SP-REUSE-1`, `SP-REUSE-4`.*
 
@@ -390,7 +390,7 @@ entries (`isStackImage`), series functions and sort functions to it by name. *Sa
 does not accept, anywhere in the rule. The error shall name the rule, the path of the key in the
 rule, and the keys or forms that the field accepts. *Satisfies `SP-SAFE-7`, `SP-READ-5`.*
 
-> The table `splitRuleSchema` in `@cornerstonejs/metadata` defines each field of a rule: the forms
+> An internal table of `@cornerstonejs/metadata` defines each field of a rule: the forms
 > that the field accepts, and the arguments that the compiled function gets, for example
 > `(instance, context)` for `matches` and `(a, b, context)` for a `sortBy` function. The compiler
 > reads this table, and it also checks each name. A typo such as `matchs` or `Modallity` was
@@ -763,7 +763,7 @@ server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAF
 
 | # | Question | State |
 | --- | --- | --- |
-| 1 | Which data form is the exchange format for a server? | **Resolved.** The `@cornerstonejs/metadata` `RawDisplaySetSelector` form is definitive, for the viewer and for a server. Commit `1f2911cf4b` removed the OHIF rule layer. |
+| 1 | Which data form is the exchange format for a server? | **Resolved.** The `@cornerstonejs/metadata` `DisplaySetRules` form is definitive, for the viewer and for a server. Commit `1f2911cf4b` removed the OHIF rule layer. |
 | 2 | One display set from two or more series (`SP-FIX-7`). | **Deferred — future work.** This is intended functionality. The work must decide how to order the instances across the series, and what a display set with items from several series means: its series attributes, its `SeriesInstanceUID`, and its reconciliation when one series gets new instances. The engine gets one series at a time today (`SP-PIPE-4`), and a study-level pass must keep `SP-DET-3`. |
 | 3 | Where does the export of series tags without patient identifiers live (`SP-GEN-3`)? It can be a viewer command, a customization, or a separate tool. | Open |
 | 4 | Is the agent skill of `SP-GEN-1` a part of this pull request? | **Resolved.** The skill is a separate change. |
@@ -781,7 +781,7 @@ server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAF
 | `SP-FIX`, `SP-DET`, `SP-SAFE` | [OHIF/Viewers#6137](https://github.com/OHIF/Viewers/pull/6137), and the reference documentation *Display Set Splitting* |
 | `SP-DESC`, `SP-GEN` | The goal in §1: a clinical user describes the problem, and an assistant writes the rule |
 | `SP-REUSE`, `SP-SRV` | The header of `ohifDefaultSplitRules.ts`, and the decision that the raw selector form is definitive (§6 item 1) |
-| `SP-FORM`, `SP-PIPE`, `SP-EXPR` | The implementation in #6137, and `RawDisplaySetSelector` in `@cornerstonejs/metadata` |
+| `SP-FORM`, `SP-PIPE`, `SP-EXPR` | The implementation in #6137, and `DisplaySetRules` in `@cornerstonejs/metadata` |
 
 ## 8. Verification
 
@@ -789,9 +789,9 @@ server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAF
 | --- | --- |
 | `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/ohifDefaultSplitRules.test.ts` |
 | `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
-| `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `rawDisplaySetSelector.test.ts` of `@cornerstonejs/metadata` |
+| `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `displaySetRules.test.ts` of `@cornerstonejs/metadata` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
-| `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `rawDisplaySetSelector.test.ts`, `expression.test.ts`) |
+| `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-SUM`, `SP-CTX`, `SP-SFN`, `SP-EXM` | See §8 of the [series context](./series-context.md) specification |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
 | `SP-SAFE-3`, `SP-PIPE-9` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |

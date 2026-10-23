@@ -1,4 +1,4 @@
-import { displaySet as metadataDisplaySet, rawDisplaySetSelector } from '@cornerstonejs/metadata';
+import { displaySetRules } from '@cornerstonejs/metadata';
 import type { RawSplitRule } from '@cornerstonejs/metadata';
 import DisplaySetService from './DisplaySetService';
 import EVENTS from './EVENTS';
@@ -38,7 +38,7 @@ const makeMixedBValueSeries = () => [
 
 /** An upstream default rule, with a test priority. */
 const upstreamRule = (id: string, priority: number): RawSplitRule => {
-  const entry = rawDisplaySetSelector[id];
+  const entry = displaySetRules[id];
   if (!entry) {
     throw new Error(`upstream rule ${id} missing`);
   }
@@ -368,8 +368,7 @@ describe('DisplaySetService', () => {
 
     it('passes the series facts of the re-split to the display set it extends', () => {
       const factRule = { priority: 1 };
-      const seriesCount = series =>
-        series[metadataDisplaySet.DISPLAY_SET_CONTEXT_FACT].instances.length;
+      const seriesCount = series => series.displaySetContext.instances.length;
       setCustomization({
         enabled: true,
         splitRules: { counted: factRule },

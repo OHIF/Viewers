@@ -1,4 +1,4 @@
-import { defaultDisplaySetSplitRules, groupInstancesBySplitRules } from '@cornerstonejs/metadata';
+import { compiledDisplaySetRules, groupInstancesBySplitRules } from '@cornerstonejs/metadata';
 import { compileSplitRules, SplitRuleRunError } from './compileSplitRules';
 
 const makeInstance = (overrides: Record<string, unknown> = {}) => ({
@@ -103,7 +103,7 @@ describe('compileSplitRules', () => {
   it('rejects a rule that the compiler has already compiled', () => {
     // A compiled rule has the hook `series`, which is not a raw field.
     const { rules, errors } = compileSplitRules({
-      volume3d: defaultDisplaySetSplitRules.volume3d as never,
+      volume3d: compiledDisplaySetRules.volume3d as never,
     });
     expect(errors).toEqual([
       { ruleId: 'volume3d', message: expect.stringContaining("unknown field 'series'") },
