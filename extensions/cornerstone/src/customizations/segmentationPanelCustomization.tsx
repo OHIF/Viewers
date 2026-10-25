@@ -91,6 +91,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       }
     },
     'panelSegmentation.tableMode': 'collapsed',
+    'panelSegmentation.excludedModalities': ['SM', 'OT', 'DOC', 'ECG'],
     'panelSegmentation.readableText': {
       // the values will appear in this order
       min: 'Min Value',

@@ -51,6 +51,12 @@ declare global {
        * size is 50. A value that is not a valid array length throws.
        */
       'cornerstone.maxUndoRedoCacheSize': number | undefined;
+      /**
+       * Modalities for which the segmentation panel is disabled and shows
+       * "Segmentation not supported" instead of offering to add one. Defaults
+       * to `['SM', 'OT', 'DOC', 'ECG']`.
+       */
+      'panelSegmentation.excludedModalities': string[];
     }
 
     export interface PresentationIds {
