@@ -51,6 +51,11 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
       className={`focus-visible:ring-ring group rounded-[4px] focus-visible:outline-none focus-visible:ring-1 ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
       onClick={addSegmentation}
       onKeyDown={event => {
+        // Only react when the row itself has focus; keys bubbling up from focusable
+        // children keep their own default behaviour.
+        if (event.target !== event.currentTarget) {
+          return;
+        }
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           addSegmentation();
