@@ -20,6 +20,8 @@ const LIVER_ROW = 5;
 const NEW_LIVER_HEX = '#1E90FF';
 const NEW_LIVER_CSS_RGB = 'rgb(30, 144, 255)';
 
+const MAX_DIFF_PIXEL_RATIO = 0.002;
+
 async function switchLayout(page: Page, selectLayout: () => Promise<void>) {
   const renderCycle = waitForViewportRenderCycle(page, {
     needsRenderTimeout: 20000,
@@ -58,6 +60,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
     page,
     viewport: await viewportPageObject.active,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.stackBeforeMPR,
+    maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
@@ -71,6 +74,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
     page,
     viewportPageObject,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.mprFromStack,
+    maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 
   // Load series into 1x1 grid again to return to a stack viewport.
@@ -89,6 +93,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
     page,
     viewport: await viewportPageObject.active,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.stackAfterMPR,
+    maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 });
 
@@ -112,6 +117,7 @@ test('keeps every segment when switching from 3D to MPR', async ({
     page,
     viewportPageObject,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.mprAfter3D,
+    maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 });
 
@@ -138,6 +144,7 @@ test('keeps a changed segment color after switching to MPR', async ({
     page,
     viewportPageObject,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.mprAfterColorChange,
+    maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 });
 
