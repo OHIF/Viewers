@@ -91,7 +91,7 @@ export type ConstraintValue =
   | string[]
   | number[]
   | {
-      value: string | number | boolean | [];
+      value: string | number | boolean | [] | string[] | number[];
     };
 
 /** The validators of `HangingProtocolService/lib/validator.js`. */

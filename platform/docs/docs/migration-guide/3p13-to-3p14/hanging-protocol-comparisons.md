@@ -146,4 +146,7 @@ attribute, or uses an array with the full value (`PatientOrientation`).
 
 - The `Constraint` type of `@ohif/core` (`Types.HangingProtocol.Constraint`) now lists all
   of the validators. The type had `notEquals`, which no validator implements. Use
-  `doesNotEqual`.
+  `doesNotEqual`. The `{ value }` form of a constraint now also accepts an array of strings or
+  numbers.
+- The operand wrappers `{ value }` and `{ attribute, from }` are for hanging protocols only.
+  The `@cornerstonejs/metadata` split rules do not accept them yet.
