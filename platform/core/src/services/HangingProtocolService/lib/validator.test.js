@@ -51,6 +51,10 @@ describe('validator', () => {
         validate(attributeMap, { list: { equals: { value: ['abc', 'def', 'GHI'] } } }, [options])
       ).toBeUndefined();
     });
+    it('fails a single test value against a longer array', () => {
+      expect(validate(attributeMap, { list: { equals: 'abc' } }, [options])).not.toBeUndefined();
+      expect(validate(attributeMap, { list: { doesNotEqual: 'abc' } }, [options])).toBeUndefined();
+    });
   });
   describe('doesNotEqual', () => {
     it('returns undefined if value does not equal ', () => {
@@ -88,7 +92,8 @@ describe('validator', () => {
     it('returns match any list includes', () => {
       expect(
         validate(attributeMap, { listStr: { includes: 'Attenuation Corrected' } }, [options])
-      ).not.toBeUndefined();
+      ).toBeUndefined();
+      expect(validate(attributeMap, { list: { includes: 'dog' } }, [options])).not.toBeUndefined();
       expect(
         validate(attributeMap, { listStr: { includes: ['Attenuation Corrected'] } }, [options])
       ).toBeUndefined();
@@ -152,6 +157,9 @@ describe('validator', () => {
       expect(
         validate(attributeMap, { list: { doesNotInclude: 'abc' } }, [options])
       ).not.toBeUndefined();
+      expect(
+        validate(attributeMap, { list: { doesNotInclude: 'dog' } }, [options])
+      ).toBeUndefined();
       expect(
         validate(attributeMap, { list: { doesNotInclude: { value: ['abc'] } } }, [options])
       ).not.toBeUndefined();

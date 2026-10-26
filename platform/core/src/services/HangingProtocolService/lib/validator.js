@@ -22,21 +22,7 @@ import validate from 'validate.js';
  * */
 validate.validators.equals = function (value, options, key) {
   const testValue = getTestValue(options);
-  const dicomArrayValue = dicomTagToArray(value);
-
-  // If options is an array, then we need to validate each element in the array
-  if (Array.isArray(testValue)) {
-    // If the array has only one element, then we need to compare the value to that element
-    if (testValue.length !== dicomArrayValue.length) {
-      return `${key} must be an array of length ${testValue.length}`;
-    } else {
-      for (let i = 0; i < testValue.length; i++) {
-        if (testValue[i] !== dicomArrayValue[i]) {
-          return `${key} ${testValue[i]} must equal ${dicomArrayValue[i]}`;
-        }
-      }
-    }
-  } else if (testValue !== dicomArrayValue[0]) {
+  if (!isEqualToTestValue(value, testValue)) {
     return `${key} must equal ${testValue}`;
   }
 };
@@ -58,36 +44,22 @@ validate.validators.equals = function (value, options, key) {
  * value = ['Attenuation Corrected']
  * testValue = ['Attenuation Corrected'] (Fail)
  *           = 'Attenuation Corrected' (Fail)
- *           = 'Attenuation' (Fail)
+ *           = 'Attenuation' (Valid)
  * */
 validate.validators.doesNotEqual = function (value, options, key) {
   const testValue = getTestValue(options);
-  const dicomArrayValue = dicomTagToArray(value);
-
-  if (Array.isArray(testValue)) {
-    if (testValue.length === dicomArrayValue.length) {
-      let score = 0;
-      testValue.forEach((x, i) => {
-        if (x === dicomArrayValue[i]) {
-          score++;
-        }
-      });
-      if (score === testValue.length) {
-        return `${key} must not equal to ${testValue}`;
-      }
-    }
-  } else if (testValue === dicomArrayValue[0]) {
-    console.log(dicomArrayValue, testValue);
-    return `${key} must not equal to ${testValue}`;
+  if (isEqualToTestValue(value, testValue)) {
+    return `${key} must not equal ${testValue}`;
   }
 };
 
 /**
- * Check if a value includes one or more specified options.
+ * Check if a value includes one or more specified options. A single test
+ * value is the same as an array of one test value.
  *
  * @example
  * value = ['abc', 'def', 'GHI']
- * testValue = ‘abc’ (Fail)
+ * testValue = ‘abc’ (Valid)
  *           = ‘dog’ (Fail)
  *           = [‘abc’] (Valid)
  *           = [‘att’, ‘abc’] (Valid)
@@ -95,7 +67,7 @@ validate.validators.doesNotEqual = function (value, options, key) {
  *           = ['cat', 'dog'] (Fail)
  *
  * value = ['Attenuation Corrected']
- * testValue = 'Attenuation Corrected' (Fail)
+ * testValue = 'Attenuation Corrected' (Valid)
  *           = ['Attenuation Corrected', 'Corrected'] (Valid)
  *           = ['Attenuation', 'Corrected'] (Fail)
  *
@@ -104,27 +76,21 @@ validate.validators.doesNotEqual = function (value, options, key) {
  *           = ['Attenuation', 'Corrected'] (Fail)
  * */
 validate.validators.includes = function (value, options, key) {
-  const testValue = getTestValue(options);
+  const testValues = dicomTagToArray(getTestValue(options));
   const dicomArrayValue = dicomTagToArray(value);
 
-  if (Array.isArray(testValue)) {
-    const includedValues = testValue.filter(el => dicomArrayValue.includes(el));
-    if (includedValues.length === 0) {
-      return `${key} must include at least one of the following values: ${testValue.join(', ')}`;
-    }
-  } else {
-    return `${key} ${testValue} must be an array`;
+  if (!testValues.some(el => dicomArrayValue.includes(el))) {
+    return `${key} must include at least one of the following values: ${testValues.join(', ')}`;
   }
-  // else if (!value.includes(testValue)) {
-  //   return `${key} ${value} must include ${testValue}`;
-  // }
 };
 /**
- * Check if a value does not include one or more specified options.
+ * Check if a value does not include one or more specified options. A single
+ * test value is the same as an array of one test value.
  *
  * @example
  * value = ['abc', 'def', 'GHI']
  * testValue = ['Corr'] (Valid)
+ *           = 'dog' (Valid)
  *           = 'abc' (Fail)
  *           = ['abc'] (Fail)
  *           = [‘att’, ‘cor’] (Valid)
@@ -140,19 +106,12 @@ validate.validators.includes = function (value, options, key) {
  *           = ['Attenuation', 'Corrected'] (Valid)
  * */
 validate.validators.doesNotInclude = function (value, options, key) {
-  const testValue = getTestValue(options);
+  const testValues = dicomTagToArray(getTestValue(options));
   const dicomArrayValue = dicomTagToArray(value);
 
-  // if (!Array.isArray(value) || value.length === 1) {
-  //   return `${key} is not allowed as a single value`;
-  // }
-  if (Array.isArray(testValue)) {
-    const includedValues = testValue.filter(el => dicomArrayValue.includes(el));
-    if (includedValues.length > 0) {
-      return `${key} must not include the following value: ${includedValues}`;
-    }
-  } else {
-    return `${key} ${testValue} must be an array`;
+  const includedValues = testValues.filter(el => dicomArrayValue.includes(el));
+  if (includedValues.length > 0) {
+    return `${key} must not include the following value: ${includedValues}`;
   }
 };
 // Ignore case contains.
@@ -500,5 +459,18 @@ const dicomTagToArray = value => {
     dicomArrayValue = [...value];
   }
   return dicomArrayValue;
+};
+/**
+ * The equality of `equals` and `doesNotEqual`. A single value is the same as an
+ * array of one value, so `'abc'` equals `['abc']`, but not `['abc', 'def']`.
+ * Two arrays are equal when they have the same length and the same elements,
+ * in the same order. Use `includes` to test that a value is one of a list.
+ */
+const isEqualToTestValue = (value, testValue) => {
+  const values = dicomTagToArray(value);
+  const testValues = dicomTagToArray(testValue);
+  return (
+    values.length === testValues.length && testValues.every((item, index) => item === values[index])
+  );
 };
 export default validate;

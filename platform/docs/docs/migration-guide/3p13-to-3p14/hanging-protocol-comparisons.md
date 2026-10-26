@@ -55,6 +55,38 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
   protocol no longer matches. This is the intended meaning of these rules: the comments call
   them "match series with images".
 
+## `equals`, `doesNotEqual`, `includes` and `doesNotInclude`
+
+`equals` and `doesNotEqual` now compare the whole value. A single test value is the same as
+an array of one value. Before 3.14, a single test value was compared with the first element
+of a multi-valued attribute only, against the documentation of `equals`.
+
+`includes` and `doesNotInclude` now accept a single test value. Before 3.14, a single test
+value always failed, with "must be an array".
+
+| Constraint | Attribute value | 3.13 | 3.14 |
+|---|---|---|---|
+| `equals: 'ORIGINAL'` | `['ORIGINAL', 'PRIMARY']` | passes (first element) | fails |
+| `equals: 'ORIGINAL'` | `['ORIGINAL']` or `'ORIGINAL'` | passes | passes |
+| `doesNotEqual: 'ORIGINAL'` | `['ORIGINAL', 'PRIMARY']` | fails | passes |
+| `includes: 'ORIGINAL'` | `['ORIGINAL', 'PRIMARY']` | fails ("must be an array") | passes |
+| `doesNotInclude: 'LOCALIZER'` | `['ORIGINAL', 'PRIMARY']` | fails ("must be an array") | passes |
+
+What to change: find each `equals` and `doesNotEqual` with a single test value on a
+multi-valued attribute, for example `ImageType`. To test that the value holds the test
+value, change `equals` to `includes`, and `doesNotEqual` to `doesNotInclude`:
+
+```js
+// 3.13: ImageType value 1 is ORIGINAL
+constraint: { equals: 'ORIGINAL' }
+
+// 3.14: ImageType holds ORIGINAL
+constraint: { includes: 'ORIGINAL' }
+```
+
+The OHIF hanging protocols do not change. Each `equals` in them compares a single-valued
+attribute, or uses an array with the full value (`PatientOrientation`).
+
 ## Other changes to the constraint list
 
 - The `Constraint` type of `@ohif/core` (`Types.HangingProtocol.Constraint`) now lists all

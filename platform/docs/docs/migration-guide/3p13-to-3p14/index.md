@@ -77,6 +77,7 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 - **[Hanging protocol comparisons](./hanging-protocol-comparisons.md)** — the
   `greaterThan` and `lessThan` constraints are now strict. Before, they tested `>=`
   and `<=`. The new `greaterThanOrEqual` and `lessThanOrEqual` constraints keep the old
-  meaning.
+  meaning. `equals` and `doesNotEqual` compare the whole value of a multi-valued
+  attribute, and `includes` and `doesNotInclude` accept a single test value.
 
 <DocCardList />
