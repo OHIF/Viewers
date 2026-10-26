@@ -139,6 +139,12 @@ jobs:
       - run:
           name: Install Dependencies
           command: pnpm install
+      # Without this step, the packages build against the pinned CS3D, and a PR
+      # that uses an unreleased CS3D export fails here.
+      - run:
+          name: Apply the CS3D_REF of the pull request
+          command: bash .scripts/ci/cs3d-apply-ref.sh
+          no_output_timeout: 30m
       # No git identity or NPM token here: this job only builds the packages for
       # PRs and never pushes or publishes. Keep publish credentials in NPM_PUBLISH
       # so third-party build code on PR branches never runs with them on disk.

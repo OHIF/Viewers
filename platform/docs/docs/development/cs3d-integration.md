@@ -110,6 +110,7 @@ The same `CS3D_REF` line also applies to the CI jobs outside GitHub Actions:
 | Job | Where |
 |-----|-------|
 | CircleCI `UNIT_TESTS` (jest) | `.circleci/config.yml` |
+| CircleCI `BUILD_PACKAGES_QUICK` | `.circleci/config.yml` |
 | CircleCI `Cypress Tests` | `.circleci/config.yml` |
 | Netlify `deploy/netlify` preview | `netlify.toml` |
 

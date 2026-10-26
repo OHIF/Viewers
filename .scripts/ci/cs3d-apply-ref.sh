@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # Apply the `CS3D_REF:` line of the pull request body to this checkout, for
-# the CI systems that are not GitHub Actions: the CircleCI unit test and
-# Cypress jobs, and the Netlify deploy preview. The GitHub Playwright workflow
+# the CI systems that are not GitHub Actions: the CircleCI unit test, package
+# build and Cypress jobs, and the Netlify deploy preview. The GitHub Playwright workflow
 # does the same work in its own steps (.github/workflows/playwright.yml).
 #
 # Run it from the repository root, AFTER the ordinary `pnpm install`:
