@@ -7,7 +7,7 @@ import {
   screenShotPaths,
   test,
   visitStudyAndHydrate,
-  waitForViewportRenderCycle,
+  waitForRenderCycleForAction,
   waitForViewportsRendered,
 } from './utils';
 import { expectRowNotSelected, expectRowSelected } from './utils/assertions';
@@ -23,12 +23,10 @@ const NEW_LIVER_CSS_RGB = 'rgb(30, 144, 255)';
 const MAX_DIFF_PIXEL_RATIO = 0.002;
 
 async function switchLayout(page: Page, selectLayout: () => Promise<void>) {
-  const renderCycle = waitForViewportRenderCycle(page, {
+  await waitForRenderCycleForAction(page, selectLayout, {
     needsRenderTimeout: 20000,
     renderedTimeout: 60000,
   });
-  await selectLayout();
-  await renderCycle;
   await waitForViewportsRendered(page, { timeout: 60000 });
 }
 
@@ -64,8 +62,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
   });
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
-  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
-  await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
+  await expect(viewportPageObject.panes).toHaveCount(3);
 
   await expect(rightPanelPageObject.labelMapSegmentationPanel.panel.rows).toHaveCount(
     SEGMENT_COUNT
@@ -79,10 +76,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
 
   // Load series into 1x1 grid again to return to a stack viewport.
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.grid(1, 1).click());
-  await expect(viewportPageObject.getNthLocator(1)).toHaveCount(0);
-  await expect(viewportPageObject.getNthLocator(2)).toHaveCount(0);
-
-  await waitForViewportsRendered(page);
+  await expect(viewportPageObject.panes).toHaveCount(1);
 
   await switchLayout(page, () => leftPanelPageObject.loadSeriesByModality('CT'));
 
@@ -109,8 +103,7 @@ test('keeps every segment when switching from 3D to MPR', async ({
   await expect(rows).toHaveCount(SEGMENT_COUNT);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
-  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
-  await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
+  await expect(viewportPageObject.panes).toHaveCount(3);
 
   await expect(rows).toHaveCount(SEGMENT_COUNT);
   await checkForGridScreenshot({
@@ -130,14 +123,20 @@ test('keeps a changed segment color after switching to MPR', async ({
   const liver = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(LIVER_ROW);
   await expect(liver.title).toHaveText('Liver');
 
-  const colorChangeCycle = waitForViewportRenderCycle(page);
-  await liver.actions.changeColor(NEW_LIVER_HEX);
-  await colorChangeCycle;
+  // The hydrated slice doesn't show the liver; clicking its row centers the stack on it.
+  await waitForRenderCycleForAction(page, () => liver.click());
+
+  await waitForRenderCycleForAction(page, () => liver.actions.changeColor(NEW_LIVER_HEX));
   await expect(liver.rowDataColorHex).toHaveCSS('background-color', NEW_LIVER_CSS_RGB);
+  await checkForViewportScreenshot({
+    page,
+    viewport: await viewportPageObject.active,
+    screenshotPath: screenShotPaths.segAcrossViewportTypes.stackAfterColorChange,
+    maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
+  });
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
-  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
-  await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
+  await expect(viewportPageObject.panes).toHaveCount(3);
 
   await expect(liver.rowDataColorHex).toHaveCSS('background-color', NEW_LIVER_CSS_RGB);
   await checkForGridScreenshot({
@@ -162,21 +161,19 @@ test('keeps the selected segment selected across viewport types', async ({
 
   // Hydration makes the first segment active.
   await expectRowSelected(spleen);
+  await expectRowNotSelected(liver);
 
-  const segmentClickCycle = waitForViewportRenderCycle(page);
-  await liver.click();
-  await segmentClickCycle;
+  await waitForRenderCycleForAction(page, () => liver.click());
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
-  await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
-  await expect(viewportPageObject.getNthLocator(2)).toBeVisible();
+  await expect(viewportPageObject.panes).toHaveCount(3);
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.threeDOnly.click());
-  await expect(viewportPageObject.getNthLocator(1)).toHaveCount(0);
+  await expect(viewportPageObject.panes).toHaveCount(1);
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 });

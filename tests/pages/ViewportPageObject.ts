@@ -576,7 +576,7 @@ export class ViewportPageObject {
   }
 
   async getAll(): Promise<IViewportPageObject[]> {
-    const viewports = await this.page.getByTestId('viewport-pane').all();
+    const viewports = await this.panes.all();
     return await Promise.all(viewports.map(viewport => this.viewportPageObjectFactory(viewport)));
   }
 
@@ -586,7 +586,12 @@ export class ViewportPageObject {
   }
 
   getNthLocator(index: number): Locator {
-    return this.page.getByTestId('viewport-pane').nth(index);
+    return this.panes.nth(index);
+  }
+
+  // Every viewport pane in the grid
+  get panes(): Locator {
+    return this.page.getByTestId('viewport-pane');
   }
 
   getById(viewportId: string): Promise<IViewportPageObject> {
