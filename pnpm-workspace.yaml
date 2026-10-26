@@ -71,6 +71,9 @@ overrides:
   # merge. Keep this list aligned with master so security/version pins from
   # upstream PRs land here too.
   commander: 8.3.0
+  # netlify-cli (run via `pnpm dlx` in playwright.yml) calls Option.conflicts(),
+  # which commander 8 lacks. 12.1.0 is the version netlify-cli declares.
+  'netlify-cli>commander': 12.1.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
   dcmjs: 0.52.0
