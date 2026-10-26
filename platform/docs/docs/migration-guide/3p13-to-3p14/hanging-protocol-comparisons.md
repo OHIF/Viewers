@@ -48,12 +48,18 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
   `greaterThan: 2` to `greaterThanOrEqual: 2`. The match does not change.
 - `@ohif/frameView`: `numImageFrames` changes from `greaterThan: 16` to
   `greaterThanOrEqual: 16`. The match does not change.
-- The rules `numImageFrames: { greaterThan: 0 }` and
-  `numberOfDisplaySetsWithImages: { greaterThan: 0 }` do not change. They are now strict,
-  so a display set with 0 image frames, or a study with 0 display sets with images, no
-  longer gets the weight of the rule. When the rule is `required`, the display set or the
-  protocol no longer matches. This is the intended meaning of these rules: the comments call
-  them "match series with images".
+- The rules `numImageFrames: { greaterThan: { value: 0 } }` do not change. They are now
+  strict, so a display set with 0 image frames no longer gets the weight of the rule. When
+  the rule is `required`, the display set no longer matches. This is the intended meaning of
+  these rules: the comments call them "match series with images".
+
+## Numeric strings
+
+`equals`, `doesNotEqual`, `includes` and `doesNotInclude` now read a numeric string as a
+number when the other value is a number, as `@cornerstonejs/metadata` does. So
+`equals: 1` holds for the value `'1'`, and `includes: [1, 2]` holds for `['2']`. An empty
+string is not a number, so `''` does not equal `0`. Two strings still compare as text, so
+`'1.0'` does not equal `'1'`.
 
 ## `equals`, `doesNotEqual`, `includes` and `doesNotInclude`
 

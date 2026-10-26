@@ -1,6 +1,7 @@
 import validate from 'validate.js';
 /**
- * check if the value is strictly equal to options
+ * check if the value is equal to options. A number equals a numeric string:
+ * `1` equals `'1'`.
  *
  * @example
  * value = ['abc', 'def', 'GHI']
@@ -76,11 +77,9 @@ validate.validators.doesNotEqual = function (value, options, key) {
  *           = ['Attenuation', 'Corrected'] (Fail)
  * */
 validate.validators.includes = function (value, options, key) {
-  const testValues = dicomTagToArray(getTestValue(options));
-  const dicomArrayValue = dicomTagToArray(value);
-
-  if (!testValues.some(el => dicomArrayValue.includes(el))) {
-    return `${key} must include at least one of the following values: ${testValues.join(', ')}`;
+  const testValue = getTestValue(options);
+  if (!includedTestValues(value, testValue).length) {
+    return `${key} must include at least one of the following values: ${dicomTagToArray(testValue).join(', ')}`;
   }
 };
 /**
@@ -106,10 +105,7 @@ validate.validators.includes = function (value, options, key) {
  *           = ['Attenuation', 'Corrected'] (Valid)
  * */
 validate.validators.doesNotInclude = function (value, options, key) {
-  const testValues = dicomTagToArray(getTestValue(options));
-  const dicomArrayValue = dicomTagToArray(value);
-
-  const includedValues = testValues.filter(el => dicomArrayValue.includes(el));
+  const includedValues = includedTestValues(value, getTestValue(options));
   if (includedValues.length > 0) {
     return `${key} must not include the following value: ${includedValues}`;
   }
@@ -460,6 +456,35 @@ const dicomTagToArray = value => {
   }
   return dicomArrayValue;
 };
+/** The number of a number or a numeric string, else `undefined`. */
+const toFinite = value => {
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined;
+  }
+  const number = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
+  return Number.isFinite(number) ? number : undefined;
+};
+/**
+ * The equality of two single values, as in `@cornerstonejs/metadata`: `===`,
+ * or, when one value is a number, equal numbers, so `'1'` equals `1`.
+ */
+const isEqualElement = (a, b) => {
+  if (a === b) {
+    return true;
+  }
+  if (typeof a !== 'number' && typeof b !== 'number') {
+    return false;
+  }
+  const x = toFinite(a);
+  return x !== undefined && x === toFinite(b);
+};
+/** The test values that the value holds, with {@link isEqualElement}. */
+const includedTestValues = (value, testValue) => {
+  const values = dicomTagToArray(value);
+  return dicomTagToArray(testValue).filter(item =>
+    values.some(element => isEqualElement(element, item))
+  );
+};
 /**
  * The equality of `equals` and `doesNotEqual`. A single value is the same as an
  * array of one value, so `'abc'` equals `['abc']`, but not `['abc', 'def']`.
@@ -470,7 +495,8 @@ const isEqualToTestValue = (value, testValue) => {
   const values = dicomTagToArray(value);
   const testValues = dicomTagToArray(testValue);
   return (
-    values.length === testValues.length && testValues.every((item, index) => item === values[index])
+    values.length === testValues.length &&
+    testValues.every((item, index) => isEqualElement(item, values[index]))
   );
 };
 export default validate;

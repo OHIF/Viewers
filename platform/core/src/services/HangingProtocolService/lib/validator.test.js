@@ -55,6 +55,12 @@ describe('validator', () => {
       expect(validate(attributeMap, { list: { equals: 'abc' } }, [options])).not.toBeUndefined();
       expect(validate(attributeMap, { list: { doesNotEqual: 'abc' } }, [options])).toBeUndefined();
     });
+    it('reads a numeric string as a number, and keeps an empty string apart from 0', () => {
+      expect(validate({ n: '3' }, { n: { equals: 3 } }, [options])).toBeUndefined();
+      expect(validate({ n: ['1', '2'] }, { n: { equals: [1, 2] } }, [options])).toBeUndefined();
+      expect(validate({ n: '' }, { n: { equals: { value: 0 } } }, [options])).not.toBeUndefined();
+      expect(validate({ n: ['1', '2'] }, { n: { includes: 2 } }, [options])).toBeUndefined();
+    });
   });
   describe('doesNotEqual', () => {
     it('returns undefined if value does not equal ', () => {
