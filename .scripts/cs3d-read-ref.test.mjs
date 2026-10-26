@@ -17,7 +17,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
-import { parseBody, classify, findPullRequest, chooseSource } from './cs3d-read-ref.mjs';
+import { parseBody, classify, findPullRequest, chooseSource, fetchBody } from './cs3d-read-ref.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const workflow = YAML.parse(readFileSync(join(root, '.github/workflows/playwright.yml'), 'utf8'));
@@ -164,4 +164,15 @@ test('warns when the ref file disagrees with the PR body', () => {
   const r = chooseSource('No line any more.\n', 'CS3D_REF: feat/stale\n');
   assert.equal(r.source, 'body');
   assert.match(r.warning, /feat\/stale/);
+});
+
+test('never puts the token in the error of a failed body request', async t => {
+  t.mock.method(globalThis, 'fetch', async () => new Response('', { status: 401 }));
+  await assert.rejects(
+    fetchBody({ repo: 'OHIF/Viewers', number: '1' }, { token: 'SECRET123' }),
+    error => {
+      assert.equal(error.message, 'HTTP 401');
+      return true;
+    }
+  );
 });

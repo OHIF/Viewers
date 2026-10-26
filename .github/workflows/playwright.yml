@@ -771,6 +771,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # .cs3d-ref is the CircleCI and Netlify fallback for the body line
+      # (.scripts/cs3d-read-ref.mjs). On master it would silently apply to each
+      # later PR whose body the API does not return. The API reads the file at
+      # the PR head, so this job still runs no code of the PR.
+      - name: Check for a .cs3d-ref file
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if out=$(gh api "repos/${REPO}/contents/.cs3d-ref?ref=${HEAD_SHA}" --jq .path 2>&1); then
+            echo "::error::This pull request adds a .cs3d-ref file. Delete .cs3d-ref before the merge."
+            exit 1
+          fi
+          if ! grep -q 'HTTP 404' <<<"$out"; then
+            echo "::error::Could not check for a .cs3d-ref file: ${out}"
+            exit 1
+          fi
+          echo "::notice::No .cs3d-ref file — nothing to flag."
       - name: Check for CS3D branch usage
         env:
           CS3D_KIND: ${{ needs.gate.outputs.cs3d_kind }}

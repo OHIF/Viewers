@@ -31,7 +31,6 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 /** Parses a body the same way as the awk parser of the gate. */
@@ -223,22 +222,31 @@ export function findPullRequest(env = process.env) {
   return null;
 }
 
-function fetchBody({ repo, number }) {
-  const args = [
-    '-fsSL',
-    '--retry',
-    '3',
-    '--max-time',
-    '30',
-    '-H',
-    'Accept: application/vnd.github+json',
-  ];
-  if (process.env.GITHUB_TOKEN) {
-    args.push('-H', `Authorization: Bearer ${process.env.GITHUB_TOKEN}`);
+/**
+ * Reads the PR body through the GitHub API, with up to 3 retries for a
+ * transient failure (a network error, 429 or 5xx).
+ *
+ * The token goes in a request header, never on a command line, and a failure
+ * reports only the HTTP status: a CI log must never show the token.
+ */
+export async function fetchBody({ repo, number }, { token = process.env.GITHUB_TOKEN } = {}) {
+  const headers = { Accept: 'application/vnd.github+json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const url = `https://api.github.com/repos/${repo}/pulls/${number}`;
+  let failure = '';
+  for (let attempt = 0; attempt < 4; attempt++) {
+    let response;
+    try {
+      response = await fetch(url, { headers, signal: AbortSignal.timeout(30_000) });
+    } catch (error) {
+      failure = `request failed (${error.name})`;
+      continue;
+    }
+    if (response.ok) return (await response.json()).body || '';
+    failure = `HTTP ${response.status}`;
+    if (response.status !== 429 && response.status < 500) break;
   }
-  args.push(`https://api.github.com/repos/${repo}/pulls/${number}`);
-  const json = execFileSync('curl', args, { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
-  return JSON.parse(json).body || '';
+  throw new Error(failure);
 }
 
 /** The checked-in fallback for a PR body that the API does not return. */
@@ -276,7 +284,7 @@ function readRefFile() {
   }
 }
 
-function main() {
+async function main() {
   const out = (kind, ref = '', history = '', defer = false) =>
     console.log([kind, ref, history, defer].join('\n'));
   const bodyFileIndex = process.argv.indexOf('--body-file');
@@ -292,17 +300,18 @@ function main() {
     }
     let fetched = null;
     try {
-      fetched = fetchBody(pr);
+      fetched = await fetchBody(pr);
     } catch (error) {
       console.error(
-        `[cs3d-read-ref] WARNING: could not read the body of ${pr.repo}#${pr.number}. ` +
-          String(error.message || error)
+        `[cs3d-read-ref] WARNING: could not read the body of ${pr.repo}#${pr.number}: ${error.message}`
       );
     }
     const { text, source, warning } = chooseSource(fetched, readRefFile());
     if (warning) console.error(`[cs3d-read-ref] WARNING: ${warning}`);
     if (source === 'file') {
-      console.error(`[cs3d-read-ref] Using the CS3D_REF line of ${REF_FILE} instead of the PR body.`);
+      console.error(
+        `[cs3d-read-ref] Using the CS3D_REF line of ${REF_FILE} instead of the PR body.`
+      );
     } else if (source === 'none') {
       console.error(
         `[cs3d-read-ref] No PR body and no ${REF_FILE}: the job runs against the pinned CS3D version.`

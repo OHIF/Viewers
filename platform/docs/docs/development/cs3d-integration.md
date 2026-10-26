@@ -138,8 +138,21 @@ CS3D_REF: feat/my-feature
 Without the file, the job prints a warning and uses the pinned version, so an ordinary PR
 does not fail for that reason. The body wins whenever the API answers, and the job prints a
 warning when the file and the body disagree. Delete `.cs3d-ref` in the same change that
-deletes or retires the `CS3D_REF` line. A `GITHUB_TOKEN` in the CircleCI or Netlify settings
-also avoids the limit, but it is optional.
+deletes or retires the `CS3D_REF` line. The **CS3D Branch Merge Guard** reports a red result
+while the PR has the file, because on `master` the file would apply to each later PR whose
+body the API does not return.
+
+A `GITHUB_TOKEN` in the CircleCI or Netlify settings also avoids the limit, but it is
+optional. Use a fine-grained token with read-only access to public repositories and no other
+permission, because the code of each PR, and of each CS3D branch that it names, runs in the
+same job. In CircleCI, keep the token away from fork builds. The script sends the token only
+in a request header, and never prints it.
+
+A version line reinstalls with `--ignore-scripts`: no lockfile covers the new tree, so no
+install script of it runs. On Netlify, `cs3d-apply-ref.sh --after-build` deletes
+`node_modules` after a build that changed CS3D, so the build cache never gives that CS3D to a
+later build. The script replaces an existing `libs/@cornerstonejs` only on CircleCI or
+Netlify, never on a developer machine, even when `CI=true` is set.
 
 The CircleCI job sees the PR only when the branch has an open PR at the start of the
 pipeline; re-run the pipeline after you open the PR, or after you change the line.

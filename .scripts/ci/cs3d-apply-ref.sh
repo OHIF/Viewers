@@ -17,11 +17,24 @@
 #
 # Usage: bash .scripts/ci/cs3d-apply-ref.sh [--body-file <file>]
 #   --body-file reads a saved body instead of the pull request (for a test).
+#        bash .scripts/ci/cs3d-apply-ref.sh --after-build
+#   --after-build deletes node_modules when this script changed CS3D, so that
+#   a build cache (Netlify) never saves a linked or re-pinned CS3D for a later
+#   build.
 
 set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 ROOT="$PWD"
+MARKER="node_modules/.cs3d-ref-applied"
+
+if [ "${1:-}" = "--after-build" ]; then
+  if [ -e "$MARKER" ]; then
+    echo "[cs3d-apply-ref] Deleting node_modules, so that the build cache does not keep the CS3D of this PR."
+    rm -rf node_modules
+  fi
+  exit 0
+fi
 
 # One value per line: kind, ref, history, defer. A rejected line prints
 # nothing, and the process substitution hides the exit status, so the result
@@ -51,7 +64,10 @@ case "$kind" in
       GITHUB_OUTPUT="$changed_file" node .scripts/cs3d-set-version.mjs "$resolved"
     fi
     if grep -qx 'changed=true' "$changed_file"; then
-      pnpm install --no-frozen-lockfile
+      # No lockfile covers the new tree, so no install script of it may run.
+      # The ordinary install before this script already ran the OHIF scripts.
+      pnpm install --no-frozen-lockfile --ignore-scripts
+      touch "$MARKER"
     fi
     rm -f "$changed_file"
     ;;
@@ -59,10 +75,11 @@ case "$kind" in
   branch)
     target="libs/@cornerstonejs"
     if [ -e "$target" ]; then
-      # A developer machine keeps its own CS3D checkout here. Only a CI
-      # checkout, which is disposable, may be replaced.
-      if [ "${CI:-}" != "true" ]; then
-        echo "[cs3d-apply-ref] $target already exists, and this is not CI. Link your own checkout with 'pnpm cs3d:link'." >&2
+      # A developer machine keeps its own CS3D checkout here. Only a CircleCI
+      # or Netlify checkout, which is disposable, may be replaced. CI=true is
+      # not enough: some developers set it in their shell.
+      if [ "${CIRCLECI:-}" != "true" ] && [ "${NETLIFY:-}" != "true" ]; then
+        echo "[cs3d-apply-ref] $target already exists, and this is not CircleCI or Netlify. Link your own checkout with 'pnpm cs3d:link'." >&2
         exit 1
       fi
       rm -rf "$target"
@@ -71,6 +88,7 @@ case "$kind" in
     git clone --depth 1 --branch "$ref" https://github.com/cornerstonejs/cornerstone3D.git "$target"
     (cd "$target" && pnpm install --frozen-lockfile && pnpm run build:esm)
     node "$target/scripts/link-ohif-cornerstone-node-modules.mjs" "$ROOT"
+    touch "$MARKER"
     echo "[cs3d-apply-ref] Linked CS3D branch $ref ($(git -C "$target" rev-parse --short HEAD)) into node_modules"
     ;;
 
