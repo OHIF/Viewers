@@ -1,4 +1,4 @@
-import validate from './lib/validator';
+import validate, { isOhifValidator } from './lib/validator';
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
@@ -159,7 +159,7 @@ const resolveConstraintAttributes = (
         };
       }
     } else {
-      resolvedConstraint[key] = wrapFalsyOperand(value);
+      resolvedConstraint[key] = isOhifValidator(key) ? wrapFalsyOperand(value) : value;
     }
   }, {});
 
@@ -169,7 +169,8 @@ const resolveConstraintAttributes = (
 /**
  * Validate.js does not run a validator whose operand is falsy, so
  * `{ greaterThan: 0 }` would always pass. `{ value: 0 }` is truthy, and the
- * validators read the operand from `value`.
+ * validators read the operand from `value`. Only the OHIF validators get the
+ * wrapper: for a validate.js built-in such as `presence`, `false` means "off".
  */
 const wrapFalsyOperand = operand =>
   operand === 0 || operand === false || operand === '' ? { value: operand } : operand;

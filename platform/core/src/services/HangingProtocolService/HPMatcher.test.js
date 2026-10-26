@@ -17,4 +17,13 @@ describe('HPMatcher', () => {
     expect(passes({ n: 1 }, { notNull: false })).toBe(false);
     expect(passes({ n: null }, { notNull: true })).toBe(false);
   });
+
+  it('keeps a built-in validator off when its option is false', () => {
+    expect(passes({}, { presence: false })).toBe(true);
+  });
+
+  it('matches a display set with 0 image frames with greaterThanOrEqual: { value: 0 }', () => {
+    expect(passes({ n: 0 }, { greaterThanOrEqual: { value: 0 } })).toBe(true);
+    expect(passes({ n: 0 }, { greaterThan: { value: 0 } })).toBe(false);
+  });
 });

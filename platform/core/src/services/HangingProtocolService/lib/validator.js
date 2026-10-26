@@ -1,4 +1,16 @@
 import validate from 'validate.js';
+
+/** The validate.js built-in validators, before OHIF adds its own below. */
+const BUILT_IN_VALIDATORS = new Set(Object.keys(validate.validators));
+
+/**
+ * True for an OHIF validator. Each one reads its operand as a value to test, so
+ * `false` or `0` is a test value. For a built-in such as `presence`, `false`
+ * turns the validator off.
+ */
+export const isOhifValidator = name =>
+  !BUILT_IN_VALIDATORS.has(name) && typeof validate.validators[name] === 'function';
+
 /**
  * check if the value is equal to options. A number equals a numeric string:
  * `1` equals `'1'`.

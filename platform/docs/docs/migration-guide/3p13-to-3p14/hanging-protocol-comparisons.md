@@ -27,9 +27,10 @@ decide which meaning the rule needs:
 - The rule needs the old meaning. Rename `greaterThan` to `greaterThanOrEqual`, and
   `lessThan` to `lessThanOrEqual`. Keep the value. This change is exact for every value,
   also for a value that is not an integer.
-- The rule needs the strict meaning. Make no change. A rule such as
-  `numImageFrames: { greaterThan: 0 }` now means "the display set has images", as its name
-  says.
+- The rule needs the strict meaning. Make no change. For example,
+  `numImageFrames: { greaterThan: 0 }` now fails for a display set with 0 image frames, such
+  as a whole slide or ECG display set. Before 3.14, `numImageFrames: { greaterThan:
+  { value: 0 } }` matched these display sets.
 
 ```js
 // 3.13: matches a study with 2 or more display sets with images
@@ -48,10 +49,11 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
   `greaterThan: 2` to `greaterThanOrEqual: 2`. The match does not change.
 - `@ohif/frameView`: `numImageFrames` changes from `greaterThan: 16` to
   `greaterThanOrEqual: 16`. The match does not change.
-- The rules `numImageFrames: { greaterThan: { value: 0 } }` do not change. They are now
-  strict, so a display set with 0 image frames no longer gets the weight of the rule. When
-  the rule is `required`, the display set no longer matches. This is the intended meaning of
-  these rules: the comments call them "match series with images".
+- The rules `numImageFrames: { greaterThan: { value: 0 } }` change to
+  `greaterThanOrEqual: { value: 0 }`. The match does not change: a display set with 0 image
+  frames (whole slide, ECG) still matches, so the default protocol still shows a whole slide
+  study. The rules are in the default protocol, `seriesSelectors`, `@ohif/hpCompare`,
+  `@ohif/hpScale`, the dynamic volume protocol and the test protocol `hpTestSwitch`.
 
 - The rules `numberOfDisplaySetsWithImages: { greaterThan: 0 }` (`studyWithImages`,
   `@ohif/hpScale`, and the test protocol `hpTestSwitch`) now run. Before 3.14 they always

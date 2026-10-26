@@ -89,6 +89,7 @@ export type ConstraintValue =
   | boolean
   | []
   | string[]
+  | number[]
   | {
       value: string | number | boolean | [];
     };
