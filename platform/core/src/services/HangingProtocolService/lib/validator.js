@@ -352,14 +352,17 @@ validate.validators.endsWith = function (value, options, key) {
  * Creates a validator that compares a numeric value with one test value. The
  * test value can be a number, `{ value }`, or an array of one number.
  *
+ * The value reads as in `@cornerstonejs/metadata`: a number, a numeric
+ * string, or the first element of an array. A value with no number fails.
+ *
  * @param compare - the comparison of the value with the test value
  * @param relation - the relation, for the error message
- * @param rejectArrayOrString - fail an array or a string value
  */
-const createNumberValidator = (compare, relation, rejectArrayOrString) =>
-  function (value, options, key) {
-    if (rejectArrayOrString && (Array.isArray(value) || typeof value === 'string')) {
-      return `${key} is not allowed as an array or string`;
+const createNumberValidator = (compare, relation) =>
+  function (rawValue, options, key) {
+    const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
+    if (value === undefined) {
+      return `${key} must be a number, but was ${rawValue}`;
     }
     let testValue = getTestValue(options);
     if (Array.isArray(testValue)) {
@@ -386,7 +389,7 @@ const createNumberValidator = (compare, relation, rejectArrayOrString) =>
  *           = 40 (Fail)
  *
  * */
-validate.validators.greaterThan = createNumberValidator((a, b) => a > b, 'greater than', true);
+validate.validators.greaterThan = createNumberValidator((a, b) => a > b, 'greater than');
 /**
  * @example
  * value = 30
@@ -397,8 +400,7 @@ validate.validators.greaterThan = createNumberValidator((a, b) => a > b, 'greate
  * */
 validate.validators.greaterThanOrEqual = createNumberValidator(
   (a, b) => a >= b,
-  'greater than or equal to',
-  true
+  'greater than or equal to'
 );
 /**
  * Strictly less than.
@@ -410,7 +412,7 @@ validate.validators.greaterThanOrEqual = createNumberValidator(
  *           = 20 (Fail)
  *
  * */
-validate.validators.lessThan = createNumberValidator((a, b) => a < b, 'less than', false);
+validate.validators.lessThan = createNumberValidator((a, b) => a < b, 'less than');
 /**
  * @example
  * value = 30
@@ -421,8 +423,7 @@ validate.validators.lessThan = createNumberValidator((a, b) => a < b, 'less than
  * */
 validate.validators.lessThanOrEqual = createNumberValidator(
   (a, b) => a <= b,
-  'less than or equal to',
-  false
+  'less than or equal to'
 );
 /**
  * @example

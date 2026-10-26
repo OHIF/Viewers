@@ -404,6 +404,29 @@ describe('validator', () => {
       ).not.toBeUndefined();
     });
   });
+  describe('number values', () => {
+    const numberValidators = [
+      ['greaterThan', 4],
+      ['greaterThanOrEqual', 5],
+      ['lessThan', 6],
+      ['lessThanOrEqual', 5],
+    ];
+    it.each([
+      [5, true],
+      ['5', true],
+      [[5], true],
+      [['5', '9'], true],
+      [null, false],
+      [undefined, false],
+      ['', false],
+    ])('reads %j as a number: %s', (n, isNumber) => {
+      numberValidators.forEach(([name, testValue]) => {
+        expect(validate({ n }, { n: { [name]: testValue } }, [options]) === undefined).toBe(
+          isNumber
+        );
+      });
+    });
+  });
   describe('notNull', () => {
     it.each([
       [undefined, false],

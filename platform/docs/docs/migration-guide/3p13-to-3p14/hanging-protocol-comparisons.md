@@ -19,6 +19,21 @@ Two new constraints give the old meaning: `greaterThanOrEqual` and `lessThanOrEq
 | `greaterThanOrEqual: n` | not available ("Unknown validator") | value `>=` n |
 | `lessThanOrEqual: n` | not available ("Unknown validator") | value `<=` n |
 
+## Number values
+
+`greaterThan`, `greaterThanOrEqual`, `lessThan` and `lessThanOrEqual` now read the value as
+`@cornerstonejs/metadata` does:
+
+- A numeric string reads as a number: `'5'` is 5. Before 3.14, `greaterThan` failed on a
+  string value.
+- An array reads as its first element: `[5]` is 5. Before 3.14, `greaterThan` failed on an
+  array value.
+- A value with no number fails: `null`, `undefined`, `''`. Before 3.14, `lessThan` passed
+  on a missing value, because JavaScript reads `null < 10` as true.
+
+The OHIF hanging protocols do not change. Their number rules read `numImageFrames` and
+`numberOfDisplaySetsWithImages`, which are numbers.
+
 ## What to change
 
 Find each `greaterThan` and `lessThan` constraint in your hanging protocols. For each one,
