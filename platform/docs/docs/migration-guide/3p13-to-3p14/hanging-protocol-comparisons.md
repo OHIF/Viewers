@@ -80,13 +80,20 @@ Before 3.14, it failed only on `null` and `undefined`. `0` and `false` are value
 The OHIF hanging protocols do not change. The only `notNull` rule, `prior`
 `StudyInstanceUID` in `@ohif/hpCompare`, reads a UID or `undefined`.
 
-## Numeric strings
+## Numbers, numeric strings and booleans
 
 `equals`, `doesNotEqual`, `includes` and `doesNotInclude` now read a numeric string as a
 number when the other value is a number, as `@cornerstonejs/metadata` does. So
 `equals: 1` holds for the value `'1'`, and `includes: [1, 2]` holds for `['2']`. An empty
 string is not a number, so `''` does not equal `0`. Two strings still compare as text, so
 `'1.0'` does not equal `'1'`.
+
+A boolean now equals the number `1` or `0`, and the text `'true'` or `'false'`. So
+`equals: true` holds for the value `1` and for `'true'`, and `equals: false` holds for `0`
+and for `'false'`. A boolean does not equal any other value: `true` does not equal `'1'`.
+
+The OHIF hanging protocols do not change. Each `equals: true` in them reads
+`isDisplaySetFromUrl`, which is a boolean.
 
 ## `equals`, `doesNotEqual`, `includes` and `doesNotInclude`
 

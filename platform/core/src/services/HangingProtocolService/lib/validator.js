@@ -494,11 +494,16 @@ const toFinite = value => {
 };
 /**
  * The equality of two single values, as in `@cornerstonejs/metadata`: `===`,
- * or, when one value is a number, equal numbers, so `'1'` equals `1`.
+ * or, when one value is a number, equal numbers, so `'1'` equals `1`. A
+ * boolean equals the number `1` / `0` and the text `'true'` / `'false'` only.
  */
 const isEqualElement = (a, b) => {
   if (a === b) {
     return true;
+  }
+  if (typeof a === 'boolean' || typeof b === 'boolean') {
+    const [flag, other] = typeof a === 'boolean' ? [a, b] : [b, a];
+    return other === (flag ? 1 : 0) || other === String(flag);
   }
   if (typeof a !== 'number' && typeof b !== 'number') {
     return false;
