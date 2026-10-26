@@ -47,8 +47,8 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
 
 - `@ohif/hpMammo`: `numberOfDisplaySetsWithImages` changes from
   `greaterThan: 2` to `greaterThanOrEqual: 2`. The match does not change.
-- `@ohif/frameView`: `numImageFrames` changes from `greaterThan: 16` to
-  `greaterThanOrEqual: 16`. The match does not change.
+- `@ohif/frameView`: `numImageFrames` changes from `greaterThan: { value: 16 }` to
+  `greaterThanOrEqual: { value: 16 }`. The match does not change.
 - The rules `numImageFrames: { greaterThan: { value: 0 } }` change to
   `greaterThanOrEqual: { value: 0 }`. The match does not change: a display set with 0 image
   frames (whole slide, ECG) still matches, so the default protocol still shows a whole slide
@@ -59,20 +59,34 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
   `@ohif/hpScale`, and the test protocol `hpTestSwitch`) now run. Before 3.14 they always
   passed (see "A falsy operand"). Now a study with 0 display sets with images no longer gets
   the weight of the `OneOrMoreSeries` rule.
+- `@ohif/hpMammo` has two `required` rules with `doesNotContain`: `PatientOrientation`
+  `doesNotContain: ['P', 'FL']` and `SeriesDescription` `doesNotContain: 'CC'`. Before 3.14,
+  the rule failed with an error when the display set had no value for the attribute, so the
+  display set did not match. Now the rule holds on no value (see "Text values"). So a display
+  set with no `PatientOrientation` or no `SeriesDescription` can now fill that viewport, when
+  its other required rules hold.
+- A numeric string `numImageFrames` now matches the number rules. The stack SOP class
+  handler copies `NumberOfFrames` of a multi-frame instance as it is, and a data source can
+  give it as text. Before 3.14, `greaterThan` failed on a string, so such a display set did
+  not match `@ohif/frameView` or the `numImageFrames` selectors. Now `'30'` reads as 30.
 
 ## Number values
 
-`greaterThan`, `greaterThanOrEqual`, `lessThan` and `lessThanOrEqual` now read the value and
-the test value as `@cornerstonejs/metadata` does:
+`greaterThan`, `greaterThanOrEqual`, `lessThan` and `lessThanOrEqual` now read the value as
+`@cornerstonejs/metadata` does:
 
 - A numeric string reads as a number: `'5'` is 5. Before 3.14, `greaterThan` failed on a
   string value.
 - An array reads as its first element: `[5]` is 5. Before 3.14, `greaterThan` failed on an
   array value.
-- A value with no number fails: `null`, `undefined`, `''`. Before 3.14, `lessThan` passed
-  on `null`, because JavaScript reads `null <= 10` as true.
-- A test value with no number fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan:
-  []` passed on every value.
+- A value with no number fails: `null`, `undefined`, `''`. Before 3.14, a direct call of
+  the validator with `lessThan` passed on `null`, because JavaScript reads `null <= 10` as
+  true. Through `HPMatcher`, a `null` attribute already read as `undefined` and failed.
+
+The test value reads in the same way: `'4'` and `['4']` are 4. A test value with no number
+fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every value.
+`@cornerstonejs/metadata` accepts a finite number only, so `greaterThan: '4'` is an error
+there.
 
 `range` reads the value and its two bounds in the same way. So `range: [1, 10]` now holds
 for `'5'` and for `[5, 60]` (the first element is 5), and fails for `[50, 60]`, `null` and
@@ -91,21 +105,40 @@ always passed, whatever the value. The operand `{ value: 0 }` did run. Now the o
 `false` or `''` runs for every OHIF validator. Check each such constraint in your hanging
 protocols: it now tests the value.
 
-- An operand `null` or `undefined` still skips the validator, and the rule passes.
-- A `validate.js` built-in validator keeps its meaning: `presence: false` turns it off. A
-  validator that your code adds to `validate.validators` after `@ohif/core` loads counts as
-  an OHIF validator, so it also gets the operand `0`, `false` or `''`.
-- The text validators (`contains`, `containsI`, `doesNotContain`, `doesNotContainI`,
-  `startsWith`, `endsWith`) read a number or a boolean operand as text, as
-  `@cornerstonejs/metadata` does. So `startsWith: 0` tests for `'0'`, and
-  `doesNotContain: 0` holds for `'abc'`. Before 3.14, these rules always passed.
+- An operand `null`, `undefined` or `NaN` still skips the validator, and the rule passes.
+- Only the OHIF validators get the operand: the validators of this page, `containsAll` and
+  `range`. A `validate.js` built-in validator keeps its meaning: `presence: false` turns it
+  off. A validator that your application adds to `validate.validators` also keeps the
+  `validate.js` meaning.
+- A text validator reads a number or a boolean operand as text: `startsWith: 0` tests for
+  `'0'`, and `doesNotContain: 0` holds for `'abc'` (see "Text values"). Before 3.14, the bare
+  operand `0` skipped the rule, so it passed. The operand `{ value: 0 }` failed with an
+  error (`startsWith`) or always failed (`doesNotContain`).
 - An operand `''` runs the text validators too. Every text contains `''`, so
-  `doesNotContain: ''` and `doesNotContainI: ''` now always fail. `startsWith: ''`,
-  `endsWith: ''` and `equals: ''` now fail on a missing value, and `containsAll: ''` fails
-  with "must be an array". Before 3.14, all of these always passed.
+  `doesNotContain: ''` and `doesNotContainI: ''` now fail on every value that has a text.
+  `contains: ''`, `startsWith: ''`, `endsWith: ''` and `equals: ''` now fail on a missing
+  value, and `containsAll: ''` fails with "must be an array". Before 3.14, all of these
+  always passed.
 - No OHIF hanging protocol uses the operand `0`, `false` or `''` with a text validator.
 
 `notNull: false` now means "has no value". Before 3.14, it always passed.
+
+## Text values
+
+`contains`, `containsI`, `doesNotContain`, `doesNotContainI`, `startsWith` and `endsWith`
+now read the value as `@cornerstonejs/metadata` does:
+
+- Each element of the value that has a value reads as text: `5` is `'5'`, and `[null,
+  'R MLO']` is `['R MLO']`. Before 3.14, a number value failed `startsWith` with "must be a
+  string", and passed `contains` (a number has no `indexOf`).
+- A value with no value gives no text. So `contains`, `startsWith` and `endsWith` fail, and
+  `doesNotContain` and `doesNotContainI` hold. Before 3.14, all of these failed with an
+  error on a missing value.
+- The test value reads as text too (see "A falsy operand"). `@cornerstonejs/metadata`
+  accepts a string operand only, so `startsWith: 0` is an error there.
+
+The rule holds when one text of the value passes the test with one test value, as before.
+The `@ohif/hpMammo` change is in "The OHIF hanging protocols".
 
 ## No value
 
@@ -129,8 +162,8 @@ A boolean now equals the number `1` or `0`, and the text `'true'` or `'false'`. 
 `equals: true` holds for the value `1` and for `'true'`, and `equals: false` holds for `0`
 and for `'false'`. A boolean does not equal any other value: `true` does not equal `'1'`.
 
-The OHIF hanging protocols do not change. Each `equals: true` in them reads
-`isDisplaySetFromUrl`, which is a boolean.
+The OHIF hanging protocols do not change. Each `equals: true` and `equals: { value: true }`
+in them reads `isDisplaySetFromUrl` or `isReconstructable`, which are booleans.
 
 ## `equals`, `doesNotEqual`, `includes` and `doesNotInclude`
 
@@ -164,14 +197,31 @@ constraint: { includes: 'ORIGINAL' }
 The OHIF hanging protocols do not change. Each `equals` in them compares a single-valued
 attribute, or uses an array with the full value (`PatientOrientation`).
 
+## Known differences from `@cornerstonejs/metadata`
+
+The hanging protocol constraints and the `@cornerstonejs/metadata` split rule operators of the
+same names still differ here:
+
+- `equals: null` means "has no value" in `@cornerstonejs/metadata`. In a hanging protocol,
+  the operand `null` skips the constraint, and the rule passes. Use `notNull: false`.
+- A boolean equals `1` or `0` here. `@cornerstonejs/metadata` adds the same meaning in a
+  later release.
+- `greaterThanOrEqual` and `lessThanOrEqual` are not split rule operators yet.
+- `@cornerstonejs/metadata` rejects an operand of the wrong kind: a number operand of a text
+  operator (`startsWith: 0`), and a text operand of a number operator (`greaterThan: '4'`).
+  The hanging protocol constraints read such an operand as text or as a number.
+- `containsAll` compares with `===` here, so `['1', 'b']` with `containsAll: [1]` fails.
+  `@cornerstonejs/metadata` compares a number and a numeric string by value.
+- `notNull` reads any operand other than `false` as `true`. `@cornerstonejs/metadata`
+  accepts a boolean only.
+- The operand wrappers `{ value }` and `{ attribute, from }` are for hanging protocols only.
+
 ## Other changes to the constraint list
 
 - The `Constraint` type of `@ohif/core` (`Types.HangingProtocol.Constraint`) now lists all
   of the validators. The type had `notEquals`, which no validator implements. Use
   `doesNotEqual`. The `{ value }` form of a constraint now also accepts an array of strings or
   numbers.
-- The operand wrappers `{ value }` and `{ attribute, from }` are for hanging protocols only.
-  The `@cornerstonejs/metadata` split rules do not accept them yet.
 - The error messages of the validators changed, for example for the number constraints,
   `range` and `doesNotEqual`. `HPMatcher` gives them in the match details only. Do not test
   for the old text.

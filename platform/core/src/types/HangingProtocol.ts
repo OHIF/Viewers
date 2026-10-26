@@ -115,7 +115,7 @@ export type Constraint = {
   greaterThanOrEqual?: ConstraintValue;
   lessThanOrEqual?: ConstraintValue;
   range?: ConstraintValue;
-  notNull?: boolean;
+  notNull?: boolean | { value: boolean };
 };
 
 export type MatchingRule = {

@@ -464,11 +464,23 @@ describe('validator', () => {
       ['endsWith', false, 'is false', true],
       ['contains', 1, 'a1b', true],
       ['doesNotContain', 0, 'abc', true],
-      ['doesNotContainI', 'X', 'abc', true],
+      ['doesNotContainI', 0, 'abc', true],
     ])('%s reads the operand %j as text against %j: %s', (name, operand, n, passes) => {
       expect(validate({ n }, { n: { [name]: { value: operand } } }, [options]) === undefined).toBe(
         passes
       );
+    });
+  });
+  describe('text values', () => {
+    it.each([
+      ['contains', 'a', undefined, false],
+      ['doesNotContain', 'a', undefined, true],
+      ['doesNotContainI', 'A', [null, 'xyz'], true],
+      ['contains', '6', 5, false],
+      ['startsWith', '5', 50, true],
+      ['containsI', 'MLO', ['', 'r mlo'], true],
+    ])('%s %j reads the value %j as text: %s', (name, operand, n, passes) => {
+      expect(validate({ n }, { n: { [name]: operand } }, [options]) === undefined).toBe(passes);
     });
   });
   describe('range', () => {

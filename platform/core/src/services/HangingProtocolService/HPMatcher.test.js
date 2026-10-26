@@ -1,4 +1,5 @@
 import { HPMatcher } from './HPMatcher';
+import validate from './lib/validator';
 
 const passes = (metadataInstance, constraint) =>
   HPMatcher.match(metadataInstance, [{ attribute: 'n', constraint }], {}, {}).details.passed
@@ -27,8 +28,20 @@ describe('HPMatcher', () => {
     expect(passes({ n: 'abc' }, { doesNotContain: '' })).toBe(false);
   });
 
-  it('keeps a built-in validator off when its option is false', () => {
+  it('keeps a built-in or an application validator off when its option is false', () => {
     expect(passes({}, { presence: false })).toBe(true);
+    validate.validators.alwaysFails = () => 'fails';
+    try {
+      expect(passes({ n: 1 }, { alwaysFails: false })).toBe(true);
+      expect(passes({ n: 1 }, { alwaysFails: true })).toBe(false);
+    } finally {
+      delete validate.validators.alwaysFails;
+    }
+  });
+
+  it('runs an { attribute } operand that resolves to 0', () => {
+    expect(passes({ n: 0, m: 0 }, { equals: { attribute: 'm' } })).toBe(true);
+    expect(passes({ n: 1, m: 0 }, { equals: { attribute: 'm' } })).toBe(false);
   });
 
   it('matches a display set with 0 image frames with greaterThanOrEqual: { value: 0 }', () => {

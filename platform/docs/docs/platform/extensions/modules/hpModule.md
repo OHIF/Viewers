@@ -249,7 +249,7 @@ A list of criteria for the protocol along with the provided points for ranking.
 
 
   - `constraint`: the constraint that needs to be satisfied for the attribute. It accepts a `validator` which can be
-    [`equals`, `doesNotEqual`, `contains`, `doesNotContain`, `startsWith`, `endsWidth`]
+    [`equals`, `doesNotEqual`, `includes`, `doesNotInclude`, `contains`, `containsI`, `containsAll`, `doesNotContain`, `doesNotContainI`, `startsWith`, `endsWith`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `range`, `notNull`]. A number value reads as text in the text validators, and a missing value has no text: `contains` fails and `doesNotContain` holds. The operand `0`, `false` or `''` runs the validator; `null` and `undefined` skip it
 
  | Rule | Single Value | Array Value | Example |
 |------|--------------|-------------|---------|

@@ -1,15 +1,33 @@
 import validate from 'validate.js';
 
-/** The validate.js built-in validators, before OHIF adds its own below. */
-const BUILT_IN_VALIDATORS = new Set(Object.keys(validate.validators));
+/** The validators that this module adds to validate.js. */
+const OHIF_VALIDATORS = new Set([
+  'equals',
+  'doesNotEqual',
+  'includes',
+  'doesNotInclude',
+  'containsI',
+  'contains',
+  'containsAll',
+  'doesNotContain',
+  'doesNotContainI',
+  'startsWith',
+  'endsWith',
+  'greaterThan',
+  'greaterThanOrEqual',
+  'lessThan',
+  'lessThanOrEqual',
+  'range',
+  'notNull',
+]);
 
 /**
  * True for an OHIF validator. Each one reads its operand as a value to test, so
- * `false` or `0` is a test value. For a built-in such as `presence`, `false`
- * turns the validator off.
+ * `false` or `0` is a test value. For a validate.js built-in such as
+ * `presence`, or a validator that an application adds, `false` keeps the
+ * validate.js meaning.
  */
-export const isOhifValidator = name =>
-  !BUILT_IN_VALIDATORS.has(name) && typeof validate.validators[name] === 'function';
+export const isOhifValidator = name => OHIF_VALIDATORS.has(name);
 
 /**
  * check if the value is equal to options. A number equals a numeric string:
@@ -141,29 +159,8 @@ validate.validators.doesNotInclude = function (value, options, key) {
  *
  * */
 validate.validators.containsI = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(value)) {
-    if (value.some(item => !validate.validators.containsI(item.toLowerCase(), options, key))) {
-      return undefined;
-    }
-    return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
-  }
-  if (Array.isArray(testValue)) {
-    if (
-      testValue.some(
-        subTest => !validate.validators.containsI(value, String(subTest).toLowerCase(), key)
-      )
-    ) {
-      return;
-    }
-    return `${key} must contain at least one of ${testValue.join(',')}`;
-  }
-  if (
-    !hasNoValue(testValue) &&
-    value.indexOf &&
-    value.toLowerCase().indexOf(String(testValue).toLowerCase()) === -1
-  ) {
-    return key + 'must contain any case of' + testValue;
+  if (!matchesText(value, options, true, (text, needle) => text.includes(needle))) {
+    return `${key} must contain any case of one of ${JSON.stringify(getTestValue(options))}`;
   }
 };
 /**
@@ -183,21 +180,8 @@ validate.validators.containsI = function (value, options, key) {
  *
  * */
 validate.validators.contains = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(value)) {
-    if (value.some(item => !validate.validators.contains(item, options, key))) {
-      return undefined;
-    }
-    return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
-  }
-  if (Array.isArray(testValue)) {
-    if (testValue.some(subTest => !validate.validators.contains(value, subTest, key))) {
-      return;
-    }
-    return `${key} must contain at least one of ${testValue.join(',')}`;
-  }
-  if (!hasNoValue(testValue) && value.indexOf && value.indexOf(String(testValue)) === -1) {
-    return key + 'must contain ' + testValue;
+  if (!matchesText(value, options, false, (text, needle) => text.includes(needle))) {
+    return `${key} must contain one of ${JSON.stringify(getTestValue(options))}`;
   }
 };
 
@@ -231,9 +215,8 @@ validate.validators.containsAll = function (value, options, key) {
  *
  * */
 validate.validators.doesNotContain = function (value, options, key) {
-  const containsResult = validate.validators.contains(value, options, key);
-  if (!containsResult) {
-    return `No item of ${value} should contain ${getTestValue(options)}`;
+  if (matchesText(value, options, false, (text, needle) => text.includes(needle))) {
+    return `${key} must not contain ${JSON.stringify(getTestValue(options))}`;
   }
 };
 
@@ -254,9 +237,8 @@ validate.validators.doesNotContain = function (value, options, key) {
  *
  * */
 validate.validators.doesNotContainI = function (value, options, key) {
-  const containsResult = validate.validators.containsI(value, options, key);
-  if (!containsResult) {
-    return `No item of ${value} should not contain ${getTestValue(options)}`;
+  if (matchesText(value, options, true, (text, needle) => text.includes(needle))) {
+    return `${key} must not contain any case of ${JSON.stringify(getTestValue(options))}`;
   }
 };
 /**
@@ -275,31 +257,8 @@ validate.validators.doesNotContainI = function (value, options, key) {
  *
  * */
 validate.validators.startsWith = function (value, options, key) {
-  const testValues = toTexts(getTestValue(options));
-
-  if (typeof value === 'string') {
-    if (!testValues.some(testValue => value.startsWith(testValue))) {
-      return key + ' must start with any of these values: ' + testValues;
-    }
-  } else if (Array.isArray(value)) {
-    let valid = false;
-    for (let i = 0; i < value.length; i++) {
-      for (let j = 0; j < testValues.length; j++) {
-        if (value[i].startsWith(testValues[j])) {
-          valid = true; // set valid flag to true if a match is found
-          break;
-        }
-      }
-      if (valid) {
-        return undefined; // break out of loop if a match is found
-      }
-    }
-
-    if (!valid) {
-      return key + ' must start with any of these values: ' + testValues; // return undefined if no match is found
-    }
-  } else {
-    return 'Value must be a string or an array';
+  if (!matchesText(value, options, false, (text, needle) => text.startsWith(needle))) {
+    return `${key} must start with one of ${JSON.stringify(getTestValue(options))}`;
   }
 };
 
@@ -319,40 +278,18 @@ validate.validators.startsWith = function (value, options, key) {
  *
  * */
 validate.validators.endsWith = function (value, options, key) {
-  const testValues = toTexts(getTestValue(options));
-
-  if (typeof value === 'string') {
-    if (!testValues.some(testValue => value.endsWith(testValue))) {
-      return key + ' must end with any of these values: ' + testValues;
-    }
-  } else if (Array.isArray(value)) {
-    let valid = false;
-    for (let i = 0; i < value.length; i++) {
-      for (let j = 0; j < testValues.length; j++) {
-        if (value[i].endsWith(testValues[j])) {
-          valid = true; // set valid flag to true if a match is found
-          break;
-        }
-      }
-      if (valid) {
-        return undefined; // break out of loop if a match is found
-      }
-    }
-
-    if (!valid) {
-      return key + ' must end with any of these values: ' + testValues; // return undefined if no match is found
-    }
-  } else {
-    return key + ' must be a string or an array';
+  if (!matchesText(value, options, false, (text, needle) => text.endsWith(needle))) {
+    return `${key} must end with one of ${JSON.stringify(getTestValue(options))}`;
   }
 };
 /**
  * Creates a validator that compares a numeric value with one test value. The
  * test value can be a number, `{ value }`, or an array of one number.
  *
- * The value and the test value read as in `@cornerstonejs/metadata`: a number,
- * a numeric string, or the first element of an array. A value with no number
- * fails, and so does a test value with no number (`''`, `[]`, `null`).
+ * The value reads as in `@cornerstonejs/metadata`: a number, a numeric string,
+ * or the first element of an array. A value with no number fails. The test
+ * value reads in the same way, and a test value with no number (`''`, `[]`,
+ * `null`) fails. `@cornerstonejs/metadata` accepts a finite number only.
  *
  * @param compare - the comparison of the value with the test value
  * @param relation - the relation, for the error message
@@ -468,15 +405,31 @@ validate.validators.notNull = (value, options) => {
   }
   return isNull ? 'Value is null' : undefined;
 };
-const getTestValue = options => {
-  if (Array.isArray(options)) {
-    return options.map(option => option?.value ?? option);
-  } else {
-    return options?.value ?? options;
-  }
-};
-/** The test values of a text validator as text, as in `@cornerstonejs/metadata`: `0` is `'0'`. */
+/** The operand, without its `{ value }` wrapper. `{ value: null }` gives `null`. */
+const unwrap = option =>
+  option !== null && typeof option === 'object' && !Array.isArray(option) && 'value' in option
+    ? option.value
+    : option;
+const getTestValue = options => (Array.isArray(options) ? options.map(unwrap) : unwrap(options));
+/**
+ * The test values of a text validator as text: `0` is `'0'`.
+ * `@cornerstonejs/metadata` accepts a string operand only.
+ */
 const toTexts = testValue => (Array.isArray(testValue) ? testValue : [testValue]).map(String);
+/**
+ * True when a text of the value and a test value pass `test`, as the text
+ * operators of `@cornerstonejs/metadata` do. The value reads as text: each
+ * element of an array that has a value, so `5` is `'5'`. A value with no value
+ * gives no text, so `contains` fails and `doesNotContain` holds.
+ */
+const matchesText = (value, options, ignoreCase, test) => {
+  const toCase = text => (ignoreCase ? text.toLowerCase() : text);
+  const texts = (Array.isArray(value) ? value : [value])
+    .filter(element => !hasNoValue(element))
+    .map(element => toCase(String(element)));
+  const needles = toTexts(getTestValue(options)).map(toCase);
+  return texts.some(text => needles.some(needle => test(text, needle)));
+};
 const dicomTagToArray = value => {
   let dicomArrayValue;
   if (!Array.isArray(value)) {
