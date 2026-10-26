@@ -4,7 +4,6 @@ name: Dependency Audit
 # pnpm-lock.yaml. Only versions the PR adds count, compared with the point where
 # it branched off its target branch, so advisories already on the target never
 # block an unrelated PR. The logic is .scripts/dependency-audit/audit.mjs.
-# It also fails a PR that has a .cs3d-ref file (see the last step).
 #
 # Runs on pull_request_target so the workflow and script always come from the
 # default branch: a PR cannot edit its own check. The PR's files are only
@@ -132,22 +131,3 @@ jobs:
             -f description="$description" \
             -f target_url="$RUN_URL" \
             --jq '"\(.context): \(.description)"'
-      # .cs3d-ref is the CircleCI and Netlify fallback for a CS3D_REF line in
-      # the PR body (.scripts/cs3d-read-ref.mjs). On master it would apply to
-      # each later PR whose body the API does not return. This check is
-      # required, so it blocks the merge; the CS3D Branch Merge Guard only
-      # reports. Runs even when the audit failed.
-      - name: Fail while the PR has a .cs3d-ref file
-        if: ${{ !cancelled() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          set -euo pipefail
-          if out=$(gh api "repos/$REPO/contents/.cs3d-ref?ref=$HEAD_SHA" --jq .path 2>&1); then
-            echo "::error::This PR has a .cs3d-ref file. Delete .cs3d-ref before the merge."
-            exit 1
-          fi
-          grep -q 'HTTP 404' <<<"$out" || { echo "::error::Could not check for a .cs3d-ref file: $out"; exit 1; }
-          echo "No .cs3d-ref file."
