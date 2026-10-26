@@ -78,6 +78,10 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `greaterThan` and `lessThan` constraints are now strict. Before, they tested `>=`
   and `<=`. The new `greaterThanOrEqual` and `lessThanOrEqual` constraints keep the old
   meaning. `equals` and `doesNotEqual` compare the whole value of a multi-valued
-  attribute, and `includes` and `doesNotInclude` accept a single test value.
+  attribute, and `includes` and `doesNotInclude` accept a single test value. A numeric
+  string and a boolean can now equal a number. The number constraints read a numeric
+  string or the first element of an array. `notNull` reads `''` and `[]` as no value. An
+  operand `0`, `false` or `''` now runs its constraint; before, the constraint always
+  passed.
 
 <DocCardList />

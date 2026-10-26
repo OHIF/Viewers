@@ -352,8 +352,9 @@ validate.validators.endsWith = function (value, options, key) {
  * Creates a validator that compares a numeric value with one test value. The
  * test value can be a number, `{ value }`, or an array of one number.
  *
- * The value reads as in `@cornerstonejs/metadata`: a number, a numeric
- * string, or the first element of an array. A value with no number fails.
+ * The value and the test value read as in `@cornerstonejs/metadata`: a number,
+ * a numeric string, or the first element of an array. A value with no number
+ * fails, and so does a test value with no number (`''`, `[]`, `null`).
  *
  * @param compare - the comparison of the value with the test value
  * @param relation - the relation, for the error message
@@ -362,17 +363,15 @@ const createNumberValidator = (compare, relation) =>
   function (rawValue, options, key) {
     const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
     if (value === undefined) {
-      return `${key} must be a number, but was ${rawValue}`;
+      return `${key} must be a number, but was ${JSON.stringify(rawValue)}`;
     }
-    let testValue = getTestValue(options);
-    if (Array.isArray(testValue)) {
-      if (testValue.length > 1) {
-        return key + ' must be an array of length 1';
-      }
-      if (testValue.length === 0) {
-        return;
-      }
-      testValue = testValue[0];
+    const rawTestValue = getTestValue(options);
+    if (Array.isArray(rawTestValue) && rawTestValue.length > 1) {
+      return key + ' must be an array of length 1';
+    }
+    const testValue = toFinite(Array.isArray(rawTestValue) ? rawTestValue[0] : rawTestValue);
+    if (testValue === undefined) {
+      return `${key} has a test value that is not a number: ${JSON.stringify(rawTestValue)}`;
     }
     if (!compare(value, testValue)) {
       return `${key} must be ${relation} ${testValue}, but was ${value}`;

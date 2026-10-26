@@ -18,6 +18,15 @@ describe('HPMatcher', () => {
     expect(passes({ n: null }, { notNull: true })).toBe(false);
   });
 
+  it('skips a validator whose operand is null or undefined', () => {
+    expect(passes({ n: 5 }, { equals: null })).toBe(true);
+    expect(passes({ n: 5 }, { equals: undefined })).toBe(true);
+  });
+
+  it('runs a string validator whose operand is an empty string', () => {
+    expect(passes({ n: 'abc' }, { doesNotContain: '' })).toBe(false);
+  });
+
   it('keeps a built-in validator off when its option is false', () => {
     expect(passes({}, { presence: false })).toBe(true);
   });

@@ -138,7 +138,7 @@ const resolveConstraintAttributes = (
 
   const resolvedConstraint = {};
   Object.entries(constraint).forEach(([key, value]) => {
-    if (typeof value === 'object' && Object.keys(value).length > 0 && 'attribute' in value) {
+    if (value && typeof value === 'object' && 'attribute' in value) {
       const attributeName = value.attribute;
       const attributeFrom = value.from ?? 'metadataInstance';
 

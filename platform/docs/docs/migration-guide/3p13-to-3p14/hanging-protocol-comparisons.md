@@ -19,21 +19,6 @@ Two new constraints give the old meaning: `greaterThanOrEqual` and `lessThanOrEq
 | `greaterThanOrEqual: n` | not available ("Unknown validator") | value `>=` n |
 | `lessThanOrEqual: n` | not available ("Unknown validator") | value `<=` n |
 
-## Number values
-
-`greaterThan`, `greaterThanOrEqual`, `lessThan` and `lessThanOrEqual` now read the value as
-`@cornerstonejs/metadata` does:
-
-- A numeric string reads as a number: `'5'` is 5. Before 3.14, `greaterThan` failed on a
-  string value.
-- An array reads as its first element: `[5]` is 5. Before 3.14, `greaterThan` failed on an
-  array value.
-- A value with no number fails: `null`, `undefined`, `''`. Before 3.14, `lessThan` passed
-  on a missing value, because JavaScript reads `null < 10` as true.
-
-The OHIF hanging protocols do not change. Their number rules read `numImageFrames` and
-`numberOfDisplaySetsWithImages`, which are numbers.
-
 ## What to change
 
 Find each `greaterThan` and `lessThan` constraint in your hanging protocols. For each one,
@@ -75,13 +60,37 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
   passed (see the next section). Now a study with 0 display sets with images no longer gets
   the weight of the `OneOrMoreSeries` rule.
 
+## Number values
+
+`greaterThan`, `greaterThanOrEqual`, `lessThan` and `lessThanOrEqual` now read the value and
+the test value as `@cornerstonejs/metadata` does:
+
+- A numeric string reads as a number: `'5'` is 5. Before 3.14, `greaterThan` failed on a
+  string value.
+- An array reads as its first element: `[5]` is 5. Before 3.14, `greaterThan` failed on an
+  array value.
+- A value with no number fails: `null`, `undefined`, `''`. Before 3.14, `lessThan` passed
+  on `null`, because JavaScript reads `null <= 10` as true.
+- A test value with no number fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan:
+  []` passed on every value.
+
+The OHIF hanging protocols do not change. Their number rules read `numImageFrames` and
+`numberOfDisplaySetsWithImages`, which are numbers, with number test values.
+
 ## A falsy operand
 
 Before 3.14, a constraint with the operand `0`, `false` or `''` never ran, because
 `validate.js` skips a validator with a falsy operand. So `greaterThan: 0` and `equals: 0`
-always passed, whatever the value. The operand `{ value: 0 }` did run. Now every operand
-runs. Check each constraint with the operand `0`, `false` or `''` in your hanging protocols:
-it now tests the value.
+always passed, whatever the value. The operand `{ value: 0 }` did run. Now the operand `0`,
+`false` or `''` runs for every OHIF validator. Check each such constraint in your hanging
+protocols: it now tests the value.
+
+- An operand `null` or `undefined` still skips the validator, and the rule passes.
+- A `validate.js` built-in validator keeps its meaning: `presence: false` turns it off.
+- An operand `''` now runs the text validators. Every text contains `''`, so
+  `doesNotContain: ''` now always fails. `startsWith: ''`, `endsWith: ''` and `equals: ''`
+  now fail on a missing value, and `containsAll: ''` fails with "must be an array". Before
+  3.14, all of these always passed. No OHIF hanging protocol uses the operand `''`.
 
 `notNull: false` now means "has no value". Before 3.14, it always passed.
 

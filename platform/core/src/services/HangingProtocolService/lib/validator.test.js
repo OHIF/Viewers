@@ -426,6 +426,18 @@ describe('validator', () => {
         );
       });
     });
+    it.each([
+      ['4', true],
+      [['4'], true],
+      [{ value: '' }, false],
+      [[], false],
+      [{ value: null }, false],
+      ['a', false],
+    ])('reads the test value %j as a number: %s', (testValue, isNumber) => {
+      expect(validate({ n: 5 }, { n: { greaterThan: testValue } }, [options]) === undefined).toBe(
+        isNumber
+      );
+    });
   });
   describe('notNull', () => {
     it.each([
