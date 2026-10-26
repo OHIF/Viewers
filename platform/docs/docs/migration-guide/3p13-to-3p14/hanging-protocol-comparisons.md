@@ -53,6 +53,21 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
   the rule is `required`, the display set no longer matches. This is the intended meaning of
   these rules: the comments call them "match series with images".
 
+- The rules `numberOfDisplaySetsWithImages: { greaterThan: 0 }` (`studyWithImages`,
+  `@ohif/hpScale`, and the test protocol `hpTestSwitch`) now run. Before 3.14 they always
+  passed (see the next section). Now a study with 0 display sets with images no longer gets
+  the weight of the `OneOrMoreSeries` rule.
+
+## A falsy operand
+
+Before 3.14, a constraint with the operand `0`, `false` or `''` never ran, because
+`validate.js` skips a validator with a falsy operand. So `greaterThan: 0` and `equals: 0`
+always passed, whatever the value. The operand `{ value: 0 }` did run. Now every operand
+runs. Check each constraint with the operand `0`, `false` or `''` in your hanging protocols:
+it now tests the value.
+
+`notNull: false` now means "has no value". Before 3.14, it always passed.
+
 ## Numeric strings
 
 `equals`, `doesNotEqual`, `includes` and `doesNotInclude` now read a numeric string as a

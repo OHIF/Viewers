@@ -438,8 +438,14 @@ validate.validators.range = function (value, options, key) {
   }
 };
 
-validate.validators.notNull = value =>
-  value === null || value === undefined ? 'Value is null' : undefined;
+/** `notNull: true` fails on no value, and `notNull: false` fails on a value. */
+validate.validators.notNull = (value, options) => {
+  const isNull = value === null || value === undefined;
+  if (getTestValue(options) === false) {
+    return isNull ? undefined : 'Value is not null';
+  }
+  return isNull ? 'Value is null' : undefined;
+};
 const getTestValue = options => {
   if (Array.isArray(options)) {
     return options.map(option => option?.value ?? option);

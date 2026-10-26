@@ -159,12 +159,20 @@ const resolveConstraintAttributes = (
         };
       }
     } else {
-      resolvedConstraint[key] = value;
+      resolvedConstraint[key] = wrapFalsyOperand(value);
     }
   }, {});
 
   return resolvedConstraint;
 };
+
+/**
+ * Validate.js does not run a validator whose operand is falsy, so
+ * `{ greaterThan: 0 }` would always pass. `{ value: 0 }` is truthy, and the
+ * validators read the operand from `value`.
+ */
+const wrapFalsyOperand = operand =>
+  operand === 0 || operand === false || operand === '' ? { value: operand } : operand;
 
 const HPMatcher = {
   match,
