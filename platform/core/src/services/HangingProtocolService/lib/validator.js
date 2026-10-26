@@ -450,9 +450,19 @@ validate.validators.range = function (value, options, key) {
   }
 };
 
+/**
+ * No value, as in `@cornerstonejs/metadata` `hasNoValue`: `undefined`, `null`,
+ * `''`, or an array whose elements all have no value (`[]`, `['']`, `[null]`).
+ */
+const hasNoValue = value =>
+  value === undefined ||
+  value === null ||
+  value === '' ||
+  (Array.isArray(value) && value.every(hasNoValue));
+
 /** `notNull: true` fails on no value, and `notNull: false` fails on a value. */
 validate.validators.notNull = (value, options) => {
-  const isNull = value === null || value === undefined;
+  const isNull = hasNoValue(value);
   if (getTestValue(options) === false) {
     return isNull ? undefined : 'Value is not null';
   }

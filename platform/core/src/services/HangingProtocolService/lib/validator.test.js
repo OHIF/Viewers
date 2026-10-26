@@ -393,6 +393,24 @@ describe('validator', () => {
       ).not.toBeUndefined();
     });
   });
+  describe('notNull', () => {
+    it.each([
+      [undefined, false],
+      [null, false],
+      ['', false],
+      [[], false],
+      [[''], false],
+      [0, true],
+      [false, true],
+      ['a', true],
+      [['a'], true],
+    ])('reads %j as having a value: %s', (n, hasValue) => {
+      expect(validate({ n }, { n: { notNull: true } }, [options]) === undefined).toBe(hasValue);
+      expect(validate({ n }, { n: { notNull: { value: false } } }, [options]) === undefined).toBe(
+        !hasValue
+      );
+    });
+  });
   describe('range', () => {
     it('returns undefined if the value is between', () => {
       expect(

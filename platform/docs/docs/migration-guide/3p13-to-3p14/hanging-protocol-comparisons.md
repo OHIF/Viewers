@@ -70,6 +70,16 @@ it now tests the value.
 
 `notNull: false` now means "has no value". Before 3.14, it always passed.
 
+## No value
+
+`notNull` now reads an empty value as no value, as `@cornerstonejs/metadata` does. No value is
+`undefined`, `null`, `''`, or an array whose elements all have no value (`[]`, `['']`,
+`[null]`). So `notNull: true` now also fails on `''`, `[]` and an array of empty elements.
+Before 3.14, it failed only on `null` and `undefined`. `0` and `false` are values.
+
+The OHIF hanging protocols do not change. The only `notNull` rule, `prior`
+`StudyInstanceUID` in `@ohif/hpCompare`, reads a UID or `undefined`.
+
 ## Numeric strings
 
 `equals`, `doesNotEqual`, `includes` and `doesNotInclude` now read a numeric string as a
