@@ -150,13 +150,19 @@ validate.validators.containsI = function (value, options, key) {
   }
   if (Array.isArray(testValue)) {
     if (
-      testValue.some(subTest => !validate.validators.containsI(value, subTest.toLowerCase(), key))
+      testValue.some(
+        subTest => !validate.validators.containsI(value, String(subTest).toLowerCase(), key)
+      )
     ) {
       return;
     }
     return `${key} must contain at least one of ${testValue.join(',')}`;
   }
-  if (testValue && value.indexOf && value.toLowerCase().indexOf(testValue.toLowerCase()) === -1) {
+  if (
+    !hasNoValue(testValue) &&
+    value.indexOf &&
+    value.toLowerCase().indexOf(String(testValue).toLowerCase()) === -1
+  ) {
     return key + 'must contain any case of' + testValue;
   }
 };
@@ -190,7 +196,7 @@ validate.validators.contains = function (value, options, key) {
     }
     return `${key} must contain at least one of ${testValue.join(',')}`;
   }
-  if (testValue && value.indexOf && value.indexOf(testValue) === -1) {
+  if (!hasNoValue(testValue) && value.indexOf && value.indexOf(String(testValue)) === -1) {
     return key + 'must contain ' + testValue;
   }
 };
@@ -269,11 +275,7 @@ validate.validators.doesNotContainI = function (value, options, key) {
  *
  * */
 validate.validators.startsWith = function (value, options, key) {
-  let testValues = getTestValue(options);
-
-  if (typeof testValues === 'string') {
-    testValues = [testValues];
-  }
+  const testValues = toTexts(getTestValue(options));
 
   if (typeof value === 'string') {
     if (!testValues.some(testValue => value.startsWith(testValue))) {
@@ -317,11 +319,7 @@ validate.validators.startsWith = function (value, options, key) {
  *
  * */
 validate.validators.endsWith = function (value, options, key) {
-  let testValues = getTestValue(options);
-
-  if (typeof testValues === 'string') {
-    testValues = [testValues];
-  }
+  const testValues = toTexts(getTestValue(options));
 
   if (typeof value === 'string') {
     if (!testValues.some(testValue => value.endsWith(testValue))) {
@@ -437,16 +435,18 @@ validate.validators.lessThanOrEqual = createNumberValidator(
  *           = [45] (Fail)
  *
  * */
-validate.validators.range = function (value, options, key) {
+validate.validators.range = function (rawValue, options, key) {
   const testValue = getTestValue(options);
-  if (Array.isArray(testValue) && testValue.length === 2) {
-    const min = Math.min(testValue[0], testValue[1]);
-    const max = Math.max(testValue[0], testValue[1]);
-    if (value === undefined || value < min || value > max) {
-      return `${key} with value ${value} must be between ${min} and ${max}`;
-    }
-  } else {
-    return `${key} must be an array of length 2`;
+  const bounds = Array.isArray(testValue) ? testValue.map(toFinite) : [];
+  if (bounds.length !== 2 || bounds.includes(undefined)) {
+    return `${key} must be an array of two numbers`;
+  }
+  const min = Math.min(bounds[0], bounds[1]);
+  const max = Math.max(bounds[0], bounds[1]);
+  // The value reads as in the number validators: the first element of an array.
+  const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
+  if (value === undefined || value < min || value > max) {
+    return `${key} with value ${JSON.stringify(rawValue)} must be between ${min} and ${max}`;
   }
 };
 
@@ -475,6 +475,8 @@ const getTestValue = options => {
     return options?.value ?? options;
   }
 };
+/** The test values of a text validator as text, as in `@cornerstonejs/metadata`: `0` is `'0'`. */
+const toTexts = testValue => (Array.isArray(testValue) ? testValue : [testValue]).map(String);
 const dicomTagToArray = value => {
   let dicomArrayValue;
   if (!Array.isArray(value)) {

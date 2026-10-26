@@ -457,7 +457,31 @@ describe('validator', () => {
       );
     });
   });
+  describe('text operands', () => {
+    it.each([
+      ['startsWith', 0, 'abc', false],
+      ['startsWith', 0, '0abc', true],
+      ['endsWith', false, 'is false', true],
+      ['contains', 1, 'a1b', true],
+      ['doesNotContain', 0, 'abc', true],
+      ['doesNotContainI', 'X', 'abc', true],
+    ])('%s reads the operand %j as text against %j: %s', (name, operand, n, passes) => {
+      expect(validate({ n }, { n: { [name]: { value: operand } } }, [options]) === undefined).toBe(
+        passes
+      );
+    });
+  });
   describe('range', () => {
+    it.each([
+      [5, true],
+      ['5', true],
+      [[5, 60], true],
+      [[50, 60], false],
+      [null, false],
+      ['', false],
+    ])('reads %j as the number validators do: in [1, 10] is %s', (n, inRange) => {
+      expect(validate({ n }, { n: { range: [1, 10] } }, [options]) === undefined).toBe(inRange);
+    });
     it('returns undefined if the value is between', () => {
       expect(
         validate(attributeMap, { num: { range: [attributeMap.num + 1, attributeMap.num - 1] } }, [

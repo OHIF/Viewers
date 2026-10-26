@@ -57,7 +57,7 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
 
 - The rules `numberOfDisplaySetsWithImages: { greaterThan: 0 }` (`studyWithImages`,
   `@ohif/hpScale`, and the test protocol `hpTestSwitch`) now run. Before 3.14 they always
-  passed (see the next section). Now a study with 0 display sets with images no longer gets
+  passed (see "A falsy operand"). Now a study with 0 display sets with images no longer gets
   the weight of the `OneOrMoreSeries` rule.
 
 ## Number values
@@ -74,8 +74,14 @@ the test value as `@cornerstonejs/metadata` does:
 - A test value with no number fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan:
   []` passed on every value.
 
+`range` reads the value and its two bounds in the same way. So `range: [1, 10]` now holds
+for `'5'` and for `[5, 60]` (the first element is 5), and fails for `[50, 60]`, `null` and
+`''`. Before 3.14, `range` compared an array value as it was, so `[50, 60]` passed. The
+bounds must be two numbers, or two numeric strings.
+
 The OHIF hanging protocols do not change. Their number rules read `numImageFrames` and
-`numberOfDisplaySetsWithImages`, which are numbers, with number test values.
+`numberOfDisplaySetsWithImages`, which are numbers, with number test values. No OHIF
+hanging protocol uses `range`.
 
 ## A falsy operand
 
@@ -86,11 +92,18 @@ always passed, whatever the value. The operand `{ value: 0 }` did run. Now the o
 protocols: it now tests the value.
 
 - An operand `null` or `undefined` still skips the validator, and the rule passes.
-- A `validate.js` built-in validator keeps its meaning: `presence: false` turns it off.
-- An operand `''` now runs the text validators. Every text contains `''`, so
-  `doesNotContain: ''` now always fails. `startsWith: ''`, `endsWith: ''` and `equals: ''`
-  now fail on a missing value, and `containsAll: ''` fails with "must be an array". Before
-  3.14, all of these always passed. No OHIF hanging protocol uses the operand `''`.
+- A `validate.js` built-in validator keeps its meaning: `presence: false` turns it off. A
+  validator that your code adds to `validate.validators` after `@ohif/core` loads counts as
+  an OHIF validator, so it also gets the operand `0`, `false` or `''`.
+- The text validators (`contains`, `containsI`, `doesNotContain`, `doesNotContainI`,
+  `startsWith`, `endsWith`) read a number or a boolean operand as text, as
+  `@cornerstonejs/metadata` does. So `startsWith: 0` tests for `'0'`, and
+  `doesNotContain: 0` holds for `'abc'`. Before 3.14, these rules always passed.
+- An operand `''` runs the text validators too. Every text contains `''`, so
+  `doesNotContain: ''` and `doesNotContainI: ''` now always fail. `startsWith: ''`,
+  `endsWith: ''` and `equals: ''` now fail on a missing value, and `containsAll: ''` fails
+  with "must be an array". Before 3.14, all of these always passed.
+- No OHIF hanging protocol uses the operand `0`, `false` or `''` with a text validator.
 
 `notNull: false` now means "has no value". Before 3.14, it always passed.
 
@@ -159,3 +172,6 @@ attribute, or uses an array with the full value (`PatientOrientation`).
   numbers.
 - The operand wrappers `{ value }` and `{ attribute, from }` are for hanging protocols only.
   The `@cornerstonejs/metadata` split rules do not accept them yet.
+- The error messages of the validators changed, for example for the number constraints,
+  `range` and `doesNotEqual`. `HPMatcher` gives them in the match details only. Do not test
+  for the old text.

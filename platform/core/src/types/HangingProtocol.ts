@@ -96,7 +96,7 @@ export type ConstraintValue =
 
 /** The validators of `HangingProtocolService/lib/validator.js`. */
 export type Constraint = {
-  // This value exactly
+  // Equal value: the whole value, a numeric string equals a number
   equals?: ConstraintValue;
   doesNotEqual?: ConstraintValue;
   includes?: ConstraintValue;
@@ -109,7 +109,7 @@ export type Constraint = {
   doesNotContainI?: ConstraintValue;
   startsWith?: ConstraintValue;
   endsWith?: ConstraintValue;
-  // Strict comparisons
+  // Number comparisons; greaterThan and lessThan are strict
   greaterThan?: ConstraintValue;
   lessThan?: ConstraintValue;
   greaterThanOrEqual?: ConstraintValue;
