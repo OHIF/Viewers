@@ -138,9 +138,10 @@ CS3D_REF: feat/my-feature
 Without the file, the job prints a warning and uses the pinned version, so an ordinary PR
 does not fail for that reason. The body wins whenever the API answers, and the job prints a
 warning when the file and the body disagree. Delete `.cs3d-ref` in the same change that
-deletes or retires the `CS3D_REF` line. The **CS3D Branch Merge Guard** reports a red result
-while the PR has the file, because on `master` the file would apply to each later PR whose
-body the API does not return.
+deletes or retires the `CS3D_REF` line. While the PR has the file, the **CS3D Branch Merge
+Guard** reports a red result, and the required **Dependency audit** check fails, so the PR
+cannot merge. On `master`, the file would apply to each later PR whose body the API does not
+return.
 
 A `GITHUB_TOKEN` in the CircleCI or Netlify settings also avoids the limit, but it is
 optional. Use a fine-grained token with read-only access to public repositories and no other
