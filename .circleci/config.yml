@@ -40,6 +40,8 @@ jobs:
           command: pnpm install --frozen-lockfile
       # A `CS3D_REF:` line in the PR body selects the CS3D build to test, as it
       # does for the Playwright workflow. Without the line, nothing changes.
+      # The project's read-only GITHUB_TOKEN avoids the API rate limit; see
+      # platform/docs/docs/development/cs3d-integration.md.
       - run:
           name: Apply the CS3D_REF of the pull request
           command: bash .scripts/ci/cs3d-apply-ref.sh
@@ -48,6 +50,11 @@ jobs:
       - run:
           name: 'JavaScript Test Suite'
           command: pnpm run test:unit:ci
+      # The PR's copy of the CS3D_REF parser. The Playwright gate runs the
+      # copy on master, so changes are tested here.
+      - run:
+          name: 'CS3D_REF parser tests'
+          command: node --test .scripts/cs3d-read-ref.test.mjs
       - run:
           name: 'React Compiler lint budget'
           command: pnpm run lint:compiler:ci
@@ -93,16 +100,6 @@ jobs:
     steps:
       # Checkout code and ALL Git Tags
       - checkout
-      # .cs3d-ref is the PR-only fallback for a CS3D_REF line
-      # (.scripts/cs3d-read-ref.mjs). A master or release build that has it
-      # stops here, before anything is published.
-      - run:
-          name: Fail if .cs3d-ref exists
-          command: |
-            if [ -e .cs3d-ref ]; then
-              echo "This branch has a .cs3d-ref file. Delete .cs3d-ref; it is for an open PR only."
-              exit 1
-            fi
       - install_pnpm
       - run:
           name: Install Dependencies

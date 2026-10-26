@@ -103,63 +103,55 @@ name the exact release. A branch whose name merely starts with a digit, such as
   `master` depending on unreleased CS3D code. The guard is advisory — it reports, it does
   not block the merge button.
 
-### CircleCI and the Netlify deploy preview
+### CircleCI, and the deploy previews
 
-The same `CS3D_REF` line also applies to the CI jobs outside GitHub Actions:
+The same `CS3D_REF` line also applies to these CircleCI jobs:
 
 | Job | Where |
 |-----|-------|
 | CircleCI `UNIT_TESTS` (jest) | `.circleci/config.yml` |
 | CircleCI `BUILD_PACKAGES_QUICK` | `.circleci/config.yml` |
 | CircleCI `Cypress Tests` | `.circleci/config.yml` |
-| Netlify `deploy/netlify` preview | `netlify.toml` |
 
-Each job runs `.scripts/ci/cs3d-apply-ref.sh` after its ordinary install. The script reads
-the PR body with `.scripts/cs3d-read-ref.mjs`, and then does what the Playwright workflow
-does: nothing for no line, a version rewrite and a reinstall for a version, or a clone, a
-build and a link for a branch. Before this, those jobs always used the pinned version, so a
-PR that needed an unreleased CS3D change failed there even when Playwright passed.
+All of the jobs, and the Playwright workflow, run `.scripts/ci/cs3d-apply-ref.sh` after the
+ordinary install. The script does nothing for no line, a version rewrite and a reinstall for a
+version, or a clone, a build and a link for a branch. Before this, the CircleCI jobs always
+used the pinned version, so a PR that needed an unreleased CS3D change failed there even when
+Playwright passed.
 
-`cs3d-read-ref.mjs` is a copy of the parser in the Playwright `gate` job, which keeps its
-own copy inline because it runs before any code from the PR. When you change a rule, change
-both, and run `node --test .scripts/cs3d-read-ref.test.mjs`. That test runs the real gate
-script from the workflow file against the same bodies as the copy, and fails when the two
-disagree.
+`.scripts/cs3d-read-ref.mjs` is the one parser of the line:
 
-The jobs read the body through the GitHub API, without a token. Neither CircleCI nor Netlify
-gives the body to the build, only the PR number. When the API does not answer, for example at
-the unauthenticated rate limit, the job uses the `.cs3d-ref` file at the repository root, if
-the branch has one. The file holds the same line as the body:
+- The Playwright `gate` job runs the copy of the parser on `master`, never the copy of the PR,
+  so a PR cannot rewrite its own gate. A change to the parser reaches the gate only after the
+  merge. The gate passes its checked result to the script with `--kind`, `--ref` and
+  `--defer`, so the self-hosted runner acts only on that ref.
+- The CircleCI jobs run the copy of the PR, which reads the body through the GitHub API.
+  CircleCI runs the code of the PR in any case, so that copy adds no trust.
+- The `UNIT_TESTS` job runs `node --test .scripts/cs3d-read-ref.test.mjs`.
 
-```
-CS3D_REF: feat/my-feature
-```
-
-Without the file, the job prints a warning and uses the pinned version, so an ordinary PR
-does not fail for that reason. The body wins whenever the API answers, and the job prints a
-warning when the file and the body disagree. Delete `.cs3d-ref` in the same change that
-deletes or retires the `CS3D_REF` line. The **CS3D Branch Merge Guard** reports a red result
-while the PR has the file, because on `master` the file would apply to each later PR whose
-body the API does not return. If the file reaches `master` or a `release/*` branch anyway, the
-CircleCI `BUILD` job fails before it publishes anything.
-
-A `GITHUB_TOKEN` in the CircleCI or Netlify settings also avoids the limit, but it is
-optional. Use a fine-grained token with read-only access to public repositories and no other
-permission, because the code of each PR, and of each CS3D branch that it names, runs in the
-same job. In CircleCI, keep the token away from fork builds. The script sends the token only
-in a request header, and never prints it.
+CircleCI gives the build only the PR number, not the body. Without a token, the GitHub API
+allows a small number of requests per hour from each address. Set a read-only `GITHUB_TOKEN`
+in the CircleCI project settings: a fine-grained token with read-only access to public
+repositories and no other permission. The code of each PR, and of each CS3D branch that it
+names, runs in the same job. CircleCI gives project secrets only to same-repo builds, so keep
+"Pass secrets to builds from forked pull requests" off. The script sends the token only in a
+request header, and never prints it. When the API does not answer, the job prints a warning
+and uses the pinned version, so an ordinary PR does not fail for that reason.
 
 A version line reinstalls with `--ignore-scripts`: no lockfile covers the new tree, so no
-install script of it runs. On Netlify, `cs3d-apply-ref.sh --after-build` deletes
-`node_modules` after a build that changed CS3D, so the build cache never gives that CS3D to a
-later build. The script replaces an existing `libs/@cornerstonejs` only on CircleCI or
-Netlify, never on a developer machine, even when `CI=true` is set.
+install script of it runs. The script replaces an existing `libs/@cornerstonejs` only on
+CircleCI or GitHub Actions, never on a developer machine, even when `CI=true` is set.
 
 The CircleCI job sees the PR only when the branch has an open PR at the start of the
 pipeline; re-run the pipeline after you open the PR, or after you change the line.
 
 A branch build adds the CS3D install and build to each job. The Cypress job runs on 8
 parallel containers, and each container builds CS3D.
+
+The Netlify `deploy-preview-<N>` build always uses the pinned CS3D version. For a PR with a
+`CS3D_REF` line, use the `cs3d-pr-<N>` preview that the Playwright workflow deploys. The
+Playwright job summary shows its link. The workflow deploys the preview also when a test
+fails.
 
 ### Retiring a branch ref
 
@@ -186,7 +178,7 @@ record would stop meaning what it said.
 :::note
 A PR from a fork still requests approval on the `cs3d-integration` environment while the
 line is present, even after the line is spent. The gate that makes that decision has no
-checkout by design, so it cannot tell which version the repo pins. Delete the line to stop
+checkout of the PR by design, so it cannot tell which version the repo pins. Delete the line to stop
 the prompt.
 :::
 

@@ -1,39 +1,37 @@
 #!/usr/bin/env node
 
 /**
- * Reads the `CS3D_REF:` line of a pull request body, for the CI systems that
- * are not GitHub Actions: the CircleCI unit test and Cypress jobs, and the
- * Netlify deploy preview.
+ * Reads the `CS3D_REF:` line of a pull request body. This is the one parser of
+ * that line: the `gate` job of .github/workflows/playwright.yml runs it, and
+ * so does .scripts/ci/cs3d-apply-ref.sh in the CircleCI jobs.
  *
  * Usage:
- *   node .scripts/cs3d-read-ref.mjs              find the PR from the CI environment
- *   node .scripts/cs3d-read-ref.mjs --body-file <file>   parse a saved body (tests)
+ *   node .scripts/cs3d-read-ref.mjs                         find the PR from CircleCI
+ *   node .scripts/cs3d-read-ref.mjs --body-file <file>      parse a saved body
+ *   node .scripts/cs3d-read-ref.mjs --body-file <file> --no-defer
+ *       a manual request: `<branch> now <version>` is not deferred
  *
  * Prints four lines on stdout: <kind>, <ref>, <history>, <defer>. The kind is
  * `none`, `version` or `branch`. An empty value is an empty line; one value per
  * line keeps an empty field in place, which a tab-separated line does not
- * under bash `read`. Diagnostics go to stderr.
+ * under bash `read`. Diagnostics go to stderr, as GitHub annotations under
+ * GitHub Actions. A rejected line exits 1 and prints nothing on stdout.
  *
- * The rules are a copy of the `gate` job in .github/workflows/playwright.yml,
- * and the two copies must agree. The gate keeps its copy inline on purpose: it
- * runs before any code from the pull request, so it cannot run this file. The
- * jobs that use this file already run the code of the pull request, so a
- * script from the checkout adds no new trust. When you change a rule, change
- * it in both places, and run `node --test .scripts/cs3d-read-ref.test.mjs`.
+ * The gate runs the copy of this file on the default branch, never the copy of
+ * the pull request, so a pull request cannot rewrite its own gate. A change to
+ * this file therefore reaches the gate only after the merge.
  *
- * Difference from the gate, on purpose: when the body cannot be read (no PR,
- * a GitHub API rate limit, a network fault), this script reads the `.cs3d-ref`
- * file of the checkout instead, and reports `none` with a warning when there
- * is no such file. The gate fails instead, because it also decides approval
- * and feeds the merge guard. Neither decision happens here, and a failure here
- * would stop every pull request whenever the shared CI address reaches the
- * unauthenticated rate limit. A read-only GITHUB_TOKEN also avoids that limit.
+ * Without --body-file, the script reads the body through the GitHub API. When
+ * the body cannot be read (no PR, a rate limit, a network fault), it reports
+ * `none` with a warning, and the job uses the pinned CS3D. The gate fails
+ * instead, because it also decides approval and feeds the merge guard. A
+ * read-only GITHUB_TOKEN avoids the unauthenticated rate limit.
  */
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-/** Parses a body the same way as the awk parser of the gate. */
+/** Parses a body into the live request, and the first skipped line. */
 export function parseBody(body) {
   const result = { raw: '', skip: null, unclosed: false };
   const refval = s =>
@@ -47,12 +45,15 @@ export function parseBody(body) {
     skips++;
   };
 
+  // A CS3D_REF line is a request only at the top level of the body. A fenced
+  // code block, an indented code block and an HTML comment quote text rather
+  // than state it; the OHIF PR template is mostly HTML comments. Up to three
+  // spaces still count as top level, as in markdown.
   let fence = '';
   let flen = 0;
   let comment = false;
   let openSkip = false;
-  // awk splits records on "\n" only; the gate then strips one trailing "\r".
-  // A body that ends in "\n" has no empty last record in awk.
+  // Lines split on "\n" only, with one trailing "\r" stripped.
   const lines = body.split('\n');
   if (lines.length && lines[lines.length - 1] === '') lines.pop();
 
@@ -60,6 +61,7 @@ export function parseBody(body) {
     const lineNo = i + 1;
     const line = lines[i].replace(/\r$/, '');
 
+    // A tab counts as four columns, as markdown reads it.
     let ind = 0;
     for (const c of line) {
       if (c === ' ') ind++;
@@ -76,6 +78,8 @@ export function parseBody(body) {
     };
 
     if (fence !== '') {
+      // A closing fence repeats the opening marker, is at least as long, and
+      // carries nothing else.
       const ch = text[0];
       const n = ind < 4 && (ch === '`' || ch === '~') ? runOf(ch) : 0;
       if (n >= 3 && ch === fence && n >= flen && /^[ \t]*$/.test(text.slice(n))) {
@@ -128,23 +132,24 @@ export function parseBody(body) {
     }
 
     if (startsRef) {
-      result.raw = text
-        .replace(/^CS3D_REF:[ \t]*/, '')
-        .replace(/[ \t\r]+$/, '')
-        .replace(/\t/g, ' ');
-      // The gate reports skips seen before the live line, but it acts on
-      // them only when no live line exists, so they are dropped here.
+      // The whole remainder of the line, so that the grammar rejects an
+      // annotation such as `fix/x (released as 5.25.80)`.
+      result.raw = refval(text);
+      // A skip matters only when no live line exists.
       result.skip = null;
       return result;
     }
   }
 
+  // An unclosed fence or comment hides every line below it.
   if ((fence !== '' || comment) && openSkip) result.unclosed = true;
   return result;
 }
 
 const REF_GRAMMAR = /^[A-Za-z0-9][A-Za-z0-9._/+-]*$/;
 const CONCRETE_VERSION = /^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$/;
+// Exactly the forms that .scripts/cs3d-resolve-version.mjs accepts:
+// 5.10.3, 5.11.0-beta.1, 5.x, 5.10.x and 4.19+.
 const VERSION_FORMS = /^[0-9]+(\.[0-9]+(\.([0-9]+(-[0-9A-Za-z.-]+)?|x)|\+)|\.x)$/;
 
 /** The shape rules of `git check-ref-format refs/heads/<part>`, for the grammar above. */
@@ -155,10 +160,19 @@ function isLegalRefName(part) {
 }
 
 /**
- * Validates and classifies the raw value, as sections 2 to 4 of the gate do.
- * Throws an Error with the message that the gate prints when it rejects a ref.
+ * Validates and classifies the raw value of a CS3D_REF line. Throws an Error
+ * with a message for the PR author when it rejects the value.
+ *
+ * Accepted forms: `<branch>` (a branch or tag of cornerstonejs/cornerstone3D),
+ * `<version>`, and `<branch> now <version>`. In the third form, the version is
+ * a record of the release that the branch became, so `defer` tells the caller
+ * to keep a pin that is the same or newer. A manual request
+ * (`deferNow: false`) has no stored line to go stale, and does not defer.
+ *
+ * The grammar bars whitespace and newlines (which could add entries to
+ * GITHUB_OUTPUT), a leading '-' or '.' (a flag), '..' and ':' (a fork).
  */
-export function classify(rawValue, { isPullRequest = true } = {}) {
+export function classify(rawValue, { deferNow = true } = {}) {
   const raw = rawValue.trim();
   if (!raw) return { kind: 'none', ref: '', history: '', defer: false };
 
@@ -169,57 +183,82 @@ export function classify(rawValue, { isPullRequest = true } = {}) {
   if (now) {
     history = now[1];
     ref = now[2];
-    defer = isPullRequest;
+    defer = deferNow;
   }
 
+  // The value comes from the PR body, which anyone can read, so quoting it
+  // discloses nothing. Control characters go, and the length is capped, so
+  // that the value cannot become a workflow command of its own.
   const shown = raw.replace(/[\x00-\x1f]/g, '').slice(0, 200);
+  const reject = why => new Error(`Rejected the requested CS3D ref, read as: [${shown}]. ${why}`);
   const grammarOk = p => REF_GRAMMAR.test(p) && !p.includes('..');
   if (!grammarOk(ref) || (history && !grammarOk(history))) {
-    throw new Error(
-      `Rejected the requested CS3D ref, read as: [${shown}]. Write it as one of: <branch>, <version>, or '<branch> now <version>'.`
+    throw reject(
+      "Write it as one of: <branch>, <version>, or '<branch> now <version>'. Each part must start with a letter or digit, contain only letters, digits and the characters . _ / + - and contain no '..'. Forks cannot be named: give a branch or tag in cornerstonejs/cornerstone3D, or a published version."
     );
   }
-  // The gate runs `git check-ref-format` on the ref and on each word of the
-  // history, so a history with a space in it cannot pass there either.
   for (const part of [ref, ...(history ? history.split(/\s+/) : [])]) {
     if (!isLegalRefName(part)) {
-      throw new Error(
-        `Rejected the requested CS3D ref, read as: [${shown}]. Git does not accept that ref name.`
+      throw reject(
+        "Git does not accept that ref name. Check for a trailing or doubled '/', a path component that starts with '.', or a '.lock' suffix."
       );
     }
   }
   if (history && !CONCRETE_VERSION.test(ref)) {
-    throw new Error(
-      `Rejected the requested CS3D ref, read as: [${shown}]. The version after 'now' must be one concrete release.`
+    throw reject(
+      "The version after 'now' must be one concrete release, for example 5.10.6 or 5.11.0-beta.1, and not a range."
     );
   }
 
   let kind;
   if (VERSION_FORMS.test(ref)) kind = 'version';
   else if (/^[0-9][0-9.x+]*$/.test(ref)) {
-    throw new Error(
-      `Rejected the requested CS3D ref, read as: [${shown}]. It looks like a version, but it is not one of the accepted forms: 5.10.3, 5.11.0-beta.1, 5.x, 5.10.x or 4.19+.`
+    // Written only from the version alphabet, so a typed version, not a branch.
+    throw reject(
+      'It looks like a version, but it is not one of the accepted forms: 5.10.3, 5.11.0-beta.1, 5.x, 5.10.x or 4.19+. A two-part number such as 5.10 is not one of them. Write 5.10.x for the latest 5.10 release, or name the exact release.'
     );
   } else kind = 'branch';
 
   return { kind, ref, history, defer };
 }
 
+const SKIP_WHERE = {
+  fence: 'inside a fenced code block',
+  indent: 'indented by four spaces or more, which markdown reads as a code block',
+  comment: 'inside an HTML comment',
+};
+
 /**
- * Finds `owner/repo` and the pull request number from the CI environment.
- * Returns null when this build is not for a pull request.
+ * Reads the request of a PR body: parseBody, then classify. Returns the
+ * classify result and a `warning` for a skipped line. Throws for a rejected
+ * value, and for a skipped line in a block that the body never closes, because
+ * that block can hide a real request and the merge guard would then report
+ * all clear.
+ */
+export function readRef(body, { deferNow = true } = {}) {
+  const parsed = parseBody(body);
+  let warning = '';
+  if (!parsed.raw && parsed.skip) {
+    const { reason, line, value } = parsed.skip;
+    const where = SKIP_WHERE[reason] || 'inside a quoted block';
+    const shown = value.replace(/[\x00-\x1f]/g, '').slice(0, 200);
+    if (parsed.unclosed) {
+      throw new Error(
+        `Line ${line} of the pull request body reads [CS3D_REF: ${shown}], ${where} that the body never closes. Close the block, or move the line out of it.`
+      );
+    }
+    warning = `Ignored the CS3D_REF line on line ${line} of the pull request body, read as [CS3D_REF: ${shown}], because that line is ${where}. Move the line to the top level of the body if you meant it as a request.`;
+  }
+  return { ...classify(parsed.raw, { deferNow }), warning };
+}
+
+/**
+ * Finds `owner/repo` and the pull request number from the CircleCI
+ * environment. Returns null when this build is not for a pull request.
  */
 export function findPullRequest(env = process.env) {
-  // CircleCI: the URL of the PR, set when the branch has an open PR.
   const circle = (env.CIRCLE_PULL_REQUEST || '').match(/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/);
-  if (circle) return { repo: circle[1], number: circle[2] };
-
-  // Netlify: a deploy preview sets PULL_REQUEST=true and REVIEW_ID.
-  if (env.PULL_REQUEST === 'true' && /^\d+$/.test(env.REVIEW_ID || '')) {
-    const repo = (env.REPOSITORY_URL || '').match(/github\.com[/:]([^/]+\/[^/.]+)/);
-    return { repo: repo ? repo[1] : 'OHIF/Viewers', number: env.REVIEW_ID };
-  }
-  return null;
+  return circle ? { repo: circle[1], number: circle[2] } : null;
 }
 
 /**
@@ -249,45 +288,18 @@ export async function fetchBody({ repo, number }, { token = process.env.GITHUB_T
   throw new Error(failure);
 }
 
-/** The checked-in fallback for a PR body that the API does not return. */
-export const REF_FILE = '.cs3d-ref';
-
-/**
- * Chooses the text to parse: the PR body when the API returned it, otherwise
- * the `.cs3d-ref` file. Returns { text, source, warning }.
- *
- * The file holds the same `CS3D_REF: <ref>` line as the body, and must be
- * deleted together with that line. The body always wins when it is readable;
- * a file that disagrees with it gives a warning, because the file then
- * describes a ref that the PR no longer requests.
- */
-export function chooseSource(body, fileText) {
-  if (body === null) {
-    return fileText === null
-      ? { text: '', source: 'none', warning: '' }
-      : { text: fileText, source: 'file', warning: '' };
-  }
-  let warning = '';
-  if (fileText !== null && parseBody(fileText).raw !== parseBody(body).raw) {
-    warning =
-      `${REF_FILE} requests [${parseBody(fileText).raw}], and the PR body requests ` +
-      `[${parseBody(body).raw}]. The body wins. Update or delete ${REF_FILE}.`;
-  }
-  return { text: body, source: 'body', warning };
-}
-
-function readRefFile() {
-  try {
-    return readFileSync(fileURLToPath(new URL(`../${REF_FILE}`, import.meta.url)), 'utf8');
-  } catch {
-    return null;
-  }
+/** Prints a diagnostic on stderr, as a GitHub annotation under GitHub Actions. */
+function report(level, message) {
+  console.error(
+    process.env.GITHUB_ACTIONS === 'true' ? `::${level}::${message}` : `[cs3d-read-ref] ${message}`
+  );
 }
 
 async function main() {
   const out = (kind, ref = '', history = '', defer = false) =>
     console.log([kind, ref, history, defer].join('\n'));
   const bodyFileIndex = process.argv.indexOf('--body-file');
+  const deferNow = !process.argv.includes('--no-defer');
 
   let body;
   if (bodyFileIndex > 0) {
@@ -295,62 +307,29 @@ async function main() {
   } else {
     const pr = findPullRequest();
     if (!pr) {
-      console.error('[cs3d-read-ref] This build is not for a pull request: no CS3D_REF to read.');
+      report('notice', 'This build is not for a pull request: no CS3D_REF to read.');
       return out('none');
     }
-    let fetched = null;
     try {
-      fetched = await fetchBody(pr);
+      body = await fetchBody(pr);
     } catch (error) {
-      console.error(
-        `[cs3d-read-ref] WARNING: could not read the body of ${pr.repo}#${pr.number}: ${error.message}`
+      report(
+        'warning',
+        `Could not read the body of ${pr.repo}#${pr.number} (${error.message}), so this job uses the pinned CS3D version. Set a read-only GITHUB_TOKEN to avoid the GitHub API rate limit.`
       );
+      return out('none');
     }
-    const { text, source, warning } = chooseSource(fetched, readRefFile());
-    if (warning) console.error(`[cs3d-read-ref] WARNING: ${warning}`);
-    if (source === 'file') {
-      console.error(
-        `[cs3d-read-ref] Using the CS3D_REF line of ${REF_FILE} instead of the PR body.`
-      );
-    } else if (source === 'none') {
-      console.error(
-        `[cs3d-read-ref] No PR body and no ${REF_FILE}: the job runs against the pinned CS3D version.`
-      );
-    }
-    body = text;
-  }
-
-  const parsed = parseBody(body);
-  if (!parsed.raw && parsed.skip) {
-    const { reason, line, value } = parsed.skip;
-    const where =
-      {
-        fence: 'inside a fenced code block',
-        indent: 'indented as a code block',
-        comment: 'inside an HTML comment',
-      }[reason] || 'inside a quoted block';
-    const shown = value.replace(/[\x00-\x1f]/g, '').slice(0, 200);
-    if (parsed.unclosed) {
-      console.error(
-        `[cs3d-read-ref] Line ${line} reads [CS3D_REF: ${shown}], ${where} that the body never closes. Close the block, or move the line out of it.`
-      );
-      process.exit(1);
-    }
-    console.error(
-      `[cs3d-read-ref] Ignored the CS3D_REF line on line ${line}, because it is ${where}.`
-    );
   }
 
   try {
-    const { kind, ref, history, defer } = classify(parsed.raw);
-    if (kind !== 'none') {
-      console.error(
-        `[cs3d-read-ref] CS3D ref requested: ${ref} (${kind}${history ? `; was branch ${history}` : ''})`
-      );
-    }
+    const { kind, ref, history, defer, warning } = readRef(body, { deferNow });
+    if (warning) report('warning', warning);
+    if (kind === 'none') report('notice', 'No CS3D ref requested.');
+    else if (history) report('notice', `CS3D ref: ${ref} (${kind}; was branch ${history})`);
+    else report('notice', `CS3D ref requested: ${ref} (${kind})`);
     out(kind, ref, history, defer);
   } catch (error) {
-    console.error(`[cs3d-read-ref] ${error.message}`);
+    report('error', error.message);
     process.exit(1);
   }
 }
