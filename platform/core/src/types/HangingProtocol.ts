@@ -93,15 +93,28 @@ export type ConstraintValue =
       value: string | number | boolean | [];
     };
 
+/** The validators of `HangingProtocolService/lib/validator.js`. */
 export type Constraint = {
   // This value exactly
   equals?: ConstraintValue;
-  notEquals?: ConstraintValue;
+  doesNotEqual?: ConstraintValue;
+  includes?: ConstraintValue;
+  doesNotInclude?: ConstraintValue;
   // A caseless contains
-  containsI?: string;
+  containsI?: ConstraintValue;
   contains?: ConstraintValue;
+  containsAll?: ConstraintValue;
   doesNotContain?: ConstraintValue;
+  doesNotContainI?: ConstraintValue;
+  startsWith?: ConstraintValue;
+  endsWith?: ConstraintValue;
+  // Strict comparisons
   greaterThan?: ConstraintValue;
+  lessThan?: ConstraintValue;
+  greaterThanOrEqual?: ConstraintValue;
+  lessThanOrEqual?: ConstraintValue;
+  range?: ConstraintValue;
+  notNull?: boolean;
 };
 
 export type MatchingRule = {

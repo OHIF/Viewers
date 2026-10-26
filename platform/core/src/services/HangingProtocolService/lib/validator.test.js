@@ -324,6 +324,26 @@ describe('validator', () => {
         validate(attributeMap, { num: { greaterThan: [attributeMap.num + 1] } }, [options])
       ).not.toBeUndefined();
     });
+    it('fails on an equal value', () => {
+      expect(
+        validate(attributeMap, { num: { greaterThan: attributeMap.num } }, [options])
+      ).not.toBeUndefined();
+    });
+  });
+  describe('greaterThanOrEqual', () => {
+    it('passes on an equal or a smaller test value', () => {
+      expect(
+        validate(attributeMap, { num: { greaterThanOrEqual: { value: attributeMap.num } } }, [
+          options,
+        ])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { num: { greaterThanOrEqual: attributeMap.num - 1 } }, [options])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { num: { greaterThanOrEqual: attributeMap.num + 1 } }, [options])
+      ).not.toBeUndefined();
+    });
   });
   describe('lessThan', () => {
     it('returns undefined on lessThan', () => {
@@ -338,6 +358,24 @@ describe('validator', () => {
       ).toBeUndefined();
       expect(
         validate(attributeMap, { num: { lessThan: [attributeMap.num - 1] } }, [options])
+      ).not.toBeUndefined();
+    });
+    it('fails on an equal value', () => {
+      expect(
+        validate(attributeMap, { num: { lessThan: attributeMap.num } }, [options])
+      ).not.toBeUndefined();
+    });
+  });
+  describe('lessThanOrEqual', () => {
+    it('passes on an equal or a larger test value', () => {
+      expect(
+        validate(attributeMap, { num: { lessThanOrEqual: { value: attributeMap.num } } }, [options])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { num: { lessThanOrEqual: attributeMap.num + 1 } }, [options])
+      ).toBeUndefined();
+      expect(
+        validate(attributeMap, { num: { lessThanOrEqual: attributeMap.num - 1 } }, [options])
       ).not.toBeUndefined();
     });
   });

@@ -382,54 +382,81 @@ validate.validators.endsWith = function (value, options, key) {
   }
 };
 /**
+ * Creates a validator that compares a numeric value with one test value. The
+ * test value can be a number, `{ value }`, or an array of one number.
+ *
+ * @param compare - the comparison of the value with the test value
+ * @param relation - the relation, for the error message
+ * @param rejectArrayOrString - fail an array or a string value
+ */
+const createNumberValidator = (compare, relation, rejectArrayOrString) =>
+  function (value, options, key) {
+    if (rejectArrayOrString && (Array.isArray(value) || typeof value === 'string')) {
+      return `${key} is not allowed as an array or string`;
+    }
+    let testValue = getTestValue(options);
+    if (Array.isArray(testValue)) {
+      if (testValue.length > 1) {
+        return key + ' must be an array of length 1';
+      }
+      if (testValue.length === 0) {
+        return;
+      }
+      testValue = testValue[0];
+    }
+    if (!compare(value, testValue)) {
+      return `${key} must be ${relation} ${testValue}, but was ${value}`;
+    }
+  };
+
+/**
+ * Strictly greater than.
+ *
  * @example
  * value = 30
  * testValue = 20 (Valid)
+ *           = 30 (Fail)
  *           = 40 (Fail)
  *
  * */
-validate.validators.greaterThan = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(value) || typeof value === 'string') {
-    return `${key} is not allowed as an array or string`;
-  }
-  if (Array.isArray(testValue)) {
-    if (testValue.length === 1) {
-      if (!(value >= testValue[0])) {
-        return `${key}  must be greater than or equal to ${testValue[0]}, but was ${value}`;
-      }
-    } else if (testValue.length > 1) {
-      return key + ' must be an array of length 1';
-    }
-  } else {
-    if (!(value >= testValue)) {
-      return key + ' must be greater than ' + testValue;
-    }
-  }
-};
+validate.validators.greaterThan = createNumberValidator((a, b) => a > b, 'greater than', true);
+/**
+ * @example
+ * value = 30
+ * testValue = 20 (Valid)
+ *           = 30 (Valid)
+ *           = 40 (Fail)
+ *
+ * */
+validate.validators.greaterThanOrEqual = createNumberValidator(
+  (a, b) => a >= b,
+  'greater than or equal to',
+  true
+);
+/**
+ * Strictly less than.
+ *
+ * @example
+ * value = 30
+ * testValue = 40 (Valid)
+ *           = 30 (Fail)
+ *           = 20 (Fail)
+ *
+ * */
+validate.validators.lessThan = createNumberValidator((a, b) => a < b, 'less than', false);
 /**
  * @example
  * value = 30
  * testValue = 40 (Valid)
+ *           = 30 (Valid)
  *           = 20 (Fail)
  *
  * */
-validate.validators.lessThan = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(testValue)) {
-    if (testValue.length === 1) {
-      if (!(value <= testValue[0])) {
-        return `${key}  must be less than or equal to ${testValue[0]}, but was ${value}`;
-      }
-    } else if (testValue.length > 1) {
-      return key + ' must be an array of length 1';
-    }
-  } else {
-    if (!(value <= testValue)) {
-      return key + ' must be less than ' + testValue;
-    }
-  }
-};
+validate.validators.lessThanOrEqual = createNumberValidator(
+  (a, b) => a <= b,
+  'less than or equal to',
+  false
+);
 /**
  * @example
 

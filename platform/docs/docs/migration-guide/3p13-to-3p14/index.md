@@ -74,4 +74,9 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `createContext` and `useContext` — the compiler now provides the memoization it
   was hand-rolling.
 
+- **[Hanging protocol comparisons](./hanging-protocol-comparisons.md)** — the
+  `greaterThan` and `lessThan` constraints are now strict. Before, they tested `>=`
+  and `<=`. The new `greaterThanOrEqual` and `lessThanOrEqual` constraints keep the old
+  meaning.
+
 <DocCardList />
