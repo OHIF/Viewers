@@ -5,21 +5,29 @@ import { studyWithImages } from './utils/studySelectors';
 
 const match = (displaySet, rules) => HPMatcher.match(displaySet, rules, {}, {});
 
+// A stack display set has SeriesDescription '' when the instance has none, and no
+// PatientOrientation, so the rules read PatientOrientation from the first instance.
 describe('hanging protocol matches with a missing text value', () => {
-  const rightMlo = { ViewCode: 'SCT:399368009', PatientOrientation: ['A', 'FR'] };
-
-  it('hpMammo RMLO accepts a display set with no SeriesDescription', () => {
-    const result = match(rightMlo, RMLO.seriesMatchingRules);
-    expect(result.requiredFailed).toBe(false);
+  const rightMlo = (patientOrientation?) => ({
+    ViewCode: 'SCT:399368009',
+    SeriesDescription: '',
+    instances: [{ PatientOrientation: patientOrientation }],
   });
 
-  it('hpMammo RMLO accepts a display set with no PatientOrientation', () => {
-    const result = match({ ViewCode: 'SCT:399368009' }, RMLO.seriesMatchingRules);
-    expect(result.requiredFailed).toBe(false);
+  it('hpMammo RMLO accepts a display set with an empty SeriesDescription', () => {
+    expect(match(rightMlo(['A', 'FR']), RMLO.seriesMatchingRules).requiredFailed).toBe(false);
+  });
+
+  it('hpMammo RMLO accepts an instance with no PatientOrientation', () => {
+    expect(match(rightMlo(), RMLO.seriesMatchingRules).requiredFailed).toBe(false);
+    expect(match(rightMlo(null), RMLO.seriesMatchingRules).requiredFailed).toBe(false);
   });
 
   it('hpMammo RMLO still rejects a CC series description', () => {
-    const result = match({ ...rightMlo, SeriesDescription: 'R CC' }, RMLO.seriesMatchingRules);
+    const result = match(
+      { ...rightMlo(['A', 'FR']), SeriesDescription: 'R CC' },
+      RMLO.seriesMatchingRules
+    );
     expect(result.requiredFailed).toBe(true);
   });
 
@@ -33,14 +41,14 @@ describe('hanging protocol matches with a missing text value', () => {
       constraint: { doesNotContain: { value: 'Uncorrected' } },
     },
   ];
+  const ptScore = seriesDescription =>
+    match({ Modality: 'PT', SeriesDescription: seriesDescription }, ptRules).score;
 
-  it('the copied tmtv PT rule scores a PT with no SeriesDescription above an uncorrected PT', () => {
-    const missing = match({ Modality: 'PT' }, ptRules).score;
-    const uncorrected = match(
-      { Modality: 'PT', SeriesDescription: 'PET Uncorrected' },
-      ptRules
-    ).score;
-    expect(missing).toBeGreaterThan(uncorrected);
+  it('the copied tmtv PT rule scores a PT with no description as one with no correction named', () => {
+    expect(ptScore('')).toBe(ptScore('PET WB'));
+    expect(ptScore(undefined)).toBe(ptScore('PET WB'));
+    expect(ptScore('PET WB')).toBeGreaterThan(ptScore('PET Uncorrected'));
+    expect(ptScore('PET Attenuation Corrected')).toBeGreaterThan(ptScore('PET WB'));
   });
 });
 

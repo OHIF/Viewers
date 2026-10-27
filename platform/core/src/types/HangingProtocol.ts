@@ -95,7 +95,7 @@ export type ConstraintValue =
       value: string | number | boolean | null | [] | string[] | number[];
     }
   | {
-      // Reads the operand from another attribute, of the instance by default.
+      // Reads the operand from another attribute, of the metadata instance by default.
       attribute: string;
       from?: string;
     };

@@ -24,10 +24,11 @@ describe('HPMatcher', () => {
     expect(passes({ n: 5 }, { equals: undefined })).toBe(true);
   });
 
-  it('reads a null attribute as missing, so equals: { value: null } does not hold', () => {
-    expect(passes({ n: null }, { equals: { value: null } })).toBe(false);
+  it('gives equals: { value: null } a null instance value, but not a missing value', () => {
+    expect(passes({ instances: [{ n: null }] }, { equals: { value: null } })).toBe(true);
     expect(passes({}, { equals: { value: null } })).toBe(false);
-    expect(passes({ n: null }, { notNull: false })).toBe(true);
+    expect(passes({}, { notNull: false })).toBe(true);
+    expect(passes({ instances: [{ n: null }] }, { notNull: false })).toBe(true);
   });
 
   it('runs a string validator whose operand is an empty string', () => {

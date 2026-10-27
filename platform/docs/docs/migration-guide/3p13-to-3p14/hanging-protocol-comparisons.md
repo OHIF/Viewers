@@ -76,22 +76,27 @@ These matches change:
   OHIF modes show no change: the segmentation mode lists only `@ohif/mnGrid`, and when no
   protocol scores, the protocol engine uses the `default` protocol when the mode lists it,
   else the first protocol of the mode.
-- `@ohif/hpMammo` has two `required` rules with `doesNotContain`: `PatientOrientation`
-  `doesNotContain: ['P', 'FL']` and `SeriesDescription` `doesNotContain: 'CC'`. Before 3.14,
-  the rule failed with an error when the display set had no value for the attribute, so the
-  display set did not match. Now the rule holds on no value (see "Text values"). So a display
-  set with no `PatientOrientation` or no `SeriesDescription` can now fill that viewport, when
-  its other required rules hold.
-- The TMTV protocol and the dynamic volume protocol give the weight 2 to a PT display set
-  whose `SeriesDescription` does not contain `Uncorrected`. Before 3.14, a PT display set with
-  no `SeriesDescription` made that rule fail with an error, so it got 0. Now it gets 2. With
-  the other PT rules, such a display set now scores 4 in TMTV, the same as a PT whose
-  description does not name the correction (`'PET WB'`). An attenuation corrected PT scores
-  5, and an uncorrected PT 2. Before 3.14, it scored 2, the same as an uncorrected PT.
+- `@ohif/hpMammo` has the `required` rule `PatientOrientation: { doesNotContain: ['P', 'FL'] }`.
+  A display set has no `PatientOrientation`, so the rule reads it from the first instance.
+  Before 3.14, the rule failed with an error when the instance had no `PatientOrientation`
+  (absent or `null`), so the display set did not match. Now the rule holds on no value (see
+  "Text values"). So a mammography display set with no `PatientOrientation` can now fill that
+  viewport, when its other required rules hold.
 - A numeric string `numImageFrames` now matches the number rules. The stack SOP class
   handler copies `NumberOfFrames` of a multi-frame instance as it is, and a data source can
   give it as text. Before 3.14, `greaterThan` failed on a string, so such a display set did
   not match `@ohif/frameView` or the `numImageFrames` selectors. Now `'30'` reads as 30.
+
+These rules change their result only for a display set that the stack SOP class handler does
+not make, because that handler sets `SeriesDescription` to `''` when the instance has none:
+
+- `@ohif/hpMammo` `SeriesDescription: { doesNotContain: 'CC' }` (`required`), and the PT rule
+  `SeriesDescription: { doesNotContain: { value: 'Uncorrected' } }` (weight 2) of the TMTV
+  protocol and the dynamic volume protocol. On `''`, these rules held before 3.14 too. On a
+  display set with no `SeriesDescription` attribute (`undefined` or `null`), they failed
+  with an error before 3.14, and now hold. In TMTV, such a PT display set now scores 4 (the
+  same as a PT whose description does not name the correction, and as a stack PT display set
+  with no description); before, it scored 2.
 
 ## Number values
 
@@ -106,10 +111,10 @@ These matches change:
   `lessThan: 6` and now passes.
 - A value with no number fails: `null`, `undefined`, `''`, `true`. Before 3.14, JavaScript
   compared `null` and `true` as numbers, so `lessThan: 10` passed on `null`, and
-  `greaterThan: { value: 0 }` passed on `null` (`null >= 0`) and on `true`. `HPMatcher` reads
-  a missing or a `null` attribute as `undefined`, which failed before too; a custom
-  attribute callback can give `null` or a boolean. `Infinity` is not a finite number, so it
-  fails now too.
+  `greaterThan: { value: 0 }` passed on `null` (`null >= 0`) and on `true`. A `null` value
+  comes from an empty instance attribute (dcmjs gives an empty Type 2 element as `null`) or
+  from a custom attribute callback. A missing attribute is `undefined`, which failed before
+  too. `Infinity` is not a finite number, so it fails now too.
 
 The test value reads in the same way: `'4'` and `['4']` are 4. A test value with no number
 fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every number value.
@@ -133,7 +138,8 @@ always passed, whatever the value. The operand `{ value: 0 }` did run. Now the o
 `false` or `''` runs for every OHIF validator. Check each such constraint in your hanging
 protocols: it now tests the value.
 
-- An operand `null`, `undefined` or `NaN` still skips the validator, and the rule passes.
+- An operand `null`, `undefined` or `NaN` skips the validator, and the rule passes. Before
+  3.14, an operand `null` made `HPMatcher` throw "Cannot convert undefined or null to object".
 - The OHIF validators are `equals`, `doesNotEqual`, `includes`, `doesNotInclude`, `contains`,
   `containsI`, `containsAll`, `doesNotContain`, `doesNotContainI`, `startsWith`, `endsWith`,
   `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `range` and `notNull`.
@@ -158,8 +164,11 @@ An `{ attribute, from }` operand that gives no value now reaches the validator a
 with `X` missing fails `equals`. A text validator gets no text from such an operand, so
 `contains` fails.
 
-`HPMatcher` reads a `null` attribute as missing. So `equals: { value: null }` does not hold
-on a `null` or a missing attribute. Use `notNull: false` to test for no value.
+`HPMatcher` reads an attribute of the display set, and, when the display set has no value
+(`undefined` or `null`), the attribute of its first instance. So a `null` instance attribute
+reaches the validator as `null`, and `equals: { value: null }` holds on it. A missing
+attribute is `undefined`, and `equals: { value: null }` does not hold on it. Use
+`notNull: false` to test for no value of any kind.
 
 `notNull: false` now means "has no value". Before 3.14, it always passed.
 
@@ -171,9 +180,11 @@ now read the value as `@cornerstonejs/metadata` does:
 - Each element of the value that has a value reads as text: `5` is `'5'`, and `[null,
   'R MLO']` is `['R MLO']`. Before 3.14, a number value failed `startsWith` with "Value must
   be a string or an array", and passed `contains` (a number has no `indexOf`).
-- A value with no value gives no text. So `contains`, `startsWith` and `endsWith` fail, and
-  `doesNotContain` and `doesNotContainI` hold. Before 3.14, all of these failed with an
-  error on a missing value.
+- A value with no value gives no text. So `contains`, `containsI`, `startsWith` and
+  `endsWith` fail, and `doesNotContain` and `doesNotContainI` hold. Before 3.14, on a
+  missing value, `contains`, `containsI`, `doesNotContain` and `doesNotContainI` failed
+  with an error ("Something went wrong during validation"), and `startsWith` and `endsWith`
+  failed with "must be a string or an array".
 - An object reads as the text `'[object Object]'`. So on a person name object
   (`PatientName` as `{ Alphabetic }`), `contains` and `containsI` now fail, and
   `doesNotContain` and `doesNotContainI` now hold. Before 3.14, an object has no `indexOf`,
@@ -184,7 +195,7 @@ now read the value as `@cornerstonejs/metadata` does:
   `startsWith: 0` is an error there.
 
 The rule holds when one text of the value passes the test with one test value, as before.
-The `@ohif/hpMammo` and PT changes are in "The OHIF hanging protocols".
+The `@ohif/hpMammo` and TMTV results are in "The OHIF hanging protocols".
 
 ## No value
 
