@@ -20,6 +20,8 @@ import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
+import { getSegmentStats } from './getSegmentStats';
+import { roundNumbers } from './roundNumbers';
 import {
   expectAnnotationLabelText,
   expectAnnotationStatsText,
@@ -69,6 +71,8 @@ export {
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
+  getSegmentStats,
+  roundNumbers,
   expectAnnotationLabelText,
   expectAnnotationStatsText,
   measurementTextFormatters,
