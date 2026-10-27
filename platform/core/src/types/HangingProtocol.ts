@@ -89,19 +89,39 @@ export type ConstraintValue =
   | boolean
   | []
   | string[]
+  | number[]
+  | null
   | {
-      value: string | number | boolean | [];
+      value: string | number | boolean | null | [] | string[] | number[];
+    }
+  | {
+      // Reads the operand from another attribute, of the metadata instance by default.
+      attribute: string;
+      from?: string;
     };
 
+/** The validators of `HangingProtocolService/lib/validator.js`. */
 export type Constraint = {
-  // This value exactly
+  // Equal value: the whole value, a numeric string equals a number
   equals?: ConstraintValue;
-  notEquals?: ConstraintValue;
+  doesNotEqual?: ConstraintValue;
+  includes?: ConstraintValue;
+  doesNotInclude?: ConstraintValue;
   // A caseless contains
-  containsI?: string;
+  containsI?: ConstraintValue;
   contains?: ConstraintValue;
+  containsAll?: ConstraintValue;
   doesNotContain?: ConstraintValue;
+  doesNotContainI?: ConstraintValue;
+  startsWith?: ConstraintValue;
+  endsWith?: ConstraintValue;
+  // Number comparisons; greaterThan and lessThan are strict
   greaterThan?: ConstraintValue;
+  lessThan?: ConstraintValue;
+  greaterThanOrEqual?: ConstraintValue;
+  lessThanOrEqual?: ConstraintValue;
+  range?: ConstraintValue;
+  notNull?: boolean | { value: boolean } | { attribute: string; from?: string };
 };
 
 export type MatchingRule = {

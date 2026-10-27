@@ -482,7 +482,7 @@ const defaultProtocol = {
         {
           attribute: 'numImageFrames',
           constraint: {
-            greaterThan: { value: 0 },
+            greaterThanOrEqual: { value: 0 },
           },
         },
       ],
