@@ -33,7 +33,7 @@ Find each `greaterThan` and `lessThan` constraint in your hanging protocols. For
 decide which meaning the rule needs:
 
 - The rule needs the old meaning. Rename `greaterThan` to `greaterThanOrEqual`, and
-  `lessThan` to `lessThanOrEqual`. Keep the value. This change is exact for every number
+  `lessThan` to `lessThanOrEqual`. Keep the value. This change is exact for every finite number
   value, also for a value that is not an integer. For a text value, an array value or no
   value, the result can change; see "Number values".
 - The rule needs the strict meaning. Make no change. For example,
@@ -54,7 +54,8 @@ For an integer attribute, `greaterThan: n - 1` gives the same result as
 
 ## The OHIF hanging protocols
 
-These rules change, and keep their match:
+These rules change, and keep their match for a number value (for a numeric string, see
+below):
 
 - `@ohif/hpMammo`: `numberOfDisplaySetsWithImages` changes from `greaterThan: 2` to
   `greaterThanOrEqual: 2`.
@@ -73,7 +74,8 @@ These matches change:
   `@ohif/mnGrid8`, and in `@ohif/hpScale` and the test protocol `hpTestSwitch`. Before 3.14 it
   always passed. Now a study with 0 display sets with images no longer gets its weight. The
   OHIF modes show no change: the segmentation mode lists only `@ohif/mnGrid`, and when no
-  protocol scores, the protocol engine uses the first protocol of the mode.
+  protocol scores, the protocol engine uses the `default` protocol when the mode lists it,
+  else the first protocol of the mode.
 - `@ohif/hpMammo` has two `required` rules with `doesNotContain`: `PatientOrientation`
   `doesNotContain: ['P', 'FL']` and `SeriesDescription` `doesNotContain: 'CC'`. Before 3.14,
   the rule failed with an error when the display set had no value for the attribute, so the
@@ -82,8 +84,10 @@ These matches change:
   its other required rules hold.
 - The TMTV protocol and the dynamic volume protocol give the weight 2 to a PT display set
   whose `SeriesDescription` does not contain `Uncorrected`. Before 3.14, a PT display set with
-  no `SeriesDescription` made that rule fail with an error, so it got 0. Now it gets 2, the
-  same as an attenuation corrected PT, and more than an uncorrected PT.
+  no `SeriesDescription` made that rule fail with an error, so it got 0. Now it gets 2. With
+  the other PT rules, such a display set now scores 4 in TMTV, the same as a PT whose
+  description does not name the correction (`'PET WB'`). An attenuation corrected PT scores
+  5, and an uncorrected PT 2. Before 3.14, it scored 2, the same as an uncorrected PT.
 - A numeric string `numImageFrames` now matches the number rules. The stack SOP class
   handler copies `NumberOfFrames` of a multi-frame instance as it is, and a data source can
   give it as text. Before 3.14, `greaterThan` failed on a string, so such a display set did
@@ -95,14 +99,17 @@ These matches change:
 `@cornerstonejs/metadata` does:
 
 - A numeric string reads as a number: `'5'` is 5. Before 3.14, `greaterThan` failed on a
-  string value.
+  string value, and `lessThan` let JavaScript convert it, so `' '` read as 0 and passed
+  `lessThan: 5`. Now `' '` has no number and fails.
 - An array reads as its first element: `[5]` is 5. Before 3.14, `greaterThan` failed on an
-  array value.
+  array value, and `lessThan` let JavaScript convert it, so `['5', '9']` failed
+  `lessThan: 6` and now passes.
 - A value with no number fails: `null`, `undefined`, `''`, `true`. Before 3.14, JavaScript
   compared `null` and `true` as numbers, so `lessThan: 10` passed on `null`, and
   `greaterThan: { value: 0 }` passed on `null` (`null >= 0`) and on `true`. `HPMatcher` reads
-  a missing attribute as `undefined`, which failed before too; a custom attribute callback
-  can give `null` or a boolean.
+  a missing or a `null` attribute as `undefined`, which failed before too; a custom
+  attribute callback can give `null` or a boolean. `Infinity` is not a finite number, so it
+  fails now too.
 
 The test value reads in the same way: `'4'` and `['4']` are 4. A test value with no number
 fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every number value.

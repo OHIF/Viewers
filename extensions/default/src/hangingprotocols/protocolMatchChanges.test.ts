@@ -1,6 +1,7 @@
 import { HPMatcher } from '@ohif/core/src/services/HangingProtocolService/HPMatcher';
 import { RMLO } from './utils/mammoDisplaySetSelector';
 import { seriesWithImages } from './utils/seriesSelectors';
+import { studyWithImages } from './utils/studySelectors';
 
 const match = (displaySet, rules) => HPMatcher.match(displaySet, rules, {}, {});
 
@@ -47,5 +48,17 @@ describe('hanging protocol matches with a numeric string', () => {
   it('seriesWithImages accepts numImageFrames as text, as a number', () => {
     expect(match({ numImageFrames: '30' }, seriesWithImages).requiredFailed).toBe(false);
     expect(match({ numImageFrames: 30 }, seriesWithImages).requiredFailed).toBe(false);
+  });
+});
+
+describe('hanging protocol matches with 0 image frames or 0 display sets', () => {
+  it('seriesWithImages accepts a whole slide display set with 0 image frames', () => {
+    expect(match({ numImageFrames: 0 }, seriesWithImages).requiredFailed).toBe(false);
+  });
+
+  it('studyWithImages gives no OneOrMoreSeries weight to a study with 0 display sets with images', () => {
+    const none = match({ numberOfDisplaySetsWithImages: 0 }, studyWithImages).score;
+    const one = match({ numberOfDisplaySetsWithImages: 1 }, studyWithImages).score;
+    expect(none).toBeLessThan(one);
   });
 });

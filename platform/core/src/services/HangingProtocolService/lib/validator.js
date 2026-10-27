@@ -430,7 +430,7 @@ const showValue = value =>
  */
 const matchesText = (value, options, ignoreCase, test) => {
   const toCase = text => (ignoreCase ? text.toLowerCase() : text);
-  const texts = (Array.isArray(value) ? value : [value])
+  const texts = asArray(value)
     .filter(element => !hasNoValue(element))
     .map(element => toCase(String(element)));
   const needles = toTexts(getTestValue(options)).map(toCase);
