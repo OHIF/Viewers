@@ -114,7 +114,8 @@ not make, because that handler sets `SeriesDescription` to `''` when the instanc
   `greaterThan: { value: 0 }` passed on `null` (`null >= 0`) and on `true`. A `null` value
   comes from an empty instance attribute (dcmjs gives an empty Type 2 element as `null`) or
   from a custom attribute callback. A missing attribute is `undefined`, which failed before
-  too. `Infinity` is not a finite number, so it fails now too.
+  too. `Infinity` is not a finite number, so it now fails; before 3.14, it passed
+  `greaterThan`.
 
 The test value reads in the same way: `'4'` and `['4']` are 4. A test value with no number
 fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every number value.
@@ -157,8 +158,8 @@ protocols: it now tests the value.
   always passed.
 - No OHIF hanging protocol uses the operand `0`, `false` or `''` with a text validator.
 
-An `{ attribute, from }` operand that gives no value now reaches the validator as
-`undefined`. Before 3.14, the validator got the wrapper object. So
+An `{ attribute, from }` operand that gives no value now reaches the validator as that value
+(`undefined` or `null`). Before 3.14, the validator got the wrapper object. So
 `equals: { attribute: 'X' }` now holds when the value and `X` are both missing, and
 `doesNotEqual` fails. Two different kinds of no value are not equal: the value `''` or `[]`
 with `X` missing fails `equals`. A text validator gets no text from such an operand, so
