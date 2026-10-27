@@ -6,8 +6,8 @@ import { makeDisplaySetFromInstanceGroup } from './makeDisplaySetFromInstanceGro
  */
 jest.mock('./makeImageSetDisplaySet', () => {
   // More than one slice is reconstructable; the `instance` is the first image.
-  const applyImageListAttributes = imageSet => {
-    imageSet.isReconstructable = imageSet.images.length > 1;
+  const applyImageListAttributes = (imageSet, _context, ruleIsReconstructable?: boolean) => {
+    imageSet.isReconstructable = ruleIsReconstructable ?? imageSet.images.length > 1;
     imageSet.instance = imageSet.images[0];
     return {};
   };
@@ -29,9 +29,9 @@ jest.mock('./makeImageSetDisplaySet', () => {
       return imageSet;
     },
     // The real image part applies the image-list attributes.
-    applyImageAttributes: imageSet => {
+    applyImageAttributes: (imageSet, _context, options) => {
       imageSet.hasImagePart = true;
-      applyImageListAttributes(imageSet);
+      applyImageListAttributes(imageSet, _context, options.isReconstructable);
     },
     applyImageListAttributes,
     applyThumbnailSrc: imageSet => {
@@ -109,6 +109,27 @@ describe('makeDisplaySetFromInstanceGroup', () => {
     expect(displaySet.handler).toBe(handler);
     expect(!!displaySet.hasImagePart).toBe(hasImagePart);
   });
+
+  // OHIF refines the CS3D isReconstructable for display; a rule attribute wins.
+  it.each([
+    ['the OHIF check', undefined, true],
+    ['the rule attribute', () => ({ isReconstructable: false }), false],
+  ])(
+    'gives an image display set the isReconstructable of %s',
+    (_label, customAttributes, expected) => {
+      // Two slices with no geometry: CS3D says false, the OHIF check (mocked) says true.
+      const displaySet = makeDisplaySetFromInstanceGroup(
+        {
+          instances: [instance, { ...instance, SOPInstanceUID: 'sop-2' }],
+          matchedRule: { id: 'r', customAttributes },
+          splitKey: 'k',
+        } as never,
+        { splitNumber: 0 },
+        context
+      ) as unknown as Record<string, unknown>;
+      expect(displaySet.isReconstructable).toBe(expected);
+    }
+  );
 
   describe('extendInstances', () => {
     const slice = (sop: string, instanceNumber: number) => ({

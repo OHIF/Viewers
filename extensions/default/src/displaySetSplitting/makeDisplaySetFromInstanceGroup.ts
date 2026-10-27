@@ -80,11 +80,37 @@ function orderAndRefreshAttributes(
   imageSet,
   matchedRule: SplitRule,
   order: InstanceOrder,
-  context: ImageSetFactoryContext
+  context: ImageSetFactoryContext,
+  ruleIsReconstructable?: boolean
 ) {
   applyInstanceOrder(imageSet, matchedRule, order, context);
-  const derived = applyImageListAttributes(imageSet, context);
+  const derived = applyImageListAttributes(imageSet, context, ruleIsReconstructable);
   applyThumbnailSrc(imageSet, context, derived);
+}
+
+/**
+ * Step 1: the `@cornerstonejs/metadata` display set of the group, and the
+ * `isReconstructable` that the rule's own attributes set, if any. The rule's
+ * `customAttributes` runs once, inside `createDisplaySetFromGroup`; the
+ * wrapper only reads its result.
+ */
+function buildRuleDisplaySet(group: InstanceGroup, splitNumber: number) {
+  let ruleIsReconstructable: boolean | undefined;
+  const { customAttributes } = group.matchedRule;
+  const matchedRule = customAttributes
+    ? {
+        ...group.matchedRule,
+        customAttributes: (attributes, options) => {
+          const result = customAttributes(attributes, options);
+          if (typeof result?.isReconstructable === 'boolean') {
+            ruleIsReconstructable = result.isReconstructable;
+          }
+          return result;
+        },
+      }
+    : group.matchedRule;
+  const ruleDisplaySet = createDisplaySetFromGroup({ ...group, matchedRule }, { splitNumber });
+  return { ruleDisplaySet, ruleIsReconstructable };
 }
 
 /**
@@ -92,10 +118,13 @@ function orderAndRefreshAttributes(
  * display set: `splitKey`, `splitRuleId`, `splitGroupId`, `sopClassUids`,
  * `handler` and the rule's attributes. Applied after the OHIF
  * defaults, so the rule's attributes win over them.
+ *
+ * An image display set keeps the OHIF `isReconstructable`: the image part
+ * refines the CS3D value for display, and already applied a rule attribute.
  */
-function copyRuleDisplaySet(displaySet, ruleDisplaySet: object) {
+function copyRuleDisplaySet(displaySet, ruleDisplaySet: object, isImage: boolean) {
   for (const [key, value] of Object.entries(ruleDisplaySet)) {
-    if (!NOT_COPIED.has(key)) {
+    if (!NOT_COPIED.has(key) && !(isImage && key === 'isReconstructable')) {
       displaySet.setAttribute(key, value);
     }
   }
@@ -137,7 +166,7 @@ export function makeDisplaySetFromInstanceGroup(
   // Step 1. `compileSplitRules` wraps `customAttributes`, so an error here
   // names the rule and the field; DisplaySetService catches it and stops the
   // study.
-  const ruleDisplaySet = createDisplaySetFromGroup(group, { splitNumber });
+  const { ruleDisplaySet, ruleIsReconstructable } = buildRuleDisplaySet(group, splitNumber);
   const { handler } = ruleDisplaySet as { handler?: string };
   const isImage = !handler || handler === 'image';
 
@@ -145,10 +174,13 @@ export function makeDisplaySetFromInstanceGroup(
   const displaySet = makeSeriesDisplaySet([...group.instances]);
   if (isImage) {
     // The order is applied below, once, with the matched rule folded in.
-    applyImageAttributes(displaySet, context, { skipSort: true });
-    orderAndRefreshAttributes(displaySet, matchedRule, order, context);
+    applyImageAttributes(displaySet, context, {
+      skipSort: true,
+      isReconstructable: ruleIsReconstructable,
+    });
+    orderAndRefreshAttributes(displaySet, matchedRule, order, context, ruleIsReconstructable);
   }
-  copyRuleDisplaySet(displaySet, ruleDisplaySet);
+  copyRuleDisplaySet(displaySet, ruleDisplaySet, isImage);
 
   displaySet.setAttribute(
     'extendInstances',
@@ -182,21 +214,25 @@ export function makeDisplaySetFromInstanceGroup(
       // `images` is a non-writable property, but the array contents are
       // mutable. A non-image display set keeps the new instances at the end.
       displaySet.images.push(...instancesToAdd);
+      // The display set keeps the `splitKey` of the group that created it.
+      const grown = buildRuleDisplaySet(
+        { ...group, series: order.series, instances: [...displaySet.images] },
+        splitNumber
+      );
       if (isImage) {
         // The sort reads `isReconstructable`: one slice is not reconstructable,
         // but more slices can be. So the attributes come first for the grown
         // list, then again from the final order.
-        applyImageListAttributes(displaySet, context);
-        orderAndRefreshAttributes(displaySet, matchedRule, order, context);
+        applyImageListAttributes(displaySet, context, grown.ruleIsReconstructable);
+        orderAndRefreshAttributes(
+          displaySet,
+          matchedRule,
+          order,
+          context,
+          grown.ruleIsReconstructable
+        );
       }
-      // The display set keeps the `splitKey` of the group that created it.
-      copyRuleDisplaySet(
-        displaySet,
-        createDisplaySetFromGroup(
-          { ...group, series: order.series, instances: [...displaySet.images] },
-          { splitNumber }
-        )
-      );
+      copyRuleDisplaySet(displaySet, grown.ruleDisplaySet, isImage);
       return displaySet;
     }
   );

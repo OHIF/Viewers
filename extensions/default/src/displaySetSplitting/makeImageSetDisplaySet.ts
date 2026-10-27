@@ -108,6 +108,11 @@ export type MakeImageSetDisplaySetOptions = {
    * OHIF's default order and the matched rule's comparator together, once.
    */
   skipSort?: boolean;
+  /**
+   * The `isReconstructable` that a split rule's attributes set. It replaces
+   * the OHIF check, and the messages and the icon follow it.
+   */
+  isReconstructable?: boolean;
 };
 
 /**
@@ -161,7 +166,7 @@ export function applyImageAttributes(
 
   // Everything derived from the image list. `imageSet.sort` reads
   // `isReconstructable`, so this must run before it.
-  const derived = applyImageListAttributes(imageSet, context);
+  const derived = applyImageListAttributes(imageSet, context, options.isReconstructable);
   applyThumbnailSrc(imageSet, context, derived);
 
   // The legacy SOP class handler path has no rule to consult, so OHIF's default
@@ -204,14 +209,20 @@ export function makeImageSetDisplaySet(
  * series, and a split rule's `customAttributes` may have overridden it (e.g.
  * the SCOUT example relabels `SeriesDescription`).
  *
+ * @param ruleIsReconstructable - a value that a split rule's attributes set;
+ *   it replaces the OHIF check.
  * @returns the intermediate values a caller needs for the thumbnail.
  */
-export function applyImageListAttributes(imageSet, context: ImageSetFactoryContext) {
+export function applyImageListAttributes(
+  imageSet,
+  context: ImageSetFactoryContext,
+  ruleIsReconstructable?: boolean
+) {
   const dataSource = context.extensionManager.getActiveDataSource()[0];
   const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
   const {
     isDynamicVolume,
-    value: isReconstructable,
+    value: checkedIsReconstructable,
     averageSpacingBetweenFrames,
     dynamicVolumeInfo,
   } = getDisplaySetInfo(imageSet.images, imageIds, context);
@@ -221,6 +232,7 @@ export function applyImageListAttributes(imageSet, context: ImageSetFactoryConte
   // leave `instance` pointing at the wrong image.
   const instance = imageSet.images[0];
   const multiFrame = isMultiFrame(instance);
+  const isReconstructable = ruleIsReconstructable ?? checkedIsReconstructable;
 
   imageSet.setAttributes({
     instance,

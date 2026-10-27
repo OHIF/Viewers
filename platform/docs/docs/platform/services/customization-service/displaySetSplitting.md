@@ -285,7 +285,9 @@ OHIF builds each display set of a rule in three steps:
    rule's `attributes` from step 1. For a rule with no
    handler, or with the `image` handler, it also adds the image fields: the
    stack `SOPClassHandlerId`, `isReconstructable`, the messages, the thumbnail
-   and the instance order.
+   and the instance order. `@cornerstonejs/metadata` gives `isReconstructable`
+   from the instance data, OHIF refines it for display, and a rule attribute
+   `isReconstructable` wins over both.
 3. The `extendDisplaySet` of the handler adds the handler fields. The function
    is synchronous, and changes the display set in place. `addedInstances` is
    undefined when the display set is created, and lists the new instances
