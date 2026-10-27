@@ -1,4 +1,4 @@
-import { metaData } from '@cornerstonejs/core';
+import { metaData, version as cs3dVersion } from '@cornerstonejs/core';
 
 import OHIF, { utils } from '@ohif/core';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -16,6 +16,9 @@ interface Options {
   InstanceNumber?: number;
   SeriesDate?: string;
   SeriesTime?: string;
+  Manufacturer?: string;
+  ManufacturerModelName?: string;
+  SoftwareVersions?: string | string[];
 }
 
 /**
@@ -23,15 +26,23 @@ interface Options {
  * that you wish to serialize.
  * @param additionalFindingTypes toolTypes that should be stored with labels as Findings
  * @param options Naturalized DICOM JSON headers to merge into the displaySet.
- *
+ * The writer header (`Manufacturer`, `ManufacturerModelName`, `SoftwareVersions`)
+ * defaults to OHIF and the CS3D version; a value in `options` wins.
  */
-const _generateReport = (measurementData, additionalFindingTypes, options: Options = {}) => {
+export const _generateReport = (
+  measurementData,
+  additionalFindingTypes,
+  options: Options = {}
+) => {
   const filteredToolState = getFilteredCornerstoneToolState(
     measurementData,
     additionalFindingTypes
   );
 
-  const report = MeasurementReport.generateReport(filteredToolState, metaData, options);
+  const report = MeasurementReport.generateReport(filteredToolState, metaData, {
+    ...utils.getSRWriterHeader('@cornerstonejs/adapters', 'CS3D', cs3dVersion),
+    ...options,
+  });
 
   const { dataset } = report;
 
