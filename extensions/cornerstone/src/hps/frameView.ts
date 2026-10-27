@@ -14,7 +14,7 @@ const frameView: Types.HangingProtocol.Protocol = {
         {
           attribute: 'numImageFrames',
           constraint: {
-            greaterThan: { value: 16 },
+            greaterThanOrEqual: { value: 16 },
           },
           required: true,
         },

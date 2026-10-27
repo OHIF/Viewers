@@ -1,6 +1,38 @@
 import validate from 'validate.js';
+import { asArray } from '@cornerstonejs/utils';
+
+/** The validators that this module adds to validate.js. */
+export const OHIF_VALIDATORS = new Set([
+  'equals',
+  'doesNotEqual',
+  'includes',
+  'doesNotInclude',
+  'containsI',
+  'contains',
+  'containsAll',
+  'doesNotContain',
+  'doesNotContainI',
+  'startsWith',
+  'endsWith',
+  'greaterThan',
+  'greaterThanOrEqual',
+  'lessThan',
+  'lessThanOrEqual',
+  'range',
+  'notNull',
+]);
+
 /**
- * check if the value is strictly equal to options
+ * True for an OHIF validator. Each one reads its operand as a value to test, so
+ * `false` or `0` is a test value. For a validate.js built-in such as
+ * `presence`, or a validator that an application adds, `false` keeps the
+ * validate.js meaning.
+ */
+export const isOhifValidator = name => OHIF_VALIDATORS.has(name);
+
+/**
+ * check if the value is equal to options. A number equals a numeric string:
+ * `1` equals `'1'`.
  *
  * @example
  * value = ['abc', 'def', 'GHI']
@@ -22,22 +54,8 @@ import validate from 'validate.js';
  * */
 validate.validators.equals = function (value, options, key) {
   const testValue = getTestValue(options);
-  const dicomArrayValue = dicomTagToArray(value);
-
-  // If options is an array, then we need to validate each element in the array
-  if (Array.isArray(testValue)) {
-    // If the array has only one element, then we need to compare the value to that element
-    if (testValue.length !== dicomArrayValue.length) {
-      return `${key} must be an array of length ${testValue.length}`;
-    } else {
-      for (let i = 0; i < testValue.length; i++) {
-        if (testValue[i] !== dicomArrayValue[i]) {
-          return `${key} ${testValue[i]} must equal ${dicomArrayValue[i]}`;
-        }
-      }
-    }
-  } else if (testValue !== dicomArrayValue[0]) {
-    return `${key} must equal ${testValue}`;
+  if (!isEqualToTestValue(value, testValue)) {
+    return `${key} must equal ${showValue(testValue)}`;
   }
 };
 /**
@@ -52,42 +70,28 @@ validate.validators.equals = function (value, options, key) {
  *           = ['abc', 'def'] (Valid)
  *
  * value = 'Attenuation Corrected'
- *       = 'Attenuation Corrected' (Fail)
- *       = 'Attenuation' (Valid)
+ * testValue = 'Attenuation Corrected' (Fail)
+ *           = 'Attenuation' (Valid)
  *
  * value = ['Attenuation Corrected']
  * testValue = ['Attenuation Corrected'] (Fail)
  *           = 'Attenuation Corrected' (Fail)
- *           = 'Attenuation' (Fail)
+ *           = 'Attenuation' (Valid)
  * */
 validate.validators.doesNotEqual = function (value, options, key) {
   const testValue = getTestValue(options);
-  const dicomArrayValue = dicomTagToArray(value);
-
-  if (Array.isArray(testValue)) {
-    if (testValue.length === dicomArrayValue.length) {
-      let score = 0;
-      testValue.forEach((x, i) => {
-        if (x === dicomArrayValue[i]) {
-          score++;
-        }
-      });
-      if (score === testValue.length) {
-        return `${key} must not equal to ${testValue}`;
-      }
-    }
-  } else if (testValue === dicomArrayValue[0]) {
-    console.log(dicomArrayValue, testValue);
-    return `${key} must not equal to ${testValue}`;
+  if (isEqualToTestValue(value, testValue)) {
+    return `${key} must not equal ${showValue(testValue)}`;
   }
 };
 
 /**
- * Check if a value includes one or more specified options.
+ * Check if a value includes one or more specified options. A single test
+ * value is the same as an array of one test value.
  *
  * @example
  * value = ['abc', 'def', 'GHI']
- * testValue = ‘abc’ (Fail)
+ * testValue = ‘abc’ (Valid)
  *           = ‘dog’ (Fail)
  *           = [‘abc’] (Valid)
  *           = [‘att’, ‘abc’] (Valid)
@@ -95,7 +99,7 @@ validate.validators.doesNotEqual = function (value, options, key) {
  *           = ['cat', 'dog'] (Fail)
  *
  * value = ['Attenuation Corrected']
- * testValue = 'Attenuation Corrected' (Fail)
+ * testValue = 'Attenuation Corrected' (Valid)
  *           = ['Attenuation Corrected', 'Corrected'] (Valid)
  *           = ['Attenuation', 'Corrected'] (Fail)
  *
@@ -105,26 +109,18 @@ validate.validators.doesNotEqual = function (value, options, key) {
  * */
 validate.validators.includes = function (value, options, key) {
   const testValue = getTestValue(options);
-  const dicomArrayValue = dicomTagToArray(value);
-
-  if (Array.isArray(testValue)) {
-    const includedValues = testValue.filter(el => dicomArrayValue.includes(el));
-    if (includedValues.length === 0) {
-      return `${key} must include at least one of the following values: ${testValue.join(', ')}`;
-    }
-  } else {
-    return `${key} ${testValue} must be an array`;
+  if (!includedTestValues(value, testValue).length) {
+    return `${key} must include one of ${showValue(testValue)}`;
   }
-  // else if (!value.includes(testValue)) {
-  //   return `${key} ${value} must include ${testValue}`;
-  // }
 };
 /**
- * Check if a value does not include one or more specified options.
+ * Check if a value does not include one or more specified options. A single
+ * test value is the same as an array of one test value.
  *
  * @example
  * value = ['abc', 'def', 'GHI']
  * testValue = ['Corr'] (Valid)
+ *           = 'dog' (Valid)
  *           = 'abc' (Fail)
  *           = ['abc'] (Fail)
  *           = [‘att’, ‘cor’] (Valid)
@@ -140,23 +136,11 @@ validate.validators.includes = function (value, options, key) {
  *           = ['Attenuation', 'Corrected'] (Valid)
  * */
 validate.validators.doesNotInclude = function (value, options, key) {
-  const testValue = getTestValue(options);
-  const dicomArrayValue = dicomTagToArray(value);
-
-  // if (!Array.isArray(value) || value.length === 1) {
-  //   return `${key} is not allowed as a single value`;
-  // }
-  if (Array.isArray(testValue)) {
-    const includedValues = testValue.filter(el => dicomArrayValue.includes(el));
-    if (includedValues.length > 0) {
-      return `${key} must not include the following value: ${includedValues}`;
-    }
-  } else {
-    return `${key} ${testValue} must be an array`;
+  const includedValues = includedTestValues(value, getTestValue(options));
+  if (includedValues.length > 0) {
+    return `${key} must not include ${showValue(includedValues)}`;
   }
 };
-// Ignore case contains.
-// options testValue MUST be in lower case already, otherwise it won't match
 /**
  * @example
  * value = 'Attenuation Corrected'
@@ -174,23 +158,8 @@ validate.validators.doesNotInclude = function (value, options, key) {
  *
  * */
 validate.validators.containsI = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(value)) {
-    if (value.some(item => !validate.validators.containsI(item.toLowerCase(), options, key))) {
-      return undefined;
-    }
-    return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
-  }
-  if (Array.isArray(testValue)) {
-    if (
-      testValue.some(subTest => !validate.validators.containsI(value, subTest.toLowerCase(), key))
-    ) {
-      return;
-    }
-    return `${key} must contain at least one of ${testValue.join(',')}`;
-  }
-  if (testValue && value.indexOf && value.toLowerCase().indexOf(testValue.toLowerCase()) === -1) {
-    return key + 'must contain any case of' + testValue;
+  if (!matchesText(value, options, true, (text, needle) => text.includes(needle))) {
+    return `${key} must contain any case of one of ${showValue(getTestValue(options))}`;
   }
 };
 /**
@@ -210,21 +179,8 @@ validate.validators.containsI = function (value, options, key) {
  *
  * */
 validate.validators.contains = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(value)) {
-    if (value.some(item => !validate.validators.contains(item, options, key))) {
-      return undefined;
-    }
-    return `No item of ${value.join(',')} contains ${JSON.stringify(testValue)}`;
-  }
-  if (Array.isArray(testValue)) {
-    if (testValue.some(subTest => !validate.validators.contains(value, subTest, key))) {
-      return;
-    }
-    return `${key} must contain at least one of ${testValue.join(',')}`;
-  }
-  if (testValue && value.indexOf && value.indexOf(testValue) === -1) {
-    return key + 'must contain ' + testValue;
+  if (!matchesText(value, options, false, (text, needle) => text.includes(needle))) {
+    return `${key} must contain one of ${showValue(getTestValue(options))}`;
   }
 };
 
@@ -258,9 +214,8 @@ validate.validators.containsAll = function (value, options, key) {
  *
  * */
 validate.validators.doesNotContain = function (value, options, key) {
-  const containsResult = validate.validators.contains(value, options, key);
-  if (!containsResult) {
-    return `No item of ${value} should contain ${getTestValue(options)}`;
+  if (matchesText(value, options, false, (text, needle) => text.includes(needle))) {
+    return `${key} must not contain ${showValue(getTestValue(options))}`;
   }
 };
 
@@ -281,56 +236,29 @@ validate.validators.doesNotContain = function (value, options, key) {
  *
  * */
 validate.validators.doesNotContainI = function (value, options, key) {
-  const containsResult = validate.validators.containsI(value, options, key);
-  if (!containsResult) {
-    return `No item of ${value} should not contain ${getTestValue(options)}`;
+  if (matchesText(value, options, true, (text, needle) => text.includes(needle))) {
+    return `${key} must not contain any case of ${showValue(getTestValue(options))}`;
   }
 };
 /**
  * @example
  * value = 'Attenuation Corrected'
  * testValue = ‘Corr’ (Fail)
- *           = ‘Att’ (Fail)
+ *           = ‘Att’ (Valid)
  *           = ['cat', 'dog', 'Att'] (Valid)
  *           = [‘cat’, ‘dog’] (Fail)
  *
  * value = ['abc', 'def', 'GHI']
- * testValue = 'deg' (Valid)
+ * testValue = 'de' (Valid)
+ *           = 'deg' (Fail)
  *           = ['cat', 'GH']  (Valid)
  *           = ['cat', 'gh'] (Fail)
  *           = ['cat', 'dog'] (Fail)
  *
  * */
 validate.validators.startsWith = function (value, options, key) {
-  let testValues = getTestValue(options);
-
-  if (typeof testValues === 'string') {
-    testValues = [testValues];
-  }
-
-  if (typeof value === 'string') {
-    if (!testValues.some(testValue => value.startsWith(testValue))) {
-      return key + ' must start with any of these values: ' + testValues;
-    }
-  } else if (Array.isArray(value)) {
-    let valid = false;
-    for (let i = 0; i < value.length; i++) {
-      for (let j = 0; j < testValues.length; j++) {
-        if (value[i].startsWith(testValues[j])) {
-          valid = true; // set valid flag to true if a match is found
-          break;
-        }
-      }
-      if (valid) {
-        return undefined; // break out of loop if a match is found
-      }
-    }
-
-    if (!valid) {
-      return key + ' must start with any of these values: ' + testValues; // return undefined if no match is found
-    }
-  } else {
-    return 'Value must be a string or an array';
+  if (!matchesText(value, options, false, (text, needle) => text.startsWith(needle))) {
+    return `${key} must start with one of ${showValue(getTestValue(options))}`;
   }
 };
 
@@ -343,97 +271,97 @@ validate.validators.startsWith = function (value, options, key) {
  *           = [‘cat’, ‘dog’] (Fail)
  *
  * value = ['abc', 'def', 'GHI']
- * testValue = 'deg' (Valid)
+ * testValue = 'ef' (Valid)
+ *           = 'deg' (Fail)
  *           = ['cat', 'HI']  (Valid)
  *           = ['cat', 'hi'] (Fail)
  *           = ['cat', 'dog'] (Fail)
  *
  * */
 validate.validators.endsWith = function (value, options, key) {
-  let testValues = getTestValue(options);
-
-  if (typeof testValues === 'string') {
-    testValues = [testValues];
-  }
-
-  if (typeof value === 'string') {
-    if (!testValues.some(testValue => value.endsWith(testValue))) {
-      return key + ' must end with any of these values: ' + testValues;
-    }
-  } else if (Array.isArray(value)) {
-    let valid = false;
-    for (let i = 0; i < value.length; i++) {
-      for (let j = 0; j < testValues.length; j++) {
-        if (value[i].endsWith(testValues[j])) {
-          valid = true; // set valid flag to true if a match is found
-          break;
-        }
-      }
-      if (valid) {
-        return undefined; // break out of loop if a match is found
-      }
-    }
-
-    if (!valid) {
-      return key + ' must end with any of these values: ' + testValues; // return undefined if no match is found
-    }
-  } else {
-    return key + ' must be a string or an array';
+  if (!matchesText(value, options, false, (text, needle) => text.endsWith(needle))) {
+    return `${key} must end with one of ${showValue(getTestValue(options))}`;
   }
 };
+/**
+ * Creates a validator that compares a numeric value with one test value. The
+ * test value can be a number, `{ value }`, or an array of one number.
+ *
+ * The value reads as in `@cornerstonejs/metadata`: a number, a numeric string,
+ * or the first element of an array. A value with no number fails. The test
+ * value reads in the same way, and a test value with no number (`''`, `[]`,
+ * `null`) fails. `@cornerstonejs/metadata` accepts a finite number only.
+ *
+ * @param compare - the comparison of the value with the test value
+ * @param relation - the relation, for the error message
+ */
+const createNumberValidator = (compare, relation) =>
+  function (rawValue, options, key) {
+    const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
+    if (value === undefined) {
+      return `${key} must be a number, but was ${showValue(rawValue)}`;
+    }
+    const rawTestValue = getTestValue(options);
+    if (Array.isArray(rawTestValue) && rawTestValue.length > 1) {
+      return key + ' must be an array of length 1';
+    }
+    const testValue = toFinite(Array.isArray(rawTestValue) ? rawTestValue[0] : rawTestValue);
+    if (testValue === undefined) {
+      return `${key} has a test value that is not a number: ${showValue(rawTestValue)}`;
+    }
+    if (!compare(value, testValue)) {
+      return `${key} must be ${relation} ${testValue}, but was ${value}`;
+    }
+  };
+
+/**
+ * Strictly greater than.
+ *
+ * @example
+ * value = 30
+ * testValue = 20 (Valid)
+ *           = 30 (Fail)
+ *           = 40 (Fail)
+ *
+ * */
+validate.validators.greaterThan = createNumberValidator((a, b) => a > b, 'greater than');
 /**
  * @example
  * value = 30
  * testValue = 20 (Valid)
+ *           = 30 (Valid)
  *           = 40 (Fail)
  *
  * */
-validate.validators.greaterThan = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(value) || typeof value === 'string') {
-    return `${key} is not allowed as an array or string`;
-  }
-  if (Array.isArray(testValue)) {
-    if (testValue.length === 1) {
-      if (!(value >= testValue[0])) {
-        return `${key}  must be greater than or equal to ${testValue[0]}, but was ${value}`;
-      }
-    } else if (testValue.length > 1) {
-      return key + ' must be an array of length 1';
-    }
-  } else {
-    if (!(value >= testValue)) {
-      return key + ' must be greater than ' + testValue;
-    }
-  }
-};
+validate.validators.greaterThanOrEqual = createNumberValidator(
+  (a, b) => a >= b,
+  'greater than or equal to'
+);
+/**
+ * Strictly less than.
+ *
+ * @example
+ * value = 30
+ * testValue = 40 (Valid)
+ *           = 30 (Fail)
+ *           = 20 (Fail)
+ *
+ * */
+validate.validators.lessThan = createNumberValidator((a, b) => a < b, 'less than');
 /**
  * @example
  * value = 30
  * testValue = 40 (Valid)
+ *           = 30 (Valid)
  *           = 20 (Fail)
  *
  * */
-validate.validators.lessThan = function (value, options, key) {
-  const testValue = getTestValue(options);
-  if (Array.isArray(testValue)) {
-    if (testValue.length === 1) {
-      if (!(value <= testValue[0])) {
-        return `${key}  must be less than or equal to ${testValue[0]}, but was ${value}`;
-      }
-    } else if (testValue.length > 1) {
-      return key + ' must be an array of length 1';
-    }
-  } else {
-    if (!(value <= testValue)) {
-      return key + ' must be less than ' + testValue;
-    }
-  }
-};
+validate.validators.lessThanOrEqual = createNumberValidator(
+  (a, b) => a <= b,
+  'less than or equal to'
+);
 /**
  * @example
-
- *
  * value = 50
  * testValue = [10,60] (Valid)
  *           = [60, 10] (Valid)
@@ -443,35 +371,115 @@ validate.validators.lessThan = function (value, options, key) {
  *           = [45] (Fail)
  *
  * */
-validate.validators.range = function (value, options, key) {
+validate.validators.range = function (rawValue, options, key) {
   const testValue = getTestValue(options);
-  if (Array.isArray(testValue) && testValue.length === 2) {
-    const min = Math.min(testValue[0], testValue[1]);
-    const max = Math.max(testValue[0], testValue[1]);
-    if (value === undefined || value < min || value > max) {
-      return `${key} with value ${value} must be between ${min} and ${max}`;
-    }
-  } else {
-    return `${key} must be an array of length 2`;
+  const bounds = Array.isArray(testValue) ? testValue.map(toFinite) : [];
+  if (bounds.length !== 2 || bounds.includes(undefined)) {
+    return `${key} must be an array of two numbers`;
+  }
+  const min = Math.min(bounds[0], bounds[1]);
+  const max = Math.max(bounds[0], bounds[1]);
+  // The value reads as in the number validators: the first element of an array.
+  const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
+  if (value === undefined || value < min || value > max) {
+    return `${key} with value ${showValue(rawValue)} must be between ${min} and ${max}`;
   }
 };
 
-validate.validators.notNull = value =>
-  value === null || value === undefined ? 'Value is null' : undefined;
-const getTestValue = options => {
-  if (Array.isArray(options)) {
-    return options.map(option => option?.value ?? option);
-  } else {
-    return options?.value ?? options;
+/**
+ * No value, as in `@cornerstonejs/metadata` `hasNoValue`: `undefined`, `null`,
+ * `''`, or an array whose elements all have no value (`[]`, `['']`, `[null]`).
+ */
+const hasNoValue = value =>
+  value === undefined ||
+  value === null ||
+  value === '' ||
+  (Array.isArray(value) && value.every(hasNoValue));
+
+/** `notNull: true` fails on no value, and `notNull: false` fails on a value. */
+validate.validators.notNull = (value, options) => {
+  const isNull = hasNoValue(value);
+  if (getTestValue(options) === false) {
+    return isNull ? undefined : 'Value is not null';
   }
+  return isNull ? 'Value is null' : undefined;
 };
-const dicomTagToArray = value => {
-  let dicomArrayValue;
-  if (!Array.isArray(value)) {
-    dicomArrayValue = [value];
-  } else {
-    dicomArrayValue = [...value];
+/** The operand, without its `{ value }` wrapper. `{ value: null }` gives `null`. */
+const unwrap = option =>
+  option !== null && typeof option === 'object' && !Array.isArray(option) && 'value' in option
+    ? option.value
+    : option;
+const getTestValue = options => (Array.isArray(options) ? options.map(unwrap) : unwrap(options));
+/**
+ * The test values of a text validator as text: `0` is `'0'`. A `null` or
+ * `undefined` test value gives no text, so it matches nothing.
+ * `@cornerstonejs/metadata` accepts a string operand only.
+ */
+const toTexts = testValue =>
+  asArray(testValue)
+    .filter(text => text !== null && text !== undefined)
+    .map(String);
+/** A value for an error message: a number as is, other values as JSON. */
+const showValue = value =>
+  typeof value === 'number' ? String(value) : (JSON.stringify(value) ?? String(value));
+/**
+ * True when a text of the value and a test value pass `test`, as the text
+ * operators of `@cornerstonejs/metadata` do. The value reads as text: each
+ * element of an array that has a value, so `5` is `'5'`. A value with no value
+ * gives no text, so `contains` fails and `doesNotContain` holds.
+ */
+const matchesText = (value, options, ignoreCase, test) => {
+  const toCase = text => (ignoreCase ? text.toLowerCase() : text);
+  const texts = asArray(value)
+    .filter(element => !hasNoValue(element))
+    .map(element => toCase(String(element)));
+  const needles = toTexts(getTestValue(options)).map(toCase);
+  return texts.some(text => needles.some(needle => test(text, needle)));
+};
+/** The number of a number or a numeric string, else `undefined`. */
+const toFinite = value => {
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined;
   }
-  return dicomArrayValue;
+  const number = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
+  return Number.isFinite(number) ? number : undefined;
+};
+/**
+ * The equality of two single values, as in `@cornerstonejs/metadata`: `===`,
+ * or, when one value is a number, equal numbers, so `'1'` equals `1`. A
+ * boolean equals the number `1` / `0` and the text `'true'` / `'false'` only.
+ */
+const isEqualElement = (a, b) => {
+  if (a === b) {
+    return true;
+  }
+  if (typeof a === 'boolean' || typeof b === 'boolean') {
+    const [flag, other] = typeof a === 'boolean' ? [a, b] : [b, a];
+    return other === (flag ? 1 : 0) || other === String(flag);
+  }
+  if (typeof a !== 'number' && typeof b !== 'number') {
+    return false;
+  }
+  const x = toFinite(a);
+  return x !== undefined && x === toFinite(b);
+};
+/** The test values that the value holds, with {@link isEqualElement}. */
+const includedTestValues = (value, testValue) => {
+  const values = asArray(value);
+  return asArray(testValue).filter(item => values.some(element => isEqualElement(element, item)));
+};
+/**
+ * The equality of `equals` and `doesNotEqual`. A single value is the same as an
+ * array of one value, so `'abc'` equals `['abc']`, but not `['abc', 'def']`.
+ * Two arrays are equal when they have the same length and the same elements,
+ * in the same order. Use `includes` to test that a value is one of a list.
+ */
+const isEqualToTestValue = (value, testValue) => {
+  const values = asArray(value);
+  const testValues = asArray(testValue);
+  return (
+    values.length === testValues.length &&
+    testValues.every((item, index) => isEqualElement(item, values[index]))
+  );
 };
 export default validate;
