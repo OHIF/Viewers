@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Apply a CS3D ref to this checkout. The Playwright workflow and the CircleCI
-# unit test, package build and Cypress jobs all use this one script.
+# Apply a CS3D ref to this checkout. The Playwright workflow, the CircleCI
+# unit test, package build and Cypress jobs, and the Netlify deploy preview
+# all use this one script.
 #
 # Run it from the repository root, AFTER the ordinary `pnpm install`:
 #   - kind none: nothing changes.
@@ -17,9 +18,10 @@
 #       runner acts only on the ref that the gate checked and, for a fork, that
 #       a reviewer approved. This mode never reads the pull request.
 #   bash .scripts/ci/cs3d-apply-ref.sh [--body-file <file>]
-#       CircleCI: read the `CS3D_REF:` line of the pull request with
-#       .scripts/cs3d-read-ref.mjs. Under GitHub Actions this mode would find no
-#       pull request and apply nothing, so the script refuses it there.
+#       CircleCI and the Netlify deploy preview: read the `CS3D_REF:` line of
+#       the pull request with .scripts/cs3d-read-ref.mjs. Under GitHub Actions
+#       this mode would find no pull request and apply nothing, so the script
+#       refuses it there.
 #
 # Under GitHub Actions, the script writes `version` (the resolved version) and
 # `changed` (true when CS3D differs from the pin) to GITHUB_OUTPUT.
@@ -99,7 +101,7 @@ case "$kind" in
       # A developer machine keeps its own CS3D checkout here. Only a CI
       # checkout, which is disposable, may be replaced. CI=true is not
       # enough: some developers set it in their shell.
-      if [ "${CIRCLECI:-}" != "true" ] && [ "${GITHUB_ACTIONS:-}" != "true" ]; then
+      if [ "${CIRCLECI:-}" != "true" ] && [ "${GITHUB_ACTIONS:-}" != "true" ] && [ "${NETLIFY:-}" != "true" ]; then
         echo "[cs3d-apply-ref] $target already exists, and this is not CI. Link your own checkout with 'pnpm cs3d:link'." >&2
         exit 1
       fi

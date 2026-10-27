@@ -103,6 +103,26 @@ test('finds the pull request from CircleCI', () => {
   assert.equal(findPullRequest({}), null);
 });
 
+test('finds the pull request of a Netlify deploy preview', () => {
+  const preview = {
+    NETLIFY: 'true',
+    CONTEXT: 'deploy-preview',
+    REVIEW_ID: '6137',
+    REPOSITORY_URL: 'https://github.com/OHIF/Viewers',
+  };
+  for (const [env, expected] of [
+    [preview, { repo: 'OHIF/Viewers', number: '6137' }],
+    [
+      { ...preview, REPOSITORY_URL: 'git@github.com:OHIF/Viewers.git' },
+      { repo: 'OHIF/Viewers', number: '6137' },
+    ],
+    [{ ...preview, CONTEXT: 'production' }, null],
+    [{ ...preview, REVIEW_ID: '' }, null],
+  ]) {
+    assert.deepEqual(findPullRequest(env), expected);
+  }
+});
+
 test('never puts the token in the error of a failed body request', async t => {
   t.mock.method(globalThis, 'fetch', async () => new Response('', { status: 401 }));
   await assert.rejects(

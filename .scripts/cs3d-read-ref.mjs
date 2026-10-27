@@ -3,10 +3,11 @@
 /**
  * Reads the `CS3D_REF:` line of a pull request body. This is the one parser of
  * that line: the `gate` job of .github/workflows/playwright.yml runs it, and
- * so does .scripts/ci/cs3d-apply-ref.sh in the CircleCI jobs.
+ * so does .scripts/ci/cs3d-apply-ref.sh in the CircleCI jobs and the Netlify
+ * deploy preview.
  *
  * Usage:
- *   node .scripts/cs3d-read-ref.mjs                         find the PR from CircleCI
+ *   node .scripts/cs3d-read-ref.mjs                         find the PR from CircleCI or Netlify
  *   node .scripts/cs3d-read-ref.mjs --body-file <file>      parse a saved body
  *   node .scripts/cs3d-read-ref.mjs --body-file <file> --no-defer
  *       a manual request: `<branch> now <version>` is not deferred
@@ -254,11 +255,25 @@ export function readRef(body, { deferNow = true } = {}) {
 
 /**
  * Finds `owner/repo` and the pull request number from the CircleCI
- * environment. Returns null when this build is not for a pull request.
+ * environment, or from a Netlify deploy preview (`CONTEXT=deploy-preview`,
+ * `REVIEW_ID`, `REPOSITORY_URL`). Returns null when this build is not for a
+ * pull request.
  */
 export function findPullRequest(env = process.env) {
   const circle = (env.CIRCLE_PULL_REQUEST || '').match(/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/);
-  return circle ? { repo: circle[1], number: circle[2] } : null;
+  if (circle) {
+    return { repo: circle[1], number: circle[2] };
+  }
+  const netlifyRepo = (env.REPOSITORY_URL || '').match(/github\.com[/:]([^/]+\/[^/.]+)/);
+  if (
+    env.NETLIFY === 'true' &&
+    env.CONTEXT === 'deploy-preview' &&
+    /^\d+$/.test(env.REVIEW_ID || '') &&
+    netlifyRepo
+  ) {
+    return { repo: netlifyRepo[1], number: env.REVIEW_ID };
+  }
+  return null;
 }
 
 /**
@@ -287,7 +302,10 @@ export async function fetchBody({ repo, number }, { token = process.env.GITHUB_T
     }
     if (response.ok) return (await response.json()).body || '';
     if (response.status === 401 && token) {
-      report('warning', 'GitHub rejected GITHUB_TOKEN (HTTP 401). Replace the token. Retrying without it.');
+      report(
+        'warning',
+        'GitHub rejected GITHUB_TOKEN (HTTP 401). Replace the token. Retrying without it.'
+      );
       return fetchBody({ repo, number }, { token: '' });
     }
     failure = `HTTP ${response.status}`;
