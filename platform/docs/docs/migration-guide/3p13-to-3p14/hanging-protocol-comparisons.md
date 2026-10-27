@@ -216,9 +216,9 @@ number when the other value is a number, as `@cornerstonejs/metadata` does. So
 string is not a number, so `''` does not equal `0`. Two strings still compare as text, so
 `'1.0'` does not equal `'1'`.
 
-A boolean now equals the number `1` or `0`, and the text `'true'` or `'false'`. So
-`equals: true` holds for the value `1` and for `'true'`, and `equals: false` holds for `0`
-and for `'false'`. A boolean does not equal any other value: `true` does not equal `'1'`.
+A boolean now equals the text `'true'` or `'false'`, as in `@cornerstonejs/metadata`. So
+`equals: true` holds for the value `'true'`, and `equals: false` holds for `'false'`. A
+boolean does not equal a number: `true` does not equal `1`, and `false` does not equal `0`.
 
 The OHIF hanging protocols do not change. Each `equals: true` and `equals: { value: true }`
 in them reads `isDisplaySetFromUrl` or `isReconstructable`, which are booleans.
@@ -262,8 +262,6 @@ here:
 
 - `equals: null` means "has no value" in `@cornerstonejs/metadata`. In a hanging protocol,
   the operand `null` skips the constraint, and the rule passes. Use `notNull: false`.
-- A boolean equals `1` or `0` here. `@cornerstonejs/metadata` gives `true` equal to `'true'`
-  only; the same meaning as here is planned for cornerstonejs/cornerstone3D#2861.
 - `greaterThanOrEqual` and `lessThanOrEqual` are not split rule operators yet.
 - `@cornerstonejs/metadata` rejects an operand of the wrong kind: a number operand of a text
   operator (`startsWith: 0`), a text operand of a number operator (`greaterThan: '4'`), and
