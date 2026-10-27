@@ -95,10 +95,11 @@ These matches change:
   string value.
 - An array reads as its first element: `[5]` is 5. Before 3.14, `greaterThan` failed on an
   array value.
-- A value with no number fails: `null`, `undefined`, `''`. Before 3.14, `lessThan` passed on
-  `null`, because JavaScript reads `null <= 10` as true. `HPMatcher` reads a missing
-  attribute as `undefined`, which failed before too; a custom attribute callback can give
-  `null`.
+- A value with no number fails: `null`, `undefined`, `''`, `true`. Before 3.14, JavaScript
+  compared `null` and `true` as numbers, so `lessThan: 10` passed on `null`, and
+  `greaterThan: { value: 0 }` passed on `null` (`null >= 0`) and on `true`. `HPMatcher` reads
+  a missing attribute as `undefined`, which failed before too; a custom attribute callback
+  can give `null` or a boolean.
 
 The test value reads in the same way: `'4'` and `['4']` are 4. A test value with no number
 fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every value.
@@ -140,10 +141,15 @@ protocols: it now tests the value.
   always passed.
 - No OHIF hanging protocol uses the operand `0`, `false` or `''` with a text validator.
 
-An `{ attribute, from }` operand that gives no value now tests "no value". Before 3.14, the
-validator got the wrapper object. So `equals: { attribute: 'X' }` now holds when the value
-and `X` both have no value, and `doesNotEqual` fails. A text validator gets no text from such
-an operand, so `contains` fails.
+An `{ attribute, from }` operand that gives no value now reaches the validator as
+`undefined`. Before 3.14, the validator got the wrapper object. So
+`equals: { attribute: 'X' }` now holds when the value and `X` are both missing, and
+`doesNotEqual` fails. Two different kinds of no value are not equal: the value `''` or `[]`
+with `X` missing fails `equals`. A text validator gets no text from such an operand, so
+`contains` fails.
+
+`HPMatcher` reads a `null` attribute as missing. So `equals: { value: null }` does not hold
+on a `null` or a missing attribute. Use `notNull: false` to test for no value.
 
 `notNull: false` now means "has no value". Before 3.14, it always passed.
 
@@ -241,6 +247,12 @@ here:
   an operand as text or as a number, and compare an array operand with the whole value.
 - `includes: ''` holds on the value `''` here, and an `includes` operand that gives no value
   holds on a missing value. The split rule `includes` fails on no value.
+- `equals: ''` holds on the value `['']` here. The split rules keep an empty text and an empty
+  array apart.
+- An empty array operand: `contains: []` always fails and `doesNotContain: []` always holds
+  here. The split rules reject an empty array operand.
+- A number operator accepts an array of one number as the operand here
+  (`greaterThan: [16]`). The split rules accept a finite number only.
 - `containsAll` needs an array value and an array operand here (`['a']` with
   `containsAll: 'a'` fails with "must be an array"), and it compares with `===`, so
   `['1', 'b']` with `containsAll: [1]` fails. `@cornerstonejs/metadata` accepts a single

@@ -244,12 +244,13 @@ validate.validators.doesNotContainI = function (value, options, key) {
  * @example
  * value = 'Attenuation Corrected'
  * testValue = ‘Corr’ (Fail)
- *           = ‘Att’ (Fail)
+ *           = ‘Att’ (Valid)
  *           = ['cat', 'dog', 'Att'] (Valid)
  *           = [‘cat’, ‘dog’] (Fail)
  *
  * value = ['abc', 'def', 'GHI']
- * testValue = 'deg' (Valid)
+ * testValue = 'de' (Valid)
+ *           = 'deg' (Fail)
  *           = ['cat', 'GH']  (Valid)
  *           = ['cat', 'gh'] (Fail)
  *           = ['cat', 'dog'] (Fail)
@@ -270,7 +271,8 @@ validate.validators.startsWith = function (value, options, key) {
  *           = [‘cat’, ‘dog’] (Fail)
  *
  * value = ['abc', 'def', 'GHI']
- * testValue = 'deg' (Valid)
+ * testValue = 'ef' (Valid)
+ *           = 'deg' (Fail)
  *           = ['cat', 'HI']  (Valid)
  *           = ['cat', 'hi'] (Fail)
  *           = ['cat', 'dog'] (Fail)

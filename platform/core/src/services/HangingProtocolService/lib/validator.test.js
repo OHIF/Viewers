@@ -504,6 +504,8 @@ describe('validator', () => {
       ['contains', '6', 5, false],
       ['startsWith', '5', 50, true],
       ['containsI', 'MLO', ['', 'r mlo'], true],
+      ['startsWith', 'Att', 'Attenuation Corrected', true],
+      ['endsWith', 'deg', ['abc', 'def', 'GHI'], false],
       ['contains', { value: null }, 'xnullx', false],
       ['contains', { value: undefined }, 'abc undefined', false],
     ])('%s %j reads the value %j as text: %s', (name, operand, n, passes) => {

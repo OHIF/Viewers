@@ -1,5 +1,6 @@
 import { HPMatcher } from '@ohif/core/src/services/HangingProtocolService/HPMatcher';
 import { RMLO } from './utils/mammoDisplaySetSelector';
+import { seriesWithImages } from './utils/seriesSelectors';
 
 const match = (displaySet, rules) => HPMatcher.match(displaySet, rules, {}, {});
 
@@ -32,5 +33,12 @@ describe('hanging protocol matches with a missing text value', () => {
     const uncorrected = match({ Modality: 'PT', SeriesDescription: 'PET Uncorrected' }, ptRules)
       .score;
     expect(missing).toBeGreaterThan(uncorrected);
+  });
+});
+
+describe('hanging protocol matches with a numeric string', () => {
+  it('seriesWithImages accepts numImageFrames as text, as a number', () => {
+    expect(match({ numImageFrames: '30' }, seriesWithImages).requiredFailed).toBe(false);
+    expect(match({ numImageFrames: 30 }, seriesWithImages).requiredFailed).toBe(false);
   });
 });
