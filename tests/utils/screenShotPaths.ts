@@ -159,7 +159,7 @@ const screenShotPaths = {
   segAcrossViewportTypes: {
     stackBeforeMPR: 'segAcrossViewportTypes-stackBeforeMPR.png',
     mprFromStack: 'segAcrossViewportTypes-mprFromStack.png',
-    stackAfterMPR: 'segAcrossViewportTypes-stackAfterMPR.png',
+    oneUpAfterMPR: 'segAcrossViewportTypes-oneUpAfterMPR.png',
     mprAfter3D: 'segAcrossViewportTypes-mprAfter3D.png',
     stackAfterColorChange: 'segAcrossViewportTypes-stackAfterColorChange.png',
     mprAfterColorChange: 'segAcrossViewportTypes-mprAfterColorChange.png',

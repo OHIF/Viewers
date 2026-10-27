@@ -97,6 +97,8 @@ export interface IViewportPageObject {
     };
   };
   pane: Locator;
+  /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
+  getViewportType: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
   navigationArrows: {
@@ -461,6 +463,14 @@ export class ViewportPageObject {
       overlayText: this.getOverlayText(viewport),
       overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
+      getViewportType: async () => {
+        const viewportId = await this.getViewportId(viewport);
+        return this.page.evaluate(
+          ({ services, viewportId }) =>
+            (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
+          { viewportId, services: await this.page.evaluateHandle('window.services') }
+        );
+      },
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },

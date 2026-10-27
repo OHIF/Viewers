@@ -27,7 +27,6 @@ async function switchLayout(page: Page, selectLayout: () => Promise<void>) {
     needsRenderTimeout: 20000,
     renderedTimeout: 60000,
   });
-  await waitForViewportsRendered(page, { timeout: 60000 });
 }
 
 test.beforeEach(
@@ -47,16 +46,18 @@ test.beforeEach(
   }
 );
 
-test('keeps the labelmap drawn through a stack to MPR to stack round trip', async ({
+test('keeps the labelmap drawn from a stack through MPR and back to one viewport', async ({
   page,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
+  const initialStack = await viewportPageObject.active;
+  await expect.poll(() => initialStack.getViewportType()).toBe('stack');
   await checkForViewportScreenshot({
     page,
-    viewport: await viewportPageObject.active,
+    viewport: initialStack,
     screenshotPath: screenShotPaths.segAcrossViewportTypes.stackBeforeMPR,
     maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
@@ -74,7 +75,8 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
     maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 
-  // Load series into 1x1 grid again to return to a stack viewport.
+  // Switch back to a 1x1 grid, then reload the CT series. The 1x1 grid keeps MPR's volume
+  // viewport, so the series reloads into a volume viewport, not a stack.
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.grid(1, 1).click());
   await expect(viewportPageObject.panes).toHaveCount(1);
 
@@ -86,7 +88,7 @@ test('keeps the labelmap drawn through a stack to MPR to stack round trip', asyn
   await checkForViewportScreenshot({
     page,
     viewport: await viewportPageObject.active,
-    screenshotPath: screenShotPaths.segAcrossViewportTypes.stackAfterMPR,
+    screenshotPath: screenShotPaths.segAcrossViewportTypes.oneUpAfterMPR,
     maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
   });
 });
@@ -100,6 +102,9 @@ test('keeps every segment when switching from 3D to MPR', async ({
   const { rows } = rightPanelPageObject.labelMapSegmentationPanel.panel;
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.threeDOnly.click());
+  await expect
+    .poll(async () => (await viewportPageObject.active).getViewportType())
+    .toBe('volume3d');
   await expect(rows).toHaveCount(SEGMENT_COUNT);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.MPR.click());
@@ -173,7 +178,9 @@ test('keeps the selected segment selected across viewport types', async ({
   await expectRowNotSelected(spleen);
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.threeDOnly.click());
-  await expect(viewportPageObject.panes).toHaveCount(1);
+  await expect
+    .poll(async () => (await viewportPageObject.active).getViewportType())
+    .toBe('volume3d');
   await expectRowSelected(liver);
   await expectRowNotSelected(spleen);
 });
