@@ -782,6 +782,9 @@ importers:
       colormap:
         specifier: 2.3.2
         version: 2.3.2
+      dcmjs:
+        specifier: 0.52.0
+        version: 0.52.0
       dicom-microscopy-viewer:
         specifier: 0.48.6
         version: 0.48.6

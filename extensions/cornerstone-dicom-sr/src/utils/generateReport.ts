@@ -1,5 +1,6 @@
 import { metaData } from '@cornerstonejs/core';
-import { adaptersSR, version as adaptersVersion } from '@cornerstonejs/adapters';
+import { adaptersSR } from '@cornerstonejs/adapters';
+import { version as adaptersVersion } from '@cornerstonejs/adapters/version';
 import { utils } from '@ohif/core';
 
 import getFilteredCornerstoneToolState from './getFilteredCornerstoneToolState';
@@ -39,8 +40,8 @@ export default function generateReport(
   );
 
   const report = MeasurementReport.generateReport(filteredToolState, metaData, {
-    ...utils.getOhifWriterHeader('@cornerstonejs/adapters', 'CS3D', adaptersVersion),
     ...options,
+    ...utils.getOhifWriterHeader('@cornerstonejs/adapters', 'CS3D', adaptersVersion, options),
   });
 
   const { dataset } = report;

@@ -2,7 +2,8 @@ import dcmjs from 'dcmjs';
 import { classes, Types, utils } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
-import { adaptersRT, adaptersSEG, version as adaptersVersion } from '@cornerstonejs/adapters';
+import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
+import { version as adaptersVersion } from '@cornerstonejs/adapters/version';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 import { utils as cornerstoneUtils } from '@ohif/extension-cornerstone';
 
@@ -299,13 +300,18 @@ const commandsModule = ({
       const { date: creationDate, time: creationTime } = utils.getCurrentDicomDateTime();
 
       const saveOptions = {
-        ...utils.getOhifWriterHeader('@cornerstonejs/adapters', 'CS3D', adaptersVersion),
         predecessorImageId,
         ContentDate: creationDate,
         ContentTime: creationTime,
         ...(storeIntoSeriesImageId ? {} : { SeriesDate: creationDate, SeriesTime: creationTime }),
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,
+        ...utils.getOhifWriterHeader(
+          '@cornerstonejs/adapters',
+          'CS3D',
+          adaptersVersion,
+          generateOptions
+        ),
       };
 
       // A LABELMAP SEG frame stores a single label per voxel, so the labelmap
@@ -480,11 +486,16 @@ const commandsModule = ({
       const { date: structureSetDate, time: structureSetTime } = utils.getCurrentDicomDateTime();
 
       const dataset = await generateRTSSFromRepresentation(segmentations, {
-        ...utils.getOhifWriterHeader('@cornerstonejs/adapters', 'CS3D', adaptersVersion),
         predecessorImageId,
         StructureSetDate: structureSetDate,
         StructureSetTime: structureSetTime,
         ...contourOptions,
+        ...utils.getOhifWriterHeader(
+          '@cornerstonejs/adapters',
+          'CS3D',
+          adaptersVersion,
+          contourOptions
+        ),
       });
       return { dataset };
     },

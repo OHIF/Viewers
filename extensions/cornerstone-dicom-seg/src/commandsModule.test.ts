@@ -1,8 +1,8 @@
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import commandsModule from './commandsModule';
 
+jest.mock('@cornerstonejs/adapters/version', () => ({ version: '9.9.9' }));
 jest.mock('@cornerstonejs/adapters', () => ({
-  version: '5.13.2',
   adaptersSEG: { Cornerstone3D: { Segmentation: { generateSegmentation: jest.fn(() => ({})) } } },
   adaptersRT: {
     Cornerstone3D: { RTSS: { generateRTSSFromRepresentation: jest.fn(async () => ({})) } },
@@ -38,7 +38,7 @@ const { generateRTSSFromRepresentation } = adaptersRT.Cornerstone3D.RTSS;
 const OHIF_WRITER = {
   Manufacturer: 'OHIF',
   ManufacturerModelName: '@cornerstonejs/adapters',
-  SoftwareVersions: ['OHIF 3.14.0', 'CS3D 5.13.2'],
+  SoftwareVersions: ['OHIF 3.14.0', 'CS3D 9.9.9'],
 };
 
 function getActions() {
