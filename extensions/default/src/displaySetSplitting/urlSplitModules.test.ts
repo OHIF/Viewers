@@ -1,33 +1,85 @@
 import fs from 'fs';
 import path from 'path';
-import { createDisplaySetSplitRules, groupInstancesBySplitRules } from '@cornerstonejs/metadata';
-import { ohifDefaultSplitRules, ohifDisplaySetContext } from './ohifDefaultSplitRules';
+import JSON5 from 'json5';
+import { newContext } from 'immutability-helper';
+import {
+  createDisplaySetSplitRules,
+  defaultMetadataContext,
+  displaySetRules,
+  groupInstancesBySplitRules,
+} from '@cornerstonejs/metadata';
+import { CustomizationService } from '@ohif/core';
+import getMetadataDisplaySetCustomization from '../customizations/metadataDisplaySetCustomization';
+import getMetadataContextCustomization from '../customizations/metadataContextCustomization';
 
 /**
  * The `split/*.jsonc` URL modules in platform/app/public are data that no
- * build step checks. The compiler is strict, so a module with an unknown key
- * or a bad form only fails when a user loads it. These tests compile each
- * module over the OHIF defaults, as `?customization=split/<name>` does.
+ * build step checks. These tests apply each module as a server does: with
+ * `JSON5`, the standard `immutability-helper` commands and the
+ * `@cornerstonejs/metadata` defaults, and with no OHIF code.
  */
 const SPLIT_DIR = path.resolve(__dirname, '../../../../platform/app/public/customizations/split');
 
-/** The modules hold only full-line `//` comments, so JSON.parse reads the rest. */
 const readModule = (name: string) =>
-  JSON.parse(
-    fs
-      .readFileSync(path.join(SPLIT_DIR, `${name}.jsonc`), 'utf8')
-      .split('\n')
-      .filter(line => !line.trim().startsWith('//'))
-      .join('\n')
-  );
+  JSON5.parse(fs.readFileSync(path.join(SPLIT_DIR, `${name}.jsonc`), 'utf8'));
 
-/** Applies the `$merge` of a module's `splitRules` over the OHIF defaults. */
-const compileModule = (name: string) => {
-  const added = readModule(name).global.useMetadataDisplaySet.splitRules.$merge;
-  return createDisplaySetSplitRules(
-    { ...ohifDefaultSplitRules, ...added },
-    { displaySetContext: ohifDisplaySetContext }
+const MODULE_NAMES = fs
+  .readdirSync(SPLIT_DIR)
+  .filter(file => file.endsWith('.jsonc'))
+  .map(file => file.replace(/\.jsonc$/, ''));
+
+/** `immutability-helper` with the standard commands only: no OHIF `$filter`. */
+const standardUpdate = newContext();
+
+/**
+ * The customizations a server gets for one module: the CS3D defaults, then
+ * the `global` block of each required module, then of the module itself.
+ */
+const serverCustomizations = (name: string) => {
+  let value = {
+    useMetadataDisplaySet: { enabled: false, splitRules: displaySetRules },
+    metadataContext: defaultMetadataContext,
+  };
+  const applied = new Set<string>();
+  const apply = (moduleName: string) => {
+    if (applied.has(moduleName)) {
+      return;
+    }
+    applied.add(moduleName);
+    const module = readModule(moduleName);
+    (module.requires ?? []).forEach(required => apply(required.replace(/^split\//, '')));
+    value = standardUpdate(value, module.global ?? {});
+  };
+  apply(name);
+  return value;
+};
+
+/** The split rules of one module, compiled as a server compiles them. */
+const compileModule = (name: string, overlay = {}) => {
+  const { useMetadataDisplaySet, metadataContext } = serverCustomizations(name);
+  return createDisplaySetSplitRules(standardUpdate(useMetadataDisplaySet.splitRules, overlay), {
+    context: metadataContext,
+  });
+};
+
+/** The `useMetadataDisplaySet` value that OHIF gets for one module. */
+const ohifSplitCustomization = async (name: string) => {
+  const service = new CustomizationService({ configuration: {}, commandsManager: {} } as never);
+  service.setCustomizations(
+    {
+      ...getMetadataDisplaySetCustomization({} as never),
+      ...getMetadataContextCustomization(),
+    },
+    service.Scope.Default
   );
+  await service.requires([`split/${name}`], {
+    policy: { prefixes: { default: './customizations/' } },
+    importFn: async (url: string) => readModule(url.match(/split\/(\w+)\.jsonc$/)[1]),
+  });
+  return service.getCustomization('useMetadataDisplaySet') as {
+    enabled: boolean;
+    splitRules: unknown;
+  };
 };
 
 const MR_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.4';
@@ -46,34 +98,37 @@ const mr = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
+const CT_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.2';
+const ct = (z: number, InstanceNumber: number) => ({
+  ...mr(),
+  Modality: 'CT',
+  SeriesDescription: 'AX',
+  SOPClassUID: CT_IMAGE_STORAGE,
+  InstanceNumber,
+  ImageOrientationPatient: [1, 0, 0, 0, 1, 0],
+  ImagePositionPatient: [0, 0, z],
+});
+
+const rows = groups =>
+  groups.map(group => [group.matchedRule.id, group.instances.map(i => i.InstanceNumber)]);
+
 describe('split URL modules', () => {
   beforeEach(() => {
     counter = 0;
   });
 
-  it('every split module parses, and every module that adds rules compiles', () => {
-    const names = fs
-      .readdirSync(SPLIT_DIR)
-      .filter(file => file.endsWith('.jsonc'))
-      .map(file => file.replace(/\.jsonc$/, ''));
-    expect(names).toEqual(
-      expect.arrayContaining([
-        'enableNewSplit',
-        'scoutSeries',
-        'dwiByBValue',
-        'dxCrSingleImages',
-        'regularVolume',
-        'volumeProjectionOrder',
-        'usTimeClusters',
-      ])
-    );
-    for (const name of names) {
-      const module = readModule(name);
-      if (module.global?.useMetadataDisplaySet?.splitRules) {
-        expect(() => compileModule(name)).not.toThrow();
-      }
+  // DS-USER-PARITY-1, DS-USER-PARITY-2 (DS-IMPL-OHIF-8).
+  it.each(MODULE_NAMES)(
+    '%s gives a server and OHIF the same split rules, with no OHIF code on the server',
+    async name => {
+      const server = serverCustomizations(name).useMetadataDisplaySet;
+      const ohif = await ohifSplitCustomization(name);
+
+      expect(ohif.enabled).toBe(server.enabled);
+      expect(ohif.splitRules).toEqual(server.splitRules);
+      expect(() => compileModule(name)).not.toThrow();
     }
-  });
+  );
 
   it('dwiByBValue makes one display set for each b-value', () => {
     const rules = compileModule('dwiByBValue');
@@ -117,59 +172,73 @@ describe('split URL modules', () => {
     ]);
   });
 
-  describe('dxCrSingleImages', () => {
+  describe('single images', () => {
     const SOP_CLASS = {
       DX: '1.2.840.10008.5.1.4.1.1.1.1',
       CR: '1.2.840.10008.5.1.4.1.1.1',
       MG: '1.2.840.10008.5.1.4.1.1.1.2',
     };
-    const image = (Modality: 'DX' | 'CR' | 'MG') => ({
+    const image = (Modality: 'DX' | 'CR' | 'MG', size = 128) => ({
       ...mr(),
       SeriesDescription: Modality,
       Modality,
       SOPClassUID: SOP_CLASS[Modality],
+      Rows: size,
+      Columns: size,
     });
-    const splitSeries = (Modality: 'DX' | 'CR' | 'MG', count: number) =>
-      groupInstancesBySplitRules(
-        Array.from({ length: count }, () => image(Modality)) as any,
-        compileModule('dxCrSingleImages')
-      ).map(group => [group.matchedRule.id, group.instances.length]);
+    const split = (moduleName: string, images) =>
+      groupInstancesBySplitRules(images as any, compileModule(moduleName)).map(group => [
+        group.matchedRule.id,
+        group.instances.length,
+      ]);
 
-    it.each(['DX', 'CR'] as const)(
-      'makes one display set for each image of a %s series',
+    // DS-USER-SPLIT: a four-view MG series gives four display sets, as before #6137.
+    it.each(['MG', 'DX', 'CR'] as const)(
+      'the default rules make one display set for each image of a %s series',
       modality => {
-        expect(splitSeries(modality, 3)).toEqual([
-          ['dxCrSingleImages', 1],
-          ['dxCrSingleImages', 1],
-          ['dxCrSingleImages', 1],
-        ]);
+        expect(
+          split(
+            'enableNewSplit',
+            [1, 2, 3, 4].map(() => image(modality))
+          )
+        ).toEqual(Array.from({ length: 4 }, () => ['singleImageModality', 1]));
       }
     );
 
-    it('splits a series of 9 images, and keeps a series of 10 images together', () => {
-      expect(splitSeries('DX', 9)).toHaveLength(9);
-      expect(splitSeries('DX', 10)).toEqual([['defaultImageRule', 10]]);
+    // DS-USER-SPLIT-1.
+    it('singleImagesBySize makes one display set for each image size', () => {
+      const images = [image('DX', 128), image('DX', 1024), image('DX', 128)];
+      expect(split('singleImagesBySize', images)).toEqual([
+        ['singleImagesBySize', 2],
+        ['singleImagesBySize', 1],
+      ]);
+    });
+  });
+
+  // DS-USER-SPLIT-2.
+  describe('decimation', () => {
+    const series = () => [0, 2, 4, 6, 8].map((z, index) => ct(z, index + 1));
+
+    it('splits a series into ceil(count / decimationSize) parts, by sliceIndex modulo the count', () => {
+      const rules = compileModule('decimation', {
+        decimation: { context: { decimationSize: { $set: 2 } } },
+      });
+      expect(rows(groupInstancesBySplitRules(series() as any, rules))).toEqual([
+        ['decimation', [1, 4]],
+        ['decimation', [2, 5]],
+        ['decimation', [3]],
+      ]);
     });
 
-    it('keeps an MG series together', () => {
-      expect(splitSeries('MG', 4)).toEqual([['defaultImageRule', 4]]);
+    it('leaves a series of decimationSize (1000) images or fewer to the default rules', () => {
+      expect(
+        rows(groupInstancesBySplitRules(series() as any, compileModule('decimation')))
+      ).toEqual([['volume3d', [1, 2, 3, 4, 5]]]);
     });
   });
 
   describe('series context modules', () => {
-    const CT_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.2';
     const US_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.6.1';
-    const ct = (z: number, InstanceNumber: number) => ({
-      ...mr(),
-      Modality: 'CT',
-      SeriesDescription: 'AX',
-      SOPClassUID: CT_IMAGE_STORAGE,
-      InstanceNumber,
-      ImageOrientationPatient: [1, 0, 0, 0, 1, 0],
-      ImagePositionPatient: [0, 0, z],
-    });
-    const rows = groups =>
-      groups.map(group => [group.matchedRule.id, group.instances.map(i => i.InstanceNumber)]);
 
     it('regularVolume makes a volume of the regular slices, and leaves the extra slice', () => {
       // Slices every 2 mm, and one extra slice at 3.1 mm.

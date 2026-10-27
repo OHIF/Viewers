@@ -27,6 +27,7 @@ import onboardingCustomization from './customizations/onboardingCustomization';
 import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
 import getWorkListCustomization from './customizations/workListCustomization';
 import getMetadataDisplaySetCustomization from './customizations/metadataDisplaySetCustomization';
+import getMetadataContextCustomization from './customizations/metadataContextCustomization';
 import headerRightSideCustomization from './customizations/headerRightSideCustomization';
 import hideHeaderUndoRedoCustomization from './customizations/hideHeaderUndoRedoCustomization';
 /**
@@ -98,6 +99,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...instanceSortingCriteriaCustomization,
         ...getWorkListCustomization(),
         ...getMetadataDisplaySetCustomization({ servicesManager, extensionManager, appConfig }),
+        ...getMetadataContextCustomization(),
         ...headerRightSideCustomization,
       },
     },

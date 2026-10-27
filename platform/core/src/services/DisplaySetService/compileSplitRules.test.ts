@@ -44,10 +44,10 @@ describe('compileSplitRules', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it('resolves code entries of the display set context from the options', () => {
+  it('resolves the entries of the metadata context from the options', () => {
     const { rules } = compileSplitRules(
-      { stack: { priority: 1, matches: { isStackImage: true } } },
-      { displaySetContext: { isStackImage: instance => instance.Modality === 'US' } }
+      { stack: { priority: 1, matches: { isUltrasound: true } } },
+      { context: { isUltrasound: "Modality == 'US'" } }
     );
     expect(rules.stack.matches(makeInstance({ Modality: 'US' }), { series: {} })).toBe(true);
     expect(rules.stack.matches(makeInstance(), { series: {} })).toBe(false);
@@ -229,10 +229,10 @@ describe('compileSplitRules', () => {
       );
     });
 
-    it('in a code entry of the display set context that a raw rule references', () => {
+    it('in a code entry of the metadata context that a raw rule references', () => {
       const { rules } = compileSplitRules(
         { raw: { priority: 1, matches: { throws: true } } },
-        { displaySetContext: { throws: fail } }
+        { context: { throws: fail } }
       );
       expectRunError(
         () => groupInstancesBySplitRules([makeInstance()] as never, rules),

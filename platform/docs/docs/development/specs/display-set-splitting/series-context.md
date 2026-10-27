@@ -15,7 +15,7 @@ specification apply here too, in particular `SP-DET`, `SP-SAFE`, and `SP-REUSE`.
 **Affects:** `@cornerstonejs/metadata` (the split engine, the rule compiler, the series
 functions), `@ohif/core` (`DisplaySetService`), `@ohif/extension-default` (the display set
 factory, the example rule modules).
-**Related:** [Display Set Splitting](../../../platform/services/customization-service/displaySetSplitting.md#the-series-context)
+**Related:** [Display Set Splitting](../../../platform/services/customization-service/displaySetSplitting.md#the-metadatacontext-customization)
 — the reference documentation for the series context.
 
 ---
@@ -181,8 +181,8 @@ The flowchart shows how the engine computes the values of the display set contex
 
 ```mermaid
 flowchart TD
-  D["Default context<br/>@cornerstonejs/metadata<br/>planeGeometry · timeClusters · aliases · code entries"] --> G
-  O["useMetadataDisplaySet.displaySetContext<br/>entries over the defaults<br/>isStackImage from @ohif/extension-default"] --> G
+  D["Default context<br/>@cornerstonejs/metadata defaultMetadataContext<br/>planeGeometry · timeClusters · aliases · SOP class lists"] --> G
+  O["metadataContext customization<br/>the default context, data only<br/>OHIF adds the private chart SOP class"] --> G
   G["Global context of the rule set"] --> R
   RC["The context of one rule<br/>replaces entries for that rule only"] --> R
   R["Compile — one context program for the rule set<br/>each name checked, loops rejected"] --> V
@@ -194,7 +194,7 @@ flowchart TD
 
 **SP-CTX-1**
 `createDisplaySetSplitRules` shall compile one context program for a rule set: the entries of
-`defaultDisplaySetContext`, then the entries of `options.displaySetContext` over them. A rule shall
+`defaultMetadataContext`, then the entries of `options.context` over them. A rule shall
 read a value by its name. *Satisfies `SP-SUM-1`, `SP-SUM-5`.*
 
 **SP-CTX-2**
@@ -232,8 +232,8 @@ errors. *Satisfies `SP-SUM-6`, `SP-SAFE-7`.*
 **SP-CTX-6**
 `createDisplaySetSplitRules` shall take named series functions as `options.seriesFunctions`, in
 addition to the built-in ones. A group that names an unknown function shall be a compile error
-that names the rule, the path, and the known functions. OHIF shall pass the `seriesFunctions` and
-the `displaySetContext` of the `useMetadataDisplaySet` customization. *Satisfies `SP-SUM-9`,
+that names the rule, the path, and the known functions. OHIF shall pass the `seriesFunctions` of
+the `useMetadataDisplaySet` customization, and the `metadataContext` customization as `context`. *Satisfies `SP-SUM-9`,
 `SP-FORM-4`.*
 
 **SP-CTX-7**
@@ -326,15 +326,15 @@ series for each module.
     "isRegularSlice": "sliceIndex != null"
   },
   "matches": {
-    "isStackImage": true,
+    "isImage": true,
     "Modality": ["CT", "MR", "PT", "NM"],
     "mixesIrregular": true,
     "isRegularSlice": true
   },
   "groupBy": ["SeriesInstanceUID"],
-  "sortBy": ["sliceDistance"],
+  "sortBy": ["displaySet.sliceDistance"],
   "attributes": {
-    "SeriesDescription": { "template": "{SeriesDescription} ({sliceSpacing} mm)" }
+    "SeriesDescription": { "template": "{SeriesDescription} ({displaySet.sliceSpacing} mm)" }
   }
 }
 ```
@@ -346,11 +346,11 @@ once (`SP-CTX-2`).
 
 **SP-EXM-2** — `split/volumeProjectionOrder.jsonc`. *Satisfies `SP-SUM-3`.*
 
-The module replaces the default `volume3d` rule under its own id, so the rule keeps priority `4`
-and claims the same instances. It adds one `sortBy` entry:
+The module changes one field of the default `volume3d` rule with the standard `$set` command, so
+the rule keeps its priority and claims the same instances:
 
 ```jsonc
-"sortBy": ["sliceDistance"]
+"volume3d": { "sortBy": { "$set": ["displaySet.sliceDistance"] } }
 ```
 
 An image that is not in the dominant plane has no distance, so it goes after the images that have
@@ -364,7 +364,7 @@ one (`SP-PIPE-7`).
   "viewportTypes": ["stack"],
   "context": { "timeClustersMaxGap": 20 },
   "matches": {
-    "isStackImage": true,
+    "isImage": true,
     "Modality": "US",
     "isMultiFrame": false,
     "sweepCount": { "greaterThan": 1 },

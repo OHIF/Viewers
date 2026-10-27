@@ -61,4 +61,21 @@ describe('chartHandler', () => {
     expect(displaySet.SeriesDate).toBe('20260819');
     expect(displaySet.SeriesTime).toBe('080000');
   });
+
+  // A split rule groups a revision chain into one display set, with the
+  // active revision named by `activeSopInstanceUid`.
+  it.each([
+    ['the instance that activeSopInstanceUid names', '1.2.3.4.2', '1.2.3.4.2'],
+    ['the last instance without activeSopInstanceUid', undefined, '1.2.3.4.3'],
+  ])('extendDisplaySet loads %s', (_label, activeSopInstanceUid, expected) => {
+    const displaySet: Record<string, any> = {
+      instances: ['1.2.3.4.1', '1.2.3.4.2', '1.2.3.4.3'].map(SOPInstanceUID =>
+        chartInstance({ SOPInstanceUID })
+      ),
+      activeSopInstanceUid,
+    };
+    chartHandler.extendDisplaySet(displaySet);
+    expect(displaySet.instance.SOPInstanceUID).toBe(expected);
+    expect(displaySet.SOPInstanceUID).toBe(expected);
+  });
 });

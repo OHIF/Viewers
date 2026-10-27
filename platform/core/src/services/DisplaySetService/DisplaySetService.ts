@@ -1,4 +1,4 @@
-import { groupInstancesBySplitRules } from '@cornerstonejs/metadata';
+import { groupInstancesBySplitRules, setMetadataContext } from '@cornerstonejs/metadata';
 import type {
   CreateDisplaySetSplitRulesOptions,
   GroupInstancesOptions,
@@ -19,11 +19,42 @@ import type {
 } from './compileSplitRules';
 
 /**
- * Memoizes compiled split rules by the identity of the `splitRules` value. A
- * mode that defines other rules, or another context, gives a new `splitRules`
- * object, and that object compiles again.
+ * Memoizes compiled split rules by the identity of the `splitRules` value and
+ * of the `metadataContext` value. A mode that defines other rules, or another
+ * context, gives a new object, and that object compiles again.
  */
-const compiledSplitRulesCache = new WeakMap<object, CompiledSplitRules>();
+const compiledSplitRulesCache = new WeakMap<
+  object,
+  { context: unknown; compiled: CompiledSplitRules }
+>();
+
+/** The handler name of the unsupported display set. */
+const UNSUPPORTED_HANDLER_NAME = 'unsupported';
+
+/**
+ * A SOP class handler entry, as the extension manager returns it. A handler
+ * that serves split-rule display sets declares `handlerNames` (data) and
+ * `extendDisplaySet`.
+ */
+type SopClassHandler = {
+  sopClassUids: string[];
+  getDisplaySetsFromSeries: (instances: InstanceMetadata[]) => DisplaySet[] | undefined;
+  /** The generic handler names of the split rules that this handler serves. */
+  handlerNames?: string[];
+  /**
+   * Adds the handler fields to a display set that a split rule made, in place
+   * and synchronously. `addedInstances` is undefined at creation, and lists
+   * the new instances (already in `displaySet.instances`) at an update.
+   */
+  extendDisplaySet?: (
+    displaySet: DisplaySet,
+    options: {
+      addedInstances?: InstanceMetadata[];
+      servicesManager?: AppTypes.ServicesManager;
+      extensionManager: ExtensionManager;
+    }
+  ) => void;
+};
 
 /** The title of the notification that reports a split rule error. */
 const SPLIT_RULE_ERROR_TITLE = 'Display set split rules';
@@ -93,13 +124,6 @@ export type UseMetadataDisplaySetCustomization = {
    */
   splitRules?: Record<string, SplitRuleCustomizationEntry>;
   /**
-   * Context entries over the `@cornerstonejs/metadata` default display set
-   * context. A rule reads an entry by its name. A data entry is JSON; a code
-   * entry is a function supplied by an extension - for example `isStackImage`
-   * from `@ohif/extension-default`.
-   */
-  displaySetContext?: CreateDisplaySetSplitRulesOptions['displaySetContext'];
-  /**
    * Named series functions that a context group references with
    * `{ function: '<name>' }`, in addition to the built-in `planeGeometry` and
    * `timeClusters`. Code, supplied by an extension.
@@ -107,7 +131,11 @@ export type UseMetadataDisplaySetCustomization = {
   seriesFunctions?: CreateDisplaySetSplitRulesOptions['seriesFunctions'];
   /** Named comparators that a `sortBy` entry references with `{ sortFunction }`. */
   sortFunctions?: CreateDisplaySetSplitRulesOptions['sortFunctions'];
-  /** Factory converting a matched instance group into an OHIF display set. */
+  /**
+   * Factory converting a matched instance group into an OHIF display set. A
+   * display set with a `handler` name then goes to the `extendDisplaySet` of
+   * the SOP class handler of the mode that declares that name.
+   */
   createDisplaySetFromGroup?: (
     group: InstanceGroup,
     context: CreateDisplaySetFromGroupContext
@@ -196,6 +224,21 @@ export default class DisplaySetService extends PubSubService {
    */
   protected reportedSplitRuleSets = new WeakSet<object>();
 
+  /**
+   * The SOP class handler for each split-rule handler name, in the order of
+   * the mode's handlers: the first handler that declares a name serves it.
+   */
+  protected handlersByName = new Map<string, SopClassHandler>();
+
+  /** The handler names with no handler in the mode, warned once each. */
+  protected warnedHandlerNames = new Set<string>();
+
+  /** The `metadataContext` value that is the active `@cornerstonejs/metadata` context. */
+  protected activeMetadataContext: CreateDisplaySetSplitRulesOptions['context'];
+
+  /** The customization subscriptions of the mode, removed at mode exit. */
+  protected customizationSubscriptions: { unsubscribe: () => void }[] = [];
+
   constructor({ servicesManager }: { servicesManager?: AppTypes.ServicesManager } = {}) {
     super(EVENTS);
     this.servicesManager = servicesManager;
@@ -203,11 +246,125 @@ export default class DisplaySetService extends PubSubService {
       '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
   }
 
+  /**
+   * Registers the mode's SOP class handlers, in order. The order decides
+   * which handler serves a split-rule handler name that two handlers declare.
+   *
+   * @throws when a handler declares `handlerNames` and has no
+   *   `extendDisplaySet`.
+   */
   public init(extensionManager, SOPClassHandlerIds): void {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
     this.activeDisplaySetsMap.clear();
+    this.handlersByName = new Map();
+    this.warnedHandlerNames.clear();
+    for (const id of SOPClassHandlerIds) {
+      this._registerHandlerNames(id, extensionManager.getModuleEntry(id));
+    }
+    this._subscribeToMetadataContext();
+  }
+
+  /**
+   * Makes the `metadataContext` customization the active `@cornerstonejs/metadata`
+   * context now, and again each time a customization changes, so that
+   * `isImageInstance` and the other code tests read the same lists as the
+   * split rules. `onModeExit` removes the subscriptions.
+   */
+  private _subscribeToMetadataContext(): void {
+    this._unsubscribeFromMetadataContext();
+    const customizationService = this.servicesManager?.services?.customizationService;
+    this._applyMetadataContext();
+    if (typeof customizationService?.subscribe !== 'function') {
+      return;
+    }
+    const { EVENTS: CUSTOMIZATION_EVENTS } = customizationService;
+    this.customizationSubscriptions = [
+      CUSTOMIZATION_EVENTS.MODE_CUSTOMIZATION_MODIFIED,
+      CUSTOMIZATION_EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED,
+      CUSTOMIZATION_EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED,
+    ].map(event => customizationService.subscribe(event, () => this._applyMetadataContext()));
+  }
+
+  private _unsubscribeFromMetadataContext(): void {
+    this.customizationSubscriptions.forEach(({ unsubscribe }) => unsubscribe());
+    this.customizationSubscriptions = [];
+  }
+
+  /**
+   * Reads the `metadataContext` customization, and sets it as the active
+   * `@cornerstonejs/metadata` context when the value changed.
+   *
+   * @returns the context, which the split rules compile with as well.
+   */
+  private _applyMetadataContext(): CreateDisplaySetSplitRulesOptions['context'] {
+    const context = this.servicesManager?.services?.customizationService?.getCustomization(
+      'metadataContext'
+    ) as CreateDisplaySetSplitRulesOptions['context'];
+    if (context !== this.activeMetadataContext) {
+      this.activeMetadataContext = context;
+      setMetadataContext(context);
+    }
+    return context;
+  }
+
+  /** Maps each `handlerNames` entry of a handler that no earlier handler took. */
+  private _registerHandlerNames(id: string, handler: SopClassHandler | undefined): void {
+    if (!handler?.handlerNames) {
+      return;
+    }
+    if (typeof handler.extendDisplaySet !== 'function') {
+      throw new Error(
+        `DisplaySetService: the SOP class handler '${id}' declares handlerNames ` +
+          `${JSON.stringify(handler.handlerNames)} and has no extendDisplaySet function.`
+      );
+    }
+    for (const name of handler.handlerNames) {
+      if (!this.handlersByName.has(name)) {
+        this.handlersByName.set(name, handler);
+      }
+    }
+  }
+
+  /**
+   * The handler for a split-rule handler name. A name with no handler in the
+   * mode gets the unsupported handler, and one console warning for each name.
+   */
+  private _getHandlerForName(name: string): SopClassHandler | undefined {
+    const handler = this.handlersByName.get(name);
+    if (handler) {
+      return handler;
+    }
+    if (name !== UNSUPPORTED_HANDLER_NAME && !this.warnedHandlerNames.has(name)) {
+      this.warnedHandlerNames.add(name);
+      console.warn(
+        `DisplaySetService: no SOP class handler of the mode declares the handler name ` +
+          `'${name}'; its display sets are unsupported display sets.`
+      );
+    }
+    const unsupported = this.extensionManager.getModuleEntry(this.unsupportedSOPClassHandler) as
+      | SopClassHandler
+      | undefined;
+    this._registerHandlerNames(this.unsupportedSOPClassHandler, unsupported);
+    return unsupported;
+  }
+
+  /**
+   * Step 3 of a split-rule display set (DS-IMPL-OHIF-4): the `extendDisplaySet`
+   * of the handler that serves the display set's `handler` name. A display set
+   * with no `handler` gets no handler step.
+   */
+  private _extendWithHandler(displaySet: DisplaySet, addedInstances?: InstanceMetadata[]): void {
+    const name = (displaySet as { handler?: string }).handler;
+    if (!name) {
+      return;
+    }
+    this._getHandlerForName(name)?.extendDisplaySet?.(displaySet, {
+      addedInstances,
+      servicesManager: this.servicesManager,
+      extensionManager: this.extensionManager,
+    });
   }
 
   _addDisplaySetsToCache(displaySets: DisplaySet[]) {
@@ -446,6 +603,8 @@ export default class DisplaySetService extends PubSubService {
    *
    * It also clears the split rule errors: the next mode starts with no
    * blocked study, and reports a rule set that still has compile errors again.
+   * And it sets the `@cornerstonejs/metadata` default context as the active
+   * context again.
    */
   public onModeExit(): void {
     displaySetStore.clearDisplaySets();
@@ -453,6 +612,9 @@ export default class DisplaySetService extends PubSubService {
     this.activeDisplaySetsMap.clear();
     this.splitRuleFailures.clear();
     this.reportedSplitRuleSets = new WeakSet();
+    this._unsubscribeFromMetadataContext();
+    this.activeMetadataContext = undefined;
+    setMetadataContext(undefined);
   }
 
   /**
@@ -542,14 +704,16 @@ export default class DisplaySetService extends PubSubService {
     if (!config?.enabled || !config.splitRules || typeof config.splitRules !== 'object') {
       return { ...config, splitRules: undefined };
     }
-    let compiled = compiledSplitRulesCache.get(config.splitRules);
-    if (!compiled) {
+    const context = this._applyMetadataContext();
+    const cached = compiledSplitRulesCache.get(config.splitRules);
+    let compiled = cached?.compiled;
+    if (!cached || cached.context !== context) {
       compiled = compileSplitRules(config.splitRules, {
-        displaySetContext: config.displaySetContext,
+        context,
         seriesFunctions: config.seriesFunctions,
         sortFunctions: config.sortFunctions,
       });
-      compiledSplitRulesCache.set(config.splitRules, compiled);
+      compiledSplitRulesCache.set(config.splitRules, { context, compiled });
     }
     return {
       ...config,
@@ -858,6 +1022,8 @@ export default class DisplaySetService extends PubSubService {
         if (!home) {
           return;
         }
+        onStep(group.matchedRule.id, 'extendDisplaySet');
+        this._extendWithHandler(home);
         // applying hp-defined viewport settings to the displaysets
         Object.keys(settings).forEach(key => {
           home[key] = settings[key];
@@ -882,7 +1048,8 @@ export default class DisplaySetService extends PubSubService {
 
   /**
    * Adds new instances to an existing split-rule display set, through its
-   * `extendInstances` hook, and publishes the change.
+   * `extendInstances` hook, then the handler step with the new instances as
+   * `addedInstances`, and publishes the change.
    *
    * The series context of the re-split goes with the instances. Every rule of
    * the split shares one context, so the context fits the display set even
@@ -908,6 +1075,7 @@ export default class DisplaySetService extends PubSubService {
     if (!updated) {
       return undefined;
     }
+    this._extendWithHandler(updated, newInstances);
     this.activeDisplaySetsChanged = true;
     this._addDisplaySetsToCache([updated]);
     this._addActiveDisplaySets([updated]);

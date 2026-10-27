@@ -30,80 +30,101 @@ const SupportedTransferSyntaxes = {
 
 const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
+/** The recognizer: is the instance a video that this handler can play? */
+const isSupportedVideo = metadata => {
+  const tsuid =
+    metadata.AvailableTransferSyntaxUID || metadata.TransferSyntaxUID || metadata['00083002'];
+
+  if (supportedTransferSyntaxUIDs.includes(tsuid)) {
+    return true;
+  }
+
+  if (metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE) {
+    return true;
+  }
+
+  // Assume that an instance with one of the secondary capture SOPClassUIDs and
+  // with at least 90 frames (i.e. typically 3 seconds of video) is indeed a video.
+  return (
+    secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) && metadata.NumberOfFrames >= 90
+  );
+};
+
+/**
+ * The video fields of a display set that shows `instance`, and the
+ * registration of its rendered URL. Shared by the legacy builder and
+ * {@link extendVideoDisplaySet}.
+ */
+const getVideoFields = (instance, dataSource) => {
+  const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
+  const { SeriesNumber, NumberOfFrames, url } = instance;
+  // The date/time of a display set is the date/time of the instance it
+  // shows, chosen from all the attributes that instance carries.
+  const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
+  const videoUrlParams = {
+    instance,
+    singlepart: 'video',
+    tag: 'PixelData',
+    url,
+  };
+  const videoUrl = dataSource.retrieve.directURL(videoUrlParams);
+  const getVideoUrl = dataSource.retrieve.renderedURL
+    ? options => dataSource.retrieve.renderedURL({ ...videoUrlParams, url: videoUrl }, options)
+    : undefined;
+  csUtils.genericMetadataProvider.add(imageId, {
+    type: 'imageUrlModule',
+    metadata: { rendered: videoUrl },
+  });
+  return {
+    //plugin: id,
+    Modality,
+    SeriesDescription,
+    SeriesNumber,
+    SeriesDate,
+    SeriesTime,
+    SOPInstanceUID,
+    SOPClassHandlerId,
+    referencedImages: null,
+    measurements: null,
+    videoUrl,
+    getVideoUrl,
+    viewportType: csEnums.ViewportType.VIDEO,
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance),
+    thumbnailSrc: null,
+    imageIds: [imageId],
+    isDerivedDisplaySet: true,
+    isLoaded: false,
+    sopClassUids,
+    numImageFrames: NumberOfFrames,
+    instance,
+    supportsWindowLevel: true,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
+  };
+};
+
 const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const thumbnailSrc = null;
   console.warn('dataSource=', dataSource);
-  return instances
-    .filter(metadata => {
-      const tsuid =
-        metadata.AvailableTransferSyntaxUID || metadata.TransferSyntaxUID || metadata['00083002'];
+  return instances.filter(isSupportedVideo).map(instance => {
+    const { SeriesInstanceUID, StudyInstanceUID } = instance;
+    return {
+      ...getVideoFields(instance, dataSource),
+      displaySetInstanceUID: utils.guid(),
+      SeriesInstanceUID,
+      StudyInstanceUID,
+      instances: [instance],
+    };
+  });
+};
 
-      if (supportedTransferSyntaxUIDs.includes(tsuid)) {
-        return true;
-      }
-
-      if (metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE) {
-        return true;
-      }
-
-      // Assume that an instance with one of the secondary capture SOPClassUIDs and
-      // with at least 90 frames (i.e. typically 3 seconds of video) is indeed a video.
-      return (
-        secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) && metadata.NumberOfFrames >= 90
-      );
-    })
-    .map(instance => {
-      const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
-      const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } = instance;
-      // The date/time of a display set is the date/time of the instance it
-      // shows, chosen from all the attributes that instance carries.
-      const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
-      const videoUrlParams = {
-        instance,
-        singlepart: 'video',
-        tag: 'PixelData',
-        url,
-      };
-      const videoUrl = dataSource.retrieve.directURL(videoUrlParams);
-      const getVideoUrl = dataSource.retrieve.renderedURL
-        ? options => dataSource.retrieve.renderedURL({ ...videoUrlParams, url: videoUrl }, options)
-        : undefined;
-      const displaySet = {
-        //plugin: id,
-        Modality,
-        displaySetInstanceUID: utils.guid(),
-        SeriesDescription,
-        SeriesNumber,
-        SeriesDate,
-        SeriesTime,
-        SOPInstanceUID,
-        SeriesInstanceUID,
-        StudyInstanceUID,
-        SOPClassHandlerId,
-        referencedImages: null,
-        measurements: null,
-        videoUrl,
-        getVideoUrl,
-        viewportType: csEnums.ViewportType.VIDEO,
-        instances: [instance],
-        getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance),
-        thumbnailSrc,
-        imageIds: [imageId],
-        isDerivedDisplaySet: true,
-        isLoaded: false,
-        sopClassUids,
-        numImageFrames: NumberOfFrames,
-        instance,
-        supportsWindowLevel: true,
-        label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
-      };
-      csUtils.genericMetadataProvider.add(imageId, {
-        type: 'imageUrlModule',
-        metadata: { rendered: videoUrl },
-      });
-      return displaySet;
-    });
+/**
+ * Adds the video fields to a display set that a split rule with the `video`
+ * handler made. The rule recognizes the video, so the recognizer of the legacy
+ * builder does not run here. The display set shows its first instance.
+ */
+const extendVideoDisplaySet = (displaySet, { extensionManager }) => {
+  const dataSource = extensionManager.getActiveDataSource()[0];
+  Object.assign(displaySet, getVideoFields(displaySet.instances[0], dataSource));
 };
 
 export default function getSopClassHandlerModule(params) {
@@ -117,6 +138,8 @@ export default function getSopClassHandlerModule(params) {
       name: 'dicom-video',
       sopClassUids,
       getDisplaySetsFromSeries,
+      handlerNames: ['video'],
+      extendDisplaySet: extendVideoDisplaySet,
     },
   ];
 }

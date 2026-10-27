@@ -1,8 +1,5 @@
+import { displaySetRules } from '@cornerstonejs/metadata';
 import type { GroupInstancesOptions, InstanceGroup } from '@cornerstonejs/metadata';
-import {
-  ohifDefaultSplitRules,
-  ohifDisplaySetContext,
-} from '../displaySetSplitting/ohifDefaultSplitRules';
 import { makeDisplaySetFromInstanceGroup } from '../displaySetSplitting/makeDisplaySetFromInstanceGroup';
 import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSetDisplaySet';
 
@@ -10,10 +7,9 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * The `useMetadataDisplaySet` customization (default OFF).
  *
  * When enabled, DisplaySetService splits series instances into display sets
- * with the `@cornerstonejs/metadata` split-rules engine instead of the stack
- * SOP class handler.  Instances not matched by any rule (video, whole-slide,
- * ECG, SEG, SR, RT, PDF, ...) fall through to the registered SOP class
- * handlers unchanged.
+ * with the `@cornerstonejs/metadata` split-rules engine. A rule with a
+ * `handler` name gives its display sets to the SOP class handler of the mode
+ * that declares that name in `handlerNames`.
  *
  * Enable per mode:
  * ```js
@@ -25,39 +21,20 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * `'@ohif/extension-default.customizationModule.metadataDisplaySet'`,
  * or from the URL with `?customization=split/enableNewSplit`.
  *
- * `splitRules` is keyed by rule id, and each rule has a `priority` (ascending
- * order, first match wins). The defaults use `1..n`. A customization adds a
- * rule with `$merge`, turns a default off with `priority: null`, or moves one
- * by changing its priority - a priority below 0 runs before every default, and
- * above 10000 after every default.
- *
- * The rules are `@cornerstonejs/metadata` raw selector data - the same
- * vocabulary (a map of name to test in `matches`, names in `groupBy`,
- * `attributes`, context entries) a JSONC URL customization writes.
- * DisplaySetService compiles them with `createDisplaySetSplitRules`, with the
- * `displaySetContext` below over the default display set context.
+ * `splitRules` is the `@cornerstonejs/metadata` default rule set, keyed by
+ * rule id, with no OHIF copy. A customization adds a rule with `$merge`, turns
+ * a default off with `priority: null`, or moves one by changing its priority.
+ * DisplaySetService compiles the rules with `createDisplaySetSplitRules`, with
+ * the `metadataContext` customization as the context.
  *
  * A rule error stops display set creation; OHIF does not drop the rule, and
- * does not fall back to the SOP class handlers. A rule that does not compile
- * stops every display set, SEG and SR included; a rule that throws at run time
- * (a code context entry, a rule function, or `attributes` in the factory below)
- * stops further display sets for the study. Either error shows a persistent
- * notification that names the rule. See `DisplaySetService`.
- *
- * Note: an image SOP class instance without `Rows` is claimed by
- * `defaultImageRule`, which has no `Rows` test. The rules that need `Rows`
- * (`mixedDimensionalityBValue`, `volume3d`) skip it, so a series in which only
- * some instances have `Rows` gives two display sets. The legacy handler merges
- * such instances into the stackable display set of the series.
+ * does not fall back to the SOP class handlers. See `DisplaySetService`.
  */
 export default function getMetadataDisplaySetCustomization(context: ImageSetFactoryContext) {
   return {
     useMetadataDisplaySet: {
       enabled: false,
-      splitRules: ohifDefaultSplitRules,
-      // `isStackImage: true` in a rule: the stack SOP class handler's
-      // ownership test, which data cannot express.
-      displaySetContext: ohifDisplaySetContext,
+      splitRules: displaySetRules,
       createDisplaySetFromGroup: (
         group: InstanceGroup,
         options: {

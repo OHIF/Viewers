@@ -232,11 +232,21 @@ function _logSegImageIds({
   });
 }
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager: AppTypes.ServicesManager,
-  extensionManager
-) {
+/**
+ * Adds the SEG fields to `displaySet`, for the newest of its instances, and
+ * finds the referenced display set. Shared by the legacy builder and the
+ * split-rule path (the `segmentation` handler).
+ *
+ * @returns false when the SEG has no ReferencedSeriesSequence.
+ */
+function _extendDisplaySet(
+  displaySet,
+  {
+    servicesManager,
+    extensionManager,
+  }: { servicesManager: AppTypes.ServicesManager; extensionManager }
+): boolean {
+  const { instances } = displaySet;
   utils.sortStudyInstances(instances);
 
   // Choose the LAST instance in the list as the most recently created one.
@@ -263,11 +273,10 @@ function _getDisplaySetsFromSeries(
   // date/time reflects the save.
   const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
-  const displaySet = {
+  Object.assign(displaySet, {
     Modality: 'SEG',
     loading: false,
     isReconstructable: false,
-    displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
@@ -288,19 +297,18 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     predecessorImageId,
-    instances: [instance],
     wadoRoot,
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SEG')}`,
-  };
+  });
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
 
   if (!referencedSeriesSequence) {
     console.error('ReferencedSeriesSequence is missing for the SEG');
-    return;
+    return false;
   }
 
   const referencedSeries = referencedSeriesSequence[0] || referencedSeriesSequence;
@@ -347,6 +355,22 @@ function _getDisplaySetsFromSeries(
   displaySet.load = async ({ headers }) =>
     await _load(displaySet, servicesManager, extensionManager, headers);
 
+  return true;
+}
+
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager
+) {
+  utils.sortStudyInstances(instances);
+  const displaySet = {
+    displaySetInstanceUID: utils.guid(),
+    instances: [instances[instances.length - 1]],
+  };
+  if (!_extendDisplaySet(displaySet, { servicesManager, extensionManager })) {
+    return;
+  }
   return [displaySet];
 }
 
@@ -591,6 +615,10 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
       name: 'dicom-seg',
       sopClassUids,
       getDisplaySetsFromSeries,
+      handlerNames: ['segmentation'],
+      extendDisplaySet: (displaySet, options) => {
+        _extendDisplaySet(displaySet, options);
+      },
     },
   ];
 }

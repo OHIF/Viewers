@@ -1,4 +1,4 @@
-import { orderInstancesForRule } from '@cornerstonejs/metadata';
+import { createDisplaySetFromGroup, orderInstancesForRule } from '@cornerstonejs/metadata';
 import type {
   GroupInstancesOptions,
   InstanceGroup,
@@ -6,32 +6,31 @@ import type {
   SplitRule,
 } from '@cornerstonejs/metadata';
 import {
+  applyImageAttributes,
   applyImageListAttributes,
   applyThumbnailSrc,
-  makeImageSetDisplaySet,
+  makeSeriesDisplaySet,
   type ImageSetFactoryContext,
 } from './makeImageSetDisplaySet';
 
 /**
- * Attributes the rule's `customAttributes` may never overwrite — they define
- * the identity/content of the display set.
+ * The fields of the `@cornerstonejs/metadata` display set that the OHIF
+ * display set does not take: the CS3D identity and image id lists, and the
+ * fields that define the identity or the content of the OHIF display set.
+ * The rule's custom attributes cannot set these either.
  */
-const RESERVED_ATTRIBUTES = new Set([
+const NOT_COPIED = new Set([
+  'displaySetId',
+  'imageIds',
+  'underlyingImageIds',
   'instances',
   'instance',
   'images',
   'uid',
   'displaySetInstanceUID',
-  'splitKey',
-  // The rule and the rule group that made the display set. A user and a
-  // hanging protocol read them to find the rule that made a display set, so a
-  // rule must not rename either one.
-  'splitRuleId',
-  'splitGroupId',
   // The growth hook DisplaySetService calls on a re-split.
   'extendInstances',
-  // `setAttributes` assigns each key, and `imageSet['__proto__'] = value`
-  // replaces the prototype of the ImageSet instead of adding an attribute.
+  // `imageSet['__proto__'] = value` replaces the prototype of the ImageSet.
   '__proto__',
 ]);
 
@@ -44,23 +43,11 @@ type InstanceOrder = {
 /**
  * Puts a split-rule display set's images in the order the rule asks for.
  *
- * Two orderings meet here and only one can win. OHIF has a default instance
- * order (`ImageSet.sortInstances` — the `instanceSortingCriteria` customization,
- * else patient-position, else instance number) and a split rule may declare a
- * `compareInstances` of its own. Calling OHIF's sort on its own discards the
- * rule's, which is what used to happen: the engine ordered the group and
- * `imageSet.sort` immediately re-sorted it from scratch, so a rule's declared
- * order had no effect on the display set at all.
- *
- * `orderInstancesForRule` composes them with the engine's own precedence, so the
- * answer is the same one the split engine computed: OHIF's default is the base
- * order, the rule's comparator overrides it where it has an opinion, then the
- * host comparator (the customization's `compareInstances`) where the rule has
- * none, and a comparator returning 0 leaves the base order alone. The host
- * comparator must be passed here too: the engine ordered the group with it,
- * and a re-sort without it discards that order. So must the group's series
- * facts: computed from the display set alone, a fact such as "this series mixes
- * b-values" can differ from the value the split saw.
+ * `orderInstancesForRule` composes OHIF's default order (`ImageSet.sortInstances`)
+ * with the rule's comparator and the host comparator, with the precedence the
+ * split engine uses, so the result is the order the engine computed. The host
+ * comparator and the group's series facts must be passed again, or the re-sort
+ * discards that order.
  *
  * Sorted in place, because `imageSet.images` is a non-writable property whose
  * contents are mutable.
@@ -83,12 +70,11 @@ function applyInstanceOrder(
 /**
  * Orders the images, then refreshes the attributes that depend on the order.
  *
- * The image-list attributes must already describe the current images: OHIF's
- * default sort reads `isReconstructable` to choose patient-position or
- * instance-number order. `isReconstructable` does not depend on the order, but
- * `instance`, `messages` and the thumbnail do, so they are applied again from
- * the final order. The initial build and the growth hook both end here, so a
- * display set that grew is the same as one built from all of its instances.
+ * OHIF's default sort reads `isReconstructable`, so the image-list attributes
+ * must already describe the current images. `instance`, `messages` and the
+ * thumbnail depend on the order, so they are applied again from the final
+ * order. The initial build and the growth hook both end here, so a display
+ * set that grew is the same as one built from all of its instances.
  */
 function orderAndRefreshAttributes(
   imageSet,
@@ -102,14 +88,39 @@ function orderAndRefreshAttributes(
 }
 
 /**
- * Converts a `@cornerstonejs/metadata` split-rule instance group into a full
- * OHIF ImageSet display set.  This is the default
- * `createDisplaySetFromGroup` of the `useMetadataDisplaySet` customization.
+ * Copies the fields of the `@cornerstonejs/metadata` display set onto the OHIF
+ * display set: `splitKey`, `splitRuleId`, `splitGroupId`, `sopClassUids`,
+ * `viewportTypes`, `handler` and the rule's attributes. Applied after the OHIF
+ * defaults, so the rule's attributes win over them.
+ */
+function copyRuleDisplaySet(displaySet, ruleDisplaySet: object) {
+  for (const [key, value] of Object.entries(ruleDisplaySet)) {
+    if (!NOT_COPIED.has(key)) {
+      displaySet.setAttribute(key, value);
+    }
+  }
+}
+
+/**
+ * Converts a `@cornerstonejs/metadata` split-rule instance group into an OHIF
+ * display set. This is the default `createDisplaySetFromGroup` of the
+ * `useMetadataDisplaySet` customization.
  *
- * The display set is built by the same factory the legacy stack SOP class
- * handler uses, so it carries the complete legacy attribute set; the split
- * engine then contributes `splitKey` (reconciliation identity),
- * `splitRuleId`, `viewportTypes` and the matched rule's custom attributes.
+ * The build has three steps (DS-IMPL-OHIF-4); this function runs the first two:
+ *
+ * 1. CS3D `createDisplaySetFromGroup` builds the display set of the group,
+ *    the same one that a server builds.
+ * 2. The OHIF generic step builds an ImageSet with the series identity, and
+ *    copies the fields of step 1. Its image part (the stack handler id, the
+ *    image-list attributes, the thumbnail and the instance order) runs only
+ *    for a rule with no `handler`, or with the `image` handler.
+ * 3. DisplaySetService calls the `extendDisplaySet` of the SOP class handler
+ *    that declares the rule's `handler` name.
+ *
+ * The `extendInstances` hook repeats steps 1 and 2 for the instances that
+ * arrive later. It only adds: a split-rule display set never loses an
+ * instance. It is not named `addInstances` (the SOP class handler merge
+ * hook), so the legacy handler loop never feeds instances into it.
  */
 export function makeDisplaySetFromInstanceGroup(
   group: InstanceGroup,
@@ -119,67 +130,27 @@ export function makeDisplaySetFromInstanceGroup(
   }: { splitNumber: number; compareInstances?: GroupInstancesOptions['compareInstances'] },
   context: ImageSetFactoryContext
 ) {
-  const { instances, matchedRule, splitKey } = group;
+  const { matchedRule } = group;
   // What every re-sort of this display set orders with.
   const order: InstanceOrder = { series: group.series, compareInstances };
 
-  // The factory applies the image-list attributes, which the sort reads.
-  const imageSet = makeImageSetDisplaySet([...instances], context, {
+  // Step 1. `compileSplitRules` wraps `customAttributes`, so an error here
+  // names the rule and the field; DisplaySetService catches it and stops the
+  // study.
+  const ruleDisplaySet = createDisplaySetFromGroup(group, { splitNumber });
+  const { handler } = ruleDisplaySet as { handler?: string };
+  const isImage = !handler || handler === 'image';
+
+  // Step 2.
+  const displaySet = makeSeriesDisplaySet([...group.instances]);
+  if (isImage) {
     // The order is applied below, once, with the matched rule folded in.
-    skipSort: true,
-  });
-  orderAndRefreshAttributes(imageSet, matchedRule, order, context);
-  const sopClassUidsOf = list =>
-    [...new Set(list.map(instance => instance.SOPClassUID))] as string[];
-  const viewportTypes = matchedRule.viewportTypes ? [...matchedRule.viewportTypes] : undefined;
+    applyImageAttributes(displaySet, context, { skipSort: true });
+    orderAndRefreshAttributes(displaySet, matchedRule, order, context);
+  }
+  copyRuleDisplaySet(displaySet, ruleDisplaySet);
 
-  imageSet.setAttributes({
-    sopClassUids: sopClassUidsOf(imageSet.images),
-    splitKey,
-    splitRuleId: matchedRule.id,
-    // The group of rules the rule belongs to; the rule id unless the rule
-    // names a group. Several rules for one kind of display set (breast
-    // tomosynthesis, legacy mammography, mammography already split) share one
-    // group id, so a hanging protocol can match all of them.
-    splitGroupId: matchedRule.groupId ?? matchedRule.id,
-    viewportTypes,
-  });
-
-  // Applied from the CURRENT image list, so re-running it after a merge keeps
-  // instance-derived attributes (e.g. `instanceNumber`) in step with the new
-  // sort order instead of describing the instances of the first batch.
-  // `compileSplitRules` wraps `customAttributes`, so an error here names the
-  // rule and the field; DisplaySetService catches it and stops the study.
-  const applyCustomAttributes = () => {
-    const currentInstances = imageSet.images;
-    const customAttributes = matchedRule.customAttributes?.(
-      {
-        instance: currentInstances[0],
-        isMultiFrame: Number(currentInstances[0]?.NumberOfFrames) > 1,
-        sopClassUids: sopClassUidsOf(currentInstances),
-        viewportTypes: matchedRule.viewportTypes,
-      },
-      { instances: [...currentInstances], splitNumber, series: order.series }
-    );
-    if (!customAttributes) {
-      return;
-    }
-    imageSet.setAttributes(
-      Object.fromEntries(
-        Object.entries(customAttributes).filter(([key]) => !RESERVED_ATTRIBUTES.has(key))
-      )
-    );
-  };
-
-  applyCustomAttributes();
-
-  // Growth hook used by DisplaySetService when instances that are new to the
-  // series belong with this display set. It only adds: a split-rule display set
-  // never loses an instance. Intentionally NOT named `addInstances` (the
-  // SOP-class-handler merge hook) so the legacy handler loop can never feed
-  // unmatched instances into split-rule display sets - they share the stack
-  // SOPClassHandlerId.
-  imageSet.setAttribute(
+  displaySet.setAttribute(
     'extendInstances',
     (
       newInstances,
@@ -188,7 +159,7 @@ export function makeDisplaySetFromInstanceGroup(
         compareInstances?: GroupInstancesOptions['compareInstances'];
       } = {}
     ) => {
-      const known = new Set(imageSet.images.map(instance => instance.SOPInstanceUID));
+      const known = new Set(displaySet.images.map(instance => instance.SOPInstanceUID));
       const instancesToAdd = newInstances.filter(instance => {
         if (known.has(instance.SOPInstanceUID)) {
           return false;
@@ -208,22 +179,26 @@ export function makeDisplaySetFromInstanceGroup(
         order.compareInstances = options.compareInstances;
       }
 
-      // `images` is a non-writable property, but the array contents are mutable.
-      imageSet.images.push(...instancesToAdd);
-      // Recompute every image-list-derived attribute through the same helpers
-      // the initial build uses. First for the grown list, because the sort reads
-      // `isReconstructable`: one slice is not reconstructable, but more slices
-      // can be. Then again from the final order, for the `instance`, the
-      // messages and the thumbnail.
-      applyImageListAttributes(imageSet, context);
-      orderAndRefreshAttributes(imageSet, matchedRule, order, context);
-      imageSet.setAttribute('sopClassUids', sopClassUidsOf(imageSet.images));
-      // Last, so a rule's custom attributes still win over the recomputed
-      // defaults - the same precedence as the initial build.
-      applyCustomAttributes();
-
-      return imageSet;
+      // `images` is a non-writable property, but the array contents are
+      // mutable. A non-image display set keeps the new instances at the end.
+      displaySet.images.push(...instancesToAdd);
+      if (isImage) {
+        // The sort reads `isReconstructable`: one slice is not reconstructable,
+        // but more slices can be. So the attributes come first for the grown
+        // list, then again from the final order.
+        applyImageListAttributes(displaySet, context);
+        orderAndRefreshAttributes(displaySet, matchedRule, order, context);
+      }
+      // The display set keeps the `splitKey` of the group that created it.
+      copyRuleDisplaySet(
+        displaySet,
+        createDisplaySetFromGroup(
+          { ...group, series: order.series, instances: [...displaySet.images] },
+          { splitNumber }
+        )
+      );
+      return displaySet;
     }
   );
-  return imageSet;
+  return displaySet;
 }

@@ -43,7 +43,7 @@
             "viewportTypes": ["stack"],
             "context": { "timeClustersMaxGap": 20 },
             "matches": {
-              "isStackImage": true,
+              "isImage": true,
               "Modality": "US",
               "isMultiFrame": false,
               "sweepCount": { "greaterThan": 1 },

@@ -73,20 +73,22 @@ implementation that is inconvenient is never a reason to change §4.
 
 ### 2.2 In scope
 
-- Split rules for the image instances that the stack SOP class handler owns today.
+- Split rules for the instances of a series, with the `@cornerstonejs/metadata` default rules.
+- The handler step: a rule names a generic handler, and the SOP class handler that declares that
+  name extends the display set (`SP-PIPE-17`).
 - The layering of rules from the defaults, a mode, the app config, and a URL module.
 - The rule format: the `@cornerstonejs/metadata` raw selector form (`DisplaySetRules`).
   This form is the one definitive rule format.
 - The stability of display sets when instances arrive later, or when the rules change during a
   session.
-- The authoring route through an AI assistant (§4.2, §5.5).
-- Reuse of rules by a server (§4.6, §5.6). The server implementation itself is future work.
+- Reuse of rules by a server (§4.6, §5.5). The server implementation itself is future work.
 
 ### 2.3 Out of scope
 
-- **Secondary objects** — SEG, SR, RT Structure Set, Parametric Map, PDF, video, whole-slide, and
-  ECG. Their dedicated extensions keep their SOP class handlers. The result-set specification
-  (`RS-DS`) covers display sets for secondary results.
+- **The content of secondary objects** — SEG, SR, RT Structure Set, Parametric Map, PDF, video,
+  whole-slide, and ECG. A default rule makes their display sets, and their dedicated extensions
+  add the fields of each kind of object (`SP-PIPE-17`). The result-set specification (`RS-DS`)
+  covers display sets for secondary results.
 - **One display set from two or more series.** This is intended functionality, and it is future
   work. The engine splits one series at a time today. See `SP-FIX-7` and §6 item 2.
 - **A split of the frames of one multiframe instance** — for example, an MR instance that holds
@@ -385,8 +387,9 @@ field. *Satisfies `SP-DESC-2`.*
 | `attributes` | Attribute values keyed by attribute name — a name, a fixed value, `{ template }`, or `{ expression }` |
 
 **SP-FORM-4**
-`createDisplaySetSplitRules` shall compile the rule set. OHIF shall supply its own code context
-entries (`isStackImage`), series functions and sort functions to it by name. *Satisfies `SP-READ-1`,
+`createDisplaySetSplitRules` shall compile the rule set, with the `metadataContext` customization
+as the `context` option. OHIF shall supply its series functions and sort functions to it by name,
+and shall supply no context entry that is code. *Satisfies `SP-READ-1`,
 `SP-REUSE-1`.*
 
 **SP-FORM-7**
@@ -415,9 +418,6 @@ A rule module that needs the splitter shall name `split/enableNewSplit` in its `
 *Satisfies `SP-DESC-4`.*
 
 > The raw selector form is the one definitive rule format, for the viewer and for a server.
-> Commit `1f2911cf4b` removed the earlier OHIF rule layer: the `$function` customization marker,
-> its function-signature registry, and `customizationFunctionPolicy.denyAttributes`. No part of
-> this specification uses them.
 
 ### 5.2 The pipeline — `SP-PIPE`
 
@@ -519,8 +519,9 @@ OHIF shall compile a rule set value once, with `createDisplaySetSplitRules`, and
 rules again until the `splitRules` value changes. *Satisfies `SP-DET-1`.*
 
 > A mode that defines other rules gives a new `splitRules` object, and that object compiles
-> again. A change of `displaySetContext`, `seriesFunctions` or `sortFunctions` alone does not
-> compile the rules again, so a mode that changes them must also give a new `splitRules` object.
+> again, and so does a new `metadataContext` value. A change of `seriesFunctions` or
+> `sortFunctions` alone does not compile the rules again, so a mode that changes them must also
+> give a new `splitRules` object.
 
 **SP-PIPE-3**
 The compile step shall compile each rule alone, so that it can name every rule that fails.
@@ -618,9 +619,21 @@ the rule, else to the id of the rule. *Satisfies `SP-READ-6`.*
 > protocol then matches `splitGroupId` equal to `mammo`.
 
 **SP-PIPE-12**
-The default rules shall gate every match on the SOP class list of the stack SOP class handler
-(`isStackHandledInstance`), and shall exclude video, whole-slide, and ECG instances.
-*Satisfies `SP-SAFE-4`.*
+The default `splitRules` shall be the `@cornerstonejs/metadata` default rule set, with no OHIF copy
+or change of a rule. A rule shall test the SOP class with a list of the `metadataContext`, for
+example `isImage`. *Satisfies `SP-SAFE-4`, `SP-REUSE-1`.*
+
+**SP-PIPE-17**
+A rule may name a generic `handler`. A SOP class handler shall declare the names that it serves in
+`handlerNames`, and shall have an `extendDisplaySet` function; a handler with `handlerNames` and
+no `extendDisplaySet` is an error when the mode registers it. The first handler of the mode that
+declares a name shall serve it. A name that no handler of the mode declares shall give the
+unsupported display set, and one console warning for each name. *Satisfies `SP-SAFE-4`.*
+
+> The display set factory builds each display set in three steps: the `@cornerstonejs/metadata`
+> `createDisplaySetFromGroup`, the OHIF generic step (its image part only for no handler or the
+> `image` handler), and the handler's `extendDisplaySet(displaySet, { addedInstances,
+> servicesManager, extensionManager })`. With the rules off, the SOP class handlers run as before.
 
 ### 5.3 The expression language — `SP-EXPR`
 
@@ -650,17 +663,12 @@ a compile error. A bare keyword reads an attribute of the instance. `series.inst
 the other aggregates run over the instances of the series, and in `attributes` only,
 `displaySet.instances.*` runs over the display set. *Satisfies `SP-SAFE-2`, `SP-FORM-7`.*
 
-> Before this requirement, a bare `SliceLocation` in a comparator read `a.SliceLocation` without a
-> warning.
-
 **SP-EXPR-6**
 The compiled readers shall read an attribute of an instance, and a context value, only as an own
 property. *Satisfies `SP-SAFE-2`.*
 
-> Before this requirement, `{ "seriesFact": "constructor" }` was true, and
-> `{ "attribute": "toString", "exists": true }` was true for an instance without that attribute,
-> because the read followed the prototype chain. A bare name inside an expression can still read a
-> prototype member, for example `toString`. That is a known gap.
+> A bare name inside an expression can still read a prototype member, for example `toString`.
+> That is a known gap.
 
 > `SP-SAFE-6` has no mechanism today. It is a future item. See §6 item 9.
 
@@ -676,69 +684,15 @@ the URL that loads the module. *Satisfies `SP-DESC-3`.*
 
 **SP-DEPLOY-3**
 A rule that must take instances before the defaults shall use a priority below `0`, and shall gate
-on a code context entry such as `isStackImage`, on `SOPClassUID`, or on `Modality`. *Satisfies
+on a list of the `metadataContext` such as `isImage`, on `SOPClassUID`, or on `Modality`. *Satisfies
 `SP-FIX-6`, `SP-SAFE-4`.*
 
-### 5.5 The assistant route — `SP-GEN` *(proposed)*
-
-This sequence diagram shows the recommended route from a clinical description to a deployed rule.
-
-```mermaid
-sequenceDiagram
-  actor U as Clinical user
-  participant V as OHIF viewer
-  participant A as Assistant (Claude)
-  participant F as Rule module (JSONC)
-  actor R as Reviewer
-  participant D as Deployment
-
-  U->>V: Opens the study. The grouping is wrong.
-  U->>V: Exports the series tags, without patient identifiers
-  U->>A: "All the b-values are in one stack. The window level is wrong."
-  A->>A: Finds the attributes that separate the images
-  A->>F: Writes a keyed rule: id, priority, gate, description, comments
-  A->>A: Compiles the rule (createDisplaySetSplitRules) and runs it on the tags
-  U->>V: Loads ?customization=split/dwiByBValue
-  V-->>U: Shows the new display sets
-  alt The grouping is still wrong
-    U->>A: Describes what is still wrong
-    A->>F: Replaces the rule under the same id
-  end
-  U->>R: Asks for a review of the rule module
-  R->>F: Reads the diff
-  R->>D: Merges the rule module
-  D-->>V: All users get the new grouping
-```
-
-**SP-GEN-1** *(a separate change)*
-The repository should hold an agent skill, in `.agents/skills/`, that tells an assistant how to
-turn a clinical description into a rule module. The skill should cite the reference
-documentation instead of a copy of it. *Satisfies `SP-DESC-1`, `SP-DESC-2`.*
-
-**SP-GEN-2**
-The skill should tell the assistant to use a rule id that names the problem, a priority below
-`0`, an explicit gate, a `description`, and a header comment. *Satisfies `SP-DESC-3`,
-`SP-SAFE-4`, `SP-REUSE-3`.*
-
-**SP-GEN-3**
-The viewer should give a way to export the tags of a series without the patient identifiers, as
-input for the assistant. *Satisfies `SP-DESC-6`.*
-
-**SP-GEN-4**
-The skill should tell the assistant to replace a rule under its id, and never to add a rule with a
-new id for the same problem. *Satisfies `SP-REUSE-3`, `SP-REUSE-4`.*
-
-**SP-GEN-5**
-The repository should give a unit test pattern that compiles a rule with
-`createDisplaySetSplitRules`, feeds exported series tags to `groupInstancesBySplitRules`, and
-checks the resulting groups. *Satisfies `SP-DESC-4`, `SP-REUSE-5`.*
-
-### 5.6 Reuse by a server — `SP-SRV` *(proposed)*
+### 5.5 Reuse by a server — `SP-SRV`
 
 ```mermaid
 flowchart LR
   RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set"]
-  LD --> CP["Compile<br/>createDisplaySetSplitRules<br/>+ the same code context entries"]
+  LD --> CP["Compile<br/>createDisplaySetSplitRules<br/>+ the metadataContext"]
   CP --> G["groupInstancesBySplitRules<br/>per series"]
   G --> IX["Server index<br/>display sets with splitKey"]
   IX -.->|the viewer reads the index| VW["OHIF viewer"]
@@ -753,13 +707,21 @@ A server index shall record the `splitKey` of each display set, so that the view
 display sets to the index. *Satisfies `SP-REUSE-2`, `SP-DET-3`.*
 
 **SP-SRV-3**
-The ownership test for SOP classes shall be a named code context entry (`isStackImage`), so that a
-server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
+Each split file shall use only the standard `immutability-helper` commands, and no `$filter`. For
+each split file, the rules from `immutability-helper`, `JSON5` and `createDisplaySetSplitRules`,
+with no OHIF code, shall equal the rules from `CustomizationService`. *Satisfies `SP-REUSE-2`.*
 
-> The OHIF default rules are raw data (`ohifDefaultSplitRules.ts`). The only code is the context
-> entry `isStackImage` (`isStackImageInstance`). A server must register the same entry. The
-> upstream `isStackImage` entry of `@cornerstonejs/metadata` differs from it for two SOP classes:
-> Corneal Topography Map and RT Dose.
+**SP-SRV-4**
+The SOP class tests shall be lists of the `metadataContext` customization, with the
+`@cornerstonejs/metadata` names, so that one overlay such as
+`{ "metadataContext": { "imageSopClassUids": { "$push": ["1.2.3.4"] } } }` works in OHIF and on a
+server. The OHIF default value adds only the private chart SOP class to `chartSopClassUids`.
+*Satisfies `SP-REUSE-2`, `SP-SAFE-4`.*
+
+**SP-SRV-5**
+OHIF shall add a new instance to the display sets without a re-split (`SP-DET-3`). A server
+re-splits the whole series when an instance arrives. The documentation shall state this
+difference. *Satisfies `SP-REUSE-2`.*
 
 ---
 
@@ -767,13 +729,11 @@ server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAF
 
 | # | Question | State |
 | --- | --- | --- |
-| 1 | Which data form is the exchange format for a server? | **Resolved.** The `@cornerstonejs/metadata` `DisplaySetRules` form is definitive, for the viewer and for a server. Commit `1f2911cf4b` removed the OHIF rule layer. |
+| 1 | Which data form is the exchange format for a server? | **Resolved.** The `@cornerstonejs/metadata` `DisplaySetRules` form is definitive, for the viewer and for a server. |
 | 2 | One display set from two or more series (`SP-FIX-7`). | **Deferred — future work.** This is intended functionality. The work must decide how to order the instances across the series, and what a display set with items from several series means: its series attributes, its `SeriesInstanceUID`, and its reconciliation when one series gets new instances. The engine gets one series at a time today (`SP-PIPE-4`), and a study-level pass must keep `SP-DET-3`. |
-| 3 | Where does the export of series tags without patient identifiers live (`SP-GEN-3`)? It can be a viewer command, a customization, or a separate tool. | Open |
-| 4 | Is the agent skill of `SP-GEN-1` a part of this pull request? | **Resolved.** The skill is a separate change. |
 | 5 | The prefix `SP` must go into §1 of the specification register (`specs/index.md`). | **Deferred.** The register is not on this branch. Add the prefix on a branch that holds the register. |
 | 6 | A split of the frames of one multiframe instance (`SP-FIX-8`), for example an MR instance with interleaved echo 1 and echo 2 frames. | **Deferred — follow-up pull request.** Out of scope for this change, and intended functionality. The engine claims and groups whole instances today, so the work needs a claim and a grouping for each frame. |
-| 7 | A series fact in the raw form is a named boolean only. Can the CT scout example `split/scoutSeries.jsonc` use the raw form? | **Resolved** in commit `1f2911cf4b`. The example uses the boolean series fact `hasScout` (scope `mixed`: the series mixes images with and without `LOCALIZER` in `ImageType`), and then matches each localizer instance. The [series context](./series-context.md) specification adds series facts that hold any value. |
+| 7 | A series fact in the raw form is a named boolean only. Can the CT scout example `split/scoutSeries.jsonc` use the raw form? | **Resolved.** The example uses the boolean series fact `hasScout` (scope `mixed`: the series mixes images with and without `LOCALIZER` in `ImageType`), and then matches each localizer instance. The [series context](./series-context.md) specification adds series facts that hold any value. |
 | 8 | What does the system do with a rule that has an error? | **Resolved.** The system does not drop the rule. A dropped rule can be a critical rule for the clinician, so the system creates no display sets and shows an error that names the rule (`SP-SAFE-7`, `SP-PIPE-13`). `SP-SAFE-2` states the guarantee of the safe functions: a valid rule always either applies or does not apply. An error in the rule set blocks the load of every study, as other errors that prevent a study load do. |
 | 9 | What mechanism lets a deployment deny a rule attribute (`SP-SAFE-6`)? | **Deferred — future item.** |
 | 10 | Must a run-time failure of a rule also stop display set creation, as `SP-SAFE-7` does for a rule with an error? | **Resolved — yes.** `SP-SAFE-3` and `SP-PIPE-9` require the stop and an error that names the rule and the series. `SP-PIPE-14` names the field too. |
@@ -783,18 +743,21 @@ server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAF
 | Requirement group | Source |
 | --- | --- |
 | `SP-FIX`, `SP-DET`, `SP-SAFE` | [OHIF/Viewers#6137](https://github.com/OHIF/Viewers/pull/6137), and the reference documentation *Display Set Splitting* |
-| `SP-DESC`, `SP-GEN` | The goal in §1: a clinical user describes the problem, and an assistant writes the rule |
-| `SP-REUSE`, `SP-SRV` | The header of `ohifDefaultSplitRules.ts`, and the decision that the raw selector form is definitive (§6 item 1) |
+| `SP-DESC` | The goal in §1: a clinical user describes the problem, and an assistant writes the rule |
+| `SP-REUSE`, `SP-SRV` | The decision that the raw selector form is definitive (§6 item 1), and the design of one rule set for the viewer and the server ([OHIF/Viewers#6137](https://github.com/OHIF/Viewers/pull/6137), [cornerstonejs/cornerstone3D#2861](https://github.com/cornerstonejs/cornerstone3D/pull/2861)) |
 | `SP-FORM`, `SP-PIPE`, `SP-EXPR` | The implementation in #6137, and `DisplaySetRules` in `@cornerstonejs/metadata` |
 
 ## 8. Verification
 
 | Requirement group | Test |
 | --- | --- |
-| `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/ohifDefaultSplitRules.test.ts` |
+| `SP-FIX`, `SP-PIPE-5`..`SP-PIPE-8`, `SP-PIPE-12` | `extensions/default/src/displaySetSplitting/urlSplitModules.test.ts`, and the default rule tests of `@cornerstonejs/metadata` |
+| `SP-PIPE-17` | `DisplaySetService.test.ts` ("handler names"), and `makeDisplaySetFromInstanceGroup.test.ts` (the image part) |
+| `SP-SRV-3` | `urlSplitModules.test.ts` (one test for each split file) |
+| `SP-SRV-4` | `extensions/default/src/customizations/metadataContextCustomization.test.ts` |
 | `SP-DET`, `SP-PIPE-4`, `SP-PIPE-10` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
 | `SP-READ-4`, `SP-READ-6`, `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `displaySetRules.test.ts` of `@cornerstonejs/metadata` |
-| `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataDisplaySetCustomization.test.ts` |
+| `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataContextCustomization.test.ts` |
 | `SP-SAFE-1`, `SP-SAFE-2`, `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-SUM`, `SP-CTX`, `SP-SFN`, `SP-EXM` | See §8 of the [series context](./series-context.md) specification |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
@@ -802,4 +765,4 @@ server can use the same test without OHIF code. *Satisfies `SP-REUSE-2`, `SP-SAF
 | `SP-SAFE-7`, `SP-PIPE-13` | `compileSplitRules.test.ts` ("a rule that does not compile is reported, not dropped") and `DisplaySetService.test.ts`, the compile part of `split rule errors` |
 | `SP-SAFE-6` | *Deferred* — §6 item 9 |
 | `SP-DESC-4`, `SP-FIX-3` | *Pending* — a Playwright test that loads a split rule module and checks the new items in the study browser |
-| `SP-GEN`, `SP-SRV` | *Pending* — proposed work |
+| `SP-SRV-1`, `SP-SRV-2` | *Pending* — the server implementation is future work |

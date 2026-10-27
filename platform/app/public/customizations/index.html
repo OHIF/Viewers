@@ -212,7 +212,7 @@
               value: 'split/enableNewSplit',
               name: 'Enable metadata split rules',
               scope: 'global',
-              desc: 'Splits series into display sets with the metadata split rules instead of the stack SOP class handler. Fixes mixed-b-value DWI series; video/WSI/SEG/SR and other specialized instances still use their dedicated SOP class handlers.',
+              desc: 'Splits series into display sets with the @cornerstonejs/metadata default split rules. Fixes mixed-b-value DWI series. A rule with a handler name (video, wholeSlide, ecg, segmentation, rtStructureSet, parametricMap, structuredReport, encapsulatedDocument, bulkAnnotation, chart, unsupported) gives its display sets to the SOP class handler of the mode that declares that name.',
             },
             {
               value: 'split/scoutSeries',
@@ -225,6 +225,18 @@
               name: 'DWI one display set per b-value (example)',
               scope: 'global',
               desc: 'Example custom raw selector rule: puts each b-value of a diffusion MR series into its own stack display set ("<description> b=<value>"), in place of one display set that renders as 4D. Pulls in split/enableNewSplit via requires.',
+            },
+            {
+              value: 'split/singleImagesBySize',
+              name: 'CR/DX/MG single images by size',
+              scope: 'global',
+              desc: 'Groups the single CR, DX and MG images of a series by image size, in place of one display set for each image. Not for mammography that needs one display set for each view. Pulls in split/enableNewSplit via requires.',
+            },
+            {
+              value: 'split/decimation',
+              name: 'Decimate large series',
+              scope: 'global',
+              desc: 'Splits a series of more than decimationSize (default 1000) single-frame images into ceil(count / decimationSize) display sets, by sliceIndex modulo the count. Pulls in split/enableNewSplit via requires.',
             },
           ],
         },

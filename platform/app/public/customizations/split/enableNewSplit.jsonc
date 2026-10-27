@@ -2,23 +2,22 @@
 //
 // Enables metadata-driven display set splitting: series instances are split
 // into display sets by the @cornerstonejs/metadata split-rules engine
-// (`useMetadataDisplaySet` customization) instead of the stack SOP class
-// handler.  Instances not matched by any split rule (video, whole-slide,
-// ECG, SEG, SR, RT, PDF, ...) still go through the registered SOP class
-// handlers, so specialized extensions keep working unchanged.
+// (`useMetadataDisplaySet` customization), with the @cornerstonejs/metadata
+// default rules. A rule with a `handler` name (video, ECG, whole slide, SEG,
+// RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation,
+// chart, unsupported) gives its display sets to the SOP class handler of the
+// mode that declares that name in `handlerNames`, so specialized extensions
+// keep working unchanged.
 //
 // The default rules include `mixedDimensionalityBValue`, which splits MR
 // series mixing instances with and without DiffusionBValue into separate
-// display sets (the DWI mixed-b-value issue).
-//
-// The default rule `singleImageModality` is off, so a CR, DX or MG series is
-// one display set, and not one display set for each image as with the stack
-// SOP class handler. `split/dxCrSingleImages.jsonc` shows a per-image split
-// for small DX and CR series as a rule.
+// display sets (the DWI mixed-b-value issue), and `singleImageModality`, which
+// makes one display set for each CR, DX or MG image, as the stack SOP class
+// handler does. `split/singleImagesBySize.jsonc` groups those images by size.
 //
 // Load it with `?customization=split/enableNewSplit`.
 //
-// Custom rules are @cornerstonejs/metadata raw selector data (a map of name to
+// Custom rules are @cornerstonejs/metadata rule data (a map of name to
 // test in `matches`, names in `groupBy` and `sortBy`, a rule `context`, and
 // `attributes`) - see `split/scoutSeries.jsonc` for a complete example.  `splitRules` is keyed by
 // rule id: add a rule with `$merge`.  Rules are evaluated in ascending

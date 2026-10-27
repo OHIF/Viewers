@@ -1,5 +1,7 @@
 import { utils } from '@ohif/core';
-import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
+import getDisplaySetsFromUnsupportedSeries, {
+  extendUnsupportedDisplaySet,
+} from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
 import {
   makeImageSetDisplaySet,
@@ -23,6 +25,24 @@ const makeDisplaySet = instances => makeImageSetDisplaySet(instances, appContext
 const isSingleImageModality = modality => {
   return modality === 'CR' || modality === 'MG' || modality === 'DX';
 };
+
+/**
+ * The stack fields of a display set: the instance number and acquisition time
+ * of a display set of one multi-frame or single-image instance, else the study.
+ * Shared by the legacy builder and the split-rule path.
+ */
+function extendStackDisplaySet(displaySet) {
+  const { images } = displaySet;
+  const [instance] = images;
+  if (images.length === 1 && (isMultiFrame(instance) || isSingleImageModality(instance.Modality))) {
+    displaySet.setAttributes({
+      instanceNumber: instance.InstanceNumber,
+      acquisitionDatetime: instance.AcquisitionDateTime,
+    });
+  } else {
+    displaySet.setAttribute('studyInstanceUid', instance.StudyInstanceUID);
+  }
+}
 
 function getSopClassUids(instances) {
   const uniqueSopClassUidsInSeries = new Set();
@@ -68,17 +88,13 @@ function getDisplaySetsFromSeries(instances) {
       displaySet.setAttributes({
         sopClassUids,
         numImageFrames: instance.NumberOfFrames,
-        instanceNumber: instance.InstanceNumber,
-        acquisitionDatetime: instance.AcquisitionDateTime,
       });
+      extendStackDisplaySet(displaySet);
       displaySets.push(displaySet);
     } else if (isSingleImageModality(instance.Modality)) {
       displaySet = makeDisplaySet([instance]);
-      displaySet.setAttributes({
-        sopClassUids,
-        instanceNumber: instance.InstanceNumber,
-        acquisitionDatetime: instance.AcquisitionDateTime,
-      });
+      displaySet.setAttributes({ sopClassUids });
+      extendStackDisplaySet(displaySet);
       displaySets.push(displaySet);
     } else {
       stackableInstances.push(instance);
@@ -87,7 +103,9 @@ function getDisplaySetsFromSeries(instances) {
 
   if (stackableInstances.length) {
     const displaySet = makeDisplaySet(stackableInstances);
-    displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
+    // A single stackable instance is neither multi-frame nor single-image, so
+    // this sets `studyInstanceUid`.
+    extendStackDisplaySet(displaySet);
     displaySet.setAttributes({
       sopClassUids,
     });
@@ -97,8 +115,6 @@ function getDisplaySetsFromSeries(instances) {
   return displaySets;
 }
 
-// The registration list lives in `stackSopClassUids` so the split rules can
-// use the same list to decide which instances the stack path owns.
 const sopClassUids = STACK_SOP_CLASS_UIDS;
 
 function getSopClassHandlerModule(appContextParam) {
@@ -109,16 +125,24 @@ function getSopClassHandlerModule(appContextParam) {
       name: sopClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
+      // The image part of the split-rule display set is the generic step of
+      // `makeDisplaySetFromInstanceGroup`; this adds the stack fields only.
+      handlerNames: ['image'],
+      extendDisplaySet: extendStackDisplaySet,
     },
     {
       name: 'not-supported-display-sets-handler',
       sopClassUids: [],
       getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
+      handlerNames: ['unsupported'],
+      extendDisplaySet: extendUnsupportedDisplaySet,
     },
     {
       name: chartHandler.name,
       sopClassUids: chartHandler.sopClassUids,
       getDisplaySetsFromSeries: chartHandler.getDisplaySetsFromSeries,
+      handlerNames: chartHandler.handlerNames,
+      extendDisplaySet: chartHandler.extendDisplaySet,
     },
   ];
 }

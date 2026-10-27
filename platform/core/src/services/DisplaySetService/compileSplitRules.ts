@@ -118,9 +118,8 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleS
  *
  * Every entry is compiled by the `@cornerstonejs/metadata`
  * `createDisplaySetSplitRules` - there is no OHIF rule language. `options`
- * supplies the display set context and the named functions the rules
- * reference, for example the `isStackImage` code entry of
- * `@ohif/extension-default`. The compiler keeps a
+ * supplies the context (the `metadataContext` customization) and the named
+ * functions the rules reference. The compiler keeps a
  * function at a function place as is, so an entry that mixes functions with
  * data goes through the same compiler as raw data. No field is left
  * uncompiled because another field is a function.

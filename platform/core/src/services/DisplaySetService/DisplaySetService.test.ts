@@ -1,6 +1,7 @@
-import { displaySetRules } from '@cornerstonejs/metadata';
+import { defaultMetadataContext, displaySetRules, isImageInstance } from '@cornerstonejs/metadata';
 import type { RawSplitRule } from '@cornerstonejs/metadata';
 import DisplaySetService from './DisplaySetService';
+import CustomizationService from '../CustomizationService';
 import EVENTS from './EVENTS';
 import * as displaySetStore from './displaySetStore';
 
@@ -70,6 +71,7 @@ const makeCreateDisplaySetFromGroup = () => {
       splitKey: group.splitKey,
       splitRuleId: group.matchedRule.id,
       splitNumber,
+      handler: group.matchedRule.handler,
     };
     displaySet.extendInstances = jest.fn(newInstances => {
       displaySet.instances.push(...newInstances);
@@ -790,6 +792,85 @@ describe('DisplaySetService', () => {
       });
     });
 
+    describe('handler names (DS-IMPL-OHIF-3 to -5)', () => {
+      const handlerEntry = (handlerNames: string[]) => ({
+        sopClassUids: [],
+        getDisplaySetsFromSeries: jest.fn(() => []),
+        handlerNames,
+        extendDisplaySet: jest.fn(),
+      });
+      const withHandler = (handler: string) => ({
+        enabled: true,
+        splitRules: {
+          ...testSplitRules,
+          named: { priority: -1, handler, groupBy: ['SeriesInstanceUID'] },
+        },
+        createDisplaySetFromGroup,
+      });
+      let first;
+      let second;
+      let unsupported;
+
+      beforeEach(() => {
+        first = handlerEntry(['segmentation']);
+        second = handlerEntry(['segmentation', 'structuredReport']);
+        unsupported = handlerEntry(['unsupported']);
+        const handlers = {
+          first,
+          second,
+          [UNSUPPORTED_HANDLER_ID]: unsupported,
+        };
+        service.init({ getModuleEntry: id => handlers[id] }, ['first', 'second']);
+      });
+
+      it.each([
+        ['segmentation', 'first'],
+        ['structuredReport', 'second'],
+      ])(
+        'gives a %s display set to the first handler of the mode that declares the name',
+        (name, expected) => {
+          setCustomization(withHandler(name));
+          const [displaySet] = service.makeDisplaySets([makeInstance()]);
+          const handler = expected === 'first' ? first : second;
+          expect(handler.extendDisplaySet).toHaveBeenCalledTimes(1);
+          expect(handler.extendDisplaySet.mock.calls[0][0]).toBe(displaySet);
+          expect(handler.extendDisplaySet.mock.calls[0][1].addedInstances).toBeUndefined();
+        }
+      );
+
+      it('gives the new instances to the handler at an update', () => {
+        setCustomization(withHandler('segmentation'));
+        const instances = [makeInstance()];
+        service.makeDisplaySets(instances);
+        const extra = makeInstance();
+        service.makeDisplaySets([...instances, extra]);
+        expect(first.extendDisplaySet).toHaveBeenCalledTimes(2);
+        expect(first.extendDisplaySet.mock.calls[1][1].addedInstances).toEqual([extra]);
+      });
+
+      it('gives an unknown name the unsupported handler, with one warning for each name', () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+        setCustomization(withHandler('hologram'));
+        service.makeDisplaySets([makeInstance()]);
+        service.makeDisplaySets([makeInstance({ SeriesInstanceUID: 'series-2' })]);
+        expect(unsupported.extendDisplaySet).toHaveBeenCalledTimes(2);
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(warn.mock.calls[0][0]).toContain("'hologram'");
+        warn.mockRestore();
+      });
+
+      it('rejects a handler with handlerNames and no extendDisplaySet at registration', () => {
+        const broken = {
+          sopClassUids: [],
+          getDisplaySetsFromSeries: jest.fn(),
+          handlerNames: ['video'],
+        };
+        expect(() => service.init({ getModuleEntry: () => broken }, ['broken'])).toThrow(
+          /'broken' declares handlerNames/
+        );
+      });
+    });
+
     it('does not remove instances that the call does not contain', () => {
       const uids = displaySet => displaySet.instances.map(instance => instance.SOPInstanceUID);
       const instance = (InstanceNumber: number) =>
@@ -799,5 +880,32 @@ describe('DisplaySetService', () => {
       service.makeDisplaySets([instance(1)]);
       expect(uids(displaySet)).toEqual(['ds-1', 'ds-2']);
     });
+  });
+
+  // R8-1: the customization is the active @cornerstonejs/metadata context.
+  it('makes a metadataContext list change apply to isImageInstance, until mode exit', () => {
+    const customizationService = new CustomizationService({
+      configuration: {},
+      commandsManager: {},
+    } as never);
+    customizationService.setCustomizations(
+      { metadataContext: defaultMetadataContext },
+      customizationService.Scope.Default
+    );
+    const modeService = new DisplaySetService({
+      servicesManager: { services: { customizationService } },
+    } as never);
+    modeService.init({ getModuleEntry: () => undefined }, []);
+    const privateImage = { SOPClassUID: '1.2.3.4' };
+    expect(isImageInstance(privateImage as never)).toBe(false);
+
+    customizationService.setCustomizations(
+      { metadataContext: { imageSopClassUids: { $push: ['1.2.3.4'] } } },
+      customizationService.Scope.Global
+    );
+    expect(isImageInstance(privateImage as never)).toBe(true);
+
+    modeService.onModeExit();
+    expect(isImageInstance(privateImage as never)).toBe(false);
   });
 });

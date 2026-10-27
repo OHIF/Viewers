@@ -12,7 +12,7 @@ jest.mock('./makeImageSetDisplaySet', () => {
     return {};
   };
   return {
-    makeImageSetDisplaySet: instances => {
+    makeSeriesDisplaySet: instances => {
       const imageSet: Record<string, unknown> = { images: instances, instances };
       imageSet.setAttributes = (attributes: Record<string, unknown>) =>
         Object.assign(imageSet, attributes);
@@ -26,9 +26,12 @@ jest.mock('./makeImageSetDisplaySet', () => {
         (imageSet.sortCalls as unknown[]).push(imageSet.isReconstructable);
         return list;
       };
-      // The real factory applies the image-list attributes before it returns.
-      applyImageListAttributes(imageSet);
       return imageSet;
+    },
+    // The real image part applies the image-list attributes.
+    applyImageAttributes: imageSet => {
+      imageSet.hasImagePart = true;
+      applyImageListAttributes(imageSet);
     },
     applyImageListAttributes,
     applyThumbnailSrc: imageSet => {
@@ -94,6 +97,17 @@ describe('makeDisplaySetFromInstanceGroup', () => {
       expect(displaySet.x).toBeUndefined();
       expect(displaySet.label).toBe('MG');
     });
+  });
+
+  // DS-IMPL-OHIF-4: the image part runs for no handler, or the `image` handler.
+  it.each([
+    [undefined, true],
+    ['image', true],
+    ['segmentation', false],
+  ])('with the handler %s, runs the image part: %s', (handler, hasImagePart) => {
+    const displaySet = build({ id: 'r', handler });
+    expect(displaySet.handler).toBe(handler);
+    expect(!!displaySet.hasImagePart).toBe(hasImagePart);
   });
 
   describe('extendInstances', () => {

@@ -102,15 +102,6 @@ function getDisplaySetInfo(instances, imageIds, context: ImageSetFactoryContext)
   };
 }
 
-/**
- * Builds a stack/volume ImageSet display set carrying the full OHIF attribute
- * set (`label`, `supportsWindowLevel`, `FrameOfReferenceUID`,
- * `SOPClassHandlerId`, `isReconstructable`, `messages`, ...).
- *
- * This is the single shared factory used by both the legacy stack SOP class
- * handler and the `useMetadataDisplaySet` split-rules path, so both paths
- * produce identical display sets.
- */
 export type MakeImageSetDisplaySetOptions = {
   /**
    * Leave the instance order alone. Set by the split-rule path, which applies
@@ -119,11 +110,13 @@ export type MakeImageSetDisplaySetOptions = {
   skipSort?: boolean;
 };
 
-export function makeImageSetDisplaySet(
-  instances,
-  context: ImageSetFactoryContext,
-  options: MakeImageSetDisplaySetOptions = {}
-) {
+/**
+ * The generic part of an OHIF display set: an ImageSet over the instances,
+ * with the series identity (`displaySetInstanceUID`, the series UIDs, date,
+ * number, description, `Modality`, `label`). Every display set of a split
+ * rule starts here, whatever its handler.
+ */
+export function makeSeriesDisplaySet(instances) {
   // Need to sort the instances in order to get a consistent instance/thumbnail
   sortStudyInstances(instances);
   const instance = instances[0];
@@ -138,15 +131,31 @@ export function makeImageSetDisplaySet(
     SeriesInstanceUID: instance.SeriesInstanceUID,
     StudyInstanceUID: instance.StudyInstanceUID,
     SeriesNumber: instance.SeriesNumber || 0,
-    FrameRate: instance.FrameTime,
     SOPClassUID: instance.SOPClassUID,
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
-    SOPClassHandlerId: STACK_SOP_CLASS_HANDLER_ID,
-    supportsWindowLevel: true,
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
+  });
+  return imageSet;
+}
+
+/**
+ * The image part of a display set: the stack SOP class handler id, the
+ * image-list attributes (`isReconstructable`, `messages`, ...), the thumbnail
+ * and, unless `skipSort`, OHIF's default instance order.
+ */
+export function applyImageAttributes(
+  imageSet,
+  context: ImageSetFactoryContext,
+  options: MakeImageSetDisplaySetOptions = {}
+) {
+  const instance = imageSet.images[0];
+  imageSet.setAttributes({
+    FrameRate: instance.FrameTime,
+    SOPClassHandlerId: STACK_SOP_CLASS_HANDLER_ID,
+    supportsWindowLevel: true,
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
@@ -155,17 +164,31 @@ export function makeImageSetDisplaySet(
   const derived = applyImageListAttributes(imageSet, context);
   applyThumbnailSrc(imageSet, context, derived);
 
-  const { servicesManager } = context;
-  const { customizationService } = servicesManager.services;
-
   // The legacy SOP class handler path has no rule to consult, so OHIF's default
   // order is the whole answer and is applied here. The split-rule path passes
   // `skipSort` and orders once itself, folding the matched rule's comparator in
   // over this same default - see `applyInstanceOrder`.
   if (!options.skipSort) {
-    imageSet.sort(customizationService);
+    imageSet.sort(context.servicesManager.services.customizationService);
   }
+}
 
+/**
+ * Builds a stack/volume ImageSet display set carrying the full OHIF attribute
+ * set (`label`, `supportsWindowLevel`, `FrameOfReferenceUID`,
+ * `SOPClassHandlerId`, `isReconstructable`, `messages`, ...): the generic part
+ * and the image part.
+ *
+ * The legacy stack SOP class handler and the split-rule path share these two
+ * parts, so both paths produce identical image display sets.
+ */
+export function makeImageSetDisplaySet(
+  instances,
+  context: ImageSetFactoryContext,
+  options: MakeImageSetDisplaySetOptions = {}
+) {
+  const imageSet = makeSeriesDisplaySet(instances);
+  applyImageAttributes(imageSet, context, options);
   return imageSet;
 }
 
