@@ -609,8 +609,9 @@ display set, and shall not let the `attributes` of a rule overwrite those three 
 > (`SP-READ-4`), so a rule must not be able to change `splitRuleId`.
 
 **SP-PIPE-18**
-A rule shall have no viewport types. The handler of the display set shall decide how OHIF shows
-it, from the instance data: the image part of the display set factory for a rule with no handler
+No default rule and no OHIF split module shall set viewport types. A custom rule may set
+`viewportTypes`, and OHIF shall keep them on the display set as data, and shall not read them. The
+handler of the display set shall decide how OHIF shows it, from the instance data: the image part of the display set factory for a rule with no handler
 or the `image` handler, and the `extendDisplaySet` of the SOP class handler for the other names.
 *Satisfies `SP-SAFE-4`.*
 

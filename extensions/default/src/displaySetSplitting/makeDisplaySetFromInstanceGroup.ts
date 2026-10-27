@@ -28,10 +28,6 @@ const NOT_COPIED = new Set([
   'images',
   'uid',
   'displaySetInstanceUID',
-  // A rule has no viewport types: the handler decides how OHIF shows the
-  // display set.
-  'viewportTypes',
-  'preferredViewportType',
   // The growth hook DisplaySetService calls on a re-split.
   'extendInstances',
   // `imageSet['__proto__'] = value` replaces the prototype of the ImageSet.

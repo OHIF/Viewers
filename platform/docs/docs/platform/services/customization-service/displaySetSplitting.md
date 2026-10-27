@@ -337,11 +337,13 @@ A Comprehensive 3D SR is a `structuredReport`. In the microscopy mode, the
 microscopy SR handler is first, so it shows the SR. In the other modes, the
 cornerstone SR handler shows it.
 
-A rule has no viewport types. The handler decides how OHIF shows the display
-set, from the instance data: the image part of the generic step for a rule with
-no handler or the `image` handler, and the handler's `extendDisplaySet` for the
-other names. A rule with a `viewportTypes` field does not compile. Each display
-set of a rule has `splitKey` and `splitRuleId`, also when a handler extends it.
+No default rule and no OHIF split module sets viewport types. A custom rule
+may set `viewportTypes`, and OHIF keeps them on the display set as data, but
+OHIF does not read them. The handler decides how OHIF shows the display set,
+from the instance data: the image part of the generic step for a rule with no
+handler or the `image` handler, and the handler's `extendDisplaySet` for the
+other names. Each display set of a rule has `splitKey` and `splitRuleId`, also
+when a handler extends it.
 
 ## New instances and new rules
 
