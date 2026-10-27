@@ -96,6 +96,10 @@ implementation that is inconvenient is never a reason to change §4.
 - **Automatic deployment of a generated rule.** A person always applies the rule (`SP-DESC-5`).
 - **Hanging protocols.** A hanging protocol selects display sets. A split rule creates display
   sets. The two stay separate, although a rule can set attributes that a hanging protocol reads.
+  Since [OHIF/Viewers#6386](https://github.com/OHIF/Viewers/pull/6386), a hanging protocol
+  constraint and a split rule operator of the same name have the same meaning in most cases. The
+  migration guide [Hanging protocol comparisons](../../../migration-guide/3p13-to-3p14/hanging-protocol-comparisons.md)
+  lists the differences that remain.
 
 ## 3. Definitions
 
