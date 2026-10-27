@@ -28,6 +28,10 @@ const NOT_COPIED = new Set([
   'images',
   'uid',
   'displaySetInstanceUID',
+  // A rule has no viewport types: the handler decides how OHIF shows the
+  // display set.
+  'viewportTypes',
+  'preferredViewportType',
   // The growth hook DisplaySetService calls on a re-split.
   'extendInstances',
   // `imageSet['__proto__'] = value` replaces the prototype of the ImageSet.
@@ -90,7 +94,7 @@ function orderAndRefreshAttributes(
 /**
  * Copies the fields of the `@cornerstonejs/metadata` display set onto the OHIF
  * display set: `splitKey`, `splitRuleId`, `splitGroupId`, `sopClassUids`,
- * `viewportTypes`, `handler` and the rule's attributes. Applied after the OHIF
+ * `handler` and the rule's attributes. Applied after the OHIF
  * defaults, so the rule's attributes win over them.
  */
 function copyRuleDisplaySet(displaySet, ruleDisplaySet: object) {

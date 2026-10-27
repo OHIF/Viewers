@@ -30,7 +30,6 @@
           "singleImagesBySize": {
             "priority": -1,
             "description": "CR / DX / MG single images: one display set for each image size bucket of the series.",
-            "viewportTypes": ["stack"],
             "context": {
               "rowsBucket": "round(Rows / 64)",
               "columnsBucket": "round(Columns / 64)",

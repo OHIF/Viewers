@@ -36,7 +36,6 @@
           "dwiByBValue": {
             "priority": -1,
             "description": "Diffusion MR: one display set for each b-value.",
-            "viewportTypes": ["stack"],
             "context": {
               "bValue": "Number(DiffusionBValue)",
               "isDiffusion": "series.instances.max(bValue) > 0"

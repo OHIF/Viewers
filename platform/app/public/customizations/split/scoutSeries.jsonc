@@ -34,7 +34,6 @@
         "$merge": {
           "ctScout": {
             "priority": -1,
-            "viewportTypes": ["stack"],
             "context": {
               "isLocalizer": "includes(ImageType, 'LOCALIZER')",
               "hasScout": "series.instances.count(isLocalizer) > 0 && series.instances.count(isLocalizer) < series.instances.count()"

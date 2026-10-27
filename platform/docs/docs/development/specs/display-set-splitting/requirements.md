@@ -383,7 +383,6 @@ field. *Satisfies `SP-DESC-2`.*
 | `matches` | A map of name to test, and every entry must hold. A name is a DICOM keyword or a context name. There is no `all`, `any` or `not` |
 | `groupBy` | A list of names |
 | `sortBy` | A list of names, in ascending order, or `{ sortFunction }` |
-| `viewportTypes` | A list of viewport type names |
 | `attributes` | Attribute values keyed by attribute name — a name, a fixed value, `{ template }`, or `{ expression }` |
 
 **SP-FORM-4**
@@ -458,7 +457,7 @@ flowchart TD
   E6 --> R{"7 · Reconcile with the display sets<br/>that the series already has"}
   R -- "other instances of the group<br/>already have a display set" --> X["extendInstances<br/>the display set grows"]
   R -- "a display set has the<br/>same splitKey" --> X
-  R -- "new group" --> F["createDisplaySetFromGroup<br/>ImageSet + splitKey, splitRuleId, viewportTypes<br/>+ attributes: label, SeriesDescription, …<br/>re-sort: OHIF default order + comparators"]
+  R -- "new group" --> F["createDisplaySetFromGroup<br/>ImageSet + splitKey, splitRuleId, handler<br/>+ attributes: label, SeriesDescription, …<br/>re-sort: OHIF default order + comparators"]
 
   X --> O["8 · DISPLAY_SETS_ADDED<br/>or display set metadata invalidated"]
   F --> O
@@ -473,7 +472,6 @@ own display set. The module `split/dwiByBValue.jsonc` holds the rule.
 "dwiByBValue": {
   "priority": -1,
   "description": "Diffusion MR: one display set for each b-value.",
-  "viewportTypes": ["stack"],
   "context": {
     "isDiffusion": "series.instances.count(DiffusionBValue) > 0",
     "bValue": "Number(DiffusionBValue)"
@@ -604,10 +602,17 @@ The display set factory shall record `splitKey`, `splitRuleId`, and `splitGroupI
 display set, and shall not let the `attributes` of a rule overwrite those three attributes or
 `extendInstances`. *Satisfies `SP-READ-4`, `SP-READ-6`, `SP-DET-3`.*
 
-> `RESERVED_ATTRIBUTES` in `makeDisplaySetFromInstanceGroup.ts` holds these four names, and also
-> `__proto__`, because an assignment of `__proto__` replaces the prototype of the display set. A
+> `@cornerstonejs/metadata` protects the three split attributes. `NOT_COPIED` in
+> `makeDisplaySetFromInstanceGroup.ts` holds `extendInstances`, and also `__proto__`, because an
+> assignment of `__proto__` replaces the prototype of the display set. A
 > user and a hanging protocol read `splitRuleId` to find the rule that made a display set
 > (`SP-READ-4`), so a rule must not be able to change `splitRuleId`.
+
+**SP-PIPE-18**
+A rule shall have no viewport types. The handler of the display set shall decide how OHIF shows
+it, from the instance data: the image part of the display set factory for a rule with no handler
+or the `image` handler, and the `extendDisplaySet` of the SOP class handler for the other names.
+*Satisfies `SP-SAFE-4`.*
 
 **SP-PIPE-15**
 A rule may have a `groupId`. The display set factory shall set `splitGroupId` to the `groupId` of

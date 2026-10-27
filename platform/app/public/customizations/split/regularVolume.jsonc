@@ -43,7 +43,6 @@
           "regularVolume": {
             "priority": -2,
             "description": "Volume series with some irregular images: the regular slices become one volume display set.",
-            "viewportTypes": ["volume", "volume3d", "stack"],
             "context": {
               "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
               "isRegularSlice": "sliceIndex != null"
@@ -63,7 +62,6 @@
           "irregularImages": {
             "priority": null,
             "description": "Off. With priority -1: the images that regularVolume leaves become one stack.",
-            "viewportTypes": ["stack"],
             "context": {
               "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
               "isRegularSlice": "sliceIndex != null"

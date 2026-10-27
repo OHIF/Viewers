@@ -40,7 +40,6 @@
           "decimation": {
             "priority": -1,
             "description": "A series of more than decimationSize single-frame images: ceil(count / decimationSize) display sets, by sliceIndex modulo the count.",
-            "viewportTypes": ["volume", "volume3d", "stack"],
             "context": {
               "decimationSize": 1000,
               "decimationCount": "ceil(seriesInstanceCount / decimationSize)",

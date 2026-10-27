@@ -320,7 +320,6 @@ series for each module.
 ```jsonc
 "regularVolume": {
   "priority": -2,
-  "viewportTypes": ["volume", "volume3d", "stack"],
   "context": {
     "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
     "isRegularSlice": "sliceIndex != null"
@@ -361,7 +360,6 @@ one (`SP-PIPE-7`).
 ```jsonc
 "usTimeClusters": {
   "priority": -1,
-  "viewportTypes": ["stack"],
   "context": { "timeClustersMaxGap": 20 },
   "matches": {
     "isImage": true,

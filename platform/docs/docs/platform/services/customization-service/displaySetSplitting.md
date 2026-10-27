@@ -281,8 +281,8 @@ OHIF builds each display set of a rule in three steps:
 1. `createDisplaySetFromGroup` of `@cornerstonejs/metadata` builds the display
    set of the group. A server builds the same one.
 2. The OHIF generic step builds the OHIF display set with the series identity,
-   and copies `splitKey`, `splitRuleId`, `splitGroupId`, `viewportTypes`,
-   `handler` and the rule's `attributes` from step 1. For a rule with no
+   and copies `splitKey`, `splitRuleId`, `splitGroupId`, `handler` and the
+   rule's `attributes` from step 1. For a rule with no
    handler, or with the `image` handler, it also adds the image fields: the
    stack `SOPClassHandlerId`, `isReconstructable`, the messages, the thumbnail
    and the instance order.
@@ -337,9 +337,11 @@ A Comprehensive 3D SR is a `structuredReport`. In the microscopy mode, the
 microscopy SR handler is first, so it shows the SR. In the other modes, the
 cornerstone SR handler shows it.
 
-The viewport types of a rule are hints. `stack` is a hint, and it does not
-force a viewport. Each display set of a rule has `splitKey`, `splitRuleId` and
-the viewport types, also when a handler extends it.
+A rule has no viewport types. The handler decides how OHIF shows the display
+set, from the instance data: the image part of the generic step for a rule with
+no handler or the `image` handler, and the handler's `extendDisplaySet` for the
+other names. A rule with a `viewportTypes` field does not compile. Each display
+set of a rule has `splitKey` and `splitRuleId`, also when a handler extends it.
 
 ## New instances and new rules
 
@@ -394,7 +396,6 @@ customizationService.setCustomizations(
         $merge: {
           ctScout: {
             priority: -1,
-            viewportTypes: ['stack'],
             context: {
               isLocalizer: "includes(ImageType, 'LOCALIZER')",
               hasScout:

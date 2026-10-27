@@ -50,7 +50,6 @@ const testSplitRules: Record<string, RawSplitRule> = {
   // One display set PER IMAGE for single-image modalities (CR here).
   singleImageModality: {
     priority: 1,
-    viewportTypes: ['stack'],
     matches: instance => instance.Modality === 'CR' && !!instance.Rows,
     groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
   },
@@ -392,7 +391,6 @@ describe('DisplaySetService', () => {
      */
     const scoutRule: RawSplitRule = {
       priority: -1,
-      viewportTypes: ['stack'],
       context: {
         isLocalizer: "includes(ImageType, 'LOCALIZER')",
         hasScout:

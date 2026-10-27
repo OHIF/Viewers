@@ -40,7 +40,6 @@
           "usTimeClusters": {
             "priority": -1,
             "description": "Ultrasound single images: one display set for each sweep of contiguous acquisition time.",
-            "viewportTypes": ["stack"],
             "context": { "timeClustersMaxGap": 20 },
             "matches": {
               "isImage": true,
