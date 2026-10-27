@@ -1,4 +1,29 @@
-import validate from './validator.js';
+import validate, { OHIF_VALIDATORS } from './validator.js';
+
+/** The built-in validators of validate.js 0.12. */
+const BUILT_IN_VALIDATORS = [
+  'date',
+  'datetime',
+  'email',
+  'equality',
+  'exclusion',
+  'format',
+  'inclusion',
+  'length',
+  'numericality',
+  'presence',
+  'type',
+  'url',
+];
+
+describe('OHIF_VALIDATORS', () => {
+  it('lists exactly the validators that validator.js adds', () => {
+    const added = Object.keys(validate.validators).filter(
+      name => !BUILT_IN_VALIDATORS.includes(name)
+    );
+    expect([...OHIF_VALIDATORS].sort()).toEqual(added.sort());
+  });
+});
 
 describe('validator', () => {
   const attributeMap = {
@@ -479,6 +504,8 @@ describe('validator', () => {
       ['contains', '6', 5, false],
       ['startsWith', '5', 50, true],
       ['containsI', 'MLO', ['', 'r mlo'], true],
+      ['contains', { value: null }, 'xnullx', false],
+      ['contains', { value: undefined }, 'abc undefined', false],
     ])('%s %j reads the value %j as text: %s', (name, operand, n, passes) => {
       expect(validate({ n }, { n: { [name]: operand } }, [options]) === undefined).toBe(passes);
     });

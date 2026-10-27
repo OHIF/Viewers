@@ -1,7 +1,8 @@
 import validate from 'validate.js';
+import { asArray } from '@cornerstonejs/utils';
 
 /** The validators that this module adds to validate.js. */
-const OHIF_VALIDATORS = new Set([
+export const OHIF_VALIDATORS = new Set([
   'equals',
   'doesNotEqual',
   'includes',
@@ -54,7 +55,7 @@ export const isOhifValidator = name => OHIF_VALIDATORS.has(name);
 validate.validators.equals = function (value, options, key) {
   const testValue = getTestValue(options);
   if (!isEqualToTestValue(value, testValue)) {
-    return `${key} must equal ${testValue}`;
+    return `${key} must equal ${showValue(testValue)}`;
   }
 };
 /**
@@ -80,7 +81,7 @@ validate.validators.equals = function (value, options, key) {
 validate.validators.doesNotEqual = function (value, options, key) {
   const testValue = getTestValue(options);
   if (isEqualToTestValue(value, testValue)) {
-    return `${key} must not equal ${testValue}`;
+    return `${key} must not equal ${showValue(testValue)}`;
   }
 };
 
@@ -109,7 +110,7 @@ validate.validators.doesNotEqual = function (value, options, key) {
 validate.validators.includes = function (value, options, key) {
   const testValue = getTestValue(options);
   if (!includedTestValues(value, testValue).length) {
-    return `${key} must include at least one of the following values: ${dicomTagToArray(testValue).join(', ')}`;
+    return `${key} must include one of ${showValue(testValue)}`;
   }
 };
 /**
@@ -137,11 +138,9 @@ validate.validators.includes = function (value, options, key) {
 validate.validators.doesNotInclude = function (value, options, key) {
   const includedValues = includedTestValues(value, getTestValue(options));
   if (includedValues.length > 0) {
-    return `${key} must not include the following value: ${includedValues}`;
+    return `${key} must not include ${showValue(includedValues)}`;
   }
 };
-// Ignore case contains.
-// options testValue MUST be in lower case already, otherwise it won't match
 /**
  * @example
  * value = 'Attenuation Corrected'
@@ -160,7 +159,7 @@ validate.validators.doesNotInclude = function (value, options, key) {
  * */
 validate.validators.containsI = function (value, options, key) {
   if (!matchesText(value, options, true, (text, needle) => text.includes(needle))) {
-    return `${key} must contain any case of one of ${JSON.stringify(getTestValue(options))}`;
+    return `${key} must contain any case of one of ${showValue(getTestValue(options))}`;
   }
 };
 /**
@@ -181,7 +180,7 @@ validate.validators.containsI = function (value, options, key) {
  * */
 validate.validators.contains = function (value, options, key) {
   if (!matchesText(value, options, false, (text, needle) => text.includes(needle))) {
-    return `${key} must contain one of ${JSON.stringify(getTestValue(options))}`;
+    return `${key} must contain one of ${showValue(getTestValue(options))}`;
   }
 };
 
@@ -216,7 +215,7 @@ validate.validators.containsAll = function (value, options, key) {
  * */
 validate.validators.doesNotContain = function (value, options, key) {
   if (matchesText(value, options, false, (text, needle) => text.includes(needle))) {
-    return `${key} must not contain ${JSON.stringify(getTestValue(options))}`;
+    return `${key} must not contain ${showValue(getTestValue(options))}`;
   }
 };
 
@@ -238,7 +237,7 @@ validate.validators.doesNotContain = function (value, options, key) {
  * */
 validate.validators.doesNotContainI = function (value, options, key) {
   if (matchesText(value, options, true, (text, needle) => text.includes(needle))) {
-    return `${key} must not contain any case of ${JSON.stringify(getTestValue(options))}`;
+    return `${key} must not contain any case of ${showValue(getTestValue(options))}`;
   }
 };
 /**
@@ -258,7 +257,7 @@ validate.validators.doesNotContainI = function (value, options, key) {
  * */
 validate.validators.startsWith = function (value, options, key) {
   if (!matchesText(value, options, false, (text, needle) => text.startsWith(needle))) {
-    return `${key} must start with one of ${JSON.stringify(getTestValue(options))}`;
+    return `${key} must start with one of ${showValue(getTestValue(options))}`;
   }
 };
 
@@ -279,7 +278,7 @@ validate.validators.startsWith = function (value, options, key) {
  * */
 validate.validators.endsWith = function (value, options, key) {
   if (!matchesText(value, options, false, (text, needle) => text.endsWith(needle))) {
-    return `${key} must end with one of ${JSON.stringify(getTestValue(options))}`;
+    return `${key} must end with one of ${showValue(getTestValue(options))}`;
   }
 };
 /**
@@ -298,7 +297,7 @@ const createNumberValidator = (compare, relation) =>
   function (rawValue, options, key) {
     const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
     if (value === undefined) {
-      return `${key} must be a number, but was ${JSON.stringify(rawValue)}`;
+      return `${key} must be a number, but was ${showValue(rawValue)}`;
     }
     const rawTestValue = getTestValue(options);
     if (Array.isArray(rawTestValue) && rawTestValue.length > 1) {
@@ -306,7 +305,7 @@ const createNumberValidator = (compare, relation) =>
     }
     const testValue = toFinite(Array.isArray(rawTestValue) ? rawTestValue[0] : rawTestValue);
     if (testValue === undefined) {
-      return `${key} has a test value that is not a number: ${JSON.stringify(rawTestValue)}`;
+      return `${key} has a test value that is not a number: ${showValue(rawTestValue)}`;
     }
     if (!compare(value, testValue)) {
       return `${key} must be ${relation} ${testValue}, but was ${value}`;
@@ -383,7 +382,7 @@ validate.validators.range = function (rawValue, options, key) {
   // The value reads as in the number validators: the first element of an array.
   const value = toFinite(Array.isArray(rawValue) ? rawValue[0] : rawValue);
   if (value === undefined || value < min || value > max) {
-    return `${key} with value ${JSON.stringify(rawValue)} must be between ${min} and ${max}`;
+    return `${key} with value ${showValue(rawValue)} must be between ${min} and ${max}`;
   }
 };
 
@@ -412,10 +411,17 @@ const unwrap = option =>
     : option;
 const getTestValue = options => (Array.isArray(options) ? options.map(unwrap) : unwrap(options));
 /**
- * The test values of a text validator as text: `0` is `'0'`.
+ * The test values of a text validator as text: `0` is `'0'`. A `null` or
+ * `undefined` test value gives no text, so it matches nothing.
  * `@cornerstonejs/metadata` accepts a string operand only.
  */
-const toTexts = testValue => (Array.isArray(testValue) ? testValue : [testValue]).map(String);
+const toTexts = testValue =>
+  asArray(testValue)
+    .filter(text => text !== null && text !== undefined)
+    .map(String);
+/** A value for an error message: a number as is, other values as JSON. */
+const showValue = value =>
+  typeof value === 'number' ? String(value) : (JSON.stringify(value) ?? String(value));
 /**
  * True when a text of the value and a test value pass `test`, as the text
  * operators of `@cornerstonejs/metadata` do. The value reads as text: each
@@ -429,15 +435,6 @@ const matchesText = (value, options, ignoreCase, test) => {
     .map(element => toCase(String(element)));
   const needles = toTexts(getTestValue(options)).map(toCase);
   return texts.some(text => needles.some(needle => test(text, needle)));
-};
-const dicomTagToArray = value => {
-  let dicomArrayValue;
-  if (!Array.isArray(value)) {
-    dicomArrayValue = [value];
-  } else {
-    dicomArrayValue = [...value];
-  }
-  return dicomArrayValue;
 };
 /** The number of a number or a numeric string, else `undefined`. */
 const toFinite = value => {
@@ -468,10 +465,8 @@ const isEqualElement = (a, b) => {
 };
 /** The test values that the value holds, with {@link isEqualElement}. */
 const includedTestValues = (value, testValue) => {
-  const values = dicomTagToArray(value);
-  return dicomTagToArray(testValue).filter(item =>
-    values.some(element => isEqualElement(element, item))
-  );
+  const values = asArray(value);
+  return asArray(testValue).filter(item => values.some(element => isEqualElement(element, item)));
 };
 /**
  * The equality of `equals` and `doesNotEqual`. A single value is the same as an
@@ -480,8 +475,8 @@ const includedTestValues = (value, testValue) => {
  * in the same order. Use `includes` to test that a value is one of a list.
  */
 const isEqualToTestValue = (value, testValue) => {
-  const values = dicomTagToArray(value);
-  const testValues = dicomTagToArray(testValue);
+  const values = asArray(value);
+  const testValues = asArray(testValue);
   return (
     values.length === testValues.length &&
     testValues.every((item, index) => isEqualElement(item, values[index]))

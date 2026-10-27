@@ -83,6 +83,8 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   string or the first element of an array, and so does `range`. The text constraints read
   a number value as text, and hold or fail on a missing value instead of an error.
   `notNull` reads `''` and `[]` as no value. An operand `0`, `false` or `''` now runs its
-  constraint; before, the constraint always passed.
+  constraint; before, the constraint always passed. Some matches of the OHIF protocols
+  change (`@ohif/hpMammo`, the PT rule of TMTV, a text `numImageFrames`); the page lists
+  them.
 
 <DocCardList />

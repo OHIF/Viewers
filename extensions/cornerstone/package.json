@@ -54,6 +54,7 @@
     "@cornerstonejs/core": "5.12.0",
     "@cornerstonejs/labelmap-interpolation": "5.12.0",
     "@cornerstonejs/metadata": "5.12.0",
+    "@cornerstonejs/utils": "5.12.0",
     "@cornerstonejs/polymorphic-segmentation": "5.12.0",
     "@cornerstonejs/tools": "5.12.0",
     "@icr/polyseg-wasm": "0.4.0",

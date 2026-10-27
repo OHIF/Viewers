@@ -249,7 +249,7 @@ A list of criteria for the protocol along with the provided points for ranking.
 
 
   - `constraint`: the constraint that needs to be satisfied for the attribute. It accepts a `validator` which can be
-    [`equals`, `doesNotEqual`, `includes`, `doesNotInclude`, `contains`, `containsI`, `containsAll`, `doesNotContain`, `doesNotContainI`, `startsWith`, `endsWith`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `range`, `notNull`]. A number value reads as text in the text validators, and a missing value has no text: `contains` fails and `doesNotContain` holds. The operand `0`, `false` or `''` runs the validator; `null` and `undefined` skip it
+    [`equals`, `doesNotEqual`, `includes`, `doesNotInclude`, `contains`, `containsI`, `containsAll`, `doesNotContain`, `doesNotContainI`, `startsWith`, `endsWith`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `range`, `notNull`]. A number value reads as text in the text validators, and a missing value has no text: `contains` fails and `doesNotContain` holds. The operand `0`, `false` or `''` runs the validator; `null` and `undefined` skip it. See the [3.14 migration note](../../../migration-guide/3p13-to-3p14/hanging-protocol-comparisons.md) for the changes and the known differences from the split rules.
 
  | Rule | Single Value | Array Value | Example |
 |------|--------------|-------------|---------|
