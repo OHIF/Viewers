@@ -136,7 +136,9 @@ repositories and no other permission. The code of each PR, and of each CS3D bran
 names, runs in the same job. CircleCI gives project secrets only to same-repo builds, so keep
 "Pass secrets to builds from forked pull requests" off. The script sends the token only in a
 request header, and never prints it. When the API does not answer, the job prints a warning
-and uses the pinned version, so an ordinary PR does not fail for that reason.
+and uses the pinned version, so an ordinary PR does not fail for that reason. When GitHub
+rejects the token (HTTP 401), for example after the token expires, the script reads the body
+once more without the token and prints a warning to replace the token.
 
 A version line reinstalls with `--ignore-scripts`: no lockfile covers the new tree, so no
 install script of it runs. The script replaces an existing `libs/@cornerstonejs` only on

@@ -113,3 +113,15 @@ test('never puts the token in the error of a failed body request', async t => {
     }
   );
 });
+
+test('retries without the token when GitHub rejects the token', async t => {
+  t.mock.method(console, 'error', () => {});
+  const fetchMock = t.mock.method(globalThis, 'fetch', async (url, { headers }) =>
+    headers.Authorization
+      ? new Response('', { status: 401 })
+      : Response.json({ body: 'CS3D_REF: 5.1.0' })
+  );
+  const body = await fetchBody({ repo: 'OHIF/Viewers', number: '1' }, { token: 'EXPIRED' });
+  assert.equal(body, 'CS3D_REF: 5.1.0');
+  assert.equal(fetchMock.mock.callCount(), 2);
+});

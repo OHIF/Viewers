@@ -265,6 +265,10 @@ export function findPullRequest(env = process.env) {
  * Reads the PR body through the GitHub API, with up to 3 retries for a
  * transient failure (a network error, 429 or 5xx).
  *
+ * A 401 with a token means the token expired or was revoked. The request then
+ * runs once more without the token, and a warning asks for a new token, so a
+ * bad token is never worse than no token.
+ *
  * The token goes in a request header, never on a command line, and a failure
  * reports only the HTTP status: a CI log must never show the token.
  */
@@ -282,6 +286,10 @@ export async function fetchBody({ repo, number }, { token = process.env.GITHUB_T
       continue;
     }
     if (response.ok) return (await response.json()).body || '';
+    if (response.status === 401 && token) {
+      report('warning', 'GitHub rejected GITHUB_TOKEN (HTTP 401). Replace the token. Retrying without it.');
+      return fetchBody({ repo, number }, { token: '' });
+    }
     failure = `HTTP ${response.status}`;
     if (response.status !== 429 && response.status < 500) break;
   }
