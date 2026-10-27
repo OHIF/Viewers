@@ -154,7 +154,7 @@ export default function constructSR(metadata, { SeriesDescription, SeriesNumber 
     imagingMeasurements,
   });
 
-  const writerHeader = utils.getSRWriterHeader('dcmjs', 'dcmjs', process.env.DCMJS_VERSION);
+  const writerHeader = utils.getWriterHeader('dcmjs', 'dcmjs', process.env.DCMJS_VERSION);
   const dataset = new dcmjs.sr.documents.Comprehensive3DSR({
     content: measurementReport[0],
     evidence: [metadata],

@@ -40,7 +40,7 @@ export const _generateReport = (
   );
 
   const report = MeasurementReport.generateReport(filteredToolState, metaData, {
-    ...utils.getSRWriterHeader('@cornerstonejs/adapters', 'CS3D', cs3dVersion),
+    ...utils.getWriterHeader('@cornerstonejs/adapters', 'CS3D', cs3dVersion),
     ...options,
   });
 

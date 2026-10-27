@@ -1,6 +1,6 @@
 import dcmjs from 'dcmjs';
 import { classes, Types, utils } from '@ohif/core';
-import { cache, metaData } from '@cornerstonejs/core';
+import { cache, metaData, version as cs3dVersion } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
@@ -299,6 +299,7 @@ const commandsModule = ({
       const { date: creationDate, time: creationTime } = utils.getCurrentDicomDateTime();
 
       const saveOptions = {
+        ...utils.getWriterHeader('@cornerstonejs/adapters', 'CS3D', cs3dVersion),
         predecessorImageId,
         ContentDate: creationDate,
         ContentTime: creationTime,
@@ -479,6 +480,7 @@ const commandsModule = ({
       const { date: structureSetDate, time: structureSetTime } = utils.getCurrentDicomDateTime();
 
       const dataset = await generateRTSSFromRepresentation(segmentations, {
+        ...utils.getWriterHeader('@cornerstonejs/adapters', 'CS3D', cs3dVersion),
         predecessorImageId,
         StructureSetDate: structureSetDate,
         StructureSetTime: structureSetTime,

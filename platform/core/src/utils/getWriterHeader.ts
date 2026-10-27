@@ -2,18 +2,19 @@
 const LO_MAX_LENGTH = 64;
 
 /**
- * The header attributes that name OHIF as the writer of an SR.
+ * The header attributes that name OHIF as the writer of a derived object
+ * (SR, SEG or RTSTRUCT).
  *
  * `SoftwareVersions` is multi-valued: the OHIF version, then the version of
- * the library that builds the SR data.  A missing version is written as
+ * the library that builds the object data.  A missing version is written as
  * `unknown`.
  *
- * @param modelName - the library that builds the SR data, written as
+ * @param modelName - the library that builds the object data, written as
  *   `ManufacturerModelName`, e.g. `@cornerstonejs/adapters`
  * @param libraryLabel - the short library name in `SoftwareVersions`, e.g. `CS3D`
  * @param libraryVersion - the version of that library
  */
-export function getSRWriterHeader(
+export function getWriterHeader(
   modelName: string,
   libraryLabel: string,
   libraryVersion?: string
@@ -31,4 +32,4 @@ export function getSRWriterHeader(
   };
 }
 
-export default getSRWriterHeader;
+export default getWriterHeader;
