@@ -1,11 +1,12 @@
-import { metaData, version as cs3dVersion } from '@cornerstonejs/core';
-import { _generateReport } from './commandsModule';
+import { metaData } from '@cornerstonejs/core';
+import { version as adaptersVersion } from '@cornerstonejs/adapters';
+import generateReport from './generateReport';
 
 const imageId = 'wadors:/studies/1/series/2/instances/3/frames/1';
 
-jest.mock('./utils/getFilteredCornerstoneToolState', () => () => ({ [imageId]: {} }));
+jest.mock('./getFilteredCornerstoneToolState', () => () => ({ [imageId]: {} }));
 
-describe('_generateReport', () => {
+describe('generateReport', () => {
   const env = { ...process.env };
 
   beforeEach(() => {
@@ -26,17 +27,18 @@ describe('_generateReport', () => {
   });
 
   it('names OHIF and the CS3D adapters as the writer of the SR', () => {
-    const dataset = _generateReport([], []);
+    const dataset = generateReport([], []);
 
     expect(dataset).toMatchObject({
       Manufacturer: 'OHIF',
       ManufacturerModelName: '@cornerstonejs/adapters',
-      SoftwareVersions: ['OHIF 3.14.0', `CS3D ${cs3dVersion}`],
+      // An adapters release before the `version` export gives `unknown`.
+      SoftwareVersions: ['OHIF 3.14.0', `CS3D ${adaptersVersion ?? 'unknown'}`],
     });
   });
 
   it('keeps a writer value that the caller gives', () => {
-    const dataset = _generateReport([], [], { Manufacturer: 'Site viewer' });
+    const dataset = generateReport([], [], { Manufacturer: 'Site viewer' });
 
     expect(dataset.Manufacturer).toBe('Site viewer');
   });

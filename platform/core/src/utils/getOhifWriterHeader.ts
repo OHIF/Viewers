@@ -14,7 +14,7 @@ const LO_MAX_LENGTH = 64;
  * @param libraryLabel - the short library name in `SoftwareVersions`, e.g. `CS3D`
  * @param libraryVersion - the version of that library
  */
-export function getWriterHeader(
+export function getOhifWriterHeader(
   modelName: string,
   libraryLabel: string,
   libraryVersion?: string
@@ -32,4 +32,4 @@ export function getWriterHeader(
   };
 }
 
-export default getWriterHeader;
+export default getOhifWriterHeader;

@@ -1,59 +1,9 @@
-import { metaData, version as cs3dVersion } from '@cornerstonejs/core';
-
 import OHIF, { utils } from '@ohif/core';
-import { adaptersSR } from '@cornerstonejs/adapters';
 
-import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
+import generateReport from './utils/generateReport';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 
-const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
-
-interface Options {
-  SeriesDescription?: string;
-  SeriesInstanceUID?: string;
-  SeriesNumber?: number;
-  InstanceNumber?: number;
-  SeriesDate?: string;
-  SeriesTime?: string;
-  Manufacturer?: string;
-  ManufacturerModelName?: string;
-  SoftwareVersions?: string | string[];
-}
-
-/**
- * @param measurementData An array of measurements from the measurements service
- * that you wish to serialize.
- * @param additionalFindingTypes toolTypes that should be stored with labels as Findings
- * @param options Naturalized DICOM JSON headers to merge into the displaySet.
- * The writer header (`Manufacturer`, `ManufacturerModelName`, `SoftwareVersions`)
- * defaults to OHIF and the CS3D version; a value in `options` wins.
- */
-export const _generateReport = (
-  measurementData,
-  additionalFindingTypes,
-  options: Options = {}
-) => {
-  const filteredToolState = getFilteredCornerstoneToolState(
-    measurementData,
-    additionalFindingTypes
-  );
-
-  const report = MeasurementReport.generateReport(filteredToolState, metaData, {
-    ...utils.getWriterHeader('@cornerstonejs/adapters', 'CS3D', cs3dVersion),
-    ...options,
-  });
-
-  const { dataset } = report;
-
-  // Set the default character set as UTF-8
-  // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
-  if (typeof dataset.SpecificCharacterSet === 'undefined') {
-    dataset.SpecificCharacterSet = 'ISO_IR 192';
-  }
-
-  return dataset;
-};
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager, extensionManager, commandsManager } = props;
@@ -116,7 +66,7 @@ const commandsModule = (props: withAppTypes) => {
         // series takes that series' date and time, which the adapter copies
         // from the predecessor instance.
         const { date, time } = utils.getCurrentDicomDateTime();
-        const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, {
+        const naturalizedReport = generateReport(measurementData, additionalFindingTypes, {
           ...(options.predecessorImageId ? {} : { SeriesDate: date, SeriesTime: time }),
           ...options,
         });

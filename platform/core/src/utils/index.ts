@@ -47,7 +47,7 @@ import {
   getDateTimeSortKey,
 } from './latestInstanceDateTime';
 import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
-import { getWriterHeader } from './getWriterHeader';
+import { getOhifWriterHeader } from './getOhifWriterHeader';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
@@ -90,7 +90,7 @@ const utils = {
   getDateTimeSortKey,
   getCurrentDicomDateTime,
   updateNewInstanceMetadata,
-  getWriterHeader,
+  getOhifWriterHeader,
   writeScript,
   formatDate,
   formatTime,
@@ -151,7 +151,7 @@ export {
   getDateTimeSortKey,
   getCurrentDicomDateTime,
   updateNewInstanceMetadata,
-  getWriterHeader,
+  getOhifWriterHeader,
   writeScript,
   b64toBlob,
   urlUtil,
