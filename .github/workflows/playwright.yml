@@ -417,6 +417,11 @@ jobs:
         #
         # `--package` is required: its binaries are `netlify` and `ntl`, neither
         # matching the package name, so pnpm cannot pick a default.
+        #
+        # The preview goes to the ohif-dev site, next to Netlify's own
+        # deploy-preview-<N> deploys. NETLIFY_SITE_ID is the docs site, which
+        # build-docs.yml deploys to production. The CLI reads only the
+        # NETLIFY_SITE_ID name, so the preview secret is passed under it.
         run: |
           RESULT=$(pnpm dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
             echo "::error::Netlify deploy command failed"
@@ -432,7 +437,7 @@ jobs:
           echo "CS3D preview: $URL" >> "$GITHUB_STEP_SUMMARY"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PREVIEW_SITE_ID }}
           PR_NUM: ${{ github.event.pull_request.number || 'manual' }}
 
       # ── CS3D: log results ───────────────────────────────────────────────

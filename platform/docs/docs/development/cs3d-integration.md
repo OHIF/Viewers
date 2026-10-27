@@ -151,9 +151,10 @@ A branch build adds the CS3D install and build to each job. The Cypress job runs
 parallel containers, and each container builds CS3D.
 
 The Netlify `deploy-preview-<N>` build always uses the pinned CS3D version. For a PR with a
-`CS3D_REF` line, use the `cs3d-pr-<N>` preview that the Playwright workflow deploys. The
-Playwright job summary shows its link. The workflow deploys the preview also when a test
-fails.
+`CS3D_REF` line, use the `cs3d-pr-<N>` preview that the Playwright workflow deploys to the
+same Netlify site, at `cs3d-pr-<N>--ohif-dev.netlify.app`. The Playwright job summary shows
+its link. The workflow deploys the preview also when a test fails. The site comes from the
+`NETLIFY_PREVIEW_SITE_ID` repository secret. `NETLIFY_SITE_ID` is the docs site.
 
 ### Retiring a branch ref
 
