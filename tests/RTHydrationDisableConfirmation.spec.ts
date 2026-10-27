@@ -5,7 +5,6 @@ import {
   test,
   visitStudy,
   addOHIFConfiguration,
-  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -38,7 +37,6 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
   // Navigate to the 12th image. Keyboard navigation is focus-dependent (the
   // arrow presses were landing nowhere here), so jump via the app command.
   await activeViewport.sliceNavigation.toSlice(11);
-  await waitForViewportsRendered(page);
 
   await checkForViewportScreenshot({
     page,
@@ -68,7 +66,6 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
 
   // Same deterministic navigation as the first load.
   await activeViewport.sliceNavigation.toSlice(11);
-  await waitForViewportsRendered(page);
 
   await checkForViewportScreenshot({
     page,
