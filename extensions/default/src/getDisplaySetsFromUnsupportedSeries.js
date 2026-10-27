@@ -56,7 +56,7 @@ export default function getDisplaySetsFromUnsupportedSeries(instances) {
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
     instances,
-    instance: instances[instance.length - 1],
+    instance: instances[instances.length - 1],
     ...getUnsupportedFields(instances),
   });
   return [imageSet];
