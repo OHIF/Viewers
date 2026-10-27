@@ -12,6 +12,11 @@ describe('hanging protocol matches with a missing text value', () => {
     expect(result.requiredFailed).toBe(false);
   });
 
+  it('hpMammo RMLO accepts a display set with no PatientOrientation', () => {
+    const result = match({ ViewCode: 'SCT:399368009' }, RMLO.seriesMatchingRules);
+    expect(result.requiredFailed).toBe(false);
+  });
+
   it('hpMammo RMLO still rejects a CC series description', () => {
     const result = match({ ...rightMlo, SeriesDescription: 'R CC' }, RMLO.seriesMatchingRules);
     expect(result.requiredFailed).toBe(true);
@@ -28,10 +33,12 @@ describe('hanging protocol matches with a missing text value', () => {
     },
   ];
 
-  it('tmtv scores a PT with no SeriesDescription above an uncorrected PT', () => {
+  it('the copied tmtv PT rule scores a PT with no SeriesDescription above an uncorrected PT', () => {
     const missing = match({ Modality: 'PT' }, ptRules).score;
-    const uncorrected = match({ Modality: 'PT', SeriesDescription: 'PET Uncorrected' }, ptRules)
-      .score;
+    const uncorrected = match(
+      { Modality: 'PT', SeriesDescription: 'PET Uncorrected' },
+      ptRules
+    ).score;
     expect(missing).toBeGreaterThan(uncorrected);
   });
 });

@@ -33,8 +33,9 @@ Find each `greaterThan` and `lessThan` constraint in your hanging protocols. For
 decide which meaning the rule needs:
 
 - The rule needs the old meaning. Rename `greaterThan` to `greaterThanOrEqual`, and
-  `lessThan` to `lessThanOrEqual`. Keep the value. This change is exact for every value,
-  also for a value that is not an integer.
+  `lessThan` to `lessThanOrEqual`. Keep the value. This change is exact for every number
+  value, also for a value that is not an integer. For a text value, an array value or no
+  value, the result can change; see "Number values".
 - The rule needs the strict meaning. Make no change. For example,
   `numImageFrames: { greaterThan: 0 }` now fails for a display set with 0 image frames, such
   as a whole slide or ECG display set. Before 3.14, `numImageFrames: { greaterThan:
@@ -68,9 +69,11 @@ These rules change, and keep their match:
 These matches change:
 
 - The `OneOrMoreSeries` rule `numberOfDisplaySetsWithImages: { greaterThan: 0 }` now runs
-  (see "A falsy operand"). It is in the rule list `studyWithImages` of `@ohif/mnGrid`, and in
-  `@ohif/hpScale` and the test protocol `hpTestSwitch`. Before 3.14 it always passed. Now a
-  study with 0 display sets with images no longer gets its weight.
+  (see "A falsy operand"). It is in the rule list `studyWithImages` of `@ohif/mnGrid` and
+  `@ohif/mnGrid8`, and in `@ohif/hpScale` and the test protocol `hpTestSwitch`. Before 3.14 it
+  always passed. Now a study with 0 display sets with images no longer gets its weight. The
+  OHIF modes show no change: the segmentation mode lists only `@ohif/mnGrid`, and when no
+  protocol scores, the protocol engine uses the first protocol of the mode.
 - `@ohif/hpMammo` has two `required` rules with `doesNotContain`: `PatientOrientation`
   `doesNotContain: ['P', 'FL']` and `SeriesDescription` `doesNotContain: 'CC'`. Before 3.14,
   the rule failed with an error when the display set had no value for the attribute, so the
@@ -102,7 +105,7 @@ These matches change:
   can give `null` or a boolean.
 
 The test value reads in the same way: `'4'` and `['4']` are 4. A test value with no number
-fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every value.
+fails: `''`, `[]`, `null`, `'a'`. Before 3.14, `greaterThan: []` passed on every number value.
 `@cornerstonejs/metadata` accepts a finite number only, so `greaterThan: '4'` is an error
 there.
 
@@ -159,14 +162,16 @@ on a `null` or a missing attribute. Use `notNull: false` to test for no value.
 now read the value as `@cornerstonejs/metadata` does:
 
 - Each element of the value that has a value reads as text: `5` is `'5'`, and `[null,
-  'R MLO']` is `['R MLO']`. Before 3.14, a number value failed `startsWith` with "must be a
-  string", and passed `contains` (a number has no `indexOf`).
+  'R MLO']` is `['R MLO']`. Before 3.14, a number value failed `startsWith` with "Value must
+  be a string or an array", and passed `contains` (a number has no `indexOf`).
 - A value with no value gives no text. So `contains`, `startsWith` and `endsWith` fail, and
   `doesNotContain` and `doesNotContainI` hold. Before 3.14, all of these failed with an
   error on a missing value.
-- An object reads as the text `'[object Object]'`. So a text validator on a person name
-  object (`PatientName` as `{ Alphabetic }`) now fails `contains`. Before 3.14, it passed
-  `contains`. Read a text field, for example a custom attribute that gives the name as text.
+- An object reads as the text `'[object Object]'`. So on a person name object
+  (`PatientName` as `{ Alphabetic }`), `contains` and `containsI` now fail, and
+  `doesNotContain` and `doesNotContainI` now hold. Before 3.14, an object has no `indexOf`,
+  so `contains` and `containsI` passed, and `doesNotContain` and `doesNotContainI` failed.
+  Read a text field, for example a custom attribute that gives the name as text.
 - The test value reads as text too (see "A falsy operand"). A `null` or `undefined` test
   value gives no text. `@cornerstonejs/metadata` accepts a string operand only, so
   `startsWith: 0` is an error there.

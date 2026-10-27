@@ -85,7 +85,7 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `notNull` reads `''` and `[]` as no value. An operand `0`, `false` or `''` now runs its
   constraint; before, the constraint always passed. Some matches of the OHIF protocols
   change (`@ohif/hpMammo`, the PT rule of TMTV and of the dynamic volume protocol, a text
-  `numImageFrames`, and the `OneOrMoreSeries` weight of `@ohif/mnGrid` and
-  `@ohif/hpScale`); the page lists them.
+  `numImageFrames`, and the `OneOrMoreSeries` weight of `@ohif/mnGrid`,
+  `@ohif/mnGrid8` and `@ohif/hpScale`); the page lists them.
 
 <DocCardList />

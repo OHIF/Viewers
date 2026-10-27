@@ -70,8 +70,8 @@ validate.validators.equals = function (value, options, key) {
  *           = ['abc', 'def'] (Valid)
  *
  * value = 'Attenuation Corrected'
- *       = 'Attenuation Corrected' (Fail)
- *       = 'Attenuation' (Valid)
+ * testValue = 'Attenuation Corrected' (Fail)
+ *           = 'Attenuation' (Valid)
  *
  * value = ['Attenuation Corrected']
  * testValue = ['Attenuation Corrected'] (Fail)
@@ -362,8 +362,6 @@ validate.validators.lessThanOrEqual = createNumberValidator(
 );
 /**
  * @example
-
- *
  * value = 50
  * testValue = [10,60] (Valid)
  *           = [60, 10] (Valid)

@@ -45,6 +45,12 @@ describe('HPMatcher', () => {
     }
   });
 
+  it('reads an { attribute } operand that resolves to nothing as missing', () => {
+    expect(passes({}, { equals: { attribute: 'm' } })).toBe(true);
+    expect(passes({}, { doesNotEqual: { attribute: 'm' } })).toBe(false);
+    expect(passes({ n: '' }, { equals: { attribute: 'm' } })).toBe(false);
+  });
+
   it('runs an { attribute } operand that resolves to 0', () => {
     expect(passes({ n: 0, m: 0 }, { equals: { attribute: 'm' } })).toBe(true);
     expect(passes({ n: 1, m: 0 }, { equals: { attribute: 'm' } })).toBe(false);

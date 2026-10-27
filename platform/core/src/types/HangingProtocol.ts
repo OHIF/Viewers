@@ -90,8 +90,14 @@ export type ConstraintValue =
   | []
   | string[]
   | number[]
+  | null
   | {
-      value: string | number | boolean | [] | string[] | number[];
+      value: string | number | boolean | null | [] | string[] | number[];
+    }
+  | {
+      // Reads the operand from another attribute, of the instance by default.
+      attribute: string;
+      from?: string;
     };
 
 /** The validators of `HangingProtocolService/lib/validator.js`. */
