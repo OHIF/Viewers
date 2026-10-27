@@ -107,8 +107,11 @@ case "$kind" in
     fi
     echo "[cs3d-apply-ref] Cloning cornerstonejs/cornerstone3D branch $ref"
     git clone --depth 1 --branch "$ref" https://github.com/cornerstonejs/cornerstone3D.git "$target"
-    (cd "$target" && pnpm install --frozen-lockfile && pnpm run build:esm)
-    node "$target/scripts/link-ohif-cornerstone-node-modules.mjs" "$ROOT"
+    # The install, build and link run code of the CS3D branch, which needs no
+    # GITHUB_TOKEN. Its packages/docs/preinstall.js would print the token and
+    # write it into the global git config.
+    (cd "$target" && unset GITHUB_TOKEN && pnpm install --frozen-lockfile && pnpm run build:esm)
+    env -u GITHUB_TOKEN node "$target/scripts/link-ohif-cornerstone-node-modules.mjs" "$ROOT"
     output "changed=true"
     echo "[cs3d-apply-ref] Linked CS3D branch $ref ($(git -C "$target" rev-parse --short HEAD)) into node_modules"
     ;;
