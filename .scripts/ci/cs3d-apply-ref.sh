@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 #
-# Apply a CS3D ref to this checkout. The Playwright workflow, the CircleCI
-# unit test, package build and Cypress jobs, and the Netlify deploy preview
-# all use this one script.
+# Apply a CS3D ref to this checkout. The Playwright workflow and the CircleCI
+# unit test, package build and Cypress jobs all use this one script.
 #
 # Run it from the repository root, AFTER the ordinary `pnpm install`:
 #   - kind none: nothing changes.
@@ -18,13 +17,9 @@
 #       runner acts only on the ref that the gate checked and, for a fork, that
 #       a reviewer approved. This mode never reads the pull request.
 #   bash .scripts/ci/cs3d-apply-ref.sh [--body-file <file>]
-#       CircleCI and the Netlify deploy preview: read the `CS3D_REF:` line of
-#       the pull request with .scripts/cs3d-read-ref.mjs. Under GitHub Actions
-#       this mode would find no pull request and apply nothing, so the script
-#       refuses it there.
-#   bash .scripts/ci/cs3d-apply-ref.sh --after-build
-#       Netlify, after the build: delete what this script changed, so that the
-#       build cache never gives a linked or re-pinned CS3D to a later build.
+#       CircleCI: read the `CS3D_REF:` line of the pull request with
+#       .scripts/cs3d-read-ref.mjs. Under GitHub Actions this mode would find no
+#       pull request and apply nothing, so the script refuses it there.
 #
 # Under GitHub Actions, the script writes `version` (the resolved version) and
 # `changed` (true when CS3D differs from the pin) to GITHUB_OUTPUT.
@@ -33,38 +28,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 ROOT="$PWD"
-MARKER="node_modules/.cs3d-ref-applied"
-
-# A build on Netlify's servers. A local `netlify build` sets NETLIFY_LOCAL and
-# has no BUILD_ID, so it never counts.
-on_netlify() {
-  [ "${NETLIFY:-}" = "true" ] && [ -n "${BUILD_ID:-}" ] && [ -z "${NETLIFY_LOCAL:-}" ]
-}
-
-if [ "${1:-}" = "--after-build" ]; then
-  if on_netlify && [ -e "$MARKER" ]; then
-    echo "[cs3d-apply-ref] Deleting node_modules and libs/@cornerstonejs, so that the build cache does not keep the CS3D of this PR."
-    rm -rf node_modules libs/@cornerstonejs
-    # A version ref rewrote the pins; the build is done, so a failure here
-    # must not fail it.
-    git checkout -- . || echo "[cs3d-apply-ref] Could not restore the tracked files." >&2
-  fi
-  exit 0
-fi
-
-# Netlify keeps ignored files and node_modules between builds. Start every
-# Netlify build from the pinned CS3D, whatever an earlier build left.
-if on_netlify; then
-  if [ -e libs/@cornerstonejs ]; then
-    echo "[cs3d-apply-ref] Deleting libs/@cornerstonejs that an earlier Netlify build left."
-    rm -rf libs/@cornerstonejs
-  fi
-  if [ -L node_modules/@cornerstonejs/core ] || [ -e "$MARKER" ]; then
-    echo "[cs3d-apply-ref] The build cache holds the CS3D of an earlier PR: reinstalling."
-    rm -rf node_modules
-    pnpm install --frozen-lockfile
-  fi
-fi
 
 kind=""
 ref=""
@@ -94,7 +57,7 @@ else
   history="${fields[2]:-}"
   defer="${fields[3]:-}"
   if [ -z "$kind" ]; then
-    echo "[cs3d-apply-ref] cs3d-read-ref.mjs gave no CS3D ref; see the message above." >&2
+    echo "[cs3d-apply-ref] cs3d-read-ref.mjs rejected the CS3D_REF line; see the message above." >&2
     exit 1
   fi
 fi
@@ -123,7 +86,6 @@ case "$kind" in
       # No lockfile covers the new tree, so no install script of it may run.
       # The ordinary install before this script already ran the OHIF scripts.
       pnpm install --no-frozen-lockfile --ignore-scripts
-      touch "$MARKER"
       output "changed=true"
     else
       output "changed=false"
@@ -137,7 +99,7 @@ case "$kind" in
       # A developer machine keeps its own CS3D checkout here. Only a CI
       # checkout, which is disposable, may be replaced. CI=true is not
       # enough: some developers set it in their shell.
-      if [ "${CIRCLECI:-}" != "true" ] && [ "${GITHUB_ACTIONS:-}" != "true" ] && ! on_netlify; then
+      if [ "${CIRCLECI:-}" != "true" ] && [ "${GITHUB_ACTIONS:-}" != "true" ]; then
         echo "[cs3d-apply-ref] $target already exists, and this is not CI. Link your own checkout with 'pnpm cs3d:link'." >&2
         exit 1
       fi
@@ -150,7 +112,6 @@ case "$kind" in
     # write it into the global git config.
     (cd "$target" && unset GITHUB_TOKEN && pnpm install --frozen-lockfile && pnpm run build:esm)
     env -u GITHUB_TOKEN node "$target/scripts/link-ohif-cornerstone-node-modules.mjs" "$ROOT"
-    touch "$MARKER"
     output "changed=true"
     echo "[cs3d-apply-ref] Linked CS3D branch $ref ($(git -C "$target" rev-parse --short HEAD)) into node_modules"
     ;;
