@@ -10,7 +10,7 @@ summary: A per-viewport indicator and detail view telling the user when the disp
 **Prefix:** `VF` (viewport fidelity) — *proposed, not yet reserved in the specification register.*
 **Source:** OHIF / FU Berlin Set-Aside — Final Acceptance Criteria, task **T6** (Aim 2.3, required).
 **Depends on:** **T3** viewport fidelity state (Cornerstone3D), **T4** GPU class taxonomy, **T9** capability-bound level binding, **T15** automatic level-selection policy, **T14** interactive fidelity degradation.
-**Design owner:** @dan-rukas — visual and UX design (§5.4), plus review of and edits to user-facing wording.
+**Design owner:** @dan-rukas — visual and UX design (§5.4), plus review of and edits to user-facing wording. The design notes are in [OHIF/Viewers#6255](https://github.com/OHIF/Viewers/issues/6255).
 **Implementation owner:** @mbellehumeur — OHIF implementation (§5.1–§5.3) and the Cornerstone3D work (§5.5).
 **Status:** Draft. §4 under review; §5 is the recommended approach and is expected to change.
 **Affects:** `@ohif/extension-cornerstone`, `@ohif/extension-default`, `@cornerstonejs/core` (T3).
@@ -541,6 +541,7 @@ overlay item props.
 ### 5.4 Suggested visual design — `VF-UX`
 
 > Requester's suggestion, and @dan-rukas's to revise. Subordinate to §4 throughout.
+> The design of @dan-rukas is in [OHIF/Viewers#6255](https://github.com/OHIF/Viewers/issues/6255).
 
 An icon inside the demographics overlay region, registered per §5.3 so that a deployment can
 move it by configuration.
