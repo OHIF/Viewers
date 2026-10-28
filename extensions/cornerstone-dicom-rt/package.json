@@ -28,6 +28,7 @@
     "start": "pnpm run dev"
   },
   "peerDependencies": {
+    "@dcmjs-org/dcmjs": "1.0.0-beta.5",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
     "@ohif/extension-default": "workspace:*",

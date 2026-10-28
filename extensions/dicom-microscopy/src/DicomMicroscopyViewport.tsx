@@ -4,7 +4,7 @@ import { cleanDenaturalizedDataset } from '@ohif/extension-default';
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 import { useSystem } from '@ohif/core';
 
 // This component is wrapped with React.memo and uses a custom areEqual comparison

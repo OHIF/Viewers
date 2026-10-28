@@ -1,4 +1,4 @@
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 const { DicomMessage, DicomMetaDictionary } = dcmjs.data;
 const dicomlab2RGB = dcmjs.data.Colors.dicomlab2RGB;
 
