@@ -60,6 +60,35 @@ The branch must live in the `cornerstonejs/cornerstone3D` repository. The old
 and run that account's install scripts on the shared self-hosted runner.
 :::
 
+### Integrated build of a CS3D pull request from a fork
+
+A `CS3D_REF` line cannot name a branch of a fork. The scripts reject the `<owner>:<branch>`
+form and a URL, and they clone from `cornerstonejs/cornerstone3D` only. To test a CS3D pull
+request from a fork with OHIF, a CS3D maintainer pushes a copy of the fork branch to
+`cornerstonejs/cornerstone3D`. The OHIF PR names that copy.
+
+For example, cornerstonejs/cornerstone3D#2992 comes from the branch
+`feat/viewport-fidelity-state` of the fork `mbellehumeur/cornerstone3D`. That branch
+contains cornerstonejs/cornerstone3D#2931, which has its branch in
+`cornerstonejs/cornerstone3D`. OHIF/Viewers#6295 tests both CS3D pull requests in one build:
+
+1. Merge `main` into the CS3D base branch, `feat/multires-voxel-manager-base`, and push it.
+2. Merge the base branch into the fork branch. Push the merge to the fork, if the pull
+   request permits edits from maintainers.
+3. Push the same commit to `cornerstonejs/cornerstone3D`, with the same branch name:
+
+   ```bash
+   git push origin HEAD:refs/heads/feat/viewport-fidelity-state
+   ```
+
+4. Put the line `CS3D_REF: feat/viewport-fidelity-state` in the body of the OHIF PR.
+5. Push a commit to the OHIF PR, so that Netlify builds the deploy preview again.
+
+A new commit on the fork does not change the integrated build. A maintainer must push the
+same commit to the copy. Thus a maintainer decides which fork code runs in CI, and the copy
+shows the exact commit that CI tested. After CS3D releases the change, retire the line as
+[Retiring a branch ref](#retiring-a-branch-ref) describes, and delete the copy branch.
+
 ### Triggering via workflow_dispatch
 
 Use **Actions > Playwright Tests > Run workflow** and set the `cs3d_ref` input. The input
@@ -174,7 +203,9 @@ What a PR author and a reviewer can expect from `deploy-preview-<N>`:
 - Netlify builds a preview when you push, not when you edit the PR body. Push a commit after
   you add or change the line.
 - A fork PR can name any branch of `cornerstonejs/cornerstone3D`, and its deploy preview builds
-  it without approval. Netlify runs the code of a fork PR in any case.
+  it without approval. Netlify runs the code of a fork PR in any case. No PR can name a branch
+  of a CS3D fork; see
+  [Integrated build of a CS3D pull request from a fork](#integrated-build-of-a-cs3d-pull-request-from-a-fork).
 
 The build reads the PR body through the GitHub API. Without a token, the GitHub API allows a
 small number of requests per hour from each address, and Netlify's build servers share their

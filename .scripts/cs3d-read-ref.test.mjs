@@ -34,6 +34,10 @@ const BODIES = {
   'leading dash': ['CS3D_REF: -rf\n', REJECT],
   'double dot': ['CS3D_REF: a..b\n', REJECT],
   'owner form': ['CS3D_REF: someone:branch\n', REJECT],
+  'fork URL': [
+    'CS3D_REF: https://github.com/mbellehumeur/cornerstone3D/tree/feat/viewport-fidelity-state\n',
+    REJECT,
+  ],
   'trailing slash': ['CS3D_REF: feat/\n', REJECT],
   'dot component': ['CS3D_REF: feat/.hidden\n', REJECT],
   'lock suffix': ['CS3D_REF: feat.lock\n', REJECT],
