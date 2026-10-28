@@ -41,6 +41,7 @@
     "@cornerstonejs/adapters": "5.12.0",
     "@cornerstonejs/core": "5.12.0",
     "@cornerstonejs/tools": "5.12.0",
+    "@cornerstonejs/utils": "5.12.0",
     "classnames": "2.5.1"
   },
   "devDependencies": {

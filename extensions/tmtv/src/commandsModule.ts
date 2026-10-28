@@ -1,6 +1,7 @@
 import OHIF from '@ohif/core';
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
+import { asArray } from '@cornerstonejs/utils';
 import { classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import getThresholdValues from './utils/getThresholdValue';
@@ -91,20 +92,18 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
+      // After an edit in the SUV panel, the sequence is a plain object (no [0])
+      const radiopharmaceuticalInfo = asArray(instance.RadiopharmaceuticalInformationSequence)[0];
       const metadata = {
         SeriesTime: instance.SeriesTime,
         Modality: instance.Modality,
         PatientSex: instance.PatientSex,
         PatientWeight: instance.PatientWeight,
         RadiopharmaceuticalInformationSequence: {
-          RadionuclideTotalDose:
-            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
-          RadionuclideHalfLife:
-            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
-          RadiopharmaceuticalStartTime:
-            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
-          RadiopharmaceuticalStartDateTime:
-            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
+          RadionuclideTotalDose: radiopharmaceuticalInfo.RadionuclideTotalDose,
+          RadionuclideHalfLife: radiopharmaceuticalInfo.RadionuclideHalfLife,
+          RadiopharmaceuticalStartTime: radiopharmaceuticalInfo.RadiopharmaceuticalStartTime,
+          RadiopharmaceuticalStartDateTime: radiopharmaceuticalInfo.RadiopharmaceuticalStartDateTime,
         },
       };
 

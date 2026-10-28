@@ -9,6 +9,7 @@ import {
 import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { asArray } from '@cornerstonejs/utils';
 
 import addSRAnnotation from './utils/addSRAnnotation';
 import isRehydratable from './utils/isRehydratable';
@@ -365,7 +366,8 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     const { ReferencedSOPInstanceUID } = referencedSOPSequence;
-    const frame = referencedSOPSequence.ReferencedFrameNumber || 1;
+    // dcmjs 1.0 keeps a one-value IS 1-n as a list
+    const frame = Number(asArray(referencedSOPSequence.ReferencedFrameNumber)[0]) || 1;
     const key = `${ReferencedSOPInstanceUID}:${frame}`;
     const imageId = imageIdMap.get(key);
 
@@ -450,7 +452,7 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
  * @returns {any[]} The array of measurements.
  */
 function _getMeasurements(ImagingMeasurementReportContentSequence) {
-  const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
+  const ImagingMeasurements = _getSequenceAsArray(ImagingMeasurementReportContentSequence).find(
     item =>
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements
   );
@@ -788,7 +790,7 @@ function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredVal
  * @returns {any[]} The list of referenced images.
  */
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
-  const ImageLibrary = ImagingMeasurementReportContentSequence.find(
+  const ImageLibrary = _getSequenceAsArray(ImagingMeasurementReportContentSequence).find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
   );
 

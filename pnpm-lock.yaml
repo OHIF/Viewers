@@ -546,6 +546,9 @@ importers:
       '@babel/runtime':
         specifier: 7.29.7
         version: 7.29.7
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
       '@dcmjs-org/dcmjs':
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
@@ -644,6 +647,9 @@ importers:
       '@cornerstonejs/tools':
         specifier: 5.12.0
         version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
       '@dcmjs-org/dcmjs':
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
@@ -859,6 +865,9 @@ importers:
       '@babel/runtime':
         specifier: 7.29.7
         version: 7.29.7
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
       '@dcmjs-org/dcmjs':
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
@@ -964,6 +973,9 @@ importers:
       '@babel/runtime':
         specifier: 7.29.7
         version: 7.29.7
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
       '@dcmjs-org/dcmjs':
         specifier: 1.0.0-beta.5
         version: 1.0.0-beta.5
