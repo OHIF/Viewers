@@ -164,8 +164,8 @@ jobs:
           # A `CS3D_REF:` line in the PR body is the request; on a manual run the
           # workflow input is. Both are optional and absence means the same
           # thing: run the ordinary suite against the CS3D version this repo
-          # already pins, with no clone, no version rewrite and no preview
-          # deploy. There is deliberately no default ref — one would go stale
+          # already pins, with no clone and no version rewrite. There is
+          # deliberately no default ref — one would go stale
           # against the pinned version and silently downgrade it.
           #
           # The body is read live from the API rather than from the event
@@ -247,8 +247,8 @@ jobs:
           # apart needs the version the repo pins, and this job has no checkout
           # of the PR by design — so the conservative answer is the only one available
           # here. A spent line still costs a fork PR one approval per run; the
-          # steps on the box do recognise it, and skip the preview build and the
-          # deploy. Delete the line to stop the approval prompt.
+          # steps on the box do recognise it, and change nothing. Delete the
+          # line to stop the approval prompt.
           if [ "$EVENT_NAME" = "pull_request" ] && [ "$IS_SAME_REPO" != "true" ]; then
             echo "::notice::This fork PR requests a CS3D integration run, so it needs approval from a reviewer on the cs3d-integration environment before it reaches the self-hosted runner."
             echo "approval=true" >> "$GITHUB_OUTPUT"
@@ -379,7 +379,7 @@ jobs:
           path: coverage
           retention-days: 3
 
-      # ── CS3D: build and deploy preview to Netlify ───────────────────────
+      # ── CS3D: log build context ─────────────────────────────────────────
       - name: Log build context (OHIF/CS3D branch and version for build diagnosis)
         if: needs.gate.outputs.integration == 'true'
         run: |
@@ -395,54 +395,6 @@ jobs:
           CS3D_REF_TYPE: ${{ needs.gate.outputs.cs3d_kind }}
           CS3D_REF: ${{ needs.gate.outputs.cs3d_ref }}
           CS3D_VERSION: ${{ steps.cs3d.outputs.version }}
-
-      # The preview build and deploy exist to show a tree that differs from an
-      # ordinary run. A branch run always differs. A version run differs only
-      # when the manifests were actually rewritten — which a retired
-      # `<branch> now <version>` clause stops doing once the repo pins that
-      # version or something newer. Without this condition a spent line keeps
-      # building and deploying a preview identical to the ordinary suite on
-      # every re-run, for as long as the line stays in the body as history.
-      # `!cancelled()`: a PR with a failing test still gets a preview.
-      - name: Build OHIF viewer (CS3D preview)
-        if: ${{ !cancelled() && steps.cs3d.outputs.changed == 'true' }}
-        run: pnpm run build:ci
-
-      - name: Deploy CS3D preview to Netlify
-        if: ${{ !cancelled() && steps.cs3d.outputs.changed == 'true' }}
-        # The version is pinned here rather than in package.json. This ran
-        # `npx netlify-cli`, which fetched whatever the registry served at that
-        # moment and ran it on the self-hosted box with NETLIFY_AUTH_TOKEN in
-        # its environment.
-        #
-        # `--package` is required: its binaries are `netlify` and `ntl`, neither
-        # matching the package name, so pnpm cannot pick a default.
-        #
-        # The preview goes to the ohif-dev site, next to Netlify's own
-        # deploy-preview-<N> deploys. NETLIFY_SITE_ID is the docs site, which
-        # build-docs.yml deploys to production. The CLI reads only the
-        # NETLIFY_SITE_ID name, so the preview secret is passed under it.
-        #
-        # `--no-build`: the step above already built dist. Without it, the CLI
-        # runs the netlify.toml build command, and cs3d-apply-ref.sh refuses to
-        # run with no arguments under GitHub Actions.
-        run: |
-          RESULT=$(pnpm dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app --no-build) || {
-            echo "::error::Netlify deploy command failed"
-            exit 1
-          }
-          URL=$(echo "$RESULT" | jq -r '.deploy_url')
-          if [[ -z "$URL" || "$URL" == "null" ]]; then
-            echo "::error::Netlify deploy did not return a valid URL"
-            echo "$RESULT"
-            exit 1
-          fi
-          echo "::notice::CS3D preview deployed: $URL"
-          echo "CS3D preview: $URL" >> "$GITHUB_STEP_SUMMARY"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PREVIEW_SITE_ID }}
-          PR_NUM: ${{ github.event.pull_request.number || 'manual' }}
 
       # ── CS3D: log results ───────────────────────────────────────────────
       - name: Log CS3D build used
