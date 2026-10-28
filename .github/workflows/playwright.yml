@@ -422,8 +422,12 @@ jobs:
         # deploy-preview-<N> deploys. NETLIFY_SITE_ID is the docs site, which
         # build-docs.yml deploys to production. The CLI reads only the
         # NETLIFY_SITE_ID name, so the preview secret is passed under it.
+        #
+        # `--no-build`: the step above already built dist. Without it, the CLI
+        # runs the netlify.toml build command, and cs3d-apply-ref.sh refuses to
+        # run with no arguments under GitHub Actions.
         run: |
-          RESULT=$(pnpm dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
+          RESULT=$(pnpm dlx --package=netlify-cli@27.5.2 netlify deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app --no-build) || {
             echo "::error::Netlify deploy command failed"
             exit 1
           }
