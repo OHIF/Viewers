@@ -27,7 +27,7 @@ const contentItemFormatters = {
   },
   PNAME: contentItem => {
     // dcmjs 1.0 gives a VM 1 name as one object; 0.x gave a list
-    const personName = contentItem.PersonName && asArray(contentItem.PersonName)[0];
+    const personName = asArray(contentItem.PersonName ?? [])[0];
     return personName ? utils.formatPN(personName) : undefined;
   },
   DATE: contentItem => {

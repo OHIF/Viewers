@@ -92,7 +92,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      // After an edit in the SUV panel, the sequence is a plain object (no [0])
+      // One item object, or a plain object (no [0]) after an SUV panel edit
       const radiopharmaceuticalInfo = asArray(instance.RadiopharmaceuticalInformationSequence)[0];
       const metadata = {
         SeriesTime: instance.SeriesTime,

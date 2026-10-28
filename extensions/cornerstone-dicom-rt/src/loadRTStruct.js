@@ -302,7 +302,7 @@ function _setROIContourMetadata(
   ROIContour,
   contourPoints
 ) {
-  const StructureSetROI = asArray(StructureSetROISequence).find(
+  const StructureSetROI = asArray(StructureSetROISequence ?? []).find(
     structureSetROI => structureSetROI.ROINumber === ROIContour.ReferencedROINumber
   );
 
@@ -361,7 +361,7 @@ function _setROIContourDataColor(ROIContour, ROIContourData) {
  * @param {number} ROINumber - ROI number to match observations
  */
 function _setROIContourRTROIObservations(ROIContourData, RTROIObservationsSequence, ROINumber) {
-  const RTROIObservations = asArray(RTROIObservationsSequence).find(
+  const RTROIObservations = asArray(RTROIObservationsSequence ?? []).find(
     RTROIObservations => RTROIObservations.ReferencedROINumber === ROINumber
   );
 

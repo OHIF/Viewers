@@ -79,8 +79,8 @@ overrides:
   'netlify-cli>commander': 12.1.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
-  # Only @cornerstonejs/adapters still depends on dcmjs; OHIF itself imports
-  # @dcmjs-org/dcmjs. Remove this pin when the adapters move to @dcmjs-org/dcmjs.
+  # @cornerstonejs/adapters, metadata, utils and ai 5.12.0 still depend on dcmjs;
+  # OHIF itself imports @dcmjs-org/dcmjs. Remove this pin when they move to it.
   dcmjs: 0.52.0
   path-to-regexp: 0.1.13
   nth-check: 2.1.1
