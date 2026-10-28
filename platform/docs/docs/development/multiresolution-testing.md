@@ -200,6 +200,35 @@ The `?debug=true` stats overlay does not show the reduction. Its `QUALITY` row r
 `volume.getVoxelQuality()` with no selector. That record describes the full-resolution
 data, and not the grid that the viewport draws.
 
+### The new viewports
+
+Add `&useNextViewports=true` to a URL to draw through the generic viewports of
+Cornerstone3D. With the Cornerstone3D branch `feat/acquisition-plane-original-frames`
+([cornerstonejs/cornerstone3D#3018](https://github.com/cornerstonejs/cornerstone3D/pull/3018)),
+the acquisition plane draws the original frames when the GPU class reduces the volume.
+The legacy viewports draw the acquisition plane from the reduced texture. Thus an axial
+view of the 2464-image CT under `gpu/medium` shows the average of two acquired slices on
+the legacy viewports, and one acquired slice on the new viewports.
+
+An example URL on the deploy preview of OHIF/Viewers#6295:
+
+```
+https://deploy-preview-6295--ohif-dev.netlify.app/viewer?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.99.1071.24993177073256607564948872275593&hangingProtocolId=mpr&customization=gpu/medium&useNextViewports=true
+```
+
+| View | Legacy viewports | New viewports |
+| ---- | ---------------- | ------------- |
+| Axial, the acquisition plane | The reduced texture. Lossy. | The original frames. Lossless. |
+| Sagittal and coronal | The reduced texture | The reduced texture, the same as legacy |
+| Axial with a slab or the MIP blend mode | The reduced texture | The reduced texture |
+
+On the new viewports, check these items:
+
+- A rotation from axial to sagittal and back keeps the slice, the pan and the zoom.
+- The crosshairs and the sync of the views still work.
+- A SEG stays aligned in each view. A labelmap volume in a sagittal or coronal viewport
+  can make the axial view go back to the reduced texture.
+
 ## What this branch does not do
 
 **The resolution of a viewport does not change while a volume loads.** The device sets
