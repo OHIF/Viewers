@@ -119,7 +119,6 @@ name the exact release. A branch whose name merely starts with a digit, such as
 - Updates all `@cornerstonejs/*` versions in workspace package.json files
 - Re-installs to fetch the specified versions from npm
 - Runs all tests
-- Builds and deploys a Netlify preview
 - The tested version is read back from `node_modules` and logged in workflow annotations
 
 **Branch path** (e.g., `main`, `feat/foo`):
@@ -127,7 +126,6 @@ name the exact release. A branch whose name merely starts with a digit, such as
 - Builds CS3D from source (`pnpm run build:esm`)
 - Links built packages into OHIF's `node_modules`
 - Runs all tests
-- Builds and deploys a Netlify preview
 - The **CS3D Branch Merge Guard** job reports a red result, because merging would leave
   `master` depending on unreleased CS3D code. The guard is advisory — it reports, it does
   not block the merge button.
@@ -198,8 +196,9 @@ What a PR author and a reviewer can expect from `deploy-preview-<N>`:
   installs and builds CS3D; keep the total under the build time limit of the Netlify site.
 - A rejected line, for example `CS3D_REF: 5.10`, fails the deploy preview.
 - When the build cannot read the PR body (for example because of the GitHub rate limit), the
-  deploy preview fails with a message. It does not quietly use the pinned CS3D. Push a commit,
-  or retry the deploy later.
+  deploy preview uses the pinned CS3D, and the deploy log shows a warning. A PR with no line
+  does not fail for that reason. A PR that needs an unreleased CS3D API still fails on its
+  build errors, and the warning tells why. Retry the deploy later.
 - Netlify builds a preview when you push, not when you edit the PR body. Push a commit after
   you add or change the line.
 - A fork PR can name any branch of `cornerstonejs/cornerstone3D`, and its deploy preview builds
@@ -209,23 +208,22 @@ What a PR author and a reviewer can expect from `deploy-preview-<N>`:
 
 The build reads the PR body through the GitHub API. Without a token, the GitHub API allows a
 small number of requests per hour from each address, and Netlify's build servers share their
-addresses. To avoid the limit for same-repo PRs, add `GITHUB_TOKEN` to the environment of the
-Netlify site: a fine-grained token with read-only access to public repositories and no other
-permission. Mark it as a secret value, and set the site's policy for sensitive variables in
-untrusted deploys to "deploy without sensitive variables". A fork PR runs its own
-`netlify.toml`, so a fork build must not get the token. A fork build then has no token, and
-can still hit the rate limit.
+addresses. To avoid the limit, add `GITHUB_TOKEN` to the environment of the Netlify site: a
+fine-grained token with read-only access to public repositories and no other permission. Mark
+it as a secret value, and set the site's policy for sensitive variables in untrusted deploys to
+"deploy without sensitive variables".
+
+That policy withholds the token only from an untrusted deploy. Netlify trusts a fork PR when
+its author is a member of the Netlify team, and that build gets the token. A fork PR runs its
+own `netlify.toml`, so that build can read the token. This risk is acceptable, because the
+token is read-only and has access to public repositories only. A fork PR from another author
+gets no token, and can still hit the rate limit.
 
 Netlify keeps ignored files and `node_modules` between builds. So each Netlify build first
 removes a `libs/@cornerstonejs`, and reinstalls when `node_modules` still holds a CS3D that
 an earlier build linked or re-pinned. After a successful build that changed CS3D,
 `--after-build` deletes `node_modules` and `libs/@cornerstonejs`, and restores the pinned
 versions, so that the build cache does not keep the CS3D of the PR.
-
-The Playwright workflow deploys a second preview with the same CS3D build, at
-`cs3d-pr-<N>--ohif-dev.netlify.app`. The Playwright job summary shows its link. The workflow
-deploys that preview also when a test fails. The site comes from the `NETLIFY_PREVIEW_SITE_ID`
-repository secret. `NETLIFY_SITE_ID` is the docs site.
 
 ### Retiring a branch ref
 
@@ -242,7 +240,7 @@ drag the pin backwards. A line still saying `now 5.10.6` in a repo that has move
 
 That is what lets the line stay in place as history: the branch name remains visible as the
 reason the pinned version moved, and once the repo pins that version or something newer the
-line stops changing the run — no rewrite, no reinstall, and no preview deploy. The merge
+line stops changing the run — no rewrite and no reinstall. The merge
 guard also passes, because what the PR depends on is a published release.
 
 The version after `now` must be one concrete release, such as `5.10.6` or `5.11.0-beta.1`.

@@ -343,18 +343,12 @@ async function main() {
     try {
       body = await fetchBody(pr);
     } catch (error) {
-      // A deploy preview is what a reviewer opens, so it must not quietly show
-      // the pinned CS3D when the PR asked for another one.
-      if (isNetlifyDeployPreview()) {
-        report(
-          'error',
-          `Could not read the body of ${pr.repo}#${pr.number} (${error.message}), so this deploy preview cannot tell which CS3D to build. Push a commit or retry the deploy later.`
-        );
-        process.exit(1);
-      }
+      // A fork PR's deploy preview never gets the token, and Netlify's build
+      // servers share their addresses, so the rate limit can hit any build.
+      // Fall back to the pin rather than fail a PR with no CS3D_REF line.
       report(
         'warning',
-        `Could not read the body of ${pr.repo}#${pr.number} (${error.message}), so this job uses the pinned CS3D version. Set a read-only GITHUB_TOKEN to avoid the GitHub API rate limit.`
+        `Could not read the body of ${pr.repo}#${pr.number} (${error.message}), so this build uses the pinned CS3D version and ignores any CS3D_REF line. A PR that needs an unreleased CS3D change fails to build for that reason; retry the build later. Set a read-only GITHUB_TOKEN to avoid the GitHub API rate limit.`
       );
       return out('none');
     }
