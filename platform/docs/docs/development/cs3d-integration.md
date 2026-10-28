@@ -105,13 +105,15 @@ name the exact release. A branch whose name merely starts with a digit, such as
 
 ### CircleCI, and the deploy previews
 
-The same `CS3D_REF` line also applies to these CircleCI jobs:
+The same `CS3D_REF` line also applies to these CircleCI jobs, and to the Netlify deploy
+preview:
 
 | Job | Where |
 |-----|-------|
 | CircleCI `UNIT_TESTS` (jest) | `.circleci/config.yml` |
 | CircleCI `BUILD_PACKAGES_QUICK` | `.circleci/config.yml` |
 | CircleCI `Cypress Tests` | `.circleci/config.yml` |
+| Netlify `deploy-preview-<N>` | `netlify.toml` |
 
 All of the jobs, and the Playwright workflow, run `.scripts/ci/cs3d-apply-ref.sh` after the
 ordinary install. The script does nothing for no line, a version rewrite and a reinstall for a
@@ -142,7 +144,9 @@ once more without the token and prints a warning to replace the token.
 
 A version line reinstalls with `--ignore-scripts`: no lockfile covers the new tree, so no
 install script of it runs. The script replaces an existing `libs/@cornerstonejs` only on
-CircleCI or GitHub Actions, never on a developer machine, even when `CI=true` is set.
+CircleCI, GitHub Actions or Netlify's build servers, never on a developer machine, even when
+`CI=true` is set. A local `netlify build` does not count as Netlify: it sets `NETLIFY_LOCAL`,
+and it has no `BUILD_ID`.
 
 The CircleCI job sees the PR only when the branch has an open PR at the start of the
 pipeline; re-run the pipeline after you open the PR, or after you change the line.
@@ -150,11 +154,47 @@ pipeline; re-run the pipeline after you open the PR, or after you change the lin
 A branch build adds the CS3D install and build to each job. The Cypress job runs on 8
 parallel containers, and each container builds CS3D.
 
-The Netlify `deploy-preview-<N>` build always uses the pinned CS3D version. For a PR with a
-`CS3D_REF` line, use the `cs3d-pr-<N>` preview that the Playwright workflow deploys to the
-same Netlify site, at `cs3d-pr-<N>--ohif-dev.netlify.app`. The Playwright job summary shows
-its link. The workflow deploys the preview also when a test fails. The site comes from the
-`NETLIFY_PREVIEW_SITE_ID` repository secret. `NETLIFY_SITE_ID` is the docs site.
+#### The Netlify deploy preview
+
+The Netlify `deploy-preview-<N>` build also reads the `CS3D_REF` line, through
+`.scripts/ci/cs3d-apply-ref.sh` in the build command of `netlify.toml`. Netlify gives the PR
+number in `REVIEW_ID`. So the deploy preview is an integrated build that you can test before
+the CS3D change merges.
+
+What a PR author and a reviewer can expect from `deploy-preview-<N>`:
+
+- No line: the pinned CS3D, as before.
+- A version line: the pins move to that version. A branch line: the build clones, builds and
+  links that branch of `cornerstonejs/cornerstone3D`. The build takes longer, because it also
+  installs and builds CS3D; keep the total under the build time limit of the Netlify site.
+- A rejected line, for example `CS3D_REF: 5.10`, fails the deploy preview.
+- When the build cannot read the PR body (for example because of the GitHub rate limit), the
+  deploy preview fails with a message. It does not quietly use the pinned CS3D. Push a commit,
+  or retry the deploy later.
+- Netlify builds a preview when you push, not when you edit the PR body. Push a commit after
+  you add or change the line.
+- A fork PR can name any branch of `cornerstonejs/cornerstone3D`, and its deploy preview builds
+  it without approval. Netlify runs the code of a fork PR in any case.
+
+The build reads the PR body through the GitHub API. Without a token, the GitHub API allows a
+small number of requests per hour from each address, and Netlify's build servers share their
+addresses. To avoid the limit for same-repo PRs, add `GITHUB_TOKEN` to the environment of the
+Netlify site: a fine-grained token with read-only access to public repositories and no other
+permission. Mark it as a secret value, and set the site's policy for sensitive variables in
+untrusted deploys to "deploy without sensitive variables". A fork PR runs its own
+`netlify.toml`, so a fork build must not get the token. A fork build then has no token, and
+can still hit the rate limit.
+
+Netlify keeps ignored files and `node_modules` between builds. So each Netlify build first
+removes a `libs/@cornerstonejs`, and reinstalls when `node_modules` still holds a CS3D that
+an earlier build linked or re-pinned. After a successful build that changed CS3D,
+`--after-build` deletes `node_modules` and `libs/@cornerstonejs`, and restores the pinned
+versions, so that the build cache does not keep the CS3D of the PR.
+
+The Playwright workflow deploys a second preview with the same CS3D build, at
+`cs3d-pr-<N>--ohif-dev.netlify.app`. The Playwright job summary shows its link. The workflow
+deploys that preview also when a test fails. The site comes from the `NETLIFY_PREVIEW_SITE_ID`
+repository secret. `NETLIFY_SITE_ID` is the docs site.
 
 ### Retiring a branch ref
 
@@ -189,9 +229,11 @@ the prompt.
 
 Two rules apply to a PR from a fork, and to no other PR:
 
-- **An integration run waits for approval.** A `CS3D_REF` line asks the shared self-hosted
-  runner to build and execute CS3D code, so the run pauses on the `cs3d-integration`
-  environment until one of the named reviewers approves that specific run.
+- **A Playwright integration run waits for approval.** A `CS3D_REF` line asks the shared
+  self-hosted runner to build and execute CS3D code, so the run pauses on the
+  `cs3d-integration` environment until one of the named reviewers approves that specific run.
+  The Netlify deploy preview does not wait: it runs on Netlify's servers, which run the code of
+  a fork PR in any case.
 - **A PR that changes a CI-defining file does not run Playwright until it is merged.** The
   paths are `.github/`, `.scripts/`, `pnpm-workspace.yaml`, `preinstall.js`, any root
   pnpmfile, and every `.npmrc` in the workspace. `package.json` and `pnpm-lock.yaml` are
