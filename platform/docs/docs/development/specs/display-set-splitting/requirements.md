@@ -368,8 +368,9 @@ rule id, in the `splitRules` field of the `useMetadataDisplaySet` customization.
 
 **SP-FORM-2**
 Each rule shall have a numeric `priority`, or `null`. The default rules shall use the priorities
-`1..n`. A custom rule that must run before the defaults shall use a priority below `0`. A fallback
-rule shall use a priority above `10000`. *Satisfies `SP-FIX-5`.*
+`10, 20, 30, ...` (steps of 10). A custom rule that must run before the defaults shall use a
+priority below `0`. A custom rule between two defaults shall use a number that is not a multiple of
+10. A fallback rule shall use a priority above `10000`. *Satisfies `SP-FIX-5`.*
 
 **SP-FORM-3**
 A rule shall use the fields of `RawSplitRule`, and the reference documentation shall define each
@@ -428,7 +429,7 @@ numbers match the requirements below. Stage 3 and the stages in box 6 are in
 flowchart TD
   subgraph SRC["1 · Rule sources — the injection points"]
     direction LR
-    S1["Defaults<br/>@ohif/extension-default<br/>priority 1..5"]
+    S1["Defaults<br/>@ohif/extension-default<br/>priority 10, 20, ... 160"]
     S2["Mode<br/>onModeEnter → setCustomizations"]
     S3["App config<br/>customizationService: [ ... ]"]
     S4["URL module<br/>?customization=split/dwiByBValue<br/>only under customizationUrlPrefixes"]

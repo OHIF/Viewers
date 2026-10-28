@@ -100,13 +100,15 @@ priorities and their handlers:
 |---|---|
 | CR, DX, MG | One display set for each instance. A four-view MG series gives four display sets. |
 | Video, ECG, whole slide | One display set for each object, with the handler of that kind of object. |
-| Multi-frame image | One display set for each `SOPInstanceUID`. A multi-frame instance that is not a clip, for example an Enhanced CT, opens as a volume. |
+| Multi-frame image | One display set for each `SOPInstanceUID`, in `InstanceNumber` order. A multi-frame instance that is not a clip, for example an Enhanced CT, opens as a volume. |
+| CT, MR, PT series with localizer images and other images | One display set for the localizer images (`isLocalizer: true`), and the other display sets for the other images. |
 | CT, MR, PT, NM series | One volume display set for each series, or the `mixedDimensionalityBValue` split of a diffusion series. |
 | SEG, RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation, chart | One display set for each series, with the handler of that kind of object. |
 | Presentation states and other objects | The unsupported display set. |
 
-The default rules use the priorities `1..n`. A rule with a priority below `0`
-runs before every default rule, and a rule with a priority above `10000` runs
+The default rules use the priorities `10` to `160`, in steps of 10. A rule with
+a priority below `0` runs before every default rule, a rule between two
+defaults uses a number that is not a multiple of 10, and a rule with a priority above `10000` runs
 after every default rule, before the `unsupported` catch-all. A priority of
 `null` turns a rule off.
 

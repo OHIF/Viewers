@@ -12,9 +12,11 @@
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
 //  - `splitRules` is keyed by rule id, so `$merge` adds the rule under its
 //    id. Rules are evaluated in ascending `priority` with first-match-wins per
-//    instance. The default rules use the priorities 1..n, so the priority -1
-//    runs the scout rule before the generic `volume3d` rule claims the whole
-//    CT series. A priority above 10000 runs after every default rule, and
+//    instance. The default rules use the priorities 10, 20, ... 160, so the
+//    priority -1 runs the scout rule before the default `localizer` rule (60)
+//    and the default `volume3d` rule (80). The default `localizer` rule
+//    already splits the localizer images off; this module adds the "SCOUT"
+//    label and description. A priority above 10000 runs after every default rule, and
 //    `null` turns a rule off (for example
 //    `"volume3d": { "priority": { "$set": null } }`).
 //  - The rule `context` defines two names for this rule only. `isLocalizer`
