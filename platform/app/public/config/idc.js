@@ -7,6 +7,9 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  // Final downsampling reduces a volume texture to fit the GPU settings preset.
+  // config/default.js keeps it off.
+  lossyDownsampling: { final: true },
   servers: {
     // This is an array, but we'll only use the first entry for now
     dicomWeb: [],

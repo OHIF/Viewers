@@ -15,6 +15,9 @@ window.config = {
   extensions: [],
   modes: ['@ohif/mode-test', '@ohif/mode-basic-dev-mode'],
   showStudyList: true,
+  // Final downsampling reduces a volume texture to fit the GPU settings preset.
+  // config/default.js keeps it off.
+  lossyDownsampling: { final: true },
   maxNumberOfWebWorkers: 4,
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
