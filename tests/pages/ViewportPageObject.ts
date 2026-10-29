@@ -96,6 +96,10 @@ export interface IViewportPageObject {
       button: Locator;
       click: () => Promise<void>;
     };
+    projection: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
   };
   pane: Locator;
   /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
@@ -310,6 +314,15 @@ export class ViewportPageObject {
       },
       get windowLevel() {
         const button = viewport.locator('[data-cy^="windowLevelMenu"]');
+        return {
+          button,
+          async click() {
+            await button.click();
+          },
+        };
+      },
+      get projection() {
+        const button = viewport.locator('[data-cy="projectionMenu"]');
         return {
           button,
           async click() {
