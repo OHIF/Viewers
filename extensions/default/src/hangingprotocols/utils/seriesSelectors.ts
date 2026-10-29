@@ -6,7 +6,7 @@ export const seriesWithImages: MatchingRule[] = [
   {
     attribute: 'numImageFrames',
     constraint: {
-      greaterThan: { value: 0 },
+      greaterThanOrEqual: { value: 0 },
     },
     weight: 1,
     required: true,

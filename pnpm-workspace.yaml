@@ -21,8 +21,8 @@ verifyDepsBeforeRun: false
 
 # Equivalent of the bun `audit --ignore=...` flags. These GHSAs are accepted
 # risk: minimatch/picomatch advisories reached only via build/CI tooling, never
-# fed user-supplied expressions. Kept in sync with the .circleci SECURITY_AUDIT
-# job and the root `audit` script.
+# fed user-supplied expressions. Read by `pnpm audit` and by the PR check in
+# .github/workflows/dependency-audit.yml (from the PR's own copy of this file).
 auditConfig:
   ignoreGhsas:
     # decompress is called only ever decompresses a hash-pinned, hardcoded
@@ -32,9 +32,6 @@ auditConfig:
     # extract-zip is a transitive dependency of cypress and is only used in dev
     - GHSA-jmr9-qjv8-65gv
     - GHSA-7pqw-9j4j-h8q3
-    # http-cache-semantics is reached only via docusaurus's update-notifier in
-    # platform/docs; it is never used as a shared HTTP cache
-    - GHSA-ch52-4w7c-c8xp
     # braces is reached only via build/test tooling (webpack, tailwind, jest,
     # docusaurus), which expands repo-defined globs, never user input
     - GHSA-vfj7-8cjw-p6xm
@@ -74,6 +71,9 @@ overrides:
   # merge. Keep this list aligned with master so security/version pins from
   # upstream PRs land here too.
   commander: 8.3.0
+  # netlify-cli (run via `pnpm dlx` in playwright.yml) calls Option.conflicts(),
+  # which commander 8 lacks. 12.1.0 is the version netlify-cli declares.
+  'netlify-cli>commander': 12.1.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
   dcmjs: 0.52.0
@@ -105,10 +105,10 @@ overrides:
   handlebars: 4.7.9
   protobufjs: 7.6.1
   tmp: 0.2.7
-  shell-quote: 1.10.0
+  shell-quote: 1.12.0
   'fast-uri@>=3.0.0 <3.1.8': 3.1.8
   '@babel/plugin-transform-modules-systemjs': 7.29.4
-  'sharp@<0.35.4': 0.35.4
+  'sharp@<0.35.5': 0.35.5
   # Force a single modern tslib for the whole workspace. Without this, rxjs@6
   # pulls in tslib@1, which gets hoisted to root node_modules and shadows the
   # tslib@2 that modern packages (e.g. react-remove-scroll) need for
@@ -141,3 +141,8 @@ overrides:
   # browserslist-stats.json).
   'browserslist@<4.28.7': 4.28.8
   'image-size@>=0.6.3 <2.0.4': 2.0.4
+  'compression@<1.8.2': 1.8.2
+  'proxy-addr@>=1.1.0 <2.0.8': 2.0.8
+  'source-map-js@>=1.0.0 <1.2.2': 1.2.2
+  'tinypool@<2.1.2': 2.2.0
+  'http-cache-semantics@<4.3.0': 4.3.0

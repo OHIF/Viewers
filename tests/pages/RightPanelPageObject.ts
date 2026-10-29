@@ -223,6 +223,65 @@ export class RightPanelPageObject {
     };
   }
 
+  /**
+   * The statistics computed for a segment. They show in a hover card that opens while the
+   * segment row is hovered, once the stats are computed.
+   */
+  private getSegmentStats(rowTitle: Locator) {
+    const locator = this.page.locator('.segment-statistics');
+    const entries = locator.locator('.segment-statistics-body > div > div');
+    // Each entry is a name cell followed by a cell holding the value and unit spans.
+    const valueSpans = (label: string) =>
+      entries
+        .filter({ has: this.page.getByText(label, { exact: true }) })
+        .locator(':scope > div:last-child > span');
+
+    // Moves the pointer off the panel and waits for the card to close.
+    const close = async () => {
+      await this.page.mouse.move(0, 0);
+      await locator.waitFor({ state: 'hidden' });
+    };
+
+    const open = async () => {
+      await close();
+      await rowTitle.hover();
+      await locator.waitFor({ state: 'visible' });
+    };
+
+    const computeButton = locator.getByTestId('segment-bidirectional-compute');
+
+    return {
+      locator,
+      // The stat names, in the order the card lists them
+      labels: entries.locator(':scope > div:first-child'),
+      // The stat values, in the same order
+      values: entries.locator(':scope > div:last-child > span:first-child'),
+      value: (label: string) => valueSpans(label).first(),
+      unit: (label: string) => valueSpans(label).last(),
+      open,
+      close,
+      // The segment's largest bidirectional measurement, at the top of the card
+      bidirectional: {
+        computeButton,
+        length: locator.getByTestId('segment-bidirectional-length'),
+        width: locator.getByTestId('segment-bidirectional-width'),
+        compute: async () => {
+          await open();
+          await computeButton.click();
+        },
+        jumpTo: async () => {
+          await open();
+          await locator.getByTestId('segment-bidirectional-jump').click();
+        },
+      },
+    };
+  }
+
+  /** Adds the segment's computed statistics to a segmentation panel row. */
+  private getRowWithSegmentStats<T extends { title: Locator }>(row: T) {
+    return { ...row, stats: this.getSegmentStats(row.title) };
+  }
+
   private getPanelRowByIdx(index: number) {
     const row = this.page.getByTestId('data-row').nth(index);
     return this.getPanelRowDataObject(row);
@@ -372,8 +431,10 @@ export class RightPanelPageObject {
 
   private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
-    const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getSegmentByText = (text: string) => this.getPanelRowByText(text);
+    const getSegmentByIdx = (index: number) =>
+      this.getRowWithSegmentStats(this.getPanelRowByIdx(index));
+    const getSegmentByText = (text: string) =>
+      this.getRowWithSegmentStats(this.getPanelRowByText(text));
     const moreMenu = this.getCollapsedMoreMenu(typeSuffix);
 
     return {
@@ -483,14 +544,15 @@ export class RightPanelPageObject {
           await toggleButton.click();
           await applyButton.waitFor({ state: 'visible' });
         };
+        const close = async () => {
+          await page.keyboard.press('Escape');
+          await applyButton.waitFor({ state: 'hidden' });
+        };
         return {
           toggleButton,
           open,
           // Dismisses the popover so it no longer overlaps the viewport.
-          close: async () => {
-            await page.keyboard.press('Escape');
-            await applyButton.waitFor({ state: 'hidden' });
-          },
+          close,
           selectOperation: async (operation: 'merge' | 'intersect' | 'subtract') => {
             await open();
             await page.getByTestId(`logical-contour-operation-${operation}`).click();
@@ -508,6 +570,7 @@ export class RightPanelPageObject {
           apply: async () => {
             await open();
             await applyButton.click();
+            await close();
           },
           enableCreateNewSegment: async () => {
             await open();
@@ -522,6 +585,7 @@ export class RightPanelPageObject {
       get smoothContours() {
         const toggleButton = page.getByTestId('SmoothContours');
         const smoothEdgesButton = page.getByRole('button', { name: 'Smooth Edges' });
+        const removePointsButton = page.getByRole('button', { name: 'Remove Points' });
         const open = async () => {
           if (await smoothEdgesButton.isVisible()) {
             return;
@@ -529,18 +593,25 @@ export class RightPanelPageObject {
           await toggleButton.click();
           await smoothEdgesButton.waitFor({ state: 'visible' });
         };
+        const close = async () => {
+          await page.keyboard.press('Escape');
+          await smoothEdgesButton.waitFor({ state: 'hidden' });
+        };
         return {
           toggleButton,
           open,
           // Dismisses the popover so it no longer overlaps the viewport.
-          close: async () => {
-            await page.keyboard.press('Escape');
-            await smoothEdgesButton.waitFor({ state: 'hidden' });
-          },
-          // Runs the smoothContours command (b-spline resample of the outline).
+          close,
           smoothEdges: async () => {
             await open();
             await smoothEdgesButton.click();
+            await close();
+          },
+          // Runs the decimateContours command (removes redundant outline points).
+          removePoints: async () => {
+            await open();
+            await removePointsButton.click();
+            await close();
           },
         };
       },

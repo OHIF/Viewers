@@ -5,7 +5,6 @@ import {
   test,
   visitStudy,
   waitForViewportRenderCycle,
-  waitForViewportsRendered,
 } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
@@ -71,8 +70,6 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Navigate to image 56. Keyboard navigation is focus-dependent and lossy,
   // so jump via the app command.
   await activeViewport.sliceNavigation.toSlice(55);
-
-  await waitForViewportsRendered(page);
 
   await checkForViewportScreenshot({
     page,
