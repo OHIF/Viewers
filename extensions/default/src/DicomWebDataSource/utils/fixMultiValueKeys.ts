@@ -1,4 +1,4 @@
-import { asArray } from '@cornerstonejs/utils';
+import { asMultiValueArray } from '@cornerstonejs/utils';
 
 /**
  * Fix multi-valued keys so that values which are strings split by a backslash
@@ -14,9 +14,7 @@ export function fixMultiValueKeys(naturalData, keys = ['ImageType', 'FrameType']
   for (const key of keys) {
     const value = naturalData[key];
     if (typeof value === 'string' || Array.isArray(value)) {
-      naturalData[key] = asArray(value).flatMap(item =>
-        typeof item === 'string' ? item.split('\\') : [item]
-      );
+      naturalData[key] = asMultiValueArray(value);
     }
   }
   return naturalData;

@@ -1,5 +1,5 @@
 import OHIF, { utils } from '@ohif/core';
-import { asArray } from '@cornerstonejs/utils';
+import { asArray, asMultiValueArray } from '@cornerstonejs/utils';
 
 import type { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv';
 
@@ -40,7 +40,8 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   }
 
   const instanceMetadata: InstanceMetadata = {
-    CorrectedImage: splitCodeStrings(dicomMetaData.CorrectedImage),
+    // A DICOMweb source can write the values as one backslash-joined value.
+    CorrectedImage: asMultiValueArray(dicomMetaData.CorrectedImage),
     Units: dicomMetaData.Units,
     RadionuclideHalfLife: radionuclideHalfLife,
     RadionuclideTotalDose: radionuclideTotalDose,
@@ -61,9 +62,7 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   // bulkdata upstream during ingestion (utils.resolveBulkDataTags). dcmjs 1.0
   // gives a private element as a list, so read the first value.
   const suvScaleFactor = coerceNumber(asArray(dicomMetaData['70531000'])[0]);
-  const activityConcentrationScaleFactor = coerceNumber(
-    asArray(dicomMetaData['70531009'])[0]
-  );
+  const activityConcentrationScaleFactor = coerceNumber(asArray(dicomMetaData['70531009'])[0]);
   if (suvScaleFactor !== undefined || activityConcentrationScaleFactor !== undefined) {
     const philipsPETPrivateGroup: PhilipsPETPrivateGroup = {
       SUVScaleFactor: suvScaleFactor,
@@ -72,7 +71,9 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     instanceMetadata.PhilipsPETPrivateGroup = philipsPETPrivateGroup;
   }
 
-  const gePostInjectionDateTime = asArray(dicomMetaData['0009100d'])[0];
+  // GE post-injection date time (0009,100D) of block GEMS_PETD_01. dcmjs and
+  // DICOM JSON key a private tag in upper-case hex.
+  const gePostInjectionDateTime = asArray(dicomMetaData['0009100D'])[0];
   if (gePostInjectionDateTime != null) {
     instanceMetadata.GEPrivatePostInjectionDateTime = gePostInjectionDateTime;
   }
@@ -115,22 +116,6 @@ export { getPTImageIdInstanceMetadata };
 function coerceNumber(value: unknown): number | undefined {
   const n = utils.toNumber(value);
   return typeof n === 'number' && Number.isFinite(n) ? n : undefined;
-}
-
-/**
- * Returns the values of a multi-valued CS element as a flat list of strings.
- *
- * Some DICOMweb sources write all values of CorrectedImage (0028,0051) as one
- * backslash-joined string, for example `["DECY\\ATTN\\SCAT"]`. dcmjs 0.x gave
- * such a one-item list as the string itself, and calculate-suv found "ATTN"
- * with a substring match. dcmjs 1.0 keeps the list, so calculate-suv must get
- * the values split, or it throws and the PT series gets no SUV scaling.
- */
-function splitCodeStrings(value: unknown): string[] | undefined {
-  if (value == null) {
-    return undefined;
-  }
-  return asArray(value).flatMap(item => String(item).split('\\'));
 }
 
 /**

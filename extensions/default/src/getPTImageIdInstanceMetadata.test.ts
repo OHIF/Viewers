@@ -65,8 +65,7 @@ describe('getPTImageIdInstanceMetadata', () => {
   it('still reads the sequence when flattened to a single object', () => {
     const inst = baseInstance();
     // some servers/paths deliver a flattened (non-array) sequence
-    inst.RadiopharmaceuticalInformationSequence =
-      inst.RadiopharmaceuticalInformationSequence[0];
+    inst.RadiopharmaceuticalInformationSequence = inst.RadiopharmaceuticalInformationSequence[0];
     mockGet.mockReturnValue(inst);
     expect(getPTImageIdInstanceMetadata('img:1').RadionuclideHalfLife).toBe(6586.2);
   });
@@ -118,6 +117,25 @@ describe('getPTImageIdInstanceMetadata', () => {
     const result = getPTImageIdInstanceMetadata('img:1');
     expect(result.CorrectedImage).toEqual(['DECY', 'ATTN', 'SCAT']);
     expect(calculateSUVScalingFactors([result])[0].suvbw).toBeGreaterThan(0);
+  });
+
+  it('uses the GE post-injection date time of a dcmjs 1.0 naturalized dataset for decay', () => {
+    // The series time is after the acquisition time, so calculate-suv takes the
+    // scan time from (0009,100D) when it is present.
+    const inst = { ...baseInstance(), Units: 'BQML', SeriesTime: '130000' };
+    const naturalized = dcmjs.data.DicomMetaDictionary.naturalizeDataset({
+      '00090010': { vr: 'LO', Value: ['GEMS_PETD_01'] },
+      '0009100D': { vr: 'DT', Value: ['20130606113000.00'] },
+    });
+    mockGet.mockReturnValue(Object.assign(naturalized, inst));
+    const result = getPTImageIdInstanceMetadata('img:1');
+    expect(result.GEPrivatePostInjectionDateTime).toBe('20130606113000.00');
+
+    // Scan time 11:30 in place of the acquisition time 12:00: 1800 s less decay.
+    const withGE = calculateSUVScalingFactors([result])[0].suvbw;
+    mockGet.mockReturnValue(inst);
+    const withoutGE = calculateSUVScalingFactors([getPTImageIdInstanceMetadata('img:1')])[0].suvbw;
+    expect(withGE / withoutGE).toBeCloseTo(Math.pow(2, -1800 / 6586.2), 10);
   });
 
   it('coerces a numeric DS string private tag to a number', () => {
