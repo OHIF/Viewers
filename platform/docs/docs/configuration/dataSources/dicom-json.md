@@ -41,6 +41,19 @@ node .scripts/dicom-json-generator.js '/path/to/study/folder' 'url/to/dicom/serv
 ```
 
 Some modalities require additional metadata to be added to the JSON file. You can read more about the minimum amount of metadata required for the viewer to work [here](../../faq/technical#what-are-the-list-of-required-metadata-for-the-ohif-viewer-to-work). We will handle this in the script. For example, the script will add the CodeSequences for SR in order to display the measurements in the viewer.
+
+The script uses `@dcmjs-org/dcmjs` 1.0, and writes the naturalized shapes of dcmjs 1.0:
+
+- A sequence with one item is the item object, not a list with one item.
+- A value with a VM of `1-n` is a list, also for one value, for example `"ImageType": ["ORIGINAL"]`.
+- A person name is a list of name objects, for example `"PatientName": [{ "Alphabetic": "Doe^John" }]`.
+- The private elements of a reserved block are in one key, `gggg:creator`, for example
+  `"7053:Philips PET Private Group": { "creator": "...", "reservedBlock": 16, "x00": [1.5] }`.
+  The file has no hex tag keys, such as `70531000`, for these elements.
+
+OHIF reads the files that the earlier script (dcmjs 0.x) wrote, and the files that this script writes.
+The DICOM JSON data source wraps each sequence, and it adds the hex tag aliases of each private block again.
+A different reader of these files must accept both shapes.
 :::
 
 
