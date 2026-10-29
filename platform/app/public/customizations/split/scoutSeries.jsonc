@@ -1,0 +1,62 @@
+// URL-loaded customization: scoutSeries
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata raw selector data (the same safe-function
+// vocabulary the default rules use).
+//
+// Splits the localizer (scout) images of a CT series into their own display
+// set labelled "SCOUT". The rest of the series still matches the default
+// volume/stack rules and forms its own display set.
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `splitRules` is keyed by rule id, so `$merge` adds the rule under its
+//    id. Rules are evaluated in ascending `priority` with first-match-wins per
+//    instance. The default rules use the priorities 10, 20, ... 170, so the
+//    priority -1 runs the scout rule before the default `localizer` rule (60)
+//    and the default `volume3d` rule (90). So for CT this module replaces the
+//    default `localizer` rule: the scout display set has `splitRuleId`
+//    `ctScout`, the "SCOUT" label and description, and `isLocalizer: true`, as
+//    the `localizer` display set has. The rule has no `Rows` test, unlike the
+//    `localizer` rule. A priority above 10000 runs after every default rule, and
+//    `null` turns a rule off (for example
+//    `"volume3d": { "priority": { "$set": null } }`).
+//  - The rule `context` defines two names for this rule only. `isLocalizer`
+//    is true when ImageType holds LOCALIZER. `hasScout` is a series value: it
+//    is true when the series MIXES localizer and non-localizer images. A
+//    series of localizers only, or a series with none, is left whole.
+//  - `matches` claims the localizer images of a CT series that has a scout.
+//  - `attributes` sets a fixed label, `isLocalizer: true` (so a hanging
+//    protocol that excludes localizers also excludes the scout), and builds
+//    the SeriesDescription overlay text with a template.
+//
+// Load it with `?customization=split/scoutSeries`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "ctScout": {
+            "priority": -1,
+            "context": {
+              "isLocalizer": "includes(ImageType, 'LOCALIZER')",
+              "hasScout": "series.instances.count(isLocalizer) > 0 && series.instances.count(isLocalizer) < series.instances.count()"
+            },
+            "matches": {
+              "Modality": "CT",
+              "hasScout": true,
+              "isLocalizer": true
+            },
+            "groupBy": ["SeriesInstanceUID"],
+            "attributes": {
+              "label": { "template": "SCOUT" },
+              "isLocalizer": true,
+              "SeriesDescription": { "template": "SCOUT {SeriesDescription}" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

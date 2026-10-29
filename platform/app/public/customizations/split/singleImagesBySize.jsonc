@@ -1,0 +1,50 @@
+// URL-loaded customization: singleImagesBySize
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata rule data.
+//
+// With the new split on, the default rule `singleImageModality` makes one
+// display set for each CR, DX or MG image. This module groups the single
+// images of a series by image size instead: the images of one size become one
+// stack. Do not load it for mammography that needs one display set for each
+// view: the four views of an MG study often have one size.
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `$merge` adds the rule under its id with priority -1, so it runs before
+//    the default `singleImageModality` rule.
+//  - The rule `context` rounds `Rows` and `Columns` to a bucket of 64 pixels,
+//    and `imageSizeBucket` joins the two buckets into one key. The rounding is
+//    coarse, so a size near a boundary can go into the next bucket (480 gives
+//    8, 544 gives 9).
+//  - `matches` claims the single-frame CR, DX and MG images that have `Rows`.
+//  - `groupBy` makes one group for each size bucket of the series.
+//
+// Load it with `?customization=split/singleImagesBySize`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "singleImagesBySize": {
+            "priority": -1,
+            "description": "CR / DX / MG single images: one display set for each image size bucket of the series.",
+            "context": {
+              "rowsBucket": "round(Rows / 64)",
+              "columnsBucket": "round(Columns / 64)",
+              "imageSizeBucket": { "template": "rows={rowsBucket}&cols={columnsBucket}" }
+            },
+            "matches": {
+              "Modality": ["CR", "DX", "MG"],
+              "isImage": true,
+              "isMultiFrame": false,
+              "Rows": { "notNull": true }
+            },
+            "groupBy": ["SeriesInstanceUID", "imageSizeBucket"]
+          }
+        }
+      }
+    }
+  }
+}
