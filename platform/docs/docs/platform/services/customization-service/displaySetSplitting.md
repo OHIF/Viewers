@@ -106,9 +106,11 @@ priorities and their handlers:
 | SEG, RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation, chart | One display set for each series, with the handler of that kind of object. |
 | Presentation states and other objects | The unsupported display set. |
 
-The default rules use the priorities `10` to `160`, in steps of 10. A rule with
-a priority below `0` runs before every default rule, a rule between two
-defaults uses a number that is not a multiple of 10, and a rule with a priority above `10000` runs
+The default rules use the priorities `10` to `170`, in steps of 10. The
+priority `80` is reserved for a later default rule `dynamicVolume`. A rule with
+a priority below `0` runs before every default rule. A number between two
+default priorities that is not a multiple of 10 runs between those two rules. A
+rule with a priority above `10000` runs
 after every default rule, before the `unsupported` catch-all. A priority of
 `null` turns a rule off.
 
@@ -122,7 +124,7 @@ module has no effect until a site loads it, and a load turns it on.
 | `split/enableNewSplit` | Turns the split on. Every other module requires it. |
 | `split/singleImagesBySize` | Groups the single CR, DX and MG images of a series by image size, in place of one display set for each image. |
 | `split/decimation` | Splits a series of more than `decimationSize` (default 1000) single-frame images into `ceil(count / decimationSize)` display sets, by `sliceIndex` modulo the count. |
-| `split/scoutSeries` | Splits the localizer images off a CT series, labelled `SCOUT`. |
+| `split/scoutSeries` | For CT, replaces the default `localizer` rule: the localizer images become one display set labelled `SCOUT`, with `isLocalizer: true`. |
 | `split/dwiByBValue` | One display set for each b-value of a diffusion MR series. |
 | `split/regularVolume` | A volume series with some irregular images: the regular slices become one volume display set. |
 | `split/volumeProjectionOrder` | Orders the slices of `volume3d` by the distance along the normal. |
@@ -410,7 +412,10 @@ customizationService.setCustomizations(
             },
             matches: { Modality: 'CT', hasScout: true, isLocalizer: true },
             groupBy: ['SeriesInstanceUID'],
-            attributes: { SeriesDescription: { template: 'SCOUT {SeriesDescription}' } },
+            attributes: {
+              isLocalizer: true,
+              SeriesDescription: { template: 'SCOUT {SeriesDescription}' },
+            },
           },
         },
       },

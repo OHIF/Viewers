@@ -13,7 +13,7 @@
 // How it works:
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
 //  - `$merge` adds the rule under its id with priority -1, so it runs before
-//    every default rule (the defaults use the priorities 10, 20, ... 160).
+//    every default rule (the defaults use the priorities 10, 20, ... 170).
 //  - The rule `context` defines two names for this rule only. `bValue` is the
 //    numeric b-value of the instance. `isDiffusion` is true when some instance
 //    of the series has a b-value above 0. Some scanners write

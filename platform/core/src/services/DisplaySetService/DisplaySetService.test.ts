@@ -401,6 +401,7 @@ describe('DisplaySetService', () => {
       groupBy: ['SeriesInstanceUID'],
       attributes: {
         label: { template: 'SCOUT' },
+        isLocalizer: true,
         SeriesDescription: { template: 'SCOUT {SeriesDescription}' },
       },
     };
@@ -443,6 +444,7 @@ describe('DisplaySetService', () => {
         { instances: scout.instances, splitNumber: 0 }
       );
       expect(attributes.label).toBe('SCOUT');
+      expect(attributes.isLocalizer).toBe(true);
       expect(attributes.SeriesDescription).toBe('SCOUT CHEST');
     });
 

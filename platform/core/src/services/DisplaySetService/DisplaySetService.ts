@@ -113,8 +113,11 @@ export type UseMetadataDisplaySetCustomization = {
   /**
    * Rules for `groupInstancesBySplitRules`, keyed by rule id. Each rule has a
    * `priority`: rules run in ascending priority, and the first matching rule
-   * wins per instance. The default rules use `1..n`; a priority below 0 runs
-   * before them, above 10000 after them, and `null` turns a rule off.
+   * wins per instance. The default rules use the priorities 10 to 170 in
+   * steps of 10 (80 is reserved). A priority below 0 runs before them, a
+   * number between two default priorities that is not a multiple of 10 runs
+   * between those two rules, above 10000 runs after them, and `null` turns a
+   * rule off.
    *
    * An entry is a `@cornerstonejs/metadata` raw rule; a raw field can hold a
    * function. A rule that the compiler has already compiled is not a valid
