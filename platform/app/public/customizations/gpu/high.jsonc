@@ -1,19 +1,18 @@
-// GPU class: high
+// GPU settings preset: high
 //
-// States a texture edge of 2048 voxels and 32 GB of texture memory. 2048 is the
-// largest edge that the shipped profiles assume a device can render, and 32 GB is the largest
-// memory of the shipped profiles.
-//
-// `high` is the default of Cornerstone3D, and not of OHIF: OHIF uses
-// `gpu/medium`. Load this profile only on a device that holds that much
+// A texture edge of 2048 voxels and 32 GB of texture memory, the largest
+// memory of the presets. `high` is the default preset of Cornerstone3D when
+// `auto` does not exist. Select it only on a device that holds that much
 // texture memory. A device of the middle class can crash under it.
 //
-// The profile is a stated value and not a measurement. Nothing probes the
-// device, so a real device may hold less than this profile states.
+// A preset applies only with final downsampling on, and a preset in this
+// customization turns final downsampling on, also in config/default.js.
+// Nothing probes the device: a preset is a set of values, so a real device may
+// hold more or less than the preset states.
 //
 // Load it with `?customization=gpu/high`.
 {
   "bootstrap": {
-    "cornerstone.gpuCapabilityProfile": "high"
+    "cornerstone.gpuSettingsPreset": "high"
   }
 }

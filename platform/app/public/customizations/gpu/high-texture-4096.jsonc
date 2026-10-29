@@ -1,23 +1,25 @@
-// GPU class: high-texture-4096 — a control, and not a real device
+// GPU settings preset: high-texture-4096, a control that fits no real device
 //
-// States a texture edge of 4096 voxels and 32 GB of texture memory. No device
-// is tested to render an edge above 2048. Some devices report a larger
+// A texture edge of 4096 voxels and 32 GB of texture memory. No device is
+// tested to render an edge above 2048. Some devices report a larger
 // MAX_3D_TEXTURE_SIZE, but a reported size is not a reliable limit, so a
-// deployment must not state this
-// profile in production. Cornerstone3D marks the profile `internal`.
+// deployment must not select this preset in production. Cornerstone3D marks
+// the preset `internal`.
 //
-// The profile is the control of the demonstration. A series of up to 4096
-// images renders with no reduction here, and the same series reduces under the
-// default `gpu/medium`. The pair shows that the reduction comes from the limit
-// of the device and not from a defect.
+// The preset is the control of the demonstration. A series of up to 4096
+// images renders with no reduction here, and the same series reduces under
+// `gpu/medium`. The pair shows that the reduction comes from the limit and
+// not from a defect. A real device can fail to allocate a texture of this
+// edge, and that failure is the expected result on hardware.
 //
-// A real device rejects a texture of this edge, so the viewport can fail to
-// allocate. That failure is the expected result on hardware, and it is the
-// reason the profile is a control only.
+// A preset applies only with final downsampling on, and a preset in this
+// customization turns final downsampling on, also in config/default.js.
+// Nothing probes the device: a preset is a set of values, so a real device may
+// hold more or less than the preset states.
 //
 // Load it with `?customization=gpu/high-texture-4096`.
 {
   "bootstrap": {
-    "cornerstone.gpuCapabilityProfile": "high-texture-4096"
+    "cornerstone.gpuSettingsPreset": "high-texture-4096"
   }
 }

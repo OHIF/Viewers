@@ -340,51 +340,59 @@ also append to a list or merge into an existing object rather than replacing it 
 > resolves the sidebars from the final values — so commands compose with the mode's own list and
 > global-scope values win by scope precedence.
 
-#### 5. State which class of GPU the deployment has
+#### 5. Select the GPU settings preset
 
-Set the class of GPU that a volume viewport must fit its texture to (key:
-`cornerstone.gpuCapabilityProfile`). The value is the `id` of a Cornerstone3D capability profile.
-A profile states the largest texture edge and the texture memory of the device, and a viewport
-reduces its texture to fit those limits.
+Select the GPU settings preset that a volume viewport fits its texture to (key:
+`cornerstone.gpuSettingsPreset`). The value is the `id` of a Cornerstone3D GPU settings preset. A
+preset is a named set of values: the largest texture edge and the texture memory. A viewport reduces
+its texture to fit those values, which is a lossy final downsampling.
+
+A preset applies only when final downsampling is on. The app config turns it on with
+`lossyDownsampling: { final: true }`. `config/e2e.js`, `config/netlify.js` and `config/dev.js` do
+that, and `config/default.js` does not. A value in this customization also turns final
+downsampling on, so a deployment of `config/default.js` gets the preset that it selects. When no
+module sets the key, the default preset of Cornerstone3D applies, and only if the app config turns
+final downsampling on.
 
 Set the key in the `bootstrap` phase, so the value is in place before the cornerstone extension
 registers. The `global` phase also works, because the extension re-reads the value when the global
 phase applies, and both phases run before a mode opens a viewport.
 
-Nothing probes the device. The deployment states the profile, because a probe reports what a device
-claims, and a device can overstate its memory. When no module sets the key, Cornerstone3D keeps its
-own default of `high`.
+Only `auto` tests the device. `auto` computes the values from a probe of the texture edge and from
+a record of the memory that worked, in a build of Cornerstone3D that has `auto`. A named preset is
+a set of values, and a real device may hold more or less than the preset states.
 
 ```jsonc
 // platform/app/public/customizations/gpu/low-tablet.jsonc  ->  ?customization=gpu/low-tablet
 {
   "bootstrap": {
-    "cornerstone.gpuCapabilityProfile": "low-tablet"
+    "cornerstone.gpuSettingsPreset": "low-tablet"
   }
 }
 ```
 
-The shipped files, one for each class:
+The shipped files, one for each preset:
 
 | Value | Texture edge | Texture memory | Use |
 | ----- | ------------ | -------------- | --- |
+| `gpu/auto` | computed | computed | The values for the device. A build without `auto` keeps its default preset. |
 | `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces, so the reduction is easy to see. |
 | `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
-| `gpu/medium` | 2048 | 8 GB | The OHIF default. A device of the middle class. |
-| `gpu/high` | 2048 | 32 GB | The Cornerstone3D default. A device of the middle class can crash under it. |
-| `gpu/high-texture-4096` | 4096 | 32 GB | A control, and not a real device. |
+| `gpu/medium` | 2048 | 8 GB | A device of the middle class. |
+| `gpu/high` | 2048 | 32 GB | The largest memory. A device of the middle class can crash under it. |
+| `gpu/high-texture-4096` | 4096 | 32 GB | A control that fits no real device. |
 
 Pick exactly one file. A later value in the `?customization=` list overrides an earlier one.
 
 **`gpu/high-texture-4096` is a control.** No device is tested to render a texture edge above 2048.
 Some devices report a larger `MAX_3D_TEXTURE_SIZE`, but a reported size is not a reliable limit, so
-a real device can fail to allocate the texture. The profile exists to show that a reduction comes
-from the limit of the device and not from a defect: a series renders with no reduction under
-`gpu/high-texture-4096` and with a reduction under `gpu/high`. Do not state the profile in
+a real device can fail to allocate the texture. The preset exists to show that a reduction comes
+from the limit and not from a defect: a series renders with no reduction under
+`gpu/high-texture-4096` and with a reduction under `gpu/medium`. Do not select the preset in
 production.
 
-The profiles are new work in Cornerstone3D. A build of `@cornerstonejs/core` that carries no
-capability profile reports the omission in the console and keeps its own behaviour.
+The presets are new work in Cornerstone3D. A build of `@cornerstonejs/core` that has no GPU
+settings presets reports the omission in the console and keeps its own behaviour.
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 

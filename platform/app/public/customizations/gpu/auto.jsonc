@@ -1,0 +1,16 @@
+// GPU settings preset: auto
+//
+// Cornerstone3D computes the texture edge and the texture memory for the
+// device: a probe tests the texture edge, and the record of earlier loads sets
+// the memory. A build of Cornerstone3D that has no `auto` preset reports the
+// value as unknown, and keeps its own default preset.
+//
+// A preset applies only with final downsampling on, and a preset in this
+// customization turns final downsampling on, also in config/default.js.
+//
+// Load it with `?customization=gpu/auto`.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "auto"
+  }
+}

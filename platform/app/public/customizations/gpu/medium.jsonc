@@ -1,20 +1,18 @@
-// GPU class: medium
+// GPU settings preset: medium
 //
-// States a texture edge of 2048 voxels and 8 GB of texture memory. 2048 is the
-// largest edge that the shipped profiles assume a device can render, so
-// `medium` and `high`
-// differ only by memory.
+// A texture edge of 2048 voxels and 8 GB of texture memory. 2048 is the
+// largest edge that the presets assume a device can render, so `medium` and
+// `high` differ only by memory. A device of the middle class crashed with
+// more texture memory than 8 GB.
 //
-// `medium` is the OHIF default, so this file states in the URL what the viewer
-// already does. Load it to return to the default after another profile. A
-// device of the middle class crashed with more texture memory than 8 GB.
-//
-// The profile is a stated value and not a measurement. Nothing probes the
-// device, so a real device may hold more or less than this profile states.
+// A preset applies only with final downsampling on, and a preset in this
+// customization turns final downsampling on, also in config/default.js.
+// Nothing probes the device: a preset is a set of values, so a real device may
+// hold more or less than the preset states.
 //
 // Load it with `?customization=gpu/medium`.
 {
   "bootstrap": {
-    "cornerstone.gpuCapabilityProfile": "medium"
+    "cornerstone.gpuSettingsPreset": "medium"
   }
 }

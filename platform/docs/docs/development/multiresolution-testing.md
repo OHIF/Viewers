@@ -18,7 +18,7 @@ specific to the multi-resolution work.
 ## What the branch changes
 
 A volume of many images cannot always fit in one GPU texture. A series of 2464 images
-exceeds the limit of 2048 voxels on one axis that the shipped profiles assume, so before
+exceeds the limit of 2048 voxels on one axis that the GPU settings presets assume, so before
 this branch such a series could not be drawn at all on some devices, and the allocation
 failed.
 
@@ -26,8 +26,11 @@ The branch changes three things that a tester can see:
 
 - **A volume can hold several representations of its voxels.** One is the data as the
   loader delivered it. Another is a box average of that data on a coarser grid.
-- **A viewport chooses the representation that its device can hold.** The choice is made
-  once, when the viewport adds its actor, and it is read from a capability profile.
+- **A viewport chooses the representation that the GPU settings can hold.** The choice is
+  made once, when the viewport adds its actor, and it is read from a GPU settings preset.
+  The choice applies only with final downsampling on (`lossyDownsampling: { final: true }`).
+  `config/e2e.js`, `config/netlify.js` and `config/dev.js` turn it on. `config/default.js`
+  turns it on only when the `cornerstone.gpuSettingsPreset` customization selects a preset.
 - **A reduced representation follows the load.** The loader delivers its frames over
   time, and each delivery redoes the part of the reduced data that the frame changed.
 
@@ -51,11 +54,12 @@ sequenceDiagram
     participant Seg as segmentationService
 
     URL->>Cust: load customizations/gpu/low-tablet.jsonc
-    Cust-->>Cust: cornerstone.gpuCapabilityProfile = 'low-tablet'
+    Cust-->>Cust: cornerstone.gpuSettingsPreset = 'low-tablet'
     Ext->>CS: index.tsx: imageRetrieveMetadataProvider.add('volume', coarseInterleavedRetrieveStages)
-    Ext->>Ext: init.tsx: initGpuCapabilityProfile({ customizationService })
-    Ext->>CS: setActiveGpuCapabilityProfile('low-tablet')
-    Note over Ext,CS: CS3D 1. A later customization change applies the profile again,<br/>but only a viewport that adds an actor after the change reads it.
+    Ext->>CS: init.tsx: cs3DInit({ rendering: { lossyDownsampling } }) from appConfig
+    Ext->>Ext: init.tsx: initGpuSettingsPreset({ customizationService, appConfig })
+    Ext->>CS: setGpuSettingsPreset('low-tablet'), setLossyDownsampling({ final: true })
+    Note over Ext,CS: CS3D 1. A later customization change applies the preset again,<br/>but only a viewport that adds an actor after the change reads it.
     Note over HP: hangingProtocolId=mpr gives three ORTHOGRAPHIC volume viewports
     HP->>Cache: createViewportData(displaySets)
     Cache->>CS: volumeLoader.createAndCacheVolume(volumeId, { imageIds })
@@ -94,7 +98,7 @@ Then start OHIF with `pnpm dev`. To go back to the published packages, run
 `pnpm cs3d:unlink`.
 
 A local run is necessary only to debug the code. For a test of the result, use the
-deploy preview (see [Choosing a class of GPU](#choosing-a-class-of-gpu)).
+deploy preview (see [Choosing a GPU settings preset](#choosing-a-gpu-settings-preset)).
 
 ## Running it in CI
 
@@ -108,20 +112,21 @@ CS3D_REF: feat/multires-voxel-manager-base
 The branch must live in the `cornerstonejs/cornerstone3D` repository. A branch on a fork
 is rejected.
 
-## Choosing a class of GPU
+## Choosing a GPU settings preset
 
-A viewport reduces its texture to fit the device. To see a reduction on a device that
-needs none, state a smaller class of GPU with the `?customization=` URL parameter. The
-viewer ships one file for each class under
+A viewport reduces its texture to fit the GPU settings. To see a reduction on a device that
+needs none, select a smaller preset with the `?customization=` URL parameter. The viewer
+ships one file for each preset under
 `platform/app/public/customizations/gpu/`:
 
 | Value | Texture edge | Texture memory | Use |
 | ----- | ------------ | -------------- | --- |
+| `gpu/auto` | computed | computed | The values for the device, in a build of Cornerstone3D that has `auto`. |
 | `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces. The reduction is easy to see. |
 | `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
-| `gpu/medium` | 2048 | 8 GB | The OHIF default. A device of the middle class. |
-| `gpu/high` | 2048 | 32 GB | The Cornerstone3D default. A device of the middle class can crash under it. |
-| `gpu/high-texture-4096` | 4096 | 32 GB | A control, and not a real device. |
+| `gpu/medium` | 2048 | 8 GB | A device of the middle class. |
+| `gpu/high` | 2048 | 32 GB | The Cornerstone3D default without `auto`. A device of the middle class can crash under it. |
+| `gpu/high-texture-4096` | 4096 | 32 GB | A control that fits no real device. |
 
 Use the deploy preview of the pull request for the tests. Each pull request gets a
 Netlify preview at `https://deploy-preview-<number>--ohif-dev.netlify.app`, and the
@@ -135,17 +140,17 @@ https://deploy-preview-6295--ohif-dev.netlify.app/viewer?StudyInstanceUIDs=1.3.6
 
 For a local run, replace the host with `http://localhost:3000`.
 
-Each file sets the `cornerstone.gpuCapabilityProfile` customization. The app config must
+Each file sets the `cornerstone.gpuSettingsPreset` customization. The app config must
 allow the prefix. `config/netlify.js` and `config/dev.js` set `customizationUrlPrefixes`,
 and `config/default.js` does not. Thus a build that serves `config/default.js` rejects the
 parameter.
 
 **`gpu/high-texture-4096` states an edge of 4096, and no device is tested to render an edge
 above 2048.** Some devices report a `MAX_3D_TEXTURE_SIZE` of 4096 or more, but a reported
-size is not a reliable limit. A real device can therefore fail to allocate the texture. The profile is the
+size is not a reliable limit. A real device can therefore fail to allocate the texture. The preset is the
 control of the demonstration: a series of up to 4096 images reduces nothing under
 `gpu/high-texture-4096` and reduces under `gpu/high`, which shows that the reduction comes
-from the limit of the device and not from a defect. Do not state the profile in
+from the limit and not from a defect. Do not select the preset in
 production.
 
 ## What to check
@@ -187,10 +192,10 @@ The result has one entry for each volume in the viewport. A loaded SEG adds a se
 entry for the labelmap. For the series `Body 0.5 CE` (512 × 512 × 2464), expect these
 grids:
 
-| GPU class | `textureGrid` of the CT | Texture set |
-| --------- | ----------------------- | ----------- |
+| Preset | `textureGrid` of the CT | Texture set |
+| ------ | ----------------------- | ----------- |
 | `gpu/high-texture-4096` | `[512, 512, 2464]` | `full-resolution/full-extent` |
-| `gpu/medium`, `gpu/high`, or no customization | `[512, 512, 1232]` | `reduced-1x1x2/full-extent/average` |
+| `gpu/medium`, `gpu/high`, or no customization with `config/netlify.js` | `[512, 512, 1232]` | `reduced-1x1x2/full-extent/average` |
 | `gpu/low`, `gpu/low-tablet` | `[256, 256, 247]` | `reduced-2x2x10/full-extent/average` |
 
 A labelmap with the dimensions of the CT gets the same grid. The name of its set ends in
@@ -205,7 +210,7 @@ data, and not the grid that the viewport draws.
 Add `&useNextViewports=true` to a URL to draw through the generic viewports of
 Cornerstone3D. With the Cornerstone3D branch `feat/acquisition-plane-original-frames`
 ([cornerstonejs/cornerstone3D#3018](https://github.com/cornerstonejs/cornerstone3D/pull/3018)),
-the acquisition plane draws the original frames when the GPU class reduces the volume.
+the acquisition plane draws the original frames when the preset reduces the volume.
 The legacy viewports draw the acquisition plane from the reduced texture. Thus an axial
 view of the 2464-image CT under `gpu/medium` shows the average of two acquired slices on
 the legacy viewports, and one acquired slice on the new viewports.
@@ -236,9 +241,10 @@ the resolution when the viewport adds its actor, and one resolution is used for 
 load. The values refine as the data arrives, so a reformat gets sharper, but the grid does
 not get finer. A ladder of grids is later work.
 
-**Nothing probes the device.** The capability profile is a stated value and not a
-measurement, so a deployment that states a profile larger than the device holds gets an
-allocation failure. A probe is later work.
+**Nothing probes the device.** A named preset is a set of values and not a measurement, so
+a deployment that selects a preset larger than the device holds gets an allocation
+failure. The `auto` preset of the later Cornerstone3D branch `feat/gpu-auto-limits` adds
+the probe.
 
 ## Where the design is written
 
@@ -249,7 +255,7 @@ The Cornerstone3D repository holds the design of this work. Read the pages in th
    how a derived representation follows the load. Its section "Where the code is" gives
    the file of each piece.
 2. [Volume Render Sequences](https://github.com/cornerstonejs/cornerstone3D/blob/feat/multires-voxel-manager-base/packages/docs/docs/concepts/cornerstone-core/volumeRenderSequences.md)
-   gives the sequence of calls as diagrams, from the profile to the fill of a reduced
+   gives the sequence of calls as diagrams, from the preset to the fill of a reduced
    texture, and for a segmentation.
 3. [Composite Voxel Manager](https://github.com/cornerstonejs/cornerstone3D/blob/feat/multires-voxel-manager-base/packages/docs/docs/concepts/cornerstone-core/compositeVoxelManager.md)
    describes how a volume holds more than one representation of its voxels.
