@@ -3,10 +3,11 @@
 /**
  * Reads the `CS3D_REF:` line of a pull request body. This is the one parser of
  * that line: the `gate` job of .github/workflows/playwright.yml runs it, and
- * so does .scripts/ci/cs3d-apply-ref.sh in the CircleCI jobs.
+ * so does .scripts/ci/cs3d-apply-ref.sh in the CircleCI jobs and the Netlify
+ * deploy preview.
  *
  * Usage:
- *   node .scripts/cs3d-read-ref.mjs                         find the PR from CircleCI
+ *   node .scripts/cs3d-read-ref.mjs                         find the PR from CircleCI or Netlify
  *   node .scripts/cs3d-read-ref.mjs --body-file <file>      parse a saved body
  *   node .scripts/cs3d-read-ref.mjs --body-file <file> --no-defer
  *       a manual request: `<branch> now <version>` is not deferred
@@ -253,12 +254,33 @@ export function readRef(body, { deferNow = true } = {}) {
 }
 
 /**
+ * True for a Netlify deploy preview build on Netlify's servers. A local
+ * `netlify build` sets `NETLIFY_LOCAL` and has no `BUILD_ID`.
+ */
+export function isNetlifyDeployPreview(env = process.env) {
+  return (
+    env.NETLIFY === 'true' &&
+    env.CONTEXT === 'deploy-preview' &&
+    Boolean(env.BUILD_ID) &&
+    !env.NETLIFY_LOCAL
+  );
+}
+
+/**
  * Finds `owner/repo` and the pull request number from the CircleCI
- * environment. Returns null when this build is not for a pull request.
+ * environment, or from a Netlify deploy preview (`REVIEW_ID`,
+ * `REPOSITORY_URL`). Returns null when this build is not for a pull request.
  */
 export function findPullRequest(env = process.env) {
   const circle = (env.CIRCLE_PULL_REQUEST || '').match(/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/);
-  return circle ? { repo: circle[1], number: circle[2] } : null;
+  if (circle) {
+    return { repo: circle[1], number: circle[2] };
+  }
+  const netlifyRepo = (env.REPOSITORY_URL || '').match(/github\.com[/:]([^/]+\/[^/]+?)(?:\.git)?\/?$/);
+  if (isNetlifyDeployPreview(env) && /^\d+$/.test(env.REVIEW_ID || '') && netlifyRepo) {
+    return { repo: netlifyRepo[1], number: env.REVIEW_ID };
+  }
+  return null;
 }
 
 /**
@@ -321,9 +343,12 @@ async function main() {
     try {
       body = await fetchBody(pr);
     } catch (error) {
+      // A fork PR's deploy preview never gets the token, and Netlify's build
+      // servers share their addresses, so the rate limit can hit any build.
+      // Fall back to the pin rather than fail a PR with no CS3D_REF line.
       report(
         'warning',
-        `Could not read the body of ${pr.repo}#${pr.number} (${error.message}), so this job uses the pinned CS3D version. Set a read-only GITHUB_TOKEN to avoid the GitHub API rate limit.`
+        `Could not read the body of ${pr.repo}#${pr.number} (${error.message}), so this build uses the pinned CS3D version and ignores any CS3D_REF line. A PR that needs an unreleased CS3D change fails to build for that reason; retry the build later. Set a read-only GITHUB_TOKEN to avoid the GitHub API rate limit.`
       );
       return out('none');
     }
