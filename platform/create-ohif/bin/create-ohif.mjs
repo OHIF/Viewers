@@ -117,8 +117,10 @@ function hostPeerRange(version) {
 }
 
 function parseModulesCsv(csv) {
+  // Commas and/or whitespace: PowerShell turns an unquoted viewport,panel into
+  // a list, which reaches us as the single argument "viewport panel".
   const keys = csv
-    .split(',')
+    .split(/[\s,]+/)
     .map(part => part.trim())
     .filter(Boolean);
   const unknown = keys.filter(key => !MODULE_KEYS.includes(key));

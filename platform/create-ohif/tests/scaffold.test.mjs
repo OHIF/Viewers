@@ -187,6 +187,26 @@ test('standalone extension with all six modules keeps every getter', () => {
   assertNoTokens(dir);
 });
 
+test('--modules also accepts spaces, as PowerShell passes an unquoted list', () => {
+  const parent = tmp();
+  scaffold([
+    'spaced-extension',
+    '-t',
+    'extension',
+    '--modules',
+    'viewport panel',
+    '--yes',
+    '--dir',
+    parent,
+  ]);
+  const dir = path.join(parent, 'spaced-extension');
+  for (const key of ['viewport', 'panel']) {
+    for (const rel of GETTER_FILES[key]) {
+      assert.ok(exists(dir, rel), `missing ${rel}`);
+    }
+  }
+});
+
 test('standalone extension with an empty module selection scaffolds id + preRegistration only', () => {
   const parent = tmp();
   scaffold(['empty-extension', '-t', 'extension', '--modules', '', '--yes', '--dir', parent]);

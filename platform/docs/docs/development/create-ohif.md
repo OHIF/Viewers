@@ -147,7 +147,7 @@ own: the repo root's settings govern.
 All prompts have flag equivalents; a non-TTY stdin implies `--yes` semantics:
 
 ```bash
-pnpm create ohif my-ext --scope '@acme' --template extension --modules viewport,panel --yes
+pnpm create ohif my-ext --scope '@acme' --template extension --modules 'viewport,panel' --yes
 ```
 
 This creates `@acme/my-ext`. Every flag is listed under [Options](#options).
