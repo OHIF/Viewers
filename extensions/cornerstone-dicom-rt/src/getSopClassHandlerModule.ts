@@ -93,7 +93,9 @@ function _getDisplaySetsFromSeries(
 
   const referencedSeries = referencedSeriesSequence[0];
 
-  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
+  displaySet.referencedImages = asArray(referencedSeriesSequence).flatMap(series =>
+    asArray(series.ReferencedInstanceSequence ?? [])
+  );
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.FrameOfReferenceUID =
