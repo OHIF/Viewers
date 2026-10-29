@@ -24,7 +24,6 @@ window.config = {
         wadoUriRoot: 'https://myserver.com/dicomweb',
         qidoRoot: 'https://myserver.com/dicomweb',
         wadoRoot: 'https://myserver.com/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
