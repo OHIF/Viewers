@@ -544,6 +544,19 @@ export class NextViewportBackend implements IViewportBackend {
         }
       }
 
+      // A native VOLUME_3D_NEXT presentation has no blendMode, so a projection
+      // requested by the protocol (e.g. 'MIP') is set on the volume mapper
+      // directly. A 3D ray cast already spans the whole volume, so slabThickness
+      // (including 'fullVolume') has nothing to clip and is intentionally unused.
+      if (is3D && index === 0 && volumeInput.blendMode !== undefined) {
+        const mapper = (
+          nativeViewport.getDefaultActor?.()?.actor as
+            | { getMapper?: () => { setBlendMode?: (mode: number) => void } }
+            | undefined
+        )?.getMapper?.();
+        mapper?.setBlendMode?.(volumeInput.blendMode);
+      }
+
       // 3D volume rendering needs an RGBA transfer function (preset) to be visible;
       // the bare native VolumeViewport3D has no setProperties, so apply the preset to
       // the volume actor directly (mirrors the legacy adapter's applyPresetToBinding).
