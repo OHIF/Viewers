@@ -175,8 +175,6 @@ const DicomMicroscopyViewport = React.memo(
           setManagedViewer(managedViewer);
         };
 
-        microscopyService.clearAnnotations();
-
         let smDisplaySet = displaySet;
         if (displaySet.isOverlayDisplaySet) {
           // for SR displaySet, let's load the actual image displaySet
@@ -209,13 +207,19 @@ const DicomMicroscopyViewport = React.memo(
       };
     }, [viewer]);
 
+    // Annotations are kept per series in microscopyService; addViewer restores them
+    // when their series is shown again, so nothing is cleared here.
     useEffect(() => {
       const displaySet = displaySets[0];
 
-      microscopyService.clearAnnotations();
-
-      // loading SR - only if not already loaded and not currently loading
-      if (displaySet.isOverlayDisplaySet && !displaySet.isLoaded && !displaySet.isLoading) {
+      // loading SR - only if not already loaded and not currently loading, and only
+      // once this viewport's viewer exists, so its ROIs go to this viewer
+      if (
+        managedViewer &&
+        displaySet.isOverlayDisplaySet &&
+        !displaySet.isLoaded &&
+        !displaySet.isLoading
+      ) {
         const referencedDisplaySet = displaySet.getSourceDisplaySet();
         displaySet.load(referencedDisplaySet);
       }
