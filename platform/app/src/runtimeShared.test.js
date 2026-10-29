@@ -44,6 +44,24 @@ describe('runtimeShared <-> pluginExternals parity', () => {
     expect([...sharedImports].sort()).toEqual([...externals.hostSharedPackages].sort());
   });
 
+  // The `shared` object's keys are the window global names plugins read, so
+  // check them too: each key must be a shared package, and its value the
+  // module imported from that same package.
+  test('the shared object maps each hostSharedPackages name to its own import', () => {
+    const importedAs = Object.fromEntries(
+      [...source.matchAll(/^import \* as (\w+) from '([^']+)';$/gm)].map(m => [m[2], m[1]])
+    );
+    const [, body = ''] = source.match(/const shared[^=]*=\s*\{([\s\S]*?)\};/) ?? [];
+    const entries = [...body.matchAll(/^\s*(?:'([^']+)'|(\w+))\s*(?::\s*(\w+))?\s*,/gm)].map(m => [
+      m[1] ?? m[2],
+      m[3] ?? m[2],
+    ]);
+    expect(entries.map(([key]) => key).sort()).toEqual([...externals.hostSharedPackages].sort());
+    for (const [key, value] of entries) {
+      expect([key, value]).toEqual([key, importedAs[key]]);
+    }
+  });
+
   test('every shared global is externalized (never double-bundled in plugins)', () => {
     for (const name of externals.hostSharedPackages) {
       expect(externals.some(e => (e instanceof RegExp ? e.test(name) : e === name))).toBe(true);
