@@ -6,7 +6,6 @@ import {
   SegmentationRepresentation,
 } from '../services/SegmentationService/SegmentationService';
 import { useSystem } from '@ohif/core';
-const excludedModalities = ['SM', 'OT', 'DOC', 'ECG'];
 
 function mapSegmentationToDisplay(segmentation, customizationService) {
   const { label, segments, fallbackLabel } = segmentation;
@@ -132,6 +131,10 @@ export function useViewportSegmentations({
       if (!displaySet) {
         return;
       }
+
+      const excludedModalities = customizationService.getCustomization(
+        'panelSegmentation.excludedModalities'
+      );
 
       if (excludedModalities.includes(displaySet.Modality)) {
         setSegmentationsWithRepresentations(prev => ({
