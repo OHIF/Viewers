@@ -1,4 +1,5 @@
 import OHIF, { utils } from '@ohif/core';
+import { asArray } from '@cornerstonejs/utils';
 
 import type { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv';
 
@@ -57,9 +58,12 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   // numbers; an unresolved bulkdata object yields undefined and is dropped so it
   // can never corrupt the SUV calculation. SUVScaleFactor is (7053,1000) and
   // ActivityConcentrationScaleFactor is (7053,1009). These are resolved from
-  // bulkdata upstream during ingestion (utils.resolveBulkDataTags).
-  const suvScaleFactor = coerceNumber(dicomMetaData['70531000']);
-  const activityConcentrationScaleFactor = coerceNumber(dicomMetaData['70531009']);
+  // bulkdata upstream during ingestion (utils.resolveBulkDataTags). dcmjs 1.0
+  // gives a private element as a list, so read the first value.
+  const suvScaleFactor = coerceNumber(asArray(dicomMetaData['70531000'])[0]);
+  const activityConcentrationScaleFactor = coerceNumber(
+    asArray(dicomMetaData['70531009'])[0]
+  );
   if (suvScaleFactor !== undefined || activityConcentrationScaleFactor !== undefined) {
     const philipsPETPrivateGroup: PhilipsPETPrivateGroup = {
       SUVScaleFactor: suvScaleFactor,
@@ -68,8 +72,9 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     instanceMetadata.PhilipsPETPrivateGroup = philipsPETPrivateGroup;
   }
 
-  if (dicomMetaData['0009100d'] !== undefined) {
-    instanceMetadata.GEPrivatePostInjectionDateTime = dicomMetaData['0009100d'];
+  const gePostInjectionDateTime = asArray(dicomMetaData['0009100d'])[0];
+  if (gePostInjectionDateTime != null) {
+    instanceMetadata.GEPrivatePostInjectionDateTime = gePostInjectionDateTime;
   }
 
   const frameReferenceTime = coerceNumber(dicomMetaData.FrameReferenceTime);

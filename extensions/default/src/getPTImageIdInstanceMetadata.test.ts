@@ -16,6 +16,7 @@ jest.mock('@ohif/core', () => {
   return { __esModule: true, default: core, utils: core.utils };
 });
 
+import dcmjs from '@dcmjs-org/dcmjs';
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 
 // A valid PT instance with the radiopharmaceutical sequence in dcmjs array form.
@@ -89,6 +90,20 @@ describe('getPTImageIdInstanceMetadata', () => {
     // Neither tag coerces to a number, so the group is not attached at all -
     // an object can never reach calculate-suv.
     expect(getPTImageIdInstanceMetadata('img:1').PhilipsPETPrivateGroup).toBeUndefined();
+  });
+
+  it('reads the Philips scale factors from a dcmjs 1.0 naturalized dataset', () => {
+    // dcmjs 1.0 gives a private element as a list, also for one value.
+    const naturalized = dcmjs.data.DicomMetaDictionary.naturalizeDataset({
+      '70530010': { vr: 'LO', Value: ['Philips PET Private Group'] },
+      '70531000': { vr: 'DS', Value: [0.00038] },
+      '70531009': { vr: 'DS', Value: [1.881732] },
+    });
+    mockGet.mockReturnValue(Object.assign(naturalized, baseInstance()));
+    expect(getPTImageIdInstanceMetadata('img:1').PhilipsPETPrivateGroup).toEqual({
+      SUVScaleFactor: 0.00038,
+      ActivityConcentrationScaleFactor: 1.881732,
+    });
   });
 
   it('coerces a numeric DS string private tag to a number', () => {
