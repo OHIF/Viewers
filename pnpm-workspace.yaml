@@ -14,6 +14,9 @@ minimumReleaseAge: 2880
 # bunfig.toml `minimumReleaseAgeExcludes` list (pnpm supports glob patterns).
 minimumReleaseAgeExclude:
   - '@cornerstonejs/*'
+  # NiiVue 1.0 release candidates are pinned to exact versions and tracked as
+  # soon as they are published from niivue/mono.
+  - '@niivue/*'
 frozenLockfile: true
 
 # Skip the pre-`pnpm run` frozen deps-check; installs set freshness explicitly.
@@ -38,6 +41,7 @@ auditConfig:
 allowBuilds:
   '@scarf/scarf': true
   '@swc/core': true
+  cbor-extract: false
   core-js: true
   core-js-pure: true
   cypress: true
