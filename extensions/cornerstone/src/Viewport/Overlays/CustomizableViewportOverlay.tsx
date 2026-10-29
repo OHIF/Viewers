@@ -147,9 +147,11 @@ function CustomizableViewportOverlay({
           return;
         }
 
-        const scale = viewport.getZoom();
+        const scale = getViewportAdapter(viewport).getZoom();
 
-        setScale(scale);
+        if (scale !== undefined) {
+          setScale(scale);
+        }
       }
     };
 
