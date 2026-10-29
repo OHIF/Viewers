@@ -102,7 +102,10 @@ test('should save each segment of an overlap layer under its own segment number'
 
   const framesPerSegment = {};
   for (const frame of asArray(dataset.PerFrameFunctionalGroupsSequence)) {
-    const segmentNumber = asArray(frame.SegmentIdentificationSequence)[0].ReferencedSegmentNumber;
+    // US 1-n: dcmjs 1.0 gives a list, also for one value
+    const segmentNumber = Number(
+      asArray(asArray(frame.SegmentIdentificationSequence)[0].ReferencedSegmentNumber)[0]
+    );
     framesPerSegment[segmentNumber] = (framesPerSegment[segmentNumber] ?? 0) + 1;
   }
   expect(framesPerSegment[1]).toBeGreaterThan(0);
