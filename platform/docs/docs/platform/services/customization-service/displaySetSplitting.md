@@ -98,7 +98,7 @@ priorities and their handlers:
 
 | Data | Display sets |
 |---|---|
-| CR, DX, MG | One display set for each instance. A four-view MG series gives four display sets. |
+| CR, DX, MG | One display set for each instance, in `InstanceNumber` order. A four-view MG series gives four display sets. |
 | Video, ECG, whole slide | One display set for each object, with the handler of that kind of object. |
 | Multi-frame image | One display set for each `SOPInstanceUID`, in `InstanceNumber` order. A multi-frame instance that is not a clip, for example an Enhanced CT, opens as a volume. |
 | CT, MR, PT series with localizer images and other images | One display set for the localizer images (`isLocalizer: true`), and the other display sets for the other images. |

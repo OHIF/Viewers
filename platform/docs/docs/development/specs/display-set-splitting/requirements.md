@@ -429,7 +429,7 @@ numbers match the requirements below. Stage 3 and the stages in box 6 are in
 flowchart TD
   subgraph SRC["1 · Rule sources — the injection points"]
     direction LR
-    S1["Defaults<br/>@ohif/extension-default<br/>priority 10, 20, ... 160"]
+    S1["Defaults<br/>@cornerstonejs/metadata<br/>priority 10, 20, ... 160"]
     S2["Mode<br/>onModeEnter → setCustomizations"]
     S3["App config<br/>customizationService: [ ... ]"]
     S4["URL module<br/>?customization=split/dwiByBValue<br/>only under customizationUrlPrefixes"]
