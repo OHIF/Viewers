@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { ViewportActionCorners, IconPresentationProvider, ToolButton } from '@ohif/ui-next';
 import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
@@ -6,11 +6,27 @@ import { useViewportHover } from '../hooks';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
+  servicesManager?: any;
 };
 
-function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCornersProps) {
-  // Use the viewport hover hook to track if viewport is hovered or active
+function OHIFViewportActionCornersComponent({ viewportId, servicesManager }: OHIFViewportActionCornersProps) {
   const { isHovered, isActive } = useViewportHover(viewportId);
+
+  const [followMode, setFollowMode] = useState(false);
+
+  useEffect(() => {
+    const cs = servicesManager?.services?.collaborationService || (window as any).services?.collaborationService;
+    if (cs) {
+      setFollowMode(cs.getFollowMode());
+    }
+  }, [servicesManager]);
+
+  const toggleFollowMode = () => {
+    const cs = servicesManager?.services?.collaborationService || (window as any).services?.collaborationService;
+    if (cs) {
+      setFollowMode(cs.toggleFollowMode());
+    }
+  };
 
   const shouldShowCorners = isHovered || isActive;
 
@@ -36,11 +52,18 @@ function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCo
           />
         </ViewportActionCorners.TopLeft>
         <ViewportActionCorners.TopMiddle>
-          <Toolbar
-            buttonSection="viewportActionMenu.topMiddle"
-            viewportId={viewportId}
-            location={ButtonLocation.TopMiddle}
-          />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button 
+              onClick={toggleFollowMode} 
+              style={{ padding: '2px 8px', borderRadius: '4px', background: followMode ? '#10B981' : '#374151', color: 'white', fontSize: '12px', fontWeight: 'bold', marginRight: '8px', cursor: 'pointer', border: 'none' }}>
+              {followMode ? 'Following' : 'Follow'}
+            </button>
+            <Toolbar
+              buttonSection="viewportActionMenu.topMiddle"
+              viewportId={viewportId}
+              location={ButtonLocation.TopMiddle}
+            />
+          </div>
         </ViewportActionCorners.TopMiddle>
         <ViewportActionCorners.TopRight>
           <Toolbar
