@@ -11,7 +11,8 @@ summary: Scaffold OHIF workspaces, extensions, modes, and deployment configs wit
 `pnpm create ohif` downloads and runs the npm package `create-ohif` (pnpm adds
 the `create-` prefix), and `@beta` picks the version carrying the `beta`
 dist-tag. `create-ohif` is published under that tag until 3.14.0 ships as a
-stable release, so every command on these pages uses `pnpm create ohif@beta`.
+stable release, so every command on these pages that fetches `create-ohif` from
+npm uses `pnpm create ohif@beta`.
 Plain `pnpm create ohif` asks for the `latest` tag, which has no 3.14 version
 yet, and fails with "No matching version found".
 Once 3.14.0 is stable, `@beta` is dropped from the docs and the plain command
@@ -120,11 +121,16 @@ pnpm build
 
 ## Scaffold into a checkout (in-tree)
 
-To develop inside a clone of the OHIF Viewers monorepo:
+To develop inside a clone of the OHIF Viewers monorepo, run the checkout's own
+copy from its root:
 
 ```bash
-pnpm create ohif@beta --in-tree
+node platform/create-ohif/bin/create-ohif.mjs my-extension --template extension --in-tree
 ```
+
+Use this rather than `pnpm create ohif@beta`: it matches the checkout's version,
+and the repo's `pnpm-workspace.yaml` sets a two-day `minimumReleaseAge`, so pnpm
+refuses a `create-ohif` beta published less than two days ago.
 
 This writes into `extensions/` or `modes/` of the enclosing checkout (detected
 by walking up to a directory that has both `pnpm-workspace.yaml` and

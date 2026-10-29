@@ -56,7 +56,7 @@ Copy or scaffold the package under `extensions/` and declare it by
 `packageName` — the workspace glob already covers that directory:
 
 ```bash
-pnpm create ohif@beta --in-tree
+node platform/create-ohif/bin/create-ohif.mjs my-extension --template extension --in-tree
 ```
 
 See [Create an Extension or Mode](../../development/create-ohif.md).
