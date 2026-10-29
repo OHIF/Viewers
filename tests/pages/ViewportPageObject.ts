@@ -98,6 +98,8 @@ export interface IViewportPageObject {
     };
   };
   pane: Locator;
+  /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
+  getViewportType: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
   /** The text box of each annotation drawn in the viewport. */
@@ -497,6 +499,14 @@ export class ViewportPageObject {
       overlayText: this.getOverlayText(viewport),
       overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
+      getViewportType: async () => {
+        const viewportId = await this.getViewportId(viewport);
+        return this.page.evaluate(
+          ({ services, viewportId }) =>
+            (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
+          { viewportId, services: await this.page.evaluateHandle('window.services') }
+        );
+      },
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
@@ -616,7 +626,7 @@ export class ViewportPageObject {
   }
 
   async getAll(): Promise<IViewportPageObject[]> {
-    const viewports = await this.page.getByTestId('viewport-pane').all();
+    const viewports = await this.panes.all();
     return await Promise.all(viewports.map(viewport => this.viewportPageObjectFactory(viewport)));
   }
 
@@ -626,7 +636,12 @@ export class ViewportPageObject {
   }
 
   getNthLocator(index: number): Locator {
-    return this.page.getByTestId('viewport-pane').nth(index);
+    return this.panes.nth(index);
+  }
+
+  // Every viewport pane in the grid
+  get panes(): Locator {
+    return this.page.getByTestId('viewport-pane');
   }
 
   getById(viewportId: string): Promise<IViewportPageObject> {
