@@ -40,7 +40,7 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   }
 
   const instanceMetadata: InstanceMetadata = {
-    CorrectedImage: dicomMetaData.CorrectedImage,
+    CorrectedImage: splitCodeStrings(dicomMetaData.CorrectedImage),
     Units: dicomMetaData.Units,
     RadionuclideHalfLife: radionuclideHalfLife,
     RadionuclideTotalDose: radionuclideTotalDose,
@@ -115,6 +115,22 @@ export { getPTImageIdInstanceMetadata };
 function coerceNumber(value: unknown): number | undefined {
   const n = utils.toNumber(value);
   return typeof n === 'number' && Number.isFinite(n) ? n : undefined;
+}
+
+/**
+ * Returns the values of a multi-valued CS element as a flat list of strings.
+ *
+ * Some DICOMweb sources write all values of CorrectedImage (0028,0051) as one
+ * backslash-joined string, for example `["DECY\\ATTN\\SCAT"]`. dcmjs 0.x gave
+ * such a one-item list as the string itself, and calculate-suv found "ATTN"
+ * with a substring match. dcmjs 1.0 keeps the list, so calculate-suv must get
+ * the values split, or it throws and the PT series gets no SUV scaling.
+ */
+function splitCodeStrings(value: unknown): string[] | undefined {
+  if (value == null) {
+    return undefined;
+  }
+  return asArray(value).flatMap(item => String(item).split('\\'));
 }
 
 /**

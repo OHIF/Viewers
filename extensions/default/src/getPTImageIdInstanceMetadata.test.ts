@@ -17,6 +17,7 @@ jest.mock('@ohif/core', () => {
 });
 
 import dcmjs from '@dcmjs-org/dcmjs';
+import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 
 // A valid PT instance with the radiopharmaceutical sequence in dcmjs array form.
@@ -104,6 +105,19 @@ describe('getPTImageIdInstanceMetadata', () => {
       SUVScaleFactor: 0.00038,
       ActivityConcentrationScaleFactor: 1.881732,
     });
+  });
+
+  it('gives SUV factors when CorrectedImage is one backslash-joined value', () => {
+    // A static DICOMweb source writes the CorrectedImage values as one string.
+    const naturalized = dcmjs.data.DicomMetaDictionary.naturalizeDataset({
+      '00280051': { vr: 'CS', Value: ['DECY\\ATTN\\SCAT'] },
+    });
+    const inst = { ...baseInstance(), Units: 'BQML' };
+    delete inst.CorrectedImage;
+    mockGet.mockReturnValue(Object.assign(naturalized, inst));
+    const result = getPTImageIdInstanceMetadata('img:1');
+    expect(result.CorrectedImage).toEqual(['DECY', 'ATTN', 'SCAT']);
+    expect(calculateSUVScalingFactors([result])[0].suvbw).toBeGreaterThan(0);
   });
 
   it('coerces a numeric DS string private tag to a number', () => {
