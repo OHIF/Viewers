@@ -186,6 +186,7 @@ function PanelStudyBrowser({
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
           date: formatDate(qidoStudy.StudyDate) || '',
+          studyDate: qidoStudy.StudyDate,
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: Number(qidoStudy.NumInstances),
