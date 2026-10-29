@@ -80,7 +80,7 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `build:legacy` are gone; `dev:fast` is now an alias of `dev`.
 
 - **[OHIF CLI removal](./cli-removal.md)** — `platform/cli` and the root `cli`
-  script are gone. Each CLI command maps to a replacement: `pnpm create ohif@beta` to
+  script are gone. Each CLI command maps to a replacement: `pnpm create ohif` to
   scaffold, `pnpm run plugin` or `platform/app/pluginConfig.json` to add, link or
   remove plugins, and `create-ohif migrate` to port a CLI-era package.
 

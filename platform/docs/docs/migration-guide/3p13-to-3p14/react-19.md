@@ -136,7 +136,7 @@ own components covers yours:
 Both gates fail CI until their budget file matches, and both print exactly which file
 and which entry is involved, so the fix is never a guess.
 
-**You scaffolded with `pnpm create ohif@beta`.** Where the scaffolder put your
+**You scaffolded with `pnpm create ohif`.** Where the scaffolder put your
 plugin decides whether it is compiled:
 
 - **A standalone extension or mode** (`-t extension` or `-t mode`). Not compiled.

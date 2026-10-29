@@ -10,7 +10,7 @@ summary: Package and publish an OHIF extension or mode to npm — the package.js
 Publishing an extension or mode lets other teams install it from npm and load
 it either at build time (declared in `pluginConfig.json`) or at runtime (a
 descriptor in `app-config.js`). A package scaffolded with
-[`pnpm create ohif@beta`](./create-ohif.md) is already publish-ready; this page
+[`pnpm create ohif`](./create-ohif.md) is already publish-ready; this page
 explains the shape it produces and the one publishing rule you must not miss.
 
 ## package.json requirements

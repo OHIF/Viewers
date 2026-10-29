@@ -72,7 +72,7 @@ two versions, which the migration guides for those versions describe.
 ## Step 2 — Scaffold a workspace
 
 ```bash
-pnpm create ohif@beta -t workspace
+pnpm create ohif -t workspace
 ```
 
 Answer the prompts. The scaffold writes `ohifVersion` into the generated
@@ -114,8 +114,8 @@ For each extension/mode from the Step 1 inventory, drop its folder into
 
 ```bash
 # from inside the workspace, for each plugin folder you moved in
-pnpm create ohif@beta migrate ./extensions/my-extension --dry-run   # read the report
-pnpm create ohif@beta migrate ./extensions/my-extension             # apply it
+pnpm create ohif migrate ./extensions/my-extension --dry-run   # read the report
+pnpm create ohif migrate ./extensions/my-extension             # apply it
 ```
 
 The migration report is your per-plugin checklist; the

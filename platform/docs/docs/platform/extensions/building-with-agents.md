@@ -16,7 +16,7 @@ registration or load time; violating one produces the errors in the
 
 ## Ground truth
 
-Run `pnpm create ohif@beta` and treat its output as the canonical
+Run `pnpm create ohif` and treat its output as the canonical
 implementation of everything below. The always-green reference is
 [https://github.com/OHIF/extension-example](https://github.com/OHIF/extension-example).
 

@@ -198,15 +198,11 @@ via the `ExtensionManager` by requesting it via its id.
 
 ## Scaffolding
 
-Generate a new extension or mode with the `create-ohif` scaffolder. Until a
-stable (latest-tagged) release exists, always pin the beta dist-tag:
+Generate a new extension or mode with the `create-ohif` scaffolder:
 
 ```bash
-pnpm create ohif@beta my-extension
+pnpm create ohif my-extension
 ```
-
-`pnpm create ohif` (no tag) resolves `create-ohif@latest` and will fail with
-"No matching version found" while only the beta tag exists.
 
 To scaffold directly into an OHIF Viewers checkout — landing the package in
 `extensions/<name>` or `modes/<name>` with `workspace:*` peer ranges — run the

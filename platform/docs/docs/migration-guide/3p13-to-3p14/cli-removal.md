@@ -16,7 +16,7 @@ Everything the CLI did is now covered by four things you can use directly:
 - `pnpm add -w <pkg>` to install a plugin at the workspace root,
 - an entry in [`platform/app/pluginConfig.json`](../../platform/extensions/pluginConfig.md)
   to register it (edit the file directly, or use the helper),
-- [`create-ohif`](../../development/create-ohif.md) (`pnpm create ohif@beta`) to
+- [`create-ohif`](../../development/create-ohif.md) (`pnpm create ohif`) to
   scaffold a new extension or mode,
 - a `directory` entry in `pluginConfig.json` to point at a local checkout in
   place of the old `link` commands.
@@ -25,7 +25,7 @@ Everything the CLI did is now covered by four things you can use directly:
 
 | Old command | Replacement |
 | --- | --- |
-| `create-extension` / `create-mode` | `pnpm create ohif@beta` ([Create an Extension or Mode](../../development/create-ohif.md)) |
+| `create-extension` / `create-mode` | `pnpm create ohif` ([Create an Extension or Mode](../../development/create-ohif.md)) |
 | `add-extension` / `add-mode` | `pnpm add -w <pkg>` + a `pluginConfig.json` entry, or `pnpm run plugin add <pkg>` |
 | `remove-extension` / `remove-mode` | `pnpm run plugin remove <pkg>` |
 | `link-extension` / `link-mode` | `directory` entry in `pluginConfig.json` (`pnpm run plugin link <path>`) |
@@ -44,7 +44,7 @@ from-npm, from-checkout, and in-tree forms of a registration entry.
 
 An extension or mode scaffolded by the old CLI will not build or load as-is
 under the current contract. The mechanical rewrites are done for you by
-`pnpm create ohif@beta migrate ./path-to-your-plugin --dry-run`, and the deep,
+`pnpm create ohif migrate ./path-to-your-plugin --dry-run`, and the deep,
 item-by-item walkthrough — with the CLI-era template quoted verbatim — lives in
 **[CLI-era extension → 2026 plugin contract](../cli-era-extensions.md)**. The
 short version:
@@ -52,7 +52,7 @@ short version:
 1. **Broken `dev` script.** The extension template's `"dev"` pointed at
    `.webpack/webpack.dev.js` but the template shipped only
    `.webpack/webpack.prod.js`; the mode template shipped no `.webpack/`
-   directory at all. Re-scaffold with `pnpm create ohif@beta` and move `src/`
+   directory at all. Re-scaffold with `pnpm create ohif` and move `src/`
    across, or, if you keep the old config, point `dev` at the file that exists:
 
    ```diff

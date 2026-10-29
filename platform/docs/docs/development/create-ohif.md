@@ -7,16 +7,9 @@ summary: Scaffold OHIF workspaces, extensions, modes, and deployment configs wit
 
 # Create an Extension or Mode
 
-:::note Use `@beta` until OHIF 3.14 is released
+:::note
 `pnpm create ohif` downloads and runs the npm package `create-ohif` (pnpm adds
-the `create-` prefix), and `@beta` picks the version carrying the `beta`
-dist-tag. `create-ohif` is published under that tag until 3.14.0 ships as a
-stable release, so every command on these pages that fetches `create-ohif` from
-npm uses `pnpm create ohif@beta`.
-Plain `pnpm create ohif` asks for the `latest` tag, which has no 3.14 version
-yet, and fails with "No matching version found".
-Once 3.14.0 is stable, `@beta` is dropped from the docs and the plain command
-works.
+the `create-` prefix).
 :::
 
 `create-ohif` is a published scaffolder that replaces the removed OHIF CLI's
@@ -29,7 +22,7 @@ contract summary.
 ## Quick start
 
 ```bash
-pnpm create ohif@beta
+pnpm create ohif
 ```
 
 The first prompt is **"What are you building?"** with four templates:
@@ -81,7 +74,7 @@ then starts the harness dev server with your workspace plugins source-compiled
 under HMR. `pnpm run harness upgrade <tag>` re-pins the manifest, re-clones, and
 re-links.
 
-Running `pnpm create ohif@beta` **inside** a workspace folder scaffolds the new
+Running `pnpm create ohif` **inside** a workspace folder scaffolds the new
 extension or mode into `extensions/` or `modes/`, appends it to
 `ohif.config.json`, and links it into the harness on the next `pnpm dev` — no
 manual wiring.
@@ -128,9 +121,9 @@ copy from its root:
 node platform/create-ohif/bin/create-ohif.mjs my-extension --template extension --in-tree
 ```
 
-Use this rather than `pnpm create ohif@beta`: it matches the checkout's version,
-and the repo's `pnpm-workspace.yaml` sets a two-day `minimumReleaseAge`, so pnpm
-refuses a `create-ohif` beta published less than two days ago.
+Use this rather than `pnpm create ohif`: it matches the checkout's version, and
+the repo's `pnpm-workspace.yaml` sets a two-day `minimumReleaseAge`, so pnpm
+refuses a `create-ohif` version published less than two days ago.
 
 This writes into `extensions/` or `modes/` of the enclosing checkout (detected
 by walking up to a directory that has both `pnpm-workspace.yaml` and
@@ -154,7 +147,7 @@ own: the repo root's settings govern.
 All prompts have flag equivalents; a non-TTY stdin implies `--yes` semantics:
 
 ```bash
-pnpm create ohif@beta my-ext --scope '@acme' --template extension --modules viewport,panel --yes
+pnpm create ohif my-ext --scope '@acme' --template extension --modules viewport,panel --yes
 ```
 
 This creates `@acme/my-ext`. Every flag is listed under [Options](#options).
@@ -162,8 +155,8 @@ This creates `@acme/my-ext`. Every flag is listed under [Options](#options).
 ## Options
 
 ```bash
-pnpm create ohif@beta [name] [options]
-pnpm create ohif@beta migrate <path> [--dry-run]
+pnpm create ohif [name] [options]
+pnpm create ohif migrate <path> [--dry-run]
 ```
 
 | Option | Meaning |

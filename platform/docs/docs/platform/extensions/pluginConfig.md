@@ -142,7 +142,7 @@ listed here are compiled in; workspace packages that are not listed are ignored.
    by `packageName`; the build scans those workspaces and maps the declared name
    to its source directory.
 2. **External, out-of-tree source** — a checkout outside this repo (e.g. an
-   extension scaffolded with `pnpm create ohif@beta`). Add a `directory` field. The path may
+   extension scaffolded with `pnpm create ohif`). Add a `directory` field. The path may
    be absolute, `~`-relative to the home directory, or `.`-relative to the repo
    root.
 

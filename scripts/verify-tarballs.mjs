@@ -140,7 +140,10 @@ function checkPublishListParity(packages) {
     fail('publish-package.mjs', "could not locate the 'const packages = [...]' publish list");
     return;
   }
-  const publishDirs = [...arrayMatch[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+  // Drop line comments first: an apostrophe in one (e.g. "deployment's") would
+  // otherwise pair with the wrong quote and swallow the entries after it.
+  const listSource = arrayMatch[1].replace(/\/\/.*$/gm, '');
+  const publishDirs = [...listSource.matchAll(/'([^']+)'/g)].map(m => m[1]);
   const byDir = new Map(packages.map(pkg => [pkg.relDir, pkg]));
   const publishedNames = new Set();
   for (const dir of publishDirs) {

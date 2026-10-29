@@ -14,7 +14,7 @@ serves through one Rsbuild config instead of two separate pipelines.
 
 You are affected if you maintain a fork, build the viewer yourself, or work on
 OHIF itself. Deployments of the published `ohif/app` image and plugin authors
-using `pnpm create ohif@beta` are not affected.
+using `pnpm create ohif` are not affected.
 
 ## `.webpack/` is now `.rspack/`
 

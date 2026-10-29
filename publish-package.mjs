@@ -2,9 +2,33 @@ import { execa } from 'execa';
 import fs from 'fs/promises';
 import glob from 'glob';
 import path from 'path';
+import semver from 'semver';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 10000; // 10 seconds
+
+// Until create-ohif has a stable release, move its `latest` dist-tag to each
+// new master beta, so plain `pnpm create ohif` scaffolds the current beta
+// rather than the first version ever published (a registry gives a new
+// package's first version `latest` even when it is published with --tag
+// beta, and later --tag beta publishes leave it there). Only moves `latest`
+// forward, and only while it is a prerelease: once a release/* branch
+// publishes a stable version this does nothing, and can be removed.
+// Never throws, so a tagging problem can't trigger a publish retry.
+async function promoteLatestUntilStable(name, version) {
+  try {
+    const { stdout } = await execa('npm', ['view', name, 'dist-tags.latest']);
+    const latest = stdout.trim();
+    if (latest && !(semver.prerelease(latest) && semver.gt(version, latest))) {
+      console.log(`Leaving ${name}@latest at ${latest}`);
+      return;
+    }
+    await execa('npm', ['dist-tag', 'add', `${name}@${version}`, 'latest']);
+    console.log(`Moved ${name}@latest to ${version}`);
+  } catch (error) {
+    console.error(`Could not update ${name}@latest: ${error}`);
+  }
+}
 
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
@@ -80,6 +104,10 @@ async function run() {
 
             await execa('pnpm', publishArgs);
             console.log(`Successfully published package at ${packageDirectory}`);
+
+            if (branchName === 'master' && packageJsonContent.name === 'create-ohif') {
+              await promoteLatestUntilStable(packageJsonContent.name, packageJsonContent.version);
+            }
             break;
           } catch (error) {
             retries++;

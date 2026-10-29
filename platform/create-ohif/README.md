@@ -4,12 +4,7 @@ Scaffold OHIF Viewer extensions and modes.
 
 ## Usage
 
-Until a stable (latest-tagged) release exists, always pin the beta dist-tag:
-
-    pnpm create ohif@beta my-extension
-
-`pnpm create ohif` (no tag) resolves create-ohif@latest and will fail with
-"No matching version found" while only the beta tag exists.
+    pnpm create ohif my-extension
 
 ## Running a local copy
 
@@ -83,15 +78,8 @@ pluginConfig snippets for loading the built package into a host viewer.
 ## Releasing
 
 CI publishes this package with the rest of the monorepo: `publish-version.mjs`
-stamps its version on every release and `publish-package.mjs` publishes it
-(with `--tag beta` when releasing from master, the default `latest` tag
-otherwise). Promoting a stable tag:
-
-- Option A (default, no code change): wait for the first non-master release
-  publish — the default tag makes that version `latest` automatically.
-- Option B (opt-in, manual or one CI line): promote a specific beta explicitly
-  with `npm dist-tag add create-ohif@<version> latest` once the scaffolder is
-  deemed stable, enabling bare `pnpm create ohif` early.
-
-Do not auto-promote from the master pipeline — that would make `latest` a
-beta.
+stamps its version on every release and `publish-package.mjs` publishes it,
+with `--tag beta` from master and the default `latest` tag from `release/*`.
+Until the first stable release, `publish-package.mjs` also moves `latest` to
+each new master beta, so plain `pnpm create ohif` always gets the current beta.
+Once a stable version is `latest`, master betas no longer move it.

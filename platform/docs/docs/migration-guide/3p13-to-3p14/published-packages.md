@@ -22,7 +22,7 @@ if your project installs OHIF packages from npm.
 | `@ohif/i18n` | Translations |
 | `@ohif/extension-default` | The default extension |
 | `@ohif/extension-cornerstone` | The Cornerstone rendering extension |
-| `create-ohif` | The tool that creates OHIF extensions, modes and workspaces (`pnpm create ohif@beta`). See [Create an Extension or Mode](../../development/create-ohif.md). |
+| `create-ohif` | The tool that creates OHIF extensions, modes and workspaces (`pnpm create ohif`). See [Create an Extension or Mode](../../development/create-ohif.md). |
 | `@ohif/app` | The viewer application, published as a prebuilt viewer: the built `dist` folder, served as-is with your own `app-config.js`. For deployments, the Docker image is the supported route. |
 
 The five SDK packages are the ones a third-party extension or mode builds
