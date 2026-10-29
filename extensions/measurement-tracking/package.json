@@ -29,7 +29,6 @@
   "peerDependencies": {
     "@cornerstonejs/core": "5.12.0",
     "@cornerstonejs/tools": "5.12.0",
-    "@dcmjs-org/dcmjs": "1.0.0-beta.5",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
     "@ohif/extension-default": "workspace:*",
