@@ -448,6 +448,10 @@ const SANCTIONED_OHIF_SUBPATHS = [
   '@ohif/ui-next/lib/',
   '@ohif/ui-next/components/',
 ];
+// The OHIF app's own import aliases (.rspack/resolveConfig.js). They resolve
+// only in an OHIF checkout's build, never in a plugin's own build.
+// tests/migrate.test.mjs checks this list against resolveConfig.js.
+const APP_ALIASES = ['@', '@components', '@hooks', '@routes', '@state'];
 
 function detectPluginKind(pkg) {
   const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
@@ -490,6 +494,14 @@ function scanSourceImports(targetDir, flags) {
         if (spec === '@ohif/ui' || spec.startsWith('@ohif/ui/')) {
           flags.push(
             `${at} imports "${spec}" — @ohif/ui is legacy and the host does not provide it to plugins; port to @ohif/ui-next by hand (the APIs differ)`
+          );
+        } else if (APP_ALIASES.some(alias => spec === alias || spec.startsWith(`${alias}/`))) {
+          flags.push(
+            `${at} imports "${spec}", an alias inside the OHIF app — works only compiled into an OHIF checkout; a runtime bundle can't use it`
+          );
+        } else if (spec === '@ohif/app') {
+          flags.push(
+            `${at} imports "@ohif/app" — works only compiled into an OHIF checkout; a runtime bundle can't use it (the host doesn't share it)`
           );
         } else if (
           /^@ohif\/[^/]+\//.test(spec) &&

@@ -7,6 +7,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -588,6 +589,46 @@ test('migrate flags @ohif/ui imports, internal imports, and custom build config 
   assert.ok(fs.existsSync(path.join(target, '.webpack', 'custom-plugin.js')));
   assert.ok(!fs.existsSync(path.join(target, '.webpack', 'webpack.prod.js')), 'recognized config still replaced');
 });
+
+test("migrate flags imports of the OHIF app's aliases and @ohif/app", () => {
+  // The app's aliases, read from the repo's resolveConfig.js so a new alias
+  // there fails this test until migrate knows it: everything in `alias` except
+  // the dedupe aliases and the exact-match '@ohif/app$'.
+  const require = createRequire(import.meta.url);
+  const { alias, dedupeAlias } = require('../../../.rspack/resolveConfig.js');
+  const appAliases = Object.keys(alias).filter(
+    name => !(name in dedupeAlias) && !name.endsWith('$')
+  );
+  assert.ok(appAliases.length > 0, 'resolveConfig.js still has the app aliases');
+  // migrate's own list must match exactly, so it can't keep an alias that
+  // resolveConfig.js has dropped either. The bin runs on load, so read its source.
+  const [, listSource = ''] =
+    fs.readFileSync(bin, 'utf8').match(/const APP_ALIASES = \[([^\]]*)\];/) ?? [];
+  const migrateAliases = [...listSource.matchAll(/'([^']+)'/g)].map(m => m[1]);
+  assert.deepEqual([...migrateAliases].sort(), [...appAliases].sort());
+
+  const target = scaffoldCliEra('extension', 'app-alias-extension');
+  fs.writeFileSync(
+    path.join(target, 'src', 'app-imports.tsx'),
+    [
+      ...appAliases.map((name, i) => `import a${i} from '${name}/x';`),
+      "import { preserveQueryParameters } from '@ohif/app';",
+      "import { utils } from '@ohif/core';",
+      '',
+    ].join('\n')
+  );
+
+  const report = migrate(target, '--dry-run');
+  for (const name of appAliases) {
+    assert.ok(
+      report.includes(`imports "${name}/x", an alias inside the OHIF app`),
+      `${name}\n---\n${report}`
+    );
+  }
+  assert.ok(report.includes('imports "@ohif/app" — works only compiled into an OHIF checkout'), report);
+  assert.ok(!report.includes('"@ohif/core", an alias'), 'a bare @ohif package is not an app alias');
+});
+
 test('migrate flags a missing or different packageManager without writing it', () => {
   const expected = JSON.parse(
     fs.readFileSync(path.join(templatesRoot, 'workspace', 'package.json'), 'utf8')

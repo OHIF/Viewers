@@ -300,6 +300,20 @@ If your source imported any of the newly-external packages expecting them
 bundled, nothing changes in your code — but the runtime now supplies the
 host's single copy, which is the point.
 
+migrate also flags imports that only resolve when the plugin is compiled into
+an OHIF checkout: the app's own aliases (`@`, `@components`, `@hooks`,
+`@routes`, `@state`) and `@ohif/app`. They work for a directory link or an
+in-tree package. In a runtime bundle the aliases can't be resolved, and
+`@ohif/app` is `undefined`, because the host doesn't share it. If you build a
+runtime bundle, replace them:
+
+| Instead of | Use |
+| --- | --- |
+| `useAppConfig` from `@state`, to read the app config | `extensionManager.appConfig` |
+| `history` from `@ohif/app`, to navigate | `useNavigate()` from `react-router-dom` |
+| `preserveQueryParameters` or `preserveQueryStrings` from `@ohif/app` | Your own copy (it's a short function), or `URLSearchParams` |
+| Anything else under `@`, `@components`, `@hooks` or `@routes` | What `@ohif/core`, `@ohif/ui-next` and the shared extensions export |
+
 The vendored `pluginExternals.js` is a verbatim copy of the monorepo's
 `.rspack/pluginExternals.js`; `create-ohif` keeps the two in sync. See
 [Webpack to Rspack v2](./3p12-to-3p13/build-tooling.md) and the 3.14
