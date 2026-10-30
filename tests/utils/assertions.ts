@@ -2,7 +2,9 @@ import { Locator, Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
 import { DOMOverlayPageObject } from '../pages';
-import type { SegmentationSelect } from '../pages/RightPanelPageObject';
+import type { RightPanelPageObject, SegmentationSelect } from '../pages/RightPanelPageObject';
+import type { IViewportPageObject } from '../pages/ViewportPageObject';
+import { waitForRenderCycleForAction } from './waitForViewportsRendered';
 
 /**
  * Asserts the number of Modality Load Badges present on the page.
@@ -87,4 +89,70 @@ export async function expectSegmentationLabels(
   const options = await segmentationSelect.getSegmentationLabels();
   await expect(options).toHaveText(labels);
   await segmentationSelect.close();
+}
+
+type LabelmapPaintedParams = {
+  page: Page;
+  /** Must be the active viewport, which is the only one the panel's eye toggle applies to. */
+  viewport: IViewportPageObject;
+  labelMapSegmentationPanel: RightPanelPageObject['labelMapSegmentationPanel'];
+};
+
+/**
+ * Hides and re-shows the selected labelmap with the all-segments eye toggle and compares the
+ * viewport's canvas digests.
+ */
+async function hideAndShowLabelmap(
+  { page, viewport, labelMapSegmentationPanel }: LabelmapPaintedParams,
+  painted: boolean
+) {
+  await expect(viewport.pane, 'Expected the viewport to be active').toHaveAttribute(
+    'data-is-active',
+    'true'
+  );
+  const { segmentsVisibilityToggle } = labelMapSegmentationPanel;
+  const digest = () => viewport.getCanvasDigest();
+  // A render can still land after a render-cycle wait resolves (e.g. the tail of a brush
+  // stroke), so read the frame until two reads half a second apart agree.
+  const settledDigest = async () => {
+    let previous: number | undefined;
+    let current: number | undefined;
+    await expect
+      .poll(
+        async () => {
+          previous = current;
+          current = await digest();
+          return current === previous;
+        },
+        { message: 'The viewport kept repainting', intervals: [500] }
+      )
+      .toBe(true);
+    return current;
+  };
+  const shownDigest = await settledDigest();
+
+  await waitForRenderCycleForAction(page, () => segmentsVisibilityToggle.click());
+  if (painted) {
+    await expect
+      .poll(digest, { message: 'Hiding the labelmap changed nothing' })
+      .not.toBe(shownDigest);
+  } else {
+    // Nothing should change, so let the frame settle before comparing.
+    expect(await settledDigest(), 'Hiding the labelmap changed the frame').toBe(shownDigest);
+  }
+
+  await waitForRenderCycleForAction(page, () => segmentsVisibilityToggle.click());
+  await expect
+    .poll(digest, { message: 'Showing the labelmap did not restore the frame' })
+    .toBe(shownDigest);
+}
+
+/** Asserts that the selected labelmap paints pixels on the (active) viewport. */
+export async function expectLabelmapPainted(params: LabelmapPaintedParams) {
+  await hideAndShowLabelmap(params, true);
+}
+
+/** Asserts that the selected labelmap paints nothing, not even a stale frame, on the viewport. */
+export async function expectNoLabelmapPainted(params: LabelmapPaintedParams) {
+  await hideAndShowLabelmap(params, false);
 }

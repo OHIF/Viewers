@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import {
+  getViewportCanvasStats,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
@@ -36,6 +37,7 @@ export interface IOverlayText {
   locator: Locator;
   get windowLevel(): Locator;
   get instanceNumber(): Locator;
+  get seriesDescription(): Locator;
 }
 function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
   const locator = viewport.getByTestId(id);
@@ -46,6 +48,9 @@ function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
     },
     get instanceNumber() {
       return locator.getByTitle('Instance Number');
+    },
+    get seriesDescription() {
+      return locator.getByTitle('Series description');
     },
   };
 }
@@ -98,6 +103,8 @@ export interface IViewportPageObject {
   pane: Locator;
   /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
   getViewportType: () => Promise<string | undefined>;
+  /** Digest of the pixels painted on this viewport's canvas; changes when the frame changes. */
+  getCanvasDigest: () => Promise<number>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
   /** The text box of each annotation drawn in the viewport. */
@@ -504,6 +511,10 @@ export class ViewportPageObject {
             (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
           { viewportId, services: await this.page.evaluateHandle('window.services') }
         );
+      },
+      getCanvasDigest: async () => {
+        const viewportId = await this.getViewportId(viewport);
+        return (await getViewportCanvasStats({ page: this.page, viewportId })).digest;
       },
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
