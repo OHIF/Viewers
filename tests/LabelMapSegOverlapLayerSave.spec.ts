@@ -1,6 +1,6 @@
 import fs from 'node:fs';
-// dcmjs is not a root dependency: it resolves to the hoisted copy that the
-// workspace packages pin.
+// @dcmjs-org/dcmjs is not a root dependency: it resolves to the hoisted copy
+// that the workspace packages pin.
 import dcmjs from '@dcmjs-org/dcmjs';
 import type { Page } from '@playwright/test';
 

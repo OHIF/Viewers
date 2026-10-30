@@ -1,7 +1,7 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
-import { asArray } from '@cornerstonejs/utils';
+import { asArray, asArrayFirst } from '@cornerstonejs/utils';
 
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
@@ -91,7 +91,7 @@ function _getDisplaySetsFromSeries(
     return;
   }
 
-  const referencedSeries = referencedSeriesSequence[0];
+  const referencedSeries = asArrayFirst(referencedSeriesSequence);
 
   displaySet.referencedImages = asArray(referencedSeriesSequence).flatMap(series =>
     asArray(series.ReferencedInstanceSequence ?? [])
