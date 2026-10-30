@@ -178,6 +178,11 @@ without changing any file; that report is the migration checklist. See
 [CLI-era extension → 2026 plugin contract](../migration-guide/cli-era-extensions.md)
 for what each item means.
 
+`migrate` sets the peers on host-provided packages (React, React Router,
+i18next) to the versions the viewer shares. That can move a peer to a new major
+version: if your code was written for an older one, check that package's
+breaking changes. The report ends with a note naming the packages it changed.
+
 ### Where an extension or mode is created
 
 A new extension or mode is set up for the place its folder lands:

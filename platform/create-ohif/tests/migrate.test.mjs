@@ -73,6 +73,10 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
     'add pnpm-workspace.yaml with autoInstallPeers: false',
     'peerDependencies["react"]: "^18.3.1" -> "^19.2.7"',
     'peerDependencies["react-dom"]: "^18.3.1" -> "^19.2.7"',
+    'peerDependencies["react-router"]: "^6.23.1" -> "^6.30.3"',
+    'peerDependencies["react-router-dom"]: "^6.23.1" -> "^6.30.3"',
+    'peerDependencies["react-i18next"]: "^12.2.2" -> "^12.3.1"',
+    "Note: the peer versions of react, react-dom, react-router, react-router-dom, react-i18next will be set to the host's.",
     'pin to exact versions (cross-env ^7.0.3 -> 7.0.3)',
     "devDependencies: dotenv isn't used by any script, config or source file — remove it",
     'add AGENTS.md',
@@ -112,6 +116,73 @@ test('migrate moves react from dependencies to peerDependencies', () => {
   assert.equal(pkg.peerDependencies.react, '^19.2.7');
 
   assert.ok(!migrate(target, '--dry-run').includes('move "react"'), 'second run moves nothing');
+});
+
+test("migrate aligns React Router and i18next peers to the host app's majors", () => {
+  const appDeps = JSON.parse(
+    fs.readFileSync(new URL('../../app/package.json', import.meta.url), 'utf8')
+  ).dependencies;
+  const target = scaffoldCliEra('extension', 'shared-peers-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  Object.assign(scaffolded.peerDependencies, {
+    'react-router': '^5.3.0',
+    'react-router-dom': '^5.3.0',
+    i18next: '^21.0.0',
+    'react-i18next': '^11.0.0',
+  });
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target);
+  assert.ok(report.includes('peerDependencies["react-router-dom"]: "^5.3.0" -> "^'), report);
+  assert.ok(report.includes('Note: the peer versions of'), report);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  // Each peer is a caret range on the major the host app bundles, so the
+  // host's own copy satisfies it.
+  for (const name of ['react-router', 'react-router-dom', 'i18next', 'react-i18next']) {
+    const [peerMajor] = pkg.peerDependencies[name].replace(/^\^/, '').split('.');
+    const [appMajor] = appDeps[name].split('.');
+    assert.equal(`${name}@${peerMajor}`, `${name}@${appMajor}`);
+  }
+
+  assert.ok(
+    !migrate(target, '--dry-run').includes('Note: the peer versions'),
+    'second run rewrites nothing'
+  );
+});
+
+test('migrate moves React Router and i18next from dependencies to peerDependencies', () => {
+  const target = scaffoldCliEra('extension', 'shared-dep-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  delete scaffolded.peerDependencies['react-router-dom'];
+  scaffolded.dependencies = {
+    ...scaffolded.dependencies,
+    'react-router-dom': '^6.4.0',
+    i18next: '^19.9.2',
+  };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    'dependencies: move "react-router-dom" "^6.4.0" to peerDependencies "^6.30.3"',
+    'dependencies: move "i18next" "^19.9.2" to peerDependencies "^19.9.2"',
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('react-router-dom' in pkg.dependencies));
+  assert.ok(!('i18next' in pkg.dependencies));
+  assert.equal(pkg.peerDependencies['react-router-dom'], '^6.30.3');
+  assert.equal(pkg.peerDependencies.i18next, '^19.9.2');
+});
+
+test('migrate prints no version note when no shared peer changes', () => {
+  // The CLI-era mode template peer-depends on @ohif/core only.
+  const target = scaffoldCliEra('mode', 'no-shared-peers-mode');
+  assert.ok(!migrate(target, '--dry-run').includes('Note: the peer versions'));
 });
 
 test('migrate raises engines.node to the template and drops the npm and yarn engines', () => {

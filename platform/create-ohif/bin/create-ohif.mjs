@@ -430,6 +430,17 @@ const MIGRATE_DEV_DEPS = {
     'cross-env': '7.0.3',
   },
 };
+// Shared third-party packages the template doesn't declare (it declares React
+// itself), at the versions the host shares with plugins (see
+// .rspack/pluginExternals.js). migrate aligns a plugin's peers on these to the
+// host, as it does for React. tests/migrate.test.mjs checks the majors against
+// platform/app/package.json.
+const HOST_SHARED_PEERS = {
+  'react-router': '^6.30.3',
+  'react-router-dom': '^6.30.3',
+  i18next: '^19.9.2',
+  'react-i18next': '^12.3.1',
+};
 // The only @ohif deep imports the published contract resolves (ui-next
 // subpath exports); everything else under @ohif/<pkg>/ is an internal.
 const SANCTIONED_OHIF_SUBPATHS = [
@@ -678,6 +689,9 @@ async function runMigrate(targetDir, dryRun) {
   const templateReactPeers = JSON.parse(
     readTemplateFile('extension', 'package.json')
   ).peerDependencies;
+  // Shared packages whose version migrate changes, for the note at the end of
+  // the report.
+  const versionRewrites = new Set();
   for (const name of ['react', 'react-dom']) {
     if (name in peers && peers[name] !== templateReactPeers[name]) {
       note(
@@ -685,6 +699,7 @@ async function runMigrate(targetDir, dryRun) {
         `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${templateReactPeers[name]}" (the host runs React 19)`
       );
       peers[name] = templateReactPeers[name];
+      versionRewrites.add(name);
     }
   }
   // React under dependencies is always moved: the host provides React, so an
@@ -699,6 +714,28 @@ async function runMigrate(targetDir, dryRun) {
       );
       delete deps[name];
       peers[name] = templateReactPeers[name];
+      versionRewrites.add(name);
+    }
+  }
+  // React Router and i18next follow the host the same way: rewritten when
+  // declared as peers, moved when declared as dependencies.
+  for (const [name, range] of Object.entries(HOST_SHARED_PEERS)) {
+    if (name in peers && peers[name] !== range) {
+      note(
+        true,
+        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${range}" (the host shares ${name} ${range.slice(1)})`
+      );
+      peers[name] = range;
+      versionRewrites.add(name);
+    }
+    if (name in deps) {
+      note(
+        true,
+        `package.json dependencies: move "${name}" ${JSON.stringify(deps[name])} to peerDependencies "${range}" (the host provides ${name}; an installed copy is never used)`
+      );
+      delete deps[name];
+      peers[name] = range;
+      versionRewrites.add(name);
     }
   }
   if (next.dependencies) {
@@ -1151,6 +1188,12 @@ async function runMigrate(targetDir, dryRun) {
     dryRun
       ? `${rewriteCount} rewrite(s) pending, ${flags.length} manual follow-up(s).`
       : `${rewriteCount} rewrite(s) applied, ${flags.length} manual follow-up(s). Next: pnpm install && pnpm build.`,
+    ...(versionRewrites.size > 0
+      ? [
+          '',
+          `Note: the peer versions of ${[...versionRewrites].join(', ')} ${dryRun ? 'will be' : 'were'} set to the host's. If your code was written for an older major version of any of them, check that package's breaking changes; the [rewrite] lines above show the old and new ranges.`,
+        ]
+      : []),
   ];
   console.log(lines.join('\n'));
 }

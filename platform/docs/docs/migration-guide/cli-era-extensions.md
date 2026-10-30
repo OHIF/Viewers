@@ -173,6 +173,16 @@ The contract:
 - **React is a peer, never a dependency.** If `react` or `react-dom` is under
   `dependencies`, migrate moves it to `peerDependencies` at the template's
   range. The host provides React, and an installed copy would be a second React.
+- **React Router and i18next follow the host too.** Peers on `react-router`,
+  `react-router-dom`, `i18next` and `react-i18next` are set to the versions the
+  viewer shares (`^6.30.3`, `^6.30.3`, `^19.9.2`, `^12.3.1`), and any of them
+  under `dependencies` move to `peerDependencies`. The CLI-era peers above
+  become `"react-router": "^6.30.3"`, `"react-router-dom": "^6.30.3"` and
+  `"react-i18next": "^12.3.1"`.
+- **Check the majors that moved.** Aligning a peer to the host can move it to a
+  new major version (React 18 to 19, for example). If your code was written for
+  an older major, check that package's breaking changes; the report ends with a
+  note naming the packages whose versions changed.
 - **Drop the `@ohif/ui` peer** if present. `@ohif/ui` is legacy and the host
   does not hand it to runtime plugins; port UI to `@ohif/ui-next` (the APIs
   differ — this is a `[flag]`, migrate will not rewrite your imports).
