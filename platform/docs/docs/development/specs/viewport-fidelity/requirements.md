@@ -325,6 +325,17 @@ and shall not present the worst state observed across the display set.
 WHERE more than one fidelity difference applies to a viewport simultaneously, the system shall
 present a single indicator for that viewport.
 
+**VF-VIS-5a**
+WHERE a viewport shows more than one display set, the system shall present the lossiness state
+of the worst display set. IF any display set is terminally lossy, THEN the system shall present
+the terminally lossy state, also while another display set still loads. IF the system presents
+that state WHILE another display set still loads, THEN the detail view shall state that other
+data still loads.
+
+> Example: a CT that loads next to a decimated PET shows the terminally lossy state (red in
+> §5.4, label `Low Fidelity`). Cornerstone3D states the same rule as FIDELITY-STATE-12, and
+> uses "data set" for a display set. The maintainer decided this rule on 2026-10-30.
+
 **VF-VIS-6**
 The system shall enable the indicator by default wherever Cornerstone viewports are rendered.
 
