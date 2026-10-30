@@ -1,0 +1,20 @@
+// GPU settings preset: high
+//
+// A texture edge of 2048 voxels and 32 GB of texture memory, the largest
+// memory of the presets. `high` is the default preset of Cornerstone3D when
+// `auto` does not exist. Select it only on a device that holds that much
+// texture memory. A device of the middle class can crash under it.
+//
+// A preset applies only with final downsampling on, and a preset in this
+// customization turns final downsampling on, also in a locked-down config.
+// `?customization=` needs `customizationUrlPrefixes`, and config/default.js has
+// none: there, set the preset through `customizationService` in the config.
+// Nothing probes the device: a preset is a set of values, so a real device may
+// hold more or less than the preset states.
+//
+// Load it with `?customization=gpu/high`.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "high"
+  }
+}
