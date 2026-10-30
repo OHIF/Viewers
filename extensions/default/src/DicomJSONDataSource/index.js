@@ -1,7 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
 import qs from 'query-string';
-import dcmjs from '@dcmjs-org/dcmjs';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
@@ -243,8 +242,6 @@ function createDicomJSONApi(dicomJsonConfig, servicesManager) {
               };
               delete obj.instances;
               delete obj.series;
-              // JSON keeps a dcmjs 1.0 private block, but not its hex tag aliases
-              dcmjs.data.definePrivateAliases(obj);
               return obj;
             });
             storeInstances(instances);

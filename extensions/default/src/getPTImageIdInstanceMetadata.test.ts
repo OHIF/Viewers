@@ -19,6 +19,7 @@ jest.mock('@ohif/core', () => {
 import dcmjs from '@dcmjs-org/dcmjs';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
+import combineFrameInstance from '../../../platform/core/src/utils/combineFrameInstance';
 
 // A valid PT instance with the radiopharmaceutical sequence in dcmjs array form.
 const baseInstance = () => ({
@@ -72,6 +73,7 @@ describe('getPTImageIdInstanceMetadata', () => {
 
   it('populates PhilipsPETPrivateGroup when the private tags are numbers', () => {
     const inst = baseInstance();
+    inst['70530010'] = 'Philips PET Private Group';
     inst['70531000'] = 0.00038;
     inst['70531009'] = 1.881732;
     mockGet.mockReturnValue(inst);
@@ -84,6 +86,7 @@ describe('getPTImageIdInstanceMetadata', () => {
 
   it('drops an unresolved bulkdata { BulkDataURI } private tag (coerceNumber backstop)', () => {
     const inst = baseInstance();
+    inst['70530010'] = 'Philips PET Private Group';
     inst['70531000'] = { BulkDataURI: 'http://x/bulk/70531000' };
     inst['70531009'] = { BulkDataURI: 'http://x/bulk/70531009' };
     mockGet.mockReturnValue(inst);
@@ -100,6 +103,24 @@ describe('getPTImageIdInstanceMetadata', () => {
       '70531009': { vr: 'DS', Value: [1.881732] },
     });
     mockGet.mockReturnValue(Object.assign(naturalized, baseInstance()));
+    expect(getPTImageIdInstanceMetadata('img:1').PhilipsPETPrivateGroup).toEqual({
+      SUVScaleFactor: 0.00038,
+      ActivityConcentrationScaleFactor: 1.881732,
+    });
+  });
+
+  it('reads the Philips scale factors of a multi-frame PT through combineFrameInstance', () => {
+    const naturalized = dcmjs.data.DicomMetaDictionary.naturalizeDataset({
+      '70530010': { vr: 'LO', Value: ['Philips PET Private Group'] },
+      '70531000': { vr: 'DS', Value: [0.00038] },
+      '70531009': { vr: 'DS', Value: [1.881732] },
+    });
+    const multiFrame = Object.assign(naturalized, baseInstance(), {
+      NumberOfFrames: 2,
+      SharedFunctionalGroupsSequence: [{}],
+      PerFrameFunctionalGroupsSequence: [{}, {}],
+    });
+    mockGet.mockReturnValue(combineFrameInstance(2, multiFrame));
     expect(getPTImageIdInstanceMetadata('img:1').PhilipsPETPrivateGroup).toEqual({
       SUVScaleFactor: 0.00038,
       ActivityConcentrationScaleFactor: 1.881732,
@@ -140,6 +161,7 @@ describe('getPTImageIdInstanceMetadata', () => {
 
   it('coerces a numeric DS string private tag to a number', () => {
     const inst = baseInstance();
+    inst['70530010'] = ['Philips PET Private Group'];
     inst['70531000'] = '0.00038';
     mockGet.mockReturnValue(inst);
     expect(getPTImageIdInstanceMetadata('img:1').PhilipsPETPrivateGroup.SUVScaleFactor).toBe(
