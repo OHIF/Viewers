@@ -38,6 +38,10 @@ export const HOST_SINGLETON_PACKAGES = [
   '@ohif/ui-next',
   '@cornerstonejs/core',
   '@cornerstonejs/tools',
+  'react-router',
+  'react-router-dom',
+  'i18next',
+  'react-i18next',
 ];
 
 export const readConfig = (configPath = CONFIG_PATH) =>

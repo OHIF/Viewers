@@ -60,8 +60,9 @@ the UMD global is `window['@acme/extension-foo']` and it resolves to the
 extension object itself (no `.default` indirection).
 
 Host-provided packages must stay **externals** — React (`react`, `react-dom`,
-`react/jsx-runtime`), `@ohif/*`, `@cornerstonejs/*`, `vtk.js`, `dcmjs`, and
-`gl-matrix`. The scaffolded `.rspack/pluginExternals.js` already lists them; do
+`react/jsx-runtime`), React Router (`react-router`, `react-router-dom`),
+`i18next`, `react-i18next`, `@ohif/*`, `@cornerstonejs/*`, `vtk.js`, `dcmjs`,
+and `gl-matrix`. The scaffolded `.rspack/pluginExternals.js` already lists them; do
 not bundle them, or the plugin ships a second copy of React and fails to load.
 See [Develop Out-of-Tree](./out-of-tree.md) for the shared-package rationale.
 

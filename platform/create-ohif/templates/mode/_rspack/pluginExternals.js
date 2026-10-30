@@ -9,4 +9,8 @@ module.exports = [
   'react',
   'react-dom',
   'react/jsx-runtime',
+  'react-router',
+  'react-router-dom',
+  'i18next',
+  'react-i18next',
 ];

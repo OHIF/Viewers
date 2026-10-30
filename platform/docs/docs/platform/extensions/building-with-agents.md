@@ -141,7 +141,7 @@ and a plugin must never bundle or import its own copy. The host provides most of
 them as globals; the exceptions are noted below.
 
 ```js
-[/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/, 'react', 'react-dom', 'react/jsx-runtime']
+[/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/, 'react', 'react-dom', 'react/jsx-runtime', 'react-router', 'react-router-dom', 'i18next', 'react-i18next']
 ```
 
 The host assigns its singleton copies to `window`, keyed by full package name,
@@ -152,10 +152,12 @@ startup and is the contract runtime plugins can rely on across releases:
 
 `react`, `react-dom`, `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`,
 `@ohif/i18n`, `@ohif/extension-default`, `@ohif/extension-cornerstone`,
-`@cornerstonejs/core`, `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`.
+`@cornerstonejs/core`, `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`,
+`react-router`, `react-router-dom`, `i18next`, `react-i18next`.
 
 `@ohif/i18n` is shared because runtime extensions dereference it during module
-evaluation. `@ohif/ui` is intentionally **not** shared: it is legacy and a
+evaluation. React Router and i18next are shared so a plugin uses the viewer's
+Router and its one i18next instance. `@ohif/ui` is intentionally **not** shared: it is legacy and a
 forbidden import for runtime plugins — use `@ohif/ui-next`.
 
 **Every extension and mode compiled into the viewer** is also shared, by the
@@ -284,13 +286,15 @@ artifact is `dist/index.umd.js` (the extension's CSS is injected by that bundle 
 1. `src/id.ts` derives `id` from package.json `name`. Never hardcode a different id.
 2. Every module entry needs a `name` (the host throws otherwise). The module id becomes
    `<id>.<moduleType>.<name>`.
-3. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`,
+3. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`,
+   `react-router`, `react-router-dom`, `i18next`, `react-i18next`, `@ohif/*`,
    `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. They are externals
    (see `.rspack/pluginExternals.js`): the build leaves them for the host to provide.
    The host provides as runtime globals the stable shared set (`react`, `react-dom`,
    `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
    `@ohif/extension-default`, `@ohif/extension-cornerstone`, `@cornerstonejs/core`,
-   `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`) plus every extension and mode compiled
+   `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`,
+   `i18next`, `react-i18next`) plus every extension and mode compiled
    into the viewer once it has loaded, shared as-is with no compatibility promise.
    Most extensions load only when a mode needs them; for a runtime extension to
    import one, the deployer also lists it by name in `window.config.extensions`,

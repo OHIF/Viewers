@@ -17,7 +17,10 @@
 // bind to these globals without being rebuilt against the host, so removing
 // an entry, renaming exports, or making breaking API changes in a shared
 // package breaks already-published plugins. Treat additions as permanent and
-// coordinate any change with a major version of the contract.
+// coordinate any change with a major version of the contract. Moving a
+// shared third-party package to a new major version is such a change too:
+// runtimeShared.test.js pins those majors, and fails until the migration
+// guide and the documented shared versions are updated.
 //
 // Every extension and mode compiled into the viewer is ALSO put on window, by
 // the generated plugin loader once it has loaded (sharePlugin in
@@ -27,7 +30,9 @@
 //
 // @ohif/i18n is shared because runtime extensions dereference it during
 // module evaluation (e.g. dicom-pdf). @ohif/ui is intentionally NOT shared:
-// it is legacy and a forbidden import for runtime plugins.
+// it is legacy and a forbidden import for runtime plugins. React Router and
+// i18next are shared so a plugin uses the host's Router and its one i18next
+// instance; a plugin's own copy of either sees neither.
 import * as react from 'react';
 import * as reactDom from 'react-dom';
 import * as reactJsxRuntime from 'react/jsx-runtime';
@@ -40,6 +45,10 @@ import * as cornerstoneCore from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as dcmjs from 'dcmjs';
 import * as glMatrix from 'gl-matrix';
+import * as reactRouter from 'react-router';
+import * as reactRouterDom from 'react-router-dom';
+import * as i18next from 'i18next';
+import * as reactI18next from 'react-i18next';
 
 const shared: Record<string, unknown> = {
   react,
@@ -54,6 +63,10 @@ const shared: Record<string, unknown> = {
   '@cornerstonejs/tools': cornerstoneTools,
   dcmjs,
   'gl-matrix': glMatrix,
+  'react-router': reactRouter,
+  'react-router-dom': reactRouterDom,
+  i18next,
+  'react-i18next': reactI18next,
 };
 
 Object.entries(shared).forEach(([name, mod]) => {

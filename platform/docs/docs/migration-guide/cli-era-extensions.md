@@ -277,10 +277,15 @@ module.exports = [
   'react',
   'react-dom',
   'react/jsx-runtime',
+  'react-router',
+  'react-router-dom',
+  'i18next',
+  'react-i18next',
 ];
 ```
 
-`react`, `react-dom`, and `react/jsx-runtime` are now host-provided globals.
+`react`, `react-dom`, `react/jsx-runtime`, `react-router`, `react-router-dom`,
+`i18next` and `react-i18next` are now host-provided globals.
 If your source imported any of the newly-external packages expecting them
 bundled, nothing changes in your code — but the runtime now supplies the
 host's single copy, which is the point.

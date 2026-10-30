@@ -2,8 +2,8 @@
 //
 // Contract v1: the single source of truth for what an OHIF plugin bundle must
 // NOT bundle. Imported by every per-package .rspack/rspack.prod.js.
-// The bare-specifier string entries ('react', 'react-dom', 'react/jsx-runtime')
-// are matched exactly; under UMD they resolve to root[<full package name>], so
+// The bare-specifier string entries (React, React Router and i18next) are
+// matched exactly; under UMD they resolve to root[<full package name>], so
 // platform/app/src/runtimeShared.ts (shared-deps workstream) must assign a
 // window global for every string entry AND for the packages matched by the
 // /^@ohif/ and /^@cornerstonejs/ regexes that the host provides as singletons.
@@ -17,6 +17,10 @@ module.exports = [
   'react',
   'react-dom',
   'react/jsx-runtime',
+  'react-router',
+  'react-router-dom',
+  'i18next',
+  'react-i18next',
 ];
 
 // v1 host-globals sharing contract: the packages platform/app/src/runtimeShared.ts
@@ -27,6 +31,11 @@ module.exports = [
 // @ohif/i18n is shared because runtime extensions dereference it during
 // module evaluation. @ohif/ui is intentionally absent — it is legacy and a
 // forbidden import for runtime plugins.
+// React Router and i18next are shared because the host's Router and its one
+// i18next instance (set up by @ohif/i18n) hold state a plugin's own copy can't
+// see: a bundled react-router throws outside the host's Router, and a bundled
+// i18next or react-i18next shows untranslated keys. Both packages of each pair
+// are listed, so a plugin gets the host's copy whichever name it imports.
 // Regex externals above (/^@ohif/, /^@cornerstonejs/, vtk.js) intentionally
 // match MORE than this list. Every extension and mode compiled into the viewer
 // shares itself on window once it has loaded (sharePlugin in
@@ -48,5 +57,9 @@ const hostSharedPackages = [
   '@cornerstonejs/tools',
   'dcmjs',
   'gl-matrix',
+  'react-router',
+  'react-router-dom',
+  'i18next',
+  'react-i18next',
 ];
 module.exports.hostSharedPackages = hostSharedPackages;

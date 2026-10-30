@@ -17,13 +17,15 @@ no CSS — components come from extensions).
 ## Hard rules (violating any breaks loading in the host)
 
 1. `src/id.ts` derives `id` from package.json `name`. Never hardcode a different id.
-2. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/*`,
+2. Never bundle or import copies of: `react`, `react-dom`, `react/jsx-runtime`,
+   `react-router`, `react-router-dom`, `i18next`, `react-i18next`, `@ohif/*`,
    `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. They are externals
    (see `.rspack/pluginExternals.js`): the build leaves them for the host to provide.
    The host provides as runtime globals the stable shared set (`react`, `react-dom`,
    `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
    `@ohif/extension-default`, `@ohif/extension-cornerstone`, `@cornerstonejs/core`,
-   `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`) plus every extension and mode compiled
+   `@cornerstonejs/tools`, `dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`,
+   `i18next`, `react-i18next`) plus every extension and mode compiled
    into the viewer once it has loaded, shared as-is with no compatibility promise.
    Most extensions load only when a mode needs them; for a runtime mode to import
    one, the deployer lists it in `window.config.extensions` so it loads at startup.

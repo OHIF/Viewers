@@ -65,11 +65,13 @@ short version:
    host contract instead:
 
    ```js
-   externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/, 'react', 'react-dom', 'react/jsx-runtime'],
+   externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/, 'react', 'react-dom', 'react/jsx-runtime', 'react-router', 'react-router-dom', 'i18next', 'react-i18next'],
    ```
 
    React was *not* external in the old templates' effective builds — adding it
-   is the contract change. Never bundle React.
+   is the contract change. Never bundle React. React Router and i18next are
+   new externals too: the viewer shares its copies, so a plugin uses the
+   viewer's Router and translations.
 
 3. **Modern library shape.** Replace the template's split
    `library:` / `library.type` output — which declared `library` twice, so the

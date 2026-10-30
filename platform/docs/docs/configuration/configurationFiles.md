@@ -573,13 +573,36 @@ Two caveats for runtime plugins:
 
 ### Shared host packages
 
-The host assigns its singleton copies of 12 packages to `window`, keyed by
+The host assigns its singleton copies of 16 packages to `window`, keyed by
 full package name; runtime plugin builds externalize them instead of bundling
 their own copies: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/core`,
 `@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
 `@ohif/extension-cornerstone`, `@cornerstonejs/core`, `@cornerstonejs/tools`,
-`dcmjs`, `gl-matrix`. `@ohif/ui` is NOT shared: it is legacy and a forbidden
+`dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`, `i18next`,
+`react-i18next`. `@ohif/ui` is NOT shared: it is legacy and a forbidden
 import for runtime plugins (use `@ohif/ui-next`).
+
+React Router and i18next are shared so a plugin uses the viewer's Router and
+its one i18next instance, with OHIF's translations and language switching. A
+plugin's own copy of either sees neither: `useLocation` and `Link` throw
+outside the viewer's Router, and translations show their raw keys.
+
+Runtime plugins are built against the host's versions of the third-party
+packages, and get the host's copies when they load:
+
+| Package | Version |
+| --- | --- |
+| `react`, `react-dom` | 19 |
+| `react-router`, `react-router-dom` | 6 |
+| `i18next` | 19 |
+| `react-i18next` | 12 |
+| `@cornerstonejs/core`, `@cornerstonejs/tools` | 5 |
+| `dcmjs` | 0.52 |
+| `gl-matrix` | 3 |
+
+Set your plugin's peer ranges to match. A new major version of any of these
+(for `dcmjs`, a new 0.x minor) is a breaking change for runtime plugins and is
+listed in the migration guide.
 
 Every extension and mode built into the viewer is also shared on `window`
 under its package name once it has loaded (the whole module, named exports

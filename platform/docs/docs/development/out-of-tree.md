@@ -102,6 +102,10 @@ dedupe aliases, no matter what your plugin folder carries:
 - `@ohif/ui-next`
 - `@cornerstonejs/core`
 - `@cornerstonejs/tools`
+- `react-router`
+- `react-router-dom`
+- `i18next`
+- `react-i18next`
 
 These aliases are exact-match (a trailing `$` on the specifier), so bare imports
 snap to the host copy while **deep subpath imports** (for example

@@ -22,20 +22,25 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 // match on the bare specifier, so subpath imports (e.g. @ohif/ui-next/lib/x)
 // still resolve through normal walk-up and honor each package's `exports`.
 //
-// react / react-dom / @cornerstonejs/*: real directories in the repo-root
-// node_modules (pnpm node-linker=hoisted, see .npmrc). A cs3d:link'ed local
-// build replaces these with symlinks; resolve.symlinks:true follows them.
+// react / react-dom / @cornerstonejs/* / react-router(-dom) / i18next /
+// react-i18next: real directories in the repo-root node_modules (pnpm
+// node-linker=hoisted, see .npmrc). A cs3d:link'ed local build replaces the
+// @cornerstonejs ones with symlinks; resolve.symlinks:true follows them.
+// React Router and i18next are here for the same reason as React: the
+// Router context and the i18next instance must be the host's, or a plugin
+// sees no Router and untranslated keys.
 //
 // @ohif/core / @ohif/ui-next intentionally point at the WORKSPACE SOURCE
 // packages, NOT node_modules: the hoisted linker never places workspace
 // packages in the root node_modules (they are symlinked per-consumer), and
 // the source dir keeps module:"src/index.ts" dev-mode resolution working.
 //
-// Known residual (do NOT expand this settled list): the exact-match
-// `react-dom$` does not cover `react-dom/client` subpath imports, so a
-// plugin-local react-dom copy imported via subpath can still duplicate —
-// mitigated by the plugin template's `.npmrc auto-install-peers=false` and
-// the plugin doctor's local-singleton warning.
+// Known residual: the exact-match `react-dom$` does not cover
+// `react-dom/client` subpath imports, so a plugin-local react-dom copy
+// imported via subpath can still duplicate. Don't try to close it with
+// subpath aliases ('react-dom/client$', …); it's mitigated by the plugin
+// template's `autoInstallPeers: false` and the plugin doctor's
+// local-singleton warning.
 const dedupeAlias = {
   'react$': path.join(REPO_ROOT, 'node_modules', 'react'),
   'react-dom$': path.join(REPO_ROOT, 'node_modules', 'react-dom'),
@@ -44,6 +49,10 @@ const dedupeAlias = {
   '@ohif/ui-next$': path.join(REPO_ROOT, 'platform', 'ui-next'),
   '@cornerstonejs/core$': path.join(REPO_ROOT, 'node_modules', '@cornerstonejs', 'core'),
   '@cornerstonejs/tools$': path.join(REPO_ROOT, 'node_modules', '@cornerstonejs', 'tools'),
+  'react-router$': path.join(REPO_ROOT, 'node_modules', 'react-router'),
+  'react-router-dom$': path.join(REPO_ROOT, 'node_modules', 'react-router-dom'),
+  'i18next$': path.join(REPO_ROOT, 'node_modules', 'i18next'),
+  'react-i18next$': path.join(REPO_ROOT, 'node_modules', 'react-i18next'),
 };
 
 const alias = {
