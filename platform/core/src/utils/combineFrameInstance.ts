@@ -1,5 +1,17 @@
 import { vec3 } from 'gl-matrix';
+import dcmjs from '@dcmjs-org/dcmjs';
 import { dicomSplit } from './dicomSplit';
+
+/**
+ * Defines the hex tag aliases (`70531009`) of the private blocks that `level` holds as own keys.
+ * dcmjs 1.0 makes these aliases non-enumerable, so a spread or a merge of the keys loses them.
+ */
+function definePrivateAliases(level) {
+  // shortcut: dcmjs beta.5 reads its alias record through the prototype, so an Object.create
+  // child would skip its own aliases; give each level its own record until dcmjs checks own keys.
+  Object.defineProperty(level, Symbol.for('dcmjs.privateAliases'), { value: new Map() });
+  dcmjs.data.definePrivateAliases(level);
+}
 
 /**
  * Combine the Per instance frame data, the shared frame data
@@ -88,7 +100,7 @@ const combineFrameInstance = (frame, instance) => {
     // setting values hard.
     if (!instance._parentInstance) {
       Object.defineProperty(instance, '_parentInstance', {
-        value: { ...instance },
+        value: createParentInstance(instance),
         enumerable: false,
         writable: false,
         configurable: false,
@@ -121,7 +133,7 @@ const combineFrameInstance = (frame, instance) => {
   if (instance.GridFrameOffsetVector) {
     if (!instance._parentInstance) {
       Object.defineProperty(instance, '_parentInstance', {
-        value: { ...instance },
+        value: createParentInstance(instance),
         enumerable: false,
         writable: false,
         configurable: false,
@@ -166,6 +178,13 @@ const combineFrameInstance = (frame, instance) => {
   return instance;
 };
 
+/** A full copy of the instance, with the private tag aliases that the spread drops. */
+function createParentInstance(instance) {
+  const parentInstance = { ...instance };
+  definePrivateAliases(parentInstance);
+  return parentInstance;
+}
+
 /**
  * Creates a combined instance stored in the parent object which
  * inherits from the parent instance the attributes in the functional groups.
@@ -202,6 +221,7 @@ function createCombinedValue(parent, functionalGroups, key) {
       newInstance[key] = value;
     });
   });
+  definePrivateAliases(newInstance);
   return newInstance;
 }
 
