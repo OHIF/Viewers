@@ -3,6 +3,11 @@ import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../ty
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 
+export type DisplaySetSort = {
+  sortFn: (a: DisplaySet, b: DisplaySet) => number;
+  direction: 'ascending' | 'descending';
+};
+
 const displaySetCache = new Map<string, DisplaySet>();
 
 /**
@@ -44,6 +49,12 @@ export default class DisplaySetService extends PubSubService {
   // Record if the active display sets changed - used to group change events so
   // that fewer events need to be fired when creating multiple display sets
   protected activeDisplaySetsChanged = false;
+
+  // The sort last applied through sortDisplaySets.  The study browser builds its
+  // thumbnail list from this rather than from the order of activeDisplaySets,
+  // because it regroups the display sets by study, and the sort picker reads it
+  // back so that closing and reopening the picker keeps the user's choice.
+  protected displaySetSort: DisplaySetSort | null = null;
 
   constructor() {
     super(EVENTS);
@@ -477,6 +488,7 @@ export default class DisplaySetService extends PubSubService {
     direction: 'ascending' | 'descending' = 'ascending',
     suppressEvent = false
   ): void {
+    this.displaySetSort = { sortFn, direction };
     this.activeDisplaySets.sort(sortFn);
     if (direction === 'descending') {
       this.activeDisplaySets.reverse();
@@ -484,5 +496,13 @@ export default class DisplaySetService extends PubSubService {
     if (!suppressEvent) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
+  }
+
+  /**
+   * @returns the sort last applied with sortDisplaySets, or null while the
+   *    display sets are still in their default order.
+   */
+  public getDisplaySetSort(): DisplaySetSort | null {
+    return this.displaySetSort;
   }
 }
