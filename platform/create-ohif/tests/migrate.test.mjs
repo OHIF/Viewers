@@ -1,0 +1,664 @@
+// `create-ohif migrate` ports a CLI-era standalone extension/mode to the
+// current plugin contract. These tests scaffold a package from the captured
+// CLI-era template fixture (test/fixtures/cli-era/, snapshotted from
+// platform/cli/templates before its deletion) exactly the way the old CLI's
+// editPackageJson.js did, then assert the dry-run report (the migration
+// checklist) and the applied rewrites.
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const bin = fileURLToPath(new URL('../bin/create-ohif.mjs', import.meta.url));
+const fixtureRoot = fileURLToPath(new URL('../test/fixtures/cli-era/', import.meta.url));
+const templatesRoot = fileURLToPath(new URL('../templates/', import.meta.url));
+const selfPkg = JSON.parse(
+  fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')
+);
+const [major, minor] = selfPkg.version.split('.');
+const hostRange = `>=${major}.${minor}.0-beta.0 <${Number(major) + 1}`;
+
+// Reproduce what platform/cli's editPackageJson.js emitted at scaffold time:
+// merge the scaffold fields with dependencies.json (LATEST_OHIF_VERSION
+// substituted) and delete dependencies.json.
+function scaffoldCliEra(kind, name) {
+  const target = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'coh-migrate-')), name);
+  fs.cpSync(path.join(fixtureRoot, kind), target, { recursive: true });
+  const raw = fs
+    .readFileSync(path.join(target, 'dependencies.json'), 'utf8')
+    .replace(/\{LATEST_OHIF_VERSION\}/g, '3.12.0');
+  const pkg = Object.assign(
+    {
+      name,
+      version: '0.0.1',
+      description: 'A CLI-era plugin',
+      author: 'someone',
+      license: 'MIT',
+      main: `dist/umd/${name}/index.umd.js`,
+      files: ['dist/**', 'public/**', 'README.md'],
+    },
+    JSON.parse(raw)
+  );
+  fs.writeFileSync(path.join(target, 'package.json'), JSON.stringify(pkg, null, 2));
+  fs.rmSync(path.join(target, 'dependencies.json'));
+  return target;
+}
+
+function migrate(target, ...args) {
+  return execFileSync(process.execPath, [bin, 'migrate', target, ...args], {
+    encoding: 'utf8',
+  });
+}
+
+test('migrate --dry-run report names every mandated rewrite and changes nothing', () => {
+  const target = scaffoldCliEra('extension', 'my-cli-extension');
+  const report = migrate(target, '--dry-run');
+
+  // The report IS the migration checklist — every required rewrite by name.
+  for (const needle of [
+    'publishConfig: field overrides -> {"access":"public","main":"dist/index.umd.js","module":"dist/index.umd.js"}',
+    'files: -> ["dist","src","public","README.md"]',
+    'keywords already contains "ohif-extension"',
+    `"@ohif/core"]: "^3.12.0" -> "${hostRange}"`,
+    `"@ohif/i18n"]: "^1.0.0" -> "${hostRange}"`,
+    'drop "webpack"',
+    'scripts.dev: -> "cross-env NODE_ENV=development rspack build --config .rspack/rspack.prod.js --watch"',
+    'pointed at .webpack/webpack.dev.js',
+    'write .rspack/rspack.prod.js + .rspack/pluginExternals.js',
+    'remove webpack-5 config .webpack/webpack.prod.js',
+    'add .npmrc with auto-install-peers=false',
+    'add pnpm-workspace.yaml with autoInstallPeers: false',
+    'peerDependencies["react"]: "^18.3.1" -> "^19.2.7"',
+    'peerDependencies["react-dom"]: "^18.3.1" -> "^19.2.7"',
+    'peerDependencies["react-router"]: "^6.23.1" -> "^6.30.3"',
+    'peerDependencies["react-router-dom"]: "^6.23.1" -> "^6.30.3"',
+    'peerDependencies["react-i18next"]: "^12.2.2" -> "^12.3.1"',
+    "Note: the peer versions of react, react-dom, react-router, react-router-dom, react-i18next will be set to the host's.",
+    'pin to exact versions (cross-env ^7.0.3 -> 7.0.3)',
+    "devDependencies: dotenv isn't used by any script, config or source file — remove it",
+    'add AGENTS.md',
+    'add tailwind.config.js',
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  assert.ok(report.includes('dry-run'), 'report states dry-run mode');
+
+  // Nothing on disk changed.
+  assert.ok(fs.existsSync(path.join(target, '.webpack/webpack.prod.js')));
+  assert.ok(!fs.existsSync(path.join(target, '.rspack')));
+  assert.ok(!fs.existsSync(path.join(target, '.npmrc')));
+  assert.ok(!fs.existsSync(path.join(target, 'AGENTS.md')));
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.equal(pkg.main, 'dist/umd/my-cli-extension/index.umd.js');
+});
+
+test('migrate moves react from dependencies to peerDependencies', () => {
+  const target = scaffoldCliEra('extension', 'react-dep-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  delete scaffolded.peerDependencies.react;
+  scaffolded.dependencies = { ...scaffolded.dependencies, react: '^17.0.2' };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(
+    report.includes('dependencies: move "react" "^17.0.2" to peerDependencies "^19.2.7"'),
+    report
+  );
+  assert.ok(!report.includes('react@^17.0.2'), 'react is moved, not flagged for pinning');
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('react' in pkg.dependencies));
+  assert.equal(pkg.peerDependencies.react, '^19.2.7');
+
+  assert.ok(!migrate(target, '--dry-run').includes('move "react"'), 'second run moves nothing');
+});
+
+test("migrate aligns React Router and i18next peers to the host app's majors", () => {
+  const appDeps = JSON.parse(
+    fs.readFileSync(new URL('../../app/package.json', import.meta.url), 'utf8')
+  ).dependencies;
+  const target = scaffoldCliEra('extension', 'shared-peers-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  Object.assign(scaffolded.peerDependencies, {
+    'react-router': '^5.3.0',
+    'react-router-dom': '^5.3.0',
+    i18next: '^21.0.0',
+    'react-i18next': '^11.0.0',
+  });
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target);
+  assert.ok(report.includes('peerDependencies["react-router-dom"]: "^5.3.0" -> "^'), report);
+  assert.ok(report.includes('Note: the peer versions of'), report);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  // Each peer is a caret range on the major the host app bundles, so the
+  // host's own copy satisfies it.
+  for (const name of ['react-router', 'react-router-dom', 'i18next', 'react-i18next']) {
+    const [peerMajor] = pkg.peerDependencies[name].replace(/^\^/, '').split('.');
+    const [appMajor] = appDeps[name].split('.');
+    assert.equal(`${name}@${peerMajor}`, `${name}@${appMajor}`);
+  }
+
+  assert.ok(
+    !migrate(target, '--dry-run').includes('Note: the peer versions'),
+    'second run rewrites nothing'
+  );
+});
+
+test('migrate moves React Router and i18next from dependencies to peerDependencies', () => {
+  const target = scaffoldCliEra('extension', 'shared-dep-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  delete scaffolded.peerDependencies['react-router-dom'];
+  scaffolded.dependencies = {
+    ...scaffolded.dependencies,
+    'react-router-dom': '^6.4.0',
+    i18next: '^19.9.2',
+  };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    'dependencies: move "react-router-dom" "^6.4.0" to peerDependencies "^6.30.3"',
+    'dependencies: move "i18next" "^19.9.2" to peerDependencies "^19.9.2"',
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('react-router-dom' in pkg.dependencies));
+  assert.ok(!('i18next' in pkg.dependencies));
+  assert.equal(pkg.peerDependencies['react-router-dom'], '^6.30.3');
+  assert.equal(pkg.peerDependencies.i18next, '^19.9.2');
+});
+
+test('migrate prints no version note when no shared peer changes', () => {
+  // The CLI-era mode template peer-depends on @ohif/core only.
+  const target = scaffoldCliEra('mode', 'no-shared-peers-mode');
+  assert.ok(!migrate(target, '--dry-run').includes('Note: the peer versions'));
+});
+
+test('migrate raises engines.node to the template and drops the npm and yarn engines', () => {
+  const target = scaffoldCliEra('mode', 'old-engines-mode');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  // Some old CLI templates' engines.
+  scaffolded.engines = { node: '>=14', npm: '>=6', yarn: '>=1.16.0' };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+  const templateNode = JSON.parse(
+    fs.readFileSync(path.join(templatesRoot, 'mode', 'package.json'), 'utf8')
+  ).engines.node;
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    `engines.node: ">=14" -> "${templateNode}"`,
+    'engines.npm: drop ">=6"',
+    'engines.yarn: drop ">=1.16.0"',
+  ]) {
+    assert.ok(report.includes(needle), `report missing: ${needle}\n${report}`);
+  }
+
+  migrate(target);
+  assert.deepEqual(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).engines, { node: templateNode });
+  assert.ok(!migrate(target, '--dry-run').includes('engines.node: "'), 'second run changes nothing');
+});
+
+test('migrate keeps a higher engines.node floor and other engines', () => {
+  const target = scaffoldCliEra('extension', 'strict-engines-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.engines = { node: '>=99.1', pnpm: '>=12' };
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  assert.ok(migrate(target, '--dry-run').includes('engines.node: keep ">=99.1"'));
+  migrate(target);
+  assert.deepEqual(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).engines, {
+    node: '>=99.1',
+    pnpm: '>=12',
+  });
+});
+
+test("migrate drops the CLI template's OHIF/Viewers repository", () => {
+  const target = scaffoldCliEra('extension', 'ohif-repo-extension');
+  const pkgPath = path.join(target, 'package.json');
+  assert.equal(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).repository, 'OHIF/Viewers');
+
+  assert.ok(migrate(target, '--dry-run').includes('package.json repository: drop "OHIF/Viewers"'));
+  migrate(target);
+  assert.ok(!('repository' in JSON.parse(fs.readFileSync(pkgPath, 'utf8'))));
+  assert.ok(!migrate(target, '--dry-run').includes('repository'), 'second run reports nothing');
+});
+
+test("migrate keeps the author's own repository", () => {
+  for (const repository of [
+    'acme/ohif-extension-foo',
+    { type: 'git', url: 'https://github.com/OHIF/Viewers.git', directory: 'extensions/foo' },
+  ]) {
+    const target = scaffoldCliEra('extension', 'own-repo-extension');
+    const pkgPath = path.join(target, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    pkg.repository = repository;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+
+    assert.ok(!migrate(target, '--dry-run').includes('repository'));
+    migrate(target);
+    assert.deepEqual(JSON.parse(fs.readFileSync(pkgPath, 'utf8')).repository, repository);
+  }
+});
+
+// Write extra devDependencies (and optionally files) into a CLI-era scaffold.
+function withDevDeps(target, devDependencies, extraPkg = {}) {
+  const pkgPath = path.join(target, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  Object.assign(pkg.devDependencies, devDependencies);
+  Object.assign(pkg, extraPkg, { scripts: { ...pkg.scripts, ...extraPkg.scripts } });
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+}
+
+test('migrate says to remove dead devDependencies instead of pinning them', () => {
+  const target = scaffoldCliEra('extension', 'dead-dev-deps-extension');
+  // The extra devDependencies older CLI-era packages carry.
+  withDevDeps(target, {
+    'babel-eslint': '9.x',
+    'babel-plugin-inline-react-svg': '^2.0.2',
+    'babel-plugin-module-resolver': '^5.0.0',
+    eslint: '^5.0.1',
+    'eslint-loader': '^2.0.0',
+  });
+  fs.writeFileSync(path.join(target, 'babel.config.js'), 'module.exports = {};\n');
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    'eslint-loader) — superseded by .rspack/',
+    "devDependencies: eslint, babel-eslint, dotenv aren't used by any script, config or source file — remove them",
+    'babel.config.js and the Babel packages (@babel/*, babel-plugin-inline-react-svg, babel-plugin-module-resolver) are no longer used',
+  ]) {
+    assert.ok(report.includes(needle), `report missing: ${needle}\n${report}`);
+  }
+  const pinLine = report.split('\n').find(line => line.includes('not pinned to exact versions')) ?? '';
+  for (const name of ['babel-', 'eslint', 'dotenv', '@babel/']) {
+    assert.ok(!pinLine.includes(name), `${name} must not be in the pin flag: ${pinLine}`);
+  }
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.ok(!('eslint-loader' in pkg.devDependencies), 'eslint-loader is removed');
+  assert.equal(pkg.devDependencies.eslint, '^5.0.1', 'eslint is flagged, not removed');
+});
+
+test('migrate still asks to pin eslint and dotenv when the package uses them', () => {
+  const target = scaffoldCliEra('extension', 'used-tools-extension');
+  withDevDeps(target, { eslint: '^8.0.0' }, { scripts: { lint: 'eslint src' } });
+  fs.writeFileSync(path.join(target, '.eslintrc.json'), '{}\n');
+  fs.mkdirSync(path.join(target, 'src', 'config'), { recursive: true });
+  fs.writeFileSync(path.join(target, 'src', 'config', 'env.ts'), "import 'dotenv/config';\n");
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(!report.includes("used by any script, config or source file"), report);
+  assert.ok(
+    report.includes('devDependencies not pinned to exact versions: ') &&
+      report.includes('dotenv@^14.1.0') &&
+      report.includes('eslint@^8.0.0'),
+    report
+  );
+});
+
+test('migrate drops the CLI dev alias, rewrites yarn scripts and flags jest', () => {
+  const target = scaffoldCliEra('mode', 'scripts-mode');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.scripts.start = 'yarn run dev';
+  scaffolded.scripts.serve = 'yarn dev';
+  scaffolded.scripts.setup = 'yarn install';
+  scaffolded.scripts.release = 'pnpm run build && yarn publish';
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    `scripts["dev:cornerstone"]: drop (the CLI template's alias for dev`,
+    'scripts["start"]: "yarn run dev" -> "pnpm run dev"',
+    'scripts["serve"]: "yarn dev" -> "pnpm run dev"',
+    'scripts["setup"] still calls yarn ("yarn install")',
+    'scripts["release"] still calls yarn ("pnpm run build && yarn publish")',
+    `scripts["test:unit"] runs jest, which isn't a dependency`,
+    `scripts["test:unit:ci"] runs jest, which isn't a dependency`,
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  assert.ok(!report.includes('scripts["setup"]: "yarn install" ->'), 'yarn commands are flagged, not rewritten');
+
+  migrate(target);
+  const { scripts } = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('dev:cornerstone' in scripts));
+  assert.equal(scripts.start, 'pnpm run dev');
+  assert.equal(scripts.serve, 'pnpm run dev');
+  assert.equal(scripts.setup, 'yarn install');
+  assert.equal(scripts.release, 'pnpm run build && yarn publish');
+  assert.equal(scripts['test:unit'], 'jest --watchAll', 'jest scripts are flagged, not changed');
+
+  const again = migrate(target, '--dry-run');
+  assert.ok(
+    !again.includes(': drop (') && !again.includes('"yarn run') && !again.includes('"yarn dev" ->'),
+    again
+  );
+});
+
+test('migrate removes other lockfiles and the CLI build output', () => {
+  const target = scaffoldCliEra('extension', 'leftovers-extension');
+  const write = (rel, text = 'x') => {
+    fs.mkdirSync(path.dirname(path.join(target, rel)), { recursive: true });
+    fs.writeFileSync(path.join(target, rel), text);
+  };
+  write('yarn.lock');
+  write('package-lock.json', '{}');
+  write('bun.lock', '{}');
+  write('bun.lockb');
+  write('dist/umd/leftovers-extension/index.umd.js');
+  write('dist/keep.txt');
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    'remove yarn.lock, package-lock.json, bun.lock, bun.lockb (this package now uses pnpm',
+    'remove dist/umd/leftovers-extension/ (the CLI-era build output',
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  assert.ok(fs.existsSync(path.join(target, 'yarn.lock')), 'dry run deletes nothing');
+  assert.ok(fs.existsSync(path.join(target, 'dist/umd/leftovers-extension/index.umd.js')));
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'yarn.lock')));
+  assert.ok(!fs.existsSync(path.join(target, 'package-lock.json')));
+  assert.ok(!fs.existsSync(path.join(target, 'bun.lock')));
+  assert.ok(!fs.existsSync(path.join(target, 'bun.lockb')));
+  assert.ok(!fs.existsSync(path.join(target, 'dist/umd')), 'the emptied dist/umd/ is removed too');
+  assert.ok(fs.existsSync(path.join(target, 'dist/keep.txt')), 'the rest of dist/ is untouched');
+  assert.ok(
+    report.includes('dist/ holds 1 file(s) besides the .rspack build output (dist/keep.txt)'),
+    `the leftover is flagged\n${report}`
+  );
+});
+
+test('migrate removes dist/ once the CLI build output was the only thing in it', () => {
+  const target = scaffoldCliEra('extension', 'empty-dist-extension');
+  const bundle = path.join(target, 'dist/umd/empty-dist-extension/index.umd.js');
+  fs.mkdirSync(path.dirname(bundle), { recursive: true });
+  fs.writeFileSync(bundle, 'x');
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'dist')), 'the emptied dist/ is removed');
+
+  // A dist/ that is already empty (nothing of the CLI's left) goes too.
+  fs.mkdirSync(path.join(target, 'dist'));
+  assert.ok(migrate(target, '--dry-run').includes('remove the empty dist/'));
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'dist')));
+
+  // After pnpm build, dist/ holds the .rspack output: a re-run says nothing about it.
+  fs.mkdirSync(path.join(target, 'dist'));
+  fs.writeFileSync(path.join(target, 'dist/index.umd.js'), 'x');
+  fs.writeFileSync(path.join(target, 'dist/index.umd.js.map'), 'x');
+  const again = migrate(target, '--dry-run');
+  assert.ok(
+    !again.includes('remove the empty dist/') && !again.includes('dist/ holds'),
+    `a built dist/ is left alone and not flagged\n${again}`
+  );
+  migrate(target);
+  assert.ok(fs.existsSync(path.join(target, 'dist/index.umd.js')));
+});
+
+test('migrate removes a scoped CLI build output and flags other dist/umd files', () => {
+  const target = scaffoldCliEra('extension', 'scoped-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.name = '@acme/scoped-extension';
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+  for (const rel of ['dist/umd/@acme/scoped-extension/index.umd.js', 'dist/umd/something-else.js']) {
+    fs.mkdirSync(path.dirname(path.join(target, rel)), { recursive: true });
+    fs.writeFileSync(path.join(target, rel), 'x');
+  }
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(report.includes('remove dist/umd/@acme/scoped-extension/ (the CLI-era build output'), report);
+  assert.ok(
+    report.includes(
+      'dist/ holds 1 file(s) besides the .rspack build output (dist/umd/something-else.js)'
+    ),
+    report
+  );
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'dist/umd/@acme')), 'the emptied scope folder is removed');
+  assert.ok(fs.existsSync(path.join(target, 'dist/umd/something-else.js')), 'unrecognised files stay');
+});
+
+test('migrate keeps a dev alias the author changed', () => {
+  const target = scaffoldCliEra('extension', 'alias-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  scaffolded.scripts['dev:my-extension'] = 'node tools/watch.js';
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  migrate(target);
+  const { scripts } = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.equal(scripts['dev:my-extension'], 'node tools/watch.js');
+});
+
+test('migrate applies the extension rewrites and is idempotent', () => {
+  const target = scaffoldCliEra('extension', 'my-cli-extension');
+  migrate(target);
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.equal(pkg.main, 'dist/index.umd.js');
+  assert.equal(pkg.module, 'src/index.tsx');
+  assert.deepEqual(pkg.files, ['dist', 'src', 'public', 'README.md']);
+  assert.ok(pkg.keywords.includes('ohif-extension'));
+  assert.deepEqual(pkg.publishConfig, {
+    access: 'public',
+    main: 'dist/index.umd.js',
+    module: 'dist/index.umd.js',
+  });
+  // React peers follow the template; ranged toolchain entries become exact pins;
+  // ranges migrate has no pin for are flagged, not rewritten.
+  assert.equal(pkg.peerDependencies.react, '^19.2.7');
+  assert.equal(pkg.peerDependencies['react-dom'], '^19.2.7');
+  assert.equal(pkg.devDependencies['cross-env'], '7.0.3');
+  assert.equal(pkg.devDependencies.dotenv, '^14.1.0');
+  for (const name of [
+    '@ohif/core',
+    '@ohif/extension-default',
+    '@ohif/extension-cornerstone',
+    '@ohif/i18n',
+  ]) {
+    assert.equal(pkg.peerDependencies[name], hostRange, name);
+  }
+  assert.ok(!('@ohif/ui' in pkg.peerDependencies));
+  assert.ok(!('webpack' in pkg.peerDependencies));
+  assert.ok(!('webpack-merge' in pkg.peerDependencies));
+  assert.equal(
+    pkg.scripts.dev,
+    'cross-env NODE_ENV=development rspack build --config .rspack/rspack.prod.js --watch'
+  );
+  assert.equal(
+    pkg.scripts.build,
+    'cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js'
+  );
+  for (const name of ['@rspack/cli', '@rspack/core', 'css-loader', 'postcss-loader', 'tailwindcss']) {
+    assert.ok(name in pkg.devDependencies, `devDep ${name}`);
+  }
+  assert.ok(!('webpack' in pkg.devDependencies));
+
+  // .rspack vendored verbatim from the current template (fixture entry matches).
+  assert.equal(
+    fs.readFileSync(path.join(target, '.rspack/rspack.prod.js'), 'utf8'),
+    fs.readFileSync(path.join(templatesRoot, 'extension/_rspack/rspack.prod.js'), 'utf8')
+  );
+  assert.equal(
+    fs.readFileSync(path.join(target, '.rspack/pluginExternals.js'), 'utf8'),
+    fs.readFileSync(path.join(templatesRoot, 'extension/_rspack/pluginExternals.js'), 'utf8')
+  );
+  assert.ok(!fs.existsSync(path.join(target, '.webpack')));
+  assert.equal(fs.readFileSync(path.join(target, '.npmrc'), 'utf8'), 'auto-install-peers=false\n');
+  assert.equal(
+    fs.readFileSync(path.join(target, 'pnpm-workspace.yaml'), 'utf8'),
+    fs.readFileSync(path.join(templatesRoot, 'extension/pnpm-workspace.yaml'), 'utf8')
+  );
+  const agents = fs.readFileSync(path.join(target, 'AGENTS.md'), 'utf8');
+  assert.ok(agents.includes('my-cli-extension') && !agents.includes('{{'));
+  assert.ok(fs.existsSync(path.join(target, 'tailwind.config.js')));
+
+  // Second run: everything already conforms — zero pending rewrites.
+  const second = migrate(target, '--dry-run');
+  assert.match(second, /\n0 rewrite\(s\) pending/);
+});
+
+test('migrate appends autoInstallPeers to an existing pnpm-workspace.yaml and keeps its settings', () => {
+  const target = scaffoldCliEra('extension', 'my-pnpm-extension');
+  const workspacePath = path.join(target, 'pnpm-workspace.yaml');
+  // An author's own workspace file, deliberately without a trailing newline.
+  const authored = '# authored by the plugin team\nminimumReleaseAge: 1440';
+  fs.writeFileSync(workspacePath, authored);
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(
+    report.includes('pnpm-workspace.yaml: add autoInstallPeers: false'),
+    `dry-run report must name the append\n---\n${report}`
+  );
+  assert.equal(fs.readFileSync(workspacePath, 'utf8'), authored, 'dry-run changes nothing');
+
+  migrate(target);
+  assert.equal(
+    fs.readFileSync(workspacePath, 'utf8'),
+    `${authored}\nautoInstallPeers: false\n`,
+    "the author's content is kept and only the setting is appended"
+  );
+
+  const second = migrate(target, '--dry-run');
+  assert.ok(second.includes('pnpm-workspace.yaml already sets autoInstallPeers: false'), second);
+});
+
+test('migrate adapts the mode template entry to the CLI-era src/index.tsx', () => {
+  const target = scaffoldCliEra('mode', 'my-cli-mode');
+  const report = migrate(target);
+  assert.ok(report.includes('(detected: mode'), report);
+  assert.ok(report.includes('entry adapted to ../src/index.tsx'), report);
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.ok(pkg.keywords.includes('ohif-mode'));
+  assert.equal(pkg.peerDependencies['@ohif/core'], hostRange);
+  const config = fs.readFileSync(path.join(target, '.rspack/rspack.prod.js'), 'utf8');
+  assert.ok(config.includes("'../src/index.tsx'"), 'entry rewritten to the real file');
+  assert.ok(!config.includes("'../src/index.ts'\n"), 'template entry replaced');
+});
+
+test('migrate flags @ohif/ui imports, internal imports, and custom build config without rewriting them', () => {
+  const target = scaffoldCliEra('extension', 'my-cli-extension');
+  const custom = path.join(target, 'src', 'custom.tsx');
+  fs.writeFileSync(
+    custom,
+    [
+      "import { Button } from '@ohif/ui';",
+      "import utils from '@ohif/core/src/utils';",
+      "import escape from '../../outside';",
+      'export default { Button, utils, escape };',
+      '',
+    ].join('\n')
+  );
+  fs.writeFileSync(path.join(target, 'vite.config.js'), 'export default {};\n');
+  fs.writeFileSync(path.join(target, '.webpack', 'custom-plugin.js'), 'module.exports = {};\n');
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(report.includes('src/custom.tsx:1 imports "@ohif/ui"'), report);
+  assert.ok(report.includes('OHIF internals outside the contract ("@ohif/core/src/utils")'), report);
+  assert.ok(report.includes('resolves outside the package root'), report);
+  assert.ok(report.includes('vite.config.js is unrecognized custom build config'), report);
+  assert.ok(report.includes('.webpack/custom-plugin.js is unrecognized custom build config'), report);
+
+  // Flag-only: even a real run must leave all of them untouched.
+  migrate(target);
+  assert.equal(fs.readFileSync(custom, 'utf8').split('\n')[0], "import { Button } from '@ohif/ui';");
+  assert.ok(fs.existsSync(path.join(target, 'vite.config.js')));
+  assert.ok(fs.existsSync(path.join(target, '.webpack', 'custom-plugin.js')));
+  assert.ok(!fs.existsSync(path.join(target, '.webpack', 'webpack.prod.js')), 'recognized config still replaced');
+});
+
+test("migrate flags imports of the OHIF app's aliases and @ohif/app", () => {
+  // The app's aliases, read from the repo's resolveConfig.js so a new alias
+  // there fails this test until migrate knows it: everything in `alias` except
+  // the dedupe aliases and the exact-match '@ohif/app$'.
+  const require = createRequire(import.meta.url);
+  const { alias, dedupeAlias } = require('../../../.rspack/resolveConfig.js');
+  const appAliases = Object.keys(alias).filter(
+    name => !(name in dedupeAlias) && !name.endsWith('$')
+  );
+  assert.ok(appAliases.length > 0, 'resolveConfig.js still has the app aliases');
+  // migrate's own list must match exactly, so it can't keep an alias that
+  // resolveConfig.js has dropped either. The bin runs on load, so read its source.
+  const [, listSource = ''] =
+    fs.readFileSync(bin, 'utf8').match(/const APP_ALIASES = \[([^\]]*)\];/) ?? [];
+  const migrateAliases = [...listSource.matchAll(/'([^']+)'/g)].map(m => m[1]);
+  assert.deepEqual([...migrateAliases].sort(), [...appAliases].sort());
+
+  const target = scaffoldCliEra('extension', 'app-alias-extension');
+  fs.writeFileSync(
+    path.join(target, 'src', 'app-imports.tsx'),
+    [
+      ...appAliases.map((name, i) => `import a${i} from '${name}/x';`),
+      "import { preserveQueryParameters } from '@ohif/app';",
+      "import { utils } from '@ohif/core';",
+      '',
+    ].join('\n')
+  );
+
+  const report = migrate(target, '--dry-run');
+  for (const name of appAliases) {
+    assert.ok(
+      report.includes(`imports "${name}/x", an alias inside the OHIF app`),
+      `${name}\n---\n${report}`
+    );
+  }
+  assert.ok(report.includes('imports "@ohif/app" — works only compiled into an OHIF checkout'), report);
+  assert.ok(!report.includes('"@ohif/core", an alias'), 'a bare @ohif package is not an app alias');
+});
+
+test('migrate flags a missing or different packageManager without writing it', () => {
+  const expected = JSON.parse(
+    fs.readFileSync(path.join(templatesRoot, 'workspace', 'package.json'), 'utf8')
+  ).packageManager;
+  const readPm = target =>
+    JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8')).packageManager;
+  const setPm = (target, value) => {
+    const pkgPath = path.join(target, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    pkg.packageManager = value;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+  };
+
+  // Missing: flagged with the version to add, and never written.
+  const missing = scaffoldCliEra('extension', 'pm-missing');
+  const report = migrate(missing, '--dry-run');
+  assert.ok(report.includes(`[flag]    package.json has no "packageManager"`), report);
+  assert.ok(report.includes(`add "packageManager": "${expected}"`), report);
+  migrate(missing);
+  assert.equal(readPm(missing), undefined, 'migrate must not write packageManager');
+
+  // Different: flagged, and left as the author set it.
+  const different = scaffoldCliEra('extension', 'pm-different');
+  setPm(different, 'yarn@1.22.22');
+  assert.ok(migrate(different, '--dry-run').includes('"packageManager" is "yarn@1.22.22"'));
+  migrate(different);
+  assert.equal(readPm(different), 'yarn@1.22.22');
+
+  // Matching: no packageManager flag at all.
+  const matching = scaffoldCliEra('extension', 'pm-matching');
+  setPm(matching, expected);
+  assert.ok(!migrate(matching, '--dry-run').includes('packageManager'));
+});

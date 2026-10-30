@@ -1,5 +1,9 @@
 # Set the default behavior,
 # in case people don't have core.autocrlf set.
 * text=auto
-# Declares that files will always have CRLF line ends
+# Declares that files will always have LF line ends
 *.sh text eol=lf
+# create-ohif is packed and published as-is: pnpm refuses a bin file with CRLF
+# (ERR_PNPM_BIN_CRLF), and its templates become authors' files. eol alone keeps
+# text=auto's binary detection, so a binary file here is left untouched.
+platform/create-ohif/** eol=lf

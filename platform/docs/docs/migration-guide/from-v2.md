@@ -68,11 +68,11 @@ are configuration objects that will be used by the viewer to load the modules. T
 - cornerstone-core and cornerstone-tools are removed and OHIF v3 is using the new Cornerstone3D rendering library and tools. Moving to Cornerstone3D has enabled us to provide a more robust and stable foundation
   for 3D rendering and 3D annotations and measurements. In addition, Cornerstone3D provides APIs to load
   and stream data into a volume which has huge performance benefits.
-- A new CLI tool to help you create extensions and modes (more [here](../development/ohif-cli.md))
+- A new CLI tool to help you create extensions and modes (removed in 3.14; see [OHIF CLI removal](./3p13-to-3p14/cli-removal.md))
 - redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:
-- [OHIF CLI](../development/ohif-cli.md)
+- OHIF CLI (removed in 3.14; see [OHIF CLI removal](./3p13-to-3p14/cli-removal.md))
 - [New Rendering Engine and Toolings](https://www.cornerstonejs.org/)
 - [Modes](../platform/modes/index.md)
 - [Mode Gallery](https://ohif.org/modes)
@@ -366,7 +366,7 @@ How to remove an "core" extension/mode?
 </summary>
 
 You can use the OHIF cli tool to add/remove/link and unlink extensions and modes. You can find more information
-about the cli tool [here](../development/ohif-cli.md)
+about the cli tool in [OHIF CLI removal](./3p13-to-3p14/cli-removal.md) (the CLI was removed in 3.14)
 
 </details>
 

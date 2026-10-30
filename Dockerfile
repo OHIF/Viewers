@@ -41,10 +41,12 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
 COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
 # Run the install before copying the rest of the files.
-# Keep --no-frozen-lockfile here (unlike CI): .dockerignore excludes
-# platform/docs, so the lockfile's docs importer has no manifest in the build
-# context and a frozen install would fail. pnpm reconciles (drops docs) instead.
-RUN pnpm install --no-frozen-lockfile
+# Frozen, like CI, so the image installs exactly the reviewed lockfile --
+# transitive versions and integrity hashes included -- and never re-resolves
+# against the registry. pnpm 12 requires a manifest for every importer the
+# lockfile records, so .dockerignore lets platform/docs/package.json in; the
+# filter then skips installing the docs site itself.
+RUN pnpm install --frozen-lockfile --filter '!ohif-docs'
 # Copy the local directory
 COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
@@ -83,7 +85,8 @@ COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root
-RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html${PUBLIC_URL}plugins \
+  && chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

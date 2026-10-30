@@ -36,9 +36,16 @@ With OHIF 3.14, your application must supply React itself, because `@ohif/ui-nex
 longer installs a copy of its own. A peer dependency states a requirement on your
 project — it does not deliver the package to you.
 
-This is what keeps a **single React instance** on the page. Two copies of React have
-separate internal state: hooks throw `Invalid hook call`, and context created by one
-copy is invisible to components rendered by the other.
+This is what keeps a **single React instance** on the page. React stores hook state,
+context, and the component tree in module-level variables, so a second copy has its
+own separate world: hooks called across the boundary throw `Invalid hook call`, and
+context created by one copy is invisible to components rendered by the other. A second
+copy arrives in two ways. Either a package bundles React instead of leaving it to the
+host, or the bundler finds two `react` folders and includes both: a library that
+declares React 18 as a regular dependency gets its own nested `node_modules/react`,
+and a linked or separately installed plugin folder brings one of the same version.
+Both look fine in isolation, because each bundle loads and renders on its own, and
+break only when they touch the host's components.
 
 **What to do:** upgrade your application to React 19.2.7 or newer. Any 19.x at or above
 that version satisfies the range.
@@ -51,9 +58,16 @@ will work with 3.14.
 
 ## UMD builds require a React 19 host at runtime
 
-OHIF's UMD artifacts that externalize React (notably `@ohif/ui-next`) are compiled with
-the React Compiler, and the compiled output reads `useMemoCache` off the host's React.
-That API exists only in React 19.
+Every published OHIF UMD (`@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
+`@ohif/extension-default`, `@ohif/extension-cornerstone`) externalizes `react`,
+`react-dom`, and `react/jsx-runtime` and resolves them from the host page; the release
+check fails if a bundle carries its own copy. The components in these bundles are
+compiled with the React Compiler and read `useMemoCache` off that host React, an API
+that exists only in React 19.
+
+Each compiled bundle also carries the React Compiler's small
+`react/compiler-runtime` helper. That is intentional: the helper holds no copy of
+React and reads everything from the host's React.
 
 This failure surfaces at **runtime, not install time** — a React 18 host loads the
 bundle and breaks when a compiled component first renders, with no package-manager
@@ -121,6 +135,24 @@ own components covers yours:
 
 Both gates fail CI until their budget file matches, and both print exactly which file
 and which entry is involved, so the fix is never a guess.
+
+**You scaffolded with `pnpm create ohif`.** Where the scaffolder put your
+plugin decides whether it is compiled:
+
+- **A standalone extension or mode** (`-t extension` or `-t mode`). Not compiled.
+  Its `.rspack/rspack.prod.js` builds with `builtin:swc-loader` only, the same as
+  the "consume OHIF from npm" case above. A package migrated with
+  `create-ohif migrate` gets the same build.
+- **A plugin inside a workspace** (`-t workspace`). Not compiled, even though the
+  workspace builds the viewer from a copy of OHIF in `.ohif/`. The compiler only
+  covers directories inside that copy (see `react-compiler.scope.cjs`), and
+  workspace plugins live outside it.
+- **An in-tree plugin** (`--in-tree`, run inside an OHIF checkout). Compiled, and
+  covered by the same two gates as the fork case above. Adding the plugin can move
+  the counts either gate tracks, so expect to update `.react-compiler-lint-budget.json`
+  or `.react-compiler-budget.json` in the same pull request; the lint budget fails
+  when counts drop as well as when they rise, so a cleaner plugin needs the update
+  too.
 
 ### Opting a file out
 

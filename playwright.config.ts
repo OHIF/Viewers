@@ -46,7 +46,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      'cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 OHIF_OPEN=false nyc pnpm --filter @ohif/app exec rspack serve --config .webpack/webpack.pwa.js',
+      'cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 OHIF_OPEN=false nyc pnpm --filter @ohif/app exec rsbuild dev --config ../../rsbuild.config.ts',
     url: 'http://localhost:3335',
     reuseExistingServer: !process.env.CI,
     timeout: 360_000,

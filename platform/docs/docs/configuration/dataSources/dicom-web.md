@@ -104,19 +104,24 @@ is running the `dev:orthanc` script in our project's `package.json` (inside
 `platform/app`). That script is:
 
 ```js
-cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker-nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
+cross-env NODE_ENV=development PROXY_TARGET=/pacs/dicom-web PROXY_DOMAIN=http://localhost:8042 PROXY_PATH_REWRITE_FROM=/pacs/dicom-web PROXY_PATH_REWRITE_TO=/dicom-web APP_CONFIG=config/docker-nginx-orthanc.js rsbuild dev --config ../../rsbuild.config.ts
 ```
 
-- `cross-env` sets three environment variables
-  - PROXY_TARGET: `/dicom-web`
+- `cross-env` sets the environment variables
+  - PROXY_TARGET: `/pacs/dicom-web`
   - PROXY_DOMAIN: `http://localhost:8042`
+  - PROXY_PATH_REWRITE_FROM: `/pacs/dicom-web`
+  - PROXY_PATH_REWRITE_TO: `/dicom-web`
   - APP_CONFIG: `config/docker-nginx-orthanc.js`
-- `webpack-dev-server` runs using the `.webpack/webpack.pwa.js` configuration
-  file. It will watch for changes and update as we develop.
+- `rsbuild dev` runs the app's dev server using the root `rsbuild.config.ts`
+  configuration file (the app builds and serves through Rsbuild). It watches for
+  changes and updates as we develop.
 
 `PROXY_TARGET` and `PROXY_DOMAIN` tell our development server to proxy requests
-to `Orthanc`. This allows us to bypass CORS issues that normally occur when
-requesting resources that live at a different domain.
+to `Orthanc`, and `PROXY_PATH_REWRITE_FROM`/`PROXY_PATH_REWRITE_TO` rewrite the
+`/pacs/dicom-web` request path to Orthanc's `/dicom-web` path. This allows us to
+bypass CORS issues that normally occur when requesting resources that live at a
+different domain.
 
 The `APP_CONFIG` value tells our app which file to load on to `window.config`.
 By default, our app uses the file at

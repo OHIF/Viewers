@@ -179,9 +179,7 @@ const ViewportWindowLevel = ({
       handleImageVolumeLoadingCompleted
     );
 
-    const intervalId = isLoading
-      ? setInterval(() => updateViewportHistograms(), 1000)
-      : undefined;
+    const intervalId = isLoading ? setInterval(() => updateViewportHistograms(), 1000) : undefined;
 
     return () => {
       document.removeEventListener(
@@ -259,7 +257,5 @@ const ViewportWindowLevel = ({
     </PanelSection>
   );
 };
-
-
 
 export default ViewportWindowLevel;

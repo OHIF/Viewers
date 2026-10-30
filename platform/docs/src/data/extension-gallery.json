@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.ohif.org/schemas/extension-gallery.schema.json",
+  "entries": [
+    {
+      "name": "@ohif/extension-example",
+      "type": "extension",
+      "description": "Reference extension: viewport overlay, panel, command, hanging protocol.",
+      "maintainer": { "name": "OHIF", "url": "https://github.com/OHIF" },
+      "modules": ["customizationModule", "panelModule", "commandsModule", "hangingProtocolModule"],
+      "hostRange": "^3.13.0-beta.0",
+      "links": {
+        "npm": "https://www.npmjs.com/package/@ohif/extension-example",
+        "repository": "https://github.com/OHIF/extension-example"
+      }
+    }
+  ]
+}
