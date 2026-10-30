@@ -366,8 +366,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     const { ReferencedSOPInstanceUID } = referencedSOPSequence;
-    // dcmjs 1.0 keeps a one-value IS 1-n as a list
-    const frame = Number(asArray(referencedSOPSequence.ReferencedFrameNumber)[0]) || 1;
+    const frame = _getReferencedFrameNumber(referencedSOPSequence);
     const key = `${ReferencedSOPInstanceUID}:${frame}`;
     const imageId = imageIdMap.get(key);
 
@@ -387,6 +386,15 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 }
 
 /**
+ * The first ReferencedFrameNumber of a ReferencedSOPSequence item, or 1.
+ * dcmjs 1.0 gives a one-value IS 1-n as a list, and an empty element as `[]`
+ * (an invalid but seen DICOM value), so both read as frame 1.
+ */
+function _getReferencedFrameNumber(referencedSOPSequence) {
+  return Number(asArray(referencedSOPSequence?.ReferencedFrameNumber)[0]) || 1;
+}
+
+/**
  * Checks if a measurement references a specific SOP Instance UID.
  * @param {any} measurement - The measurement object.
  * @param {string} sopInstanceUID - The SOP Instance UID to check against.
@@ -400,12 +408,11 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
    * NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
    * Standard. But for now, we will support only one ReferenceFrameNumber.
    */
-  const ReferencedFrameNumber =
-    (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
-    1;
+  const ReferencedFrameNumber = _getReferencedFrameNumber(
+    measurement.coords[0].ReferencedSOPSequence
+  );
 
-  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {
+  if (frameNumber && Number(frameNumber) !== ReferencedFrameNumber) {
     return false;
   }
 

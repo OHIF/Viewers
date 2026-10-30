@@ -164,6 +164,25 @@ describe('_checkIfCanAddMeasurementsToDisplaySet', () => {
       displaySetInstanceUID: 'nm',
     });
   });
+
+  // An empty ReferencedFrameNumber is invalid DICOM, but some writers emit it;
+  // dcmjs 1.0 naturalizes it as [], and 0.52 gave null. Both mean frame 1.
+  it('places a measurement with an empty ReferencedFrameNumber on frame 1', () => {
+    const srDisplaySet = srWithOneMeasurementOn('sop-1');
+    srDisplaySet.measurements[0].coords[0].ReferencedSOPSequence.ReferencedFrameNumber = [];
+    const imageId = 'wadors:https://host/studies/st/series/se/instances/sop-1/frames/1';
+    const dataSource = { getImageIdsForDisplaySet: jest.fn(() => [imageId]) };
+    mockGetUIDsFromImageID.mockReturnValue({ SOPInstanceUID: 'sop-1', frameNumber: '1' });
+
+    _checkIfCanAddMeasurementsToDisplaySet(
+      srDisplaySet as never,
+      { displaySetInstanceUID: 'ct', Modality: 'CT' } as never,
+      dataSource,
+      servicesManager as never
+    );
+
+    expect(srDisplaySet.measurements[0]).toMatchObject({ loaded: true, imageId, frameNumber: 1 });
+  });
 });
 
 describe('getSopClassHandlerModule', () => {
