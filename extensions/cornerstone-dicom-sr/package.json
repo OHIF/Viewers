@@ -31,7 +31,6 @@
   "peerDependencies": {
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
-    "dcmjs": "0.52.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "react": "19.2.7"
@@ -41,9 +40,11 @@
     "@cornerstonejs/adapters": "5.12.0",
     "@cornerstonejs/core": "5.12.0",
     "@cornerstonejs/tools": "5.12.0",
+    "@cornerstonejs/utils": "5.12.0",
     "classnames": "2.5.1"
   },
   "devDependencies": {
+    "@dcmjs-org/dcmjs": "1.0.0-beta.5",
     "cross-env": "7.0.3"
   },
   "keywords": [

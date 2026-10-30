@@ -1,5 +1,5 @@
 import { TextEncoder, TextDecoder } from 'util';
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 import {
   DICOM_WRITE_OPTIONS,
   datasetToDicomPart10Buffer,

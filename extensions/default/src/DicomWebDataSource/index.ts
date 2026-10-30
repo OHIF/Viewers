@@ -11,12 +11,13 @@ import {
 import dcm4cheeReject from './dcm4cheeReject.js';
 
 import getImageId from './utils/getImageId.js';
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
+import { forEachBulkDataValue } from './utils/forEachBulkDataValue';
 import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
 import {
   getDatasetTransferSyntaxUID,
@@ -148,33 +149,22 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
    * This is done recursively, for sub-sequences. Shared by both the lazy
    * (async) and non-lazy (sync) series-metadata retrieval paths.
    */
-  const addRetrieveBulkDataNaturalized = (naturalized, instance = naturalized) => {
-    if (!naturalized) {
-      return naturalized;
-    }
-    for (const key of Object.keys(naturalized)) {
-      const value = naturalized[key];
-
-      if (Array.isArray(value) && typeof value[0] === 'object') {
-        // Fix recursive values
-        const validValues = value.filter(Boolean);
-        validValues.forEach(child => addRetrieveBulkDataNaturalized(child, instance));
-        continue;
-      }
-
+  const addRetrieveBulkDataNaturalized = naturalized => {
+    forEachBulkDataValue(naturalized, value => {
       // The value.Value will be set with the bulkdata read value
       // in which case it isn't necessary to re-read this.
-      if (value && value.BulkDataURI && !value.Value) {
-        // handle the scenarios where bulkDataURI is relative path
-        fixBulkDataURI(value, instance, dicomWebConfig);
-        // Provide a method to fetch bulkdata. The client is shared, so set the
-        // current auth headers at fetch time, as the other ops here do.
-        value.retrieveBulkData = options => {
-          dicomWebClient.headers = getAuthorizationHeader();
-          return retrieveBulkData.call(dicomWebClient, value, options);
-        };
+      if (value.Value) {
+        return;
       }
-    }
+      // handle the scenarios where bulkDataURI is relative path
+      fixBulkDataURI(value, naturalized, dicomWebConfig);
+      // Provide a method to fetch bulkdata. The client is shared, so set the
+      // current auth headers at fetch time, as the other ops here do.
+      value.retrieveBulkData = options => {
+        dicomWebClient.headers = getAuthorizationHeader();
+        return retrieveBulkData.call(dicomWebClient, value, options);
+      };
+    });
     return naturalized;
   };
 

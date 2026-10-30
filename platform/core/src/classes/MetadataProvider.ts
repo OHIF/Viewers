@@ -2,6 +2,7 @@ import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import { utilities } from '@cornerstonejs/core';
 import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
+import { asArray } from '@cornerstonejs/utils';
 import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
@@ -410,7 +411,9 @@ class MetadataProvider {
         // map the DICOM tags to the cornerstone tags since cornerstone tags
         // are camelCase and instance tags are all caps
         metadata = {
-          sequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions?.map(region => {
+          sequenceOfUltrasoundRegions:
+            instance.SequenceOfUltrasoundRegions &&
+            asArray(instance.SequenceOfUltrasoundRegions).map(region => {
             return {
               regionSpatialFormat: region.RegionSpatialFormat,
               regionDataType: region.RegionDataType,

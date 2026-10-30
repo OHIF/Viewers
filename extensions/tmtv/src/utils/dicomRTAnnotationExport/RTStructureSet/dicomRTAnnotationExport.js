@@ -1,4 +1,4 @@
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 import { classes, DicomMetadataStore } from '@ohif/core';
 import { adaptersRT } from '@cornerstonejs/adapters';
 

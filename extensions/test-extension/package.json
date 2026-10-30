@@ -29,7 +29,6 @@
   },
   "peerDependencies": {
     "@ohif/core": "workspace:*",
-    "dcmjs": "0.52.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "react": "19.2.7"

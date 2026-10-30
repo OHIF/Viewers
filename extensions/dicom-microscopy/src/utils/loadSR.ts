@@ -1,4 +1,4 @@
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 
 import DCM_CODE_VALUES from './dcmCodeValues';
 import toArray from './toArray';
@@ -172,7 +172,7 @@ async function _getROIsFromToolState(microscopyService, naturalizedDataset, Fram
 function _getMeasurementGroups(naturalizedDataset) {
   const { ContentSequence } = naturalizedDataset;
 
-  const imagingMeasurementsContentItem = ContentSequence.find(
+  const imagingMeasurementsContentItem = toArray(ContentSequence).find(
     ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.IMAGING_MEASUREMENTS
   );
 

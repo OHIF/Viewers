@@ -4,7 +4,7 @@ import { ExtensionManager, CommandsManager, DicomMetadataStore, utils } from '@o
 import { DataRow } from '@ohif/ui-next';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 import constructSR from '../../utils/constructSR';
 
 const { downloadDicom } = utils;

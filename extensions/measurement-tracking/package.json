@@ -33,7 +33,6 @@
     "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
     "@ohif/extension-default": "workspace:*",
     "classnames": "2.5.1",
-    "dcmjs": "0.52.0",
     "lodash.debounce": "4.0.8",
     "react": "19.2.7",
     "react-dom": "19.2.7",
