@@ -169,6 +169,12 @@ const screenShotPaths = {
     twoByTwoFromOneUp: 'segLayoutRenderPersistence-twoByTwoFromOneUp.png',
     leftPaneAfterColorChange: 'segLayoutRenderPersistence-leftPaneAfterColorChange.png',
   },
+  segMPRDisplay: {
+    mprAfterHydration: 'segMPRDisplay-mprAfterHydration.png',
+    axialScrolled: 'segMPRDisplay-axialScrolled.png',
+    sagittalScrolled: 'segMPRDisplay-sagittalScrolled.png',
+    coronalScrolled: 'segMPRDisplay-coronalScrolled.png',
+  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',
