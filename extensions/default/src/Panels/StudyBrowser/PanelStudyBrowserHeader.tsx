@@ -1,5 +1,12 @@
 import React from 'react';
-import { ToggleGroup, ToggleGroupItem } from '@ohif/ui-next';
+import { useTranslation } from 'react-i18next';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import { actionIcon, viewPreset } from './types';
 
@@ -14,6 +21,8 @@ function PanelStudyBrowserHeader({
   actionIcons: actionIcon[];
   updateActionIconValue: (actionIcon: actionIcon) => void;
 }) {
+  const { t } = useTranslation('StudyBrowser');
+
   // Button order: Settings button then List view mode (thumbnails vs. list)
   return (
     <>
@@ -22,13 +31,30 @@ function PanelStudyBrowserHeader({
           <div className="flex w-full items-center gap-[10px]">
             <div className="flex items-center justify-center">
               <div className="text-primary flex items-center space-x-1">
-                {actionIcons.map((icon: actionIcon, index) =>
-                  React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
-                    key: index,
-                    onClick: () => updateActionIconValue(icon),
-                    className: `cursor-pointer`,
-                  })
-                )}
+                {actionIcons.map((icon: actionIcon, index) => {
+                  const iconElement = React.createElement(
+                    Icons[icon.iconName] || Icons.MissingIcon,
+                    {
+                      key: index,
+                      onClick: () => updateActionIconValue(icon),
+                      className: `cursor-pointer`,
+                    }
+                  );
+                  if (!icon.label) {
+                    return iconElement;
+                  }
+                  return (
+                    <Tooltip key={index}>
+                      <TooltipTrigger
+                        asChild
+                        aria-label={t(icon.label)}
+                      >
+                        <span className="flex">{iconElement}</span>
+                      </TooltipTrigger>
+                      <TooltipContent>{t(icon.label)}</TooltipContent>
+                    </Tooltip>
+                  );
+                })}
               </div>
             </div>
             <div className="ml-auto flex h-full items-center justify-center">
