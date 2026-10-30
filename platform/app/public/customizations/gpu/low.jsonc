@@ -6,7 +6,9 @@
 // has more memory than `gpu/low-tablet`, and the same edge.
 //
 // A preset applies only with final downsampling on, and a preset in this
-// customization turns final downsampling on, also in config/default.js.
+// customization turns final downsampling on, also in a locked-down config.
+// `?customization=` needs `customizationUrlPrefixes`, and config/default.js has
+// none: there, set the preset through `customizationService` in the config.
 // Nothing probes the device: a preset is a set of values, so a real device may
 // hold more or less than the preset states.
 //

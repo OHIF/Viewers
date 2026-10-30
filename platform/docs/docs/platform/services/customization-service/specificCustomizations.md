@@ -348,9 +348,13 @@ preset is a named set of values: the largest texture edge and the texture memory
 its texture to fit those values, which is a lossy final downsampling.
 
 A preset applies only when final downsampling is on. The app config turns it on with
-`lossyDownsampling: { final: true }`. `config/e2e.js`, `config/netlify.js` and `config/dev.js` do
-that, and `config/default.js` does not. A value in this customization also turns final
-downsampling on, so a deployment of `config/default.js` gets the preset that it selects. When no
+`lossyDownsampling: { final: true }`. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and
+`config/customization.js` do that. The other bundled configs, `config/default.js` and the Docker
+recipes among them, do not. A value in this customization also turns final downsampling on, so a
+deployment of `config/default.js` gets the preset that it selects. `config/default.js` has no
+`customizationUrlPrefixes`, so `?customization=gpu/...` stops the app at startup there. Set the
+value through `customizationService` in the config, or use a config that allows URL
+customizations. When no
 module sets the key, the default preset of Cornerstone3D applies, and only if the app config turns
 final downsampling on.
 

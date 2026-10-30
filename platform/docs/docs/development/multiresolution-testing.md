@@ -29,10 +29,38 @@ The branch changes three things that a tester can see:
 - **A viewport chooses the representation that the GPU settings can hold.** The choice is
   made once, when the viewport adds its actor, and it is read from a GPU settings preset.
   The choice applies only with final downsampling on (`lossyDownsampling: { final: true }`).
-  `config/e2e.js`, `config/netlify.js` and `config/dev.js` turn it on. `config/default.js`
-  turns it on only when the `cornerstone.gpuSettingsPreset` customization selects a preset.
+  `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` turn
+  it on. The other bundled configs, `config/default.js` and the Docker recipes among them,
+  keep it off. Such a config turns it on only when the deployer sets
+  `lossyDownsampling.final`, or when the `cornerstone.gpuSettingsPreset` customization
+  selects a preset. See [Which builds turn on final downsampling](#which-builds-turn-on-final-downsampling).
 - **A reduced representation follows the load.** The loader delivers its frames over
   time, and each delivery redoes the part of the reduced data that the frame changed.
+
+## Which builds turn on final downsampling
+
+Final downsampling is lossy, and it can cause problems on some devices. Thus only the
+developer builds turn it on. Cornerstone3D also keeps it off by default.
+
+### User requirements
+
+- A developer build turns final downsampling on. The developer builds are the dev server
+  (`pnpm dev`, `pnpm dev:fast`), viewer-dev.ohif.org, the Netlify deploy previews, and the
+  e2e tests.
+- A build that a deployment uses keeps final downsampling off, unless the deployer turns it
+  on. These builds are `pnpm build` (`config/default.js`), the Docker recipes, and the other
+  bundled deployment configs.
+- The deployer can select a GPU settings preset with the `cornerstone.gpuSettingsPreset`
+  customization.
+
+### Implementation requirements
+
+- `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` set
+  `lossyDownsampling: { final: true }`.
+- `config/default.js` and each `config/docker-nginx-*.js` do not set `lossyDownsampling`.
+  A comment in each file shows how to turn it on, and lists the options.
+- The other bundled configs do not set `lossyDownsampling`, and have no comment.
+- `config/e2e.js` pins no preset, so the e2e tests use `auto`.
 
 ## How OHIF reaches a reduced texture
 
@@ -143,7 +171,9 @@ For a local run, replace the host with `http://localhost:3000`.
 Each file sets the `cornerstone.gpuSettingsPreset` customization. The app config must
 allow the prefix. `config/netlify.js` and `config/dev.js` set `customizationUrlPrefixes`,
 and `config/default.js` does not. Thus a build that serves `config/default.js` rejects the
-parameter.
+parameter, and the app stops at startup. To try a preset with `config/default.js`, set
+`cornerstone.gpuSettingsPreset` through `customizationService` in a copy of the config. You
+can also use a config that sets `customizationUrlPrefixes`.
 
 **`gpu/high-texture-4096` states an edge of 4096, and no device is tested to render an edge
 above 2048.** Some devices report a `MAX_3D_TEXTURE_SIZE` of 4096 or more, but a reported

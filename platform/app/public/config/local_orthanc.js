@@ -4,9 +4,6 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
-  // Final downsampling reduces a volume texture to fit the GPU settings preset.
-  // config/default.js keeps it off.
-  lossyDownsampling: { final: true },
   maxNumberOfWebWorkers: 3,
   showLoadingIndicator: true,
   showWarningMessageForCrossOrigin: true,

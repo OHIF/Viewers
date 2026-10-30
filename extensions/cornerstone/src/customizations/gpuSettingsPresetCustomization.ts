@@ -13,7 +13,9 @@
  * default preset of Cornerstone3D.
  *
  * Set this value in the `bootstrap` phase or in the `global` phase of a
- * `?customization=` module. The shipped examples are
+ * `?customization=` module. `?customization=` needs `customizationUrlPrefixes`,
+ * and `config/default.js` has none: there, set the value through
+ * `customizationService` in the config. The shipped examples are
  * `platform/app/public/customizations/gpu/<id>.jsonc`.
  */
 export default {

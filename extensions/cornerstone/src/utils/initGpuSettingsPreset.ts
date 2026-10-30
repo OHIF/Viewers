@@ -14,7 +14,9 @@ const CUSTOMIZATION_ID = 'cornerstone.gpuSettingsPreset';
  * Cornerstone3D has `auto`.
  *
  * - The customization states a preset: final downsampling is on, with that
- *   preset, also in a locked-down config such as `config/default.js`.
+ *   preset, also in a locked-down config such as `config/default.js`. That
+ *   config has no `customizationUrlPrefixes`, so it must set the value through
+ *   `customizationService` in the config, not with `?customization=`.
  * - The customization states no preset: `appConfig.lossyDownsampling.final`
  *   decides, with the default preset of Cornerstone3D.
  *

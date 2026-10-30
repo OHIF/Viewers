@@ -6,7 +6,9 @@
 // value as unknown, and keeps its own default preset.
 //
 // A preset applies only with final downsampling on, and a preset in this
-// customization turns final downsampling on, also in config/default.js.
+// customization turns final downsampling on, also in a locked-down config.
+// `?customization=` needs `customizationUrlPrefixes`, and config/default.js has
+// none: there, set the preset through `customizationService` in the config.
 //
 // Load it with `?customization=gpu/auto`.
 {
