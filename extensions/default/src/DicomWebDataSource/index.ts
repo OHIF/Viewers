@@ -167,8 +167,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       if (value && value.BulkDataURI && !value.Value) {
         // handle the scenarios where bulkDataURI is relative path
         fixBulkDataURI(value, instance, dicomWebConfig);
-        // Provide a method to fetch bulkdata
-        value.retrieveBulkData = retrieveBulkData.bind(dicomWebClient, value);
+        // Provide a method to fetch bulkdata. The client is shared, so set the
+        // current auth headers at fetch time, as the other ops here do.
+        value.retrieveBulkData = options => {
+          dicomWebClient.headers = getAuthorizationHeader();
+          return retrieveBulkData.call(dicomWebClient, value, options);
+        };
       }
     }
     return naturalized;

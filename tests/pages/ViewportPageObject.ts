@@ -2,10 +2,12 @@ import { Locator, Page } from '@playwright/test';
 import {
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
+  simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
+  waitForViewportsRendered,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
@@ -17,6 +19,11 @@ type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type NormalizedPathClickParams = {
+  path: { x: number; y: number }[];
+  closePath?: boolean;
 };
 
 type NormalizedPathDragParams = {
@@ -65,7 +72,7 @@ export interface IViewportPageObject {
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
-  normalizedPathClickAt: (params: { path: { x: number; y: number }[] }) => Promise<void>;
+  normalizedPathClickAt: (params: NormalizedPathClickParams) => Promise<void>;
   normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
@@ -91,8 +98,14 @@ export interface IViewportPageObject {
     };
   };
   pane: Locator;
+  /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
+  getViewportType: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
+  /** The text box of each annotation drawn in the viewport. */
+  annotationTextBoxes: Locator;
+  /** The two axes of each bidirectional measurement drawn in the viewport. */
+  bidirectionalAxes: Locator;
   navigationArrows: {
     locator: Locator;
     prev: {
@@ -333,9 +346,8 @@ export class ViewportPageObject {
   }
 
   /**
-   * Note: awaiting the returned methods (toSlice, toFirstSlice, toLastSlice, scrollBy)
-   * does not guarantee the viewport has finished rendering. Follow up with
-   * `waitForViewportsRendered` if you need pixel-stable state.
+   * toSlice, toFirstSlice, toLastSlice and scrollBy wait until the viewport is on the slice and has
+   * rendered it.
    */
   private getSliceNavigation(viewport: Locator) {
     const page = this.page;
@@ -359,15 +371,20 @@ export class ViewportPageObject {
 
     const scrollBy = async (delta: number) => {
       const viewportId = await this.getViewportId(viewport);
-      await page.evaluate(
+      // Returns the slice the scroll is headed to. A stack viewport may load it after a short
+      // delay, so its target is read from getTargetImageIdIndex; a volume viewport is already on it.
+      const targetSliceIndex = await page.evaluate(
         ({ services, viewportId, delta }) => {
           const cornerstoneViewport = (
             services as any
           ).cornerstoneViewportService.getCornerstoneViewport(viewportId);
           if (!cornerstoneViewport) {
-            return;
+            throw new Error(`No Cornerstone viewport found for ${viewportId}`);
           }
-          return cornerstoneViewport.scroll(delta);
+          cornerstoneViewport.scroll(delta);
+          return (
+            cornerstoneViewport.getTargetImageIdIndex?.() ?? cornerstoneViewport.getSliceIndex()
+          );
         },
         {
           viewportId,
@@ -375,12 +392,39 @@ export class ViewportPageObject {
           services: await page.evaluateHandle('window.services'),
         }
       );
+      await waitForSliceIndex(targetSliceIndex);
+      await waitForViewportsRendered(page);
+    };
+
+    // A negative index counts back from the last slice, as it does for jumpToImage.
+    const waitForSliceIndex = async (imageIndex: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      await page.waitForFunction(
+        ({ viewportId, imageIndex }) => {
+          const cornerstoneViewport = (
+            window as any
+          ).services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!cornerstoneViewport) {
+            return false;
+          }
+          const sliceIndex =
+            imageIndex < 0 ? cornerstoneViewport.getNumberOfSlices() + imageIndex : imageIndex;
+          return cornerstoneViewport.getSliceIndex() === sliceIndex;
+        },
+        { viewportId, imageIndex }
+      );
+    };
+
+    const toSlice = async (imageIndex: number) => {
+      await jumpToImage(imageIndex);
+      await waitForSliceIndex(imageIndex);
+      await waitForViewportsRendered(page);
     };
 
     return {
-      toSlice: jumpToImage,
-      toFirstSlice: () => jumpToImage(0),
-      toLastSlice: () => jumpToImage(-1),
+      toSlice,
+      toFirstSlice: () => toSlice(0),
+      toLastSlice: () => toSlice(-1),
       scrollBy,
     };
   }
@@ -427,16 +471,20 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
-      normalizedPathClickAt: async (params: { path: { x: number; y: number }[] }) => {
-        const { path } = params;
+      normalizedPathClickAt: async (params: NormalizedPathClickParams) => {
+        const { path, closePath = false } = params;
         await simulateNormalizedClicksOnElement({
           locator: viewport,
           normalizedPoints: path,
         });
-        await simulateNormalizedDoubleClickOnElement({
-          locator: viewport,
-          normalizedPoint: path[path.length - 1],
-        });
+        if (closePath) {
+          // Click the first point to close the path, held past the 400ms double-click window.
+          await simulateNormalizedClickOnElement({
+            locator: viewport,
+            normalizedPoint: path[0],
+            delay: 500,
+          });
+        }
       },
       normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
         await simulateNormalizedPathDragOnElement({
@@ -451,12 +499,24 @@ export class ViewportPageObject {
       overlayText: this.getOverlayText(viewport),
       overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
+      getViewportType: async () => {
+        const viewportId = await this.getViewportId(viewport);
+        return this.page.evaluate(
+          ({ services, viewportId }) =>
+            (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
+          { viewportId, services: await this.page.evaluateHandle('window.services') }
+        );
+      },
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
       getSvgAnnotationStatTextLines: (uid: string) => {
         return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
       },
+      annotationTextBoxes: this.getSvg(viewport).locator('g[data-annotation-uid] > text'),
+      bidirectionalAxes: this.getSvg(viewport).locator(
+        'line[data-id$="-line-1"], line[data-id$="-line-2"]'
+      ),
       navigationArrows: this.getNavigationArrows(viewport),
       sliceNavigation: this.getSliceNavigation(viewport),
       magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),
@@ -566,7 +626,7 @@ export class ViewportPageObject {
   }
 
   async getAll(): Promise<IViewportPageObject[]> {
-    const viewports = await this.page.getByTestId('viewport-pane').all();
+    const viewports = await this.panes.all();
     return await Promise.all(viewports.map(viewport => this.viewportPageObjectFactory(viewport)));
   }
 
@@ -576,7 +636,12 @@ export class ViewportPageObject {
   }
 
   getNthLocator(index: number): Locator {
-    return this.page.getByTestId('viewport-pane').nth(index);
+    return this.panes.nth(index);
+  }
+
+  // Every viewport pane in the grid
+  get panes(): Locator {
+    return this.page.getByTestId('viewport-pane');
   }
 
   getById(viewportId: string): Promise<IViewportPageObject> {
