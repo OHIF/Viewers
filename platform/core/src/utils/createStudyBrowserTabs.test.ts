@@ -1,4 +1,5 @@
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
+import { sortCriteriaFor as mockSortCriteriaFor } from '../services/DisplaySetService/DisplaySetService';
 
 const mockDisplaySets = [
   { displaySetInstanceUID: 'ds-2', StudyInstanceUID: 'study', SeriesNumber: 2 },
@@ -14,7 +15,8 @@ jest.mock('../contextProviders/SystemProvider', () => ({
       services: {
         displaySetService: {
           getDisplaySetByUID: uid => mockDisplaySets.find(ds => ds.displaySetInstanceUID === uid),
-          getDisplaySetSort: () => mockDisplaySetSort,
+          getSortCriteria: defaultSortCriteria =>
+            mockSortCriteriaFor(mockDisplaySetSort, defaultSortCriteria),
         },
         customizationService: {
           // The default series order, deliberately not the series number order.

@@ -19,4 +19,35 @@ describe('DisplaySetService — sortDisplaySets', () => {
       direction: 'descending',
     });
   });
+
+  it('forgets the sort when the mode exits, so the next study starts in the default order', () => {
+    const service = new DisplaySetService();
+    service.sortDisplaySets(bySeriesNumber, 'descending');
+
+    service.onModeExit();
+
+    expect(service.getDisplaySetSort()).toBeNull();
+  });
+
+  it('orders by the applied sort, breaking ties with the default order in the same direction', () => {
+    const service = new DisplaySetService();
+    const sameDate = () => 0;
+    const byDescription = (a, b) => a.SeriesDescription.localeCompare(b.SeriesDescription);
+    const displaySets = [
+      { SeriesDescription: 'b', SeriesNumber: 1 },
+      { SeriesDescription: 'a', SeriesNumber: 2 },
+    ];
+
+    expect(service.getSortCriteria(byDescription)).toBe(byDescription);
+
+    service.sortDisplaySets(sameDate, 'descending');
+    expect(
+      [...displaySets].sort(service.getSortCriteria(byDescription)).map(ds => ds.SeriesNumber)
+    ).toEqual([1, 2]);
+
+    service.sortDisplaySets(bySeriesNumber, 'descending');
+    expect(
+      [...displaySets].sort(service.getSortCriteria(byDescription)).map(ds => ds.SeriesNumber)
+    ).toEqual([2, 1]);
+  });
 });

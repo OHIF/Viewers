@@ -8,6 +8,27 @@ export type DisplaySetSort = {
   direction: 'ascending' | 'descending';
 };
 
+type DisplaySetComparator = (a: DisplaySet, b: DisplaySet) => number;
+
+/**
+ * The series order to show once a sort has been picked: the picked sort, with
+ * ties (e.g. series sharing a date) broken by the default order, all in the
+ * picked direction, so the result does not depend on the order the display
+ * sets arrive in.  Without a picked sort it is the default order.
+ */
+export function sortCriteriaFor(
+  displaySetSort: DisplaySetSort | null,
+  defaultSortCriteria?: DisplaySetComparator
+): DisplaySetComparator | undefined {
+  if (!displaySetSort) {
+    return defaultSortCriteria;
+  }
+  return (a, b) => {
+    const comparison = displaySetSort.sortFn(a, b) || defaultSortCriteria?.(a, b) || 0;
+    return displaySetSort.direction === 'descending' ? -comparison : comparison;
+  };
+}
+
 const displaySetCache = new Map<string, DisplaySet>();
 
 /**
@@ -298,6 +319,8 @@ export default class DisplaySetService extends PubSubService {
     this.getDisplaySetCache().clear();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
+    // A sort picked for one study does not carry over to the next one.
+    this.displaySetSort = null;
   }
 
   /**
@@ -504,5 +527,14 @@ export default class DisplaySetService extends PubSubService {
    */
   public getDisplaySetSort(): DisplaySetSort | null {
     return this.displaySetSort;
+  }
+
+  /**
+   * @returns the order the study browser shows the series in: the sort last
+   *    applied with sortDisplaySets, falling back to defaultSortCriteria for
+   *    ties, or defaultSortCriteria itself while no sort has been applied.
+   */
+  public getSortCriteria(defaultSortCriteria?: DisplaySetComparator) {
+    return sortCriteriaFor(this.displaySetSort, defaultSortCriteria);
   }
 }
