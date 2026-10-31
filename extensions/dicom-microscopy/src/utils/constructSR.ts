@@ -1,4 +1,5 @@
 import dcmjs from 'dcmjs';
+import { utils } from '@ohif/core';
 import DEVICE_OBSERVER_UID from './DEVICE_OBSERVER_UID';
 
 /**
@@ -153,6 +154,7 @@ export default function constructSR(metadata, { SeriesDescription, SeriesNumber 
     imagingMeasurements,
   });
 
+  const writerHeader = utils.getOhifWriterHeader('dcmjs', 'dcmjs', process.env.DCMJS_VERSION);
   const dataset = new dcmjs.sr.documents.Comprehensive3DSR({
     content: measurementReport[0],
     evidence: [metadata],
@@ -161,8 +163,11 @@ export default function constructSR(metadata, { SeriesDescription, SeriesNumber 
     seriesDescription: SeriesDescription || 'Whole slide imaging structured report',
     sopInstanceUID: dcmjs.data.DicomMetaDictionary.uid(),
     instanceNumber: 1,
-    manufacturer: 'dcmjs-org',
+    manufacturer: writerHeader.Manufacturer,
   });
+  // The constructor does not take the model name or the software versions.
+  dataset.ManufacturerModelName = writerHeader.ManufacturerModelName;
+  dataset.SoftwareVersions = writerHeader.SoftwareVersions;
   dataset.SpecificCharacterSet = 'ISO_IR 192';
   const fileMetaInformationVersionArray = new Uint8Array(2);
   fileMetaInformationVersionArray[1] = 1;
