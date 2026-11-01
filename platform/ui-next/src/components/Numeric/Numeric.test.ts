@@ -138,6 +138,23 @@ it.each([
   }
 );
 
+it('does not round an unedited Numeric.SingleRange value on blur', () => {
+  const onChange = jest.fn();
+  const result = render(
+    createElement(
+      Numeric.Container,
+      { mode: 'singleRange', min: 0, max: 1, step: 1, defaultValue: 0.5, onChange },
+      createElement(Numeric.SingleRange, { showNumberInput: true })
+    )
+  );
+  const input = result.container.querySelector('input') as HTMLInputElement;
+
+  fireEvent.blur(input);
+
+  expect(input.value).toBe('0.5');
+  expect(onChange).not.toHaveBeenCalled();
+});
+
 it('commits a valid Numeric.NumberInput draft on blur', () => {
   const { input, onChange } = renderNumericInput(numericInputs[0]);
 
