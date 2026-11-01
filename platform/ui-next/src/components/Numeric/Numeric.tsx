@@ -201,11 +201,14 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
       return false;
     }
 
-    const boundedValue = Math.max(min, Math.min(parsedValue, max));
+    // Round to the precision of the slider step so the input matches the slider position.
+    const boundedValue = Number(
+      Math.max(min, Math.min(parsedValue, max)).toFixed(getDecimalPlaces(step))
+    );
     setSingleValue(boundedValue);
     setInputValue(boundedValue.toString());
     return true;
-  }, [inputValue, max, min, setSingleValue]);
+  }, [inputValue, max, min, setSingleValue, step]);
 
   const restorePreviousInputValue = useCallback(() => {
     setInputValue(singleValue.toString());

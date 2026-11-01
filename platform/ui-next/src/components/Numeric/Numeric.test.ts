@@ -113,6 +113,27 @@ describe.each(numericInputs)('Numeric.$name', numericInput => {
   });
 });
 
+it.each([
+  { step: 0.1, typed: '0.2222', expected: 0.2 },
+  { step: 1, typed: '0.333', expected: 0 },
+])('rounds a typed Numeric.SingleRange value to step $step', ({ step, typed, expected }) => {
+  const onChange = jest.fn();
+  const result = render(
+    createElement(
+      Numeric.Container,
+      { mode: 'singleRange', min: 0, max: 10, step, defaultValue: 0.5, onChange },
+      createElement(Numeric.SingleRange, { showNumberInput: true })
+    )
+  );
+  const input = result.container.querySelector('input') as HTMLInputElement;
+
+  fireEvent.change(input, { target: { value: typed } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+
+  expect(input.value).toBe(String(expected));
+  expect(onChange).toHaveBeenLastCalledWith(expected);
+});
+
 it('commits a valid Numeric.NumberInput draft on blur', () => {
   const { input, onChange } = renderNumericInput(numericInputs[0]);
 
