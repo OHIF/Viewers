@@ -201,10 +201,10 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
       return false;
     }
 
-    // Round to the precision of the slider step so the input matches the slider position.
-    const boundedValue = Number(
-      Math.max(min, Math.min(parsedValue, max)).toFixed(getDecimalPlaces(step))
-    );
+    // Round to the precision of the slider step so the input matches the slider position,
+    // then clamp, since min and max need not be aligned to the step.
+    const roundedValue = Number(parsedValue.toFixed(getDecimalPlaces(step)));
+    const boundedValue = Math.max(min, Math.min(roundedValue, max));
     setSingleValue(boundedValue);
     setInputValue(boundedValue.toString());
     return true;
