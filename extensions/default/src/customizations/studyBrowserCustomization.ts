@@ -1,6 +1,6 @@
 import { utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
-const { formatDate } = utils;
+const { compareSeriesDateTime } = utils.sortingCriteria.seriesSortCriteria;
 
 export default {
   'studyBrowser.studyMenuItems': [],
@@ -27,11 +27,7 @@ export default {
     },
     {
       label: i18n.t('StudyBrowser:Series Date'),
-      sortFunction: (a, b) => {
-        const dateA = new Date(formatDate(a?.SeriesDate));
-        const dateB = new Date(formatDate(b?.SeriesDate));
-        return dateA.getTime() - dateB.getTime();
-      },
+      sortFunction: compareSeriesDateTime,
     },
   ],
   'studyBrowser.viewPresets': [
