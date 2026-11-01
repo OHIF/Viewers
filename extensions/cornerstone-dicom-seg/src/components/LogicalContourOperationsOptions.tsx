@@ -134,7 +134,11 @@ function LogicalContourOperationOptions() {
   }, [nextSegmentIndex]);
 
   const runCommand = useRunCommand();
-  const canApplyOperation = hasOperandSegments(segmentA, segmentB);
+  const canApplyOperation = hasOperandSegments(
+    segmentA,
+    segmentB,
+    segments.map(segment => segment.segmentIndex)
+  );
 
   const applyLogicalContourOperation = () => {
     if (!canApplyOperation) {
