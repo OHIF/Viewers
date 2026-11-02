@@ -15,6 +15,11 @@ summary: A per-viewport indicator and detail view telling the user when the disp
 **Status:** Draft. §4 under review; §5 is the recommended approach and is expected to change.
 **Affects:** `@ohif/extension-cornerstone`, `@ohif/extension-default`, `@cornerstonejs/core` (T3).
 
+> **Note.** OHIF does not have the indicator that this specification defines yet.
+> [OHIF/Viewers#6256](https://github.com/OHIF/Viewers/issues/6256) tracks that work. Until then,
+> OHIF shows the Cornerstone3D fidelity indicator. The Cornerstone3D indicator does not meet all
+> of the `VF` requirements, for example `VF-CFG-1`, `VF-VIS-1d`, `VF-LANG-4`, and `VF-REG-2`.
+
 ---
 
 ## 1. Purpose
@@ -799,9 +804,8 @@ Cornerstone3D repository.
 | `VF-CS3D` | T3 in full; T9 final bullet; T11 and T18 fidelity-state measurement |
 | `VF-DOC` | Common definition of done — "Public APIs, configuration, user-visible behaviour, and important limitations are documented" |
 
-Superseded material: the earlier acceptance-criteria drafts referenced by the final
-acceptance-criteria document. The revised quote spreadsheet remains the authority for task
-inclusion, priority, and effort.
+Superseded material: the earlier drafts of the funded task list. The funded task list stays the
+authority for task inclusion, priority, and effort.
 
 ## 9. Verification approach
 
