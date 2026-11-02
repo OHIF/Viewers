@@ -1,4 +1,4 @@
-import { Enums, cache, Types as CoreTypes } from '@cornerstonejs/core';
+import { Enums, cache, viewportProjection, Types as CoreTypes } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import type {
   IViewportAdapter,
@@ -23,7 +23,6 @@ type NativeViewport = CoreTypes.IViewport & {
     (dataId: string, props: ViewportPresentation): void;
   };
   getViewState?: () => ViewportViewState | undefined;
-  getZoom?: () => number;
   setViewState?: (patch: ViewportViewState) => void;
   getViewReference?: () => CoreTypes.ViewReference | undefined;
   setViewReference?: (ref: CoreTypes.ViewReference) => void;
@@ -103,7 +102,7 @@ export class NextViewportAdapter implements IViewportAdapter {
   }
 
   getZoom(): number | undefined {
-    return typeof this.viewport.getZoom === 'function' ? this.viewport.getZoom() : undefined;
+    return viewportProjection.getPresentation<{ zoom?: number }>(this.viewport)?.zoom;
   }
 
   // ---- per-display-set appearance ----

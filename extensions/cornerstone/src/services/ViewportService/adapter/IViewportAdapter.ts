@@ -106,8 +106,8 @@ export interface IViewportAdapter {
   getFocalPoint(): CoreTypes.Point3 | undefined;
 
   /**
-   * Current uniform zoom value. Undefined when the
-   * viewport has no zoom concept (e.g. native 3D viewports).
+   * Current uniform zoom value. Undefined when the viewport has no single
+   * zoom value (e.g. native 3D, which reports a physical scale).
    */
   getZoom(): number | undefined;
 

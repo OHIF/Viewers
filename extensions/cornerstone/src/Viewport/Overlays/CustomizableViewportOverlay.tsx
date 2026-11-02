@@ -57,6 +57,15 @@ const OverlayItemComponents = {
 };
 
 /**
+ * Reads the viewport's current zoom through the adapter. Undefined when the
+ * viewport is missing or has no single zoom value (e.g. native 3D).
+ */
+function readViewportZoom(cornerstoneViewportService, viewportId: string): number | undefined {
+  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  return viewport ? getViewportAdapter(viewport).getZoom() : undefined;
+}
+
+/**
  * Customizable Viewport Overlay
  */
 function CustomizableViewportOverlay({
@@ -74,7 +83,11 @@ function CustomizableViewportOverlay({
 }) {
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
-  const [scale, setScale] = useState(1);
+  // Seeded from the adapter so a viewport with no single zoom value (native 3D)
+  // starts as undefined rather than a misleading 1.00x.
+  const [scale, setScale] = useState<number | undefined>(() =>
+    readViewportZoom(cornerstoneViewportService, viewportId)
+  );
   const [annotationState, setAnnotationState] = useState(0);
   const { isViewportBackgroundLight: isLight, windowLevel: voi } = useViewportRendering(viewportId);
   const { imageIndex } = imageSliceData;
@@ -134,6 +147,8 @@ function CustomizableViewportOverlay({
    * Updating the scale when the viewport changes its zoom
    */
   useEffect(() => {
+    const readZoom = () => readViewportZoom(cornerstoneViewportService, viewportId);
+
     const updateScale = eventDetail => {
       const { previousCamera, camera } = eventDetail.detail;
 
@@ -141,23 +156,24 @@ function CustomizableViewportOverlay({
         previousCamera.parallelScale !== camera.parallelScale ||
         previousCamera.scale !== camera.scale
       ) {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-        if (!viewport) {
-          return;
-        }
-
-        const scale = getViewportAdapter(viewport).getZoom();
-
-        if (scale !== undefined) {
-          setScale(scale);
-        }
+        setScale(readZoom());
       }
     };
 
+    // New viewport data (e.g. a different display set) may change both the
+    // zoom and whether the viewport has a single zoom value at all.
+    const { unsubscribe } = cornerstoneViewportService.subscribe(
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+      ({ viewportId: changedViewportId }) => {
+        if (changedViewportId === viewportId) {
+          setScale(readZoom());
+        }
+      }
+    );
     element.addEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
 
     return () => {
+      unsubscribe();
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
   }, [viewportId, viewportData, cornerstoneViewportService, element]);
@@ -422,6 +438,11 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
  * Zoom Level Overlay item
  */
 function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
+  // No single zoom value (e.g. native 3D): render nothing rather than a stale 1.00x.
+  if (scale === undefined) {
+    return null;
+  }
+
   return (
     <div
       className="overlay-item flex flex-row"
@@ -463,8 +484,6 @@ function InstanceNumberOverlayItem({
     </div>
   );
 }
-
-
 
 export default CustomizableViewportOverlay;
 
