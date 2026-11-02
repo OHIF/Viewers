@@ -186,6 +186,20 @@ The contract:
 - **Drop the `@ohif/ui` peer** if present. `@ohif/ui` is legacy and the host
   does not hand it to runtime plugins; port UI to `@ohif/ui-next` (the APIs
   differ — this is a `[flag]`, migrate will not rewrite your imports).
+- **Drop the `@ohif/app` peer** if present. The host *is* the app, and the
+  published `@ohif/app` is the built viewer, not a library, so a peer on it can
+  never supply anything your code imports.
+- **Peers on unpublished OHIF packages are flagged.** Only `@ohif/core`,
+  `@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default` and
+  `@ohif/extension-cornerstone` are published as libraries (see
+  [Published packages](./3p13-to-3p14/published-packages.md)). A peer on any
+  other `@ohif` package, such as `@ohif/extension-cornerstone-dicom-sr`, is
+  kept and rewritten to the host range, because it still resolves in an OHIF
+  checkout. But it can't be installed from npm at this version: only old 3.13.x
+  releases are there, and the range also matches those. As a runtime bundle, an
+  import from such a package needs that extension loaded first (list it in
+  `window.config.extensions`), or an `extensionManager.getModuleEntry(…)` lookup
+  instead.
 
 ### scripts
 

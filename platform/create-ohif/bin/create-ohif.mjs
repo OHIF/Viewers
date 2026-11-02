@@ -452,6 +452,17 @@ const SANCTIONED_OHIF_SUBPATHS = [
 // only in an OHIF checkout's build, never in a plugin's own build.
 // tests/migrate.test.mjs checks this list against resolveConfig.js.
 const APP_ALIASES = ['@', '@components', '@hooks', '@routes', '@state'];
+// The @ohif packages published to npm as libraries (the SDK), so the only ones
+// a plugin's peer can be installed from. tests/migrate.test.mjs checks this
+// list against the @ohif members of .rspack/pluginExternals.js hostSharedPackages,
+// which scripts/verify-tarballs.mjs uses as the published set.
+const PUBLISHED_OHIF_PACKAGES = [
+  '@ohif/core',
+  '@ohif/ui-next',
+  '@ohif/i18n',
+  '@ohif/extension-default',
+  '@ohif/extension-cornerstone',
+];
 
 function detectPluginKind(pkg) {
   const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
@@ -681,6 +692,23 @@ async function runMigrate(targetDir, dryRun) {
     delete peers['@ohif/ui'];
   } else {
     note(false, 'package.json peerDependencies: no legacy "@ohif/ui" peer');
+  }
+  if ('@ohif/app' in peers) {
+    note(
+      true,
+      'package.json peerDependencies: drop "@ohif/app" (never a peer: the host is the app, and the published @ohif/app is the built viewer, not a library)'
+    );
+    delete peers['@ohif/app'];
+  }
+  // Peers on OHIF packages that aren't published as libraries any more still
+  // resolve in a checkout, so they're kept (and rewritten below), but flagged.
+  const unpublished = Object.keys(peers).filter(
+    name => name.startsWith('@ohif/') && !PUBLISHED_OHIF_PACKAGES.includes(name)
+  );
+  if (unpublished.length > 0) {
+    flags.push(
+      `package.json peerDependencies: ${unpublished.join(', ')} ${unpublished.length === 1 ? 'is' : 'are'} no longer published to npm (only old 3.13.x releases are, which the peer range also matches) — fine compiled into an OHIF checkout; as a runtime bundle, an import from one needs that extension loaded first (list it in window.config.extensions) or an extensionManager.getModuleEntry(…) lookup instead`
+    );
   }
   for (const name of Object.keys(peers)) {
     if (name.startsWith('@ohif/') && peers[name] !== hostRange) {

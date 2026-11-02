@@ -629,6 +629,47 @@ test("migrate flags imports of the OHIF app's aliases and @ohif/app", () => {
   assert.ok(!report.includes('"@ohif/core", an alias'), 'a bare @ohif package is not an app alias');
 });
 
+test('migrate drops an @ohif/app peer and flags peers on unpublished OHIF packages', () => {
+  const target = scaffoldCliEra('extension', 'unpublished-peers-extension');
+  const pkgPath = path.join(target, 'package.json');
+  const scaffolded = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  Object.assign(scaffolded.peerDependencies, {
+    '@ohif/app': '3.12.0',
+    '@ohif/extension-cornerstone-dicom-sr': '^3.12.0',
+    '@ohif/extension-measurement-tracking': '^3.12.0',
+  });
+  fs.writeFileSync(pkgPath, JSON.stringify(scaffolded, null, 2));
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(report.includes('peerDependencies: drop "@ohif/app" (never a peer'), report);
+  const flag = report.split('\n').find(line => line.includes('no longer published to npm')) ?? '';
+  assert.ok(
+    flag.includes('@ohif/extension-cornerstone-dicom-sr, @ohif/extension-measurement-tracking are'),
+    report
+  );
+  // The CLI-era fixture's other @ohif peers are all published.
+  assert.ok(!flag.includes('@ohif/extension-default'), flag);
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  assert.ok(!('@ohif/app' in pkg.peerDependencies));
+  // Kept and rewritten: they still resolve in a checkout.
+  assert.equal(pkg.peerDependencies['@ohif/extension-cornerstone-dicom-sr'], hostRange);
+});
+
+test("migrate's published @ohif list matches the SDK in pluginExternals.js", () => {
+  // scripts/verify-tarballs.mjs takes the published set from the same place.
+  const require = createRequire(import.meta.url);
+  const { hostSharedPackages } = require('../../../.rspack/pluginExternals.js');
+  const sdk = hostSharedPackages.filter(name => name.startsWith('@ohif/') && name !== '@ohif/ui');
+  assert.ok(sdk.length > 0, 'pluginExternals.js still lists the shared @ohif packages');
+  // The bin runs on load, so read its source.
+  const [, listSource = ''] =
+    fs.readFileSync(bin, 'utf8').match(/const PUBLISHED_OHIF_PACKAGES = \[([^\]]*)\];/) ?? [];
+  const published = [...listSource.matchAll(/'([^']+)'/g)].map(m => m[1]);
+  assert.deepEqual([...published].sort(), [...sdk].sort());
+});
+
 test('migrate flags a missing or different packageManager without writing it', () => {
   const expected = JSON.parse(
     fs.readFileSync(path.join(templatesRoot, 'workspace', 'package.json'), 'utf8')
