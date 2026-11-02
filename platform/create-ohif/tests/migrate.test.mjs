@@ -568,7 +568,8 @@ test('migrate flags @ohif/ui imports, internal imports, and custom build config 
       "import { Button } from '@ohif/ui';",
       "import utils from '@ohif/core/src/utils';",
       "import escape from '../../outside';",
-      'export default { Button, utils, escape };',
+      "import { cn } from '@ohif/ui-next/lib/utils';",
+      'export default { Button, utils, escape, cn };',
       '',
     ].join('\n')
   );
@@ -579,6 +580,15 @@ test('migrate flags @ohif/ui imports, internal imports, and custom build config 
   assert.ok(report.includes('src/custom.tsx:1 imports "@ohif/ui"'), report);
   assert.ok(report.includes('OHIF internals outside the contract ("@ohif/core/src/utils")'), report);
   assert.ok(report.includes('resolves outside the package root'), report);
+  // A ui-next subpath export resolves compiled in, so it isn't an internal, but
+  // a runtime bundle can't use it.
+  assert.ok(
+    report.includes(
+      'imports "@ohif/ui-next/lib/utils", a @ohif/ui-next subpath — works only compiled into'
+    ),
+    report
+  );
+  assert.ok(!report.includes('outside the contract ("@ohif/ui-next/lib/utils")'), report);
   assert.ok(report.includes('vite.config.js is unrecognized custom build config'), report);
   assert.ok(report.includes('.webpack/custom-plugin.js is unrecognized custom build config'), report);
 

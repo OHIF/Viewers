@@ -442,7 +442,9 @@ const HOST_SHARED_PEERS = {
   'react-i18next': '^12.3.1',
 };
 // The only @ohif deep imports the published contract resolves (ui-next
-// subpath exports); everything else under @ohif/<pkg>/ is an internal.
+// subpath exports); everything else under @ohif/<pkg>/ is an internal. These
+// resolve compiled in, but a runtime bundle gets @ohif packages from window by
+// package name only, so migrate flags them as compiled-in only.
 const SANCTIONED_OHIF_SUBPATHS = [
   '@ohif/ui-next/tailwind.config',
   '@ohif/ui-next/lib/',
@@ -515,11 +517,14 @@ function scanSourceImports(targetDir, flags) {
             `${at} imports "@ohif/app" — works only compiled into an OHIF checkout; a runtime bundle can't use it (the host doesn't share it)`
           );
         } else if (
-          /^@ohif\/[^/]+\//.test(spec) &&
-          !SANCTIONED_OHIF_SUBPATHS.some(
+          SANCTIONED_OHIF_SUBPATHS.some(
             prefix => spec === prefix || (prefix.endsWith('/') && spec.startsWith(prefix))
           )
         ) {
+          flags.push(
+            `${at} imports "${spec}", a @ohif/ui-next subpath — works only compiled into an OHIF checkout; a runtime bundle can't use it (import from @ohif/ui-next instead)`
+          );
+        } else if (/^@ohif\/[^/]+\//.test(spec)) {
           flags.push(
             `${at} imports OHIF internals outside the contract ("${spec}") — only bare @ohif/<package> entry points are host-provided`
           );

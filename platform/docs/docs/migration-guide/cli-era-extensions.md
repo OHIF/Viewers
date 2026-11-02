@@ -316,16 +316,19 @@ host's single copy, which is the point.
 
 migrate also flags imports that only resolve when the plugin is compiled into
 an OHIF checkout: the app's own aliases (`@`, `@components`, `@hooks`,
-`@routes`, `@state`) and `@ohif/app`. They work for a directory link or an
-in-tree package. In a runtime bundle the aliases can't be resolved, and
-`@ohif/app` is `undefined`, because the host doesn't share it. If you build a
-runtime bundle, replace them:
+`@routes`, `@state`), `@ohif/app`, and `@ohif/ui-next` subpaths such as
+`@ohif/ui-next/lib/utils`. They work for a directory link or an in-tree
+package. In a runtime bundle the aliases can't be resolved, and `@ohif/app` and
+the subpaths are `undefined`: the host shares `@ohif/ui-next` only as a whole,
+and doesn't share `@ohif/app` at all. If you build a runtime bundle, replace
+them:
 
 | Instead of | Use |
 | --- | --- |
 | `useAppConfig` from `@state`, to read the app config | `extensionManager.appConfig` |
 | `history` from `@ohif/app`, to navigate | `useNavigate()` from `react-router-dom` |
 | `preserveQueryParameters` or `preserveQueryStrings` from `@ohif/app` | Your own copy (it's a short function), or `URLSearchParams` |
+| An `@ohif/ui-next/lib/…` or `@ohif/ui-next/components/…` subpath | The same export from `@ohif/ui-next` itself |
 | Anything else under `@`, `@components`, `@hooks` or `@routes` | What `@ohif/core`, `@ohif/ui-next` and the shared extensions export |
 
 The vendored `pluginExternals.js` is a verbatim copy of the monorepo's
