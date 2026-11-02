@@ -2,15 +2,22 @@
 sidebar_position: 4
 sidebar_label: Video Tutorials
 title: OHIF Development Video Tutorials
-summary: Collection of instructional videos demonstrating key OHIF development workflows, including creating, linking, and publishing modes and extensions, with step-by-step demonstrations of the OHIF CLI and NPM publishing process.
+summary: Collection of instructional videos demonstrating key OHIF development workflows, including creating, linking, and publishing modes and extensions, with step-by-step demonstrations recorded with the former OHIF CLI (since removed) and the NPM publishing process.
 ---
 
 # Video Tutorials
 
 ## Creating, Linking and Publishing OHIF Modes and Extensions
 
-The [OHIF CLI](./ohif-cli.md) facilitates the creation, linkage and publication
-of OHIF modes and extensions. The videos below walk through how to use the CLI for
+:::warning Historical
+These videos were recorded with the former OHIF CLI, which has been removed.
+The workflow they demonstrate (create → link → publish → add) is unchanged,
+but the commands are replaced by [`create-ohif`](./create-ohif.md), the
+[`pnpm run plugin` helper](../platform/extensions/installation.md), and
+[`pnpm publish`](./publishing.md).
+:::
+
+The videos below walk through
 - creating modes and extensions
 - linking local modes and extensions
 - publishing modes and extensions to NPM

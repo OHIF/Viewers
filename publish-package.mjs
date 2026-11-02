@@ -2,14 +2,65 @@ import { execa } from 'execa';
 import fs from 'fs/promises';
 import glob from 'glob';
 import path from 'path';
+import semver from 'semver';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 10000; // 10 seconds
 
+// Until create-ohif has a stable release, move its `latest` dist-tag to each
+// new master beta, so plain `pnpm create ohif` scaffolds the current beta
+// rather than the first version ever published (a registry gives a new
+// package's first version `latest` even when it is published with --tag
+// beta, and later --tag beta publishes leave it there). Only moves `latest`
+// forward, and only while it is a prerelease: once a release/* branch
+// publishes a stable version this does nothing, and can be removed.
+// Never throws, so a tagging problem can't trigger a publish retry.
+async function promoteLatestUntilStable(name, version) {
+  try {
+    const { stdout } = await execa('npm', ['view', name, 'dist-tags.latest']);
+    const latest = stdout.trim();
+    if (latest && !(semver.prerelease(latest) && semver.gt(version, latest))) {
+      console.log(`Leaving ${name}@latest at ${latest}`);
+      return;
+    }
+    await execa('npm', ['dist-tag', 'add', `${name}@${version}`, 'latest']);
+    console.log(`Moved ${name}@latest to ${version}`);
+  } catch (error) {
+    console.error(`Could not update ${name}@latest: ${error}`);
+  }
+}
+
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 
-  const packages = ['extensions/*', 'platform/*', 'modes/*'];
+  // Tiered publish surface: only the published SDK packages -- the
+  // @ohif/* contract surface third-party plugin authors compile and run
+  // against (the @ohif/* members of the host shared-singleton set) -- plus
+  // tooling are published to npm. App-only extensions/modes/platform packages
+  // are private:true and are consumed via the git checkout / workspace
+  // template instead. Note the asymmetry with publish-version.mjs, which
+  // deliberately keeps stamping EVERY workspace package (private ones
+  // included) so lockstep versioning is preserved; only the publish set is
+  // narrowed here. This list must stay equal to SDK_PUBLISHED in
+  // scripts/verify-tarballs.mjs, whose checkPublishListParity parses this
+  // array (in CI, before this script runs) and fails the build when the two
+  // lists drift in either direction.
+  const packages = [
+    'platform/core',
+    'platform/i18n',
+    'platform/ui-next',
+    'extensions/default',
+    'extensions/cornerstone',
+    // @ohif/app: published as the prebuilt viewer (the built dist folder,
+    // served as-is with a deployment's own app-config.js). It sits outside
+    // the plugin contract.
+    'platform/app',
+    // create-ohif scaffolder: published tooling alongside the SDK set.
+    // Ships raw .mjs + templates, no dist UMD, so
+    // verify-tarballs.mjs lists it under PUBLISHED_TOOLING (allowed
+    // non-private, exempt from the SDK tarball assertions).
+    'platform/create-ohif',
+  ];
 
   const rootDir = process.cwd();
 
@@ -42,6 +93,9 @@ async function run() {
             // published tarball. npm would publish the literal "workspace:*",
             // which npm/yarn consumers cannot resolve. --no-git-checks because
             // the bump commit/tag is created in CI on a possibly-detached ref.
+            // pnpm is also required because publishConfig field overrides
+            // (main/module/types/exports) are a pnpm-only feature; npm publish
+            // would ship the src-pointing dev manifest.
             const publishArgs = ['publish', '--no-git-checks'];
 
             if (branchName === 'master') {
@@ -50,6 +104,10 @@ async function run() {
 
             await execa('pnpm', publishArgs);
             console.log(`Successfully published package at ${packageDirectory}`);
+
+            if (branchName === 'master' && packageJsonContent.name === 'create-ohif') {
+              await promoteLatestUntilStable(packageJsonContent.name, packageJsonContent.version);
+            }
             break;
           } catch (error) {
             retries++;

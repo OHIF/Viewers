@@ -72,8 +72,9 @@ mount your own route.
 
 `LegacyWorkList` is the last consumer of the legacy `@ohif/ui` package inside the
 viewer. 3.14 drops the `@ohif/ui` workspace dependency from the extensions and
-modes that declared it without importing it. The package still builds and
-publishes, and it leaves the app graph when `LegacyWorkList` does.
+modes that declared it without importing it. The package still builds, but it
+is no longer published to npm (see [Published packages](./published-packages.md)),
+and it leaves the app graph when `LegacyWorkList` does.
 
 If your extension or mode imports components from `@ohif/ui`, migrate those
 imports to `@ohif/ui-next`.

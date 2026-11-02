@@ -25,6 +25,7 @@ import {
 } from '@ohif/core';
 
 import loadModules, { loadModule as peerImport } from './pluginImports';
+import { reconcileRuntimeRegistrations } from './runtimeExtensionLoader';
 import { publicUrl } from './utils/publicUrl';
 
 /**
@@ -86,11 +87,22 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     }
   };
 
+  // Stash the allowlist so the runtime extension loader can read it even when
+  // the app config is a function (loadDynamicConfig may also have replaced
+  // window.config by now).
+  if (Array.isArray(appConfig.runtimePluginOrigins)) {
+    window.__ohif = window.__ohif || {};
+    window.__ohif.runtimePluginOrigins = appConfig.runtimePluginOrigins;
+  }
+
   /**
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
+  const loadedExtensions = await loadModules(
+    [...defaultExtensions, ...appConfig.extensions],
+    'extension'
+  );
 
   const { customizationService } = servicesManager.services;
 
@@ -104,7 +116,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   // modules can modify a mode's registered values before anything reads them.
   // The mode *instances* are only created after the global phase (below), so
   // they too see any modifications.
-  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
+  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes], 'mode');
   for (const mode of loadedModes) {
     if (mode?.customizations) {
       customizationService.addReferences(mode.customizations, customizationService.Scope.Default);
@@ -121,6 +133,10 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   await customizationService.loadAndApplyBootstrapCustomizations(extensionManager);
 
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+
+  // registerExtensions swallows per-extension errors internally, so diff the
+  // audit records against what actually registered.
+  reconcileRuntimeRegistrations(extensionManager, appConfig.extensions ?? []);
 
   // Merge extension default/global modules, then layer on the `global` phase of
   // the structured config + the URL modules resolved above (so `$apply`-style

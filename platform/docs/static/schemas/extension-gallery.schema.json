@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.ohif.org/schemas/extension-gallery.schema.json",
+  "title": "OHIF Extension Gallery",
+  "description": "Curated list of published OHIF extensions and modes. Submit an entry by opening a PR that edits platform/docs/src/data/extension-gallery.json; the entry must validate against this schema.",
+  "type": "object",
+  "required": ["entries"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/entry" }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "entry": {
+      "type": "object",
+      "required": ["name", "type", "description", "maintainer", "modules", "hostRange", "links"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "npm package name. Must equal the extension/mode id.",
+          "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?[a-z0-9-~][a-z0-9-._~]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["extension", "mode"]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "maintainer": {
+          "type": "object",
+          "required": ["name"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string" },
+            "url": { "type": "string", "format": "uri" }
+          }
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "commandsModule",
+              "customizationModule",
+              "stateSyncModule",
+              "dataSourcesModule",
+              "panelModule",
+              "sopClassHandlerModule",
+              "toolbarModule",
+              "viewportModule",
+              "contextModule",
+              "layoutTemplateModule",
+              "hangingProtocolModule",
+              "utilityModule"
+            ]
+          }
+        },
+        "hostRange": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The tested @ohif/core semver range for this package."
+        },
+        "links": {
+          "type": "object",
+          "required": ["npm", "repository"],
+          "additionalProperties": false,
+          "properties": {
+            "npm": { "type": "string", "format": "uri" },
+            "repository": { "type": "string", "format": "uri" },
+            "docs": { "type": "string", "format": "uri" }
+          }
+        }
+      }
+    }
+  }
+}
