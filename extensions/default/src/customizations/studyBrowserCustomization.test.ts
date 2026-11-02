@@ -28,7 +28,7 @@ describe('studyBrowser.sortFunctions', () => {
   it('sorts a series with no number before the numbered ones, whatever order they come in', () => {
     const one = { SeriesNumber: 1 };
     const two = { SeriesNumber: 2 };
-    const none = {};
+    const none = { SeriesNumber: '' };
     for (const input of [
       [two, none, one],
       [one, two, none],

@@ -14,7 +14,8 @@ const byKey = keyOf => (a, b) => {
 
 // A series with no number or no date sorts first.
 const seriesNumberKey = displaySet => {
-  const seriesNumber = Number(displaySet?.SeriesNumber);
+  const value = displaySet?.SeriesNumber;
+  const seriesNumber = value === '' || value === null ? NaN : Number(value);
   return Number.isFinite(seriesNumber) ? seriesNumber : -Infinity;
 };
 const seriesDateTimeKey = displaySet =>
