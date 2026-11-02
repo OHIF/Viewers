@@ -105,6 +105,12 @@ writes a `directory` `pluginConfig` entry per manifest plugin, and syncs your
 `config/app-config.js` into the harness. Confirm a stock viewer boots before
 you move anything in — that is your parity baseline.
 
+The harness is cloned from `https://github.com/OHIF/Viewers.git`. To clone it
+from somewhere else, such as an internal mirror or your fork while you still
+need it, set the `OHIF_REPO_URL` environment variable. That repository must
+have the `v<ohifVersion>` tag. The variable is read only when `.ohif/` is
+cloned, so delete `.ohif/` after changing it.
+
 ---
 
 ## Step 3 — Move each plugin in and migrate it
