@@ -1,11 +1,11 @@
 import { Locator, Page } from '@playwright/test';
-import { simulateNormalizedDragOnElement } from '../utils';
+import { simulateNormalizedDragOnElement, type MouseButton } from '../utils';
 
 type MagnifyDragParams = {
   start: { x: number; y: number };
   end?: { x: number; y: number };
   mouseUp?: boolean;
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   delay?: number;
   steps?: number;
 };

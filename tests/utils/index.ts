@@ -16,7 +16,7 @@ import {
   simulateNormalizedPathDragOnElement,
 } from './simulateDragOnElement';
 import { reduce3DViewportSize } from './reduce3DviewportSize';
-import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
+import { getMousePosition, initializeMousePositionTracker, type MouseButton } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
@@ -66,6 +66,7 @@ export {
   reduce3DViewportSize,
   getMousePosition,
   initializeMousePositionTracker,
+  type MouseButton,
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
