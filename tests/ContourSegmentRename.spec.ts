@@ -14,9 +14,7 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
   });
 });
 
-test('should rename contour segments', async ({
-  rightPanelPageObject,
-}) => {
+test('should rename contour segments', async ({ rightPanelPageObject }) => {
   const segment0 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
   const segment1 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1);
 
@@ -54,6 +52,8 @@ test('should not rename segment when dialog is cancelled after filling', async (
   await expect(segment.title).toHaveText(defautSegment0Name);
 });
 
+// Documents current behavior: a segment rename is not recorded in the undo history.
+// If undo support for renames is added, this test should expect undo to restore the old name.
 test('should keep the new segment name when undo is pressed after a rename', async ({
   page,
   mainToolbarPageObject,
@@ -65,7 +65,7 @@ test('should keep the new segment name when undo is pressed after a rename', asy
   await segment.actions.rename('Renamed Segment');
   await expect(segment.title).toHaveText('Renamed Segment');
 
-  // A rename is not recorded in the undo history, so there is nothing to undo.
+  // Nothing is recorded, so undo stays disabled and Ctrl+Z leaves the name alone.
   await expect(mainToolbarPageObject.undo.button).toBeDisabled();
   await press({ page, key: 'Control+z' });
   await expect(segment.title).toHaveText('Renamed Segment');

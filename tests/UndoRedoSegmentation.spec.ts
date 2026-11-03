@@ -48,7 +48,8 @@ async function digestAfterChange(page: Page, previous: number, message: string) 
 test.describe('labelmap', () => {
   test.beforeEach(async ({ page, rightPanelPageObject }) => {
     await visitStudy(page, STUDY_UID, 'segmentation', 2000);
-    await waitForViewportsRendered(page);
+    // Each test saves the canvas digest as its unpainted reference, so wait for the image first.
+    await waitForViewportNotBlank({ page });
 
     const { labelMapSegmentationPanel } = rightPanelPageObject;
     await labelMapSegmentationPanel.addSegmentationButton.click();
@@ -131,6 +132,8 @@ test.describe('labelmap', () => {
     await pollDigest(page, 'Expected redo to clear its pixels again').toBe(unpainted);
   });
 
+  // Documents current behavior: a segment color change is not recorded in the undo history.
+  // If undo support for color changes is added, this test should undo the color change instead.
   test('should keep a segment color change out of the undo history', async ({
     page,
     mainToolbarPageObject,
@@ -159,6 +162,7 @@ test.describe('labelmap', () => {
 
     await mainToolbarPageObject.redo.click();
     await pollDigest(page, 'Expected redo to paint in the new color').toBe(recolored);
+    await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_SEGMENT_CSS_RGB);
   });
 
   test('should undo a brush stroke after the layout changes', async ({
@@ -177,6 +181,8 @@ test.describe('labelmap', () => {
     await waitForViewportNotBlank({ page });
     const paintedInGrid = await canvasDigest(page);
 
+    // There is no unpainted 2x1 reference, so this only checks for a repaint.
+    // The exact check runs after switching back to 1x1.
     await mainToolbarPageObject.undo.click();
     await pollDigest(page, 'Expected undo to clear the stroke').not.toBe(paintedInGrid);
 
