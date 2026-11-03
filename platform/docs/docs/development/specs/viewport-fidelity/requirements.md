@@ -7,7 +7,7 @@ summary: A per-viewport indicator and detail view telling the user when the disp
 
 # Viewport fidelity indicator — requirements
 
-**Prefix:** `VF` (viewport fidelity) — *proposed, not yet reserved in the specification register.*
+**Prefix:** `VF` (viewport fidelity) — reserved in the [specification register](../index.md).
 **Source:** OHIF / FU Berlin Set-Aside — Final Acceptance Criteria, task **T6** (Aim 2.3, required).
 **Depends on:** **T3** viewport fidelity state (Cornerstone3D), **T4** GPU class taxonomy, **T9** capability-bound level binding, **T15** automatic level-selection policy, **T14** interactive fidelity degradation.
 **Design owner:** @dan-rukas — visual and UX design (§5.4), plus review of and edits to user-facing wording. The design notes are in [OHIF/Viewers#6255](https://github.com/OHIF/Viewers/issues/6255).
@@ -58,9 +58,10 @@ wrongly, or if the intended user-facing behaviour itself is changing — not bec
 out to be inconvenient to implement.
 
 > This two-section split is the **preferred convention for specifications in this register**,
-> not a one-off for this document. It is recorded as such in the register's own conventions and
-> in the repository's agent guidance. Existing specifications written before it are not
-> retrofitted as part of this work.
+> not a one-off for this document. It is recorded as such in the register's own conventions
+> ([§4.1 of the register](../index.md#41-user-requirements-and-implementation-requirements)).
+> The repository's agent guidance does not record it yet (§7 item 5). Existing specifications
+> written before it are not retrofitted as part of this work.
 
 ### 2.2 In scope
 
@@ -770,11 +771,10 @@ Cornerstone3D repository.
    not achievable with the state T3 delivers. `VF-VOCAB`'s extensibility is what would let it
    be added later without a core change. **Closed — acknowledged gap.**
 
-5. **Register integration.** This specification is committed at its eventual location, but the
-   `specs/` register tree is not on this branch — so the `VF` prefix row and the
-   `specs/index.md` conventions edit for §2.1 are both pending, to be applied on whichever
-   branch carries `specs/`. The companion `design.md` from @dan-rukas joins it then.
-   **Open — action, not a decision.**
+5. **Register integration.** The register [`specs/index.md`](../index.md) reserves the `VF`
+   prefix and records the convention of §2.1 (its §4.1). Still pending: the record of the
+   convention in the repository's agent guidance, and the companion `design.md` from
+   @dan-rukas. **Open — action, not a decision.**
 
 6. **How the recovered state is discovered.** Green is a one-second announcement over an
    otherwise unmarked image, re-revealable by hovering a target that is invisible while
