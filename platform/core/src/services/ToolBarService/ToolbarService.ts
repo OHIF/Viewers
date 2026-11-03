@@ -718,7 +718,20 @@ export default class ToolbarService extends PubSubService {
         return evaluateFunction;
       });
 
-      const evaluateProps = props.evaluate;
+      // Object entries in the array carry per-evaluator options such as
+      // `hideWhenDisabled`. Merge those options into a flat object: assigning the
+      // array itself left `evaluateProps.hideWhenDisabled` permanently undefined,
+      // so the flag was silently ignored for every multi-evaluator button.
+      const evaluateProps = evaluate.reduce((acc, evaluator) => {
+        if (typeof evaluator !== 'object' || evaluator === null) {
+          return acc;
+        }
+        // `name` selects which evaluator to run; it is not an option, and it has no
+        // single value once several evaluators are merged.
+        const { name: _name, ...options } = evaluator;
+        return { ...acc, ...options };
+      }, {});
+
       props.evaluate = args => {
         const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
 
