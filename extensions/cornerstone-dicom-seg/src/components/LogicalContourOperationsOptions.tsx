@@ -21,6 +21,7 @@ import { Icons } from '@ohif/ui-next';
 import { contourSegmentation } from '@cornerstonejs/tools/utilities';
 import { useTranslation } from 'react-i18next';
 import { Segment } from '@cornerstonejs/tools/types';
+import { hasOperandSegments } from '../utils/logicalContourOperation';
 
 const { LogicalOperation } = contourSegmentation;
 const options = [
@@ -133,8 +134,16 @@ function LogicalContourOperationOptions() {
   }, [nextSegmentIndex]);
 
   const runCommand = useRunCommand();
+  const canApplyOperation = hasOperandSegments(
+    segmentA,
+    segmentB,
+    segments.map(segment => segment.segmentIndex)
+  );
 
   const applyLogicalContourOperation = () => {
+    if (!canApplyOperation) {
+      return;
+    }
     let resultSegmentIndex = segmentA;
     if (createNewSegment) {
       resultSegmentIndex = nextSegmentIndex.toString();
@@ -207,6 +216,7 @@ function LogicalContourOperationOptions() {
           data-cy="apply-logical-contour-operation"
           className="border-primary/60 grow border"
           variant="ghost"
+          disabled={!canApplyOperation}
           onClick={() => {
             applyLogicalContourOperation();
           }}
