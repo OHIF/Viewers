@@ -1745,6 +1745,25 @@ window.config = {
   `,
   },
   {
+    id: 'panelSegmentation.excludedModalities',
+    description:
+      'Modalities for which the segmentation panel is disabled and shows "Segmentation not supported" instead of offering to add a segmentation.',
+    default: ['SM', 'OT', 'DOC', 'ECG'],
+    image: [],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'panelSegmentation.excludedModalities': {
+        $set: ['SM', 'DOC', 'ECG'], // Allow segmenting OT (e.g. converted NIfTI/NRRD volumes)
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
     id: 'panelSegmentation.disableUpdateSegmentationStats',
     description: 'Disables the automatic update of segmentation statistics in the panel.',
     default: false,
