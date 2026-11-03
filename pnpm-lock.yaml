@@ -664,6 +664,12 @@ importers:
         specifier: 7.0.3
         version: 7.0.3
 
+  extensions/cornerstone-dicom-ups:
+    dependencies:
+      dcmjs:
+        specifier: 0.52.0
+        version: 0.52.0
+
   extensions/cornerstone-dynamic-volume:
     dependencies:
       '@babel/runtime':
