@@ -29,9 +29,7 @@ const args = process.argv.slice(2);
 const [studyDirectory, urlPrefix, outputPath, scheme = 'dicomweb'] = args;
 
 if (args.length < 3 || args.length > 4) {
-  console.error(
-    'Usage: node dicom-json-generator.js <studyFolder> <urlPrefix> <outputJSONPath> [scheme]'
-  );
+  console.error('Usage: node dicom-json-generator.js <studyFolder> <urlPrefix> <outputJSONPath> [scheme]');
   process.exit(1);
 }
 
@@ -57,7 +55,7 @@ async function convertDICOMToJSON(studyDirectory, urlPrefix, outputPath, scheme)
 
     console.log('Successfully loaded data');
 
-    model.studies.forEach(study => {
+    model.studies.forEach((study) => {
       study.NumInstances = findInstancesNumber(study);
       study.Modalities = findModalities(study).join('/');
     });
@@ -108,35 +106,31 @@ function processInstance(instance) {
   }
 
   const instanceMetaData =
-    instance.NumberOfFrames > 1
-      ? createInstanceMetaDataMultiFrame(instance)
-      : createInstanceMetaData(instance);
+    instance.NumberOfFrames > 1 ? createInstanceMetaDataMultiFrame(instance) : createInstanceMetaData(instance);
 
   series.instances.push(...[].concat(instanceMetaData));
 }
 
 function getStudy(StudyInstanceUID) {
-  return model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
+  return model.studies.find((study) => study.StudyInstanceUID === StudyInstanceUID);
 }
 
 function getSeries(StudyInstanceUID, SeriesInstanceUID) {
   const study = getStudy(StudyInstanceUID);
-  return study
-    ? study.series.find(series => series.SeriesInstanceUID === SeriesInstanceUID)
-    : undefined;
+  return study ? study.series.find((series) => series.SeriesInstanceUID === SeriesInstanceUID) : undefined;
 }
 
-const findInstancesNumber = study => {
+const findInstancesNumber = (study) => {
   let numInstances = 0;
-  study.series.forEach(aSeries => {
+  study.series.forEach((aSeries) => {
     numInstances = numInstances + aSeries.instances.length;
   });
   return numInstances;
 };
 
-const findModalities = study => {
+const findModalities = (study) => {
   let modalities = new Set();
-  study.series.forEach(aSeries => {
+  study.series.forEach((aSeries) => {
     modalities.add(aSeries.Modality);
   });
   return Array.from(modalities);
@@ -262,7 +256,7 @@ function createInstanceMetaDataMultiFrame(instance) {
   const commonData = commonMetaData(instance);
   const conditionalData = conditionalMetaData(instance);
 
-  for (let i = 1; i <= instance.NumberOfFrames; i++) {
+  for (let i = 0; i < instance.NumberOfFrames; i++) {
     const metadata = { ...commonData, ...conditionalData };
     const result = { metadata, url: instance.fileLocation + `?frame=${i}` };
     instances.push(result);
