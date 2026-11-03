@@ -1,0 +1,9 @@
+.remote-cursor-container {
+  pointer-events: none;
+}
+.remote-cursor {
+  pointer-events: none;
+}
+.remote-cursor-label {
+  pointer-events: none;
+}

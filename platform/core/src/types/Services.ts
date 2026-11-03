@@ -36,6 +36,7 @@ interface Services {
   uiViewportDialogService?: UIViewportDialogService;
   panelService?: PanelService;
   multiMonitorService?: MultiMonitorService;
+  collaborationService?: any;
 }
 
 export default Services;

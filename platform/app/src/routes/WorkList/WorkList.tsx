@@ -39,12 +39,6 @@ export default function WorkList({
   commandsManager,
 }: Props) {
   const [appConfig] = useAppConfig();
-  // Customizations are read through useCustomization — it subscribes to the
-  // customization service, so late registrations and runtime changes propagate
-  // instead of freezing at the value seen on first render.
-  const LoadingIndicatorProgress = useCustomization('ui.loadingIndicatorProgress') as
-    | React.ComponentType<{ className?: string }>
-    | undefined;
   const [isFilterPending, setIsFilterPending] = useState(false);
   const showStudyListLoading = Boolean(
     (appConfig.showLoadingIndicator && isLoadingData) || !hasFetchedOnce || isFilterPending
