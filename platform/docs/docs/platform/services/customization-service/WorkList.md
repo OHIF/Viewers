@@ -140,7 +140,6 @@ A column can only display data that's already on the study row. The default DICO
    ```js
    const commaSeparatedFields = [
      '00081030', // Study Description
-     '00080060', // Modality
      '00080090', // Referring Physician's Name
      '00321032', // Requesting Physician
    ].join(',');
