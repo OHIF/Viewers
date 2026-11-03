@@ -1,25 +1,14 @@
 import { Enums } from '@cornerstonejs/core';
+import { normalizeProjectionModeId, toEngine } from '../projection/projectionRegistry';
 
-const MIP = 'mip';
-const MINIP = 'minip';
-const AVG = 'avg';
-
+/**
+ * Hanging-protocol / display-set-option entry point for blend modes.
+ *
+ * Thin adapter over the projection registry: the string vocabulary ('MIP',
+ * 'MinIP', 'AIP', legacy 'avg') is normalised by `normalizeProjectionModeId`
+ * (the one place that knows the spellings) and translated by `toEngine`.
+ * Unknown strings throw. Absent values resolve to COMPOSITE (no projection).
+ */
 export default function getCornerstoneBlendMode(blendMode: string): Enums.BlendModes {
-  if (!blendMode) {
-    return Enums.BlendModes.COMPOSITE;
-  }
-
-  if (blendMode.toLowerCase() === MIP) {
-    return Enums.BlendModes.MAXIMUM_INTENSITY_BLEND;
-  }
-
-  if (blendMode.toLowerCase() === MINIP) {
-    return Enums.BlendModes.MINIMUM_INTENSITY_BLEND;
-  }
-
-  if (blendMode.toLowerCase() === AVG) {
-    return Enums.BlendModes.AVERAGE_INTENSITY_BLEND;
-  }
-
-  throw new Error(`Unsupported blend mode: ${blendMode}`);
+  return toEngine(normalizeProjectionModeId(blendMode));
 }
