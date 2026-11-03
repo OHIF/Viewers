@@ -8,7 +8,7 @@ summary: A per-viewport indicator and detail view telling the user when the disp
 # Viewport fidelity indicator — requirements
 
 **Prefix:** `VF` (viewport fidelity) — reserved in the [specification register](../index.md).
-**Source:** OHIF / FU Berlin Set-Aside — Final Acceptance Criteria, task **T6** (Aim 2.3, required).
+**Source:** OHIF / FU Berlin Set-Aside — the funded task list, task **T6** (Aim 2.3, required).
 **Depends on:** **T3** viewport fidelity state (Cornerstone3D), **T4** GPU class taxonomy, **T9** capability-bound level binding, **T15** automatic level-selection policy, **T14** interactive fidelity degradation.
 **Design owner:** @dan-rukas — visual and UX design (§5.4), plus review of and edits to user-facing wording. The design notes are in [OHIF/Viewers#6255](https://github.com/OHIF/Viewers/issues/6255).
 **Implementation owner:** @mbellehumeur — OHIF implementation (§5.1–§5.3) and the Cornerstone3D work (§5.5).
@@ -88,7 +88,7 @@ out to be inconvenient to implement.
   rendered coarser than its reference image. Unfunded, and not achievable with the state
   available from T3. See §7 item 4.
 - Brick formats and loaders, reduced-resolution loading from the original series, and
-  vtk-wasm / WebGPU rendering paths — all excluded by the acceptance criteria.
+  vtk-wasm / WebGPU rendering paths — all excluded by the funded task list.
 
 ## 3. Definitions
 
@@ -153,8 +153,8 @@ does not enter the fidelity state machine at all.
 > rather than a control panel. It is a requirement, not a design preference.
 
 **VF-AUTO-1**
-The system shall select the fidelity at which a viewport renders without requiring input from
-the user.
+WHERE the deployment enables lossy downsampling, the system shall select the fidelity at which a
+viewport renders without requiring input from the user.
 
 **VF-AUTO-2**
 The system shall not require the user to understand resolution levels, texture limits, sampling
@@ -166,8 +166,12 @@ The system shall not require the user to interact with the fidelity indicator in
 obtain the best rendering feasible for their data, viewport and device.
 
 **VF-AUTO-4**
-IF full fidelity cannot be achieved, THEN the system shall present the best feasible rendering
-without user intervention.
+WHERE the deployment enables lossy downsampling, IF full fidelity cannot be achieved, THEN the
+system shall present the best feasible rendering without user intervention.
+
+> Lossy downsampling is off by default (`config/default.js`). A deployment turns it on with
+> `lossyDownsampling: { final: true }`, or with a GPU settings preset. Without it, a volume that
+> exceeds the device limit is not reduced, and it can fail to render.
 
 **VF-AUTO-5**
 WHERE the user wishes to influence the trade-off between fidelity and speed, the system shall
