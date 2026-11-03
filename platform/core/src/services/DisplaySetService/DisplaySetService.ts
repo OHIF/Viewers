@@ -3,6 +3,32 @@ import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../ty
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 
+export type DisplaySetSort = {
+  sortFn: (a: DisplaySet, b: DisplaySet) => number;
+  direction: 'ascending' | 'descending';
+};
+
+type DisplaySetComparator = (a: DisplaySet, b: DisplaySet) => number;
+
+/**
+ * The series order to show once a sort has been picked: the picked sort, with
+ * ties (e.g. series sharing a date) broken by the default order, all in the
+ * picked direction, so the result does not depend on the order the display
+ * sets arrive in.  Without a picked sort it is the default order.
+ */
+export function sortCriteriaFor(
+  displaySetSort: DisplaySetSort | null,
+  defaultSortCriteria?: DisplaySetComparator
+): DisplaySetComparator | undefined {
+  if (!displaySetSort) {
+    return defaultSortCriteria;
+  }
+  return (a, b) => {
+    const comparison = displaySetSort.sortFn(a, b) || defaultSortCriteria?.(a, b) || 0;
+    return displaySetSort.direction === 'descending' ? -comparison : comparison;
+  };
+}
+
 const displaySetCache = new Map<string, DisplaySet>();
 
 /**
@@ -44,6 +70,12 @@ export default class DisplaySetService extends PubSubService {
   // Record if the active display sets changed - used to group change events so
   // that fewer events need to be fired when creating multiple display sets
   protected activeDisplaySetsChanged = false;
+
+  // The sort last applied through sortDisplaySets.  The study browser builds its
+  // thumbnail list from this rather than from the order of activeDisplaySets,
+  // because it regroups the display sets by study, and the sort picker reads it
+  // back so that closing and reopening the picker keeps the user's choice.
+  protected displaySetSort: DisplaySetSort | null = null;
 
   constructor() {
     super(EVENTS);
@@ -287,6 +319,8 @@ export default class DisplaySetService extends PubSubService {
     this.getDisplaySetCache().clear();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
+    // A sort picked for one study does not carry over to the next one.
+    this.displaySetSort = null;
   }
 
   /**
@@ -477,6 +511,7 @@ export default class DisplaySetService extends PubSubService {
     direction: 'ascending' | 'descending' = 'ascending',
     suppressEvent = false
   ): void {
+    this.displaySetSort = { sortFn, direction };
     this.activeDisplaySets.sort(sortFn);
     if (direction === 'descending') {
       this.activeDisplaySets.reverse();
@@ -484,5 +519,22 @@ export default class DisplaySetService extends PubSubService {
     if (!suppressEvent) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
+  }
+
+  /**
+   * @returns the sort last applied with sortDisplaySets, or null while the
+   *    display sets are still in their default order.
+   */
+  public getDisplaySetSort(): DisplaySetSort | null {
+    return this.displaySetSort;
+  }
+
+  /**
+   * @returns the order the study browser shows the series in: the sort last
+   *    applied with sortDisplaySets, falling back to defaultSortCriteria for
+   *    ties, or defaultSortCriteria itself while no sort has been applied.
+   */
+  public getSortCriteria(defaultSortCriteria?: DisplaySetComparator) {
+    return sortCriteriaFor(this.displaySetSort, defaultSortCriteria);
   }
 }

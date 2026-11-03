@@ -47,7 +47,11 @@ export function createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    const sortCriteria = customizationService.getCustomization('sortingCriteria');
+    // A sort picked in the study browser replaces the default series order;
+    // without this the thumbnails would ignore the picker entirely.
+    const sortCriteria = displaySetService.getSortCriteria(
+      customizationService.getCustomization('sortingCriteria')
+    );
     const sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
       const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
       const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);
