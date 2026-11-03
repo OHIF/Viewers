@@ -273,6 +273,9 @@ On the new viewports, check these items:
 - A small tilt of the axial view (for example with the crosshairs rotation) shows the
   reduced texture. The original frames show only when the tilt moves the plane by less
   than half a slice across the volume.
+- For a tilt between about 0.5° and 8°, the progress scroll bar of the axial view has the
+  volume form on the new viewports and the full form on the legacy viewports. The legacy
+  viewports accept a tilt of up to about 8° as the acquisition plane.
 
 ## What this branch does not do
 
