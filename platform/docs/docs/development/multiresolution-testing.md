@@ -60,7 +60,7 @@ developer builds turn it on. Cornerstone3D also keeps it off by default.
 - `config/default.js` and each `config/docker-nginx-*.js` do not set `lossyDownsampling`.
   A comment in each file shows how to turn it on, and lists the options.
 - The other bundled configs do not set `lossyDownsampling`, and have no comment.
-- `config/e2e.js` pins no preset, so the e2e tests use `auto`.
+- `config/e2e.js` pins no preset, so the e2e tests use the default preset of Cornerstone3D.
 
 ## How OHIF reaches a reduced texture
 
@@ -149,11 +149,10 @@ ships one file for each preset under
 
 | Value | Texture edge | Texture memory | Use |
 | ----- | ------------ | -------------- | --- |
-| `gpu/auto` | computed | computed | The values for the device, in a build of Cornerstone3D that has `auto`. |
 | `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces. The reduction is easy to see. |
 | `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
 | `gpu/medium` | 2048 | 8 GB | A device of the middle class. |
-| `gpu/high` | 2048 | 32 GB | The Cornerstone3D default without `auto`. A device of the middle class can crash under it. |
+| `gpu/high` | 2048 | 32 GB | The Cornerstone3D default. A device of the middle class can crash under it. |
 | `gpu/high-texture-4096` | 4096 | 32 GB | A control that fits no real device. |
 
 Use the deploy preview of the pull request for the tests. Each pull request gets a
@@ -273,8 +272,7 @@ not get finer. A ladder of grids is later work.
 
 **Nothing probes the device.** A named preset is a set of values and not a measurement, so
 a deployment that selects a preset larger than the device holds gets an allocation
-failure. The `auto` preset of the later Cornerstone3D branch `feat/gpu-auto-limits` adds
-the probe.
+failure. A later pull request will add an automatic mode that probes the device.
 
 ## Where the design is written
 

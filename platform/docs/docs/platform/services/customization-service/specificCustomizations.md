@@ -362,9 +362,8 @@ Set the key in the `bootstrap` phase, so the value is in place before the corner
 registers. The `global` phase also works, because the extension re-reads the value when the global
 phase applies, and both phases run before a mode opens a viewport.
 
-Only `auto` tests the device. `auto` computes the values from a probe of the texture edge and from
-a record of the memory that worked, in a build of Cornerstone3D that has `auto`. A named preset is
-a set of values, and a real device may hold more or less than the preset states.
+No preset tests the device. A preset is a set of values, and a real device may hold more or less
+than the preset states. A later pull request will add an automatic mode that probes the device.
 
 ```jsonc
 // platform/app/public/customizations/gpu/low-tablet.jsonc  ->  ?customization=gpu/low-tablet
@@ -379,7 +378,6 @@ The shipped files, one for each preset:
 
 | Value | Texture edge | Texture memory | Use |
 | ----- | ------------ | -------------- | --- |
-| `gpu/auto` | computed | computed | The values for the device. A build without `auto` keeps its default preset. |
 | `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces, so the reduction is easy to see. |
 | `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
 | `gpu/medium` | 2048 | 8 GB | A device of the middle class. |
