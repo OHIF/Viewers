@@ -45,6 +45,7 @@
     "@cornerstonejs/calculate-suv": "1.1.0",
     "lodash.get": "4.4.2",
     "lodash.uniqby": "4.7.0",
+    "query-string": "10.0.0",
     "react-color": "2.19.3"
   },
   "devDependencies": {
