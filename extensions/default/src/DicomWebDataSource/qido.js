@@ -135,21 +135,11 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
   return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
 }
 
-export default function searchStudies(server, filter) {
-  const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
-  const options = {
-    queryParams,
-  };
-
-  return dicomWeb.searchForStudies(options).then(resultDataToStudies);
-}
-
 /**
  * Produces a QIDO URL given server details and a set of specified search filter
  * items
  *
  * @param filter
- * @param serverSupportsQIDOIncludeField
  * @returns {string} The URL with encoded filter query data
  */
 function mapParams(params, options = {}) {
@@ -183,7 +173,7 @@ function mapParams(params, options = {}) {
     limit: params.limit || 101,
     offset: params.offset || 0,
     fuzzymatching: options.supportsFuzzyMatching === true,
-    includefield: commaSeparatedFields, // serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
+    includefield: commaSeparatedFields,
   };
 
   // build the StudyDate range parameter
