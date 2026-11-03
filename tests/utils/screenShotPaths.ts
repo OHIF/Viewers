@@ -151,6 +151,9 @@ const screenShotPaths = {
     rtNoHydrationPreMPR: 'rtNoHydrationPreMpr.png',
     rtNoHydrationPostMPR: 'rtNoHydrationPostMpr.png',
   },
+  rtNonHydratedDelete: {
+    viewportAfterDelete: 'viewportAfterDelete.png',
+  },
   srHydration: {
     srPostHydration: 'srPostHydration.png',
     srPreHydration: 'srPreHydration.png',
