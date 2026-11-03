@@ -1,4 +1,4 @@
-import { Enums, cache, Types as CoreTypes } from '@cornerstonejs/core';
+import { Enums, cache, viewportProjection, Types as CoreTypes } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import type {
   IViewportAdapter,
@@ -99,6 +99,10 @@ export class NextViewportAdapter implements IViewportAdapter {
   getFocalPoint(): CoreTypes.Point3 | undefined {
     // The native view state carries no focalPoint; it comes from the view reference.
     return this.viewport.getViewReference?.()?.cameraFocalPoint as CoreTypes.Point3 | undefined;
+  }
+
+  getZoom(): number | undefined {
+    return viewportProjection.getPresentation<{ zoom?: number }>(this.viewport)?.zoom;
   }
 
   // ---- per-display-set appearance ----
