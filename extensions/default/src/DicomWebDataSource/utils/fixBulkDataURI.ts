@@ -29,10 +29,11 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
   const { startsWith, prefixWith = '' } = uriConfig;
   if (startsWith && BulkDataURI.startsWith(startsWith)) {
     BulkDataURI = prefixWith + BulkDataURI.substring(startsWith.length);
-    value.BulkDataURI = BulkDataURI;
   }
+  // The branches below do not rewrite absolute URIs or /path URIs with a relative wadoRoot
+  value.BulkDataURI = BulkDataURI;
 
-  if (!BulkDataURI.startsWith('http') && !value.BulkDataURI.startsWith('/')) {
+  if (!BulkDataURI.startsWith('http') && !BulkDataURI.startsWith('/')) {
     const { StudyInstanceUID, SeriesInstanceUID } = instance;
     const isInstanceStart = BulkDataURI.startsWith('instances/') || BulkDataURI.startsWith('../');
     if (
