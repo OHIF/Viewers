@@ -6,7 +6,7 @@ import {
   getViewportCanvasStats,
   test,
   visitStudy,
-  waitForViewportPainted,
+  waitForViewportNotBlank,
   waitForViewportsRendered,
 } from './utils';
 
@@ -174,7 +174,7 @@ test.describe('labelmap', () => {
 
     await mainToolbarPageObject.layoutSelection.grid(2, 1).click();
     await expect(viewportPageObject.getNthLocator(1)).toBeVisible();
-    await waitForViewportPainted({ page });
+    await waitForViewportNotBlank({ page });
     const paintedInGrid = await canvasDigest(page);
 
     await mainToolbarPageObject.undo.click();

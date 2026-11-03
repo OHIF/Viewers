@@ -45,7 +45,7 @@ import {
   waitForViewportRenderCycle,
   waitForPaintToSettle,
 } from './waitForViewportsRendered';
-import { waitForViewportPainted } from './waitForViewportPainted';
+import { waitForViewportNotBlank } from './waitForViewportNotBlank';
 
 export {
   visitStudy,
@@ -89,7 +89,7 @@ export {
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   waitForPaintToSettle,
-  waitForViewportPainted,
+  waitForViewportNotBlank,
   press,
   withKeyHeld,
   test,

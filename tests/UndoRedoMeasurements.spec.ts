@@ -2,7 +2,7 @@ import type { Locator } from '@playwright/test';
 
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 import type { RightPanelPageObject } from './pages';
-import { expect, press, test, visitStudy, waitForViewportPainted } from './utils';
+import { expect, press, test, visitStudy, waitForViewportNotBlank } from './utils';
 
 const STUDY_UID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
 
@@ -49,7 +49,7 @@ async function drawLength(viewport: IViewportPageObject, [start, end]: [Point, P
 
 test.beforeEach(async ({ page, mainToolbarPageObject, rightPanelPageObject }) => {
   await visitStudy(page, STUDY_UID, 'viewer', 2000);
-  await waitForViewportPainted({ page });
+  await waitForViewportNotBlank({ page });
 
   await rightPanelPageObject.toggle();
   await rightPanelPageObject.measurementsPanel.select();

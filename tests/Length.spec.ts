@@ -7,7 +7,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForViewportPainted,
+  waitForViewportNotBlank,
 } from './utils';
 
 // Both ends of the length line, in viewport pixels.
@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
-  await waitForViewportPainted({ page });
+  await waitForViewportNotBlank({ page });
 });
 
 test('should display the length tool', async ({

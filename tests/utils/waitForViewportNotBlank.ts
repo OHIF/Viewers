@@ -5,8 +5,9 @@ import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { waitForViewportsRendered } from './waitForViewportsRendered';
 
 // Cornerstone can report a viewport 'rendered' while its image is still loading and the canvas is black.
-// Wait for real pixels before drawing, since clicks on an empty viewport produce wrong measurements.
-export async function waitForViewportPainted({
+// Wait for non-black pixels before drawing, since clicks on an empty viewport produce wrong measurements.
+// The first non-black frame may still be partly drawn, so let its render settle before returning.
+export async function waitForViewportNotBlank({
   page,
   viewportId = 'default',
 }: {
@@ -16,7 +17,8 @@ export async function waitForViewportPainted({
   await waitForViewportsRendered(page);
   await expect
     .poll(async () => (await getViewportCanvasStats({ page, viewportId })).nonBlackRatio, {
-      message: `Expected viewport ${viewportId} to paint its image`,
+      message: `Expected viewport ${viewportId} to show non-black pixels`,
     })
     .toBeGreaterThan(0);
+  await waitForViewportsRendered(page);
 }
