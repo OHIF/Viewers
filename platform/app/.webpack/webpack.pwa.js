@@ -1,7 +1,6 @@
 // https://developers.google.com/web/tools/workbox/guides/codelabs/webpack
 // ~~ WebPack
 const path = require('path');
-const fs = require('fs');
 const { merge } = require('webpack-merge');
 const rspack = require('@rspack/core');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
@@ -33,52 +32,8 @@ const open = process.env.OHIF_OPEN !== 'false';
 
 const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
-class InjectServiceWorkerManifestPlugin {
-  constructor({ swSrc, swDest, publicPath, exclude, maximumFileSizeToCacheInBytes }) {
-    this.swSrc = swSrc;
-    this.swDest = swDest;
-    this.publicPath = publicPath;
-    this.exclude = exclude;
-    this.maximumFileSizeToCacheInBytes = maximumFileSizeToCacheInBytes;
-  }
-
-  apply(compiler) {
-    const pluginName = 'InjectServiceWorkerManifestPlugin';
-    const publicPath = this.publicPath.endsWith('/') ? this.publicPath : `${this.publicPath}/`;
-
-    compiler.hooks.thisCompilation.tap(pluginName, compilation => {
-      compilation.hooks.processAssets.tap(
-        {
-          name: pluginName,
-          stage: rspack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
-        },
-        () => {
-          const manifest = compilation
-            .getAssets()
-            .filter(asset => {
-              if (asset.name === this.swDest || asset.name.endsWith('.map')) {
-                return false;
-              }
-              if (this.exclude.some(pattern => pattern.test(asset.name))) {
-                return false;
-              }
-              return asset.source.size() <= this.maximumFileSizeToCacheInBytes;
-            })
-            .map(asset => ({
-              url: `${publicPath}${asset.name}`,
-              revision: asset.info.contenthash ? null : compilation.hash,
-            }));
-
-          const source = fs
-            .readFileSync(this.swSrc, 'utf8')
-            .replace('self.__WB_MANIFEST', JSON.stringify(manifest));
-
-          compilation.emitAsset(this.swDest, new rspack.sources.RawSource(source));
-        }
-      );
-    });
-  }
-}
+// Shared with the rsbuild build (rsbuild.config.ts).
+const InjectServiceWorkerManifestPlugin = require('./InjectServiceWorkerManifestPlugin.js');
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {

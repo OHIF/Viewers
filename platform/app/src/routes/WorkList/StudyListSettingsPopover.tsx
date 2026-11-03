@@ -3,7 +3,7 @@ import { useNavigate, type NavigateFunction } from 'react-router-dom';
 import { useTranslation, type TFunction } from 'react-i18next';
 
 import { useAppConfig } from '@state';
-import { useSystem } from '@ohif/core';
+import { useSystem, useCustomization } from '@ohif/core';
 import { StudyList, Icons, Button, useModal } from '@ohif/ui-next';
 
 export type SettingsMenuItem = {
@@ -18,6 +18,7 @@ type DefaultItemsContext = {
   customizationService: any;
   show: ReturnType<typeof useModal>['show'];
   appConfig: ReturnType<typeof useAppConfig>[0];
+  appearanceModal: any;
 };
 
 export function defaultSettingsMenuItems({
@@ -26,6 +27,7 @@ export function defaultSettingsMenuItems({
   customizationService,
   show,
   appConfig,
+  appearanceModal,
 }: DefaultItemsContext): SettingsMenuItem[] {
   const items: SettingsMenuItem[] = [
     {
@@ -57,7 +59,11 @@ export function defaultSettingsMenuItems({
     },
   ];
 
-  const AppearanceModal = customizationService.getCustomization('ohif.appearanceModal');
+  // Passed in from the component (read via useCustomization there): this runs
+  // during render, and a direct service read here would not see late or
+  // runtime registrations. The about/preferences reads above stay direct —
+  // they run inside onClick handlers, which always read fresh.
+  const AppearanceModal = appearanceModal;
   if (AppearanceModal) {
     items.splice(1, 0, {
       id: 'appearance',
@@ -93,6 +99,8 @@ export function StudyListSettingsPopover() {
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services as any;
   const { show } = useModal();
+  const appearanceModal = useCustomization('ohif.appearanceModal');
+  const buildItems = useCustomization('workList.settingsMenuItems');
 
   const defaults = defaultSettingsMenuItems({
     t,
@@ -100,14 +108,14 @@ export function StudyListSettingsPopover() {
     customizationService,
     show,
     appConfig,
+    appearanceModal,
   });
-  const buildItems = customizationService.getCustomization('workList.settingsMenuItems');
   const items: SettingsMenuItem[] =
     typeof buildItems === 'function'
       ? (() => {
-          const result = (
-            buildItems as (defaults: SettingsMenuItem[]) => SettingsMenuItem[]
-          )(defaults);
+          const result = (buildItems as (defaults: SettingsMenuItem[]) => SettingsMenuItem[])(
+            defaults
+          );
           return Array.isArray(result) ? result : defaults;
         })()
       : defaults;

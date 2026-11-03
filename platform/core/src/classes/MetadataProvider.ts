@@ -365,7 +365,16 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
           sopInstanceUID: instance.SOPInstanceUID,
+          // No SOPClassUID here - it belongs to the SOP Common module.
           instanceNumber: toNumber(instance.InstanceNumber),
+          // The instance level date/time is the only one that distinguishes a
+          // newly saved instance from the rest of its series, whose
+          // SeriesDate/SeriesTime it inherits, so it has to be carried through
+          // to instances derived from this one.  See `getLatestInstanceDateTime`.
+          instanceCreationDate: instance.InstanceCreationDate,
+          instanceCreationTime: instance.InstanceCreationTime,
+          contentDate: instance.ContentDate,
+          contentTime: instance.ContentTime,
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
           lossyImageCompressionMethod: instance.LossyImageCompressionMethod,
@@ -565,7 +574,13 @@ const WADO_IMAGE_LOADER = {
       usingDefaultValues = true;
     }
 
-    if (ImageOrientationPatient) {
+    // Additional validation (1. Must exist, 2.Must be an array, 3.Must be 6 values, 4. Must not be an invalid array (all 0s))
+    if (
+      ImageOrientationPatient &&
+      Array.isArray(ImageOrientationPatient) &&
+      ImageOrientationPatient.length === 6 &&
+      ImageOrientationPatient.some(val => parseFloat(val) !== 0)
+    ) {
       rowCosines = toNumber(ImageOrientationPatient.slice(0, 3));
       columnCosines = toNumber(ImageOrientationPatient.slice(3, 6));
       imageOrientationPatient = toNumber(ImageOrientationPatient);

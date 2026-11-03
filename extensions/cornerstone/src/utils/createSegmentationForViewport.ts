@@ -64,6 +64,7 @@ export async function createSegmentationForViewport(
   const segmentationCreationOptions = {
     label,
     segmentationId,
+    labelIsGenerated: !options.label,
     segments: _createDefaultSegments(options.createInitialSegment),
   };
 

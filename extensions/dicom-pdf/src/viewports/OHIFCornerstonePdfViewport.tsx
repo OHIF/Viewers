@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { useViewportRef } from '@ohif/core';
+import { useViewportElementRegistration } from '@ohif/core';
 import { DisplayableDocumentType } from '../utils/displayableDocumentTypes';
 import { DocumentLoadFailureReason } from '../utils/loadDisplayableDocument';
 import './OHIFCornerstonePdfViewport.css';
@@ -14,23 +13,24 @@ const FAILURE_MESSAGE_KEYS: Record<DocumentLoadFailureReason, string> = {
   aborted: 'Loading document...',
 };
 
-function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
+type OHIFCornerstonePdfViewportProps = {
+  displaySets: AppTypes.DisplaySet[];
+  viewportId?: string;
+};
+
+function OHIFCornerstonePdfViewport({
+  displaySets,
+  viewportId = 'pdf-viewport',
+}: OHIFCornerstonePdfViewportProps) {
   const [embeddedDocument, setEmbeddedDocument] = useState<{
     url: string;
     documentType: DisplayableDocumentType;
   } | null>(null);
   const [failure, setFailure] = useState<DocumentLoadFailureReason | null>(null);
   const viewportElementRef = useRef(null);
-  const viewportRef = useViewportRef(viewportId);
+  const { register: registerViewportElement, unregister: unregisterViewportElement } =
+    useViewportElementRegistration(viewportId);
   const { t } = useTranslation('EncapsulatedDocument');
-
-  useEffect(() => {
-    document.body.addEventListener('drag', makePdfDropTarget);
-    return function cleanup() {
-      document.body.removeEventListener('drag', makePdfDropTarget);
-      viewportRef.unregister();
-    };
-  }, []);
 
   const [style, setStyle] = useState('pdf-yes-click');
 
@@ -41,6 +41,17 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
   const makePdfDropTarget = () => {
     setStyle('pdf-no-click');
   };
+
+  // Declared above the effect that subscribes makePdfDropTarget: the effect body
+  // only runs after render, but a reference that textually precedes its
+  // declaration is something the compiler refuses to reason about.
+  useEffect(() => {
+    document.body.addEventListener('drag', makePdfDropTarget);
+    return function cleanup() {
+      document.body.removeEventListener('drag', makePdfDropTarget);
+      unregisterViewportElement();
+    };
+  }, []);
 
   if (displaySets && displaySets.length > 1) {
     throw new Error(
@@ -95,7 +106,7 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
       ref={el => {
         viewportElementRef.current = el;
         if (el) {
-          viewportRef.register(el);
+          registerViewportElement(el);
         }
       }}
       data-viewport-id={viewportId}
@@ -144,10 +155,5 @@ function renderDocument(
     />
   );
 }
-
-OHIFCornerstonePdfViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  viewportId: PropTypes.string,
-};
 
 export default OHIFCornerstonePdfViewport;
