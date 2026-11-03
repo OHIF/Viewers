@@ -65,8 +65,7 @@ export interface IViewportPageObject {
   doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
   normalizedClickAt: (
     normalizedPoints: { x: number; y: number }[],
-    button?: MouseButton,
-    delay?: number
+    button?: MouseButton
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
@@ -408,14 +407,12 @@ export class ViewportPageObject {
       },
       normalizedClickAt: async (
         normalizedPoints: { x: number; y: number }[],
-        button?: MouseButton,
-        delay?: number
+        button?: MouseButton
       ) => {
         await simulateNormalizedClicksOnElement({
           locator: viewport,
           normalizedPoints,
           button,
-          delay,
         });
       },
       normalizedDoubleClickAt: async (normalizedPoint: { x: number; y: number }) => {

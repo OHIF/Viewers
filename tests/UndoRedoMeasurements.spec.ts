@@ -1,7 +1,7 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import type { IViewportPageObject } from './pages/ViewportPageObject';
-import type { RightPanelPageObject } from './pages';
+import type { MainToolbarPageObject, RightPanelPageObject } from './pages';
 import { expect, press, test, visitStudy, waitForViewportNotBlank } from './utils';
 
 const STUDY_UID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -40,24 +40,55 @@ async function expectLineEnd(line: Locator, { x2, y2 }: LineEnd, message: string
   await expect(line, message).toHaveAttribute('y2', y2);
 }
 
-async function drawLength(viewport: IViewportPageObject, [start, end]: [Point, Point]) {
-  await viewport.normalizedClickAt([start]);
-  // Hold the closing click past Cornerstone's 400ms double-click window, so the line is
-  // finished when the click returns and an undo right after it can't race the tool.
-  await viewport.normalizedClickAt([end], 'left', 500);
+// Expects one length annotation in the viewport per value, each showing its value.
+async function expectViewportLengths(viewport: IViewportPageObject, values: string[]) {
+  await expect(viewport.nthAnnotation(values.length).locator).toHaveCount(0);
+  for (const value of values) {
+    await expect(viewport.svg().getByText(value, { exact: true })).toHaveCount(1);
+  }
 }
 
-test.beforeEach(async ({ page, mainToolbarPageObject, rightPanelPageObject }) => {
-  await visitStudy(page, STUDY_UID, 'viewer', 2000);
-  await waitForViewportNotBlank({ page });
+async function expectHistoryButtons(
+  mainToolbarPageObject: MainToolbarPageObject,
+  { undo, redo }: { undo: boolean; redo: boolean }
+) {
+  await expect(mainToolbarPageObject.undo.button).toBeEnabled({ enabled: undo });
+  await expect(mainToolbarPageObject.redo.button).toBeEnabled({ enabled: redo });
+}
 
-  await rightPanelPageObject.toggle();
-  await rightPanelPageObject.measurementsPanel.select();
-  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
-  await mainToolbarPageObject.measurementTools.length.click();
-});
+async function drawLength(page: Page, viewport: IViewportPageObject, [start, end]: [Point, Point]) {
+  // Listen before clicking, so the event can't fire before the listener is attached.
+  const completed = await page.evaluateHandle(() => {
+    const { eventTarget } = (window as any).cornerstone;
+    const { ANNOTATION_COMPLETED } = (window as any).cornerstoneTools.Enums.Events;
+    const done = new Promise<void>(resolve =>
+      eventTarget.addEventListenerOnce(ANNOTATION_COMPLETED, () => resolve())
+    );
+    return { done };
+  });
+  await viewport.normalizedClickAt([start, end]);
+  // Cornerstone records the undo entry just before ANNOTATION_COMPLETED fires, so an undo
+  // after this returns takes back the finished line.
+  await completed.evaluate(({ done }) => done);
+  await completed.dispose();
+}
+
+test.beforeEach(
+  async ({ page, mainToolbarPageObject, rightPanelPageObject, viewportPageObject }) => {
+    await visitStudy(page, STUDY_UID, 'viewer', 2000);
+    await waitForViewportNotBlank({ page });
+
+    await rightPanelPageObject.toggle();
+    await rightPanelPageObject.measurementsPanel.select();
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
+    const viewport = await viewportPageObject.active;
+    await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
+    await mainToolbarPageObject.measurementTools.length.click();
+  }
+);
 
 test('should undo and redo a new measurement', async ({
+  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -66,10 +97,9 @@ test('should undo and redo a new measurement', async ({
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await expect(mainToolbarPageObject.undo.button).toBeDisabled();
-  await expect(mainToolbarPageObject.redo.button).toBeDisabled();
+  await expectHistoryButtons(mainToolbarPageObject, { undo: false, redo: false });
 
-  await drawLength(viewport, LONG_LINE);
+  await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
@@ -87,6 +117,7 @@ test('should undo and redo a new measurement', async ({
 });
 
 test('should undo and redo a handle move', async ({
+  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -96,7 +127,7 @@ test('should undo and redo a handle move', async ({
   const value = lengthValueAt(rightPanelPageObject, 0);
   const line = viewport.svg('line').first();
 
-  await drawLength(viewport, LONG_LINE);
+  await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
   const drawnValue = await value.innerText();
@@ -122,6 +153,7 @@ test('should undo and redo a handle move', async ({
 });
 
 test('should undo and redo a measurement deleted from the panel', async ({
+  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -130,7 +162,7 @@ test('should undo and redo a measurement deleted from the panel', async ({
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await drawLength(viewport, LONG_LINE);
+  await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
@@ -150,6 +182,7 @@ test('should undo and redo a measurement deleted from the panel', async ({
 });
 
 test('should undo measurements one at a time, newest first', async ({
+  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -160,30 +193,35 @@ test('should undo measurements one at a time, newest first', async ({
   const firstValue = lengthValueAt(rightPanelPageObject, 0);
   const secondValue = lengthValueAt(rightPanelPageObject, 1);
 
-  await drawLength(viewport, LONG_LINE);
+  await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const longValue = await firstValue.innerText();
 
-  await drawLength(viewport, SHORT_LINE);
+  await drawLength(page, viewport, SHORT_LINE);
   await expect(rows).toHaveCount(2);
   await expect(secondValue).not.toHaveText(longValue);
   const shortValue = await secondValue.innerText();
+  await expectViewportLengths(viewport, [longValue, shortValue]);
 
   await mainToolbarPageObject.undo.click();
   await expect(rows).toHaveCount(1);
   await expect(firstValue, 'Expected the newest to be undone first').toHaveText(longValue);
+  await expectViewportLengths(viewport, [longValue]);
 
   await mainToolbarPageObject.undo.click();
   await expect(rows).toHaveCount(0);
+  await expectViewportLengths(viewport, []);
 
   await mainToolbarPageObject.redo.click();
   await expect(rows).toHaveCount(1);
   await expect(firstValue, 'Expected the oldest to be redone first').toHaveText(longValue);
+  await expectViewportLengths(viewport, [longValue]);
 
   await mainToolbarPageObject.redo.click();
   await expect(rows).toHaveCount(2);
   await expect(secondValue).toHaveText(shortValue);
+  await expectViewportLengths(viewport, [longValue, shortValue]);
 });
 
 test('should drop the redo history when a new measurement is drawn after undo', async ({
@@ -196,25 +234,30 @@ test('should drop the redo history when a new measurement is drawn after undo', 
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await drawLength(viewport, LONG_LINE);
+  await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const longValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
+  await expectViewportLengths(viewport, [longValue]);
 
   await mainToolbarPageObject.undo.click();
   await expect(rows).toHaveCount(0);
+  await expectViewportLengths(viewport, []);
   await expect(mainToolbarPageObject.redo.button).toBeEnabled();
 
-  await drawLength(viewport, SHORT_LINE);
+  await drawLength(page, viewport, SHORT_LINE);
   await expect(rows).toHaveCount(1);
   await expect(lengthValueAt(rightPanelPageObject, 0)).not.toHaveText(longValue);
   const shortValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
+  await expectViewportLengths(viewport, [shortValue]);
   await expect(mainToolbarPageObject.redo.button, 'Expected redo to be cleared').toBeDisabled();
 
   // The redo hotkey must not bring back the undone measurement either.
   await press({ page, key: 'Control+y' });
   await expect(rows).toHaveCount(1);
   await expect(lengthValueAt(rightPanelPageObject, 0)).toHaveText(shortValue);
+  await expectViewportLengths(viewport, [shortValue]);
+  await expectHistoryButtons(mainToolbarPageObject, { undo: true, redo: false });
 });
 
 test('should undo and redo with Ctrl+Z and Ctrl+Y like the header buttons', async ({
@@ -227,7 +270,7 @@ test('should undo and redo with Ctrl+Z and Ctrl+Y like the header buttons', asyn
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await drawLength(viewport, LONG_LINE);
+  await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
   const drawnValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
@@ -235,13 +278,56 @@ test('should undo and redo with Ctrl+Z and Ctrl+Y like the header buttons', asyn
   await press({ page, key: 'Control+z' });
   await expect(rows, 'Expected Ctrl+Z to remove the measurement row').toHaveCount(0);
   await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
-  await expect(mainToolbarPageObject.undo.button).toBeDisabled();
-  await expect(mainToolbarPageObject.redo.button).toBeEnabled();
+  await expectHistoryButtons(mainToolbarPageObject, { undo: false, redo: true });
 
   await press({ page, key: 'Control+y' });
   await expect(rows, 'Expected Ctrl+Y to restore the measurement row').toHaveCount(1);
   await expect(viewport.nthAnnotation(0).locator).toBeVisible();
   await expect(lengthValueAt(rightPanelPageObject, 0)).toHaveText(drawnValue);
-  await expect(mainToolbarPageObject.undo.button).toBeEnabled();
-  await expect(mainToolbarPageObject.redo.button).toBeDisabled();
+  await expectHistoryButtons(mainToolbarPageObject, { undo: true, redo: false });
+});
+
+test('should ignore Ctrl+Z and Ctrl+Y when there is nothing to undo or redo', async ({
+  page,
+  DOMOverlayPageObject,
+  mainToolbarPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  const viewport = await viewportPageObject.active;
+  const { rows } = rightPanelPageObject.measurementsPanel.panel;
+  const value = lengthValueAt(rightPanelPageObject, 0);
+
+  // Nothing has been drawn yet, so both shortcuts are no-ops.
+  await press({ page, key: 'Control+z' });
+  await expectHistoryButtons(mainToolbarPageObject, { undo: false, redo: false });
+  await press({ page, key: 'Control+y' });
+  await expectHistoryButtons(mainToolbarPageObject, { undo: false, redo: false });
+  await expect(rows).toHaveCount(0);
+
+  await drawLength(page, viewport, LONG_LINE);
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+  await expect(rows).toHaveCount(1);
+  await expectHistoryButtons(mainToolbarPageObject, { undo: true, redo: false });
+  const drawnValue = await value.innerText();
+
+  await press({ page, key: 'Control+z' });
+  await expect(rows).toHaveCount(0);
+  await expectHistoryButtons(mainToolbarPageObject, { undo: false, redo: true });
+
+  // The undo stack is empty again, so this press must not consume the redo entry.
+  await press({ page, key: 'Control+z' });
+  await expect(rows).toHaveCount(0);
+  await expectHistoryButtons(mainToolbarPageObject, { undo: false, redo: true });
+
+  await press({ page, key: 'Control+y' });
+  await expect(rows).toHaveCount(1);
+  await expect(value).toHaveText(drawnValue);
+  await expectHistoryButtons(mainToolbarPageObject, { undo: true, redo: false });
+
+  // The redo stack is empty now, so another press leaves the measurement as is.
+  await press({ page, key: 'Control+y' });
+  await expect(rows).toHaveCount(1);
+  await expect(value).toHaveText(drawnValue);
+  await expectHistoryButtons(mainToolbarPageObject, { undo: true, redo: false });
 });
