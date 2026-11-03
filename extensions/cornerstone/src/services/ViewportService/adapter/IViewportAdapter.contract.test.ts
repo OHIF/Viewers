@@ -165,6 +165,25 @@ describe('classification', () => {
     ).toBe(false);
   });
 
+  it('isInAcquisitionPlane: native tests the geometry of a volume, so axial on an axial CT counts', () => {
+    jest.spyOn(cache, 'getVolume').mockReturnValue({
+      direction: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+      dimensions: [512, 512, 100],
+      spacing: [0.7, 0.7, 2],
+    } as never);
+    const axialOn = (viewPlaneNormal: number[]) =>
+      getViewportAdapter(
+        makeNextViewport({
+          getViewState: jest.fn().mockReturnValue({ orientation: OrientationAxis.AXIAL }),
+          getViewReference: jest.fn().mockReturnValue({ volumeId: 'ct', viewPlaneNormal }),
+        })
+      ).isInAcquisitionPlane();
+
+    expect(axialOn([0, 0, 1])).toBe(true);
+    expect(axialOn([1, 0, 0])).toBe(false);
+    jest.restoreAllMocks();
+  });
+
   it('hasContent: legacy via actors, native via content mode', () => {
     expect(getViewportAdapter(makeLegacyStackViewport()).hasContent()).toBe(true);
     expect(

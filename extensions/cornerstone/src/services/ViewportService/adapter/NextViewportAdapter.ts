@@ -1,4 +1,4 @@
-import { Enums, cache, Types as CoreTypes } from '@cornerstonejs/core';
+import { Enums, cache, Types as CoreTypes, utilities as csUtils } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import type {
   IViewportAdapter,
@@ -70,6 +70,15 @@ export class NextViewportAdapter implements IViewportAdapter {
   }
 
   isInAcquisitionPlane(): boolean {
+    // A named orientation (axial on an axial CT) can be the acquisition plane, so test the geometry.
+    const reference = this.viewport.getViewReference?.();
+    const volume = reference?.volumeId ? cache.getVolume(reference.volumeId) : undefined;
+    const { isAcquisitionPlaneNormal } = csUtils;
+
+    if (volume && reference.viewPlaneNormal && typeof isAcquisitionPlaneNormal === 'function') {
+      return isAcquisitionPlaneNormal(volume, reference.viewPlaneNormal as CoreTypes.Point3);
+    }
+
     // orientation defaults to ACQUISITION when unset on the native view state.
     const orientation = this.viewport.getViewState?.()?.orientation;
     return orientation === Enums.OrientationAxis.ACQUISITION || orientation == null;

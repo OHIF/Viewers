@@ -295,10 +295,6 @@ failure. A later pull request will add an automatic mode that probes the device.
   (`fi-root`) has a z-index of 1000, which is above the OHIF menu layer. On a reduced volume
   the indicator can take a click on a menu item. The OHIF fidelity indicator pull request
   will address this.
-- **On the new viewports, the progress scroll bar of an axial MPR viewport shows the volume
-  form.** `NextViewportAdapter.isInAcquisitionPlane()` reads only the orientation of the
-  view state, so an axial viewport on an axial CT gives `false`. See
-  [OHIF/Viewers#6405](https://github.com/OHIF/Viewers/issues/6405).
 - **No automatic test covers the new viewports or the reduction.** See
   [OHIF/Viewers#6404](https://github.com/OHIF/Viewers/issues/6404).
 
