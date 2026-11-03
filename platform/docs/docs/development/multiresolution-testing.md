@@ -52,6 +52,11 @@ developer builds turn it on. Cornerstone3D also keeps it off by default.
   bundled deployment configs.
 - The deployer can select a GPU settings preset with the `cornerstone.gpuSettingsPreset`
   customization.
+- With final downsampling off, the texture is the full-resolution texture, as before this
+  work. Two other changes reach every build, also a build with final downsampling off:
+  - The MPR load order changes. The coarse stages load first, and they copy early images
+    over windows of up to 64 frames until the frames between them arrive.
+  - The Cornerstone3D label "Transient Low Fidelity" shows in red while an MPR volume loads.
 
 ### Implementation requirements
 
@@ -61,6 +66,9 @@ developer builds turn it on. Cornerstone3D also keeps it off by default.
   A comment in each file shows how to turn it on, and lists the options.
 - The other bundled configs do not set `lossyDownsampling`, and have no comment.
 - `config/e2e.js` pins no preset, so the e2e tests use the default preset of Cornerstone3D.
+- The cornerstone extension (`index.tsx`) sets `coarseInterleavedRetrieveStages` as the
+  retrieve stages of a volume, and `hps/mpr.ts` sets no `imageLoadStrategy`. Interleaved
+  loading stays on, so the label shows during the load.
 
 ## How OHIF reaches a reduced texture
 
@@ -252,7 +260,7 @@ https://deploy-preview-6295--ohif-dev.netlify.app/viewer?StudyInstanceUIDs=1.3.6
 
 | View | Legacy viewports | New viewports |
 | ---- | ---------------- | ------------- |
-| Axial, the acquisition plane | The reduced texture. Lossy. | The original frames. Lossless. |
+| Axial, the acquisition plane | The reduced texture. Lossy. | The original frames. Lossless after the frame loads. Until then the reduced texture shows, and the indicator shows lossy. |
 | Sagittal and coronal | The reduced texture | The reduced texture, the same as legacy |
 | Axial with a slab or the MIP blend mode | The reduced texture | The reduced texture |
 
@@ -260,8 +268,11 @@ On the new viewports, check these items:
 
 - A rotation from axial to sagittal and back keeps the slice, the pan and the zoom.
 - The crosshairs and the sync of the views still work.
-- A SEG stays aligned in each view. A labelmap volume in a sagittal or coronal viewport
-  can make the axial view go back to the reduced texture.
+- A SEG stays aligned in each view. The axial view keeps the original frames while the
+  labelmap shows.
+- A small tilt of the axial view (for example with the crosshairs rotation) shows the
+  reduced texture. The original frames show only when the tilt moves the plane by less
+  than half a slice across the volume.
 
 ## What this branch does not do
 
@@ -273,6 +284,23 @@ not get finer. A ladder of grids is later work.
 **Nothing probes the device.** A named preset is a set of values and not a measurement, so
 a deployment that selects a preset larger than the device holds gets an allocation
 failure. A later pull request will add an automatic mode that probes the device.
+
+### Known limitations
+
+- **Only the `mpr` protocol uses the coarse stages.** `fourUp`, `main3D`,
+  `mprAnd3DVolumeViewport`, `only3D`, `primary3D`, `primaryAxial` and the `tmtv` protocol set
+  an `imageLoadStrategy`, and a protocol with a strategy does not use the retrieve stages of
+  the volume. These protocols still show gray lines while a volume loads.
+- **The Cornerstone3D fidelity indicator can cover the OHIF menus.** The indicator
+  (`fi-root`) has a z-index of 1000, which is above the OHIF menu layer. On a reduced volume
+  the indicator can take a click on a menu item. The OHIF fidelity indicator pull request
+  will address this.
+- **On the new viewports, the progress scroll bar of an axial MPR viewport shows the volume
+  form.** `NextViewportAdapter.isInAcquisitionPlane()` reads only the orientation of the
+  view state, so an axial viewport on an axial CT gives `false`. See
+  [OHIF/Viewers#6405](https://github.com/OHIF/Viewers/issues/6405).
+- **No automatic test covers the new viewports or the reduction.** See
+  [OHIF/Viewers#6404](https://github.com/OHIF/Viewers/issues/6404).
 
 ## Where the design is written
 
