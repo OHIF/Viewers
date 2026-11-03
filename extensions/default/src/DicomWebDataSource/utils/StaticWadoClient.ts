@@ -190,21 +190,33 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       );
     }
 
-    if (typeof actual == 'string') {
+    if (typeof actual === 'string' && typeof desired === 'string') {
+      const normalizedActual = actual.toLowerCase();
+      const normalizedDesired = desired.toLowerCase();
+
       if (actual.length === 0) {
         return true;
       }
       if (desired.length === 0 || desired === '*') {
         return true;
       }
-      if (desired[0] === '*' && desired[desired.length - 1] === '*') {
-        // console.log(`Comparing ${actual} to ${desired.substring(1, desired.length - 1)}`)
-        return actual.indexOf(desired.substring(1, desired.length - 1)) != -1;
-      } else if (desired[desired.length - 1] === '*') {
-        return actual.indexOf(desired.substring(0, desired.length - 1)) != -1;
-      } else if (desired[0] === '*') {
-        return actual.indexOf(desired.substring(1)) === actual.length - desired.length + 1;
+      if (normalizedDesired[0] === '*' && normalizedDesired[normalizedDesired.length - 1] === '*') {
+        return (
+          normalizedActual.indexOf(normalizedDesired.substring(1, normalizedDesired.length - 1)) !=
+          -1
+        );
+      } else if (normalizedDesired[normalizedDesired.length - 1] === '*') {
+        return (
+          normalizedActual.indexOf(normalizedDesired.substring(0, normalizedDesired.length - 1)) !=
+          -1
+        );
+      } else if (normalizedDesired[0] === '*') {
+        return (
+          normalizedActual.indexOf(normalizedDesired.substring(1)) ===
+          normalizedActual.length - normalizedDesired.length + 1
+        );
       }
+      return normalizedDesired === normalizedActual;
     }
     return desired === actual;
   }
