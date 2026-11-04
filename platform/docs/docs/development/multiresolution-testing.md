@@ -245,9 +245,10 @@ data, and not the grid that the viewport draws.
 ### The new viewports
 
 Add `&useNextViewports=true` to a URL to draw through the generic viewports of
-Cornerstone3D. With the Cornerstone3D branch `feat/acquisition-plane-original-frames`
-([cornerstonejs/cornerstone3D#3018](https://github.com/cornerstonejs/cornerstone3D/pull/3018)),
-the acquisition plane draws the original frames when the preset reduces the volume.
+Cornerstone3D. With the Cornerstone3D branch `feat/multires-voxel-manager-base`
+([cornerstonejs/cornerstone3D#2931](https://github.com/cornerstonejs/cornerstone3D/pull/2931),
+which now holds the acquisition-plane work of cornerstonejs/cornerstone3D#3018), the acquisition plane draws the
+original frames when the preset reduces the volume.
 The legacy viewports draw the acquisition plane from the reduced texture. Thus an axial
 view of the 2464-image CT under `gpu/medium` shows the average of two acquired slices on
 the legacy viewports, and one acquired slice on the new viewports.
