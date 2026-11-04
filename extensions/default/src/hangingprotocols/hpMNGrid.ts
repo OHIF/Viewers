@@ -1,6 +1,6 @@
 import { Types } from '@ohif/core';
 import { studyWithImages } from './utils/studySelectors';
-import { seriesShownAlone, seriesWithImages } from './utils/seriesSelectors';
+import { seriesViewable, seriesWithImages } from './utils/seriesSelectors';
 import { viewportOptions } from './utils/viewportOptions';
 
 /**
@@ -35,8 +35,10 @@ export const hpMN: Types.HangingProtocol.Protocol = {
       allowUnmatchedView: true,
       seriesMatchingRules: seriesWithImages,
     },
-    shownAloneDisplaySetId: {
-      seriesMatchingRules: seriesShownAlone,
+    // The 2x1 and 1x1 stages also take an ECG, SM or PDF display set
+    viewableDisplaySetId: {
+      allowUnmatchedView: true,
+      seriesMatchingRules: seriesViewable,
     },
   },
   defaultViewport: {
@@ -172,7 +174,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions,
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'viewableDisplaySetId',
             },
           ],
         },
@@ -181,7 +183,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               matchedDisplaySetsIndex: 1,
-              id: 'defaultDisplaySetId',
+              id: 'viewableDisplaySetId',
             },
           ],
         },
@@ -208,34 +210,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions,
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
-            },
-          ],
-        },
-      ],
-    },
-
-    // A 1x1 stage for a study with no image display set, for example an ECG, SM or PDF study
-    {
-      name: '1x1 shown alone',
-      stageActivation: {
-        enabled: {
-          minViewportsMatched: 1,
-        },
-      },
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 1,
-          columns: 1,
-        },
-      },
-      viewports: [
-        {
-          viewportOptions,
-          displaySets: [
-            {
-              id: 'shownAloneDisplaySetId',
+              id: 'viewableDisplaySetId',
             },
           ],
         },
