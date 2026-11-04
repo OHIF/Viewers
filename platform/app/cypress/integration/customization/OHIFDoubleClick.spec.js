@@ -2,7 +2,8 @@ describe('OHIF Double Click', () => {
   beforeEach(() => {
     cy.checkStudyRouteInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
-      '&hangingProtocolId=@ohif/mnGrid'
+      // stageid forces stage 0 (2x2); with no stageid this study opens 3x1
+      '&hangingProtocolId=@ohif/mnGrid&stageid=2x2'
     );
     cy.expectMinimumThumbnails(3);
     cy.initCornerstoneToolsAliases();

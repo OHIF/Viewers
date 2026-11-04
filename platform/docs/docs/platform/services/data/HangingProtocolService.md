@@ -50,6 +50,52 @@ export default function getHangingProtocolModule() {
 Within the protocol itself, the structure is laid out as described in the HangingProtocol.ts
 type definition, starting with `Protocol`.  See the type definition for more details.
 
+## Protocols as customizations
+
+The customization `hangingProtocols.<id>` also defines the protocol with that id.
+When that customization has a value, the `HangingProtocolService` uses it in place of
+the protocol that the module registered with the same id. A protocol is data, so a
+`?customization=` JSONC file can add a protocol, or change one, with no code.
+
+The default extension registers `@ohif/mnGrid` and `@ohif/mnGrid8` as the default
+values of `hangingProtocols.@ohif/mnGrid` and `hangingProtocols.@ohif/mnGrid8`. This
+example changes the minimum number of viewports for the first stage of mnGrid:
+
+```jsonc
+{
+  "global": {
+    "hangingProtocols.@ohif/mnGrid": {
+      "stages": { "0": { "stageActivation": { "$set": { "enabled": { "minViewportsMatched": 3 } } } } }
+    }
+  }
+}
+```
+
+Use `$set` on the whole value to replace a protocol. `@ohif/mnGrid8` copies the
+stages of `@ohif/mnGrid` in code, so a change to `@ohif/mnGrid` does not change
+`@ohif/mnGrid8`.
+
+A protocol that only a customization defines is not in the list of registered
+protocols. Select it with `&hangingProtocolId=<id>` in the viewer URL, with the
+exact case of the id. Known limits, to be fixed in a later change:
+
+- The layout selector lists only registered protocols. It does not show a
+  protocol that only a customization defines, and it ignores a customization
+  that changes `isPreset`, `name` or `icon` of a registered protocol.
+- The case-insensitive lookup of a protocol id finds only registered protocols.
+
+`platform/app/public/customizations/hangingProtocols/ecg.jsonc` is an example. It adds
+`@ohif/ecg`:
+
+- the newest ECG of the current study above the newest ECG of a prior study, when
+  the URL lists both studies
+- else the newest ECG of the study above the older one
+- else one ECG.
+
+An encapsulated PDF with Modality `ECG` counts as an ECG. Load it with
+`?customization=hangingProtocols/ecg&hangingProtocolId=@ohif/ecg`. The app config
+must allow the `default` prefix in `customizationUrlPrefixes`.
+
 ## Events
 
 There are two events that get publish in `HangingProtocolService`:
@@ -78,6 +124,13 @@ the stage activate.  The status values are:
 The default values for no `stageActivation` are to assume that `enabled` has `minViewports` of 1,
 and `passive` has `minViewports=0`.  That is, enable the stage if at least one
 viewport is filled, and make it passive if no viewports are filled.
+
+When the stage is not specified, the protocol opens its first applicable stage:
+the first `enabled` stage, or else the first `passive` stage. This applies to
+every way of selecting a protocol: a mode's default list, a URL
+`hangingProtocolId` with no `stageid`, and the `setHangingProtocol` command
+with no `stageId` or `stageIndex`. A disabled stage is never opened, and stage
+navigation skips it.
 
 The setting for these are controlled by the stageActivation property, for example
 the following:
@@ -316,6 +369,11 @@ viewportOptions: {
 ```
 
 ### Included Custom Attributes
+
+The default extension registers `isNewestOfModality`. It is true when no other display
+set of the study with the same Modality is newer, by the date/time of the instance that
+each display set shows. Give it a weight to put the newest display set first, because
+display sets with the same score otherwise sort by `SeriesNumber`.
 
 A few custom attributes are included under @ohif/extension-test, these are namely:
 *sameAs
