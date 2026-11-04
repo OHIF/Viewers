@@ -4,6 +4,7 @@ import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
+import { utils as cornerstoneUtils } from '@ohif/extension-cornerstone';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 import {
@@ -11,6 +12,11 @@ import {
   LABELMAP_SEG_SOP_CLASS_UID,
   BITMAP_SEG_SOP_CLASS_UID,
 } from './utils/segmentationConfig';
+import {
+  getExportedLabelValues,
+  getExportLabelToSegmentIndex,
+  type LabelToSegmentIndex,
+} from './utils/labelmapLayerSegmentIndices';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -111,11 +117,16 @@ const commandsModule = ({
       const labelmapData = segmentation.representationData.Labelmap;
 
       // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
-      // derived labelmap image ids. When `referencedImageIds` is supplied (the
-      // multi-layer/overlap path) each frame is indexed by its source slice so the
-      // layers align to the same frames; otherwise frames are sequential (the legacy
-      // single-layer behavior, kept byte-identical).
-      const buildLabelmap3D = (segImageIds: string[], metadata, referencedImageIds?: string[]) => {
+      // derived labelmap image ids. The voxels keep their label values, and the
+      // adapter maps them with `labelToSegmentIndex`. When `referencedImageIds` is
+      // supplied (the multi-layer/overlap path) each frame is indexed by its source
+      // slice so the layers align to the same frames; otherwise frames are sequential.
+      const buildLabelmap3D = (
+        segImageIds: string[],
+        metadata,
+        referencedImageIds?: string[],
+        labelToSegmentIndex?: LabelToSegmentIndex
+      ) => {
         const segImages = segImageIds.map(imageId => cache.getImage(imageId));
         const labelmaps2D = [];
 
@@ -126,20 +137,9 @@ const commandsModule = ({
           : undefined;
 
         let z = 0;
+        const unboundLabels = new Set<number>();
 
         for (const segImage of segImages) {
-          const segmentsOnLabelmap = new Set();
-          const pixelData = segImage.getPixelData();
-          const { rows, columns } = segImage;
-
-          // Use a single pass through the pixel data
-          for (let i = 0; i < pixelData.length; i++) {
-            const segment = pixelData[i];
-            if (segment !== 0) {
-              segmentsOnLabelmap.add(segment);
-            }
-          }
-
           const frameIndex = referencedFrameIndexById
             ? (referencedFrameIndexById.get(segImage.referencedImageId) ?? -1)
             : z++;
@@ -148,13 +148,31 @@ const commandsModule = ({
             continue;
           }
 
+          const pixelData = segImage.getPixelData();
+          const segmentsOnLabelmap = getExportedLabelValues(
+            pixelData,
+            labelToSegmentIndex,
+            unboundLabels
+          );
+          // A slice with only unbound label values would give an empty LABELMAP frame.
+          if (!segmentsOnLabelmap.length) {
+            continue;
+          }
+          const { rows, columns } = segImage;
+
           labelmaps2D[frameIndex] = {
-            segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
+            segmentsOnLabelmap,
             pixelData,
             rows,
             columns,
           };
         }
+
+        unboundLabels.forEach(labelValue =>
+          console.warn(
+            `Label value ${labelValue} of segmentation ${segmentationId} has no segment. The SEG export does not include its voxels.`
+          )
+        );
 
         const allSegmentsOnLabelmap = labelmaps2D
           .filter(Boolean)
@@ -164,6 +182,7 @@ const commandsModule = ({
           segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
           metadata,
           labelmaps2D,
+          labelToSegmentIndex: getExportLabelToSegmentIndex(labelToSegmentIndex, unboundLabels),
         };
       };
 
@@ -215,7 +234,7 @@ const commandsModule = ({
       // source series, so cornerstone writes overlapping segments as separate frames
       // that reference the same source slice (the DICOM SEG overlap encoding). The
       // cs3D adapter's fillSegmentation accepts an array of labelmap3D for exactly
-      // this. Single-layer SEGs keep the original single-labelmap3D path unchanged.
+      // this. A single-layer SEG uses one labelmap3D with sequential frames.
       const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
 
       // The referenced source images must be fully loaded (in cache) before we can
@@ -240,15 +259,26 @@ const commandsModule = ({
           layers[0].referencedImageIds ?? labelmapData.referencedImageIds ?? [];
         referencedImages = referencedImageIds.map(resolveReferencedImage);
         labelmaps3D = layers.map(layer =>
-          buildLabelmap3D(layer.imageIds ?? [], metadata, referencedImageIds)
+          buildLabelmap3D(
+            layer.imageIds ?? [],
+            metadata,
+            referencedImageIds,
+            layer.labelToSegmentIndex
+          )
         );
       } else {
-        const { imageIds } = labelmapData;
+        const { imageIds, labelToSegmentIndex, layerWithoutImageIds } =
+          cornerstoneUtils.getSingleLayerExportSource(labelmapData);
+        if (layerWithoutImageIds) {
+          console.warn(
+            `Labelmap layer ${layerWithoutImageIds.labelmapId} has no image ids. The SEG export uses the segmentation image ids with the label map of that layer.`
+          );
+        }
         const segImages = imageIds.map(imageId => cache.getImage(imageId));
         referencedImages = segImages.map((image, sliceIndex) =>
           resolveReferencedImage(image.referencedImageId, sliceIndex)
         );
-        labelmaps3D = buildLabelmap3D(imageIds, metadata);
+        labelmaps3D = buildLabelmap3D(imageIds, metadata, undefined, labelToSegmentIndex);
       }
 
       // `...generateOptions` has the last word on the predecessor: the store
