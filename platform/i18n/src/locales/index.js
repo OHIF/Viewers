@@ -2,6 +2,7 @@ import tr_TR from './tr-TR/';
 import ar from './ar/';
 import de from './de';
 import en_US from './en-US/';
+import el from './el/';
 import es from './es/';
 import fr from './fr/';
 import ja_JP from './ja-JP/';
@@ -17,6 +18,7 @@ export default {
   ...tr_TR,
   ...de,
   ...en_US,
+  ...el,
   ...es,
   ...fr,
   ...ja_JP,
