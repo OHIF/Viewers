@@ -13,11 +13,10 @@ const displaySetFromUrl: MatchingRule = {
 };
 
 export const seriesWithImages: MatchingRule[] = [
-  // greaterThan tests >=, so value 1 means at least one image frame.
   {
     attribute: 'numImageFrames',
     constraint: {
-      greaterThan: { value: 1 },
+      greaterThanOrEqual: { value: 1 },
     },
     weight: 1,
     required: true,

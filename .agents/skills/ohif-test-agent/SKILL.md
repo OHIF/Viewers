@@ -142,7 +142,6 @@ When to use which:
 |-----------|--------|
 | Click that triggers a re-render and you want to assert after | `waitForViewportRenderCycle(page)` started before the click |
 | Layout switch / series load — render already in flight | `await waitForViewportsRendered(page)` after the call |
-| Slice navigation (`sliceNavigation.toSlice(...)`, `scrollBy`, …) | `await waitForViewportsRendered(page)` after the call (per the `getSliceNavigation` docstring) |
 | Compose with another await (e.g. screenshot the same time as load) | Save the promise, `await` it later |
 
 Replace patterns like this:
@@ -187,6 +186,8 @@ Two page objects are **not** fixture-injected:
 - `DicomTagBrowserPageObject` — reach via `DOMOverlayPageObject.dialog.dicomTagBrowser`.
 
 See [references/page-objects.md](references/page-objects.md) for fixture rules and a map of which file covers which concern; read the `.ts` file under `tests/pages/` for the current method surface.
+
+Page objects locate elements and perform actions; keep `expect` assertions in the spec.
 
 ## When the control you need has no page object yet
 

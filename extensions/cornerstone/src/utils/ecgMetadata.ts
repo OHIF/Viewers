@@ -1,129 +1,109 @@
-/**
- * Decode a multiplexed Int16 buffer into per-channel arrays.
- * Layout: sample0ch0, sample0ch1 ... sample0chN, sample1ch0, …
- * Note: DICOM ECG data is canonically SS (signed short). The sampleInterpretation
- * field is forwarded to ECGViewport for its own use; the raw buffer is always
- * treated as Int16 because Cornerstone ECGViewport expects Int16Array[].
- */
-export function decodeInt16Multiplex(
-  buffer: ArrayBuffer,
-  numberOfChannels: number,
-  numberOfSamples: number
-): Int16Array[] {
-  const src = new Int16Array(buffer);
-  const channels: Int16Array[] = [];
-  for (let ch = 0; ch < numberOfChannels; ch++) {
-    const out = new Int16Array(numberOfSamples);
-    for (let s = 0; s < numberOfSamples; s++) {
-      out[s] = src[s * numberOfChannels + ch];
-    }
-    channels.push(out);
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
+
+export type EcgModule = NonNullable<
+  ReturnType<typeof csMetadataUtilities.buildEcgModuleFromInstance>
+>;
+
+type BuildEcgModuleFromInstance = (
+  instance: Record<string, unknown>,
+  imageId?: string,
+  // Released @cornerstonejs/metadata versions ignore this argument.
+  options?: { getHeaders?: () => Record<string, string> | undefined }
+) => EcgModule | null;
+
+const buildEcgModuleFromInstance = (...args: Parameters<BuildEcgModuleFromInstance>) =>
+  (csMetadataUtilities.buildEcgModuleFromInstance as BuildEcgModuleFromInstance)(...args);
+
+/** Returns the items of a naturalized sequence: an array, an array-like, or one item. */
+function toList(value: any): any[] {
+  if (!value) {
+    return [];
   }
-  return channels;
+  return typeof value.length === 'number' ? Array.from(value) : [value];
 }
 
-/**
- * Decode a base64 InlineBinary string into a raw ArrayBuffer.
- */
-export function base64ToArrayBuffer(base64: string): ArrayBuffer {
-  const binaryStr = atob(base64);
-  const bytes = new Uint8Array(binaryStr.length);
-  for (let i = 0; i < binaryStr.length; i++) {
-    bytes[i] = binaryStr.charCodeAt(i);
+/** Returns the first item of a naturalized value, but keeps binary data whole. */
+function firstItem(value: any): any {
+  if (!value || value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+    return value;
   }
-  return bytes.buffer;
+  return typeof value.length === 'number' ? value[0] : value;
 }
 
-export type EcgModule = {
-  numberOfWaveformChannels: number;
-  numberOfWaveformSamples: number;
-  samplingFrequency: number;
-  waveformBitsAllocated: number;
-  waveformSampleInterpretation: string;
-  multiplexGroupLabel: string;
-  channelDefinitionSequence: Array<{ channelSourceSequence: { codeMeaning: string } }>;
-  waveformData: { retrieveBulkData: () => Promise<Int16Array[]> };
-};
+/** Copies the bytes of a typed array into an ArrayBuffer, which every Cornerstone version decodes. */
+function toArrayBuffer(bytes: unknown): unknown {
+  return ArrayBuffer.isView(bytes)
+    ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+    : bytes;
+}
+
+async function decodeBulkData(group: any, waveformData: any): Promise<Int16Array[]> {
+  let bytes = waveformData.Value;
+  if (bytes === undefined) {
+    bytes = await waveformData.retrieveBulkData();
+  }
+  const loaded = { WaveformSequence: [{ ...group, WaveformData: toArrayBuffer(bytes) }] };
+  const decoded = buildEcgModuleFromInstance(loaded);
+  if (!decoded) {
+    throw new Error('[ECGViewport] Failed to decode the waveform bulkdata');
+  }
+  return decoded.waveformData.retrieveBulkData();
+}
 
 /**
  * Parse the naturalized DICOM instance's WaveformSequence and build the ecgModule
  * that Cornerstone's ECGViewport.setEcg() expects via
  * metaData.get(MetadataModules.ECG, imageId).
  *
+ * Cornerstone decodes the waveform. When the data source attached a
+ * `retrieveBulkData` to `WaveformData`, that method fetches the bytes, so the
+ * data source handles multipart/related, auth and relative bulkdata URIs.
+ * The bytes come from `WaveformData.Value` when the data source already
+ * cached them there. The decoded channels are kept, so a re-mount of the
+ * same display set does not fetch or decode again; a failed load is retried.
+ *
  * Returns null if the instance has no WaveformSequence.
  */
-export function buildEcgModule(
-  instance: any,
-  userAuthenticationService?: any
-): EcgModule | null {
-  const waveformGroups = instance?.WaveformSequence;
-  if (!waveformGroups?.length) {
+export function buildEcgModule(instance: any, userAuthenticationService?: any): EcgModule | null {
+  if (!instance?.WaveformSequence?.length) {
     return null;
   }
 
-  // Use the first (and typically only) multiplex group
-  const group = waveformGroups[0];
+  const ecgModule = buildEcgModuleFromInstance(instance, instance.imageId, {
+    getHeaders: () => userAuthenticationService?.getAuthorizationHeader?.(),
+  });
+  if (!ecgModule) {
+    return null;
+  }
 
-  const numberOfChannels = group.NumberOfWaveformChannels ?? 0;
-  const numberOfSamples = group.NumberOfWaveformSamples ?? 0;
-  const samplingFrequency = group.SamplingFrequency ?? 1;
-  const bitsAllocated = group.WaveformBitsAllocated ?? 16;
-  const sampleInterpretation = group.WaveformSampleInterpretation ?? 'SS';
-  const multiplexGroupLabel = group.MultiplexGroupLabel ?? '';
-
-  const channelDefinitionSequence = (group.ChannelDefinitionSequence ?? []).map(ch => ({
-    channelSourceSequence: {
-      codeMeaning:
-        ch?.ChannelSourceSequence?.[0]?.CodeMeaning ??
-        ch?.ChannelSourceSequence?.[0]?.codeMeaning ??
-        '',
-    },
-  }));
-
-  const retrieveBulkData = async (): Promise<Int16Array[]> => {
-    const waveformData = group.WaveformData;
-
-    if (!waveformData) {
-      console.warn('[ECGViewport] No WaveformData found on instance');
-      return [];
+  const group = firstItem(instance.WaveformSequence);
+  const channelDefinitions = toList(group.ChannelDefinitionSequence);
+  // Works around a Cornerstone bug: buildEcgModuleFromInstance reads only an
+  // upper-case CodeMeaning, and drops CodeValue and CodingSchemeDesignator.
+  // No released Cornerstone viewport reads the lead code yet, so only the unit
+  // test covers it.
+  ecgModule.channelDefinitionSequence.forEach((definition, index) => {
+    const source = definition.channelSourceSequence as Record<string, string> | undefined;
+    const raw = firstItem(channelDefinitions[index]?.ChannelSourceSequence);
+    if (!source || !raw) {
+      return;
     }
+    source.codeMeaning ||= raw.codeMeaning ?? raw.CodeMeaning ?? '';
+    source.codeValue ??= raw.CodeValue ?? raw.codeValue;
+    source.codingSchemeDesignator ??= raw.CodingSchemeDesignator ?? raw.codingSchemeDesignator;
+  });
 
-    let buffer: ArrayBuffer;
+  const waveformData = firstItem(group.WaveformData ?? group.waveformData);
+  if (typeof waveformData?.retrieveBulkData === 'function') {
+    let channels: Promise<Int16Array[]> | undefined;
+    ecgModule.waveformData.retrieveBulkData = () => {
+      channels ??= decodeBulkData(group, waveformData).catch(error => {
+        channels = undefined;
+        throw error;
+      });
+      return channels;
+    };
+  }
 
-    if (waveformData.InlineBinary) {
-      buffer = base64ToArrayBuffer(waveformData.InlineBinary);
-    } else if (waveformData.BulkDataURI) {
-      const headers: Record<string, string> = {
-        Accept: 'application/octet-stream',
-      };
-      const authHeader = userAuthenticationService?.getAuthorizationHeader?.();
-      if (authHeader) {
-        Object.assign(headers, authHeader);
-      }
-
-      const response = await fetch(waveformData.BulkDataURI, { headers });
-      if (!response.ok) {
-        throw new Error(
-          `[ECGViewport] Failed to fetch waveform BulkDataURI: ${response.status}`
-        );
-      }
-      buffer = await response.arrayBuffer();
-    } else {
-      console.warn('[ECGViewport] WaveformData has no InlineBinary or BulkDataURI');
-      return [];
-    }
-
-    return decodeInt16Multiplex(buffer, numberOfChannels, numberOfSamples);
-  };
-
-  return {
-    numberOfWaveformChannels: numberOfChannels,
-    numberOfWaveformSamples: numberOfSamples,
-    samplingFrequency,
-    waveformBitsAllocated: bitsAllocated,
-    waveformSampleInterpretation: sampleInterpretation,
-    multiplexGroupLabel,
-    channelDefinitionSequence,
-    waveformData: { retrieveBulkData },
-  };
+  return ecgModule;
 }
