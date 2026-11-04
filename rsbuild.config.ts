@@ -9,6 +9,7 @@ import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFi
 import resolveConfig from './.webpack/resolveConfig';
 // Service-worker manifest injection shared with the rspack build (webpack.pwa.js).
 import InjectServiceWorkerManifestPlugin from './platform/app/.webpack/InjectServiceWorkerManifestPlugin';
+import optionalSplitRulesCopyPattern from './platform/app/.webpack/optionalSplitRulesCopyPattern';
 import fs from 'fs';
 
 const APP_ROOT = path.resolve(__dirname, './platform/app');
@@ -292,6 +293,7 @@ export default defineConfig(({ env }) => {
           to: `${DIST_DIR}/ort`,
           force: true,
         },
+        optionalSplitRulesCopyPattern(DIST_DIR),
         // Copy the public directory except config/ and html-templates/.
         // Enumerated explicitly because CopyRspackPlugin's globOptions.ignore
         // is not reliably honored across the rspack versions bundled by

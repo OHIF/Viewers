@@ -1,0 +1,36 @@
+// URL-loaded customization: enableNewSplit
+//
+// Enables metadata-driven display set splitting: series instances are split
+// into display sets by the @cornerstonejs/metadata split-rules engine
+// (`useMetadataDisplaySet` customization), with the @cornerstonejs/metadata
+// default rules. A rule with a `handler` name (video, ECG, whole slide, SEG,
+// RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation,
+// chart, unsupported) gives its display sets to the SOP class handler of the
+// mode that declares that name in `handlerNames`, so specialized extensions
+// keep working unchanged.
+//
+// The default rules include `localizer`, which puts the localizer images of
+// a CT, MR or PT series that also has other images into their own display set,
+// and `mixedDimensionalityBValue`, which splits MR
+// series mixing instances with and without DiffusionBValue into separate
+// display sets (the DWI mixed-b-value issue), and `singleImageModality`, which
+// makes one display set for each CR, DX or MG image, as the stack SOP class
+// handler does. `split/singleImagesBySize.jsonc` groups those images by size.
+//
+// Load it with `?customization=split/enableNewSplit`.
+//
+// Custom rules are @cornerstonejs/metadata rule data (a map of name to
+// test in `matches`, names in `groupBy` and `sortBy`, a rule `context`, and
+// `attributes`) - see `split/scoutSeries.jsonc` for a complete example.  `splitRules` is keyed by
+// rule id: add a rule with `$merge`.  Rules are evaluated in ascending
+// `priority` with first-match-wins per instance.  The default rules use the
+// priorities 10, 20, ... 170 (steps of 10; 80 is reserved for a later
+// `dynamicVolume` rule), so a priority below 0 runs before every default rule,
+// a number between two default priorities that is not a multiple of 10 runs
+// between those two rules, a priority above 10000 runs after every default rule (it only sees instances
+// no default rule matched), and a priority of null turns a rule off.
+{
+  "global": {
+    "useMetadataDisplaySet": { "enabled": { "$set": true } }
+  }
+}

@@ -11,11 +11,21 @@ const sopClassUids = [sopClassDictionary.RTStructureSetStorage];
 
 const loadPromises = {};
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager: AppTypes.ServicesManager,
-  extensionManager
-) {
+/**
+ * Adds the RTSTRUCT fields to `displaySet`, for the newest of its instances,
+ * and finds the referenced display set. Shared by the legacy builder and the
+ * split-rule path (the `rtStructureSet` handler).
+ *
+ * @returns false when the RTSTRUCT has no ReferencedSeriesSequence.
+ */
+function _extendDisplaySet(
+  displaySet,
+  {
+    servicesManager,
+    extensionManager,
+  }: { servicesManager: AppTypes.ServicesManager; extensionManager }
+): boolean {
+  const { instances } = displaySet;
   utils.sortStudyInstances(instances);
   // Choose the LAST instance in the list as the most recently created one.
   const instance = instances[instances.length - 1];
@@ -41,11 +51,10 @@ function _getDisplaySetsFromSeries(
    */
   const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
-  const displaySet = {
+  Object.assign(displaySet, {
     Modality: 'RTSTRUCT',
     loading: false,
     isReconstructable: false,
-    displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
@@ -65,14 +74,13 @@ function _getDisplaySetsFromSeries(
     structureSet: null,
     sopClassUids,
     instance,
-    instances,
     predecessorImageId,
     wadoRoot,
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('RTSTRUCT')}`,
-  };
+  });
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
   if (
@@ -87,7 +95,7 @@ function _getDisplaySetsFromSeries(
 
   if (!referencedSeriesSequence) {
     console.error('ReferencedSeriesSequence is missing for the RTSTRUCT');
-    return;
+    return false;
   }
 
   const referencedSeries = referencedSeriesSequence[0];
@@ -131,6 +139,18 @@ function _getDisplaySetsFromSeries(
   displaySet.load = ({ headers, createSegmentation = true }) =>
     _load(displaySet, servicesManager, extensionManager, headers, createSegmentation);
 
+  return true;
+}
+
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager
+) {
+  const displaySet = { displaySetInstanceUID: utils.guid(), instances };
+  if (!_extendDisplaySet(displaySet, { servicesManager, extensionManager })) {
+    return;
+  }
   return [displaySet];
 }
 
@@ -226,6 +246,10 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
       sopClassUids,
       getDisplaySetsFromSeries: instances => {
         return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
+      },
+      handlerNames: ['rtStructureSet'],
+      extendDisplaySet: (displaySet, options) => {
+        _extendDisplaySet(displaySet, options);
       },
     },
   ];

@@ -37,6 +37,17 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     throw new Error('No instances were provided');
   }
 
+  // The legacy display set has no `instances` field.
+  const displaySet = {};
+  _applyFields(displaySet, instances, { servicesManager, extensionManager });
+  return [displaySet];
+}
+
+/**
+ * Adds the microscopy SR fields to `displaySet`. Shared by the legacy builder and the
+ * split-rule path (the `structuredReport` handler).
+ */
+function _applyFields(displaySet, instances, { servicesManager, extensionManager }) {
   const { displaySetService, microscopyService } = servicesManager.services;
 
   const instance = instances[0];
@@ -61,12 +72,12 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     SOPClassUID,
   } = instance;
 
-  const displaySet = {
+  Object.assign(displaySet, {
     isOverlayDisplaySet: true,
     plugin: 'microscopy',
     Modality: 'SR',
     altImageText: 'Microscopy SR',
-    displaySetInstanceUID: utils.guid(),
+    displaySetInstanceUID: displaySet.displaySetInstanceUID ?? utils.guid(),
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -84,7 +95,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     isLoading: false,
     isLoaded: false,
     loadError: false,
-  };
+  });
 
   displaySet.load = function (referencedDisplaySet) {
     return loadSR(microscopyService, displaySet, referencedDisplaySet).catch(error => {
@@ -103,8 +114,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     });
     return getSourceDisplaySet(allDisplaySets, displaySet);
   };
-
-  return [displaySet];
 }
 
 export default function getDicomMicroscopySRSopClassHandler({ servicesManager, extensionManager }) {
@@ -116,5 +125,8 @@ export default function getDicomMicroscopySRSopClassHandler({ servicesManager, e
     name: 'DicomMicroscopySRSopClassHandler',
     sopClassUids: [SOP_CLASS_UIDS.COMPREHENSIVE_3D_SR],
     getDisplaySetsFromSeries,
+    handlerNames: ['structuredReport'],
+    extendDisplaySet: (displaySet, options) =>
+      _applyFields(displaySet, displaySet.instances, options),
   };
 }

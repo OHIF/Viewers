@@ -6,12 +6,21 @@ import { SOPClassHandlerId } from './id';
 import { dicomLoaderService, VOLUME_LOADER_SCHEME } from '@ohif/extension-cornerstone';
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.30'];
 
-function _getDisplaySetsFromSeries(
-  instances,
-  servicesManager: AppTypes.ServicesManager,
-  extensionManager
-) {
-  const instance = instances[0];
+/**
+ * Adds the parametric map fields to `displaySet`, for the first of its
+ * instances. Shared by the legacy builder and the split-rule path (the
+ * `parametricMap` handler).
+ *
+ * @returns false when the map has no ReferencedSeriesSequence.
+ */
+function _extendDisplaySet(
+  displaySet,
+  {
+    servicesManager,
+    extensionManager,
+  }: { servicesManager: AppTypes.ServicesManager; extensionManager }
+): boolean {
+  const instance = displaySet.instances[0];
 
   const {
     StudyInstanceUID,
@@ -29,12 +38,11 @@ function _getDisplaySetsFromSeries(
   // chosen from all the attributes that instance carries.
   const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
 
-  const displaySet = {
+  Object.assign(displaySet, {
     // Parametric map use to have the same modality as its referenced volume but
     // "PMAP" is used in the viewer even though this is not a valid DICOM modality
     Modality: 'PMAP',
     isReconstructable: true, // by default for now
-    displaySetInstanceUID: `pmap.${utils.guid()}`,
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
@@ -56,19 +64,18 @@ function _getDisplaySetsFromSeries(
     },
     sopClassUids,
     instance,
-    instances: [instance],
     wadoRoot,
     wadoUriRoot,
     wadoUri,
     supportsWindowLevel: true,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('PMAP')}`,
-  };
+  });
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
 
   if (!referencedSeriesSequence) {
     console.error('ReferencedSeriesSequence is missing for the parametric map');
-    return;
+    return false;
   }
 
   const referencedSeries = referencedSeriesSequence[0] || referencedSeriesSequence;
@@ -120,6 +127,18 @@ function _getDisplaySetsFromSeries(
   displaySet.load = async ({ headers }) =>
     await _load(displaySet, servicesManager, extensionManager, headers);
 
+  return true;
+}
+
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager
+) {
+  const displaySet = { displaySetInstanceUID: `pmap.${utils.guid()}`, instances: [instances[0]] };
+  if (!_extendDisplaySet(displaySet, { servicesManager, extensionManager })) {
+    return;
+  }
   return [displaySet];
 }
 
@@ -242,6 +261,10 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
       name: 'dicom-pmap',
       sopClassUids,
       getDisplaySetsFromSeries,
+      handlerNames: ['parametricMap'],
+      extendDisplaySet: (displaySet, options) => {
+        _extendDisplaySet(displaySet, options);
+      },
     },
   ];
 }

@@ -21,13 +21,15 @@ const SOP_CLASS_UIDS = {
 const SOPClassHandlerId =
   '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler';
 
-function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+/**
+ * Adds the whole slide fields to `displaySet`, from all of its instances (the
+ * levels of the image pyramid), and registers the DICOMweb client of the
+ * slide. Shared by the legacy builder and the split-rule path (the
+ * `wholeSlide` handler).
+ */
+function extendWholeSlideDisplaySet(displaySet, { extensionManager }) {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  // If the series has no instances, stop here
-  if (!instances || !instances.length) {
-    throw new Error('No instances were provided');
-  }
-
+  let { instances } = displaySet;
   const instance = instances[0];
 
   let singleFrameInstance = instance;
@@ -77,12 +79,11 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     );
   }
 
-  const displaySet = {
+  Object.assign(displaySet, {
     plugin: 'microscopy',
     Modality: 'SM',
     viewportType: csEnums.ViewportType.WHOLE_SLIDE,
     altImageText: 'Microscopy',
-    displaySetInstanceUID: utils.guid(),
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -99,7 +100,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     numImageFrames: 0,
     numInstances: 1,
     others: instances, // all other level instances in the image Pyramid
-    instances,
     othersFrameOfReferenceUID,
     imageIds: instances.map(instance => instance.imageId),
     getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(
@@ -107,7 +107,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
       singleFrameInstance.imageId
     ),
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SM')}`,
-  };
+  });
   // The microscopy viewer directly accesses the metadata already loaded, and
   // uses the DICOMweb client library directly for loading, so it has to be
   // provided here.
@@ -128,7 +128,16 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     // Might have some other way of getting the data in the future or internally?
     // throw new Error('Unable to provide a DICOMWeb client library, microscopy will fail to view');
   }
+}
 
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+  // If the series has no instances, stop here
+  if (!instances || !instances.length) {
+    throw new Error('No instances were provided');
+  }
+
+  const displaySet = { displaySetInstanceUID: utils.guid(), instances };
+  extendWholeSlideDisplaySet(displaySet, { extensionManager });
   return [displaySet];
 }
 
@@ -157,6 +166,8 @@ export function getDicomMicroscopySopClassHandler({ servicesManager, extensionMa
     name: 'DicomMicroscopySopClassHandler',
     sopClassUids: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
     getDisplaySetsFromSeries,
+    handlerNames: ['wholeSlide'],
+    extendDisplaySet: extendWholeSlideDisplaySet,
   };
 }
 
@@ -177,54 +188,73 @@ const ecgSopClassUids = Object.values(ECG_SOP_CLASS_UIDS);
 const DicomEcgSOPClassHandlerId =
   '@ohif/extension-cornerstone.sopClassHandlerModule.DicomEcgSopClassHandler';
 
-function _getEcgDisplaySetsFromSeries(instances, servicesManager) {
+/**
+ * The ECG fields of a display set that shows `instance`, and the registration
+ * of its ECG metadata. Shared by the legacy builder and
+ * {@link extendEcgDisplaySet}.
+ */
+function getEcgFields(instance, servicesManager) {
   const { userAuthenticationService } = servicesManager.services;
+  const { Modality, SOPInstanceUID } = instance;
+  const { SeriesDescription, SeriesNumber, SeriesDate } = instance;
+  const { SOPClassUID } = instance;
+  const imageId = instance.imageId;
 
-  return instances.map(instance => {
-    const { Modality, SOPInstanceUID } = instance;
-    const { SeriesDescription, SeriesNumber, SeriesDate } = instance;
-    const { SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
-    const imageId = instance.imageId;
-
-    // Register ECG metadata in the OHIF metadata provider so that
-    // Cornerstone's ECGViewport can retrieve it via metaData.get('ecgModule', imageId).
-    if (imageId) {
-      const ecgModule = buildEcgModule(instance, userAuthenticationService);
-      if (ecgModule) {
-        csUtils.genericMetadataProvider.addRaw(imageId, {
-          type: MetadataModules.ECG,
-          metadata: ecgModule,
-        });
-      }
+  // Register ECG metadata in the OHIF metadata provider so that
+  // Cornerstone's ECGViewport can retrieve it via metaData.get('ecgModule', imageId).
+  if (imageId) {
+    const ecgModule = buildEcgModule(instance, userAuthenticationService);
+    if (ecgModule) {
+      csUtils.genericMetadataProvider.addRaw(imageId, {
+        type: MetadataModules.ECG,
+        metadata: ecgModule,
+      });
     }
+  }
 
+  return {
+    Modality,
+    SeriesDescription,
+    SeriesNumber,
+    SeriesDate,
+    SOPInstanceUID,
+    SOPClassHandlerId: DicomEcgSOPClassHandlerId,
+    SOPClassUID,
+    referencedImages: null,
+    measurements: null,
+    viewportType: csEnums.ViewportType.ECG,
+    instance,
+    thumbnailSrc: null,
+    isDerivedDisplaySet: false,
+    isLoaded: false,
+    sopClassUids: ecgSopClassUids,
+    numImageFrames: 0,
+    numInstances: 1,
+    imageIds: imageId ? [imageId] : [],
+    supportsWindowLevel: false,
+    label: SeriesDescription || 'ECG',
+  };
+}
+
+function _getEcgDisplaySetsFromSeries(instances, servicesManager) {
+  return instances.map(instance => {
+    const { SeriesInstanceUID, StudyInstanceUID } = instance;
     return {
-      Modality,
+      ...getEcgFields(instance, servicesManager),
       displaySetInstanceUID: utils.guid(),
-      SeriesDescription,
-      SeriesNumber,
-      SeriesDate,
-      SOPInstanceUID,
       SeriesInstanceUID,
       StudyInstanceUID,
-      SOPClassHandlerId: DicomEcgSOPClassHandlerId,
-      SOPClassUID,
-      referencedImages: null,
-      measurements: null,
-      viewportType: csEnums.ViewportType.ECG,
       instances: [instance],
-      instance,
-      thumbnailSrc: null,
-      isDerivedDisplaySet: false,
-      isLoaded: false,
-      sopClassUids: ecgSopClassUids,
-      numImageFrames: 0,
-      numInstances: 1,
-      imageIds: imageId ? [imageId] : [],
-      supportsWindowLevel: false,
-      label: SeriesDescription || 'ECG',
     };
   });
+}
+
+/**
+ * Adds the ECG fields to a display set that a split rule with the `ecg`
+ * handler made. The display set shows its first instance.
+ */
+function extendEcgDisplaySet(displaySet, { servicesManager }) {
+  Object.assign(displaySet, getEcgFields(displaySet.instances[0], servicesManager));
 }
 
 export function getDicomEcgSopClassHandler({ servicesManager }) {
@@ -235,6 +265,8 @@ export function getDicomEcgSopClassHandler({ servicesManager }) {
     name: 'DicomEcgSopClassHandler',
     sopClassUids: ecgSopClassUids,
     getDisplaySetsFromSeries,
+    handlerNames: ['ecg'],
+    extendDisplaySet: extendEcgDisplaySet,
   };
 }
 

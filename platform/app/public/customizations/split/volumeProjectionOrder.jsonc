@@ -1,0 +1,40 @@
+// URL-loaded customization: volumeProjectionOrder
+//
+// Problem: the slices of a volume must be in spatial order. OHIF's default
+// order sorts by position only when the display set is reconstructable, and
+// else falls back to InstanceNumber, which does not always follow the
+// position.
+//
+// Fix: order the slices of every `volume3d` display set by their distance
+// along the normal of the image plane, from one origin for the whole series.
+//
+// How it works:
+//  - The module changes one field of the default `volume3d` rule with the
+//    standard `$set` command, so the rule keeps its priority and its
+//    `matches`, and claims the same instances.
+//  - `sliceDistance` is an alias of the default metadata context for the
+//    group `planeGeometry` (the built-in series function). It picks the
+//    origin and the normal once for the series, and gives the distance of
+//    each slice from the origin. The origin does not depend on the order in
+//    which the instances arrive.
+//  - `sortBy` orders the slices by that distance. The `displaySet.` prefix
+//    reads the value of the display set; a bare name reads the series value. An image that is not in the
+//    dominant plane has no distance, so it goes after the images that have
+//    one.
+//
+// Series that this module changes: the order of the images of CT, MR, PT and
+// NM series that `volume3d` claims. The grouping does not change.
+//
+// Load it with `?customization=split/volumeProjectionOrder`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "volume3d": {
+          "sortBy": { "$set": ["displaySet.sliceDistance"] }
+        }
+      }
+    }
+  }
+}

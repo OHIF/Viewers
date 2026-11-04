@@ -1,0 +1,68 @@
+// URL-loaded customization: decimation
+//
+// Example of a custom split rule for the metadata-driven display set splitter,
+// written as @cornerstonejs/metadata rule data.
+//
+// Problem: a series of many thousands of single-frame images is slow to load
+// and to show as one display set.
+//
+// Fix: a series of more than `decimationSize` images becomes
+// `ceil(count / decimationSize)` display sets. Each display set takes every
+// n-th slice, by `sliceIndex` modulo the count of display sets, so each one
+// covers the whole volume at a larger slice spacing.
+//
+// How it works:
+//  - `requires` loads split/enableNewSplit first, turning the splitter on.
+//  - `$merge` adds the rule under its id with priority -1, so it runs before
+//    every default rule.
+//  - The rule `context` sets `decimationSize` (1000 images) and computes
+//    `decimationCount`, the count of display sets. `decimationPart` is the
+//    `sliceIndex` (the lattice index of the slice, from the built-in
+//    `planeGeometry` group) modulo that count, and `decimationNumber` is the
+//    part from 1, for the description.
+//  - `matches` claims the single-frame images of a series with more than
+//    `decimationSize` images, when the image has a lattice index. The other
+//    images stay with the default rules.
+//  - `groupBy` makes one group for each part, and `sortBy` orders the slices
+//    of a part by their distance along the normal.
+//
+// Change the size with a standard command, for example
+// `{ "useMetadataDisplaySet": { "splitRules": { "decimation": { "context":
+// { "decimationSize": { "$set": 500 } } } } } }`.
+//
+// Load it with `?customization=split/decimation`.
+{
+  "requires": ["split/enableNewSplit"],
+  "global": {
+    "useMetadataDisplaySet": {
+      "splitRules": {
+        "$merge": {
+          "decimation": {
+            "priority": -1,
+            "description": "A series of more than decimationSize single-frame images: ceil(count / decimationSize) display sets, by sliceIndex modulo the count.",
+            "context": {
+              "decimationSize": 1000,
+              "decimationCount": "ceil(seriesInstanceCount / decimationSize)",
+              "isDecimated": "decimationCount > 1",
+              "decimationPart": "sliceIndex % decimationCount",
+              "decimationNumber": "decimationPart + 1"
+            },
+            "matches": {
+              "isImage": true,
+              "isMultiFrame": false,
+              "isDecimated": true,
+              "sliceIndex": { "notNull": true }
+            },
+            "groupBy": ["SeriesInstanceUID", "decimationPart"],
+            "sortBy": ["displaySet.sliceDistance"],
+            "attributes": {
+              "SeriesDescription": {
+                "template": "{SeriesDescription} ({decimationNumber} of {decimationCount})"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
