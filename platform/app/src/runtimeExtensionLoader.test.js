@@ -4,6 +4,14 @@
 // descriptor/cache/audit behaviors.
 import { isUrlLike, loadExternalModule, loadInPhases, sharePlugin } from './runtimeExtensionLoader';
 
+// runtimeShared.ts pulls in the cornerstone extension and libraries; the tests
+// only need to know it ran before a bundle was imported. (globalThis: jest's
+// mock factories may not reference window.)
+jest.mock('./runtimeShared', () => {
+  globalThis.__hostSharedLoaded = true;
+  return {};
+});
+
 describe('isUrlLike', () => {
   test.each([
     'https://x.example.com/y.js',
@@ -173,6 +181,7 @@ describe('loadRuntimeDescriptor', () => {
     delete window.__ohif;
     delete window.config;
     delete window[PKG];
+    delete window.__hostSharedLoaded;
     extModule = { id: PKG };
     window.browserImportFunction = jest.fn();
     if (!window.crypto || !window.crypto.subtle) {
@@ -201,6 +210,36 @@ describe('loadRuntimeDescriptor', () => {
 
   afterAll(() => {
     process.env.VERSION_NUMBER = ORIGINAL_VERSION_NUMBER;
+  });
+
+  describe('host-shared globals', () => {
+    test('are assigned before a descriptor bundle is imported', async () => {
+      let sharedWhenImported;
+      window.browserImportFunction.mockImplementation(async () => {
+        sharedWhenImported = window.__hostSharedLoaded;
+        window[PKG] = extModule;
+        return {};
+      });
+      await loader.loadRuntimeDescriptor(umdDescriptor());
+      expect(sharedWhenImported).toBe(true);
+    });
+
+    test('are assigned before a URL is imported through the fallthrough', async () => {
+      let sharedWhenImported;
+      window.browserImportFunction.mockImplementation(async () => {
+        sharedWhenImported = window.__hostSharedLoaded;
+        return { default: extModule };
+      });
+      await loader.loadExternalModule('/plugins/x.js');
+      expect(sharedWhenImported).toBe(true);
+    });
+
+    test('are not loaded for a descriptor the loader refuses', async () => {
+      await loader.loadRuntimeDescriptor(
+        umdDescriptor({ importPath: 'https://evil.example.com/x.js' })
+      );
+      expect(window.__hostSharedLoaded).toBeUndefined();
+    });
   });
 
   describe('strict globalName format discriminator', () => {

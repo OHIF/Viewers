@@ -26,7 +26,8 @@
 // the generated plugin loader once it has loaded (sharePlugin in
 // runtimeExtensionLoader.ts; extensions loaded on demand appear only then).
 // Those globals are a second tier with no compatibility promise; this list is
-// the stable one, assigned at startup.
+// the stable one, assigned before the first runtime plugin is fetched
+// (shareHostPackages in runtimeExtensionLoader.ts).
 //
 // @ohif/i18n is shared because runtime extensions dereference it during
 // module evaluation (e.g. dicom-pdf). @ohif/ui is intentionally NOT shared:

@@ -574,13 +574,13 @@ Two caveats for runtime plugins:
 ### Shared host packages
 
 The host assigns its singleton copies of 16 packages to `window`, keyed by
-full package name; runtime plugin builds externalize them instead of bundling
-their own copies: `react`, `react-dom`, `react/jsx-runtime`, `@ohif/core`,
-`@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
-`@ohif/extension-cornerstone`, `@cornerstonejs/core`, `@cornerstonejs/tools`,
-`dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`, `i18next`,
-`react-i18next`. `@ohif/ui` is NOT shared: it is legacy and a forbidden
-import for runtime plugins (use `@ohif/ui-next`).
+full package name, just before it loads the first runtime plugin; runtime
+plugin builds externalize them instead of bundling their own copies: `react`,
+`react-dom`, `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
+`@ohif/extension-default`, `@ohif/extension-cornerstone`, `@cornerstonejs/core`,
+`@cornerstonejs/tools`, `dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`,
+`i18next`, `react-i18next`. `@ohif/ui` is NOT shared: it is legacy and a
+forbidden import for runtime plugins (use `@ohif/ui-next`).
 
 React Router and i18next are shared so a plugin uses the viewer's Router and
 its one i18next instance, with OHIF's translations and language switching. A

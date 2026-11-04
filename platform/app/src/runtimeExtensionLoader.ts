@@ -88,15 +88,28 @@ export function resolveRuntimeModule(name: string): unknown | undefined {
 }
 
 /**
+ * Assigns the host's shared packages to window (runtimeShared.ts). Every path
+ * that runs a plugin bundle awaits this first: the bundle reads its externals
+ * from those globals when its file runs. It loads here rather than from
+ * index.js so that a viewer with no runtime plugins never downloads it;
+ * importing it at startup put the cornerstone extension and libraries into
+ * every deployment's initial scripts. The bundler fetches the chunk once.
+ */
+function shareHostPackages(): Promise<unknown> {
+  return import('./runtimeShared');
+}
+
+/**
  * Plugin self-sharing: the generated loadModule passes every compiled-in
  * extension and mode through here, which puts the whole module (its default
  * export and every named export) on window under its package name. A UMD
  * runtime plugin built with .rspack/pluginExternals.js leaves every @ohif/*
  * import for the host to provide, and reads it from that global.
  *
- * Never overwrites an existing global, so the SDK packages assigned by
- * runtimeShared.ts stay as they are. Unlike that list, these globals carry no
- * compatibility promise: a plugin's exports can change between releases.
+ * Never overwrites an existing global. The default and cornerstone extensions
+ * are usually shared here first; runtimeShared.ts assigns the same modules
+ * again before the first runtime plugin loads. Unlike that list, these globals
+ * carry no compatibility promise: a plugin's exports can change between releases.
  */
 export function sharePlugin<T>(packageName: string, module: T): T {
   const globals = window as unknown as Record<string, unknown>;
@@ -329,6 +342,8 @@ export async function loadRuntimeDescriptor(
         `host ${hostVersion} does not satisfy required range ${coreVersionRange}`
       );
     }
+    // After the checks, so a refused descriptor downloads nothing.
+    await shareHostPackages();
     let imported: any;
     const crossOrigin = url.origin !== window.location.origin;
     if (crossOrigin) {
@@ -472,6 +487,7 @@ export async function loadExternalModule(specifier: string): Promise<unknown> {
     );
   }
   try {
+    await shareHostPackages();
     return (await (window as any).browserImportFunction(specifier)).default;
   } catch (e: any) {
     record.error = e?.message || String(e);
