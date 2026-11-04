@@ -1,13 +1,32 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Separator, Button, Tooltip, TooltipTrigger, TooltipContent, Icons } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
-import { roundNumber } from '@ohif/core/src/utils';
-import { useSystem } from '@ohif/core/src';
+import { useSystem, utils } from '@ohif/core';
+
+const { roundNumber } = utils;
 
 interface CustomSegmentStatisticsHeaderProps {
   segmentationId: string;
   segmentIndex: number;
+}
+
+/**
+ * Reads the stats this header shows from the segmentation service. The values
+ * live outside React, so the header keeps a copy in state (see below).
+ */
+function getHeaderStats(segmentationService, segmentationId: string, segmentIndex: number) {
+  const segment = segmentationService.getSegmentation(segmentationId)?.segments[segmentIndex];
+  const namedStats = segment?.cachedStats?.namedStats;
+  const bidirectional = namedStats?.bidirectional;
+
+  return {
+    namedStats,
+    bidirectional,
+    isVisible: bidirectional
+      ? cornerstoneTools.annotation.visibility.isAnnotationVisible(bidirectional.annotationUID)
+      : false,
+  };
 }
 
 /**
@@ -21,16 +40,31 @@ export const CustomSegmentStatisticsHeader = ({
   const { segmentationService } = servicesManager.services;
   const { t } = useTranslation('SegmentationPanel');
 
-  const segmentation = segmentationService.getSegmentation(segmentationId);
-  const segment = segmentation.segments[segmentIndex];
-  const cachedStats = segment.cachedStats;
-  const namedStats = cachedStats.namedStats;
+  // The props never change while the card is open, so reading the service
+  // during render would show the values from the moment the card opened.
+  // Keep them in state and refresh them when the segmentation is modified,
+  // e.g. after "Compute Largest Bidirectional" or a visibility toggle.
+  const [headerStats, setHeaderStats] = useState(() =>
+    getHeaderStats(segmentationService, segmentationId, segmentIndex)
+  );
+
+  useEffect(() => {
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+      ({ segmentationId: modifiedSegmentationId }) => {
+        if (modifiedSegmentationId === segmentationId) {
+          setHeaderStats(getHeaderStats(segmentationService, segmentationId, segmentIndex));
+        }
+      }
+    );
+    return unsubscribe;
+  }, [segmentationService, segmentationId, segmentIndex]);
+
+  const { namedStats, bidirectional, isVisible } = headerStats;
 
   if (!namedStats) {
     return null;
   }
-
-  const bidirectional = namedStats.bidirectional;
 
   if (!bidirectional) {
     return (
@@ -69,10 +103,6 @@ export const CustomSegmentStatisticsHeader = ({
   const max = Math.max(maxMajor, maxMinor);
   const min = Math.min(maxMajor, maxMinor);
 
-  const isVisible = cornerstoneTools.annotation.visibility.isAnnotationVisible(
-    bidirectional.annotationUID
-  );
-
   return (
     <div className="-mt-2 space-y-2">
       <div className="flex items-center justify-between">
@@ -102,6 +132,7 @@ export const CustomSegmentStatisticsHeader = ({
                     segmentationId,
                     segmentIndex,
                   });
+                  setHeaderStats(getHeaderStats(segmentationService, segmentationId, segmentIndex));
                 }}
               >
                 {isVisible ? (
