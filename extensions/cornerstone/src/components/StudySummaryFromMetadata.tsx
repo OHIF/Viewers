@@ -14,7 +14,12 @@ export function StudySummaryFromMetadata(props) {
     return null;
   }
 
-  const instanceMeta = studyMeta.series[0].instances[0];
+  // A series can be in the store with no instances: its summary arrives before its instances, and
+  // a series whose metadata comes back empty never gets any. Read the first series that has one.
+  const instanceMeta = studyMeta.series.find(series => series.instances?.length)?.instances[0];
+  if (!instanceMeta) {
+    return null;
+  }
   const { StudyDate, StudyDescription } = instanceMeta;
 
   return (
