@@ -1,0 +1,21 @@
+// GPU settings preset: low-tablet
+//
+// The smallest preset: a texture edge of 256 voxels and 1 GB of texture
+// memory. Almost every volume exceeds that edge, so a viewport reduces its
+// texture, and the reduction is easy to see. Compare it with `gpu/medium`,
+// which reduces far less, and with `gpu/high-texture-4096`, which reduces
+// nothing.
+//
+// A preset applies only with final downsampling on, and a preset in this
+// customization turns final downsampling on, also in a locked-down config.
+// `?customization=` needs `customizationUrlPrefixes`, and config/default.js has
+// none: there, set the preset through `customizationService` in the config.
+// Nothing probes the device: a preset is a set of values, so a real device may
+// hold more or less than the preset states.
+//
+// Load it with `?customization=gpu/low-tablet`.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "low-tablet"
+  }
+}

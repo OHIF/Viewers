@@ -31,6 +31,11 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  // Lossy downsampling for the tests and the deploy previews. `final` reduces
+  // a volume texture to fit the GPU settings preset (Cornerstone3D default
+  // preset, or `cornerstone.gpuSettingsPreset`). config/default.js keeps final
+  // downsampling off.
+  lossyDownsampling: { final: true },
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
   maxNumRequests: {
