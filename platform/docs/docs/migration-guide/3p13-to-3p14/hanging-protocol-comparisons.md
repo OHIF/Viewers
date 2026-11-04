@@ -38,8 +38,8 @@ decide which meaning the rule needs:
   value, the result can change; see "Number values".
 - The rule needs the strict meaning. Make no change. For example,
   `numImageFrames: { greaterThan: 0 }` now fails for a display set with 0 image frames, such
-  as a whole slide or ECG display set. Before 3.14, `numImageFrames: { greaterThan:
-  { value: 0 } }` matched these display sets.
+  as a whole slide or ECG display set. Before 3.14,
+  `numImageFrames: { greaterThan: { value: 0 } }` matched these display sets.
 
 ```js
 // 3.13: matches a study with 2 or more display sets with images
