@@ -1354,7 +1354,10 @@ describe('SegmentationService', () => {
       );
 
       expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledTimes(1);
-      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledWith('timePoint2');
+      // One RLE labelmap image for each frame of every time point.
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledWith(['imageId'], {
+        voxelRepresentation: csEnums.VoxelManagerEnum.RLE,
+      });
 
       expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
       expect(service.addOrUpdateSegmentation).toHaveBeenCalledWith({
@@ -1376,7 +1379,7 @@ describe('SegmentationService', () => {
         representation: {
           data: {
             imageIds: ['imageId'],
-            referencedImageIds: 'timePoint2',
+            referencedImageIds: ['imageId'],
           },
           type: 'Labelmap',
         },

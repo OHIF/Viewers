@@ -490,17 +490,16 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
-    const isDynamicVolume = displaySet.isDynamicVolume;
-
-    let referenceImageIds = displaySet.imageIds;
-    if (isDynamicVolume) {
-      // get the middle timepoint for referenceImageIds
-      const timePoints = displaySet.dynamicVolumeInfo.timePoints;
-      const middleTimePoint = timePoints[Math.floor(timePoints.length / 2)];
-      referenceImageIds = middleTimePoint;
-    }
-
-    const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
+    // A 4D segmentation is one segmentation with one labelmap image for each
+    // frame of every time point. Cornerstone tools shows and edits the
+    // labelmap images of the time point that the volume shows; RLE keeps the
+    // many labelmap images small.
+    const referenceImageIds = displaySet.imageIds;
+    const derivedImages = await (displaySet.isDynamicVolume
+      ? imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds, {
+          voxelRepresentation: csEnums.VoxelManagerEnum.RLE,
+        })
+      : imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds));
 
     const segs = this.getSegmentations();
     const label = options?.label || `Segmentation ${segs.length + 1}`;
