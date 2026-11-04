@@ -107,9 +107,10 @@
         {
           "id": "ecg",
           "name": "ECG",
+          // No passive minimum: with no ECG, the viewer opens one empty viewport
+          // that the user can drop a display set into.
           "stageActivation": {
-            "enabled": { "minViewportsMatched": 1 },
-            "passive": { "minViewportsMatched": 1 }
+            "enabled": { "minViewportsMatched": 1 }
           },
           "viewportStructure": { "layoutType": "grid", "properties": { "rows": 1, "columns": 1 } },
           "viewports": [

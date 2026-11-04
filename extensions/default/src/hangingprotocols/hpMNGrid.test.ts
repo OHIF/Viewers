@@ -10,17 +10,28 @@ const displaySet = (displaySetInstanceUID: string, attributes: Record<string, un
 });
 
 // Runs mnGrid with no stage, as the URL route does without a stageid.
-function hang(displaySets: Record<string, unknown>[]) {
+function run(displaySets: Record<string, unknown>[]) {
   const service = new HangingProtocolService(
     { run: jest.fn() } as never,
-    { services: { customizationService: { getCustomization: () => undefined } } } as never
+    {
+      services: {
+        customizationService: { getCustomization: () => undefined },
+        displaySetService: {
+          getDisplaySetByUID: uid => displaySets.find(it => it.displaySetInstanceUID === uid),
+        },
+      },
+    } as never
   );
   service.addProtocol(hpMN.id, hpMN);
   service.setActiveProtocolIds(hpMN.id);
   service.run({ studies: [study], displaySets, activeStudy: study }, hpMN.id, {
     stageIndex: undefined,
   });
-  const { stage, viewportMatchDetails } = service.getActiveProtocol();
+  return service;
+}
+
+function hang(displaySets: Record<string, unknown>[]) {
+  const { stage, viewportMatchDetails } = run(displaySets).getActiveProtocol();
   const shown = [...viewportMatchDetails.values()].map(
     details => details.displaySetsInfo[0]?.displaySetInstanceUID
   );
@@ -37,6 +48,37 @@ describe('hpMN', () => {
     expect(hang([ecg])).toEqual({ stage: '1x1', shown: ['ecg'] });
     expect(hang([slide])).toEqual({ stage: '1x1', shown: ['slide'] });
     expect(hang([pdf])).toEqual({ stage: '1x1', shown: ['pdf'] });
+  });
+
+  it('opens the first applicable stage when a command gives no stage, and disables the image-only stages', () => {
+    const service = run([ecg]);
+    // As setHangingProtocol does for a protocol with no stored or given stage
+    service.setProtocol(hpMN.id, { stageIndex: service.getStageIndex(hpMN.id, {}) });
+
+    const { stage, protocol } = service.getActiveProtocol();
+    expect(stage.name).toBe('1x1');
+    expect(protocol.stages.map(it => it.status)).toEqual([
+      'disabled',
+      'disabled',
+      'passive',
+      'enabled',
+    ]);
+  });
+
+  it('keeps the display set that the user chose in 3x1 when the stage changes to 2x1', () => {
+    const images = ['ct1', 'ct2', 'ct3'].map(id =>
+      displaySet(id, { Modality: 'CT', numImageFrames: 100 })
+    );
+    const service = run(images);
+    // reuseCachedLayouts stores the user's ct3 in viewport 0 of the 3x1 under this key
+    const [viewport0] = service.getActiveProtocol().stage.viewports;
+    const key = service.getDisplaySetSelectorMapKey('study', viewport0.displaySets[0]);
+
+    service.setProtocol(hpMN.id, { stageId: '2x1', displaySetSelectorMap: { [key]: ['ct3'] } });
+
+    const { stage, viewportMatchDetails } = service.getActiveProtocol();
+    expect(stage.id).toBe('2x1');
+    expect(viewportMatchDetails.get(stage.viewports[0].viewportOptions.viewportId)?.displaySetsInfo[0].displaySetInstanceUID).toBe('ct3');
   });
 
   it('shows a single-frame image', () => {

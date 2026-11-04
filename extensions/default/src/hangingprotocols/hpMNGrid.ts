@@ -38,6 +38,8 @@ export const hpMN: Types.HangingProtocol.Protocol = {
     // The 2x1 and 1x1 stages also take an ECG, SM or PDF display set
     viewableDisplaySetId: {
       allowUnmatchedView: true,
+      // Keeps the user's choice when the stage changes between 3x1 and 2x1
+      selectorMapId: 'defaultDisplaySetId',
       seriesMatchingRules: seriesViewable,
     },
   },
@@ -61,6 +63,10 @@ export const hpMN: Types.HangingProtocol.Protocol = {
       stageActivation: {
         enabled: {
           minViewportsMatched: 4,
+        },
+        // Disabled with no image, so an ECG, SM or PDF study skips the stage
+        passive: {
+          minViewportsMatched: 1,
         },
       },
       viewportStructure: {
@@ -111,10 +117,14 @@ export const hpMN: Types.HangingProtocol.Protocol = {
 
     // 3x1 stage
     {
+      id: '3x1',
       name: '3x1',
       stageActivation: {
         enabled: {
           minViewportsMatched: 3,
+        },
+        passive: {
+          minViewportsMatched: 1,
         },
       },
       viewportStructure: {
@@ -156,6 +166,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
 
     // A 2x1 stage
     {
+      id: '2x1',
       name: '2x1',
       stageActivation: {
         enabled: {
@@ -192,6 +203,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
 
     // A 1x1 stage - should be automatically activated if there is only 1 viewable instance
     {
+      id: '1x1',
       name: '1x1',
       stageActivation: {
         enabled: {
@@ -238,6 +250,9 @@ export const hpMN8: Types.HangingProtocol.Protocol = {
       stageActivation: {
         enabled: {
           minViewportsMatched: 7,
+        },
+        passive: {
+          minViewportsMatched: 1,
         },
       },
       viewportStructure: {
@@ -328,6 +343,9 @@ export const hpMN8: Types.HangingProtocol.Protocol = {
       stageActivation: {
         enabled: {
           minViewportsMatched: 5,
+        },
+        passive: {
+          minViewportsMatched: 1,
         },
       },
       viewportStructure: {

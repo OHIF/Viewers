@@ -57,6 +57,10 @@ describe('the hangingProtocols/ecg customization', () => {
     expect(hang([current], [ct, ecg])).toEqual({ stage: 'ecg', shown: ['ecg'] });
   });
 
+  it('opens one empty viewport for a study with no ECG', () => {
+    expect(hang([current], [ct])).toEqual({ stage: 'ecg', shown: [undefined] });
+  });
+
   it('shows the newest of two ECGs above the older one', () => {
     const older = displaySet(current, 'older', {
       Modality: 'ECG',

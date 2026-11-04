@@ -76,7 +76,13 @@ stages of `@ohif/mnGrid` in code, so a change to `@ohif/mnGrid` does not change
 `@ohif/mnGrid8`.
 
 A protocol that only a customization defines is not in the list of registered
-protocols. Select it with `&hangingProtocolId=<id>` in the viewer URL.
+protocols. Select it with `&hangingProtocolId=<id>` in the viewer URL, with the
+exact case of the id. Known limits, to be fixed in a later change:
+
+- The layout selector lists only registered protocols. It does not show a
+  protocol that only a customization defines, and it ignores a customization
+  that changes `isPreset`, `name` or `icon` of a registered protocol.
+- The case-insensitive lookup of a protocol id finds only registered protocols.
 
 `platform/app/public/customizations/hangingProtocols/ecg.jsonc` is an example. It adds
 `@ohif/ecg`:
@@ -118,6 +124,13 @@ the stage activate.  The status values are:
 The default values for no `stageActivation` are to assume that `enabled` has `minViewports` of 1,
 and `passive` has `minViewports=0`.  That is, enable the stage if at least one
 viewport is filled, and make it passive if no viewports are filled.
+
+When the stage is not specified, the protocol opens its first applicable stage:
+the first `enabled` stage, or else the first `passive` stage. This applies to
+every way of selecting a protocol: a mode's default list, a URL
+`hangingProtocolId` with no `stageid`, and the `setHangingProtocol` command
+with no `stageId` or `stageIndex`. A disabled stage is never opened, and stage
+navigation skips it.
 
 The setting for these are controlled by the stageActivation property, for example
 the following:

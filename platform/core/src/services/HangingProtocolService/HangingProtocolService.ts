@@ -1113,16 +1113,17 @@ export default class HangingProtocolService extends PubSubService {
     }
   }
 
-  public getStageIndex(protocolId: string, options): number {
+  /**
+   * Returns the index of the given stageId or stageIndex.  With neither, returns
+   * undefined, so that setProtocol opens the first applicable stage.
+   */
+  public getStageIndex(protocolId: string, options): number | undefined {
     const protocol = this.getProtocolById(protocolId);
     const { stageId, stageIndex } = options;
     if (stageId !== undefined) {
       return protocol.stages.findIndex(it => it.id === stageId);
     }
-    if (stageIndex !== undefined) {
-      return stageIndex;
-    }
-    return 0;
+    return stageIndex;
   }
 
   /**
@@ -1379,7 +1380,8 @@ export default class HangingProtocolService extends PubSubService {
     viewport.displaySets.forEach(displaySetOptions => {
       const { id, matchedDisplaySetsIndex = 0 } = displaySetOptions;
       const reuseDisplaySetUIDs =
-        id && displaySetSelectorMap[`${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`];
+        id &&
+        displaySetSelectorMap[this.getDisplaySetSelectorMapKey(activeStudyUID, displaySetOptions)];
       const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
 
       const viewportDisplaySet = this.findDeduplicatedMatchDetails(
@@ -1496,6 +1498,21 @@ export default class HangingProtocolService extends PubSubService {
         );
       }
     }
+  }
+
+  /**
+   * Returns the displaySetSelectorMap key that remembers the user's display set
+   * for the given viewport display set options of the active protocol.  It uses
+   * the selector's `selectorMapId` when set, so that stages using different
+   * selectors for the same viewport share the user's choice.
+   */
+  public getDisplaySetSelectorMapKey(
+    studyInstanceUID: string,
+    displaySetOptions: HangingProtocol.DisplaySetOptions
+  ): string {
+    const { id, matchedDisplaySetsIndex } = displaySetOptions;
+    const mapId = this.protocol?.displaySetSelectors?.[id]?.selectorMapId ?? id;
+    return `${studyInstanceUID}:${mapId}:${matchedDisplaySetsIndex || 0}`;
   }
 
   _validateOptions(options: HangingProtocol.SetProtocolOptions): void {
