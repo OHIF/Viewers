@@ -294,7 +294,7 @@ export default class HangingProtocolService extends PubSubService {
       return this.protocol;
     }
 
-    let protocol = this.protocols.get(protocolId);
+    let protocol = this._getCustomizedProtocol(protocolId) ?? this.protocols.get(protocolId);
     if (!protocol && caseInsensitive) {
       const lowerCaseId = protocolId.toLowerCase();
       for (const [key] of this.protocols) {
@@ -322,6 +322,17 @@ export default class HangingProtocolService extends PubSubService {
     } else {
       return this._validateProtocol(protocol);
     }
+  }
+
+  /**
+   * The `hangingProtocols.<id>` customization defines the protocol with that id,
+   * and it takes precedence over a protocol that `addProtocol` registered. Thus a
+   * JSONC customization can add a protocol, or change one with `$set` or `$merge`.
+   */
+  private _getCustomizedProtocol(protocolId: string): HangingProtocol.Protocol | undefined {
+    return this._servicesManager.services.customizationService.getCustomization(
+      `hangingProtocols.${protocolId}`
+    ) as HangingProtocol.Protocol;
   }
 
   /**
@@ -906,7 +917,7 @@ export default class HangingProtocolService extends PubSubService {
     options = {} as HangingProtocol.SetProtocolOptions,
     errorCallback = null
   ): void {
-    const foundProtocol = this.protocols.get(protocolId);
+    const foundProtocol = this._getCustomizedProtocol(protocolId) ?? this.protocols.get(protocolId);
 
     if (!foundProtocol) {
       console.warn(

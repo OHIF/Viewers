@@ -13,7 +13,7 @@ const displaySet = (displaySetInstanceUID: string, attributes: Record<string, un
 function hang(displaySets: Record<string, unknown>[]) {
   const service = new HangingProtocolService(
     { run: jest.fn() } as never,
-    { services: {} } as never
+    { services: { customizationService: { getCustomization: () => undefined } } } as never
   );
   service.addProtocol(hpMN.id, hpMN);
   service.setActiveProtocolIds(hpMN.id);

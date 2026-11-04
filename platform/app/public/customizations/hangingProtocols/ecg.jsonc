@@ -1,0 +1,125 @@
+// Example URL-loaded customization: hangingProtocols/ecg
+//
+// Adds the hanging protocol `@ohif/ecg` as the customization
+// `hangingProtocols.@ohif/ecg`. The hanging protocol service reads a protocol
+// from the `hangingProtocols.<id>` customization, so this file adds a protocol
+// with no code. Load it, and select the protocol, with:
+//
+//   ?customization=hangingProtocols/ecg&hangingProtocolId=@ohif/ecg
+//
+// An ECG is a display set with Modality ECG: an ECG waveform, or an
+// encapsulated PDF with Modality ECG. The stages are in order of preference,
+// and the viewer opens the first stage that has all of its viewports filled:
+//
+// 1. ecgPrior: the newest ECG of the current study above the newest ECG of the
+//    prior study. The URL must list both studies, the current study first.
+// 2. ecgTwo: the newest ECG of the current study above the older one.
+// 3. ecg: one ECG in a single viewport.
+//
+// `isNewestOfModality` is a custom attribute of the default extension. Its
+// weight puts the newest ECG first, because display sets with the same score
+// otherwise sort by SeriesNumber.
+{
+  "global": {
+    "hangingProtocols.@ohif/ecg": {
+      "id": "@ohif/ecg",
+      "name": "ECG",
+      "description": "ECG, two ECGs, or an ECG compared to a prior ECG, one above the other",
+      "numberOfPriorsReferenced": 1,
+      "protocolMatchingRules": [],
+      "toolGroupIds": ["default"],
+      "displaySetSelectors": {
+        "currentEcgId": {
+          "allowUnmatchedView": true,
+          "studyMatchingRules": [
+            {
+              "attribute": "studyInstanceUIDsIndex",
+              "from": "options",
+              "required": true,
+              "constraint": { "equals": { "value": 0 } }
+            }
+          ],
+          "seriesMatchingRules": [
+            { "attribute": "Modality", "constraint": { "equals": "ECG" }, "required": true },
+            { "attribute": "isNewestOfModality", "constraint": { "equals": true }, "weight": 10 },
+            { "attribute": "isDisplaySetFromUrl", "constraint": { "equals": true }, "weight": 20 }
+          ]
+        },
+        "priorEcgId": {
+          "allowUnmatchedView": true,
+          "studyMatchingRules": [
+            {
+              "attribute": "studyInstanceUIDsIndex",
+              "from": "options",
+              "required": true,
+              "constraint": { "equals": { "value": 1 } }
+            }
+          ],
+          "seriesMatchingRules": [
+            { "attribute": "Modality", "constraint": { "equals": "ECG" }, "required": true },
+            { "attribute": "isNewestOfModality", "constraint": { "equals": true }, "weight": 10 }
+          ]
+        }
+      },
+      "defaultViewport": {
+        "viewportOptions": { "toolGroupId": "default", "allowUnmatchedView": true },
+        "displaySets": [{ "id": "currentEcgId", "matchedDisplaySetsIndex": -1 }]
+      },
+      "stages": [
+        {
+          "id": "ecgPrior",
+          "name": "ECG and prior",
+          "stageActivation": {
+            "enabled": { "minViewportsMatched": 2 },
+            "passive": { "minViewportsMatched": 2 }
+          },
+          "viewportStructure": { "layoutType": "grid", "properties": { "rows": 2, "columns": 1 } },
+          "viewports": [
+            {
+              "viewportOptions": { "toolGroupId": "default", "allowUnmatchedView": true },
+              "displaySets": [{ "id": "currentEcgId" }]
+            },
+            {
+              "viewportOptions": { "toolGroupId": "default", "allowUnmatchedView": true },
+              "displaySets": [{ "id": "priorEcgId" }]
+            }
+          ]
+        },
+        {
+          "id": "ecgTwo",
+          "name": "Two ECGs",
+          "stageActivation": {
+            "enabled": { "minViewportsMatched": 2 },
+            "passive": { "minViewportsMatched": 2 }
+          },
+          "viewportStructure": { "layoutType": "grid", "properties": { "rows": 2, "columns": 1 } },
+          "viewports": [
+            {
+              "viewportOptions": { "toolGroupId": "default", "allowUnmatchedView": true },
+              "displaySets": [{ "id": "currentEcgId" }]
+            },
+            {
+              "viewportOptions": { "toolGroupId": "default", "allowUnmatchedView": true },
+              "displaySets": [{ "id": "currentEcgId", "matchedDisplaySetsIndex": 1 }]
+            }
+          ]
+        },
+        {
+          "id": "ecg",
+          "name": "ECG",
+          "stageActivation": {
+            "enabled": { "minViewportsMatched": 1 },
+            "passive": { "minViewportsMatched": 1 }
+          },
+          "viewportStructure": { "layoutType": "grid", "properties": { "rows": 1, "columns": 1 } },
+          "viewports": [
+            {
+              "viewportOptions": { "toolGroupId": "default", "allowUnmatchedView": true },
+              "displaySets": [{ "id": "currentEcgId" }]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
