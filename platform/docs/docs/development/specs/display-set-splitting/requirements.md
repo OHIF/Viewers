@@ -433,7 +433,7 @@ flowchart TD
     S1["Defaults<br/>@cornerstonejs/metadata<br/>priority 10, 20, ... 170"]
     S2["Mode<br/>onModeEnter → setCustomizations"]
     S3["App config<br/>customizationService: [ ... ]"]
-    S4["URL module<br/>?customization=split/dwiByBValue<br/>only under customizationUrlPrefixes"]
+    S4["URL module<br/>?customization=split/optional/dwiByBValue<br/>only under customizationUrlPrefixes"]
   end
 
   SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>$merge adds · $set replaces · priority: null turns off<br/>one entry per rule id"]
@@ -468,7 +468,8 @@ flowchart TD
 ```
 
 **The trace of one rule.** This example rule puts each b-value of a diffusion MR series into its
-own display set. The module `split/dwiByBValue.jsonc` holds the rule.
+own display set. The file `rules/optional/dwiByBValue.jsonc` of `@cornerstonejs/metadata` holds
+the rule, and the OHIF build copies the file to the module `split/optional/dwiByBValue.jsonc`.
 
 ```jsonc
 "dwiByBValue": {
@@ -497,7 +498,7 @@ of the b-values 0, 500, and 1000.
 
 | Stage | What happens to `dwiByBValue` |
 | --- | --- |
-| 1 | The URL `?customization=split/dwiByBValue` loads the module. Its `requires` loads `split/enableNewSplit` first. |
+| 1 | The URL `?customization=split/optional/dwiByBValue` loads the module. Its `requires` loads `split/enableNewSplit` first. |
 | 2 | `$merge` adds the key `dwiByBValue` with `priority: -1`. The default rules stay. |
 | 3 | `createDisplaySetSplitRules` compiles `matches` into one predicate, the rule `context` into entries of the context program, and the template into one value reader. |
 | 4 | The priority is a number, and every rule compiles, so display set creation continues. |

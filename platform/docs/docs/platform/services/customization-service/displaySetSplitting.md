@@ -125,10 +125,32 @@ module has no effect until a site loads it, and a load turns it on.
 | `split/singleImagesBySize` | Groups the single CR, DX and MG images of a series by image size, in place of one display set for each image. |
 | `split/decimation` | Splits a series of more than `decimationSize` (default 1000) single-frame images into `ceil(count / decimationSize)` display sets, by `sliceIndex` modulo the count. |
 | `split/scoutSeries` | For CT, replaces the default `localizer` rule: the localizer images become one display set labelled `SCOUT`, with `isLocalizer: true`. |
-| `split/dwiByBValue` | One display set for each b-value of a diffusion MR series. |
 | `split/regularVolume` | A volume series with some irregular images: the regular slices become one volume display set. |
 | `split/volumeProjectionOrder` | Orders the slices of `volume3d` by the distance along the normal. |
 | `split/usTimeClusters` | An ultrasound series of several sweeps: one display set for each sweep. |
+
+The modules `split/optional/<id>` come from `@cornerstonejs/metadata`. The
+build copies each file `rules/optional/<id>.jsonc` of the package to
+`customizations/split/optional/<id>.jsonc`, and wraps the rule map in a module
+that requires `split/enableNewSplit` and `$merge`s the rules into
+`splitRules` (`platform/app/.webpack/optionalSplitRulesCopyPattern.js`). The
+viewer loads a module only when the URL asks for it, for example
+`?customization=split/optional/dwiByBValue`. The rules are in the
+[CS3D documentation of the optional rules](https://www.cornerstonejs.org/docs/concepts/cornerstone-metadata/display-sets#optional-rules):
+
+| Module | Case |
+|---|---|
+| `split/optional/dwiByBValue` | One display set for each b-value of a diffusion MR series. |
+| `split/optional/multiEchoByEchoTime` | One display set for each echo time of a single-frame MR series. |
+| `split/optional/singleImageSeriesStack` | One stack for each CR, DX or MG series. CR and DX only up to 9 images. |
+| `split/optional/volumePositionOrder` | The instances of `volume3d`, with the slices in position order. |
+| `split/optional/byAcquisitionTime` | One display set for each `AcquisitionNumber` of a CT, MR, PT or NM series. |
+| `split/optional/usTimeClusters` | One display set for each ultrasound sweep. |
+| `split/optional/regularVolume` | The regular slices of a series with some irregular images become one volume. |
+| `split/optional/derivedObjectVersions` | One display set for each SR or SEG version, with `isLatestVersion`. |
+
+A `@cornerstonejs/metadata` version without the files gives no
+`split/optional/` modules, and the build does not fail.
 
 The modules, and every other split file, use only the standard
 `immutability-helper` commands (`$set`, `$merge`, `$push`, ...). They do not

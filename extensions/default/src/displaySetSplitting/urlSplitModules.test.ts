@@ -11,22 +11,44 @@ import {
 import { CustomizationService } from '@ohif/core';
 import getMetadataDisplaySetCustomization from '../customizations/metadataDisplaySetCustomization';
 import getMetadataContextCustomization from '../customizations/metadataContextCustomization';
+import optionalSplitRulesCopyPattern from '../../../../platform/app/.webpack/optionalSplitRulesCopyPattern';
 
 /**
  * The `split/*.jsonc` URL modules in platform/app/public are data that no
  * build step checks. These tests apply each module as a server does: with
  * `JSON5`, the standard `immutability-helper` commands and the
  * `@cornerstonejs/metadata` defaults, and with no OHIF code.
+ *
+ * The `split/optional/<id>` modules are the `rules/optional/<id>.jsonc` files
+ * of @cornerstonejs/metadata, wrapped by the copy pattern of the build. A
+ * metadata version without the files has no optional modules.
  */
 const SPLIT_DIR = path.resolve(__dirname, '../../../../platform/app/public/customizations/split');
+const OPTIONAL = optionalSplitRulesCopyPattern('');
+const OPTIONAL_NAMES = fs.existsSync(OPTIONAL.from)
+  ? fs
+      .readdirSync(OPTIONAL.from)
+      .filter(file => file.endsWith('.jsonc'))
+      .map(file => `optional/${file.replace(/\.jsonc$/, '')}`)
+  : [];
 
 const readModule = (name: string) =>
-  JSON5.parse(fs.readFileSync(path.join(SPLIT_DIR, `${name}.jsonc`), 'utf8'));
+  JSON5.parse(
+    name.startsWith('optional/')
+      ? OPTIONAL.transform(
+          fs.readFileSync(path.join(OPTIONAL.from, `${name.slice('optional/'.length)}.jsonc`))
+        )
+      : fs.readFileSync(path.join(SPLIT_DIR, `${name}.jsonc`), 'utf8')
+  );
 
-const MODULE_NAMES = fs
-  .readdirSync(SPLIT_DIR)
-  .filter(file => file.endsWith('.jsonc'))
-  .map(file => file.replace(/\.jsonc$/, ''));
+const MODULE_NAMES = [
+  ...fs
+    .readdirSync(SPLIT_DIR)
+    .filter(file => file.endsWith('.jsonc'))
+    .map(file => file.replace(/\.jsonc$/, '')),
+  ...OPTIONAL_NAMES,
+];
+const describeOptional = OPTIONAL_NAMES.length ? describe : describe.skip;
 
 /** `immutability-helper` with the standard commands only: no OHIF `$filter`. */
 const standardUpdate = newContext();
@@ -74,7 +96,7 @@ const ohifSplitCustomization = async (name: string) => {
   );
   await service.requires([`split/${name}`], {
     policy: { prefixes: { default: './customizations/' } },
-    importFn: async (url: string) => readModule(url.match(/split\/(\w+)\.jsonc$/)[1]),
+    importFn: async (url: string) => readModule(url.match(/split\/([\w/]+)\.jsonc$/)[1]),
   });
   return service.getCustomization('useMetadataDisplaySet') as {
     enabled: boolean;
@@ -130,46 +152,48 @@ describe('split URL modules', () => {
     }
   );
 
-  it('dwiByBValue makes one display set for each b-value', () => {
-    const rules = compileModule('dwiByBValue');
-    const series = [
-      ...[1, 2, 3].map(() => mr({ DiffusionBValue: 0 })),
-      ...[1, 2, 3].map(() => mr({ DiffusionBValue: 1000 })),
-      ...[1, 2, 3].map(() => mr({ DiffusionBValue: 500 })),
-    ];
-    const groups = groupInstancesBySplitRules(series as any, rules);
+  describeOptional('optional/dwiByBValue', () => {
+    it('dwiByBValue makes one display set for each b-value', () => {
+      const rules = compileModule('optional/dwiByBValue');
+      const series = [
+        ...[1, 2, 3].map(() => mr({ DiffusionBValue: 0 })),
+        ...[1, 2, 3].map(() => mr({ DiffusionBValue: 1000 })),
+        ...[1, 2, 3].map(() => mr({ DiffusionBValue: 500 })),
+      ];
+      const groups = groupInstancesBySplitRules(series as any, rules);
 
-    expect(groups.map(group => group.matchedRule.id)).toEqual([
-      'dwiByBValue',
-      'dwiByBValue',
-      'dwiByBValue',
-    ]);
-    // The natural order of the keys puts the groups in b-value order.
-    expect(groups.map(group => group.instances.map(i => i.DiffusionBValue)[0])).toEqual([
-      0, 500, 1000,
-    ]);
-    expect(groups.every(group => group.instances.length === 3)).toBe(true);
-  });
+      expect(groups.map(group => group.matchedRule.id)).toEqual([
+        'dwiByBValue',
+        'dwiByBValue',
+        'dwiByBValue',
+      ]);
+      // The natural order of the keys puts the groups in b-value order.
+      expect(groups.map(group => group.instances.map(i => i.DiffusionBValue)[0])).toEqual([
+        0, 500, 1000,
+      ]);
+      expect(groups.every(group => group.instances.length === 3)).toBe(true);
+    });
 
-  it('dwiByBValue leaves the frames without a b-value to mixedDimensionalityBValue', () => {
-    const rules = compileModule('dwiByBValue');
-    const series = [...[1, 2].map(() => mr({ DiffusionBValue: 800 })), ...[1, 2].map(() => mr())];
-    const groups = groupInstancesBySplitRules(series as any, rules);
+    it('dwiByBValue leaves the frames without a b-value to mixedDimensionalityBValue', () => {
+      const rules = compileModule('optional/dwiByBValue');
+      const series = [...[1, 2].map(() => mr({ DiffusionBValue: 800 })), ...[1, 2].map(() => mr())];
+      const groups = groupInstancesBySplitRules(series as any, rules);
 
-    expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
-      ['dwiByBValue', 2],
-      ['mixedDimensionalityBValue', 2],
-    ]);
-  });
+      expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
+        ['dwiByBValue', 2],
+        ['mixedDimensionalityBValue', 2],
+      ]);
+    });
 
-  it('dwiByBValue leaves a series of b=0 frames only to the default rules', () => {
-    const rules = compileModule('dwiByBValue');
-    const series = [1, 2, 3].map(() => mr({ SeriesDescription: 'T2W', DiffusionBValue: 0 }));
-    const groups = groupInstancesBySplitRules(series as any, rules);
+    it('dwiByBValue leaves a series of b=0 frames only to the default rules', () => {
+      const rules = compileModule('optional/dwiByBValue');
+      const series = [1, 2, 3].map(() => mr({ SeriesDescription: 'T2W', DiffusionBValue: 0 }));
+      const groups = groupInstancesBySplitRules(series as any, rules);
 
-    expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
-      ['volume3d', 3],
-    ]);
+      expect(groups.map(group => [group.matchedRule.id, group.instances.length])).toEqual([
+        ['volume3d', 3],
+      ]);
+    });
   });
 
   describe('single images', () => {
