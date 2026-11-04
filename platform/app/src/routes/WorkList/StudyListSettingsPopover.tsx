@@ -126,7 +126,7 @@ export function StudyListSettingsPopover() {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Open settings"
+          aria-label={t('StudyList:Open settings')}
         >
           <Icons.SettingsStudyList
             aria-hidden="true"

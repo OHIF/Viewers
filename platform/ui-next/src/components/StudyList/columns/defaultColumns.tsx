@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
+import { useTranslation } from 'react-i18next';
 import type { DataTableFeatures } from '../../DataTable/DataTable';
 import { DataTable } from '../../DataTable';
 import type { ColumnMeta } from '../../DataTable/types';
@@ -59,6 +60,16 @@ export function textColumn(
   };
 }
 
+function DescriptionCell({ description }: { description: string }) {
+  const { t } = useTranslation('StudyList');
+
+  return (
+    <div className={!description ? 'text-muted-foreground/40' : ''}>
+      {description || t('No description')}
+    </div>
+  );
+}
+
 export const defaultColumns: ColumnDef<DataTableFeatures, StudyRow, unknown>[] = [
   {
     id: COLUMN_IDS.PATIENT,
@@ -99,7 +110,6 @@ export const defaultColumns: ColumnDef<DataTableFeatures, StudyRow, unknown>[] =
       // Date drives the cell: with no valid date we show nothing, even if a
       // time is present.
       const date = formatDICOMDate(r.date ?? '', {
-        fallbackFormat: 'MMM-DD-YYYY',
         invalidFallback: '',
       });
       if (!date) {
@@ -182,14 +192,9 @@ export const defaultColumns: ColumnDef<DataTableFeatures, StudyRow, unknown>[] =
       return r.description ?? '';
     },
     header: ({ column }) => <DataTable.ColumnHeader column={column} />,
-    cell: ({ row }) => {
-      const description = row.getValue(COLUMN_IDS.DESCRIPTION) as string;
-      return (
-        <div className={!description ? 'text-muted-foreground/40' : ''}>
-          {description || 'No Description'}
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <DescriptionCell description={row.getValue(COLUMN_IDS.DESCRIPTION) as string} />
+    ),
     meta: {
       label: 'Description',
       headerClassName: 'min-w-[290px]',

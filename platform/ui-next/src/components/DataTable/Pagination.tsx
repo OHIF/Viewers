@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../Button';
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import { useDataTable } from './context';
  * Uses the TanStack table instance from DataTable context.
  */
 export function Pagination<TData>() {
+  const { t } = useTranslation('DataTable');
   const { table } = useDataTable<TData>();
   const { pageIndex, pageSize } = table.state.pagination ?? { pageIndex: 0, pageSize: 50 };
 
@@ -33,9 +35,9 @@ export function Pagination<TData>() {
             variant="ghost"
             size="sm"
             className="text-primary/80 px-2 text-sm leading-tight"
-            aria-label="Rows per page"
+            aria-label={t('Rows per page')}
           >
-            {`${start}-${end} of ${total}`}
+            {t('Range of total', { start, end, total })}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
@@ -49,7 +51,7 @@ export function Pagination<TData>() {
               className="flex items-center gap-[2px]"
             >
               <Icons.Checked className={`h-6 w-6 ${pageSize === size ? '' : 'invisible'}`} />
-              {size} per page
+              {size} {t('per page')}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -57,7 +59,7 @@ export function Pagination<TData>() {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Previous page"
+        aria-label={t('Previous page')}
         onClick={() => table.previousPage()}
         disabled={!canPrev}
         className="ml-1"
@@ -67,7 +69,7 @@ export function Pagination<TData>() {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Next page"
+        aria-label={t('Next page')}
         onClick={() => table.nextPage()}
         disabled={!canNext}
       >
