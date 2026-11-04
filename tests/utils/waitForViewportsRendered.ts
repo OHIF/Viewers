@@ -119,7 +119,20 @@ const waitForViewportsRendered = async (
 ) => {
   const { timeout = 15000, waitVolumeLoad = true, settle = true } = options;
 
-  await page.waitForFunction(
+  try {
+    await waitForAllViewportsRendered(page, waitVolumeLoad, timeout);
+  } catch (error) {
+    const state = await describeViewportState(page).catch(() => 'unavailable');
+    throw new Error(`${error.message}\nViewport state at timeout: ${state}`, { cause: error });
+  }
+
+  if (settle) {
+    await waitForPaintToSettle(page);
+  }
+};
+
+const waitForAllViewportsRendered = (page: Page, waitVolumeLoad: boolean, timeout: number) =>
+  page.waitForFunction(
     ({ waitVolumeLoad }) => {
       const cornerstone = (window as any).cornerstone;
       if (!cornerstone?.getRenderingEngines) {
@@ -183,10 +196,44 @@ const waitForViewportsRendered = async (
     { timeout }
   );
 
-  if (settle) {
-    await waitForPaintToSettle(page);
-  }
-};
+/**
+ * Describes each viewport's status and every volume that has not loaded, so that a
+ * render timeout shows which condition did not become true.
+ *
+ * For a viewport stuck at `needsRender`, the engine fields tell the cause apart:
+ * - `queued` and `frameSet`: a render threw and the render loop stopped.
+ * - `queued` and not `frameSet`: a render request arrived while the loop ran, and
+ *   no later frame was scheduled.
+ * - not `queued`: a direct `setNeedsRender()` call with no render request.
+ */
+const describeViewportState = (page: Page) =>
+  page.evaluate(() => {
+    const cornerstone = (window as any).cornerstone;
+    const getVolumeLoadStatus = id => {
+      try {
+        return cornerstone.cache?.getVolume?.(id)?.loadStatus;
+      } catch {
+        return undefined;
+      }
+    };
+    const state = (cornerstone?.getRenderingEngines?.() ?? []).flatMap(engine => {
+      // RenderingEngine delegates to an implementation that owns the render queue.
+      const impl = engine._implementation ?? engine;
+      return (engine.getViewports?.() ?? []).map(viewport => {
+        const unloadedVolumes = (viewport.getActors?.() ?? [])
+          .map(actorEntry => actorEntry?.referencedId || actorEntry?.uid)
+          .filter(id => id && getVolumeLoadStatus(id)?.loaded === false);
+        return {
+          id: viewport.id,
+          status: viewport.viewportStatus,
+          unloadedVolumes,
+          queued: impl._needsRender?.has?.(viewport.id),
+          frameSet: impl._animationFrameSet,
+        };
+      });
+    });
+    return JSON.stringify(state);
+  });
 
 /**
  * After the render-cycle predicate has resolved, give the browser two animation
