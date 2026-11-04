@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.14.0-beta.67",
+  "version": "3.14.0-beta.70",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -44,6 +44,7 @@
     "@cornerstonejs/calculate-suv": "1.1.0",
     "lodash.get": "4.4.2",
     "lodash.uniqby": "4.7.0",
+    "query-string": "10.0.0",
     "react-color": "2.19.3"
   },
   "devDependencies": {
