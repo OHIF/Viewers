@@ -20,6 +20,8 @@ import { getMousePosition, initializeMousePositionTracker, type MouseButton } fr
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
+import { getSegmentStats } from './getSegmentStats';
+import { roundNumbers } from './roundNumbers';
 import {
   expectAnnotationLabelText,
   expectAnnotationStatsText,
@@ -43,6 +45,7 @@ import {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForRenderCycleForAction,
   waitForPaintToSettle,
 } from './waitForViewportsRendered';
 import { waitForViewportNotBlank } from './waitForViewportNotBlank';
@@ -70,6 +73,8 @@ export {
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
+  getSegmentStats,
+  roundNumbers,
   expectAnnotationLabelText,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -88,6 +93,7 @@ export {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForRenderCycleForAction,
   waitForPaintToSettle,
   waitForViewportNotBlank,
   press,
