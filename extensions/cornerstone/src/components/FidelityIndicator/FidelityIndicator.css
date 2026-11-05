@@ -1,7 +1,14 @@
+/*
+ * Disc/glyph chrome ported from Cornerstone3D FIDELITY_INDICATOR_CSS
+ * (loading / lod HTML disc; done / lossy SVG). OHIF label typography is separate.
+ */
+
 .ohif-fidelity {
-  /* Overlay root is pointer-events-none; re-enable for hover re-reveal (VF-VIS-1d). */
+  --fi-amber: #f0a030;
+  --fi-blue: #358cfd;
   pointer-events: auto;
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.35rem;
   margin: 0;
@@ -11,46 +18,18 @@
   color: inherit;
   font: inherit;
   cursor: default;
-  line-height: 1;
-}
-
-.ohif-fidelity__disc {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 9999px;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 35%);
+  line-height: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
 }
 
 .ohif-fidelity__label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font: 600 12px/1.2 system-ui, sans-serif;
   letter-spacing: 0.01em;
   text-shadow: 0 0 2px rgb(0 0 0 / 70%);
-}
-
-.ohif-fidelity--transient .ohif-fidelity__disc {
-  background: #e6b800;
-}
-
-.ohif-fidelity--standing .ohif-fidelity__disc {
-  background: #d64545;
-}
-
-.ohif-fidelity--recovered .ohif-fidelity__disc {
-  background: #2e9d4a;
-}
-
-/* Hover target after green withdrew (VF-VIS-1d): hit area, no persistent mark. */
-.ohif-fidelity--idle {
-  width: 0.75rem;
-  height: 0.75rem;
-  min-width: 0.75rem;
-  opacity: 0;
-}
-
-.ohif-fidelity--idle .ohif-fidelity__disc {
-  display: none;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .ohif-fidelity__tooltip {
@@ -60,4 +39,330 @@
 .ohif-fidelity__cause {
   margin-top: 0.25rem;
   opacity: 0.85;
+}
+
+/* Hover target after recovered withdrew (VF-VIS-1d). */
+.ohif-fidelity--idle {
+  width: 0.75rem;
+  height: 0.75rem;
+  min-width: 0.75rem;
+  opacity: 0;
+}
+
+.ohif-fidelity--idle .fi-html,
+.ohif-fidelity--idle .fidelity-indicator,
+.ohif-fidelity--idle .ohif-fidelity__label {
+  display: none;
+}
+
+/* ---------- HTML layer: loading pulse + solid LOD ---------- */
+
+.ohif-fidelity .fi-html {
+  display: none;
+  position: relative;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  transform-origin: center;
+}
+
+.ohif-fidelity[data-state='loading'] .fi-html,
+.ohif-fidelity[data-state='lod'] .fi-html {
+  display: block;
+}
+
+.ohif-fidelity[data-state='loading'] .fidelity-indicator,
+.ohif-fidelity[data-state='lod'] .fidelity-indicator {
+  display: none;
+}
+
+.ohif-fidelity[data-state='loading'] .fi-html {
+  animation:
+    fi-pop-scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    fi-pop-fade 0.3s linear both;
+}
+
+.ohif-fidelity .fi-html-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--fi-amber);
+  opacity: 0.3;
+}
+
+.ohif-fidelity .fi-html-dot {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fi-amber);
+  transform: translateZ(0);
+  will-change: transform;
+  animation: fi-loading 1.8s linear 0.3s infinite;
+}
+
+.ohif-fidelity[data-state='lod'] .fi-html-ring {
+  opacity: 1;
+}
+
+.ohif-fidelity[data-state='lod'] .fi-html-dot {
+  display: none;
+  animation: none;
+}
+
+@keyframes fi-pop-scale {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes fi-pop-fade {
+  0% {
+    opacity: 0;
+  }
+  21% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fi-loading {
+  0% {
+    transform: translateZ(0) scale(1);
+    animation-timing-function: cubic-bezier(0.2, 0, 0.57, 0.05);
+  }
+  50% {
+    transform: translateZ(0) scale(0.1111);
+    animation-timing-function: linear;
+  }
+  51.25% {
+    transform: translateZ(0) scale(0.2561);
+  }
+  52.5% {
+    transform: translateZ(0) scale(0.4133);
+  }
+  53.75% {
+    transform: translateZ(0) scale(0.569);
+  }
+  55% {
+    transform: translateZ(0) scale(0.7133);
+  }
+  56.25% {
+    transform: translateZ(0) scale(0.8394);
+  }
+  57.5% {
+    transform: translateZ(0) scale(0.9435);
+  }
+  58.75% {
+    transform: translateZ(0) scale(1.0244);
+  }
+  60% {
+    transform: translateZ(0) scale(1.0826);
+  }
+  61.25% {
+    transform: translateZ(0) scale(1.1201);
+  }
+  62.5% {
+    transform: translateZ(0) scale(1.1397);
+  }
+  63.75% {
+    transform: translateZ(0) scale(1.1447);
+  }
+  65% {
+    transform: translateZ(0) scale(1.1386);
+  }
+  66.25% {
+    transform: translateZ(0) scale(1.1247);
+  }
+  67.5% {
+    transform: translateZ(0) scale(1.1059);
+  }
+  68.75% {
+    transform: translateZ(0) scale(1.0848);
+  }
+  70% {
+    transform: translateZ(0) scale(1.0636);
+  }
+  71.25% {
+    transform: translateZ(0) scale(1.0436);
+  }
+  72.5% {
+    transform: translateZ(0) scale(1.026);
+  }
+  73.75% {
+    transform: translateZ(0) scale(1.0114);
+  }
+  75% {
+    transform: translateZ(0) scale(1);
+  }
+  76.25% {
+    transform: translateZ(0) scale(0.9918);
+  }
+  77.5% {
+    transform: translateZ(0) scale(0.9865);
+  }
+  78.75% {
+    transform: translateZ(0) scale(0.9837);
+  }
+  80% {
+    transform: translateZ(0) scale(0.9829);
+  }
+  81.25% {
+    transform: translateZ(0) scale(0.9836);
+  }
+  82.5% {
+    transform: translateZ(0) scale(0.9854);
+  }
+  83.75% {
+    transform: translateZ(0) scale(0.9878);
+  }
+  85% {
+    transform: translateZ(0) scale(0.9904);
+  }
+  86.25% {
+    transform: translateZ(0) scale(0.9929);
+  }
+  87.5% {
+    transform: translateZ(0) scale(0.9952);
+  }
+  88.75% {
+    transform: translateZ(0) scale(0.9972);
+  }
+  90% {
+    transform: translateZ(0) scale(0.9987);
+  }
+  91.25% {
+    transform: translateZ(0) scale(0.9997);
+  }
+  92.5% {
+    transform: translateZ(0) scale(1.0004);
+  }
+  93.75% {
+    transform: translateZ(0) scale(1.0007);
+  }
+  95% {
+    transform: translateZ(0) scale(1.0008);
+  }
+  96.25% {
+    transform: translateZ(0) scale(1.0007);
+  }
+  97.5% {
+    transform: translateZ(0) scale(1.0005);
+  }
+  98.75% {
+    transform: translateZ(0) scale(1.0002);
+  }
+  100% {
+    transform: translateZ(0) scale(1);
+  }
+}
+
+/* ---------- SVG (done / lossy) ---------- */
+
+.ohif-fidelity .fidelity-indicator {
+  display: block;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  overflow: visible;
+}
+
+.ohif-fidelity .fi-glyph {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    fi-pop-scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    fi-pop-fade 0.3s linear both;
+}
+
+.ohif-fidelity .fi-disc {
+  fill: var(--fi-amber);
+  fill-opacity: 0.3;
+}
+
+.ohif-fidelity .fi-dot-wrap,
+.ohif-fidelity .fi-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ohif-fidelity .fi-dot {
+  fill: var(--fi-amber);
+  animation: none;
+}
+
+.ohif-fidelity .fi-check,
+.ohif-fidelity .fi-dash {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+
+.ohif-fidelity .fi-check {
+  stroke: var(--fi-blue);
+  stroke-width: 1.5;
+}
+
+.ohif-fidelity .fi-dash {
+  stroke: var(--fi-amber);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.6);
+}
+
+.ohif-fidelity[data-state='done'] .fi-html {
+  display: none;
+}
+
+.ohif-fidelity[data-state='done'] .fi-dot-wrap {
+  display: none;
+}
+
+.ohif-fidelity[data-state='done'] .fi-disc {
+  fill: var(--fi-blue);
+  fill-opacity: 0.4;
+}
+
+.ohif-fidelity[data-state='done'] .fi-check {
+  opacity: 1;
+}
+
+.ohif-fidelity[data-state='done'] {
+  transition: opacity 0.2s linear;
+}
+
+.ohif-fidelity[data-state='done'][data-shown='false'] {
+  opacity: 0;
+}
+
+.ohif-fidelity[data-state='lossy'] .fi-html {
+  display: none;
+}
+
+.ohif-fidelity[data-state='lossy'] .fi-dot-wrap {
+  transform: scale(0);
+}
+
+.ohif-fidelity[data-state='lossy'] .fi-dash {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ohif-fidelity[data-state='lossy'][data-from='loading'] .fi-dot-wrap {
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0.57, 0.05);
+}
+
+.ohif-fidelity[data-state='lossy'][data-from='loading'] .fi-dash {
+  transition:
+    opacity 0.16s linear 0.18s,
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.18s;
 }

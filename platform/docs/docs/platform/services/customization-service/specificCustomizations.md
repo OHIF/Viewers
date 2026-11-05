@@ -340,7 +340,31 @@ also append to a list or merge into an existing object rather than replacing it 
 > resolves the sidebars from the final values — so commands compose with the mode's own list and
 > global-scope values win by scope precedence.
 
-#### 5. Select the GPU settings preset
+#### 5. Fidelity indicator display mode
+
+Control whether the viewport fidelity indicator shows the CS3D-style glyph, the OHIF
+clinician label, or both (key: `cornerstone.fidelityIndicator.display`).
+
+| Value | Shows |
+| ----- | ----- |
+| `icon` (default) | Glyph only (aria-label and tooltip still carry the words) |
+| `text` | OHIF label only (“Transient Low Fidelity” / “Low Fidelity” / “Full Fidelity”) |
+| `both` | Glyph and OHIF label |
+
+To remove the indicator entirely, clear or override `viewportOverlay.topRight` rather than
+this key — that removes disclosure of substituted pixels (`VF-CFG`).
+
+```js
+window.config = {
+  customizationService: [
+    {
+      'cornerstone.fidelityIndicator.display': 'both',
+    },
+  ],
+};
+```
+
+#### 6. Select the GPU settings preset
 
 Select the GPU settings preset that a volume viewport fits its texture to (key:
 `cornerstone.gpuSettingsPreset`). The value is the `id` of a Cornerstone3D GPU settings preset. A
