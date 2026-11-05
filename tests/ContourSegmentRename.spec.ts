@@ -53,7 +53,6 @@ test('should not rename segment when dialog is cancelled after filling', async (
 });
 
 // Expected to fail until https://github.com/OHIF/Viewers/issues/5781 is fixed
-// is not recorded in the undo history, so undo stays disabled.
 test.fail(
   'should undo and redo a segment rename',
   async ({ page, mainToolbarPageObject, rightPanelPageObject }) => {
