@@ -178,6 +178,13 @@ without changing any file; that report is the migration checklist. See
 [CLI-era extension → 2026 plugin contract](../migration-guide/cli-era-extensions.md)
 for what each item means.
 
+Run on a plugin directly inside a checkout's `extensions/` or `modes/` folder,
+`migrate` leaves it the way `--in-tree` scaffolds one: `workspace:*` peers on
+`@ohif/*` packages, `private: true` and the checkout's version, no build
+toolchain in its devDependencies, and no `.npmrc` or `pnpm-workspace.yaml` of
+its own. It removes nested copies of those two files, and names any settings in
+them beyond the template's, to move to the checkout's root files.
+
 `migrate` sets the peers on host-provided packages (React, React Router,
 i18next) to the versions the viewer shares. That can move a peer to a new major
 version: if your code was written for an older one, check that package's
@@ -192,6 +199,10 @@ A new extension or mode is set up for the place its folder lands:
 | a workspace's `extensions/` or `modes/` | a workspace plugin | Adds it to the workspace's `ohif.config.json`, so `pnpm dev` links it |
 | an OHIF checkout's `extensions/` or `modes/` | an in-tree package | Prints the `pluginConfig.json` entry to add and the lockfile step |
 | anywhere else | its own package | Prints how to link or load it in a viewer |
+
+An extension goes in `extensions/` and a mode in `modes/`: a new extension in a
+workspace's or checkout's `modes/` folder, or a mode in its `extensions/`
+folder, is refused.
 
 Where the folder lands:
 

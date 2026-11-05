@@ -541,6 +541,21 @@ test('--dir elsewhere, run from inside a checkout, creates its own package', () 
   assert.ok(exists(path.join(elsewhere, 'own-tree-ext'), '.npmrc'));
 });
 
+test('run from inside a checkout extensions folder without --dir, --yes scaffolds in-tree', () => {
+  // The non-interactive path (agents, CI) never sees the in-tree prompt.
+  const root = makeFakeCheckout();
+  const stdout = scaffold(['cwd-tree-ext', '-t', 'extension', '--yes'], {
+    cwd: path.join(root, 'extensions'),
+  });
+  const dir = path.join(root, 'extensions', 'cwd-tree-ext');
+  const pkg = readPkg(dir);
+  assert.equal(pkg.peerDependencies['@ohif/core'], 'workspace:*', 'set up as an in-tree package');
+  assert.equal(pkg.private, true);
+  assert.ok(!exists(dir, 'pnpm-workspace.yaml'));
+  assert.ok(!exists(dir, '.npmrc'));
+  assert.ok(stdout.includes('scaffolding in-tree, as with --in-tree'), stdout);
+});
+
 // ---------------------------------------------------------------------------
 // Refusal cases (all must exit nonzero without scaffolding)
 // ---------------------------------------------------------------------------
@@ -571,6 +586,33 @@ test('refusal: --in-tree outside an OHIF checkout', () => {
   const result = run(['x', '-t', 'extension', '--in-tree', '--yes'], { cwd: tmp() });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /not inside an OHIF checkout/);
+});
+
+test("refusal: a checkout's or workspace's other section (a mode into extensions/)", () => {
+  const root = makeFakeCheckout();
+  const inCheckout = run(['wrong-mode', '-t', 'mode', '--yes', '--dir', 'extensions'], {
+    cwd: root,
+  });
+  assert.notEqual(inCheckout.status, 0);
+  assert.match(inCheckout.stderr, /a mode belongs in .*modes/);
+  assert.ok(!fs.existsSync(path.join(root, 'extensions', 'wrong-mode')));
+
+  const parent = tmp();
+  scaffold(['wrong-ws', '-t', 'workspace', '--yes', '--dir', parent]);
+  const wsDir = path.join(parent, 'wrong-ws');
+  const manifestBefore = fs.readFileSync(path.join(wsDir, 'ohif.config.json'), 'utf8');
+  const inWorkspace = run([
+    'wrong-ext',
+    '-t',
+    'extension',
+    '--yes',
+    '--dir',
+    path.join(wsDir, 'modes'),
+  ]);
+  assert.notEqual(inWorkspace.status, 0);
+  assert.match(inWorkspace.stderr, /an extension belongs in .*extensions/);
+  assert.ok(!fs.existsSync(path.join(wsDir, 'modes', 'wrong-ext')));
+  assert.equal(fs.readFileSync(path.join(wsDir, 'ohif.config.json'), 'utf8'), manifestBefore);
 });
 
 test('refusal: --in-tree with a non-plugin template', () => {

@@ -72,6 +72,8 @@ Usage: create-ohif [name] [options]
 migrate: ports a CLI-era (ohif-cli) standalone extension or mode at <path> to the
 current plugin contract. --dry-run prints the full migration report without
 touching any file; that report is the migration checklist.
+Inside an OHIF checkout (<path> directly in its extensions/ or modes/), it
+leaves the plugin the way --in-tree scaffolds one.
 `;
 
 function fail(message) {
@@ -101,6 +103,21 @@ function findCheckoutRoot(from) {
       fs.existsSync(path.join(dir, 'pnpm-workspace.yaml')) &&
       fs.existsSync(path.join(dir, 'platform', 'app', 'pluginConfig.json'))
   );
+}
+
+// The root (an OHIF checkout or a workspace, found by findRoot) whose
+// extensions/ or modes/ folder directly holds pluginDir, or null. Both the
+// scaffolder and migrate decide a plugin's context with it.
+function rootHoldingPlugin(pluginDir, findRoot) {
+  const parentDir = path.dirname(pluginDir);
+  const root = findRoot(parentDir);
+  if (root === null) {
+    return null;
+  }
+  const inSection = ['extensions', 'modes'].some(
+    section => path.relative(path.join(root, section), parentDir) === ''
+  );
+  return inSection ? root : null;
 }
 
 // Workspace detection: a directory containing the committed manifest.
@@ -545,6 +562,15 @@ function readTemplateFile(kind, rel) {
   return fs.readFileSync(new URL(`../templates/${kind}/${rel}`, import.meta.url), 'utf8');
 }
 
+// The setting lines of an .npmrc or pnpm-workspace.yaml: comments and blank
+// lines dropped, whitespace trimmed.
+function settingLines(text) {
+  return text
+    .split(/\r?\n/)
+    .map(line => line.replace(/^\s*[#;].*$|\s+#.*$/, '').trim())
+    .filter(Boolean);
+}
+
 // Whether a JS/TS file under src/ or at the package root matches pattern.
 // node_modules, dist and the .webpack/ config migrate replaces are not read.
 function sourceMentions(targetDir, pattern) {
@@ -578,7 +604,16 @@ async function runMigrate(targetDir, dryRun) {
 
   const kind = detectPluginKind(pkg);
   const keyword = kind === 'extension' ? 'ohif-extension' : 'ohif-mode';
-  const hostRange = hostPeerRange(selfPkg.version);
+  // Inside an OHIF checkout the plugin is a workspace package, and migrate
+  // leaves it as `create-ohif --in-tree` scaffolds one (inTreeTransformPass):
+  // workspace:* @ohif peers, private and the checkout's version, no toolchain
+  // devDependencies and no pnpm settings files of its own.
+  const checkoutRoot = rootHoldingPlugin(targetDir, findCheckoutRoot);
+  const inTree = checkoutRoot !== null;
+  const ohifPeerRange = inTree ? 'workspace:*' : hostPeerRange(selfPkg.version);
+  const ohifPeerReason = inTree
+    ? "an in-tree plugin uses the checkout's own OHIF packages"
+    : "the OHIF versions this plugin supports, taken from create-ohif's version";
   const changes = []; // [rewrite]/[ok] lines, in checklist order
   const flags = []; // [flag] lines — never rewritten automatically
   const fileOps = []; // applied only when !dryRun, after package.json is written
@@ -661,6 +696,35 @@ async function runMigrate(targetDir, dryRun) {
     note(false, 'package.json publishConfig already carries the dist overrides');
   }
 
+  // -- package.json: private / version (in-tree only) -----------------------
+  // As inTreeTransformPass: an in-tree plugin is app-only (verify-tarballs
+  // requires every non-SDK workspace package to be private) and versions in
+  // lockstep with the checkout.
+  if (inTree) {
+    if (next.private !== true) {
+      note(
+        true,
+        'package.json private: -> true (an in-tree plugin is app-only; the repo checks that every non-SDK workspace package is private)'
+      );
+      next.private = true;
+    } else {
+      note(false, 'package.json private already true');
+    }
+    const rootPkgPath = path.join(checkoutRoot, 'package.json');
+    const rootVersion = fs.existsSync(rootPkgPath)
+      ? JSON.parse(fs.readFileSync(rootPkgPath, 'utf8')).version
+      : undefined;
+    if (typeof rootVersion === 'string' && next.version !== rootVersion) {
+      note(
+        true,
+        `package.json version: ${JSON.stringify(next.version)} -> "${rootVersion}" (in-tree plugins take the checkout's version)`
+      );
+      next.version = rootVersion;
+    } else if (typeof rootVersion === 'string') {
+      note(false, `package.json version already the checkout's ("${rootVersion}")`);
+    }
+  }
+
   // -- package.json: engines -------------------------------------------------
   // engines.node follows the template unless the package already asks for a
   // higher floor (a single ">=" range at or above the template's major). The
@@ -716,17 +780,17 @@ async function runMigrate(targetDir, dryRun) {
     );
   }
   for (const name of Object.keys(peers)) {
-    if (name.startsWith('@ohif/') && peers[name] !== hostRange) {
+    if (name.startsWith('@ohif/') && peers[name] !== ohifPeerRange) {
       note(
         true,
-        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${hostRange}" (the OHIF versions this plugin supports, taken from create-ohif's version)`
+        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${ohifPeerRange}" (${ohifPeerReason})`
       );
-      peers[name] = hostRange;
+      peers[name] = ohifPeerRange;
     }
   }
   if (!('@ohif/core' in peers)) {
-    note(true, `package.json peerDependencies: add "@ohif/core": "${hostRange}"`);
-    peers['@ohif/core'] = hostRange;
+    note(true, `package.json peerDependencies: add "@ohif/core": "${ohifPeerRange}"`);
+    peers['@ohif/core'] = ohifPeerRange;
   }
   // React peers follow the current template (the 3.14 host runs React 19, and
   // its compiled components need React 19 APIs at runtime). Only rewritten when
@@ -868,10 +932,17 @@ async function runMigrate(targetDir, dryRun) {
   next.scripts = scripts;
 
   // -- package.json: devDependencies -----------------------------------------
+  // In-tree, the checkout's hoisted install provides the build toolchain
+  // (every in-tree OHIF plugin declares only cross-env), so migrate adds none
+  // of it and removes the copies a plugin declares, which would install a
+  // second toolchain inside the plugin folder.
   const devDeps = next.devDependencies ?? {};
+  const toolchain = Object.entries(MIGRATE_DEV_DEPS[kind]).filter(
+    ([name]) => !inTree || name === 'cross-env'
+  );
   const addedDevDeps = [];
   const pinnedDevDeps = [];
-  for (const [name, range] of Object.entries(MIGRATE_DEV_DEPS[kind])) {
+  for (const [name, range] of toolchain) {
     if (!(name in devDeps)) {
       devDeps[name] = range;
       addedDevDeps.push(`${name}@${range}`);
@@ -904,6 +975,18 @@ async function runMigrate(targetDir, dryRun) {
     note(
       true,
       `package.json devDependencies: remove webpack-5 toolchain (${removedDevDeps.join(', ')}) — superseded by .rspack/`
+    );
+  }
+  const rootToolchain = inTree
+    ? Object.keys(MIGRATE_DEV_DEPS[kind]).filter(name => name !== 'cross-env' && name in devDeps)
+    : [];
+  if (rootToolchain.length > 0) {
+    for (const name of rootToolchain) {
+      delete devDeps[name];
+    }
+    note(
+      true,
+      `package.json devDependencies: remove ${rootToolchain.join(', ')} (the checkout's root install provides the build toolchain; a copy here would install a second one inside the plugin folder)`
     );
   }
   next.devDependencies = devDeps;
@@ -949,13 +1032,23 @@ async function runMigrate(targetDir, dryRun) {
     }
   }
 
-  // packageManager: flagged, never written. migrate can't tell whether the
-  // package is its own project or sits inside a repo that already pins pnpm.
-  // The version to suggest comes from the workspace template, which declares it.
+  // packageManager: dropped in-tree, where the checkout's root pins pnpm (as
+  // inTreeTransformPass does). Otherwise flagged, never written: migrate can't
+  // tell whether the package is its own project or sits inside some other repo
+  // that already pins pnpm. The version to suggest comes from the workspace
+  // template, which declares it.
   const templatePackageManager = JSON.parse(
     readTemplateFile('workspace', 'package.json')
   ).packageManager;
-  if (!next.packageManager) {
+  if (inTree) {
+    if (next.packageManager) {
+      note(
+        true,
+        `package.json packageManager: drop "${next.packageManager}" (the checkout's root package.json pins pnpm)`
+      );
+      delete next.packageManager;
+    }
+  } else if (!next.packageManager) {
     flags.push(
       `package.json has no "packageManager" — the pnpm settings above assume ${templatePackageManager}; add "packageManager": "${templatePackageManager}" unless a parent repo already pins pnpm`
     );
@@ -1130,52 +1223,86 @@ async function runMigrate(targetDir, dryRun) {
   }
 
   // -- companion files: .npmrc / AGENTS.md / tailwind.config.js --------------
-  const npmrcPath = path.join(targetDir, '.npmrc');
-  const npmrcHasLine =
-    fs.existsSync(npmrcPath) &&
-    fs
-      .readFileSync(npmrcPath, 'utf8')
-      .split('\n')
-      .some(line => line.trim() === 'auto-install-peers=false');
-  if (!npmrcHasLine) {
-    note(
-      true,
-      'add .npmrc with auto-install-peers=false (pnpm must not auto-install the host-provided peers)'
-    );
-    fileOps.push(() => {
-      const existing = fs.existsSync(npmrcPath) ? fs.readFileSync(npmrcPath, 'utf8') : '';
-      const prefix = existing && !existing.endsWith('\n') ? `${existing}\n` : existing;
-      fs.writeFileSync(npmrcPath, `${prefix}auto-install-peers=false\n`);
-    });
+  if (!inTree) {
+    const npmrcPath = path.join(targetDir, '.npmrc');
+    const npmrcHasLine =
+      fs.existsSync(npmrcPath) &&
+      fs
+        .readFileSync(npmrcPath, 'utf8')
+        .split('\n')
+        .some(line => line.trim() === 'auto-install-peers=false');
+    if (!npmrcHasLine) {
+      note(
+        true,
+        'add .npmrc with auto-install-peers=false (pnpm must not auto-install the host-provided peers)'
+      );
+      fileOps.push(() => {
+        const existing = fs.existsSync(npmrcPath) ? fs.readFileSync(npmrcPath, 'utf8') : '';
+        const prefix = existing && !existing.endsWith('\n') ? `${existing}\n` : existing;
+        fs.writeFileSync(npmrcPath, `${prefix}auto-install-peers=false\n`);
+      });
+    } else {
+      note(false, '.npmrc already sets auto-install-peers=false');
+    }
+    // pnpm 12 ignores project settings in .npmrc, so the peer guard must also live
+    // in pnpm-workspace.yaml. No file (the usual CLI-era case): write the current
+    // template's, which also carries its allowBuilds approvals. A file without the
+    // setting: append autoInstallPeers only, leaving the author's other settings
+    // alone. Already set: nothing to do.
+    const workspacePath = path.join(targetDir, 'pnpm-workspace.yaml');
+    if (!fs.existsSync(workspacePath)) {
+      note(
+        true,
+        'add pnpm-workspace.yaml with autoInstallPeers: false + allowBuilds (pnpm 12 reads peer settings only from here)'
+      );
+      fileOps.push(() =>
+        fs.writeFileSync(workspacePath, readTemplateFile(kind, 'pnpm-workspace.yaml'))
+      );
+    } else if (!/^autoInstallPeers:\s*false\s*$/m.test(fs.readFileSync(workspacePath, 'utf8'))) {
+      note(
+        true,
+        'pnpm-workspace.yaml: add autoInstallPeers: false (pnpm 12 reads peer settings only from here)'
+      );
+      fileOps.push(() => {
+        const existing = fs.readFileSync(workspacePath, 'utf8');
+        const prefix = existing && !existing.endsWith('\n') ? `${existing}\n` : existing;
+        fs.writeFileSync(workspacePath, `${prefix}autoInstallPeers: false\n`);
+      });
+    } else {
+      note(false, 'pnpm-workspace.yaml already sets autoInstallPeers: false');
+    }
   } else {
-    note(false, '.npmrc already sets auto-install-peers=false');
-  }
-  // pnpm 12 ignores project settings in .npmrc, so the peer guard must also live
-  // in pnpm-workspace.yaml. No file (the usual CLI-era case): write the current
-  // template's, which also carries its allowBuilds approvals. A file without the
-  // setting: append autoInstallPeers only, leaving the author's other settings
-  // alone. Already set: nothing to do.
-  const workspacePath = path.join(targetDir, 'pnpm-workspace.yaml');
-  if (!fs.existsSync(workspacePath)) {
-    note(
-      true,
-      'add pnpm-workspace.yaml with autoInstallPeers: false + allowBuilds (pnpm 12 reads peer settings only from here)'
-    );
-    fileOps.push(() =>
-      fs.writeFileSync(workspacePath, readTemplateFile(kind, 'pnpm-workspace.yaml'))
-    );
-  } else if (!/^autoInstallPeers:\s*false\s*$/m.test(fs.readFileSync(workspacePath, 'utf8'))) {
-    note(
-      true,
-      'pnpm-workspace.yaml: add autoInstallPeers: false (pnpm 12 reads peer settings only from here)'
-    );
-    fileOps.push(() => {
-      const existing = fs.readFileSync(workspacePath, 'utf8');
-      const prefix = existing && !existing.endsWith('\n') ? `${existing}\n` : existing;
-      fs.writeFileSync(workspacePath, `${prefix}autoInstallPeers: false\n`);
-    });
-  } else {
-    note(false, 'pnpm-workspace.yaml already sets autoInstallPeers: false');
+    // In-tree, the checkout root's .npmrc and pnpm-workspace.yaml govern. A
+    // nested pnpm-workspace.yaml makes pnpm treat this folder as its own
+    // workspace when a command runs inside it, so workspace:* peers stop
+    // resolving. Both are removed, as inTreeTransformPass does; settings beyond
+    // the template's own are named so none is lost silently.
+    for (const [file, templateFile] of [
+      ['.npmrc', '_npmrc'],
+      ['pnpm-workspace.yaml', 'pnpm-workspace.yaml'],
+    ]) {
+      const filePath = path.join(targetDir, file);
+      if (!fs.existsSync(filePath)) {
+        note(false, `no nested ${file} (the checkout root's applies)`);
+        continue;
+      }
+      const templateLines = settingLines(readTemplateFile(kind, templateFile));
+      const extras = settingLines(fs.readFileSync(filePath, 'utf8')).filter(
+        line => !templateLines.includes(line)
+      );
+      const why =
+        file === 'pnpm-workspace.yaml'
+          ? 'a nested copy makes pnpm treat this folder as its own workspace, so workspace:* peers stop resolving'
+          : "the checkout root's applies";
+      note(
+        true,
+        `remove ${file} (${why})` +
+          (extras.length > 0
+            ? ` — it also set ${extras.map(line => `"${line}"`).join(', ')}; move any you still need to the checkout's root ${file}`
+            : '')
+      );
+      fileOps.push(() => fs.rmSync(filePath));
+    }
   }
   const agentsPath = path.join(targetDir, 'AGENTS.md');
   if (!fs.existsSync(agentsPath)) {
@@ -1219,7 +1346,7 @@ async function runMigrate(targetDir, dryRun) {
   // -- report -------------------------------------------------------------------
   const rewriteCount = changes.filter(line => line.startsWith('[rewrite]')).length;
   const lines = [
-    `create-ohif migrate: ${targetDir} (detected: ${kind} "${pkg.name}")`,
+    `create-ohif migrate: ${targetDir} (detected: ${kind} "${pkg.name}"${inTree ? `, inside the OHIF checkout at ${checkoutRoot}` : ''})`,
     dryRun
       ? 'Mode: dry-run — no files were changed. This report is the migration checklist; re-run without --dry-run to apply the [rewrite] items.'
       : 'Mode: applied.',
@@ -1232,7 +1359,7 @@ async function runMigrate(targetDir, dryRun) {
     '',
     dryRun
       ? `${rewriteCount} rewrite(s) pending, ${flags.length} manual follow-up(s).`
-      : `${rewriteCount} rewrite(s) applied, ${flags.length} manual follow-up(s). Next: pnpm install && pnpm build.`,
+      : `${rewriteCount} rewrite(s) applied, ${flags.length} manual follow-up(s). Next: ${inTree ? 'pnpm run install:update-lockfile at the checkout root, then pnpm build here' : 'pnpm install && pnpm build'}.`,
     ...(versionRewrites.size > 0
       ? [
           '',
@@ -1449,24 +1576,30 @@ async function main() {
     targetDir = path.join(workspaceRoot, pluginSection, dirName);
   } else {
     targetDir = path.join(path.resolve(values.dir ?? '.'), dirName);
-    // --dir only says where the folder goes. An extension or mode whose folder
-    // lands in a workspace's or an OHIF checkout's extensions/ or modes/ is set
-    // up for that place, exactly as if it had been scaffolded there without
-    // --dir (workspace) or with --in-tree (checkout).
-    if (values.dir !== undefined && (template === 'extension' || template === 'mode')) {
+    // --dir (or the current folder) only says where the folder goes. An
+    // extension or mode whose folder lands in a workspace's or an OHIF
+    // checkout's extensions/ or modes/ is set up for that place, exactly as if
+    // it had been scaffolded there without --dir (workspace) or with --in-tree
+    // (checkout). The other section is refused: a fresh mode belongs in modes/.
+    if (template === 'extension' || template === 'mode') {
       const parentDir = path.dirname(targetDir);
-      const isSection = root =>
-        root !== null && path.relative(path.join(root, pluginSection), parentDir) === '';
-      const dirWorkspace = findWorkspaceRoot(parentDir);
-      const dirCheckout = findCheckoutRoot(parentDir);
-      if (isSection(dirWorkspace)) {
+      const dirWorkspace = rootHoldingPlugin(targetDir, findWorkspaceRoot);
+      const dirCheckout =
+        dirWorkspace === null ? rootHoldingPlugin(targetDir, findCheckoutRoot) : null;
+      const root = dirWorkspace ?? dirCheckout;
+      if (root !== null && path.relative(path.join(root, pluginSection), parentDir) !== '') {
+        fail(
+          `${relativeOrAbsolute(parentDir)} is not the ${pluginSection}/ folder of the ${dirWorkspace ? 'workspace' : 'OHIF checkout'} at ${root}: ${template === 'extension' ? 'an extension' : 'a mode'} belongs in ${path.join(root, pluginSection)}`
+        );
+      }
+      if (dirWorkspace !== null) {
         context = 'workspace';
         workspaceRoot = dirWorkspace;
-      } else if (isSection(dirCheckout)) {
+      } else if (dirCheckout !== null) {
         context = 'in-tree';
         checkoutRoot = dirCheckout;
         console.log(
-          `${values.dir} is the ${pluginSection}/ folder of the OHIF checkout at ${dirCheckout}; scaffolding in-tree, as with --in-tree.`
+          `${relativeOrAbsolute(parentDir)} is the ${pluginSection}/ folder of the OHIF checkout at ${dirCheckout}; scaffolding in-tree, as with --in-tree.`
         );
       }
     }

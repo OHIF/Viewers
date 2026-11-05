@@ -713,3 +713,79 @@ test('migrate flags a missing or different packageManager without writing it', (
   setPm(matching, expected);
   assert.ok(!migrate(matching, '--dry-run').includes('packageManager'));
 });
+
+// A minimal OHIF checkout (the two markers findCheckoutRoot looks for, plus a
+// root package.json) holding a CLI-era plugin in its extensions/ or modes/.
+function scaffoldInTree(kind, name) {
+  const standalone = scaffoldCliEra(kind, name);
+  const checkout = fs.mkdtempSync(path.join(os.tmpdir(), 'coh-checkout-'));
+  fs.writeFileSync(
+    path.join(checkout, 'pnpm-workspace.yaml'),
+    "packages:\n  - 'extensions/*'\n  - 'modes/*'\n"
+  );
+  fs.mkdirSync(path.join(checkout, 'platform', 'app'), { recursive: true });
+  fs.writeFileSync(path.join(checkout, 'platform', 'app', 'pluginConfig.json'), '{}\n');
+  fs.writeFileSync(
+    path.join(checkout, 'package.json'),
+    JSON.stringify({ name: 'ohif-monorepo-root', version: '3.14.0-beta.68', private: true })
+  );
+  const target = path.join(checkout, kind === 'extension' ? 'extensions' : 'modes', name);
+  fs.cpSync(standalone, target, { recursive: true });
+  return { checkout, target };
+}
+
+test('migrate inside an OHIF checkout leaves the plugin as --in-tree scaffolds one', () => {
+  const { checkout, target } = scaffoldInTree('mode', 'my-tree-mode');
+  const report = migrate(target);
+  assert.ok(report.includes(`inside the OHIF checkout at ${checkout}`), report);
+  assert.ok(report.includes('Next: pnpm run install:update-lockfile at the checkout root'), report);
+  assert.ok(!report.includes('packageManager'), 'no packageManager flag in-tree');
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.equal(pkg.peerDependencies['@ohif/core'], 'workspace:*');
+  assert.equal(pkg.private, true);
+  assert.equal(pkg.version, '3.14.0-beta.68');
+  // The root provides the toolchain: only cross-env is added. (The fixture's own
+  // babel and dotenv entries are the author's, left for the flags to handle.)
+  assert.equal(pkg.devDependencies['cross-env'], '7.0.3');
+  assert.ok(!('@rspack/cli' in pkg.devDependencies) && !('@rspack/core' in pkg.devDependencies));
+  assert.ok(!fs.existsSync(path.join(target, 'pnpm-workspace.yaml')));
+  assert.ok(!fs.existsSync(path.join(target, '.npmrc')));
+  assert.ok(fs.existsSync(path.join(target, '.rspack/rspack.prod.js')));
+
+  const second = migrate(target, '--dry-run');
+  assert.match(second, /\n0 rewrite\(s\) pending/);
+});
+
+test("migrate inside a checkout removes nested pnpm settings, the root's toolchain and packageManager", () => {
+  const { target } = scaffoldInTree('extension', 'my-tree-extension');
+  const workspaceTemplate = fs.readFileSync(
+    path.join(templatesRoot, 'extension/pnpm-workspace.yaml'),
+    'utf8'
+  );
+  fs.writeFileSync(
+    path.join(target, 'pnpm-workspace.yaml'),
+    `${workspaceTemplate}overrides:\n  lodash: 4.17.21\n`
+  );
+  fs.writeFileSync(path.join(target, '.npmrc'), 'auto-install-peers=false\n');
+  withDevDeps(target, { '@rspack/core': '1.3.0' }, { packageManager: 'pnpm@12.8.1' });
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(
+    report.includes(
+      'remove pnpm-workspace.yaml (a nested copy makes pnpm treat this folder as its own workspace'
+    ),
+    report
+  );
+  assert.ok(report.includes('it also set "overrides:", "lodash: 4.17.21"'), report);
+  assert.ok(!/remove \.npmrc[^\n]*it also set/.test(report), 'the template .npmrc has no extras');
+  assert.ok(report.includes('devDependencies: remove @rspack/core'), report);
+  assert.ok(report.includes('packageManager: drop "pnpm@12.8.1"'), report);
+
+  migrate(target);
+  assert.ok(!fs.existsSync(path.join(target, 'pnpm-workspace.yaml')));
+  assert.ok(!fs.existsSync(path.join(target, '.npmrc')));
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.ok(!('@rspack/core' in pkg.devDependencies));
+  assert.ok(!('packageManager' in pkg));
+});

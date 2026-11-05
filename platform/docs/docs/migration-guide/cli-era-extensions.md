@@ -224,6 +224,14 @@ list, if there is none), and an `.npmrc` with
 auto-install its own copies, which would produce duplicate React/`@ohif/core`
 instances.
 
+Inside an OHIF checkout (the plugin directly in its `extensions/` or `modes/`
+folder) the opposite applies: the checkout root's files govern, and a nested
+`pnpm-workspace.yaml` makes pnpm treat the plugin folder as its own workspace,
+so `workspace:*` peers stop resolving. There, migrate removes both files
+instead, and leaves the plugin the way
+[`create-ohif --in-tree`](../development/create-ohif.md#scaffold-into-a-checkout-in-tree)
+scaffolds one.
+
 ---
 
 ## Build config: `.webpack/` → `.rspack/`
