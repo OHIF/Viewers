@@ -864,14 +864,19 @@ async function runMigrate(targetDir, dryRun) {
   // -- package.json: scripts -------------------------------------------------
   const scripts = next.scripts ?? {};
   if (scripts.dev !== CONTRACT_DEV_SCRIPT) {
-    const brokenDev = typeof scripts.dev === 'string' && scripts.dev.includes('.webpack/webpack.dev.js');
+    // The CLI template's dev script named a config the template never shipped;
+    // a plugin that has the file (one from the OHIF repo, say) gets no such reason.
+    const brokenDev =
+      typeof scripts.dev === 'string' &&
+      scripts.dev.includes('.webpack/webpack.dev.js') &&
+      !fs.existsSync(path.join(targetDir, '.webpack', 'webpack.dev.js'));
     note(
       true,
-      `package.json scripts.dev: -> "${CONTRACT_DEV_SCRIPT}"${
+      `package.json scripts.dev: -> "${CONTRACT_DEV_SCRIPT}" (the contract build in watch mode, so dev writes the same ${CONTRACT_UMD} the viewer loads${
         brokenDev
-          ? ' (the CLI-era dev script pointed at .webpack/webpack.dev.js, a file the CLI template never shipped — it was broken from day one)'
+          ? '; the CLI-era script pointed at .webpack/webpack.dev.js, a file the CLI template never shipped — it was broken from day one'
           : ''
-      }`
+      })`
     );
     scripts.dev = CONTRACT_DEV_SCRIPT;
   } else {
@@ -1101,9 +1106,19 @@ async function runMigrate(targetDir, dryRun) {
       }
     }
     if (recognized.length > 0) {
+      // The CLI template's webpack.prod.js declared output.library twice; say
+      // so only for a config that does.
+      const libraryTwice =
+        recognized.includes('webpack.prod.js') &&
+        (fs.readFileSync(path.join(webpackDir, 'webpack.prod.js'), 'utf8').match(/\blibrary\s*:/g) ?? [])
+          .length >= 2;
       note(
         true,
-        `remove webpack-5 config ${recognized.map(name => `.webpack/${name}`).join(', ')} (replaced by .rspack/; the old config's output.library was declared twice, so it never reliably emitted the documented UMD)`
+        `remove webpack-5 config ${recognized.map(name => `.webpack/${name}`).join(', ')} (replaced by .rspack/, the plugin contract's build: ${CONTRACT_UMD}, window[name] set to the ${kind}, and the host's externals${
+          libraryTwice
+            ? "; the old config's output.library was declared twice, so it never reliably emitted the documented UMD"
+            : ''
+        })`
       );
       fileOps.push(() => {
         for (const name of recognized) {

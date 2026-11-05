@@ -600,6 +600,30 @@ test('migrate flags @ohif/ui imports, internal imports, and custom build config 
   assert.ok(!fs.existsSync(path.join(target, '.webpack', 'webpack.prod.js')), 'recognized config still replaced');
 });
 
+test("migrate gives the CLI template's reasons only for a config that matches it", () => {
+  const target = scaffoldCliEra('extension', 'my-cli-extension');
+  const devReason = 'the contract build in watch mode, so dev writes the same dist/index.umd.js the viewer loads';
+  const removeReason =
+    "replaced by .rspack/, the plugin contract's build: dist/index.umd.js, window[name] set to the extension, and the host's externals";
+  let report = migrate(target, '--dry-run');
+  assert.ok(report.includes(`${devReason}; the CLI-era script pointed at`), report);
+  assert.ok(report.includes('a file the CLI template never shipped'), report);
+  assert.ok(report.includes(`${removeReason}; the old config's output.library was declared twice`), report);
+
+  // A plugin from the OHIF repo has a webpack.dev.js and declares library once.
+  fs.writeFileSync(path.join(target, '.webpack', 'webpack.dev.js'), 'module.exports = {};\n');
+  fs.writeFileSync(
+    path.join(target, '.webpack', 'webpack.prod.js'),
+    "module.exports = { output: { library: { type: 'umd' } } };\n"
+  );
+  report = migrate(target, '--dry-run');
+  assert.ok(report.includes(`(${devReason})`), report);
+  assert.ok(!report.includes('never shipped'), report);
+  assert.ok(report.includes('.webpack/webpack.dev.js'), report);
+  assert.ok(report.includes(`(${removeReason})`), report);
+  assert.ok(!report.includes('declared twice'), report);
+});
+
 test("migrate flags imports of the OHIF app's aliases and @ohif/app", () => {
   // The app's aliases, read from the repo's resolveConfig.js so a new alias
   // there fails this test until migrate knows it: everything in `alias` except
