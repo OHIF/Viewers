@@ -24,6 +24,8 @@ const CONTOUR_PATH = [
   { x: 0.4, y: 0.4 },
 ];
 
+// Color of the first segment: the first entry of the cornerstone color LUT.
+const DEFAULT_SEGMENT_CSS_RGB = 'rgb(221, 84, 84)';
 const NEW_SEGMENT_HEX = '#FF5722';
 const NEW_SEGMENT_CSS_RGB = 'rgb(255, 87, 34)';
 
@@ -132,38 +134,39 @@ test.describe('labelmap', () => {
     await pollDigest(page, 'Expected redo to clear its pixels again').toBe(unpainted);
   });
 
-  // Documents current behavior: a segment color change is not recorded in the undo history.
-  // If undo support for color changes is added, this test should undo the color change instead.
-  test('should keep a segment color change out of the undo history', async ({
-    page,
-    mainToolbarPageObject,
-    rightPanelPageObject,
-    viewportPageObject,
-  }) => {
-    const viewport = await viewportPageObject.active;
-    const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
-    const unpainted = await canvasDigest(page);
+  // Expected to fail until https://github.com/OHIF/Viewers/issues/5781 is fixed.
+  test.fail(
+    'should undo and redo a segment color change',
+    async ({ page, mainToolbarPageObject, rightPanelPageObject, viewportPageObject }) => {
+      const viewport = await viewportPageObject.active;
+      const segment = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
+      const unpainted = await canvasDigest(page);
 
-    await viewport.normalizedDragAt(BRUSH_STROKE);
-    const painted = await digestAfterChange(page, unpainted, 'Expected the brush stroke to paint');
+      await viewport.normalizedDragAt(BRUSH_STROKE);
+      const painted = await digestAfterChange(
+        page,
+        unpainted,
+        'Expected the brush stroke to paint'
+      );
+      await expect(segment.rowDataColorHex).toHaveCSS('background-color', DEFAULT_SEGMENT_CSS_RGB);
 
-    await segment.actions.changeColor(NEW_SEGMENT_HEX);
-    await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_SEGMENT_CSS_RGB);
-    const recolored = await digestAfterChange(
-      page,
-      painted,
-      'Expected the stroke to repaint in the new color'
-    );
+      await segment.actions.changeColor(NEW_SEGMENT_HEX);
+      await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_SEGMENT_CSS_RGB);
+      const recolored = await digestAfterChange(
+        page,
+        painted,
+        'Expected the stroke to repaint in the new color'
+      );
 
-    // Undo skips the color change and takes back the stroke drawn before it.
-    await mainToolbarPageObject.undo.click();
-    await pollDigest(page, 'Expected undo to clear the stroke').toBe(unpainted);
-    await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_SEGMENT_CSS_RGB);
+      await mainToolbarPageObject.undo.click();
+      await expect(segment.rowDataColorHex).toHaveCSS('background-color', DEFAULT_SEGMENT_CSS_RGB);
+      await pollDigest(page, 'Expected undo to repaint the stroke in its old color').toBe(painted);
 
-    await mainToolbarPageObject.redo.click();
-    await pollDigest(page, 'Expected redo to paint in the new color').toBe(recolored);
-    await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_SEGMENT_CSS_RGB);
-  });
+      await mainToolbarPageObject.redo.click();
+      await pollDigest(page, 'Expected redo to paint in the new color').toBe(recolored);
+      await expect(segment.rowDataColorHex).toHaveCSS('background-color', NEW_SEGMENT_CSS_RGB);
+    }
+  );
 
   test('should undo a brush stroke after the layout changes', async ({
     page,
