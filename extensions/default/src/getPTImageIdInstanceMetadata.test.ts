@@ -19,7 +19,7 @@ jest.mock('@ohif/core', () => {
 import dcmjs from '@dcmjs-org/dcmjs';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
-import combineFrameInstance from '../../../platform/core/src/utils/combineFrameInstance';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 
 // A valid PT instance with the radiopharmaceutical sequence in dcmjs array form.
 const baseInstance = () => ({
@@ -120,7 +120,7 @@ describe('getPTImageIdInstanceMetadata', () => {
       SharedFunctionalGroupsSequence: [{}],
       PerFrameFunctionalGroupsSequence: [{}, {}],
     });
-    mockGet.mockReturnValue(combineFrameInstance(2, multiFrame));
+    mockGet.mockReturnValue(csMetadataUtilities.combineFrameInstance(2, multiFrame));
     expect(getPTImageIdInstanceMetadata('img:1').PhilipsPETPrivateGroup).toEqual({
       SUVScaleFactor: 0.00038,
       ActivityConcentrationScaleFactor: 1.881732,
