@@ -20,7 +20,15 @@ export default {
       contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
     },
   ],
-  'viewportOverlay.topRight': [],
+  // VF-REG-1 / #6256: always-visible overlay surface (not viewportActionMenu).
+  // Remove or override this entry to disable (VF-CFG-1).
+  'viewportOverlay.topRight': [
+    {
+      id: 'FidelityIndicator',
+      inheritsFrom: 'ohif.overlayItem.fidelity',
+      title: 'Image fidelity',
+    },
+  ],
   'viewportOverlay.bottomLeft': [
     {
       id: 'WindowLevel',

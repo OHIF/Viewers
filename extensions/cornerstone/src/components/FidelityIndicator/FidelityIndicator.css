@@ -1,0 +1,63 @@
+.ohif-fidelity {
+  /* Overlay root is pointer-events-none; re-enable for hover re-reveal (VF-VIS-1d). */
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+  line-height: 1;
+}
+
+.ohif-fidelity__disc {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 35%);
+}
+
+.ohif-fidelity__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 0 2px rgb(0 0 0 / 70%);
+}
+
+.ohif-fidelity--transient .ohif-fidelity__disc {
+  background: #e6b800;
+}
+
+.ohif-fidelity--standing .ohif-fidelity__disc {
+  background: #d64545;
+}
+
+.ohif-fidelity--recovered .ohif-fidelity__disc {
+  background: #2e9d4a;
+}
+
+/* Hover target after green withdrew (VF-VIS-1d): hit area, no persistent mark. */
+.ohif-fidelity--idle {
+  width: 0.75rem;
+  height: 0.75rem;
+  min-width: 0.75rem;
+  opacity: 0;
+}
+
+.ohif-fidelity--idle .ohif-fidelity__disc {
+  display: none;
+}
+
+.ohif-fidelity__tooltip {
+  max-width: 16rem;
+}
+
+.ohif-fidelity__cause {
+  margin-top: 0.25rem;
+  opacity: 0.85;
+}

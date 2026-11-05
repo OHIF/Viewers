@@ -19,6 +19,7 @@ import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 
 import './CustomizableViewportOverlay.css';
 import { useViewportRendering } from '../../hooks';
+import FidelityIndicator from '../../components/FidelityIndicator';
 
 const EPSILON = 1e-4;
 const { formatPN, formatValue } = utils;
@@ -54,6 +55,7 @@ const OverlayItemComponents = {
   'ohif.overlayItem.windowLevel': VOIOverlayItem,
   'ohif.overlayItem.zoomLevel': ZoomOverlayItem,
   'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
+  'ohif.overlayItem.fidelity': FidelityOverlayItem,
 };
 
 /**
@@ -459,6 +461,16 @@ function InstanceNumberOverlayItem({
         )}
       </span>
     </div>
+  );
+}
+
+/** Viewport fidelity indicator (#6256 / VF-REG-1). */
+function FidelityOverlayItem({ viewportId, element }: OverlayItemProps) {
+  return (
+    <FidelityIndicator
+      viewportId={viewportId}
+      element={element}
+    />
   );
 }
 
