@@ -73,6 +73,10 @@ package resolves, verifies `@ohif/core` peer-range compatibility (prerelease
 versions included), and reports installed-but-undeclared packages that carry
 the `ohif-extension` or `ohif-mode` keyword. For each one it prints the exact
 JSON line to paste into `pluginConfig.json`; it never writes the file itself.
+Because installs are hoisted, a plugin's own dependencies are installed at the
+root too, so the warning says how each package got there: listed in the root or
+`platform/app` `package.json`, a dependency of a declared plugin, or an indirect
+dependency. A package that a plugin only imports as a library needs no entry.
 
 ## Removing
 

@@ -227,6 +227,7 @@ function runPnpm(args) {
 const defaultCtx = () => ({
   configPath: CONFIG_PATH,
   rootPkgPath: path.join(REPO_ROOT, 'package.json'),
+  appPkgPath: path.join(REPO_ROOT, 'platform', 'app', 'package.json'),
   nodeModulesDir: path.join(REPO_ROOT, 'node_modules'),
   runPnpm,
 });
@@ -643,16 +644,50 @@ export function cmdDoctor(args, ctx = defaultCtx()) {
   }
 
   // (e) installed-but-undeclared keyword report (never writes the config).
+  // node_modules is hoisted, so it holds every package installed anywhere in
+  // the workspace. One the root or app package.json lists was installed for the
+  // viewer; any other may be only a library some package imports, so the
+  // warning says how it got there rather than telling the user to declare it.
+  const listedForViewer = new Set(
+    [ctx.rootPkgPath, ctx.appPkgPath].flatMap(file => {
+      const pkg = readJsonSafe(file) || {};
+      return [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.devDependencies || {})];
+    })
+  );
+  const dependentPlugins = {}; // package name -> declared plugins listing it in dependencies
+  for (const { entry, source } of resolved) {
+    const pkg = readJsonSafe(path.join(source.dir, 'package.json'));
+    if (!pkg) continue;
+    for (const name of Object.keys(pkg.dependencies || {})) {
+      (dependentPlugins[name] ||= []).push(entry.packageName);
+    }
+  }
   const reportUndeclared = (name, keyword) => {
     const target = keyword === 'ohif-mode' ? 'modes' : 'extensions';
-    warn(
-      `${name} (keyword ${keyword}) is installed but not declared — add to "${target}" in ` +
-        `platform/app/pluginConfig.json:\n        { "packageName": "${name}" }`
-    );
+    const addIt =
+      `add to "${target}" in platform/app/pluginConfig.json:\n        { "packageName": "${name}" }`;
+    if (listedForViewer.has(name)) {
+      warn(`${name} (keyword ${keyword}) is installed but not declared — ${addIt}`);
+    } else if (dependentPlugins[name]) {
+      const plugins = dependentPlugins[name].join(' and ');
+      warn(
+        `${name} (keyword ${keyword}) is installed as a dependency of ${plugins} but not ` +
+          `declared — ignore this if it is only imported as a library; if it must be ` +
+          `registered for ${plugins} to work, ${addIt}`
+      );
+    } else {
+      warn(
+        `${name} (keyword ${keyword}) is installed as an indirect dependency but not ` +
+          `declared — ignore this if it is only imported as a library; if a plugin needs ` +
+          `it registered, ${addIt}`
+      );
+    }
   };
   const scanPackageDir = pkgDir => {
     const pkg = readJsonSafe(path.join(pkgDir, 'package.json'));
-    if (!pkg || !pkg.name || declared.has(pkg.name)) return;
+    // In-tree plugins are linked into node_modules too; the in-tree check below
+    // reports them.
+    if (!pkg || !pkg.name || declared.has(pkg.name) || workspaceDirs[pkg.name]) return;
     const keyword = Array.isArray(pkg.keywords)
       ? pkg.keywords.find(k => k === 'ohif-extension' || k === 'ohif-mode')
       : undefined;

@@ -16,6 +16,7 @@ function makeCtx(packages) {
   const ctx = {
     configPath: path.join(dir, 'pluginConfig.json'),
     rootPkgPath: path.join(dir, 'package.json'),
+    appPkgPath: path.join(dir, 'app-package.json'),
     nodeModulesDir: path.join(dir, 'node_modules'),
     installs: [],
   };
@@ -153,4 +154,46 @@ test('doctor warns when a declared plugin peer-requires something not installed'
     lines.join('\n')
   );
   assert.ok(!lines.some(line => line.includes('ohif-extension-optional-missing')), lines.join('\n'));
+});
+
+// node_modules is hoisted, so a plugin's own dependencies sit next to the
+// packages installed for the viewer; the warning tells them apart.
+test('doctor says how an undeclared plugin package was installed', t => {
+  const ctx = makeCtx([
+    { name: 'ohif-extension-listed', keywords: ['ohif-extension'] },
+    { name: 'ohif-mode-library', keywords: ['ohif-mode'] },
+    { name: 'some-library', dependencies: { 'ohif-extension-deep': '^1.0.0' } },
+    { name: 'ohif-extension-deep', keywords: ['ohif-extension'] },
+  ]);
+  fs.writeFileSync(
+    ctx.rootPkgPath,
+    JSON.stringify({ name: 'root', dependencies: { 'ohif-extension-listed': '^1.0.0' } })
+  );
+  const modeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ohif-plugin-mode-'));
+  fs.writeFileSync(
+    path.join(modeDir, 'package.json'),
+    JSON.stringify({
+      name: 'ohif-mode-host',
+      keywords: ['ohif-mode'],
+      dependencies: { 'ohif-mode-library': '^1.0.0', 'some-library': '^1.0.0' },
+    })
+  );
+  fs.writeFileSync(
+    ctx.configPath,
+    JSON.stringify({
+      extensions: [],
+      modes: [{ packageName: 'ohif-mode-host', directory: modeDir.split(path.sep).join('/') }],
+    })
+  );
+
+  const lines = captureLog(t, () => cmdDoctor([], ctx));
+  const has = text => assert.ok(lines.some(line => line.includes(text)), `${text}\n---\n${lines.join('\n')}`);
+  has('[warn] ohif-extension-listed (keyword ohif-extension) is installed but not declared — add to "extensions"');
+  has(
+    '[warn] ohif-mode-library (keyword ohif-mode) is installed as a dependency of ohif-mode-host but not ' +
+      'declared — ignore this if it is only imported as a library; if it must be registered for ' +
+      'ohif-mode-host to work, add to "modes"'
+  );
+  has('[warn] ohif-extension-deep (keyword ohif-extension) is installed as an indirect dependency but not declared');
+  assert.ok(!lines.some(line => line.includes('ohif-mode-host (keyword')), lines.join('\n'));
 });
