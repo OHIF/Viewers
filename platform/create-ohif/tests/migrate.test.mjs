@@ -16,10 +16,11 @@ import { fileURLToPath } from 'node:url';
 const bin = fileURLToPath(new URL('../bin/create-ohif.mjs', import.meta.url));
 const fixtureRoot = fileURLToPath(new URL('../test/fixtures/cli-era/', import.meta.url));
 const templatesRoot = fileURLToPath(new URL('../templates/', import.meta.url));
-const selfPkg = JSON.parse(
-  fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')
+// The bin runs from this checkout, so it targets the checkout's version.
+const checkoutPkg = JSON.parse(
+  fs.readFileSync(new URL('../../../package.json', import.meta.url), 'utf8')
 );
-const [major, minor] = selfPkg.version.split('.');
+const [major, minor] = checkoutPkg.version.split('.');
 const hostRange = `>=${major}.${minor}.0-beta.0 <${Number(major) + 1}`;
 
 // Reproduce what platform/cli's editPackageJson.js emitted at scaffold time:

@@ -19,6 +19,33 @@ import { parseArgs } from 'node:util';
 
 const selfPkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
+// The OHIF version create-ohif targets: the peer ranges, coreVersionRange and a
+// workspace's pinned ohifVersion come from it. Run from a checkout's
+// platform/create-ohif (the documented in-tree command), it is the checkout's
+// version: only a release bumps this package's own version, so between releases
+// it trails the repo's. The published package never runs from a checkout.
+const selfVersion = checkoutVersion() ?? selfPkg.version;
+
+function checkoutVersion() {
+  const packageDir = fileURLToPath(new URL('..', import.meta.url));
+  const root = path.resolve(packageDir, '..', '..');
+  const isCheckoutCopy =
+    path.resolve(packageDir) === path.join(root, 'platform', 'create-ohif') &&
+    fs.existsSync(path.join(root, 'pnpm-workspace.yaml')) &&
+    fs.existsSync(path.join(root, 'platform', 'app', 'pluginConfig.json'));
+  if (!isCheckoutCopy) {
+    return null;
+  }
+  // This runs as the bin loads, so an unreadable root package.json falls back
+  // to the package's own version rather than breaking every command.
+  try {
+    const { version } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+    return typeof version === 'string' ? version : null;
+  } catch {
+    return null;
+  }
+}
+
 const TEMPLATES = ['workspace', 'extension', 'mode', 'deployment'];
 const NAME_RE = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
 const SCOPE_RE = /^@[a-z0-9-~][a-z0-9-._~]*$/;
@@ -53,7 +80,7 @@ const MODULES = {
 };
 const MODULE_KEYS = Object.keys(MODULES);
 
-const USAGE = `create-ohif ${selfPkg.version}
+const USAGE = `create-ohif ${selfVersion}
 
 Usage: create-ohif [name] [options]
        create-ohif migrate <path> [--dry-run]
@@ -373,7 +400,7 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
       `    "packageName": "${name}",`,
       `    "importPath": "/plugins/${dirName}/${scaffoldedVersion}/index.umd.js",`,
       `    "globalName": "${name}",`,
-      `    "coreVersionRange": "${hostPeerRange(selfPkg.version)}"`,
+      `    "coreVersionRange": "${hostPeerRange(selfVersion)}"`,
       '  }',
     ];
     lines.push(
@@ -610,7 +637,7 @@ async function runMigrate(targetDir, dryRun) {
   // devDependencies and no pnpm settings files of its own.
   const checkoutRoot = rootHoldingPlugin(targetDir, findCheckoutRoot);
   const inTree = checkoutRoot !== null;
-  const ohifPeerRange = inTree ? 'workspace:*' : hostPeerRange(selfPkg.version);
+  const ohifPeerRange = inTree ? 'workspace:*' : hostPeerRange(selfVersion);
   const ohifPeerReason = inTree
     ? "an in-tree plugin uses the checkout's own OHIF packages"
     : "the OHIF versions this plugin supports, taken from create-ohif's version";
@@ -1413,7 +1440,7 @@ async function main() {
   const { values, positionals } = parsed;
 
   if (values.version) {
-    console.log(selfPkg.version);
+    console.log(selfVersion);
     return;
   }
   if (values.help) {
@@ -1459,7 +1486,7 @@ async function main() {
     }
   } else {
     prompts = await loadPrompts();
-    prompts.intro(`create-ohif ${selfPkg.version}`);
+    prompts.intro(`create-ohif ${selfVersion}`);
     const ask = async promise => {
       const answer = await promise;
       if (prompts.isCancel(answer)) {
@@ -1636,12 +1663,12 @@ async function main() {
   substitutePass(targetDir, {
     name,
     dirName,
-    ohifVersion: selfPkg.version,
-    peerRange: context === 'in-tree' ? 'workspace:*' : hostPeerRange(selfPkg.version),
+    ohifVersion: selfVersion,
+    peerRange: context === 'in-tree' ? 'workspace:*' : hostPeerRange(selfVersion),
     // coreVersionRange guidance always uses the peer range shape: a raw caret
     // (^<manifest version>) would exclude the current host, whose injected
     // VERSION_NUMBER (version.txt) lags the manifest version.
-    coreRange: hostPeerRange(selfPkg.version),
+    coreRange: hostPeerRange(selfVersion),
     // JSON-escaped so free-text answers cannot break package.json.
     description: JSON.stringify(description).slice(1, -1),
   });

@@ -13,8 +13,10 @@ import { fileURLToPath } from 'node:url';
 
 const bin = fileURLToPath(new URL('../bin/create-ohif.mjs', import.meta.url));
 const selfPkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+// The bin runs from this checkout, so it targets the checkout's version.
+const checkoutPkg = JSON.parse(fs.readFileSync(new URL('../../../package.json', import.meta.url), 'utf8'));
 // Standalone peer range mirrors hostPeerRange() in the bin.
-const [major, minor] = selfPkg.version.split('.');
+const [major, minor] = checkoutPkg.version.split('.');
 const hostRange = `>=${major}.${minor}.0-beta.0 <${Number(major) + 1}`;
 
 const GETTER_FILES = {
@@ -330,7 +332,7 @@ test('workspace scaffold emits the committed manifest and the managed-harness la
 
   // The committed manifest: pinned OHIF version, empty plugin list, app config.
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'ohif.config.json'), 'utf8'));
-  assert.equal(manifest.ohifVersion, selfPkg.version);
+  assert.equal(manifest.ohifVersion, checkoutPkg.version);
   assert.deepEqual(manifest.plugins, []);
   assert.equal(manifest.appConfig, 'config/app-config.js');
 
@@ -437,7 +439,7 @@ test('deployment scaffold is config-only', () => {
     'descriptor coreVersionRange uses the peer range shape the current host accepts'
   );
   assert.ok(
-    !readme.includes(`^${selfPkg.version}`),
+    !readme.includes(`^${checkoutPkg.version}`),
     'descriptor coreVersionRange must not use a raw caret the lagging host would reject'
   );
   assert.ok(stdout.includes('docker compose up'), stdout);
@@ -652,6 +654,33 @@ test('create-ohif itself does not carry the plugin keywords', () => {
   for (const keyword of ['ohif-extension', 'ohif-mode']) {
     assert.ok(!(selfPkg.keywords ?? []).includes(keyword), keyword);
   }
+});
+
+// Only a release bumps create-ohif's own version, so the copy in a checkout
+// targets the checkout's version instead.
+test("a checkout's copy targets the checkout's version; any other copy its own", () => {
+  assert.equal(run(['--version']).stdout.trim(), checkoutPkg.version);
+
+  const copyAt = packageDir => {
+    fs.mkdirSync(path.join(packageDir, 'bin'), { recursive: true });
+    fs.copyFileSync(bin, path.join(packageDir, 'bin', 'create-ohif.mjs'));
+    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ version: '9.9.9' }));
+    return spawnSync(process.execPath, [path.join(packageDir, 'bin', 'create-ohif.mjs'), '--version'], {
+      encoding: 'utf8',
+    }).stdout.trim();
+  };
+  const checkout = tmp();
+  fs.writeFileSync(path.join(checkout, 'pnpm-workspace.yaml'), "packages:\n  - 'platform/*'\n");
+  fs.mkdirSync(path.join(checkout, 'platform', 'app'), { recursive: true });
+  fs.writeFileSync(path.join(checkout, 'platform', 'app', 'pluginConfig.json'), '{}');
+  fs.writeFileSync(path.join(checkout, 'package.json'), JSON.stringify({ version: '9.9.9-beta.1' }));
+  assert.equal(copyAt(path.join(checkout, 'platform', 'create-ohif')), '9.9.9-beta.1');
+  // The published package runs from pnpm's store, never from a checkout's platform/.
+  assert.equal(copyAt(path.join(checkout, 'node_modules', 'create-ohif')), '9.9.9');
+  assert.equal(copyAt(path.join(tmp(), 'create-ohif')), '9.9.9');
+  // A checkout without a readable root package.json falls back to the copy's own.
+  fs.rmSync(path.join(checkout, 'package.json'));
+  assert.equal(copyAt(path.join(checkout, 'platform', 'create-ohif')), '9.9.9');
 });
 
 test('refusal: migrate needs a package.json at the target', () => {
