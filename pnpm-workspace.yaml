@@ -14,7 +14,7 @@ minimumReleaseAge: 2880
 # bunfig.toml `minimumReleaseAgeExcludes` list (pnpm supports glob patterns).
 minimumReleaseAgeExclude:
   - '@cornerstonejs/*'
-  # The dcmjs 1.0 beta is pinned to an exact prerelease (1.0.0-beta.9) that may
+  # The dcmjs 1.0 beta is pinned to an exact prerelease (1.0.0-beta.10) that may
   # be newer than the cutoff.
   - '@dcmjs-org/*'
 frozenLockfile: true

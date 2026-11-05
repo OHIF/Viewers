@@ -39,7 +39,7 @@
     "@cornerstonejs/codec-openjpeg": "1.3.2",
     "@cornerstonejs/codec-openjph": "2.4.9",
     "@cornerstonejs/dicom-image-loader": "5.12.0",
-    "@dcmjs-org/dcmjs": "1.0.0-beta.9",
+    "@dcmjs-org/dcmjs": "1.0.0-beta.10",
     "@ohif/core": "workspace:*",
     "@ohif/extension-default": "workspace:*",
     "dicom-parser": "1.8.21",
