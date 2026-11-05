@@ -184,8 +184,6 @@ test.describe('labelmap', () => {
     await waitForViewportNotBlank({ page });
     const paintedInGrid = await canvasDigest(page);
 
-    // There is no unpainted 2x1 reference, so this only checks for a repaint.
-    // The exact check runs after switching back to 1x1.
     await mainToolbarPageObject.undo.click();
     await pollDigest(page, 'Expected undo to clear the stroke').not.toBe(paintedInGrid);
 
