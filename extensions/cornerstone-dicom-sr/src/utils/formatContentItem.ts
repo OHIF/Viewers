@@ -1,4 +1,5 @@
 import { utils } from '@ohif/core';
+import { asArray } from '@cornerstonejs/utils';
 
 /**
  * Formatters used to format each of the content items (SR "nodes") which can be
@@ -25,7 +26,8 @@ const contentItemFormatters = {
     return `${NumericValue} ${CodeValue}`;
   },
   PNAME: contentItem => {
-    const personName = contentItem.PersonName?.[0];
+    // dcmjs 1.0 gives a VM 1 name as one object; 0.x gave a list
+    const personName = asArray(contentItem.PersonName ?? [])[0];
     return personName ? utils.formatPN(personName) : undefined;
   },
   DATE: contentItem => {

@@ -5,7 +5,8 @@
  * Background: some servers return small scalar values - notably the Philips
  * SUV Scale Factor (7053,1000) and Activity Concentration Scale Factor
  * (7053,1009) - as bulkdata rather than inline. dcmjs `naturalizeDataset` then
- * leaves them as `{ BulkDataURI: '...' }` objects under their raw hex key.
+ * leaves them as `{ BulkDataURI: '...' }` objects, in the private block of
+ * dcmjs 1.0 (`'7053:Philips PET Private Group'.x00`) or under the hex key.
  * Downstream consumers (e.g. SUV scaling via calculate-suv) expect numbers and
  * silently corrupt when handed an object, so data sources resolve the
  * registered tags eagerly so that every subscriber reads a fully-resolved
@@ -19,26 +20,39 @@
  * each bulkdata value; when it is absent the value is left untouched and
  * consumers fall back gracefully.
  */
+import { findPrivateTag } from '@cornerstonejs/utils';
+import type { PrivateTagLocation } from '@cornerstonejs/utils';
 
-// Tags that may arrive as bulkdata and must be resolved to numbers, keyed by
-// the naturalized (comma-less) hex tag. Seeded with the Philips PET Private
-// Group scalar tags; both are VR DS in the standard Philips definition, but
-// the VR is auto-detected (see decode below) because servers occasionally
-// encode them as FL/FD.
-const resolvedBulkDataTags = new Set<string>([
-  '70531000', // Philips SUV Scale Factor
-  '70531009', // Philips Activity Concentration Scale Factor
+/** A tag to resolve: the 8-digit hex tag, and the private creator of a private tag. */
+export type ResolvedBulkDataTag = { tag: string; creator?: string };
+
+const PHILIPS_PET = 'Philips PET Private Group';
+
+// Upper-case hex tag -> private creator (undefined for a tag with no creator).
+// Seeded with the Philips PET Private Group scalar tags; both are VR DS in the
+// standard Philips definition, but the VR is auto-detected (see decode below)
+// because servers occasionally encode them as FL/FD.
+const resolvedBulkDataTags = new Map<string, string | undefined>([
+  ['70531000', PHILIPS_PET], // Philips SUV Scale Factor
+  ['70531009', PHILIPS_PET], // Philips Activity Concentration Scale Factor
 ]);
 
 /**
- * Registers additional tags (naturalized comma-less hex form, e.g.
- * '70531000') to be resolved from bulkdata during metadata ingestion.
+ * Registers additional tags to be resolved from bulkdata during metadata
+ * ingestion: an 8-digit hex tag (`'00091001'`), or `{ tag, creator }` for a
+ * private tag. With a creator, the tag is found by its group, its creator and
+ * its element number (`getPrivateTagValue` rules), so the xx block digits of
+ * the hex tag do not matter, and the value is found in a dcmjs 1.0 private
+ * block also after a copy of the instance.
  */
-export function registerResolvedBulkDataTags(tags: string | string[]): void {
+export function registerResolvedBulkDataTags(
+  tags: string | ResolvedBulkDataTag | Array<string | ResolvedBulkDataTag>
+): void {
   const list = Array.isArray(tags) ? tags : [tags];
-  for (const tag of list) {
+  for (const entry of list) {
+    const { tag, creator } = typeof entry === 'string' ? { tag: entry, creator: undefined } : entry;
     if (typeof tag === 'string' && tag.length) {
-      resolvedBulkDataTags.add(tag.toUpperCase());
+      resolvedBulkDataTags.set(tag.toUpperCase(), creator);
     }
   }
 }
@@ -47,7 +61,7 @@ export function registerResolvedBulkDataTags(tags: string | string[]): void {
  * Returns the tags currently registered for eager bulkdata resolution.
  */
 export function getResolvedBulkDataTags(): string[] {
-  return [...resolvedBulkDataTags];
+  return [...resolvedBulkDataTags.keys()];
 }
 
 function toUint8(raw: unknown): Uint8Array | undefined {
@@ -149,9 +163,23 @@ async function resolveValueToNumber(value): Promise<number | undefined> {
 }
 
 /**
+ * The place of a registered tag in an instance: with a creator, the element of
+ * that creator (the dcmjs 1.0 block or the hex-key form, see `findPrivateTag`);
+ * otherwise, or when the creator is absent, the hex key in either casing.
+ */
+function locateTag(instance, tag: string, creator?: string): PrivateTagLocation {
+  const location = creator && findPrivateTag(instance, tag.slice(0, 4), creator, tag.slice(6, 8));
+  if (location) {
+    return location;
+  }
+  return { container: instance, key: tag in instance ? tag : tag.toLowerCase() };
+}
+
+/**
  * Resolves, in place, the registered bulkdata tags on a single naturalized
  * instance. No-op for values that are already numbers or that have no
- * resolvable bulkdata.
+ * resolvable bulkdata. The number is written where the value was found, so a
+ * value in a dcmjs 1.0 private block stays in the block and survives a copy.
  */
 async function resolveInstance(instance): Promise<void> {
   if (!instance) {
@@ -159,11 +187,9 @@ async function resolveInstance(instance): Promise<void> {
   }
 
   await Promise.all(
-    [...resolvedBulkDataTags].map(async tag => {
-      // Registered tags are normalized to uppercase hex; naturalized datasets
-      // key unknown private tags by their hex tag, so check both casings.
-      const key = tag in instance ? tag : tag.toLowerCase();
-      const value = instance[key];
+    [...resolvedBulkDataTags].map(async ([tag, creator]) => {
+      const { container, key } = locateTag(instance, tag, creator);
+      const value = container[key];
       // Inline (already a number) or absent: nothing to resolve.
       if (value == null || typeof value !== 'object') {
         return;
@@ -171,7 +197,7 @@ async function resolveInstance(instance): Promise<void> {
       try {
         const num = await resolveValueToNumber(value);
         if (num !== undefined) {
-          instance[key] = num;
+          container[key] = num;
         }
       } catch (error) {
         console.warn(`resolveBulkDataTags: failed to resolve tag ${tag}`, error);

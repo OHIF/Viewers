@@ -1,4 +1,4 @@
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
 import { classes, Types } from '@ohif/core';
@@ -13,6 +13,7 @@ import {
 } from '@ohif/ui-next';
 
 import DicomTagTable from './DicomTagTable';
+import getDatasetEntries from './getDatasetEntries';
 import './DicomTagBrowser.css';
 
 export type Row = {
@@ -329,19 +330,17 @@ function getRows(metadata, depth = 0) {
     return [];
   }
 
-  const keywords = Object.keys(metadata);
+  const entries = getDatasetEntries(metadata);
 
   const rows = [];
-  for (let i = 0; i < keywords.length; i++) {
-    let keyword = keywords[i];
+  for (const entry of entries) {
+    let [keyword, value] = entry as [string, any];
 
     if (keyword === '_vrMap') {
       continue;
     }
 
     const tagInfo = nameMap[keyword];
-
-    let value = metadata[keyword];
 
     if (tagInfo && tagInfo.vr === 'SQ') {
       const sequenceAsArray = toArray(value);

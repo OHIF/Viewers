@@ -1,4 +1,5 @@
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
+import { asArray } from '@cornerstonejs/utils';
 const { DicomMessage, DicomMetaDictionary } = dcmjs.data;
 const dicomlab2RGB = dcmjs.data.Colors.dicomlab2RGB;
 
@@ -34,14 +35,14 @@ async function checkAndLoadContourData({
 
   const promisesMap = new Map();
 
-  for (const ROIContour of instance.ROIContourSequence) {
+  for (const ROIContour of asArray(instance.ROIContourSequence)) {
     const referencedROINumber = ROIContour.ReferencedROINumber;
     if (!ROIContour || !ROIContour.ContourSequence) {
       promisesMap.set(referencedROINumber, [Promise.resolve([])]);
       continue;
     }
 
-    for (const Contour of ROIContour.ContourSequence) {
+    for (const Contour of asArray(ROIContour.ContourSequence)) {
       if (!Contour || !Contour.ContourData) {
         return Promise.reject('Invalid Contour or ContourData');
       }
@@ -114,13 +115,13 @@ async function checkAndLoadContourData({
     resolvedPromisesMap.set(key, await Promise.allSettled(promiseArray));
   }
 
-  instance.ROIContourSequence.forEach(ROIContour => {
+  asArray(instance.ROIContourSequence).forEach(ROIContour => {
     try {
       const referencedROINumber = ROIContour.ReferencedROINumber;
       const resolvedPromises = resolvedPromisesMap.get(referencedROINumber);
 
       if (ROIContour.ContourSequence) {
-        ROIContour.ContourSequence.forEach((Contour, index) => {
+        asArray(ROIContour.ContourSequence).forEach((Contour, index) => {
           const promise = resolvedPromises[index];
           if (promise.status === 'fulfilled') {
             if (
@@ -230,17 +231,14 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
     ReferencedSOPInstanceUIDsSet: new Set(),
   };
 
-  for (let i = 0; i < ROIContourSequence.length; i++) {
-    const ROIContour = ROIContourSequence[i];
+  for (const ROIContour of asArray(ROIContourSequence)) {
     const { ContourSequence } = ROIContour;
     if (!ContourSequence) {
       continue;
     }
 
-    const ContourSequenceArray = _toArray(ContourSequence);
-
     const contourPoints = [];
-    for (const ContourSequenceItem of ContourSequenceArray) {
+    for (const ContourSequenceItem of asArray(ContourSequence)) {
       const { ContourData, NumberOfContourPoints, ContourGeometricType, ContourImageSequence } =
         ContourSequenceItem;
 
@@ -304,7 +302,7 @@ function _setROIContourMetadata(
   ROIContour,
   contourPoints
 ) {
-  const StructureSetROI = StructureSetROISequence.find(
+  const StructureSetROI = asArray(StructureSetROISequence ?? []).find(
     structureSetROI => structureSetROI.ROINumber === ROIContour.ReferencedROINumber
   );
 
@@ -363,7 +361,7 @@ function _setROIContourDataColor(ROIContour, ROIContourData) {
  * @param {number} ROINumber - ROI number to match observations
  */
 function _setROIContourRTROIObservations(ROIContourData, RTROIObservationsSequence, ROINumber) {
-  const RTROIObservations = RTROIObservationsSequence.find(
+  const RTROIObservations = asArray(RTROIObservationsSequence ?? []).find(
     RTROIObservations => RTROIObservations.ReferencedROINumber === ROINumber
   );
 
@@ -379,16 +377,4 @@ function _setROIContourRTROIObservations(ROIContourData, RTROIObservationsSequen
       ROIInterpreter,
     };
   }
-}
-
-/**
- * Converts a single object or array to an array.
- * Utility function to ensure consistent array handling for DICOM sequences.
- *
- * @function _toArray
- * @param {*} objOrArray - Object or array to convert
- * @returns {Array} Array containing the input (if already array) or wrapped in array
- */
-function _toArray(objOrArray) {
-  return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
 }

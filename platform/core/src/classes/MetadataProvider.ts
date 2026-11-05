@@ -2,14 +2,14 @@ import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import { utilities } from '@cornerstonejs/core';
 import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
+import { asArray } from '@cornerstonejs/utils';
 import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
-import combineFrameInstance from '../utils/combineFrameInstance';
 
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
-const { getUriModule } = csMetadataUtilities;
+const { getUriModule, combineFrameInstance, dicomSplit } = csMetadataUtilities;
 
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
@@ -62,7 +62,14 @@ class MetadataProvider {
       return;
     }
 
-    const result = (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
+    let result = instance;
+    // A single frame instance stays the root instance, even with functional groups.
+    if (frameNumber && instance.NumberOfFrames >= 2) {
+      // isDisplaySetReconstructable reads ImageType[2] on the root instance.
+      instance.ImageType = dicomSplit(instance.ImageType);
+      // parseInt: a frames string such as '2,3' gives frame 2, and not a RangeError.
+      result = combineFrameInstance(Number.parseInt(frameNumber), instance);
+    }
 
     // We reassign the imageId on the instance because multiframe images processed
     // through combineFrameInstance will mistakenly get the first imageId.
@@ -410,25 +417,27 @@ class MetadataProvider {
         // map the DICOM tags to the cornerstone tags since cornerstone tags
         // are camelCase and instance tags are all caps
         metadata = {
-          sequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions?.map(region => {
-            return {
-              regionSpatialFormat: region.RegionSpatialFormat,
-              regionDataType: region.RegionDataType,
-              regionFlags: region.RegionFlags,
-              regionLocationMinX0: region.RegionLocationMinX0,
-              regionLocationMinY0: region.RegionLocationMinY0,
-              regionLocationMaxX1: region.RegionLocationMaxX1,
-              regionLocationMaxY1: region.RegionLocationMaxY1,
-              referencePixelX0: region.ReferencePixelX0,
-              referencePixelY0: region.ReferencePixelY0,
-              referencePixelPhysicalValueX: region.ReferencePixelPhysicalValueX,
-              referencePixelPhysicalValueY: region.ReferencePixelPhysicalValueY,
-              physicalUnitsXDirection: region.PhysicalUnitsXDirection,
-              physicalUnitsYDirection: region.PhysicalUnitsYDirection,
-              physicalDeltaX: region.PhysicalDeltaX,
-              physicalDeltaY: region.PhysicalDeltaY,
-            };
-          }),
+          sequenceOfUltrasoundRegions:
+            instance.SequenceOfUltrasoundRegions &&
+            asArray(instance.SequenceOfUltrasoundRegions).map(region => {
+              return {
+                regionSpatialFormat: region.RegionSpatialFormat,
+                regionDataType: region.RegionDataType,
+                regionFlags: region.RegionFlags,
+                regionLocationMinX0: region.RegionLocationMinX0,
+                regionLocationMinY0: region.RegionLocationMinY0,
+                regionLocationMaxX1: region.RegionLocationMaxX1,
+                regionLocationMaxY1: region.RegionLocationMaxY1,
+                referencePixelX0: region.ReferencePixelX0,
+                referencePixelY0: region.ReferencePixelY0,
+                referencePixelPhysicalValueX: region.ReferencePixelPhysicalValueX,
+                referencePixelPhysicalValueY: region.ReferencePixelPhysicalValueY,
+                physicalUnitsXDirection: region.PhysicalUnitsXDirection,
+                physicalUnitsYDirection: region.PhysicalUnitsYDirection,
+                physicalDeltaX: region.PhysicalDeltaX,
+                physicalDeltaY: region.PhysicalDeltaY,
+              };
+            }),
         };
         break;
 

@@ -2,6 +2,7 @@ import { SOPClassHandlerId } from './id';
 import { utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
+import { asArray } from '@cornerstonejs/utils';
 
 const SOP_CLASS_UIDS = {
   VIDEO_MICROSCOPIC_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.2.1',
@@ -39,7 +40,8 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       const tsuid =
         metadata.AvailableTransferSyntaxUID || metadata.TransferSyntaxUID || metadata['00083002'];
 
-      if (supportedTransferSyntaxUIDs.includes(tsuid)) {
+      // AvailableTransferSyntaxUID is UI 1-n: dcmjs 1.0 keeps one value as a list
+      if (asArray(tsuid).some(uid => supportedTransferSyntaxUIDs.includes(uid))) {
         return true;
       }
 

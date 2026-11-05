@@ -1,4 +1,4 @@
-import dcmjs from 'dcmjs';
+import dcmjs from '@dcmjs-org/dcmjs';
 
 export const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
@@ -24,7 +24,6 @@ export const RUNTIME_INSTANCE_PROPERTY_KEYS = [
   'wadoUriRoot',
   'imageRendering',
   'imageId',
-  '_parentInstance',
   'frameNumber',
 ] as const;
 
