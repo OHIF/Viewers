@@ -295,10 +295,9 @@ failure. A later pull request will add an automatic mode that probes the device.
   `mprAnd3DVolumeViewport`, `only3D`, `primary3D`, `primaryAxial` and the `tmtv` protocol set
   an `imageLoadStrategy`, and a protocol with a strategy does not use the retrieve stages of
   the volume. These protocols still show gray lines while a volume loads.
-- **The Cornerstone3D fidelity indicator can cover the OHIF menus.** The indicator
-  (`fi-root`) has a z-index of 1000, which is above the OHIF menu layer. On a reduced volume
-  the indicator can take a click on a menu item. The OHIF fidelity indicator pull request
-  will address this.
+- **The Cornerstone3D fidelity indicator is disabled in OHIF.** `init.tsx` sets
+  `dangerouslyDisableFidelityIndicator: true` so CS3D’s `.fi-root` (z-index 1000) cannot
+  cover OHIF menus. OHIF shows fidelity on `viewportOverlay.topRight` instead (#6256).
 - **No automatic test covers the new viewports or the reduction.** See
   [OHIF/Viewers#6404](https://github.com/OHIF/Viewers/issues/6404).
 

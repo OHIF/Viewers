@@ -77,9 +77,13 @@ export default async function init({
 
   // appConfig.lossyDownsampling = { final, interactive, interleavedLoading }.
   // An absent kind keeps the Cornerstone3D default: final off, the others on.
+  // OHIF owns the fidelity indicator (viewportOverlay); turn off CS3D's .fi-root
+  // so it cannot cover OHIF menus. Fidelity state and VIEWPORT_FIDELITY_CHANGED
+  // keep running.
   await cs3DInit({
     peerImport: appConfig.peerImport,
     debug: { statsOverlay },
+    dangerouslyDisableFidelityIndicator: true,
     ...(appConfig.lossyDownsampling && {
       rendering: { lossyDownsampling: appConfig.lossyDownsampling },
     }),
