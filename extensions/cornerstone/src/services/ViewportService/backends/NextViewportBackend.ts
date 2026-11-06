@@ -533,7 +533,7 @@ export class NextViewportBackend implements IViewportBackend {
         // normalized from the HP string ('MIP') to a BlendModes enum by
         // ViewportInfo.mapDisplaySetOptions, and slabThickness was resolved to a
         // number by _getSlabThickness ('fullVolume' -> volume diagonal).
-        if (!is3D && volumeInput.blendMode !== undefined) {
+        if (volumeInput.blendMode !== undefined) {
           presentationProps.blendMode = volumeInput.blendMode;
         }
         if (!is3D && volumeInput.slabThickness !== undefined) {
@@ -542,19 +542,6 @@ export class NextViewportBackend implements IViewportBackend {
         if (Object.keys(presentationProps).length > 0) {
           nativeViewport.setDisplaySetPresentation(dataId, presentationProps);
         }
-      }
-
-      // A native VOLUME_3D_NEXT presentation has no blendMode, so a projection
-      // requested by the protocol (e.g. 'MIP') is set on the volume mapper
-      // directly. A 3D ray cast already spans the whole volume, so slabThickness
-      // (including 'fullVolume') has nothing to clip and is intentionally unused.
-      if (is3D && index === 0 && volumeInput.blendMode !== undefined) {
-        const mapper = (
-          nativeViewport.getDefaultActor?.()?.actor as
-            | { getMapper?: () => { setBlendMode?: (mode: number) => void } }
-            | undefined
-        )?.getMapper?.();
-        mapper?.setBlendMode?.(volumeInput.blendMode);
       }
 
       // 3D volume rendering needs an RGBA transfer function (preset) to be visible;
