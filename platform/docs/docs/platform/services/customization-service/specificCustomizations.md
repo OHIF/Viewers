@@ -347,9 +347,9 @@ clinician label, or both (key: `cornerstone.fidelityIndicator.display`).
 
 | Value | Shows |
 | ----- | ----- |
-| `icon` (default) | Glyph only (aria-label and tooltip still carry the words) |
+| `icon` | Glyph only (aria-label and tooltip still carry the words) |
 | `text` | OHIF label only (“Transient Low Fidelity” / “Low Fidelity” / “Full Fidelity”) |
-| `both` | Glyph and OHIF label |
+| `both` (default) | Glyph and OHIF label |
 
 To remove the indicator entirely, clear or override `viewportOverlay.topRight` rather than
 this key — that removes disclosure of substituted pixels (`VF-CFG`).
@@ -358,7 +358,7 @@ this key — that removes disclosure of substituted pixels (`VF-CFG`).
 window.config = {
   customizationService: [
     {
-      'cornerstone.fidelityIndicator.display': 'both',
+      'cornerstone.fidelityIndicator.display': 'icon',
     },
   ],
 };

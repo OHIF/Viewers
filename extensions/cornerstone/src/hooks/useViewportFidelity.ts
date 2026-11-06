@@ -111,6 +111,16 @@ export function useViewportFidelity({
       wasLossyRef.current = nextWasLossy;
       const nextPresentation = presentationOf(next, nextWasLossy);
 
+      // Temporary debug — remove after fidelity indicator diagnosis.
+      console.debug('[fidelity]', viewportId, {
+        shownState: next?.shownState,
+        lossy: next?.lossy,
+        transient: next?.transient,
+        cause: next?.cause,
+        presentation: nextPresentation,
+        wasLossy: nextWasLossy,
+      });
+
       setState(next);
       setWasLossy(nextWasLossy);
 
@@ -128,11 +138,16 @@ export function useViewportFidelity({
       clearHold();
       setPresentation(nextPresentation);
     },
-    [clearHold]
+    [clearHold, viewportId]
   );
 
   const readSnapshot = useCallback(() => {
     const viewport = fidelityViewportOf(element, cornerstoneViewportService, viewportId);
+    if (!viewport) {
+      console.debug('[fidelity]', viewportId, 'no viewport yet', {
+        hasElement: Boolean(element),
+      });
+    }
     return viewport?.getFidelityState?.() ?? null;
   }, [cornerstoneViewportService, element, viewportId]);
 

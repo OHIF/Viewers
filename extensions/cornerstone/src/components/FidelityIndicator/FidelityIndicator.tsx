@@ -60,7 +60,7 @@ function normalizeDisplay(value: unknown): FidelityIndicatorDisplay {
   if (value === 'text' || value === 'both' || value === 'icon') {
     return value;
   }
-  return 'icon';
+  return 'both';
 }
 
 /** Map OHIF presentation + CS3D shownState to the CS3D glyph state. */
@@ -130,7 +130,7 @@ function FidelityGlyph() {
  * Per-viewport fidelity indicator for OHIF (#6256 / VF-VIS).
  * Consumes Cornerstone3D `VIEWPORT_FIDELITY_CHANGED` / `getFidelityState()`.
  * Disc matches CS3D product glyph; label is OHIF i18n when display allows it.
- * `cornerstone.fidelityIndicator.display`: `icon` | `text` | `both` (default `icon`).
+ * `cornerstone.fidelityIndicator.display`: `icon` | `text` | `both` (default `both`).
  */
 function FidelityIndicator({
   viewportId,
@@ -158,6 +158,32 @@ function FidelityIndicator({
   const idleRevealer = presentation === 'none' && wasLossy;
   const showIcon = display === 'icon' || display === 'both';
   const showText = display === 'text' || display === 'both';
+
+  // Temporary debug — remove after fidelity indicator diagnosis.
+  useEffect(() => {
+    console.debug('[fidelity-ui]', viewportId, {
+      display,
+      presentation,
+      glyphState,
+      wasLossy,
+      showIcon,
+      showText,
+      shownState: state?.shownState,
+      lossy: state?.lossy,
+      willRender: !(presentation === 'none' && !idleRevealer),
+    });
+  }, [
+    viewportId,
+    display,
+    presentation,
+    glyphState,
+    wasLossy,
+    showIcon,
+    showText,
+    state?.shownState,
+    state?.lossy,
+    idleRevealer,
+  ]);
 
   if (presentation === 'none' && !idleRevealer) {
     return null;
