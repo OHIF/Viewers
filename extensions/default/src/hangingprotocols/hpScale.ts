@@ -35,7 +35,7 @@ const hpScale: Types.HangingProtocol.Protocol = {
           weight: 1,
           attribute: 'numImageFrames',
           constraint: {
-            greaterThan: { value: 0 },
+            greaterThanOrEqual: { value: 0 },
           },
           required: true,
         },
