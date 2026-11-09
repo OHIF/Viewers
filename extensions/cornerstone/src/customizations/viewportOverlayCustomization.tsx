@@ -21,6 +21,7 @@ export default {
     },
   ],
   // VF-REG-1 / #6256: always-visible overlay surface (not viewportActionMenu).
+  // Laid out flush with the action-corner top-right band; menus stay hover-gated.
   // Remove or override this entry to disable (VF-CFG-1).
   'viewportOverlay.topRight': [
     {

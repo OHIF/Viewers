@@ -12,6 +12,10 @@
 .overlay-top {
   top: 2.15rem;
 }
+/* Flush with ViewportActionCorners topRight (top-[4px]) for fidelity. */
+.overlay-top-right {
+  top: 4px;
+}
 .overlay-bottom {
   bottom: 2.15rem;
 }
