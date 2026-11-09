@@ -1,0 +1,100 @@
+name: Claude Review Gate
+
+# Turns the Claude Code Review check run (which always concludes neutral) into
+# an approve / request-changes review plus a `claude-review-gate` commit status
+# on the reviewed SHA. The verdict is the machine-readable last line of the
+# check run's Details text:
+#   <!-- bughunter-severity: {"nit":0,"normal":1,"pre_existing":0} -->
+# `normal` counts Important findings, including still-open threads from
+# earlier reviews, so the gate stays red until they're fixed or resolved.
+#
+# check_run workflows run from the default branch, so a PR can't alter its
+# own gate (and edits here only take effect once merged to v3.9.4-radimal).
+
+on:
+  check_run:
+    types: [completed]
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: write
+  statuses: write
+
+concurrency:
+  group: claude-review-gate-${{ github.event.check_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    # Match on the app too — an Actions job named "Claude Code Review" in a PR
+    # must not be able to stamp itself. `skipped` means a push changed no
+    # files; the previous verdict stands.
+    if: >-
+      github.event.check_run.name == 'Claude Code Review'
+      && github.event.check_run.app.slug == 'claude'
+      && github.event.check_run.conclusion != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Stamp PR from Claude review verdict
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          CHECK_RUN_ID: ${{ github.event.check_run.id }}
+          SHA: ${{ github.event.check_run.head_sha }}
+          CHECK_URL: ${{ github.event.check_run.html_url }}
+        run: |
+          set -euo pipefail
+
+          # The Claude app leaves check_run.pull_requests empty, so resolve the
+          # PR from the commit. Only stamp if it's still the head — a verdict
+          # for a superseded commit must not approve code it never saw.
+          PR=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+            --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0].number // empty")
+          if [ -z "$PR" ]; then
+            echo "No open PR has $SHA as its head — nothing to stamp."
+            exit 0
+          fi
+
+          CHECK=$(gh api "repos/$REPO/check-runs/$CHECK_RUN_ID")
+          TEXT=$(jq -r '.output.text // ""' <<<"$CHECK")
+          TITLE=$(jq -r '.output.title // "Claude Code Review"' <<<"$CHECK")
+          VERDICT=$(sed -n 's/.*<!-- bughunter-severity: \(.*\) -->.*/\1/p' <<<"$TEXT" | tail -n 1)
+
+          # A failed, timed-out, cancelled or superseded review has no verdict
+          # line. Treat that as "no verdict", never as zero findings: leave the
+          # status pending and don't touch the PR's reviews.
+          if [ -z "$VERDICT" ] || ! N=$(jq -er '.normal' <<<"$VERDICT"); then
+            gh api "repos/$REPO/statuses/$SHA" -f state=pending -f context=claude-review-gate \
+              -f description="No verdict from Claude Code Review (${{ github.event.check_run.conclusion }})" \
+              -f target_url="$CHECK_URL"
+            exit 0
+          fi
+          NITS=$(jq -r '.nit // 0' <<<"$VERDICT")
+          PRE_EXISTING=$(jq -r '.pre_existing // 0' <<<"$VERDICT")
+
+          if [ "$N" -gt 0 ]; then
+            STATE=failure
+            EVENT=REQUEST_CHANGES
+            DESC="$N important finding(s)"
+          else
+            STATE=success
+            EVENT=APPROVE
+            DESC="No important findings"
+          fi
+
+          gh api "repos/$REPO/statuses/$SHA" -f state=$STATE -f context=claude-review-gate \
+            -f description="$DESC" -f target_url="$CHECK_URL"
+
+          BODY=$(cat <<EOF
+          🤖 **Claude review gate: ${EVENT//_/ }** for \`${SHA:0:7}\`
+
+          [$TITLE]($CHECK_URL): $N important, $NITS nit, $PRE_EXISTING pre-existing.
+          $([ "$N" -gt 0 ] && echo "Fix the 🔴 Important findings or resolve their threads, then re-run Claude Code Review.")
+          EOF
+          )
+          # commit_id pins the review to the SHA Claude actually reviewed.
+          gh api -X POST "repos/$REPO/pulls/$PR/reviews" \
+            -f commit_id="$SHA" -f event=$EVENT -f body="$BODY"
