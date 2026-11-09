@@ -439,6 +439,9 @@ importers:
       '@cornerstonejs/utils':
         specifier: 5.12.0
         version: 5.12.0
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@icr/polyseg-wasm':
         specifier: 0.4.0
         version: 0.4.0
@@ -454,9 +457,6 @@ importers:
       '@ohif/extension-default':
         specifier: workspace:*
         version: link:../default
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -549,6 +549,12 @@ importers:
       '@babel/runtime':
         specifier: 7.29.7
         version: 7.29.7
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -592,6 +598,9 @@ importers:
       '@cornerstonejs/core':
         specifier: 5.12.0
         version: 5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@kitware/vtk.js':
         specifier: 36.4.1
         version: 36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0)
@@ -641,6 +650,9 @@ importers:
       '@cornerstonejs/tools':
         specifier: 5.12.0
         version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -650,9 +662,6 @@ importers:
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -663,6 +672,9 @@ importers:
         specifier: 19.2.7
         version: 19.2.7
     devDependencies:
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
@@ -693,9 +705,6 @@ importers:
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -718,15 +727,18 @@ importers:
       '@cornerstonejs/calculate-suv':
         specifier: 1.1.0
         version: 1.1.0
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
       '@ohif/i18n':
         specifier: workspace:*
         version: link:../../platform/i18n
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicomweb-client:
         specifier: 0.10.4
         version: 0.10.4
@@ -776,6 +788,9 @@ importers:
       '@cornerstonejs/codec-openjpeg':
         specifier: 1.3.2
         version: 1.3.2
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
@@ -831,9 +846,6 @@ importers:
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -856,15 +868,15 @@ importers:
       '@babel/runtime':
         specifier: 7.29.7
         version: 7.29.7
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -905,9 +917,6 @@ importers:
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       lodash.debounce:
         specifier: 4.0.8
         version: 4.0.8
@@ -939,9 +948,6 @@ importers:
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -961,15 +967,18 @@ importers:
       '@babel/runtime':
         specifier: 7.29.7
         version: 7.29.7
+      '@cornerstonejs/utils':
+        specifier: 5.12.0
+        version: 5.12.0
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@ohif/core':
         specifier: workspace:*
         version: link:../../platform/core
       classnames:
         specifier: 2.5.1
         version: 2.5.1
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -1521,6 +1530,9 @@ importers:
       '@cornerstonejs/dicom-image-loader':
         specifier: 5.12.0
         version: 5.12.0(@cornerstonejs/core@5.12.0(@cornerstonejs/metadata@5.12.0)(@cornerstonejs/utils@5.12.0)(autoprefixer@10.4.27(postcss@8.5.26))(wslink@2.5.0))(@cornerstonejs/metadata@5.12.0)(dicom-parser@1.8.21)
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       '@emotion/serialize':
         specifier: 1.3.3
         version: 1.3.3
@@ -1548,9 +1560,6 @@ importers:
       cornerstone-math:
         specifier: 0.1.10
         version: 0.1.10
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       detect-gpu:
         specifier: 4.0.50
         version: 4.0.50
@@ -1738,12 +1747,12 @@ importers:
       '@cornerstonejs/utils':
         specifier: 5.12.0
         version: 5.12.0
+      '@dcmjs-org/dcmjs':
+        specifier: 1.0.0-beta.10
+        version: 1.0.0-beta.10
       cornerstone-math:
         specifier: 0.1.10
         version: 0.1.10
-      dcmjs:
-        specifier: 0.52.0
-        version: 0.52.0
       dicom-parser:
         specifier: 1.8.21
         version: 1.8.21
@@ -3602,6 +3611,31 @@ packages:
 
   '@date-fns/tz@1.5.0':
     resolution: {integrity: sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg==}
+
+  '@dcmjs-org/core@1.0.0-beta.10':
+    resolution: {integrity: sha512-KatRCUwrn0AbTGYULCLZbOqTJP+8ep5bxuBQ+cGWaxFnZ5dz9b76hh8hIwWLbMqSzqVpgqbs2PTpljynf08F8g==}
+
+  '@dcmjs-org/dcmjs@1.0.0-beta.10':
+    resolution: {integrity: sha512-bmzXmaBklWIWiar3eTzzqG1sIyqfBgef9Ep3uA+Nb0ZOvCPHXyiGrMC+srj1KZX5WQQ+PrDq8R2uH8zyYCU0fw==}
+    engines: {node: '>=22.13'}
+
+  '@dcmjs-org/dicomdir@1.0.0-beta.10':
+    resolution: {integrity: sha512-CkskqWukk8KLiizocznUAhWW2Rj1xzmGNndQCQJgfh6pQYCBxh+okk89uJym79YrRrubELubsci3VGnGUOlgLA==}
+
+  '@dcmjs-org/encapsulated@1.0.0-beta.10':
+    resolution: {integrity: sha512-B6ClYrbnlp38ZhBdDnuqnbSKNj/CmckY1cpNZT2gyw6aCD+zDedOIOdpL6eD0AdBlWq9grjzDB6s+Fz1h23J3w==}
+
+  '@dcmjs-org/imaging@1.0.0-beta.10':
+    resolution: {integrity: sha512-9q+8fEETyJYhhTZTkUHgdZveb8il4XmT7Vc9wdGAJlTSwODDO99lx5YPw3p5KEeHHcDoB11BAcIwgqIQ3J5W2A==}
+
+  '@dcmjs-org/media@1.0.0-beta.10':
+    resolution: {integrity: sha512-n/UrvtGeFmFh90ZRVNi9dnfB28GXHXh6AOq0oQsA3Vck1Jhc8hSuyOiDK5fTisBylFUw0EdaVQmORYrKOxJAhQ==}
+
+  '@dcmjs-org/parser@1.0.0-beta.10':
+    resolution: {integrity: sha512-Fq7GeY3GQDuX2cleCSva9KoAESwN5hTtaLDisrkNgOt33tfV2JhFxX2mu+4Yzqn09NxbruGiMforP1u8DKKTqg==}
+
+  '@dcmjs-org/video@1.0.0-beta.10':
+    resolution: {integrity: sha512-DmPHdlCJkdbEBtPOl/U025rHWm/dqePKlfAq7Cr667aeVOiOGVhzGu8nPFNkE05ixWPiOK/8fPA4cTlkrOVhtQ==}
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -15703,6 +15737,57 @@ snapshots:
       - supports-color
 
   '@date-fns/tz@1.5.0': {}
+
+  '@dcmjs-org/core@1.0.0-beta.10':
+    dependencies:
+      loglevel: 1.9.2
+      pako: 2.1.0
+
+  '@dcmjs-org/dcmjs@1.0.0-beta.10':
+    dependencies:
+      '@babel/runtime-corejs3': 7.29.2
+      '@dcmjs-org/core': 1.0.0-beta.10
+      '@dcmjs-org/encapsulated': 1.0.0-beta.10
+      '@dcmjs-org/imaging': 1.0.0-beta.10
+      '@dcmjs-org/media': 1.0.0-beta.10
+      '@dcmjs-org/parser': 1.0.0-beta.10
+      '@dcmjs-org/video': 1.0.0-beta.10
+      adm-zip: 0.6.1
+      gl-matrix: 3.4.4
+      lodash.clonedeep: 4.5.0
+      loglevel: 1.9.2
+      ndarray: 1.0.19
+      pako: 2.1.0
+
+  '@dcmjs-org/dicomdir@1.0.0-beta.10':
+    dependencies:
+      '@dcmjs-org/core': 1.0.0-beta.10
+
+  '@dcmjs-org/encapsulated@1.0.0-beta.10':
+    dependencies:
+      '@dcmjs-org/core': 1.0.0-beta.10
+
+  '@dcmjs-org/imaging@1.0.0-beta.10':
+    dependencies:
+      '@dcmjs-org/core': 1.0.0-beta.10
+
+  '@dcmjs-org/media@1.0.0-beta.10':
+    dependencies:
+      '@dcmjs-org/dicomdir': 1.0.0-beta.10
+      '@dcmjs-org/encapsulated': 1.0.0-beta.10
+      '@dcmjs-org/imaging': 1.0.0-beta.10
+      '@dcmjs-org/video': 1.0.0-beta.10
+
+  '@dcmjs-org/parser@1.0.0-beta.10':
+    dependencies:
+      '@dcmjs-org/core': 1.0.0-beta.10
+      pako: 2.1.0
+
+  '@dcmjs-org/video@1.0.0-beta.10':
+    dependencies:
+      '@dcmjs-org/core': 1.0.0-beta.10
+      '@dcmjs-org/imaging': 1.0.0-beta.10
+      '@dcmjs-org/parser': 1.0.0-beta.10
 
   '@discoveryjs/json-ext@0.5.7': {}
 

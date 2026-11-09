@@ -11,23 +11,30 @@ export const fieldProxies = [
 
 const METADATA_PROXY_FLAG = Symbol('isMetadataProxy');
 
+/** The value of `field` in the first macro item of the shared functional groups that has it. */
+function sharedValue(instance, field) {
+  const groups = instance.SharedFunctionalGroupsSequence?.[0] ?? {};
+  for (const sequence of Object.values(groups)) {
+    const value = sequence?.[0]?.[field];
+    if (value !== undefined) {
+      return value;
+    }
+  }
+}
+
 /**
  * Adds proxy properties for a limited number of values which are sometimes
  * defined in multiframe instance data.
  *
- * If a requested field is in `metadataFieldsToWrap`:
- *   - It first tries to return the value from the current instance.
- *   - If not found, it attempts to retrieve the value from the `_parentInstance`.
- *   - If still not found, it checks `_parentInstance._shared`.
- *   - If none exist, it returns `undefined`.
+ * If a requested field is in `fieldProxies` and the instance has no own value,
+ * the getter returns the value of the shared functional groups, or `undefined`.
+ * A write defines a plain own value on the object that is written to, so a write
+ * to a frame view (an `Object.create` child of the instance) does not change the instance.
  *
  * For all other properties, it behaves like a regular property access.
  *
- * This allows graceful fallback access for DICOM metadata values that might be spread
- * across nested or shared metadata structures.
- *
  * @param {Object} instance - The target instance object to wrap.
- * @returns {Proxy} A proxy-wrapped instance with custom field resolution behavior.
+ * @returns {Object} The same instance, with the proxy fields.
  */
 export function addProxyFields(instance) {
   // Skip wrapping if already wrapped
@@ -35,28 +42,27 @@ export function addProxyFields(instance) {
     return instance;
   }
 
-  for(const fieldProxy of fieldProxies) {
-    if( fieldProxy in instance) {
+  for (const fieldProxy of fieldProxies) {
+    if (fieldProxy in instance) {
       continue;
     }
-    Object.defineProperty(instance,fieldProxy, {
+    Object.defineProperty(instance, fieldProxy, {
       configurable: true,
       enumerable: true,
-      get: () => {
-        return instance._parentInstance?.[fieldProxy] ?? instance._parentInstance?._shared?.[fieldProxy];
-      },
-      set: (value) => {
-        Object.defineProperty(instance,fieldProxy, {
+      get: () => sharedValue(instance, fieldProxy),
+      set(value) {
+        Object.defineProperty(this, fieldProxy, {
+          configurable: true,
           writable: true,
           enumerable: true,
           value,
-        })
-      }
+        });
+      },
     });
   }
 
   // Mark this proxy to avoid double wrapping
-  Object.defineProperty(instance,METADATA_PROXY_FLAG, { value: true });
+  Object.defineProperty(instance, METADATA_PROXY_FLAG, { value: true });
 
   return instance;
 }

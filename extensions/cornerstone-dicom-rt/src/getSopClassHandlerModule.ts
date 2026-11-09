@@ -1,6 +1,7 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
+import { asArray, asArrayFirst } from '@cornerstonejs/utils';
 
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
@@ -90,9 +91,11 @@ function _getDisplaySetsFromSeries(
     return;
   }
 
-  const referencedSeries = referencedSeriesSequence[0];
+  const referencedSeries = asArrayFirst(referencedSeriesSequence);
 
-  displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
+  displaySet.referencedImages = asArray(referencedSeriesSequence).flatMap(series =>
+    asArray(series.ReferencedInstanceSequence ?? [])
+  );
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   displaySet.FrameOfReferenceUID =
@@ -183,17 +186,17 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
 ) {
   const ReferencedSeriesSequence = [];
 
-  ReferencedFrameOfReferenceSequence.forEach(referencedFrameOfReference => {
+  asArray(ReferencedFrameOfReferenceSequence).forEach(referencedFrameOfReference => {
     const { RTReferencedStudySequence } = referencedFrameOfReference;
 
-    RTReferencedStudySequence.forEach(rtReferencedStudy => {
+    asArray(RTReferencedStudySequence ?? []).forEach(rtReferencedStudy => {
       const { RTReferencedSeriesSequence } = rtReferencedStudy;
 
-      RTReferencedSeriesSequence.forEach(rtReferencedSeries => {
+      asArray(RTReferencedSeriesSequence ?? []).forEach(rtReferencedSeries => {
         const ReferencedInstanceSequence = [];
         const { ContourImageSequence, SeriesInstanceUID } = rtReferencedSeries;
 
-        ContourImageSequence.forEach(contourImage => {
+        asArray(ContourImageSequence ?? []).forEach(contourImage => {
           ReferencedInstanceSequence.push({
             ReferencedSOPInstanceUID: contourImage.ReferencedSOPInstanceUID,
             ReferencedSOPClassUID: contourImage.ReferencedSOPClassUID,

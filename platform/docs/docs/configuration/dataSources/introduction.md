@@ -9,7 +9,12 @@ summary: Introduces OHIF's data structure based on naturalized DICOM JSON format
 
 The internal data structure of OHIF’s metadata follows naturalized DICOM JSON, a
 format pioneered by `dcmjs`. In short DICOM metadata headers with DICOM Keywords
-instead of tags and sequences as arrays, for easy development and clear code.
+instead of tags, for easy development and clear code. OHIF uses the shapes of
+`@dcmjs-org/dcmjs` 1.0: a sequence with one item is the item object, and a
+sequence with more items is a list. Use `asArray` from `@cornerstonejs/utils` to
+read a sequence as a list. A private element is in a `gggg:creator` block; read it
+with `getPrivateTagValue(instance, group, creator, element)` from
+`@cornerstonejs/utils`, not by its 8-digit hex key.
 
 Here in this section we will discuss couple of data sources that are commonly used
 and OHIF has provided the implementation for them.

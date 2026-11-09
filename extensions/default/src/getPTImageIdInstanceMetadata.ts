@@ -1,4 +1,5 @@
 import OHIF, { utils } from '@ohif/core';
+import { asArrayFirst, asMultiValueArray, getPrivateTagValue } from '@cornerstonejs/utils';
 
 import type { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv';
 
@@ -39,7 +40,8 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
   }
 
   const instanceMetadata: InstanceMetadata = {
-    CorrectedImage: dicomMetaData.CorrectedImage,
+    // A DICOMweb source can write the values as one backslash-joined value.
+    CorrectedImage: asMultiValueArray(dicomMetaData.CorrectedImage),
     Units: dicomMetaData.Units,
     RadionuclideHalfLife: radionuclideHalfLife,
     RadionuclideTotalDose: radionuclideTotalDose,
@@ -53,13 +55,9 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     AcquisitionTime: dicomMetaData.AcquisitionTime,
   };
 
-  // Philips PET private group. Only populated with values that coerce to real
-  // numbers; an unresolved bulkdata object yields undefined and is dropped so it
-  // can never corrupt the SUV calculation. SUVScaleFactor is (7053,1000) and
-  // ActivityConcentrationScaleFactor is (7053,1009). These are resolved from
-  // bulkdata upstream during ingestion (utils.resolveBulkDataTags).
-  const suvScaleFactor = coerceNumber(dicomMetaData['70531000']);
-  const activityConcentrationScaleFactor = coerceNumber(dicomMetaData['70531009']);
+  // Only finite numbers; see readPhilipsFactor.
+  const suvScaleFactor = readPhilipsFactor(dicomMetaData, 0x00);
+  const activityConcentrationScaleFactor = readPhilipsFactor(dicomMetaData, 0x09);
   if (suvScaleFactor !== undefined || activityConcentrationScaleFactor !== undefined) {
     const philipsPETPrivateGroup: PhilipsPETPrivateGroup = {
       SUVScaleFactor: suvScaleFactor,
@@ -68,8 +66,12 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
     instanceMetadata.PhilipsPETPrivateGroup = philipsPETPrivateGroup;
   }
 
-  if (dicomMetaData['0009100d'] !== undefined) {
-    instanceMetadata.GEPrivatePostInjectionDateTime = dicomMetaData['0009100d'];
+  // GE post-injection date time (0009,xx0D), creator GEMS_PETD_01.
+  const gePostInjectionDateTime = asArrayFirst(
+    getPrivateTagValue(dicomMetaData, 0x0009, 'GEMS_PETD_01', 0x0d)
+  );
+  if (gePostInjectionDateTime != null) {
+    instanceMetadata.GEPrivatePostInjectionDateTime = gePostInjectionDateTime;
   }
 
   const frameReferenceTime = coerceNumber(dicomMetaData.FrameReferenceTime);
@@ -95,6 +97,21 @@ export default function getPTImageIdInstanceMetadata(imageId: string): InstanceM
 }
 
 export { getPTImageIdInstanceMetadata };
+
+/**
+ * Reads a factor of the Philips PET private group (7053,xxEE), creator
+ * `Philips PET Private Group`: element 0x00 is the SUV Scale Factor, and 0x09
+ * the Activity Concentration Scale Factor. `getPrivateTagValue` reads the dcmjs
+ * 1.0 block, which survives the copy of a multi-frame instance
+ * (`combineFrameInstance`), and the hex-key form. dcmjs 1.0 gives the value as a
+ * list. `utils.resolveBulkDataTags` resolves a bulk data value during
+ * ingestion; a value that is still an object gives `undefined`.
+ */
+function readPhilipsFactor(instance: object, element: number): number | undefined {
+  return coerceNumber(
+    asArrayFirst(getPrivateTagValue(instance, 0x7053, 'Philips PET Private Group', element))
+  );
+}
 
 /**
  * Coerces a naturalized DICOM value into a finite number, or returns undefined.

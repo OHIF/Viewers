@@ -9,6 +9,7 @@ import {
 import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { asArray } from '@cornerstonejs/utils';
 
 import addSRAnnotation from './utils/addSRAnnotation';
 import isRehydratable from './utils/isRehydratable';
@@ -365,7 +366,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     const { ReferencedSOPInstanceUID } = referencedSOPSequence;
-    const frame = referencedSOPSequence.ReferencedFrameNumber || 1;
+    const frame = _getReferencedFrameNumber(referencedSOPSequence);
     const key = `${ReferencedSOPInstanceUID}:${frame}`;
     const imageId = imageIdMap.get(key);
 
@@ -385,6 +386,15 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 }
 
 /**
+ * The first ReferencedFrameNumber of a ReferencedSOPSequence item, or 1.
+ * dcmjs 1.0 gives a one-value IS 1-n as a list, and an empty element as `[]`
+ * (an invalid but seen DICOM value), so both read as frame 1.
+ */
+function _getReferencedFrameNumber(referencedSOPSequence) {
+  return Number(asArray(referencedSOPSequence?.ReferencedFrameNumber)[0]) || 1;
+}
+
+/**
  * Checks if a measurement references a specific SOP Instance UID.
  * @param {any} measurement - The measurement object.
  * @param {string} sopInstanceUID - The SOP Instance UID to check against.
@@ -398,12 +408,11 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
    * NOTE: The ReferencedFrameNumber can be multiple values according to the DICOM
    * Standard. But for now, we will support only one ReferenceFrameNumber.
    */
-  const ReferencedFrameNumber =
-    (measurement.coords[0].ReferencedSOPSequence &&
-      measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
-    1;
+  const ReferencedFrameNumber = _getReferencedFrameNumber(
+    measurement.coords[0].ReferencedSOPSequence
+  );
 
-  if (frameNumber && Number(frameNumber) !== Number(ReferencedFrameNumber)) {
+  if (frameNumber && Number(frameNumber) !== ReferencedFrameNumber) {
     return false;
   }
 
@@ -450,7 +459,7 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
  * @returns {any[]} The array of measurements.
  */
 function _getMeasurements(ImagingMeasurementReportContentSequence) {
-  const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
+  const ImagingMeasurements = _getSequenceAsArray(ImagingMeasurementReportContentSequence).find(
     item =>
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements
   );
@@ -788,7 +797,7 @@ function _getLabelFromMeasuredValueSequence(ConceptNameCodeSequence, MeasuredVal
  * @returns {any[]} The list of referenced images.
  */
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
-  const ImageLibrary = ImagingMeasurementReportContentSequence.find(
+  const ImageLibrary = _getSequenceAsArray(ImagingMeasurementReportContentSequence).find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
   );
 
