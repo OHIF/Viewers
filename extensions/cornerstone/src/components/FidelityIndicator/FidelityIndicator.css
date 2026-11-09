@@ -43,9 +43,9 @@
 
 /* Hover target after recovered withdrew (VF-VIS-1d). */
 .ohif-fidelity--idle {
-  width: 0.75rem;
-  height: 0.75rem;
-  min-width: 0.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
   opacity: 0;
 }
 
@@ -61,8 +61,8 @@
   display: none;
   position: relative;
   flex-shrink: 0;
-  width: 10px;
-  height: 10px;
+  width: 24px;
+  height: 24px;
   transform-origin: center;
 }
 
@@ -92,10 +92,10 @@
 
 .ohif-fidelity .fi-html-dot {
   position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 6px;
-  height: 6px;
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  height: 60%;
   border-radius: 50%;
   background: var(--fi-amber);
   transform: translateZ(0);
@@ -269,8 +269,8 @@
 .ohif-fidelity .fidelity-indicator {
   display: block;
   flex-shrink: 0;
-  width: 10px;
-  height: 10px;
+  width: 24px;
+  height: 24px;
   overflow: visible;
 }
 

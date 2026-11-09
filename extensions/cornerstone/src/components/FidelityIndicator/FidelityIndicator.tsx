@@ -60,7 +60,7 @@ function normalizeDisplay(value: unknown): FidelityIndicatorDisplay {
   if (value === 'text' || value === 'both' || value === 'icon') {
     return value;
   }
-  return 'both';
+  return 'icon';
 }
 
 /** Map OHIF presentation + CS3D shownState to the CS3D glyph state. */
@@ -92,8 +92,8 @@ function FidelityGlyph() {
       </div>
       <svg
         className="fidelity-indicator"
-        width="10"
-        height="10"
+        width="24"
+        height="24"
         viewBox="0 0 15 15"
         aria-hidden="true"
       >
@@ -130,7 +130,7 @@ function FidelityGlyph() {
  * Per-viewport fidelity indicator for OHIF (#6256 / VF-VIS).
  * Consumes Cornerstone3D `VIEWPORT_FIDELITY_CHANGED` / `getFidelityState()`.
  * Disc matches CS3D product glyph; label is OHIF i18n when display allows it.
- * `cornerstone.fidelityIndicator.display`: `icon` | `text` | `both` (default `both`).
+ * `cornerstone.fidelityIndicator.display`: `icon` | `text` | `both` (default `icon`).
  */
 function FidelityIndicator({
   viewportId,

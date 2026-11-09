@@ -1,9 +1,9 @@
 /**
  * How the viewport fidelity indicator presents itself on `viewportOverlay.*`.
  *
- * - `icon` — CS3D-style glyph only
+ * - `icon` — CS3D-style glyph only (default)
  * - `text` — OHIF clinician label only
- * - `both` — glyph and OHIF label (default)
+ * - `both` — glyph and OHIF label
  *
  * Aria-label and tooltip always carry the words. Removing the indicator
  * entirely is done by clearing `viewportOverlay.topRight` (VF-CFG-1), not
@@ -12,5 +12,5 @@
 export type FidelityIndicatorDisplay = 'icon' | 'text' | 'both';
 
 export default {
-  'cornerstone.fidelityIndicator.display': 'both' as FidelityIndicatorDisplay,
+  'cornerstone.fidelityIndicator.display': 'icon' as FidelityIndicatorDisplay,
 };
