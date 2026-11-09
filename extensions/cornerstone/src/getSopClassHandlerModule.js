@@ -1,6 +1,7 @@
 import OHIF from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 import dcmjs from 'dcmjs';
 import { dicomWebUtils } from '@ohif/extension-default';
 import { buildEcgModule } from './utils/ecgMetadata';
@@ -195,6 +196,14 @@ function _getEcgDisplaySetsFromSeries(instances, servicesManager) {
           type: MetadataModules.ECG,
           metadata: ecgModule,
         });
+        // The time and mV region, so measurement tools report physical units
+        const calibration = csMetadataUtilities.buildEcgCalibrationFromInstance?.(instance);
+        if (calibration) {
+          csUtils.genericMetadataProvider.addRaw(imageId, {
+            type: MetadataModules.CALIBRATION,
+            metadata: calibration,
+          });
+        }
       }
     }
 
