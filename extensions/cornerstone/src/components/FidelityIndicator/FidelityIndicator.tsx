@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 import { useCustomization } from '@ohif/core';
 import {
   useViewportFidelity,
@@ -10,8 +10,6 @@ import type { FidelityIndicatorDisplay } from '../../customizations/fidelityIndi
 import type { Types } from '@cornerstonejs/core';
 
 import './FidelityIndicator.css';
-
-type GlyphState = 'loading' | 'lod' | 'lossy' | 'done';
 
 function labelKeyOf(presentation: FidelityPresentation): string | null {
   if (presentation === 'transient') {
@@ -63,74 +61,12 @@ function normalizeDisplay(value: unknown): FidelityIndicatorDisplay {
   return 'icon';
 }
 
-/** Map OHIF presentation + CS3D shownState to the CS3D glyph state. */
-function glyphStateOf(
-  presentation: FidelityPresentation,
-  shownState: Types.ViewportFidelityShownState | undefined
-): GlyphState | null {
-  if (presentation === 'recovered') {
-    return 'done';
-  }
-  if (presentation === 'standing') {
-    return 'lossy';
-  }
-  if (presentation === 'transient') {
-    return shownState === 'lod' ? 'lod' : 'loading';
-  }
-  return null;
-}
-
-function FidelityGlyph() {
-  return (
-    <>
-      <div
-        className="fi-html"
-        aria-hidden="true"
-      >
-        <div className="fi-html-ring" />
-        <div className="fi-html-dot" />
-      </div>
-      <svg
-        className="fidelity-indicator"
-        width="24"
-        height="24"
-        viewBox="0 0 15 15"
-        aria-hidden="true"
-      >
-        <g className="fi-glyph">
-          <circle
-            className="fi-disc"
-            cx="7.5"
-            cy="7.5"
-            r="7.5"
-          />
-          <g className="fi-dot-wrap">
-            <circle
-              className="fi-dot"
-              cx="7.5"
-              cy="7.5"
-              r="4.5"
-            />
-          </g>
-          <path
-            className="fi-check"
-            d="M4.7 7.8 L6.7 9.7 L10.3 5.7"
-          />
-          <path
-            className="fi-dash"
-            d="M5 7.5 H10"
-          />
-        </g>
-      </svg>
-    </>
-  );
-}
-
 /**
  * Per-viewport fidelity indicator for OHIF (#6256 / VF-VIS).
  * Consumes Cornerstone3D `VIEWPORT_FIDELITY_CHANGED` / `getFidelityState()`.
- * Disc matches CS3D product glyph; label is OHIF i18n when display allows it.
- * `cornerstone.fidelityIndicator.display`: `icon` | `text` | `both` (default `icon`).
+ * Glyph is a fixed yellow warning triangle; transient vs standing is carried by
+ * label / aria / tooltip. `cornerstone.fidelityIndicator.display`:
+ * `icon` | `text` | `both` (default `icon`).
  */
 function FidelityIndicator({
   viewportId,
@@ -144,46 +80,12 @@ function FidelityIndicator({
   const { presentation, wasLossy, state, revealRecovered, hideRecoveredReveal } =
     useViewportFidelity({ viewportId, element });
 
-  const glyphState = glyphStateOf(presentation, state?.shownState);
-  const prevGlyphRef = useRef<GlyphState | null>(null);
-  const dataFrom =
-    glyphState === 'lossy' && prevGlyphRef.current === 'loading' ? 'loading' : undefined;
-
-  useEffect(() => {
-    if (glyphState) {
-      prevGlyphRef.current = glyphState;
-    }
-  }, [glyphState]);
-
   const idleRevealer = presentation === 'none' && wasLossy;
   const showIcon = display === 'icon' || display === 'both';
   const showText = display === 'text' || display === 'both';
-
-  // Temporary debug — remove after fidelity indicator diagnosis.
-  useEffect(() => {
-    console.debug('[fidelity-ui]', viewportId, {
-      display,
-      presentation,
-      glyphState,
-      wasLossy,
-      showIcon,
-      showText,
-      shownState: state?.shownState,
-      lossy: state?.lossy,
-      willRender: !(presentation === 'none' && !idleRevealer),
-    });
-  }, [
-    viewportId,
-    display,
-    presentation,
-    glyphState,
-    wasLossy,
-    showIcon,
-    showText,
-    state?.shownState,
-    state?.lossy,
-    idleRevealer,
-  ]);
+  // Yellow triangle only while lossy; recovered uses text (if enabled) then withdraws.
+  const showWarningGlyph =
+    showIcon && (presentation === 'transient' || presentation === 'standing');
 
   if (presentation === 'none' && !idleRevealer) {
     return null;
@@ -205,16 +107,18 @@ function FidelityIndicator({
         <button
           type="button"
           className={`ohif-fidelity${isIdle ? ' ohif-fidelity--idle' : ''}`}
-          data-state={glyphState ?? undefined}
-          data-from={dataFrom}
-          data-shown={glyphState === 'done' ? 'true' : undefined}
           aria-label={t(ariaKeyOf(ariaPresentation))}
           onMouseEnter={revealRecovered}
           onMouseLeave={hideRecoveredReveal}
           onFocus={revealRecovered}
           onBlur={hideRecoveredReveal}
         >
-          {showIcon && !isIdle ? <FidelityGlyph /> : null}
+          {showWarningGlyph ? (
+            <Icons.StatusWarning
+              className="ohif-fidelity__glyph"
+              aria-hidden="true"
+            />
+          ) : null}
           {showText && labelKey ? (
             <span className="ohif-fidelity__label">{t(labelKey)}</span>
           ) : null}
