@@ -1,5 +1,7 @@
 import { Locator } from 'playwright';
 
+import type { MouseButton } from './mouseUtils';
+
 /**
  *
  * @parm locator - The locator to click on
@@ -16,7 +18,7 @@ export async function simulateClicksOnElement({
 }: {
   locator: Locator;
   points: { x: number; y: number }[];
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   delay?: number;
 }) {
   for (const { x, y } of points) {
@@ -73,7 +75,7 @@ export async function simulateNormalizedClickOnElement({
 }: {
   locator: Locator;
   normalizedPoint: { x: number; y: number };
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   delay?: number;
 }) {
   const bBox = await locator.boundingBox();
@@ -97,7 +99,7 @@ export async function simulateNormalizedClicksOnElement({
 }: {
   locator: Locator;
   normalizedPoints: { x: number; y: number }[];
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   delay?: number;
 }) {
   for (const normalizedPoint of normalizedPoints) {
