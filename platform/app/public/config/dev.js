@@ -16,7 +16,11 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: ['@ohif/extension-default.customizationModule.theme'],
+  customizationService: {
+    // A `?customization=gpu/<preset>` URL module applies after this block, so it wins.
+    bootstrap: { 'cornerstone.gpuSettingsPreset': 'medium' },
+    global: ['@ohif/extension-default.customizationModule.theme'],
+  },
 
   // URL-driven customizations (?customization=). The `default` prefix (no
   // slashes) is used for values without a leading slash; every other prefix
@@ -37,9 +41,8 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   // Lossy downsampling for the tests and the deploy previews. `final` reduces
-  // a volume texture to fit the GPU settings preset (Cornerstone3D default
-  // preset, or `cornerstone.gpuSettingsPreset`). config/default.js keeps final
-  // downsampling off.
+  // a volume texture to fit the `cornerstone.gpuSettingsPreset` above.
+  // config/default.js keeps final downsampling off.
   lossyDownsampling: { final: true },
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,

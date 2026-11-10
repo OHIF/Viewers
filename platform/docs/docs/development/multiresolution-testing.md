@@ -52,11 +52,16 @@ developer builds turn it on. Cornerstone3D also keeps it off by default.
   bundled deployment configs.
 - The deployer can select a GPU settings preset with the `cornerstone.gpuSettingsPreset`
   customization.
+- A developer build uses the `medium` preset, unless a `?customization=gpu/<preset>` URL
+  selects a different preset.
 - With final downsampling off, the texture is the full-resolution texture, as before this
   work. Two other changes reach every build, also a build with final downsampling off:
   - The MPR load order changes. The coarse stages load first, and they copy early images
     over windows of up to 64 frames until the frames between them arrive.
   - The Cornerstone3D label "Transient Low Fidelity" shows in red while an MPR volume loads.
+    The label stays on, because a user must know when a view does not show the full data. An
+    OHIF indicator ([OHIF/Viewers#6413](https://github.com/OHIF/Viewers/pull/6413)) will
+    replace it.
 
 ### Implementation requirements
 
@@ -65,7 +70,9 @@ developer builds turn it on. Cornerstone3D also keeps it off by default.
 - `config/default.js` and each `config/docker-nginx-*.js` do not set `lossyDownsampling`.
   A comment in each file shows how to turn it on, and lists the options.
 - The other bundled configs do not set `lossyDownsampling`, and have no comment.
-- `config/e2e.js` pins no preset, so the e2e tests use the default preset of Cornerstone3D.
+- `config/dev.js`, `config/netlify.js` and `config/e2e.js` set
+  `cornerstone.gpuSettingsPreset: 'medium'` in the `bootstrap` phase of `customizationService`.
+  A URL module applies its `bootstrap` phase after the app config, so the URL preset wins.
 - The cornerstone extension (`index.tsx`) sets `coarseInterleavedRetrieveStages` as the
   retrieve stages of a volume, and `hps/mpr.ts` sets no `imageLoadStrategy`. Interleaved
   loading stays on, so the label shows during the load.
@@ -297,8 +304,8 @@ failure. A later pull request will add an automatic mode that probes the device.
   the volume. These protocols still show gray lines while a volume loads.
 - **The Cornerstone3D fidelity indicator can cover the OHIF menus.** The indicator
   (`fi-root`) has a z-index of 1000, which is above the OHIF menu layer. On a reduced volume
-  the indicator can take a click on a menu item. The OHIF fidelity indicator pull request
-  will address this.
+  the indicator can take a click on a menu item. The OHIF fidelity indicator,
+  [OHIF/Viewers#6413](https://github.com/OHIF/Viewers/pull/6413), will address this.
 - **No automatic test covers the new viewports or the reduction.** See
   [OHIF/Viewers#6404](https://github.com/OHIF/Viewers/issues/6404).
 

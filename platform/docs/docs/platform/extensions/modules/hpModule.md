@@ -240,7 +240,9 @@ strategy above does not copy images to empty frames.
 
 Earlier versions of the `mpr` protocol used the `nth` strategy. The change applies to all users, also
 with lossy downsampling off: the load order changes, and the first images show at a coarse depth
-resolution before they refine.
+resolution before they refine. The data source `volumeRetrieveOptions` selects other volume
+stages. See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/multi-resolution-volumes.md)
+to get the 3.13 load back.
 
 ### protocolMatchingRules
 A list of criteria for the protocol along with the provided points for ranking.

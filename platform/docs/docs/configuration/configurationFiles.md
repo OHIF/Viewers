@@ -195,7 +195,7 @@ if auth headers are used, a preflight request is required.
   - `interactive` (default `true`): a viewport lowers the detail while the user interacts, for example with a larger sample distance during a 3D rotation. The full detail returns when the interaction ends.
   - `interleavedLoading` (default `true`): the loader fills the frames that have not loaded yet with copies of the nearby loaded frames. Each frame becomes exact when its own data loads.
 
-  These options are not fully safe on every device. A texture that is too large can lose the WebGL context, and then the user must reload the page. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` set `lossyDownsampling: { final: true }`. The other bundled configs keep the defaults. `config/default.js` and the `config/docker-nginx-*.js` recipes show the setting in a comment.
+  These options are not fully safe on every device. A texture that is too large can lose the WebGL context, and then the user must reload the page. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` set `lossyDownsampling: { final: true }`. `config/dev.js`, `config/netlify.js` and `config/e2e.js` also select the `medium` preset, and a `?customization=gpu/<preset>` URL can select a different preset. The other bundled configs keep the defaults. `config/default.js` and the `config/docker-nginx-*.js` recipes show the setting in a comment.
 - `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to
   load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
 - `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
@@ -328,6 +328,17 @@ configuration: {
   stackRetrieveOptions: {
     retrieveOptions: { single: { streaming: false } },
   },
+}
+```
+
+### Data Source: volumeRetrieveOptions
+At the data source configuration level, you can set `volumeRetrieveOptions` to select the retrieve stages of a volume. The value is the name of a Cornerstone3D `ProgressiveRetrieveImages` stage set, or a `{ stages }` object. The default is `'coarseInterleavedRetrieveStages'`. A hanging protocol with an `imageLoadStrategy` does not use these stages.
+
+The 3.13 default was `'interleavedRetrieveStages'`. That stage set has a lossy first pass, which is fast on an HTJ2K server. To use it again:
+
+```js
+configuration: {
+  volumeRetrieveOptions: 'interleavedRetrieveStages',
 }
 ```
 
