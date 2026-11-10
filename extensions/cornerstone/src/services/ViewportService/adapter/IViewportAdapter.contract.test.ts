@@ -1,4 +1,4 @@
-import { Enums, cache } from '@cornerstonejs/core';
+import { Enums, cache, viewportProjection } from '@cornerstonejs/core';
 import {
   getViewportAdapter,
   isNextViewport,
@@ -197,6 +197,42 @@ describe('view geometry', () => {
     expect(adapter.getViewState().rotation).toBe(90);
     adapter.setViewState({ rotation: 180 });
     expect(viewport.setViewState).toHaveBeenCalledWith({ rotation: 180 });
+  });
+
+  it('getZoom: legacy asks the viewport; native reads viewportProjection (no zoom on 3D)', () => {
+    // Legacy: delegates to viewport.getZoom(), undefined when the viewport has none.
+    expect(
+      getViewportAdapter(
+        makeLegacyStackViewport({ getZoom: jest.fn().mockReturnValue(1.5) })
+      ).getZoom()
+    ).toBe(1.5);
+    expect(getViewportAdapter(makeLegacyStackViewport()).getZoom()).toBeUndefined();
+
+    // Native: never calls the deprecated viewport.getZoom(); reads the projection presentation.
+    const planar = makeNextViewport({
+      type: ViewportType.PLANAR_NEXT,
+      getZoom: jest.fn().mockReturnValue(99),
+    });
+    const volume3d = makeNextViewport({
+      type: ViewportType.VOLUME_3D_NEXT,
+      getCurrentMode: jest.fn().mockReturnValue('volume3d'),
+    });
+    const spy = jest.spyOn(viewportProjection, 'getPresentation').mockImplementation(((
+      viewport: unknown
+    ) =>
+      viewport === planar
+        ? { zoom: 2.5 }
+        : // Native 3D reports a physical scale, not a single zoom value.
+          { camera: {}, scale: { x: 1, y: 1 } }) as never);
+    try {
+      expect(getViewportAdapter(planar).getZoom()).toBe(2.5);
+      expect(planar.getZoom).not.toHaveBeenCalled();
+      expect(getViewportAdapter(volume3d).getZoom()).toBeUndefined();
+      expect(spy).toHaveBeenCalledWith(planar);
+      expect(spy).toHaveBeenCalledWith(volume3d);
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('getViewPlaneNormal and getFocalPoint resolve on both lanes', () => {
