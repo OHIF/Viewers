@@ -61,6 +61,9 @@ const screenShotPaths = {
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
   },
+  mip: {
+    mipEnabledDisplayedCorrectly: 'mipEnabledDisplayedCorrectly.png',
+  },
   mpr2: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
     mprDisplayedCorrectlyZoomed: 'mprDisplayedCorrectlyZoomed.png',
