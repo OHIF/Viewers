@@ -120,7 +120,11 @@ follow the template). Note what is **not** here:
 - `files` ships `src` as well as `dist` because directory-mode consumers
   compile from source.
 - `keywords` carries `ohif-extension` (or `ohif-mode` for a mode) — registry
-  discovery and `pnpm plugin doctor` key off it.
+  discovery and `pnpm plugin doctor` key off it. Migrate also reads it to tell
+  an extension from a mode, as `pnpm run plugin add` does. The CLI templates
+  wrote it, but if yours has neither keyword, migrate stops and asks you to
+  add one. Inside a checkout it goes by the folder instead (`extensions/` or
+  `modes/`), and flags a keyword that disagrees with the folder.
 - No `repository`. The CLI template set it to `"OHIF/Viewers"`, so npm linked
   every generated package to OHIF's repo; migrate drops that value. Add your own
   `repository` if you want npm to link to your source.

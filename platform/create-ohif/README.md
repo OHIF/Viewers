@@ -36,7 +36,10 @@ create-ohif migrate <path> [--dry-run]
 
 `migrate` ports a CLI-era (OHIF CLI) standalone extension or mode at `<path>`
 to the current plugin contract. `--dry-run` prints the full migration report
-without touching any file; that report is the migration checklist.
+without touching any file; that report is the migration checklist. It tells an
+extension from a mode by the `ohif-extension` / `ohif-mode` keyword, or inside a
+checkout by the `extensions/` or `modes/` folder, and refuses when it has
+neither.
 
 When arguments are omitted (and stdin is a TTY), an interactive prompt flow
 collects the name, template, extension modules, and description. Non-TTY

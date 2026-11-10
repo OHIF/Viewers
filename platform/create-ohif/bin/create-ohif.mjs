@@ -564,7 +564,12 @@ const PUBLISHED_OHIF_PACKAGES = [
   '@ohif/extension-cornerstone',
 ];
 
-function detectPluginKind(pkg) {
+// The plugin's kind: its ohif-mode/ohif-extension keyword, else, inside a
+// checkout, the section folder it sits in ('extensions' or 'modes'). With
+// neither it returns null and migrate refuses rather than guess from the
+// name: the keyword migrate writes is what pnpm run plugin add files the
+// plugin under.
+function detectPluginKind(pkg, section) {
   const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
   if (keywords.includes('ohif-mode')) {
     return 'mode';
@@ -572,7 +577,13 @@ function detectPluginKind(pkg) {
   if (keywords.includes('ohif-extension')) {
     return 'extension';
   }
-  return /(^|[-/])modes?(-|$)/.test(pkg.name ?? '') ? 'mode' : 'extension';
+  if (section === 'modes') {
+    return 'mode';
+  }
+  if (section === 'extensions') {
+    return 'extension';
+  }
+  return null;
 }
 
 function detectSourceEntry(targetDir, pkg) {
@@ -683,14 +694,26 @@ async function runMigrate(targetDir, dryRun) {
     fail(`migrate: ${pkgPath} has no "name" field`);
   }
 
-  const kind = detectPluginKind(pkg);
-  const keyword = kind === 'extension' ? 'ohif-extension' : 'ohif-mode';
   // Inside an OHIF checkout the plugin is a workspace package, and migrate
   // leaves it as `create-ohif --in-tree` scaffolds one (inTreeTransformPass):
   // workspace:* @ohif peers, private and the checkout's version, no toolchain
   // devDependencies and no pnpm settings files of its own.
   const checkoutRoot = rootHoldingPlugin(targetDir, findCheckoutRoot);
   const inTree = checkoutRoot !== null;
+  // rootHoldingPlugin accepts only a plugin directly in extensions/ or modes/.
+  const section = inTree
+    ? ['extensions', 'modes'].find(
+        name => path.relative(path.join(checkoutRoot, name), path.dirname(targetDir)) === ''
+      )
+    : null;
+  const kind = detectPluginKind(pkg, section);
+  if (kind === null) {
+    fail(
+      `migrate: ${pkgPath} has no "ohif-extension" or "ohif-mode" keyword, so migrate can't tell whether this is an extension or a mode.\n` +
+        'Add "keywords": ["ohif-extension"] or "keywords": ["ohif-mode"] to package.json and re-run.'
+    );
+  }
+  const keyword = kind === 'extension' ? 'ohif-extension' : 'ohif-mode';
   const ohifPeerRange = inTree ? 'workspace:*' : hostPeerRange(selfVersion);
   const ohifPeerReason = inTree
     ? "an in-tree plugin uses the checkout's own OHIF packages"
@@ -737,6 +760,12 @@ async function runMigrate(targetDir, dryRun) {
     note(false, `package.json files already ${JSON.stringify(CONTRACT_FILES)}`);
   }
   const keywords = Array.isArray(next.keywords) ? next.keywords : [];
+  const folderKind = { extensions: 'extension', modes: 'mode' }[section];
+  if (folderKind !== undefined && folderKind !== kind) {
+    flags.push(
+      `package.json keywords say "${keyword}", but the plugin is in the checkout's ${section}/ folder — one of them is wrong; migrate went by the keyword, and so does pnpm run plugin add`
+    );
+  }
   if (!keywords.includes(keyword)) {
     note(true, `package.json keywords: add "${keyword}" (registry discovery + plugin doctor key off it)`);
     next.keywords = [...keywords, keyword];

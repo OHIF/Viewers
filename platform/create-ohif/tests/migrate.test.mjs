@@ -926,6 +926,48 @@ test("migrate inside a checkout points jest and Babel at the checkout's setup", 
   assert.ok(!migrate(target, '--dry-run').includes('babel.config.js: replace it'));
 });
 
+test('migrate refuses a standalone plugin without an ohif-extension or ohif-mode keyword', () => {
+  // The name says mode, but migrate no longer guesses from it.
+  const target = scaffoldCliEra('mode', 'my-cli-mode');
+  editPackage(target, pkg => delete pkg.keywords);
+  const before = fs.readFileSync(path.join(target, 'package.json'), 'utf8');
+  assert.throws(
+    () => execFileSync(process.execPath, [bin, 'migrate', target], { encoding: 'utf8', stdio: 'pipe' }),
+    error =>
+      error.status === 1 &&
+      error.stderr.includes('has no "ohif-extension" or "ohif-mode" keyword') &&
+      error.stderr.includes('Add "keywords": ["ohif-extension"] or "keywords": ["ohif-mode"]')
+  );
+  assert.equal(fs.readFileSync(path.join(target, 'package.json'), 'utf8'), before);
+  assert.ok(fs.existsSync(path.join(target, '.webpack')), 'nothing was migrated');
+});
+
+test('migrate inside a checkout takes the kind from the folder when there is no keyword', () => {
+  // A fork's in-tree mode whose name doesn't say mode and that has no keyword.
+  const { target } = scaffoldInTree('mode', 'lung-workflow');
+  editPackage(target, pkg => delete pkg.keywords);
+  const report = migrate(target);
+  assert.ok(report.includes('(detected: mode "lung-workflow"'), report);
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.deepEqual(pkg.keywords, ['ohif-mode']);
+  assert.ok(!report.includes('one of them is wrong'), report);
+});
+
+test('migrate flags a keyword that disagrees with the checkout folder', () => {
+  const { target } = scaffoldInTree('mode', 'lung-workflow');
+  editPackage(target, pkg => {
+    pkg.keywords = ['ohif-extension'];
+  });
+  const report = migrate(target, '--dry-run');
+  assert.ok(report.includes('(detected: extension "lung-workflow"'), report);
+  assert.ok(
+    report.includes(
+      `package.json keywords say "ohif-extension", but the plugin is in the checkout's modes/ folder — one of them is wrong`
+    ),
+    report
+  );
+});
+
 function editPackage(target, edit) {
   const pkgPath = path.join(target, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
