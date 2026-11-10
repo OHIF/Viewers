@@ -197,7 +197,7 @@ function _getEcgDisplaySetsFromSeries(instances, servicesManager) {
           metadata: ecgModule,
         });
         // The time and mV region, so measurement tools report physical units
-        const calibration = csMetadataUtilities.buildEcgCalibrationFromInstance?.(instance);
+        const calibration = csMetadataUtilities.buildEcgCalibrationFromInstance(instance);
         if (calibration) {
           csUtils.genericMetadataProvider.addRaw(imageId, {
             type: MetadataModules.CALIBRATION,
