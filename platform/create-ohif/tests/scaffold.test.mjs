@@ -270,6 +270,10 @@ test('standalone mode scaffold: TS entry, no CSS or Tailwind, no React toolchain
   const pkg = readPkg(dir);
   assert.equal(pkg.name, 'my-mode');
   assert.deepEqual(pkg.keywords, ['ohif-mode']);
+  // No public/ folder, but listed like the extension's and migrate's, so a
+  // public/ the author adds later ships in the published package (the app
+  // build copies a mode's public/ too).
+  assert.deepEqual(pkg.files, ['dist', 'src', 'public', 'README.md']);
   assert.equal(pkg.module, 'src/index.ts');
   for (const peer of ['@ohif/core', '@ohif/extension-cornerstone', '@ohif/extension-default']) {
     assert.equal(pkg.peerDependencies[peer], hostRange, peer);
