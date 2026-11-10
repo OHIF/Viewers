@@ -442,7 +442,7 @@ test('deployment scaffold is config-only', () => {
     !readme.includes(`^${checkoutPkg.version}`),
     'descriptor coreVersionRange must not use a raw caret the lagging host would reject'
   );
-  assert.ok(stdout.includes('docker compose up'), stdout);
+  assert.ok(stdout.includes('APP_CONFIG="$(cat app-config.js)" docker compose up'), stdout);
 });
 
 // ---------------------------------------------------------------------------

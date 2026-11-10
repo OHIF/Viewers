@@ -1,7 +1,9 @@
 /** @type {AppTypes.Config} */
 
-// OHIF app config for this deployment. `docker compose up` (see README.md)
-// passes this file's text through the stock image's APP_CONFIG entrypoint.
+// OHIF app config for this deployment. Start the viewer with
+//   APP_CONFIG="$(cat app-config.js)" docker compose up
+// which passes this file's text to the stock image through its APP_CONFIG
+// variable (see README.md). Plain `docker compose up` ignores this file.
 //
 // Point the data source at your own DICOMweb server; the one below is OHIF's
 // read-only public demo server.

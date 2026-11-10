@@ -18,6 +18,12 @@ APP_CONFIG="$(cat app-config.js)" docker compose up
 
 The viewer is served at http://localhost:3000. Edit `app-config.js` and
 re-run the command to apply changes.
+Without `APP_CONFIG`, the image serves its built-in configuration and ignores
+this file; the container log then says "Not using custom APP_CONFIG".
+
+This is the image's environment-variable way of supplying a configuration.
+For the others (mounting the file, or building it into the image), see
+[Specifying the OHIF Configuration File](https://docs.ohif.org/deployment/docker/#specifying-the-ohif-configuration-file).
 
 To pin the viewer version, replace the `ohif/app:latest` tag in
 `docker-compose.yml` with a specific release tag. Runtime-loaded plugins (below)

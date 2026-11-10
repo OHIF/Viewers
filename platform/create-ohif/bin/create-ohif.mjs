@@ -433,7 +433,8 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
     lines.push(
       'Next steps:',
       `  cd ${dirName}`,
-      '  edit app-config.js, then: docker compose up'
+      '  edit app-config.js, then start the viewer with its contents:',
+      '    APP_CONFIG="$(cat app-config.js)" docker compose up'
     );
   } else {
     // Versioned path: the image serves /plugins/<name>/<version>/ as immutable.
