@@ -443,6 +443,21 @@ test('deployment scaffold is config-only', () => {
     'descriptor coreVersionRange must not use a raw caret the lagging host would reject'
   );
   assert.ok(stdout.includes('APP_CONFIG="$(cat app-config.js)" docker compose up'), stdout);
+  // --dir put the folder outside the current one, so the cd line names its
+  // full path, not just my-deployment.
+  assert.ok(
+    stdout.split('\n').some(line => /^\s+cd /.test(line) && line.includes(dir)),
+    stdout
+  );
+});
+
+test('the next steps quote a folder path with a space and put one command per line', () => {
+  const parent = path.join(tmp(), 'my plugins');
+  fs.mkdirSync(parent);
+  const stdout = scaffold(['spaced-ext', '-t', 'extension', '--yes', '--dir', parent]);
+  const dir = path.join(parent, 'spaced-ext');
+  assert.ok(stdout.includes(`  cd "${dir}"\n  pnpm install\n  pnpm build\n`), stdout);
+  assert.ok(!stdout.includes('&&'), stdout);
 });
 
 // ---------------------------------------------------------------------------

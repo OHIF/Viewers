@@ -401,8 +401,18 @@ function relativeOrAbsolute(targetDir) {
   return !relative || relative.startsWith('..') ? targetDir : relative;
 }
 
+// A path for a printed command: double-quoted when it holds anything beyond
+// plain path characters. That covers a space (every shell splits on it) and a
+// Windows backslash (an escape when unquoted in bash), and double quotes read
+// the same for these in bash, PowerShell and cmd.
+function shellPath(p) {
+  return /^[\w@%+=:,./~-]+$/.test(p) ? p : `"${p}"`;
+}
+
 function printSummary({ context, template, name, dirName, targetDir, checkoutRoot }) {
   const lines = [`\nScaffolded ${name} at ${targetDir}\n`];
+  // One command per line: Windows PowerShell 5.1 rejects `&&`.
+  const cdLine = `  cd ${shellPath(relativeOrAbsolute(targetDir))}`;
   if (context === 'in-tree') {
     const section = template === 'extension' ? 'extensions' : 'modes';
     lines.push(
@@ -424,7 +434,9 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
   } else if (template === 'workspace') {
     lines.push(
       'Next steps:',
-      `  cd ${dirName} && pnpm install && pnpm dev`,
+      cdLine,
+      '  pnpm install',
+      '  pnpm dev',
       '',
       'ohif.config.json is the committed manifest (pinned OHIF version, plugins, app config);',
       'the .ohif/ harness is machine-managed, gitignored, and disposable.'
@@ -432,7 +444,7 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
   } else if (template === 'deployment') {
     lines.push(
       'Next steps:',
-      `  cd ${dirName}`,
+      cdLine,
       '  edit app-config.js, then start the viewer with its contents:',
       '    APP_CONFIG="$(cat app-config.js)" docker compose up'
     );
@@ -451,7 +463,9 @@ function printSummary({ context, template, name, dirName, targetDir, checkoutRoo
     ];
     lines.push(
       'Next steps:',
-      `  cd ${relativeOrAbsolute(targetDir)} && pnpm install && pnpm build`,
+      cdLine,
+      '  pnpm install',
+      '  pnpm build',
       '',
       `Load at runtime (app-config.js, under "${template === 'extension' ? 'extensions' : 'modes'}"):`,
       ...descriptor,
