@@ -150,6 +150,7 @@ describe('HangingProtocolService', () => {
         toCall: mockedFunction,
       },
       customizationService: {
+        hasCustomization: () => false,
         getCustomization: () => undefined,
       },
     },

@@ -53,9 +53,17 @@ type definition, starting with `Protocol`.  See the type definition for more det
 ## Protocols as customizations
 
 The customization `hangingProtocols.<id>` also defines the protocol with that id.
-When that customization has a value, the `HangingProtocolService` uses it in place of
-the protocol that the module registered with the same id. A protocol is data, so a
-`?customization=` JSONC file can add a protocol, or change one, with no code.
+A protocol is data, so a `?customization=` JSONC file can add a protocol, or change
+one, with no code. The `HangingProtocolService` uses the first of these that exists:
+
+1. A `hangingProtocols.<id>` customization at global or mode scope, for example from
+   a `?customization=` file or from the `customizationService` of the app config.
+2. The protocol that `addProtocol` or a hanging protocol module registered with the id.
+3. A `hangingProtocols.<id>` customization at default scope.
+
+Thus a site that registers its own `@ohif/mnGrid` with `addProtocol` still gets its
+own protocol. A `$set` or `$merge` at global scope changes the built-in default value,
+and it takes precedence over the site's registered protocol.
 
 The default extension registers `@ohif/mnGrid` and `@ohif/mnGrid8` as the default
 values of `hangingProtocols.@ohif/mnGrid` and `hangingProtocols.@ohif/mnGrid8`. This
@@ -130,7 +138,9 @@ the first `enabled` stage, or else the first `passive` stage. This applies to
 every way of selecting a protocol: a mode's default list, a URL
 `hangingProtocolId` with no `stageid`, and the `setHangingProtocol` command
 with no `stageId` or `stageIndex`. A disabled stage is never opened, and stage
-navigation skips it.
+navigation skips it. When the URL or a command gives a stage that is disabled for
+the study, or a stage that does not exist, the protocol also opens its first
+applicable stage. For a disabled stage, the console shows a warning.
 
 The setting for these are controlled by the stageActivation property, for example
 the following:

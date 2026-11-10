@@ -20,8 +20,12 @@ const displaySet = (study, uid: string, attributes: Record<string, unknown>) => 
   ...attributes,
 });
 
-function serviceWith(customizations: Record<string, unknown>) {
-  const customizationService = { getCustomization: id => customizations[id] };
+// `customizations` are set at global scope, and `defaults` at default scope.
+function serviceWith(customizations: Record<string, unknown>, defaults = {}) {
+  const customizationService = {
+    hasCustomization: id => id in customizations,
+    getCustomization: id => customizations[id] ?? defaults[id],
+  };
   return new HangingProtocolService(
     { run: jest.fn() } as never,
     { services: { customizationService } } as never
@@ -45,6 +49,14 @@ describe('hangingProtocols.<id> customization', () => {
     const service = serviceWith({ 'hangingProtocols.@ohif/ecg': ecgProtocol });
     service.addProtocol('@ohif/ecg', { ...ecgProtocol, name: 'registered' });
     expect(service.getProtocolById('@ohif/ecg').name).toBe('ECG');
+  });
+
+  it('does not replace a registered protocol when the customization is only a default', () => {
+    const service = serviceWith({}, { 'hangingProtocols.@ohif/ecg': ecgProtocol });
+    expect(service.getProtocolById('@ohif/ecg').name).toBe('ECG');
+
+    service.addProtocol('@ohif/ecg', { ...ecgProtocol, name: 'registered' });
+    expect(service.getProtocolById('@ohif/ecg').name).toBe('registered');
   });
 });
 

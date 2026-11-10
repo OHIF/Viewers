@@ -325,14 +325,20 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   /**
-   * The `hangingProtocols.<id>` customization defines the protocol with that id,
-   * and it takes precedence over a protocol that `addProtocol` registered. Thus a
-   * JSONC customization can add a protocol, or change one with `$set` or `$merge`.
+   * The `hangingProtocols.<id>` customization defines the protocol with that id.
+   * Thus a JSONC customization can add a protocol, or change one with `$set` or
+   * `$merge`. The order of precedence:
+   * 1. A global or mode customization.
+   * 2. A protocol that `addProtocol` registered.
+   * 3. A default customization, for example the built-in `@ohif/mnGrid`.
    */
   private _getCustomizedProtocol(protocolId: string): HangingProtocol.Protocol | undefined {
-    return this._servicesManager.services.customizationService.getCustomization(
-      `hangingProtocols.${protocolId}`
-    ) as HangingProtocol.Protocol;
+    const { customizationService } = this._servicesManager.services;
+    const customizationId = `hangingProtocols.${protocolId}`;
+    if (this.protocols.has(protocolId) && !customizationService.hasCustomization(customizationId)) {
+      return;
+    }
+    return customizationService.getCustomization(customizationId) as HangingProtocol.Protocol;
   }
 
   /**
@@ -1008,24 +1014,27 @@ export default class HangingProtocolService extends PubSubService {
     });
   }
 
+  /**
+   * Returns the index of the stage that `options` asks for. When `options` gives
+   * no stage, or the stage it gives is `disabled` for this study, returns the
+   * first `enabled` stage, or else the first `passive` stage.
+   */
   private _findStageIndex(options = null as HangingProtocol.SetProtocolOptions): number | void {
     const stageId = options?.stageId;
     const protocol = this.protocol;
     const stages = protocol.stages;
 
-    if (stageId) {
-      for (let i = 0; i < stages.length; i++) {
-        const stage = stages[i];
-        if (stage.id === stageId && stage.status !== 'disabled') {
-          return i;
-        }
-      }
-      return;
+    const requestedIndex = stageId
+      ? stages.findIndex(stage => stage.id === stageId)
+      : options?.stageIndex;
+    const requested = stages[requestedIndex ?? -1];
+    if (requested && requested.status !== 'disabled') {
+      return requestedIndex;
     }
-
-    const stageIndex = options?.stageIndex;
-    if (stageIndex !== undefined) {
-      return stages[stageIndex]?.status !== 'disabled' ? stageIndex : undefined;
+    if (requested) {
+      console.warn(
+        `Stage ${requested.id ?? requestedIndex} of ${protocol.id} is disabled for this study, so the first applicable stage opens`
+      );
     }
 
     let firstNotDisabled: number;
@@ -1079,7 +1088,7 @@ export default class HangingProtocolService extends PubSubService {
 
       const stage = this._findStageIndex(options);
       if (stage === undefined) {
-        throw new Error(`Can't find applicable stage ${protocol.id} ${options?.stageIndex}`);
+        throw new Error(`Protocol ${protocol.id} has no applicable stage for this study`);
       }
       this.stageIndex = stage as number;
 

@@ -15,7 +15,7 @@ function run(displaySets: Record<string, unknown>[]) {
     { run: jest.fn() } as never,
     {
       services: {
-        customizationService: { getCustomization: () => undefined },
+        customizationService: { hasCustomization: () => false, getCustomization: () => undefined },
         displaySetService: {
           getDisplaySetByUID: uid => displaySets.find(it => it.displaySetInstanceUID === uid),
         },
@@ -65,6 +65,16 @@ describe('hpMN', () => {
     ]);
   });
 
+  it('opens the first applicable stage when the URL gives a stage that is disabled', () => {
+    const service = run([ecg]);
+    // As the URL route does for &stageid=2x2
+    service.setProtocol(hpMN.id, {
+      stageIndex: service.getStageIndex(hpMN.id, { stageId: '2x2' }),
+    });
+
+    expect(service.getActiveProtocol().stage.id).toBe('1x1');
+  });
+
   it('keeps the display set that the user chose in 3x1 when the stage changes to 2x1', () => {
     const images = ['ct1', 'ct2', 'ct3'].map(id =>
       displaySet(id, { Modality: 'CT', numImageFrames: 100 })
@@ -78,7 +88,10 @@ describe('hpMN', () => {
 
     const { stage, viewportMatchDetails } = service.getActiveProtocol();
     expect(stage.id).toBe('2x1');
-    expect(viewportMatchDetails.get(stage.viewports[0].viewportOptions.viewportId)?.displaySetsInfo[0].displaySetInstanceUID).toBe('ct3');
+    expect(
+      viewportMatchDetails.get(stage.viewports[0].viewportOptions.viewportId)?.displaySetsInfo[0]
+        .displaySetInstanceUID
+    ).toBe('ct3');
   });
 
   it('shows a single-frame image', () => {
