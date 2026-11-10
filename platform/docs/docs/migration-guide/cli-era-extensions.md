@@ -233,7 +233,9 @@ It also:
   `pnpm run …`, and flags any other yarn call (for example `yarn install`, or
   yarn later in a command) for you to translate by hand;
 - flags scripts that run jest when jest isn't a dependency. New scaffolds use
-  vitest for tests.
+  vitest for tests. Inside a checkout the scripts are left alone: the root
+  installs jest and runs every plugin's `test:unit:ci`, as it does for its own
+  plugins' identical scripts.
 
 ### `pnpm-workspace.yaml` and `.npmrc`
 
@@ -374,6 +376,15 @@ side of the same bundler move.
 removes `eslint-loader` with the rest of the webpack tooling. It also flags
 `eslint`, `babel-eslint` and `dotenv` for removal when no script, config or
 source file uses them (the CLI templates listed them but never ran them).
+
+Inside a checkout, Babel is still in use: jest compiles a plugin's tests with
+`babel-jest`, which reads the plugin's own `babel.config.js`, and each of the
+checkout's plugins has a one-line one that re-exports the root's
+(`module.exports = require('../../babel.config.js');`). So migrate flags a
+`babel.config.js` that doesn't, to be replaced with that line, and flags the
+Babel packages under `devDependencies` for removal because the root install
+provides them. `@babel/runtime` under `dependencies` stays, as in the
+checkout's plugins.
 
 Any other custom build file (`webpack.config.js`, a `vite.*`/`rollup.*` config,
 extra files in `.webpack/`) is **flagged, not rewritten**: migrate leaves it in

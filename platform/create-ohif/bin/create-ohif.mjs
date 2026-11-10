@@ -1117,9 +1117,10 @@ async function runMigrate(targetDir, dryRun) {
   }
   // A test script that runs jest without jest installed can only fail. Flag it
   // rather than delete it: the author may want tests (create-ohif scaffolds use
-  // vitest).
+  // vitest). In-tree, the checkout's root installs jest and runs every
+  // plugin's test:unit:ci, as it does for its own plugins' identical scripts.
   const declaresJest = 'jest' in (next.dependencies ?? {}) || 'jest' in (next.devDependencies ?? {});
-  if (!declaresJest) {
+  if (!declaresJest && !inTree) {
     for (const [name, command] of Object.entries(scripts)) {
       if (typeof command === 'string' && /(^|[\s&;|])jest(\s|$)/.test(command)) {
         flags.push(
@@ -1215,11 +1216,15 @@ async function runMigrate(targetDir, dryRun) {
   }
 
   // Ranges migrate has no pin for: flag them by name rather than resolve a
-  // version against the registry. Babel packages and the unused tools above
-  // are skipped because the report already says to remove them.
+  // version against the registry. Babel packages the Babel flag below names
+  // (in-tree, only devDependencies: a plugin there keeps @babel/runtime, as
+  // the checkout's plugins do) and the unused tools above are skipped because
+  // the report already says to remove them.
+  const babelFlagged = (section, name) =>
+    isBabelPackage(name) && (!inTree || section === 'devDependencies');
   for (const section of ['dependencies', 'devDependencies']) {
     const ranged = Object.entries(next[section] ?? {})
-      .filter(([name]) => !isBabelPackage(name) && !unusedTools.includes(name))
+      .filter(([name]) => !babelFlagged(section, name) && !unusedTools.includes(name))
       .filter(([name]) => !sharedFlagged.has(`${section}:${name}`))
       .filter(([, spec]) => !EXACT_VERSION.test(spec))
       .filter(([, spec]) => !spec.startsWith('workspace:'))
@@ -1338,20 +1343,41 @@ async function runMigrate(targetDir, dryRun) {
       );
     }
   }
-  const hasBabelConfig = fs.existsSync(path.join(targetDir, 'babel.config.js'));
+  const babelConfigPath = path.join(targetDir, 'babel.config.js');
+  const hasBabelConfig = fs.existsSync(babelConfigPath);
   const babelPackages = [
     ...new Set(
       ['dependencies', 'devDependencies'].flatMap(section =>
-        Object.keys(next[section] ?? {}).filter(isBabelPackage)
+        Object.keys(next[section] ?? {}).filter(name => babelFlagged(section, name))
       )
     ),
   ];
-  if (hasBabelConfig || babelPackages.length > 0) {
-    // Listed as one @babel/* entry: CLI-era packages have a dozen of them.
-    const named = [
-      ...(babelPackages.some(name => name.startsWith('@babel/')) ? ['@babel/*'] : []),
-      ...babelPackages.filter(name => !name.startsWith('@babel/')),
-    ];
+  // Listed as one @babel/* entry: CLI-era packages have a dozen of them.
+  const named = [
+    ...(babelPackages.some(name => name.startsWith('@babel/')) ? ['@babel/*'] : []),
+    ...babelPackages.filter(name => !name.startsWith('@babel/')),
+  ];
+  if (inTree) {
+    // In-tree, Babel is still in use: jest compiles each plugin's tests with
+    // babel-jest, which reads the plugin's own babel.config.js, and every
+    // checkout plugin's is a one-line re-export of the root's. The root
+    // install provides the Babel packages.
+    if (
+      hasBabelConfig &&
+      !/require\(\s*['"]\.\.\/\.\.\/babel\.config(\.js)?['"]\s*\)/.test(
+        fs.readFileSync(babelConfigPath, 'utf8')
+      )
+    ) {
+      flags.push(
+        "babel.config.js: replace it with module.exports = require('../../babel.config.js');, as the checkout's plugins do, so jest compiles this plugin's tests with the checkout's Babel setup — check first that the checkout's config covers anything yours adds"
+      );
+    }
+    if (named.length > 0) {
+      flags.push(
+        `package.json devDependencies: the Babel packages (${named.join(', ')}) are provided by the checkout's root install — remove them; a copy here can install a second Babel inside the plugin folder`
+      );
+    }
+  } else if (hasBabelConfig || babelPackages.length > 0) {
     const what = [
       ...(hasBabelConfig ? ['babel.config.js'] : []),
       ...(named.length > 0 ? [`the Babel packages (${named.join(', ')})`] : []),

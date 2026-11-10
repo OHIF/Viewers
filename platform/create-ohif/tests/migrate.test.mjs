@@ -900,6 +900,32 @@ test("migrate inside a checkout removes nested pnpm settings, the root's toolcha
 });
 
 // Read a fixture's package.json, change it, and write it back.
+test("migrate inside a checkout points jest and Babel at the checkout's setup", () => {
+  // The CLI-era mode runs jest and carries its own babel.config.js, as the
+  // checkout's own plugins do (theirs re-export the root config).
+  const { target } = scaffoldInTree('mode', 'babel-tree-mode');
+
+  const report = migrate(target, '--dry-run');
+  assert.ok(!report.includes('runs jest'), 'the checkout installs and runs jest');
+  assert.ok(!report.includes('no longer used'), 'Babel is still used in-tree');
+  for (const needle of [
+    "babel.config.js: replace it with module.exports = require('../../babel.config.js');",
+    "package.json devDependencies: the Babel packages (@babel/*) are provided by the checkout's root install — remove them",
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  // @babel/runtime stays a dependency, so a range on it is flagged for pinning.
+  const pinLines = report.split('\n').filter(line => line.includes('not pinned to exact versions'));
+  assert.ok(pinLines.some(line => line.includes('@babel/runtime@^7.20.13')), report);
+  assert.ok(!pinLines.some(line => line.includes('@babel/plugin')), report);
+
+  fs.writeFileSync(
+    path.join(target, 'babel.config.js'),
+    "module.exports = require('../../babel.config.js');\n"
+  );
+  assert.ok(!migrate(target, '--dry-run').includes('babel.config.js: replace it'));
+});
+
 function editPackage(target, edit) {
   const pkgPath = path.join(target, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
