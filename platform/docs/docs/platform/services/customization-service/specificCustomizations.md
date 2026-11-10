@@ -382,7 +382,7 @@ The shipped files, one for each preset:
 | `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
 | `gpu/medium` | 2048 | 8 GB | A device of the middle class. |
 | `gpu/high` | 2048 | 32 GB | The largest memory. A device of the middle class can crash under it. |
-| `gpu/high-texture-4096` | 4096 | 32 GB | A control that fits no real device. |
+| `gpu/high-texture-4096` | 4096 | 32 GB | Testing only: a control that fits no real device. |
 
 Pick exactly one file. A later value in the `?customization=` list overrides an earlier one.
 
@@ -391,10 +391,8 @@ Some devices report a larger `MAX_3D_TEXTURE_SIZE`, but a reported size is not a
 a real device can fail to allocate the texture. The preset exists to show that a reduction comes
 from the limit and not from a defect: a series renders with no reduction under
 `gpu/high-texture-4096` and with a reduction under `gpu/medium`. Do not select the preset in
-production.
-
-The presets are new work in Cornerstone3D. A build of `@cornerstonejs/core` that has no GPU
-settings presets reports the omission in the console and keeps its own behaviour.
+production. When the automatic mode is re-implemented, use this preset to test the path of a device
+that reports a large texture edge.
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 

@@ -238,9 +238,9 @@ extension sets the volume retrieve configuration to the Cornerstone3D
 line while the volume loads. The `mpr` protocol sets no strategy, so it uses this configuration. A
 strategy above does not copy images to empty frames.
 
-A Cornerstone3D version without `coarseInterleavedRetrieveStages` gets
-`interleavedRetrieveStages` instead. That configuration does not copy images to empty frames, so
-a reformat can show gray lines until the volume loads.
+Earlier versions of the `mpr` protocol used the `nth` strategy. The change applies to all users, also
+with lossy downsampling off: the load order changes, and the first images show at a coarse depth
+resolution before they refine.
 
 ### protocolMatchingRules
 A list of criteria for the protocol along with the provided points for ranking.

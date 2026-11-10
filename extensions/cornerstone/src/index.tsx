@@ -154,14 +154,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
-    // Volumes load every 64th image first and replicate it to the empty frames
-    // around it, then refine. A Cornerstone3D without the coarse stages keeps
-    // the stock interleaved stages.
-    const { ProgressiveRetrieveImages } = cornerstone;
+    // Volumes load every 64th image first and copy it to the empty frames around it, then refine.
     imageRetrieveMetadataProvider.add(
       'volume',
-      ProgressiveRetrieveImages.coarseInterleavedRetrieveStages ??
-        ProgressiveRetrieveImages.interleavedRetrieveStages
+      cornerstone.ProgressiveRetrieveImages.coarseInterleavedRetrieveStages
     );
 
     /**

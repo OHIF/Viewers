@@ -75,8 +75,6 @@ export default async function init({
   const statsOverlay =
     new URLSearchParams(window.location.search).get('debug') === 'true';
 
-  // appConfig.lossyDownsampling = { final, interactive, interleavedLoading }.
-  // An absent kind keeps the Cornerstone3D default: final off, the others on.
   await cs3DInit({
     peerImport: appConfig.peerImport,
     debug: { statsOverlay },
@@ -165,8 +163,6 @@ export default async function init({
     toolbarService,
   } = servicesManager.services;
 
-  // A volume viewport reads the GPU settings when it adds its actor, so the
-  // preset must apply before a mode opens a viewport.
   initGpuSettingsPreset({ customizationService, appConfig });
 
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
