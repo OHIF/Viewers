@@ -185,10 +185,13 @@ toolchain in its devDependencies, and no `.npmrc` or `pnpm-workspace.yaml` of
 its own. It removes nested copies of those two files, and names any settings in
 them beyond the template's, to move to the checkout's root files.
 
-`migrate` sets the peers on host-provided packages (React, React Router,
-i18next) to the versions the viewer shares. That can move a peer to a new major
-version: if your code was written for an older one, check that package's
-breaking changes. The report ends with a note naming the packages it changed.
+`migrate` sets host-provided packages (React, React Router, i18next,
+cornerstone, `dcmjs`, `gl-matrix` and the `@ohif` packages) to the versions the
+viewer shares. Outside a checkout they become peers; inside one they stay in
+the section you list them in, on the checkout's versions. That can move a
+package to a new major version: if your code was written for an older one,
+check that package's breaking changes. The report ends with a note naming the
+packages it changed.
 
 ### Where an extension or mode is created
 

@@ -73,12 +73,9 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
     'remove webpack-5 config .webpack/webpack.prod.js',
     'add .npmrc with auto-install-peers=false',
     'add pnpm-workspace.yaml with autoInstallPeers: false',
-    'peerDependencies["react"]: "^18.3.1" -> "^19.2.7"',
-    'peerDependencies["react-dom"]: "^18.3.1" -> "^19.2.7"',
-    'peerDependencies["react-router"]: "^6.23.1" -> "^6.30.3"',
-    'peerDependencies["react-router-dom"]: "^6.23.1" -> "^6.30.3"',
-    'peerDependencies["react-i18next"]: "^12.2.2" -> "^12.3.1"',
-    "Note: the peer versions of react, react-dom, react-router, react-router-dom, react-i18next will be set to the host's.",
+    'peerDependencies["react"]: "^18.3.1" -> "^19.0.0"',
+    'peerDependencies["react-dom"]: "^18.3.1" -> "^19.0.0"',
+    "Note: the versions of react, react-dom will be set to the host's.",
     'pin to exact versions (cross-env ^7.0.3 -> 7.0.3)',
     "devDependencies: dotenv isn't used by any script, config or source file — remove it",
     'add AGENTS.md',
@@ -86,6 +83,9 @@ test('migrate --dry-run report names every mandated rewrite and changes nothing'
   ]) {
     assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
   }
+  // React Router and react-i18next peers are already on the host's majors.
+  assert.ok(!report.includes('peerDependencies["react-router'), report);
+  assert.ok(!report.includes('peerDependencies["react-i18next"]'), report);
   assert.ok(report.includes('dry-run'), 'report states dry-run mode');
 
   // Nothing on disk changed.
@@ -107,7 +107,7 @@ test('migrate moves react from dependencies to peerDependencies', () => {
 
   const report = migrate(target, '--dry-run');
   assert.ok(
-    report.includes('dependencies: move "react" "^17.0.2" to peerDependencies "^19.2.7"'),
+    report.includes('dependencies: move "react" "^17.0.2" to peerDependencies "^19.0.0"'),
     report
   );
   assert.ok(!report.includes('react@^17.0.2'), 'react is moved, not flagged for pinning');
@@ -115,7 +115,7 @@ test('migrate moves react from dependencies to peerDependencies', () => {
   migrate(target);
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
   assert.ok(!('react' in pkg.dependencies));
-  assert.equal(pkg.peerDependencies.react, '^19.2.7');
+  assert.equal(pkg.peerDependencies.react, '^19.0.0');
 
   assert.ok(!migrate(target, '--dry-run').includes('move "react"'), 'second run moves nothing');
 });
@@ -137,7 +137,7 @@ test("migrate aligns React Router and i18next peers to the host app's majors", (
 
   const report = migrate(target);
   assert.ok(report.includes('peerDependencies["react-router-dom"]: "^5.3.0" -> "^'), report);
-  assert.ok(report.includes('Note: the peer versions of'), report);
+  assert.ok(report.includes('Note: the versions of'), report);
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
   // Each peer is a caret range on the major the host app bundles, so the
   // host's own copy satisfies it.
@@ -148,7 +148,7 @@ test("migrate aligns React Router and i18next peers to the host app's majors", (
   }
 
   assert.ok(
-    !migrate(target, '--dry-run').includes('Note: the peer versions'),
+    !migrate(target, '--dry-run').includes('Note: the versions'),
     'second run rewrites nothing'
   );
 });
@@ -167,24 +167,84 @@ test('migrate moves React Router and i18next from dependencies to peerDependenci
 
   const report = migrate(target, '--dry-run');
   for (const needle of [
-    'dependencies: move "react-router-dom" "^6.4.0" to peerDependencies "^6.30.3"',
+    'dependencies: move "react-router-dom" "^6.4.0" to peerDependencies "^6.4.0"',
     'dependencies: move "i18next" "^19.9.2" to peerDependencies "^19.9.2"',
   ]) {
     assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
   }
+  // Both were already on the host's majors, so the note names only React (the
+  // CLI-era template's React 18 peers).
+  assert.ok(report.includes("Note: the versions of react, react-dom will be set to the host's."), report);
 
   migrate(target);
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
   assert.ok(!('react-router-dom' in pkg.dependencies));
   assert.ok(!('i18next' in pkg.dependencies));
-  assert.equal(pkg.peerDependencies['react-router-dom'], '^6.30.3');
+  assert.equal(pkg.peerDependencies['react-router-dom'], '^6.4.0');
   assert.equal(pkg.peerDependencies.i18next, '^19.9.2');
+});
+
+test("migrate keeps a shared package's version on the host's major as a peer", () => {
+  const target = scaffoldCliEra('extension', 'same-major-extension');
+  editPackage(target, pkg => {
+    for (const name of ['react', 'react-dom', 'react-router-dom']) {
+      delete pkg.peerDependencies[name];
+    }
+    pkg.peerDependencies['react-router'] = '6.30.0';
+    pkg.dependencies = {
+      ...pkg.dependencies,
+      react: '19.2.0',
+      'react-dom': '^19.1.0',
+      'react-router-dom': '^5.3.0',
+      'react-i18next': '^12.1.0',
+    };
+  });
+
+  const report = migrate(target, '--dry-run');
+  for (const needle of [
+    // An exact version becomes a caret range of itself; a range is kept.
+    'dependencies: move "react" "19.2.0" to peerDependencies "^19.2.0"',
+    'dependencies: move "react-dom" "^19.1.0" to peerDependencies "^19.1.0"',
+    // Another major takes the host's.
+    'dependencies: move "react-router-dom" "^5.3.0" to peerDependencies "^6.0.0"',
+    // An existing peer wins over the dependency.
+    `dependencies: drop "react-i18next" "^12.1.0" (it's already a peer, "^12.2.2"`,
+    'peerDependencies["react-router"]: "6.30.0" -> "^6.30.0" (an exact peer is met by that one release only',
+    // Only react-router-dom changed major.
+    "Note: the versions of react-router-dom will be set to the host's.",
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+
+  migrate(target);
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.deepEqual(
+    {
+      react: pkg.peerDependencies.react,
+      'react-dom': pkg.peerDependencies['react-dom'],
+      'react-router': pkg.peerDependencies['react-router'],
+      'react-router-dom': pkg.peerDependencies['react-router-dom'],
+      'react-i18next': pkg.peerDependencies['react-i18next'],
+    },
+    {
+      react: '^19.2.0',
+      'react-dom': '^19.1.0',
+      'react-router': '^6.30.0',
+      'react-router-dom': '^6.0.0',
+      'react-i18next': '^12.2.2',
+    }
+  );
+  for (const name of ['react', 'react-dom', 'react-router-dom', 'react-i18next']) {
+    assert.ok(!(name in pkg.dependencies), name);
+  }
+  const again = migrate(target, '--dry-run');
+  assert.ok(!/peerDependencies\["react|move "react|drop "react/.test(again), again);
 });
 
 test('migrate prints no version note when no shared peer changes', () => {
   // The CLI-era mode template peer-depends on @ohif/core only.
   const target = scaffoldCliEra('mode', 'no-shared-peers-mode');
-  assert.ok(!migrate(target, '--dry-run').includes('Note: the peer versions'));
+  assert.ok(!migrate(target, '--dry-run').includes('Note: the versions'));
 });
 
 test('migrate raises engines.node to the template and drops the npm and yarn engines', () => {
@@ -467,10 +527,10 @@ test('migrate applies the extension rewrites and is idempotent', () => {
     main: 'dist/index.umd.js',
     module: 'dist/index.umd.js',
   });
-  // React peers follow the template; ranged toolchain entries become exact pins;
-  // ranges migrate has no pin for are flagged, not rewritten.
-  assert.equal(pkg.peerDependencies.react, '^19.2.7');
-  assert.equal(pkg.peerDependencies['react-dom'], '^19.2.7');
+  // React peers follow the host's major; ranged toolchain entries become exact
+  // pins; ranges migrate has no pin for are flagged, not rewritten.
+  assert.equal(pkg.peerDependencies.react, '^19.0.0');
+  assert.equal(pkg.peerDependencies['react-dom'], '^19.0.0');
   assert.equal(pkg.devDependencies['cross-env'], '7.0.3');
   assert.equal(pkg.devDependencies.dotenv, '^14.1.0');
   for (const name of [
@@ -754,6 +814,30 @@ function scaffoldInTree(kind, name) {
     path.join(checkout, 'package.json'),
     JSON.stringify({ name: 'ohif-monorepo-root', version: '3.14.0-beta.68', private: true })
   );
+  // The app's and an SDK package's pinned dependencies, where migrate reads the
+  // shared packages' versions in-tree.
+  fs.writeFileSync(
+    path.join(checkout, 'platform', 'app', 'package.json'),
+    JSON.stringify({
+      name: '@ohif/app',
+      dependencies: {
+        react: '19.2.7',
+        'react-dom': '19.2.7',
+        'react-router': '6.30.3',
+        'react-router-dom': '6.30.3',
+        i18next: '19.9.2',
+        'react-i18next': '12.3.1',
+      },
+    })
+  );
+  fs.mkdirSync(path.join(checkout, 'extensions', 'cornerstone'), { recursive: true });
+  fs.writeFileSync(
+    path.join(checkout, 'extensions', 'cornerstone', 'package.json'),
+    JSON.stringify({
+      name: '@ohif/extension-cornerstone',
+      dependencies: { '@cornerstonejs/core': '5.12.0', '@cornerstonejs/tools': '5.12.0' },
+    })
+  );
   const target = path.join(checkout, kind === 'extension' ? 'extensions' : 'modes', name);
   fs.cpSync(standalone, target, { recursive: true });
   return { checkout, target };
@@ -813,4 +897,150 @@ test("migrate inside a checkout removes nested pnpm settings, the root's toolcha
   const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
   assert.ok(!('@rspack/core' in pkg.devDependencies));
   assert.ok(!('packageManager' in pkg));
+});
+
+// Read a fixture's package.json, change it, and write it back.
+function editPackage(target, edit) {
+  const pkgPath = path.join(target, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  edit(pkg);
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+}
+
+test('migrate moves @ohif dependencies to peers outside a checkout', () => {
+  // Like master's modes/usAnnotation, which lists its OHIF packages as
+  // workspace:* dependencies.
+  const target = scaffoldCliEra('mode', 'ohif-deps-mode');
+  editPackage(target, pkg => {
+    delete pkg.peerDependencies['@ohif/core'];
+    Object.assign(pkg.dependencies, {
+      '@ohif/core': 'workspace:*',
+      '@ohif/extension-ultrasound-pleura-bline': 'workspace:*',
+    });
+    Object.assign(pkg.devDependencies, { '@ohif/ui-next': 'workspace:*', '@ohif/i18n': '3.12.0' });
+  });
+
+  const report = migrate(target);
+  assert.ok(
+    report.includes(
+      `dependencies: move "@ohif/extension-ultrasound-pleura-bline" "workspace:*" to peerDependencies "${hostRange}" (the host provides it; outside a checkout workspace:* cannot be installed)`
+    ),
+    report
+  );
+  assert.ok(report.includes('devDependencies: move "@ohif/ui-next" "workspace:*"'), report);
+  // As a peer, the unpublished extension gets the existing flag.
+  assert.ok(report.includes('@ohif/extension-ultrasound-pleura-bline is no longer published'), report);
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.ok(!Object.keys(pkg.dependencies).some(name => name.startsWith('@ohif/')), 'no @ohif dependency left');
+  for (const name of ['@ohif/core', '@ohif/extension-ultrasound-pleura-bline', '@ohif/ui-next']) {
+    assert.equal(pkg.peerDependencies[name], hostRange, name);
+  }
+  assert.equal(pkg.devDependencies['@ohif/i18n'], '3.12.0', 'a dev copy at a real version stays');
+  assert.ok(!('@ohif/ui-next' in pkg.devDependencies));
+  assert.ok(!migrate(target, '--dry-run').includes('move "@ohif/'), 'second run moves nothing');
+});
+
+test("migrate moves shared cornerstone and dcmjs dependencies to peers on the host's line", () => {
+  // Like MONAI Label's 3.11-era extension.
+  const target = scaffoldCliEra('extension', 'cs3-extension');
+  editPackage(target, pkg => {
+    Object.assign(pkg.dependencies, {
+      '@cornerstonejs/core': '^3.32.5',
+      '@cornerstonejs/adapters': '^3.32.5',
+      '@cornerstonejs/codec-charls': '^1.2.3',
+      dcmjs: '0.29.0',
+    });
+    pkg.devDependencies['@cornerstonejs/core'] = '^3.32.5';
+  });
+
+  const report = migrate(target);
+  for (const needle of [
+    'dependencies: move "@cornerstonejs/core" "^3.32.5" to peerDependencies "^5.0.0" (the host provides @cornerstonejs/core 5',
+    'dependencies: move "dcmjs" "0.29.0" to peerDependencies "^0.52.0"',
+    // The dev copy is the author's: flagged, not rewritten.
+    'devDependencies["@cornerstonejs/core"]: "^3.32.5" — the host runs @cornerstonejs/core 5; update your dev copy to a 5.x release',
+    "devDependencies: dcmjs is a peer now, and peers aren't installed — if your code or tests import it, add a 0.52.x release",
+    // Released with core but not shared, so it stays bundled and must match.
+    'dependencies["@cornerstonejs/adapters"]: "^3.32.5" — cornerstone\'s packages are released together, and the host runs @cornerstonejs/core 5.x',
+  ]) {
+    assert.ok(report.includes(needle), `report must mention: ${needle}\n---\n${report}`);
+  }
+  // A codec has its own release line, so it isn't flagged with cornerstone.
+  assert.ok(!report.includes('["@cornerstonejs/codec-charls"]'), report);
+  // The entries flagged above aren't also asked to be pinned.
+  const pinFlags = report.split('\n').filter(line => line.includes('not pinned to exact versions'));
+  assert.ok(pinFlags.some(line => line.includes('@cornerstonejs/codec-charls')), pinFlags.join('\n'));
+  assert.ok(!pinFlags.some(line => /adapters|@cornerstonejs\/core/.test(line)), pinFlags.join('\n'));
+  assert.ok(/Note: the versions of [^\n]*@cornerstonejs\/core[^\n]*dcmjs/.test(report), report);
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.equal(pkg.peerDependencies['@cornerstonejs/core'], '^5.0.0');
+  assert.equal(pkg.peerDependencies.dcmjs, '^0.52.0');
+  assert.ok(!('@cornerstonejs/core' in pkg.dependencies) && !('dcmjs' in pkg.dependencies));
+  assert.equal(pkg.devDependencies['@cornerstonejs/core'], '^3.32.5');
+  assert.ok(!migrate(target, '--dry-run').includes('move "@cornerstonejs/core"'), 'second run moves nothing');
+});
+
+test("migrate inside a checkout keeps shared packages in place, on the checkout's versions", () => {
+  const { target } = scaffoldInTree('extension', 'cs3-tree-extension');
+  editPackage(target, pkg => {
+    Object.assign(pkg.dependencies, {
+      '@cornerstonejs/core': '^3.32.5',
+      '@cornerstonejs/adapters': '^3.32.5',
+      i18next: '^17.0.3',
+      '@ohif/core': '^3.11.0',
+    });
+    pkg.devDependencies['@cornerstonejs/core'] = '^3.32.5';
+    // Already on the checkout's major: left alone, even though not exact.
+    pkg.peerDependencies['react-dom'] = '^19.0.0';
+  });
+
+  const report = migrate(target);
+  assert.ok(
+    report.includes(
+      'dependencies["@cornerstonejs/core"]: "^3.32.5" -> "5.12.0" (the checkout installs @cornerstonejs/core 5.12.0)'
+    ),
+    report
+  );
+  assert.ok(
+    report.includes('dependencies["@ohif/core"]: "^3.11.0" -> "workspace:*"'),
+    report
+  );
+  assert.ok(
+    report.includes('the host runs @cornerstonejs/core 5.12.0; update it to the same release'),
+    report
+  );
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
+  assert.equal(pkg.dependencies['@cornerstonejs/core'], '5.12.0');
+  assert.equal(pkg.devDependencies['@cornerstonejs/core'], '5.12.0');
+  assert.equal(pkg.dependencies.i18next, '19.9.2', 'stays a dependency, on the checkout version');
+  assert.ok(!('i18next' in pkg.peerDependencies));
+  assert.equal(pkg.dependencies['@ohif/core'], 'workspace:*');
+  assert.equal(pkg.peerDependencies.react, '19.2.7', "React 18 moves to the checkout's 19");
+  assert.equal(pkg.peerDependencies['react-dom'], '^19.0.0');
+  assert.ok(!migrate(target, '--dry-run').includes('-> "5.12.0"'), 'second run rewrites nothing');
+});
+
+// host-shared-majors.json is checked against the viewer's installed copies by
+// platform/app/src/runtimeShared.test.js; this keeps the templates on it too.
+test("the templates' shared packages are on the host's majors", () => {
+  const majors = JSON.parse(
+    fs.readFileSync(new URL('../host-shared-majors.json', import.meta.url), 'utf8')
+  );
+  for (const tpl of ['extension', 'mode']) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(templatesRoot, tpl, 'package.json'), 'utf8'));
+    for (const section of ['peerDependencies', 'devDependencies']) {
+      for (const [name, spec] of Object.entries(manifest[section] ?? {})) {
+        if (name in majors) {
+          const [, major, minor] = spec.match(/(\d+)\.(\d+)/);
+          assert.equal(
+            `${tpl} ${section} ${name}@${major === '0' ? `0.${minor}` : major}`,
+            `${tpl} ${section} ${name}@${majors[name]}`
+          );
+        }
+      }
+    }
+  }
 });

@@ -37,23 +37,14 @@ const SETTLED_LIST = [
 // The major version of each shared third-party package (for a 0.x package, its
 // minor: semver treats each 0.x minor as breaking). A runtime plugin is built
 // against these and gets the host's copy at runtime, so moving one to a new
-// major breaks plugins that are already built. When this fails, add a
-// migration-guide entry for the change, update the versions listed under
-// "Shared host packages" in platform/docs/docs/configuration/configurationFiles.md,
-// then update the value here.
+// major breaks plugins that are already built. The list lives in create-ohif,
+// whose migrate sets a standalone plugin's shared packages to these majors.
+// When this fails, add a migration-guide entry for the change, update the
+// versions listed under "Shared host packages" in
+// platform/docs/docs/configuration/configurationFiles.md, then update the value
+// in platform/create-ohif/host-shared-majors.json.
 /** @type {Record<string, string>} */
-const SHARED_MAJORS = {
-  react: '19',
-  'react-dom': '19',
-  '@cornerstonejs/core': '5',
-  '@cornerstonejs/tools': '5',
-  dcmjs: '0.52',
-  'gl-matrix': '3',
-  'react-router': '6',
-  'react-router-dom': '6',
-  i18next: '19',
-  'react-i18next': '12',
-};
+const SHARED_MAJORS = require('../../create-ohif/host-shared-majors.json');
 
 describe('runtimeShared <-> pluginExternals parity', () => {
   const source = fs.readFileSync(path.join(__dirname, 'runtimeShared.ts'), 'utf8');

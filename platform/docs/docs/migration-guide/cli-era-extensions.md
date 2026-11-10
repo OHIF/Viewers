@@ -170,15 +170,36 @@ The contract:
   `create-ohif`. `pnpm run plugin doctor` checks the `@ohif/core` peer against
   the viewer's version; the runtime loader checks a descriptor's
   `coreVersionRange`, not peer ranges.
-- **React is a peer, never a dependency.** If `react` or `react-dom` is under
-  `dependencies`, migrate moves it to `peerDependencies` at the template's
-  range. The host provides React, and an installed copy would be a second React.
-- **React Router and i18next follow the host too.** Peers on `react-router`,
-  `react-router-dom`, `i18next` and `react-i18next` are set to the versions the
-  viewer shares (`^6.30.3`, `^6.30.3`, `^19.9.2`, `^12.3.1`), and any of them
-  under `dependencies` move to `peerDependencies`. The CLI-era peers above
-  become `"react-router": "^6.30.3"`, `"react-router-dom": "^6.30.3"` and
-  `"react-i18next": "^12.3.1"`.
+- **Shared packages follow the host's major version.** The host shares React
+  and `react-dom` 19, `react-router` and `react-router-dom` 6, `i18next` 19,
+  `react-i18next` 12, `@cornerstonejs/core` and `@cornerstonejs/tools` 5,
+  `dcmjs` 0.52 and `gl-matrix` 3 (`create-ohif`'s `host-shared-majors.json`).
+  A peer on another major is set to the host's (`^19.0.0`, `^5.0.0`,
+  `^0.52.0`, …); a range already on it is left alone, and an exact version on
+  it becomes a caret range of itself (`19.2.0` becomes `^19.2.0`), since an
+  exact peer is met by that one release only. Any of them under `dependencies`
+  move to `peerDependencies` by the same rule, or are dropped if they are
+  already peers: the build leaves them external, so an installed copy is never
+  used. A copy under `devDependencies`, for types
+  and tests, is yours: migrate flags it when it is on another major, and flags
+  a moved package that has none, since peers aren't installed. The CLI-era
+  peers above become `"react": "^19.0.0"` and `"react-dom": "^19.0.0"`; React
+  Router and `react-i18next` are already on the host's majors and stay.
+- **Other cornerstone packages are flagged.** `@cornerstonejs/adapters`, the
+  image loader and the rest aren't shared, so your build bundles them, and
+  cornerstone releases its packages together. When migrate moves your
+  `@cornerstonejs/core` to another major, it flags each of them still on your
+  old one.
+- **`@ohif` packages are peers too.** An `@ohif/*` entry under `dependencies`
+  moves to `peerDependencies` at the host range, as does a `workspace:*` entry
+  under `devDependencies`, which can't be installed outside an OHIF checkout. A
+  dev copy at a real version stays.
+- **Inside a checkout, the shared packages stay where you list them.** A plugin
+  directly in a checkout's `extensions/` or `modes/` keeps each shared package
+  in its section, as the repo's own plugins do. One on another major than the
+  checkout installs is set to the checkout's version, read from the
+  dependencies of `platform/app` and the SDK packages. `@ohif/*` entries become
+  `workspace:*` wherever they are.
 - **Check the majors that moved.** Aligning a peer to the host can move it to a
   new major version (React 18 to 19, for example). If your code was written for
   an older major, check that package's breaking changes; the report ends with a

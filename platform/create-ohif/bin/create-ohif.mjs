@@ -160,6 +160,51 @@ function hostPeerRange(version) {
   return `>=${major}.${minor}.0-beta.0 <${Number(major) + 1}`;
 }
 
+// The major line of a version or a simple range ("^3.32.5" -> "3"; for 0.x the
+// minor counts, "0.52.0" -> "0.52"), or null when it names no version
+// ("workspace:*", "latest", a URL).
+function versionLine(spec) {
+  const match = typeof spec === 'string' && spec.match(/^[\^~>=v\s]*(\d+)\.(\d+)/);
+  if (!match) {
+    return null;
+  }
+  return match[1] === '0' ? `0.${match[2]}` : match[1];
+}
+
+// The caret range for a major line: "5" -> "^5.0.0", "0.52" -> "^0.52.0".
+function lineRange(line) {
+  return line.startsWith('0.') ? `^${line}.0` : `^${line}.0.0`;
+}
+
+// The exact versions an OHIF checkout installs, from the dependencies of
+// CHECKOUT_VERSION_SOURCES, which pin exact versions. A name two of them
+// disagree on is left out, as is anything not pinned.
+function checkoutVersions(checkoutRoot) {
+  const found = {};
+  const conflicting = new Set();
+  for (const dir of CHECKOUT_VERSION_SOURCES) {
+    let deps;
+    try {
+      deps = JSON.parse(fs.readFileSync(path.join(checkoutRoot, dir, 'package.json'), 'utf8')).dependencies;
+    } catch {
+      continue;
+    }
+    for (const [name, spec] of Object.entries(deps ?? {})) {
+      if (!EXACT_VERSION.test(spec)) {
+        continue;
+      }
+      if (name in found && found[name] !== spec) {
+        conflicting.add(name);
+      }
+      found[name] ??= spec;
+    }
+  }
+  for (const name of conflicting) {
+    delete found[name];
+  }
+  return found;
+}
+
 function parseModulesCsv(csv) {
   // Commas and/or whitespace: PowerShell turns an unquoted viewport,panel into
   // a list, which reaches us as the single argument "viewport panel".
@@ -474,17 +519,26 @@ const MIGRATE_DEV_DEPS = {
     'cross-env': '7.0.3',
   },
 };
-// Shared third-party packages the template doesn't declare (it declares React
-// itself), at the versions the host shares with plugins (see
-// .rspack/pluginExternals.js). migrate aligns a plugin's peers on these to the
-// host, as it does for React. tests/migrate.test.mjs checks the majors against
-// platform/app/package.json.
-const HOST_SHARED_PEERS = {
-  'react-router': '^6.30.3',
-  'react-router-dom': '^6.30.3',
-  i18next: '^19.9.2',
-  'react-i18next': '^12.3.1',
-};
+// The host's shared third-party packages (see .rspack/pluginExternals.js), by
+// the major line runtime plugins are built against (for a 0.x package, its
+// minor). This file is the contract's one list: the repo's
+// platform/app/src/runtimeShared.test.js checks the viewer's installed copies
+// against it, and moving one needs a migration-guide entry. Exact versions
+// change too often to keep here; in-tree, migrate reads them from the checkout.
+const HOST_SHARED_MAJORS = JSON.parse(
+  fs.readFileSync(new URL('../host-shared-majors.json', import.meta.url), 'utf8')
+);
+const SHARED_THIRD_PARTY = Object.keys(HOST_SHARED_MAJORS);
+// The checkout packages whose dependencies pin the versions the viewer
+// installs: the app itself and the SDK packages.
+const CHECKOUT_VERSION_SOURCES = [
+  'platform/app',
+  'platform/core',
+  'platform/ui-next',
+  'platform/i18n',
+  'extensions/default',
+  'extensions/cornerstone',
+];
 // The only @ohif deep imports the published contract resolves (ui-next
 // subpath exports); everything else under @ohif/<pkg>/ is an internal. These
 // resolve compiled in, but a runtime bundle gets @ohif packages from window by
@@ -780,6 +834,49 @@ async function runMigrate(targetDir, dryRun) {
 
   // -- package.json: peerDependencies ---------------------------------------
   const peers = next.peerDependencies ?? {};
+  const deps = next.dependencies ?? {};
+  const devDeps = next.devDependencies ?? {};
+  // @ohif packages outside peerDependencies. In-tree they stay where they are
+  // and link the checkout's copy through workspace:*; a range would install a
+  // published one instead (a checkout's prerelease version satisfies no
+  // ordinary range). Outside a checkout the host provides them, so a
+  // dependency becomes a peer, as does a workspace:* devDependency, which
+  // can't be installed there; a dev copy at a real version stays (for types).
+  for (const [section, entries] of [
+    ['dependencies', deps],
+    ['devDependencies', devDeps],
+  ]) {
+    for (const [name, spec] of Object.entries(entries)) {
+      if (!name.startsWith('@ohif/')) {
+        continue;
+      }
+      if (inTree) {
+        if (spec !== 'workspace:*') {
+          note(
+            true,
+            `package.json ${section}["${name}"]: ${JSON.stringify(spec)} -> "workspace:*" (${ohifPeerReason}; a range would install a published copy)`
+          );
+          entries[name] = 'workspace:*';
+        }
+        continue;
+      }
+      if (section === 'devDependencies' && !spec.startsWith('workspace:')) {
+        continue;
+      }
+      delete entries[name];
+      if (name in peers) {
+        note(true, `package.json ${section}: drop "${name}" ${JSON.stringify(spec)} (already a peer; the host provides it)`);
+      } else {
+        note(
+          true,
+          `package.json ${section}: move "${name}" ${JSON.stringify(spec)} to peerDependencies "${ohifPeerRange}" (the host provides it${
+            spec.startsWith('workspace:') ? '; outside a checkout workspace:* cannot be installed' : ''
+          })`
+        );
+        peers[name] = ohifPeerRange;
+      }
+    }
+  }
   if ('@ohif/ui' in peers) {
     note(
       true,
@@ -819,59 +916,129 @@ async function runMigrate(targetDir, dryRun) {
     note(true, `package.json peerDependencies: add "@ohif/core": "${ohifPeerRange}"`);
     peers['@ohif/core'] = ohifPeerRange;
   }
-  // React peers follow the current template (the 3.14 host runs React 19, and
-  // its compiled components need React 19 APIs at runtime). Only rewritten when
-  // declared; a package that never named React keeps not naming it.
-  const templateReactPeers = JSON.parse(
-    readTemplateFile('extension', 'package.json')
-  ).peerDependencies;
   // Shared packages whose version migrate changes, for the note at the end of
   // the report.
   const versionRewrites = new Set();
-  for (const name of ['react', 'react-dom']) {
-    if (name in peers && peers[name] !== templateReactPeers[name]) {
-      note(
-        true,
-        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${templateReactPeers[name]}" (the host runs React 19)`
-      );
-      peers[name] = templateReactPeers[name];
-      versionRewrites.add(name);
+  // Entries the shared-package checks below already flag, so the exact-version
+  // flag further down doesn't name them again.
+  const sharedFlagged = new Set();
+  // The plugin's own cornerstone line before migrate changes it: the other
+  // @cornerstonejs packages on that line were released with it.
+  const oldCornerstoneLine = ['peerDependencies', 'dependencies', 'devDependencies']
+    .map(section => versionLine(pkg[section]?.['@cornerstonejs/core']))
+    .find(Boolean);
+  let hostCornerstone;
+  if (inTree) {
+    // In-tree, the shared packages stay in whichever section the plugin lists
+    // them, as the repo's own plugins do. One on another major than the
+    // checkout installs is set to the checkout's version.
+    const installed = checkoutVersions(checkoutRoot);
+    hostCornerstone = installed['@cornerstonejs/core'];
+    for (const [section, entries] of [
+      ['peerDependencies', peers],
+      ['dependencies', deps],
+      ['devDependencies', devDeps],
+    ]) {
+      for (const name of SHARED_THIRD_PARTY.filter(shared => shared in entries)) {
+        const line = versionLine(entries[name]);
+        if (!installed[name]) {
+          flags.push(
+            `package.json ${section}["${name}"]: the checkout's version of ${name} wasn't found (in the dependencies of ${CHECKOUT_VERSION_SOURCES.join(', ')}) — check ${JSON.stringify(entries[name])} against it by hand`
+          );
+          sharedFlagged.add(`${section}:${name}`);
+        } else if (line !== null && line !== versionLine(installed[name])) {
+          note(
+            true,
+            `package.json ${section}["${name}"]: ${JSON.stringify(entries[name])} -> "${installed[name]}" (the checkout installs ${name} ${installed[name]})`
+          );
+          entries[name] = installed[name];
+          versionRewrites.add(name);
+        }
+      }
     }
+  } else {
+    // Outside a checkout, the shared packages follow the host's major line: a
+    // peer on another line is set to it, and a dependency becomes a peer, since
+    // the build leaves them external and an installed copy is never used. A
+    // range already on the host's line keeps the author's floor; an exact
+    // version on it becomes a caret range of itself, since an exact peer is met
+    // by that one release only. A package the plugin never named stays
+    // unnamed. A dev copy (for types and tests) is the author's: flagged when
+    // on another line, not rewritten.
+    for (const [name, line] of Object.entries(HOST_SHARED_MAJORS)) {
+      const peerSpec = spec => {
+        if (versionLine(spec) !== line) {
+          return lineRange(line);
+        }
+        return EXACT_VERSION.test(spec) ? `^${spec}` : spec;
+      };
+      if (name in peers && peerSpec(peers[name]) !== peers[name]) {
+        const onLine = versionLine(peers[name]) === line;
+        note(
+          true,
+          `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${peerSpec(peers[name])}" (${onLine ? `an exact peer is met by that one release only, and the host may run another ${line}.x` : `the host shares ${name} ${line}`})`
+        );
+        if (!onLine) {
+          versionRewrites.add(name);
+        }
+        peers[name] = peerSpec(peers[name]);
+      }
+      if (name in deps) {
+        if (name in peers) {
+          note(
+            true,
+            `package.json dependencies: drop "${name}" ${JSON.stringify(deps[name])} (it's already a peer, ${JSON.stringify(peers[name])}; the host provides ${name} ${line}, so an installed copy is never used)`
+          );
+        } else {
+          note(
+            true,
+            `package.json dependencies: move "${name}" ${JSON.stringify(deps[name])} to peerDependencies "${peerSpec(deps[name])}" (the host provides ${name} ${line}; an installed copy is never used)`
+          );
+          if (versionLine(deps[name]) !== line) {
+            versionRewrites.add(name);
+          }
+          peers[name] = peerSpec(deps[name]);
+        }
+        delete deps[name];
+        if (!(name in devDeps)) {
+          flags.push(
+            `package.json devDependencies: ${name} is a peer now, and peers aren't installed — if your code or tests import it, add a ${line}.x release of it to devDependencies`
+          );
+        }
+      }
+      if (name in devDeps && versionLine(devDeps[name]) !== line) {
+        flags.push(
+          `package.json devDependencies["${name}"]: ${JSON.stringify(devDeps[name])} — the host runs ${name} ${line}; update your dev copy to a ${line}.x release`
+        );
+        sharedFlagged.add(`devDependencies:${name}`);
+      }
+    }
+    hostCornerstone = `${HOST_SHARED_MAJORS['@cornerstonejs/core']}.x`;
   }
-  // React under dependencies is always moved: the host provides React, so an
-  // installed copy would be a second React. It becomes a peer at the
-  // template's range.
-  const deps = next.dependencies ?? {};
-  for (const name of ['react', 'react-dom']) {
-    if (name in deps) {
-      note(
-        true,
-        `package.json dependencies: move "${name}" ${JSON.stringify(deps[name])} to peerDependencies "${templateReactPeers[name]}" (the host provides React; an installed copy would be a second React)`
-      );
-      delete deps[name];
-      peers[name] = templateReactPeers[name];
-      versionRewrites.add(name);
-    }
-  }
-  // React Router and i18next follow the host the same way: rewritten when
-  // declared as peers, moved when declared as dependencies.
-  for (const [name, range] of Object.entries(HOST_SHARED_PEERS)) {
-    if (name in peers && peers[name] !== range) {
-      note(
-        true,
-        `package.json peerDependencies["${name}"]: ${JSON.stringify(peers[name])} -> "${range}" (the host shares ${name} ${range.slice(1)})`
-      );
-      peers[name] = range;
-      versionRewrites.add(name);
-    }
-    if (name in deps) {
-      note(
-        true,
-        `package.json dependencies: move "${name}" ${JSON.stringify(deps[name])} to peerDependencies "${range}" (the host provides ${name}; an installed copy is never used)`
-      );
-      delete deps[name];
-      peers[name] = range;
-      versionRewrites.add(name);
+  // Cornerstone's packages are released together, so one the host doesn't share
+  // (adapters, the image loader, …) still has to match the host's core. Those on
+  // the plugin's old core line are flagged when that line changes.
+  const newCornerstoneLine = inTree
+    ? versionLine(hostCornerstone)
+    : HOST_SHARED_MAJORS['@cornerstonejs/core'];
+  if (oldCornerstoneLine && newCornerstoneLine && oldCornerstoneLine !== newCornerstoneLine) {
+    for (const [section, entries] of [
+      ['dependencies', deps],
+      ['devDependencies', devDeps],
+      ['peerDependencies', peers],
+    ]) {
+      for (const [name, spec] of Object.entries(entries)) {
+        if (
+          name.startsWith('@cornerstonejs/') &&
+          !SHARED_THIRD_PARTY.includes(name) &&
+          versionLine(spec) === oldCornerstoneLine
+        ) {
+          flags.push(
+            `package.json ${section}["${name}"]: ${JSON.stringify(spec)} — cornerstone's packages are released together, and the host runs @cornerstonejs/core ${hostCornerstone}; update it to the same release`
+          );
+          sharedFlagged.add(`${section}:${name}`);
+        }
+      }
     }
   }
   if (next.dependencies) {
@@ -968,7 +1135,6 @@ async function runMigrate(targetDir, dryRun) {
   // (every in-tree OHIF plugin declares only cross-env), so migrate adds none
   // of it and removes the copies a plugin declares, which would install a
   // second toolchain inside the plugin folder.
-  const devDeps = next.devDependencies ?? {};
   const toolchain = Object.entries(MIGRATE_DEV_DEPS[kind]).filter(
     ([name]) => !inTree || name === 'cross-env'
   );
@@ -1054,6 +1220,7 @@ async function runMigrate(targetDir, dryRun) {
   for (const section of ['dependencies', 'devDependencies']) {
     const ranged = Object.entries(next[section] ?? {})
       .filter(([name]) => !isBabelPackage(name) && !unusedTools.includes(name))
+      .filter(([name]) => !sharedFlagged.has(`${section}:${name}`))
       .filter(([, spec]) => !EXACT_VERSION.test(spec))
       .filter(([, spec]) => !spec.startsWith('workspace:'))
       .map(([name, spec]) => `${name}@${spec}`);
@@ -1405,7 +1572,7 @@ async function runMigrate(targetDir, dryRun) {
     ...(versionRewrites.size > 0
       ? [
           '',
-          `Note: the peer versions of ${[...versionRewrites].join(', ')} ${dryRun ? 'will be' : 'were'} set to the host's. If your code was written for an older major version of any of them, check that package's breaking changes; the [rewrite] lines above show the old and new ranges.`,
+          `Note: the versions of ${[...versionRewrites].join(', ')} ${dryRun ? 'will be' : 'were'} set to the host's. If your code was written for an older major version of any of them, check that package's breaking changes; the [rewrite] lines above show the old and new ranges.`,
         ]
       : []),
   ];

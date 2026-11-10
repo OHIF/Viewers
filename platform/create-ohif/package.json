@@ -9,7 +9,7 @@
   "keywords": ["ohif", "create", "scaffold"],
   "bin": { "create-ohif": "bin/create-ohif.mjs" },
   "engines": { "node": ">=24" },
-  "files": ["bin", "templates", "README.md"],
+  "files": ["bin", "templates", "host-shared-majors.json", "README.md"],
   "publishConfig": { "access": "public" },
   "scripts": {
     "test": "node --test \"tests/*.test.mjs\"",

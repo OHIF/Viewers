@@ -664,6 +664,10 @@ test("a checkout's copy targets the checkout's version; any other copy its own",
   const copyAt = packageDir => {
     fs.mkdirSync(path.join(packageDir, 'bin'), { recursive: true });
     fs.copyFileSync(bin, path.join(packageDir, 'bin', 'create-ohif.mjs'));
+    fs.copyFileSync(
+      new URL('../host-shared-majors.json', import.meta.url),
+      path.join(packageDir, 'host-shared-majors.json')
+    );
     fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ version: '9.9.9' }));
     return spawnSync(process.execPath, [path.join(packageDir, 'bin', 'create-ohif.mjs'), '--version'], {
       encoding: 'utf8',
