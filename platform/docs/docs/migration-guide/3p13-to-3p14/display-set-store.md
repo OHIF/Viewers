@@ -35,8 +35,12 @@ const displaySet = metaData.getTyped(
 
 `displaySetService.getDisplaySetCache()` returns a new `Map` on each call, a
 copy of the stored display sets. A write to that copy does not change the
-service. Nothing in the OHIF tree writes to it, so only downstream code is
-affected.
+service.
+
+In 3.13, the 4D commands of `@ohif/extension-cornerstone-dynamic-volume`
+(`swapDynamicWithComputedDisplaySet` and `swapComputedWithDynamicDisplaySet`)
+wrote to this map. In 3.14 they call `addDisplaySets`, so the service also
+sends `DISPLAY_SETS_ADDED` for the computed display set.
 
 **Before (3.13)**, these calls changed the service:
 
