@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { type ExtensionManager, DicomMetadataStore, utils } from '@ohif/core';
-import { preserveQueryParameters, preserveKeys } from '@ohif/app';
+import { preserveQueryParameters } from '@ohif/app';
 
 const { formatPN } = utils;
 
@@ -297,18 +297,23 @@ export function getDataSourcePathSegment(
 /**
  * React hook: builds the search string to append to mode-switch links while keeping viewer-wide query params.
  */
-export function usePreservedViewerSearch(locationSearch: string): string {
+export function usePreservedViewerSearch(
+  locationSearch: string,
+  customizationService?: Parameters<typeof preserveQueryParameters>[1]
+): string {
   return useMemo(() => {
     const next = new URLSearchParams(locationSearch);
     /**
-     * Remove preserved keys first so preserveQueryParameters doesn't append duplicates.
-     * (next was initialised from the same search string that preserveQueryParameters reads).
+     * Collect the preserved params on their own, then replace them in `next`. `next` comes from the
+     * same search string that preserveQueryParameters reads, so appending directly would duplicate them.
      */
-    for (const key of preserveKeys) {
+    const preserved = new URLSearchParams();
+    preserveQueryParameters(preserved, customizationService, new URLSearchParams(locationSearch));
+    for (const key of new Set(preserved.keys())) {
       next.delete(key);
     }
-    preserveQueryParameters(next);
+    preserved.forEach((value, key) => next.append(key, value));
     const s = next.toString();
     return s ? `?${s}` : '';
-  }, [locationSearch]);
+  }, [locationSearch, customizationService]);
 }

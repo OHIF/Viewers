@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import {
@@ -14,7 +13,6 @@ import {
   TooltipTrigger,
   useImageViewer,
 } from '@ohif/ui-next';
-import { CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
@@ -37,24 +35,33 @@ type ToolbarMenuRow = {
   label: string;
 };
 
-function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManager }) {
-  const extensionManager = servicesManager.services.customizationService.extensionManager;
+type ToolbarModeSelectorProps = {
+  servicesManager: AppTypes.ServicesManager;
+};
+
+/** Study envelope together with the study and data source it was loaded for. */
+type LoadedEnvelope = {
+  primaryUid: string;
+  dataSource: unknown;
+  envelope: StudyEnvelope | null;
+};
+
+function ToolbarModeSelector({ servicesManager }: ToolbarModeSelectorProps) {
+  const { customizationService } = servicesManager.services;
+  const extensionManager = customizationService.extensionManager;
   const { t } = useTranslation('ToolbarModeSelector');
 
-  const labels = useMemo(
-    () => ({
-      browseModes: t('Browse modes'),
-      modes: t('Modes'),
-      loadingMetadata: t('Loading study metadata for modes…'),
-      unableToEvaluate: t('Unable to evaluate this mode'),
-      currentMode: t('Current mode'),
-      noModesAvailable: t('No modes available'),
-    }),
-    [t]
-  );
+  const labels = {
+    browseModes: t('Browse modes'),
+    modes: t('Modes'),
+    loadingMetadata: t('Loading study metadata for modes…'),
+    unableToEvaluate: t('Unable to evaluate this mode'),
+    currentMode: t('Current mode'),
+    noModesAvailable: t('No modes available'),
+  };
 
   const location = useLocation();
-  const preservedSearch = usePreservedViewerSearch(location.search);
+  const preservedSearch = usePreservedViewerSearch(location.search, customizationService);
 
   const [appConfig] = useAppConfig();
   const loadedModes = appConfig?.loadedModes || [];
@@ -64,81 +71,57 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
   const StudyInstanceUIDs = imageViewer?.StudyInstanceUIDs;
   const primaryUid = Array.isArray(StudyInstanceUIDs) ? StudyInstanceUIDs[0] : undefined;
 
-  const [studyEnvelope, setStudyEnvelope] = useState<StudyEnvelope | null>(null);
-  const [metadataLoadFinished, setMetadataLoadFinished] = useState(false);
+  const [loaded, setLoaded] = useState<LoadedEnvelope | null>(null);
   const [open, setOpen] = useState(false);
 
-  const dataSource = useMemo(
-    () =>
-      extensionManager.getActiveDataSourceOrNull?.() ?? extensionManager.getActiveDataSource?.()?.[0],
-    [extensionManager]
-  );
+  const dataSource =
+    extensionManager.getActiveDataSourceOrNull?.() ?? extensionManager.getActiveDataSource?.()?.[0];
 
   useEffect(() => {
-    let cancelled = false;
-
-    setMetadataLoadFinished(false);
-
-    async function load() {
-      if (!primaryUid || !dataSource) {
-        setStudyEnvelope(null);
-        setMetadataLoadFinished(true);
-        return;
-      }
-
-      const env = await fetchStudyEnvelope(primaryUid, dataSource);
-
-      if (!cancelled) {
-        setStudyEnvelope(env);
-        setMetadataLoadFinished(true);
-      }
+    if (!primaryUid || !dataSource) {
+      return;
     }
 
-    load();
+    let cancelled = false;
+    fetchStudyEnvelope(primaryUid, dataSource).then(envelope => {
+      if (!cancelled) {
+        setLoaded({ primaryUid, dataSource, envelope });
+      }
+    });
 
     return () => {
       cancelled = true;
     };
   }, [primaryUid, dataSource]);
 
-  const modesForToolbar = useMemo(() => loadedModes.filter(m => !m.hide), [loadedModes]);
+  /**
+   * Only use an envelope loaded for the current study and data source. Until the new one arrives,
+   * an envelope from the previous study must not enable or disable modes.
+   */
+  const isLoadedForCurrentStudy =
+    !!loaded && loaded.primaryUid === primaryUid && loaded.dataSource === dataSource;
+  const studyEnvelope = isLoadedForCurrentStudy ? loaded.envelope : null;
+  const metadataLoadFinished = !dataSource || isLoadedForCurrentStudy;
 
-  const comparableModesList = useMemo(() => {
-    if (!studyEnvelope || !modesForToolbar?.length) {
-      return [...modesForToolbar];
-    }
+  const modesForToolbar = loadedModes.filter(m => !m.hide);
 
-    const list = [...modesForToolbar];
+  const comparableModesList = [...modesForToolbar];
+  if (studyEnvelope && groupEnabledModesFirst) {
+    comparableModesList.sort((a, b) => {
+      const validA = modeIsValidForOrdering(a, studyEnvelope);
+      const validB = modeIsValidForOrdering(b, studyEnvelope);
+      return Number(validB) - Number(validA);
+    });
+  }
 
-    if (groupEnabledModesFirst && studyEnvelope) {
-      list.sort((a, b) => {
-        const validA = modeIsValidForOrdering(a, studyEnvelope);
-        const validB = modeIsValidForOrdering(b, studyEnvelope);
-        return Number(validB) - Number(validA);
-      });
-    }
+  const dsSuffix = getDataSourcePathSegment(location.pathname, loadedModes, extensionManager);
 
-    return list;
-  }, [groupEnabledModesFirst, modesForToolbar, studyEnvelope]);
-
-  const buildHrefForMode = useCallback(
-    (routeName: string) => {
-      const dsSuffix = getDataSourcePathSegment(location.pathname, loadedModes, extensionManager);
-      const pathname = `/${routeName}${dsSuffix ? `/${dsSuffix}` : ''}`;
-      return { pathname, search: preservedSearch };
-    },
-    [extensionManager, loadedModes, location.pathname, preservedSearch]
-  );
-
-  const closePopover = useCallback(() => {
+  const closePopover = () => {
     setOpen(false);
-  }, []);
+  };
 
-  const modeMenuRows = useMemo((): ToolbarMenuRow[] => {
-    if (!studyEnvelope) {
-      return [];
-    }
-    const rows: ToolbarMenuRow[] = [];
+  const modeMenuRows: ToolbarMenuRow[] = [];
+  if (studyEnvelope) {
     for (const mode of comparableModesList) {
       const validity = evaluateModeValidity(mode, studyEnvelope, labels.unableToEvaluate);
       if (!validity || validity.valid === null) {
@@ -148,14 +131,16 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
       if (!routeName) {
         continue;
       }
-      const modeHref = buildHrefForMode(routeName);
+      const modeHref = {
+        pathname: `/${routeName}${dsSuffix ? `/${dsSuffix}` : ''}`,
+        search: preservedSearch,
+      };
       const isCurrentRoute = location.pathname === modeHref.pathname;
       const isDisabled = validity.valid !== true || isCurrentRoute;
       const label = mode.displayName || routeName;
-      rows.push({ mode, validity, modeHref, isCurrentRoute, isDisabled, label });
+      modeMenuRows.push({ mode, validity, modeHref, isCurrentRoute, isDisabled, label });
     }
-    return rows;
-  }, [buildHrefForMode, comparableModesList, labels.unableToEvaluate, location.pathname, studyEnvelope]);
+  }
 
   if (modesForToolbar.length <= 1) {
     return null;
@@ -177,7 +162,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
               disabled
               className={cn(
                 'inline-flex h-10 w-10 cursor-not-allowed items-center justify-center !rounded-lg',
-                'opacity-40 text-foreground/80 hover:bg-muted hover:text-highlight'
+                'text-foreground/80 hover:bg-muted hover:text-highlight opacity-40'
               )}
               aria-label={labels.browseModes}
               data-cy="mode-selector-trigger"
@@ -217,7 +202,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                 'inline-flex h-10 w-10 items-center justify-center !rounded-lg',
                 open
                   ? 'bg-background text-foreground/80'
-                  : 'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight'
+                  : 'text-foreground/80 hover:bg-background hover:text-highlight bg-transparent'
               )}
               aria-haspopup="dialog"
               aria-expanded={open}
@@ -242,11 +227,11 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
         align="center"
         sideOffset={10}
         className={cn(
-          'bg-popover/98 text-popover-foreground z-[100] flex w-[min(100vw-1.75rem,17.5rem)] max-w-none flex-col overflow-visible rounded-lg border border-border/80 p-0 shadow-xl shadow-black/10 backdrop-blur-md dark:border-border/55 dark:bg-popover dark:shadow-black/35',
+          'bg-popover/98 text-popover-foreground border-border/80 dark:border-border/55 dark:bg-popover dark:shadow-black/35 z-[100] flex w-[min(100vw-1.75rem,17.5rem)] max-w-none flex-col overflow-visible rounded-lg border p-0 shadow-xl shadow-black/10 backdrop-blur-md',
           'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'
         )}
       >
-        <header className="border-b border-border/40 px-2.5 py-1.5">
+        <header className="border-border/40 border-b px-2.5 py-1.5">
           <p className="text-muted-foreground text-xs">{labels.modes}</p>
         </header>
 
@@ -254,116 +239,111 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
           role="menu"
           className="space-y-0.5 px-1.5 py-1.5"
         >
-          {modeMenuRows.length === 0 ?
+          {modeMenuRows.length === 0 ? (
             <li className="list-none">
-              <p className="text-muted-foreground px-2 py-2 text-xs leading-snug">{labels.noModesAvailable}</p>
+              <p className="text-muted-foreground px-2 py-2 text-xs leading-snug">
+                {labels.noModesAvailable}
+              </p>
             </li>
-          : modeMenuRows.map(
-            ({
-              mode: { routeName },
-              validity,
-              modeHref,
-              isCurrentRoute,
-              isDisabled,
-              label,
-            }) => (
-              <li
-                key={routeName}
-                className="list-none"
-              >
-                {!isDisabled ?
-                  <Link
-                    role="menuitem"
-                    tabIndex={0}
-                    data-cy={`mode-selector-${routeName}`}
-                    to={modeHref}
-                    className={cn(
-                      'group flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5',
-                      'text-foreground outline-none ring-offset-background transition-colors duration-150',
-                      'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 active:bg-accent/90'
-                    )}
-                    onClick={closePopover}
-                  >
-                    <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
-                    <Icons.ChevronRight
-                      aria-hidden
+          ) : (
+            modeMenuRows.map(
+              ({ mode: { routeName }, validity, modeHref, isCurrentRoute, isDisabled, label }) => (
+                <li
+                  key={routeName}
+                  className="list-none"
+                >
+                  {!isDisabled ? (
+                    <Link
+                      role="menuitem"
+                      tabIndex={0}
+                      data-cy={`mode-selector-${routeName}`}
+                      to={modeHref}
                       className={cn(
-                        'h-3.5 w-3.5 shrink-0 opacity-35 transition-opacity duration-150',
-                        'text-muted-foreground group-hover:translate-x-px group-hover:opacity-100'
+                        'group flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5',
+                        'text-foreground ring-offset-background outline-none transition-colors duration-150',
+                        'hover:bg-accent hover:text-accent-foreground focus-visible:ring-primary/35 active:bg-accent/90 focus-visible:ring-2 focus-visible:ring-offset-1'
                       )}
-                    />
-                  </Link>
-                : isCurrentRoute ?
-                  <div
-                    aria-current="true"
-                    aria-label={`${label} — ${labels.currentMode}`}
-                    className={cn(
-                      'relative flex w-full cursor-default items-center justify-between gap-2 overflow-hidden rounded-lg px-2 py-1.5',
-                      'border border-primary/18 bg-gradient-to-br from-accent/85 via-accent/50 to-accent/30 text-foreground',
-                      'shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] ring-1 ring-inset ring-border/50',
-                      'dark:from-accent/35 dark:via-accent/25 dark:to-muted/55 dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] dark:ring-border/35'
-                    )}
-                    data-cy={`mode-selector-current-${routeName}`}
-                  >
-                    <span className="min-w-0 flex-1 truncate text-left text-sm font-medium leading-snug tracking-tight text-foreground">
-                      {label}
-                    </span>
-                    <span
-                      aria-hidden
-                      className="h-3.5 w-3.5 shrink-0 self-center select-none opacity-0"
-                    />
-                  </div>
-                : validity.description ?
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div
-                        role="presentation"
-                        className={cn(
-                          'flex w-full cursor-not-allowed rounded-lg px-2 py-1.5 text-muted-foreground opacity-[0.88]'
-                        )}
-                        data-cy={`mode-selector-disabled-${routeName}`}
-                      >
-                        <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      align="start"
-                      side="top"
-                      sideOffset={6}
-                      className="z-[220] max-w-[236px]"
+                      onClick={closePopover}
                     >
-                      <p className="text-xs leading-snug">{validity.description}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                : (
+                      <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">
+                        {label}
+                      </span>
+                      <Icons.ChevronRight
+                        aria-hidden
+                        className={cn(
+                          'opacity-35 h-3.5 w-3.5 shrink-0 transition-opacity duration-150',
+                          'text-muted-foreground group-hover:translate-x-px group-hover:opacity-100'
+                        )}
+                      />
+                    </Link>
+                  ) : isCurrentRoute ? (
                     <div
-                      role="presentation"
+                      aria-current="true"
+                      aria-label={`${label} — ${labels.currentMode}`}
                       className={cn(
-                        'flex w-full cursor-not-allowed rounded-lg px-2 py-1.5 text-muted-foreground opacity-[0.88]'
+                        'relative flex w-full cursor-default items-center justify-between gap-2 overflow-hidden rounded-lg px-2 py-1.5',
+                        'border-primary/18 from-accent/85 via-accent/50 to-accent/30 text-foreground border bg-gradient-to-br',
+                        'ring-border/50 shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] ring-1 ring-inset',
+                        'dark:from-accent/35 dark:via-accent/25 dark:to-muted/55 dark:ring-border/35 dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]'
+                      )}
+                      data-cy={`mode-selector-current-${routeName}`}
+                    >
+                      <span className="text-foreground min-w-0 flex-1 truncate text-left text-sm font-medium leading-snug tracking-tight">
+                        {label}
+                      </span>
+                      <span
+                        aria-hidden
+                        className="h-3.5 w-3.5 shrink-0 select-none self-center opacity-0"
+                      />
+                    </div>
+                  ) : validity.description ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          role="menuitem"
+                          tabIndex={0}
+                          aria-disabled="true"
+                          className={cn(
+                            'text-muted-foreground flex w-full cursor-not-allowed rounded-lg px-2 py-1.5 opacity-[0.88]'
+                          )}
+                          data-cy={`mode-selector-disabled-${routeName}`}
+                        >
+                          <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">
+                            {label}
+                          </span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        align="start"
+                        side="top"
+                        sideOffset={6}
+                        className="z-[220] max-w-[236px]"
+                      >
+                        <p className="text-xs leading-snug">{validity.description}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <div
+                      role="menuitem"
+                      aria-disabled="true"
+                      className={cn(
+                        'text-muted-foreground flex w-full cursor-not-allowed rounded-lg px-2 py-1.5 opacity-[0.88]'
                       )}
                       data-cy={`mode-selector-disabled-${routeName}`}
                     >
-                      <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
+                      <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">
+                        {label}
+                      </span>
                     </div>
-                  )
-                }
-              </li>
+                  )}
+                </li>
+              )
             )
-          )
-          }
+          )}
         </ul>
       </PopoverContent>
     </Popover>
   );
 }
-
-ToolbarModeSelector.propTypes = {
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.shape({
-    services: PropTypes.shape({
-      customizationService: PropTypes.object.isRequired,
-    }).isRequired,
-  }).isRequired,
-};
 
 export default ToolbarModeSelector;

@@ -1,9 +1,12 @@
+import { renderHook } from '@testing-library/react';
+
 import {
   fetchStudyEnvelope,
   hasUsableModalities,
   modalitiesStringFromSet,
   normalizeModalitiesString,
   resolveStudyModalities,
+  usePreservedViewerSearch,
 } from './modeSelectorUtils';
 
 jest.mock('@ohif/core', () => ({
@@ -16,8 +19,9 @@ jest.mock('@ohif/core', () => ({
 }));
 
 jest.mock('@ohif/app', () => ({
-  preserveQueryParameters: jest.fn(),
-  preserveKeys: [],
+  preserveQueryParameters: jest.requireActual(
+    '../../../../platform/app/src/utils/preserveQueryParameters'
+  ).preserveQueryParameters,
 }));
 
 const { DicomMetadataStore } = jest.requireMock('@ohif/core');
@@ -46,6 +50,11 @@ function loadedStudy(modalities: string[]) {
       instances: [{ Modality, PatientID: 'P1', StudyDescription: 'Desc' }],
     })),
   };
+}
+
+/** Renders the hook and returns its value. */
+function preservedSearch(...args: Parameters<typeof usePreservedViewerSearch>): string {
+  return renderHook(() => usePreservedViewerSearch(...args)).result.current;
 }
 
 describe('modeSelectorUtils', () => {
@@ -196,6 +205,42 @@ describe('modeSelectorUtils', () => {
       const dataSource = makeDataSource(null, []);
 
       expect(await fetchStudyEnvelope('1.2.3', dataSource)).toBeNull();
+    });
+  });
+
+  describe('usePreservedViewerSearch', () => {
+    it('keeps preserved params once and leaves other params alone', () => {
+      const search = preservedSearch('?StudyInstanceUIDs=1.2.3&configUrl=a.json&theme=dark');
+      const params = new URLSearchParams(search);
+
+      expect(params.getAll('configUrl')).toEqual(['a.json']);
+      expect(params.getAll('theme')).toEqual(['dark']);
+      expect(params.getAll('StudyInstanceUIDs')).toEqual(['1.2.3']);
+    });
+
+    it('keeps repeated values of a preserved param without duplicating them', () => {
+      const search = preservedSearch('?customization=a&customization=b');
+
+      expect(new URLSearchParams(search).getAll('customization')).toEqual(['a', 'b']);
+    });
+
+    it('includes keys added through the customization service', () => {
+      const customizationService = {
+        getValue: jest.fn().mockReturnValue(['site']),
+      };
+
+      const search = preservedSearch(
+        '?site=x&other=y',
+        customizationService as unknown as Parameters<typeof usePreservedViewerSearch>[1]
+      );
+      const params = new URLSearchParams(search);
+
+      expect(params.getAll('site')).toEqual(['x']);
+      expect(params.getAll('other')).toEqual(['y']);
+    });
+
+    it('returns an empty string when there are no params', () => {
+      expect(preservedSearch('')).toBe('');
     });
   });
 });
