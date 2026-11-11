@@ -8,6 +8,7 @@ import {
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
   waitForViewportsRendered,
+  type MouseButton,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
@@ -18,7 +19,7 @@ export type SvgInnerElement = 'circle' | 'path' | 'line' | 'polyline' | 'g';
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
-  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+  config?: { button?: MouseButton; delay?: number; steps?: number };
 };
 
 type NormalizedPathClickParams = {
@@ -28,7 +29,7 @@ type NormalizedPathClickParams = {
 
 type NormalizedPathDragParams = {
   path: { x: number; y: number }[];
-  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+  config?: { button?: MouseButton; delay?: number; steps?: number };
 };
 
 export interface IOverlayText {
@@ -61,14 +62,11 @@ export interface IViewportPageObject {
       click: () => Promise<void>;
     };
   };
-  clickAt: (
-    points: { x: number; y: number }[],
-    button?: 'left' | 'right' | 'middle'
-  ) => Promise<void>;
+  clickAt: (points: { x: number; y: number }[], button?: MouseButton) => Promise<void>;
   doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
   normalizedClickAt: (
     normalizedPoints: { x: number; y: number }[],
-    button?: 'left' | 'right' | 'middle'
+    button?: MouseButton
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
@@ -438,7 +436,7 @@ export class ViewportPageObject {
           point,
         });
       },
-      clickAt: async (points: { x: number; y: number }[], button?: 'left' | 'right' | 'middle') => {
+      clickAt: async (points: { x: number; y: number }[], button?: MouseButton) => {
         await simulateClicksOnElement({
           locator: viewport,
           points,
@@ -447,7 +445,7 @@ export class ViewportPageObject {
       },
       normalizedClickAt: async (
         normalizedPoints: { x: number; y: number }[],
-        button?: 'left' | 'right' | 'middle'
+        button?: MouseButton
       ) => {
         await simulateNormalizedClicksOnElement({
           locator: viewport,
