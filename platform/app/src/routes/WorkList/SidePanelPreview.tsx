@@ -26,7 +26,10 @@ export function SidePanelPreview({
    */
   onModalitiesResolved?: (studyInstanceUid: string, modalities: string) => void;
 }) {
-  const { series, onThumbnailImageError } = useSeriesFetch({ dataSource, selected });
+  const { series, seriesStudyInstanceUID, onThumbnailImageError } = useSeriesFetch({
+    dataSource,
+    selected,
+  });
   const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
   const thumbnailRequestStrategy =
     dataSource?.getConfig?.()?.thumbnailRequestStrategy || 'bulkDataRetrieve';
@@ -48,18 +51,15 @@ export function SidePanelPreview({
   /**
    * When the study query did not return ModalitiesInStudy, derive the
    * modalities from the fetched series so the workflow list can be filtered
-   * for this study. Series that belong to another study (left over from the
-   * previous selection while this one loads) are ignored.
+   * for this study. Only a series list fetched for the selected study is used,
+   * never one left over from the previous selection.
    */
   const selectedUid = selected?.studyInstanceUid;
   const derivedModalities =
-    selected && !String(selected.modalities ?? '').trim()
+    selected && !String(selected.modalities ?? '').trim() && seriesStudyInstanceUID === selectedUid
       ? Array.from(
           new Set(
             series
-              .filter(
-                s => (s.studyInstanceUid ?? s.StudyInstanceUID ?? selectedUid) === selectedUid
-              )
               .map(s =>
                 String(s.modality || s.Modality || '')
                   .trim()

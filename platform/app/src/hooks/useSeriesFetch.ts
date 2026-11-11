@@ -55,25 +55,27 @@ type SetSeries = (next: PreviewSeries[] | ((prev: PreviewSeries[]) => PreviewSer
  * functions are never compiled, so the limitation does not apply here.
  */
 async function loadPreviewSeries({
-  selected,
+  studyInstanceUID,
   dataSource,
   signal,
   sortBySeriesDate,
   maxParallelRequests,
   setSeries,
+  setSeriesStudyInstanceUID,
   ownedBlobUrlsRef,
 }: {
-  selected: StudyRow | null;
+  studyInstanceUID: string | undefined;
   dataSource: any;
   signal: AbortSignal;
   sortBySeriesDate: ((rows: any[]) => any[]) | undefined;
   maxParallelRequests: number;
   setSeries: SetSeries;
+  setSeriesStudyInstanceUID: (studyInstanceUID: string | undefined) => void;
   ownedBlobUrlsRef: { current: string[] };
 }): Promise<void> {
-  const studyInstanceUID = (selected as any)?.studyInstanceUid;
   if (!studyInstanceUID) {
     setSeries([]);
+    setSeriesStudyInstanceUID(undefined);
     return;
   }
 
@@ -96,6 +98,7 @@ async function loadPreviewSeries({
     });
 
     setSeries(normalizedSeriesList);
+    setSeriesStudyInstanceUID(studyInstanceUID);
 
     const fetchTargets = normalizedSeriesList.filter((row: PreviewSeries) => {
       if (!getSeriesUID(row)) {
@@ -144,6 +147,7 @@ async function loadPreviewSeries({
     if (!signal.aborted) {
       console.warn('Failed to load preview series/thumbnails for selected study.', e);
       setSeries([]);
+      setSeriesStudyInstanceUID(undefined);
     }
   }
 }
@@ -164,9 +168,17 @@ export function useSeriesFetch({
   selected: StudyRow | null;
 }): {
   series: PreviewSeries[];
+  /** The study the current `series` list was fetched for, once it has loaded. */
+  seriesStudyInstanceUID: string | undefined;
   onThumbnailImageError: (seriesUID: string) => void;
 } {
   const [series, setSeries] = useState<PreviewSeries[]>([]);
+  const [seriesStudyInstanceUID, setSeriesStudyInstanceUID] = useState<string | undefined>();
+  /**
+   * Keyed on the study UID rather than the row object, so a new object for the
+   * same study (e.g. with modalities filled in) does not restart the fetch.
+   */
+  const studyInstanceUID = (selected as any)?.studyInstanceUid as string | undefined;
   // Blob URLs created by this panel (via the `fetch` thumbnail strategy).
   // Tracked so we can URL.revokeObjectURL them on study change / unmount —
   // otherwise every fetched series leaks one blob worth of memory.
@@ -187,12 +199,13 @@ export function useSeriesFetch({
     const maxParallelRequests = Math.max(1, appConfig?.maxNumRequests?.thumbnail ?? 5);
 
     void loadPreviewSeries({
-      selected,
+      studyInstanceUID,
       dataSource,
       signal,
       sortBySeriesDate,
       maxParallelRequests,
       setSeries,
+      setSeriesStudyInstanceUID,
       ownedBlobUrlsRef,
     });
 
@@ -209,7 +222,7 @@ export function useSeriesFetch({
         } catch {}
       });
     };
-  }, [dataSource, selected, sortBySeriesDate, appConfig?.maxNumRequests?.thumbnail]);
+  }, [dataSource, studyInstanceUID, sortBySeriesDate, appConfig?.maxNumRequests?.thumbnail]);
 
   const onThumbnailImageError = (seriesUID: string) => {
     setSeries(prevSeriesList =>
@@ -234,5 +247,5 @@ export function useSeriesFetch({
     );
   };
 
-  return { series, onThumbnailImageError };
+  return { series, seriesStudyInstanceUID, onThumbnailImageError };
 }
