@@ -1492,14 +1492,8 @@ function commandsModule({
       cornerstoneViewportService.storePresentation({ viewportId });
     },
     updateVolumeData: ({ volume }) => {
-      // update vtkOpenGLTexture and imageData of computed volume
-      const { imageData, vtkOpenGLTexture } = volume;
-      const numSlices = imageData.getDimensions()[2];
-      const slicesToUpdate = [...Array(numSlices).keys()];
-      slicesToUpdate.forEach(i => {
-        vtkOpenGLTexture.setUpdatedFrame(i);
-      });
-      imageData.modified();
+      // Marks the imageData and every texture set (full and reduced) of the computed volume dirty.
+      volume.modified();
     },
 
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
@@ -2039,7 +2033,9 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const { viewport } = _getActiveViewportEnabledElement();
+      // May be undefined when no viewport is enabled (e.g. Escape pressed while
+      // a modal such as Preferences is open).
+      const enabledElement = _getActiveViewportEnabledElement();
       const previewTools = getPreviewTools({ toolGroupService });
 
       previewTools.forEach(tool => {
@@ -2051,7 +2047,7 @@ function commandsModule({
       });
 
       if (segmentAI.enabled) {
-        segmentAI[`${action}Preview`](viewport.element);
+        segmentAI[`${action}Preview`](enabledElement?.viewport?.element);
       }
     },
     acceptPreview: () => {

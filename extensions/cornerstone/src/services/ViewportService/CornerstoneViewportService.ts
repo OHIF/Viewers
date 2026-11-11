@@ -607,12 +607,15 @@ class CornerstoneViewportService
     // The broadcast event here ensures that listeners have a valid, up to date
     // viewport to access.  Doing it too early can result in exceptions or
     // invalid data.
-    displaySetPromise.then(() => {
-      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-        viewportData,
-        viewportId,
-      });
-    });
+    displaySetPromise.then(
+      () => {
+        this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+          viewportData,
+          viewportId,
+        });
+      },
+      error => console.error('[CornerstoneViewportService] Failed to set the viewport data', error)
+    );
   }
 
   public getViewportOptions(viewportId: string): ViewportOptions {
@@ -910,7 +913,17 @@ class CornerstoneViewportService
       return;
     }
 
-    return this.backend.mountEcg(viewport, displaySet, imageId);
+    try {
+      await this.backend.mountEcg(viewport, displaySet, imageId);
+    } catch (error) {
+      // Tell the user, then reject so that setViewportData does not report a successful mount.
+      this.servicesManager.services.uiNotificationService?.show({
+        title: 'ECG',
+        message: 'The ECG waveform could not be loaded.',
+        type: 'error',
+      });
+      throw error;
+    }
   }
 
   // Public so the viewport backends (IViewportServiceInternals) can dispatch to it.
@@ -1528,12 +1541,15 @@ class CornerstoneViewportService
       return;
     }
 
-    displaySetPromise.then(() => {
-      this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
-        viewportData,
-        viewportId,
-      });
-    });
+    displaySetPromise.then(
+      () => {
+        this._broadcastEvent(this.EVENTS.VIEWPORT_DATA_CHANGED, {
+          viewportData,
+          viewportId,
+        });
+      },
+      error => console.error('[CornerstoneViewportService] Failed to update the viewport', error)
+    );
   }
 
   _setDisplaySets(

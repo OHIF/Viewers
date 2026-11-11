@@ -407,6 +407,10 @@ class MetadataProvider {
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.CALIBRATION_MODULE:
+        // No regions: return nothing, so a later provider (for example the ECG one) can answer
+        if (!instance.SequenceOfUltrasoundRegions) {
+          return;
+        }
         // map the DICOM tags to the cornerstone tags since cornerstone tags
         // are camelCase and instance tags are all caps
         metadata = {
@@ -574,7 +578,13 @@ const WADO_IMAGE_LOADER = {
       usingDefaultValues = true;
     }
 
-    if (ImageOrientationPatient) {
+    // Additional validation (1. Must exist, 2.Must be an array, 3.Must be 6 values, 4. Must not be an invalid array (all 0s))
+    if (
+      ImageOrientationPatient &&
+      Array.isArray(ImageOrientationPatient) &&
+      ImageOrientationPatient.length === 6 &&
+      ImageOrientationPatient.some(val => parseFloat(val) !== 0)
+    ) {
       rowCosines = toNumber(ImageOrientationPatient.slice(0, 3));
       columnCosines = toNumber(ImageOrientationPatient.slice(3, 6));
       imageOrientationPatient = toNumber(ImageOrientationPatient);
