@@ -196,6 +196,20 @@ rule split those frames into separate display sets.
 > echo 2 frames. The engine claims and groups whole instances today, so a rule cannot separate the
 > frames of one instance. See §6 item 6.
 
+**SP-FIX-9**
+WHILE the split rules are on, the system shall show an instance that no rule gives to an extension
+of the mode as an unsupported display set. The system shall show the same instance with the
+display of its extension while the split rules are off.
+
+**SP-FIX-10**
+The documentation shall state what an extension must add so that its display sets show while the
+split rules are on.
+
+> An extension of another party that shows a private kind of object must take part in the rules,
+> or a deployment that turns on the rules shows its objects as unsupported. The rules are off by
+> default, so a deployment that does not turn them on sees no change. The migration guide
+> *Display set split rules and SOP class handlers* states the steps.
+
 ### 4.2 Describe the problem, get a rule — `SP-DESC`
 
 **SP-DESC-1**
@@ -392,6 +406,8 @@ the groups `SP-FORM`, `SP-PIPE`, `SP-EXPR`, `SP-DEPLOY`, and `SP-SRV`.
 | --- | --- |
 | `SP-FIX` | `extensions/default/src/displaySetSplitting/urlSplitModules.test.ts`, and the default rule tests of `@cornerstonejs/metadata` |
 | `SP-DET` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
+| `SP-FIX-9` | `DisplaySetService.test.ts` ("gives an unknown name the unsupported handler"), and the `unsupported` rule tests of `@cornerstonejs/metadata` |
+| `SP-FIX-10` | A review of the migration guide *Display set split rules and SOP class handlers* |
 | `SP-READ-4`, `SP-READ-6` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `displaySetRules.test.ts` of `@cornerstonejs/metadata` |
 | `SP-SAFE-1`, `SP-SAFE-2` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-SAFE-3` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |

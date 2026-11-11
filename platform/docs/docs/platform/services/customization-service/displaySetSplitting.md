@@ -284,8 +284,9 @@ A rule can name a **handler** for its display sets, for example
 `"handler": "segmentation"`. The names are generic: `image`, `video`,
 `wholeSlide`, `ecg`, `segmentation`, `rtStructureSet`, `parametricMap`,
 `structuredReport`, `encapsulatedDocument`, `bulkAnnotation`, `chart`,
-`unsupported`. A rule with no `handler` makes an image display set and calls no
-handler. That is the common case for images.
+`unsupported`. A rule with no `handler` makes an image display set, and the
+`image` handler of the mode, when the mode has one, adds its fields. That is the
+common case for images.
 
 A SOP class handler declares the names that it serves as data, and the function
 that adds its fields:
@@ -363,7 +364,8 @@ instance with no chain gives its own display set. SR and SEG do not change.
 
 A Comprehensive 3D SR is a `structuredReport`. In the microscopy mode, the
 microscopy SR handler is first, so it shows the SR. In the other modes, the
-cornerstone SR handler shows it.
+cornerstone SR handler shows it. In the microscopy mode, another SR class is an
+unsupported display set, as with the rules off.
 
 No default rule and no OHIF split module sets viewport types. A custom rule
 may set `viewportTypes`, and OHIF keeps them on the display set as data, but

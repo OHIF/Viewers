@@ -140,14 +140,15 @@ flowchart TD
 **The trace of one rule.** This example rule puts each b-value of a diffusion MR series into its
 own display set. The file `rules/optional/dwiByBValue.jsonc` of `@cornerstonejs/metadata` holds
 the rule, and the OHIF build copies the file to the module `split/optional/dwiByBValue.jsonc`.
+The copy below has the rule data of that file, without its comments. The file is the reference.
 
 ```jsonc
 "dwiByBValue": {
   "priority": -1,
   "description": "Diffusion MR: one display set for each b-value.",
   "context": {
-    "isDiffusion": "series.instances.count(DiffusionBValue) > 0",
-    "bValue": "Number(DiffusionBValue)"
+    "bValue": "Number(DiffusionBValue)",
+    "isDiffusion": "series.instances.max(bValue) > 0"
   },
   "matches": {
     "Modality": "MR",
@@ -156,7 +157,7 @@ the rule, and the OHIF build copies the file to the module `split/optional/dwiBy
     "DiffusionBValue": { "notNull": true }
   },
   "groupBy": ["SeriesInstanceUID", "bValue"],
-  "sortBy": ["SliceLocation"],
+  "sortBy": ["displaySet.sliceDistance", "InstanceNumber"],
   "attributes": {
     "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
   }
@@ -172,11 +173,11 @@ of the b-values 0, 500, and 1000.
 | 2 | `$merge` adds the key `dwiByBValue` with `priority: -1`. The default rules stay. |
 | 3 | `createDisplaySetSplitRules` compiles `matches` into one predicate, the rule `context` into entries of the context program, and the template into one value reader. |
 | 4 | The priority is a number, and every rule compiles, so display set creation continues. |
-| 6a | The order is `dwiByBValue` (−1), then the default rules (1 to 5). |
-| 6b | `isDiffusion` is true: some instances of the series have `DiffusionBValue`. |
+| 6a | The order is `dwiByBValue` (−1), then the default rules (`10` to `170`, and `unsupported` last). |
+| 6b | `isDiffusion` is true: the largest b-value of the series is above 0. A series with b=0 only is not a diffusion series for this rule. |
 | 6c | All 90 instances have `DiffusionBValue`, so `dwiByBValue` claims all of them. |
 | 6d | Three groups, with the keys `["dwiByBValue", <SeriesInstanceUID>, 0]`, `[…, 500]`, and `[…, 1000]`. |
-| 6e | In each group, the order is acquisition order, and then `SliceLocation` in ascending order. |
+| 6e | In each group, the order is the distance of each slice along the normal of the image plane (`displaySet.sliceDistance`), and then `InstanceNumber`. |
 | 6f | The natural order of the keys puts the groups in the order b=0, b=500, b=1000. |
 | 7 | The three groups are new. `createDisplaySetFromGroup` makes three display sets, with the descriptions `<description> b=0`, `b=500`, and `b=1000`. |
 | 8 | The study browser shows three items. Each item gets its own window level. |
@@ -243,7 +244,7 @@ The engine shall give each instance that no rule claims to the SOP class handler
 *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
 With the default rules, no instance reaches this step: the `unsupported` rule has no `matches`, so
 it claims each instance that no other rule claims. The step applies to a rule set that turns
-`unsupported` off.
+`unsupported` off. The `unsupported` rule gives the result of `SP-FIX-9`.
 
 **SP-PIPE-9**
 IF the engine throws for a series, THEN the display set service shall create no further display

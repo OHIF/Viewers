@@ -102,4 +102,10 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `RenderingCapabilities.webgl2`; use `volume.modified()` in place of the per-frame
   texture updates. The developer configs select the `medium` GPU settings preset.
 
+- **[Display set split rules](./display-set-split-rules.md)** — the split rules of
+  `@cornerstonejs/metadata` are an opt-in customization, off by default. With the rules on, a
+  SOP class handler of another extension runs only when it declares `handlerNames` and
+  `extendDisplaySet`, and a rule names it. Otherwise its series shows as an unsupported display
+  set.
+
 <DocCardList />
