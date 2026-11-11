@@ -49,6 +49,7 @@ const defineValues = {
   'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
   'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
   'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+  'process.env.DCMJS_VERSION': JSON.stringify(require('./dcmjsVersion')),
   'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
   /* i18n */
   'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),

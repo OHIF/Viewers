@@ -1,6 +1,6 @@
 import {
   attemptAction,
-  checkForScreenshot,
+  checkForGridScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -26,10 +26,10 @@ test.describe('3D four up Test', async () => {
 
     await waitForViewportsRendered(page);
 
-    await checkForScreenshot(
+    await checkForGridScreenshot({
       page,
-      viewportPageObject.grid,
-      screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly
-    );
+      viewportPageObject,
+      screenshotPath: screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly,
+    });
   });
 });
