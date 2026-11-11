@@ -31,6 +31,9 @@ const compiledSplitRulesCache = new WeakMap<
 /** The handler name of the unsupported display set. */
 const UNSUPPORTED_HANDLER_NAME = 'unsupported';
 
+/** The handler name of an image display set; a rule with no `handler` gets it. */
+const IMAGE_HANDLER_NAME = 'image';
+
 /**
  * A SOP class handler entry, as the extension manager returns it. A handler
  * that serves split-rule display sets declares `handlerNames` (data) and
@@ -356,14 +359,15 @@ export default class DisplaySetService extends PubSubService {
   /**
    * Step 3 of a split-rule display set (DS-IMPL-OHIF-4): the `extendDisplaySet`
    * of the handler that serves the display set's `handler` name. A display set
-   * with no `handler` gets no handler step.
+   * with no `handler` is an image display set: it gets the step of the `image`
+   * handler when the mode declares one, and no step otherwise.
    */
   private _extendWithHandler(displaySet: DisplaySet, addedInstances?: InstanceMetadata[]): void {
     const name = (displaySet as { handler?: string }).handler;
-    if (!name) {
-      return;
-    }
-    this._getHandlerForName(name)?.extendDisplaySet?.(displaySet, {
+    const handler = name
+      ? this._getHandlerForName(name)
+      : this.handlersByName.get(IMAGE_HANDLER_NAME);
+    handler?.extendDisplaySet?.(displaySet, {
       addedInstances,
       servicesManager: this.servicesManager,
       extensionManager: this.extensionManager,

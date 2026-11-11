@@ -33,6 +33,9 @@ const isSingleImageModality = modality => {
  */
 function extendStackDisplaySet(displaySet) {
   const { images } = displaySet;
+  if (!images?.length) {
+    return;
+  }
   const [instance] = images;
   if (images.length === 1 && (isMultiFrame(instance) || isSingleImageModality(instance.Modality))) {
     displaySet.setAttributes({
@@ -125,8 +128,7 @@ function getSopClassHandlerModule(appContextParam) {
       name: sopClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
-      // The image part of the split-rule display set is the generic step of
-      // `makeDisplaySetFromInstanceGroup`; this adds the stack fields only.
+      // Also serves a split rule with no `handler`; adds the stack fields only.
       handlerNames: ['image'],
       extendDisplaySet: extendStackDisplaySet,
     },

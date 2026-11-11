@@ -859,6 +859,28 @@ describe('DisplaySetService', () => {
         warn.mockRestore();
       });
 
+      it('gives a display set with no handler to the image handler only when the mode has one', () => {
+        const noHandler = {
+          enabled: true,
+          splitRules: {
+            ...testSplitRules,
+            named: { priority: -1, groupBy: ['SeriesInstanceUID'] },
+          },
+          createDisplaySetFromGroup,
+        };
+        setCustomization(noHandler);
+        service.makeDisplaySets([makeInstance()]);
+        expect(unsupported.extendDisplaySet).not.toHaveBeenCalled();
+
+        const image = handlerEntry(['image']);
+        service.onModeExit();
+        service.init({ getModuleEntry: id => ({ image })[id] }, ['image']);
+        setCustomization(noHandler);
+        const [displaySet] = service.makeDisplaySets([makeInstance()]);
+        expect(image.extendDisplaySet).toHaveBeenCalledTimes(1);
+        expect(image.extendDisplaySet.mock.calls[0][0]).toBe(displaySet);
+      });
+
       it('rejects a handler with handlerNames and no extendDisplaySet at registration', () => {
         const broken = {
           sopClassUids: [],

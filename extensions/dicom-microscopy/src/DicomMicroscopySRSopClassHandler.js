@@ -13,6 +13,24 @@ const SOP_CLASS_UIDS = {
 const SOPClassHandlerId =
   '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler';
 
+const UNSUPPORTED_HANDLER_ID =
+  '@ohif/extension-default.sopClassHandlerModule.not-supported-display-sets-handler';
+
+/**
+ * The split-rule step of the `structuredReport` name. The handler shows only
+ * Comprehensive 3D SR, as on the SOP class handler path; another SR class gets
+ * the fields of the unsupported display set.
+ */
+function _extendDisplaySet(displaySet, options) {
+  if (displaySet.instances?.[0]?.SOPClassUID !== SOP_CLASS_UIDS.COMPREHENSIVE_3D_SR) {
+    options.extensionManager
+      .getModuleEntry(UNSUPPORTED_HANDLER_ID)
+      ?.extendDisplaySet?.(displaySet, options);
+    return;
+  }
+  _applyFields(displaySet, displaySet.instances, options);
+}
+
 function _getReferencedFrameOfReferenceUID(naturalizedDataset) {
   const { ContentSequence } = naturalizedDataset;
 
@@ -126,7 +144,6 @@ export default function getDicomMicroscopySRSopClassHandler({ servicesManager, e
     sopClassUids: [SOP_CLASS_UIDS.COMPREHENSIVE_3D_SR],
     getDisplaySetsFromSeries,
     handlerNames: ['structuredReport'],
-    extendDisplaySet: (displaySet, options) =>
-      _applyFields(displaySet, displaySet.instances, options),
+    extendDisplaySet: _extendDisplaySet,
   };
 }
