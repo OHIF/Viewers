@@ -1,0 +1,7 @@
+// GPU settings preset medium: texture edge 2048, 8 GB, for a mid-range GPU.
+// Load it with `?customization=gpu/medium`. See specificCustomizations.md.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "medium"
+  }
+}
