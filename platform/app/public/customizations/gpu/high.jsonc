@@ -1,0 +1,8 @@
+// GPU settings preset high (the Cornerstone3D default): texture edge 2048, 32 GB.
+// A mid-range GPU can crash under it.
+// Load it with `?customization=gpu/high`. See specificCustomizations.md.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "high"
+  }
+}

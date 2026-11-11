@@ -8,6 +8,7 @@
  * fails the check unless its GHSA is in `auditConfig.ignoreGhsas` of the PR's
  * pnpm-workspace.yaml. Advisories already present on the target branch never
  * fail a PR. Ignores the PR adds to that list are called out for reviewers.
+ * The report also lists every package the PR updates, adds or removes.
  *
  * Every input is data from the pull request; nothing in it is executed.
  *
@@ -17,9 +18,13 @@
  *
  * "base" is the PR's branch point on its target branch, "head" the PR. Any file
  * may be missing; a missing base lockfile (target branch without a pnpm
- * lockfile) makes every package in the head lockfile count as added.
- * The number of ignores the PR adds goes to $GITHUB_OUTPUT as `new_ignores`
- * when set. Writes a Markdown report
+ * lockfile) makes every package in the head lockfile count as added, and a
+ * missing head lockfile makes every package in the base lockfile count as
+ * removed.
+ * When $GITHUB_OUTPUT is set, it gets counts for the status lines the workflow
+ * adds to the PR's checks list: `new_ignores` (ignores the PR adds) and
+ * `changes_updated`, `changes_new`, `changes_removed`, `changes_total` (rows of
+ * the "Packages changed" table). Writes a Markdown report
  * to $GITHUB_STEP_SUMMARY when set. Exits 1 when the PR adds a blocking
  * advisory, deletes the lockfile, or adds many entries it cannot audit; 2 on
  * errors.
@@ -39,8 +44,15 @@ const SEVERITY_ORDER = ['critical', 'high', 'moderate', 'low', 'info'];
 export const PACKAGE_NAME = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
 export const REGISTRY_VERSION = /^\d+\.\d+\.\d+(-[0-9a-z.-]+)?(\+[0-9a-z.-]+)?$/i;
 const GHSA_ID = /^GHSA(-[23456789cfghjmpqrvwx]{4}){3}$/;
-// Rows in the "Packages changed" table; a first lockfile has thousands.
-const MAX_CHANGE_ROWS = 300;
+// Limits on lockfile text in the report, so a PR cannot push the step summary
+// over GitHub's 1 MiB limit (GitHub then drops the summary). Rows in a list of
+// lockfile entries (a first lockfile has thousands); characters in one such
+// list; versions in one table cell; characters of one name or version (npm's
+// limit for a name).
+const MAX_ROWS = 300;
+const MAX_SECTION_CHARS = 300_000;
+const MAX_CELL_VERSIONS = 10;
+const MAX_TEXT_CHARS = 214;
 
 export function readText(file) {
   return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
@@ -58,8 +70,10 @@ export function lockfilePackages(text) {
       throw new Error(`pnpm-lock.yaml does not parse: ${doc.errors[0].message}`);
     }
     for (const key of Object.keys(doc.toJS()?.packages ?? {})) {
-      const at = key.lastIndexOf('@');
-      if (at <= 0) {
+      // The first @ after a scope's leading @: a git+ssh version has its own @
+      // (foo@git+ssh://git@github.com/o/r.git#sha).
+      const at = key.indexOf('@', 1);
+      if (at < 0) {
         continue;
       }
       const name = key.slice(0, at);
@@ -85,16 +99,23 @@ export function addedPackages(base, head) {
   return added.sort((a, b) => a.name.localeCompare(b.name) || a.version.localeCompare(b.version));
 }
 
+const CHANGE_KINDS = ['updated', 'new', 'removed'];
+
 /**
  * The packages whose versions differ between `base` and `head`, one entry per
  * name: `before` holds the versions only `base` has, `after` the versions only
- * `head` has. A new package has no `before`, a removed one no `after`.
+ * `head` has. `kind` comes from whether the name is in each lockfile, not from
+ * the versions: a package that gains or drops one of several versions is
+ * `updated`, so one of `before` and `after` can be empty for it.
+ * Updated packages come first, then new ones, then removed ones (the table is
+ * capped, so removals drop off first); by name within each group.
  */
 export function packageChanges(base, head) {
   const changes = new Map();
   const change = name => {
     if (!changes.has(name)) {
-      changes.set(name, { name, before: [], after: [] });
+      const kind = !base.has(name) ? 'new' : !head.has(name) ? 'removed' : 'updated';
+      changes.set(name, { name, kind, before: [], after: [] });
     }
     return changes.get(name);
   };
@@ -104,7 +125,8 @@ export function packageChanges(base, head) {
   for (const { name, version } of addedPackages(base, head)) {
     change(name).after.push(version);
   }
-  return [...changes.values()].sort((a, b) => a.name.localeCompare(b.name));
+  const group = c => CHANGE_KINDS.indexOf(c.kind);
+  return [...changes.values()].sort((a, b) => group(a) - group(b) || a.name.localeCompare(b.name));
 }
 
 async function postWithRetry(body) {
@@ -175,8 +197,10 @@ export function escapeCommand(text) {
 }
 
 /**
- * Text safe inside a Markdown table cell. Backslashes first, so a trailing
- * `\` cannot combine with the cell's closing `|`; then pipes.
+ * Advisory text (from npm) safe inside a Markdown table cell: escaped, not
+ * stripped, so it still reads correctly. Backslashes first, so a trailing `\`
+ * cannot combine with the cell's closing `|`; then pipes. Text from the PR's
+ * lockfile goes through showLockfileText() instead.
  */
 export function tableCell(text) {
   return String(text ?? '')
@@ -250,28 +274,89 @@ function newIgnoresSection(newIgnores, findings) {
 }
 
 /**
- * Lockfile text (unvalidated) safe inside a code span in a table cell: no
- * control characters (one row, one line), backticks, pipes or backslashes.
+ * Text from the PR's lockfile (unvalidated), safe to show in the report.
+ * Every character outside printable ASCII, and every space, backtick, pipe
+ * and backslash, shows as `[U+XXXX]`. So a hidden character (a bidi override,
+ * a zero-width space, a trailing space, a non-ASCII look-alike letter) is
+ * shown instead of making the text look like a real package, and the text
+ * stays on one line, inside a code span and inside a table cell. Real npm
+ * names and versions are printable ASCII without these four characters, so
+ * they show unchanged. ASCII look-alikes (`rn` for `m`) are not caught.
+ * Text longer than MAX_TEXT_CHARS is cut, and ends in `…`.
  */
+export function showLockfileText(text) {
+  const chars = [...String(text)];
+  const shown = chars
+    .slice(0, MAX_TEXT_CHARS)
+    .join('')
+    .replace(
+      /[^\x21-\x7e]|[`|\\]/gu,
+      c => `[U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}]`
+    );
+  return chars.length > MAX_TEXT_CHARS ? `${shown}…` : shown;
+}
+
+/**
+ * The first of `rows` that fit in MAX_ROWS rows and MAX_SECTION_CHARS
+ * characters, then a line that says how many of the `total` are left out.
+ * Callers build at most MAX_ROWS rows.
+ */
+function fitRows(rows, total) {
+  const shown = [];
+  let size = 0;
+  for (const row of rows.slice(0, MAX_ROWS)) {
+    size += row.length + 1;
+    if (size > MAX_SECTION_CHARS) {
+      break;
+    }
+    shown.push(row);
+  }
+  if (total > shown.length) {
+    shown.push('', `…and ${total - shown.length} more (see the \`pnpm-lock.yaml\` diff).`);
+  }
+  return shown;
+}
+
+/** Lockfile text as a code span in a table cell; empty when there is none. */
 function lockfileCell(text) {
-  const clean = text.replace(/[\x00-\x1f\x7f`|\\]/g, '');
-  return clean ? `\`${clean}\`` : '';
+  const shown = showLockfileText(text);
+  return shown ? `\`${shown}\`` : '';
+}
+
+/** How many changes are updates, new packages and removals. */
+function countChanges(changes) {
+  const count = kind => changes.filter(c => c.kind === kind).length;
+  return {
+    updated: count('updated'),
+    added: count('new'),
+    removed: count('removed'),
+  };
 }
 
 /** Collapsed "Packages changed" table, so reviewers see what the lockfile change does. */
 function changesSection(changes) {
-  const versions = list => (list.length ? list.map(lockfileCell).join(', ') : '–');
-  const shown = changes.slice(0, MAX_CHANGE_ROWS);
+  const versions = list => {
+    if (!list.length) {
+      return '–';
+    }
+    const cells = list.slice(0, MAX_CELL_VERSIONS).map(lockfileCell);
+    if (list.length > MAX_CELL_VERSIONS) {
+      cells.push(`+${list.length - MAX_CELL_VERSIONS} more`);
+    }
+    return cells.join(', ');
+  };
+  const { updated, added, removed } = countChanges(changes);
+  const rows = changes
+    .slice(0, MAX_ROWS)
+    .map(c => `| ${lockfileCell(c.name)} | ${versions(c.before)} | ${versions(c.after)} |`);
   const lines = [
-    `<details><summary>Packages changed (${changes.length})</summary>`,
+    `<details><summary>Packages changed (${changes.length}): ${updated} updated, ` +
+      `${added} new, ${removed} removed</summary>`,
     '',
     '| Package | Before | After |',
     '|---|---|---|',
-    ...shown.map(c => `| ${lockfileCell(c.name)} | ${versions(c.before)} | ${versions(c.after)} |`),
+    ...fitRows(rows, changes.length),
   ];
-  if (changes.length > shown.length) {
-    lines.push('', `…and ${changes.length - shown.length} more.`);
-  }
   lines.push('', '</details>', '');
   return lines;
 }
@@ -294,9 +379,6 @@ function lockfileSection({
     );
   }
   lines.push(`This PR adds ${added} package version(s) to \`pnpm-lock.yaml\`.`, '');
-  if (changes.length) {
-    lines.push(...changesSection(changes));
-  }
   if (blocking.length) {
     lines.push(
       `### ❌ ${blocking.length} new high or critical advisory(ies)`,
@@ -337,13 +419,20 @@ function lockfileSection({
     lines.push(
       `<details><summary>${notAudited.length} added entry(ies) not from the npm registry, not audited</summary>`,
       '',
-      // Unvalidated lockfile keys: drop control characters (one entry, one
-      // line) and backticks (it stays inside the code span).
-      ...notAudited.map(p => `- \`${`${p.name}@${p.version}`.replace(/[\x00-\x1f\x7f`]/g, '')}\``),
+      ...fitRows(
+        notAudited
+          .slice(0, MAX_ROWS)
+          .map(p => `- \`${showLockfileText(`${p.name}@${p.version}`)}\``),
+        notAudited.length
+      ),
       '',
       '</details>',
       ''
     );
+  }
+  // Last, so the result above stays in view when the table is opened.
+  if (changes.length) {
+    lines.push(...changesSection(changes));
   }
   return lines;
 }
@@ -372,9 +461,28 @@ async function main() {
   let cannotAudit = null;
   const headText = readText(values.head);
   const baseText = readText(values.base);
+  // A missing lockfile has no packages; an unchanged one is not parsed.
+  const lockfileChanged = baseText !== headText;
+  const basePackages = lockfileChanged ? lockfilePackages(baseText ?? '') : new Map();
+  const headPackages = lockfileChanged ? lockfilePackages(headText ?? '') : new Map();
+  const changes = packageChanges(basePackages, headPackages);
+  // Counts only, never text from the PR: the workflow puts them in statuses.
+  // Written before the advisory lookup, so a failed lookup cannot leave the
+  // counts of an earlier run on the commit.
+  if (process.env.GITHUB_OUTPUT) {
+    const { updated, added, removed } = countChanges(changes);
+    fs.appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `new_ignores=${newIgnores.length}\n` +
+        `changes_updated=${updated}\nchanges_new=${added}\n` +
+        `changes_removed=${removed}\nchanges_total=${changes.length}\n`
+    );
+  }
   if (headText === null && baseText !== null) {
     cannotAudit = 'This PR deletes pnpm-lock.yaml, so its dependencies cannot be audited.';
     lines.push(`### ❌ ${cannotAudit}`, '');
+    // Every package is removed: list them like any other lockfile change.
+    lines.push(...changesSection(changes));
   } else if (headText === null) {
     lines.push(
       'Neither the PR nor its target branch has a `pnpm-lock.yaml`; nothing to audit.',
@@ -383,8 +491,6 @@ async function main() {
   } else if (baseText === headText) {
     lines.push('`pnpm-lock.yaml` is unchanged; nothing to audit.', '');
   } else {
-    const basePackages = lockfilePackages(baseText ?? '');
-    const headPackages = lockfilePackages(headText);
     const added = addedPackages(basePackages, headPackages);
     const auditable = added.filter(
       p => PACKAGE_NAME.test(p.name) && REGISTRY_VERSION.test(p.version)
@@ -405,7 +511,7 @@ async function main() {
     lines.push(
       ...lockfileSection({
         added: added.length,
-        changes: packageChanges(basePackages, headPackages),
+        changes,
         notAudited,
         blocking,
         allowed: serious.filter(f => ignoreGhsas.has(f.ghsa)),
@@ -419,9 +525,6 @@ async function main() {
   // workflow also flags them in the PR's checks list, from `new_ignores`.
   if (newIgnores.length) {
     lines.splice(2, 0, ...newIgnoresSection(newIgnores, findings));
-  }
-  if (process.env.GITHUB_OUTPUT) {
-    fs.appendFileSync(process.env.GITHUB_OUTPUT, `new_ignores=${newIgnores.length}\n`);
   }
 
   const markdown = lines.join('\n');
