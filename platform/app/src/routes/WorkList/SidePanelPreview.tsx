@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useCustomization } from '@ohif/core';
 import { StudyList, type StudyRow } from '@ohif/ui-next';
@@ -16,9 +16,15 @@ const ALLOWED_PREVIEW_SERIES_VIEWS: ReadonlyArray<PreviewSeriesView> = [
 export function SidePanelPreview({
   dataSource,
   selected,
+  onModalitiesResolved,
 }: {
   dataSource: any;
   selected: StudyRow | null;
+  /**
+   * Called with the modalities derived from the selected study's series when
+   * the study row had none, so the study list can use them for the row too.
+   */
+  onModalitiesResolved?: (studyInstanceUid: string, modalities: string) => void;
 }) {
   const { series, onThumbnailImageError } = useSeriesFetch({ dataSource, selected });
   const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
@@ -42,17 +48,34 @@ export function SidePanelPreview({
   /**
    * When the study query did not return ModalitiesInStudy, derive the
    * modalities from the fetched series so the workflow list can be filtered
-   * for this study.
+   * for this study. Series that belong to another study (left over from the
+   * previous selection while this one loads) are ignored.
    */
+  const selectedUid = selected?.studyInstanceUid;
   const derivedModalities =
     selected && !String(selected.modalities ?? '').trim()
       ? Array.from(
           new Set(
-            series.map(s => String(s.modality || s.Modality || '').toUpperCase()).filter(Boolean)
+            series
+              .filter(
+                s => (s.studyInstanceUid ?? s.StudyInstanceUID ?? selectedUid) === selectedUid
+              )
+              .map(s =>
+                String(s.modality || s.Modality || '')
+                  .trim()
+                  .toUpperCase()
+              )
+              .filter(Boolean)
           )
         ).join('/')
       : '';
   const study = derivedModalities ? { ...selected, modalities: derivedModalities } : selected;
+
+  useEffect(() => {
+    if (selectedUid && derivedModalities) {
+      onModalitiesResolved?.(selectedUid, derivedModalities);
+    }
+  }, [selectedUid, derivedModalities, onModalitiesResolved]);
 
   const previewProps: PreviewContentProps = {
     study: study as StudyRow | null,

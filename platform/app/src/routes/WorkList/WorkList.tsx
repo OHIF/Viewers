@@ -59,6 +59,24 @@ export default function WorkList({
 
   const [selected, setSelected] = useState<StudyRow | null>(null);
 
+  /**
+   * Modalities derived from fetched series, by study UID, for rows whose
+   * study query did not return ModalitiesInStudy. Filling them into the rows
+   * lets the row menu and double-click use the same workflow filtering as the
+   * preview panel.
+   */
+  const [resolvedModalities, setResolvedModalities] = useState<Record<string, string>>({});
+  const onModalitiesResolved = (studyInstanceUid: string, modalities: string) => {
+    setResolvedModalities(prev =>
+      prev[studyInstanceUid] === modalities ? prev : { ...prev, [studyInstanceUid]: modalities }
+    );
+  };
+  const tableData = (data as StudyRow[]).map(row =>
+    !String(row.modalities ?? '').trim() && resolvedModalities[row.studyInstanceUid]
+      ? { ...row, modalities: resolvedModalities[row.studyInstanceUid] }
+      : row
+  );
+
   // Persist the preview panel open/closed state so it survives navigating
   // into a study and back. The hook only handles objects, hence the wrapper.
   const [previewState, updatePreviewState] = useSessionStorage({
@@ -148,7 +166,7 @@ export default function WorkList({
           >
             <StudyList.Table
               columns={columns}
-              data={data as StudyRow[]}
+              data={tableData}
               sorting={sorting.length > 0 ? sorting : defaultSorting}
               pagination={pagination}
               filters={filters}
@@ -184,6 +202,7 @@ export default function WorkList({
               <SidePanelPreview
                 dataSource={dataSource}
                 selected={selected}
+                onModalitiesResolved={onModalitiesResolved}
               />
             </StudyList.Preview>
           </StudyList>
