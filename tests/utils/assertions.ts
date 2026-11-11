@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
-import { DOMOverlayPageObject } from '../pages';
+import { DOMOverlayPageObject, type MainToolbarPageObject } from '../pages';
 import type { SegmentationSelect } from '../pages/RightPanelPageObject';
 
 /**
@@ -73,6 +73,20 @@ export async function expectRowLocked(rowObject: { lockIcon: Locator }) {
 
 export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
   await expect(rowObject.lockIcon, 'Expected the row to not show the lock icon').toHaveCount(0);
+}
+
+// Asserts whether the header Undo and Redo buttons are enabled.
+export async function expectUndoRedoEnabled({
+  mainToolbarPageObject,
+  undo,
+  redo,
+}: {
+  mainToolbarPageObject: MainToolbarPageObject;
+  undo: boolean;
+  redo: boolean;
+}) {
+  await expect(mainToolbarPageObject.undo.button).toBeEnabled({ enabled: undo });
+  await expect(mainToolbarPageObject.redo.button).toBeEnabled({ enabled: redo });
 }
 
 export async function expectRowNotSelected(rowObject) {
