@@ -373,6 +373,39 @@ handler or the `image` handler, and the handler's `extendDisplaySet` for the
 other names. Each display set of a rule has `splitKey` and `splitRuleId`, also
 when a handler extends it.
 
+### A SOP class handler of another extension
+
+With the rules on, the default `unsupported` rule has no `matches`, so it takes
+each instance that no other rule takes. No instance goes to the SOP class
+handler loop. So a handler of another extension for a private SOP class does
+not run, and the series shows as an unsupported display set. With the rules
+off, the handler runs as before.
+
+To serve such a SOP class with the rules on, the extension does two things:
+
+1. The handler declares a name in `handlerNames`, and has an
+   `extendDisplaySet` that adds its fields.
+2. A rule with a priority below the default rules claims the SOP class, and
+   names the handler:
+
+```js
+customizationService.setCustomizations({
+  useMetadataDisplaySet: {
+    splitRules: {
+      $merge: {
+        myPrivateObject: {
+          priority: -1,
+          description: 'My private SOP class: one display set for each instance.',
+          handler: 'myPrivateObject',
+          matches: { SOPClassUID: '1.2.3.4.5' },
+          groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
+        },
+      },
+    },
+  },
+});
+```
+
 ## New instances and new rules
 
 ### New instances: OHIF adds, a server re-splits

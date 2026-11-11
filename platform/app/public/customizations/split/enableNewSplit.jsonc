@@ -6,8 +6,11 @@
 // default rules. A rule with a `handler` name (video, ECG, whole slide, SEG,
 // RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation,
 // chart, unsupported) gives its display sets to the SOP class handler of the
-// mode that declares that name in `handlerNames`, so specialized extensions
-// keep working unchanged.
+// mode that declares that name in `handlerNames`, so the specialized
+// extensions of OHIF keep working unchanged. A handler of another extension
+// for a private SOP class runs only when it declares `handlerNames` and a rule
+// names it: the default `unsupported` rule takes every other instance (see
+// "A SOP class handler of another extension" in displaySetSplitting.md).
 //
 // The default rules include `localizer`, which puts the localizer images of
 // a CT, MR or PT series that also has other images into their own display set,
