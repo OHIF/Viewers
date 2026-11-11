@@ -69,8 +69,9 @@ for the series or not.
 ![SR-exported](../../assets/img/SR-exported.png)
 
 If you click Yes, DICOM SR measurements gets re-hydrated into the viewer and
-the series become a tracked series. If you click No, the viewer does not ask again
-for this SR while the study stays open. To track its measurements later, open the
+the series become a tracked series. If you click No, or click outside the prompt, the
+viewer does not ask again for this SR while the study stays open, and the viewport has
+no control that shows the prompt again. To track its measurements later, open the
 study again and click Yes. This works for an SR that is stored in the data source.
 An SR that was only downloaded, or copied to the clipboard, shows in the viewer
 until the study is closed, and is not there when the study is opened again.
