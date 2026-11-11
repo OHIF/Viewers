@@ -8,6 +8,7 @@ import {
   waitForViewportNotBlank,
   waitForViewportsRendered,
 } from './utils';
+import { expectUndoRedoEnabled } from './utils/assertions';
 
 const STUDY_UID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
 
@@ -69,6 +70,32 @@ test.describe('labelmap', () => {
     await mainToolbarPageObject.redo.click();
     await pollDigest(page, 'Expected redo to repaint the stroke').toBe(painted);
     await expect(mainToolbarPageObject.redo.button).toBeDisabled();
+  });
+
+  test('should undo and redo a threshold brush stroke', async ({
+    page,
+    mainToolbarPageObject,
+    rightPanelPageObject,
+    viewportPageObject,
+  }) => {
+    const viewport = await viewportPageObject.active;
+    const unpainted = await canvasDigest(page);
+
+    await rightPanelPageObject.labelMapSegmentationPanel.tools.threshold.click();
+    await viewport.normalizedDragAt(BRUSH_STROKE);
+    const painted = await digestAfterChange(
+      page,
+      unpainted,
+      'Expected the threshold stroke to paint'
+    );
+
+    await mainToolbarPageObject.undo.click();
+    await pollDigest(page, 'Expected undo to clear the stroke').toBe(unpainted);
+    await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: true });
+
+    await mainToolbarPageObject.redo.click();
+    await pollDigest(page, 'Expected redo to repaint the stroke').toBe(painted);
+    await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
   });
 
   test('should undo an eraser stroke, then the brush stroke under it', async ({
