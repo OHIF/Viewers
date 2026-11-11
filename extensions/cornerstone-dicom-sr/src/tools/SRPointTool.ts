@@ -71,7 +71,7 @@ class SRPointTool extends ProbeTool {
       }
 
       styleSpecifier.annotationUID = annotationUID;
-      const { color, lineWidth } = this.getAnnotationStyle({
+      const { color, lineWidth, lineDash } = this.getAnnotationStyle({
         annotation,
         styleSpecifier,
       });
@@ -86,6 +86,7 @@ class SRPointTool extends ProbeTool {
       drawPath(svgDrawingHelper, annotationUID, 'cross', crossPaths, {
         color,
         lineWidth: lineWidth || 2,
+        lineDash,
       });
 
       renderStatus = true;
@@ -93,7 +94,7 @@ class SRPointTool extends ProbeTool {
       const options = this.getLinkedTextBoxStyle(styleSpecifier, annotation);
       if (options?.visibility !== false) {
         const targetId = this.getTargetId(viewport, data);
-        const textLines = getSRPointTextLines(data, targetId);
+        const textLines = this.configuration.getTextLines(data, targetId);
         if (textLines?.length) {
           const textCanvasCoordinates = [
             cx + (this.configuration?.textCanvasOffset?.x ?? 4),
