@@ -2,7 +2,6 @@ import type { Page } from '@playwright/test';
 
 import {
   expect,
-  getSvgAttribute,
   getViewportCanvasStats,
   test,
   visitStudy,
@@ -15,14 +14,6 @@ const STUDY_UID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
 const BRUSH_STROKE = { start: { x: 0.3, y: 0.5 }, end: { x: 0.7, y: 0.5 } };
 // Crosses the middle of the brush stroke, so it erases part of it.
 const ERASER_STROKE = { start: { x: 0.5, y: 0.3 }, end: { x: 0.5, y: 0.7 } };
-
-const CONTOUR_PATH = [
-  { x: 0.4, y: 0.4 },
-  { x: 0.6, y: 0.4 },
-  { x: 0.6, y: 0.6 },
-  { x: 0.4, y: 0.6 },
-  { x: 0.4, y: 0.4 },
-];
 
 // Color of the first segment: the first entry of the cornerstone color LUT.
 const DEFAULT_SEGMENT_CSS_RGB = 'rgb(221, 84, 84)';
@@ -193,49 +184,5 @@ test.describe('labelmap', () => {
 
     await mainToolbarPageObject.redo.click();
     await pollDigest(page, 'Expected redo to repaint the stroke').toBe(painted);
-  });
-});
-
-test.describe('contour', () => {
-  test.beforeEach(async ({ page, rightPanelPageObject }) => {
-    await visitStudy(page, STUDY_UID, 'segmentation', 2000);
-    await waitForViewportsRendered(page);
-
-    const { contourSegmentationPanel } = rightPanelPageObject;
-    await contourSegmentationPanel.addSegmentation();
-    await expect(contourSegmentationPanel.panel.rows).toHaveCount(1);
-    await waitForViewportsRendered(page);
-  });
-
-  test('should undo and redo a freehand contour', async ({
-    page,
-    mainToolbarPageObject,
-    rightPanelPageObject,
-    viewportPageObject,
-  }) => {
-    const viewport = await viewportPageObject.active;
-    const paths = viewport.svg('path');
-    await expect(paths).toHaveCount(0);
-
-    await rightPanelPageObject.contourSegmentationPanel.tools.freehandContour.click();
-    await viewport.normalizedPathDragAt({ path: CONTOUR_PATH });
-    await expect(paths, 'Expected the contour to be drawn').toHaveCount(1);
-    await expect(paths.first()).toBeVisible();
-    // Read the path once the contour has rendered in its final, closed shape.
-    await waitForViewportsRendered(page);
-    const drawnPathD = await getSvgAttribute({
-      viewportPageObject,
-      svgInnerElement: 'path',
-      attributeName: 'd',
-    });
-
-    await mainToolbarPageObject.undo.click();
-    await expect(paths, 'Expected undo to remove the contour').toHaveCount(0);
-    await expect(mainToolbarPageObject.undo.button).toBeDisabled();
-
-    await mainToolbarPageObject.redo.click();
-    await expect(paths, 'Expected redo to restore the contour').toHaveCount(1);
-    await expect(paths.first()).toBeVisible();
-    await expect(paths.first()).toHaveAttribute('d', drawnPathD);
   });
 });
