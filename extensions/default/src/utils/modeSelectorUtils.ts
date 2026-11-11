@@ -8,11 +8,17 @@ const { formatPN } = utils;
 /** Fields read from `query.studies.search` responses; remainder spread into `study`. */
 type StudySearchRow = { modalities?: string } & Record<string, unknown>;
 
-/** Data source subset used when calling `studies.search` to populate the envelope. */
+/** Fields read from `query.series.search` responses. */
+type SeriesSearchRow = { modality?: string };
+
+/** Data source subset used when calling study/series search to populate the envelope. */
 export type DataSourceWithStudySearch = {
   query?: {
     studies?: {
       search?: (params: { studyInstanceUid: string }) => Promise<StudySearchRow[]> | StudySearchRow[];
+    };
+    series?: {
+      search?: (studyInstanceUid: string) => Promise<SeriesSearchRow[]> | SeriesSearchRow[];
     };
   };
 };
@@ -55,54 +61,106 @@ export function normalizeModalitiesString(raw?: string): string {
 }
 
 /**
- * Loads study metadata for the mode selector: tries the active data source search, then falls back
- * to `DicomMetadataStore` and builds modalities plus a study payload for validity checks.
+ * True when the modalities string contains at least one non-empty modality token.
  */
-export async function fetchStudyEnvelope(
-  StudyInstanceUID: string,
-  dataSource: DataSourceWithStudySearch | null | undefined
-): Promise<StudyEnvelope | null> {
-  try {
-    // Call as a method on query.studies so `this` inside search is bound (do not extract the function).
-    if (dataSource?.query?.studies?.search) {
-      const rows = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
-      const row = rows?.[0];
-      if (row) {
-        return {
-          modalitiesToCheck: normalizeModalitiesString(row.modalities),
-          study: { ...row },
-        };
-      }
+export function hasUsableModalities(modalities?: string): boolean {
+  return normalizeModalitiesString(modalities)
+    .split('\\')
+    .some(token => token.trim() !== '');
+}
+
+/**
+ * Builds a sorted, normalized modalities string from a set of modality codes.
+ */
+export function modalitiesStringFromSet(modalitySet: Set<string>): string {
+  return normalizeModalitiesString([...modalitySet].sort().join('/'));
+}
+
+/**
+ * Adds a modality value to the set when it is a non-empty string.
+ */
+function addModality(modalitySet: Set<string>, rawModality: unknown): void {
+  if (rawModality != null && `${rawModality}`.trim() !== '') {
+    modalitySet.add(`${rawModality}`.trim());
+  }
+}
+
+/**
+ * Collects modalities from series already loaded in `DicomMetadataStore`.
+ */
+export function modalitiesFromMetadataStore(studyInstanceUID: string): Set<string> {
+  const modalitySet = new Set<string>();
+  const meta = DicomMetadataStore.getStudy(studyInstanceUID);
+  meta?.series?.forEach(series => {
+    if (series?.instances?.length) {
+      addModality(modalitySet, series.instances[0].Modality);
     }
+  });
+  return modalitySet;
+}
+
+/**
+ * Collects modalities from a series-level search of the study.
+ */
+export async function modalitiesFromSeriesSearch(
+  studyInstanceUID: string,
+  dataSource: DataSourceWithStudySearch | null | undefined
+): Promise<Set<string>> {
+  const modalitySet = new Set<string>();
+  if (!dataSource?.query?.series?.search) {
+    return modalitySet;
+  }
+  try {
+    /** Call as a method on query.series so `this` inside search is bound. */
+    const rows = await dataSource.query.series.search(studyInstanceUID);
+    rows?.forEach(row => addModality(modalitySet, row?.modality));
   } catch (_e) {
-    // Fallback to locally loaded metadata
+    /** Leave the set empty; callers fall back to loaded metadata. */
+  }
+  return modalitySet;
+}
+
+/**
+ * Resolves the modalities used for mode validity. Uses the study-level value (ModalitiesInStudy)
+ * when the server returned one. Some servers (e.g. Google Healthcare) do not return it, so the
+ * fallback is the union of series already in `DicomMetadataStore` and a series search. Loaded
+ * metadata alone is not enough: with lazy study loading only some series may be loaded when the
+ * selector evaluates modes.
+ */
+export async function resolveStudyModalities(
+  studyInstanceUID: string,
+  dataSource: DataSourceWithStudySearch | null | undefined,
+  studyModalities?: string
+): Promise<string> {
+  if (hasUsableModalities(studyModalities)) {
+    return normalizeModalitiesString(studyModalities);
   }
 
+  const modalitySet = modalitiesFromMetadataStore(studyInstanceUID);
+  const fromSeriesSearch = await modalitiesFromSeriesSearch(studyInstanceUID, dataSource);
+  fromSeriesSearch.forEach(modality => modalitySet.add(modality));
+
+  return modalitiesStringFromSet(modalitySet);
+}
+
+/**
+ * Builds a study payload from series already in `DicomMetadataStore`, or null if none are loaded.
+ */
+function studyFromMetadataStore(StudyInstanceUID: string): Record<string, unknown> | null {
   const meta = DicomMetadataStore.getStudy(StudyInstanceUID);
   if (!meta?.series?.length) {
     return null;
   }
 
-  const modalitySet = new Set<string>();
   let numInstances = 0;
-
   meta.series.forEach(series => {
-    if (series?.instances?.length) {
-      const rawModality = series.instances[0].Modality;
-      if (rawModality != null && `${rawModality}`.trim() !== '') {
-        modalitySet.add(String(rawModality));
-      }
-      numInstances += series.instances.length;
-    }
+    numInstances += series?.instances?.length || 0;
   });
 
-  const modalitiesStr = [...modalitySet].sort().join('/');
-  const modalitiesNormalized = normalizeModalitiesString(modalitiesStr);
   const firstSeriesWithInstance = meta.series.find(s => s?.instances?.length);
   const inst0 = firstSeriesWithInstance?.instances?.[0];
-  const studyPayload = {
+  return {
     studyInstanceUid: StudyInstanceUID,
-    modalities: modalitiesNormalized,
     mrn: inst0?.PatientID,
     instances: numInstances,
     description: inst0?.StudyDescription,
@@ -113,10 +171,54 @@ export async function fetchStudyEnvelope(
     studyInstanceUID: StudyInstanceUID,
     StudyInstanceUID,
   };
+}
+
+/**
+ * Loads study metadata for the mode selector: tries the active data source study search, then falls
+ * back to `DicomMetadataStore`. When the study-level modalities are missing, they are resolved from
+ * loaded series plus a series search (see `resolveStudyModalities`).
+ */
+export async function fetchStudyEnvelope(
+  StudyInstanceUID: string,
+  dataSource: DataSourceWithStudySearch | null | undefined
+): Promise<StudyEnvelope | null> {
+  try {
+    /** Call as a method on query.studies so `this` inside search is bound (do not extract the function). */
+    if (dataSource?.query?.studies?.search) {
+      const rows = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
+      const row = rows?.[0];
+      if (row) {
+        const modalitiesToCheck = await resolveStudyModalities(
+          StudyInstanceUID,
+          dataSource,
+          row.modalities
+        );
+        return {
+          modalitiesToCheck,
+          study: { ...row, modalities: modalitiesToCheck },
+        };
+      }
+    }
+  } catch (_e) {
+    /** Fall back to locally loaded metadata and series search */
+  }
+
+  const study = studyFromMetadataStore(StudyInstanceUID);
+  const modalitiesToCheck = await resolveStudyModalities(StudyInstanceUID, dataSource);
+  if (!study && !modalitiesToCheck) {
+    return null;
+  }
 
   return {
-    modalitiesToCheck: modalitiesNormalized,
-    study: studyPayload,
+    modalitiesToCheck,
+    study: {
+      ...(study || {
+        studyInstanceUid: StudyInstanceUID,
+        studyInstanceUID: StudyInstanceUID,
+        StudyInstanceUID,
+      }),
+      modalities: modalitiesToCheck,
+    },
   };
 }
 
