@@ -195,7 +195,9 @@ The path above is for the image that the root `Dockerfile` builds. The deploymen
 as Nginx-Orthanc, serve the viewer from `/var/www/html`, the `root` in their `nginx.conf`. With a
 recipe, mount the file at `/var/www/html/app-config.js`. The recipes do not run the `entrypoint.sh`
 of the root image, so the [Environment Variable](#environment-variable) method does not apply to
-them.
+them. The [Build Default](#build-default) method does not apply either: each recipe `dockerfile`
+sets `ENV APP_CONFIG` in its build stage, and `--build-arg APP_CONFIG` does not change it. To change
+the build default of a recipe, edit the `ENV APP_CONFIG` line in the `dockerfile` of the recipe.
 :::
 
 ---
