@@ -1,16 +1,18 @@
 ---
 sidebar_position: 2
 sidebar_label: Display set storage
-title: getDisplaySetCache() returns a snapshot
+title: Display sets are stored in the cornerstone metadata cache
 ---
 
-# Display sets moved into the cornerstone metadata store
+# Display sets are stored in the cornerstone metadata cache
 
-`DisplaySetService` previously kept its display sets in a module-private
-`Map`, and `getDisplaySetCache()` handed that map out directly. In 3.14 they
-are stored in the `@cornerstonejs/metadata` `DISPLAY_SET` typed metadata cache,
-keyed by `displaySetInstanceUID`, so cornerstone-native code can resolve the
-same display sets OHIF sees:
+In 3.14, `DisplaySetService` **always** stores its display sets in the
+`@cornerstonejs/metadata` `DISPLAY_SET` typed metadata cache, keyed by
+`displaySetInstanceUID`. This is not an option: the `useMetadataDisplaySet`
+customization changes how display sets are **made**, not where they are
+stored. In 3.13, the service kept them in a private `Map`.
+
+Cornerstone code can now read the same display sets that OHIF uses:
 
 ```js
 import { Enums, metaData } from '@cornerstonejs/metadata';
@@ -21,63 +23,87 @@ const displaySet = metaData.getTyped(
 );
 ```
 
-## `getDisplaySetCache()` is deprecated
+| Change | Kind |
+| --- | --- |
+| Writes to the map from `getDisplaySetCache()` are lost | **Breaking** |
+| `getDisplaySetCache()` is deprecated | Deprecation, still works for reads |
+| `onModeExit()` clears only OHIF's own entries | Information |
+| Display sets last for one mode | Information, unchanged behaviour |
+| Display sets become immutable | Planned, not in 3.14 |
 
-It still returns a `Map<string, DisplaySet>`, but that map is now a **snapshot**
-rather than the live store. Reading from it is unchanged:
+## Breaking: writes to `getDisplaySetCache()` are lost
+
+`displaySetService.getDisplaySetCache()` returns a new `Map` on each call, a
+copy of the stored display sets. A write to that copy does not change the
+service. Nothing in the OHIF tree writes to it, so only downstream code is
+affected.
+
+**Before (3.13)**, these calls changed the service:
 
 ```js
-// Still fine.
-const displaySets = Array.from(displaySetService.getDisplaySetCache().values());
-```
-
-Mutating it no longer affects the service — the writes land on a throwaway copy
-and are silently lost:
-
-```js
-// Broken in 3.14: both are no-ops.
 displaySetService.getDisplaySetCache().set(uid, myDisplaySet);
 displaySetService.getDisplaySetCache().delete(uid);
+displaySetService.getDisplaySetCache().clear();
 ```
 
-Nothing in the OHIF tree mutated it, so this only affects downstream code.
-Replace mutations with the service API, which keeps the active display set list
-and the events in step:
+**After (3.14)**, use the service methods, which also update the active display
+set list and send the events:
 
-| Instead of | Use |
-| --- | --- |
-| `cache.get(uid)` | `displaySetService.getDisplaySetByUID(uid)` |
-| `cache.values()` (all) | `displaySetService.getActiveDisplaySets()` |
-| filtering `cache.values()` | `displaySetService.getDisplaySetsBy(predicate)` |
-| `cache.delete(uid)` | `displaySetService.deleteDisplaySet(uid)` |
-| `cache.clear()` | `displaySetService.onModeExit()` |
-| `cache.set(uid, ds)` | `displaySetService.makeDisplaySets(instances)` |
+```js
+displaySetService.addDisplaySets(myDisplaySet);
+displaySetService.deleteDisplaySet(uid);
+displaySetService.onModeExit(); // removes all of this service's display sets
+```
 
-## Clearing is scoped to OHIF's own entries
+To make display sets from instances, use
+`displaySetService.makeDisplaySets(instances)`.
 
-`onModeExit()` removes only the display sets this service created, per UID,
-rather than clearing the whole `DISPLAY_SET` module. Entries written directly
-by cornerstone code (keyed by image id rather than by `displaySetInstanceUID`)
-survive that call.
+## Deprecated: `getDisplaySetCache()`
 
-## Display sets do not survive a mode exit
+Reads from `getDisplaySetCache()` still work. Use the service methods instead.
 
-This is unchanged from 3.13 in effect, but the mechanism is now shared with
-cornerstone, so it is worth stating explicitly: **display sets last for the
-duration of a mode.** Two separate things clear them on the way out, and both
-are intended:
+**Before (3.13):**
+
+```js
+const cache = displaySetService.getDisplaySetCache();
+const one = cache.get(uid);
+const all = Array.from(cache.values());
+const ct = Array.from(cache.values()).filter(ds => ds.Modality === 'CT');
+```
+
+**After (3.14):**
+
+```js
+const one = displaySetService.getDisplaySetByUID(uid);
+const all = displaySetService.getActiveDisplaySets();
+const ct = displaySetService.getDisplaySetsBy(ds => ds.Modality === 'CT');
+```
+
+`getActiveDisplaySets()` returns all display sets of the current mode, as
+`getDisplaySetCache().values()` did.
+
+## Information: clearing removes only OHIF's own entries
+
+`onModeExit()` removes only the display sets that this service created, one UID
+at a time. It does not clear the whole `DISPLAY_SET` module. Entries that
+cornerstone code writes directly (keyed by image id, not by
+`displaySetInstanceUID`) stay.
+
+## Information: display sets last for one mode
+
+This is the same as in 3.13, but the mechanism is now shared with cornerstone.
+Two steps clear display sets when a mode exits, and both are intended:
 
 | Step | What it clears |
 | --- | --- |
-| `mode.onModeExit` | nothing — runs first, so a mode can snapshot what it wants to keep |
-| `@ohif/extension-cornerstone` `onModeExit` | `utilities.clearCacheData()` — the whole typed metadata registry, including the `DISPLAY_SET` module |
-| `DisplaySetService.onModeExit()` | this service's own display sets, per UID |
+| `mode.onModeExit` | nothing; it runs first, so a mode can keep what it needs |
+| `@ohif/extension-cornerstone` `onModeExit` | `utilities.clearCacheData()`: the whole typed metadata registry, with the `DISPLAY_SET` module |
+| `DisplaySetService.onModeExit()` | this service's own display sets, one UID at a time |
 
 The cornerstone extension releases the typed registry because naturalized
-instances hold full Part 10 buffers that live outside the size-capped image
-cache; dropping display sets along with them is deliberate, not collateral.
-Because `mode.onModeExit` runs before either clear, the existing
-snapshot-and-restore pattern still works:
+instances hold full Part 10 buffers, outside the size-capped image cache. The
+display sets go with them on purpose. Because `mode.onModeExit` runs before
+both steps, this pattern still works:
 
 ```js
 // In your mode
@@ -92,10 +118,29 @@ onModeEnter({ servicesManager }) {
 },
 ```
 
-What does **not** work is stashing a `displaySetInstanceUID` across a mode
-change and looking it up afterwards — `getDisplaySetByUID` will return
-`undefined`. Hold the display set object itself.
+A `displaySetInstanceUID` kept across a mode change does not work:
+`getDisplaySetByUID` returns `undefined` after the change. Keep the display set
+object itself.
 
-If `utilities.clearCacheData()` is called mid-mode (a loader
-re-initialization, say), the store notices the missing entries on the next read
-and prunes its own index instead of returning stale UIDs.
+If code calls `utilities.clearCacheData()` while a mode is active (for example
+when a loader initializes again), the service finds the missing entries on the
+next read and removes their UIDs from its index. It does not return stale UIDs.
+
+## Planned (not in 3.14): display sets become immutable
+
+This section is for information. Nothing in it changes in 3.14.
+
+A later release replaces the display set storage with a vanilla zustand store,
+the `displaySetStore` of `@cornerstonejs/metadata`. In that release:
+
+- A display set is an immutable record. Code changes a display set with a
+  service call (for example an `update` of the fields), and not with a direct
+  write such as `displaySet.isLoaded = true`.
+- A change gives a new display set object. Code that keeps a display set object
+  must read it again by `displaySetInstanceUID` to see the change.
+- `utilities.clearCacheData()` no longer clears display sets. Only
+  `DisplaySetService.onModeExit()` clears them.
+
+To prepare, avoid new code that writes to a display set object after
+`addDisplaySets`, and keep the `displaySetInstanceUID` instead of the object
+where you can.

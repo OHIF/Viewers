@@ -42,6 +42,15 @@ const DISPLAY_SET_MODULE = Enums.MetadataModules.DISPLAY_SET;
  * A display set is therefore never expected to outlive its mode. Code that
  * needs one later must hold its own reference — not a `displaySetInstanceUID`
  * to look up afterwards.
+ *
+ * ### Planned: a true store
+ *
+ * This module is an adapter today, not a zustand store. The name is kept
+ * because a later change replaces it with the vanilla zustand
+ * `displaySetStore` of `@cornerstonejs/metadata` (cornerstonejs/cornerstone3D#3059).
+ * That store keeps display sets as immutable records: changes go through
+ * `update` / `modify` calls, and in-place writes to a display set stop
+ * working.
  */
 const displaySetUIDs = new Set<string>();
 

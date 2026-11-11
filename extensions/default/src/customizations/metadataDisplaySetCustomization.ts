@@ -11,7 +11,8 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * `handler` name gives its display sets to the SOP class handler of the mode
  * that declares that name in `handlerNames`.
  *
- * Enable per mode:
+ * Enable per mode, in the `onModeEnter` of the mode. `setCustomizations` uses
+ * `CustomizationScope.Mode` by default, and `onModeExit` clears that scope:
  * ```js
  * customizationService.setCustomizations({
  *   useMetadataDisplaySet: { enabled: { $set: true } },
