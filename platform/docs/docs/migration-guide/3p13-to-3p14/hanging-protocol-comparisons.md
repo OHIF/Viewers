@@ -304,7 +304,7 @@ When no stage is given, the viewer opens the first stage with all of its viewpor
 stage 0. This applies to:
 
 - a URL with `&hangingProtocolId=` and no `&stageid=`
-- a URL with an unknown `&stageid=`, or a `&stageid=` of a stage that is disabled for the study
+- a URL with an unknown `&stageid=`
 - the `setHangingProtocol` command with no stage, for example "Apply Hanging Protocol" in
   the study menu.
 
@@ -323,11 +323,16 @@ A protocol that imports `seriesWithImages` from `seriesSelectors.ts` no longer m
 display set with 0 image frames. `seriesViewable` accepts 0 image frames, as the 3.13 rule
 did, but it rejects a SEG.
 
-### Stage navigation skips the disabled mnGrid stages
+### A disabled stage is never opened
 
-On a study with no image display set, the 2x2 and 3x1 stages of mnGrid are disabled, and
-`,` and `.` skip them. In 3.13 the user could step to an empty 2x2 and drag series into it.
-The layout selector still gives any layout. Other protocols do not change.
+In any protocol, a stage is disabled for a study when its `stageActivation.passive` rule
+fails. The viewer never opens a disabled stage. `,` and `.` skip it, and a URL `&stageid=`
+or a `setHangingProtocol` command that asks for it opens the first applicable stage instead.
+The console then shows a warning. In 3.13, a request for a disabled stage gave an error.
+
+For example, the 2x2 and 3x1 stages of mnGrid are now disabled on a study with no image
+display set. In 3.13 the user could step to an empty 2x2 and drag series into it. The layout
+selector still gives any layout.
 
 ### Protocols as customizations
 
