@@ -1,11 +1,10 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
   screenShotPaths,
   test,
   visitStudy,
   waitForViewportRenderCycle,
 } from './utils';
-import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -38,18 +37,22 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 
   await viewportRenderCycle;
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage
-  );
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage,
+  });
 
-  // Navigate to the middle image of the default viewport.
-  await press({ page, key: 'ArrowDown', nTimes: 12 });
+  // Navigate to the middle image of the default viewport. Keyboard
+  // navigation is focus-dependent and lossy, so jump via the app command.
+  const defaultViewport = await viewportPageObject.getById('default');
+  await defaultViewport.sliceNavigation.toSlice(12);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage
-  );
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage,
+  });
 });

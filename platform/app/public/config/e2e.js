@@ -31,13 +31,21 @@ window.config = {
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
   strictZSpacingForVolumeViewport: true,
+  // Lossy downsampling for the tests and the deploy previews. `final` reduces
+  // a volume texture to fit the `cornerstone.gpuSettingsPreset` below.
+  // config/default.js keeps final downsampling off.
+  lossyDownsampling: { final: true },
   // filterQueryParam: false,
 
   // Add some customizations to the default e2e datasource
-  customizationService: [
-    '@ohif/extension-default.customizationModule.datasources',
-    '@ohif/extension-default.customizationModule.helloPage',
-  ],
+  customizationService: {
+    // A `?customization=gpu/<preset>` URL module applies after this block, so it wins.
+    bootstrap: { 'cornerstone.gpuSettingsPreset': 'medium' },
+    global: [
+      '@ohif/extension-default.customizationModule.datasources',
+      '@ohif/extension-default.customizationModule.helloPage',
+    ],
+  },
 
   defaultDataSourceName: 'e2e',
   investigationalUseDialog: {

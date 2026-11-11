@@ -39,6 +39,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
+import initGpuSettingsPreset from './utils/initGpuSettingsPreset';
 import { colormaps } from './utils/colormaps';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useLutPresentationStore } from './stores/useLutPresentationStore';
@@ -77,6 +78,9 @@ export default async function init({
   await cs3DInit({
     peerImport: appConfig.peerImport,
     debug: { statsOverlay },
+    ...(appConfig.lossyDownsampling && {
+      rendering: { lossyDownsampling: appConfig.lossyDownsampling },
+    }),
   });
 
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
@@ -158,6 +162,8 @@ export default async function init({
     displaySetService,
     toolbarService,
   } = servicesManager.services;
+
+  initGpuSettingsPreset({ customizationService, appConfig });
 
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
     colorbarService.EVENTS.STATE_CHANGED,
