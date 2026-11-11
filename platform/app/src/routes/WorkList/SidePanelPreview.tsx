@@ -39,8 +39,23 @@ export function SidePanelPreview({
     : 'all';
   const seriesView: PreviewSeriesView = forceListView ? 'list' : configuredSeriesView;
 
+  /**
+   * When the study query did not return ModalitiesInStudy, derive the
+   * modalities from the fetched series so the workflow list can be filtered
+   * for this study.
+   */
+  const derivedModalities =
+    selected && !String(selected.modalities ?? '').trim()
+      ? Array.from(
+          new Set(
+            series.map(s => String(s.modality || s.Modality || '').toUpperCase()).filter(Boolean)
+          )
+        ).join('/')
+      : '';
+  const study = derivedModalities ? { ...selected, modalities: derivedModalities } : selected;
+
   const previewProps: PreviewContentProps = {
-    study: selected as StudyRow | null,
+    study: study as StudyRow | null,
     series,
     seriesView,
     onThumbnailImageError,
