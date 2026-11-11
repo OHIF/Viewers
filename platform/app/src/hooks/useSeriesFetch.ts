@@ -163,9 +163,12 @@ async function loadPreviewSeries({
 export function useSeriesFetch({
   dataSource,
   selected,
+  refreshKey,
 }: {
   dataSource: any;
   selected: StudyRow | null;
+  /** Changing this reloads the series for the same study (e.g. after a study list refetch). */
+  refreshKey?: unknown;
 }): {
   series: PreviewSeries[];
   /** The study the current `series` list was fetched for, once it has loaded. */
@@ -222,7 +225,13 @@ export function useSeriesFetch({
         } catch {}
       });
     };
-  }, [dataSource, studyInstanceUID, sortBySeriesDate, appConfig?.maxNumRequests?.thumbnail]);
+  }, [
+    dataSource,
+    studyInstanceUID,
+    refreshKey,
+    sortBySeriesDate,
+    appConfig?.maxNumRequests?.thumbnail,
+  ]);
 
   const onThumbnailImageError = (seriesUID: string) => {
     setSeries(prevSeriesList =>

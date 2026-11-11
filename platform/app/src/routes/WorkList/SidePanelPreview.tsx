@@ -16,10 +16,16 @@ const ALLOWED_PREVIEW_SERIES_VIEWS: ReadonlyArray<PreviewSeriesView> = [
 export function SidePanelPreview({
   dataSource,
   selected,
+  studyListData,
   onModalitiesResolved,
 }: {
   dataSource: any;
   selected: StudyRow | null;
+  /**
+   * The study list the selection came from. A new value (a refetch) reloads
+   * the selected study's series even when its UID is unchanged.
+   */
+  studyListData?: unknown;
   /**
    * Called with the modalities derived from the selected study's series when
    * the study row had none, so the study list can use them for the row too.
@@ -29,6 +35,7 @@ export function SidePanelPreview({
   const { series, seriesStudyInstanceUID, onThumbnailImageError } = useSeriesFetch({
     dataSource,
     selected,
+    refreshKey: studyListData,
   });
   const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
   const thumbnailRequestStrategy =

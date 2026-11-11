@@ -63,17 +63,27 @@ export default function WorkList({
    * Modalities derived from fetched series, by study UID, for rows whose
    * study query did not return ModalitiesInStudy. Filling them into the rows
    * lets the row menu and double-click use the same workflow filtering as the
-   * preview panel.
+   * preview panel. They are kept only for the study list they were derived
+   * for: a refetch (new `data`) drops them, so changed studies are derived
+   * again.
    */
-  const [resolvedModalities, setResolvedModalities] = useState<Record<string, string>>({});
+  const [resolvedModalities, setResolvedModalities] = useState<{
+    studies: unknown;
+    byUid: Record<string, string>;
+  }>({ studies: data, byUid: {} });
+  const resolvedByUid = resolvedModalities.studies === data ? resolvedModalities.byUid : {};
   const onModalitiesResolved = (studyInstanceUid: string, modalities: string) => {
-    setResolvedModalities(prev =>
-      prev[studyInstanceUid] === modalities ? prev : { ...prev, [studyInstanceUid]: modalities }
-    );
+    setResolvedModalities(prev => {
+      const byUid = prev.studies === data ? prev.byUid : {};
+      if (prev.studies === data && byUid[studyInstanceUid] === modalities) {
+        return prev;
+      }
+      return { studies: data, byUid: { ...byUid, [studyInstanceUid]: modalities } };
+    });
   };
   const tableData = (data as StudyRow[]).map(row =>
-    !String(row.modalities ?? '').trim() && resolvedModalities[row.studyInstanceUid]
-      ? { ...row, modalities: resolvedModalities[row.studyInstanceUid] }
+    !String(row.modalities ?? '').trim() && resolvedByUid[row.studyInstanceUid]
+      ? { ...row, modalities: resolvedByUid[row.studyInstanceUid] }
       : row
   );
 
@@ -202,6 +212,7 @@ export default function WorkList({
               <SidePanelPreview
                 dataSource={dataSource}
                 selected={selected}
+                studyListData={data}
                 onModalitiesResolved={onModalitiesResolved}
               />
             </StudyList.Preview>
