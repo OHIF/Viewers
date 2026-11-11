@@ -1,9 +1,12 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  expect,
   screenShotPaths,
   test,
   visitStudy,
-  waitForPaintToSettle,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,30 +17,43 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG', async ({
   page,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
+
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-  await page.waitForTimeout(5000);
+  await viewportRenderCycle;
 
-  await checkForScreenshot(
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await expect(DOMOverlayPageObject.viewport.modalityLoadBadges).toHaveCount(1);
+
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR,
+  });
+
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await page.waitForTimeout(5000);
-  await waitForPaintToSettle(page);
+  await viewportRenderAfterLayoutChange;
+ 
+  await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segNoHydrationThenMPR.segNoHydrationPostMPR,
+  });
 });
