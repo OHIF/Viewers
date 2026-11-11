@@ -43,6 +43,9 @@ async function runThumbnailPool<T>(
   await Promise.all(Array.from({ length: Math.min(maxParallel, items.length) }, runWorker));
 }
 
+/** The request a loaded series list belongs to. */
+type SeriesLoadedFor = { studyInstanceUID: string; refreshKey: unknown };
+
 type SetSeries = (next: PreviewSeries[] | ((prev: PreviewSeries[]) => PreviewSeries[])) => void;
 
 /**
@@ -61,7 +64,8 @@ async function loadPreviewSeries({
   sortBySeriesDate,
   maxParallelRequests,
   setSeries,
-  setSeriesStudyInstanceUID,
+  setSeriesLoadedFor,
+  refreshKey,
   ownedBlobUrlsRef,
 }: {
   studyInstanceUID: string | undefined;
@@ -70,12 +74,13 @@ async function loadPreviewSeries({
   sortBySeriesDate: ((rows: any[]) => any[]) | undefined;
   maxParallelRequests: number;
   setSeries: SetSeries;
-  setSeriesStudyInstanceUID: (studyInstanceUID: string | undefined) => void;
+  setSeriesLoadedFor: (loadedFor: SeriesLoadedFor | undefined) => void;
+  refreshKey: unknown;
   ownedBlobUrlsRef: { current: string[] };
 }): Promise<void> {
   if (!studyInstanceUID) {
     setSeries([]);
-    setSeriesStudyInstanceUID(undefined);
+    setSeriesLoadedFor(undefined);
     return;
   }
 
@@ -98,7 +103,7 @@ async function loadPreviewSeries({
     });
 
     setSeries(normalizedSeriesList);
-    setSeriesStudyInstanceUID(studyInstanceUID);
+    setSeriesLoadedFor({ studyInstanceUID, refreshKey });
 
     const fetchTargets = normalizedSeriesList.filter((row: PreviewSeries) => {
       if (!getSeriesUID(row)) {
@@ -147,7 +152,7 @@ async function loadPreviewSeries({
     if (!signal.aborted) {
       console.warn('Failed to load preview series/thumbnails for selected study.', e);
       setSeries([]);
-      setSeriesStudyInstanceUID(undefined);
+      setSeriesLoadedFor(undefined);
     }
   }
 }
@@ -176,7 +181,7 @@ export function useSeriesFetch({
   onThumbnailImageError: (seriesUID: string) => void;
 } {
   const [series, setSeries] = useState<PreviewSeries[]>([]);
-  const [seriesStudyInstanceUID, setSeriesStudyInstanceUID] = useState<string | undefined>();
+  const [seriesLoadedFor, setSeriesLoadedFor] = useState<SeriesLoadedFor | undefined>();
   /**
    * Keyed on the study UID rather than the row object, so a new object for the
    * same study (e.g. with modalities filled in) does not restart the fetch.
@@ -208,7 +213,8 @@ export function useSeriesFetch({
       sortBySeriesDate,
       maxParallelRequests,
       setSeries,
-      setSeriesStudyInstanceUID,
+      setSeriesLoadedFor,
+      refreshKey,
       ownedBlobUrlsRef,
     });
 
@@ -255,6 +261,16 @@ export function useSeriesFetch({
       })
     );
   };
+
+  /**
+   * Report the study only while the loaded series match the current request,
+   * so series left over from before a refetch are not treated as current.
+   */
+  const seriesStudyInstanceUID =
+    seriesLoadedFor?.studyInstanceUID === studyInstanceUID &&
+    seriesLoadedFor?.refreshKey === refreshKey
+      ? seriesLoadedFor.studyInstanceUID
+      : undefined;
 
   return { series, seriesStudyInstanceUID, onThumbnailImageError };
 }
