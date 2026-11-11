@@ -575,6 +575,10 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
+  const finding = mergedContentSequence.find(
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.Finding
+  );
+
   const { ConceptNameCodeSequence: conceptNameItem } = graphicItem;
   const { CodeValue: graphicValue, CodingSchemeDesignator: graphicDesignator } = conceptNameItem;
   const graphicCode = `${graphicDesignator}:${graphicValue}`;
@@ -612,12 +616,25 @@ function _processTID1410Measurement(mergedContentSequence) {
   );
   if (findingSites.length) {
     measurement.labels.push({
-      label: CodeNameCodeSequenceValues.FindingSiteSCT,
+      label: findingSites[0].ConceptNameCodeSequence?.CodeMeaning || 'Finding Site',
       value: findingSites[0].ConceptCodeSequence.CodeMeaning,
     });
   }
 
+  _addFindingConcepts(measurement, finding, findingSites);
+
   return measurement;
+}
+
+/**
+ * Keeps the coded Finding and Finding Site concepts on the measurement so the SR preview can show
+ * the same label as the hydrated annotation (e.g. the Finding "Lesion"), see getLabelForSRMeasurement.
+ */
+function _addFindingConcepts(measurement, finding, findingSites) {
+  Object.assign(measurement, {
+    srFinding: finding?.ConceptCodeSequence,
+    srFindingSites: findingSites.map(site => site.ConceptCodeSequence).filter(Boolean),
+  });
 }
 
 /**
@@ -743,6 +760,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     }
   });
 
+  _addFindingConcepts(measurement, finding, findingSites);
   return measurement;
 }
 
@@ -854,5 +872,5 @@ function isTextPosition(group) {
   );
 }
 
-export { _checkIfCanAddMeasurementsToDisplaySet };
+export { _checkIfCanAddMeasurementsToDisplaySet, _processMeasurement };
 export default getSopClassHandlerModule;
