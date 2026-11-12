@@ -149,6 +149,10 @@ describe('HangingProtocolService', () => {
       TestService: {
         toCall: mockedFunction,
       },
+      customizationService: {
+        hasCustomization: () => false,
+        getCustomization: () => undefined,
+      },
     },
   };
   const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);

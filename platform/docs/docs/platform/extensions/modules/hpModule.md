@@ -380,6 +380,24 @@ The ptDisplaySet will match against all the series that are PT and reconstructab
 As you see each selector is composed of an `id` as the key and a set of `seriesMatchingRules` (displaySetMatchingRules) which gives score to the displaySet
 based on the matching rules. The displaySet with the highest score will be used for the `id`.
 
+The viewer remembers the display set that the user puts in a viewport, under
+the selector `id` and the `matchedDisplaySetsIndex`, and reuses it when the
+stage changes. When two stages use different selectors for the same viewport,
+set `selectorMapId` on one selector to the `id` of the other. The two selectors
+then share the user's choice. The viewer does not check a reused display set
+against the rules of the selector, so a display set that the user put in a
+viewport stays when the stage changes. For example, `@ohif/mnGrid` uses
+`viewableDisplaySetId` (images, ECG, SM and PDF) in the 2x1 and 1x1 stages, and
+`defaultDisplaySetId` (images only) in the 2x2 and 3x1 stages:
+
+```js
+viewableDisplaySetId: {
+  allowUnmatchedView: true,
+  selectorMapId: 'defaultDisplaySetId',
+  seriesMatchingRules: seriesViewable,
+},
+```
+
 ### stages
 Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is an array of objects, each object being one stage.
 

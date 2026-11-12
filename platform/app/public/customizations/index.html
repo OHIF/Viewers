@@ -251,6 +251,19 @@
           ],
         },
         {
+          dir: 'hangingProtocols/',
+          title: 'Hanging protocols',
+          desc: 'Hanging protocols defined as data. Select one with &hangingProtocolId=<id> in the viewer URL.',
+          items: [
+            {
+              value: 'hangingProtocols/ecg',
+              name: 'ECG protocol (@ohif/ecg)',
+              scope: 'global',
+              desc: 'Adds the @ohif/ecg protocol: an ECG above a prior ECG, two ECGs (newest above), or one ECG. An encapsulated PDF with Modality ECG counts as an ECG. Use with &hangingProtocolId=@ohif/ecg.',
+            },
+          ],
+        },
+        {
           dir: 'gpu/',
           title: 'GPU settings preset',
           desc:
