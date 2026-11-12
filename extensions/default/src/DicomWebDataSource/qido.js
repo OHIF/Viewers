@@ -136,11 +136,11 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
 }
 
 /**
- * Produces a QIDO URL given server details and a set of specified search filter
- * items
+ * Maps study list search filter items to study-level QIDO query parameters.
  *
- * @param filter
- * @returns {string} The URL with encoded filter query data
+ * @param {object} params - Search filter items, for example `patientName` and `startDate`
+ * @param {object} [options] - Data source options: `supportsWildcard`, `supportsFuzzyMatching`
+ * @returns {object} The query parameters, without undefined or empty values
  */
 function mapParams(params, options = {}) {
   if (!params) {
