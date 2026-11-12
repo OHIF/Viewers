@@ -46,14 +46,14 @@ describe('addSRAnnotation', () => {
     expect(mockAddAnnotation.mock.calls[0][0].data.label).toBe('Lesion');
   });
 
-  it('falls back to the first label value', () => {
+  it('does not copy a measurement value into the label', () => {
     addSRAnnotation({
       measurement: measurementWith({ labels: [{ label: 'Length', value: '12 mm' }] }),
       imageId: 'image-1',
       displaySet: { displaySetInstanceUID: 'sr' },
     });
 
-    expect(mockAddAnnotation.mock.calls[0][0].data.label).toBe('12 mm');
+    expect(mockAddAnnotation.mock.calls[0][0].data.label).toBeUndefined();
   });
 
   it('adds the preview locked', () => {
@@ -63,7 +63,6 @@ describe('addSRAnnotation', () => {
       displaySet: { displaySetInstanceUID: 'sr' },
     });
 
-    expect(mockAddAnnotation.mock.calls[0][0].isLocked).toBe(true);
     expect(mockSetAnnotationLocked).toHaveBeenCalledWith('1.2.3', true);
   });
 });

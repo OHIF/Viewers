@@ -33,7 +33,11 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
 
     // NOTE -> We use the CORNERSTONEJS coding schemeDesignator which we have
     // defined in the @cornerstonejs/adapters
-    if (measurementDataI.label) {
+    /**
+     * A label equal to the coded Finding came from that Finding on hydration, so it is not written
+     * again as free text.
+     */
+    if (measurementDataI.label && measurementDataI.label !== finding?.CodeMeaning) {
       if (additionalFindingTypes.includes(toolType)) {
         finding = {
           CodeValue: 'CORNERSTONEFREETEXT',

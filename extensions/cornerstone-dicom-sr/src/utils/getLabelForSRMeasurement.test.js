@@ -58,6 +58,12 @@ describe('getLabelForSRMeasurement', () => {
     );
   });
 
+  it('puts the comment ahead of the coded finding, as hydration does', () => {
+    expect(getLabelForSRMeasurement({ srComment: 'Target A', srFinding: lesion, labels: [] })).toBe(
+      'Target A'
+    );
+  });
+
   it('falls back to the finding site line when no concepts were kept', () => {
     expect(getLabelForSRMeasurement({ labels: [{ label: 'Finding Site', value: 'Lung' }] })).toBe(
       'Lung'

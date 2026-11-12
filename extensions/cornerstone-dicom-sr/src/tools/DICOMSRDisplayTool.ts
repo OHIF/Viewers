@@ -9,6 +9,7 @@ import {
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import { SCOORDTypes } from '../enums';
 import toolNames from './toolNames';
+import drawCross, { CROSS_SIZE } from './drawCross';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
   static toolName = toolNames.DICOMSRDisplay;
@@ -37,14 +38,13 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const shorthand = _labelToShorthand(labelEntry.label);
       const value = labelEntry.value ?? '';
 
-      /**
-       * Empty shorthand (CORNERSTONEFREETEXT, Length, etc.): show value only — avoids ": text" or
-       * "363698007: site" when label was a raw code (fixed at source for finding site).
-       */
-      if (shorthand === '' && value !== '') {
-        lines.push(String(value));
-      } else if (shorthand === '') {
-        continue;
+      /** An empty shorthand shows the value only, and an empty value shows the shorthand only. */
+      if (shorthand === '') {
+        if (value !== '') {
+          lines.push(String(value));
+        }
+      } else if (value === '') {
+        lines.push(shorthand);
       } else {
         lines.push(`${shorthand}: ${value}`);
       }
@@ -247,12 +247,10 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     options
   ) {
     const canvasCoordinates = [];
-    const crossSize = 6;
 
     renderableData.map((data, index) => {
-      const point = data[0];
-      const [canvasX, canvasY] = viewport.worldToCanvas(point);
-      canvasCoordinates.push(viewport.worldToCanvas(point));
+      const canvasPoint = viewport.worldToCanvas(data[0]);
+      canvasCoordinates.push(canvasPoint);
 
       if (data[1] !== undefined) {
         canvasCoordinates.push(viewport.worldToCanvas(data[1]));
@@ -262,24 +260,13 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           `arrow-${index}`,
           canvasCoordinates[canvasCoordinates.length - 1],
           canvasCoordinates[canvasCoordinates.length - 2],
-          { color: options.color, width: options.lineWidth }
+          { color: options.color, width: options.lineWidth, lineDash: options.lineDash }
         );
       } else {
-        const cx = Number(canvasX);
-        const cy = Number(canvasY);
-        const crossPaths = [
-          [
-            [cx, cy - crossSize],
-            [cx, cy + crossSize],
-          ],
-          [
-            [cx - crossSize, cy],
-            [cx + crossSize, cy],
-          ],
-        ];
-        drawing.drawPath(svgDrawingHelper, annotationUID, `cross-${index}`, crossPaths, {
+        drawCross(svgDrawingHelper, annotationUID, `cross-${index}`, canvasPoint, CROSS_SIZE, {
           color: options.color,
-          lineWidth: options.lineWidth || 2,
+          lineWidth: options.lineWidth,
+          lineDash: options.lineDash,
         });
       }
     });
@@ -363,10 +350,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
 
-    const textLines =
-      typeof label === 'string' && label.length > 0
-        ? [label]
-        : this._getTextBoxLinesFromLabels(labels);
+    const textLines = getPreviewTextLines(label, this._getTextBoxLinesFromLabels(labels));
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
     if (!annotation.data?.handles?.textBox?.worldPosition) {
@@ -405,12 +389,24 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 }
 
 const SHORT_HAND_MAP = {
-  'Short Axis': 'W: ',
-  'Long Axis': 'L: ',
-  AREA: 'Area: ',
+  'Short Axis': 'W',
+  'Long Axis': 'L',
+  AREA: 'Area',
   Length: '',
   CORNERSTONEFREETEXT: '',
 };
+
+/**
+ * The text lines of the preview text box: the label (finding, finding site or comment) first, then
+ * the measurement lines. The label is left out when a measurement line already shows it.
+ */
+export function getPreviewTextLines(label: string | undefined, lines: string[]): string[] {
+  if (typeof label !== 'string' || label.length === 0) {
+    return lines;
+  }
+  const shown = lines.some(line => line === label || line.endsWith(`: ${label}`));
+  return shown ? lines : [label, ...lines];
+}
 
 function _labelToShorthand(label) {
   const shortHand = SHORT_HAND_MAP[label];

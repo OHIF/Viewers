@@ -27,7 +27,11 @@ jest.mock('@ohif/i18n', () => ({ __esModule: true, default: { t: (key: string) =
 
 jest.mock('@cornerstonejs/adapters', () => ({
   adaptersSR: {
-    Cornerstone3D: { TEXT_ANNOTATION_POSITION: {}, COMMENT_CODE: {}, CodeScheme: {} },
+    Cornerstone3D: {
+      TEXT_ANNOTATION_POSITION: {},
+      COMMENT_CODE: { schemeDesignator: 'DCM', value: '121106' },
+      CodeScheme: {},
+    },
   },
 }));
 
@@ -257,5 +261,22 @@ describe('_processMeasurement', () => {
 
     expect(measurement.srFinding).toBe(lesion);
     expect(measurement.srFindingSites).toEqual([]);
+  });
+
+  it('keeps an SRT finding site and the comment of a measurement without geometry', () => {
+    const srtSite = {
+      ValueType: 'CODE',
+      ConceptNameCodeSequence: { CodeValue: 'G-C0E3', CodingSchemeDesignator: 'SRT' },
+      ConceptCodeSequence: lung,
+    };
+    const comment = {
+      ValueType: 'TEXT',
+      ConceptNameCodeSequence: { CodeValue: '121106', CodingSchemeDesignator: 'DCM' },
+      TextValue: 'Target A',
+    };
+    const measurement = _processMeasurement([...trackingItems, findingItem, srtSite, comment]);
+
+    expect(measurement.srFindingSites).toEqual([lung]);
+    expect(measurement.srComment).toBe('Target A');
   });
 });

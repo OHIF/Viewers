@@ -609,11 +609,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     }
   });
 
-  const findingSites = mergedContentSequence.filter(
-    item =>
-      item.ConceptNameCodeSequence.CodingSchemeDesignator === CodingSchemeDesignators.SCT &&
-      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSiteSCT
-  );
+  const findingSites = mergedContentSequence.filter(_isFindingSite);
   if (findingSites.length) {
     measurement.labels.push({
       label: findingSites[0].ConceptNameCodeSequence?.CodeMeaning || 'Finding Site',
@@ -621,17 +617,35 @@ function _processTID1410Measurement(mergedContentSequence) {
     });
   }
 
-  _addFindingConcepts(measurement, finding, findingSites);
+  _addFindingConcepts(measurement, mergedContentSequence, finding, findingSites);
 
   return measurement;
 }
 
+/** A Finding Site item, with the SCT concept name or the older SRT one. */
+function _isFindingSite(item) {
+  const { CodingSchemeDesignator, CodeValue } = item.ConceptNameCodeSequence;
+  return (
+    (CodingSchemeDesignator === CodingSchemeDesignators.SCT &&
+      CodeValue === CodeNameCodeSequenceValues.FindingSiteSCT) ||
+    (CodingSchemeDesignator === CodingSchemeDesignators.SRT &&
+      CodeValue === CodeNameCodeSequenceValues.FindingSite)
+  );
+}
+
 /**
- * Keeps the coded Finding and Finding Site concepts on the measurement so the SR preview can show
- * the same label as the hydrated annotation (e.g. the Finding "Lesion"), see getLabelForSRMeasurement.
+ * Keeps the comment, the Finding and the Finding Site concepts on the measurement, so that the SR
+ * preview shows the same label as the hydrated annotation (see getLabelForSRMeasurement).
  */
-function _addFindingConcepts(measurement, finding, findingSites) {
+function _addFindingConcepts(measurement, mergedContentSequence, finding, findingSites) {
+  const comment = mergedContentSequence.find(
+    item =>
+      item.ConceptNameCodeSequence.CodingSchemeDesignator === COMMENT_CODE.schemeDesignator &&
+      item.ConceptNameCodeSequence.CodeValue === COMMENT_CODE.value &&
+      item.TextValue
+  );
   Object.assign(measurement, {
+    srComment: comment?.TextValue,
     srFinding: finding?.ConceptCodeSequence,
     srFindingSites: findingSites.map(site => site.ConceptCodeSequence).filter(Boolean),
   });
@@ -655,11 +669,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.Finding
   );
 
-  const findingSites = mergedContentSequence.filter(
-    item =>
-      item.ConceptNameCodeSequence.CodingSchemeDesignator === CodingSchemeDesignators.SRT &&
-      item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSite
-  );
+  const findingSites = mergedContentSequence.filter(_isFindingSite);
 
   const commentSites = mergedContentSequence.filter(
     item =>
@@ -760,7 +770,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     }
   });
 
-  _addFindingConcepts(measurement, finding, findingSites);
+  _addFindingConcepts(measurement, mergedContentSequence, finding, findingSites);
   return measurement;
 }
 

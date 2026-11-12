@@ -106,7 +106,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
   const SRAnnotation: Types.Annotation = {
     annotationUID: TrackingUniqueIdentifier,
     highlighted: false,
-    isLocked: true,
+    isLocked: false,
     isPreview: toolName === toolNames.DICOMSRDisplay,
     invalidated: false,
     metadata: {
@@ -119,7 +119,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
     },
     data: {
-      label: getLabelForSRMeasurement(measurement) ?? (measurement.labels?.[0]?.value || undefined),
+      label: getLabelForSRMeasurement(measurement),
       displayText: measurement.displayText || undefined,
       handles: {
         textBox: measurement.textBox ?? {},
@@ -143,8 +143,8 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
   annotation.state.addAnnotation(SRAnnotation);
 
   /**
-   * The preview shows the stored SR content and is not a measurement yet, so it cannot be edited
-   * until the SR is hydrated.
+   * The preview is read-only until the SR is hydrated. The locking API, not the isLocked field,
+   * records the lock in the locking state that the tools and events use.
    */
   annotation.locking.setAnnotationLocked(TrackingUniqueIdentifier, true);
 }
