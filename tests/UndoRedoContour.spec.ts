@@ -1,17 +1,16 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import type { MainToolbarPageObject, RightPanelPageObject, ViewportPageObject } from './pages';
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 import {
   expect,
-  getSvgAttribute,
   test,
   visitStudy,
   waitForAnnotationCompleted,
   waitForViewportNotBlank,
   waitForViewportsRendered,
 } from './utils';
-import { expectUndoRedoEnabled } from './utils/assertions';
+import { expectUndoRedoState } from './utils/assertions';
 
 const STUDY_UID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
 
@@ -60,8 +59,7 @@ const FREEHAND_CONTOUR: ContourTool = {
 
 const SPLINE_CONTOUR: ContourTool = {
   select: panel => panel.contourSegmentationPanel.tools.splineContour.click(),
-  // The last click lands on the first point, which closes the spline.
-  draw: viewport => viewport.normalizedClickAt([...SPLINE_POINTS, SPLINE_POINTS[0]]),
+  draw: viewport => viewport.normalizedPathClickAt({ path: SPLINE_POINTS, closePath: true }),
 };
 
 const LIVEWIRE_CONTOUR: ContourTool = {
@@ -74,12 +72,11 @@ const LIVEWIRE_CONTOUR: ContourTool = {
   },
 };
 
-// The largest gap between matching numbers of two path `d` strings, or Infinity when their
-// commands differ. Redoing a point move rebuilds the spline from the restored points, which can
-// round a few coordinates 0.1px away from the drag's own render.
-function pathGap(d: string | null, expected: string) {
-  const numbers = (path: string) => (path.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
-  const commands = (path: string) => path.replace(/[-\d.,\s]+/g, '');
+// Largest coordinate difference between two path `d` strings with the same commands; Infinity
+// otherwise.
+function maxCoordinateDiff(d: string | null, expected: string) {
+  const numbers = (path: string) => (path.match(/-?(\d*\.)?\d+(e[-+]?\d+)?/gi) ?? []).map(Number);
+  const commands = (path: string) => path.replace(/[-+\d.,\se]+/gi, '');
   if (d === null || commands(d) !== commands(expected)) {
     return Infinity;
   }
@@ -90,10 +87,29 @@ function pathGap(d: string | null, expected: string) {
   return Math.max(0, ...actual.map((n, i) => Math.abs(n - wanted[i])));
 }
 
-// Reads the contour's path once it has rendered in its final, closed shape.
-async function settledPathD(page: Page, viewportPageObject: ViewportPageObject) {
-  await waitForViewportsRendered(page);
-  return getSvgAttribute({ viewportPageObject, svgInnerElement: 'path', attributeName: 'd' });
+// Undo and redo rebuild the spline from its restored points, which can round a few coordinates
+// slightly differently from the render they restore, so allow half a pixel.
+function pollPathNear(path: Locator, expected: string, message: string) {
+  return expect
+    .poll(async () => maxCoordinateDiff(await path.getAttribute('d'), expected), { message })
+    .toBeLessThanOrEqual(0.5);
+}
+
+// Reads the path's `d` once two reads 250ms apart agree.
+async function settledPathD(path: Locator) {
+  let previous: string | null = null;
+  await expect
+    .poll(
+      async () => {
+        const d = await path.getAttribute('d');
+        const settled = d !== null && d === previous;
+        previous = d;
+        return settled;
+      },
+      { intervals: [250], message: 'Expected the contour path to stop changing' }
+    )
+    .toBe(true);
+  return previous as string;
 }
 
 async function drawContour(page: Page, viewport: IViewportPageObject, tool: ContourTool) {
@@ -104,11 +120,13 @@ async function drawContour(page: Page, viewport: IViewportPageObject, tool: Cont
 
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await visitStudy(page, STUDY_UID, 'segmentation', 2000);
+  // Livewire snaps to the image's edges, so draw only once the image is on screen.
   await waitForViewportNotBlank({ page });
 
   const { contourSegmentationPanel } = rightPanelPageObject;
   await contourSegmentationPanel.addSegmentation();
   await expect(contourSegmentationPanel.panel.rows).toHaveCount(1);
+  // Adding a segmentation re-renders the viewport; draw once that render is done.
   await waitForViewportsRendered(page);
 });
 
@@ -124,18 +142,18 @@ async function undoRedoNewContour(
 
   await tool.select(rightPanelPageObject);
   await drawContour(page, viewport, tool);
-  const drawnPathD = await settledPathD(page, viewportPageObject);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  const drawnPathD = await settledPathD(paths.first());
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   await mainToolbarPageObject.undo.click();
   await expect(paths, 'Expected undo to remove the contour').toHaveCount(0);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: true });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   await mainToolbarPageObject.redo.click();
   await expect(paths, 'Expected redo to restore the contour').toHaveCount(1);
   await expect(paths.first()).toBeVisible();
   await expect(paths.first()).toHaveAttribute('d', drawnPathD);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 }
 
 test('should undo and redo a freehand contour', async ({
@@ -189,26 +207,20 @@ test('should undo and redo a spline control point move', async ({
 
   await SPLINE_CONTOUR.select(rightPanelPageObject);
   await drawContour(page, viewport, SPLINE_CONTOUR);
-  const drawnPathD = await settledPathD(page, viewportPageObject);
+  const drawnPathD = await settledPathD(path);
 
   await viewport.normalizedDragAt(SPLINE_POINT_MOVE);
-  await expect(path, 'Expected the move to reshape the contour').not.toHaveAttribute(
-    'd',
-    drawnPathD
-  );
-  const movedPathD = await settledPathD(page, viewportPageObject);
+  await expect(path, 'Expected the move to reshape it').not.toHaveAttribute('d', drawnPathD);
+  const movedPathD = await settledPathD(path);
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   await mainToolbarPageObject.undo.click();
-  await expect(path, 'Expected undo to restore the drawn shape').toHaveAttribute('d', drawnPathD);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: true });
+  await pollPathNear(path, drawnPathD, 'Expected undo to restore the drawn shape');
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
   await mainToolbarPageObject.redo.click();
-  await expect
-    .poll(async () => pathGap(await path.getAttribute('d'), movedPathD), {
-      message: 'Expected redo to move the point again',
-    })
-    .toBeLessThanOrEqual(0.5);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await pollPathNear(path, movedPathD, 'Expected redo to move the point again');
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });
 
 test('should undo and redo a contour segment delete', async ({
@@ -223,20 +235,24 @@ test('should undo and redo a contour segment delete', async ({
 
   await SPLINE_CONTOUR.select(rightPanelPageObject);
   await drawContour(page, viewport, SPLINE_CONTOUR);
-  const drawnPathD = await settledPathD(page, viewportPageObject);
+  const drawnPathD = await settledPathD(paths.first());
   const segmentName = await panel.nthSegment(0).title.innerText();
 
   await panel.nthSegment(0).actions.delete();
   await expect(panel.rows).toHaveCount(0);
   await expect(paths, 'Expected the delete to remove the contour').toHaveCount(0);
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   await mainToolbarPageObject.undo.click();
   await expect(panel.rows, 'Expected undo to restore the segment row').toHaveCount(1);
   await expect(panel.nthSegment(0).title).toHaveText(segmentName);
   await expect(paths, 'Expected undo to restore the contour').toHaveCount(1);
+  await expect(paths.first()).toBeVisible();
   await expect(paths.first()).toHaveAttribute('d', drawnPathD);
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
   await mainToolbarPageObject.redo.click();
   await expect(panel.rows, 'Expected redo to delete the segment again').toHaveCount(0);
   await expect(paths, 'Expected redo to remove the contour again').toHaveCount(0);
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });

@@ -14,7 +14,7 @@ import {
   waitForAnnotationCompleted,
   waitForViewportNotBlank,
 } from './utils';
-import { expectUndoRedoEnabled } from './utils/assertions';
+import { expectUndoRedoState } from './utils/assertions';
 
 const STUDY_UID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
 
@@ -27,8 +27,7 @@ type MeasurementTool = {
   points: Point[];
   // Text the tool asks for once the annotation is drawn.
   label?: string;
-  // Drags the annotation's left-most handle, so the drag can't start on the text box, which
-  // Cornerstone places to the right of the annotation.
+  // A drag from the left-most handle; the text box sits to the right, so the drag can't grab it.
   handleMove: { start: Point; end: Point };
 };
 
@@ -38,10 +37,16 @@ type NewAnnotationFixtures = {
   viewportPageObject: ViewportPageObject;
 };
 
+// The left-most handle of the circle, ellipse and spline drawn below, dragged further left.
+const LEFT_HANDLE_MOVE = { start: { x: 0.44, y: 0.45 }, end: { x: 0.4, y: 0.45 } };
+
+// Every shape Cornerstone draws for an annotation: outline, handles, lines and text box.
+const ANNOTATION_SHAPES = ':is(circle, ellipse, rect, line, polyline, path, text):not(defs *)';
+
 const SPLINE_ROI: MeasurementTool = {
   name: 'SplineROI',
   select: toolbar => toolbar.measurementTools.splineROI.click(),
-  // The last click lands next to the first point, which closes the spline.
+  // Closes with a quick click near the first point; a held close dismisses the tracking prompt.
   points: [
     { x: 0.44, y: 0.45 },
     { x: 0.5, y: 0.38 },
@@ -50,7 +55,7 @@ const SPLINE_ROI: MeasurementTool = {
     { x: 0.48, y: 0.53 },
     { x: 0.442, y: 0.452 },
   ],
-  handleMove: { start: { x: 0.44, y: 0.45 }, end: { x: 0.4, y: 0.45 } },
+  handleMove: LEFT_HANDLE_MOVE,
 };
 
 const TOOLS: MeasurementTool[] = [
@@ -71,7 +76,7 @@ const TOOLS: MeasurementTool[] = [
       { x: 0.5, y: 0.45 },
       { x: 0.44, y: 0.45 },
     ],
-    handleMove: { start: { x: 0.44, y: 0.45 }, end: { x: 0.4, y: 0.45 } },
+    handleMove: LEFT_HANDLE_MOVE,
   },
   {
     name: 'EllipticalROI',
@@ -81,7 +86,7 @@ const TOOLS: MeasurementTool[] = [
       { x: 0.5, y: 0.45 },
       { x: 0.56, y: 0.5 },
     ],
-    handleMove: { start: { x: 0.44, y: 0.45 }, end: { x: 0.4, y: 0.45 } },
+    handleMove: LEFT_HANDLE_MOVE,
   },
   {
     name: 'RectangleROI',
@@ -122,52 +127,52 @@ async function drawAnnotation(
   });
 }
 
-// What the user sees of the only annotation: its panel row, its viewport text box (stats or
-// label) and the end points of every SVG line, which covers arrow and bidirectional shafts.
+// The only annotation's panel row, its viewport text box (stats or label), and the end points of
+// every SVG line (arrow and bidirectional shafts, text box links).
 async function annotationSnapshot(
   rightPanelPageObject: RightPanelPageObject,
   viewport: IViewportPageObject
 ) {
   const row = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
-  const lines = await viewport
-    .svg('line')
-    .evaluateAll(elements =>
-      elements.map(line => ['x1', 'y1', 'x2', 'y2'].map(name => line.getAttribute(name)).join(','))
-    );
-  return JSON.stringify({
-    title: await row.title.innerText(),
-    panel: await row.stats.primary.lines.allInnerTexts(),
-    textBox: await viewport.nthAnnotation(0).locator.locator('tspan').allTextContents(),
-    lines,
-  });
+  const [title, panel, textBox, lines] = await Promise.all([
+    row.title.innerText(),
+    row.stats.primary.lines.allInnerTexts(),
+    viewport.nthAnnotation(0).locator.locator('tspan').allTextContents(),
+    viewport
+      .svg('line')
+      .evaluateAll(elements =>
+        elements.map(line => ['x1', 'y1', 'x2', 'y2'].map(n => line.getAttribute(n)).join(','))
+      ),
+  ]);
+  return JSON.stringify({ title, panel, textBox, lines });
 }
 
-// Reads the snapshot once two reads 500ms apart agree, so stats still updating aren't captured.
-async function settledSnapshot(
-  rightPanelPageObject: RightPanelPageObject,
-  viewport: IViewportPageObject
-) {
-  let previous: string | undefined;
-  await expect
-    .poll(
-      async () => {
-        const current = await annotationSnapshot(rightPanelPageObject, viewport);
-        const settled = current === previous;
-        previous = current;
-        return settled;
-      },
-      { intervals: [500], message: 'Expected the annotation to stop changing' }
-    )
-    .toBe(true);
-  return previous as string;
+// Reads the annotation snapshot either once it stops changing, or by polling it in an assertion.
+function snapshotOf(rightPanelPageObject: RightPanelPageObject, viewport: IViewportPageObject) {
+  const read = () => annotationSnapshot(rightPanelPageObject, viewport);
+  return {
+    // Two reads 500ms apart must agree, so stats still updating aren't captured.
+    settled: async () => {
+      let previous: string | undefined;
+      await expect
+        .poll(
+          async () => {
+            const current = await read();
+            const settled = current === previous;
+            previous = current;
+            return settled;
+          },
+          { intervals: [500], message: 'Expected the annotation to stop changing' }
+        )
+        .toBe(true);
+      return previous as string;
+    },
+    poll: (message: string) => expect.poll(read, { message }),
+  };
 }
 
-function pollSnapshot(
-  rightPanelPageObject: RightPanelPageObject,
-  viewport: IViewportPageObject,
-  message: string
-) {
-  return expect.poll(() => annotationSnapshot(rightPanelPageObject, viewport), { message });
+async function expectNothingDrawn(viewport: IViewportPageObject) {
+  await expect(viewport.svg().locator(ANNOTATION_SHAPES)).toHaveCount(0);
 }
 
 // Checks that one undo removes the drawn annotation and its row with nothing left to undo, and
@@ -179,18 +184,20 @@ async function undoRedoNewAnnotation({
 }: NewAnnotationFixtures) {
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
-  const drawn = await settledSnapshot(rightPanelPageObject, viewport);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  const snapshot = snapshotOf(rightPanelPageObject, viewport);
+  const drawn = await snapshot.settled();
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   await mainToolbarPageObject.undo.click();
   await expect(rows, 'Expected undo to remove the row').toHaveCount(0);
-  await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: true });
+  await expectNothingDrawn(viewport);
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   await mainToolbarPageObject.redo.click();
   await expect(rows, 'Expected redo to restore the row').toHaveCount(1);
-  await pollSnapshot(rightPanelPageObject, viewport, 'Expected redo to restore it').toBe(drawn);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expect(viewport.nthAnnotation(0).locator).toBeVisible();
+  await snapshot.poll('Expected redo to restore the annotation').toBe(drawn);
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 }
 
 test.beforeEach(async ({ page, rightPanelPageObject, viewportPageObject }) => {
@@ -200,8 +207,7 @@ test.beforeEach(async ({ page, rightPanelPageObject, viewportPageObject }) => {
   await rightPanelPageObject.toggle();
   await rightPanelPageObject.measurementsPanel.select();
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
-  const viewport = await viewportPageObject.active;
-  await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
+  await expectNothingDrawn(await viewportPageObject.active);
 });
 
 for (const tool of TOOLS) {
@@ -255,24 +261,23 @@ for (const tool of TOOLS) {
       viewportPageObject,
     }) => {
       const viewport = await viewportPageObject.active;
-      const drawn = await settledSnapshot(rightPanelPageObject, viewport);
+      const snapshot = snapshotOf(rightPanelPageObject, viewport);
+      const drawn = await snapshot.settled();
 
+      // Moves 150ms apart, longer than SplineROI's 100ms stats throttle, so its stats reach the
+      // final position.
       await viewport.normalizedDragAt({ ...tool.handleMove, config: { delay: 150, steps: 5 } });
-      await pollSnapshot(rightPanelPageObject, viewport, 'Expected the move to change it').not.toBe(
-        drawn
-      );
-      const moved = await settledSnapshot(rightPanelPageObject, viewport);
-      await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+      await snapshot.poll('Expected the move to change the annotation').not.toBe(drawn);
+      const moved = await snapshot.settled();
+      await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
       await mainToolbarPageObject.undo.click();
-      await pollSnapshot(rightPanelPageObject, viewport, 'Expected undo to restore it').toBe(drawn);
-      await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: true });
+      await snapshot.poll('Expected undo to restore the annotation').toBe(drawn);
+      await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
       await mainToolbarPageObject.redo.click();
-      await pollSnapshot(rightPanelPageObject, viewport, 'Expected redo to move it again').toBe(
-        moved
-      );
-      await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+      await snapshot.poll('Expected redo to move it again').toBe(moved);
+      await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
     });
 
     test('should undo and redo a delete from the panel', async ({
@@ -282,20 +287,24 @@ for (const tool of TOOLS) {
     }) => {
       const viewport = await viewportPageObject.active;
       const { panel } = rightPanelPageObject.measurementsPanel;
-      const drawn = await settledSnapshot(rightPanelPageObject, viewport);
+      const snapshot = snapshotOf(rightPanelPageObject, viewport);
+      const drawn = await snapshot.settled();
 
       await panel.nthMeasurement(0).actions.delete();
       await expect(panel.rows).toHaveCount(0);
-      await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
+      await expectNothingDrawn(viewport);
+      await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
       await mainToolbarPageObject.undo.click();
       await expect(panel.rows, 'Expected undo to bring the row back').toHaveCount(1);
-      await pollSnapshot(rightPanelPageObject, viewport, 'Expected undo to restore it').toBe(drawn);
-      await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: true });
+      await expect(viewport.nthAnnotation(0).locator).toBeVisible();
+      await snapshot.poll('Expected undo to restore the annotation').toBe(drawn);
+      await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
       await mainToolbarPageObject.redo.click();
       await expect(panel.rows, 'Expected redo to delete the row again').toHaveCount(0);
-      await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
+      await expectNothingDrawn(viewport);
+      await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
     });
   });
 }

@@ -1,9 +1,8 @@
 import type { Page } from '@playwright/test';
 
 /**
- * Runs `action` and resolves once Cornerstone fires ANNOTATION_COMPLETED for the annotation it
- * draws. Cornerstone records a new annotation's undo entry just before that event, so an undo
- * right after this takes back the finished annotation.
+ * Runs `action` and resolves on the next ANNOTATION_COMPLETED. By then the tool has recorded the
+ * annotation's undo entry, so an undo right after this takes back the finished annotation.
  *
  * @param page - The Playwright page.
  * @param action - The clicks or drags that draw one annotation.
@@ -22,27 +21,29 @@ export async function waitForAnnotationCompleted({
   const completed = await page.evaluateHandle(() => {
     const { eventTarget } = (window as any).cornerstone;
     const { ANNOTATION_COMPLETED } = (window as any).cornerstoneTools.Enums.Events;
-    const done = new Promise<void>(resolve =>
-      eventTarget.addEventListenerOnce(ANNOTATION_COMPLETED, () => resolve())
-    );
-    return { done };
+    let onCompleted = () => {};
+    const done = new Promise<void>(resolve => {
+      onCompleted = () => resolve();
+      eventTarget.addEventListener(ANNOTATION_COMPLETED, onCompleted);
+    });
+    const stop = () => eventTarget.removeEventListener(ANNOTATION_COMPLETED, onCompleted);
+    done.then(stop);
+    return { done, stop };
   });
   try {
     await action();
-    await completed.evaluate(
-      ({ done }, timeout) =>
-        Promise.race([
-          done,
-          new Promise<void>((_, reject) =>
-            setTimeout(
-              () => reject(new Error(`ANNOTATION_COMPLETED did not fire within ${timeout}ms`)),
-              timeout
-            )
-          ),
-        ]),
-      timeout
-    );
+    await completed.evaluate(({ done }, timeout) => {
+      let timer: ReturnType<typeof setTimeout>;
+      const timedOut = new Promise<void>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`ANNOTATION_COMPLETED did not fire within ${timeout}ms`)),
+          timeout
+        );
+      });
+      return Promise.race([done, timedOut]).finally(() => clearTimeout(timer));
+    }, timeout);
   } finally {
+    await completed.evaluate(({ stop }) => stop());
     await completed.dispose();
   }
 }

@@ -10,7 +10,7 @@ import {
   waitForAnnotationCompleted,
   waitForViewportNotBlank,
 } from './utils';
-import { expectUndoRedoEnabled } from './utils/assertions';
+import { expectUndoRedoState } from './utils/assertions';
 
 const STUDY_UID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
 
@@ -106,7 +106,7 @@ test('should undo and redo a new measurement', async ({
   const viewport = await viewportPageObject.active;
   const { rows } = rightPanelPageObject.measurementsPanel.panel;
 
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: false });
 
   await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
@@ -116,13 +116,13 @@ test('should undo and redo a new measurement', async ({
   await mainToolbarPageObject.undo.click();
   await expect(rows, 'Expected undo to remove the measurement row').toHaveCount(0);
   await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
-  await expect(mainToolbarPageObject.undo.button).toBeDisabled();
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   await mainToolbarPageObject.redo.click();
   await expect(rows, 'Expected redo to restore the measurement row').toHaveCount(1);
   await expect(viewport.nthAnnotation(0).locator).toBeVisible();
   await expect(lengthValueAt(rightPanelPageObject, 0)).toHaveText(drawnValue);
-  await expect(mainToolbarPageObject.redo.button).toBeDisabled();
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });
 
 test('should undo and redo a handle move', async ({
@@ -248,21 +248,22 @@ test('should drop the redo history when a new measurement is drawn after undo', 
   await mainToolbarPageObject.undo.click();
   await expect(rows).toHaveCount(0);
   await expectViewportLengths(viewport, []);
-  await expect(mainToolbarPageObject.redo.button).toBeEnabled();
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   await drawLength(page, viewport, SHORT_LINE);
   await expect(rows).toHaveCount(1);
   await expect(lengthValueAt(rightPanelPageObject, 0)).not.toHaveText(longValue);
   const shortValue = await lengthValueAt(rightPanelPageObject, 0).innerText();
   await expectViewportLengths(viewport, [shortValue]);
-  await expect(mainToolbarPageObject.redo.button, 'Expected redo to be cleared').toBeDisabled();
+  // Drawing after an undo clears the redo history.
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   // The redo hotkey must not bring back the undone measurement either.
   await press({ page, key: 'Control+y' });
   await expect(rows).toHaveCount(1);
   await expect(lengthValueAt(rightPanelPageObject, 0)).toHaveText(shortValue);
   await expectViewportLengths(viewport, [shortValue]);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });
 
 test('should undo and redo with Ctrl+Z and Ctrl+Y like the header buttons', async ({
@@ -283,13 +284,13 @@ test('should undo and redo with Ctrl+Z and Ctrl+Y like the header buttons', asyn
   await press({ page, key: 'Control+z' });
   await expect(rows, 'Expected Ctrl+Z to remove the measurement row').toHaveCount(0);
   await expect(viewport.nthAnnotation(0).locator).toHaveCount(0);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: true });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   await press({ page, key: 'Control+y' });
   await expect(rows, 'Expected Ctrl+Y to restore the measurement row').toHaveCount(1);
   await expect(viewport.nthAnnotation(0).locator).toBeVisible();
   await expect(lengthValueAt(rightPanelPageObject, 0)).toHaveText(drawnValue);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });
 
 test('should ignore Ctrl+Z and Ctrl+Y when there is nothing to undo or redo', async ({
@@ -305,34 +306,34 @@ test('should ignore Ctrl+Z and Ctrl+Y when there is nothing to undo or redo', as
 
   // Nothing has been drawn yet, so both shortcuts are no-ops.
   await press({ page, key: 'Control+z' });
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: false });
   await press({ page, key: 'Control+y' });
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: false });
   await expect(rows).toHaveCount(0);
 
   await drawLength(page, viewport, LONG_LINE);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await expect(rows).toHaveCount(1);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
   const drawnValue = await value.innerText();
 
   await press({ page, key: 'Control+z' });
   await expect(rows).toHaveCount(0);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: true });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   // The undo stack is empty again, so this press must not consume the redo entry.
   await press({ page, key: 'Control+z' });
   await expect(rows).toHaveCount(0);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: false, redo: true });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: false, redo: true });
 
   await press({ page, key: 'Control+y' });
   await expect(rows).toHaveCount(1);
   await expect(value).toHaveText(drawnValue);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   // The redo stack is empty now, so another press leaves the measurement as is.
   await press({ page, key: 'Control+y' });
   await expect(rows).toHaveCount(1);
   await expect(value).toHaveText(drawnValue);
-  await expectUndoRedoEnabled({ mainToolbarPageObject, undo: true, redo: false });
+  await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });

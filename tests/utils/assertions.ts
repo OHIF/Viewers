@@ -75,8 +75,12 @@ export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
   await expect(rowObject.lockIcon, 'Expected the row to not show the lock icon').toHaveCount(0);
 }
 
-// Asserts whether the header Undo and Redo buttons are enabled.
-export async function expectUndoRedoEnabled({
+export async function expectRowNotSelected(rowObject) {
+  await expect(rowObject.locator).not.toContainClass('bg-popover');
+}
+
+// Asserts which of the header Undo and Redo buttons are enabled.
+export async function expectUndoRedoState({
   mainToolbarPageObject,
   undo,
   redo,
@@ -87,10 +91,6 @@ export async function expectUndoRedoEnabled({
 }) {
   await expect(mainToolbarPageObject.undo.button).toBeEnabled({ enabled: undo });
   await expect(mainToolbarPageObject.redo.button).toBeEnabled({ enabled: redo });
-}
-
-export async function expectRowNotSelected(rowObject) {
-  await expect(rowObject.locator).not.toContainClass('bg-popover');
 }
 
 // Opens the segmentation selector, asserts its options match `labels`, then closes it.
