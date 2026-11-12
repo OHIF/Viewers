@@ -48,6 +48,25 @@ async function expectLineEnd(line: Locator, { x2, y2 }: LineEnd, message: string
   await expect(line, message).toHaveAttribute('y2', y2);
 }
 
+// Reads the length value and line end once two reads 500ms apart agree, so a read right after a
+// drag can't catch one of its intermediate steps.
+async function settledLength(value: Locator, line: Locator) {
+  let previous = '';
+  await expect
+    .poll(
+      async () => {
+        const current = JSON.stringify([await value.innerText(), await lineEnd(line)]);
+        const settled = current === previous;
+        previous = current;
+        return settled;
+      },
+      { intervals: [500], message: 'Expected the length to stop changing' }
+    )
+    .toBe(true);
+  const [settledValue, settledEnd] = JSON.parse(previous) as [string, LineEnd];
+  return { value: settledValue, end: settledEnd };
+}
+
 // Expects one length annotation in the viewport per value, each showing its value.
 async function expectViewportLengths(viewport: IViewportPageObject, values: string[]) {
   await expect(viewport.nthAnnotation(values.length).locator).toHaveCount(0);
@@ -126,12 +145,8 @@ test('should undo and redo a handle move', async ({
   await viewport.normalizedDragAt({ start: LONG_LINE[1], end: MOVED_LONG_LINE_END });
   await expect(value, 'Expected the handle move to change the length').not.toHaveText(drawnValue);
   await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
-  await expect(line, 'Expected the handle move to move the line end').not.toHaveAttribute(
-    'x2',
-    drawnEnd.x2
-  );
-  const movedValue = await value.innerText();
-  const movedEnd = await lineEnd(line);
+  await expect(line, 'Expected the line end to move').not.toHaveAttribute('x2', drawnEnd.x2);
+  const { value: movedValue, end: movedEnd } = await settledLength(value, line);
 
   await mainToolbarPageObject.undo.click();
   await expect(value, 'Expected undo to restore the drawn length').toHaveText(drawnValue);
