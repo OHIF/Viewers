@@ -35,7 +35,7 @@ in command prompt or terminal_
 
 > If you are using `Docker Toolbox` you need to change the _PROXY_DOMAIN_
 > parameter in _platform/app/package.json_ to http://192.168.99.100:8042 or
-> the ip docker-machine ip throws. This is the value [`WebPack`][webpack-proxy]
+> the ip docker-machine ip throws. This is the value the [development server][dev-server-proxy]
 > uses to proxy requests
 
 ## Open Source DICOM Image Archives
@@ -303,4 +303,4 @@ below:
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
 [storescu]: http://support.dcmtk.org/docs/storescu.html
-[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
+[dev-server-proxy]: https://rsbuild.rs/config/server/proxy

@@ -92,16 +92,9 @@ supply chain attacks by enforcing reproducible dependencies. That is, if the
 no compromised packages should land on your machine by using this flag.
 :::
 
-You should see the following output:
-
-```bash
-@ohif/app: i ｢wds｣: Project is running at http://localhost:3000/
-@ohif/app: i ｢wds｣: webpack output is served from /
-@ohif/app: i ｢wds｣: Content not from webpack is served from D:\code\ohif\Viewers\platform\viewer
-@ohif/app: i ｢wds｣: 404s will fallback to /index.html
-
-# And a list of all generated files
-```
+When the build finishes, the development server prints the address it is
+serving the viewer on: `http://localhost:3000` by default, or the port set in
+`OHIF_PORT`.
 
 ### 🎉 Celebrate 🎉
 

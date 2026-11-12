@@ -625,7 +625,7 @@ alternative data source (or even specify different default hotkeys).
 | `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
 | `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
 | `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
-| `OHIF_PORT`          | The port to run the webpack server on for PWA builds.                                              | `3000`              |
+| `OHIF_PORT`          | The port the development server listens on.                                                        | `3000`              |
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the
@@ -651,7 +651,6 @@ output.
 [dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [storescu]: https://support.dcmtk.org/docs/storescu.html
-[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
 [orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/platform/app/.recipes/Nginx-Orthanc
 <!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
