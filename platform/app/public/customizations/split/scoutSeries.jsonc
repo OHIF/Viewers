@@ -20,7 +20,7 @@
 //    `ctScout`, the "SCOUT" label and description, and `isLocalizer: true`, as
 //    the `localizer` display set has. The rule has no `Rows` test, unlike the
 //    `localizer` rule. To turn a rule off, remove its id from the order (for
-//    example `{ "$splice": [["volume3d", 1]] }`).
+//    example `{ "$spliceById": [["volume3d", 1]] }`).
 //  - `isLocalizer` (ImageType holds LOCALIZER) is a name of the default
 //    context. The rule `context` defines `hasScout`, for this rule only: a
 //    series value that is true when the series MIXES localizer and

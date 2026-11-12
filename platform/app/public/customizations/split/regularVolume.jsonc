@@ -26,7 +26,7 @@
 //    the value of the series.
 //  - `attributes` adds the spacing of the display set to the SeriesDescription.
 //  - `irregularImages` is in the registry, but not in the rule order, so it is
-//    off. Add its id to the order (for example `{ "$splice":
+//    off. Add its id to the order (for example `{ "$spliceById":
 //    [["volume3d", 0, "irregularImages"]] }`) to put the other images into one
 //    stack. Both rules read the same `planeGeometry` group, so the engine
 //    computes it once for each series.

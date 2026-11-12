@@ -114,7 +114,7 @@ flowchart TD
     S4["URL module<br/>?customization=split/optional/dwiByBValue<br/>only under customizationUrlPrefixes"]
   end
 
-  SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>registry: $merge adds · $set replaces<br/>order: $splice by rule id adds, removes, moves<br/>one entry per rule id"]
+  SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>registry: $merge adds · $set replaces<br/>order: $spliceById adds, removes, moves<br/>one entry per rule id"]
   L --> C["3 · Compile — the ids of the order, each alone<br/>materializeSplitRules → createDisplaySetSplitRules<br/>matches → predicate · names → readers<br/>context entries → one program for the rule set<br/>code context entries and functions from OHIF"]
   C --> N{"4 · Validate<br/>does every rule of the order compile,<br/>is every id in the registry, once?"}
   N -- "no" --> STOP["Stop: no display sets for any study<br/>error that names the rule"]
@@ -203,16 +203,20 @@ The customization service shall merge the rule layers in the order default, mode
 later layer shall edit a rule by its id. *Satisfies `SP-FIX-5`, `SP-REUSE-4`.*
 
 **SP-PIPE-19**
-The `$splice` command of the customization service shall also take a rule id as the position. A
-string position shall be the index of the item that equals the string, or of the item whose `id`
-equals the string. An unknown id shall be an error. Each entry of one `$splice` shall find its
-position after the edits of the earlier entries. A number shall work as in `immutability-helper`.
-*Satisfies `SP-FIX-5`.*
+The customization service shall register the `$spliceById` command, with `spliceById` of
+`@cornerstonejs/metadata`. Each entry shall be `[id, deleteCount, ...items]`. The position shall be
+the index of the item that equals the id, or of the item whose `id` equals it. An unknown id, and a
+position that is not a string, shall be an error. Each entry shall find its position after the edits
+of the earlier entries. The standard `$splice` shall stay unchanged. *Satisfies `SP-FIX-5`.*
+
+> A separate command name, and not a string position of `$splice`: plain `immutability-helper` reads
+> a string position of `$splice` as `0` and gives no error, but it rejects an unknown command. So a
+> host without the command fails, and does not build another order.
 
 > So a layer can turn off, replace, or move one default rule by its id, and does not depend on
 > the index of the rule: `[['volume3d', 0, 'myRule']]` inserts `myRule` before `volume3d`,
-> `[['ecg', 1]]` removes `ecg`, and `[['volume3d', 1, 'myVolume']]` replaces `volume3d`. A string
-> that looks like a number, for example `'3'`, is an id, not an index. An unknown id throws, so a
+> `[['ecg', 1]]` removes `ecg`, and `[['volume3d', 1, 'myVolume']]` replaces `volume3d`. An unknown
+> id throws, so a
 > layer for a default rule that a later release renames fails with an error, and does not do
 > nothing.
 
@@ -287,7 +291,7 @@ A deployment may remove `unsupported` from the rule order. The compile step shal
 order without `unsupported`, and the display set service shall then give each instance that no
 rule claims to the SOP class handlers of the mode (`SP-PIPE-8`). *Satisfies `SP-FIX-11`.*
 
-> For example, `{ "displaySetRuleOrder": { "$splice": [["unsupported", 1]] } }` removes the
+> For example, `{ "displaySetRuleOrder": { "$spliceById": [["unsupported", 1]] } }` removes the
 > catch-all. An instance of a private SOP class then shows with the SOP class handler of its
 > extension, as with the rules off.
 
@@ -412,7 +416,7 @@ the URL that loads the module. *Satisfies `SP-DESC-3`.*
 
 **SP-DEPLOY-3**
 A rule that must take instances before the defaults shall put its id first in the rule order
-(`$unshift`), or before the default rule that it must precede (`$splice` with the id of that rule),
+(`$unshift`), or before the default rule that it must precede (`$spliceById` with the id of that rule),
 and shall gate on a list of the `metadataContext` such as `isImage`, on `SOPClassUID`, or on
 `Modality`. *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
 
@@ -420,7 +424,7 @@ and shall gate on a list of the `metadataContext` such as `isImage`, on `SOPClas
 
 ```mermaid
 flowchart LR
-  RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set / $splice"]
+  RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set / $spliceById"]
   LD --> CP["Compile<br/>materializeSplitRules → createDisplaySetSplitRules<br/>+ the metadataContext"]
   CP --> G["groupInstancesBySplitRules<br/>per series"]
   G --> IX["Server index<br/>display sets with splitKey"]
@@ -436,15 +440,13 @@ A server index shall record the `splitKey` of each display set, so that the view
 display sets to the index. *Satisfies `SP-REUSE-2`, `SP-DET-3`.*
 
 **SP-SRV-3**
-Each split file shall use only the standard `immutability-helper` commands: no `$filter`, and no
-rule id position of `$splice` (`SP-PIPE-19`). For each split file, the rules from
-`immutability-helper`, `JSON5`, `materializeSplitRules` and `createDisplaySetSplitRules`, with no
+Each split file shall use only the standard `immutability-helper` commands and `$spliceById`
+(`SP-PIPE-19`), and no `$filter`. For each split file, the rules from `immutability-helper` with
+`spliceById` registered, `JSON5`, `materializeSplitRules` and `createDisplaySetSplitRules`, with no
 other OHIF code, shall equal the rules from `CustomizationService`. *Satisfies `SP-REUSE-2`.*
 
-> Plain `immutability-helper` takes only a number as the position of `$splice`. It does not reject
-> a string: it inserts at index 0, so a server gets another order with no error. A split file
-> therefore uses `$unshift`, `$push`, or a numeric `$splice` position. A deployment customization
-> that only OHIF reads can use the rule id position.
+> A split file shall not put an id in `$splice`. Plain `immutability-helper` reads a string position
+> as `0`, so a server gets another order with no error.
 
 **SP-SRV-4**
 The SOP class tests shall be lists of the `metadataContext` customization, with the
@@ -478,7 +480,7 @@ difference. *Satisfies `SP-REUSE-2`.*
 | `SP-PIPE-4`, `SP-PIPE-10` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
 | `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `displaySetRules.test.ts` of `@cornerstonejs/metadata` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataContextCustomization.test.ts` |
-| `SP-PIPE-19` | `platform/core/src/services/CustomizationService/CustomizationService.test.js`: "applies $splice with an id as the position" |
+| `SP-PIPE-19` | `platform/core/src/services/CustomizationService/CustomizationService.test.js`: "applies $spliceById with an id as the position" |
 | `SP-PIPE-20` | `DisplaySetService.test.ts`: "falls unmatched instances through to the legacy handlers" |
 | `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |

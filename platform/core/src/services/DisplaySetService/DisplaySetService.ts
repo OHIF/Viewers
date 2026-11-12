@@ -128,8 +128,8 @@ export type UseMetadataDisplaySetCustomization = {
   displaySetRules?: Record<string, SplitRuleCustomizationEntry>;
   /**
    * The rule ids in evaluation order; the first rule that matches an instance
-   * claims it. A customization adds, removes or replaces an id with `$splice`,
-   * which also takes a rule id as the position. An instance that no rule
+   * claims it. A customization adds, removes or replaces an id with
+   * `$spliceById`, which takes a rule id as the position. An instance that no rule
    * claims goes to the SOP class handlers.
    */
   displaySetRuleOrder?: string[];

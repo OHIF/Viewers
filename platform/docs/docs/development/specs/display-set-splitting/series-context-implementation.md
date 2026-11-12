@@ -198,7 +198,7 @@ with `"displaySetRuleOrder": { "$unshift": ["regularVolume"] }`.
 
 The module also adds the rule `irregularImages` to the registry, but not to the rule order, so the
 rule is off. With its id in the order, for example
-`{ "$splice": [["volume3d", 0, "irregularImages"]] }`, that rule puts the other images into one
+`{ "$spliceById": [["volume3d", 0, "irregularImages"]] }`, that rule puts the other images into one
 stack, with `"isRegularSlice": false`. Both rules read the global `planeGeometry` group and replace
 no entry that it reads, so the engine computes the lattice once (`SP-CTX-2`).
 

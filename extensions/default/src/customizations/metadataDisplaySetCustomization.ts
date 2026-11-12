@@ -25,10 +25,10 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * `displaySetRules` (the registry, keyed by rule id) and `displaySetRuleOrder`
  * (the rule ids in evaluation order) are the `@cornerstonejs/metadata`
  * defaults, with no OHIF copy. A customization changes a rule by its id in the
- * registry, and adds, removes or replaces an id of the order with `$splice`,
- * which takes a rule id as the position:
+ * registry, and adds, removes or replaces an id of the order with
+ * `$spliceById`, which takes a rule id as the position:
  * ```js
- * { displaySetRuleOrder: { $splice: [['volume3d', 0, 'byAcquisition']] } }
+ * { displaySetRuleOrder: { $spliceById: [['volume3d', 0, 'dwiByBValue']] } }
  * ```
  * DisplaySetService compiles the rules of the order with
  * `createDisplaySetSplitRules`, with the `metadataContext` customization as

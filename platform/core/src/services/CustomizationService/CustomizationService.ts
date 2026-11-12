@@ -1,5 +1,6 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
+import { spliceById } from '@cornerstonejs/metadata';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
@@ -1117,37 +1118,11 @@ export default class CustomizationService extends PubSubService {
 }
 
 /**
- * `$splice` that also takes a rule id as the position. Each entry is
- * `[start, deleteCount, ...items]`, as in immutability-helper. A string
- * `start` is the index of the item that is equal to the string, or whose `id`
- * is equal to it, so `[['volume3d', 0, 'byAcquisition']]` inserts before
- * `volume3d`. An unknown string throws. Each entry finds its position after the
- * edits of the earlier entries. A number works as before, so a string that
- * looks like a number (`'3'`) is an id, not an index.
+ * `$spliceById`: `$splice` with a rule id as the position, for example
+ * `{ $spliceById: [['volume3d', 0, 'myRule']] }`. See `spliceById` of
+ * `@cornerstonejs/metadata`, which a server host registers the same way.
  */
-extend('$splice', (splices: unknown, original: unknown) => {
-  if (!Array.isArray(original)) {
-    throw new Error(`update(): expected target of $splice to be an array; got ${original}.`);
-  }
-  if (!Array.isArray(splices) || !splices.every(Array.isArray)) {
-    throw new Error('update(): expected spec of $splice to be an array of arrays.');
-  }
-  if (!splices.length) {
-    return original;
-  }
-  const result = [...original];
-  for (const [position, ...rest] of splices) {
-    let start = position;
-    if (typeof position === 'string') {
-      start = result.findIndex(item => item === position || item?.id === position);
-      if (start === -1) {
-        throw new Error(`update(): $splice found no item with the id '${position}'.`);
-      }
-    }
-    result.splice(start, ...rest);
-  }
-  return result;
-});
+extend('$spliceById', (spec, original) => spliceById(original as unknown[], spec));
 
 /** Add custom $filter command */
 extend('$filter', (query, original) => {

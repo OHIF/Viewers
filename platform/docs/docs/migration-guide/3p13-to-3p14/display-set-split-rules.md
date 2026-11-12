@@ -120,22 +120,23 @@ A rule has no `priority` field. The compiler rejects a rule with a `priority`
 |---|---|
 | `splitRules: { $merge: { myRule } }` | `displaySetRules: { $merge: { myRule } }`, and put the id in `displaySetRuleOrder` |
 | A priority below `0` (before every default rule) | `displaySetRuleOrder: { $unshift: ['myRule'] }` |
-| A priority between two default priorities | `displaySetRuleOrder: { $splice: [['volume3d', 0, 'myRule']] }`, with the id of the later default rule |
-| A priority above `10000` (a fallback) | `displaySetRuleOrder: { $splice: [['unsupported', 0, 'myRule']] }` |
-| `volume3d: { priority: { $set: null } }` (turn a rule off) | `displaySetRuleOrder: { $splice: [['volume3d', 1]] }` |
+| A priority between two default priorities | `displaySetRuleOrder: { $spliceById: [['volume3d', 0, 'myRule']] }`, with the id of the later default rule |
+| A priority above `10000` (a fallback) | `displaySetRuleOrder: { $spliceById: [['unsupported', 0, 'myRule']] }` |
+| `volume3d: { priority: { $set: null } }` (turn a rule off) | `displaySetRuleOrder: { $spliceById: [['volume3d', 1]] }` |
 | `priority: null` on a new rule (in the module, but off) | Add the rule to `displaySetRules` only, and not to the order |
-| A change of the priority of a default rule (move it) | Remove the id from the order, and insert it at the new position, with two `$splice` entries |
+| A change of the priority of a default rule (move it) | Remove the id from the order, and insert it at the new position, with two `$spliceById` entries |
 | `splitRules: { volume3d: { sortBy: { $set: [...] } } }` (change one field) | `displaySetRules: { volume3d: { sortBy: { $set: [...] } } }`; the rule keeps its place |
 | `?customization=split/volumeProjectionOrder` | `?customization=split/optional/volumePositionOrder` |
 | `?customization=split/optional/byAcquisitionTime` | `?customization=split/optional/byAcquisition` |
 
-The OHIF `$splice` takes a rule id as the position, in addition to a number.
+`$spliceById` is `$splice` with a rule id as the position.
 `[['volume3d', 0, 'myRule']]` inserts `myRule` before `volume3d`.
 `[['volume3d', 1]]` removes `volume3d`. `[['volume3d', 1, 'myVolume']]`
 replaces `volume3d` with `myVolume`. An id that is not in the order is an
-error. Each entry of one `$splice` finds its position after the earlier
-entries. For example, `[['ctScout', 1], ['localizer', 0, 'ctScout']]` moves
-`ctScout` to the position just before `localizer`.
+error. Each entry finds its position after the earlier entries. For example,
+`[['ctScout', 1], ['localizer', 0, 'ctScout']]` moves `ctScout` to the position
+just before `localizer`. Do not put an id in `$splice`: plain
+`immutability-helper` reads a string position as `0` and gives no error.
 
 An id of the order that is not in the registry, or an id that is in the order
 twice, is a compile error. OHIF then creates no display sets, and shows an

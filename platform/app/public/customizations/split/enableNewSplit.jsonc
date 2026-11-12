@@ -28,7 +28,7 @@
 // `displaySetRules` is the registry, keyed by rule id: add a rule with
 // `$merge`, or change a rule by its id. `displaySetRuleOrder` is the list of
 // rule ids in evaluation order, with first-match-wins per instance: add,
-// remove or replace an id with `$splice`, which takes a rule id as the
+// remove or replace an id with `$spliceById`, which takes a rule id as the
 // position (`[["volume3d", 0, "myRule"]]` inserts before `volume3d`). A rule
 // that the order does not name is not used. An instance that no rule claims
 // goes to the SOP class handlers.

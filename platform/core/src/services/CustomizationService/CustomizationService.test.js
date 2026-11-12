@@ -197,27 +197,27 @@ describe('CustomizationService - Registration + API Operations', () => {
       expect(result).toEqual([1, 2, 99, 4]);
     });
 
-    it('applies $splice with an id as the position', () => {
+    it('applies $spliceById with an id as the position', () => {
       customizationService.setCustomizations({
         IdList: ['video', 'volume3d', { id: 'ecg' }, 'unsupported'],
       });
       customizationService.setCustomizations({
         IdList: {
-          $splice: [
-            ['volume3d', 0, 'byAcquisition'],
+          $spliceById: [
+            ['volume3d', 0, 'dwiByBValue'],
             ['ecg', 1],
-            ['volume3d', 1, 'volume3dCopy'],
+            ['volume3d', 1, 'myVolume'],
           ],
         },
       });
       expect(customizationService.getCustomization('IdList')).toEqual([
         'video',
-        'byAcquisition',
-        'volume3dCopy',
+        'dwiByBValue',
+        'myVolume',
         'unsupported',
       ]);
       expect(() =>
-        customizationService.setCustomizations({ IdList: { $splice: [['missing', 1]] } })
+        customizationService.setCustomizations({ IdList: { $spliceById: [['missing', 1]] } })
       ).toThrow(/missing/);
     });
 

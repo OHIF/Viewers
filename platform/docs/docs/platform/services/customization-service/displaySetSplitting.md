@@ -177,10 +177,9 @@ A `@cornerstonejs/metadata` version without the files gives no
 
 The modules, and every other split file, use only the standard
 `immutability-helper` commands (`$set`, `$merge`, `$push`, `$unshift`, ...),
-and the rule id position of `$splice` (see [Changing a rule](#changing-a-rule)).
-They do not use the OHIF command `$filter`. So a server that uses
-`@cornerstonejs/metadata`, `immutability-helper` with the same `$splice`
-extension, and a JSONC parser, and no other OHIF code, applies the same files to
+and `$spliceById` (see [Changing a rule](#changing-a-rule)). They do not use
+the OHIF command `$filter`. So a server that uses `@cornerstonejs/metadata`,
+`immutability-helper` with `$spliceById` registered, and a JSONC parser, and no other OHIF code, applies the same files to
 the same defaults and gets the same rules. A unit test
 (`urlSplitModules.test.ts`) checks this for each module.
 
@@ -201,13 +200,13 @@ useMetadataDisplaySet: {
 // Add a rule that runs just before the default volume3d rule
 useMetadataDisplaySet: {
   displaySetRules: { $merge: { myRule } },
-  displaySetRuleOrder: { $splice: [['volume3d', 0, 'myRule']] },
+  displaySetRuleOrder: { $spliceById: [['volume3d', 0, 'myRule']] },
 }
 
 // Add a fallback rule (only sees instances no other default rule matched)
 useMetadataDisplaySet: {
   displaySetRules: { $merge: { myRule } },
-  displaySetRuleOrder: { $splice: [['unsupported', 0, 'myRule']] },
+  displaySetRuleOrder: { $spliceById: [['unsupported', 0, 'myRule']] },
 }
 
 // Change one field of a rule, and keep its place
@@ -216,21 +215,27 @@ useMetadataDisplaySet: {
 }
 
 // Turn one rule off
-useMetadataDisplaySet: { displaySetRuleOrder: { $splice: [['volume3d', 1]] } }
+useMetadataDisplaySet: { displaySetRuleOrder: { $spliceById: [['volume3d', 1]] } }
 
 // Replace one rule in the order with another rule
 useMetadataDisplaySet: {
   displaySetRules: { $merge: { myVolume } },
-  displaySetRuleOrder: { $splice: [['volume3d', 1, 'myVolume']] },
+  displaySetRuleOrder: { $spliceById: [['volume3d', 1, 'myVolume']] },
 }
 ```
 
-The OHIF `$splice` takes a rule id as the position, in addition to a number.
-The id is the item of the list that equals the string, or the item whose `id`
-equals the string. A string that looks like a number, for example `'3'`, is an
-id and not an index. An id that is not in the list is an error. Each entry of
-one `$splice` finds its position after the edits of the earlier entries. Plain
-`immutability-helper` takes only a number.
+`$spliceById` is `$splice` with a rule id as the position. Each entry is
+`[id, deleteCount, ...items]`. The position is the item of the list that equals
+the id, or the item whose `id` equals it. An id that is not in the list is an
+error. Each entry finds its position after the edits of the earlier entries.
+For an index, use the standard `$splice`.
+
+`$spliceById` is not a command of plain `immutability-helper`. OHIF registers
+`spliceById` of `@cornerstonejs/metadata`, and a server registers the same
+function with `extend('$spliceById', (spec, list) => spliceById(list, spec))`.
+A host without the command gives an error. Do not put an id in `$splice`:
+plain `immutability-helper` reads a string position as `0`, gives no error,
+and so changes the wrong item.
 
 A keyed registry cannot hold two rules with one id, so a customization layer
 replaces or edits a rule instead of adding a copy of it. An id can be in the
@@ -466,7 +471,7 @@ customizationService.setCustomizations({
 ```
 
 A deployment can also remove `unsupported` from the order, with
-`{ displaySetRuleOrder: { $splice: [['unsupported', 1]] } }`. Then each
+`{ displaySetRuleOrder: { $spliceById: [['unsupported', 1]] } }`. Then each
 instance that no rule claims goes to the SOP class handlers, so the handler of
 the extension runs as with the rules off. The other instances that no rule
 claims also go to the SOP class handlers, and do not show as unsupported
@@ -539,7 +544,7 @@ customizationService.setCustomizations(
         },
       },
       // Run ctScout just before the default localizer rule.
-      displaySetRuleOrder: { $splice: [['localizer', 0, 'ctScout']] },
+      displaySetRuleOrder: { $spliceById: [['localizer', 0, 'ctScout']] },
     },
   },
   customizationService.Scope.Global
