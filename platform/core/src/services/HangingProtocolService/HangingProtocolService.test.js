@@ -149,6 +149,10 @@ describe('HangingProtocolService', () => {
       TestService: {
         toCall: mockedFunction,
       },
+      customizationService: {
+        hasCustomization: () => false,
+        getCustomization: () => undefined,
+      },
     },
   };
   const hangingProtocolService = new HangingProtocolService(commandsManager, servicesManager);
@@ -187,6 +191,29 @@ describe('HangingProtocolService', () => {
       it('matches best image match', () => {
         checkHpsBestMatch(hangingProtocolService);
       });
+    });
+  });
+
+  describe('areRequiredSelectorsValid', () => {
+    it('gives the required series rules the same options as the series matching', () => {
+      hangingProtocolService.addProtocol(testProtocol.id, testProtocol);
+      hangingProtocolService.run({ studies: [studyMatch], displaySets: studyMatchDisplaySets });
+      hangingProtocolService.addCustomAttribute('studyHasPT', 'Study has PT', (_ds, options) =>
+        options?.displaySets?.some(it => it.Modality === 'PT')
+      );
+      const selector = {
+        seriesMatchingRules: [
+          { attribute: 'studyHasPT', constraint: { equals: true }, required: true },
+          {
+            attribute: 'StudyInstanceUID',
+            from: 'current',
+            constraint: { equals: 'studyMatch' },
+            required: true,
+          },
+        ],
+      };
+
+      expect(hangingProtocolService.areRequiredSelectorsValid([selector], displaySet1)).toBe(true);
     });
   });
 });

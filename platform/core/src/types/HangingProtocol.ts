@@ -89,19 +89,39 @@ export type ConstraintValue =
   | boolean
   | []
   | string[]
+  | number[]
+  | null
   | {
-      value: string | number | boolean | [];
+      value: string | number | boolean | null | [] | string[] | number[];
+    }
+  | {
+      // Reads the operand from another attribute, of the metadata instance by default.
+      attribute: string;
+      from?: string;
     };
 
+/** The validators of `HangingProtocolService/lib/validator.js`. */
 export type Constraint = {
-  // This value exactly
+  // Equal value: the whole value, a numeric string equals a number
   equals?: ConstraintValue;
-  notEquals?: ConstraintValue;
+  doesNotEqual?: ConstraintValue;
+  includes?: ConstraintValue;
+  doesNotInclude?: ConstraintValue;
   // A caseless contains
-  containsI?: string;
+  containsI?: ConstraintValue;
   contains?: ConstraintValue;
+  containsAll?: ConstraintValue;
   doesNotContain?: ConstraintValue;
+  doesNotContainI?: ConstraintValue;
+  startsWith?: ConstraintValue;
+  endsWith?: ConstraintValue;
+  // Number comparisons; greaterThan and lessThan are strict
   greaterThan?: ConstraintValue;
+  lessThan?: ConstraintValue;
+  greaterThanOrEqual?: ConstraintValue;
+  lessThanOrEqual?: ConstraintValue;
+  range?: ConstraintValue;
+  notNull?: boolean | { value: boolean } | { attribute: string; from?: string };
 };
 
 export type MatchingRule = {
@@ -148,6 +168,14 @@ export type DisplaySetSelector = {
    * don't get different values of allowUnmatchedView
    */
   allowUnmatchedView?: boolean;
+
+  /**
+   * The selector id under which the user's display set choice for a viewport is
+   * remembered across stages.  Defaults to the id of this selector.  Selectors
+   * that share a selectorMapId keep the user's choice when the stage changes
+   * between stages that use different selectors for the same viewport.
+   */
+  selectorMapId?: string;
 
   // The image matching rule (not currently implemented) selects which image to
   // display initially, only for stack views.
