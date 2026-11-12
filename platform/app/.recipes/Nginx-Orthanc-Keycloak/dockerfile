@@ -1,36 +1,30 @@
-# Stage 1: Build the application
-FROM node:20.18.1-slim as builder
+# syntax=docker/dockerfile:1.7-labs
+# Build context: the repository root (see docker-compose.yml).
 
-# Setup the working directory
+# Stage 1: Build the application. Keep this stage the same as in the root
+# Dockerfile, so that all builds share the cached pnpm install layer.
+FROM node:24.22.2-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@12
+
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
-# Install dependencies
-# apt-get update is combined with apt-get install to avoid using outdated packages
-RUN apt-get update && apt-get install -y build-essential python3
+# Install from the package manifests first, for layer caching. See the root Dockerfile.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
+COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
+RUN pnpm install --no-frozen-lockfile
+COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
-# Copy package.json and other dependency-related files first
-# Assuming your package.json and yarn.lock or similar are located in the project root
-# Todo: this probably can get improved by copying
-# only the package json files and running yarn install before
-# copying the rest of the files but having a monorepo setup
-# makes this a bit more complicated, i wasn't able to get it working
-COPY ./ /usr/src/app/
-
-# Install node dependencies
-RUN yarn config set workspaces-experimental true
-RUN yarn install --frozen-lockfile
-
-# Copy the rest of the application code
-
-# set QUICK_BUILD to true to make the build faster for dev
 ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js
-
-# Build the application
-RUN yarn run build
+RUN pnpm run build
 
 # Use nginx as the base image
-FROM nginx:1.27.1-alpine
+FROM nginx:1.30-alpine
 
 # Install dependencies for oauth2-proxy
 RUN apk add --no-cache curl
