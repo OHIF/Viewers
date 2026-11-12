@@ -65,14 +65,8 @@ RUN ./.docker/compressDist.sh
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginxinc/nginx-unprivileged:1.27-alpine as final
+FROM nginxinc/nginx-unprivileged:1.30-alpine AS final
 #RUN apk add --no-cache bash
-# The base image is not rebuilt for every Alpine security fix (for example OpenSSL,
-# CVE-2026-31789), so take the fixed packages at build time. apk needs root, and
-# the image runs as nginx.
-USER root
-RUN apk upgrade --no-cache
-USER nginx
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
 ARG PORT=80
@@ -88,7 +82,9 @@ COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/
 
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
+# The base image is not rebuilt for each Alpine fix, so take the fixes at build time.
 USER root
+RUN apk upgrade --no-cache
 RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
