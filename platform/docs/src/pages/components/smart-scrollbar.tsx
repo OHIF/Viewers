@@ -200,18 +200,16 @@ function SmartScrollbarDemo({
         <SmartScrollbarTrack>
           <SmartScrollbarFill
             marked={loaded.bytes}
-            version={loaded.version}
             className="bg-neutral/25"
             loadingClassName="bg-neutral/50"
           />
           <SmartScrollbarFill
             marked={viewed.bytes}
-            version={viewed.version}
             className="bg-primary/35"
           />
         </SmartScrollbarTrack>
         <SmartScrollbarIndicator />
-        <SmartScrollbarEndpoints marked={loaded.bytes} version={loaded.version} />
+        <SmartScrollbarEndpoints marked={loaded.bytes} />
       </SmartScrollbar>
     </DemoViewport>
   );
@@ -257,19 +255,16 @@ function SmartScrollbarPageContent() {
 
   const fillProps = [
     { name: 'marked', type: 'Uint8Array', default: '—', description: 'Byte array where 1 = marked position, 0 = unmarked' },
-    { name: 'version', type: 'number', default: '—', description: 'Change token — bump when the array mutates in-place' },
     { name: 'className', type: 'string', default: 'bg-neutral/25', description: 'Fill color class for normal state' },
     { name: 'loadingClassName', type: 'string', default: 'bg-neutral/50', description: 'Fill color class while parent isLoading is true' },
   ];
 
   const endpointsProps = [
     { name: 'marked', type: 'Uint8Array', default: '—', description: 'Byte array marking loaded positions' },
-    { name: 'version', type: 'number', default: '—', description: 'Change token — bump when the array mutates in-place' },
   ];
 
   const byteArrayFields = [
-    { name: 'bytes', type: 'Uint8Array', default: '—', description: 'Mutable array — safe for in-place writes' },
-    { name: 'version', type: 'number', default: '—', description: 'Invalidation token for React memo dependencies' },
+    { name: 'bytes', type: 'Uint8Array', default: '—', description: 'Safe for in-place writes; new identity published on each change' },
     { name: 'isFull', type: 'boolean', default: '—', description: 'True when all bytes are set to 1' },
     { name: 'setByte(index)', type: 'function', default: '—', description: 'Mark a position as loaded or viewed' },
     { name: 'clearByte(index)', type: 'function', default: '—', description: 'Unmark a position' },
@@ -418,21 +413,16 @@ viewed.setByte(currentIndex);
   <SmartScrollbarTrack>
     <SmartScrollbarFill
       marked={loaded.bytes}
-      version={loaded.version}
       className="bg-neutral/25"
       loadingClassName="bg-neutral/50"
     />
     <SmartScrollbarFill
       marked={viewed.bytes}
-      version={viewed.version}
       className="bg-primary/35"
     />
   </SmartScrollbarTrack>
   <SmartScrollbarIndicator />
-  <SmartScrollbarEndpoints
-    marked={loaded.bytes}
-    version={loaded.version}
-  />
+  <SmartScrollbarEndpoints marked={loaded.bytes} />
 </SmartScrollbar>`}
         />
       </Section>

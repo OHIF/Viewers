@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import { eventTarget, utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
@@ -339,9 +339,16 @@ export default function USAnnotationPanel() {
     </ScrollArea>
   );
 
-  const updateAnnotatedFrames = () => {
+  const updateAnnotatedFrames = useCallback(() => {
     const activeViewportId = viewportGridService.getActiveViewportId();
     const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
+
+    // MEASUREMENT_REMOVED can arrive while the viewport is being torn down, and
+    // there is nothing to count once it is gone.
+    if (!viewport) {
+      return;
+    }
+
     // copying to avoid mutating the original array
     const imageIdsMonitored = [...imageIdsToObserve];
     const imageIdFilter = (imageId: string) => {
@@ -361,7 +368,7 @@ export default function USAnnotationPanel() {
       return { imageId: key, index: index + 1, frame, pleura, bLine };
     });
     setAnnotatedFrames(updatedFrames);
-  };
+  }, [viewportGridService, cornerstoneViewportService, imageIdsToObserve]);
   /**
    * Callback function that is called when an annotation is modified
    * Updates the annotatedFrames state with the latest annotation data
@@ -372,23 +379,29 @@ export default function USAnnotationPanel() {
         updateAnnotatedFrames();
       }
     },
-    [viewportGridService, cornerstoneViewportService, imageIdsToObserve]
+    [updateAnnotatedFrames]
   );
 
   useEffect(() => {
     eventTarget.addEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
-    const { unsubscribe } = measurementService.subscribe(
-      measurementService.EVENTS.MEASUREMENT_REMOVED,
-      () => {
+
+    // Deleting one measurement and deleting them all are separate events, and
+    // clearing is also what runs on mode exit - so both have to be handled or the
+    // frame table keeps counting annotations that are gone.
+    const subscriptions = [
+      measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_REMOVED, () => {
         updateAnnotatedFrames();
-      }
-    );
+      }),
+      measurementService.subscribe(measurementService.EVENTS.MEASUREMENTS_CLEARED, () => {
+        updateAnnotatedFrames();
+      }),
+    ];
 
     return () => {
       eventTarget.removeEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
-      unsubscribe();
+      subscriptions.forEach(({ unsubscribe }) => unsubscribe());
     };
-  }, [annotationModified, measurementService]);
+  }, [annotationModified, measurementService, updateAnnotatedFrames]);
 
   /**
    * ──────────────────────────────────────────────────────
