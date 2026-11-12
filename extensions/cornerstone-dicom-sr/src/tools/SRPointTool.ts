@@ -75,7 +75,11 @@ class SRPointTool extends ProbeTool {
        */
       const targetId = this.getTargetId(viewport, data);
       data.cachedStats ??= {};
-      if (!data.cachedStats[targetId] || annotation.invalidated) {
+      if (!data.cachedStats[targetId]) {
+        /** The Probe calculation only fills the targets that already have an entry. */
+        data.cachedStats[targetId] = { Modality: null, index: null, value: null };
+        this._calculateCachedStats(annotation, renderingEngine, enabledElement);
+      } else if (annotation.invalidated) {
         this._calculateCachedStats(annotation, renderingEngine, enabledElement);
       }
 

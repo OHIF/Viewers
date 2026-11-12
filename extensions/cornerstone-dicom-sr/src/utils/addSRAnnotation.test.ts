@@ -63,6 +63,7 @@ describe('addSRAnnotation', () => {
       displaySet: { displaySetInstanceUID: 'sr' },
     });
 
+    expect(mockAddAnnotation.mock.calls[0][0].isLocked).toBe(true);
     expect(mockSetAnnotationLocked).toHaveBeenCalledWith('1.2.3', true);
   });
 });

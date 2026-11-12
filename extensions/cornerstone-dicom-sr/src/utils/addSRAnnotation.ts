@@ -106,7 +106,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
   const SRAnnotation: Types.Annotation = {
     annotationUID: TrackingUniqueIdentifier,
     highlighted: false,
-    isLocked: false,
+    isLocked: true,
     isPreview: toolName === toolNames.DICOMSRDisplay,
     invalidated: false,
     metadata: {
@@ -143,8 +143,9 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
   annotation.state.addAnnotation(SRAnnotation);
 
   /**
-   * The preview is read-only until the SR is hydrated. The locking API, not the isLocked field,
-   * records the lock in the locking state that the tools and events use.
+   * The preview is read-only until the SR is hydrated. Both locks are needed: handle and move
+   * filtering reads isLocked, while the tools read the global set, which setAnnotationLocked fills.
+   * That call does nothing for a UID still in the set from an earlier load, so isLocked is set above.
    */
   annotation.locking.setAnnotationLocked(TrackingUniqueIdentifier, true);
 }
