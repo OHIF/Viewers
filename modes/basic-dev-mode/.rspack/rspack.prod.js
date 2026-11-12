@@ -1,7 +1,7 @@
-const webpack = require('@rspack/core');
+const rspack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.rspack/rspack.base.js');
+const rspackBase = require('./../../../.rspack/rspack.base.js');
 const pluginExternals = require('./../../../.rspack/pluginExternals.js');
 const pkg = require('./../package.json');
 
@@ -14,7 +14,7 @@ const ENTRY = {
 };
 
 module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
+  const commonConfig = rspackBase(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
   return merge(commonConfig, {
     stats: {
@@ -42,7 +42,7 @@ module.exports = (env, argv) => {
     },
     externals: pluginExternals,
     plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
+      new rspack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
     ],

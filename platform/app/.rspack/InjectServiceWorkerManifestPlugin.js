@@ -5,7 +5,7 @@ const fs = require('fs');
  * source (replacing `self.__WB_MANIFEST`) and emits it as `swDest`.
  *
  * Registered by the app build (rsbuild.config.ts) via tools.rspack.plugins.
- * All bundler APIs are taken from `compiler.webpack` inside `apply()` rather
+ * All bundler APIs are taken from `compiler.rspack` inside `apply()` rather
  * than imported from `@rspack/core` at module scope, so the plugin works
  * against whichever rspack version the running pipeline bundles.
  */
@@ -20,7 +20,7 @@ class InjectServiceWorkerManifestPlugin {
 
   apply(compiler) {
     const pluginName = 'InjectServiceWorkerManifestPlugin';
-    const { sources, Compilation } = compiler.webpack;
+    const { sources, Compilation } = compiler.rspack;
     const publicPath = this.publicPath.endsWith('/') ? this.publicPath : `${this.publicPath}/`;
 
     compiler.hooks.thisCompilation.tap(pluginName, compilation => {

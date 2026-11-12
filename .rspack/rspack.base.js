@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
 
-const webpack = require('@rspack/core');
+const rspack = require('@rspack/core');
 
 // ~~ PLUGINS
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -20,11 +20,11 @@ const cssToJavaScript = require('./rules/cssToJavaScript.js');
 const resolveConfig = require('./resolveConfig');
 // Only uncomment for old v2 stylus
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
-let ReactRefreshWebpackPlugin;
+let ReactRefreshPlugin;
 try {
   const mod = require('@rspack/plugin-react-refresh');
-  ReactRefreshWebpackPlugin = mod.ReactRefreshRspackPlugin || mod.default || mod;
-} catch { ReactRefreshWebpackPlugin = null; }
+  ReactRefreshPlugin = mod.ReactRefreshRspackPlugin || mod.default || mod;
+} catch { ReactRefreshPlugin = null; }
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -241,24 +241,24 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       __dirname: false,
     },
     plugins: [
-      new webpack.DefinePlugin(defineValues),
-      new webpack.ProvidePlugin({
+      new rspack.DefinePlugin(defineValues),
+      new rspack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      new webpack.IgnorePlugin({
+      new rspack.IgnorePlugin({
         resourceRegExp: /^(fs|path)$/,
         contextRegExp: /@cornerstonejs[\\/]codec-/,
       }),
-      ...(isProdBuild || IS_COVERAGE || !ReactRefreshWebpackPlugin
+      ...(isProdBuild || IS_COVERAGE || !ReactRefreshPlugin
         ? []
-        : [new ReactRefreshWebpackPlugin({ overlay: false })]),
+        : [new ReactRefreshPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
   };
 
   if (isProdBuild) {
-    config.optimization.minimizer = [new webpack.SwcJsMinimizerRspackPlugin()];
+    config.optimization.minimizer = [new rspack.SwcJsMinimizerRspackPlugin()];
   }
 
   if (isQuickBuild) {

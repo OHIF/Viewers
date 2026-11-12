@@ -9,7 +9,7 @@ import writePluginImportsFile from './platform/app/.rspack/writePluginImportsFil
 import resolveConfig from './.rspack/resolveConfig';
 // Service-worker manifest injection. Kept in its own module rather than inline
 // so it stays bundler-version agnostic: it takes every rspack API off
-// `compiler.webpack` inside apply() instead of importing @rspack/core.
+// `compiler.rspack` inside apply() instead of importing @rspack/core.
 import InjectServiceWorkerManifestPlugin from './platform/app/.rspack/InjectServiceWorkerManifestPlugin';
 import fs from 'fs';
 import type { IncomingMessage, ServerResponse } from 'http';

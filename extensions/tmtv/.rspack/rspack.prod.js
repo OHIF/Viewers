@@ -1,14 +1,14 @@
-const webpack = require('@rspack/core');
+const rspack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.rspack/rspack.base.js');
+const rspackBase = require('./../../../.rspack/rspack.base.js');
 const pluginExternals = require('./../../../.rspack/pluginExternals.js');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
-const MiniCssExtractPlugin = webpack.CssExtractRspackPlugin;
+const MiniCssExtractPlugin = rspack.CssExtractRspackPlugin;
 
 const ENTRY = {
   app: `${SRC_DIR}/index.tsx`,
@@ -17,7 +17,7 @@ const ENTRY = {
 const outputName = `ohif-${pkg.name.split('/').pop()}`;
 
 module.exports = (env, argv) => {
-  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
+  const commonConfig = rspackBase(env, argv, { SRC_DIR, DIST_DIR, ENTRY });
 
   return merge(commonConfig, {
     stats: {
@@ -45,7 +45,7 @@ module.exports = (env, argv) => {
     },
     externals: pluginExternals,
     plugins: [
-      new webpack.optimize.LimitChunkCountPlugin({
+      new rspack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
       new MiniCssExtractPlugin({

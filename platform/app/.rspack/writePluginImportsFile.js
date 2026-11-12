@@ -413,7 +413,7 @@ function pluginAssetDir(plugin) {
   return inNodeModules && fs.existsSync(inNodeModules) ? inNodeModules : undefined;
 }
 
-// Alias map fed into webpack `resolve.alias`. The trailing `$` makes each alias
+// Alias map fed into rspack `resolve.alias`. The trailing `$` makes each alias
 // an EXACT match for the bare package specifier that the generated
 // pluginImports.js imports, so deep subpath imports (e.g.
 // `@ohif/extension-cornerstone/types`) still flow through normal resolution and
@@ -421,7 +421,7 @@ function pluginAssetDir(plugin) {
 //
 // Only in-tree / `directory`-overridden plugins get an alias. An external
 // plugin installed as a root dependency intentionally gets none: its bare
-// specifier then resolves through webpack's normal node_modules walk-up
+// specifier then resolves through rspack's normal node_modules walk-up
 // (resolve.modules includes the repo-root node_modules), exactly like any other
 // installed package.
 function getPluginResolveAliases() {

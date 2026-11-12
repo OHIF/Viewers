@@ -28,9 +28,11 @@ The config directories and files were renamed:
 | `.webpack/resolveConfig.js`, `.webpack/rules/*` | `.rspack/resolveConfig.js`, `.rspack/rules/*` |
 | `platform/app/.webpack/webpack.pwa.js` | removed (see below) |
 
-The contents are the same Rspack configs as in 3.13. They still
-`require('@rspack/core')` into a local variable named `webpack`, and the per-package
-UMD builds still run the `rspack` CLI against `.rspack/rspack.base.js`. Every
+The contents are the same Rspack configs as in 3.13, with two local variables
+renamed: the one holding `require('@rspack/core')` is now `rspack` (was `webpack`),
+and the one holding `rspack.base.js` is now `rspackBase` (was `webpackCommon`).
+They are local names, so a fork's own configs keep working without the change. The
+per-package UMD builds still run the `rspack` CLI against `.rspack/rspack.base.js`. Every
 per-package `rspack.prod.js` now takes its `externals` from the shared
 `.rspack/pluginExternals.js` instead of a hand-written list.
 
