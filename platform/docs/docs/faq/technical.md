@@ -1,5 +1,12 @@
+---
+id: technical
+title: Technical FAQ
+summary: Technical explanations and solutions for OHIF Viewer implementation challenges, including required metadata fields, handling large volumes for MPR/rendering, dynamically loading measurements, customizing series sorting, and addressing common rendering issues.
+---
+
 # Technical FAQ
 
+* [How to add a custom icon to the viewport corners](./add-viewport-icon.md)
 
 
 ## Viewer opens but does not show any thumbnails
@@ -31,93 +38,59 @@ For each filter in filters:
 
 ## What are the list of required metadata for the OHIF Viewer to work?
 
+When you use the DICOM JSON data source, the viewer does not query a DICOMweb server for missing instance metadata later. The JSON file must therefore contain the metadata that OHIF needs to create display sets, render pixels, sort instances, and enable modality-specific tools.
 
-### Mandatory
+The minimum set depends on the modality and on the features that you want to support. The tables below are a practical starting point for generated DICOM JSON files. If you do not need to reduce the JSON payload size, keep the source DICOM metadata and do not remove tags.
 
-**All Modalities**
+### Baseline Image Metadata
 
-- `StudyInstanceUID`, `SeriesInstanceUID`, `SOPInstanceUID`: Unique identifiers for the study, series, and object.
-- `PhotometricInterpretation`: Describes the color space of the image.
-- `Rows`, `Columns`: Image dimensions.
-- `PixelRepresentation`: Indicates how pixel data should be interpreted.
-- `Modality`: Type of modality (e.g., CT, MR, etc.).
-- `PixelSpacing`: Spacing between pixels.
-- `BitsAllocated`: Number of bits allocated for each pixel sample.
-- `SOPClassUID`: Specifies the DICOM service class of the object (though you might be able to render without it for most regular images datasets, but it is pretty normal to have it)
+| Scope | Include these tags | Why |
+| --- | --- | --- |
+| Identity and routing | `StudyInstanceUID`, `SeriesInstanceUID`, `SOPInstanceUID`, `SOPClassUID`, `Modality` | OHIF uses these tags to group instances into studies, series, and display sets, and to select the SOP class handler. |
+| Pixel description | `Rows`, `Columns`, `SamplesPerPixel`, `PhotometricInterpretation`, `BitsAllocated`, `BitsStored`, `HighBit`, `PixelRepresentation` | The metadata provider and the image loader use these tags to decode the pixel data. |
+| Color pixel data | `PlanarConfiguration` when `SamplesPerPixel` is greater than `1` | DICOM makes this tag Type 1C for color data. The tag gives the order of the color samples. |
+| Geometry and measurements | `PixelSpacing`, `PixelAspectRatio` (only when the aspect ratio is not 1:1), `ImagePositionPatient`, `ImageOrientationPatient`, `FrameOfReferenceUID` | OHIF uses these tags for calibrated measurements, stack geometry, MPR, segmentation overlays, and alignment between series. |
+| Sorting and user context | `InstanceNumber`, `SeriesNumber`, `SeriesDate`, `SeriesTime`, `StudyDescription`, `SeriesDescription` | These tags give a stable order and useful labels in the study browser. |
 
-**Rendering**
+### Rendering Metadata
 
-You need to have the following tags for the viewer to render the image properly, otherwise you should
-use the windowing tools to adjust the image to your liking:
+For grayscale images, include these tags when the source object has them:
 
-- `RescaleIntercept`, `RescaleSlope`: Values used for rescaling pixel values for visualization.
-- `WindowCenter`, `WindowWidth`: Windowing parameters for display.
+- `RescaleIntercept`, `RescaleSlope`: the Modality LUT that converts stored pixel values. CT images always have these tags. Many MR images do not have them.
+- `WindowCenter`, `WindowWidth`, and `VOILUTFunction`, or `VOILUTSequence`: the VOI LUT for the initial display.
 
-**Some Datasets**
+Do not add empty or invented values to satisfy a generic metadata template. For example, an RGB ultrasound image does not need `WindowCenter` and `WindowWidth`. If a tag is optional for the image type and you do not have a valid value, omit the tag.
 
-- `InstanceNumber`: Useful for sorting instances (without it the instances might be out of order)
+### Feature and Modality Metadata
 
-**For MPR (Multi-Planar Reformatting) rendering and tools**
+| Feature or modality | Additional tags and sequences | Notes |
+| --- | --- | --- |
+| CT, MR | `PixelSpacing`, `RescaleIntercept`, `RescaleSlope`, `WindowCenter`, `WindowWidth` | These are the common tags for calibrated grayscale display and measurements. |
+| DX, CR, MG, XA (projection radiography) | `ImagerPixelSpacing`, `PixelSpacing` when present, `PixelSpacingCalibrationType`, `EstimatedRadiographicMagnificationFactor` | Many projection images have `ImagerPixelSpacing` (the detector plane) and no `PixelSpacing`. OHIF uses these tags to calibrate measurements. |
+| MPR and volume tools | `ImagePositionPatient`, `ImageOrientationPatient`, `PixelSpacing`, `FrameOfReferenceUID` | Without patient-space geometry, MPR and spatial tools do not work correctly. |
+| Any multi-frame image object | `NumberOfFrames` | OHIF creates one image ID for each frame. Copy the value from the source object. |
+| Enhanced multi-frame (for example Enhanced CT, Enhanced MR) | `SharedFunctionalGroupsSequence`, `PerFrameFunctionalGroupsSequence` | These objects keep the pixel spacing, the plane position, and the plane orientation in the functional groups, not at the top level. |
+| US, including cine | `NumberOfFrames`, `FrameTime`, `SequenceOfUltrasoundRegions` | OHIF uses `SequenceOfUltrasoundRegions` for calibrated ultrasound measurements. |
+| Color US or RGB images | `SamplesPerPixel`, `PhotometricInterpretation`, `PlanarConfiguration` | `PlanarConfiguration` is required when the pixel data has more than one sample for each pixel. |
+| Palette color images | `RedPaletteColorLookupTableDescriptor`, `GreenPaletteColorLookupTableDescriptor`, `BluePaletteColorLookupTableDescriptor`, and the three `...PaletteColorLookupTableData` tags | These tags are required when `PhotometricInterpretation` is `PALETTE COLOR`. The data tags are usually a `BulkDataURI`. |
+| PT with SUV correction | `RadiopharmaceuticalInformationSequence`, `SeriesDate`, `SeriesTime`, `CorrectedImage`, `Units`, `DecayCorrection`, `AcquisitionDate`, `AcquisitionTime`, `PatientWeight` | The radiopharmaceutical sequence must include `RadionuclideHalfLife`, `RadionuclideTotalDose`, and `RadiopharmaceuticalStartDateTime` or `RadiopharmaceuticalStartTime`. |
+| Dynamic or multi-frame PT | `FrameReferenceTime`, `ActualFrameDuration` when available | These tags give the timing of each PET frame. |
+| SEG | `FrameOfReferenceUID`, `ReferencedSeriesSequence`, `SharedFunctionalGroupsSequence`, `PerFrameFunctionalGroupsSequence` | OHIF uses these tags to put the segmentation frames on the referenced images. |
+| RTSTRUCT | `ReferencedFrameOfReferenceSequence`, `ReferencedSeriesSequence` when present, `ROIContourSequence`, `StructureSetROISequence`, `RTROIObservationsSequence` | The RT Structure Set IOD has no top-level `FrameOfReferenceUID`. OHIF reads the frame of reference from `ReferencedFrameOfReferenceSequence`. OHIF reads the referenced series from `ReferencedSeriesSequence`, or else from the `RTReferencedStudySequence` in `ReferencedFrameOfReferenceSequence`. |
+| SR | `ConceptNameCodeSequence`, `ContentSequence`, `ContentTemplateSequence`, `CurrentRequestedProcedureEvidenceSequence`, `CodingSchemeIdentificationSequence` | OHIF uses these sequences for the report content and the measurement references. |
+| PDF | `EncapsulatedDocument` | This tag contains the PDF document, usually as a `BulkDataURI`. |
+| Video | `NumberOfFrames` | OHIF uses this tag as the video frame count. |
 
-- `ImagePositionPatient`, `ImageOrientationPatient`: Position and orientation of the image in the patient.
+### DICOM JSON Specific Notes
 
-**SEG (Segmentation)**
+- Put the URL of the DICOM file next to the `metadata` object of each instance. The URL is not a DICOM tag.
+- Use the same study, series, and instance UIDs at every level of the JSON file. The DICOM JSON data source merges the study and series metadata into each instance.
+- A `frame` query parameter in an image URL is the DICOM frame number. The first frame is `frame=1`, as in WADO-RS `/frames/1` and in `ReferencedFrameNumber`. Do not use `frame=0`.
+- `NumberOfFrames` must match the source object and the image URLs. A wrong value makes OHIF create the wrong number of image IDs.
 
-- `FrameOfReferenceUID` for handling segmentation layers.
-- sequences
-  - `ReferencedSeriesSequence`
-  - `SharedFunctionalGroupsSequence`
-  - `PerFrameFunctionalGroupsSequence`
+### Optional Metadata
 
-**RTSTRUCT (Radiotherapy Structure)**
-
-- `FrameOfReferenceUID` for handling segmentation layers.
-- sequences
-  - `ROIContourSequence`
-  - `StructureSetROISequence`
-  - `ReferencedFrameOfReferenceSequence`
-
-**US (Ultrasound)**
-
-- `NumberOfFrames`: Number of frames in a multi-frame image.
-- `SequenceOfUltrasoundRegions`: For measurements.
-- `FrameTime`: Time between frames if specified.
-
-**SR (Structured Reporting)**
-
-- Various sequences for encoding the report content and template.
-  - `ConceptNameCodeSequence`
-  - `ContentSequence`
-  - `ContentTemplateSequence`
-  - `CurrentRequestedProcedureEvidenceSequence`
-  - `ContentTemplateSequence`
-  - `CodingSchemeIdentificationSequence`
-
-**PT with SUV Correction (Positron Tomography Standardized Uptake Value)**
-
-- Sequences and tags related to radiopharmaceuticals, units, corrections, and timing.
-  - `RadiopharmaceuticalInformationSequence`
-  - `SeriesDate`
-  - `SeriesTime`
-  - `CorrectedImage`
-  - `Units`
-  - `DecayCorrection`
-  - `AcquisitionDate`
-  - `AcquisitionTime`
-  - `PatientWeight`
-
-**PDF**
-
-- `EncapsulatedDocument`: Contains the PDF document.
-
-**Video**
-
-- `NumberOfFrames`: Video frame count .
-
-
-### Optional
-There are various other optional tags that will add to the viewer experience, but are not required for basic functionality. These include:
-Patient Information, Study Information, Series Information, Instance Information, and Frame Information.
+Other DICOM attributes are not required for basic rendering, but they improve the viewer experience. These include patient demographics, study information, series information, instance information, acquisition details, and frame information.
 
 
 ## How do I handle large volumes for MPR and Volume Rendering
@@ -164,7 +137,7 @@ Read more about these discussions in our PRs
 
 
 :::warning
-Although the support for 16 bit data type is available in WebGL, in some settings (e.g., Intel-based Macos) there seems
+Although the support for 16-bit data type is available in WebGL, in some settings (e.g., Intel-based macOS) there seems
 to be still some issues with it. You can read and track bugs below.
 
 - https://bugs.chromium.org/p/chromium/issues/detail?id=1246379

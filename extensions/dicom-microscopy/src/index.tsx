@@ -1,5 +1,5 @@
 import { id } from './id';
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
 import getCustomizationModule from './getCustomizationModule';
@@ -7,6 +7,7 @@ import { Types } from '@ohif/core';
 
 import { useViewportGrid } from '@ohif/ui-next';
 import getDicomMicroscopySRSopClassHandler from './DicomMicroscopySRSopClassHandler';
+import getDicomMicroscopyANNSopClassHandler from './DicomMicroscopyANNSopClassHandler';
 import MicroscopyService from './services/MicroscopyService';
 import { useResizeDetector } from 'react-resize-detector';
 import debounce from 'lodash.debounce';
@@ -43,7 +44,7 @@ const extension: Types.Extensions.Extension = {
    * {name, component} object. Example of a viewport module is the CornerstoneViewport
    * that is provided by the Cornerstone extension in OHIF.
    */
-  getViewportModule({ servicesManager, extensionManager, commandsManager }) {
+  getViewportModule({ servicesManager }) {
     /**
      *
      * @param props {*}
@@ -55,24 +56,27 @@ const extension: Types.Extensions.Extension = {
      * @param props.displaySetOptions
      * @returns
      */
+    // Declared here rather than inside the component. It closes over
+    // `servicesManager`, which belongs to this factory and not to render, and the
+    // compiler will hoist a render-scope callback it believes captures nothing
+    // all the way to module scope - where `servicesManager` does not resolve.
+    // It also addresses every managed viewer, so one shared debounce is right.
+    const onResize = debounce(() => {
+      const { microscopyService } = servicesManager.services;
+      const managedViewer = microscopyService.getAllManagedViewers();
+
+      if (managedViewer && managedViewer.length > 0) {
+        managedViewer[0].viewer.resize();
+      }
+    }, 100);
+
     const ExtendedMicroscopyViewport = props => {
       const { viewportOptions } = props;
 
       const [viewportGrid, viewportGridService] = useViewportGrid();
       const { activeViewportId } = viewportGrid;
 
-      const displaySetsKey = useMemo(() => {
-        return props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
-      }, [props.displaySets]);
-
-      const onResize = debounce(() => {
-        const { microscopyService } = servicesManager.services;
-        const managedViewer = microscopyService.getAllManagedViewers();
-
-        if (managedViewer && managedViewer.length > 0) {
-          managedViewer[0].viewer.resize();
-        }
-      }, 100);
+      const displaySetsKey = props.displaySets.map(ds => ds.displaySetInstanceUID).join('-');
 
       const { ref: resizeRef } = useResizeDetector({
         onResize,
@@ -80,13 +84,15 @@ const extension: Types.Extensions.Extension = {
         handleWidth: true,
       });
 
+      const setViewportActive = (viewportId: string) => {
+        viewportGridService.setActiveViewportId(viewportId);
+      };
+
       return (
         <MicroscopyViewport
           key={displaySetsKey}
           activeViewportId={activeViewportId}
-          setViewportActive={(viewportId: string) => {
-            viewportGridService.setActiveViewportId(viewportId);
-          }}
+          setViewportActive={setViewportActive}
           viewportData={viewportOptions}
           resizeRef={resizeRef}
           {...props}
@@ -131,8 +137,8 @@ const extension: Types.Extensions.Extension = {
           return {
             disabled: false,
             className: isPrimaryActive
-              ? '!text-black bg-primary-light'
-              : '!text-common-bright hover:!bg-primary-dark hover:!text-primary-light',
+              ? '!text-black bg-highlight'
+              : '!text-foreground/80 hover:!bg-muted hover:!text-highlight',
             // Todo: isActive right now is used for nested buttons where the primary
             // button needs to be fully rounded (vs partial rounded) when active
             // otherwise it does not have any other use
@@ -150,7 +156,10 @@ const extension: Types.Extensions.Extension = {
    * Examples include the default sop class handler provided by the default extension
    */
   getSopClassHandlerModule(params) {
-    return [getDicomMicroscopySRSopClassHandler(params)];
+    return [
+      getDicomMicroscopySRSopClassHandler(params),
+      getDicomMicroscopyANNSopClassHandler(params),
+    ];
   },
 
   getPanelModule,

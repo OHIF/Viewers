@@ -22,7 +22,7 @@ export default {
               label: 'Delete Measurement',
               commands: [
                 {
-                  commandName: 'deleteMeasurement',
+                  commandName: 'removeMeasurement',
                 },
               ],
             },

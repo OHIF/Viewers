@@ -25,12 +25,16 @@ export default function (wadoRoot, getAuthrorizationHeader) {
           //Call a function when the state changes.
           if (xhr.readyState == 4) {
             switch (xhr.status) {
+              case 200:
               case 204:
                 resolve(xhr.responseText);
 
                 break;
               case 404:
                 reject('Your dataSource does not support reject functionality');
+              default:
+                reject(`Unexpected status code: ${xhr.status}`);
+                break;
             }
           }
         };

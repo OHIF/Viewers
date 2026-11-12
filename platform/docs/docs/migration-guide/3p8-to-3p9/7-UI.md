@@ -1,5 +1,6 @@
 ---
 title: UI
+summary: Migration guide for UI changes in OHIF 3.9, covering the new UI components from @ohif/ui-next, UINotificationService updates with Sonner integration, viewport pane Tailwind class changes, Header component refactoring, and managing both UI libraries.
 ---
 
 ## New Components

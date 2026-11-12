@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
+import { useSystem } from '@ohif/core';
+import i18n from '@ohif/i18n';
 
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
@@ -13,7 +15,8 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
   const { findingSites, finding, label: baseLabel, displayText: baseDisplayText } = measurement;
 
   const firstSite = findingSites?.[0];
-  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  const label =
+    baseLabel || finding?.text || firstSite?.text || i18n.t('MeasurementTable:empty');
 
   // Initialize displayText with the structure used in Length.ts and CobbAngle.ts
   const displayText = {
@@ -56,13 +59,14 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
  * @param {Object} options.valueTypes - The value types for mapping measurements.
  * @returns {Array} An array of mapped and filtered measurements.
  */
-export function useMeasurements(servicesManager, { measurementFilter }) {
+export function useMeasurements({ measurementFilter } = { measurementFilter: () => true }) {
+  const { servicesManager } = useSystem();
   const { measurementService, displaySetService } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
     const updateDisplayMeasurements = () => {
-      let measurements = measurementService.getMeasurements(measurementFilter);
+      const measurements = measurementService.getMeasurements(measurementFilter);
       const mappedMeasurements = measurements.map(m =>
         mapMeasurementToDisplay(m, displaySetService)
       );

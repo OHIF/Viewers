@@ -37,15 +37,15 @@ const machineConfiguration = {
             target: 'promptLabelAnnotation',
             actions: ['setPreviousState'],
           },
-          {
-            target: 'off',
-          },
         ],
       },
     },
     idle: {
       entry: 'clearContext',
       on: {
+        // No-op: idle entry already cleared context. Redo can still send
+        // CLEAR_TRACKING_CONTEXT (tracking memo); required when strict mode is on.
+        CLEAR_TRACKING_CONTEXT: {},
         TRACK_SERIES: [
           {
             target: 'promptLabelAnnotation',
@@ -57,7 +57,6 @@ const machineConfiguration = {
             actions: ['setPreviousState'],
           },
         ],
-        // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',
@@ -123,11 +122,30 @@ const machineConfiguration = {
         UNTRACK_SERIES: [
           {
             target: 'tracking',
-            actions: ['removeTrackedSeries', 'setIsDirty'],
+            actions: ['removeTrackedSeries', 'setIsDirty', 'clearDisplaySetHydratedState'],
             cond: 'hasRemainingTrackedSeries',
           },
           {
             target: 'idle',
+          },
+        ],
+        UNTRACK_ALL: [
+          {
+            target: 'tracking',
+            actions: [
+              'clearContext',
+              'setIsDirtyToClean',
+              'clearDisplaySetHydratedState',
+              'clearAllMeasurements',
+            ],
+          },
+        ],
+        // Redo of measurement clear: annotations are already deleted via Cornerstone memo;
+        // this only clears XState tracking context. UNTRACK_ALL would clear measurements again.
+        CLEAR_TRACKING_CONTEXT: [
+          {
+            target: 'tracking',
+            actions: ['clearContext', 'setIsDirtyToClean', 'clearDisplaySetHydratedState'],
           },
         ],
         SET_TRACKED_SERIES: [
@@ -147,6 +165,15 @@ const machineConfiguration = {
             target: 'tracking',
           },
         ],
+        CHECK_DIRTY: {
+          target: 'promptHasDirtyAnnotations',
+          cond: 'hasDirtyAndSimplified',
+        },
+        PROMPT_HYDRATE_SR: {
+          target: 'promptHydrateStructuredReport',
+          cond: 'isSimplifiedConfig',
+          actions: ['clearAllMeasurements', 'clearDisplaySetHydratedState'],
+        },
       },
     },
     promptTrackNewSeries: {
@@ -215,6 +242,16 @@ const machineConfiguration = {
       invoke: {
         src: 'promptSaveReport',
         onDone: [
+          {
+            target: 'tracking',
+            actions: [
+              'clearAllMeasurements',
+              'clearDisplaySetHydratedState',
+              'setIsDirty',
+              'updatedViewports',
+            ],
+            cond: 'simplifiedAndLoadSR',
+          },
           // "clicked the save button"
           // - should clear all measurements
           // - show DICOM SR
@@ -310,6 +347,28 @@ const machineConfiguration = {
           {
             target: 'off',
           },
+        ],
+      },
+    },
+    promptHasDirtyAnnotations: {
+      invoke: {
+        src: 'promptHasDirtyAnnotations',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: [
+              'clearAllMeasurements',
+              'clearDisplaySetHydratedState',
+              'setIsDirty',
+              'updatedViewports',
+            ],
+            cond: 'shouldSetStudyAndSeries',
+          },
+          {
+            target: 'promptSaveReport',
+            cond: 'shouldPromptSaveReport',
+          },
+          { target: 'tracking' },
         ],
       },
     },

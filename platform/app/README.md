@@ -80,7 +80,7 @@ In your cloned repository's root folder, run:
 
 ```js
 // Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 // Stands up local server to host Viewer.
 // Viewer connects to our public cloud PACS by default

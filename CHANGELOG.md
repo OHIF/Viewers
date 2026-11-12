@@ -3,6 +3,4054 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.88...v3.13.0-beta.89) (2026-06-10)
+
+
+### Bug Fixes
+
+* ohif tests to run with cornerstone 3d 5.0 ([#6043](https://github.com/OHIF/Viewers/issues/6043)) ([6dd150d](https://github.com/OHIF/Viewers/commit/6dd150d401ad73d60632a23378b7dfd4b5142690))
+
+
+
+
+
+# [3.13.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.87...v3.13.0-beta.88) (2026-06-05)
+
+
+### Bug Fixes
+
+* **security:** Patch axios vulnerabilities. ([#6063](https://github.com/OHIF/Viewers/issues/6063)) ([99c6154](https://github.com/OHIF/Viewers/commit/99c615434309b113aed9ac9a977419eeae0528cb))
+
+
+
+
+
+# [3.13.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.86...v3.13.0-beta.87) (2026-05-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.85...v3.13.0-beta.86) (2026-05-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.84...v3.13.0-beta.85) (2026-05-28)
+
+
+### Features
+
+* **WorkList:** New Study List (WorkList based on ui-next); old study list renamed to LegacyWorklist ([#6005](https://github.com/OHIF/Viewers/issues/6005)) ([daae4c1](https://github.com/OHIF/Viewers/commit/daae4c144e7cb80bbee7c05d9fceef8b332ed2a0))
+
+
+
+
+
+# [3.13.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.83...v3.13.0-beta.84) (2026-05-27)
+
+
+### Bug Fixes
+
+* **security:** Add tmp as a resolution to fix security vulnerability. ([#6044](https://github.com/OHIF/Viewers/issues/6044)) ([bdcafc1](https://github.com/OHIF/Viewers/commit/bdcafc12de5e4f73a1a96cab9c0830d49315c044))
+
+
+
+
+
+# [3.13.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.82...v3.13.0-beta.83) (2026-05-26)
+
+
+### Bug Fixes
+
+* **segmentation:** restore navigation for duplicated contour segments ([#6038](https://github.com/OHIF/Viewers/issues/6038)) ([0c1ca6b](https://github.com/OHIF/Viewers/commit/0c1ca6b04a6c1aef478c7a7d9f360f9b9c50f188))
+
+
+
+
+
+# [3.13.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.81...v3.13.0-beta.82) (2026-05-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.80...v3.13.0-beta.81) (2026-05-21)
+
+
+### Features
+
+* **tests:** Add tests for duplicating contour segments ([#6002](https://github.com/OHIF/Viewers/issues/6002)) ([2258c79](https://github.com/OHIF/Viewers/commit/2258c7957a18ed0f1a75d2bd5d379006797b2882))
+
+
+
+
+
+# [3.13.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.79...v3.13.0-beta.80) (2026-05-20)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.78...v3.13.0-beta.79) (2026-05-19)
+
+
+### Bug Fixes
+
+* **seg:** prevent viewport orientation change when loading SEG in manual grid layout ([#6021](https://github.com/OHIF/Viewers/issues/6021)) ([95251ab](https://github.com/OHIF/Viewers/commit/95251ab6709934e4ef59931379f8d9d7629f87b2))
+
+
+
+
+
+# [3.13.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.77...v3.13.0-beta.78) (2026-05-19)
+
+
+### Bug Fixes
+
+* **measurements:** read displayName in SplineROI and PlanarFreehandROI reports ([#5908](https://github.com/OHIF/Viewers/issues/5908)) ([27af682](https://github.com/OHIF/Viewers/commit/27af6821b56f2c5be3a5d4ce38d05be6fbce68f4))
+
+
+
+
+
+# [3.13.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.76...v3.13.0-beta.77) (2026-05-19)
+
+
+### Bug Fixes
+
+* **segmentation:** remove thresholdRange label in double-range tool settings ([#5931](https://github.com/OHIF/Viewers/issues/5931)) ([527cfb0](https://github.com/OHIF/Viewers/commit/527cfb0ae8c615aeaddbc7f16892ba4460a5b596))
+
+
+
+
+
+# [3.13.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.75...v3.13.0-beta.76) (2026-05-19)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.74...v3.13.0-beta.75) (2026-05-18)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.73...v3.13.0-beta.74) (2026-05-15)
+
+
+### Bug Fixes
+
+* **security:** Update various dependencies to fix security vulnerabilities. ([#6023](https://github.com/OHIF/Viewers/issues/6023)) ([55b46f3](https://github.com/OHIF/Viewers/commit/55b46f39c65a183978a44a61fb322685134f3bd6))
+
+
+
+
+
+# [3.13.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.72...v3.13.0-beta.73) (2026-05-13)
+
+
+### Features
+
+* **llm:** add instructions md file for claude and other LLM tools ([#6017](https://github.com/OHIF/Viewers/issues/6017)) ([f231eff](https://github.com/OHIF/Viewers/commit/f231eff5980495c9f3ac0bd907a03388d06c5b90))
+
+
+
+
+
+# [3.13.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.71...v3.13.0-beta.72) (2026-05-12)
+
+
+### Bug Fixes
+
+* **measurement-tracking:** restore tracked state on undo after Delete all ([#5994](https://github.com/OHIF/Viewers/issues/5994)) ([397aa4d](https://github.com/OHIF/Viewers/commit/397aa4d0e361e95dcbd83e0557a9cd84c0b8440a))
+
+
+
+
+
+# [3.13.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.70...v3.13.0-beta.71) (2026-05-07)
+
+
+### Bug Fixes
+
+* remove waitForVolumeLoad from main toolbar page object ([#6004](https://github.com/OHIF/Viewers/issues/6004)) ([37e19f7](https://github.com/OHIF/Viewers/commit/37e19f734a675a95cedc8a8acc3980816a489574))
+
+
+
+
+
+# [3.13.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.69...v3.13.0-beta.70) (2026-05-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.68...v3.13.0-beta.69) (2026-05-06)
+
+
+### Bug Fixes
+
+* **security:** Patch axios security vulnerabilities. ([#5998](https://github.com/OHIF/Viewers/issues/5998)) ([5e624f1](https://github.com/OHIF/Viewers/commit/5e624f13870cdb63300b82285b46d4b21b9d47c3))
+
+
+
+
+
+# [3.13.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.67...v3.13.0-beta.68) (2026-05-05)
+
+
+### Bug Fixes
+
+* **ToolGroupService:** Centralize tool binding persistence and provide API to add and remove persisted bindings. ([#5989](https://github.com/OHIF/Viewers/issues/5989)) ([979d619](https://github.com/OHIF/Viewers/commit/979d619f7ccb426beb75d59721b01c98175d5241))
+
+
+
+
+
+# [3.13.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.66...v3.13.0-beta.67) (2026-04-30)
+
+
+### Features
+
+* **ui-next:** Adds toggle state for ToolButton and Crosshair example ([#5914](https://github.com/OHIF/Viewers/issues/5914)) ([691e267](https://github.com/OHIF/Viewers/commit/691e26731f4f3b3957fe81fc051b09c972696cf6))
+
+
+
+
+
+# [3.13.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.65...v3.13.0-beta.66) (2026-04-29)
+
+
+### Bug Fixes
+
+* **config url:** Hardening fetch options. ([#5985](https://github.com/OHIF/Viewers/issues/5985)) ([468e573](https://github.com/OHIF/Viewers/commit/468e5734a9ab02516430cc0dab5d7f2106dea950))
+
+
+
+
+
+# [3.13.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.64...v3.13.0-beta.65) (2026-04-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.63...v3.13.0-beta.64) (2026-04-27)
+
+
+### Bug Fixes
+
+* **seg:** prevent segmentations from spreading to all viewports before hydration confirmation in 3D four-up ([#5967](https://github.com/OHIF/Viewers/issues/5967)) ([f8ccf9f](https://github.com/OHIF/Viewers/commit/f8ccf9ff2ea9ab7c38bd427514a8ae87902822a3))
+
+
+
+
+
+# [3.13.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.62...v3.13.0-beta.63) (2026-04-27)
+
+
+### Bug Fixes
+
+* **security:** refine dynamic config URL trust policy and document trusted-origin behavior ([#5973](https://github.com/OHIF/Viewers/issues/5973)) ([f3cca21](https://github.com/OHIF/Viewers/commit/f3cca21e49729fbf4bab85aa1de64b9dcfebd0ce))
+
+
+
+
+
+# [3.13.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.61...v3.13.0-beta.62) (2026-04-23)
+
+
+### Bug Fixes
+
+* **security:** Patch protobufjs for CVE-2026-41242. ([#5974](https://github.com/OHIF/Viewers/issues/5974)) ([1fc97fe](https://github.com/OHIF/Viewers/commit/1fc97fea43cc5e6689bd0076b77a278c67252af7))
+
+
+
+
+
+# [3.13.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.60...v3.13.0-beta.61) (2026-04-23)
+
+
+### Features
+
+* **slice scrollbar:** Integrate ViewportSliceProgressScrollbar with customizations and docs ([#5960](https://github.com/OHIF/Viewers/issues/5960)) ([8fc0dc1](https://github.com/OHIF/Viewers/commit/8fc0dc16e97f3262fdac902ecf2d7c20cb8f78cc))
+
+
+
+
+
+# [3.13.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.59...v3.13.0-beta.60) (2026-04-21)
+
+
+### Bug Fixes
+
+* **configuration:** Harden dynamic datasource URL trust boundaries and credential handling. ([#5963](https://github.com/OHIF/Viewers/issues/5963)) ([eede569](https://github.com/OHIF/Viewers/commit/eede569a88ed6a3177bbdea8552dfb93ca13cac5))
+
+
+
+
+
+# [3.13.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.58...v3.13.0-beta.59) (2026-04-16)
+
+
+### Bug Fixes
+
+* Use newer ONNX version and load without errors ([#5854](https://github.com/OHIF/Viewers/issues/5854)) ([cc5dc20](https://github.com/OHIF/Viewers/commit/cc5dc201649bcbfb4cfad21141dbd56000d30f53)), closes [#5875](https://github.com/OHIF/Viewers/issues/5875) [#5884](https://github.com/OHIF/Viewers/issues/5884) [#5886](https://github.com/OHIF/Viewers/issues/5886) [#5893](https://github.com/OHIF/Viewers/issues/5893) [#5874](https://github.com/OHIF/Viewers/issues/5874) [#5865](https://github.com/OHIF/Viewers/issues/5865)
+
+
+
+
+
+# [3.13.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.57...v3.13.0-beta.58) (2026-04-14)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.56...v3.13.0-beta.57) (2026-04-13)
+
+
+### Bug Fixes
+
+* Enhance multiframe instance handling and improve instance valida… ([#5956](https://github.com/OHIF/Viewers/issues/5956)) ([f5a66b9](https://github.com/OHIF/Viewers/commit/f5a66b9eea236cd3291eac857208d7465516c89a))
+
+
+
+
+
+# [3.13.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.55...v3.13.0-beta.56) (2026-04-10)
+
+
+### Bug Fixes
+
+* A couple of changes to enable cs3d integration build ([#5944](https://github.com/OHIF/Viewers/issues/5944)) ([f6bbd5c](https://github.com/OHIF/Viewers/commit/f6bbd5c779e4692dc47c93327a890661b8dcc174))
+
+
+
+
+
+# [3.13.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.54...v3.13.0-beta.55) (2026-04-10)
+
+
+### Bug Fixes
+
+* ignore auth in git ([#5955](https://github.com/OHIF/Viewers/issues/5955)) ([961eea1](https://github.com/OHIF/Viewers/commit/961eea1c39c37a940c1707c3dfafcede5f4af994))
+
+
+
+
+
+# [3.13.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.53...v3.13.0-beta.54) (2026-04-08)
+
+
+### Bug Fixes
+
+* **cornerstone:** read FrameOfReferenceUID from display set in viewport service ([#5950](https://github.com/OHIF/Viewers/issues/5950)) ([d219171](https://github.com/OHIF/Viewers/commit/d219171e25caf5a7c575080f63819d6f4fe45016))
+
+
+
+
+
+# [3.13.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.52...v3.13.0-beta.53) (2026-04-06)
+
+
+### Reverts
+
+* rename DisplaySet.frameOfReferenceUID back to FrameOfReferenceUID ([#5943](https://github.com/OHIF/Viewers/issues/5943)) ([0e933c2](https://github.com/OHIF/Viewers/commit/0e933c256e07b7cda35ed2ba3cfb1ab35d895d57))
+
+
+
+
+
+# [3.13.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.51...v3.13.0-beta.52) (2026-04-06)
+
+
+### Bug Fixes
+
+* **defaultRouteInit:** pass sorted display sets to hanging protocol for deterministic viewport order ([#5933](https://github.com/OHIF/Viewers/issues/5933)) ([68b10d3](https://github.com/OHIF/Viewers/commit/68b10d365a72d656c83a1c61624dcbd245fff5db))
+
+
+### Features
+
+* **component:** Adds SmartScrollbar to ui-next - OHIF-2558 ([#5924](https://github.com/OHIF/Viewers/issues/5924)) ([91a8715](https://github.com/OHIF/Viewers/commit/91a8715795c1501b271f10b361382331eb836bf9))
+
+
+
+
+
+# [3.13.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.50...v3.13.0-beta.51) (2026-04-03)
+
+
+### Bug Fixes
+
+* **security:** Update yarn.lock that was missed in PR [#5936](https://github.com/OHIF/Viewers/issues/5936). ([#5940](https://github.com/OHIF/Viewers/issues/5940)) ([84ddf78](https://github.com/OHIF/Viewers/commit/84ddf78c879a7cb1aa62c3aaef4428adf67065da))
+
+
+
+
+
+# [3.13.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.49...v3.13.0-beta.50) (2026-04-02)
+
+
+### Bug Fixes
+
+* **security:** update dependencies to fix security vulnerabilities ([#5936](https://github.com/OHIF/Viewers/issues/5936)) ([5358a39](https://github.com/OHIF/Viewers/commit/5358a3985a1fa87eb1e3e7493dd61254f790b6d8))
+
+
+
+
+
+# [3.13.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.48...v3.13.0-beta.49) (2026-04-02)
+
+
+### Bug Fixes
+
+* **segmentation:** restrict overlay segmentation menu to same frame of reference as viewport background display set  ([#5900](https://github.com/OHIF/Viewers/issues/5900)) ([b9029ef](https://github.com/OHIF/Viewers/commit/b9029ef6f8d63a0e36ec929310c1c5ad3f563ef8))
+
+
+
+
+
+# [3.13.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.47...v3.13.0-beta.48) (2026-04-01)
+
+
+### Bug Fixes
+
+* **measurement:** Restore viewport interactivity when deleting in-progress Spline or Livewire measurement ([#5905](https://github.com/OHIF/Viewers/issues/5905)) ([7929f08](https://github.com/OHIF/Viewers/commit/7929f0898f1bf882682a912b1c32d93d0944726f))
+
+
+
+
+
+# [3.13.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.46...v3.13.0-beta.47) (2026-03-28)
+
+
+### Bug Fixes
+
+* prevent black viewport when navigating series with client-created segmentation ([#5919](https://github.com/OHIF/Viewers/issues/5919)) ([e66fb5a](https://github.com/OHIF/Viewers/commit/e66fb5a2b8c93a60ea20d315f73def7a02ea205f))
+
+
+
+
+
+# [3.13.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.45...v3.13.0-beta.46) (2026-03-27)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.44...v3.13.0-beta.45) (2026-03-27)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.43...v3.13.0-beta.44) (2026-03-27)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.42...v3.13.0-beta.43) (2026-03-17)
+
+
+### Bug Fixes
+
+* **SR:** Added support for spline and live wire SR items. ([#5870](https://github.com/OHIF/Viewers/issues/5870)) ([1d4802c](https://github.com/OHIF/Viewers/commit/1d4802c2a38dd75dca7afca87913e100453c9135))
+
+
+
+
+
+# [3.13.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.41...v3.13.0-beta.42) (2026-03-17)
+
+
+### Features
+
+* Add combined build ([#5895](https://github.com/OHIF/Viewers/issues/5895)) ([1df671e](https://github.com/OHIF/Viewers/commit/1df671e9ab67d43f98bf09f6838ddc0a5f220277))
+
+
+
+
+
+# [3.13.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.40...v3.13.0-beta.41) (2026-03-16)
+
+
+### Bug Fixes
+
+* **sr-hydration:** enable hydration and arrow navigation for 3D SR measurements ([#5887](https://github.com/OHIF/Viewers/issues/5887)) ([7a38903](https://github.com/OHIF/Viewers/commit/7a38903b1977b1cf0f3a0ba8a4a823fac5e8fdeb))
+
+
+
+
+
+# [3.13.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.39...v3.13.0-beta.40) (2026-03-13)
+
+
+### Bug Fixes
+
+* **security:** Bump flattened version to address CVE-2026-32141. ([#5897](https://github.com/OHIF/Viewers/issues/5897)) ([d8d376e](https://github.com/OHIF/Viewers/commit/d8d376edaf9c2b7af237182657e3e2203cca5abb))
+
+
+
+
+
+# [3.13.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.38...v3.13.0-beta.39) (2026-03-13)
+
+
+### Bug Fixes
+
+* **window level:** The window level value is not displayed by default on all the viewports when selecting common/custom layout and TMTV. ([#5865](https://github.com/OHIF/Viewers/issues/5865)) ([fe1ecfe](https://github.com/OHIF/Viewers/commit/fe1ecfe0cc5d1bcf82686d821f356da8936a8c4b))
+
+
+
+
+
+# [3.13.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.37...v3.13.0-beta.38) (2026-03-12)
+
+
+### Bug Fixes
+
+* **segmentation:** Display "No description S:{series number} {modality}" for segmentations with no label. ([#5874](https://github.com/OHIF/Viewers/issues/5874)) ([7b5d0ce](https://github.com/OHIF/Viewers/commit/7b5d0ce40e5422ccfce6091ac3d7559586cbe57e))
+
+
+
+
+
+# [3.13.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.36...v3.13.0-beta.37) (2026-03-12)
+
+
+### Bug Fixes
+
+* **security:** Bump tar version to address CVE-2026-31802. ([#5893](https://github.com/OHIF/Viewers/issues/5893)) ([d015b2e](https://github.com/OHIF/Viewers/commit/d015b2e32a418042034c4f557c5a36499c72f702))
+
+
+
+
+
+# [3.13.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.35...v3.13.0-beta.36) (2026-03-11)
+
+
+### Bug Fixes
+
+* Modalities in study list should select starts with as primary ([#5886](https://github.com/OHIF/Viewers/issues/5886)) ([b83e978](https://github.com/OHIF/Viewers/commit/b83e978df8c9ffda3759378318267b8d0020653c))
+
+
+
+
+
+# [3.13.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.34...v3.13.0-beta.35) (2026-03-09)
+
+
+### Bug Fixes
+
+* **Threshold tool:** Threshold tool no longer becomes deselected when the Dynamic option is selected ([#5884](https://github.com/OHIF/Viewers/issues/5884)) ([889026f](https://github.com/OHIF/Viewers/commit/889026f8a9c20cd21c31b4a02128afd5f057b14b))
+
+
+
+
+
+# [3.13.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.33...v3.13.0-beta.34) (2026-03-09)
+
+
+### Bug Fixes
+
+* **seg hydration:** auto-hydrate RT struct on second load with disableConfirmationPrompts ([#5875](https://github.com/OHIF/Viewers/issues/5875)) ([6f773f9](https://github.com/OHIF/Viewers/commit/6f773f997214c388409f3af3e9fc0e5b84debc10))
+
+
+
+
+
+# [3.13.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.32...v3.13.0-beta.33) (2026-03-05)
+
+
+### Bug Fixes
+
+* **security:** Bump svgo and tar to fix vulnerabilities. ([#5877](https://github.com/OHIF/Viewers/issues/5877)) ([61a1fcc](https://github.com/OHIF/Viewers/commit/61a1fccd7d47965831a6c80357219eed979ce4d6))
+
+
+
+
+
+# [3.13.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.31...v3.13.0-beta.32) (2026-03-05)
+
+
+### Features
+
+* **ecg:** add DICOM ECG waveform extension ([#5856](https://github.com/OHIF/Viewers/issues/5856)) ([70f76ae](https://github.com/OHIF/Viewers/commit/70f76aeba1b27f8e4de5ec73a7b831428e38e3d2))
+
+
+
+
+
+# [3.13.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.30...v3.13.0-beta.31) (2026-03-04)
+
+
+### Bug Fixes
+
+* **microscopy:** rename measurement in microscopy mode ([#5866](https://github.com/OHIF/Viewers/issues/5866)) ([2358a73](https://github.com/OHIF/Viewers/commit/2358a73c3cd24953430064480fb9e66bfe36ea69))
+
+
+
+
+
+# [3.13.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.29...v3.13.0-beta.30) (2026-03-04)
+
+
+### Bug Fixes
+
+* **segmentation:** segment bidirectional tool error and show toast notification when no segment is drawn ([#5861](https://github.com/OHIF/Viewers/issues/5861)) ([7e10830](https://github.com/OHIF/Viewers/commit/7e10830d5802e22bda4df6a3f8008e9a414b4cd4))
+
+
+
+
+
+# [3.13.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.28...v3.13.0-beta.29) (2026-03-04)
+
+
+### Bug Fixes
+
+* **security:** Address various security vulnerabilities. ([#5869](https://github.com/OHIF/Viewers/issues/5869)) ([be8e266](https://github.com/OHIF/Viewers/commit/be8e266a80f13d03ce9dc4a21a0227d3e1bc36ac))
+
+
+
+
+
+# [3.13.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.27...v3.13.0-beta.28) (2026-03-03)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.26...v3.13.0-beta.27) (2026-03-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.25...v3.13.0-beta.26) (2026-02-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.24...v3.13.0-beta.25) (2026-02-26)
+
+
+### Bug Fixes
+
+* Update CS3D 4.18.2 ([#5837](https://github.com/OHIF/Viewers/issues/5837)) ([5370b93](https://github.com/OHIF/Viewers/commit/5370b9382e7bfddeadd69bab9e653f5f997a6e19))
+
+
+
+
+
+# [3.13.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.23...v3.13.0-beta.24) (2026-02-24)
+
+
+### Bug Fixes
+
+* prevent viewer crash when opening DICOM Tag Browser from empty viewport  ([#5827](https://github.com/OHIF/Viewers/issues/5827)) ([d11d6d4](https://github.com/OHIF/Viewers/commit/d11d6d401bc92a3870ec1089d97235b01a6b27c3))
+* **ui-next:** Add validation for opacity and border inputs in the segmentation panel - OHIF-2332 ([#5819](https://github.com/OHIF/Viewers/issues/5819)) ([a8f7099](https://github.com/OHIF/Viewers/commit/a8f709982f16983a11c780e696521df5aa05b604))
+
+
+
+
+
+# [3.13.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.22...v3.13.0-beta.23) (2026-02-23)
+
+
+### Bug Fixes
+
+* palette color 8 encoded 16 ([#5823](https://github.com/OHIF/Viewers/issues/5823)) ([eeca1f7](https://github.com/OHIF/Viewers/commit/eeca1f7a7b529d1700f5d281a6fd98074547ffe9)), closes [#5813](https://github.com/OHIF/Viewers/issues/5813)
+
+
+
+
+
+# [3.13.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.21...v3.13.0-beta.22) (2026-02-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.20...v3.13.0-beta.21) (2026-02-23)
+
+
+### Bug Fixes
+
+* **RTStruct:** RTSTRUCT contours rendered on first slice for multi-frame images without IPP ([#5811](https://github.com/OHIF/Viewers/issues/5811)) ([b5573ca](https://github.com/OHIF/Viewers/commit/b5573caaa65d0d7ff3e83df0ec70b4aa7ea898ca))
+
+
+
+
+
+# [3.13.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.19...v3.13.0-beta.20) (2026-02-21)
+
+
+### Bug Fixes
+
+* Published version should match ([#5813](https://github.com/OHIF/Viewers/issues/5813)) ([d359a3b](https://github.com/OHIF/Viewers/commit/d359a3b784227b248c5b09548db363c7f8adbcb8))
+
+
+
+
+
+# [3.13.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.18...v3.13.0-beta.19) (2026-02-20)
+
+
+### Bug Fixes
+
+* **security:**  CVE-2026-27212 patched. Various dependency updates as a result of CVE-2026-26996. ([#5830](https://github.com/OHIF/Viewers/issues/5830)) ([2722960](https://github.com/OHIF/Viewers/commit/27229609cda3162e37573418ef82ca5d4e365075))
+
+
+
+
+
+# [3.13.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.17...v3.13.0-beta.18) (2026-02-19)
+
+
+### Bug Fixes
+
+* **segmentation overlay:** update viewport ds list upon seg delete - OHIF-2425 ([#5729](https://github.com/OHIF/Viewers/issues/5729)) ([b353541](https://github.com/OHIF/Viewers/commit/b35354120a01d89b27844f967c32c052bba8b096))
+
+
+
+
+
+# [3.13.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.16...v3.13.0-beta.17) (2026-02-19)
+
+
+### Bug Fixes
+
+* Add copy to clipboard option for capture ([#5720](https://github.com/OHIF/Viewers/issues/5720)) ([53c67f3](https://github.com/OHIF/Viewers/commit/53c67f361234a0b4160c1b11fafcb143a0723336))
+
+
+
+
+
+# [3.13.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.15...v3.13.0-beta.16) (2026-02-18)
+
+
+### Bug Fixes
+
+* **security:** Bump tar to 7.5.9 and lerna to 9.0.4 to fix CVE-2026-26960. ([#5824](https://github.com/OHIF/Viewers/issues/5824)) ([3d59c0d](https://github.com/OHIF/Viewers/commit/3d59c0d9d3783336eaa8d37cfc0172818942bf00))
+
+
+
+
+
+# [3.13.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.14...v3.13.0-beta.15) (2026-02-17)
+
+
+### Bug Fixes
+
+* **dicom-tag-browser:** Prevent long series names from overlapping - OHIF-2406 ([#5809](https://github.com/OHIF/Viewers/issues/5809)) ([cca1a86](https://github.com/OHIF/Viewers/commit/cca1a8683bc7d392a3a07268f24585642d13b1cd))
+
+
+
+
+
+# [3.13.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.13...v3.13.0-beta.14) (2026-02-13)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.12...v3.13.0-beta.13) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replace hardcoded black with background color token ([#5815](https://github.com/OHIF/Viewers/issues/5815)) ([dbc31a5](https://github.com/OHIF/Viewers/commit/dbc31a5d4ec5b2238683a580af96aff23d9fafeb))
+
+
+
+
+
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+
+### Bug Fixes
+
+* **usAnnotation:** Prevent error after JSON download ([#5814](https://github.com/OHIF/Viewers/issues/5814)) ([739e323](https://github.com/OHIF/Viewers/commit/739e3239cf5765711050b673b373c0145747824f))
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replaces legacy colors with ui-next colors ([#5351](https://github.com/OHIF/Viewers/issues/5351)) ([9a2691a](https://github.com/OHIF/Viewers/commit/9a2691a71fe3723bb05cbd148968b64e5d0fa951))
+
+
+
+
+
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+
+### Bug Fixes
+
+* **microscopy:** Prevent measurement clearing on viewport resize ([#5796](https://github.com/OHIF/Viewers/issues/5796)) ([baef707](https://github.com/OHIF/Viewers/commit/baef707e46fd76b50f8b510b45da64e12d71ed0e))
+
+
+
+
+
+# [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+* Missing tag ([#5808](https://github.com/OHIF/Viewers/issues/5808)) ([c92bdd5](https://github.com/OHIF/Viewers/commit/c92bdd5b48b8805e9ea4cbac72007391b9ba0efe))
+
+
+
+
+
+# [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+
+
+
+
+
+# [3.13.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.7) (2026-02-10)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+
+
+
+
+
+# [3.13.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.5...v3.13.0-beta.6) (2026-02-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.4...v3.13.0-beta.5) (2026-02-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.3...v3.13.0-beta.4) (2026-02-10)
+
+
+### Bug Fixes
+
+* Better handle octet stream case ([#5789](https://github.com/OHIF/Viewers/issues/5789)) ([037402f](https://github.com/OHIF/Viewers/commit/037402f7f6a1fc07593be302e4f578f6c4870c6e))
+
+
+
+
+
+# [3.13.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.2...v3.13.0-beta.3) (2026-02-10)
+
+
+### Bug Fixes
+
+* **app:** display study not found message for all modes ([#5752](https://github.com/OHIF/Viewers/issues/5752)) ([7f9e59e](https://github.com/OHIF/Viewers/commit/7f9e59ee3074e3511d22c7f0075856a7bd2cc32e))
+
+
+
+
+
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* **cine:** prevent crash on second view/hydration of SR series  ([#5724](https://github.com/OHIF/Viewers/issues/5724)) ([f70c9b9](https://github.com/OHIF/Viewers/commit/f70c9b932db2bb14173acae675d38ce250d244fa))
+
+
+
+
+
+# [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* **security:** Use a resolution for axios to address CVE-2026-25639. ([#5793](https://github.com/OHIF/Viewers/issues/5793)) ([94c9e16](https://github.com/OHIF/Viewers/commit/94c9e162f3d17840c7e9659557f685ca8642d06f))
+
+
+
+
+
+# [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.134...v3.12.0-beta.135) (2026-02-05)
+
+
+### Bug Fixes
+
+* **jump-to-contour-segment:** For contours like those from RSTRUCTs, use generic jumpToSegmentCenter if a segment center is available. ([#5785](https://github.com/OHIF/Viewers/issues/5785)) ([45739b3](https://github.com/OHIF/Viewers/commit/45739b31a2c72cb646c733929f733a8e180a616c))
+
+
+
+
+
+# [3.12.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.133...v3.12.0-beta.134) (2026-02-05)
+
+
+### Bug Fixes
+
+* **HistoryMemo:** Segmentation delete wasn't remembered ([#5775](https://github.com/OHIF/Viewers/issues/5775)) ([48f2f6f](https://github.com/OHIF/Viewers/commit/48f2f6fb13f9ba0aa03ad51afd2812466bcb2f58))
+
+
+
+
+
+# [3.12.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.132...v3.12.0-beta.133) (2026-02-04)
+
+
+### Bug Fixes
+
+* **jump-to-label-map:** Use `undefined` for viewportId for arrow navigation. ([#5774](https://github.com/OHIF/Viewers/issues/5774)) ([512aa3b](https://github.com/OHIF/Viewers/commit/512aa3b07f4c783040acd67e3fd2103559a06522))
+
+
+
+
+
+# [3.12.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.131...v3.12.0-beta.132) (2026-01-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.130...v3.12.0-beta.131) (2026-01-30)
+
+
+### Bug Fixes
+
+* **segmentation:** Use jumpToSegmentNext instead of jumpToSegmentCenter for arrow navigation. ([#5759](https://github.com/OHIF/Viewers/issues/5759)) ([02423c5](https://github.com/OHIF/Viewers/commit/02423c5bf3131006df92c8054994887d1811d821))
+
+
+
+
+
+# [3.12.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.129...v3.12.0-beta.130) (2026-01-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.129](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.128...v3.12.0-beta.129) (2026-01-27)
+
+
+### Bug Fixes
+
+* Handle optional ContentSequence for NUM content items ([#5703](https://github.com/OHIF/Viewers/issues/5703)) ([6dedf55](https://github.com/OHIF/Viewers/commit/6dedf5573e78a5751bed0b79646700acedfc8a38))
+
+
+
+
+
+# [3.12.0-beta.128](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.127...v3.12.0-beta.128) (2026-01-27)
+
+
+### Bug Fixes
+
+* **TMTV:** Consider blend mode when adding segmentation representations. OHIF-2416, OHIF-2369 ([#5735](https://github.com/OHIF/Viewers/issues/5735)) ([06612fe](https://github.com/OHIF/Viewers/commit/06612fe177e2c31c33fa5c81c092b830a337cac2))
+
+
+
+
+
+# [3.12.0-beta.127](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.126...v3.12.0-beta.127) (2026-01-22)
+
+
+### Bug Fixes
+
+* Navigate to contour should work ([#5718](https://github.com/OHIF/Viewers/issues/5718)) ([0fd517d](https://github.com/OHIF/Viewers/commit/0fd517d6ab583652a3667f9af49413648f2755db))
+
+
+
+
+
+# [3.12.0-beta.126](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.125...v3.12.0-beta.126) (2026-01-22)
+
+
+### Bug Fixes
+
+* the null value check issue in image spacing calculation ([#5726](https://github.com/OHIF/Viewers/issues/5726)) ([afe184e](https://github.com/OHIF/Viewers/commit/afe184ec78dcc8f780e64687e06670365beeb77e))
+
+
+
+
+
+# [3.12.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.124...v3.12.0-beta.125) (2026-01-21)
+
+
+### Bug Fixes
+
+* **security:** Ignore CVE-2026-23745, CVE-2026-23950 and CVE-2024-28863 because they are limited to build/dev environments. ([#5733](https://github.com/OHIF/Viewers/issues/5733)) ([320f0a7](https://github.com/OHIF/Viewers/commit/320f0a7463ad95251842ece6cd329bba7b6b2a97))
+
+
+
+
+
+# [3.12.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.123...v3.12.0-beta.124) (2026-01-16)
+
+
+### Bug Fixes
+
+* **microscopy:** Update microscope to 0.48.17 to fix a measurement exception. ([#5710](https://github.com/OHIF/Viewers/issues/5710)) ([4a1f509](https://github.com/OHIF/Viewers/commit/4a1f5098654dc7afef4c135f2e2198a0e785f4b9))
+
+
+
+
+
+# [3.12.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.122...v3.12.0-beta.123) (2026-01-14)
+
+
+### Bug Fixes
+
+* **window-level-action-menu:** Window level menu no longer needs two clicks to open after it is used ([#5711](https://github.com/OHIF/Viewers/issues/5711)) ([eb6b814](https://github.com/OHIF/Viewers/commit/eb6b814fc9c35feb6aa5f4378632b53202b0d8a3))
+
+
+
+
+
+# [3.12.0-beta.122](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.121...v3.12.0-beta.122) (2026-01-13)
+
+
+### Bug Fixes
+
+* **segmentation:** List surface representations in the segmentation table for 3D views. ([#5700](https://github.com/OHIF/Viewers/issues/5700)) ([82e6a18](https://github.com/OHIF/Viewers/commit/82e6a18735b2e2278d6b95037d82bd3cb529104d))
+
+
+
+
+
+# [3.12.0-beta.121](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.120...v3.12.0-beta.121) (2026-01-12)
+
+
+### Bug Fixes
+
+* **segmentation:** Update cornerstone dependencies to fix a segmentation exception after capture. ([#5701](https://github.com/OHIF/Viewers/issues/5701)) ([aba4855](https://github.com/OHIF/Viewers/commit/aba48552765d03cf82e6a92cdd443b246560c4fd))
+
+
+
+
+
+# [3.12.0-beta.120](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.119...v3.12.0-beta.120) (2026-01-09)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.119](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.118...v3.12.0-beta.119) (2026-01-08)
+
+
+### Bug Fixes
+
+* **DicomTagBrowser:** Check for null metadata. ([#5696](https://github.com/OHIF/Viewers/issues/5696)) ([6429a55](https://github.com/OHIF/Viewers/commit/6429a5518a56f7fbd9d948510c52e0d467c9ca57))
+
+
+
+
+
+# [3.12.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.117...v3.12.0-beta.118) (2026-01-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Use active segmentation for navigation. ([#5692](https://github.com/OHIF/Viewers/issues/5692)) ([ecc74a5](https://github.com/OHIF/Viewers/commit/ecc74a53e097b13851ea8f7be0cabab6b0d82b7f))
+
+
+
+
+
+# [3.12.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.116...v3.12.0-beta.117) (2026-01-06)
+
+
+### Bug Fixes
+
+* **capture:** Ensure download filename has the correct extension. ([#5691](https://github.com/OHIF/Viewers/issues/5691)) ([38a8406](https://github.com/OHIF/Viewers/commit/38a8406a66a5d37c403d1dbd09d7e1a62affff15))
+
+
+
+
+
+# [3.12.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.115...v3.12.0-beta.116) (2026-01-06)
+
+
+### Bug Fixes
+
+* NM multiframe with TimeSlotVector ([#5666](https://github.com/OHIF/Viewers/issues/5666)) ([a74648f](https://github.com/OHIF/Viewers/commit/a74648f8ec23c01b91588ff7c6ee1620ca456ed7))
+
+
+
+
+
+# [3.12.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.114...v3.12.0-beta.115) (2026-01-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.113...v3.12.0-beta.114) (2026-01-05)
+
+
+### Bug Fixes
+
+* **security:** update qs package to fix vulnerability CVE-2025-15284 ([#5686](https://github.com/OHIF/Viewers/issues/5686)) ([ca364a3](https://github.com/OHIF/Viewers/commit/ca364a3af7a29dc98d5c5b8e4c73abebc107c7ce))
+
+
+
+
+
+# [3.12.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.112...v3.12.0-beta.113) (2025-12-19)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.111...v3.12.0-beta.112) (2025-12-19)
+
+
+### Bug Fixes
+
+* pass metadata to viewport orientation matching ([#5667](https://github.com/OHIF/Viewers/issues/5667)) ([cd253f2](https://github.com/OHIF/Viewers/commit/cd253f20bde68f33a01ac1fe5e1cf6b987d9d5e2))
+
+
+
+
+
+# [3.12.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.110...v3.12.0-beta.111) (2025-12-18)
+
+
+### Bug Fixes
+
+* **segmentation:** Update cornerstone dependencies to fix segment visibility issue. ([#5664](https://github.com/OHIF/Viewers/issues/5664)) ([3440f66](https://github.com/OHIF/Viewers/commit/3440f66ebd0900c0f5b1a5edbdf6f3b5fc72bbcf))
+
+
+
+
+
+# [3.12.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.109...v3.12.0-beta.110) (2025-12-18)
+
+
+### Bug Fixes
+
+* prevent annotation from appearing in active viewport when switching series with different Frame of Reference UID ([#5630](https://github.com/OHIF/Viewers/issues/5630)) ([658994c](https://github.com/OHIF/Viewers/commit/658994c854a03203054168dcfd383c0a6e320df0))
+
+
+
+
+
+# [3.12.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.108...v3.12.0-beta.109) (2025-12-18)
+
+
+### Bug Fixes
+
+* **segmentation:** When setting the segmentation style and the representation type is not provided, apply the style to all representation types. ([#5662](https://github.com/OHIF/Viewers/issues/5662)) ([f3beb8e](https://github.com/OHIF/Viewers/commit/f3beb8e7115429bdb0e37f4c61491d0b28a2f6b6))
+
+
+
+
+
+# [3.12.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.107...v3.12.0-beta.108) (2025-12-17)
+
+
+### Bug Fixes
+
+* Jump to measurement from measurement panel after rotating viewport ([#5090](https://github.com/OHIF/Viewers/issues/5090)) ([ef98516](https://github.com/OHIF/Viewers/commit/ef98516b4fcd76f796bfd5560f98c968e48df645))
+
+
+
+
+
+# [3.12.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.106...v3.12.0-beta.107) (2025-12-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.105...v3.12.0-beta.106) (2025-12-16)
+
+
+### Bug Fixes
+
+* preclinical mode not working ([#5631](https://github.com/OHIF/Viewers/issues/5631)) ([2de81ef](https://github.com/OHIF/Viewers/commit/2de81efa7e6be534972cd763271c038b293d86f0))
+
+
+
+
+
+# [3.12.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.104...v3.12.0-beta.105) (2025-12-15)
+
+
+### Bug Fixes
+
+* seg sync for data without FOR ([#5565](https://github.com/OHIF/Viewers/issues/5565)) ([6c628e0](https://github.com/OHIF/Viewers/commit/6c628e09376a0371a84ea55bcecfd25368ee43e8))
+
+
+
+
+
+# [3.12.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.103...v3.12.0-beta.104) (2025-12-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.102...v3.12.0-beta.103) (2025-12-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.101...v3.12.0-beta.102) (2025-12-10)
+
+
+### Bug Fixes
+
+* **DataSource:** migrate configuration dialog to ui-next components ([#5626](https://github.com/OHIF/Viewers/issues/5626)) ([c0f39ae](https://github.com/OHIF/Viewers/commit/c0f39aeb51dc5abad6381706eaa0ac69a54979f2))
+* **routes:** display 404 feedback page for unmatched URLs ([#5627](https://github.com/OHIF/Viewers/issues/5627)) ([eef755e](https://github.com/OHIF/Viewers/commit/eef755ef05e38d5271b1c79e4dd191d723895470))
+
+
+
+
+
+# [3.12.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.100...v3.12.0-beta.101) (2025-12-09)
+
+
+### Bug Fixes
+
+* **seg-viewport:** add guard for missing reference display set handler to prevent viewport crash ([#5618](https://github.com/OHIF/Viewers/issues/5618)) ([8dde223](https://github.com/OHIF/Viewers/commit/8dde2237a2c1123fc448ae8b68e2f59af376b294))
+
+
+
+
+
+# [3.12.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.99...v3.12.0-beta.100) (2025-12-05)
+
+
+### Features
+
+* **notification:** add custom notification component support ([#5605](https://github.com/OHIF/Viewers/issues/5605)) ([c4e5a46](https://github.com/OHIF/Viewers/commit/c4e5a4616db87b39df5e16b75f1ba3c18407468f))
+
+
+
+
+
+# [3.12.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.98...v3.12.0-beta.99) (2025-12-04)
+
+
+### Bug Fixes
+
+* Initial sort not consistent ([#5224](https://github.com/OHIF/Viewers/issues/5224)) ([77f9f8e](https://github.com/OHIF/Viewers/commit/77f9f8e1c4af6b5d22ecf9332b5edf503cd5b848))
+
+
+
+
+
+# [3.12.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.97...v3.12.0-beta.98) (2025-12-03)
+
+
+### Bug Fixes
+
+* **clipboard:** Adds tooltip clipboard icon feedback when copy fails ([#5609](https://github.com/OHIF/Viewers/issues/5609)) ([6566354](https://github.com/OHIF/Viewers/commit/6566354986583e5d7db01c8734e282faf7a072b9))
+
+
+
+
+
+# [3.12.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.96...v3.12.0-beta.97) (2025-12-03)
+
+
+### Bug Fixes
+
+* skip VOI sync for empty viewports ([#5599](https://github.com/OHIF/Viewers/issues/5599)) ([1aa4431](https://github.com/OHIF/Viewers/commit/1aa443112186851855a638ab974a3060c3e28ea0))
+
+
+
+
+
+# [3.12.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.95...v3.12.0-beta.96) (2025-12-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.94...v3.12.0-beta.95) (2025-12-02)
+
+
+### Bug Fixes
+
+* sculptor tool fixes ([#5595](https://github.com/OHIF/Viewers/issues/5595)) ([4471416](https://github.com/OHIF/Viewers/commit/4471416c30bf80d9f6766660d103f28c83ba7bb3))
+
+
+
+
+
+# [3.12.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.93...v3.12.0-beta.94) (2025-12-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.92...v3.12.0-beta.93) (2025-11-25)
+
+
+### Features
+
+* tooltips for tool settings ([#5586](https://github.com/OHIF/Viewers/issues/5586)) ([411553e](https://github.com/OHIF/Viewers/commit/411553ee916b8a63b2a934a7e1274bc449041016))
+
+
+
+
+
+# [3.12.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.91...v3.12.0-beta.92) (2025-11-24)
+
+
+### Bug Fixes
+
+* **docs:** Empty commit as an attempt to fix the docs build. ([#5582](https://github.com/OHIF/Viewers/issues/5582)) ([94b0358](https://github.com/OHIF/Viewers/commit/94b0358f18f81fa2822a208d68decfce076ef577))
+
+
+
+
+
+# [3.12.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.90...v3.12.0-beta.91) (2025-11-21)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.89...v3.12.0-beta.90) (2025-11-21)
+
+
+### Bug Fixes
+
+* **DicomUpload:** Switch to use ui-next components and colors ([#5576](https://github.com/OHIF/Viewers/issues/5576)) ([62d6bf4](https://github.com/OHIF/Viewers/commit/62d6bf437b167ac3e60a0f134869c9f96d199d0f))
+
+
+
+
+
+# [3.12.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.88...v3.12.0-beta.89) (2025-11-20)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.87...v3.12.0-beta.88) (2025-11-20)
+
+
+### Bug Fixes
+
+* Remove dead code and fix rectangle roi rehydration ([#5490](https://github.com/OHIF/Viewers/issues/5490)) ([9ca02b4](https://github.com/OHIF/Viewers/commit/9ca02b4071f77600f7dcd87930fecdcf3d1c249f))
+
+
+
+
+
+# [3.12.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.86...v3.12.0-beta.87) (2025-11-19)
+
+
+### Bug Fixes
+
+* **SegmentationStyle:** Fix inactive contour visibility and styling. ([#5563](https://github.com/OHIF/Viewers/issues/5563)) ([5c17c26](https://github.com/OHIF/Viewers/commit/5c17c262eaa5c1229033cfff4b3e7709e874611f))
+
+
+
+
+
+# [3.12.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.85...v3.12.0-beta.86) (2025-11-13)
+
+
+### Bug Fixes
+
+* **segmentation:** Allow for manually added label map and contour segmentations to be used as viewport data overlays. ([#5562](https://github.com/OHIF/Viewers/issues/5562)) ([02f6744](https://github.com/OHIF/Viewers/commit/02f6744dab993f16cf2516fd5f657e0743e3fa42))
+
+
+
+
+
+# [3.12.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.84...v3.12.0-beta.85) (2025-11-11)
+
+
+### Bug Fixes
+
+* **interpolation:** Auto accept interpolation when the interpolation process is completed. ([#5555](https://github.com/OHIF/Viewers/issues/5555)) ([834ae3c](https://github.com/OHIF/Viewers/commit/834ae3c762ca309187afebdf77bad1ad9a57f03f))
+
+
+
+
+
+# [3.12.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.83...v3.12.0-beta.84) (2025-11-10)
+
+
+### Bug Fixes
+
+* **dev:** update webpack proxy config syntax for Orthanc dev mode ([#5531](https://github.com/OHIF/Viewers/issues/5531)) ([58aa0d1](https://github.com/OHIF/Viewers/commit/58aa0d1eaae2e1a8103e6096864a4e5d7baf090e))
+
+
+
+
+
+# [3.12.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.82...v3.12.0-beta.83) (2025-11-06)
+
+
+### Features
+
+* **metadata:** metadata access improvement ([#5292](https://github.com/OHIF/Viewers/issues/5292)) ([16233d9](https://github.com/OHIF/Viewers/commit/16233d980f17abfc30461b46c6b1888be10c7840))
+
+
+
+
+
+# [3.12.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.81...v3.12.0-beta.82) (2025-11-05)
+
+
+### Bug Fixes
+
+* **segmentation:** When synchronizing a segmentation representation, use the type of the source viewport segmentation to determine the type of the target viewport segmentation ([#5546](https://github.com/OHIF/Viewers/issues/5546)) ([a0556b0](https://github.com/OHIF/Viewers/commit/a0556b08be98e0bba950ad7b9b575d7b971104ba))
+
+
+
+
+
+# [3.12.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.80...v3.12.0-beta.81) (2025-11-05)
+
+
+### Bug Fixes
+
+* **SegmentationTools:** [Bug] Changes of brush/eraser radius with hotkey do not reflect on segmentation tool ([#5535](https://github.com/OHIF/Viewers/issues/5535)) ([29bd87c](https://github.com/OHIF/Viewers/commit/29bd87c8c0592a9a1350e687b862f5452627aece))
+
+
+
+
+
+# [3.12.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.79...v3.12.0-beta.80) (2025-11-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.78...v3.12.0-beta.79) (2025-10-30)
+
+
+### Bug Fixes
+
+* **security:** Exact versioning and docs dependabot alerts ([#5536](https://github.com/OHIF/Viewers/issues/5536)) ([000e42e](https://github.com/OHIF/Viewers/commit/000e42e9a6eaa4f0878cbf877f03b09a459ad18e))
+
+
+
+
+
+# [3.12.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.77...v3.12.0-beta.78) (2025-10-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.76...v3.12.0-beta.77) (2025-10-28)
+
+
+### Bug Fixes
+
+* **3DSegmentation:** [Bug] The viewports become blank when loading the seg file in advanced layout after closing the seg file from any other advanced layout ([#5505](https://github.com/OHIF/Viewers/issues/5505)) ([76f7d4e](https://github.com/OHIF/Viewers/commit/76f7d4e23aa359a3397b10adf0bf09df3763f190))
+
+
+
+
+
+# [3.12.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.75...v3.12.0-beta.76) (2025-10-27)
+
+
+### Bug Fixes
+
+* **security:** Addressed dependabot alert CVE-2025-59288 concerning playwright ([#5527](https://github.com/OHIF/Viewers/issues/5527)) ([1f11c83](https://github.com/OHIF/Viewers/commit/1f11c83006bff98cb8434f0662b4de55d5b9bf78))
+
+
+
+
+
+# [3.12.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.74...v3.12.0-beta.75) (2025-10-24)
+
+
+### Bug Fixes
+
+* **security:** For bun, enforce frozen lockfile. For yarn, strongly suggest using frozen lockfile. ([#5508](https://github.com/OHIF/Viewers/issues/5508)) ([1009c60](https://github.com/OHIF/Viewers/commit/1009c6091107d2db0768622120f916208a391343))
+
+
+
+
+
+# [3.12.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.73...v3.12.0-beta.74) (2025-10-23)
+
+
+### Features
+
+* **jpeg2000:** Add 16-bit RGB support to JPEG2000 decoder  ([#5519](https://github.com/OHIF/Viewers/issues/5519)) ([a154443](https://github.com/OHIF/Viewers/commit/a1544432db42bf77864bb7df2f757cae819a4b4d))
+
+
+
+
+
+# [3.12.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.72...v3.12.0-beta.73) (2025-10-22)
+
+
+### Bug Fixes
+
+* Fixed the tooltip text of the window button, it was mistakenly written in Chinese in the en-us json ([#5513](https://github.com/OHIF/Viewers/issues/5513)) ([8b9445c](https://github.com/OHIF/Viewers/commit/8b9445c442d0a40b7e4393614313192bd006461b))
+
+
+
+
+
+# [3.12.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.71...v3.12.0-beta.72) (2025-10-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.70...v3.12.0-beta.71) (2025-10-21)
+
+
+### Bug Fixes
+
+* **segmentation:** Fixed the manual scrolling of the segments list and implemented automatic scrolling to the active segment. ([#5510](https://github.com/OHIF/Viewers/issues/5510)) ([1df4f84](https://github.com/OHIF/Viewers/commit/1df4f843fe3c377643938563ff9e2e4f930d8537))
+
+
+
+
+
+# [3.12.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.69...v3.12.0-beta.70) (2025-10-20)
+
+
+### Bug Fixes
+
+* **rendering:** Fix palette color LUT conversion causing black images ([#5509](https://github.com/OHIF/Viewers/issues/5509)) ([ffd9ec3](https://github.com/OHIF/Viewers/commit/ffd9ec32730580e266ffae365a10ac3e524dd6cf))
+
+
+
+
+
+# [3.12.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.68...v3.12.0-beta.69) (2025-10-20)
+
+
+### Bug Fixes
+
+* Pass the correct sop uid + frame for rehydration to prevent associating rehydrated measurements with the wrong data ([#5506](https://github.com/OHIF/Viewers/issues/5506)) ([5037802](https://github.com/OHIF/Viewers/commit/503780247ce7228c602a539fd88ea374e7d0d42f)), closes [#2404](https://github.com/OHIF/Viewers/issues/2404)
+
+
+
+
+
+# [3.12.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.67...v3.12.0-beta.68) (2025-10-18)
+
+
+### Bug Fixes
+
+* **segmentation:** Lock all rehydrated segmentation segments when panelSegmentation.disableEditing is true. ([#5503](https://github.com/OHIF/Viewers/issues/5503)) ([170e860](https://github.com/OHIF/Viewers/commit/170e860aa1b786ab6056cf31076804302a2bc462))
+
+
+
+
+
+# [3.12.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.66...v3.12.0-beta.67) (2025-10-17)
+
+
+### Bug Fixes
+
+* **ErrorBoundary:** Allow for details to be shown in production. ([#5504](https://github.com/OHIF/Viewers/issues/5504)) ([4620cc3](https://github.com/OHIF/Viewers/commit/4620cc3acf89f218c3feaaf4c153a3dc8b023b23))
+
+
+
+
+
+# [3.12.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.65...v3.12.0-beta.66) (2025-10-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.64...v3.12.0-beta.65) (2025-10-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.63...v3.12.0-beta.64) (2025-10-15)
+
+
+### Bug Fixes
+
+* **docker:** Use bun version 1.2.23 for docker build. ([#5501](https://github.com/OHIF/Viewers/issues/5501)) ([86e924f](https://github.com/OHIF/Viewers/commit/86e924fb88cc146f91c7d826ee071e451de47942))
+
+
+
+
+
+# [3.12.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.62...v3.12.0-beta.63) (2025-10-15)
+
+
+### Bug Fixes
+
+* Segmentation not displayed and unable to draw segments in volume viewport after converting Labelmap to Surface ([#5488](https://github.com/OHIF/Viewers/issues/5488)) ([faea09e](https://github.com/OHIF/Viewers/commit/faea09e7ef2667aad5cef1efc2a6516677ca2915))
+
+
+
+
+
+# [3.12.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.61...v3.12.0-beta.62) (2025-10-15)
+
+
+### Bug Fixes
+
+* **segmentationService:** prevent no representation crash ([#5495](https://github.com/OHIF/Viewers/issues/5495)) ([3137aed](https://github.com/OHIF/Viewers/commit/3137aed0170196a61e16c6dac0c15bcc41691919))
+
+
+
+
+
+# [3.12.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.60...v3.12.0-beta.61) (2025-10-15)
+
+
+### Bug Fixes
+
+* **docs:** Set exact version for glob. ([#5497](https://github.com/OHIF/Viewers/issues/5497)) ([0d2f4e7](https://github.com/OHIF/Viewers/commit/0d2f4e715a941fa458ebf8e64972088580a04952))
+
+
+
+
+
+# [3.12.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.59...v3.12.0-beta.60) (2025-10-15)
+
+
+### Bug Fixes
+
+* **security:** Run bun audit before bun install. ([#5496](https://github.com/OHIF/Viewers/issues/5496)) ([fbd9371](https://github.com/OHIF/Viewers/commit/fbd9371884d0e87376d67eb98c17a4d62e4e6dd1))
+
+
+
+
+
+# [3.12.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.58...v3.12.0-beta.59) (2025-10-14)
+
+
+### Bug Fixes
+
+* **security:** Use exact versioning for dependencies in package.json files. ([#5494](https://github.com/OHIF/Viewers/issues/5494)) ([c7d2017](https://github.com/OHIF/Viewers/commit/c7d2017f081c5803a70bab6c75bba0c975028125))
+
+
+
+
+
+# [3.12.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.57...v3.12.0-beta.58) (2025-10-14)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.56...v3.12.0-beta.57) (2025-10-14)
+
+
+### Bug Fixes
+
+* **bun:** Use fixed bun version ([#5493](https://github.com/OHIF/Viewers/issues/5493)) ([3fe67d5](https://github.com/OHIF/Viewers/commit/3fe67d5c98a22edc32cb0d3de5edc05b722dd68e))
+
+
+
+
+
+# [3.12.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.55...v3.12.0-beta.56) (2025-10-10)
+
+
+### Bug Fixes
+
+* Update Dockerfile ([#5484](https://github.com/OHIF/Viewers/issues/5484)) ([41c0287](https://github.com/OHIF/Viewers/commit/41c028781b80f0ca80f4d6cde3ca8e7958f1baed))
+
+
+
+
+
+# [3.12.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.54...v3.12.0-beta.55) (2025-10-09)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.53...v3.12.0-beta.54) (2025-10-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.52...v3.12.0-beta.53) (2025-10-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.51...v3.12.0-beta.52) (2025-10-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Segmentation not displayed and unable to draw segments when switching back to volume/stack viewport from 3D viewport ([#5430](https://github.com/OHIF/Viewers/issues/5430)) ([78df8ff](https://github.com/OHIF/Viewers/commit/78df8ff03a371904a390c63a95628d5511dad136))
+
+
+
+
+
+# [3.12.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.50...v3.12.0-beta.51) (2025-10-07)
+
+
+### Bug Fixes
+
+* validation for Percentage of Max SUV input field in TMTV module ([#5417](https://github.com/OHIF/Viewers/issues/5417)) ([5040c94](https://github.com/OHIF/Viewers/commit/5040c947d2f47e5ec66285fa353e3e0ffd127ba7))
+
+
+
+
+
+# [3.12.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.49...v3.12.0-beta.50) (2025-10-07)
+
+
+### Bug Fixes
+
+* **Segmentation:** [Bug [#5420](https://github.com/OHIF/Viewers/issues/5420)] Segmentation color resets after using toggleOneUp ([#5465](https://github.com/OHIF/Viewers/issues/5465)) ([2c6ce21](https://github.com/OHIF/Viewers/commit/2c6ce21c8f79f8b3e6dc47b5aa6f717b6b5cbd2a))
+
+
+
+
+
+# [3.12.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.48...v3.12.0-beta.49) (2025-10-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.47...v3.12.0-beta.48) (2025-10-07)
+
+
+### Bug Fixes
+
+* **measurementTrackingMachine:** remove unreachable states ([#5460](https://github.com/OHIF/Viewers/issues/5460)) ([7f12f39](https://github.com/OHIF/Viewers/commit/7f12f398fb145a31e5557dbee51c0a9b0f40a35b))
+
+
+
+
+
+# [3.12.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.46...v3.12.0-beta.47) (2025-10-07)
+
+
+### Bug Fixes
+
+* **toolbar:** prevent duplicate command execution on repeated interactions ([#5456](https://github.com/OHIF/Viewers/issues/5456)) ([4d04dd5](https://github.com/OHIF/Viewers/commit/4d04dd5651f4cf8dcaf4732baee5e218e92bd3c1))
+
+
+
+
+
+# [3.12.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.45...v3.12.0-beta.46) (2025-10-06)
+
+
+### Bug Fixes
+
+* viewport ready event firing logic ([#5462](https://github.com/OHIF/Viewers/issues/5462)) ([d2ae13b](https://github.com/OHIF/Viewers/commit/d2ae13b03f21e3ab9545d50d7403ec52004bfbfc))
+
+
+
+
+
+# [3.12.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.44...v3.12.0-beta.45) (2025-10-06)
+
+
+### Bug Fixes
+
+* **router:** opt in to React Router v7 future flags ([#5461](https://github.com/OHIF/Viewers/issues/5461)) ([e2964bf](https://github.com/OHIF/Viewers/commit/e2964bf66947d18af06f292d9395b465545fdf9d))
+
+
+
+
+
+# [3.12.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.43...v3.12.0-beta.44) (2025-10-06)
+
+
+### Bug Fixes
+
+* Safely handle missing active viewport ([#5448](https://github.com/OHIF/Viewers/issues/5448)) ([792db26](https://github.com/OHIF/Viewers/commit/792db26ff1591f9e054486f1bee01c422e774101))
+
+
+
+
+
+# [3.12.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.42...v3.12.0-beta.43) (2025-10-06)
+
+
+### Features
+
+* **MeasurementService:** add rendering of unmapped measurements  ([#5416](https://github.com/OHIF/Viewers/issues/5416)) ([851e74d](https://github.com/OHIF/Viewers/commit/851e74d7b867a806befb5d85fd71ff9a75e9f2d2))
+
+
+
+
+
+# [3.12.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.41...v3.12.0-beta.42) (2025-10-03)
+
+
+### Bug Fixes
+
+* duplicate segmentation entries on layout switch ([#5458](https://github.com/OHIF/Viewers/issues/5458)) ([9e951e8](https://github.com/OHIF/Viewers/commit/9e951e88005af505ae0c07fbcd3366de12b773dd))
+
+
+
+
+
+# [3.12.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.40...v3.12.0-beta.41) (2025-10-03)
+
+
+### Bug Fixes
+
+* study browser mode for multiple studies ([#5457](https://github.com/OHIF/Viewers/issues/5457)) ([6a1df9d](https://github.com/OHIF/Viewers/commit/6a1df9de4ad3c10a4653f18e03aff6bda4962fd1))
+
+
+
+
+
+# [3.12.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.39...v3.12.0-beta.40) (2025-10-02)
+
+
+### Bug Fixes
+
+* **studyBrowserCustomization:** fix thumbnail menu item actions in study browser ([#5283](https://github.com/OHIF/Viewers/issues/5283)) ([2f28a0d](https://github.com/OHIF/Viewers/commit/2f28a0deab5e43f432bbd9b5989928c9b0450278))
+
+
+
+
+
+# [3.12.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.38...v3.12.0-beta.39) (2025-10-01)
+
+
+### Features
+
+* Add inherit from basic/longitudinal modes ([#5435](https://github.com/OHIF/Viewers/issues/5435)) ([9ad0d7f](https://github.com/OHIF/Viewers/commit/9ad0d7fc8cf34867fa2cfc2bf2b2f63451ec03e5))
+
+
+
+
+
+# [3.12.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.37...v3.12.0-beta.38) (2025-09-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.36...v3.12.0-beta.37) (2025-09-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.35...v3.12.0-beta.36) (2025-09-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.34...v3.12.0-beta.35) (2025-09-29)
+
+
+### Bug Fixes
+
+* **segmentation:** Restored segment label tool in longitudinal mode. ([#5443](https://github.com/OHIF/Viewers/issues/5443)) ([dd86a8e](https://github.com/OHIF/Viewers/commit/dd86a8eabd0712d25e7652a242377fe09597e8d5))
+
+
+
+
+
+# [3.12.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.33...v3.12.0-beta.34) (2025-09-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.32...v3.12.0-beta.33) (2025-09-29)
+
+
+### Bug Fixes
+
+* **security:** Removed dependency on tar-fs by removing dependencies on storybook and sharp. ([#5438](https://github.com/OHIF/Viewers/issues/5438)) ([80f314a](https://github.com/OHIF/Viewers/commit/80f314a422ec45fff6cdd5869f4293a110d00125))
+
+
+
+
+
+# [3.12.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.31...v3.12.0-beta.32) (2025-09-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.30...v3.12.0-beta.31) (2025-09-25)
+
+
+### Bug Fixes
+
+* Improve rt handling for bulkdata ([#5415](https://github.com/OHIF/Viewers/issues/5415)) ([d88a341](https://github.com/OHIF/Viewers/commit/d88a341884f7361865bc10159c1a82633667ab5b))
+
+
+
+
+
+# [3.12.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.29...v3.12.0-beta.30) (2025-09-25)
+
+
+### Bug Fixes
+
+* **i18n:** Add and update i18n Translation for Toolbar Tool Names ([#5392](https://github.com/OHIF/Viewers/issues/5392)) ([7783d0f](https://github.com/OHIF/Viewers/commit/7783d0f558bbb7016c29513b6fe76ed069dbd75c))
+
+
+
+
+
+# [3.12.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.28...v3.12.0-beta.29) (2025-09-22)
+
+
+### Features
+
+* **Segmentation:** Segmentation highlight animation function selection ([#5401](https://github.com/OHIF/Viewers/issues/5401)) ([69dbe27](https://github.com/OHIF/Viewers/commit/69dbe2778493cdfc7a8da5e757c95217bb31edc2))
+
+
+
+
+
+# [3.12.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.27...v3.12.0-beta.28) (2025-09-19)
+
+
+### Bug Fixes
+
+* **SegmentationService:** _getSegmentCenter wrongly handling seg center availability ([#5396](https://github.com/OHIF/Viewers/issues/5396)) ([74b82bd](https://github.com/OHIF/Viewers/commit/74b82bd93442411ad68f4872992126c40321eb9e))
+
+
+
+
+
+# [3.12.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.26...v3.12.0-beta.27) (2025-09-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.25...v3.12.0-beta.26) (2025-09-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.24...v3.12.0-beta.25) (2025-09-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.23...v3.12.0-beta.24) (2025-09-10)
+
+
+### Bug Fixes
+
+* **ErrorBoundary:** Fixing console errors and Improving error logging for better developer experience ([#5378](https://github.com/OHIF/Viewers/issues/5378)) ([56c5828](https://github.com/OHIF/Viewers/commit/56c5828b02d53bfd17182bb8d0c126b7cd4f400e))
+
+
+
+
+
+# [3.12.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.22...v3.12.0-beta.23) (2025-09-05)
+
+
+### Bug Fixes
+
+* **cornerstone-dicom-rt:** adding caching usage to cornerstone-dicom-rt SOP Class Handler ([#5387](https://github.com/OHIF/Viewers/issues/5387)) ([d6ea179](https://github.com/OHIF/Viewers/commit/d6ea179ac43a47d4011b8dcaf59d79d99382d6c8))
+
+
+
+
+
+# [3.12.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.21...v3.12.0-beta.22) (2025-08-29)
+
+
+### Bug Fixes
+
+* **oidc:** resolve navigation throttling and blank screen during sign-in/sign-out with Keycloak + dcm4chee + Traefik ([#5373](https://github.com/OHIF/Viewers/issues/5373)) ([79473c2](https://github.com/OHIF/Viewers/commit/79473c2ea4196b758614480860a8c596730b4147))
+
+
+
+
+
+# [3.12.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.20...v3.12.0-beta.21) (2025-08-29)
+
+
+### Bug Fixes
+
+* routerBasename declaration location ([#5347](https://github.com/OHIF/Viewers/issues/5347)) ([0f6f2bb](https://github.com/OHIF/Viewers/commit/0f6f2bb432d7021d3a92b38b58de51a380d9b0c9))
+
+
+
+
+
+# [3.12.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.19...v3.12.0-beta.20) (2025-08-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.18...v3.12.0-beta.19) (2025-08-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.17...v3.12.0-beta.18) (2025-08-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.16...v3.12.0-beta.17) (2025-08-28)
+
+
+### Bug Fixes
+
+* seg preview ([#5338](https://github.com/OHIF/Viewers/issues/5338)) ([d91cc23](https://github.com/OHIF/Viewers/commit/d91cc230e5231ca32ee28736f661a1497f7834c5))
+
+
+
+
+
+# [3.12.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.15...v3.12.0-beta.16) (2025-08-25)
+
+
+### Bug Fixes
+
+* docker deploy ([#5359](https://github.com/OHIF/Viewers/issues/5359)) ([368a176](https://github.com/OHIF/Viewers/commit/368a176c093aa2ccf4197c46543209d5ff69939a))
+
+
+
+
+
+# [3.12.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.14...v3.12.0-beta.15) (2025-08-25)
+
+
+### Bug Fixes
+
+* Docker build failure due to missing lerna command ([#5357](https://github.com/OHIF/Viewers/issues/5357)) ([bedb185](https://github.com/OHIF/Viewers/commit/bedb1854f96928f6db5707dce74ea75b1445e9bd))
+
+
+
+
+
+# [3.12.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.13...v3.12.0-beta.14) (2025-08-25)
+
+
+### Bug Fixes
+
+* local ModalitiesInStudy check ([#5285](https://github.com/OHIF/Viewers/issues/5285)) ([d269404](https://github.com/OHIF/Viewers/commit/d2694048a47faf9028184d0272df12e2602ae674))
+
+
+
+
+
+# [3.12.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.12...v3.12.0-beta.13) (2025-08-25)
+
+
+### Bug Fixes
+
+* add back clear segmentation representations ([#5336](https://github.com/OHIF/Viewers/issues/5336)) ([21d6ba2](https://github.com/OHIF/Viewers/commit/21d6ba2bb30df5b99bf5728163caff514aaa5dcd))
+
+
+
+
+
+# [3.12.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.11...v3.12.0-beta.12) (2025-08-25)
+
+
+### Bug Fixes
+
+* Segmentation stats customization module ([#5324](https://github.com/OHIF/Viewers/issues/5324)) ([b9d6f55](https://github.com/OHIF/Viewers/commit/b9d6f558cbe5957f83e6d92305a78662a0b186ed))
+
+
+
+
+
+# [3.12.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.10...v3.12.0-beta.11) (2025-08-25)
+
+
+### Bug Fixes
+
+* Add seriesInstanceUID fallback for callByRetrieveAETitle ([#5332](https://github.com/OHIF/Viewers/issues/5332)) ([840b5d3](https://github.com/OHIF/Viewers/commit/840b5d37d15537abc38316d636da7c144e6d9223))
+
+
+
+
+
+# [3.12.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.9...v3.12.0-beta.10) (2025-08-22)
+
+
+### Features
+
+*  Jump to measurement moves the camera if it is not in the viewport ([#5023](https://github.com/OHIF/Viewers/issues/5023)) ([6fe9df6](https://github.com/OHIF/Viewers/commit/6fe9df6ec93c0f37e3bb9f8bf6425bae025e75c8))
+
+
+
+
+
+# [3.12.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.8...v3.12.0-beta.9) (2025-08-22)
+
+
+### Bug Fixes
+
+* header icon logic ([#5339](https://github.com/OHIF/Viewers/issues/5339)) ([a2133ef](https://github.com/OHIF/Viewers/commit/a2133ef6cb6e47fad22908fb1338ee57c67eb8f8))
+
+
+
+
+
+# [3.12.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.7...v3.12.0-beta.8) (2025-08-20)
+
+
+### Features
+
+* Add WSI bulk data annotations support (ANN) ([#4972](https://github.com/OHIF/Viewers/issues/4972)) ([2ed6818](https://github.com/OHIF/Viewers/commit/2ed681817142b13971bb17b3058be26bbab6b90b))
+
+
+
+
+
+# [3.12.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.6...v3.12.0-beta.7) (2025-08-15)
+
+
+### Bug Fixes
+
+* load 3dsr ([#5335](https://github.com/OHIF/Viewers/issues/5335)) ([becba78](https://github.com/OHIF/Viewers/commit/becba7861f99ae4e190caddea8b663e60a9883f5))
+
+
+
+
+
+# [3.12.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.5...v3.12.0-beta.6) (2025-08-13)
+
+
+### Features
+
+* **orientationMarkers:** improved the orientation markers with a simplified version ([#5328](https://github.com/OHIF/Viewers/issues/5328)) ([266b1f5](https://github.com/OHIF/Viewers/commit/266b1f58f01ac6742a9bb40dda28459e7cddc683))
+
+
+
+
+
+# [3.12.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.4...v3.12.0-beta.5) (2025-08-11)
+
+
+### Bug Fixes
+
+* Update Dockerfile ([#5319](https://github.com/OHIF/Viewers/issues/5319)) ([0e83f45](https://github.com/OHIF/Viewers/commit/0e83f4515c902ffa3dbab2d68ec81b93881e1768))
+
+
+
+
+
+# [3.12.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.3...v3.12.0-beta.4) (2025-08-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.2...v3.12.0-beta.3) (2025-08-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.1...v3.12.0-beta.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* Guard series.instances in DicomJSONDataSource to prevent TypeError (OHI-2114) ([#5312](https://github.com/OHIF/Viewers/issues/5312)) ([f1d158b](https://github.com/OHIF/Viewers/commit/f1d158bbe81fd9f6052ce23c8588c9c93d76360c))
+
+
+
+
+
+# [3.12.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.0...v3.12.0-beta.1) (2025-08-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.116...v3.12.0-beta.0) (2025-08-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.115...v3.11.0-beta.116) (2025-08-05)
+
+
+### Bug Fixes
+
+* **annotation:** Add command to show pleura percentage in USAnnotationPanel and update condition for BLinePleuraPercentage ([#5297](https://github.com/OHIF/Viewers/issues/5297)) ([35bc074](https://github.com/OHIF/Viewers/commit/35bc074a53bd8c804dba44830145a6633302f11d))
+
+
+
+
+
+# [3.11.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.114...v3.11.0-beta.115) (2025-07-31)
+
+
+### Features
+
+* add support to scoord3d ([#5016](https://github.com/OHIF/Viewers/issues/5016)) ([735405a](https://github.com/OHIF/Viewers/commit/735405a8554c7ee6283faa83fc42ff8bb9ac34ff))
+
+
+
+
+
+# [3.11.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.113...v3.11.0-beta.114) (2025-07-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.112...v3.11.0-beta.113) (2025-07-30)
+
+
+### Features
+
+* improve segment label ([#5217](https://github.com/OHIF/Viewers/issues/5217)) ([271b84f](https://github.com/OHIF/Viewers/commit/271b84f78fcc3974006c7e1a4dbb2ef322fdb9ec))
+
+
+
+
+
+# [3.11.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.111...v3.11.0-beta.112) (2025-07-28)
+
+
+### Bug Fixes
+
+* **colorbar:** Allow for AdvancedRenderingControls to be placed at the left or right of the viewport. ([#5273](https://github.com/OHIF/Viewers/issues/5273)) ([341f1c4](https://github.com/OHIF/Viewers/commit/341f1c4ce799d1bcef3632e0d135be0cfcb333a9))
+
+
+
+
+
+# [3.11.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.110...v3.11.0-beta.111) (2025-07-28)
+
+
+### Bug Fixes
+
+* **colorbar:** Allow for `AdvancedRenderingControls` to be placed at the top or bottom of the viewport. ([#5270](https://github.com/OHIF/Viewers/issues/5270)) ([d24fe54](https://github.com/OHIF/Viewers/commit/d24fe54d2b5598c8356afa9ce91939018940ee19))
+
+
+
+
+
+# [3.11.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.109...v3.11.0-beta.110) (2025-07-28)
+
+
+### Bug Fixes
+
+* **multiframes:** Corrected combining frame instances for multiframes. ([#5264](https://github.com/OHIF/Viewers/issues/5264)) ([47e231f](https://github.com/OHIF/Viewers/commit/47e231f0618443e70c1daae718e7dd0908954b52))
+* null save voi range properties ([#5268](https://github.com/OHIF/Viewers/issues/5268)) ([04dcacd](https://github.com/OHIF/Viewers/commit/04dcacd3a5d0d565b163c96222c8c7f948a05abd))
+
+
+
+
+
+# [3.11.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.108...v3.11.0-beta.109) (2025-07-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.107...v3.11.0-beta.108) (2025-07-25)
+
+
+### Bug Fixes
+
+* **tooltips:** tool tips should be portals ([#5265](https://github.com/OHIF/Viewers/issues/5265)) ([570e087](https://github.com/OHIF/Viewers/commit/570e08700720d561c3d1201e03142634fccf5939))
+
+
+
+
+
+# [3.11.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.106...v3.11.0-beta.107) (2025-07-25)
+
+
+### Bug Fixes
+
+* prevent failure in DICOM loader for wadouri type ([#5260](https://github.com/OHIF/Viewers/issues/5260)) ([d0cf9e0](https://github.com/OHIF/Viewers/commit/d0cf9e02f438cd8d26ed5bca5fb528549f4c8b98))
+
+
+
+
+
+# [3.11.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.105...v3.11.0-beta.106) (2025-07-24)
+
+
+### Bug Fixes
+
+* **ArrowAnnotate:** Allow free-form text for arrow annotations ([#5259](https://github.com/OHIF/Viewers/issues/5259)) ([3c8446a](https://github.com/OHIF/Viewers/commit/3c8446a5e5caf8c050275bd4c193defa9e370b32))
+
+
+
+
+
+# [3.11.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.104...v3.11.0-beta.105) (2025-07-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.103...v3.11.0-beta.104) (2025-07-23)
+
+
+### Bug Fixes
+
+* issue introduced from PR 5022 ([#5223](https://github.com/OHIF/Viewers/issues/5223)) ([428b6ff](https://github.com/OHIF/Viewers/commit/428b6ffbe75d606a72548555ac0e365299b0de4f))
+
+
+
+
+
+# [3.11.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.102...v3.11.0-beta.103) (2025-07-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.101...v3.11.0-beta.102) (2025-07-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.100...v3.11.0-beta.101) (2025-07-23)
+
+
+### Bug Fixes
+
+* **calibration:** do not override user set calibration ([#5231](https://github.com/OHIF/Viewers/issues/5231)) ([75cc6ef](https://github.com/OHIF/Viewers/commit/75cc6eff32bc890c240c7b6830b7ef729b6df379))
+
+
+
+
+
+# [3.11.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.99...v3.11.0-beta.100) (2025-07-23)
+
+
+### Bug Fixes
+
+* disable seg download/export buttons until a user has drawn something ([#4953](https://github.com/OHIF/Viewers/issues/4953)) ([7ffe17d](https://github.com/OHIF/Viewers/commit/7ffe17deea8d5642ad69d11943cff3298c227be2))
+
+
+
+
+
+# [3.11.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.98...v3.11.0-beta.99) (2025-07-23)
+
+
+### Bug Fixes
+
+* **ViewportOrientationMarkers:** round rotation to fix floating point issue ([#5135](https://github.com/OHIF/Viewers/issues/5135)) ([bd3ff5f](https://github.com/OHIF/Viewers/commit/bd3ff5f57c2fee35e92be4571048cc057eeaf29d))
+
+
+
+
+
+# [3.11.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.97...v3.11.0-beta.98) (2025-07-23)
+
+
+### Bug Fixes
+
+* **docs:** Added docs for multimonitor and local linking ([#5247](https://github.com/OHIF/Viewers/issues/5247)) ([83ea0ad](https://github.com/OHIF/Viewers/commit/83ea0ad93e6cd278e9a585c1bd1c27fccd426d5a))
+* **security:** Removed stylus package due to potential security vulnerability and we don't use it. ([#5250](https://github.com/OHIF/Viewers/issues/5250)) ([83d4bc4](https://github.com/OHIF/Viewers/commit/83d4bc4a5a470bc09ede78c92ef89611dbce1d00))
+
+
+
+
+
+# [3.11.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.96...v3.11.0-beta.97) (2025-07-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.95...v3.11.0-beta.96) (2025-07-22)
+
+
+### Features
+
+* **segmentation:** Add customization for handling missing referencedDisplaySetInstanceUID for the SEG/RTSTRUCT. ([#4983](https://github.com/OHIF/Viewers/issues/4983)) ([12de7a8](https://github.com/OHIF/Viewers/commit/12de7a85c9330471d81f481de7bc65e60c1c4ab3))
+
+
+
+
+
+# [3.11.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.94...v3.11.0-beta.95) (2025-07-21)
+
+
+### Bug Fixes
+
+* **docs:** Added entry for the showStudyList configuration setting. ([#5235](https://github.com/OHIF/Viewers/issues/5235)) ([bde0eb1](https://github.com/OHIF/Viewers/commit/bde0eb1f07698b7375f7c4a58753d0368703e5bf))
+
+
+
+
+
+# [3.11.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.93...v3.11.0-beta.94) (2025-07-21)
+
+
+### Bug Fixes
+
+* **security:** Pin eslint-config-prettier and eslint-plugin-prettier versions. ([#5234](https://github.com/OHIF/Viewers/issues/5234)) ([3d5ee68](https://github.com/OHIF/Viewers/commit/3d5ee687cb105acfbcfb045a95ca32047e8dd78a))
+
+
+
+
+
+# [3.11.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.92...v3.11.0-beta.93) (2025-07-21)
+
+
+### Bug Fixes
+
+* labelmap init ([#5228](https://github.com/OHIF/Viewers/issues/5228)) ([ed3de96](https://github.com/OHIF/Viewers/commit/ed3de96e4c2d44d6df366043bdb4b09769902eff))
+
+
+
+
+
+# [3.11.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.91...v3.11.0-beta.92) (2025-07-18)
+
+
+### Bug Fixes
+
+* **multimonitor:** Study browser more menu fixes ([#5208](https://github.com/OHIF/Viewers/issues/5208)) ([3d4ec31](https://github.com/OHIF/Viewers/commit/3d4ec3181d1c031600a1f76eb57a062f15de0ab9))
+
+
+
+
+
+# [3.11.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.90...v3.11.0-beta.91) (2025-07-17)
+
+
+### Bug Fixes
+
+* image slices are displayed in reverse order, if we switch from common layout to 2D MPR ([#5022](https://github.com/OHIF/Viewers/issues/5022)) ([6a4ca70](https://github.com/OHIF/Viewers/commit/6a4ca7083623f21ae4c810507da0c4634bc10de9))
+
+
+
+
+
+# [3.11.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.89...v3.11.0-beta.90) (2025-07-16)
+
+
+### Bug Fixes
+
+* **black-viewports:** MPR viewports were turning black if their parent stack had it's properties reset ([#5219](https://github.com/OHIF/Viewers/issues/5219)) ([3ff9a65](https://github.com/OHIF/Viewers/commit/3ff9a65ef3c3f1735d8730868a8b7dc984fc76fc))
+* **DicomUpload:** Fix upload form and some scrollbars styles ([#5125](https://github.com/OHIF/Viewers/issues/5125)) ([26d77fb](https://github.com/OHIF/Viewers/commit/26d77fb149bd126cdd0571fa0e202e136c6d0d83))
+* **viewportgrid:** don't subscribe to duplicate event listeners ([#5218](https://github.com/OHIF/Viewers/issues/5218)) ([faef74a](https://github.com/OHIF/Viewers/commit/faef74ab21801841ad6b6a2104bc88a52c5c0b9e))
+
+
+
+
+
+# [3.11.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.88...v3.11.0-beta.89) (2025-07-16)
+
+
+### Bug Fixes
+
+* **segmentation:** Fix segmentationid undefined 5106 ([#5107](https://github.com/OHIF/Viewers/issues/5107)) ([f38805e](https://github.com/OHIF/Viewers/commit/f38805e6f1c98138db1617c2fa56f9007207d456))
+
+
+
+
+
+# [3.11.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.87...v3.11.0-beta.88) (2025-07-16)
+
+
+### Bug Fixes
+
+* **TMTV:** The TMTV CSV file now has the correct name and contents ([#5215](https://github.com/OHIF/Viewers/issues/5215)) ([522d2aa](https://github.com/OHIF/Viewers/commit/522d2aa764c2dbdb6ed22e7877201b0fb108f07d))
+
+
+
+
+
+# [3.11.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.86...v3.11.0-beta.87) (2025-07-15)
+
+
+### Bug Fixes
+
+* **segmentation:** Removed LOAD/hydrate button for segmentation overlays ([#5214](https://github.com/OHIF/Viewers/issues/5214)) ([e0289dc](https://github.com/OHIF/Viewers/commit/e0289dc49f52e7ee6f0642f01de3ae31cddf71e0))
+
+
+
+
+
+# [3.11.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.85...v3.11.0-beta.86) (2025-07-14)
+
+
+### Bug Fixes
+
+* **panels:** Allow for setting the initial and minimum expanded widths of each side panel. ([#5207](https://github.com/OHIF/Viewers/issues/5207)) ([5454111](https://github.com/OHIF/Viewers/commit/545411137c2560de503c6826b3de7af9a557669e))
+
+
+
+
+
+# [3.11.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.84...v3.11.0-beta.85) (2025-07-14)
+
+
+### Features
+
+* **viewport:** Enhance Orientation Menu with Reformat Option and UI Improvements ([#5184](https://github.com/OHIF/Viewers/issues/5184)) ([c175837](https://github.com/OHIF/Viewers/commit/c175837273e664318fe51c426d98e4989f55b050))
+
+
+
+
+
+# [3.11.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.83...v3.11.0-beta.84) (2025-07-14)
+
+
+### Bug Fixes
+
+* **UI:** Restored the scroll bar OHIF L&F ([#5202](https://github.com/OHIF/Viewers/issues/5202)) ([94bdcf4](https://github.com/OHIF/Viewers/commit/94bdcf414d5d70767c2cf24fdfd3446c45d9c8dd))
+
+
+
+
+
+# [3.11.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.82...v3.11.0-beta.83) (2025-07-11)
+
+
+### Bug Fixes
+
+* enhance preview accept method ([#5199](https://github.com/OHIF/Viewers/issues/5199)) ([540923a](https://github.com/OHIF/Viewers/commit/540923ad8b2f768bd0f766c4f106cf6785a06afc))
+
+
+
+
+
+# [3.11.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.81...v3.11.0-beta.82) (2025-07-11)
+
+
+### Bug Fixes
+
+* **UnitTests:** Fixing "Cannot find module @cornerstonejs/core" error while running unit tests ([#5148](https://github.com/OHIF/Viewers/issues/5148)) ([4a59126](https://github.com/OHIF/Viewers/commit/4a59126dd9aad6b10538e46e17415654b219e2ad))
+
+
+
+
+
+# [3.11.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.80...v3.11.0-beta.81) (2025-07-11)
+
+
+### Bug Fixes
+
+* exception in newly added segmentations ([#5198](https://github.com/OHIF/Viewers/issues/5198)) ([fd5bcee](https://github.com/OHIF/Viewers/commit/fd5bcee909223f92c0833bf63f9aee08eb533be2))
+
+
+
+
+
+# [3.11.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.79...v3.11.0-beta.80) (2025-07-11)
+
+
+### Features
+
+* **rendering:** Introduce WebGLContextPool for parallel rendering in ContextPoolRenderingEngine ([#5196](https://github.com/OHIF/Viewers/issues/5196)) ([10d9316](https://github.com/OHIF/Viewers/commit/10d93161b4a1bea18ec1b9de9ae3e094e6bb47d0))
+
+
+
+
+
+# [3.11.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.78...v3.11.0-beta.79) (2025-07-11)
+
+
+### Features
+
+* group clear measurements history ([#5194](https://github.com/OHIF/Viewers/issues/5194)) ([4d3ff5a](https://github.com/OHIF/Viewers/commit/4d3ff5a6cc720431f774a179e24205bfaec1d539))
+
+
+
+
+
+# [3.11.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.77...v3.11.0-beta.78) (2025-07-11)
+
+
+### Bug Fixes
+
+* **security:** Patch for Babel vulnerability ([#5193](https://github.com/OHIF/Viewers/issues/5193)) ([eeaf49c](https://github.com/OHIF/Viewers/commit/eeaf49c61a5ceb2414c2d6e4529dab64cc33f9de))
+
+
+
+
+
+# [3.11.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.76...v3.11.0-beta.77) (2025-07-10)
+
+
+### Bug Fixes
+
+* **rendering:** Introduce SequentialRenderingEngine to resolve canvas size limitation, performance degradation on high res monitors and enhance multi-monitor support ([#5195](https://github.com/OHIF/Viewers/issues/5195)) ([4c5e34d](https://github.com/OHIF/Viewers/commit/4c5e34d1837695241430b8dd1739ab39f2fb3060))
+
+
+
+
+
+# [3.11.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.75...v3.11.0-beta.76) (2025-07-10)
+
+
+### Bug Fixes
+
+* **segmentation overlays:** Allow for the addition of multiple segmentation overlays. ([#5189](https://github.com/OHIF/Viewers/issues/5189)) ([4847362](https://github.com/OHIF/Viewers/commit/48473625f678c7bd3fe9327bd043a3cf4b1b4c0c))
+
+
+
+
+
+# [3.11.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.74...v3.11.0-beta.75) (2025-07-09)
+
+
+### Features
+
+* add segment label tool ([#5164](https://github.com/OHIF/Viewers/issues/5164)) ([ac85248](https://github.com/OHIF/Viewers/commit/ac852485cd5063122bcb9c0fbcca9f9cfb47d3f2))
+
+
+
+
+
+# [3.11.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.73...v3.11.0-beta.74) (2025-07-08)
+
+
+### Bug Fixes
+
+* **labeling:** measurement labeling dialog was overwriting the entire measurement and breaking it ([#5095](https://github.com/OHIF/Viewers/issues/5095)) ([64a634c](https://github.com/OHIF/Viewers/commit/64a634cab93a12021f3217a45fb635dfa9cd8bbd))
+* **measurement-group:** use measurment study uid instead of active study uid ([#5091](https://github.com/OHIF/Viewers/issues/5091)) ([7b2e37a](https://github.com/OHIF/Viewers/commit/7b2e37a44fa60c5b069ba7f30d4b0f9eec693de0))
+
+
+
+
+
+# [3.11.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.72...v3.11.0-beta.73) (2025-07-07)
+
+
+### Bug Fixes
+
+* **overlay-menu:** Adding, changing and removing segmentation overlays should update the overlay menu instantly ([#5181](https://github.com/OHIF/Viewers/issues/5181)) ([f08cc30](https://github.com/OHIF/Viewers/commit/f08cc303e69501898b40a7ddbe36f2b311a1c1e2))
+
+
+
+
+
+# [3.11.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.71...v3.11.0-beta.72) (2025-07-03)
+
+
+### Bug Fixes
+
+* add force to remove image from cache ([#5176](https://github.com/OHIF/Viewers/issues/5176)) ([e277303](https://github.com/OHIF/Viewers/commit/e2773033959dc029cc6c698dfd65e2ed03b51a26))
+
+
+
+
+
+# [3.11.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.70...v3.11.0-beta.71) (2025-07-03)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.69...v3.11.0-beta.70) (2025-07-03)
+
+
+### Features
+
+* Add possibility to add additional props for PanelSection ([#5172](https://github.com/OHIF/Viewers/issues/5172)) ([c112db1](https://github.com/OHIF/Viewers/commit/c112db13a8b81f923698f6e899df36a1486f3a60))
+
+
+
+
+
+# [3.11.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.68...v3.11.0-beta.69) (2025-07-02)
+
+
+### Bug Fixes
+
+* **segmentation:** Added support for unhydrated RTSTRUCT in MPR. Added support for overlaying segmentations over display sets the segmentations do not reference. ([#5168](https://github.com/OHIF/Viewers/issues/5168)) ([4f6f525](https://github.com/OHIF/Viewers/commit/4f6f5254fb290203ba6e1777ced552a22864ef04))
+
+
+
+
+
+# [3.11.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.67...v3.11.0-beta.68) (2025-06-27)
+
+
+### Features
+
+* **hp:** add onStageChange callback ([#5165](https://github.com/OHIF/Viewers/issues/5165)) ([4bddd53](https://github.com/OHIF/Viewers/commit/4bddd53fcdf24cf861e73b8be705bc7e12afee56))
+
+
+
+
+
+# [3.11.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.66...v3.11.0-beta.67) (2025-06-27)
+
+
+### Bug Fixes
+
+* **segmentation:** Changes to fix problems with non hydrated/loaded segmentations to be viewable when switching hanging protocols (e.g. MPR) ([#5139](https://github.com/OHIF/Viewers/issues/5139)) ([c2624f1](https://github.com/OHIF/Viewers/commit/c2624f116d8d19911fb9773be263fa647fce0dd9))
+
+
+
+
+
+# [3.11.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.65...v3.11.0-beta.66) (2025-06-27)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.64...v3.11.0-beta.65) (2025-06-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.63...v3.11.0-beta.64) (2025-06-26)
+
+
+### Features
+
+* **labelmap:** Add labelmap segmentation in OHIF ([#5158](https://github.com/OHIF/Viewers/issues/5158)) ([9824f79](https://github.com/OHIF/Viewers/commit/9824f79177f4a1db175f2cf27732b08bb271e6be))
+
+
+
+
+
+# [3.11.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.62...v3.11.0-beta.63) (2025-06-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.61...v3.11.0-beta.62) (2025-06-25)
+
+
+### Bug Fixes
+
+* **unit-tests:** Update bun.lock to fix unit tests. ([#5159](https://github.com/OHIF/Viewers/issues/5159)) ([ec0c4f7](https://github.com/OHIF/Viewers/commit/ec0c4f745161006ad2b49c0e3a46114a20c6907c))
+
+
+
+
+
+# [3.11.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.60...v3.11.0-beta.61) (2025-06-25)
+
+
+### Bug Fixes
+
+* **build:** BUILD_PACKAGES_QUICK  PR check ([#5160](https://github.com/OHIF/Viewers/issues/5160)) ([6c9d99e](https://github.com/OHIF/Viewers/commit/6c9d99eef87f4db84230b3d8aa1814a80ddddfef))
+
+
+### Features
+
+* **toolbar/hokeys:** add pub sub events to hotkeys manager class, subscribe toolbar to hotkeys pressed event ([#5157](https://github.com/OHIF/Viewers/issues/5157)) ([57f07ad](https://github.com/OHIF/Viewers/commit/57f07ad9f21082549acb54066fca5c46d6713332))
+* Ultrasound Pleura B-line Annotation Mode & Extension ([#5061](https://github.com/OHIF/Viewers/issues/5061)) ([226f9b0](https://github.com/OHIF/Viewers/commit/226f9b0773900aec29ec22f52f39f33e629dc15b))
+
+
+
+
+
+# [3.11.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.59...v3.11.0-beta.60) (2025-06-24)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.58...v3.11.0-beta.59) (2025-06-20)
+
+
+### Bug Fixes
+
+* **action-corners:** check hideWhenDisabled at both the evaluator and prop levels ([#5149](https://github.com/OHIF/Viewers/issues/5149)) ([d6d3fa7](https://github.com/OHIF/Viewers/commit/d6d3fa7ef47cc56ad5c9d0e577023358a0c26381))
+
+
+
+
+
+# [3.11.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.57...v3.11.0-beta.58) (2025-06-18)
+
+
+### Bug Fixes
+
+* **UnitTest:** run was failing due to JS tests importing TS modules ([#5145](https://github.com/OHIF/Viewers/issues/5145)) ([268d62e](https://github.com/OHIF/Viewers/commit/268d62e9913f6ade375e663ba5736b8ebd0c1075))
+
+
+
+
+
+# [3.11.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.56...v3.11.0-beta.57) (2025-06-18)
+
+
+### Bug Fixes
+
+* **getToolbarModule:** fix enabled state of image slice sync ([#5136](https://github.com/OHIF/Viewers/issues/5136)) ([dc829c8](https://github.com/OHIF/Viewers/commit/dc829c8fcad1ce1fc2e9aef446cc474d08e00835))
+
+
+
+
+
+# [3.11.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.55...v3.11.0-beta.56) (2025-06-13)
+
+
+### Bug Fixes
+
+* **hp:** When reapplying an hp the display set selectors should be considered. ([#5074](https://github.com/OHIF/Viewers/issues/5074)) ([5311c94](https://github.com/OHIF/Viewers/commit/5311c941f7ebbfe8cc2943e3718245567c09a034))
+
+
+
+
+
+# [3.11.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.54...v3.11.0-beta.55) (2025-06-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.53...v3.11.0-beta.54) (2025-06-11)
+
+
+### Bug Fixes
+
+* **ToolbarService:** Fixed removeButton bug for removing buttons inside sections ([#5123](https://github.com/OHIF/Viewers/issues/5123)) ([d3c9ff5](https://github.com/OHIF/Viewers/commit/d3c9ff50c7eaec0edad55213d73bc1ed61a40723))
+
+
+### Features
+
+* **commandsModule:** Enhanced flipViewport and rotateViewport commands ([#5065](https://github.com/OHIF/Viewers/issues/5065)) ([4da7fc3](https://github.com/OHIF/Viewers/commit/4da7fc307f2054675510dd44062f8c94a37f9585))
+
+
+
+
+
+# [3.11.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.52...v3.11.0-beta.53) (2025-06-11)
+
+
+### Bug Fixes
+
+* data-viewportId name is illegal, renamed to data-viewportid ([#5121](https://github.com/OHIF/Viewers/issues/5121)) ([75271ca](https://github.com/OHIF/Viewers/commit/75271ca416173ddb71972ed311f9d729443cf763))
+
+
+
+
+
+# [3.11.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.51...v3.11.0-beta.52) (2025-06-10)
+
+
+### Bug Fixes
+
+* **markerlabelmap:** accept preview/reject preview not working when the marker annotation tools are active ([#5101](https://github.com/OHIF/Viewers/issues/5101)) ([26fd51f](https://github.com/OHIF/Viewers/commit/26fd51f53589244a47807106c3065e3926a16903))
+
+
+
+
+
+# [3.11.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.50...v3.11.0-beta.51) (2025-06-09)
+
+
+### Bug Fixes
+
+* **touch:** Prevent touch drag to refresh the browser page. ([#5108](https://github.com/OHIF/Viewers/issues/5108)) ([a361e55](https://github.com/OHIF/Viewers/commit/a361e556ef0cf221ac1e1ffe450bf546f7997ca9))
+
+
+
+
+
+# [3.11.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.49...v3.11.0-beta.50) (2025-06-09)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.48...v3.11.0-beta.49) (2025-06-07)
+
+
+### Bug Fixes
+
+* **WindowLevelActionMenu:** The window level menu must show different contents for 3D volume viewports ([#5113](https://github.com/OHIF/Viewers/issues/5113)) ([0afb3fc](https://github.com/OHIF/Viewers/commit/0afb3fc75314c1d8d6c50d13f31d5c2fc6849ce2))
+
+
+
+
+
+# [3.11.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.47...v3.11.0-beta.48) (2025-06-05)
+
+
+### Bug Fixes
+
+* **touch:** Allow for multi-touch in OHIF ([#5099](https://github.com/OHIF/Viewers/issues/5099)) ([1a6aa09](https://github.com/OHIF/Viewers/commit/1a6aa09a7708c943af3a1d920489311b3a0ee5da))
+
+
+
+
+
+# [3.11.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.46...v3.11.0-beta.47) (2025-06-02)
+
+
+### Bug Fixes
+
+* **tmtv:** Corrected the various section names being referenced. ([#5093](https://github.com/OHIF/Viewers/issues/5093)) ([316d5a7](https://github.com/OHIF/Viewers/commit/316d5a76445839dd15720a2e1e228e9b0bab3b6e))
+
+
+
+
+
+# [3.11.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.45...v3.11.0-beta.46) (2025-06-02)
+
+
+### Bug Fixes
+
+* **segmentation:** Allow for debounced pub/sub events to be reliably cancelled when unsubscribed to. ([#5092](https://github.com/OHIF/Viewers/issues/5092)) ([38ed7ba](https://github.com/OHIF/Viewers/commit/38ed7ba744528f7c3289e8b795d549adbb7342d0))
+
+
+
+
+
+# [3.11.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.44...v3.11.0-beta.45) (2025-05-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+
+### Features
+
+* create memo when manually adding and removing annotations ([#5051](https://github.com/OHIF/Viewers/issues/5051)) ([5891505](https://github.com/OHIF/Viewers/commit/5891505c51f82ecad22fb8182b88fb3fb52255b3))
+
+
+
+
+
+# [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
+
+
+### Bug Fixes
+
+* **ui:** Prevent unintended text selection and improve component behavior ([#5077](https://github.com/OHIF/Viewers/issues/5077)) ([c6327ac](https://github.com/OHIF/Viewers/commit/c6327acdc1c00e1f2922af54012c79b274252532))
+
+
+
+
+
+# [3.11.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.41...v3.11.0-beta.42) (2025-05-28)
+
+
+### Bug Fixes
+
+* **Customization:** Fixed incorrect events broadcast  ([#5075](https://github.com/OHIF/Viewers/issues/5075)) ([c88bdac](https://github.com/OHIF/Viewers/commit/c88bdac4b1d9da89dcda74133045be776d73cfb3))
+
+
+
+
+
+# [3.11.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.40...v3.11.0-beta.41) (2025-05-26)
+
+
+### Bug Fixes
+
+* e2e playwright tests runnigns ([#5070](https://github.com/OHIF/Viewers/issues/5070)) ([b9ca76e](https://github.com/OHIF/Viewers/commit/b9ca76ea6714726a13bceec73dbddc12280ca5bf))
+
+
+
+
+
+# [3.11.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.39...v3.11.0-beta.40) (2025-05-26)
+
+
+### Bug Fixes
+
+* **capture:** Disable or enable the tool group based on the show flag. ([#5069](https://github.com/OHIF/Viewers/issues/5069)) ([ebfa1ff](https://github.com/OHIF/Viewers/commit/ebfa1ff5f22ea5318328722dd9f1929b37f16b0c))
+* **frame-view:** After pan and/or zoom, stack scroll is now synchronized for frame view ([#5067](https://github.com/OHIF/Viewers/issues/5067)) ([1873a84](https://github.com/OHIF/Viewers/commit/1873a8405f6c8d112035d47049582c52f00f640b))
+
+
+
+
+
+# [3.11.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.38...v3.11.0-beta.39) (2025-05-26)
+
+
+### Bug Fixes
+
+* **router:** Expose the react router from the worklist too. ([#5062](https://github.com/OHIF/Viewers/issues/5062)) ([14f5f0c](https://github.com/OHIF/Viewers/commit/14f5f0c074738ba251b40c6a8ebd26bc287ceb4e))
+
+
+
+
+
+# [3.11.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.37...v3.11.0-beta.38) (2025-05-24)
+
+
+### Bug Fixes
+
+* **context-menu:** Move the reposition logic from the context menu to the dialog component. ([#5060](https://github.com/OHIF/Viewers/issues/5060)) ([cb814e6](https://github.com/OHIF/Viewers/commit/cb814e6a6076847caf46200c49adbac31f3d5236))
+
+
+
+
+
+# [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
+
+
+### Bug Fixes
+
+* **cli:** removing missing imports in mode template ([#5049](https://github.com/OHIF/Viewers/issues/5049)) ([dcde841](https://github.com/OHIF/Viewers/commit/dcde8418390f7070d6830ebf6257dc08969e8136))
+
+
+
+
+
+# [3.11.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.35...v3.11.0-beta.36) (2025-05-16)
+
+
+### Bug Fixes
+
+* backward compatibility with toolbar service ([#5052](https://github.com/OHIF/Viewers/issues/5052)) ([9b1b501](https://github.com/OHIF/Viewers/commit/9b1b501d83502d13b285050bd5fca102b7f7612c))
+* **segmentation:** segmentation stats calculations were not being done on a subsequent navigation to a mode ([#5046](https://github.com/OHIF/Viewers/issues/5046)) ([c6b2865](https://github.com/OHIF/Viewers/commit/c6b28654b507981d1dc5038b4f8a869ed53470fe))
+
+
+
+
+
+# [3.11.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.34...v3.11.0-beta.35) (2025-05-16)
+
+
+### Features
+
+* **viewport:** Added getter for presentation id provider. ([#5053](https://github.com/OHIF/Viewers/issues/5053)) ([338bd86](https://github.com/OHIF/Viewers/commit/338bd865c3bc660bd5b377020977181939002856))
+
+
+
+
+
+# [3.11.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.33...v3.11.0-beta.34) (2025-05-15)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.32...v3.11.0-beta.33) (2025-05-15)
+
+
+### Features
+
+* **actions:** simplify action corner api through the toolbarService ([#5033](https://github.com/OHIF/Viewers/issues/5033)) ([7c15bb8](https://github.com/OHIF/Viewers/commit/7c15bb8901001eefedc72498176ac24f6662bfab))
+
+
+
+
+
+# [3.11.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.31...v3.11.0-beta.32) (2025-05-13)
+
+
+### Bug Fixes
+
+* Added missing export for LayoutSelector in ui-next ([#5040](https://github.com/OHIF/Viewers/issues/5040)) ([da51e6e](https://github.com/OHIF/Viewers/commit/da51e6e3c185e4d11d50679fd0deaa804b07511c))
+
+
+
+
+
+# [3.11.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.30...v3.11.0-beta.31) (2025-05-12)
+
+
+### Bug Fixes
+
+* **NotFoundStudy:** Fixed the viewer not-found page when showStudyList: false ([#5035](https://github.com/OHIF/Viewers/issues/5035)) ([950453f](https://github.com/OHIF/Viewers/commit/950453fd70ed2b5fec51cc9b6d34e94538ed15cd))
+
+
+
+
+
+# [3.11.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.29...v3.11.0-beta.30) (2025-05-09)
+
+
+### Bug Fixes
+
+* **DicomWebProxyDataSource:** bug fix to save Segmentation files back to Kheops ([#5028](https://github.com/OHIF/Viewers/issues/5028)) ([349306d](https://github.com/OHIF/Viewers/commit/349306da4013602141fecefd095d95e8dc538c30))
+
+
+
+
+
+# [3.11.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.28...v3.11.0-beta.29) (2025-05-08)
+
+
+### Features
+
+* **app:** Decouple colorbar UI from service and enable action menu programatic control ([#5018](https://github.com/OHIF/Viewers/issues/5018)) ([1445e12](https://github.com/OHIF/Viewers/commit/1445e1212415e6e6957fce4a8fc6908aed69a93c))
+
+
+
+
+
+# [3.11.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.27...v3.11.0-beta.28) (2025-05-08)
+
+
+### Features
+
+* **thumbnails:** Enhance DICOM Thumbnail Rendering with different strategies ([#5004](https://github.com/OHIF/Viewers/issues/5004)) ([578c393](https://github.com/OHIF/Viewers/commit/578c3939f0271f762d6a1290216dbc4bf59dd88b))
+
+
+
+
+
+# [3.11.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.26...v3.11.0-beta.27) (2025-05-07)
+
+
+### Bug Fixes
+
+* **orientationMarker:** MPR orientation change should get reflected too ([#5020](https://github.com/OHIF/Viewers/issues/5020)) ([a5ea3e1](https://github.com/OHIF/Viewers/commit/a5ea3e15c70f6b8f2d16257f5f5c774c921d82cb))
+
+
+
+
+
+# [3.11.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.25...v3.11.0-beta.26) (2025-05-07)
+
+
+### Features
+
+* add locale files for Russian language, translated texts in locale json files to Russian language. ([#4984](https://github.com/OHIF/Viewers/issues/4984)) ([c829270](https://github.com/OHIF/Viewers/commit/c829270c80c0899132aff0294b8e7386475dc71c))
+
+
+
+
+
+# [3.11.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.24...v3.11.0-beta.25) (2025-05-06)
+
+
+### Features
+
+* **i18n:** add Arabic translations ([#5013](https://github.com/OHIF/Viewers/issues/5013)) ([8218a9d](https://github.com/OHIF/Viewers/commit/8218a9d0346fe9a5473420e26a0b8ab389f4ef58))
+
+
+
+
+
+# [3.11.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.23...v3.11.0-beta.24) (2025-05-05)
+
+
+### Features
+
+* **data overlay:** add foreground background control plus orientation change in the UI and add RTDOSE support ([#5007](https://github.com/OHIF/Viewers/issues/5007)) ([cd4e640](https://github.com/OHIF/Viewers/commit/cd4e6408bc2964e5ee27427cdc328751eaf4d088))
+
+
+
+
+
+# [3.11.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.22...v3.11.0-beta.23) (2025-05-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.21...v3.11.0-beta.22) (2025-05-02)
+
+
+### Features
+
+* improve menu modals customizations ([#5011](https://github.com/OHIF/Viewers/issues/5011)) ([7dbe5e3](https://github.com/OHIF/Viewers/commit/7dbe5e37b06056fdd5262a131417013d112c3d30))
+
+
+
+
+
+# [3.11.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.20...v3.11.0-beta.21) (2025-05-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.19...v3.11.0-beta.20) (2025-05-01)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.18...v3.11.0-beta.19) (2025-05-01)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.17...v3.11.0-beta.18) (2025-04-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.16...v3.11.0-beta.17) (2025-04-29)
+
+
+### Bug Fixes
+
+* **referencelines:** and bring back the notification for worker updates but disallow duplication ([#5005](https://github.com/OHIF/Viewers/issues/5005)) ([98f8187](https://github.com/OHIF/Viewers/commit/98f8187dfeb8aec6eca145da75c855aec0da4e1d))
+
+
+
+
+
+# [3.11.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.15...v3.11.0-beta.16) (2025-04-29)
+
+
+### Bug Fixes
+
+* **template:** Update mode template to match current implementation (OHI-1833) ([#4998](https://github.com/OHIF/Viewers/issues/4998)) ([0f39496](https://github.com/OHIF/Viewers/commit/0f394962904808a140221dbae063ca5dcf0df36b))
+
+
+
+
+
+# [3.11.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.14...v3.11.0-beta.15) (2025-04-22)
+
+
+### Bug Fixes
+
+* **docs:** Fix SSR build errors by dynamically importing UI components and resolving other issues ([#4991](https://github.com/OHIF/Viewers/issues/4991)) ([09ac43f](https://github.com/OHIF/Viewers/commit/09ac43f297fa81101d3a3eaa9b5cfef8e01ea214))
+
+
+
+
+
+# [3.11.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.13...v3.11.0-beta.14) (2025-04-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.12...v3.11.0-beta.13) (2025-04-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.11...v3.11.0-beta.12) (2025-04-22)
+
+
+### Features
+
+* Improve unsupported displayset messages ([#4979](https://github.com/OHIF/Viewers/issues/4979)) ([3b8faa8](https://github.com/OHIF/Viewers/commit/3b8faa8a76dde5088815431a947fec07db4a3c7f))
+
+
+
+
+
+# [3.11.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.10...v3.11.0-beta.11) (2025-04-18)
+
+
+### Bug Fixes
+
+* **dicomWebClient:** use public getter for activeDataSourceName instead of accessing private property ([#4973](https://github.com/OHIF/Viewers/issues/4973)) ([5688a2b](https://github.com/OHIF/Viewers/commit/5688a2b4b8f872163ff6492bb80d12cade4385cd))
+
+
+
+
+
+# [3.11.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.9...v3.11.0-beta.10) (2025-04-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.8...v3.11.0-beta.9) (2025-04-17)
+
+
+### Bug Fixes
+
+* **ExtensionManager:** getDataSources method ([#4959](https://github.com/OHIF/Viewers/issues/4959)) ([66a16cd](https://github.com/OHIF/Viewers/commit/66a16cd22f6cedc6e4287dd1304e1f87de4c0d08))
+
+
+
+
+
+# [3.11.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.7...v3.11.0-beta.8) (2025-04-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.6...v3.11.0-beta.7) (2025-04-16)
+
+
+### Bug Fixes
+
+* github runner ([#4961](https://github.com/OHIF/Viewers/issues/4961)) ([9535422](https://github.com/OHIF/Viewers/commit/953542236116aea6f4dce6275b8cdbd4490f4520))
+
+
+
+
+
+# [3.11.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.5...v3.11.0-beta.6) (2025-04-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.4...v3.11.0-beta.5) (2025-04-14)
+
+
+### Bug Fixes
+
+* making onnxruntime work with rsbuild ([#4957](https://github.com/OHIF/Viewers/issues/4957)) ([4a87302](https://github.com/OHIF/Viewers/commit/4a87302f06378649680370f10dd942d31c1c61fb))
+
+
+
+
+
+# [3.11.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.3...v3.11.0-beta.4) (2025-04-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.2...v3.11.0-beta.3) (2025-04-11)
+
+
+### Bug Fixes
+
+* add back study browser scrollbar ([#4942](https://github.com/OHIF/Viewers/issues/4942)) ([ed94df0](https://github.com/OHIF/Viewers/commit/ed94df0dfe007748e51de959d9dd4101485d8df4))
+* enable measurements panel scroll ([#4943](https://github.com/OHIF/Viewers/issues/4943)) ([7a36eba](https://github.com/OHIF/Viewers/commit/7a36eba67c6365f3f8cabb53a31ae1eee96069e8))
+
+
+### Features
+
+* expose scroll thumbnail into view ([#4941](https://github.com/OHIF/Viewers/issues/4941)) ([4926a95](https://github.com/OHIF/Viewers/commit/4926a9532c89011ef932fad1dbae643806e780a8))
+
+
+
+
+
+# [3.11.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.1...v3.11.0-beta.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* make datasource selection work ([#4944](https://github.com/OHIF/Viewers/issues/4944)) ([a9b180c](https://github.com/OHIF/Viewers/commit/a9b180c5d427ec5a6823991cf0c6604be7af1cc2))
+
+
+
+
+
+# [3.11.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.0...v3.11.0-beta.1) (2025-04-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.159...v3.11.0-beta.0) (2025-04-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.159](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.158...v3.10.0-beta.159) (2025-04-09)
+
+
+### Bug Fixes
+
+* **ui:** Enhance UI Components and Update CornerstoneJS Dependencies and resizable panels ([#4938](https://github.com/OHIF/Viewers/issues/4938)) ([43bc142](https://github.com/OHIF/Viewers/commit/43bc142439aab1a6514ba1711f86d64ac8bb1acb))
+
+
+
+
+
+# [3.10.0-beta.158](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.157...v3.10.0-beta.158) (2025-04-09)
+
+
+### Bug Fixes
+
+* x-ray pixel spacing calibration ([#4922](https://github.com/OHIF/Viewers/issues/4922)) ([f6f60a6](https://github.com/OHIF/Viewers/commit/f6f60a63d2780cece8ade012a71b93cb3c7c4035))
+
+
+
+
+
+# [3.10.0-beta.157](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.156...v3.10.0-beta.157) (2025-04-09)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.156](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.155...v3.10.0-beta.156) (2025-04-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.155](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.154...v3.10.0-beta.155) (2025-04-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.154](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.153...v3.10.0-beta.154) (2025-04-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.153](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.152...v3.10.0-beta.153) (2025-04-08)
+
+
+### Bug Fixes
+
+* **OIDC:** Use new access_token after refresh ([#4853](https://github.com/OHIF/Viewers/issues/4853)) ([cfa202e](https://github.com/OHIF/Viewers/commit/cfa202e89a51f8b2e81b29954bb3a211c583fe28))
+
+
+
+
+
+# [3.10.0-beta.152](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.151...v3.10.0-beta.152) (2025-04-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Add segment jump for new segments and make panels scrollable ([#4928](https://github.com/OHIF/Viewers/issues/4928)) ([3653de7](https://github.com/OHIF/Viewers/commit/3653de748731199d130f02200becde78c07d3303))
+
+
+
+
+
+# [3.10.0-beta.151](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.150...v3.10.0-beta.151) (2025-04-07)
+
+
+### Features
+
+* allow saving to same SR series ([#4889](https://github.com/OHIF/Viewers/issues/4889)) ([62e5a62](https://github.com/OHIF/Viewers/commit/62e5a6206606ba7a16a56cf47456e52f892372da))
+
+
+
+
+
+# [3.10.0-beta.150](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.149...v3.10.0-beta.150) (2025-04-04)
+
+
+### Bug Fixes
+
+* **cine:** Resolve Cine Player Faults on DisplaySet Update ([#4909](https://github.com/OHIF/Viewers/issues/4909)) ([746f252](https://github.com/OHIF/Viewers/commit/746f2524eb5e3ec1d36fbb35dc2cc5b55c7ba99f))
+
+
+
+
+
+# [3.10.0-beta.149](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.148...v3.10.0-beta.149) (2025-04-04)
+
+
+### Features
+
+* **image capture:** Enhance SEG and RTSS Support with Dependency Updates and Bug Fixes ([#4924](https://github.com/OHIF/Viewers/issues/4924)) ([fc33bd0](https://github.com/OHIF/Viewers/commit/fc33bd0d594a1ac8de79b11080ead48630a8ca27))
+
+
+
+
+
+# [3.10.0-beta.148](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.147...v3.10.0-beta.148) (2025-04-04)
+
+
+### Features
+
+* Automate tracking prompts for a less disruptive annotation workflow ([#4822](https://github.com/OHIF/Viewers/issues/4822)) ([54fded5](https://github.com/OHIF/Viewers/commit/54fded554e934f2f75e00d456ebad7692d561225))
+
+
+
+
+
+# [3.10.0-beta.147](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.146...v3.10.0-beta.147) (2025-04-03)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.146](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.145...v3.10.0-beta.146) (2025-04-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.145](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.144...v3.10.0-beta.145) (2025-04-02)
+
+
+### Bug Fixes
+
+* **seg:** Enhance segmentation tools and UI, refactor code, and update dependencies ([#4915](https://github.com/OHIF/Viewers/issues/4915)) ([8432d5f](https://github.com/OHIF/Viewers/commit/8432d5f6330b300ac6760b32372be382210ed05b))
+
+
+
+
+
+# [3.10.0-beta.144](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.143...v3.10.0-beta.144) (2025-04-01)
+
+
+### Features
+
+* **segmentation:** Enhance Segmentation with New AI and Once Click Tools ([#4910](https://github.com/OHIF/Viewers/issues/4910)) ([c75a3f3](https://github.com/OHIF/Viewers/commit/c75a3f3af58c4cd29c349338e4065269d8d9f387))
+
+
+
+
+
+# [3.10.0-beta.143](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.142...v3.10.0-beta.143) (2025-04-01)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.142](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.141...v3.10.0-beta.142) (2025-03-31)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.141](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.140...v3.10.0-beta.141) (2025-03-28)
+
+
+### Bug Fixes
+
+* jump to measurement forever ([#4867](https://github.com/OHIF/Viewers/issues/4867)) ([d7bd365](https://github.com/OHIF/Viewers/commit/d7bd36544a039deae30e179404452cde738b8b03))
+* **measurement:** fix for measurement jump is not switching series in 2DMPR ([#4779](https://github.com/OHIF/Viewers/issues/4779)) ([3f06c96](https://github.com/OHIF/Viewers/commit/3f06c966eb0bc9f6b5dcc477ccc7962f8a344c6f))
+
+
+
+
+
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+
+### Bug Fixes
+
+* routerBasename setting ([#4891](https://github.com/OHIF/Viewers/issues/4891)) ([459b0d2](https://github.com/OHIF/Viewers/commit/459b0d223a5867aaaabe1b5b61fd22b040ce5602))
+
+
+
+
+
+# [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
+
+
+### Bug Fixes
+
+* **seg:** multiframe SEG ([#4890](https://github.com/OHIF/Viewers/issues/4890)) ([892d03f](https://github.com/OHIF/Viewers/commit/892d03fc3ca85a2772bf49ff5efc8014b9b2cdc9))
+
+
+
+
+
+# [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
+
+
+### Bug Fixes
+
+* remove duplicated deleteMeasurements code ([#4895](https://github.com/OHIF/Viewers/issues/4895)) ([9bde644](https://github.com/OHIF/Viewers/commit/9bde644fce6db56d7d0dd62a876312559b7b2beb))
+
+
+
+
+
+# [3.10.0-beta.137](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.136...v3.10.0-beta.137) (2025-03-26)
+
+
+### Bug Fixes
+
+* datasource connection error style ([#4888](https://github.com/OHIF/Viewers/issues/4888)) ([467acbd](https://github.com/OHIF/Viewers/commit/467acbd997105d719bad3949a69ed0b5f8c553b4))
+
+
+
+
+
+# [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
+
+
+### Bug Fixes
+
+* **seg:** orthanc seg ([#4883](https://github.com/OHIF/Viewers/issues/4883)) ([4dd485b](https://github.com/OHIF/Viewers/commit/4dd485bd2d927381bbc2910a2ec545c7d4c03868))
+
+
+
+
+
+# [3.10.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.134...v3.10.0-beta.135) (2025-03-25)
+
+
+### Bug Fixes
+
+* compare series date time ([#4887](https://github.com/OHIF/Viewers/issues/4887)) ([165c9dc](https://github.com/OHIF/Viewers/commit/165c9dc7104f63844a887b0ba91bd877c90c8471))
+* Delete study measurements instead of all measurements ([#4882](https://github.com/OHIF/Viewers/issues/4882)) ([8e47112](https://github.com/OHIF/Viewers/commit/8e47112d8e9fe86d57a587e3445b12d5f98d0161))
+* Skip showing NaN for average pixel/max value ([#4884](https://github.com/OHIF/Viewers/issues/4884)) ([f6fa509](https://github.com/OHIF/Viewers/commit/f6fa5098744ff0058b007cf97e68d95c4b0e77c8))
+
+
+
+
+
+# [3.10.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.133...v3.10.0-beta.134) (2025-03-20)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.132...v3.10.0-beta.133) (2025-03-20)
+
+
+### Features
+
+* add customization to PanelStudyBrowser dbl click callback ([#4871](https://github.com/OHIF/Viewers/issues/4871)) ([01c3726](https://github.com/OHIF/Viewers/commit/01c3726ced9afaa75b7c78fd22b380b42151c671))
+
+
+
+
+
+# [3.10.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.131...v3.10.0-beta.132) (2025-03-20)
+
+
+### Features
+
+* Group findings table values with custom components/grouping functions ([#4712](https://github.com/OHIF/Viewers/issues/4712)) ([df8efba](https://github.com/OHIF/Viewers/commit/df8efba82c268633ea05b5cb915061bceaec912c))
+
+
+
+
+
+# [3.10.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.130...v3.10.0-beta.131) (2025-03-19)
+
+
+### Features
+
+* **segmentation:** Enhance Segmentation Tools with Preview and Selection Features ([#4870](https://github.com/OHIF/Viewers/issues/4870)) ([5f11233](https://github.com/OHIF/Viewers/commit/5f112337b6ce26036bc5a156e26a0023c9de59ca))
+
+
+
+
+
+# [3.10.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.129...v3.10.0-beta.130) (2025-03-19)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.129](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.128...v3.10.0-beta.129) (2025-03-18)
+
+
+### Features
+
+* overlapping segments ([#4849](https://github.com/OHIF/Viewers/issues/4849)) ([55d6393](https://github.com/OHIF/Viewers/commit/55d6393a3f3ed5b961809f77bf13a84da3c10be8))
+
+
+
+
+
+# [3.10.0-beta.128](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.127...v3.10.0-beta.128) (2025-03-18)
+
+
+### Bug Fixes
+
+* add back dicom tag browser SQ items ([#4869](https://github.com/OHIF/Viewers/issues/4869)) ([fb93ef9](https://github.com/OHIF/Viewers/commit/fb93ef921999010cbabe4bc7d8bef9b90c8efc71))
+
+
+
+
+
+# [3.10.0-beta.127](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.126...v3.10.0-beta.127) (2025-03-18)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.126](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.125...v3.10.0-beta.126) (2025-03-18)
+
+
+### Features
+
+* **segmentation:** segment statistics, labelmap interpolation and segment bidirectional ([#4865](https://github.com/OHIF/Viewers/issues/4865)) ([ec79b55](https://github.com/OHIF/Viewers/commit/ec79b5523e262efd775149cd86b87b870d05d6bc))
+
+
+
+
+
+# [3.10.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.124...v3.10.0-beta.125) (2025-03-17)
+
+
+### Bug Fixes
+
+* **metadata:** change the default values for cosines ([#4863](https://github.com/OHIF/Viewers/issues/4863)) ([b7fbf04](https://github.com/OHIF/Viewers/commit/b7fbf04230ec71e1812d12020e0b48d35a51b285))
+
+
+
+
+
+# [3.10.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.123...v3.10.0-beta.124) (2025-03-17)
+
+
+### Bug Fixes
+
+* max call stack exceeded for dicom tag browser ([#4855](https://github.com/OHIF/Viewers/issues/4855)) ([841320a](https://github.com/OHIF/Viewers/commit/841320adfb4cd009350e70c43a7661dc42800c7d))
+
+
+
+
+
+# [3.10.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.122...v3.10.0-beta.123) (2025-03-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.122](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.121...v3.10.0-beta.122) (2025-03-17)
+
+
+### Features
+
+* update vtk js ([#4858](https://github.com/OHIF/Viewers/issues/4858)) ([ebe6fba](https://github.com/OHIF/Viewers/commit/ebe6fbaf31a497b4941178cbb734176d2fb989c2))
+
+
+
+
+
+# [3.10.0-beta.121](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.120...v3.10.0-beta.121) (2025-03-11)
+
+
+### Features
+
+* **fonts:** bundle fonts in OHIF and dont use google cdn ([#4821](https://github.com/OHIF/Viewers/issues/4821)) ([1f634ba](https://github.com/OHIF/Viewers/commit/1f634bab456208a629747ef35a8ca7097d8ebf5f))
+* **viewport-gap:** remove viewport gap and update border behavior ([#4835](https://github.com/OHIF/Viewers/issues/4835)) ([3f70617](https://github.com/OHIF/Viewers/commit/3f70617c629a0ef569dd2602e1f4a16fe1f77ba5))
+
+
+
+
+
+# [3.10.0-beta.120](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.119...v3.10.0-beta.120) (2025-03-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.119](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.118...v3.10.0-beta.119) (2025-03-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.117...v3.10.0-beta.118) (2025-03-07)
+
+
+### Bug Fixes
+
+* **tmtv tools:** add CircleROIStartEndThreshold to supported tools in TMTV extension ([#4828](https://github.com/OHIF/Viewers/issues/4828)) ([17d2889](https://github.com/OHIF/Viewers/commit/17d2889dc50bc943f1fb6371f5a1667243b6eb70))
+
+
+
+
+
+# [3.10.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.116...v3.10.0-beta.117) (2025-03-07)
+
+
+### Features
+
+* **toolbox:** Refactor Toolbar and Toolbox to enable sections ([#4825](https://github.com/OHIF/Viewers/issues/4825)) ([cc5cdfb](https://github.com/OHIF/Viewers/commit/cc5cdfb08158eaa1fa576875f959a665e72f9d5e))
+
+
+
+
+
+# [3.10.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.115...v3.10.0-beta.116) (2025-03-06)
+
+
+### Bug Fixes
+
+* dicom tag browser row height on toggle ([#4832](https://github.com/OHIF/Viewers/issues/4832)) ([5a7f784](https://github.com/OHIF/Viewers/commit/5a7f7841b2c3b88d4fa6313862bc355be74acf5d))
+
+
+
+
+
+# [3.10.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.114...v3.10.0-beta.115) (2025-02-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.113...v3.10.0-beta.114) (2025-02-28)
+
+
+### Bug Fixes
+
+* Cornerstone3D 3.0 ([#4816](https://github.com/OHIF/Viewers/issues/4816)) ([24567c4](https://github.com/OHIF/Viewers/commit/24567c4e92c404ba210f25e91ac23a2e7a228a54))
+
+
+
+
+
+# [3.10.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.112...v3.10.0-beta.113) (2025-02-28)
+
+
+### Bug Fixes
+
+* Performance of panel study browser ([#4819](https://github.com/OHIF/Viewers/issues/4819)) ([d25809e](https://github.com/OHIF/Viewers/commit/d25809eed073d3f308f6af8244ceae7df8c2ee35))
+
+
+
+
+
+# [3.10.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.111...v3.10.0-beta.112) (2025-02-28)
+
+
+### Features
+
+* separate checks for addWindowLevelActionMenu and addSegmentationOverlay ([#4813](https://github.com/OHIF/Viewers/issues/4813)) ([7f0cc0f](https://github.com/OHIF/Viewers/commit/7f0cc0f60e74a2e0ac2aea1fe6a786582b495c4e))
+
+
+
+
+
+# [3.10.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.110...v3.10.0-beta.111) (2025-02-26)
+
+
+### Bug Fixes
+
+* broken activateViewportBeforeInteraction behavior ([#4810](https://github.com/OHIF/Viewers/issues/4810)) ([fdb073c](https://github.com/OHIF/Viewers/commit/fdb073c216013477c8545db34d254a9ad328fe48))
+
+
+
+
+
 # [3.10.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.109...v3.10.0-beta.110) (2025-02-26)
 
 

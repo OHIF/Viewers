@@ -2,7 +2,8 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsVisible } from './utils/getIsVisible';
-const Length = {
+
+const ArrowAnnotate = {
   toAnnotation: measurement => {},
 
   /**
@@ -74,7 +75,7 @@ const Length = {
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: data.text,
+      label: data.label,
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
@@ -172,4 +173,4 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
     values,
   };
 }
-export default Length;
+export default ArrowAnnotate;

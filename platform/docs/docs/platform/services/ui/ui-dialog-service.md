@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: UI Dialog Service
+title: UI Dialog Service
+summary: Documentation for OHIF's UI Dialog Service, which provides streamlined dialog windows for user attention, input collection, and information display, with methods for creating and dismissing multiple dialogs throughout the application.
 ---
 # UI Dialog Service
 

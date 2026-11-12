@@ -2,9 +2,9 @@
 
 window.config = {
   name: 'config/kheops.js',
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
-  modes: [],
+  modes: ['@ohif/mode-test'],
   customizationService: {},
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
@@ -18,7 +18,7 @@ window.config = {
   groupEnabledModesFirst: true,
   maxNumRequests: {
     interaction: 100,
-    thumbnail: 75,
+    thumbnail: 5,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
@@ -26,7 +26,17 @@ window.config = {
   // filterQueryParam: false,
   // Uses the ohif datasource as the default - this requires that KHEOPS be
   // configured with an OHIF path to .../viewer/dicomwebproxy
-  defaultDataSourceName: 'ohif3',
+  defaultDataSourceName: 'ohif',
+  // Show basic as 'Basic' and hide the longiutdinal mode for kheops
+  modesConfiguration: {
+    '@ohif/mode-basic': {
+      hide: { $set: false },
+      displayName: { $set: 'Basic' },
+    },
+    '@ohif/mode-longitudinal': {
+      hide: { $set: true },
+    },
+  },
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -40,7 +50,7 @@ window.config = {
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb',
+      sourceName: 'ohif',
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
@@ -54,47 +64,15 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
+        singlepart: 'video,pdf',
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
           transform: url => url.replace('/pixeldata.mp4', '/rendered'),
         },
-        omitQuotationForMultipartRequest: true,
       },
     },
 
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif2',
-      configuration: {
-        friendlyName: 'AWS S3 Static wado secondary server',
-        name: 'aws',
-        wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-        omitQuotationForMultipartRequest: true,
-      },
-    },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'ohif3',
@@ -136,12 +114,35 @@ window.config = {
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'video',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+      },
+    },
+    {
+      friendlyName: 'StaticWado default data',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: '/dicomweb',
+        qidoRoot: '/dicomweb',
+        wadoRoot: '/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',

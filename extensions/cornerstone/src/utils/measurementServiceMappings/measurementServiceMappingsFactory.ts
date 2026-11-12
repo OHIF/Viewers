@@ -12,6 +12,8 @@ import SplineROI from './SplineROI';
 import LivewireContour from './LivewireContour';
 import Probe from './Probe';
 import UltrasoundDirectional from './UltrasoundDirectional';
+import SegmentBidirectional from './SegmentBidirectional';
+import UltrasoundPleuraBLine from './UltrasoundPleuraBLine';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -47,7 +49,10 @@ const measurementServiceMappingsFactory = (
       SplineROI: POLYLINE,
       LivewireContour: POLYLINE,
       Probe: POINT,
+      SRPoint: POINT,
+      SRRectangleROI: RECTANGLE,
       UltrasoundDirectional: POLYLINE,
+      SegmentBidirectional: BIDIRECTIONAL,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -84,6 +89,27 @@ const measurementServiceMappingsFactory = (
       matchingCriteria: [
         // TODO -> We should eventually do something like shortAxis + longAxis,
         // But its still a little unclear how these automatic interpretations will work.
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+      ],
+    },
+    SegmentBidirectional: {
+      toAnnotation: SegmentBidirectional.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        SegmentBidirectional.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.POLYLINE,
           points: 2,
@@ -260,6 +286,23 @@ const measurementServiceMappingsFactory = (
       toAnnotation: UltrasoundDirectional.toAnnotation,
       toMeasurement: csToolsAnnotation =>
         UltrasoundDirectional.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          points: 2,
+        },
+      ],
+    },
+    UltrasoundPleuraBLine: {
+      toAnnotation: UltrasoundPleuraBLine.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        UltrasoundPleuraBLine.toMeasurement(
           csToolsAnnotation,
           displaySetService,
           cornerstoneViewportService,

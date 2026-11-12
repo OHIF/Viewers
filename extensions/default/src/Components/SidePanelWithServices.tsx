@@ -28,7 +28,7 @@ const SidePanelWithServices = ({
   onClose,
   ...props
 }: SidePanelWithServicesProps) => {
-  const panelService = servicesManager?.services?.panelService;
+  const { panelService, toolbarService, viewportGridService } = servicesManager.services;
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
@@ -37,9 +37,15 @@ const SidePanelWithServices = ({
   const [closedManually, setClosedManually] = useState(false);
   const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
 
-  const handleActiveTabIndexChange = useCallback(({ activeTabIndex }) => {
-    setActiveTabIndex(activeTabIndex);
-  }, []);
+  const handleActiveTabIndexChange = useCallback(
+    ({ activeTabIndex }) => {
+      const { activeViewportId: viewportId } = viewportGridService.getState();
+      toolbarService.refreshToolbarState({ viewportId });
+
+      setActiveTabIndex(activeTabIndex);
+    },
+    [toolbarService, viewportGridService]
+  );
 
   const handleOpen = useCallback(() => {
     setSidePanelExpanded(true);

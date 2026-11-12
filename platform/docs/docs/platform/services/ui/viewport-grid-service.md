@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Viewport Grid Service
+title: Viewport Grid Service
+summary: Documentation for OHIF's Viewport Grid Service, which manages the layout and configuration of the viewer's viewport grid, handling active viewport selection, display set assignment, and layout changes with event broadcasting capabilities.
 ---
 
 # Viewport Grid Service

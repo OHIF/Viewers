@@ -1,55 +1,37 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import PanelTMTV from './Panels/PanelTMTV';
+import i18n from '@ohif/i18n';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
+  const { toolbarService } = servicesManager.services;
+
   const wrappedPanelPetSuv = () => {
-    return (
-      <PanelPetSUV
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
-    );
+    return <PanelPetSUV />;
   };
 
   const wrappedROIThresholdToolbox = () => {
     return (
       <Toolbox
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-        buttonSectionId="ROIThresholdToolbox"
-        title="Threshold Tools"
+        buttonSectionId={toolbarService.sections.roiThresholdToolbox}
+        title={i18n.t('ROIThresholdConfiguration:Threshold Tools')}
       />
     );
   };
 
   const wrappedROIThresholdExport = () => {
-    return (
-      <PanelROIThresholdExport
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-      />
-    );
+    return <PanelROIThresholdExport />;
   };
 
   const wrappedPanelTMTV = () => {
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-          buttonSectionId="ROIThresholdToolbox"
-          title="Threshold Tools"
+          buttonSectionId={toolbarService.sections.roiThresholdToolbox}
+          title={i18n.t('ROIThresholdConfiguration:Threshold Tools')}
         />
         <PanelTMTV
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-        />
-        <PanelROIThresholdExport
           commandsManager={commandsManager}
           servicesManager={servicesManager}
         />

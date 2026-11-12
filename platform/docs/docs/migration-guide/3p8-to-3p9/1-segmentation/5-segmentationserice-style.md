@@ -1,6 +1,7 @@
 ---
 id: seg-style
 title: SegmentationService Style
+summary: Migration guide for segmentation styling API changes in OHIF 3.9, covering the transition to viewport-specific visibility controls, new style specification system using the specifier pattern, and updated methods for setting colors and toggling visibility.
 ---
 
 

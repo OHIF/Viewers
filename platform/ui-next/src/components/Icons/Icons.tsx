@@ -24,6 +24,7 @@ import IconMPR from './Sources/IconMPR';
 import Info from './Sources/Info';
 import InfoLink from './Sources/InfoLink';
 import InfoSeries from './Sources/InfoSeries';
+import JumpToSlice from './Sources/JumpToSlice';
 import ListView from './Sources/ListView';
 import LoadingSpinner from './Sources/LoadingSpinner';
 import Lock from './Sources/Lock';
@@ -33,20 +34,28 @@ import More from './Sources/More';
 import MultiplePatients from './Sources/MultiplePatients';
 import NavigationPanelReveal from './Sources/NavigationPanelReveal';
 import OHIFLogo from './Sources/OHIFLogo';
+import OHIFLogoHorizontal from './Sources/OHIFLogoHorizontal';
 import Patient from './Sources/Patient';
+import PatientStudyList from './Sources/PatientStudyList';
 import Pin from './Sources/Pin';
 import PinFill from './Sources/PinFill';
 import Plus from './Sources/Plus';
 import PowerOff from './Sources/PowerOff';
+import Redo from './Sources/Redo';
 import Refresh from './Sources/Refresh';
 import Rename from './Sources/Rename';
 import Series from './Sources/Series';
+import SeriesPlaceholder from './Sources/SeriesPlaceholder';
 import Settings from './Sources/Settings';
 import Show from './Sources/Show';
 import SidePanelCloseLeft from './Sources/SidePanelCloseLeft';
 import SidePanelCloseRight from './Sources/SidePanelCloseRight';
 import SortingAscending from './Sources/SortingAscending';
+import SocialGithub from './Sources/SocialGithub';
 import SortingDescending from './Sources/SortingDescending';
+import SortingNew from './Sources/SortingNew';
+import SortingNewAscending from './Sources/SortingNewAscending';
+import SortingNewDescending from './Sources/SortingNewDescending';
 import StatusError from './Sources/StatusError';
 import StatusSuccess from './Sources/StatusSuccess';
 import StatusTracking from './Sources/StatusTracking';
@@ -72,6 +81,18 @@ import IconTransferring from './Sources/IconTransferring';
 import Alert from './Sources/Alert';
 import AlertOutline from './Sources/AlertOutline';
 import Clipboard from './Sources/Clipboard';
+import Checked from './Sources/Checked';
+import OrientationSwitch from './Sources/OrientationSwitch';
+import OrientationSwitchA from './Sources/OrientationSwitchA';
+import OrientationSwitchS from './Sources/OrientationSwitchS';
+import OrientationSwitchC from './Sources/OrientationSwitchC';
+import OrientationSwitchR from './Sources/OrientationSwitchR';
+import LayerBackground from './Sources/LayerBackground';
+import LayerForeground from './Sources/LayerForeground';
+import LayerSegmentation from './Sources/LayerSegmentation';
+import WindowLevelAdvanced from './Sources/WindowLevelAdvanced';
+import Opacity from './Sources/Opacity';
+import Threshold from './Sources/Threshold';
 import {
   Tool3DRotate,
   ToolAngle,
@@ -84,6 +105,7 @@ import {
   ToolCobbAngle,
   ToolCreateThreshold,
   ToolCrosshair,
+  ToolCrosshairChecked,
   ToolDicomTagBrowser,
   ToolFlipHorizontal,
   ToolFreehandPolygon,
@@ -129,6 +151,10 @@ import {
   ToolSegmentAnything,
   ToolContract,
   ToolExpand,
+  ToolClickSegment,
+  ToolSegmentLabel,
+  ToolSculptor,
+  ToolLabelmapEditWithContour,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -137,9 +163,11 @@ import ContentPrev from './Sources/ContentPrev';
 import ContentNext from './Sources/ContentNext';
 import CheckBoxChecked from './Sources/CheckBoxChecked';
 import CheckBoxUnchecked from './Sources/CheckBoxUnChecked';
+import CloudSettings from './Sources/CloudSettings';
 import Close from './Sources/Close';
 import Pause from './Sources/Pause';
 import Play from './Sources/Play';
+import PanelRight from './Sources/PanelRight';
 import ViewportWindowLevel from './Sources/ViewportWindowLevel';
 import Search from './Sources/Search';
 import Clear from './Sources/Clear';
@@ -155,6 +183,22 @@ import {
   LayoutAdvanced3DFourUp,
   LayoutAdvanced3DMain,
 } from './Sources/Layout';
+import {
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsCombineMerge,
+  ActionsCombineSubtract,
+  ActionsCombineIntersect,
+  ActionsSetting,
+  ActionsBidirectional,
+  ActionsInterpolate,
+} from './Sources/SegActions';
+import {
+  HelperCombineSubtract,
+  HelperCombineIntersect,
+  HelperCombineMerge,
+} from './Sources/Helpers';
 import Link from './Sources/Link';
 import IconColorLUT from './Sources/IconColorLUT';
 import CTAAA from '../../../assets/images/CT-AAA.png';
@@ -193,6 +237,11 @@ import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
 import ChevronLeft from './Sources/ChevronLeft';
+import StatusAlert from './Sources/StatusAlert';
+import Undo from './Sources/Undo';
+import TabContours from './Sources/TabContours';
+import IllustrationNotFound from './Sources/IllustrationNotFound';
+import SettingsStudyList from './Sources/SettingsStudyList';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -372,7 +421,17 @@ export const Icons = {
     />
   ),
   // Icons
+  LayerBackground,
+  LayerForeground,
+  LayerSegmentation,
+  OrientationSwitch,
+  OrientationSwitchA,
+  OrientationSwitchS,
+  OrientationSwitchC,
+  OrientationSwitchR,
+  Checked,
   Clipboard,
+  CloudSettings,
   ActionNewDialog,
   GroupLayers,
   Database,
@@ -388,6 +447,7 @@ export const Icons = {
   ToolCobbAngle,
   ToolCreateThreshold,
   ToolCrosshair,
+  ToolCrosshairChecked,
   ToolDicomTagBrowser,
   ToolFlipHorizontal,
   ToolFreehandPolygon,
@@ -458,7 +518,9 @@ export const Icons = {
   MultiplePatients,
   NavigationPanelReveal,
   OHIFLogo,
+  OHIFLogoHorizontal,
   Patient,
+  PatientStudyList,
   Pin,
   PinFill,
   Plus,
@@ -466,13 +528,20 @@ export const Icons = {
   Refresh,
   Rename,
   Series,
+  SeriesPlaceholder,
   Settings,
+  SettingsStudyList,
   Show,
   SidePanelCloseLeft,
   SidePanelCloseRight,
+  PanelRight,
+  SocialGithub,
   SortingAscending,
   SortingDescending,
   Sorting,
+  SortingNew,
+  SortingNewAscending,
+  SortingNewDescending,
   StatusError,
   StatusSuccess,
   StatusTracking,
@@ -568,6 +637,21 @@ export const Icons = {
   OHIFLogoColorDarkBackground,
   Magnifier,
   Pencil,
+  WindowLevelAdvanced,
+  Opacity,
+  Threshold,
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsCombineMerge,
+  ActionsCombineSubtract,
+  ActionsCombineIntersect,
+  ActionsSetting,
+  ActionsBidirectional,
+  ActionsInterpolate,
+  HelperCombineSubtract,
+  HelperCombineIntersect,
+  HelperCombineMerge,
   //
   //
   //
@@ -584,6 +668,7 @@ export const Icons = {
   magnifier: (props: IconProps) => Magnifier(props),
   'status-alert-warning': (props: IconProps) => StatusWarning(props),
   'logo-dark-background': (props: IconProps) => OHIFLogoColorDarkBackground(props),
+  'ohif-logo-horizontal': (props: IconProps) => OHIFLogoHorizontal(props),
   'external-link': (props: IconProps) => ExternalLink(props),
   'checkbox-checked': (props: IconProps) => CheckBoxChecked(props),
   'checkbox-unchecked': (props: IconProps) => CheckBoxUnchecked(props),
@@ -591,9 +676,10 @@ export const Icons = {
   'checkbox-active': (props: IconProps) => CheckBoxChecked(props),
   'icon-tool-eraser': (props: IconProps) => ToolEraser(props),
   'icon-tool-brush': (props: IconProps) => ToolBrush(props),
-  'icon-tool-labelmap-assist': (props: IconProps) => ToolLabelmapAssist(props),
-  'icon-tool-segment-anything': (props: IconProps) => ToolSegmentAnything(props),
+  'icon-labelmap-slice-propagation': (props: IconProps) => ToolLabelmapAssist(props),
+  'icon-marker-labelmap': (props: IconProps) => ToolSegmentAnything(props),
   'icon-tool-threshold': (props: IconProps) => ToolThreshold(props),
+  'icon-tool-click-segment': (props: IconProps) => ToolClickSegment(props),
   'icon-tool-pet-segment': (props: IconProps) => ToolPETSegment(props),
   'icon-tool-interpolation': (props: IconProps) => ToolInterpolation(props),
   'icon-tool-bidirectional-segment': (props: IconProps) => ToolBidirectionalSegment(props),
@@ -613,6 +699,8 @@ export const Icons = {
   'status-tracked': (props: IconProps) => StatusTracking(props),
   'status-untracked': (props: IconProps) => StatusUntracked(props),
   'status-locked': (props: IconProps) => StatusLocked(props),
+  'tab-contours': (props: IconProps) => TabContours(props),
+  TabContours: (props: IconProps) => TabContours(props),
   'tab-segmentation': (props: IconProps) => TabSegmentation(props),
   'tab-studies': (props: IconProps) => TabStudies(props),
   'tab-linear': (props: IconProps) => TabLinear(props),
@@ -623,6 +711,7 @@ export const Icons = {
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
   'icon-patient': (props: IconProps) => Patient(props),
+  'panel-right': (props: IconProps) => PanelRight(props),
   'chevron-down': (props: IconProps) => ChevronOpen(props),
   'tool-length': (props: IconProps) => ToolLength(props),
   'tool-3d-rotate': (props: IconProps) => Tool3DRotate(props),
@@ -636,6 +725,7 @@ export const Icons = {
   'tool-cobb-angle': (props: IconProps) => ToolCobbAngle(props),
   'tool-create-threshold': (props: IconProps) => ToolCreateThreshold(props),
   'tool-crosshair': (props: IconProps) => ToolCrosshair(props),
+  'tool-crosshair-checked': (props: IconProps) => ToolCrosshairChecked(props),
   'dicom-tag-browser': (props: IconProps) => ToolDicomTagBrowser(props),
   'tool-flip-horizontal': (props: IconProps) => ToolFlipHorizontal(props),
   'tool-freehand-polygon': (props: IconProps) => ToolFreehandPolygon(props),
@@ -659,6 +749,7 @@ export const Icons = {
   'tool-referenceLines': (props: IconProps) => ToolReferenceLines(props),
   'tool-reset': (props: IconProps) => ToolReset(props),
   'tool-rotate-right': (props: IconProps) => ToolRotateRight(props),
+  'icon-tool-sculptor': (props: IconProps) => ToolSculptor(props),
   'tool-seg-brush': (props: IconProps) => ToolSegBrush(props),
   'tool-seg-eraser': (props: IconProps) => ToolSegEraser(props),
   'tool-seg-shape': (props: IconProps) => ToolSegShape(props),
@@ -670,6 +761,7 @@ export const Icons = {
   'tool-ultrasound-bidirectional': (props: IconProps) => ToolUltrasoundBidirectional(props),
   'tool-window-level': (props: IconProps) => ToolWindowLevel(props),
   'tool-window-region': (props: IconProps) => ToolWindowRegion(props),
+  'tool-segment-label': (props: IconProps) => ToolSegmentLabel(props),
   'icon-tool-window-region': (props: IconProps) => ToolWindowRegion(props),
   'icon-tool-ultrasound-bidirectional': (props: IconProps) => ToolUltrasoundBidirectional(props),
   'icon-tool-cobb-angle': (props: IconProps) => ToolCobbAngle(props),
@@ -681,13 +773,15 @@ export const Icons = {
   'icon-transferring': (props: IconProps) => IconTransferring(props),
   'icon-alert-small': (props: IconProps) => Alert(props),
   'icon-alert-outline': (props: IconProps) => AlertOutline(props),
-  'status-alert': (props: IconProps) => Alert(props),
+  'status-alert': (props: IconProps) => StatusAlert(props),
   info: (props: IconProps) => Info(props),
   'notifications-info': (props: IconProps) => NotificationInfo(props),
   'notificationwarning-diamond': (props: IconProps) => NotificationWarning(props),
   'content-prev': (props: IconProps) => ContentPrev(props),
   'content-next': (props: IconProps) => ContentNext(props),
   'icon-settings': (props: IconProps) => Settings(props),
+  'settings-study-list': (props: IconProps) => SettingsStudyList(props),
+  'cloud-settings': (props: IconProps) => CloudSettings(props),
   close: (props: IconProps) => Close(props),
   pause: (props: IconProps) => Pause(props),
   'icon-pause': (props: IconProps) => Pause(props),
@@ -713,7 +807,24 @@ export const Icons = {
   'old-trash': (props: IconProps) => Trash(props),
   'tool-point': (props: IconProps) => ToolCircle(props),
   'tool-freehand-line': (props: IconProps) => ToolFreehand(props),
+  'tool-labelmap-edit-with-contour': (props: IconProps) => ToolLabelmapEditWithContour(props),
+  'actions-smooth': (props: IconProps) => ActionsSmooth(props),
+  'actions-simplify': (props: IconProps) => ActionsSimplify(props),
+  'actions-combine': (props: IconProps) => ActionsCombine(props),
+  'actions-combine-merge': (props: IconProps) => ActionsCombineMerge(props),
+  'actions-combine-subtract': (props: IconProps) => ActionsCombineSubtract(props),
+  'actions-combine-intersect': (props: IconProps) => ActionsCombineIntersect(props),
+  'actions-bidirectional': (props: IconProps) => ActionsBidirectional(props),
+  'actions-interpolate': (props: IconProps) => ActionsInterpolate(props),
+  'actions-setting': (props: IconProps) => ActionsSetting(props),
+  'helper-combine-subtract': (props: IconProps) => HelperCombineSubtract(props),
+  'helper-combine-intersect': (props: IconProps) => HelperCombineIntersect(props),
+  'helper-combine-merge': (props: IconProps) => HelperCombineMerge(props),
   clipboard: (props: IconProps) => Clipboard(props),
+  Undo,
+  Redo,
+  JumpToSlice,
+  IllustrationNotFound,
 
   /** Adds an icon to the set of icons */
   addIcon: (name: string, icon) => {

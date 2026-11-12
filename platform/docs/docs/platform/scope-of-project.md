@@ -1,5 +1,7 @@
 ---
 sidebar_position: 1
+title: Scope of Project
+summary: Overview of the OHIF Viewer's scope as a web-based medical imaging viewer that functions as a "dumb client," explaining its capabilities as a Progressive Web Application (PWA), the separation of data from the viewer, and clarification about offline capabilities.
 ---
 # Scope of Project
 

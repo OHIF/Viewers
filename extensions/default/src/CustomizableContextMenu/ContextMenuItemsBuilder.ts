@@ -1,4 +1,4 @@
-import { Types } from '@ohif/ui';
+import { Types } from '@ohif/ui-next';
 import { Menu, SelectorProps, MenuItem, ContextMenuProps } from './types';
 
 type ContextMenuItem = Types.ContextMenuItem;

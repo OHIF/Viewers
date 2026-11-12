@@ -10,7 +10,6 @@ export const More = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <title>icon-more</title>
     <g
       id="icon-more"
       stroke="none"

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: 3.7 -> 3.8
+title: Migration Guide from 3.7 to 3.8
+summary: Migration guide for upgrading from OHIF 3.7 to 3.8, covering changes to toolbar button definitions, active tool handling, button evaluators, tool listeners, leftPanel/rightPanel naming, URL parameters, UI components, and refactoring of enums.
 ---
 
 # Migration Guide

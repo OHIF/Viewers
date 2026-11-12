@@ -2,6 +2,7 @@
 id: 6-rtstruct
 title: RTSTRUCT
 sidebar_position: 6
+summary: Migration guide for RT Structure Set rendering in OHIF 3.9, explaining the transition from VTK-based rendering to SVG-based rendering for improved stability and speed while maintaining stack viewports instead of converting to volume viewports.
 ---
 
 

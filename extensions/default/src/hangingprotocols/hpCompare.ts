@@ -1,4 +1,5 @@
 import { Types } from '@ohif/core';
+import i18n from 'i18next';
 
 const defaultDisplaySetSelector = {
   studyMatchingRules: [
@@ -17,7 +18,7 @@ const defaultDisplaySetSelector = {
     {
       attribute: 'numImageFrames',
       constraint: {
-        greaterThan: { value: 0 },
+        greaterThanOrEqual: { value: 0 },
       },
     },
     // This display set will select the specified items by preference
@@ -49,7 +50,7 @@ const priorDisplaySetSelector = {
     {
       attribute: 'numImageFrames',
       constraint: {
-        greaterThan: { value: 0 },
+        greaterThanOrEqual: { value: 0 },
       },
     },
     // This display set will select the specified items by preference
@@ -113,8 +114,8 @@ const priorViewport1 = {
  */
 const hpMNCompare: Types.HangingProtocol.Protocol = {
   id: '@ohif/hpCompare',
-  description: 'Compare two studies in various layouts',
-  name: 'Compare Two Studies',
+  description: i18n.t('Hps:Compare two studies in various layouts'),
+  name: i18n.t('Hps:Compare Two Studies'),
   numberOfPriorsReferenced: 1,
   protocolMatchingRules: [
     {

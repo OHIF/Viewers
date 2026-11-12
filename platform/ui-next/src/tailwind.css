@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import './assets/fonts.css';
 
 @tailwind base;
 @tailwind components;
@@ -9,7 +9,10 @@
 @layer base {
   :root {
     --highlight: 191 74% 63%;
-    --background: 236 62% 5%;
+    --neutral: 213 22% 59%;
+    --neutral-light: 214 69% 81%;
+    --neutral-dark: 214 16% 21%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --card: 234 64% 10%;
     --card-foreground: 0 0% 98%;
@@ -17,7 +20,7 @@
     --popover-foreground: 0 0% 98%;
     --primary: 214 98% 60%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 214 66% 48%;
+    --secondary: 214 65% 36%;
     --secondary-foreground: 200 50% 84%;
     --muted: 234 64% 10%;
     --muted-foreground: 200 46% 65%;
@@ -26,7 +29,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
+    --input: 236 52% 30%;
     --ring: 214 98% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -69,7 +72,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
+    --input: 236 52% 30%;
     --ring: 214 98% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -212,16 +215,16 @@
   }
 
   body {
-    @apply !bg-black;
+    @apply !bg-background;
   }
 }
 
 h2.section-header {
-  @apply py-4 text-2xl font-normal text-white;
+  @apply text-foreground py-4 text-2xl font-normal;
 }
 
 h3.section-header {
-  @apply py-3 text-xl text-white;
+  @apply text-foreground py-3 text-xl;
 }
 
 .row {
@@ -252,4 +255,12 @@ input[type='number']::-webkit-outer-spin-button {
 
 input[type='number'] {
   -moz-appearance: textfield; /* For Firefox */
+}
+
+/* disabled class - used for icons and divs based on context */
+.ohif-disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  user-select: none;
+  opacity: 0.5;
 }

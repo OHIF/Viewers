@@ -11,13 +11,15 @@ const config = {
   entry: rootDir + '/' + pkg.module,
   devtool: 'source-map',
   output: {
+    library: {
+      type: 'umd',
+      umdNamedDefine: true,
+    },
     path: outputFolder,
     filename: outputFile,
     library: pkg.name,
-    libraryTarget: 'umd',
-    chunkFilename: '[name].chunk.js',
-    umdNamedDefine: true,
-    globalObject: "typeof self !== 'undefined' ? self : this",
+chunkFilename: '[name].chunk.js',
+globalObject: "typeof self !== 'undefined' ? self : this",
   },
   externals: [
     {

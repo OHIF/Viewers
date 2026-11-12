@@ -2,18 +2,17 @@ import SegmentationServiceType from '../services/SegmentationService';
 
 export const handleSegmentChange = ({
   direction,
-  segDisplaySet,
+  segmentationId,
   viewportId,
   selectedSegmentObjectIndex,
   segmentationService,
 }: {
   direction: number;
-  segDisplaySet: AppTypes.DisplaySet;
+  segmentationId: string;
   viewportId: string;
   selectedSegmentObjectIndex: number;
   segmentationService: SegmentationServiceType;
 }) => {
-  const segmentationId = segDisplaySet.displaySetInstanceUID;
   const segmentation = segmentationService.getSegmentation(segmentationId);
 
   const { segments } = segmentation;
@@ -42,6 +41,6 @@ export const handleSegmentChange = ({
   const segmentIndex = Object.values(segments)[newSelectedSegmentIndex]?.segmentIndex;
 
   segmentationService.setActiveSegment(segmentationId, segmentIndex);
-  segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
+  segmentationService.jumpToSegmentNext(segmentationId, segmentIndex, undefined, direction);
   selectedSegmentObjectIndex = newSelectedSegmentIndex;
 };

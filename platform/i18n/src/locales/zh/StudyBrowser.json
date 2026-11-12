@@ -2,5 +2,11 @@
   "Primary": "当前",
   "Recent": "最近",
   "All": "全部",
-  "Tracked Series": "个跟踪序列"
+  "Tracked Series": "跟踪序列",
+  "Tag Browser": "标签浏览",
+  "Add as Layer": "添加为图层",
+  "Series Number": "序列编号",
+  "Series Date": "序列时间",
+  "Thumbnail Double Click": "缩略图双击",
+  "The selected display sets could not be added to the viewport.": "所选显示集无法添加到视图端口。"
 }

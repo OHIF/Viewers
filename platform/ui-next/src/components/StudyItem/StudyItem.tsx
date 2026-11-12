@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ThumbnailList } from '../ThumbnailList';
 
@@ -41,15 +40,21 @@ const StudyItem = ({
               <div className="flex min-w-0 flex-col items-start text-[13px]">
                 <Tooltip>
                   <TooltipContent>{date}</TooltipContent>
-                  <TooltipTrigger className="w-full">
-                    <div className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left text-white">
+                  <TooltipTrigger
+                    className="w-full"
+                    asChild
+                  >
+                    <div className="text-foreground h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left">
                       {date}
                     </div>
                   </TooltipTrigger>
                 </Tooltip>
                 <Tooltip>
                   <TooltipContent>{description}</TooltipContent>
-                  <TooltipTrigger className="w-full">
+                  <TooltipTrigger
+                    className="w-full"
+                    asChild
+                  >
                     <div className="text-muted-foreground h-[18px] w-full overflow-hidden truncate whitespace-nowrap text-left">
                       {description}
                     </div>
@@ -90,22 +95,6 @@ const StudyItem = ({
   );
 };
 
-StudyItem.propTypes = {
-  date: PropTypes.string.isRequired,
-  description: PropTypes.string,
-  modalities: PropTypes.string.isRequired,
-  numInstances: PropTypes.number.isRequired,
-  isActive: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  isExpanded: PropTypes.bool,
-  displaySets: PropTypes.array,
-  activeDisplaySetInstanceUIDs: PropTypes.array,
-  onClickThumbnail: PropTypes.func,
-  onDoubleClickThumbnail: PropTypes.func,
-  onClickUntrack: PropTypes.func,
-  viewPreset: PropTypes.string,
-  StudyMenuItems: PropTypes.func,
-  StudyInstanceUID: PropTypes.string,
-};
+
 
 export { StudyItem };

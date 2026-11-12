@@ -1,18 +1,20 @@
 import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
-import { validateYarn, removeExtensionFromConfig, removeModeFromConfig } from './utils/index.js';
+import { validatePnpm, removeExtensionFromConfig, removeModeFromConfig } from './utils/index.js';
 
 const linkPackage = async (packageName, options, removeFromConfig) => {
   const { viewerDirectory } = options;
 
-  // make sure yarn is installed
-  await validateYarn();
+  // make sure pnpm is installed
+  await validatePnpm();
 
-  // change directory to OHIF Platform root and execute yarn link
-  process.chdir(viewerDirectory);
+  // change directory to the OHIF Platform root, where the package was linked.
+  // Unlinking mutates the lockfile, so disable the workspace's frozen-lockfile
+  // default for this call (pnpm unlink rejects --no-frozen-lockfile).
+  process.chdir(`${viewerDirectory}/../..`);
 
-  const results = await execa(`yarn`, ['unlink', packageName]);
+  const results = await execa('pnpm', ['unlink', packageName, '--config.frozen-lockfile=false']);
   console.log(results.stdout);
 
   const webpackPwaPath = path.join(viewerDirectory, '.webpack', 'webpack.pwa.js');
@@ -23,7 +25,7 @@ const linkPackage = async (packageName, options, removeFromConfig) => {
   removeFromConfig(packageName);
 
   // run prettier on the webpack config
-  await execa(`yarn`, ['prettier', '--write', webpackPwaPath]);
+  await execa('pnpm', ['exec', 'prettier', '--write', webpackPwaPath]);
 };
 
 async function removePathFromWebpackConfig(webpackConfigPath, packageName) {

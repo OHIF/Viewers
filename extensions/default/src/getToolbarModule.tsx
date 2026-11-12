@@ -1,17 +1,16 @@
-import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
-import { ToolButton, utils } from '@ohif/ui-next';
+import { utils } from '@ohif/ui-next';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
 // legacy
-import ToolbarDividerLegacy from './Toolbar/ToolbarDivider';
-import ToolbarSplitButtonWithServicesLegacy from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWithServices';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
+import ToolRowWrapper from './Toolbar/ToolRowWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
+import { ToolButtonWrapper } from './Toolbar/ToolButtonWrapper';
+import { Toolbar } from './Toolbar';
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
@@ -19,11 +18,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // new
     {
       name: 'ohif.toolButton',
-      defaultComponent: ToolButton,
+      defaultComponent: ToolButtonWrapper,
     },
     {
       name: 'ohif.toolButtonList',
       defaultComponent: ToolButtonListWrapper,
+    },
+    {
+      name: 'ohif.row',
+      defaultComponent: ToolRowWrapper,
     },
     {
       name: 'ohif.toolBoxButtonGroup',
@@ -32,23 +35,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.toolBoxButton',
       defaultComponent: ToolBoxButtonWrapper,
-    },
-    // legacy
-    {
-      name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButtonLegacy,
-    },
-    {
-      name: 'ohif.buttonGroup',
-      defaultComponent: ToolbarButtonGroupWithServicesLegacy,
-    },
-    {
-      name: 'ohif.divider',
-      defaultComponent: ToolbarDividerLegacy,
-    },
-    {
-      name: 'ohif.splitButton',
-      defaultComponent: ToolbarSplitButtonWithServicesLegacy,
     },
     // others
     {
@@ -61,25 +47,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       defaultComponent: ProgressDropdownWithService,
     },
     {
-      name: 'evaluate.group.promoteToPrimary',
-      evaluate: ({ viewportId, button, itemId }) => {
-        const { items } = button.props;
-
-        if (!itemId) {
-          return {
-            primary: button.props.primary,
-            items,
-          };
-        }
-
-        // other wise we can move the clicked tool to the primary button
-        const clickedItemProps = items.find(item => item.id === itemId || item.itemId === itemId);
-
-        return {
-          primary: clickedItemProps,
-          items,
-        };
-      },
+      name: 'ohif.Toolbar',
+      defaultComponent: Toolbar,
     },
     {
       name: 'evaluate.cine',

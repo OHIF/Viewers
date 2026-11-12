@@ -17,7 +17,21 @@ function timeout(delay) {
 
 const threshold = 2400;
 
+// Fake timers make these tests deterministic: with real timers the elapsed
+// assertions depend on wall-clock scheduling and flake on busy CI runners
+// (a 2400ms setTimeout can take more than 4800ms to fire under load).
+// jest's modern fake timers also mock Date.now, so advanceTimersByTime moves
+// the timers and the clock together and elapsed is exactly the timeout delay.
+
 describe('Queue', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   // Todo: comment due to wrong implementation
   // it('should bind functions to the queue', async () => {
   //   const queue = new Queue(2);
@@ -30,7 +44,7 @@ describe('Queue', () => {
   //   });
   //   const end = await timer(threshold);
   //   expect(end - start >= 2 * threshold).toBe(true);
-  //   expect(mockedTimeout).toBeCalledTimes(2);
+  //   expect(mockedTimeout).toHaveBeenCalledTimes(2);
   // });
   it('should prevent task execution when queue limit is reached', async () => {
     const queue = new Queue(1);
@@ -38,15 +52,15 @@ describe('Queue', () => {
     const timer = queue.bind(mockedTimeout);
     const start = Date.now();
     const promise = timer(threshold).then(time => time - start);
-    try {
-      await timer(threshold);
-    } catch (e) {
-      expect(Date.now() - start < threshold).toBe(true);
-      expect(e.message).toBe('Queue limit reached');
-    }
+    // The queue is full, so the second call rejects without waiting. Awaiting
+    // the rejection also flushes the microtasks that register the first
+    // task's setTimeout, so it can be advanced below.
+    await expect(timer(threshold)).rejects.toThrow('Queue limit reached');
+    expect(Date.now() - start < threshold).toBe(true);
+    jest.advanceTimersByTime(threshold);
     const elapsed = await promise;
-    expect(elapsed >= threshold && elapsed < 2 * threshold).toBe(true);
-    expect(mockedTimeout).toBeCalledTimes(1);
+    expect(elapsed).toBe(threshold);
+    expect(mockedTimeout).toHaveBeenCalledTimes(1);
   });
   it('should safely bind tasks to the queue', async () => {
     const queue = new Queue(1);
@@ -57,13 +71,14 @@ describe('Queue', () => {
     const promise = timer(threshold).then(time => time - start);
     await timer(threshold);
     expect(Date.now() - start < threshold).toBe(true);
-    expect(mockedErrorHandler).toBeCalledTimes(1);
-    expect(mockedErrorHandler).nthCalledWith(
+    expect(mockedErrorHandler).toHaveBeenCalledTimes(1);
+    expect(mockedErrorHandler).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({ message: 'Queue limit reached' })
     );
+    jest.advanceTimersByTime(threshold);
     const elapsed = await promise;
-    expect(elapsed >= threshold && elapsed < 2 * threshold).toBe(true);
-    expect(mockedTimeout).toBeCalledTimes(1);
+    expect(elapsed).toBe(threshold);
+    expect(mockedTimeout).toHaveBeenCalledTimes(1);
   });
 });

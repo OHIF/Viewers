@@ -6,6 +6,7 @@ import Tooltip from '../Tooltip/Tooltip';
 
 const sizeClasses = {
   [ButtonEnums.size.small]: 'h-[26px] text-[13px]',
+  [ButtonEnums.size.smallTall]: 'h-[32px] text-[13px]',
   [ButtonEnums.size.medium]: 'h-[32px] text-[14px]',
 };
 

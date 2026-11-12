@@ -1,6 +1,8 @@
 ---
 sidebar_position: 10
 sidebar_label: Global Types
+title: Global Types and Service Extensions
+summary: Guide to using and extending TypeScript types in OHIF applications, focusing on the withAppTypes utility for component typing, adding custom properties, and properly integrating new services into the global namespace for type safety and code completion.
 ---
 
 # Extending App Types and Services in Your Application

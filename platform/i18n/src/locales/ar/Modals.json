@@ -1,0 +1,13 @@
+{
+  "Download High Quality Image": "تنزيل صورة عالية الجودة",
+  "Cancel": "إلغاء",
+  "Download": "تنزيل",
+  "File Name": "اسم الملف",
+  "Active viewport has no displayed image": "نافذة العرض النشطة لا تحتوي على صورة",
+  "Image preview": "معاينة الصورة",
+  "Show Annotations": "إظهار التعليقات التوضيحية",
+  "File Type": "نوع الملف",
+  "Image height (px)": "ارتفاع الصورة (بكسل)",
+  "Image width (px)": "عرض الصورة (بكسل)",
+  "Please specify the dimensions, filename, and desired type for the output image.": "يُرجى تحديد الأبعاد واسم الملف ونوع الصورة المطلوبة للصورة الناتجة."
+}

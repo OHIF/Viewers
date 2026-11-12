@@ -1,5 +1,7 @@
 ---
 id: general
+title: General FAQ
+summary: Answers to common questions about OHIF Viewer, including how to report bugs, request features, contact for support or academic collaborations, regulatory compliance status (FDA/CE/HIPAA), and obtaining sample studies.
 ---
 
 

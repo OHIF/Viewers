@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Toolbar Service
+title: Toolbar Service
+summary: Documentation for OHIF's ToolbarService, which manages the viewer's toolbar UI components, including button creation, section organization, and command execution, with support for nested dropdowns and state management.
 ---
 
 # Toolbar **Service**

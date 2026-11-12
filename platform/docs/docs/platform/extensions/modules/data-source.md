@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Data Source
+title: Data Source Module
+summary: Documentation for OHIF Data Source Module, which defines ways to fetch and map data into OHIF's native format, covering built-in sources like dicomweb and dicomjson, and explaining how to create custom data sources for proprietary backends.
 ---
 
 # Module: Data Source

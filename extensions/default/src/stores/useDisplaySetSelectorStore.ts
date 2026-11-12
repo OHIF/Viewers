@@ -24,7 +24,7 @@ type DisplaySetSelectorState = {
   /**
    * Stores a mapping from `<activeStudyUID>:<displaySetSelectorId>:<matchOffset>` to `displaySetInstanceUID`.
    */
-  displaySetSelectorMap: Record<string, string>;
+  displaySetSelectorMap: Record<string, Array<string>>;
 
   /**
    * Sets the display set selector for a given key.
@@ -32,7 +32,7 @@ type DisplaySetSelectorState = {
    * @param key - The key.
    * @param value - The `displaySetInstanceUID` to associate with the key.
    */
-  setDisplaySetSelector: (key: string, value: string) => void;
+  setDisplaySetSelector: (key: string, value: Array<string>) => void;
 
   /**
    * Clears the entire display set selector map.
@@ -53,7 +53,7 @@ const createDisplaySetSelectorStore = (set): DisplaySetSelectorState => ({
   /**
    * Sets the display set selector for a given key.
    */
-  setDisplaySetSelector: (key: string, value: string) =>
+  setDisplaySetSelector: (key: string, value: Array<string>) =>
     set(
       state => ({
         displaySetSelectorMap: {

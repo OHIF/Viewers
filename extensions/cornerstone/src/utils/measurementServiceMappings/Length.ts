@@ -3,7 +3,6 @@ import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-import { config } from '@cornerstonejs/tools/annotation';
 
 const Length = {
   toAnnotation: measurement => {},
@@ -26,7 +25,7 @@ const Length = {
 
     const isLocked = getIsLocked(annotationUID);
     const isVisible = getIsVisible(annotationUID);
-    const colorString = config.style.getStyleProperty('color', { annotationUID });
+    // const colorString = config.style.getStyleProperty('color', { annotationUID });
 
     // color string is like 'rgb(255, 255, 255)' we need them to be in RGBA array [255, 255, 255, 255]
     // Todo: this should be in a utility
@@ -78,7 +77,6 @@ const Length = {
       isLocked,
       isVisible,
       metadata,
-      // color,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,

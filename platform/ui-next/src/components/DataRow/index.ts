@@ -1,3 +1,1 @@
-import DataRow from './DataRow';
-
-export { DataRow };
+export * from './DataRow';

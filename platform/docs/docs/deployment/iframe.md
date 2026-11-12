@@ -1,6 +1,8 @@
 ---
 sidebar_position: 7
 sidebar_label: iframe
+title: Embedding OHIF in an iframe
+summary: Guidelines for embedding OHIF Viewer within other applications using iframe integration, explaining configuration requirements for path settings, static builds, and proper setup to ensure WebWorkers, WASM, and WebGL features function correctly.
 ---
 
 # iframe

@@ -1,52 +1,72 @@
 version: 2.1
 
+# ci: re-trigger pipeline
+
 orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@3.4.2
 
 defaults: &defaults
   docker:
-    - image: cimg/node:20.18.1
+    - image: cimg/node:24.22.2
       environment:
         TERM: xterm
         QUICK_BUILD: true
   working_directory: ~/repo
 
 commands:
-  install_bun:
+  install_pnpm:
     steps:
-      - restore_cache:
-          keys:
-            - bun-cache-v2-{{ arch }}-latest
       - run:
-          name: Install Bun
+          name: Install pnpm
           command: |
-            if [ ! -d "$HOME/.bun" ]; then
-              curl -fsSL https://bun.sh/install | bash
-            fi
-            echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
-            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
+            # The cimg/node global modules dir (/usr/local/lib/node_modules) is
+            # root-owned, so a plain `npm install -g` fails with EACCES. Install
+            # with sudo so the global pnpm binary lands in the shared prefix.
+            sudo npm install -g pnpm@12.8.1
+            echo 'export PATH="$(pnpm store path)/../.bin:$PATH"' >> $BASH_ENV
             source $BASH_ENV
-      - save_cache:
-          key: bun-cache-v2-{{ arch }}-latest
-          paths:
-            - ~/.bun
 
 jobs:
   UNIT_TESTS:
     <<: *defaults
     resource_class: large
     steps:
-      - install_bun
+      - install_pnpm
       - run: node --version
       - checkout
       - run:
           name: Install Dependencies
-          command: bun install --no-save
+          command: pnpm install --frozen-lockfile
+      # A `CS3D_REF:` line in the PR body selects the CS3D build to test, as it
+      # does for the Playwright workflow. Without the line, nothing changes.
+      # The project's read-only GITHUB_TOKEN avoids the API rate limit; see
+      # platform/docs/docs/development/cs3d-integration.md.
+      - run:
+          name: Apply the CS3D_REF of the pull request
+          command: bash .scripts/ci/cs3d-apply-ref.sh
+          no_output_timeout: 30m
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: bun run test:unit:ci
+          command: pnpm run test:unit:ci
+      # The PR's copy of the CS3D_REF parser. The Playwright gate runs the
+      # copy on master, so changes are tested here.
+      - run:
+          name: 'CS3D_REF parser tests'
+          command: node --test .scripts/cs3d-read-ref.test.mjs
+      - run:
+          name: 'React Compiler lint budget'
+          command: pnpm run lint:compiler:ci
+      - run:
+          name: 'React Compiler coverage budget'
+          command: pnpm run compiler:coverage:ci
+      # The PR's copy of the dependency-audit script. The GitHub workflow that
+      # uses it always runs master's copy, so changes are tested here.
+      - run:
+          name: 'Dependency audit script tests'
+          working_directory: .scripts/dependency-audit
+          command: npm ci --ignore-scripts --no-audit --no-fund && npm test
       # platform/app
       - run:
           name: 'VIEWER: Combine report output'
@@ -80,17 +100,17 @@ jobs:
     steps:
       # Checkout code and ALL Git Tags
       - checkout
-      - install_bun
+      - install_pnpm
       - run:
           name: Install Dependencies
-          command: bun install --no-save
+          command: pnpm install --frozen-lockfile
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
-          command: bun ./version.mjs
+          command: node ./version.mjs
       - run:
           name: 'Build the OHIF Viewer'
-          command: bun run build
+          command: pnpm run build
           no_output_timeout: 45m
       - run:
           name: 'Upload SourceMaps, Send Deploy Notification'
@@ -116,46 +136,46 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      - install_bun
+      - install_pnpm
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
+      # The dependency audit is the GitHub "Dependency Audit" workflow
+      # (.github/workflows/dependency-audit.yml).
       - run:
           name: Install Dependencies
-          command: bun install --frozen-lockfile
+          command: pnpm install
+      # Without this step, the packages build against the pinned CS3D, and a PR
+      # that uses an unreleased CS3D export fails here.
       - run:
-          name: Avoid hosts unknown for github
-          command: |
-            rm -rf ~/.ssh
-            mkdir ~/.ssh/
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-            git config --global user.name "ohif-bot"
-      - run:
-          name: Authenticate with NPM registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          name: Apply the CS3D_REF of the pull request
+          command: bash .scripts/ci/cs3d-apply-ref.sh
+          no_output_timeout: 30m
+      # No git identity or NPM token here: this job only builds the packages for
+      # PRs and never pushes or publishes. Keep publish credentials in NPM_PUBLISH
+      # so third-party build code on PR branches never runs with them on disk.
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            bun run build:package-all
+            pnpm run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            bun run build:package-all-1
+            pnpm run build:package-all-1
 
   NPM_PUBLISH:
     <<: *defaults
     resource_class: large
     steps:
-      - install_bun
+      - install_pnpm
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
       - run:
           name: Install Dependencies
-          command: bun install --no-save
+          command: pnpm install --frozen-lockfile
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -166,15 +186,21 @@ jobs:
             git config --global user.name "ohif-bot"
       - run:
           name: Authenticate with NPM registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            bun run build:package-all
+            pnpm run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            bun run build:package-all-1
+            pnpm run build:package-all-1
       - run:
           name: increase min time out
           command: |
@@ -186,14 +212,20 @@ jobs:
       - run:
           name: publish package versions
           command: |
-            bun ./publish-version.mjs
+            node ./publish-version.mjs
       - run:
-          name: Again set the NPM registry (was deleted in the version script)
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          name: Re-assert the NPM auth token before publishing
+          # Write the auth token to npm's per-user config (~/.npmrc), not the
+          # repo root. publish-package.mjs chdir's into each package dir to run
+          # `npm publish`, and npm only reads the project .npmrc from that dir
+          # plus the user .npmrc from $HOME -- it never sees ~/repo/.npmrc, so a
+          # root-level token yields ENEEDAUTH. Using ~/.npmrc also avoids
+          # clobbering the committed workspace-config .npmrc (node-linker=hoisted).
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: publish package dist
           command: |
-            bun ./publish-package.mjs
+            node ./publish-package.mjs
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -215,8 +247,11 @@ jobs:
             if [[ ! -e version.txt ]]; then
               exit 0
             else
-              # Remove npm config
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
@@ -242,15 +277,18 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Build Docker image for arm64
+          name: Build Docker image for arm64 (Release)
           command: |
             # This file will exist if a new version was published by
             # our command in the previous job.
             if [[ ! -e version.txt ]]; then
               exit 0
             else
-              # Remove npm config
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
@@ -287,7 +325,11 @@ jobs:
               exit 0
             else
               echo "Building and pushing Docker image from the master branch (beta releases)"
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
 
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
@@ -321,7 +363,11 @@ jobs:
               exit 0
             else
               echo "Building and pushing ARM64 Docker image from the master branch (beta releases)"
-              rm -f ./.npmrc
+              # Restore the committed .npmrc (pnpm workspace config such as
+              # node-linker=hoisted). NPM_PUBLISH overwrote it with a publish
+              # auth token, but the Dockerfile COPYs .npmrc for the in-image
+              # pnpm install, so it needs the config file present and token-free.
+              git checkout -- .npmrc
               # Set our version number using vars
               export IMAGE_VERSION=$(cat version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION
@@ -339,12 +385,21 @@ jobs:
     resource_class: large
     parallelism: 8
     steps:
-      - install_bun
+      - install_pnpm
       - run:
           name: Install System Dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
+            # CircleCI's base image registers third-party apt sources (git-lfs via
+            # packagecloud, git-core PPA via launchpad) that periodically hang
+            # `apt-get update`. The Cypress libs below all come from the Ubuntu
+            # archive, so drop those sources and bound the update with timeouts +
+            # retries so a slow mirror can't stall the job indefinitely.
+            sudo rm -f /etc/apt/sources.list.d/*git* || true
+            sudo apt-get update \
+              -o Acquire::Retries=3 \
+              -o Acquire::http::Timeout=20 \
+              -o Acquire::https::Timeout=20
+            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6
       - run:
           name: Start Xvfb
           command: Xvfb :99 -screen 0 1920x1080x24 &
@@ -353,12 +408,25 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-command: bun install --no-save
-          package-manager: yarn
+          install-command: pnpm install
+      # After cypress/install, on purpose: node/install-packages inside it has
+      # already saved the dependency cache, so a linked CS3D branch cannot
+      # reach a cache that another pull request restores.
+      - run:
+          name: Apply the CS3D_REF of the pull request
+          command: bash .scripts/ci/cs3d-apply-ref.sh
+          no_output_timeout: 30m
       - cypress/run-tests:
+          # CI runs headless under Xvfb with no GPU, so Electron uses software
+          # WebGL. Newer Chromium deprecated that implicit fallback (canvas
+          # rendering degrades and races with element clicks). ELECTRON_EXTRA_LAUNCH_ARGS
+          # is the reliable way to pass the opt-in flag to Cypress's Electron browser.
+          # Wait for the dev server with curl rather than `npx wait-on`: npx would
+          # fetch wait-on and its dependencies unpinned, outside the lockfile, in a
+          # job that holds the Cypress record key.
           cypress-command: |
-            npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
-          start-command: bun run test:data && bun run test:e2e:serve
+            timeout 600 bash -c 'until curl -sf -o /dev/null http://localhost:3000; do sleep 2; done' && cd platform/app && ELECTRON_EXTRA_LAUNCH_ARGS="--enable-unsafe-swiftshader" npx cypress run --record --parallel
+          start-command: pnpm run test:data && pnpm run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:
     <<: *defaults
@@ -369,7 +437,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Create and push multi-architecture manifest
+          name: Create and push multi-architecture manifest (Release)
           command: |
             # This file will exist if a new version was published by
             # our command in the previous job.
@@ -457,8 +525,13 @@ workflows:
           filters:
             branches:
               only: master
+      # - HOLD_FOR_APPROVAL:
+      #     type: approval
+      #     requires:
+      #       - BUILD
       - NPM_PUBLISH:
           requires:
+            # - HOLD_FOR_APPROVAL
             - BUILD
       - DOCKER_BETA_PUBLISH:
           requires:

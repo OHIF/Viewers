@@ -1,5 +1,7 @@
 ---
 sidebar_position: 3
+title: PWA vs Packaged Application
+summary: Explanation of OHIF's primary build process for Progressive Web Applications (PWAs), detailing how the application is built as a set of static assets with service worker support for enhanced performance across devices and network conditions.
 ---
 
 # PWA vs Packaged

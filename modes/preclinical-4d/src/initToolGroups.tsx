@@ -31,15 +31,16 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, se
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.Probe },
@@ -108,6 +109,17 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, se
     disabled: [
       {
         toolName: toolNames.Crosshairs,
+        // Bind Crosshairs to Primary+Shift (matching the longitudinal/tmtv
+        // modes) so it has its own mouse binding. Without a binding it activates
+        // on plain Primary and, being `disableOnPassive`, gets disabled the
+        // moment another Primary tool (brush/zoom/pan in the same group) is
+        // activated from the toolbar, making them mutually exclusive.
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+            modifierKey: Enums.KeyboardBindings.Shift,
+          },
+        ],
         configuration: {
           viewportIndicators: true,
           viewportIndicatorsConfig: {

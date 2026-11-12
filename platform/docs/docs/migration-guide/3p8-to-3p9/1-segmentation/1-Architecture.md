@@ -1,6 +1,7 @@
 ---
 id: seg-new-arch
 title: New Architecture
+summary: Overview of the new viewport-centric segmentation architecture in OHIF 3.9, which replaces the previous toolGroup-centric approach and introduces clearer separation between segmentation data and its visual representation.
 ---
 
 

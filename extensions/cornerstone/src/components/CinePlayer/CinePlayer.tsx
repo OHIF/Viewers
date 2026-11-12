@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { useCine } from '@ohif/ui';
+import { useCine } from '@ohif/ui-next';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { useAppConfig } from '@state';
 

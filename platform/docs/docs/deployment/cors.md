@@ -1,5 +1,7 @@
 ---
 sidebar_position: 8
+title: Cross-Origin Resource Sharing
+summary: Detailed explanation of cross-origin security configurations for OHIF Viewer, covering CORS requirements for data source access, iframe embedding, secure contexts, and troubleshooting techniques for proper implementation.
 ---
 
 # Cross-Origin Information for OHIF

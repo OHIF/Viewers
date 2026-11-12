@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: Commands Manager
+title: Commands Manager
+summary: Documentation for the CommandsManager class which tracks named functions scoped to specific contexts, allowing OHIF to execute commands with appropriate context prioritization across the application.
 ---
 # Commands Manager
 

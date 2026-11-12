@@ -1,19 +1,34 @@
 // Numeric.tsx
-import React, { createContext, useContext, useCallback, PropsWithChildren } from 'react';
+import React, { createContext, useContext, useCallback, useState, PropsWithChildren } from 'react';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input/Input';
 import { Slider } from '../Slider/Slider';
 import { DoubleSlider } from '../DoubleSlider/DoubleSlider';
+import { Button } from '../Button/Button';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// Calculate decimal places based on step
+const getDecimalPlaces = (step: number): number => {
+  if (Number.isInteger(step)) {
+    return 0;
+  }
+  const stepStr = step.toString();
+  if (stepStr.includes('.')) {
+    return stepStr.split('.')[1].length;
+  }
+  return 0;
+};
 
 interface NumericMetaContextValue {
-  mode: 'number' | 'singleRange' | 'doubleRange';
+  mode: 'number' | 'singleRange' | 'doubleRange' | 'stepper';
   singleValue: number;
   doubleValue: [number, number];
   setSingleValue: (val: number) => void;
   setDoubleValue: (vals: [number, number]) => void;
   min: number;
   max: number;
+  allowTypedExpansion?: boolean | [number, number];
   step: number;
 }
 
@@ -23,7 +38,7 @@ const NumericMetaContext = createContext<NumericMetaContextValue | null>(null);
    1) Container
 ---------------------------------------------------------------------------*/
 interface NumericMetaContainerProps {
-  mode: 'number' | 'singleRange' | 'doubleRange';
+  mode: 'number' | 'singleRange' | 'doubleRange' | 'stepper';
   value?: number; // for controlled single-value usage from parent
   defaultValue?: number; // for uncontrolled single-value usage
   values?: [number, number]; // for controlled double-range usage from parent
@@ -31,6 +46,7 @@ interface NumericMetaContainerProps {
   onChange?: (val: number | [number, number]) => void;
   min?: number;
   max?: number;
+  allowTypedExpansion?: boolean | [number, number];
   step?: number;
   className?: string;
 }
@@ -44,6 +60,7 @@ function NumericMetaContainer({
   onChange,
   min = 0,
   max = 100,
+  allowTypedExpansion,
   step = 1,
   className,
   children,
@@ -57,10 +74,10 @@ function NumericMetaContainer({
 
   // Use useControllableState for both single and double values
   const [internalSingleValue, setInternalSingleValue] = useControllableState({
-    prop: mode === 'number' || mode === 'singleRange' ? value : undefined,
+    prop: mode === 'number' || mode === 'singleRange' || mode === 'stepper' ? value : undefined,
     defaultProp: calculatedDefaultValue,
     onChange: newVal => {
-      if (mode === 'number' || mode === 'singleRange') {
+      if (mode === 'number' || mode === 'singleRange' || mode === 'stepper') {
         onChange?.(newVal);
       }
     },
@@ -100,6 +117,7 @@ function NumericMetaContainer({
         setDoubleValue: handleDoubleChange,
         min,
         max,
+        allowTypedExpansion,
         step,
       }}
     >
@@ -127,7 +145,7 @@ function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelPr
 
   let displayedValue = '';
   let valueClasses = '';
-  if (mode === 'number' || mode === 'singleRange') {
+  if (mode === 'number' || mode === 'singleRange' || mode === 'stepper') {
     displayedValue = singleValue.toString();
     valueClasses = 'w-10';
   } else if (mode === 'doubleRange') {
@@ -161,6 +179,14 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
   }
 
   const { mode, singleValue, setSingleValue, min, max, step } = ctx;
+  const [inputValue, setInputValue] = useState(singleValue.toString());
+  // Adjust prop-derived state before React commits a render with a stale displayed value.
+  // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevValue, setPrevValue] = useState(singleValue);
+  if (prevValue !== singleValue) {
+    setPrevValue(singleValue);
+    setInputValue(singleValue.toString());
+  }
 
   const handleSliderChange = useCallback(
     (val: number[]) => {
@@ -169,14 +195,42 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
     [setSingleValue]
   );
 
-  const handleNumberChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const parsed = parseFloat(evt.target.value);
-      if (!isNaN(parsed)) {
-        setSingleValue(Math.max(min, Math.min(parsed, max)));
+  const commitInputValue = useCallback(() => {
+    const parsedValue = Number(inputValue);
+    if (inputValue.trim() === '' || !Number.isFinite(parsedValue)) {
+      return false;
+    }
+
+    const boundedValue = Math.max(min, Math.min(parsedValue, max));
+    setSingleValue(boundedValue);
+    setInputValue(boundedValue.toString());
+    return true;
+  }, [inputValue, max, min, setSingleValue]);
+
+  const restorePreviousInputValue = useCallback(() => {
+    setInputValue(singleValue.toString());
+  }, [singleValue]);
+
+  const handleBlur = useCallback(() => {
+    if (!commitInputValue()) {
+      restorePreviousInputValue();
+    }
+  }, [commitInputValue, restorePreviousInputValue]);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.nativeEvent.isComposing) {
+        return;
+      }
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (!commitInputValue()) {
+          restorePreviousInputValue();
+        }
       }
     },
-    [min, max, setSingleValue]
+    [commitInputValue, restorePreviousInputValue]
   );
 
   if (mode !== 'singleRange') {
@@ -195,13 +249,13 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
       />
       {showNumberInput && (
         <Input
-          type="number"
+          type="text"
+          inputMode="decimal"
           className={cn('w-[50px] shrink-0', numberInputClassName)}
-          value={singleValue}
-          step={step}
-          min={min}
-          max={max}
-          onChange={handleNumberChange}
+          value={inputValue}
+          onChange={event => setInputValue(event.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
         />
       )}
     </div>
@@ -222,7 +276,7 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
     throw new Error('DoubleRange must be used inside <Numeric.Container>.');
   }
 
-  const { mode, doubleValue, setDoubleValue, min, max, step } = ctx;
+  const { mode, doubleValue, setDoubleValue, min, max, allowTypedExpansion, step } = ctx;
 
   const handleSliderChange = useCallback(
     (values: [number, number]) => {
@@ -240,6 +294,7 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
       <DoubleSlider
         min={min}
         max={max}
+        allowTypedExpansion={allowTypedExpansion}
         step={step}
         defaultValue={doubleValue}
         onValueChange={handleSliderChange}
@@ -262,16 +317,30 @@ function NumberInput({ className }: NumberInputProps) {
     throw new Error('NumberInput must be used inside <Numeric.Container>.');
   }
 
-  const { mode, singleValue, setSingleValue, min, max, step } = ctx;
+  const { mode, singleValue, setSingleValue, min, max } = ctx;
+  const [inputValue, setInputValue] = useState(singleValue.toString());
+  // Adjust prop-derived state before React commits a render with a stale displayed value.
+  // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevValue, setPrevValue] = useState(singleValue);
+  if (prevValue !== singleValue) {
+    setPrevValue(singleValue);
+    setInputValue(singleValue.toString());
+  }
+
   if (mode !== 'number') {
     return null;
   }
 
-  const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(evt.target.value);
-    if (!isNaN(val)) {
-      setSingleValue(Math.max(min, Math.min(val, max)));
+  const commitInputValue = () => {
+    const parsedValue = Number(inputValue);
+    if (inputValue.trim() === '' || !Number.isFinite(parsedValue)) {
+      return false;
     }
+
+    const boundedValue = Math.max(min, Math.min(parsedValue, max));
+    setSingleValue(boundedValue);
+    setInputValue(boundedValue.toString());
+    return true;
   };
 
   // Calculate width based on max value's length, with a minimum of 3 characters
@@ -280,14 +349,218 @@ function NumberInput({ className }: NumberInputProps) {
 
   return (
     <Input
-      type="number"
-      value={singleValue}
-      step={step}
-      min={min}
-      max={max}
-      onChange={handleChange}
+      type="text"
+      inputMode="decimal"
+      value={inputValue}
+      onChange={event => setInputValue(event.target.value)}
+      onKeyDown={event => {
+        if (event.nativeEvent.isComposing) {
+          return;
+        }
+
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          if (!commitInputValue()) {
+            setInputValue(singleValue.toString());
+          }
+        }
+      }}
+      onBlur={() => {
+        if (!commitInputValue()) {
+          setInputValue(singleValue.toString());
+        }
+      }}
       className={cn('min-w-[60px]', `w-[${calculatedWidth}]`, className)}
     />
+  );
+}
+
+/* -------------------------------------------------------------------------
+   6) NumberStepper sub-component
+---------------------------------------------------------------------------*/
+interface NumberStepperProps {
+  className?: string;
+  children?: React.ReactNode;
+  direction?: 'horizontal' | 'vertical';
+  inputWidth?: string;
+}
+
+// Modified NumberStepper component to properly position left/right controls
+function NumberStepper({ className, children, direction, inputWidth }: NumberStepperProps) {
+  const ctx = useContext(NumericMetaContext);
+  if (!ctx) {
+    throw new Error('NumberStepper must be used inside <Numeric.Container>.');
+  }
+
+  const { mode, singleValue, setSingleValue, min, max, step } = ctx;
+  const decimalPlaces = getDecimalPlaces(step);
+  const formatDisplayValue = useCallback(
+    (value: number) => (decimalPlaces > 0 ? value.toFixed(decimalPlaces) : value.toString()),
+    [decimalPlaces]
+  );
+  const formattedSingleValue = formatDisplayValue(singleValue);
+  const [inputValue, setInputValue] = useState(formattedSingleValue);
+  // Adjust prop-derived state before React commits a render with a stale displayed value.
+  // See https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevFormattedValue, setPrevFormattedValue] = useState(formattedSingleValue);
+  if (prevFormattedValue !== formattedSingleValue) {
+    setPrevFormattedValue(formattedSingleValue);
+    setInputValue(formattedSingleValue);
+  }
+
+  if (mode !== 'stepper') {
+    return null;
+  }
+
+  const commitInputValue = () => {
+    const parsedValue = Number(inputValue);
+    if (inputValue.trim() === '' || !Number.isFinite(parsedValue)) {
+      return false;
+    }
+
+    const boundedValue = Math.max(min, Math.min(parsedValue, max));
+    setSingleValue(boundedValue);
+    setInputValue(formatDisplayValue(boundedValue));
+    return true;
+  };
+
+  const handleBlur = () => {
+    if (!commitInputValue()) {
+      setInputValue(formatDisplayValue(singleValue));
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing) {
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (!commitInputValue()) {
+        setInputValue(formatDisplayValue(singleValue));
+      }
+    }
+  };
+
+  // Check if children is HorizontalControls component
+  const hasHorizontalControls = direction === 'horizontal';
+
+  if (hasHorizontalControls) {
+    // We'll handle the control positioning ourselves
+    return (
+      <div
+        className={cn(
+          'bg-background border-input flex h-[28px] items-center overflow-hidden rounded-md border',
+          className
+        )}
+      >
+        <LeftControl
+          min={min}
+          step={step}
+          value={singleValue}
+          setValue={setSingleValue}
+        />
+        <Input
+          type="text"
+          inputMode="decimal"
+          value={inputValue}
+          onChange={event => setInputValue(event.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          className={cn(
+            'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+            inputWidth
+          )}
+        />
+        {children}
+        <RightControl
+          max={max}
+          step={step}
+          value={singleValue}
+          setValue={setSingleValue}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'bg-background border-input flex items-center overflow-hidden rounded-md border',
+        className
+      )}
+    >
+      <Input
+        type="text"
+        inputMode="decimal"
+        value={inputValue}
+        onChange={event => setInputValue(event.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        className={cn(
+          'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+          inputWidth ? inputWidth : 'max-w-12 min-w-0'
+        )}
+      />
+      <div className="ml-1 flex flex-shrink-0 flex-col">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSingleValue(singleValue + step)}
+          disabled={singleValue >= max}
+          className="text-primary h-3 w-5"
+        >
+          <ChevronUp className="h-3 w-3" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSingleValue(singleValue - step)}
+          disabled={singleValue <= min}
+          className="text-primary h-3 w-5"
+        >
+          <ChevronDown className="h-3 w-3" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// New components for left and right controls
+function LeftControl({ min, step, value, setValue }) {
+  const decrement = useCallback(() => {
+    const newValue = Math.max(value - step, min);
+    setValue(newValue);
+  }, [value, min, step, setValue]);
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={decrement}
+      className="text-primary h-full w-4 cursor-pointer p-0"
+    >
+      <ChevronLeft className="h-4 w-4" />
+    </Button>
+  );
+}
+
+function RightControl({ max, step, value, setValue }) {
+  const increment = useCallback(() => {
+    const newValue = Math.min(value + step, max);
+    setValue(newValue);
+  }, [value, max, step, setValue]);
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={increment}
+      className="text-primary h-full w-4 cursor-pointer p-0"
+    >
+      <ChevronRight className="h-4 w-4" />
+    </Button>
   );
 }
 
@@ -297,6 +570,7 @@ export const Numeric = {
   SingleRange,
   DoubleRange,
   NumberInput,
+  NumberStepper,
 };
 
 export default Numeric;

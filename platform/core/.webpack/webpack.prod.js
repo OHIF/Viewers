@@ -31,9 +31,11 @@ module.exports = (env, argv) => {
       sideEffects: false,
     },
     output: {
+      library: {
+        name: 'ohif-core',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-core',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@cornerstonejs/],

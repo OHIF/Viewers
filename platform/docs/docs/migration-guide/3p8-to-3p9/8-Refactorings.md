@@ -1,5 +1,6 @@
 ---
 title: Refactoring
+summary: Migration guide for refactored components in OHIF 3.9, including the move of PanelSegmentation from cornerstone-dicom-seg extension to cornerstone extension, centralization of dialog utilities, and improved customization ID structure for better modularity.
 ---
 
 import Tabs from '@theme/Tabs';

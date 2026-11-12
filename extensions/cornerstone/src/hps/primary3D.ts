@@ -1,9 +1,9 @@
 import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
-
+import i18n from 'i18next';
 export const primary3D = {
   id: 'primary3D',
   locked: true,
-  name: '3D primary',
+  name: i18n.t('Hps:3D primary'),
   icon: 'layout-advanced-3d-primary',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',

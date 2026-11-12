@@ -2,18 +2,18 @@ import { ExtensionManager, MODULE_TYPES } from './extensions';
 import { ServiceProvidersManager, ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
 import { SystemContextProvider, useSystem } from './contextProviders/SystemProvider';
+import { ViewportElementsProvider } from './hooks/useViewportElement';
 
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
 import log from './log.js';
 import object from './object.js';
 import string from './string.js';
-import user from './user.js';
+import user from './user';
 import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
 import * as Enums from './enums';
-import { useToolbar } from './hooks/useToolbar';
 import {
   CineService,
   UIDialogService,
@@ -41,6 +41,8 @@ import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetS
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 import useActiveViewportDisplaySets from './hooks/useActiveViewportDisplaySets';
+
+export * from './hooks';
 
 const hotkeys = {
   ...utils.hotkeys,
@@ -86,7 +88,6 @@ const OHIF = {
   pubSubServiceInterface,
   PubSubService,
   PanelService,
-  useToolbar,
   useActiveViewportDisplaySets,
   WorkflowStepsService,
   StudyPrefetcherService,
@@ -101,6 +102,7 @@ export {
   ServicesManager,
   ServiceProvidersManager,
   SystemContextProvider,
+  ViewportElementsProvider,
   //
   defaults,
   utils,
@@ -137,12 +139,12 @@ export {
   WorkflowStepsService,
   StudyPrefetcherService,
   useSystem,
-  useToolbar,
   useActiveViewportDisplaySets,
 };
 
 export { OHIF };
 
 export type { Types };
+export type { SortDisplaySetsCopyOptions } from './utils/sortStudy';
 
 export default OHIF;

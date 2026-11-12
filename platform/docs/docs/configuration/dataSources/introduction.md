@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+title: Data Source Introduction
+summary: Introduces OHIF's data structure based on naturalized DICOM JSON format, providing an overview of common data sources available in OHIF and how custom data sources can be implemented.
 ---
 
 # Data Source

@@ -3,7 +3,7 @@ window.config = {
   // Activate the new HP mode....
   isNewHP: true,
 
-  routerBasename: '/',
+  routerBasename: null,
   customizationService: [
     '@ohif/extension-default.customizationModule.datasources',
     {

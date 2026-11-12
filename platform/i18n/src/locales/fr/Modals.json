@@ -1,0 +1,19 @@
+{
+  "Active viewport has no displayed image": "La vue active n'affiche aucune image",
+  "Cancel": "$t(Common:Cancel)",
+  "Download": "Télécharger",
+  "The file name cannot be empty.": "Le nom du fichier ne peut pas être vide.",
+  "File Type": "Type de fichier",
+  "File Name": "Nom du fichier",
+  "formTitle": "Veuillez préciser les dimensions, le nom de fichier et le type souhaité pour l'image exportée.",
+  "Image height (px)": "Hauteur de l'image (px)",
+  "Image Preview": "Aperçu de l'image",
+  "Image preview": "Aperçu de l'image",
+  "Image width (px)": "Largeur de l'image (px)",
+  "keepAspectRatio": "Conserver les proportions",
+  "loadingPreview": "Chargement de l'aperçu de l'image...",
+  "The minimum valid height is 100px.": "La hauteur minimale autorisée est de 100 px.",
+  "The minimum valid width is 100px.": "La largeur minimale autorisée est de 100 px.",
+  "Show Annotations": "Afficher les annotations",
+  "Please specify the dimensions, filename, and desired type for the output image.": "Veuillez préciser les dimensions, le nom de fichier et le type souhaité pour l'image exportée."
+}

@@ -83,8 +83,8 @@ const Bidirectional = {
 
 function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
-  const { cachedStats } = data;
-  const { referencedImageId, referencedSeriesInstanceUID } = metadata;
+  const { cachedStats = {} } = data;
+  const { referencedImageId } = metadata;
   const targets = Object.keys(cachedStats);
 
   if (!targets.length) {

@@ -1,21 +1,22 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataRow, PanelSection } from '../../index';
-import { createContext } from '../../lib/createContext';
+import { Icons, PanelSection, Tooltip, TooltipContent, TooltipTrigger } from '../../index';
+import DataRow from '../DataRow/DataRow';
 
 interface MeasurementTableContext {
   data?: any[];
-  onClick?: (uid: string) => void;
-  onDelete?: (uid: string) => void;
-  onToggleVisibility?: (uid: string) => void;
-  onToggleLocked?: (uid: string) => void;
-  onRename?: (uid: string) => void;
-  onColor?: (uid: string) => void;
+  onAction?: (e, command: string | string[], uid: string) => void;
   disableEditing?: boolean;
+  isExpanded: boolean;
 }
 
-const [MeasurementTableProvider, useMeasurementTableContext] =
-  createContext<MeasurementTableContext>('MeasurementTable', { data: [] });
+// The default stands in when a part is rendered outside a MeasurementTable: it
+// shows the empty state rather than throwing, which is what the previous
+// createContext helper did too - it preferred a supplied default over its error.
+const MeasurementTableContextValue = React.createContext<MeasurementTableContext>({
+  data: [],
+  isExpanded: true,
+});
 
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
@@ -24,12 +25,8 @@ interface MeasurementDataProps extends MeasurementTableContext {
 
 const MeasurementTable = ({
   data = [],
-  onClick,
-  onDelete,
-  onToggleVisibility,
-  onToggleLocked,
-  onRename,
-  onColor,
+  onAction,
+  isExpanded = true,
   title,
   children,
   disableEditing = false,
@@ -38,23 +35,19 @@ const MeasurementTable = ({
   const amount = data.length;
 
   return (
-    <MeasurementTableProvider
-      data={data}
-      onClick={onClick}
-      onDelete={onDelete}
-      onToggleVisibility={onToggleVisibility}
-      onToggleLocked={onToggleLocked}
-      onRename={onRename}
-      onColor={onColor}
-      disableEditing={disableEditing}
+    <MeasurementTableContextValue.Provider
+      value={{ data, onAction, isExpanded, disableEditing }}
     >
       <PanelSection defaultOpen={true}>
-        <PanelSection.Header className="bg-secondary-dark">
+        <PanelSection.Header
+          key="measurementTableHeader"
+          className="bg-popover"
+        >
           <span>{`${t(title)} (${amount})`}</span>
         </PanelSection.Header>
-        <PanelSection.Content>{children}</PanelSection.Content>
+        <PanelSection.Content key="measurementTableContent">{children}</PanelSection.Content>
       </PanelSection>
-    </MeasurementTableProvider>
+    </MeasurementTableContextValue.Provider>
   );
 };
 
@@ -63,12 +56,16 @@ const Header = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Body = () => {
-  const { data } = useMeasurementTableContext('MeasurementTable.Body');
+  // Hooks stay above the early return below: called inside it, useTranslation
+  // would run only when the list is empty, so the hook count would change as
+  // measurements come and go.
+  const { t } = useTranslation('MeasurementTable');
+  const { data } = React.useContext(MeasurementTableContextValue);
 
   if (!data || data.length === 0) {
     return (
-      <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
-        No tracked measurements
+      <div className="text-highlight mb-1 flex flex-1 items-center px-2 py-2 text-base">
+        {t('No tracked measurements')}
       </div>
     );
   }
@@ -99,6 +96,9 @@ interface MeasurementItem {
   isVisible: boolean;
   isLocked: boolean;
   toolName: string;
+  isExpanded: boolean;
+  isUnmapped?: boolean;
+  statusTooltip?: string;
 }
 
 interface RowProps {
@@ -107,35 +107,32 @@ interface RowProps {
 }
 
 const Row = ({ item, index }: RowProps) => {
-  const {
-    onClick,
-    onDelete,
-    onToggleVisibility,
-    onToggleLocked,
-    onRename,
-    onColor,
-    disableEditing,
-  } = useMeasurementTableContext('MeasurementTable.Row');
+  const { onAction, isExpanded, disableEditing } = React.useContext(MeasurementTableContextValue);
 
+  const { uid } = item;
   return (
-    <DataRow
-      key={item.uid}
-      description={item.label}
-      number={index + 1}
-      title={item.label}
-      colorHex={item.colorHex}
-      isSelected={item.isSelected}
-      details={item.displayText}
-      onSelect={() => onClick(item.uid)}
-      onDelete={() => onDelete(item.uid)}
-      disableEditing={disableEditing}
-      isVisible={item.isVisible}
-      isLocked={item.isLocked}
-      onToggleVisibility={() => onToggleVisibility(item.uid)}
-      onToggleLocked={() => onToggleLocked(item.uid)}
-      onRename={() => onRename(item.uid)}
-      // onColor={() => onColor(item.uid)}
-    />
+    <div data-cy={`measurement-table-row-${index}`}>
+      <DataRow
+        key={item.uid}
+        description={item.label}
+        number={index + 1}
+        title={item.label}
+        colorHex={item.colorHex}
+        isSelected={item.isSelected}
+        details={item.displayText}
+        onDelete={e => onAction(e, 'removeMeasurement', uid)}
+        onSelect={e => onAction(e, 'jumpToMeasurement', uid)}
+        onRename={e => onAction(e, 'renameMeasurement', uid)}
+        onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
+        onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
+        onColor={e => onAction(e, 'changeMeasurementColor', uid)}
+        disableEditing={disableEditing}
+        isVisible={item.isVisible}
+        isLocked={item.isLocked}
+      >
+        {item.isUnmapped && <DataRow.Status.Warning tooltip={item.statusTooltip} />}
+      </DataRow>
+    </div>
   );
 };
 

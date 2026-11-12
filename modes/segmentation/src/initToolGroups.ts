@@ -1,3 +1,5 @@
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -10,14 +12,21 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
-function createTools(utilityModule) {
+function createTools({ utilityModule, commandsManager }) {
   const { toolNames, Enums } = utilityModule.exports;
-  return {
+
+  const tools = {
     active: [
       { toolName: toolNames.WindowLevel, bindings: [{ mouseButton: Enums.MouseBindings.Primary }] },
       { toolName: toolNames.Pan, bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }] },
-      { toolName: toolNames.Zoom, bindings: [{ mouseButton: Enums.MouseBindings.Secondary }] },
-      { toolName: toolNames.StackScroll, bindings: [{ mouseButton: Enums.MouseBindings.Wheel }] },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
+      },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
+      },
     ],
     passive: [
       {
@@ -25,13 +34,26 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
+      },
+      {
+        toolName: toolNames.LabelmapSlicePropagation,
+      },
+      {
+        toolName: toolNames.MarkerLabelmap,
+      },
+      {
+        toolName: toolNames.ClickSegment,
       },
       {
         toolName: 'CircularEraser',
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -39,6 +61,8 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -46,6 +70,8 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -53,6 +79,8 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -60,6 +88,8 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -67,19 +97,35 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          // preview: {
-          //   enabled: true,
-          // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
         },
+      },
+      {
+        toolName: toolNames.SegmentBidirectional,
+      },
+      {
+        toolName: toolNames.SegmentSelect,
+      },
+      {
+        toolName: 'ThresholdSphereBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: toolNames.LabelMapEditWithContourTool,
       },
       { toolName: toolNames.CircleScissors },
       { toolName: toolNames.RectangleScissors },
@@ -89,16 +135,56 @@ function createTools(utilityModule) {
       { toolName: toolNames.WindowLevelRegion },
 
       { toolName: toolNames.UltrasoundDirectional },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+      },
+      { toolName: toolNames.LivewireContourSegmentation },
+      { toolName: toolNames.SculptorTool },
+      { toolName: toolNames.PlanarFreehandROI },
+      {
+        toolName: 'CatmullRomSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: 'CATMULLROM',
+            enableTwoPointPreview: true,
+          },
+        },
+      },
+      {
+        toolName: 'LinearSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: 'LINEAR',
+            enableTwoPointPreview: true,
+          },
+        },
+      },
+      {
+        toolName: 'BSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: 'BSPLINE',
+            enableTwoPointPreview: true,
+          },
+        },
+      },
     ],
     disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
+
+  const updatedTools = commandsManager.run('initializeSegmentLabelTool', { tools });
+
+  return updatedTools;
 }
 
 function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
-  const tools = createTools(utilityModule);
+  const tools = createTools({ commandsManager, utilityModule });
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
@@ -108,10 +194,22 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   );
   const servicesManager = extensionManager._servicesManager;
   const { cornerstoneViewportService } = servicesManager.services;
-  const tools = createTools(utilityModule);
+  const tools = createTools({ commandsManager, utilityModule });
   tools.disabled.push(
     {
       toolName: utilityModule.exports.toolNames.Crosshairs,
+      // Bind Crosshairs to Primary+Shift (matching the longitudinal/tmtv modes)
+      // so it lives on its own mouse binding. Without a binding it activates on
+      // plain Primary and, being `disableOnPassive`, gets disabled the moment
+      // another Primary tool (brush/zoom/pan, all in this `mpr` group) is
+      // activated from the toolbar — making Crosshairs mutually exclusive with
+      // them. On its own binding it stays active alongside those tools.
+      bindings: [
+        {
+          mouseButton: utilityModule.exports.Enums.MouseBindings.Primary,
+          modifierKey: utilityModule.exports.Enums.KeyboardBindings.Shift,
+        },
+      ],
       configuration: {
         viewportIndicators: true,
         viewportIndicatorsConfig: {
@@ -160,7 +258,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.Pan,
@@ -172,7 +270,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);

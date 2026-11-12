@@ -1,22 +1,35 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
-import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
-import promptBeginTracking from './promptBeginTracking';
-import promptTrackNewSeries from './promptTrackNewSeries';
-import promptTrackNewStudy from './promptTrackNewStudy';
-import promptHydrateStructuredReport from './promptHydrateStructuredReport';
+import { measurementTrackingMode } from './promptBeginTracking';
 import hydrateStructuredReport from './hydrateStructuredReport';
 import { useAppConfig } from '@state';
+import {
+  promptBeginTrackingWrapper,
+  promptHydrateStructuredReportWrapper,
+  promptTrackNewSeriesWrapper,
+  promptTrackNewStudyWrapper,
+  promptLabelAnnotationWrapper,
+  promptSaveReportWrapper,
+  promptHasDirtyAnnotationsWrapper,
+} from './promptWrapperFunctions';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
-const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOP_CLASS_HANDLER_ID =
+  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID =
+  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d';
+
+const hasValidSOPClassHandlerId = displaySet => {
+  return [SR_SOP_CLASS_HANDLER_ID, COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID].includes(
+    displaySet.SOPClassHandlerId
+  );
+};
 
 /**
  *
@@ -30,12 +43,18 @@ function TrackedMeasurementsContextProvider(
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const { measurementService, displaySetService, customizationService } = servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    customizationService,
+    trackedMeasurementsService,
+  } = servicesManager.services as AppTypes.Services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
+      const { trackedStudy, trackedSeries } = ctx;
+      const { viewportId: activeViewportId } = evt.data;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
@@ -82,13 +101,23 @@ function TrackedMeasurementsContextProvider(
     },
 
     jumpToSameImageInActiveViewport: (ctx, evt) => {
-      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
+      const { trackedStudy, trackedSeries } = ctx;
+      const { viewportId: activeViewportId } = evt.data;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
       // Jump to the last tracked measurement - most recent
+      if (!trackedMeasurements?.length) {
+        console.warn(
+          "Didn't find any tracked measurements",
+          measurements,
+          trackedStudy,
+          trackedSeries
+        );
+        return;
+      }
       const trackedMeasurement = trackedMeasurements[trackedMeasurements.length - 1];
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
 
@@ -97,7 +126,7 @@ function TrackedMeasurementsContextProvider(
       // it will be in the correct position zoom and pan
       commandsManager.runCommand('updateStoredPositionPresentation', {
         viewportId: activeViewportId,
-        displaySetInstanceUID: referencedDisplaySetUID,
+        displaySetInstanceUIDs: [referencedDisplaySetUID],
         referencedImageId: trackedMeasurement.referencedImageId,
       });
 
@@ -107,8 +136,9 @@ function TrackedMeasurementsContextProvider(
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
-        const StructuredReportDisplaySetInstanceUID = evt.data.createdDisplaySetInstanceUIDs[0];
+      const uids = evt.data?.createdDisplaySetInstanceUIDs;
+      if (uids?.length > 0) {
+        const StructuredReportDisplaySetInstanceUID = uids[0];
 
         viewportGridService.setDisplaySetsForViewport({
           viewportId: evt.data.viewportId,
@@ -128,37 +158,71 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      const measurements = measurementService.getMeasurements();
-      const measurementIds = measurements.map(fm => fm.uid);
+      const trackingContext = evt.trackedStudy
+        ? { StudyInstanceUID: evt.trackedStudy, SeriesInstanceUIDs: [...(evt.trackedSeries || [])] }
+        : undefined;
+      measurementService.clearMeasurements(
+        undefined,
+        trackingContext ? { trackingContext } : undefined
+      );
+      measurementService.setIsMeasurementDeletedIndividually(false);
+    },
+    clearDisplaySetHydratedState: (ctx, evt) => {
+      const { displaySetInstanceUID } = evt.data ?? evt;
 
-      for (let i = 0; i < measurementIds.length; i++) {
-        measurementService.remove(measurementIds[i]);
-      }
+      const displaysets = displaySetService.getActiveDisplaySets();
+      displaysets?.forEach(displayset => {
+        if (
+          displayset.Modality === 'SR' &&
+          displayset.displaySetInstanceUID !== displaySetInstanceUID &&
+          displayset.isHydrated
+        ) {
+          displayset.isHydrated = false;
+          displayset.isLoaded = false;
+        }
+      });
+    },
+    updatedViewports: (ctx, evt) => {
+      const { hangingProtocolService } = servicesManager.services;
+      const { displaySetInstanceUID, viewportId } = evt.data ?? evt;
+
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportId,
+        displaySetInstanceUID
+      );
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
     },
   });
   machineOptions.services = Object.assign({}, machineOptions.services, {
-    promptBeginTracking: promptBeginTracking.bind(null, {
+    promptBeginTracking: promptBeginTrackingWrapper.bind(null, {
       servicesManager,
       extensionManager,
       appConfig,
     }),
-    promptTrackNewSeries: promptTrackNewSeries.bind(null, {
+    promptTrackNewSeries: promptTrackNewSeriesWrapper.bind(null, {
       servicesManager,
       extensionManager,
       appConfig,
     }),
-    promptTrackNewStudy: promptTrackNewStudy.bind(null, {
+    promptTrackNewStudy: promptTrackNewStudyWrapper.bind(null, {
       servicesManager,
       extensionManager,
       appConfig,
     }),
-    promptSaveReport: promptSaveReport.bind(null, {
+    promptSaveReport: promptSaveReportWrapper.bind(null, {
       servicesManager,
       commandsManager,
       extensionManager,
       appConfig,
     }),
-    promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
+    promptHydrateStructuredReport: promptHydrateStructuredReportWrapper.bind(null, {
+      servicesManager,
+      extensionManager,
+      commandsManager,
+      appConfig,
+    }),
+    promptHasDirtyAnnotations: promptHasDirtyAnnotationsWrapper.bind(null, {
       servicesManager,
       extensionManager,
       commandsManager,
@@ -170,7 +234,7 @@ function TrackedMeasurementsContextProvider(
       commandsManager,
       appConfig,
     }),
-    promptLabelAnnotation: promptLabelAnnotation.bind(null, {
+    promptLabelAnnotation: promptLabelAnnotationWrapper.bind(null, {
       servicesManager,
       extensionManager,
       commandsManager,
@@ -184,6 +248,25 @@ function TrackedMeasurementsContextProvider(
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
+    },
+    isSimplifiedConfig: (ctx, evt, condMeta) => {
+      return appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
+    },
+    simplifiedAndLoadSR: (ctx, evt, condMeta) => {
+      return (
+        appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
+        evt.data?.isBackupSave === false
+      );
+    },
+    hasDirtyAndSimplified: (ctx, evt, condMeta) => {
+      const measurements = measurementService.getMeasurements();
+      const hasDirtyMeasurements =
+        measurements.some(measurement => measurement.isDirty) ||
+        (measurements.length && measurementService.getIsMeasurementDeletedIndividually());
+      return (
+        appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
+        hasDirtyMeasurements
+      );
     },
   });
 
@@ -203,6 +286,13 @@ function TrackedMeasurementsContextProvider(
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
     measurementTrackingMachine
   );
+
+  // Update TrackedMeasurementsService when trackedSeries changes in context
+  useEffect(() => {
+    if (trackedMeasurements?.context?.trackedSeries && trackedMeasurementsService) {
+      trackedMeasurementsService.updateTrackedSeries(trackedMeasurements.context.trackedSeries);
+    }
+  }, [trackedMeasurements?.context?.trackedSeries, trackedMeasurementsService]);
 
   useEffect(() => {
     // Update the state machine with the active viewport ID
@@ -245,26 +335,31 @@ function TrackedMeasurementsContextProvider(
         // The issue here is that this handler in TrackedMeasurementsContext
         // ends up occurring before the Viewport is created, so the displaySet
         // is not loaded yet, and isRehydratable is undefined unless we call load().
-        if (
-          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-          !displaySet.isLoaded &&
-          displaySet.load
-        ) {
+        if (hasValidSOPClassHandlerId(displaySet) && !displaySet.isLoaded && displaySet.load) {
           await displaySet.load();
         }
 
         // Magic string
         // load function added by our sopClassHandler module
         if (
-          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-          displaySet.isRehydratable === true
+          hasValidSOPClassHandlerId(displaySet) &&
+          displaySet.isRehydratable === true &&
+          !displaySet.isHydrated
         ) {
-          console.log('sending event...', trackedMeasurements);
-          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+          const params = {
             displaySetInstanceUID: displaySet.displaySetInstanceUID,
             SeriesInstanceUID: displaySet.SeriesInstanceUID,
             viewportId: activeViewportId,
-          });
+          };
+
+          // Check if we should bypass the confirmation prompt
+          const disableConfirmationPrompts = appConfig?.disableConfirmationPrompts;
+
+          if (disableConfirmationPrompts) {
+            sendTrackedMeasurementsEvent('HYDRATE_SR', params);
+          } else {
+            sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', params);
+          }
         }
       }
     };
@@ -275,13 +370,25 @@ function TrackedMeasurementsContextProvider(
     sendTrackedMeasurementsEvent,
     servicesManager.services,
     viewports,
+    appConfig,
   ]);
 
   useEffect(() => {
-    // The command needs to be bound to the context's sendTrackedMeasurementsEvent
-    // so the command has to be registered in a React component.
+    // These commands are bound to the context's sendTrackedMeasurementsEvent, so they have
+    // to be registered from inside this (React) component. Re-registration on each
+    // render is safe — registerCommand overwrites by key.
     commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
       commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
+    });
+    commandsManager.registerCommand('DEFAULT', 'restoreTrackedSeries', {
+      commandFn: ({ StudyInstanceUID, SeriesInstanceUIDs }) =>
+        sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
+          StudyInstanceUID,
+          SeriesInstanceUIDs,
+        }),
+    });
+    commandsManager.registerCommand('DEFAULT', 'clearTrackedSeries', {
+      commandFn: () => sendTrackedMeasurementsEvent('CLEAR_TRACKING_CONTEXT'),
     });
   }, [commandsManager, sendTrackedMeasurementsEvent]);
 
@@ -294,9 +401,6 @@ function TrackedMeasurementsContextProvider(
   );
 }
 
-TrackedMeasurementsContextProvider.propTypes = {
-  children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  appConfig: PropTypes.object,
-};
+
 
 export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

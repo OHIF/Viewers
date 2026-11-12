@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: UI Modal Service
+title: UI Modal Service
+summary: Documentation for OHIF's UI Modal Service, which enables displaying centered, non-draggable modal windows for focused user interaction, with support for custom components and content throughout the application.
 ---
 # UI Modal Service
 

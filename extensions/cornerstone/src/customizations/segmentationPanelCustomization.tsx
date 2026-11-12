@@ -1,95 +1,119 @@
+import { CustomDropdownMenuContent } from './CustomDropdownMenuContent';
+import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
+import SegmentationToolConfig from '../components/SegmentationToolConfig';
 import React from 'react';
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  Icons,
-} from '@ohif/ui-next';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
+  const { segmentationService } = servicesManager.services;
+
+  let contourRenderFillChangedGlobally = false;
+
+  // Listen to when the global CONTOUR type renderFill style property is changed.
+  const { unsubscribe } = segmentationService.subscribe(
+    segmentationService.EVENTS.SEGMENTATION_STYLE_MODIFIED,
+    ({ specifier, style }) => {
+      if (
+        specifier.type === SegmentationRepresentations.Contour &&
+        specifier.segmentationId == null &&
+        specifier.viewportId == null &&
+        style.renderFill != null
+      ) {
+        unsubscribe();
+        contourRenderFillChangedGlobally = true;
+      }
+    }
+  );
+
   return {
-    'panelSegmentation.customDropdownMenuContent': ({
-      activeSegmentation,
-      onSegmentationAdd,
-      onSegmentationRemoveFromViewport,
-      onSegmentationEdit,
-      onSegmentationDelete,
-      allowExport,
-      storeSegmentation,
-      onSegmentationDownload,
-      onSegmentationDownloadRTSS,
-      t,
-    }) => (
-      <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => onSegmentationAdd(activeSegmentation.segmentationId)}>
-          <Icons.Add className="text-foreground" />
-          <span className="pl-2">{t('Create New Segmentation')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => onSegmentationRemoveFromViewport(activeSegmentation.segmentationId)}
-        >
-          <Icons.Series className="text-foreground" />
-          <span className="pl-2">{t('Remove from Viewport')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onSegmentationEdit(activeSegmentation.segmentationId)}>
-          <Icons.Rename className="text-foreground" />
-          <span className="pl-2">{t('Rename')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger
-            disabled={!allowExport}
-            className="pl-1"
-          >
-            <Icons.Export className="text-foreground" />
-            <span className="pl-2">{t('Export & Download')}</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem
-                onClick={() => storeSegmentation(activeSegmentation.segmentationId)}
-              >
-                {t('Export DICOM SEG')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onSegmentationDownload(activeSegmentation.segmentationId)}
-              >
-                {t('Download DICOM SEG')}
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => onSegmentationDelete(activeSegmentation.segmentationId)}>
-          <Icons.Delete className="text-red-600" />
-          <span className="pl-2 text-red-600">{t('Delete')}</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    ),
+    'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
+    'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
-    'panelSegmentation.onSegmentationAdd': () => {
+    'panelSegmentation.onSegmentationAdd': async ({
+      segmentationRepresentationType = SegmentationRepresentations.Labelmap,
+    }) => {
       const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getState().activeViewportId;
-      commandsManager.run('createLabelmapForViewport', { viewportId });
+      if (segmentationRepresentationType === SegmentationRepresentations.Labelmap) {
+        commandsManager.run('createLabelmapForViewport', { viewportId });
+      } else if (segmentationRepresentationType === SegmentationRepresentations.Contour) {
+        const segmentationId = await commandsManager.run('createContourForViewport', {
+          viewportId,
+        });
+        // Override the default (i.e. hydrated RTSTRUCT) style for contours if the global CONTOUR type
+        // renderFill style property has not been changed.
+        if (!contourRenderFillChangedGlobally) {
+          segmentationService.setStyle(
+            { segmentationId, type: SegmentationRepresentations.Contour },
+            {
+              renderFill: true,
+              renderFillInactive: true,
+            },
+            // Do not merge so that these created contours inherit other type-specific style properties like the fill alpha.
+            // Merging would otherwise permanently inherit the fill alpha and any inheritance from the type level would be lost.
+            false
+          );
+        }
+
+        // If the global CONTOUR type renderFill style property is already set, do not subscribe to the SEGMENTATION_STYLE_MODIFIED event.
+        if (contourRenderFillChangedGlobally) {
+          return;
+        }
+
+        // Subscribe to the SEGMENTATION_STYLE_MODIFIED event to listen for changes to the CONTOUR type renderFill style property.
+        const { unsubscribe } = segmentationService.subscribe(
+          segmentationService.EVENTS.SEGMENTATION_STYLE_MODIFIED,
+          ({ specifier, style }) => {
+            if (
+              specifier.type === SegmentationRepresentations.Contour &&
+              specifier.segmentationId == null &&
+              specifier.viewportId == null &&
+              style.renderFill != null
+            ) {
+              // We are here because the renderFill style property is globally being changed for ALL contours.
+              // When this occurs, the desire is for ALL contours to inherit the property. To make this happen,
+              // we have to clear the style property that was set for this specific segmentation
+              // when it was created above.
+              // We can now also unsubscribe because this change only needs to be made when the global CONTOUR type
+              // renderFill style property is first changed.
+
+              contourRenderFillChangedGlobally = true;
+              unsubscribe();
+              segmentationService.setStyle(
+                { segmentationId, type: SegmentationRepresentations.Contour },
+                {},
+                false
+              );
+            }
+          }
+        );
+      }
     },
     'panelSegmentation.tableMode': 'collapsed',
     'panelSegmentation.readableText': {
-      lesionStats: 'Lesion Statistics',
-      minValue: 'Minimum Value',
-      maxValue: 'Maximum Value',
-      meanValue: 'Mean Value',
-      volume: 'Volume (ml)',
-      suvPeak: 'SUV Peak',
-      suvMax: 'Maximum SUV',
-      suvMaxIJK: 'SUV Max IJK',
-      lesionGlyoclysisStats: 'Lesion Glycolysis',
+      // the values will appear in this order
+      min: 'Min Value',
+      minLPS: 'Min Coord',
+      max: 'Max Value',
+      maxLPS: 'Max Coord',
+      mean: 'Mean Value',
+      stdDev: 'Standard Deviation',
+      count: 'Voxel Count',
+      median: 'Median',
+      skewness: 'Skewness',
+      kurtosis: 'Kurtosis',
+      peakValue: 'Peak Value',
+      peakLPS: 'Peak Coord',
+      volume: 'Volume',
+      lesionGlycolysis: 'Lesion Glycolysis',
+      center: 'Center',
+    },
+    'labelMapSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
+    },
+    'contourSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
     },
   };
 }

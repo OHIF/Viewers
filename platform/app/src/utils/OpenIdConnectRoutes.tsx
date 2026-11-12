@@ -1,10 +1,11 @@
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
 import LegacyClient from './legacyOIDCClient';
 import NextClient from './nextOIDCClient';
+import { sanitizeSameOriginRedirect } from './sanitizeRedirect';
 
 function _isAbsoluteUrl(url) {
   return url.includes('http://') || url.includes('https://');
@@ -55,7 +56,10 @@ function LogoutComponent(props) {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   userManager.signoutRedirect({
-    post_logout_redirect_uri: query.get('redirect_uri'),
+    post_logout_redirect_uri: sanitizeSameOriginRedirect(
+      query.get('redirect_uri'),
+      window.location.origin
+    ),
   });
   return null;
 }
@@ -94,7 +98,7 @@ function LoginComponent(userManager) {
 }
 
 function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }) {
-  const userManager = initUserManager(oidc, routerBasename);
+  const userManager = useMemo(() => initUserManager(oidc, routerBasename), [oidc, routerBasename]);
 
   const getAuthorizationHeader = () => {
     const user = userAuthenticationService.getUser();
@@ -145,6 +149,19 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
       getAuthorizationHeader,
       handleUnauthenticated,
     });
+  }, []);
+
+  useEffect(() => {
+    const userLoadedHandler = user => {
+      userAuthenticationService.setUser(user);
+    };
+
+    userManager.events.addUserLoaded(userLoadedHandler);
+
+    // Cleanup on component unmount.
+    return () => {
+      userManager.events.removeUserLoaded(userLoadedHandler);
+    };
   }, []);
 
   const oidcAuthority = oidc[0].authority;

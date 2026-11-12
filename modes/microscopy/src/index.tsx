@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import i18n from 'i18next';
 
 import { id } from './id';
@@ -18,7 +17,6 @@ export const cornerstone = {
 
 const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
 const dicompdf = {
@@ -38,8 +36,6 @@ const extensionDependencies = {
 
 function modeFactory({ modeConfiguration }) {
   return {
-    // TODO: We're using this as a route segment
-    // We should not be.
     id,
     routeName: 'microscopy',
     displayName: i18n.t('Modes:Microscopy'),
@@ -47,17 +43,27 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+    onModeEnter: ({ servicesManager }: withAppTypes) => {
       const { toolbarService } = servicesManager.services;
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
+
+      toolbarService.updateSection('MeasurementTools', [
+        'line',
+        'point',
+        'polygon',
+        'circle',
+        'box',
+        'freehandpolygon',
+        'freehandline',
+      ]);
     },
 
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const { toolbarService, uiDialogService, uiModalService } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolbarService.reset();
     },
@@ -79,9 +85,6 @@ function modeFactory({ modeConfiguration }) {
     routes: [
       {
         path: 'microscopy',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
@@ -89,7 +92,7 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
               leftPanelClosed: true, // we have problem with rendering thumbnails for microscopy images
-              rightPanelClosed: true, // we do not have the save microscopy measurements yet
+              // rightPanelClosed: true, // we do not have the save microscopy measurements yet
               rightPanels: [ohif.rightPanel],
               rightPanelResizable: true,
               viewports: [
@@ -99,10 +102,11 @@ function modeFactory({ modeConfiguration }) {
                     // Share the sop class handler with cornerstone version of it
                     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
+                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler',
                   ],
                 },
                 {
-                  namespace: dicomvideo.viewport,
+                  namespace: cornerstone.viewport,
                   displaySetsToDisplay: [dicomvideo.sopClassHandler],
                 },
                 {
@@ -120,6 +124,7 @@ function modeFactory({ modeConfiguration }) {
     sopClassHandlers: [
       '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
       '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
+      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler',
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,
     ],

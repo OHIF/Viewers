@@ -1,9 +1,7 @@
 import { id } from './id';
-import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -56,8 +54,41 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
-      toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
+      toolbarService.register(toolbarButtons);
+
+      toolbarService.updateSection(toolbarService.sections.secondary, ['ProgressDropdown']);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'AdvancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection('AdvancedRenderingControls', [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
 
       // the primary button section is created in the workflow steps
       // specific to the step
@@ -80,9 +111,14 @@ function modeFactory({ modeConfiguration }) {
         cornerstoneViewportService.EVENTS.VIEWPORT_VOLUMES_CHANGED,
         () => {
           const viewportId = viewportGridService.getActiveViewportId();
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-          cineService.playClip(csViewport.element, { viewportId });
-          // cineService.setIsCineEnabled(true);
+
+          if (!viewportId) {
+            return;
+          }
+
+          const frameRate = 24;
+          cineService.setIsCineEnabled(true);
+          cineService.setCine({ id: viewportId, isPlaying: true, frameRate });
 
           unsubscribe();
         }

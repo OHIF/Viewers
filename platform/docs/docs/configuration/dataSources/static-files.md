@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Static Files
+title: Static DICOMweb Files
+summary: Details how to use the static-wado project to generate and serve optimized static DICOMweb files for enhanced OHIF Viewer performance, with step-by-step instructions for installation, file generation, and viewer configuration.
 ---
 
 
@@ -35,7 +37,7 @@ This project contains two main components:
 2. **Install Dependencies:**
 
     ```bash
-    yarn install
+    yarn install --frozen-lockfile
     ```
 
 ## Generating Static DICOMweb Files

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 9
 sidebar_label: Utility
+title: Utility Module
+summary: Documentation for OHIF Utility Module, which exposes reusable functionality from one extension to others, allowing for sharing of internal methods, services, and enumerations across the application architecture.
 ---
 
 # Module: Utility

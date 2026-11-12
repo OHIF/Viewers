@@ -134,8 +134,8 @@ const bindings = [
     isEditable: true,
   },
   {
-    commandName: 'cancelMeasurement',
-    label: 'Cancel Cornerstone Measurement',
+    commandName: 'cancelActiveOperation',
+    label: 'Cancel',
     keys: ['esc'],
   },
   {
@@ -152,34 +152,82 @@ const bindings = [
   },
   {
     commandName: 'setWindowLevelPreset',
-    commandOptions: { presetName: 'ct-bone', presetIndex: 2 },
+    commandOptions: { presetName: 'ct-liver', presetIndex: 2 },
     label: 'W/L Preset 3',
     keys: ['3'],
   },
   {
     commandName: 'setWindowLevelPreset',
-    commandOptions: { presetName: 'ct-brain', presetIndex: 3 },
+    commandOptions: { presetName: 'ct-bone', presetIndex: 3 },
     label: 'W/L Preset 4',
     keys: ['4'],
+  },
+  {
+    commandName: 'setWindowLevelPreset',
+    commandOptions: { presetName: 'ct-brain', presetIndex: 4 },
+    label: 'W/L Preset 5',
+    keys: ['5'],
   },
   {
     commandName: 'deleteActiveAnnotation',
     label: 'Delete Annotation',
     keys: ['backspace'],
   },
-  // after we have the ui for undo/redo, we can add these back in
-  // {
-  //   commandName: 'undo',
-  //   label: 'Undo',
-  //   keys: ['ctrl+z'],
-  //   isEditable: true,
-  // },
-  // {
-  //   commandName: 'redo',
-  //   label: 'Redo',
-  //   keys: ['ctrl+y'],
-  //   isEditable: true,
-  // },
+  {
+    commandName: 'acceptPreview',
+    label: 'Accept Preview',
+    keys: ['enter'],
+  },
+  {
+    commandName: 'undo',
+    label: 'Undo',
+    keys: ['ctrl+z'],
+    isEditable: true,
+  },
+  {
+    commandName: 'redo',
+    label: 'Redo',
+    keys: ['ctrl+y'],
+    isEditable: true,
+  },
+  {
+    commandName: 'interpolateScrollForMarkerLabelmap',
+    label: 'Interpolate Scroll',
+    keys: ['n'],
+    isEditable: true,
+  },
+  {
+    commandName: 'increaseBrushSize',
+    label: 'Increase Brush Size',
+    keys: [']'],
+    isEditable: true,
+  },
+  {
+    commandName: 'decreaseBrushSize',
+    label: 'Decrease Brush Size',
+    keys: ['['],
+    isEditable: true,
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'CircularEraser' },
+    label: 'Eraser',
+    keys: ['e'],
+    isEditable: true,
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'CircularBrush' },
+    label: 'Brush',
+    keys: ['b'],
+    isEditable: true,
+  },
+  {
+    commandName: 'addNewSegment',
+    label: 'Add New Segment',
+    keys: ['a'],
+    isEditable: true,
+  },
 ];
 
 export default bindings;

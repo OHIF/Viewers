@@ -1,0 +1,31 @@
+{
+  "name": "slate",
+  "label": "Neutral: Slate",
+  "cssVars": {
+    "dark": {
+      "highlight": "217 97% 52%",
+      "neutral": "0 0% 55%",
+      "neutral-light": "0 0% 75%",
+      "neutral-dark": "0 0% 25%",
+      "background": "0 0% 0%",
+      "foreground": "0 0% 96%",
+      "card": "0 0% 7%",
+      "card-foreground": "0 0% 96%",
+      "popover": "0 0% 9%",
+      "popover-foreground": "0 0% 96%",
+      "primary": "230 75% 55%",
+      "primary-foreground": "0 0% 98%",
+      "secondary": "0 0% 25%",
+      "secondary-foreground": "0 0% 85%",
+      "muted": "0 0% 7%",
+      "muted-foreground": "0 0% 60%",
+      "accent": "0 0% 18%",
+      "accent-foreground": "0 0% 96%",
+      "destructive": "0 65% 40%",
+      "destructive-foreground": "0 0% 98%",
+      "border": "0 0% 18%",
+      "input": "0 0% 22%",
+      "ring": "215 75% 55%"
+    }
+  }
+}

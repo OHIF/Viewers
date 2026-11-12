@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Issue & PR Triage Process
+title: OHIF Development Process
+summary: Detailed explanation of OHIF's issue triage, backlog management, contribution evaluation, and release processes, including categorization of issues, pull request workflow, quality assurance procedures, and continuous integration practices.
 ---
 
 # Our Process

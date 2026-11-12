@@ -1,5 +1,6 @@
 ---
 title: Measurements
+summary: Migration guide for measurement changes in OHIF 3.9, covering the new structured 'displayText' object with primary and secondary arrays for better organization, and the renaming of 'selected' property to 'isSelected'.
 ---
 
 

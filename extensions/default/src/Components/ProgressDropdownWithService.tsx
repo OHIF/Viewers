@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback, ReactElement } from 'react';
-import { ProgressDropdown } from '@ohif/ui';
+import React, { useEffect, useState, ReactElement } from 'react';
+import { ProgressDropdown } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 
 const workflowStepsToDropdownOptions = (steps = []) =>
   steps.map(step => ({
@@ -10,7 +11,8 @@ const workflowStepsToDropdownOptions = (steps = []) =>
     completed: false,
   }));
 
-export function ProgressDropdownWithService({ servicesManager }: withAppTypes): ReactElement {
+export function ProgressDropdownWithService(): ReactElement<any> {
+  const { servicesManager } = useSystem();
   const { workflowStepsService } = servicesManager.services;
   const [activeStepId, setActiveStepId] = useState(workflowStepsService.activeWorkflowStep?.id);
 
@@ -18,7 +20,7 @@ export function ProgressDropdownWithService({ servicesManager }: withAppTypes): 
     workflowStepsToDropdownOptions(workflowStepsService.workflowSteps)
   );
 
-  const setCurrentAndPreviousOptionsAsCompleted = useCallback(currentOption => {
+  const setCurrentAndPreviousOptionsAsCompleted = currentOption => {
     if (currentOption.completed) {
       return;
     }
@@ -42,21 +44,18 @@ export function ProgressDropdownWithService({ servicesManager }: withAppTypes): 
 
       return newOptionsState;
     });
-  }, []);
+  };
 
-  const handleDropdownChange = useCallback(
-    ({ selectedOption }) => {
-      if (!selectedOption) {
-        return;
-      }
+  const handleDropdownChange = ({ selectedOption }) => {
+    if (!selectedOption) {
+      return;
+    }
 
-      // TODO: Steps should be marked as completed after user has
-      // completed some action when required (not implemented)
-      setCurrentAndPreviousOptionsAsCompleted(selectedOption);
-      setActiveStepId(selectedOption.value);
-    },
-    [setCurrentAndPreviousOptionsAsCompleted]
-  );
+    // TODO: Steps should be marked as completed after user has
+    // completed some action when required (not implemented)
+    setCurrentAndPreviousOptionsAsCompleted(selectedOption);
+    setActiveStepId(selectedOption.value);
+  };
 
   useEffect(() => {
     let timeoutId;

@@ -1,8 +1,19 @@
-import { Types, DicomMetadataStore } from '@ohif/core';
+import { Types, DicomMetadataStore, utils } from '@ohif/core';
+import { datasetToDicomBlob, setNonEnumerableInstanceProperty } from './utils/dicomWriter';
+import { registerNaturalizedDatasetsForLocalWadouri } from './utils/registerNaturalizedDatasetForLocalWadouri';
+import { registerStoredInstanceImageIds } from './utils/registerStoredInstanceImageId';
+
+const { downloadBlob } = utils;
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
+import {
+  configureViewportForLayerAddition,
+  configureViewportForLayerRemoval,
+  canAddDisplaySetToViewport,
+  DERIVED_OVERLAY_MODALITIES,
+} from './utils/layerConfigurationUtils';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
@@ -17,6 +28,7 @@ import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocol
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
+import promptSaveReport from './utils/promptSaveReport';
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -24,6 +36,7 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
   reset?: false;
+  restoreCachedLayout?: boolean;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -51,6 +64,187 @@ const commandsModule = ({
 
   const actions = {
     /**
+     * Adds a display set as a layer to the specified viewport
+     *
+     * @param options.viewportId - The ID of the viewport to add the layer to
+     * @param options.displaySetInstanceUID - The UID of the display set to add as a layer
+     * @param options.removeFirst - Optional flag to remove the display set first if it's already added
+     */
+    addDisplaySetAsLayer: ({ viewportId, displaySetInstanceUID, removeFirst = false }) => {
+      if (!viewportId) {
+        const { activeViewportId } = servicesManager.services.viewportGridService.getState();
+        viewportId = activeViewportId;
+      }
+
+      if (!viewportId || !displaySetInstanceUID) {
+        console.warn('Missing required parameters for addDisplaySetAsLayer command');
+        return;
+      }
+
+      const { displaySetService, viewportGridService, hangingProtocolService } =
+        servicesManager.services;
+
+      // Get the display set
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (!displaySet) {
+        return;
+      }
+
+      // Get current display sets for the viewport
+      const currentDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+      // Check if we can add this display set to the viewport
+      const canAdd = canAddDisplaySetToViewport({
+        viewportId,
+        displaySetInstanceUID,
+        servicesManager,
+      });
+
+      if (!canAdd) {
+        return;
+      }
+
+      // Adding a layer is a per-viewport action: it shows the display set in the
+      // one viewport it is given, and leaves `isHydrated` and the segmentation
+      // presentation store alone. Those two are display-set-global ("show this
+      // wherever it logically belongs"), so a viewport re-created after a
+      // per-viewport add re-applies whatever hydration says rather than
+      // inheriting the add. The global statement is made by the hydration
+      // commands (hydrateSecondaryDisplaySet / loadSegmentationDisplaySetsForViewport
+      // in extensions/cornerstone), which record it themselves; the removal
+      // counterpart here is `removeDisplaySetLayer`'s `unhydrate` flag, which
+      // exists because removal has callers that are themselves global.
+      //
+      // Add the display set to the viewport
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportId,
+        displaySetInstanceUID
+      );
+
+      // Configure each viewport for layer addition
+      updatedViewports.forEach(viewport => {
+        configureViewportForLayerAddition({
+          viewport,
+          displaySetInstanceUID,
+          currentDisplaySetUIDs,
+          servicesManager,
+        });
+      });
+
+      // Update position presentation
+      commandsManager.runCommand('updateStoredPositionPresentation', {
+        viewportId,
+        displaySetInstanceUIDs: updatedViewports[0].displaySetInstanceUIDs,
+      });
+
+      // Run command to update viewports
+      commandsManager.run('setDisplaySetsForViewports', {
+        viewportsToUpdate: updatedViewports,
+      });
+    },
+
+    /**
+     * Removes a display set layer from the specified viewport
+     *
+     * @param options.viewportId - The ID of the viewport to remove the layer from
+     * @param options.displaySetInstanceUID - The UID of the display set to remove
+     * @param options.unhydrate - Whether this removal also means "stop showing
+     *   this display set anywhere" (see the note below).
+     */
+    removeDisplaySetLayer: ({ viewportId, displaySetInstanceUID, unhydrate = false }) => {
+      if (!viewportId || !displaySetInstanceUID) {
+        console.warn('Missing required parameters for removeDisplaySetLayer command');
+        return;
+      }
+
+      const {
+        displaySetService,
+        viewportGridService,
+        hangingProtocolService,
+        segmentationService,
+      } = servicesManager.services;
+
+      // Get the display set
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (!displaySet) {
+        return;
+      }
+
+      // Check if it's a segmentation and handle accordingly.
+      // Note that for the sake of hydrated segmentations, we remove the
+      // segmentation before checking if the display set is indeed in the viewport.
+      // This is because hydrated segmentations are not in the viewport per se
+      // {i.e. they are not layered) but are simply referenced by the display
+      // set in the viewport.
+      const isSegmentation = DERIVED_OVERLAY_MODALITIES.includes(displaySet.Modality);
+      if (isSegmentation) {
+        segmentationService.removeRepresentationsFromViewport(viewportId, {
+          segmentationId: displaySetInstanceUID,
+        });
+
+        // By default this command is the single-viewport primitive: it removes
+        // the layer from the one viewport it is given and leaves
+        // `displaySet.isHydrated` and the segmentation presentation store alone,
+        // both of which are display-set-global ("show this wherever it
+        // logically belongs"). That is what the viewport overlay menu wants -
+        // its Remove hides the overlay here, and a viewport re-created later
+        // re-applies whatever hydration says. Clearing them unconditionally
+        // would also let a layer *replacement* (remove + add) silently
+        // un-hydrate the display set everywhere.
+        //
+        // `unhydrate: true` is the global statement, used by the removal paths
+        // that are themselves global - the segmentation panel's Remove from
+        // Viewport, and the SEGMENTATION_REMOVED handler in
+        // extensions/cornerstone/src/utils/setUpSegmentationEventHandlers.ts
+        // (which records it itself, before this loop over viewports). Recording
+        // `hydrated: false` rather than dropping the entry keeps the store a
+        // statement of desired state, so a viewport created later converges on
+        // "not shown" instead of replaying an earlier `hydrated: true`.
+        if (unhydrate) {
+          displaySet.isHydrated = false;
+
+          commandsManager.runCommand('updateStoredSegmentationPresentation', {
+            displaySet,
+            hydrated: false,
+          });
+        }
+      }
+
+      // Get current display sets for the viewport
+      const currentDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+      // If the display set is not in the viewport, no need to remove it
+      if (!currentDisplaySetUIDs.includes(displaySetInstanceUID)) {
+        return;
+      }
+
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportId,
+        displaySetInstanceUID
+      );
+
+      // Configure each viewport for layer removal
+      updatedViewports.forEach(viewport => {
+        configureViewportForLayerRemoval({
+          viewport,
+          displaySetInstanceUID,
+          currentDisplaySetUIDs,
+          servicesManager,
+        });
+      });
+
+      // Update position presentation
+      commandsManager.runCommand('updateStoredPositionPresentation', {
+        viewportId,
+        displaySetInstanceUIDs: updatedViewports[0].displaySetInstanceUIDs,
+      });
+
+      // Update the viewports
+      commandsManager.run('setDisplaySetsForViewports', {
+        viewportsToUpdate: updatedViewports,
+      });
+    },
+    /**
      * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
      */
     multimonitor: async options => {
@@ -73,6 +267,14 @@ const commandsModule = ({
           multiMonitorService.run(screenDelta, commands, options);
         }, 1000);
       }
+    },
+
+    /** Displays a prompt and then save the report if relevant */
+    promptSaveReport: props => {
+      const { StudyInstanceUID } = props;
+      promptSaveReport({ servicesManager, commandsManager, extensionManager }, props, {
+        data: { StudyInstanceUID },
+      });
     },
 
     /**
@@ -140,8 +342,9 @@ const commandsModule = ({
         type: type,
       });
     },
-    clearMeasurements: () => {
-      measurementService.clearMeasurements();
+
+    clearMeasurements: options => {
+      measurementService.clearMeasurements(options.measurementFilter);
     },
 
     /**
@@ -183,6 +386,7 @@ const commandsModule = ({
       stageId,
       stageIndex,
       reset = false,
+      restoreCachedLayout = true,
     }: HangingProtocolParams): boolean => {
       const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
@@ -221,7 +425,8 @@ const commandsModule = ({
         }`;
 
         const { viewportGridState } = useViewportGridStore.getState();
-        const restoreProtocol = !reset && viewportGridState[storedHanging];
+        // An explicit preset selection passes restoreCachedLayout: false so the stage layout wins over a stale cached grid
+        const restoreProtocol = !reset && restoreCachedLayout && viewportGridState[storedHanging];
 
         if (
           reset ||
@@ -248,6 +453,7 @@ const commandsModule = ({
           hangingProtocolService.setProtocol(protocolId, {
             stageId,
             stageIndex: useStageIdx,
+            displaySetSelectorMap,
           });
         } else {
           hangingProtocolService.setProtocol(protocolId, {
@@ -266,6 +472,9 @@ const commandsModule = ({
           `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
           null
         );
+
+        // An applied protocol is an explicit layout change, so abandon any pending one-up toggle
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
         return true;
       } catch (e) {
         console.error(e);
@@ -340,10 +549,12 @@ const commandsModule = ({
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log('setViewportGridLayout running', onLayoutChange, numRows, numCols);
         // Don't apply the layout if the run command returns false
         return;
       }
+
+      // An explicit grid selection abandons any pending one-up toggle; clear only past the onLayoutChange veto
+      useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
@@ -439,6 +650,9 @@ const commandsModule = ({
           isHangingProtocolLayout: true,
         });
 
+        // Toggled back, so drop the stored layout; the store only holds a currently active one-up
+        useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
+
         // Reset crosshairs after restoring the layout
         setTimeout(() => {
           commandsManager.runCommand('resetCrosshairs');
@@ -499,16 +713,17 @@ const commandsModule = ({
       const displaySets = displaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
-      const defaultDisplaySetInstanceUID = displaySetInstanceUID || displaySetInstanceUIDs[0];
+      const defaultDisplaySetInstanceUID =
+        displaySetInstanceUID || displaySetInstanceUIDs[0] || displaySets[0]?.displaySetInstanceUID;
+
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
           displaySets,
           displaySetInstanceUID: defaultDisplaySetInstanceUID,
-          onClose: UIModalService.hide,
         },
-        containerDimensions: 'w-[70%] max-w-[900px]',
         title: 'DICOM Tag Browser',
+        containerClassName: 'max-w-3xl',
       });
     },
 
@@ -528,7 +743,11 @@ const commandsModule = ({
       const { activeViewportId, viewports } = viewportGridService.getState();
 
       const activeViewport = viewports.get(activeViewportId);
-      const activeDisplaySetInstanceUID = activeViewport.displaySetInstanceUIDs[0];
+      const activeDisplaySetInstanceUID = activeViewport?.displaySetInstanceUIDs?.[0];
+
+      if (!activeDisplaySetInstanceUID) {
+        return;
+      }
 
       const thumbnailList = document.querySelector('#ohif-thumbnail-list');
 
@@ -536,21 +755,9 @@ const commandsModule = ({
         return;
       }
 
-      const thumbnailListBounds = thumbnailList.getBoundingClientRect();
-
       const thumbnail = document.querySelector(`#thumbnail-${activeDisplaySetInstanceUID}`);
 
       if (!thumbnail) {
-        return;
-      }
-
-      const thumbnailBounds = thumbnail.getBoundingClientRect();
-
-      // This only handles a vertical thumbnail list.
-      if (
-        thumbnailBounds.top >= thumbnailListBounds.top &&
-        thumbnailBounds.top <= thumbnailListBounds.bottom
-      ) {
         return;
       }
 
@@ -581,10 +788,11 @@ const commandsModule = ({
         displaySetIndexToShow > -1 && displaySetIndexToShow < currentDisplaySets.length;
         displaySetIndexToShow += direction
       ) {
-        if (
-          !excludeNonImageModalities ||
-          !nonImageModalities.includes(currentDisplaySets[displaySetIndexToShow].Modality)
-        ) {
+        const nextDisplaySet = currentDisplaySets[displaySetIndexToShow];
+        if (nextDisplaySet.madeInClient) {
+          continue;
+        }
+        if (!excludeNonImageModalities || !nonImageModalities.includes(nextDisplaySet.Modality)) {
           break;
         }
       }
@@ -614,14 +822,114 @@ const commandsModule = ({
         });
       }
 
-      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
+    },
+
+    /**
+     * Creates a store function based on the data source type.
+     * @param dataSource - 'download', 'copyToClipboard', or a named data source
+     * @param defaultFileName - Default filename for download/clipboard
+     * @param defaultContentType - Default content type for clipboard
+     * @returns A store function, or null if no valid store exists
+     */
+    createStoreFunction: ({ dataSource, defaultFileName, defaultContentType }) => {
+      if (dataSource === 'download') {
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          registerNaturalizedDatasetsForLocalWadouri(instances);
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Download only supports a single DICOM instance');
+          }
+          const reportBlob = datasetToDicomBlob(instances[0]);
+          downloadBlob(reportBlob, { filename: defaultFileName || 'dicom.dcm' });
+        };
+      }
+
+      if (dataSource === 'copyToClipboard') {
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          registerNaturalizedDatasetsForLocalWadouri(instances);
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Copy to clipboard only supports a single DICOM instance');
+          }
+          const reportBlob = datasetToDicomBlob(instances[0]);
+          const type = defaultContentType || 'application/dicom';
+          await navigator.clipboard.write([new ClipboardItem({ [type]: reportBlob })]);
+        };
+      }
+
+      // DICOM STOW path — resolve the named data source
+      const dataSources = extensionManager.getDataSources(dataSource);
+      const resolvedDataSource = dataSources?.[0];
+      if (!resolvedDataSource?.store?.dicom) {
+        return null;
+      }
+
+      return async (dicom, { dicomDict } = {}) => {
+        const instances = Array.isArray(dicom) ? dicom : [dicom];
+        // Always keep an in-memory wadouri copy so DICOM can be read without re-fetching.
+        registerNaturalizedDatasetsForLocalWadouri(instances);
+
+        if (dataSource !== 'dicomlocal') {
+          const config = resolvedDataSource.getConfig?.();
+          if (config?.wadoRoot) {
+            instances.forEach(instance => {
+              setNonEnumerableInstanceProperty(instance, 'wadoRoot', config.wadoRoot);
+            });
+          }
+        }
+
+        // Identify the stored instances before they reach the metadata store, so
+        // that the display sets made from them know which instance they came
+        // from, and a later save of the same data can extend this series.
+        registerStoredInstanceImageIds(instances, resolvedDataSource);
+
+        DicomMetadataStore.addInstances(instances, true);
+        for (const instance of instances) {
+          await resolvedDataSource.store.dicom(instance, null, dicomDict);
+        }
+        const studyUIDs = new Set(instances.map(i => i.StudyInstanceUID).filter(Boolean));
+        for (const uid of studyUIDs) {
+          resolvedDataSource.deleteStudyMetadataPromise(uid);
+        }
+      };
+    },
+
+    /**
+     * Launches a workflow (mode) for a study from the worklist. This is the
+     * default `workList.onStudyDoubleClick` command.
+     *
+     * @param study - the StudyRow the action applies to
+     * @param workflows - the workflows applicable to the study, in menu order;
+     *   each has `id`, `displayName`, `isDefault` and `launchWithStudy(study)`
+     * @param defaultWorkflow - the user's default workflow when it applies to
+     *   the study
+     * @param workflowId - command option to force a specific workflow (mode id)
+     *   instead of the default/first applicable one
+     */
+    launchDefaultMode: ({ study, workflows = [], defaultWorkflow, workflowId }) => {
+      const workflow = workflowId
+        ? workflows.find(w => w.id === workflowId)
+        : (defaultWorkflow ?? workflows[0]);
+      if (!workflow) {
+        console.warn(
+          workflowId
+            ? `launchDefaultMode: workflow '${workflowId}' is not applicable to the study`
+            : 'launchDefaultMode: no workflow is applicable to the study'
+        );
+        return;
+      }
+      workflow.launchWithStudy(study);
     },
   };
 
   const definitions = {
     multimonitor: actions.multimonitor,
+    promptSaveReport: actions.promptSaveReport,
     loadStudy: actions.loadStudy,
     showContextMenu: actions.showContextMenu,
     closeContextMenu: actions.closeContextMenu,
@@ -642,6 +950,14 @@ const commandsModule = ({
     toggleOneUp: actions.toggleOneUp,
     openDICOMTagViewer: actions.openDICOMTagViewer,
     updateViewportDisplaySet: actions.updateViewportDisplaySet,
+    scrollActiveThumbnailIntoView: actions.scrollActiveThumbnailIntoView,
+    addDisplaySetAsLayer: actions.addDisplaySetAsLayer,
+    removeDisplaySetLayer: actions.removeDisplaySetLayer,
+    createStoreFunction: actions.createStoreFunction,
+    launchDefaultMode: {
+      commandFn: actions.launchDefaultMode,
+      context: 'WORKLIST',
+    },
   };
 
   return {

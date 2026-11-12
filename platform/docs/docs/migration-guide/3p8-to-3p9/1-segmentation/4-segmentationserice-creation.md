@@ -1,6 +1,7 @@
 ---
 id: seg-creation
-title: Segmentation  Creation
+title: Segmentation Creation
+summary: Migration guide for segmentation creation methods in OHIF 3.9, covering renamed methods like createLabelmapForViewport and createLabelmapForDisplaySet, updated parameter structures, and transition from tool group to viewport-centric approach.
 ---
 
 ## createEmptySegmentationForViewport

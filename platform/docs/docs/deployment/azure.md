@@ -1,5 +1,7 @@
 ---
 sidebar_position: 12
+title: Microsoft Azure Integration
+summary: Comprehensive guide for configuring OHIF with Microsoft Azure Healthcare APIs, including step-by-step instructions for Azure AD registration, DICOM service setup, CORS configuration, and OAuth authentication implementation.
 ---
 
 # Microsoft Azure
@@ -160,7 +162,7 @@ Update the data source configuration file with your Azure Healthcare APIs detail
 
    ```bash
    cd OHIFViewer
-   yarn install
+   yarn install --frozen-lockfile
    APP_CONFIG=config/azure.js yarn run dev
    ```
 
@@ -173,4 +175,3 @@ Update the data source configuration file with your Azure Healthcare APIs detail
 - The `qidoRoot`, `wadoUriRoot`, and `wadoRoot` should point to your Azure DICOM service URL. Replace `{your-dicom-instance}` with your actual instance name.
 
 This setup allows OHIF to interact seamlessly with Azure's Healthcare APIs, enabling robust DICOM management and visualization.
-

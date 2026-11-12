@@ -1,5 +1,7 @@
 ---
 sidebar_position: 4
+title: Docker Deployment
+summary: Comprehensive guide for deploying OHIF Viewer using Docker, covering pre-built images from Docker Hub, custom image building, configuration options through build arguments and environment variables, and runtime container management.
 ---
 
 # Docker
@@ -187,6 +189,17 @@ docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/ap
 Ensure the path to the local configuration file is absolute, as some Docker versions require it.
 :::
 
+:::note
+The path above is for the image that the root `Dockerfile` builds. The deployment recipes in
+[`platform/app/.recipes`](https://github.com/OHIF/Viewers/tree/master/platform/app/.recipes), such
+as Nginx-Orthanc, serve the viewer from `/var/www/html`, the `root` in their `nginx.conf`. With a
+recipe, mount the file at `/var/www/html/app-config.js`. The recipes do not run the `entrypoint.sh`
+of the root image, so the [Environment Variable](#environment-variable) method does not apply to
+them. The [Build Default](#build-default) method does not apply either: each recipe `dockerfile`
+sets `ENV APP_CONFIG` in its build stage, and `--build-arg APP_CONFIG` does not change it. To change
+the build default of a recipe, edit the `ENV APP_CONFIG` line in the `dockerfile` of the recipe.
+:::
+
 ---
 
 #### Environment Variable
@@ -204,7 +217,3 @@ docker run -d -p 3000:80/tcp -e APP_CONFIG="$(cat /path/to/the/config/file)" --n
 - As an alternative to the `cat` command, you can convert the file to a single line and copy-paste it directly. Tools like [Visual Studio Code](https://stackoverflow.com/questions/46491061/shortcut-for-joining-two-lines) and [Notepad++](https://superuser.com/questions/518229/how-do-i-remove-linebreaks-in-notepad) offer "Join Lines" commands to help with this.
 - If both the [Volume Mounting](#volume-mounting) and [Environment Variable](#environment-variable) methods are used, the Volume Mounting method takes precedence.
 :::
-
----
-
-This rewrite improves readability by reorganizing information into smaller, clear sections and providing consistent formatting for examples and tips.

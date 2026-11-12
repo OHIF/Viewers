@@ -137,7 +137,7 @@ class WorkflowStepsService extends PubSubService {
 
     toUse.forEach(({ buttonSection, buttons }) => {
       toolbarService.clearButtonSection(buttonSection);
-      toolbarService.createButtonSection(buttonSection, buttons);
+      toolbarService.updateSection(buttonSection, buttons);
     });
   }
 

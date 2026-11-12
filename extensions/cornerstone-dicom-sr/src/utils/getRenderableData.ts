@@ -36,6 +36,14 @@ function getRenderableData({ GraphicType, GraphicData, ValueType, imageId }) {
         ValueType,
         imageId,
       });
+
+      if (!imageId) {
+        // without the image id it's not possible to perform the calculations below
+        // these calculations also do not seem to be needed, since everything works
+        // just fine when we skip them. At least for SCOORD3D annotations.
+        return pointsWorld;
+      }
+
       // We do not have an explicit draw circle svg helper in Cornerstone3D at
       // this time, but we can use the ellipse svg helper to draw a circle, so
       // here we reshape the data for that purpose.
@@ -89,6 +97,13 @@ function getRenderableData({ GraphicType, GraphicData, ValueType, imageId }) {
         ValueType,
         imageId,
       });
+
+      if (!imageId) {
+        // without the image id it's not possible to perform the calculations below
+        // these calculations also do not seem to be needed, since everything works
+        // just fine when we skip them. At least for SCOORD3D annotations.
+        return pointsWorld;
+      }
 
       const majorAxisStart = vec3.fromValues(...pointsWorld[0]);
       const majorAxisEnd = vec3.fromValues(...pointsWorld[1]);

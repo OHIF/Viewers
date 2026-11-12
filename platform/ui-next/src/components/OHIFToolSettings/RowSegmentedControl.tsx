@@ -2,6 +2,7 @@ import React from 'react';
 import { Label } from '../Label';
 import { Tabs, TabsList, TabsTrigger } from '../Tabs';
 import { cn } from '../../lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 interface RadioValue {
   value: string;
@@ -13,18 +14,24 @@ interface RadioOption {
   name: string;
   value: string;
   values: RadioValue[];
-  commands?: (val: string) => void;
+  onChange?: (val: string) => void;
+  tooltip?: string;
 }
 
 interface RowSegmentedControlProps {
   option: RadioOption;
   className?: string;
+  onChange?: (val: string) => void;
 }
 
-export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({ option, className }) => {
+export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({
+  option,
+  className,
+  onChange,
+}) => {
   const handleValueChange = (newVal: string) => {
-    if (option.commands) {
-      option.commands(newVal);
+    if (onChange) {
+      onChange(newVal);
     }
   };
 
@@ -33,7 +40,18 @@ export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({ option
       className={cn('flex items-center justify-between text-[13px]', className)}
       key={option.id}
     >
-      <Label className="mr-2">{option.name}</Label>
+      <Label className="mr-2">
+        {option.tooltip ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-help">{option.name}</span>
+            </TooltipTrigger>
+            <TooltipContent side="top">{option.tooltip}</TooltipContent>
+          </Tooltip>
+        ) : (
+          option.name
+        )}
+      </Label>
       <div className="max-w-1/2">
         <Tabs
           value={option.value}
@@ -44,6 +62,7 @@ export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({ option
               <TabsTrigger
                 value={itemValue}
                 key={`button-${option.id}-${index}`}
+                data-cy={`${option.id}-${itemValue}`}
               >
                 {label}
               </TabsTrigger>

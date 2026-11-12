@@ -29,11 +29,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -115,11 +115,12 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
           {
             mouseButton: Enums.MouseBindings.Secondary,
           },
+          { numTouchPoints: 2 },
         ],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -165,11 +166,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -254,11 +255,11 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }, { numTouchPoints: 3 }],
       },
     ],
   };
@@ -266,7 +267,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);

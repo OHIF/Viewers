@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Toolbar
+title: Toolbar Module
+summary: Documentation for OHIF Toolbar Module, which provides UI components and evaluators for the application's toolbar, supporting custom button types, advanced state management, and conditional rendering based on viewport and modality requirements.
 ---
 
 # Module: Toolbar
@@ -114,6 +116,13 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
 ```
 
 as you can see the job of this evaluator is to determine if the button should be disabled or not. It does so by checking the `toolGroup` and the `toolName` and then returns an object with `disabled` and `className` properties.
+
+Various information can be returned by an evaluator. In particular...
+- `disabled`: flag indicating if the tool should be disabled or not
+- `disabledText`: the text or tooltip to show if the `disabled` flag above is set to `true`
+- `visible`: flag indicating if the tool show be visible or not; this is a convenient way to force a tool to hide based on some custom (evaluator) logic
+- `isActive`: flag to indicating where the tool is currently active or not
+- `className`: custom CSS class names to add to the tool's component
 
 The following evaluators are provided by us:
 

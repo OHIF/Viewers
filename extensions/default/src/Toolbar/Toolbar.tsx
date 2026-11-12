@@ -1,9 +1,43 @@
 import React from 'react';
 import { useToolbar } from '@ohif/core';
 
-export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
-  const { toolbarButtons, onInteraction } = useToolbar({
-    servicesManager,
+/**
+ * Props for the Toolbar component that renders a collection of toolbar buttons and/or button sections.
+ *
+ * @interface ToolbarProps
+ */
+interface ToolbarProps {
+  /**
+   * The section of buttons to display in the toolbar.
+   * Common values include 'primary', 'secondary', 'tertiary', etc.
+   * Defaults to 'primary' if not specified.
+   *
+   * @default 'primary'
+   */
+  buttonSection?: string;
+
+  /**
+   * The unique identifier of the viewport this toolbar is associated with.
+   */
+  viewportId?: string;
+
+  /**
+   * The numeric position or location of the toolbar.
+   * Used for ordering and layout purposes in the UI.
+   */
+  location?: number;
+}
+
+export function Toolbar({ buttonSection = 'primary', viewportId, location }: ToolbarProps) {
+  const {
+    toolbarButtons,
+    onInteraction,
+    isItemOpen,
+    isItemLocked,
+    openItem,
+    closeItem,
+    toggleLock,
+  } = useToolbar({
     buttonSection,
   });
 
@@ -19,17 +53,45 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
         }
 
         const { id, Component, componentProps } = toolDef;
+
+        // Enhanced props with state and actions - respecting viewport specificity
+        const enhancedProps = {
+          ...componentProps,
+          isOpen: isItemOpen(id, viewportId),
+          isLocked: isItemLocked(id, viewportId),
+          onOpen: () => openItem(id, viewportId),
+          onClose: () => closeItem(id, viewportId),
+          onToggleLock: () => toggleLock(id, viewportId),
+          viewportId,
+        };
+
         const tool = (
           <Component
             key={id}
             id={id}
-            onInteraction={onInteraction}
-            servicesManager={servicesManager}
-            {...componentProps}
+            location={location}
+            onInteraction={args => {
+              onInteraction({
+                ...args,
+                itemId: id,
+                viewportId,
+              });
+            }}
+            {...enhancedProps}
           />
         );
 
-        return <div key={id}>{tool}</div>;
+        return (
+          <div
+            key={id}
+            // This wrapper div exists solely for React's key prop requirement during reconciliation.
+            // We use display:contents to make it transparent to the layout engine (children appear
+            // as direct children of the parent) while keeping it in the DOM for React's virtual DOM.
+            className="contents"
+          >
+            {tool}
+          </div>
+        );
       })}
     </>
   );

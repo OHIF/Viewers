@@ -1,10 +1,11 @@
-import { test } from '@playwright/test';
 import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  reduce3DViewportSize,
   attemptAction,
+  checkForGridScreenshot,
+  reduce3DViewportSize,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,19 +15,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D main Test', async () => {
-  test('should render 3D main correctly.', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^3D main$/ })
-      .first()
-      .click();
+  test('should render 3D main correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDMain.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await checkForScreenshot(
+    await waitForViewportsRendered(page);
+    await checkForGridScreenshot({
       page,
-      page,
-      screenShotPaths.threeDMain.threeDMainDisplayedCorrectly,
-      200
-    );
+      viewportPageObject,
+      screenshotPath: screenShotPaths.threeDMain.threeDMainDisplayedCorrectly,
+    });
   });
 });

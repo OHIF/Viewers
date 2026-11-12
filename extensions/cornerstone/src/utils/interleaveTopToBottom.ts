@@ -39,31 +39,6 @@ export default function interleaveTopToBottom({
     }
   }
 
-  const filteredMatchDetails = [];
-  const displaySetsToLoad = new Set();
-
-  // Check all viewports that have a displaySet to be loaded. In some cases
-  // (eg: line chart viewports which is not a Cornerstone viewport) the
-  // displaySet is created on the client and there are no instances to be
-  // downloaded. For those viewports the displaySet may have the `skipLoading`
-  // option set to true otherwise it may block the download of all other
-  // instances resulting in blank viewports.
-  Array.from(matchDetails.values()).forEach(curMatchDetails => {
-    const { displaySetsInfo } = curMatchDetails;
-    let numDisplaySetsToLoad = 0;
-
-    displaySetsInfo.forEach(({ displaySetInstanceUID, displaySetOptions }) => {
-      if (!displaySetOptions?.options?.skipLoading) {
-        numDisplaySetsToLoad++;
-        displaySetsToLoad.add(displaySetInstanceUID);
-      }
-    });
-
-    if (numDisplaySetsToLoad) {
-      filteredMatchDetails.push(curMatchDetails);
-    }
-  });
-
   /**
    * The following is checking if all the viewports that were matched in the HP has been
    * successfully created their cornerstone viewport or not. Todo: This can be
@@ -108,7 +83,7 @@ export default function interleaveTopToBottom({
   // the imageIds and save them in AllRequests for later use
   const AllRequests = [];
   volumes.forEach(volume => {
-    const requests = volume.getImageLoadRequests();
+    const requests = volume.getImageLoadRequests?.() ?? [];
 
     if (!requests?.[0]?.imageId) {
       return;

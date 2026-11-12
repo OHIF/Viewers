@@ -1,5 +1,7 @@
 ---
 sidebar_position: 11
+title: User Account Control
+summary: Comprehensive guide for implementing user authentication in OHIF using Keycloak, covering setup with both Orthanc and DCM4CHEE, configuration with OAuth2 proxy, SSL implementation, and detailed steps for local and production deployment scenarios.
 ---
 # User Account Control
 

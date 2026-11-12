@@ -1,12 +1,19 @@
 import OHIF from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 import dcmjs from 'dcmjs';
 import { dicomWebUtils } from '@ohif/extension-default';
+import { buildEcgModule } from './utils/ecgMetadata';
 
 const { MetadataModules } = csEnums;
 const { utils } = OHIF;
 const { denaturalizeDataset } = dcmjs.data.DicomMetaDictionary;
-const { transferDenaturalizedDataset, fixMultiValueKeys } = dicomWebUtils;
+// NOTE: access transferDenaturalizedDataset / fixMultiValueKeys lazily (at call
+// time) rather than destructuring here. This module and @ohif/extension-default
+// form a circular import, so dicomWebUtils can be undefined at module-eval time
+// depending on bundler eval order; a top-level destructure then throws and
+// crashes app boot.
 
 const SOP_CLASS_UIDS = {
   VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.6',
@@ -16,6 +23,7 @@ const SOPClassHandlerId =
   '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler';
 
 function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+  const dataSource = extensionManager.getActiveDataSource()[0];
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -30,22 +38,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     if (framesI < currentFrames) {
       singleFrameInstance = instanceI;
       currentFrames = framesI;
-    }
-  }
-  let imageIdForThumbnail = null;
-  const dataSource = extensionManager.getActiveDataSource()[0];
-  if (singleFrameInstance) {
-    if (currentFrames == 1) {
-      // Not all DICOM server implementations support thumbnail service,
-      // So if we have a single-frame image, we will prefer it.
-      imageIdForThumbnail = singleFrameInstance.imageId;
-    }
-    if (!imageIdForThumbnail) {
-      // use the thumbnail service provided by DICOM server
-      imageIdForThumbnail = dataSource.getImageIdsForInstance({
-        instance: singleFrameInstance,
-        thumbnail: true,
-      });
     }
   }
 
@@ -107,11 +99,15 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     instance,
     numImageFrames: 0,
     numInstances: 1,
-    imageIdForThumbnail, // thumbnail image
     others: instances, // all other level instances in the image Pyramid
     instances,
     othersFrameOfReferenceUID,
     imageIds: instances.map(instance => instance.imageId),
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(
+      singleFrameInstance,
+      singleFrameInstance.imageId
+    ),
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SM')}`,
   };
   // The microscopy viewer directly accesses the metadata already loaded, and
   // uses the DICOMweb client library directly for loading, so it has to be
@@ -148,8 +144,8 @@ function getDICOMwebMetadata(instanceMap, imageId) {
     console.warn('Metadata not already found for', imageId, 'in', instanceMap);
     return this.super.getDICOMwebMetadata(imageId);
   }
-  return transferDenaturalizedDataset(
-    denaturalizeDataset(fixMultiValueKeys(instanceMap.get(imageId)))
+  return dicomWebUtils.transferDenaturalizedDataset(
+    denaturalizeDataset(dicomWebUtils.fixMultiValueKeys(instanceMap.get(imageId)))
   );
 }
 
@@ -165,6 +161,92 @@ export function getDicomMicroscopySopClassHandler({ servicesManager, extensionMa
   };
 }
 
+/**
+ * DICOM Waveform SOP Class UIDs for ECG / cardiac electrophysiology.
+ * Reference: https://dicom.nema.org/medical/dicom/current/output/chtml/part04/sect_B.5.html
+ */
+const ECG_SOP_CLASS_UIDS = {
+  TWELVE_LEAD_ECG_WAVEFORM_STORAGE: '1.2.840.10008.5.1.4.1.1.9.1.1',
+  GENERAL_ECG_WAVEFORM_STORAGE: '1.2.840.10008.5.1.4.1.1.9.1.2',
+  AMBULATORY_ECG_WAVEFORM_STORAGE: '1.2.840.10008.5.1.4.1.1.9.1.3',
+  HEMODYNAMIC_WAVEFORM_STORAGE: '1.2.840.10008.5.1.4.1.1.9.2.1',
+  CARDIAC_ELECTROPHYSIOLOGY_WAVEFORM_STORAGE: '1.2.840.10008.5.1.4.1.1.9.3.1',
+};
+
+const ecgSopClassUids = Object.values(ECG_SOP_CLASS_UIDS);
+
+const DicomEcgSOPClassHandlerId =
+  '@ohif/extension-cornerstone.sopClassHandlerModule.DicomEcgSopClassHandler';
+
+function _getEcgDisplaySetsFromSeries(instances, servicesManager) {
+  const { userAuthenticationService } = servicesManager.services;
+
+  return instances.map(instance => {
+    const { Modality, SOPInstanceUID } = instance;
+    const { SeriesDescription, SeriesNumber, SeriesDate } = instance;
+    const { SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
+    const imageId = instance.imageId;
+
+    // Register ECG metadata in the OHIF metadata provider so that
+    // Cornerstone's ECGViewport can retrieve it via metaData.get('ecgModule', imageId).
+    if (imageId) {
+      const ecgModule = buildEcgModule(instance, userAuthenticationService);
+      if (ecgModule) {
+        csUtils.genericMetadataProvider.addRaw(imageId, {
+          type: MetadataModules.ECG,
+          metadata: ecgModule,
+        });
+        // The time and mV region, so measurement tools report physical units
+        const calibration = csMetadataUtilities.buildEcgCalibrationFromInstance(instance);
+        if (calibration) {
+          csUtils.genericMetadataProvider.addRaw(imageId, {
+            type: MetadataModules.CALIBRATION,
+            metadata: calibration,
+          });
+        }
+      }
+    }
+
+    return {
+      Modality,
+      displaySetInstanceUID: utils.guid(),
+      SeriesDescription,
+      SeriesNumber,
+      SeriesDate,
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+      SOPClassHandlerId: DicomEcgSOPClassHandlerId,
+      SOPClassUID,
+      referencedImages: null,
+      measurements: null,
+      viewportType: csEnums.ViewportType.ECG,
+      instances: [instance],
+      instance,
+      thumbnailSrc: null,
+      isDerivedDisplaySet: false,
+      isLoaded: false,
+      sopClassUids: ecgSopClassUids,
+      numImageFrames: 0,
+      numInstances: 1,
+      imageIds: imageId ? [imageId] : [],
+      supportsWindowLevel: false,
+      label: SeriesDescription || 'ECG',
+    };
+  });
+}
+
+export function getDicomEcgSopClassHandler({ servicesManager }) {
+  const getDisplaySetsFromSeries = instances =>
+    _getEcgDisplaySetsFromSeries(instances, servicesManager);
+
+  return {
+    name: 'DicomEcgSopClassHandler',
+    sopClassUids: ecgSopClassUids,
+    getDisplaySetsFromSeries,
+  };
+}
+
 export function getSopClassHandlerModule(params) {
-  return [getDicomMicroscopySopClassHandler(params)];
+  return [getDicomMicroscopySopClassHandler(params), getDicomEcgSopClassHandler(params)];
 }

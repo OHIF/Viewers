@@ -1,6 +1,7 @@
 ---
 id: seg-api
 title: SegmentationService API
+summary: Detailed guide to the SegmentationService API changes in OHIF 3.9, covering the transition from toolGroup to viewport-centric segmentation management, updates to key methods like getActiveSegmentation, setActiveSegmentation, and addSegment.
 ---
 
 

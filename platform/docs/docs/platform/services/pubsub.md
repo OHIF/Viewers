@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: Pub Sub
+title: Publish-Subscribe Pattern
+summary: Documentation of the publish-subscribe pattern implementation in OHIF, which enables event-based communication between services, allowing components to subscribe to events and receive updates when they occur, reducing direct dependencies between modules.
 ---
 
 # Pub sub

@@ -2,21 +2,31 @@
   display: none;
 }
 .ViewportOverlay {
-  color: #9ccef9;
+  color: hsl(var(--highlight));
 }
 .ViewportOverlay .overlay-element {
   position: absolute;
   font-weight: 400;
-  text-shadow: 1px 1px #000;
   pointer-events: none;
 }
 .overlay-top {
-  top: 28px;
+  top: 2.15rem;
 }
 .overlay-bottom {
-  bottom: 3px;
+  bottom: 2.15rem;
 }
 
+/* Base text styling without shadow */
 .overlay-text {
-  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.75);
+  /* No default shadow - will be applied by shadow classes */
+}
+
+/* Dark shadow for light backgrounds */
+.shadow-dark {
+  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.65);
+}
+
+/* Light shadow for dark backgrounds */
+.shadow-light {
+  text-shadow: 0.8px 0.8px 0.5px rgba(255, 255, 255, 0.65);
 }

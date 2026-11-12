@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Configuration Files
+title: Configuration Files
+summary: Comprehensive guide to configuring OHIF Viewer, including data sources, environment variables, advanced options like study prefetching, and detailed explanations of configuration parameters for performance optimization and feature customization.
 ---
 
 # Config files
@@ -28,7 +30,7 @@ The simplest way is to update the existing default config:
 
 ```js title="platform/app/public/config/default.js"
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
   modes: [],
   showStudyList: true,
@@ -81,7 +83,7 @@ window.config = ({ servicesManager } = {}) => {
         }
       },
     },
-    routerBasename: '/',
+    routerBasename: null,
     dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
@@ -116,6 +118,7 @@ window.config = ({ servicesManager } = {}) => {
 
 
 Here are a list of some options available:
+- `customizationService`: An array of customization module references and inline overrides applied at the global scope. This is how deployers enable optional features like the [Appearance & Theming](./ui.md) system and configure UI components without modifying core code. See [Customization Service](../platform/services/customization-service/customizationService.md) for the full syntax reference.
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
   panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
@@ -125,12 +128,12 @@ Here are a list of some options available:
 - `investigationalUseDialog`: This should contain an object with `option` value, it can be either `always` which always shows the dialog once per session, `never` which never shows the dialog, or `configure` which shows the dialog once and won't show it again until a set number of days defined by the user, if it's set to configure, you are required to add an additional property `days` which is the number of days to wait before showing the dialog again.
 - `groupEnabledModesFirst`: boolean, if set to true, all valid modes for the study get grouped together first, then the rest of the modes. If false, all modes are shown in the order they are defined in the configuration.
 - `experimentalStudyBrowserSort`: boolean, if set to true, you will get the experimental StudyBrowserSort component in the UI, which displays a list of sort functions that the displaySets can be sorted by, the sort reflects in all part of the app including the thumbnail/study panel. These sort functions are defined in the customizationModule and can be expanded by users.
-- `disableConfirmationPrompts`: boolean, if set to true, it skips confirmation prompts for measurement tracking and hydration.
+- `disableConfirmationPrompts`: boolean, if set to true, it skips confirmation prompts for segmentation related prompts.
 - `showPatientInfo`: string, if set to 'visible', the patient info header will be shown and its initial state is expanded. If set to 'visibleCollapsed', the patient info header will be shown but it's initial state is collapsed. If set to 'disabled', the patient info header will never be shown, and if set to 'visibleReadOnly', the patient info header will be shown and always expanded.
 - `requestTransferSyntaxUID` : Request a specific Transfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
-- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type. For `thumbnail`, a small pool (around `5`) is recommended: the study list preview panel fetches a thumbnail per series in parallel, and a larger pool yields little throughput benefit while risking server overload and contention with `interaction`/`prefetch` requests.
 - `modesConfiguration`: Allows overriding modes configuration.
   - Example config:
   ```js
@@ -184,8 +187,15 @@ if auth headers are used, a preflight request is required.
   }
   ```
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+- `showStudyList`: (default to false), if set to false, the OHIF search (or work list) page will not be shown nor will there be a back button (chevron) in the viewer to navigate to it
 - `useNorm16Texture`: (default to false), if set to true, it will use 16 bit data type for the image data wherever possible which has
   significant impact on reducing the memory usage. However, the 16Bit textures require EXT_texture_norm16 extension in webGL 2.0 (you can check if you have it here https://webglreport.com/?v=2). In addition to the extension, there are reported problems for Intel Macs that might cause the viewer to crash. In summary, it is great a configuration if you have support for it.
+- `lossyDownsampling`: sets which lossy downsampling Cornerstone3D can use for a volume. The object has three flags:
+  - `final` (default `false`): a volume viewport reduces its texture to fit the GPU settings preset. Select the preset with the `cornerstone.gpuSettingsPreset` customization: `low-tablet`, `low`, `medium`, `high` or `high-texture-4096`. See [Select the GPU settings preset](../platform/services/customization-service/specificCustomizations.md#5-select-the-gpu-settings-preset).
+  - `interactive` (default `true`): a viewport lowers the detail while the user interacts, for example with a larger sample distance during a 3D rotation. The full detail returns when the interaction ends.
+  - `interleavedLoading` (default `true`): the loader fills the frames that have not loaded yet with copies of the nearby loaded frames. Each frame becomes exact when its own data loads.
+
+  These options are not fully safe on every device. A texture that is too large can lose the WebGL context, and then the user must reload the page. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` set `lossyDownsampling: { final: true }`. `config/dev.js`, `config/netlify.js` and `config/e2e.js` also select the `medium` preset, and a `?customization=gpu/<preset>` URL can select a different preset. The other bundled configs keep the defaults. `config/default.js` and the `config/docker-nginx-*.js` recipes show the setting in a comment.
 - `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to
   load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
 - `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
@@ -193,6 +203,7 @@ if auth headers are used, a preflight request is required.
 - `activateViewportBeforeInteraction`: (default to true), if set to false, tools can be used directly without the need to click and activate the viewport.
 - `autoPlayCine`: (default to false), if set to true, data sets with the DICOM frame time tag (i.e. (0018,1063)) will auto play when displayed
 - `addWindowLevelActionMenu`: (default to true), if set to false, the window level action menu item is NOT added to the viewport action corners
+- `showErrorDetails`: determines which runtime environments can display exception and error details caught at the `ErrorBoundary`; acceptable values include: `always`, `dev`, and `production`
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
@@ -268,7 +279,7 @@ based on the proximity to the current series/display set. This can be useful to 
     /* Enable/disable study prefetching service (default: false) */
     enabled: true,
     /* Number of displaysets to be prefetched  (default: 2)*/
-    displaySetCount: 2,
+    displaySetsCount: 2,
     /**
      * Max number of concurrent prefetch requests (default: 10)
      * High numbers may impact on the time to load a new dropped series because
@@ -307,6 +318,29 @@ reasons:
 
 However, if you would like to get compressed data in a specific transfer syntax, you can modify the `acceptHeader` configuration or
 `requestTransferSyntaxUID` configuration.
+
+### Data Source: stackRetrieveOptions
+At the data source configuration level, you can set `stackRetrieveOptions` to customize Cornerstone stack image retrieval. Merged with defaults; only specify overrides. For example, set `streaming: false` when the data source returns uncompressed DICOM (e.g. `application/octet-stream` only) to avoid black image on load:
+
+```js
+configuration: {
+  acceptHeader: ['application/octet-stream'],
+  stackRetrieveOptions: {
+    retrieveOptions: { single: { streaming: false } },
+  },
+}
+```
+
+### Data Source: volumeRetrieveOptions
+At the data source configuration level, you can set `volumeRetrieveOptions` to select the retrieve stages of a volume. The value is the name of a Cornerstone3D `ProgressiveRetrieveImages` stage set, or a `{ stages }` object. The default is `'coarseInterleavedRetrieveStages'`. A hanging protocol with an `imageLoadStrategy` does not use these stages.
+
+The 3.13 default was `'interleavedRetrieveStages'`. That stage set has a lossy first pass, which is fast on an HTJ2K server. To use it again:
+
+```js
+configuration: {
+  volumeRetrieveOptions: 'interleavedRetrieveStages',
+}
+```
 
 ## Environment Variables
 

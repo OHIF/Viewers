@@ -1,11 +1,28 @@
-import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
+import React, { ReactElement, useEffect, useState, useRef } from 'react';
 import { VolumeShiftProps } from '../../types/ViewportPresets';
+import { Numeric } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
-export function VolumeShift({
-  viewportId,
-  commandsManager,
-  servicesManager,
-}: VolumeShiftProps): ReactElement {
+/**
+ * Records the shift applied to a viewport's opacity transfer function.
+ *
+ * Module scope on purpose: shiftedBy is stashed on the cornerstone viewport
+ * object, and writing to a value the render produced is a mutation the React
+ * Compiler cannot account for - it refuses to optimize the whole component.
+ * Passing the viewport to a named helper keeps the operation explicit and lets
+ * the compiler key the callback on the viewport reference rather than on a
+ * property path it would have to dereference during render.
+ */
+function setShiftedBy(viewport, shift) {
+  if (!viewport) {
+    return;
+  }
+  viewport.shiftedBy = shift;
+}
+
+export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement<any> {
+  const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [minShift, setMinShift] = useState<number | null>(null);
   const [maxShift, setMaxShift] = useState<number | null>(null);
@@ -20,6 +37,7 @@ export function VolumeShift({
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const { actor } = viewport.getActors()[0];
   const ofun = actor.getProperty().getScalarOpacity(0);
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   useEffect(() => {
     if (isBlocking) {
@@ -37,57 +55,38 @@ export function VolumeShift({
     setStep(Math.pow(10, Math.floor(Math.log10(transferFunctionWidth / 500))));
   }, [cornerstoneViewportService, viewportId, actor, ofun, isBlocking]);
 
-  const onChangeRange = useCallback(
-    newShift => {
-      const shiftDifference = newShift - prevShiftRef.current;
-      prevShiftRef.current = newShift;
-      viewport.shiftedBy = newShift;
-      commandsManager.runCommand('shiftVolumeOpacityPoints', {
-        viewportId,
-        shift: shiftDifference,
-      });
-    },
-    [commandsManager, viewportId, viewport]
-  );
-
-  const calculateBackground = value => {
-    const percentage = ((value - 0) / (1 - 0)) * 100;
-    return `linear-gradient(to right, #5acce6 0%, #5acce6 ${percentage}%, #3a3f99 ${percentage}%, #3a3f99 100%)`;
+  const onChangeRange = newShift => {
+    const shiftDifference = newShift - prevShiftRef.current;
+    prevShiftRef.current = newShift;
+    setShiftedBy(viewport, newShift);
+    commandsManager.runCommand('shiftVolumeOpacityPoints', {
+      viewportId,
+      shift: shiftDifference,
+    });
+    setShift(newShift);
   };
 
   return (
-    <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
-        <label
-          className="block  text-white"
-          htmlFor="shift"
-        >
-          Shift
-        </label>
-        {step !== null && (
-          <input
-            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
+    <div className="my-1 mt-2 flex flex-col space-y-2">
+      {step !== null && minShift !== null && maxShift !== null && (
+        <div className="w-full pl-2 pr-1">
+          <Numeric.Container
+            mode="singleRange"
+            min={minShift}
+            max={maxShift}
+            step={step}
             value={shift}
-            onChange={e => {
-              const shiftValue = parseInt(e.target.value, 10);
-              setShift(shiftValue);
-              onChangeRange(shiftValue);
-            }}
-            id="shift"
+            onChange={onChangeRange}
             onMouseDown={() => setIsBlocking(true)}
             onMouseUp={() => setIsBlocking(false)}
-            max={maxShift}
-            min={minShift}
-            type="range"
-            step={step}
-            style={{
-              background: calculateBackground((shift - minShift) / (maxShift - minShift)),
-              '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
-            }}
-          />
-        )}
-      </div>
-    </>
+          >
+            <div className="flex flex-row items-center">
+              <Numeric.Label className="w-16">{t('Shift')}</Numeric.Label>
+              <Numeric.SingleRange sliderClassName="mx-2 flex-grow" />
+            </div>
+          </Numeric.Container>
+        </div>
+      )}
+    </div>
   );
 }

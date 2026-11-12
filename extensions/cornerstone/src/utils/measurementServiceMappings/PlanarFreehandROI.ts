@@ -95,6 +95,11 @@ function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
   const { cachedStats } = data;
   const { referencedImageId } = metadata;
+
+  if (!cachedStats) {
+    return;
+  }
+
   const targets = Object.keys(cachedStats);
 
   if (!targets.length) {
@@ -155,8 +160,8 @@ function getColumnValueReport(annotation, customizationService) {
   const { metadata, data } = annotation;
   const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
-  report.forEach(({ name, value }) => {
-    columns.push(name);
+  report.forEach(({ displayName, value }) => {
+    columns.push(displayName);
     stats[value] ? values.push(stats[value]) : values.push('not available');
   });
 

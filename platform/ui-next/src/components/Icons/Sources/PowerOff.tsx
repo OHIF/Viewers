@@ -6,8 +6,8 @@ export const PowerOff = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 28"
     aria-labelledby="title"
-    width="1em"
-    height="1em"
+    width="28px"
+    height="28px"
     fill="currentColor"
     {...props}
   >

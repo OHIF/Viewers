@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Service Manager
+title: Service Manager
+summary: Documentation for the ServicesManager class which provides central registration and access to application services, with details on built-in services, service architecture, lifecycle management, and implementation of custom services.
 ---
 
 # Services Manager

@@ -1,5 +1,6 @@
 ---
 title: Other Changes
+summary: Migration guide for additional changes in OHIF 3.9, covering external library loading with browserImport function, the pluginConfig.json format for dynamic imports, and improvements to viewport navigation using ViewReference methods.
 ---
 
 import Tabs from '@theme/Tabs';

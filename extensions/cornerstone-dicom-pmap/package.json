@@ -1,54 +1,53 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-pmap",
-  "version": "3.10.0-beta.110",
+  "version": "3.14.0-beta.81",
   "description": "DICOM Parametric Map read workflow",
   "author": "OHIF",
   "license": "MIT",
+  "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-cornerstone-dicom-pmap.umd.js",
   "module": "src/index.tsx",
+  "engines": {
+    "node": ">=24"
+  },
   "files": [
     "dist/**",
     "public/**",
     "README.md"
   ],
-  "repository": "OHIF/Viewers",
-  "keywords": [
-    "ohif-extension"
-  ],
   "publishConfig": {
     "access": "public"
   },
-  "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
-  },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:dicom-pmap": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev:dicom-pmap": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.10.0-beta.110",
-    "@ohif/extension-cornerstone": "3.10.0-beta.110",
-    "@ohif/extension-default": "3.10.0-beta.110",
-    "@ohif/i18n": "3.10.0-beta.110",
-    "prop-types": "^15.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
-    "react-router": "^6.8.1",
-    "react-router-dom": "^6.8.1"
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-cornerstone": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/i18n": "workspace:*",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-i18next": "12.3.1",
+    "react-router": "6.30.3",
+    "react-router-dom": "6.30.3"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^2.19.14",
-    "@cornerstonejs/core": "^2.19.14",
-    "@kitware/vtk.js": "32.1.1",
-    "react-color": "^2.19.3"
-  }
+    "@babel/runtime": "7.29.7",
+    "@cornerstonejs/adapters": "5.17.1",
+    "@cornerstonejs/core": "5.17.1",
+    "@kitware/vtk.js": "36.4.1"
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3"
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }

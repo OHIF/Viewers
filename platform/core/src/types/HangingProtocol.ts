@@ -24,6 +24,13 @@ export type DisplaySetAndViewportOptions = {
   displaySetOptions: DisplaySetOptions;
 };
 
+export interface ViewportUpdate {
+  viewportId?: string;
+  displaySetInstanceUIDs: string[];
+  viewportOptions?: ViewportOptions;
+  displaySetOptions?: DisplaySetOptions[];
+}
+
 export type DisplayArea = {
   type?: 'SCALE' | 'FIT';
   scale?: number;
@@ -49,7 +56,7 @@ export type SetProtocolOptions = {
    * This is normally transparent to the user of this, but in order to specify
    * specific instances, they can be added like that.
    */
-  displaySetSelectorMap?: Record<string, string>;
+  displaySetSelectorMap?: Record<string, Array<string>>;
 
   /** Used to define the display sets already in view, in order to allow
    * filling empty viewports with other instances.
@@ -82,19 +89,39 @@ export type ConstraintValue =
   | boolean
   | []
   | string[]
+  | number[]
+  | null
   | {
-      value: string | number | boolean | [];
+      value: string | number | boolean | null | [] | string[] | number[];
+    }
+  | {
+      // Reads the operand from another attribute, of the metadata instance by default.
+      attribute: string;
+      from?: string;
     };
 
+/** The validators of `HangingProtocolService/lib/validator.js`. */
 export type Constraint = {
-  // This value exactly
+  // Equal value: the whole value, a numeric string equals a number
   equals?: ConstraintValue;
-  notEquals?: ConstraintValue;
+  doesNotEqual?: ConstraintValue;
+  includes?: ConstraintValue;
+  doesNotInclude?: ConstraintValue;
   // A caseless contains
-  containsI?: string;
+  containsI?: ConstraintValue;
   contains?: ConstraintValue;
+  containsAll?: ConstraintValue;
   doesNotContain?: ConstraintValue;
+  doesNotContainI?: ConstraintValue;
+  startsWith?: ConstraintValue;
+  endsWith?: ConstraintValue;
+  // Number comparisons; greaterThan and lessThan are strict
   greaterThan?: ConstraintValue;
+  lessThan?: ConstraintValue;
+  greaterThanOrEqual?: ConstraintValue;
+  lessThanOrEqual?: ConstraintValue;
+  range?: ConstraintValue;
+  notNull?: boolean | { value: boolean } | { attribute: string; from?: string };
 };
 
 export type MatchingRule = {
@@ -293,6 +320,8 @@ export type ProtocolNotifications = {
   // and all viewport data includes a designated display set. This command
   // will run on every stage's initial layout.
   onViewportDataInitialized?: Command[];
+  // This set of commands is executed before the stage change is applied
+  onStageChange?: Command[];
 };
 
 /**

@@ -1,6 +1,6 @@
 /** @type {AppTypes.Config} */
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   showStudyList: true,
   extensions: [],
   modes: [],
@@ -23,7 +23,9 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
+        supportsWildcard: true,
         requestOptions: {
           auth: 'admin:admin',
         },

@@ -15,6 +15,7 @@ import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatTime from './formatTime';
 import formatPN from './formatPN';
+import formatValue from './formatValue';
 import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
@@ -26,6 +27,7 @@ import sortInstancesByPosition from './sortInstancesByPosition';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
+import toNumber from './toNumber';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
 import addAccessors from './addAccessors';
@@ -33,13 +35,37 @@ import {
   sortStudy,
   sortStudySeries,
   sortStudyInstances,
+  sortDisplaySetsCopy,
   sortingCriteria,
   seriesSortCriteria,
+  instancesSortCriteria,
 } from './sortStudy';
+import {
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+} from './latestInstanceDateTime';
+import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
+import { getOhifWriterHeader } from './getOhifWriterHeader';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
 import * as MeasurementFilters from './measurementFilters';
+import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
+import calculateScanAxisNormal from './calculateScanAxisNormal';
+import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
+import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
+import { buildButtonCommands } from './buildButtonCommands';
+import { thumbnailNoImageModalities } from './thumbnailNoImageModalities';
+import {
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
+} from './resolveBulkDataTags';
+
+import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -54,18 +80,29 @@ const utils = {
   sortStudy,
   sortStudySeries,
   sortStudyInstances,
+  sortDisplaySetsCopy,
   sortingCriteria,
   seriesSortCriteria,
+  instancesSortCriteria,
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
+  getOhifWriterHeader,
   writeScript,
   formatDate,
   formatTime,
   formatPN,
+  formatValue,
   b64toBlob,
   urlUtil,
   imageIdToURI,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
+  structuredCloneWithFunctions,
   hotkeys,
   Queue,
   isDicomUid,
@@ -80,12 +117,25 @@ const utils = {
   isDisplaySetReconstructable,
   debounce,
   roundNumber,
+  toNumber,
   downloadCSVReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
   MeasurementFilters,
+  getClosestOrientationFromIOP,
+  calculateScanAxisNormal,
+  areAllImageOrientationsEqual,
+  thumbnailNoImageModalities,
+  downloadBlob,
+  downloadUrl,
+  downloadCsv,
+  downloadDicom,
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
 };
 
 export {
@@ -94,12 +144,21 @@ export {
   absoluteUrl,
   sortBy,
   formatDate,
+  formatValue,
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
+  getOhifWriterHeader,
   writeScript,
   b64toBlob,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
+  structuredCloneWithFunctions,
   hotkeys,
   Queue,
   isDicomUid,
@@ -114,12 +173,24 @@ export {
   imageIdToURI,
   debounce,
   roundNumber,
+  toNumber,
   downloadCSVReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
   MeasurementFilters,
+  getClosestOrientationFromIOP,
+  buildButtonCommands,
+  thumbnailNoImageModalities,
+  downloadBlob,
+  downloadUrl,
+  downloadCsv,
+  downloadDicom,
+  resolveBulkDataTags,
+  registerResolvedBulkDataTags,
+  getResolvedBulkDataTags,
+  decodeNumericBulkData,
 };
 
 export default utils;

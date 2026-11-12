@@ -1,5 +1,6 @@
 import { SOPClassHandlerId } from './id';
 import { utils } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
 
 const SOP_CLASS_UIDS = {
@@ -31,6 +32,8 @@ const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
 const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
+  const thumbnailSrc = null;
+  console.warn('dataSource=', dataSource);
   return instances
     .filter(metadata => {
       const tsuid =
@@ -52,14 +55,20 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     })
     .map(instance => {
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
-      const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
-        instance;
-      const videoUrl = dataSource.retrieve.directURL({
+      const { SeriesNumber, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } = instance;
+      // The date/time of a display set is the date/time of the instance it
+      // shows, chosen from all the attributes that instance carries.
+      const { SeriesDate, SeriesTime } = utils.getLatestInstanceDateTime(instance);
+      const videoUrlParams = {
         instance,
         singlepart: 'video',
         tag: 'PixelData',
         url,
-      });
+      };
+      const videoUrl = dataSource.retrieve.directURL(videoUrlParams);
+      const getVideoUrl = dataSource.retrieve.renderedURL
+        ? options => dataSource.retrieve.renderedURL({ ...videoUrlParams, url: videoUrl }, options)
+        : undefined;
       const displaySet = {
         //plugin: id,
         Modality,
@@ -67,29 +76,27 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SeriesDescription,
         SeriesNumber,
         SeriesDate,
+        SeriesTime,
         SOPInstanceUID,
         SeriesInstanceUID,
         StudyInstanceUID,
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
-        viewportType: csEnums.ViewportType.VIDEO,
-        // The videoUrl is deprecated, the preferred URL is renderedUrl
         videoUrl,
-        renderedUrl: videoUrl,
+        getVideoUrl,
+        viewportType: csEnums.ViewportType.VIDEO,
         instances: [instance],
-        thumbnailSrc: dataSource.retrieve.directURL({
-          instance,
-          defaultPath: '/thumbnail',
-          defaultType: 'image/jpeg',
-          tag: 'Absent',
-        }),
+        getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance),
+        thumbnailSrc,
         imageIds: [imageId],
         isDerivedDisplaySet: true,
         isLoaded: false,
         sopClassUids,
         numImageFrames: NumberOfFrames,
         instance,
+        supportsWindowLevel: true,
+        label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
       };
       csUtils.genericMetadataProvider.add(imageId, {
         type: 'imageUrlModule',
@@ -99,7 +106,8 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     });
 };
 
-export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+export default function getSopClassHandlerModule(params) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

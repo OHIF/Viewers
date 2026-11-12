@@ -1,10 +1,8 @@
-export const toolGroupIds = {
-  CT: 'ctToolGroup',
-  PT: 'ptToolGroup',
-  Fusion: 'fusionToolGroup',
-  MIP: 'mipToolGroup',
-  default: 'default',
-};
+import { toolGroupIds } from '@ohif/extension-tmtv';
+
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
+export { toolGroupIds };
 
 function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
@@ -19,15 +17,16 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
@@ -60,6 +59,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -67,6 +68,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -74,6 +77,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -81,6 +86,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -88,6 +95,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -95,6 +104,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -105,15 +116,12 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
           // preview: {
           //   enabled: true,
           // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
     ],
@@ -121,6 +129,9 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     disabled: [
       {
         toolName: toolNames.Crosshairs,
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary, modifierKey: Enums.KeyboardBindings.Shift },
+        ],
         configuration: {
           disableOnPassive: true,
           autoPan: {
@@ -174,7 +185,16 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+/**
+ * Mode tool group setup, sharing the options-object signature used by all
+ * modes so implementations are interchangeable via the `initToolGroups` mode
+ * instance property.
+ */
+function initToolGroups({ extensionManager, toolGroupService, commandsManager }) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+  const { toolNames, Enums } = utilityModule.exports;
   _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 

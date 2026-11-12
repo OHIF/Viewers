@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: DICOM JSON
+title: DICOM JSON
+summary: Explains how to configure and use the DICOM JSON data source format in OHIF, including structure of the JSON file with study/series/instance metadata, implementation examples, and local deployment instructions.
 ---
 
 # DICOM JSON
@@ -27,6 +29,8 @@ dataset. Let's have a look at the JSON file:
 
 JSON file stores the metadata for the study level, series level and instance
 level. A JSON launch file should follow the same structure as the one below.
+If you remove metadata to reduce payload size, keep the tags that OHIF needs for
+display set creation, rendering, sorting, and modality-specific tools.
 
 :::tip
 You can use our script to generate the JSON file from a hosted endpoint. See
@@ -38,9 +42,19 @@ You could run it like this:
 node .scripts/dicom-json-generator.js '/path/to/study/folder' 'url/to/dicom/server/folder' 'json/output/file.json'
 ```
 
-Some modalities require additional metadata to be added to the JSON file. You can read more about the minimum amount of metadata required for the viewer to work [here](../../faq/technical#what-are-the-list-of-required-metadata-for-the-ohif-viewer-to-work). We will handle this in the script. For example, the script will add the CodeSequences for SR in order to display the measurements in the viewer.
+Some modalities require additional metadata to be added to the JSON file. You
+can read more about the
+[minimum and recommended metadata required for the viewer](../../faq/technical#what-are-the-list-of-required-metadata-for-the-ohif-viewer-to-work).
+The script preserves SR CodeSequences such as `ConceptNameCodeSequence` when
+they are present in the source metadata so measurements can be displayed in the
+viewer.
 :::
 
+:::note
+For a multi-frame instance, copy `NumberOfFrames` from the source object. If a
+URL points to a specific frame, the `frame` query parameter is the DICOM frame
+number. The first frame is `frame=1`, as in WADO-RS `/frames/1`.
+:::
 
 Note that at the instance level metadata we are storing both the `metadata` and
 also the `url` for the dicom file on the dicom server. In this case we are
@@ -154,7 +168,7 @@ inside your `public` folder. Since files are served from your local server the
 the dicom files will be
 `dicomweb:http://localhost:3000/LIDC-IDRI-0001/01-01-2000-30178/3000566.000000-03192/1-001.dcm`.
 
-After `yarn install` and running `yarn dev` and opening the browser at
+After `yarn install --frozen-lockfile` and running `yarn dev` and opening the browser at
 `http://localhost:3000/viewer/dicomjson?url=http://localhost:3000/LIDC-IDRI-0001.json`
 will display the viewer.
 

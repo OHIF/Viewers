@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const stickyClasses = 'sticky top-0';
@@ -17,7 +16,7 @@ const NavBar = ({
   return (
     <div
       className={classnames(
-        'bg-secondary-dark z-20 border-black px-1',
+        'bg-popover z-20 border-background px-1',
         isSticky && stickyClasses,
         !isSticky && notStickyClasses,
         className
@@ -28,10 +27,6 @@ const NavBar = ({
   );
 };
 
-NavBar.propTypes = {
-  className: PropTypes.string,
-  children: PropTypes.node,
-  isSticky: PropTypes.bool,
-};
+
 
 export default NavBar;

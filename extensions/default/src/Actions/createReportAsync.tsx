@@ -1,6 +1,3 @@
-import React from 'react';
-import { DicomMetadataStore } from '@ohif/core';
-
 /**
  *
  * @param {*} servicesManager
@@ -8,33 +5,27 @@ import { DicomMetadataStore } from '@ohif/core';
 async function createReportAsync({
   servicesManager,
   getReport,
-  reportType = 'measurement',
+  reportType = 'Measurements',
+  successMessage,
 }: withAppTypes) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
-  const loadingDialogId = uiDialogService.create({
-    showOverlay: true,
-    isDraggable: false,
-    centralize: true,
-    content: Loading,
-  });
 
   try {
     const naturalizedReport = await getReport();
 
-    if (!naturalizedReport) return;
+    if (!naturalizedReport) {
+      return;
+    }
 
-    // The "Mode" route listens for DicomMetadataStore changes
-    // When a new instance is added, it listens and
-    // automatically calls makeDisplaySets
-    DicomMetadataStore.addInstances([naturalizedReport], true);
-
+    // addInstances is called by the store command (storeMeasurements/storeSegmentation),
+    // so the display set should already exist at this point.
     const displaySet = displaySetService.getMostRecentDisplaySet();
 
     const displaySetInstanceUID = displaySet.displaySetInstanceUID;
 
     uiNotificationService.show({
       title: 'Create Report',
-      message: `${reportType} saved successfully`,
+      message: successMessage ?? `${reportType} saved successfully`,
       type: 'success',
     });
 
@@ -47,12 +38,8 @@ async function createReportAsync({
     });
     throw new Error(`Failed to store ${reportType}. Error: ${error.message || 'Unknown error'}`);
   } finally {
-    uiDialogService.dismiss({ id: loadingDialogId });
+    uiDialogService.hide('loading-dialog');
   }
-}
-
-function Loading() {
-  return <div className="text-primary-active">Loading...</div>;
 }
 
 export default createReportAsync;

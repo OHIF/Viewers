@@ -1,8 +1,7 @@
 import React, { useEffect, useCallback, useState, ReactElement, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { PanelSection, WindowLevel } from '@ohif/ui';
-import { Enums, eventTarget } from '@cornerstonejs/core';
+import { PanelSection, WindowLevel } from '@ohif/ui-next';
+import { Enums, eventTarget, cache, utilities as csUtils, Types } from '@cornerstonejs/core';
 import { useActiveViewportDisplaySets } from '@ohif/core';
 import {
   getNodeOpacity,
@@ -13,44 +12,78 @@ import {
 
 const { Events } = Enums;
 
+/**
+ * True when every volume in the viewport has finished loading.
+ *
+ * A volume that completed before this panel mounted never fires
+ * IMAGE_VOLUME_LOADING_COMPLETED, so seeding isLoading from the event alone
+ * leaves it true forever and the histogram interval then runs for the life of
+ * the panel. Asking the cache directly avoids depending on an announcement
+ * that may already have happened.
+ */
+const areViewportVolumesLoaded = (viewport): boolean => {
+  if (!viewport || !csUtils.viewportSupportsVolumeId(viewport)) {
+    return false;
+  }
+
+  const volumeIds = (viewport as Types.IVolumeViewport).getAllVolumeIds();
+  if (!volumeIds.length) {
+    return false;
+  }
+
+  return volumeIds.every(
+    volumeId =>
+      (cache.getVolume(volumeId)?.loadStatus as { loaded?: boolean } | undefined)?.loaded === true
+  );
+};
+
+// Depends only on its arguments, so it lives at module scope and keeps a stable
+// identity — that is what lets updateViewportHistograms below be memoized.
+const getVolumeOpacity = (viewport, volumeId) => {
+  const volumeActor = viewport.getActors().find(actor => actor.referencedId === volumeId)?.actor;
+
+  if (isPetVolumeWithDefaultOpacity(volumeId, volumeActor)) {
+    return getNodeOpacity(volumeActor, 1);
+  } else if (isVolumeWithConstantOpacity(volumeActor)) {
+    return getNodeOpacity(volumeActor, 0);
+  }
+
+  return undefined;
+};
+
 const ViewportWindowLevel = ({
   servicesManager,
   viewportId,
 }: withAppTypes<{
   viewportId: string;
-}>): ReactElement => {
+}>): ReactElement<any> => {
   const { cornerstoneViewportService } = servicesManager.services;
-  const [windowLevels, setWindowLevels] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const displaySets = useActiveViewportDisplaySets({ servicesManager });
-
-  const getViewportsWithVolumeIds = useCallback(
-    (volumeIds: string[]) => {
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-      const viewports = renderingEngine.getVolumeViewports();
-
-      return viewports.filter(vp => {
-        const viewportVolumeIds = vp.getActors().map(actor => actor.referencedId);
-        return (
-          volumeIds.length === viewportVolumeIds.length &&
-          volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
-        );
-      });
-    },
-    [cornerstoneViewportService]
+  const [windowLevels, setWindowLevels] = useState<any[]>([]);
+  // Lazy initializer rather than an effect: this runs exactly once, so it needs
+  // no setState-in-effect and cannot go stale.
+  const [isLoading, setIsLoading] = useState(
+    () => !areViewportVolumesLoaded(cornerstoneViewportService.getCornerstoneViewport(viewportId))
   );
+  const displaySets = useActiveViewportDisplaySets();
 
-  const getVolumeOpacity = useCallback((viewport, volumeId) => {
-    const volumeActor = viewport.getActors().find(actor => actor.referencedId === volumeId)?.actor;
+  const getViewportsWithVolumeIds = (volumeIds: string[]) => {
+    const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+    // getVolumeViewports() was removed in the GenericViewport architecture
+    // (a PLANAR_NEXT viewport can be volume-capable without being a VolumeViewport).
+    // Official replacement: getViewports() + the viewportSupportsVolumeCompatibility
+    // capability guard (cornerstone codemod cornerstone3d/5/generic-viewport).
+    const viewports = renderingEngine
+      .getViewports()
+      .filter(csUtils.viewportSupportsVolumeCompatibility);
 
-    if (isPetVolumeWithDefaultOpacity(volumeId, volumeActor)) {
-      return getNodeOpacity(volumeActor, 1);
-    } else if (isVolumeWithConstantOpacity(volumeActor)) {
-      return getNodeOpacity(volumeActor, 0);
-    }
-
-    return undefined;
-  }, []);
+    return viewports.filter(vp => {
+      const viewportVolumeIds = (vp as Types.IVolumeViewport).getAllVolumeIds();
+      return (
+        volumeIds.length === viewportVolumeIds.length &&
+        volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
+      );
+    });
+  };
 
   const updateViewportHistograms = useCallback(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -59,7 +92,7 @@ const ViewportWindowLevel = ({
     getWindowLevelsData(viewport, viewportInfo, getVolumeOpacity).then(data => {
       setWindowLevels(data);
     });
-  }, [viewportId, cornerstoneViewportService, getVolumeOpacity]);
+  }, [cornerstoneViewportService, viewportId]);
 
   const handleCornerstoneVOIModified = useCallback(
     e => {
@@ -101,41 +134,38 @@ const ViewportWindowLevel = ({
     [handleCornerstoneVOIModified]
   );
 
-  const handleVOIChange = useCallback(
-    (volumeId, voi) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const handleVOIChange = (volumeId, voi) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      const newRange = {
-        lower: voi.windowCenter - voi.windowWidth / 2,
-        upper: voi.windowCenter + voi.windowWidth / 2,
-      };
+    const newRange = {
+      lower: voi.windowCenter - voi.windowWidth / 2,
+      upper: voi.windowCenter + voi.windowWidth / 2,
+    };
 
-      viewport.setProperties({ voiRange: newRange }, volumeId);
-      viewport.render();
-    },
-    [cornerstoneViewportService, viewportId]
-  );
+    viewport.setProperties({ voiRange: newRange }, volumeId);
+    viewport.render();
+  };
 
-  const handleOpacityChange = useCallback(
-    (viewportId, _volumeIndex, volumeId, opacity) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const handleOpacityChange = (viewportId, _volumeIndex, volumeId, opacity) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport) {
-        return;
-      }
+    if (!viewport) {
+      return;
+    }
 
-      const viewportVolumeIds = viewport.getActors().map(actor => actor.referencedId);
-      const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
+    const viewportVolumeIds = csUtils.viewportSupportsVolumeId(viewport)
+      ? (viewport as Types.IVolumeViewport).getAllVolumeIds()
+      : [];
+    const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
 
-      viewports.forEach(vp => {
-        vp.setProperties({ colormap: { opacity } }, volumeId);
-        vp.render();
-      });
-    },
-    [getViewportsWithVolumeIds, cornerstoneViewportService]
-  );
+    viewports.forEach(vp => {
+      vp.setProperties({ colormap: { opacity } }, volumeId);
+      vp.render();
+    });
+  };
 
-  // New function to handle image volume loading completion
+  // Memoized so the effect below does not tear down and re-register its
+  // listeners (and restart its interval) on every render.
   const handleImageVolumeLoadingCompleted = useCallback(() => {
     setIsLoading(false);
     updateViewportHistograms();
@@ -149,11 +179,9 @@ const ViewportWindowLevel = ({
       handleImageVolumeLoadingCompleted
     );
 
-    const intervalId = setInterval(() => {
-      if (isLoading) {
-        updateViewportHistograms();
-      }
-    }, 1000);
+    const intervalId = isLoading
+      ? setInterval(() => updateViewportHistograms(), 1000)
+      : undefined;
 
     return () => {
       document.removeEventListener(
@@ -175,9 +203,7 @@ const ViewportWindowLevel = ({
   ]);
 
   // Create a memoized version of displaySet IDs for comparison
-  const displaySetIds = useMemo(() => {
-    return displaySets?.map(ds => ds.displaySetInstanceUID).sort() || [];
-  }, [displaySets]);
+  const displaySetIds = displaySets?.map(ds => ds.displaySetInstanceUID).sort() || [];
 
   useEffect(() => {
     const { unsubscribe } = cornerstoneViewportService.subscribe(
@@ -200,36 +226,40 @@ const ViewportWindowLevel = ({
   }, [viewportId, cornerstoneViewportService, updateViewportHistograms, displaySetIds, isLoading]);
 
   return (
-    <PanelSection title="Window Level">
-      {windowLevels.map((windowLevel, i) => {
-        if (!windowLevel.histogram) {
-          return null;
-        }
+    <PanelSection defaultOpen={true}>
+      <PanelSection.Header>Window Level</PanelSection.Header>
+      <PanelSection.Content className="bg-muted py-1">
+        {windowLevels.map((windowLevel, i) => {
+          if (!windowLevel.histogram) {
+            return null;
+          }
 
-        return (
-          <WindowLevel
-            key={windowLevel.volumeId}
-            title={`${windowLevel.modality}`}
-            histogram={windowLevel.histogram}
-            voi={windowLevel.voi}
-            step={windowLevel.step}
-            showOpacitySlider={windowLevel.showOpacitySlider}
-            colormap={windowLevel.colormap}
-            onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
-            opacity={windowLevel.opacity}
-            onOpacityChange={opacity =>
-              handleOpacityChange(windowLevel.viewportId, i, windowLevel.volumeId, opacity)
-            }
-          />
-        );
-      })}
+          return (
+            <WindowLevel
+              key={windowLevel.volumeId}
+              histogram={windowLevel.histogram}
+              voi={windowLevel.voi}
+              step={windowLevel.step}
+              showOpacitySlider={windowLevel.showOpacitySlider}
+              colormap={windowLevel.colormap}
+              onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
+              opacity={windowLevel.opacity}
+              onOpacityChange={opacity =>
+                handleOpacityChange(windowLevel.viewportId, i, windowLevel.volumeId, opacity)
+              }
+            />
+          );
+        })}
+        {windowLevels.length === 0 && !isLoading && (
+          <div className="text-muted-foreground py-2 text-center text-sm">
+            No window level data available
+          </div>
+        )}
+      </PanelSection.Content>
     </PanelSection>
   );
 };
 
-ViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
-  viewportId: PropTypes.string.isRequired,
-};
+
 
 export default ViewportWindowLevel;

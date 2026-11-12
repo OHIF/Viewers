@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "Veld mag niet leeg zijn",
+  "Hotkey is already in use": "\"{{action}}\" gebruikt al de \"{{pressedKeys}}\" sneltoets.",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "Het is niet mogelijk om alleen modifier toetsen (ctrl, alt en shift) als sneltoets te definiëren",
+  "Shortcut combination is not allowed": "{{pressedKeys}} sneltoets combinatie is niet toegestaan"
+}

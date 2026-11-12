@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: 2.x -> 3.5
+title: Migration Guide from 2.x to 3.5
+summary: Comprehensive migration guide for upgrading from OHIF 2.x to 3.5, covering architectural changes, UI improvements, extensions, modes, cornerstone3D integration, configuration changes, and build process updates.
 ---
 
 # Migration Guide

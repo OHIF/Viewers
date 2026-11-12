@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+title: Build for Production
+summary: Step-by-step guide to building a production-ready version of the OHIF Viewer, including environment setup, code acquisition, dependency restoration, production build creation, and configuration options for deployment.
 ---
 
 # Build for Production
@@ -36,7 +38,7 @@ Next run these commands:
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Build source code for production
 yarn run build

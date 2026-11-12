@@ -1,5 +1,7 @@
 ---
 sidebar_position: 3
+title: Deploy Static Assets
+summary: Guide to deploying OHIF Viewer static assets using various hosting options, from simple drag-and-drop methods like Netlify to more advanced cloud platforms like AWS, GCP, and Azure, with step-by-step instructions for each deployment approach.
 ---
 
 # Deploy Static Assets
@@ -174,3 +176,33 @@ accurate documentation, we will link to each provider's own recommended steps:
 
 - [Add SSL Support](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-https-custom-domain-cdn)
 - [Configure a Custom Domain](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-custom-domain-name)
+
+## Content-Security-Policy
+
+The hosted viewer ships a `Content-Security-Policy-Report-Only` header (see
+`netlify.toml`; the nginx recipes under `platform/app/.recipes` carry the same
+policy as commented `add_header` examples). Report-Only means the browser
+evaluates the policy and logs violations to the console, but blocks nothing.
+
+What the policy covers:
+
+- `default-src 'self'` with `frame-ancestors 'none'` (mirrors the existing
+  `X-Frame-Options: DENY`), `base-uri 'self'`, and `form-action 'self'`.
+- `script-src` allows `'unsafe-inline'`/`'unsafe-eval'` (required by the
+  current bundles and the cornerstone/vtk WASM and worker paths) plus
+  `https://cdnjs.cloudflare.com` for the Rollbar snippet used by demo builds.
+- `worker-src`, `object-src`, `frame-src`, and `img-src` allow `blob:` because
+  web workers, DICOM PDF rendering, and image data all use blob URLs.
+- `connect-src` allows any `https:` origin because deployments point the
+  viewer at arbitrary DICOMweb servers; narrow this to your archive's origin
+  in your own deployment if you can.
+
+Reading violations: open the browser devtools console and filter for
+`Content-Security-Policy`. Report-only violations are logged as warnings and
+do not affect behavior; each one is either telemetry for tightening the policy
+or a directive that must stay relaxed.
+
+Criteria for promoting Report-Only to an enforcing `Content-Security-Policy`
+header: zero unexplained violations across the e2e suite and a manual session
+that exercises study load, MPR, SEG display, PDF display, and video display.
+Until then, keep the header name `Content-Security-Policy-Report-Only`.

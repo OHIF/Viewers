@@ -1,10 +1,9 @@
 // External
 
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, type BrowserRouterProps } from 'react-router-dom';
 
 import Compose from './routes/Mode/Compose';
 import {
@@ -13,22 +12,20 @@ import {
   HotkeysManager,
   ServiceProvidersManager,
   SystemContextProvider,
+  ViewportElementsProvider,
 } from '@ohif/core';
-import {
-  DialogProvider,
-  Modal,
-  ModalProvider,
-  ThemeWrapper,
-  ViewportDialogProvider,
-  CineProvider,
-  UserAuthenticationProvider,
-} from '@ohif/ui';
 import {
   ThemeWrapper as ThemeWrapperNext,
   NotificationProvider,
   ViewportGridProvider,
+  DialogProvider,
+  CineProvider,
   TooltipProvider,
-  ToolboxProvider,
+  Modal as ModalNext,
+  ManagedDialog,
+  ModalProvider,
+  ViewportDialogProvider,
+  UserAuthenticationProvider,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -36,13 +33,28 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
-import { ShepherdJourneyProvider } from 'react-shepherd';
+import './App.css';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
   servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
+
+/**
+ * The device's maximum 3D texture size, or undefined when WebGL2 is
+ * unavailable. A device capability, so it is read once rather than per render.
+ */
+function getMax3DTextureSize() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2');
+  return gl ? gl.getParameter(gl.MAX_3D_TEXTURE_SIZE) : undefined;
+}
+
+const routerFutureFlags: BrowserRouterProps['future'] = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
 
 function App({
   config = {
@@ -53,7 +65,7 @@ function App({
      * Hosted at: https://ohif.org/where-i-host-the/viewer/
      * Value: `/where-i-host-the/viewer/`
      * */
-    routerBaseName: '/',
+    routerBasename: '/',
     /**
      *
      */
@@ -68,7 +80,23 @@ function App({
   const [init, setInit] = useState(null);
   useEffect(() => {
     const run = async () => {
-      appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
+      appInit(config, defaultExtensions, defaultModes)
+        .then(initialised => {
+          // Published as named exports, so they must be set before the render
+          // that mounts children - some of them read these during their own
+          // render. Assigning here rather than in App's render body keeps that
+          // ordering while leaving render free of side effects.
+          commandsManager = initialised.commandsManager;
+          extensionManager = initialised.extensionManager;
+          servicesManager = initialised.servicesManager;
+          serviceProvidersManager = initialised.serviceProvidersManager;
+          hotkeysManager = initialised.hotkeysManager;
+
+          initialised.appConfig.max3DTextureSize = getMax3DTextureSize();
+
+          setInit(initialised);
+        })
+        .catch(console.error);
     };
 
     run();
@@ -78,25 +106,8 @@ function App({
     return null;
   }
 
-  // Set above for named export
-  commandsManager = init.commandsManager;
-  extensionManager = init.extensionManager;
-  servicesManager = init.servicesManager;
-  serviceProvidersManager = init.serviceProvidersManager;
-  hotkeysManager = init.hotkeysManager;
-
-  // Set appConfig
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
-
-  // get the maximum 3D texture size
-  const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl2');
-
-  if (gl) {
-    const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
-    appConfigState.max3DTextureSize = max3DTextureSize;
-  }
 
   const {
     uiDialogService,
@@ -106,7 +117,6 @@ function App({
     cineService,
     userAuthenticationService,
     uiNotificationService,
-    customizationService,
   } = servicesManager.services;
 
   const providers = [
@@ -114,33 +124,36 @@ function App({
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
-    [ThemeWrapper],
     [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
-    [ToolboxProvider],
+    [ViewportElementsProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
     [NotificationProvider, { service: uiNotificationService }],
     [TooltipProvider],
-    [DialogProvider, { service: uiDialogService }],
-    [ModalProvider, { service: uiModalService, modal: Modal }],
-    [ShepherdJourneyProvider],
+    [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
+    [ModalProvider, { service: uiModalService, modal: ModalNext }],
   ];
 
-  // Loop through and register each of the service providers registered with the ServiceProvidersManager.
-  const providersFromManager = Object.entries(serviceProvidersManager.providers);
+  // Providers registered with the ServiceProvidersManager are inserted ahead of
+  // the dialog/modal providers: dialog and modal content renders at those
+  // providers' own level (as a sibling of their children, not inside the route
+  // tree), so any context a registered provider supplies must already be in
+  // scope there.
+  const providersFromManager = Object.entries(serviceProvidersManager.providers).map(
+    ([serviceName, provider]) => [provider, { service: servicesManager.services[serviceName] }]
+  );
   if (providersFromManager.length > 0) {
-    providersFromManager.forEach(([serviceName, provider]) => {
-      providers.push([provider, { service: servicesManager.services[serviceName] }]);
-    });
+    const dialogIndex = providers.findIndex(([component]) => component === DialogProvider);
+    providers.splice(dialogIndex, 0, ...providersFromManager);
   }
 
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 
   let authRoutes = null;
 
-  // Should there be a generic call to init on the extension manager?
-  customizationService.init(extensionManager);
+  // customizationService.init(extensionManager) runs in appInit after extensions register;
+  // do not call init again here — repeated init would duplicate-merge unless guarded (see CustomizationService.init).
 
   // Use config to create routes
   const appRoutes = createRoutes({
@@ -166,7 +179,10 @@ function App({
 
   return (
     <CombinedProviders>
-      <BrowserRouter basename={routerBasename}>
+      <BrowserRouter
+        basename={routerBasename}
+        future={routerFutureFlags}
+      >
         {authRoutes}
         {appRoutes}
       </BrowserRouter>
@@ -174,23 +190,7 @@ function App({
   );
 }
 
-App.propTypes = {
-  config: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({
-      routerBasename: PropTypes.string.isRequired,
-      oidc: PropTypes.array,
-      whiteLabeling: PropTypes.object,
-      extensions: PropTypes.array,
-    }),
-  ]).isRequired,
-  /* Extensions that are "bundled" or "baked-in" to the application.
-   * These would be provided at build time as part of they entry point. */
-  defaultExtensions: PropTypes.array,
-  /* Modes that are "bundled" or "baked-in" to the application.
-   * These would be provided at build time as part of they entry point. */
-  defaultModes: PropTypes.array,
-};
+
 
 export default App;
 

@@ -1,0 +1,24 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "instrument": true,
+  "sourceMap": true,
+  "cache": false,
+  "all": true,
+  "include": [
+    "platform/*/src/**/*.ts",
+    "platform/*/src/**/*.js",
+    "extensions/*/src/**/*.ts",
+    "extensions/*/src/**/*.js",
+    "modes/*/src/**/*.ts",
+    "modes/*/src/**/*.js"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/test/**",
+    "**/tests/**",
+    "**/examples/**",
+    "**/stories/**",
+    "platform/docs/**"
+  ]
+}

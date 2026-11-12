@@ -1,0 +1,21 @@
+{
+  "Active": "Активный",
+  "Add new segmentation": "Добавить новую сегментацию",
+  "Add segment": "Добавить сегмент",
+  "Add segmentation": "Добавить сегментацию",
+  "Delete": "Удалить",
+  "Display inactive segmentations": "Отобразить неактивные сегментации",
+  "Export DICOM SEG": "Экспортировать DICOM SEG",
+  "Download DICOM SEG": "Скачать DICOM SEG",
+  "Download DICOM RTSTRUCT": "Скачать DICOM RTSTRUCT",
+  "Fill": "Заполнить",
+  "Inactive segmentations": "Неактивные сегментации",
+  "Opacity": "Тень",
+  "Outline": "Контур",
+  "Rename": "Переименовать",
+  "Segmentation": "Сегментация",
+  "Size": "Размер",
+  "No segmentations available": "Нет доступных сегментаций",
+  "Not available on the current viewport": "Недоступно в текущем окне просмотра",
+  "Add segment to enable this tool": "Добавьте сегмент, чтобы включить этот инструмент"
+}
