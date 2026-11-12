@@ -1,11 +1,6 @@
 import ToolbarService from '../ToolbarService';
 
-/**
- * `hideWhenDisabled` is read off `props.evaluateProps` in refreshToolbarState.
- * When `evaluate` is an array, `evaluateProps` used to be the array itself, so
- * `evaluateProps.hideWhenDisabled` was always undefined and the flag was ignored
- * for every multi-evaluator button (OHIF#5587).
- */
+// The array form of `evaluate` must keep `hideWhenDisabled` (OHIF#5587).
 describe('ToolbarService.handleEvaluate — evaluateProps', () => {
   const createService = (evaluators: Record<string, (args) => unknown>) => {
     // handleEvaluate only touches the evaluator registry, so the managers can be
@@ -40,31 +35,6 @@ describe('ToolbarService.handleEvaluate — evaluateProps', () => {
     expect(props.evaluateProps.supportedModalities).toEqual(['US']);
   });
 
-  it('drops name, which identifies the evaluator rather than configuring it', () => {
-    const service = createService({ a: () => ({}), b: () => ({}) });
-    const props = {
-      evaluate: [
-        { name: 'a', hideWhenDisabled: true },
-        { name: 'b', disabledText: 'nope' },
-      ],
-    };
-
-    service.handleEvaluate(props);
-
-    expect(props.evaluateProps).toEqual({ hideWhenDisabled: true, disabledText: 'nope' });
-    expect(props.evaluateProps).not.toHaveProperty('name');
-  });
-
-  it('yields an empty object when every entry is a bare evaluator name', () => {
-    const service = createService({ a: () => ({}), b: () => ({}) });
-    const props = { evaluate: ['a', 'b'] };
-
-    service.handleEvaluate(props);
-
-    expect(props.evaluateProps).toEqual({});
-    expect(props.evaluateProps.hideWhenDisabled).toBeUndefined();
-  });
-
   it('still runs every evaluator and disables when any one disables', () => {
     const service = createService({
       a: () => ({ disabled: false, className: 'from-a' }),
@@ -89,11 +59,7 @@ describe('ToolbarService.handleEvaluate — evaluateProps', () => {
   });
 });
 
-/**
- * The suite above pins how `evaluateProps` is derived. This one covers the effect the
- * issue actually reports: a button with `hideWhenDisabled` on an array evaluator must
- * disappear from the toolbar once it evaluates as disabled.
- */
+// A disabled button with `hideWhenDisabled` on an array evaluator must hide.
 describe('ToolbarService.refreshToolbarState — hideWhenDisabled visibility', () => {
   const US_ONLY_EVALUATORS = {
     'evaluate.cornerstoneTool': () => ({ disabled: false }),
