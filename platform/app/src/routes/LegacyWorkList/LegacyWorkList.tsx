@@ -1,6 +1,13 @@
+'use no memo';
+// Deprecated: mounted only when workList.variant is 'legacy', and removed in a
+// future release along with that customization id.
+//
+// Opted out of the React Compiler: this is the 3.13 study list kept as it was, and
+// its two eslint-disable comments on exhaustive-deps would make the compiler skip it
+// anyway. It runs on its own useMemo calls, as it did in 3.13.
+
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
@@ -611,16 +618,6 @@ function LegacyWorkList({
     </div>
   );
 }
-
-LegacyWorkList.propTypes = {
-  data: PropTypes.array.isRequired,
-  dataSource: PropTypes.shape({
-    query: PropTypes.object.isRequired,
-    getConfig: PropTypes.func,
-  }).isRequired,
-  isLoadingData: PropTypes.bool.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 const defaultFilterValues = {
   patientName: '',

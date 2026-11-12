@@ -28,9 +28,14 @@ interface HeaderProps {
   WhiteLabeling?: {
     createLogoComponentFn?: (React: any, props: any) => ReactNode;
   };
-  PatientInfo?: ReactNode;
   Secondary?: ReactNode;
-  UndoRedo?: ReactNode;
+  /**
+   * Ordered slots filling the right of the menu bar, ahead of the settings
+   * menu — patient info, undo/redo, whatever a site puts there. Each is
+   * followed by a separator, and a slot whose content renders nothing takes
+   * its separator with it.
+   */
+  RightSide?: ReactNode[];
 }
 
 function Header({
@@ -40,8 +45,7 @@ function Header({
   onClickReturnButton,
   isSticky = false,
   WhiteLabeling,
-  PatientInfo,
-  UndoRedo,
+  RightSide = [],
   Secondary,
   ...props
 }: HeaderProps): ReactNode {
@@ -81,10 +85,17 @@ function Header({
             <div className="flex items-center justify-center space-x-2">{children}</div>
           </div>
           <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
-            {UndoRedo}
-            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
-            {PatientInfo}
-            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
+            {RightSide.map((item, index) => (
+              // The separator is an `::after` so that `empty:hidden` can drop
+              // the whole slot — separator included — when the item rendered
+              // nothing (e.g. patient info with `showPatientInfo: 'disabled'`).
+              <div
+                key={index}
+                className="after:border-muted flex items-center empty:hidden after:mx-1.5 after:h-[25px] after:border-r after:content-['']"
+              >
+                {item}
+              </div>
+            ))}
             <div className="flex-shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

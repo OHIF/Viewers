@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useAppConfig } from '@state';
 import { utils } from '@ohif/core';
@@ -43,6 +43,111 @@ async function runThumbnailPool<T>(
   await Promise.all(Array.from({ length: Math.min(maxParallel, items.length) }, runWorker));
 }
 
+type SetSeries = (next: PreviewSeries[] | ((prev: PreviewSeries[]) => PreviewSeries[])) => void;
+
+/**
+ * Loads the series list for the selected study and fills in thumbnails, pushing
+ * updates through `setSeries` as they arrive.
+ *
+ * Module scope on purpose: this body's optional chaining and ternaries sit inside
+ * a try/catch, a combination the React Compiler cannot yet lower ("value blocks
+ * within a try/catch"). Inlined in the hook it bails the whole thing; plain
+ * functions are never compiled, so the limitation does not apply here.
+ */
+async function loadPreviewSeries({
+  selected,
+  dataSource,
+  signal,
+  sortBySeriesDate,
+  maxParallelRequests,
+  setSeries,
+  ownedBlobUrlsRef,
+}: {
+  selected: StudyRow | null;
+  dataSource: any;
+  signal: AbortSignal;
+  sortBySeriesDate: ((rows: any[]) => any[]) | undefined;
+  maxParallelRequests: number;
+  setSeries: SetSeries;
+  ownedBlobUrlsRef: { current: string[] };
+}): Promise<void> {
+  const studyInstanceUID = (selected as any)?.studyInstanceUid;
+  if (!studyInstanceUID) {
+    setSeries([]);
+    return;
+  }
+
+  try {
+    const seriesList = await dataSource.query.series.search(studyInstanceUID);
+    if (signal.aborted) {
+      return;
+    }
+
+    const sortedSeriesList = sortBySeriesDate?.(seriesList) ?? [];
+    const normalizedSeriesList = sortedSeriesList.map(row => {
+      const modality = String(row.modality || row.Modality || '').toUpperCase();
+      const thumbnailStatus: PreviewThumbnailStatus = thumbnailNoImageModalities.includes(modality)
+        ? { status: PreviewThumbnailStatusState.NotApplicable }
+        : { status: PreviewThumbnailStatusState.Loading };
+      return {
+        ...row,
+        thumbnailStatus,
+      };
+    });
+
+    setSeries(normalizedSeriesList);
+
+    const fetchTargets = normalizedSeriesList.filter((row: PreviewSeries) => {
+      if (!getSeriesUID(row)) {
+        return false;
+      }
+      return row.thumbnailStatus?.status !== PreviewThumbnailStatusState.NotApplicable;
+    });
+
+    const fetchThumbnail = async (row: (typeof fetchTargets)[number]) => {
+      const seriesUID = getSeriesUID(row);
+      let src: string | null = null;
+      try {
+        const getThumbnailSrc = dataSource?.retrieve?.getGetThumbnailSrc?.(
+          { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
+          undefined
+        );
+        src = (await getThumbnailSrc?.({ signal })) ?? null;
+      } catch {
+        src = null;
+      }
+      // Track ownership of blob URLs before the abort check so URLs that
+      // arrive just after abort are still revoked on cleanup.
+      if (src?.startsWith('blob:')) {
+        ownedBlobUrlsRef.current.push(src);
+      }
+      if (signal.aborted) {
+        return;
+      }
+      setSeries(prev =>
+        prev.map(seriesItem => {
+          if (getSeriesUID(seriesItem) !== seriesUID) {
+            return seriesItem;
+          }
+          return {
+            ...seriesItem,
+            thumbnailStatus: src
+              ? { status: PreviewThumbnailStatusState.Ready, src }
+              : { status: PreviewThumbnailStatusState.NotAvailable },
+          };
+        })
+      );
+    };
+
+    await runThumbnailPool(fetchTargets, maxParallelRequests, signal, fetchThumbnail);
+  } catch (e) {
+    if (!signal.aborted) {
+      console.warn('Failed to load preview series/thumbnails for selected study.', e);
+      setSeries([]);
+    }
+  }
+}
+
 /**
  * Fetches the series for the selected study and, where applicable, their
  * thumbnails, exposing the resulting list and an image-error handler.
@@ -76,91 +181,20 @@ export function useSeriesFetch({
     const abortController = new AbortController();
     const { signal } = abortController;
 
-    const run = async () => {
-      const studyInstanceUID = (selected as any)?.studyInstanceUid;
-      if (!studyInstanceUID) {
-        setSeries([]);
-        return;
-      }
+    // Bound parallel thumbnail fetches so studies with many series don't
+    // saturate the connection and stall later viewer navigation. Mirrors
+    // CS3D's imageLoadPoolManager.maxNumRequests.thumbnail.
+    const maxParallelRequests = Math.max(1, appConfig?.maxNumRequests?.thumbnail ?? 5);
 
-      try {
-        const seriesList = await dataSource.query.series.search(studyInstanceUID);
-        if (signal.aborted) {
-          return;
-        }
-
-        const sortedSeriesList = sortBySeriesDate?.(seriesList) ?? [];
-        const normalizedSeriesList = sortedSeriesList.map(row => {
-          const modality = String(row.modality || row.Modality || '').toUpperCase();
-          const thumbnailStatus: PreviewThumbnailStatus = thumbnailNoImageModalities.includes(
-            modality
-          )
-            ? { status: PreviewThumbnailStatusState.NotApplicable }
-            : { status: PreviewThumbnailStatusState.Loading };
-          return {
-            ...row,
-            thumbnailStatus,
-          };
-        });
-
-        setSeries(normalizedSeriesList);
-
-        const fetchTargets = normalizedSeriesList.filter((row: PreviewSeries) => {
-          if (!getSeriesUID(row)) {
-            return false;
-          }
-          return row.thumbnailStatus?.status !== PreviewThumbnailStatusState.NotApplicable;
-        });
-
-        // Bound parallel thumbnail fetches so studies with many series don't
-        // saturate the connection and stall later viewer navigation. Mirrors
-        // CS3D's imageLoadPoolManager.maxNumRequests.thumbnail.
-        const maxParallelRequests = Math.max(1, appConfig?.maxNumRequests?.thumbnail ?? 5);
-        const fetchThumbnail = async (row: (typeof fetchTargets)[number]) => {
-          const seriesUID = getSeriesUID(row);
-          let src: string | null = null;
-          try {
-            const getThumbnailSrc = dataSource?.retrieve?.getGetThumbnailSrc?.(
-              { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
-              undefined
-            );
-            src = (await getThumbnailSrc?.({ signal })) ?? null;
-          } catch {
-            src = null;
-          }
-          // Track ownership of blob URLs before the abort check so URLs that
-          // arrive just after abort are still revoked on cleanup.
-          if (src?.startsWith('blob:')) {
-            ownedBlobUrlsRef.current.push(src);
-          }
-          if (signal.aborted) {
-            return;
-          }
-          setSeries(prev =>
-            prev.map(seriesItem => {
-              if (getSeriesUID(seriesItem) !== seriesUID) {
-                return seriesItem;
-              }
-              return {
-                ...seriesItem,
-                thumbnailStatus: src
-                  ? { status: PreviewThumbnailStatusState.Ready, src }
-                  : { status: PreviewThumbnailStatusState.NotAvailable },
-              };
-            })
-          );
-        };
-
-        await runThumbnailPool(fetchTargets, maxParallelRequests, signal, fetchThumbnail);
-      } catch (e) {
-        if (!signal.aborted) {
-          console.warn('Failed to load preview series/thumbnails for selected study.', e);
-          setSeries([]);
-        }
-      }
-    };
-
-    void run();
+    void loadPreviewSeries({
+      selected,
+      dataSource,
+      signal,
+      sortBySeriesDate,
+      maxParallelRequests,
+      setSeries,
+      ownedBlobUrlsRef,
+    });
 
     return () => {
       abortController.abort();
@@ -175,9 +209,9 @@ export function useSeriesFetch({
         } catch {}
       });
     };
-  }, [dataSource, selected, appConfig?.maxNumRequests?.thumbnail]);
+  }, [dataSource, selected, sortBySeriesDate, appConfig?.maxNumRequests?.thumbnail]);
 
-  const onThumbnailImageError = useCallback((seriesUID: string) => {
+  const onThumbnailImageError = (seriesUID: string) => {
     setSeries(prevSeriesList =>
       prevSeriesList.map(seriesItem => {
         if (getSeriesUID(seriesItem) !== seriesUID) {
@@ -198,7 +232,7 @@ export function useSeriesFetch({
         };
       })
     );
-  }, []);
+  };
 
   return { series, onThumbnailImageError };
 }
