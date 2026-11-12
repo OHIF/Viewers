@@ -49,6 +49,7 @@ const defineValues = {
   'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
   'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
   'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+  'process.env.DCMJS_VERSION': JSON.stringify(require('./dcmjsVersion')),
   'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
   /* i18n */
   'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
@@ -70,7 +71,13 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    // Full source maps in development as well as production. The React
+    // Compiler restructures function bodies, so the line-only maps a
+    // 'cheap-*' devtool produces can no longer place a breakpoint on the
+    // statement you clicked. Measured on this repo: no rebuild cost, and the
+    // .map files are fetched only when DevTools is open, so the payload the
+    // browser downloads is unchanged.
+    devtool: 'source-map',
     // `rspack serve` (@rspack/cli) auto-enables lazyCompilation for web-only
     // apps unless the config defines it explicitly. The on-demand proxy chunks
     // it produces fail to load in the headless cypress/electron e2e run
@@ -115,12 +122,19 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
                     {
                       test: /\.[jt]sx?$/,
                       exclude: /node_modules/,
-                      use: {
-                        loader: 'babel-loader',
-                        options: {
-                          presets: ['@babel/preset-typescript', '@babel/preset-react'],
-                          plugins: ['istanbul'],
-                        },
+                      loader: 'babel-loader',
+                      options: {
+                        // Rely on the root babel.config.js (preset-env,
+                        // preset-react automatic runtime, preset-typescript, and
+                        // babel-plugin-react-compiler) and only add coverage
+                        // instrumentation. Supplying inline presets here
+                        // re-added a classic-runtime preset-react that shadowed
+                        // the compiler, so the coverage/e2e builds shipped the
+                        // cleanup-era components without the memoization the
+                        // compiler is meant to restore - breaking behavior (e.g.
+                        // orientation markers after rotate/flip) that works in
+                        // the production and dev builds.
+                        plugins: ['istanbul'],
                       },
                     },
                   ]

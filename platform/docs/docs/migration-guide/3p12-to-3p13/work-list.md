@@ -24,6 +24,12 @@ import LegacyWorkList from 'path/to/routes/LegacyWorkList/LegacyWorkList';
 
 ## Opting back into the legacy study list
 
+:::warning Deprecated
+The opt-out below still works in 3.14, but `LegacyWorkList` and `workList.variant`
+will be removed in a future release. See the
+[3.13 to 3.14 WorkList guide](../3p13-to-3p14/work-list.md).
+:::
+
 If you need more time to migrate, set the new `workList.variant` customization to `'legacy'` to mount `LegacyWorkList` at `/`:
 
 ```js

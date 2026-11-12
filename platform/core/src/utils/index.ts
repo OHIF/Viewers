@@ -40,6 +40,14 @@ import {
   seriesSortCriteria,
   instancesSortCriteria,
 } from './sortStudy';
+import {
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+} from './latestInstanceDateTime';
+import { getCurrentDicomDateTime, updateNewInstanceMetadata } from './updateNewInstanceMetadata';
+import { getOhifWriterHeader } from './getOhifWriterHeader';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
@@ -76,6 +84,13 @@ const utils = {
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
+  getOhifWriterHeader,
   writeScript,
   formatDate,
   formatTime,
@@ -130,6 +145,13 @@ export {
   sortBy,
   formatDate,
   formatValue,
+  dateTimeAttributes,
+  getLatestInstanceDateTime,
+  getLatestInstanceDateTimeSortKey,
+  getDateTimeSortKey,
+  getCurrentDicomDateTime,
+  updateNewInstanceMetadata,
+  getOhifWriterHeader,
   writeScript,
   b64toBlob,
   urlUtil,

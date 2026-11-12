@@ -45,7 +45,6 @@ const DicomTagBrowser = ({
   const [selectedDisplaySetInstanceUID, setSelectedDisplaySetInstanceUID] =
     useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
-  const [shouldShowInstanceList, setShouldShowInstanceList] = useState(false);
   const [filterValue, setFilterValue] = useState('');
 
   const onSelectChange = value => {
@@ -92,11 +91,16 @@ const DicomTagBrowser = ({
     [activeDisplaySet, instanceNumber]
   );
 
+  // Derived, not state: it is a pure function of the active display set, and
+  // computing it inside the rows memo meant the JSX below read the previous
+  // render's value.
+  const shouldShowInstanceList =
+    activeDisplaySet instanceof ImageSet && activeDisplaySet.images.length > 1;
+
   const rows = useMemo(() => {
     const isImageStack = activeDisplaySet instanceof ImageSet;
     const metadata = getMetadata(isImageStack);
 
-    setShouldShowInstanceList(isImageStack && activeDisplaySet.images.length > 1);
     const tags = getSortedTags(metadata);
     const rows = getFormattedRowsFromTags({ tags, metadata });
     return rows;

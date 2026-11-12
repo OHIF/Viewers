@@ -157,6 +157,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
         <Switch
           checked={renderInactiveSegmentations}
           onCheckedChange={toggleRenderInactiveSegmentations}
+          data-cy={`segmentation-config-render-inactive${dataCyTypeSuffix}`}
         />
         <Label className="text-muted-foreground mx-2 text-xs">
           {t('Display inactive segmentations')}

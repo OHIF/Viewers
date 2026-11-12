@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
@@ -194,12 +193,7 @@ function TrackedCornerstoneViewport(
   );
 }
 
-TrackedCornerstoneViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
+
 
 function _getNextMeasurementUID(
   direction,

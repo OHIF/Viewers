@@ -1,5 +1,10 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { isVolume3DViewportType } from '../../../utils/getLegacyViewportType';
 import {
@@ -50,17 +55,22 @@ function ViewportSliceProgressScrollbar({
 
   const { numberOfSlices, imageIndex } = imageSliceData;
 
-  const imageIds = useMemo(() => getViewportImageIds(viewportData), [viewportData]);
-  const imageIdToIndex = useMemo(() => {
-    const map = new Map<string, number>();
-    for (let i = 0; i < imageIds.length; i++) {
-      const imageId = imageIds[i];
+  // Manual memoization is load-bearing here: this component is excluded from
+  // the React Compiler (see rsbuild.config.ts / babel.config.js), and the
+  // byte-array hooks below list these in their effect deps — fresh identities
+  // every render re-run the seeding effects, whose publish re-renders this
+  // component in an infinite setState loop.
+  const { imageIds, imageIdToIndex } = useMemo(() => {
+    const ids = getViewportImageIds(viewportData);
+    const idToIndex = new Map<string, number>();
+    for (let i = 0; i < ids.length; i++) {
+      const imageId = ids[i];
       if (imageId) {
-        map.set(imageId, i);
+        idToIndex.set(imageId, i);
       }
     }
-    return map;
-  }, [imageIds]);
+    return { imageIds: ids, imageIdToIndex: idToIndex };
+  }, [viewportData]);
 
   const isFullMode = useProgressScrollbarMode({
     viewportData,
@@ -77,11 +87,7 @@ function ViewportSliceProgressScrollbar({
     setImageSliceData,
   });
 
-  const {
-    bytes: loadedBytes,
-    version: loadedVersion,
-    isFull: isFullyLoaded,
-  } = useLoadedSliceBytes({
+  const { bytes: loadedBytes, isFull: isFullyLoaded } = useLoadedSliceBytes({
     isFullMode,
     numberOfSlices,
     viewportData,
@@ -90,7 +96,7 @@ function ViewportSliceProgressScrollbar({
     loadedBatchIntervalMs,
   });
 
-  const { bytes: viewedBytes, version: viewedVersion } = useViewedSliceBytes({
+  const { bytes: viewedBytes } = useViewedSliceBytes({
     isFullMode,
     numberOfSlices,
     imageIndex,
@@ -162,7 +168,6 @@ function ViewportSliceProgressScrollbar({
             {isFullMode && showLoadedFill && (
               <SmartScrollbarFill
                 marked={loadedBytes}
-                version={loadedVersion}
                 className="bg-neutral/25"
                 loadingClassName="bg-neutral/50"
               />
@@ -170,7 +175,6 @@ function ViewportSliceProgressScrollbar({
             {isFullMode && showViewedFill && (
               <SmartScrollbarFill
                 marked={viewedBytes}
-                version={viewedVersion}
                 className="bg-primary/35"
                 loadingClassName="bg-primary/35"
               />
@@ -178,10 +182,7 @@ function ViewportSliceProgressScrollbar({
           </SmartScrollbarTrack>
           <SmartScrollbarIndicator />
           {isFullMode && showLoadedEndpoints && (
-            <SmartScrollbarEndpoints
-              marked={loadedBytes}
-              version={loadedVersion}
-            />
+            <SmartScrollbarEndpoints marked={loadedBytes} />
           )}
         </SmartScrollbar>
       </div>
@@ -189,13 +190,6 @@ function ViewportSliceProgressScrollbar({
   );
 }
 
-ViewportSliceProgressScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
+
 
 export default ViewportSliceProgressScrollbar;
