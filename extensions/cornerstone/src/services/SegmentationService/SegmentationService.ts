@@ -1714,6 +1714,37 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     );
   }
 
+  /**
+   * Wraps a highlight's animation frame so it runs only while the highlight is
+   * current. A frame that throws ends the highlight, so the segment can be
+   * highlighted again, and resets the temporary style an earlier frame may have
+   * applied, since nothing else will once the highlight is forgotten.
+   */
+  private _segmentHighlightFrame(
+    highlight: SegmentHighlight,
+    frame: FrameRequestCallback
+  ): FrameRequestCallback {
+    return (time: number) => {
+      if (!this._isCurrentSegmentHighlight(highlight)) {
+        return;
+      }
+      try {
+        frame(time);
+      } catch (error) {
+        const { segmentationId, segmentIndex, type } = highlight;
+        this._segmentHighlights.delete(segmentHighlightKey(segmentationId, segmentIndex, type));
+        if (this.getCornerstoneSegmentation(segmentationId)) {
+          try {
+            this._resetSegmentHighlightStyle(highlight);
+          } catch {
+            // The frame's error is the one to report.
+          }
+        }
+        throw error;
+      }
+    };
+  }
+
   private _completeSegmentHighlight(highlight: SegmentHighlight): void {
     highlight.state = 'selected';
     this._resetSegmentHighlightStyle(highlight);
@@ -2046,11 +2077,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     }) as cstTypes.LabelmapStyle;
 
     let startTime: number = null;
-    const animation = (timestamp: number) => {
-      if (!this._isCurrentSegmentHighlight(highlight)) {
-        return;
-      }
-
+    const animation = this._segmentHighlightFrame(highlight, (timestamp: number) => {
       if (startTime === null) {
         startTime = timestamp;
       }
@@ -2076,7 +2103,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       } else {
         this._completeSegmentHighlight(highlight);
       }
-    };
+    });
 
     requestAnimationFrame(animation);
   }
@@ -2101,11 +2128,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
 
     const prevOutlineWidth = prevStyle.outlineWidth;
 
-    const animate = (currentTime: number) => {
-      if (!this._isCurrentSegmentHighlight(highlight)) {
-        return;
-      }
-
+    const animate = this._segmentHighlightFrame(highlight, (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
         this._completeSegmentHighlight(highlight);
@@ -2127,7 +2150,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       );
 
       requestAnimationFrame(animate);
-    };
+    });
 
     requestAnimationFrame(animate);
   }
@@ -2273,6 +2296,12 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     evt: cstTypes.EventTypes.SegmentationRemovedEventType
   ) => {
     const { segmentationId } = evt.detail;
+
+    this._segmentHighlights.forEach((highlight, key) => {
+      if (highlight.segmentationId === segmentationId) {
+        this._segmentHighlights.delete(key);
+      }
+    });
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,

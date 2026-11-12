@@ -1,4 +1,5 @@
 import {
+  addTool,
   AngleTool,
   annotation,
   ArrowAnnotateTool,
@@ -13,8 +14,10 @@ import {
 import { Types } from '@ohif/core';
 
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
+import SRPointTool from './tools/SRPointTool';
 import addToolInstance from './utils/addToolInstance';
 import toolNames from './tools/toolNames';
+import { getSRRectangleROITextLines } from './utils/srToolGetTextLines';
 
 /**
  * @param {object} configuration
@@ -31,9 +34,14 @@ export default function init({
   addToolInstance(toolNames.SRArrowAnnotate, ArrowAnnotateTool);
   addToolInstance(toolNames.SRAngle, AngleTool);
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
-  addToolInstance(toolNames.SRRectangleROI, RectangleROITool);
 
-  // TODO - fix the SR display of Cobb Angle, as it joins the two lines
+  /** SR subtypes: show label (e.g. Lesion) instead of intensity/stats */
+  addTool(SRPointTool);
+  addToolInstance(toolNames.SRRectangleROI, RectangleROITool, {
+    getTextLines: getSRRectangleROITextLines,
+  });
+
+  /** TODO - fix the SR display of Cobb Angle, as it joins the two lines */
   addToolInstance(toolNames.SRCobbAngle, CobbAngleTool);
 
   // Modify annotation tools to use dashed lines on SR
@@ -42,6 +50,7 @@ export default function init({
   };
   annotation.config.style.setToolGroupToolStyles('SRToolGroup', {
     [toolNames.DICOMSRDisplay]: dashedLine,
+    [toolNames.SRPoint]: dashedLine,
     SRLength: dashedLine,
     SRBidirectional: dashedLine,
     SREllipticalROI: dashedLine,

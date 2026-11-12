@@ -28,6 +28,7 @@ import instanceSortingCriteriaCustomization from './customizations/instanceSorti
 import getWorkListCustomization from './customizations/workListCustomization';
 import headerRightSideCustomization from './customizations/headerRightSideCustomization';
 import hideHeaderUndoRedoCustomization from './customizations/hideHeaderUndoRedoCustomization';
+import hangingProtocolsCustomization from './customizations/hangingProtocolsCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -89,6 +90,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...instanceSortingCriteriaCustomization,
         ...getWorkListCustomization(),
         ...headerRightSideCustomization,
+        ...hangingProtocolsCustomization,
       },
     },
   ];

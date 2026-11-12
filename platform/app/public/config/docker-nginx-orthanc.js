@@ -10,6 +10,8 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  // Off by default; can lose the WebGL context on some devices. See configurationFiles.md.
+  // lossyDownsampling: { final: true, interactive: true, interleavedLoading: true },
   studyPrefetcher: {
     enabled: true,
     displaySetsCount: 2,

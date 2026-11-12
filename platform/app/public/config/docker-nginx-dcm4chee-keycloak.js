@@ -9,6 +9,8 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  // Off by default; can lose the WebGL context on some devices. See configurationFiles.md.
+  // lossyDownsampling: { final: true, interactive: true, interleavedLoading: true },
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
