@@ -18,7 +18,7 @@ const defaultDisplaySetSelector = {
     {
       attribute: 'numImageFrames',
       constraint: {
-        greaterThan: { value: 0 },
+        greaterThanOrEqual: { value: 0 },
       },
     },
     // This display set will select the specified items by preference
@@ -50,7 +50,7 @@ const priorDisplaySetSelector = {
     {
       attribute: 'numImageFrames',
       constraint: {
-        greaterThan: { value: 0 },
+        greaterThanOrEqual: { value: 0 },
       },
     },
     // This display set will select the specified items by preference

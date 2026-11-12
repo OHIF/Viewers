@@ -23,12 +23,12 @@
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
 # Copy Files
-FROM node:24.15.0-slim as builder
+FROM node:24.22.2-slim as builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g pnpm@11
+RUN npm install -g pnpm@12
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app

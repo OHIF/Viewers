@@ -230,15 +230,14 @@ The [Playwright workflow](.github/workflows/playwright.yml) runs three jobs:
 
 A PR from a fork that changes a CI-defining file does not run Playwright on the
 self-hosted runner. It runs once the change is reviewed and merged. The affected
-paths are `.github/`, `.scripts/`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
-`preinstall.js`, any root pnpmfile, and **every** `package.json` and `.npmrc` in
-the workspace, not only the ones in the root directory.
+paths are `.github/`, `.scripts/`, `pnpm-workspace.yaml`, `preinstall.js`, any
+root pnpmfile, and **every** `.npmrc` in the workspace, not only the one in the
+root directory.
 
-Those manifests are on the list deliberately: `pnpm install` runs the lifecycle
-scripts of each workspace project on the runner, so a `postinstall` added to
-`extensions/<name>/package.json` executes there before any test starts. The cost
-is that a fork PR which only adds a dependency to one extension waits for its
-merge before Playwright runs. A PR from a branch in this repository is not
+`package.json` and `pnpm-lock.yaml` are not on the list, so a fork PR that adds
+a dependency or moves a module between workspace packages runs Playwright as
+usual. Changes to the root `package.json` and `pnpm-lock.yaml` still need a code
+owner's review before merge. A PR from a branch in this repository is not
 affected by either rule.
 
 #### Testing changes that span both repos
@@ -251,7 +250,7 @@ If a feature requires changes in both Cornerstone3D and OHIF:
 3. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
 4. Playwright tests build CS3D from source, link it, and run the full suite. The
    merge guard reports a red result for as long as the line names a branch, so
-   you can see the test results and the preview deploy while you iterate.
+   you can see the test results and the Netlify deploy preview while you iterate.
 5. Once the CS3D side is merged and published, change the line to the retiring
    form below.
 
@@ -271,7 +270,7 @@ that has moved on to 5.11.0 tests 5.11.0, not 5.10.6.
 That is what lets the line stay in place as history — the branch name remains
 visible as the reason the pinned version moved, and the line stops changing what
 the run does. Once the repo pins that version or something newer, no rewrite
-happens, no reinstall happens, and no preview is built or deployed. The version
+happens, and no reinstall happens. The version
 must be one concrete release, such as `5.10.6` or `5.11.0-beta.1`, not a range.
 
 A fork PR still asks for the `cs3d-integration` approval while the line is
@@ -280,11 +279,11 @@ cannot tell which version the repo pins. Delete the line to stop the prompt.
 
 #### Preview deploys
 
-When a `CS3D_REF` line changes the tree under test, the Playwright workflow also
-builds the OHIF viewer and deploys it to Netlify as a preview. This gives you a
-live URL to manually test the combined CS3D + OHIF changes without running
-anything locally. A spent retiring form tests the same tree as an ordinary run,
-so it does not produce a preview.
+The Netlify `deploy-preview-<N>` build reads the same `CS3D_REF` line, so the
+deploy preview link shows the combined CS3D + OHIF changes. You can test them
+manually without running anything locally. Netlify builds the preview when you
+push, so push a commit after you add or change the line. See the
+[CS3D integration docs](platform/docs/docs/development/cs3d-integration.md#the-netlify-deploy-preview).
 
 For details on linking CS3D locally for development, see the
 [Cornerstone3D README](libs/@cornerstonejs/README.md#local-development-linking--unlinking).
