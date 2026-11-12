@@ -50,6 +50,7 @@ import {
 } from './waitForViewportsRendered';
 import { waitForViewportNotBlank } from './waitForViewportNotBlank';
 import { waitForAnnotationCompleted } from './waitForAnnotationCompleted';
+import { readWhenSettled } from './readWhenSettled';
 
 export {
   visitStudy,
@@ -98,6 +99,7 @@ export {
   waitForPaintToSettle,
   waitForViewportNotBlank,
   waitForAnnotationCompleted,
+  readWhenSettled,
   press,
   withKeyHeld,
   test,

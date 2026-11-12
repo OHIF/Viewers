@@ -4,6 +4,7 @@ import type { MainToolbarPageObject, RightPanelPageObject, ViewportPageObject } 
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 import {
   expect,
+  readWhenSettled,
   test,
   visitStudy,
   waitForAnnotationCompleted,
@@ -87,8 +88,8 @@ function maxCoordinateDiff(d: string | null, expected: string) {
   return Math.max(0, ...actual.map((n, i) => Math.abs(n - wanted[i])));
 }
 
-// Undo and redo rebuild the spline from its restored points, which can round a few coordinates
-// slightly differently from the render they restore, so allow half a pixel.
+// A restored contour is drawn again from its stored points, which can round a few coordinates
+// 0.1px differently from the render it restores, so allow half a pixel.
 function pollPathNear(path: Locator, expected: string, message: string) {
   return expect
     .poll(async () => maxCoordinateDiff(await path.getAttribute('d'), expected), { message })
@@ -96,20 +97,12 @@ function pollPathNear(path: Locator, expected: string, message: string) {
 }
 
 // Reads the path's `d` once two reads 250ms apart agree.
-async function settledPathD(path: Locator) {
-  let previous: string | null = null;
-  await expect
-    .poll(
-      async () => {
-        const d = await path.getAttribute('d');
-        const settled = d !== null && d === previous;
-        previous = d;
-        return settled;
-      },
-      { intervals: [250], message: 'Expected the contour path to stop changing' }
-    )
-    .toBe(true);
-  return previous as string;
+function settledPathD(path: Locator) {
+  return readWhenSettled({
+    read: () => path.getAttribute('d'),
+    interval: 250,
+    message: 'Expected the contour path to stop changing',
+  });
 }
 
 async function drawContour(page: Page, viewport: IViewportPageObject, tool: ContourTool) {
@@ -120,13 +113,13 @@ async function drawContour(page: Page, viewport: IViewportPageObject, tool: Cont
 
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
   await visitStudy(page, STUDY_UID, 'segmentation', 2000);
-  // Livewire snaps to the image's edges, so draw only once the image is on screen.
+  // Wait for the image before drawing; livewire also snaps to its edges.
   await waitForViewportNotBlank({ page });
 
   const { contourSegmentationPanel } = rightPanelPageObject;
   await contourSegmentationPanel.addSegmentation();
   await expect(contourSegmentationPanel.panel.rows).toHaveCount(1);
-  // Adding a segmentation re-renders the viewport; draw once that render is done.
+  // Adding a segmentation renders the viewport twice, the second time just after its row shows.
   await waitForViewportsRendered(page);
 });
 
@@ -152,7 +145,7 @@ async function undoRedoNewContour(
   await mainToolbarPageObject.redo.click();
   await expect(paths, 'Expected redo to restore the contour').toHaveCount(1);
   await expect(paths.first()).toBeVisible();
-  await expect(paths.first()).toHaveAttribute('d', drawnPathD);
+  await pollPathNear(paths.first(), drawnPathD, 'Expected redo to restore the same path');
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 }
 
@@ -233,8 +226,8 @@ test('should undo and redo a contour segment delete', async ({
   const paths = viewport.svg('path');
   const { panel } = rightPanelPageObject.contourSegmentationPanel;
 
-  await SPLINE_CONTOUR.select(rightPanelPageObject);
-  await drawContour(page, viewport, SPLINE_CONTOUR);
+  await FREEHAND_CONTOUR.select(rightPanelPageObject);
+  await drawContour(page, viewport, FREEHAND_CONTOUR);
   const drawnPathD = await settledPathD(paths.first());
   const segmentName = await panel.nthSegment(0).title.innerText();
 
@@ -248,7 +241,7 @@ test('should undo and redo a contour segment delete', async ({
   await expect(panel.nthSegment(0).title).toHaveText(segmentName);
   await expect(paths, 'Expected undo to restore the contour').toHaveCount(1);
   await expect(paths.first()).toBeVisible();
-  await expect(paths.first()).toHaveAttribute('d', drawnPathD);
+  await pollPathNear(paths.first(), drawnPathD, 'Expected undo to restore the same path');
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
   await mainToolbarPageObject.redo.click();

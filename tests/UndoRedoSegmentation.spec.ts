@@ -81,9 +81,9 @@ test.describe('labelmap', () => {
     const viewport = await viewportPageObject.active;
     const unpainted = await canvasDigest(page);
 
-    const { threshold } = rightPanelPageObject.labelMapSegmentationPanel.tools;
-    await threshold.click();
-    await expect(threshold.input, 'Expected the Threshold tool to be active').toBeVisible();
+    await rightPanelPageObject.labelMapSegmentationPanel.tools.threshold.click();
+    // The Threshold button activates one of the ThresholdCircularBrush tools.
+    await expect.poll(() => viewport.getActiveToolName()).toMatch(/^ThresholdCircularBrush/);
     await viewport.normalizedDragAt(BRUSH_STROKE);
     const painted = await digestAfterChange(page, unpainted, 'Expected the threshold to paint');
     await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
