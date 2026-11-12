@@ -102,6 +102,8 @@ enum MeasurementChangeType {
 
 export type MeasurementFilter = (measurement) => boolean;
 
+const sourceMissing = new Set();
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -497,7 +499,10 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source.uid, annotationType, source);
+        if (!sourceMissing.has(source.uid)) {
+          console.log('No source mapping', source.uid, annotationType, source);
+          sourceMissing.add(source.uid);
+        }
         this.addUnmappedMeasurement(sourceAnnotationDetail, source);
         return;
       }
@@ -711,12 +716,12 @@ class MeasurementService extends PubSubService {
    * That allows, for example, clearing all of a single studies measurements
    * without needing to clear other measurements.
    */
-  public clearMeasurements(filter?: MeasurementFilter) {
+  public clearMeasurements(filter?: MeasurementFilter, metadata?: Record<string, unknown>) {
     // Make a copy of the measurements
     const toClear = this.getMeasurements(filter);
     const measurements = [...toClear];
     toClear.forEach(measurement => this.measurements.delete(measurement.uid));
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements, ...metadata });
   }
 
   /**

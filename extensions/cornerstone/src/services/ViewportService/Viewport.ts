@@ -2,10 +2,10 @@ import {
   Types,
   Enums,
   getEnabledElementByViewportId,
-  VolumeViewport,
   utilities,
 } from '@cornerstonejs/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { isOrthographicViewportType } from '../../utils/getLegacyViewportType';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
@@ -105,7 +105,7 @@ const dataContains = ({ data, displaySetUID, imageId, viewport }): boolean => {
     return !!data.imageIds.find(dataId => dataId === imageId);
   }
 
-  if (imageId && (data.volumeId || viewport instanceof VolumeViewport)) {
+  if (imageId && (data.volumeId || isOrthographicViewportType(viewport))) {
     const isAcquisition = !!viewport.getCurrentImageId();
 
     if (!isAcquisition) {
@@ -227,9 +227,16 @@ class ViewportInfo {
     // via cornerstoneViewportService
     let viewportData = this.getViewportData();
 
+    // Branch on the persisted data shape, not viewportType: native ("next") volume
+    // viewports carry viewportType === PLANAR_NEXT while their data is still a volume
+    // array, so keying off viewportType alone would treat them as a stack object and
+    // miss the display set — skipping invalidateViewportData() on metadata invalidation.
+    // Falls back to viewportType for legacy viewportData with no dataShapeType.
+    const dataShapeType = viewportData.dataShapeType ?? viewportData.viewportType;
+
     if (
-      viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
-      viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+      dataShapeType === Enums.ViewportType.ORTHOGRAPHIC ||
+      dataShapeType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(

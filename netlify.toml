@@ -1,0 +1,43 @@
+# Netlify Config
+#
+# TOML Reference:
+# https://www.netlify.com/docs/netlify-toml-reference/
+#
+# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
+# https://viewer.ohif.org is created using a different process that is
+# managed by CircleCI and deployed to our Google Hosting
+
+[build]
+  base = ""
+  # A `CS3D_REF:` line in the PR body selects the CS3D build of a deploy
+  # preview, as it does for the Playwright workflow and CircleCI. Without the
+  # line, or on a build that is not a deploy preview, the script changes nothing.
+  # --after-build keeps a changed CS3D out of the Netlify build cache.
+  command = "bash .scripts/ci/cs3d-apply-ref.sh && pnpm run build:ci && bash .scripts/ci/cs3d-apply-ref.sh --after-build"
+  publish = "platform/app/dist"
+
+[build.environment]
+  # If 'production', `pnpm install` does not install devDependencies
+  NODE_ENV = "development"
+  NODE_VERSION = "24.22.2"
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+    # Report-Only CSP: observational only, enforces nothing. Watch browser
+    # consoles for violation reports before ever promoting this to an
+    # enforcing Content-Security-Policy header. cdnjs.cloudflare.com is for
+    # the Rollbar snippet in html-templates/rollbar.html (demo builds);
+    # connect-src stays broad because deployments point the viewer at
+    # arbitrary DICOMweb origins.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https: blob:; worker-src 'self' blob:; object-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''

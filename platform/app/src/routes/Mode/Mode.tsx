@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
-import PropTypes from 'prop-types';
+import type { To, NavigateOptions } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '../../hooks';
@@ -12,6 +13,64 @@ import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
+
+/**
+ * The properties that the mode route gives to the `validateModeEntry` hook of a
+ * mode, and to the default hook below.
+ *
+ * `navigate` does nothing after the user leaves the route.
+ */
+export type ValidateModeEntryProps = {
+  studyInstanceUIDs?: string[];
+  dataSource: any;
+  navigate: (to: To, options?: NavigateOptions) => void;
+  servicesManager: AppTypes.ServicesManager;
+  extensionManager: AppTypes.ExtensionManager;
+  commandsManager: AppTypes.CommandsManager;
+  appConfig: AppTypes.Config;
+  query: URLSearchParams;
+};
+
+/**
+ * The default `validateModeEntry` hook. It checks that every study in the URL
+ * exists in the data source, and it navigates to `/notfoundstudy` when a study
+ * is absent or when the query fails.
+ *
+ * This check moved here from PanelStudyBrowser.tsx so that the check runs in
+ * all modes. A mode that does not load its data by StudyInstanceUID replaces
+ * this check with its own `validateModeEntry` - see `ModeRoute` below.
+ *
+ * @param props.studyInstanceUIDs the studies that the URL asks for
+ * @param props.dataSource the active data source
+ * @param props.navigate navigates away, and does nothing after an unmount
+ */
+async function validateStudies({
+  studyInstanceUIDs,
+  dataSource,
+  navigate,
+}: ValidateModeEntryProps) {
+  if (!studyInstanceUIDs?.length || !dataSource) {
+    return;
+  }
+
+  for (const studyInstanceUID of studyInstanceUIDs) {
+    try {
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: studyInstanceUID,
+      });
+
+      if (!qidoForStudyUID?.length) {
+        console.warn('Study not found:', studyInstanceUID);
+        navigate('/notfoundstudy');
+        return;
+      }
+    } catch (error) {
+      console.error('Error validating study:', studyInstanceUID, error);
+      navigate('/notfoundstudy');
+      return;
+    }
+  }
+}
 
 export default function ModeRoute({
   mode,
@@ -30,6 +89,8 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  const navigate = useNavigate();
 
   mode?.onModeInit?.({
     servicesManager,
@@ -94,6 +155,15 @@ export default function ModeRoute({
         }
       }
 
+      // Mode dependency extensions register their customization modules here,
+      // but `registerExtension` does not merge them into the customization
+      // service — that otherwise only happens later in
+      // `extensionManager.onModeEnter`. Merge them now so anything that runs
+      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+      // the defaults these extensions provide.
+      // `init` is idempotent — each extension module is merged at most once.
+      customizationService.init(extensionManager);
+
       if (isMounted.current) {
         setExtensionDependenciesLoaded(true);
       }
@@ -145,9 +215,18 @@ export default function ModeRoute({
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
+        // Register panels immediately so ViewerLayout's first render sees them.
+        // ResizablePanelsHook only auto-expands side panels on the initial mount;
+        // if panels are added later, the viewport grid keeps the wrong width.
+        // setupRouteInit (below) resets and re-applies them after customizations
+        // are layered on, so URL/config modules can still modify the lists.
         panelService.reset();
         panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
         panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // Stash the layout lists for setupRouteInit to seed into the
+        // `leftPanels` / `rightPanels` customizations.
+        layoutData.panels = { leftPanels, rightPanels };
 
         // layoutProps contains all props but leftPanels and rightPanels
         layoutData.props = layoutProps;
@@ -169,6 +248,61 @@ export default function ModeRoute({
       return;
     }
 
+    // The validation can complete after the user leaves the route, so a
+    // navigation can happen after an unmount. A navigation after an unmount
+    // removes the user from the route that the user already moved to.
+    const navigateIfMounted = (to: To, options?: NavigateOptions) => {
+      if (isMounted.current) {
+        navigate(to, options);
+      }
+    };
+
+    // Starts the validation, and does not wait for the validation.
+    //
+    // `setupRouteInit` calls this function after `route.init`, and before
+    // `defaultRouteInit`. Every hook that sets a custom authentication token
+    // runs before that point: `onModeInit`, the `onModeEnter` of the
+    // extensions, the `onModeEnter` of the mode, and `route.init`. The
+    // validation query then uses that token.
+    //
+    // The validation does not use the promise of `setupRouteInit`, and the
+    // validation runs at the same time as the retrieve of the metadata. Two
+    // results come from this:
+    //
+    //   - The validation does not add a delay to the retrieve. This keeps the
+    //     behaviour of OHIF 3.13, where the validation ran in its own effect.
+    //   - The validation still runs when `defaultRouteInit` rejects. An
+    //     invalid StudyInstanceUID gives an undefined `activeStudy`, and
+    //     `hangingProtocolService.run` throws for that undefined study. A
+    //     validation that waits for the promise of `setupRouteInit` never runs
+    //     in that case, and the viewer never shows the "not found" page.
+    //     See `tests/StudyValidation.spec.ts`.
+    const startModeEntryValidation = () => {
+      // `mode.validateModeEntry` replaces the default study check. The hook can
+      // be an async function, and the hook can navigate away on its own.
+      const validateModeEntry = mode?.validateModeEntry ?? validateStudies;
+
+      // `Promise.resolve` starts the chain, so a hook that throws before the
+      // hook returns its promise also gives a rejection, and no rejection
+      // stays unhandled.
+      Promise.resolve()
+        .then(() =>
+          validateModeEntry({
+            studyInstanceUIDs,
+            dataSource,
+            navigate: navigateIfMounted,
+            servicesManager,
+            extensionManager,
+            commandsManager,
+            appConfig,
+            query,
+          })
+        )
+        .catch(e => {
+          console.warn('mode entry validation failure', e);
+        });
+    };
+
     const setupRouteInit = async () => {
       // TODO: For some reason this is running before the Providers
       // are calling setServiceImplementation
@@ -185,6 +319,56 @@ export default function ModeRoute({
         commandsManager,
         appConfig,
       });
+
+      // `extensionManager.onModeEnter` resets the customization mode scope via
+      // `customizationService.onModeEnter`; the mode scope is then layered
+      // bottom-up so the final value of every key is decided by scope
+      // precedence (global > mode > default) and application order alone:
+      //   1. the mode's own values — its layout panel lists, seeded as the
+      //      standard `leftPanels` / `rightPanels` customizations;
+      //      its toolbar/tool-group composition, seeded as the plain
+      //      `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
+      //      customizations (resolved to concrete definitions later, when the
+      //      mode's `onModeEnter` registers the toolbar); and its
+      //      `modeCustomizations` block (declared as data on the mode
+      //      instance, usually as a customization name registered at default
+      //      scope when the mode loaded, so bootstrap/global customizations
+      //      can modify the block itself before it is applied);
+      //   2. the app config / URL `mode` phase blocks — the general (`*`)
+      //      block first, then any block keyed by this mode's id / routeName.
+      const { leftPanels = [], rightPanels = [] } = layoutTemplateData.current.panels ?? {};
+      customizationService.setCustomizations({
+        leftPanels,
+        rightPanels,
+        toolbarButtons: mode.toolbarButtons ?? [],
+        toolbarSections: mode.toolbarSections ?? [],
+        toolGroupAdditions: mode.toolGroupAdditions ?? {},
+      });
+
+      const modeCustomizations =
+        typeof mode.modeCustomizations === 'string'
+          ? customizationService.getCustomization(mode.modeCustomizations)
+          : mode.modeCustomizations;
+      if (modeCustomizations) {
+        customizationService.setCustomizations(modeCustomizations);
+      }
+      customizationService.applyModeCustomizations([mode.id, mode.routeName]);
+
+      // Re-apply panels only when customizations changed the lists. When they
+      // match the layout, the panels registered in retrieveLayoutData are left
+      // in place so ViewerLayout's ResizablePanelsHook keeps the correct sizes
+      // from its one-time initial expand.
+      const resolvedLeftPanels = customizationService.getValue('leftPanels') ?? [];
+      const resolvedRightPanels = customizationService.getValue('rightPanels') ?? [];
+      const panelsChanged =
+        JSON.stringify(resolvedLeftPanels) !== JSON.stringify(leftPanels) ||
+        JSON.stringify(resolvedRightPanels) !== JSON.stringify(rightPanels);
+
+      if (panelsChanged) {
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, resolvedLeftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, resolvedRightPanels);
+      }
 
       // use the URL hangingProtocolId if it exists, otherwise use the one
       // defined in the mode configuration
@@ -261,6 +445,11 @@ export default function ModeRoute({
           stageIndexToUse
         );
       }
+
+      // Every hook that can set a custom authentication token has run, so the
+      // validation starts here. The validation runs at the same time as the
+      // retrieve below.
+      startModeEntryValidation();
 
       return defaultRouteInit(
         {
@@ -393,12 +582,3 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
     return Compose({ components: contextModuleProviders, children });
   };
 }
-
-ModeRoute.propTypes = {
-  mode: PropTypes.object.isRequired,
-  dataSourceName: PropTypes.string,
-  extensionManager: PropTypes.object,
-  servicesManager: PropTypes.object,
-  hotkeysManager: PropTypes.object,
-  commandsManager: PropTypes.object,
-};

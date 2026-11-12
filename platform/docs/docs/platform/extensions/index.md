@@ -177,10 +177,17 @@ the top level [`extensions/`][ext-source] directory.
 }
 ```
 
-:::note Important
-You SHOULD NOT directly register extensions in the `pluginConfig.json` file.
-Use the provided `cli` to add/remove/install/uninstall extensions. Read more [here](../../development/ohif-cli.md)
+:::note
+You can register extensions by editing the `pluginConfig.json` file directly.
+The provided `cli` can also add/remove/install/uninstall extensions
+([read more](../../development/ohif-cli.md)), but it is being phased out in
+favour of generating extensions with an agent.
 :::
+
+For the full set of fields (`packageName`, `version`, `default`, `directory`,
+the `public` section) and the three ways a plugin can be located (in-tree,
+out-of-tree `directory`, or installed dependency), see the
+[pluginConfig.json reference](./pluginConfig.md).
 
 The final registration and import of the extensions happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
 

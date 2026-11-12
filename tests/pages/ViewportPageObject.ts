@@ -1,21 +1,54 @@
 import { Locator, Page } from '@playwright/test';
 import {
-  getMousePosition,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
+  simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDoubleClickOnElement,
   simulateNormalizedDragOnElement,
+  simulateNormalizedPathDragOnElement,
+  waitForViewportsRendered,
+  type MouseButton,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
+import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-type SvgInnerElement = 'circle' | 'path' | 'd';
+export type SvgInnerElement = 'circle' | 'path' | 'line' | 'polyline' | 'g';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
-  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+  config?: { button?: MouseButton; delay?: number; steps?: number };
 };
+
+type NormalizedPathClickParams = {
+  path: { x: number; y: number }[];
+  closePath?: boolean;
+};
+
+type NormalizedPathDragParams = {
+  path: { x: number; y: number }[];
+  config?: { button?: MouseButton; delay?: number; steps?: number };
+};
+
+export interface IOverlayText {
+  locator: Locator;
+  get windowLevel(): Locator;
+  get instanceNumber(): Locator;
+}
+function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
+  const locator = viewport.getByTestId(id);
+  return {
+    locator,
+    get windowLevel() {
+      return locator.getByTitle('Window Level');
+    },
+    get instanceNumber() {
+      return locator.getByTitle('Instance Number');
+    },
+  };
+}
 
 export interface IViewportPageObject {
   nthAnnotation(nth: number): {
@@ -24,17 +57,21 @@ export interface IViewportPageObject {
     contextMenu: {
       open: () => Promise<void>;
     };
+    text: {
+      locator: Locator;
+      click: () => Promise<void>;
+    };
   };
-  clickAt: (
-    points: { x: number; y: number }[],
-    button?: 'left' | 'right' | 'middle'
-  ) => Promise<void>;
+  clickAt: (points: { x: number; y: number }[], button?: MouseButton) => Promise<void>;
   doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
   normalizedClickAt: (
     normalizedPoints: { x: number; y: number }[],
-    button?: 'left' | 'right' | 'middle'
+    button?: MouseButton
   ) => Promise<void>;
+  normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
+  normalizedPathClickAt: (params: NormalizedPathClickParams) => Promise<void>;
+  normalizedPathDragAt: (params: NormalizedPathDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
     leftMid: Locator;
@@ -42,10 +79,10 @@ export interface IViewportPageObject {
     bottomMid: Locator;
   };
   overlayText: {
-    topLeft: Locator;
-    topRight: Locator;
-    bottomLeft: Locator;
-    bottomRight: Locator;
+    topLeft: IOverlayText;
+    topRight: IOverlayText;
+    bottomLeft: IOverlayText;
+    bottomRight: IOverlayText;
   };
   overlayMenu: {
     dataOverlay: DataOverlayPageObject;
@@ -59,22 +96,73 @@ export interface IViewportPageObject {
     };
   };
   pane: Locator;
+  /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
+  getViewportType: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  getSvgAnnotationStatTextLines: (uid: string) => Locator;
+  /** The text box of each annotation drawn in the viewport. */
+  annotationTextBoxes: Locator;
+  /** The two axes of each bidirectional measurement drawn in the viewport. */
+  bidirectionalAxes: Locator;
+  navigationArrows: {
+    locator: Locator;
+    prev: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+    next: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+  };
+  sliceNavigation: {
+    toSlice: (sliceIndex: number) => Promise<void>;
+    toFirstSlice: () => Promise<void>;
+    toLastSlice: () => Promise<void>;
+    scrollBy: (delta: number) => Promise<void>;
+  };
+  magnifyGlass: MagnifyGlassPageObject;
+  hideViewportOverlayText: () => Promise<void>;
+  hideAnnotationText: () => Promise<void>;
+  hideOrientationMarkerText: () => Promise<void>;
+  hideViewportNotificationText: () => Promise<void>;
+  hideModalityLoadBadgeText: () => Promise<void>;
+  hideAllText: () => Promise<void>;
+  showViewportOverlayText: () => Promise<void>;
+  showAnnotationText: () => Promise<void>;
+  showOrientationMarkerText: () => Promise<void>;
+  showViewportNotificationText: () => Promise<void>;
+  showModalityLoadBadgeText: () => Promise<void>;
+  showAllText: () => Promise<void>;
 }
+
+const viewportOverlaySelector = '[data-cy^="viewport-overlay-"]';
+const annotationTextSelector = 'g[data-annotation-uid] text';
+const orientationMarkerSelector = '.ViewportOrientationMarkers';
+// Hydration / measurement-tracking prompt shown over the viewport.
+const viewportNotificationSelector = '[data-cy="viewport-notification"]';
+// "SEG" / "RTSTRUCT" / "SR" badge (with its LOAD button); rendered only while unhydrated.
+const modalityLoadBadgeSelector = '[data-cy^="ModalityLoadBadge-"]';
+const allViewportTextSelector = [
+  viewportOverlaySelector,
+  annotationTextSelector,
+  orientationMarkerSelector,
+  viewportNotificationSelector,
+  modalityLoadBadgeSelector,
+].join(', ');
 
 export class ViewportPageObject {
   readonly page: Page;
-  private readonly dataOverlayPageObject: DataOverlayPageObject;
 
   constructor(page: Page) {
     this.page = page;
-    this.dataOverlayPageObject = new DataOverlayPageObject(page);
   }
 
   private getAnnotation(viewport: Locator, nth: number) {
     const page = this.page;
     const domOverlayPageObject = new DOMOverlayPageObject(page);
     const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
+    const textLocator = annotation.locator('text').first();
 
     return {
       locator: annotation,
@@ -86,7 +174,21 @@ export class ViewportPageObject {
           await domOverlayPageObject.viewport.annotationContextMenu.open(annotation);
         },
       },
+      text: {
+        locator: textLocator,
+        click: async () => {
+          await textLocator.click({ force: true });
+        },
+      },
     };
+  }
+
+  private async getViewportId(viewport: Locator): Promise<string> {
+    const id = await viewport.locator('[data-viewportid]').getAttribute('data-viewportid');
+    if (id === null) {
+      throw new Error('Could not resolve data-viewportid from viewport locator');
+    }
+    return id;
   }
 
   private getOrientationMarkers(viewport: Locator) {
@@ -100,16 +202,101 @@ export class ViewportPageObject {
 
   private getOverlayText(viewport: Locator) {
     return {
-      topLeft: viewport.getByTestId('viewport-overlay-top-left'),
-      topRight: viewport.getByTestId('viewport-overlay-top-right'),
-      bottomLeft: viewport.getByTestId('viewport-overlay-bottom-left'),
-      bottomRight: viewport.getByTestId('viewport-overlay-bottom-right'),
+      topLeft: overlayTextFactory(viewport, 'viewport-overlay-top-left'),
+      topRight: overlayTextFactory(viewport, 'viewport-overlay-top-right'),
+      bottomLeft: overlayTextFactory(viewport, 'viewport-overlay-bottom-left'),
+      bottomRight: overlayTextFactory(viewport, 'viewport-overlay-bottom-right'),
     };
   }
 
-  private getOverlayMenu(viewport: Locator) {
+  /**
+   * Hides all viewport text (overlays, annotations, orientation markers, prompts,
+   * modality badges) in one sweep.
+   */
+  async hideAllViewportGridText(): Promise<void> {
+    await this.hideLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /** Re-shows everything {@link hideAllViewportGridText} hid. */
+  async showAllViewportGridText(): Promise<void> {
+    await this.showLocatorElements(this.grid.locator(allViewportTextSelector));
+  }
+
+  /**
+   * Hides matching elements by adding Tailwind's `hidden` class.
+   * Safe when the locator matches nothing (`evaluateAll` is a no-op on an empty set).
+   */
+  private async hideLocatorElements(locator: Locator): Promise<void> {
+    await locator.evaluateAll(elements => {
+      elements.forEach(element => element.classList.add('hidden'));
+    });
+  }
+
+  /**
+   * Shows matching elements by removing Tailwind's `hidden` class.
+   * Safe when the locator matches nothing.
+   */
+  private async showLocatorElements(locator: Locator): Promise<void> {
+    await locator.evaluateAll(elements => {
+      elements.forEach(element => element.classList.remove('hidden'));
+    });
+  }
+
+  private getTextVisibilityMethods(viewport: Locator) {
+    const textVisibilityMethods = {
+      hideViewportOverlayText: async () => {
+        await this.hideLocatorElements(viewport.locator(viewportOverlaySelector));
+      },
+      hideAnnotationText: async () => {
+        await this.hideLocatorElements(viewport.locator(annotationTextSelector));
+      },
+      hideOrientationMarkerText: async () => {
+        await this.hideLocatorElements(viewport.locator(orientationMarkerSelector));
+      },
+      hideViewportNotificationText: async () => {
+        await this.hideLocatorElements(viewport.locator(viewportNotificationSelector));
+      },
+      hideModalityLoadBadgeText: async () => {
+        await this.hideLocatorElements(viewport.locator(modalityLoadBadgeSelector));
+      },
+      hideAllText: async () => {
+        await textVisibilityMethods.hideViewportOverlayText();
+        await textVisibilityMethods.hideAnnotationText();
+        await textVisibilityMethods.hideOrientationMarkerText();
+        await textVisibilityMethods.hideViewportNotificationText();
+        await textVisibilityMethods.hideModalityLoadBadgeText();
+      },
+
+      showViewportOverlayText: async () => {
+        await this.showLocatorElements(viewport.locator(viewportOverlaySelector));
+      },
+      showAnnotationText: async () => {
+        await this.showLocatorElements(viewport.locator(annotationTextSelector));
+      },
+      showOrientationMarkerText: async () => {
+        await this.showLocatorElements(viewport.locator(orientationMarkerSelector));
+      },
+      showViewportNotificationText: async () => {
+        await this.showLocatorElements(viewport.locator(viewportNotificationSelector));
+      },
+      showModalityLoadBadgeText: async () => {
+        await this.showLocatorElements(viewport.locator(modalityLoadBadgeSelector));
+      },
+      showAllText: async () => {
+        await textVisibilityMethods.showViewportOverlayText();
+        await textVisibilityMethods.showAnnotationText();
+        await textVisibilityMethods.showOrientationMarkerText();
+        await textVisibilityMethods.showViewportNotificationText();
+        await textVisibilityMethods.showModalityLoadBadgeText();
+      },
+    };
+
+    return textVisibilityMethods;
+  }
+
+  private async getOverlayMenu(viewport: Locator) {
     return {
-      dataOverlay: this.dataOverlayPageObject,
+      dataOverlay: new DataOverlayPageObject(this.page, await this.getViewportId(viewport)),
       get orientation() {
         const button = viewport.locator('[data-cy^="orientationMenu"]');
         return {
@@ -135,7 +322,112 @@ export class ViewportPageObject {
     return viewport.locator(`svg.svg-layer${innerElement ? ` ${innerElement}` : ''}`);
   }
 
-  private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
+  private getNavigationArrows(viewport: Locator) {
+    const container = viewport.getByTestId('viewport-action-arrows');
+    const prevButton = viewport.getByTestId('viewport-action-arrows-left');
+    const nextButton = viewport.getByTestId('viewport-action-arrows-right');
+    return {
+      locator: container,
+      prev: {
+        button: prevButton,
+        click: async () => {
+          await prevButton.click();
+        },
+      },
+      next: {
+        button: nextButton,
+        click: async () => {
+          await nextButton.click();
+        },
+      },
+    };
+  }
+
+  /**
+   * toSlice, toFirstSlice, toLastSlice and scrollBy wait until the viewport is on the slice and has
+   * rendered it.
+   */
+  private getSliceNavigation(viewport: Locator) {
+    const page = this.page;
+
+    const jumpToImage = async (imageIndex: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      await page.evaluate(
+        ({ commandsManager, viewportId, imageIndex }) => {
+          return commandsManager.runCommand('jumpToImage', {
+            imageIndex,
+            viewport: { id: viewportId },
+          });
+        },
+        {
+          viewportId,
+          imageIndex,
+          commandsManager: await page.evaluateHandle('window.commandsManager'),
+        }
+      );
+    };
+
+    const scrollBy = async (delta: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      // Returns the slice the scroll is headed to. A stack viewport may load it after a short
+      // delay, so its target is read from getTargetImageIdIndex; a volume viewport is already on it.
+      const targetSliceIndex = await page.evaluate(
+        ({ services, viewportId, delta }) => {
+          const cornerstoneViewport = (
+            services as any
+          ).cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!cornerstoneViewport) {
+            throw new Error(`No Cornerstone viewport found for ${viewportId}`);
+          }
+          cornerstoneViewport.scroll(delta);
+          return (
+            cornerstoneViewport.getTargetImageIdIndex?.() ?? cornerstoneViewport.getSliceIndex()
+          );
+        },
+        {
+          viewportId,
+          delta,
+          services: await page.evaluateHandle('window.services'),
+        }
+      );
+      await waitForSliceIndex(targetSliceIndex);
+      await waitForViewportsRendered(page);
+    };
+
+    // A negative index counts back from the last slice, as it does for jumpToImage.
+    const waitForSliceIndex = async (imageIndex: number) => {
+      const viewportId = await this.getViewportId(viewport);
+      await page.waitForFunction(
+        ({ viewportId, imageIndex }) => {
+          const cornerstoneViewport = (
+            window as any
+          ).services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!cornerstoneViewport) {
+            return false;
+          }
+          const sliceIndex =
+            imageIndex < 0 ? cornerstoneViewport.getNumberOfSlices() + imageIndex : imageIndex;
+          return cornerstoneViewport.getSliceIndex() === sliceIndex;
+        },
+        { viewportId, imageIndex }
+      );
+    };
+
+    const toSlice = async (imageIndex: number) => {
+      await jumpToImage(imageIndex);
+      await waitForSliceIndex(imageIndex);
+      await waitForViewportsRendered(page);
+    };
+
+    return {
+      toSlice,
+      toFirstSlice: () => toSlice(0),
+      toLastSlice: () => toSlice(-1),
+      scrollBy,
+    };
+  }
+
+  private async viewportPageObjectFactory(viewport: Locator): Promise<IViewportPageObject> {
     return {
       nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
       doubleClickAt: async (point: { x: number; y: number }) => {
@@ -144,7 +436,7 @@ export class ViewportPageObject {
           point,
         });
       },
-      clickAt: async (points: { x: number; y: number }[], button?: 'left' | 'right' | 'middle') => {
+      clickAt: async (points: { x: number; y: number }[], button?: MouseButton) => {
         await simulateClicksOnElement({
           locator: viewport,
           points,
@@ -153,12 +445,18 @@ export class ViewportPageObject {
       },
       normalizedClickAt: async (
         normalizedPoints: { x: number; y: number }[],
-        button?: 'left' | 'right' | 'middle'
+        button?: MouseButton
       ) => {
         await simulateNormalizedClicksOnElement({
           locator: viewport,
           normalizedPoints,
           button,
+        });
+      },
+      normalizedDoubleClickAt: async (normalizedPoint: { x: number; y: number }) => {
+        await simulateNormalizedDoubleClickOnElement({
+          locator: viewport,
+          normalizedPoint,
         });
       },
       normalizedDragAt: async (params: NormalizedDragParams) => {
@@ -171,17 +469,60 @@ export class ViewportPageObject {
           steps: params.config?.steps,
         });
       },
+      normalizedPathClickAt: async (params: NormalizedPathClickParams) => {
+        const { path, closePath = false } = params;
+        await simulateNormalizedClicksOnElement({
+          locator: viewport,
+          normalizedPoints: path,
+        });
+        if (closePath) {
+          // Click the first point to close the path, held past the 400ms double-click window.
+          await simulateNormalizedClickOnElement({
+            locator: viewport,
+            normalizedPoint: path[0],
+            delay: 500,
+          });
+        }
+      },
+      normalizedPathDragAt: async (params: NormalizedPathDragParams) => {
+        await simulateNormalizedPathDragOnElement({
+          locator: viewport,
+          path: params.path,
+          button: params.config?.button,
+          delay: params.config?.delay,
+          steps: params.config?.steps,
+        });
+      },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
-      overlayMenu: this.getOverlayMenu(viewport),
+      overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
+      getViewportType: async () => {
+        const viewportId = await this.getViewportId(viewport);
+        return this.page.evaluate(
+          ({ services, viewportId }) =>
+            (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
+          { viewportId, services: await this.page.evaluateHandle('window.services') }
+        );
+      },
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
+      getSvgAnnotationStatTextLines: (uid: string) => {
+        return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
+      },
+      annotationTextBoxes: this.getSvg(viewport).locator('g[data-annotation-uid] > text'),
+      bidirectionalAxes: this.getSvg(viewport).locator(
+        'line[data-id$="-line-1"], line[data-id$="-line-2"]'
+      ),
+      navigationArrows: this.getNavigationArrows(viewport),
+      sliceNavigation: this.getSliceNavigation(viewport),
+      magnifyGlass: new MagnifyGlassPageObject(this.page, viewport),
+      ...this.getTextVisibilityMethods(viewport),
     };
   }
 
-  get active(): IViewportPageObject {
+  get active(): Promise<IViewportPageObject> {
     const viewport = this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
     return this.viewportPageObjectFactory(viewport);
   }
@@ -189,41 +530,73 @@ export class ViewportPageObject {
   get crosshairs() {
     const page = this.page;
 
+    const crosshairHoverTimeout = 20000;
+
+    async function getSlabHandleLocator(locator: Locator) {
+      const startTime = Date.now();
+      const rectLocator = locator.locator('rect').first();
+      const circleLocator = locator.locator('circle').first();
+
+      while (Date.now() - startTime < crosshairHoverTimeout) {
+        if ((await rectLocator.count()) > 0) {
+          return rectLocator;
+        }
+
+        if ((await circleLocator.count()) > 0) {
+          return circleLocator;
+        }
+
+        await page.waitForTimeout(250);
+      }
+
+      throw new Error('Could not find slab thickness handle for crosshairs interaction');
+    }
+
+    // Drive the drag from the handle's own bounding-box center rather than the
+    // async window.mouseX/Y tracker: the tracker can lag behind the hover, which
+    // makes the drag start from a stale point and rotate/resize nothing. Stepped
+    // moves emit intermediate mousemove events so cornerstone registers a real
+    // drag instead of a single teleport (which can be dropped or mis-deltad).
+    const DRAG_DISTANCE = 100;
+    const DRAG_STEPS = 10;
+
+    async function dragHandleFromCenter(handle: Locator, dx: number, dy: number) {
+      const box = await handle.boundingBox();
+      if (!box) {
+        throw new Error('Could not resolve crosshairs handle bounding box for drag');
+      }
+      const cx = box.x + box.width / 2;
+      const cy = box.y + box.height / 2;
+
+      await page.mouse.move(cx, cy);
+      await page.mouse.down();
+      await page.mouse.move(cx + dx, cy + dy, { steps: DRAG_STEPS });
+      await page.mouse.up();
+    }
+
     async function increaseSlabThickness(locator: Locator, lineNumber: number, axis: string) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
-      await lineLocator.hover({ force: true });
+      await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      const circleLocator = locator.locator('rect').first();
-      await circleLocator.hover({ force: true });
+      const slabHandleLocator = await getSlabHandleLocator(locator);
+      await slabHandleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      await page.mouse.down();
-
-      const position = await getMousePosition(page);
-      switch (axis) {
-        case 'x':
-          await page.mouse.move(position.x + 100, position.y);
-          break;
-        case 'y':
-          await page.mouse.move(position.x, position.y + 100);
-          break;
-      }
-      await page.mouse.up();
+      const dx = axis === 'x' ? DRAG_DISTANCE : 0;
+      const dy = axis === 'y' ? DRAG_DISTANCE : 0;
+      await dragHandleFromCenter(slabHandleLocator, dx, dy);
     }
 
     async function rotateCrosshairs(locator: Locator, lineNumber: number) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
-      await lineLocator.hover({ force: true });
+      await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       const circleLocator = locator.locator('circle').nth(1);
-      await circleLocator.hover({ force: true });
+      await circleLocator.waitFor({ state: 'attached', timeout: crosshairHoverTimeout });
+      await circleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      await page.mouse.down();
-
-      const position = await getMousePosition(page);
-      await page.mouse.move(position.x, position.y + 100);
-      await page.mouse.up();
+      await dragHandleFromCenter(circleLocator, 0, DRAG_DISTANCE);
     }
 
     function crosshairsFactory(
@@ -251,16 +624,25 @@ export class ViewportPageObject {
   }
 
   async getAll(): Promise<IViewportPageObject[]> {
-    const viewports = await this.page.getByTestId('viewport-pane').all();
-    return viewports.map(viewport => this.viewportPageObjectFactory(viewport));
+    const viewports = await this.panes.all();
+    return await Promise.all(viewports.map(viewport => this.viewportPageObjectFactory(viewport)));
   }
 
-  getNth(index: number): IViewportPageObject {
-    const viewport = this.page.getByTestId('viewport-pane').nth(index);
+  getNth(index: number): Promise<IViewportPageObject> {
+    const viewport = this.getNthLocator(index);
     return this.viewportPageObjectFactory(viewport);
   }
 
-  getById(viewportId: string): IViewportPageObject {
+  getNthLocator(index: number): Locator {
+    return this.panes.nth(index);
+  }
+
+  // Every viewport pane in the grid
+  get panes(): Locator {
+    return this.page.getByTestId('viewport-pane');
+  }
+
+  getById(viewportId: string): Promise<IViewportPageObject> {
     const viewport = this.page.locator(
       `[data-cy="viewport-pane"]:has(div[data-viewportid="${viewportId}"])`
     );

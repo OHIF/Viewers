@@ -1,11 +1,10 @@
-import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef, type JSX } from 'react';
 import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';
 import ProgressItemDetail from './ProgressItemDetail';
 import ProgressItem from './ProgressItem';
 import { Icons } from '../Icons';
-import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
+import { ProgressDropdownOption } from './types';
 
 const ProgressDropdown = ({
   options: optionsProps,
@@ -94,12 +93,12 @@ const ProgressDropdown = ({
   return (
     <div
       ref={element}
-      className="relative grow select-none text-[0px] text-white"
+      className="text-foreground relative grow select-none text-[0px]"
     >
       <div>
         <div className="mb-1.5 flex h-[26px]">
           <div
-            className="bg-secondary-dark border-primary-main flex grow cursor-pointer rounded border"
+            className="bg-popover border-primary/40 flex grow cursor-pointer rounded border"
             style={{ width: `${dropDownWidth}px` }}
             onClick={toggleOpen}
           >
@@ -108,18 +107,18 @@ const ProgressDropdown = ({
 
               {!selectedOption && <div className="ml-1 grow text-base leading-6">{children}</div>}
             </div>
-            <Icons.ChevronDown className="text-primary-active mt-1.5 ml-1 mr-2" />
+            <Icons.ChevronDown className="text-primary mt-1.5 ml-1 mr-2" />
           </div>
           <button
             className={classnames('ml-1.5 w-[26px] rounded text-base', {
-              'bg-primary-main': canMoveNext,
-              'bg-primary-dark pointer-events-none': !canMoveNext,
+              'bg-primary/60 hover:bg-primary/80': canMoveNext,
+              'bg-popover pointer-events-none': !canMoveNext,
             })}
           >
             <Icons.ArrowRight
-              className={classnames('relative left-0.5 h-6 w-6 text-white', {
-                'text-white': canMoveNext,
-                'text-secondary-light': !canMoveNext,
+              className={classnames('text-foreground relative left-0.5 h-6 w-6', {
+                'text-foreground': canMoveNext,
+                'text-': !canMoveNext,
               })}
               onClick={handleNextButtonClick}
             />
@@ -128,8 +127,9 @@ const ProgressDropdown = ({
         <div
           className={classnames(
             'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top',
-            'bg-primary-dark overflow-hidden transition-[max-height] duration-300',
-            'border-secondary-main rounded border shadow',
+            'bg-popover overflow-hidden transition-[max-height] duration-300',
+            'border-input/50 rounded border shadow',
+            'py-1',
             {
               hidden: !open,
               'max-h-[500px]': open,
@@ -153,12 +153,6 @@ const ProgressDropdown = ({
   );
 };
 
-ProgressDropdown.propTypes = {
-  options: PropTypes.arrayOf(ProgressDropdownOptionPropType).isRequired,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  children: PropTypes.node,
-  dropDownWidth: PropTypes.string,
-};
+
 
 export default ProgressDropdown;

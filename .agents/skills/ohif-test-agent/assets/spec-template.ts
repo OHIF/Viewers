@@ -1,0 +1,62 @@
+import {
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+} from './utils';
+
+test.beforeEach(async ({ page }) => {
+  // Pick the right UID + mode for your feature (see references/patterns-by-feature.md)
+  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
+  const mode = 'viewer';
+  await visitStudy(page, studyInstanceUID, mode, 2000);
+});
+
+test.describe('FEATURE NAME', () => {
+  test('describes the behaviour in one sentence', async ({
+    page,
+    viewportPageObject,
+    mainToolbarPageObject,
+    rightPanelPageObject,
+    DOMOverlayPageObject, // capital D on purpose
+  }) => {
+    // 1. Arrange — select a tool, open a panel, etc.
+
+    // 2. Act — interact with the viewport.
+    //    Prefer normalized (0–1) coordinates:
+    //    const activeViewport = await viewportPageObject.active;
+    //    await activeViewport.normalizedClickAt([{ x: 0.3, y: 0.3 }, { x: 0.7, y: 0.7 }]);
+
+    //    For actions that re-render the viewport, gate on the render cycle
+    //    instead of sleeping — start the watcher BEFORE the action:
+    //    const cycle = waitForViewportRenderCycle(page);
+    //    await action();
+    //    await cycle;
+
+    // 3. Handle prompts (first measurement prompts for tracking; SEG/RT/SR prompts for hydration)
+    //    await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+
+    // 4. Assert canvas output via visual regression — the viewport/grid helpers
+    //    hide viewport text and scope the capture (never the full page). Use raw
+    //    checkForScreenshot only for non-viewport locators (panels, dialogs).
+    //    const viewport = await viewportPageObject.active;
+    //    await checkForViewportScreenshot({
+    //      page,
+    //      viewport,
+    //      screenshotPath: screenShotPaths.YOUR_CATEGORY.YOUR_KEY,
+    //    });
+
+    //    When the assertion spans several panes (MPR, 3D four-up), capture the grid:
+    //    await checkForGridScreenshot({
+    //      page,
+    //      viewportPageObject,
+    //      screenshotPath: screenShotPaths.YOUR_CATEGORY.YOUR_KEY,
+    //    });
+
+    // 5. Assert DOM state directly
+    //    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
+  });
+});

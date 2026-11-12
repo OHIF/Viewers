@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Icons } from '@ohif/ui-next';
 import { Button } from '../Button';
 import { useTranslation } from 'react-i18next';
@@ -65,17 +64,17 @@ const InvestigationalUseDialog = ({
 
   return (
     <div className="fixed bottom-2 z-50 flex h-[86px] w-full justify-center">
-      <div className="bg-secondary-dark border-primary-dark flex w-[90%] items-center justify-between rounded-lg border-2 pl-[22px] pr-[22px] pt-[10px] pb-[10px] shadow-lg">
+      <div className="bg-popover border-muted flex w-[90%] items-center justify-between rounded-lg border-2 pl-[22px] pr-[22px] pt-[10px] pb-[10px] shadow-lg">
         <div className="flex items-center gap-4">
           <Icons.InvestigationalUse className="h-18 w-18" />
           <div className="flex flex-col">
-            <div className="text-[19px] text-white">
+            <div className="text-foreground text-[19px]">
               OHIF Viewer is{' '}
-              <span className="text-primary-light">{t('for investigational use only')}</span>
+              <span className="text-highlight">{t('for investigational use only')}</span>
             </div>
-            <div className="text-[13px] text-white">
+            <div className="text-foreground text-[13px]">
               <span
-                className="text-primary-active cursor-pointer"
+                className="text-primary cursor-pointer"
                 onClick={() => window.open('https://ohif.org/', '_blank')}
               >
                 {t('Learn more about OHIF Viewer')}
@@ -85,7 +84,6 @@ const InvestigationalUseDialog = ({
         </div>
         <Button
           onClick={handleConfirmAndHide}
-          className="bg-primary-main"
           dataCY="confirm-and-hide-button"
         >
           {t('Confirm and hide')}
@@ -95,11 +93,6 @@ const InvestigationalUseDialog = ({
   );
 };
 
-InvestigationalUseDialog.propTypes = {
-  dialogConfiguration: PropTypes.shape({
-    option: PropTypes.oneOf(Object.values(showDialogOption)).isRequired,
-    days: PropTypes.number,
-  }),
-};
+
 
 export default InvestigationalUseDialog;

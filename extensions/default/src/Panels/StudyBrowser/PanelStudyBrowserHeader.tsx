@@ -45,7 +45,7 @@ function PanelStudyBrowserHeader({
                     key={index}
                     aria-label={viewPreset.id}
                     value={viewPreset.id}
-                    className="text-actions-primary"
+                    className="text-primary"
                   >
                     {React.createElement(Icons[viewPreset.iconName] || Icons.MissingIcon)}
                   </ToggleGroupItem>

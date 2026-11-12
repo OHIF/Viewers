@@ -94,11 +94,11 @@ const MultiLabelInput: React.FC<MultiLabelInputProps> = ({
         {internalLabels.map((label, index) => (
           <span
             key={index}
-            className="m-1 inline-flex items-center rounded-full bg-[#2a2a4a] px-4 py-1 text-white"
+            className="text-foreground m-1 inline-flex items-center rounded-full bg-[#2a2a4a] px-4 py-1"
           >
             {label}
             <button
-              className="ml-2.5 cursor-pointer rounded-full bg-blue-800 px-2 py-0.5 text-xs text-white transition-colors hover:bg-blue-600"
+              className="text-foreground ml-2.5 cursor-pointer rounded-full bg-blue-800 px-2 py-0.5 text-xs transition-colors hover:bg-blue-600"
               onClick={() => handleRemoveLabel(label)}
             >
               ×

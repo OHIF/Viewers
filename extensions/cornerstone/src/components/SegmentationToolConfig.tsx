@@ -34,7 +34,7 @@ export default function SegmentationToolConfig() {
   };
 
   return (
-    <div className="bg-muted flex flex-col gap-2 border-b border-b-[2px] border-black px-2 py-3">
+    <div className="bg-muted flex flex-col gap-2 border-b border-b-[2px] border-background px-2 py-3">
       <div className="flex items-center gap-2">
         <Switch
           checked={previewEdits}

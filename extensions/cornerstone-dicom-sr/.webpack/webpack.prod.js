@@ -1,8 +1,8 @@
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const path = require('path');
 const webpackCommon = require('./../../../.webpack/webpack.base.js');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MiniCssExtractPlugin = webpack.CssExtractRspackPlugin;
 
 const pkg = require('./../package.json');
 
@@ -36,9 +36,11 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
+      library: {
+        name: 'ohif-extension-cornerstone-dicom-sr',
+        type: 'umd',
+      },
       path: ROOT_DIR,
-      library: 'ohif-extension-cornerstone-dicom-sr',
-      libraryTarget: 'umd',
       filename: pkg.main,
     },
     externals: [/\b(vtk.js)/, /\b(dcmjs)/, /\b(gl-matrix)/, /^@ohif/, /^@cornerstonejs/],

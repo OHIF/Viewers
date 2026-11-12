@@ -1,6 +1,7 @@
 import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
 import { getRenderingEngine } from '@cornerstonejs/core';
+import { getViewportAdapter } from '../ViewportService/adapter';
 import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
 
 export default class ColorbarService extends PubSubService {
@@ -39,25 +40,6 @@ export default class ColorbarService extends PubSubService {
   }
 
   /**
-   * Gets the appropriate data ID for a viewport and display set
-   * @param viewport - The viewport instance
-   * @param displaySetInstanceUID - The display set instance UID to identify data
-   * @returns The appropriate data ID for the viewport type (volumeId for volume viewports, undefined for stack)
-   */
-  private getDataIdForViewport(viewport, displaySetInstanceUID: string): string | undefined {
-    // For volume viewports, find the matching volumeId
-    if (viewport.getAllVolumeIds) {
-      const volumeIds = viewport.getAllVolumeIds() || [];
-      return volumeIds.length > 0
-        ? volumeIds.find(id => id.includes(displaySetInstanceUID)) || undefined
-        : undefined;
-    }
-
-    // For other viewports, no specific dataId is needed for now
-    return undefined;
-  }
-
-  /**
    * Adds a colorbar to a specific viewport identified by `viewportId`, using the provided `displaySetInstanceUIDs` and `options`.
    * This method prepares the colorbar state that will be used by the ViewportColorbarsContainer component.
    *
@@ -78,8 +60,8 @@ export default class ColorbarService extends PubSubService {
       return;
     }
 
-    const actorEntries = viewport.getActors();
-    if (!actorEntries || actorEntries.length === 0) {
+    const adapter = getViewportAdapter(viewport);
+    if (!adapter.hasContent()) {
       return;
     }
 
@@ -92,8 +74,8 @@ export default class ColorbarService extends PubSubService {
         return;
       }
 
-      const dataId = this.getDataIdForViewport(viewport, displaySetInstanceUID);
-      const properties = dataId ? viewport.getProperties(dataId) : viewport.getProperties();
+      const dataId = adapter.getDataIdForDisplaySet(displaySetInstanceUID);
+      const properties = adapter.getPresentation(dataId);
       const colormap = properties?.colormap;
 
       if (activeColormapName && !colormap) {
@@ -240,16 +222,18 @@ export default class ColorbarService extends PubSubService {
   private setViewportColormap(viewportId, displaySetInstanceUID, colormap, immediate = false) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
-    const actorEntries = viewport?.getActors();
-    if (!viewport || !actorEntries || actorEntries.length === 0) {
+    if (!viewport) {
+      return;
+    }
+    const adapter = getViewportAdapter(viewport);
+    if (!adapter.hasContent()) {
       return;
     }
 
-    // Get the appropriate dataId for this viewport/displaySet combination
-    const dataId = this.getDataIdForViewport(viewport, displaySetInstanceUID);
-
-    // Set properties with or without dataId based on what the viewport supports
-    viewport.setProperties({ colormap }, dataId);
+    // Address the display set's binding (volumeId on legacy multi-volume, bare
+    // UID on native, active binding otherwise)
+    const dataId = adapter.getDataIdForDisplaySet(displaySetInstanceUID);
+    adapter.setPresentation({ colormap }, dataId);
 
     if (immediate) {
       viewport.render();

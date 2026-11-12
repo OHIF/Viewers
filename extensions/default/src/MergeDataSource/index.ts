@@ -219,6 +219,13 @@ function createMergeDataSourceApi(
       },
     },
     retrieve: {
+      getGetThumbnailSrc: (...args: unknown[]) =>
+        callForDefaultDataSource({
+          path: 'retrieve.getGetThumbnailSrc',
+          args,
+          defaultDataSourceName,
+          extensionManager,
+        }),
       bulkDataURI: (...args: unknown[]) =>
         callForAllDataSourcesAsync({
           mergeMap,
@@ -235,6 +242,24 @@ function createMergeDataSourceApi(
           defaultDataSourceName,
           extensionManager,
         }),
+      renderedURL: (...args: unknown[]) => {
+        const [dataSource] = extensionManager.getDataSources(defaultDataSourceName);
+        const renderedURL = get(dataSource, 'retrieve.renderedURL');
+
+        if (renderedURL) {
+          return renderedURL.apply(dataSource, args);
+        }
+
+        const directURL = get(dataSource, 'retrieve.directURL');
+
+        if (!directURL) {
+          return Promise.resolve({ url: null });
+        }
+
+        return Promise.resolve(directURL.apply(dataSource, [args[0]])).then(url => ({
+          url: (url as string | undefined | null) || null,
+        }));
+      },
       series: {
         metadata: (...args: unknown[]) =>
           callForAllDataSourcesAsync({

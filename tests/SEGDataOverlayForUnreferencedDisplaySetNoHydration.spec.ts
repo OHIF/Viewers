@@ -1,5 +1,10 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
-import { press } from './utils/keyboardUtils';
+import {
+  checkForGridScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+} from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -15,33 +20,39 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 }) => {
   await leftPanelPageObject.loadSeriesByDescription('Apparent Diffusion Coefficient');
 
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
+    .dataOverlay;
+  await dataOverlayPageObject.toggle();
 
-  await viewportPageObject
-    .getById('default')
-    .overlayMenu.dataOverlay.addSegmentation('T2 Weighted Axial Segmentations');
+  // Start watching for viewport to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
+  await dataOverlayPageObject.addSegmentation('T2 Weighted Axial Segmentations');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
-  await page.waitForTimeout(5000);
+  await dataOverlayPageObject.toggle();
 
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage
-  );
+  await viewportRenderCycle;
 
-  // Navigate to the middle image of the default viewport.
-  await press({ page, key: 'ArrowDown', nTimes: 12 });
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayFirstImage,
+  });
+
+  // Navigate to the middle image of the default viewport. Keyboard
+  // navigation is focus-dependent and lossy, so jump via the app command.
+  const defaultViewport = await viewportPageObject.getById('default');
+  await defaultViewport.sliceNavigation.toSlice(12);
+
+  await checkForGridScreenshot({
     page,
-    screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage
-  );
+    viewportPageObject,
+    screenshotPath:
+      screenShotPaths.segDataOverlayForUnreferencedDisplaySetNoHydration.overlayMiddleImage,
+  });
 });

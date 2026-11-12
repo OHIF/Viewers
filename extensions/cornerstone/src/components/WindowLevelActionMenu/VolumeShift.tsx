@@ -1,10 +1,27 @@
-import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
+import React, { ReactElement, useEffect, useState, useRef } from 'react';
 import { VolumeShiftProps } from '../../types/ViewportPresets';
 import { Numeric } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
-export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement {
+/**
+ * Records the shift applied to a viewport's opacity transfer function.
+ *
+ * Module scope on purpose: shiftedBy is stashed on the cornerstone viewport
+ * object, and writing to a value the render produced is a mutation the React
+ * Compiler cannot account for - it refuses to optimize the whole component.
+ * Passing the viewport to a named helper keeps the operation explicit and lets
+ * the compiler key the callback on the viewport reference rather than on a
+ * property path it would have to dereference during render.
+ */
+function setShiftedBy(viewport, shift) {
+  if (!viewport) {
+    return;
+  }
+  viewport.shiftedBy = shift;
+}
+
+export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement<any> {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [minShift, setMinShift] = useState<number | null>(null);
@@ -38,19 +55,16 @@ export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement {
     setStep(Math.pow(10, Math.floor(Math.log10(transferFunctionWidth / 500))));
   }, [cornerstoneViewportService, viewportId, actor, ofun, isBlocking]);
 
-  const onChangeRange = useCallback(
-    newShift => {
-      const shiftDifference = newShift - prevShiftRef.current;
-      prevShiftRef.current = newShift;
-      viewport.shiftedBy = newShift;
-      commandsManager.runCommand('shiftVolumeOpacityPoints', {
-        viewportId,
-        shift: shiftDifference,
-      });
-      setShift(newShift);
-    },
-    [commandsManager, viewportId, viewport]
-  );
+  const onChangeRange = newShift => {
+    const shiftDifference = newShift - prevShiftRef.current;
+    prevShiftRef.current = newShift;
+    setShiftedBy(viewport, newShift);
+    commandsManager.runCommand('shiftVolumeOpacityPoints', {
+      viewportId,
+      shift: shiftDifference,
+    });
+    setShift(newShift);
+  };
 
   return (
     <div className="my-1 mt-2 flex flex-col space-y-2">

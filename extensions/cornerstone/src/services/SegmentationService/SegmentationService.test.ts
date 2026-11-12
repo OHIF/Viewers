@@ -19,6 +19,7 @@ import {
 import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import * as MapROIContoursToRTStructData from './RTSTRUCT/mapROIContoursToRTStructData';
 import SegmentationServiceClass, { SegmentationRepresentation } from './SegmentationService';
+import { setNextViewportsEnabled } from '../../utils/nextViewports';
 
 jest.mock('@cornerstonejs/core', () => ({
   ...jest.requireActual('@cornerstonejs/core'),
@@ -914,6 +915,101 @@ describe('SegmentationService', () => {
       });
     });
 
+    describe('next (generic) viewport', () => {
+      // A native GenericViewport (raw PlanarViewport) exposes setDisplaySets /
+      // setDisplaySetPresentation / setViewState, so csUtils.isGenericViewport is
+      // true and addSegmentationRepresentation routes to NextSegmentationBackend.
+      // It deliberately has NO getViewPresentation: the native path must never reach
+      // convertStackToVolumeViewport (the source of the observed
+      // "getViewPresentation is not a function" / silent ORTHOGRAPHIC flip).
+      const makeNextViewport = () => ({
+        element: { addEventListener: jest.fn(), removeEventListener: jest.fn() },
+        id: viewportId,
+        type: ViewportType.PLANAR_NEXT,
+        setDisplaySets: jest.fn(),
+        setDisplaySetPresentation: jest.fn(),
+        setViewState: jest.fn(),
+      });
+
+      it('renders the labelmap in place and never promotes the viewport (resolver maps in place)', async () => {
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+        jest
+          .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+          .mockReturnValue(makeNextViewport() as unknown as csTypes.IStackViewport);
+        jest
+          .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
+          .mockReturnValue('labelmapImageId');
+        jest
+          .spyOn(cstSegmentation, 'addSegmentationRepresentations')
+          .mockReturnValueOnce(undefined);
+        const convertSpy = jest.spyOn(service, 'convertStackToVolumeViewport');
+
+        const callback = jest.fn();
+        service.subscribe(service.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, callback);
+
+        await service.addSegmentationRepresentation(viewportId, {
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        });
+
+        // the native in-place resolver is consulted...
+        expect(
+          cstSegmentation.state.updateLabelmapSegmentationImageReferences
+        ).toHaveBeenCalledWith(viewportId, mockCornerstoneSegmentation.segmentationId);
+
+        // ...but the viewport is NEVER promoted to an ORTHOGRAPHIC volume viewport
+        expect(convertSpy).not.toHaveBeenCalled();
+        expect(
+          serviceManagerMock.services.viewportGridService.setDisplaySetsForViewport
+        ).not.toHaveBeenCalled();
+
+        // the representation is added in place, synchronously (isConverted === false)
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledWith(viewportId, [
+          {
+            type: csToolsEnums.SegmentationRepresentations.Labelmap,
+            segmentationId: mockCornerstoneSegmentation.segmentationId,
+            config: { colorLUTOrIndex: undefined },
+          },
+        ]);
+
+        expect(callback).toHaveBeenCalledWith({
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+        });
+      });
+
+      it('never promotes on native even when the in-place resolver cannot map (returns isConverted:false unconditionally)', async () => {
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+        jest
+          .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+          .mockReturnValue(makeNextViewport() as unknown as csTypes.IStackViewport);
+        // resolver fails (FrameOfReference mismatch / mount-timing race): on legacy this
+        // would fall through to convertStackToVolumeViewport; on native it must not.
+        jest
+          .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
+          .mockReturnValue(undefined);
+        jest
+          .spyOn(cstSegmentation, 'addSegmentationRepresentations')
+          .mockReturnValueOnce(undefined);
+        const convertSpy = jest.spyOn(service, 'convertStackToVolumeViewport');
+
+        await service.addSegmentationRepresentation(viewportId, {
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        });
+
+        expect(convertSpy).not.toHaveBeenCalled();
+        expect(
+          serviceManagerMock.services.viewportGridService.setDisplaySetsForViewport
+        ).not.toHaveBeenCalled();
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      });
+    });
+
     describe('volume viewport', () => {
       it('should add a segmentation representation to volume viewport without need for handling', async () => {
         jest
@@ -1120,6 +1216,7 @@ describe('SegmentationService', () => {
         isDynamicVolume: false,
         SeriesNumber: 1,
         SeriesDescription: 'Series Description',
+        Modality: 'SEG',
       } as unknown as AppTypes.DisplaySet;
 
       jest
@@ -1145,6 +1242,9 @@ describe('SegmentationService', () => {
             info: 'S1: Series Description',
           },
           label: 'Segmentation 2',
+          // The caller gave no label, so the service invented this one.
+          labelIsGenerated: true,
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: true,
@@ -1165,6 +1265,56 @@ describe('SegmentationService', () => {
       expect(retrievedSegmentationId).toEqual(expect.any(String));
     });
 
+    describe('labelIsGenerated', () => {
+      // `storeSegmentation` offers the label of a segmentation as the first name
+      // for a new series, but only when the user chose that name.  The service
+      // marks the label that the service invents, so the save can tell the two
+      // apart without a comparison of two strings.  The mark goes into the
+      // public input, and `normalizeSegmentationInput` puts the mark on the
+      // segmentation; the service writes nothing onto the state afterwards.
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+      } as unknown as AppTypes.DisplaySet;
+
+      const createWith = async (options?: Record<string, unknown>) => {
+        jest
+          .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+          .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentations')
+          .mockReturnValue([{ segmentationId: 'segmentationId' }] as cstTypes.Segmentation[]);
+        const add = jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+        await service.createLabelmapForDisplaySet(displaySet, options);
+        return (add.mock.calls[0][0] as cstTypes.SegmentationPublicInput).config;
+      };
+
+      it('marks a label that the service invents', async () => {
+        const config = await createWith();
+
+        expect(config.label).toBe('Segmentation 2');
+        expect(config.labelIsGenerated).toBe(true);
+      });
+
+      it('marks nothing for a label that the caller gives', async () => {
+        const config = await createWith({ label: 'Liver' });
+
+        expect(config.label).toBe('Liver');
+        expect(config.labelIsGenerated).toBe(false);
+      });
+
+      it('marks a label that the caller reports as generated', async () => {
+        const config = await createWith({ label: 'Segmentation 7', labelIsGenerated: true });
+
+        expect(config.label).toBe('Segmentation 7');
+        expect(config.labelIsGenerated).toBe(true);
+      });
+    });
+
     it('should create a labelmap for a dynamic volume display set', async () => {
       const segmentationId = 'segmentationId';
       const displaySet = {
@@ -1175,6 +1325,7 @@ describe('SegmentationService', () => {
         dynamicVolumeInfo: {
           timePoints: ['timePoint1', 'timePoint2', 'timePoint3'],
         },
+        Modality: 'SEG',
       } as unknown as AppTypes.DisplaySet;
 
       jest
@@ -1212,6 +1363,9 @@ describe('SegmentationService', () => {
             info: 'S1: Series Description',
           },
           label: 'Segmentation 2',
+          // The caller gave the label, so the label is not a generated one.
+          labelIsGenerated: false,
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: true,
@@ -1230,6 +1384,51 @@ describe('SegmentationService', () => {
       });
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+
+    it('should create a dedicated color LUT and remember its index so every viewport representation reuses it', async () => {
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+      } as unknown as AppTypes.DisplaySet;
+
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest.spyOn(cstSegmentation.state, 'getSegmentations').mockReturnValue([]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      jest.mocked(cstSegmentation.state.addColorLUT).mockReturnValue(7);
+
+      const segmentationId = await service.createLabelmapForDisplaySet(displaySet);
+
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledWith([[0, 0, 0, 0]]);
+      expect(service['_segmentationIdToColorLUTIndexMap'].get(segmentationId)).toBe(7);
+    });
+
+    it('should keep the existing color LUT when called again with the same segmentation id', async () => {
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+      } as unknown as AppTypes.DisplaySet;
+
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest.spyOn(cstSegmentation.state, 'getSegmentations').mockReturnValue([]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      jest.mocked(cstSegmentation.state.addColorLUT).mockReturnValueOnce(7).mockReturnValueOnce(8);
+
+      const segmentationId = await service.createLabelmapForDisplaySet(displaySet);
+      await service.createLabelmapForDisplaySet(displaySet, { segmentationId });
+
+      // Updating an existing segmentation must not strand the representations
+      // already rendering it on the previous LUT.
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledTimes(1);
+      expect(service['_segmentationIdToColorLUTIndexMap'].get(segmentationId)).toBe(7);
     });
   });
 
@@ -1320,6 +1519,8 @@ describe('SegmentationService', () => {
         },
         SeriesDate: '2025-01-01',
         SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+        SeriesNumber: 1,
       };
 
       const referencedDisplaySet = {
@@ -1379,6 +1580,7 @@ describe('SegmentationService', () => {
       const expectedSegmentation = {
         config: {
           label: segDisplaySet.SeriesDescription,
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: false,
@@ -1464,6 +1666,136 @@ describe('SegmentationService', () => {
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
     });
+
+    describe('overlap / useSliceRendering (next backend)', () => {
+      const segmentationId = 'segmentationId';
+
+      // The session flag selects the seg-backend lane at SEG-load; reset it so it
+      // never leaks into the legacy-path tests that follow.
+      afterEach(() => {
+        setNextViewportsEnabled(false);
+      });
+
+      const segMetadata = {
+        data: [
+          {},
+          { SegmentNumber: '1', SegmentLabel: 'Segment 1', rgba: [255, 0, 0, 255] },
+          { SegmentNumber: '2', SegmentLabel: 'Segment 2', rgba: [0, 255, 0, 255] },
+        ],
+      };
+      const centroids = new Map([
+        [1, { image: { x: 0, y: 0, z: 0 }, world: { x: 0, y: 0, z: 0 } }],
+        [2, { image: { x: 1, y: 1, z: 1 }, world: { x: 1, y: 1, z: 1 } }],
+      ]);
+
+      // labelMapImages is the adapter's array-of-GROUPS (one conflict-free group per
+      // overlap layer). Two groups whose voxels carry values {1} and {2} respectively.
+      const makeOverlapGroups = () => {
+        const vm0 = { getScalarData: jest.fn().mockReturnValue([1, 0]), setScalarData: jest.fn() };
+        const vm1 = { getScalarData: jest.fn().mockReturnValue([0, 2]), setScalarData: jest.fn() };
+        return [
+          [
+            { imageId: 'g0i1', referencedImageId: 'r1', voxelManager: vm0 },
+            { imageId: 'g0i2', referencedImageId: 'r2', voxelManager: vm0 },
+          ],
+          [
+            { imageId: 'g1i1', referencedImageId: 'r1', voxelManager: vm1 },
+            { imageId: 'g1i2', referencedImageId: 'r2', voxelManager: vm1 },
+          ],
+        ];
+      };
+
+      const makeSegDisplaySet = (labelMapImages, overlappingSegments) => ({
+        centroids,
+        displaySetInstanceUID: 'display-set-uid',
+        referencedDisplaySetInstanceUID: 'existent-display-set-uid',
+        labelMapImages,
+        overlappingSegments,
+        segMetadata,
+        SeriesDate: '2025-01-01',
+        SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+        SeriesNumber: 1,
+      });
+
+      const primeMocks = () => {
+        jest
+          .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+          .mockReturnValue({ instances: [{ imageId: 'r1' }, { imageId: 'r2' }] });
+        jest.spyOn(metaData, 'get').mockReturnValue({});
+        jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      };
+
+      it('flag ON + overlapping SEG builds one labelmap layer per group + segmentBindings', async () => {
+        setNextViewportsEnabled(true);
+        primeMocks();
+
+        await service.createSegmentationForSEGDisplaySet(
+          makeSegDisplaySet(makeOverlapGroups(), true),
+          { type: csToolsEnums.SegmentationRepresentations.Labelmap, segmentationId }
+        );
+
+        const seg = jest.mocked(service.addOrUpdateSegmentation).mock.calls[0][0];
+        const data = seg.representation.data as Record<string, any>;
+
+        // one labelmap layer per conflict-free group, under ONE segmentationId
+        expect(Object.keys(data.labelmaps)).toEqual([
+          'segmentationId-storage-0',
+          'segmentationId-storage-1',
+        ]);
+        expect(data.labelmaps['segmentationId-storage-0'].imageIds).toEqual(['g0i1', 'g0i2']);
+        expect(data.labelmaps['segmentationId-storage-1'].imageIds).toEqual(['g1i1', 'g1i2']);
+        expect(data.labelmaps['segmentationId-storage-0'].storageKind).toBe('stack');
+
+        // segment->layer bindings recovered from the distinct non-zero voxel values
+        expect(data.segmentBindings).toEqual({
+          1: { labelmapId: 'segmentationId-storage-0', labelValue: 1 },
+          2: { labelmapId: 'segmentationId-storage-1', labelValue: 2 },
+        });
+        expect(data.primaryLabelmapId).toBe('segmentationId-storage-0');
+        // flattened list retained for legacy singular readers
+        expect(data.imageIds).toEqual(['g0i1', 'g0i2', 'g1i1', 'g1i2']);
+      });
+
+      it('flag ON + non-overlapping SEG stays a single layer (no multi-layer map)', async () => {
+        setNextViewportsEnabled(true);
+        primeMocks();
+
+        const vm = { getScalarData: jest.fn().mockReturnValue([1, 0]), setScalarData: jest.fn() };
+        const singleGroup = [
+          [
+            { imageId: 'i1', referencedImageId: 'r1', voxelManager: vm },
+            { imageId: 'i2', referencedImageId: 'r2', voxelManager: vm },
+          ],
+        ];
+
+        await service.createSegmentationForSEGDisplaySet(makeSegDisplaySet(singleGroup, false), {
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          segmentationId,
+        });
+
+        const seg = jest.mocked(service.addOrUpdateSegmentation).mock.calls[0][0];
+        const data = seg.representation.data as Record<string, any>;
+        expect(data.labelmaps).toBeUndefined();
+        expect(data.segmentBindings).toBeUndefined();
+        expect(data.imageIds).toEqual(['i1', 'i2']);
+      });
+
+      it('flag OFF + overlapping SEG collapses to a single flattened layer (legacy byte-identical)', async () => {
+        // flag stays off (default)
+        primeMocks();
+
+        await service.createSegmentationForSEGDisplaySet(
+          makeSegDisplaySet(makeOverlapGroups(), true),
+          { type: csToolsEnums.SegmentationRepresentations.Labelmap, segmentationId }
+        );
+
+        const seg = jest.mocked(service.addOrUpdateSegmentation).mock.calls[0][0];
+        const data = seg.representation.data as Record<string, any>;
+        expect(data.labelmaps).toBeUndefined();
+        expect(data.imageIds).toEqual(['g0i1', 'g0i2', 'g1i1', 'g1i2']);
+      });
+    });
   });
 
   describe('createSegmentationForRTDisplaySet', () => {
@@ -1534,7 +1866,7 @@ describe('SegmentationService', () => {
     it('should create a segmentation for a RTSTRUCT display set', async () => {
       const segmentationId = 'segmentationId';
       const rtStructDisplaySet = {
-        modality: 'RTSTRUCT',
+        Modality: 'RTSTRUCT',
         displaySetInstanceUID: 'display-set-uid',
         referencedDisplaySetInstanceUID: 'existent-display-set-uid',
         SeriesDate: '2025-01-01',
@@ -1544,6 +1876,7 @@ describe('SegmentationService', () => {
           ROIContours: [{}, {}, {}],
           frameOfReferenceUID: 'frameOfReferenceUID',
         },
+        SeriesNumber: 1,
       };
 
       const referencedDisplaySet = {
@@ -1650,6 +1983,7 @@ describe('SegmentationService', () => {
       const expectedSegmentation = {
         config: {
           label: rtStructDisplaySet.SeriesDescription,
+          fallbackLabel: 'S:1 RTSTRUCT',
           segments: {
             '1': {
               active: false,
@@ -1790,6 +2124,10 @@ describe('SegmentationService', () => {
       const segmentationId = 'segmentationId';
       const segmentationData = {
         segmentationId,
+        representation: {
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          data: {},
+        },
         config: {
           label: 'Segmentation 1',
         },
@@ -2117,7 +2455,9 @@ describe('SegmentationService', () => {
       service.removeSegment(segmentationId, segmentIndex);
 
       expect(cstSegmentation.removeSegment).toHaveBeenCalledTimes(1);
-      expect(cstSegmentation.removeSegment).toHaveBeenCalledWith(segmentationId, segmentIndex);
+      expect(cstSegmentation.removeSegment).toHaveBeenCalledWith(segmentationId, segmentIndex, {
+        recordHistory: true,
+      });
     });
   });
 
@@ -2565,12 +2905,12 @@ describe('SegmentationService', () => {
   describe('clearSegmentationRepresentations', () => {
     it('should clear the segmentation representations', () => {
       const viewportId = 'viewportId';
-      jest.spyOn(service, 'removeSegmentationRepresentations').mockReturnValue(undefined);
+      jest.spyOn(service, 'removeRepresentationsFromViewport').mockReturnValue(undefined);
 
       service.clearSegmentationRepresentations(viewportId);
 
-      expect(service.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
-      expect(service.removeSegmentationRepresentations).toHaveBeenCalledWith(viewportId);
+      expect(service.removeRepresentationsFromViewport).toHaveBeenCalledTimes(1);
+      expect(service.removeRepresentationsFromViewport).toHaveBeenCalledWith(viewportId);
     });
   });
 
@@ -2598,7 +2938,7 @@ describe('SegmentationService', () => {
     });
   });
 
-  describe('removeSegmentationRepresentations', () => {
+  describe('removeRepresentationsFromViewport', () => {
     it('should remove the segmentation representations', () => {
       const viewportId = 'viewportId';
       const specifier = {
@@ -2607,7 +2947,7 @@ describe('SegmentationService', () => {
       };
       jest.spyOn(cstSegmentation, 'removeSegmentationRepresentations').mockReturnValue(undefined);
 
-      service.removeSegmentationRepresentations(viewportId, specifier);
+      service.removeRepresentationsFromViewport(viewportId, specifier);
 
       expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
       expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledWith(
@@ -2681,6 +3021,47 @@ describe('SegmentationService', () => {
         false,
         EasingFunctionEnum.EASE_IN_OUT
       );
+    });
+
+    it('navigates a native viewport via setViewReference (no jumpToWorld) and still highlights', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const viewportId = 'viewportId';
+      // A native PlanarViewport: csUtils.isGenericViewport is true (setDisplaySets +
+      // setDisplaySetPresentation + setViewState) and it has setViewReference but NO
+      // jumpToWorld, so jumpToSegmentCenter routes to the next twin.
+      const viewport = {
+        setDisplaySets: jest.fn(),
+        setDisplaySetPresentation: jest.fn(),
+        setViewState: jest.fn(),
+        setViewReference: jest.fn(),
+        render: jest.fn(),
+      };
+
+      const segmentationWithCenter = {
+        ...mockCornerstoneSegmentation,
+        segments: {
+          ...mockCornerstoneSegmentation.segments,
+          [segmentIndex]: {
+            ...mockCornerstoneSegmentation.segments[segmentIndex],
+            cachedStats: { center: { image: [1, 1, 1], world: [10, 10, 10] } },
+          },
+        },
+      };
+
+      jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(segmentationWithCenter);
+      // @ts-expect-error - mock only needed properties
+      getEnabledElementByViewportId.mockReturnValue({ viewport });
+      jest.spyOn(service, 'highlightSegment').mockReturnValue(undefined);
+
+      service.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
+
+      // native jump: a view reference centered on the segment world point, then render
+      expect(viewport.setViewReference).toHaveBeenCalledTimes(1);
+      expect(viewport.setViewReference).toHaveBeenCalledWith({ cameraFocalPoint: [10, 10, 10] });
+      expect(viewport.render).toHaveBeenCalledTimes(1);
+      // the recenter happened, so the highlight still runs
+      expect(service.highlightSegment).toHaveBeenCalledTimes(1);
     });
 
     it('should correctly handle custom animation parameters', () => {
@@ -2840,7 +3221,6 @@ describe('SegmentationService', () => {
       it('should throw if hideOthers is true', () => {
         const segmentIndex = 1;
 
-        jest.spyOn(window, 'clearInterval').mockReturnValue(undefined);
         jest
           .spyOn(cstSegmentation.state, 'getSegmentation')
           .mockReturnValue(mockCornerstoneSegmentation);
@@ -2850,8 +3230,6 @@ describe('SegmentationService', () => {
         expect(() =>
           service.highlightSegment(representations[0].segmentationId, segmentIndex)
         ).toThrow('hideOthers is not working right now');
-
-        expect(window.clearInterval).not.toHaveBeenCalled();
 
         expect(service.getViewportIdsWithSegmentation).toHaveBeenCalledTimes(1);
         expect(service.getViewportIdsWithSegmentation).toHaveBeenCalledWith(
@@ -2945,35 +3323,273 @@ describe('SegmentationService', () => {
         // end of animation call
         animationCallback(approximateStartTime + animationDuration);
 
-        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
-
-        expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledTimes(1);
-        expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledWith();
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(2);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenLastCalledWith(
+          {
+            segmentationId: contourRepresentations[0].segmentationId,
+            segmentIndex,
+            type: csToolsEnums.SegmentationRepresentations.Contour,
+          },
+          {},
+          false
+        );
+        expect(cstSegmentation.config.style.resetToGlobalStyle).not.toHaveBeenCalled();
 
         expect(window.requestAnimationFrame).not.toHaveBeenCalledTimes(3);
       });
     });
 
-    it('should clear interval if it exists', () => {
-      expect(service.highlightIntervalId).toBe(null);
+    describe('when highlights overlap', () => {
+      const segmentationId = 'segmentationId';
+      const defaultFillAlpha = 0.5;
+      const labelmapKey = (segmentIndex: number) => `${segmentIndex}:Labelmap`;
+      let frames: FrameRequestCallback[];
+      let styles: Map<string, Record<string, number>>;
 
-      service.highlightIntervalId = 'intervalId';
+      // Runs every queued animation frame once; the callbacks queue the next frames.
+      const runFrame = (timestamp: number) => {
+        const pending = frames;
+        frames = [];
+        pending.forEach(callback => callback(timestamp));
+      };
 
-      jest
-        .spyOn(cstSegmentation.state, 'getSegmentation')
-        .mockReturnValue(mockCornerstoneSegmentation);
-      jest.spyOn(service, 'getViewportIdsWithSegmentation');
-      jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValue(representations);
-      jest.spyOn(cstSegmentation.config.style, 'getStyle').mockReturnValue({
-        fillAlpha: 0.3,
+      const fillAlphaOf = (segmentIndex: number) =>
+        styles.get(labelmapKey(segmentIndex))?.fillAlpha ?? defaultFillAlpha;
+
+      const mockRepresentation = (type: csToolsEnums.SegmentationRepresentations) => {
+        jest
+          .spyOn(service, 'getSegmentationRepresentations')
+          .mockReturnValue([{ segmentationId, type }] as SegmentationRepresentation[]);
+      };
+
+      beforeEach(() => {
+        frames = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+          frames.push(callback);
+          return frames.length;
+        });
+        jest.mocked(cstSegmentation.state.getSegmentation).mockReturnValue({
+          segments: {},
+        } as unknown as cstTypes.Segmentation);
+
+        // A per-segment style store, so a temporary highlight value is observable as
+        // the start value of the next highlight that reads it.
+        styles = new Map();
+        jest
+          .mocked(cstSegmentation.config.style.setStyle)
+          .mockImplementation(({ segmentIndex, type }, style, merge = true) => {
+            const key = `${segmentIndex}:${type}`;
+            styles.set(key, merge ? { ...styles.get(key), ...style } : style);
+          });
+        jest
+          .mocked(cstSegmentation.config.style.getStyle)
+          .mockImplementation(({ segmentIndex, type }) =>
+            type === 'Contour' ? { outlineWidth: 2 } : { fillAlpha: fillAlphaOf(segmentIndex) }
+          );
+        // Linear from the start value, so a frame's value shows the start it used.
+        jest
+          .spyOn(EasingFunctionMap, 'get')
+          .mockReturnValue((progress: number, start: number) => start + progress);
       });
-      jest.spyOn(window, 'requestAnimationFrame').mockReturnValue(undefined);
-      jest.spyOn(window, 'clearInterval').mockReturnValue(undefined);
 
-      service.highlightSegment(representations[0].segmentationId, 1, viewportId, 0.9, 750, false);
+      afterEach(() => {
+        jest.mocked(window.requestAnimationFrame).mockRestore();
+        jest.mocked(EasingFunctionMap.get).mockRestore();
+      });
 
-      expect(window.clearInterval).toHaveBeenCalledTimes(1);
-      expect(window.clearInterval).toHaveBeenCalledWith('intervalId');
+      it('stops a superseded labelmap highlight and resets its fill at once', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        runFrame(375);
+        expect(fillAlphaOf(1)).toBe(defaultFillAlpha + 0.5);
+
+        service.highlightSegment(segmentationId, 2, viewportId, 0.9, 750, false);
+
+        expect(styles.get(labelmapKey(1))).toEqual({});
+        expect(frames).toHaveLength(2);
+        runFrame(400);
+        expect(frames).toHaveLength(1);
+        expect(styles.get(labelmapKey(1))).toEqual({});
+        expect(fillAlphaOf(2)).toBe(defaultFillAlpha);
+      });
+
+      it('stops a superseded contour highlight without resetting every other style', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Contour);
+
+        service.highlightSegment(segmentationId, 1, viewportId);
+        runFrame(performance.now());
+        service.highlightSegment(segmentationId, 2, viewportId);
+        jest.mocked(cstSegmentation.config.style.setStyle).mockClear();
+
+        runFrame(performance.now());
+
+        expect(frames).toHaveLength(1);
+        expect(cstSegmentation.config.style.resetToGlobalStyle).not.toHaveBeenCalled();
+        expect(styles.get('1:Contour')).toEqual({});
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          { segmentationId, segmentIndex: 2, type: 'Contour' },
+          expect.objectContaining({ outlineWidth: expect.any(Number) })
+        );
+      });
+
+      it('continues a running highlight when the same segment is selected again', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        runFrame(375);
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+
+        expect(frames).toHaveLength(1);
+        runFrame(750);
+        expect(frames).toHaveLength(0);
+        expect(styles.get(labelmapKey(1))).toEqual({});
+      });
+
+      it('starts a reselected segment from its real fill, even before the next frame', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        runFrame(375);
+        service.highlightSegment(segmentationId, 2, viewportId, 0.9, 750, false);
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(400);
+
+        expect(fillAlphaOf(1)).toBe(defaultFillAlpha);
+        runFrame(1150);
+        expect(frames).toHaveLength(0);
+        expect(styles.get(labelmapKey(1))).toEqual({});
+      });
+
+      it('highlights a segment again after its highlight failed mid-animation', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        jest.mocked(cstSegmentation.config.style.setStyle).mockImplementationOnce(() => {
+          throw new Error('segmentation is gone');
+        });
+        expect(() => runFrame(0)).toThrow('segmentation is gone');
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+
+        expect(frames).toHaveLength(1);
+      });
+
+      it('resets the temporary style when a frame fails after an earlier frame applied it', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        expect(styles.get(labelmapKey(1))).not.toEqual({});
+
+        jest.mocked(cstSegmentation.config.style.setStyle).mockImplementationOnce(() => {
+          throw new Error('frame failed');
+        });
+        expect(() => runFrame(375)).toThrow('frame failed');
+
+        expect(styles.get(labelmapKey(1))).toEqual({});
+      });
+
+      it('reports the frame error when resetting the style also fails', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        jest
+          .mocked(cstSegmentation.config.style.setStyle)
+          .mockImplementationOnce(() => {
+            throw new Error('frame failed');
+          })
+          .mockImplementationOnce(() => {
+            throw new Error('reset failed');
+          });
+
+        expect(() => runFrame(375)).toThrow('frame failed');
+      });
+
+      it('forgets the highlights of a removed segmentation', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        (
+          service as unknown as {
+            _onSegmentationRemovedFromSource: (evt: { detail: { segmentationId: string } }) => void;
+          }
+        )._onSegmentationRemovedFromSource({ detail: { segmentationId } });
+        runFrame(375);
+        expect(frames).toHaveLength(0);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+
+        expect(frames).toHaveLength(1);
+      });
+
+      it('replays the highlight when a segment whose highlight finished is selected again', () => {
+        mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+        runFrame(0);
+        runFrame(750);
+        service.highlightSegment(segmentationId, 1, viewportId, 0.9, 750, false);
+
+        expect(frames).toHaveLength(1);
+      });
+
+      describe('when one jump highlights several viewports', () => {
+        beforeEach(() => {
+          jest.mocked(cstSegmentation.state.getSegmentation).mockReturnValue({
+            segments: { 1: { cachedStats: { center: { world: [10, 10, 10] } } } },
+          } as unknown as cstTypes.Segmentation);
+          jest
+            .spyOn(service, 'getViewportIdsWithSegmentation')
+            .mockReturnValue(['viewportId1', 'viewportId2']);
+          // @ts-expect-error - mock only needed properties
+          getEnabledElementByViewportId.mockReturnValue({ viewport: { jumpToWorld: jest.fn() } });
+        });
+
+        it('runs one animation for the style the viewports share', () => {
+          mockRepresentation(csToolsEnums.SegmentationRepresentations.Labelmap);
+
+          service.jumpToSegmentCenter(segmentationId, 1);
+          runFrame(0);
+
+          expect(frames).toHaveLength(1);
+          expect(fillAlphaOf(1)).toBe(defaultFillAlpha);
+        });
+
+        it('animates both a labelmap and a contour viewport', () => {
+          jest.spyOn(service, 'getSegmentationRepresentations').mockImplementation(
+            id =>
+              [
+                {
+                  segmentationId,
+                  type:
+                    id === 'viewportId1'
+                      ? csToolsEnums.SegmentationRepresentations.Labelmap
+                      : csToolsEnums.SegmentationRepresentations.Contour,
+                },
+              ] as SegmentationRepresentation[]
+          );
+
+          service.jumpToSegmentCenter(segmentationId, 1);
+          runFrame(performance.now());
+
+          expect(frames).toHaveLength(2);
+          expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+            { segmentationId, segmentIndex: 1, type: 'Labelmap' },
+            expect.objectContaining({ fillAlpha: expect.any(Number) })
+          );
+          expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+            { segmentationId, segmentIndex: 1, type: 'Contour' },
+            expect.objectContaining({ outlineWidth: expect.any(Number) })
+          );
+        });
+      });
     });
   });
 
