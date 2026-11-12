@@ -81,6 +81,10 @@ The full workflow for saving measurements to SR and loading SR into the viewer i
 ![user-measurement-panel-modal](../../assets/img/tracking-workflow2.png)
 ![user-measurement-panel-modal](../../assets/img/tracking-workflow3.png)
 
+:::note
+The videos below show an older version of the viewer. In the videos, the button that saves the
+report is `Export`. In the current viewer, this button is `Save`.
+:::
 
 #### Overview video for loading DICOM SR and making a tracked series:
 <!-- SR Restore and Yes -->
