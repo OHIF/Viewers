@@ -32,12 +32,15 @@ services:
   # TODO: Update to use Postgres
   # https://github.com/mrts/docker-postgresql-multiple-databases
   orthanc:
-    image: jodogne/orthanc-plugins
+    image: jodogne/orthanc-plugins:1.13.0
     hostname: orthanc
     container_name: orthancPACS
+    # Read only the recipe config. The image config directory also has advanced.json,
+    # which repeats options of the recipe config, and Orthanc then does not start.
+    command: /etc/orthanc-recipe/
     volumes:
       # Config
-      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - ./config/orthanc.json:/etc/orthanc-recipe/orthanc.json:ro
       # Persist data
       - ./volumes/orthanc-db/:/var/lib/orthanc/db/
     restart: unless-stopped

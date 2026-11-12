@@ -1477,7 +1477,11 @@ export default class HangingProtocolService extends PubSubService {
     // only match the required rules
     const requiredRules = seriesMatchingRules.filter(rule => rule.required);
     if (requiredRules.length) {
-      const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
+      const matched = this.protocolEngine.findMatch(
+        displaySet,
+        requiredRules,
+        this._getSeriesMatchOptions(displaySet)
+      );
 
       if (!matched || matched.score === 0) {
         throw new Error(
@@ -1485,6 +1489,30 @@ export default class HangingProtocolService extends PubSubService {
         );
       }
     }
+  }
+
+  /** Returns the supported display sets of the given study. */
+  private _getStudyDisplaySets(studyInstanceUID: string): DisplaySet[] {
+    return this.displaySets.filter(
+      it => it.StudyInstanceUID === studyInstanceUID && !it?.unsupported
+    );
+  }
+
+  /**
+   * Returns the options that series matching rules get.  Both the series
+   * matching and the validation of the required series rules use it, so that a
+   * custom attribute or a `from` rule gets the same data in both.
+   */
+  private _getSeriesMatchOptions(
+    displaySet: DisplaySet,
+    studyDisplaySets = this._getStudyDisplaySets(displaySet.StudyInstanceUID)
+  ) {
+    return {
+      studies: this.studies,
+      instance: displaySet.images?.[0],
+      displaySetMatchDetails: this.displaySetMatchDetails,
+      displaySets: studyDisplaySets,
+    };
   }
 
   _validateOptions(options: HangingProtocol.SetProtocolOptions): void {
@@ -1524,9 +1552,7 @@ export default class HangingProtocolService extends PubSubService {
         return;
       }
 
-      const studyDisplaySets = this.displaySets.filter(
-        it => it.StudyInstanceUID === study.StudyInstanceUID && !it?.unsupported
-      );
+      const studyDisplaySets = this._getStudyDisplaySets(study.StudyInstanceUID);
 
       const studyMatchDetails = this.protocolEngine.findMatch(study, studyMatchingRules, {
         studies: this.studies,
@@ -1547,13 +1573,7 @@ export default class HangingProtocolService extends PubSubService {
         const seriesMatchDetails = this.protocolEngine.findMatch(
           displaySet,
           seriesMatchingRules,
-          // Todo: why we have images here since the matching type does not have it
-          {
-            studies: this.studies,
-            instance: displaySet.images?.[0],
-            displaySetMatchDetails: this.displaySetMatchDetails,
-            displaySets: studyDisplaySets,
-          }
+          this._getSeriesMatchOptions(displaySet, studyDisplaySets)
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
