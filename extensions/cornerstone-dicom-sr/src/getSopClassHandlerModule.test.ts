@@ -8,13 +8,18 @@ jest.mock('@ohif/core', () => ({
       EnhancedSR: 'enhanced-sr',
       ComprehensiveSR: 'comprehensive-sr',
       Comprehensive3DSR: 'comprehensive-3d-sr',
+      XRayRadiationDoseSR: 'xray-radiation-dose-sr',
     },
+    sortStudyInstances: jest.fn(),
+    getLatestInstanceDateTime: () => ({}),
+    guid: () => 'display-set-1',
   },
   classes: {
     MetadataProvider: {
       getUIDsFromImageID: (...args: unknown[]) => mockGetUIDsFromImageID(...args),
     },
   },
+  DisplaySetMessageList: class {},
   Types: {},
 }));
 
@@ -33,7 +38,10 @@ jest.mock('./utils/addSRAnnotation', () => ({
 
 jest.mock('./utils/isRehydratable', () => ({ __esModule: true, default: jest.fn() }));
 
-import { _checkIfCanAddMeasurementsToDisplaySet } from './getSopClassHandlerModule';
+import getSopClassHandlerModule, {
+  _checkIfCanAddMeasurementsToDisplaySet,
+} from './getSopClassHandlerModule';
+import { SOPClassHandlerId } from './id';
 
 const servicesManager = {
   services: { customizationService: { getCustomization: () => undefined } },
@@ -155,5 +163,30 @@ describe('_checkIfCanAddMeasurementsToDisplaySet', () => {
       imageId,
       displaySetInstanceUID: 'nm',
     });
+  });
+});
+
+describe('getSopClassHandlerModule', () => {
+  // No handler listed the X-Ray Radiation Dose SR SOP class, so the viewer showed
+  // a dose report as an unsupported series. The report holds no TID 1500
+  // measurements, so it belongs in the SR text viewport.
+  it('makes a text SR display set of an X-Ray Radiation Dose SR', () => {
+    const doseReport = {
+      StudyInstanceUID: 'study-1',
+      SeriesInstanceUID: 'series-1',
+      SOPInstanceUID: 'sop-dose-1',
+      SOPClassUID: 'xray-radiation-dose-sr',
+      // (113701, DCM, "X-Ray Radiation Dose Report"), the root of TID 10001 and TID 10011
+      ConceptNameCodeSequence: { CodeValue: '113701', CodingSchemeDesignator: 'DCM' },
+      ContentSequence: [{ ValueType: 'CONTAINER' }],
+    };
+    const handlers = getSopClassHandlerModule({ servicesManager, extensionManager: {} } as never);
+    // The display set service takes the first handler that lists the SOP class.
+    const handler = handlers.find(h => h.sopClassUids.includes(doseReport.SOPClassUID));
+
+    expect(handler?.name).toBe('dicom-sr');
+    expect(handler.getDisplaySetsFromSeries([doseReport])).toMatchObject([
+      { SOPClassHandlerId, isImagingMeasurementReport: false },
+    ]);
   });
 });
