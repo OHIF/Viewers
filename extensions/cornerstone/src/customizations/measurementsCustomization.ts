@@ -1,4 +1,14 @@
 export default {
+  /**
+   * Label shown before the Probe value in the measurement panel, e.g.
+   * 'RGB' -> "RGB: 158, 113, 150". A string, or a function
+   * `({ value, unit }) => string | undefined`. `null` (default) = no label.
+   *
+   * It is its own id, not a key inside `cornerstone.measurements`, so a mode
+   * can set it with a plain value: changing a key inside that entry needs
+   * `$merge`, and a plain object there would replace every tool's settings.
+   */
+  'cornerstone.measurements.probeValueLabel': null,
   'cornerstone.measurements': {
     Angle: {
       displayText: [],

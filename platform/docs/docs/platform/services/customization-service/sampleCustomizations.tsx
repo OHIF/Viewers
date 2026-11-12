@@ -2036,6 +2036,24 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'cornerstone.measurements.probeValueLabel',
+    description:
+      'Label shown before the Probe value in the measurement panel (e.g. "RGB: 158, 113, 150" on a colour image). A string, or a function `({ value, unit }) => string | undefined`. Only prefixes the text: the rounded value and its unit are unchanged. `null` (default) shows no label.',
+    default: null,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'cornerstone.measurements.probeValueLabel': {
+        $set: ({ value }) => (Array.isArray(value) ? 'RGB' : 'Value'),
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const studyBrowserCustomizations = [

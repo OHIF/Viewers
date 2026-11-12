@@ -182,11 +182,35 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   if (value !== undefined) {
     const roundedValue = utils.roundNumber(value, 2);
-    displayText.primary.push(`${roundedValue} ${getDisplayUnit(unit)}`);
+    const label = getValueLabel(customizationService, { value, unit });
+    const labelText = label ? `${label}: ` : '';
+    displayText.primary.push(`${labelText}${roundedValue} ${getDisplayUnit(unit)}`);
     displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
 
   return displayText;
+}
+
+/**
+ * Optional label for the probed value, read from the
+ * `cornerstone.measurements.probeValueLabel` customization. It is off by
+ * default (`null`), so the measurement panel shows exactly what it always has.
+ *
+ * A probe on a colour image yields `[R, G, B]`, which the panel renders as three
+ * bare numbers that are easy to mistake for coordinates. A mode can set the
+ * customization to a string (`'RGB'`) or to a function
+ * `({ value, unit }) => string | undefined` to name the value. The label only
+ * prefixes the text: the rounded value and its unit are left untouched.
+ */
+function getValueLabel(customizationService, { value, unit }): string | undefined {
+  const valueLabel = customizationService?.getCustomization?.(
+    'cornerstone.measurements.probeValueLabel'
+  );
+
+  if (typeof valueLabel === 'function') {
+    return valueLabel({ value, unit }) || undefined;
+  }
+  return valueLabel || undefined;
 }
 
 export default Probe;
