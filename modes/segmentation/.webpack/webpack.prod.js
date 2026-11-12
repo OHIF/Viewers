@@ -11,12 +11,14 @@ const config = {
   entry: rootDir + '/' + pkg.module,
   devtool: 'source-map',
   output: {
+    library: {
+      name: pkg.name,
+      type: 'umd',
+      umdNamedDefine: true,
+    },
     path: outputFolder,
     filename: outputFile,
-    library: pkg.name,
-    libraryTarget: 'umd',
     chunkFilename: '[name].chunk.js',
-    umdNamedDefine: true,
     globalObject: "typeof self !== 'undefined' ? self : this",
   },
   externals: [
@@ -33,11 +35,23 @@ const config = {
         amd: '@ohif/core',
         root: '@ohif/core',
       },
+      '@ohif/mode-basic': {
+        commonjs2: '@ohif/mode-basic',
+        commonjs: '@ohif/mode-basic',
+        amd: '@ohif/mode-basic',
+        root: '@ohif/mode-basic',
+      },
       '@ohif/ui': {
         commonjs2: '@ohif/ui',
         commonjs: '@ohif/ui',
         amd: '@ohif/ui',
         root: '@ohif/ui',
+      },
+      i18next: {
+        commonjs2: 'i18next',
+        commonjs: 'i18next',
+        amd: 'i18next',
+        root: 'i18next',
       },
     },
   ],
@@ -50,6 +64,38 @@ const config = {
         resolve: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
+      },
+      {
+        test: /\.svg?$/,
+        oneOf: [
+          {
+            use: [
+              {
+                loader: '@svgr/webpack',
+                options: {
+                  svgoConfig: {
+                    plugins: [
+                      {
+                        name: 'preset-default',
+                        params: {
+                          overrides: {
+                            removeViewBox: false,
+                          },
+                        },
+                      },
+                    ],
+                  },
+                  prettier: false,
+                  svgo: true,
+                  titleProp: true,
+                },
+              },
+            ],
+            issuer: {
+              and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+            },
+          },
+        ],
       },
     ],
   },

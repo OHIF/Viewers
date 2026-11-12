@@ -5,7 +5,20 @@ const toolGroupIds = {
   CT: 'dynamic4D-ct',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+const colours = {
+  'viewport-0': 'rgb(200, 0, 0)',
+  'viewport-1': 'rgb(200, 200, 0)',
+  'viewport-2': 'rgb(0, 200, 0)',
+};
+
+const colorsByOrientation = {
+  axial: 'rgb(200, 0, 0)',
+  sagittal: 'rgb(200, 200, 0)',
+  coronal: 'rgb(0, 200, 0)',
+};
+
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, servicesManager) {
+  const { cornerstoneViewportService } = servicesManager.services;
   const tools = {
     active: [
       {
@@ -18,12 +31,16 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.Probe },
@@ -87,18 +104,47 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.SphereScissors },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
+        // Bind Crosshairs to Primary+Shift (matching the longitudinal/tmtv
+        // modes) so it has its own mouse binding. Without a binding it activates
+        // on plain Primary and, being `disableOnPassive`, gets disabled the
+        // moment another Primary tool (brush/zoom/pan in the same group) is
+        // activated from the toolbar, making them mutually exclusive.
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+            modifierKey: Enums.KeyboardBindings.Shift,
+          },
+        ],
         configuration: {
-          viewportIndicators: false,
+          viewportIndicators: true,
+          viewportIndicatorsConfig: {
+            circleRadius: 5,
+            xOffset: 0.95,
+            yOffset: 0.05,
+          },
           disableOnPassive: true,
           autoPan: {
             enabled: false,
             panSize: 10,
+          },
+          getReferenceLineColor: viewportId => {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+            const viewportOptions = viewportInfo?.viewportOptions;
+            if (viewportOptions) {
+              return (
+                colours[viewportOptions.id] ||
+                colorsByOrientation[viewportOptions.orientation] ||
+                '#0c0'
+              );
+            } else {
+              console.warn('missing viewport?', viewportId);
+              return '#0c0';
+            }
           },
         },
       },
@@ -123,8 +169,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools);
 }
 
-function initToolGroups({ toolNames, Enums, toolGroupService, commandsManager }) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+function initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager }) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, servicesManager);
 }
 
 export { initToolGroups as default, toolGroupIds };

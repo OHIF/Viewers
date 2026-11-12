@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Toolbar
+title: Toolbar Module
+summary: Documentation for OHIF Toolbar Module, which provides UI components and evaluators for the application's toolbar, supporting custom button types, advanced state management, and conditional rendering based on viewport and modality requirements.
 ---
 
 # Module: Toolbar
@@ -115,6 +117,13 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
 
 as you can see the job of this evaluator is to determine if the button should be disabled or not. It does so by checking the `toolGroup` and the `toolName` and then returns an object with `disabled` and `className` properties.
 
+Various information can be returned by an evaluator. In particular...
+- `disabled`: flag indicating if the tool should be disabled or not
+- `disabledText`: the text or tooltip to show if the `disabled` flag above is set to `true`
+- `visible`: flag indicating if the tool show be visible or not; this is a convenient way to force a tool to hide based on some custom (evaluator) logic
+- `isActive`: flag to indicating where the tool is currently active or not
+- `className`: custom CSS class names to add to the tool's component
+
 The following evaluators are provided by us:
 
 - `evaluate.cornerstoneTool`: If assigned to a button (see next), it will make the button react to the active viewport state based on its toolGroup.
@@ -137,12 +146,63 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 },
 ```
 
+
+#### Viewport and Modality Support Evaluation
+
+The toolbar system now uses a more robust approach for evaluating button states based on viewport types and modalities:
+
+**Viewport Type Support**:
+
+Use `evaluate.viewport.supported` to disable buttons for specific viewport types:
+
+```js
+{
+  name: 'evaluate.viewport.supported',
+  unsupportedViewportTypes: ['volume3d', 'video', 'sm']
+}
+```
+
+**Modality Support**:
+Use `evaluate.modality.supported` to control button state based on modalities:
+
+```js
+{
+  name: 'evaluate.modality.supported',
+  supportedModalities: ['CT', 'MR'],  // Enable only for these modalities
+  // OR
+  unsupportedModalities: ['US']       // Disable for these modalities
+}
+```
+
 #### Composing evaluators
+Multiple evaluators can be combined to create complex conditions:
+
+```js
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d']
+  },
+  {
+    name: 'evaluate.modality.supported',
+    supportedModalities: ['CT']
+  }
+]
+```
+
+This evaluation system provides more precise control over when toolbar buttons are enabled or disabled based on the active viewport's characteristics.
 
 You can choose to set up multiple evaluators for a single button. This comes in handy when you need to assess the button according to various conditions. For example, we aim to prevent the Cine player from showing up on the 3D viewport, so we have:
 
 ```js
-evaluate: ['evaluate.cine', 'evaluate.not3D'],
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d'],
+  },
+],
 ```
 
 You can even come up with advanced evaluators such as:

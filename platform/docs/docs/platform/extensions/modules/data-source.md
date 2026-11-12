@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Data Source
+title: Data Source Module
+summary: Documentation for OHIF Data Source Module, which defines ways to fetch and map data into OHIF's native format, covering built-in sources like dicomweb and dicomjson, and explaining how to create custom data sources for proprietary backends.
 ---
 
 # Module: Data Source
@@ -36,8 +38,8 @@ Default extension provides two main data sources that are commonly used:
 `dicomweb` and `dicomjson`
 
 ```js
-import { createDicomWebApi } from './DicomWebDataSource/index.js';
-import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
+import { createDicomWebApi } from './DicomWebDataSource/index';
+import { createDicomJSONApi } from './DicomJSONDataSource/index';
 
 function getDataSourcesModule() {
   return [
@@ -84,7 +86,7 @@ important api endpoints that you need to implement:
 - `initialize`: This method is called when the data source is first created in the mode.tsx, it is used to initialize the data source and set the configuration. For instance, `dicomwebDatasource` uses this method to grab the StudyInstanceUID from the URL and set it as the active study, as opposed to `dicomJSONDatasource` which uses url in the browser to fetch the data and store it in a cache
 - `query.studies.search`: This is used in the study panel on the left to fetch the prior studies for the same MRN which is then used to display on the `All` tab. it is also used in the Worklist to show all the studies from the server.
 - `query.series.search`: This is used to fetch the series information for a given study that is expanded in the Worklist.
-- `retrieve.bulkDataURI`: used to render RTSTUCTURESET in the viewport.
+- `retrieve.bulkDataURI`: used to render RTSTUCTURESET in the viewport. It is an object that contains `enabled` as property and other options that are specific to the data source.
 - `retrieve.series.metadata`: It is a crucial end point that is used to fetch series level metadata which for hanging displaySets and displaySet creation.
 - `store.dicom`: If you don't need store functionality, you can skip this method. This is used to store the data in the backend.
 

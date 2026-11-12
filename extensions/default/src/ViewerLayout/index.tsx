@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
-import { ErrorBoundary, LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
+import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
+import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
+import useResizablePanels from './ResizablePanelsHook';
+
+const resizableHandleClassName = 'mt-[1px] bg-background';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -18,10 +21,16 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanelClosed = false,
   rightPanelClosed = false,
+  leftPanelResizable = false,
+  rightPanelResizable = false,
+  leftPanelInitialExpandedWidth,
+  rightPanelInitialExpandedWidth,
+  leftPanelMinimumExpandedWidth,
+  rightPanelMinimumExpandedWidth,
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
-  const { panelService, hangingProtocolService } = servicesManager.services;
+  const { panelService, hangingProtocolService, customizationService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const hasPanels = useCallback(
@@ -34,16 +43,46 @@ function ViewerLayout({
   const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
   const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
 
+  const [
+    leftPanelProps,
+    rightPanelProps,
+    resizablePanelGroupProps,
+    resizableLeftPanelProps,
+    resizableViewportGridPanelProps,
+    resizableRightPanelProps,
+    onHandleDragging,
+  ] = useResizablePanels(
+    leftPanelClosed,
+    setLeftPanelClosed,
+    rightPanelClosed,
+    setRightPanelClosed,
+    hasLeftPanels,
+    hasRightPanels,
+    leftPanelInitialExpandedWidth,
+    rightPanelInitialExpandedWidth,
+    leftPanelMinimumExpandedWidth,
+    rightPanelMinimumExpandedWidth
+  );
+
+  const handleMouseEnter = () => {
+    (document.activeElement as HTMLElement)?.blur();
+  };
+
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
+
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window
    * is sized to our viewport.
    */
   useEffect(() => {
-    document.body.classList.add('bg-black');
+    document.body.classList.add('bg-background');
     document.body.classList.add('overflow-hidden');
+
     return () => {
-      document.body.classList.remove('bg-black');
+      document.body.classList.remove('bg-background');
       document.body.classList.remove('overflow-hidden');
     };
   }, []);
@@ -57,7 +96,7 @@ function ViewerLayout({
       );
     }
 
-    return { entry, content: entry.component };
+    return { entry };
   };
 
   useEffect(() => {
@@ -82,6 +121,7 @@ function ViewerLayout({
 
     return {
       component: entry.component,
+      isReferenceViewable: entry.isReferenceViewable,
       displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
     };
   };
@@ -117,65 +157,71 @@ function ViewerLayout({
         appConfig={appConfig}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
-        style={{ height: 'calc(100vh - 52px' }}
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-background"
+        style={{ height: 'calc(100vh - 52px)' }}
       >
         <React.Fragment>
-          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
-          {/* LEFT SIDEPANELS */}
-          {hasLeftPanels ? (
-            <ErrorBoundary context="Left Panel">
-              <SidePanelWithServices
-                side="left"
-                activeTabIndex={leftPanelClosedState ? null : 0}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
-          ) : null}
-          {/* TOOLBAR + GRID */}
-          <div className="flex h-full flex-1 flex-col">
-            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ErrorBoundary context="Grid">
-                <ViewportGridComp
-                  servicesManager={servicesManager}
-                  viewportComponents={viewportComponents}
-                  commandsManager={commandsManager}
+          {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-background" />}
+          <ResizablePanelGroup {...resizablePanelGroupProps}>
+            {/* LEFT SIDEPANELS */}
+            {hasLeftPanels ? (
+              <>
+                <ResizablePanel {...resizableLeftPanelProps}>
+                  <SidePanelWithServices
+                    side="left"
+                    isExpanded={!leftPanelClosedState}
+                    servicesManager={servicesManager}
+                    {...leftPanelProps}
+                  />
+                </ResizablePanel>
+                <ResizableHandle
+                  onDragging={onHandleDragging}
+                  disabled={!leftPanelResizable}
+                  className={resizableHandleClassName}
                 />
-              </ErrorBoundary>
-            </div>
-          </div>
-          {hasRightPanels ? (
-            <ErrorBoundary context="Right Panel">
-              <SidePanelWithServices
-                side="right"
-                activeTabIndex={rightPanelClosedState ? null : 0}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
-          ) : null}
+              </>
+            ) : null}
+            {/* TOOLBAR + GRID */}
+            <ResizablePanel {...resizableViewportGridPanelProps}>
+              <div className="flex h-full flex-1 flex-col">
+                <div
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-background"
+                  onMouseEnter={handleMouseEnter}
+                >
+                  <ViewportGridComp
+                    servicesManager={servicesManager}
+                    viewportComponents={viewportComponents}
+                    commandsManager={commandsManager}
+                  />
+                </div>
+              </div>
+            </ResizablePanel>
+            {hasRightPanels ? (
+              <>
+                <ResizableHandle
+                  onDragging={onHandleDragging}
+                  disabled={!rightPanelResizable}
+                  className={resizableHandleClassName}
+                />
+                <ResizablePanel {...resizableRightPanelProps}>
+                  <SidePanelWithServices
+                    side="right"
+                    isExpanded={!rightPanelClosedState}
+                    servicesManager={servicesManager}
+                    {...rightPanelProps}
+                  />
+                </ResizablePanel>
+              </>
+            ) : null}
+          </ResizablePanelGroup>
         </React.Fragment>
       </div>
-
+      <Onboarding tours={customizationService.getCustomization('ohif.tours')} />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );
 }
 
-ViewerLayout.propTypes = {
-  // From extension module params
-  extensionManager: PropTypes.shape({
-    getModuleEntry: PropTypes.func.isRequired,
-  }).isRequired,
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object.isRequired,
-  // From modes
-  leftPanels: PropTypes.array,
-  rightPanels: PropTypes.array,
-  leftPanelClosed: PropTypes.bool.isRequired,
-  rightPanelClosed: PropTypes.bool.isRequired,
-  /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  viewports: PropTypes.array,
-};
+
 
 export default ViewerLayout;

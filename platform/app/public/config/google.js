@@ -1,9 +1,6 @@
+/** @type {AppTypes.Config} */
 window.config = {
-  routerBasename: '/',
-  customizationService: {
-    dicomUploadComponent:
-      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
-  },
+  routerBasename: null,
   enableGoogleCloudAdapter: false,
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
@@ -48,7 +45,8 @@ window.config = {
           'https://healthcare.googleapis.com/v1/projects/ohif-cloud-healthcare/locations/us-east4/datasets/ohif-qa-dataset/dicomStores/ohif-qa-2/dicomWeb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'rendered',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: false,

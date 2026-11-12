@@ -1,5 +1,7 @@
 ---
-sidebar_position: 10
+sidebar_position: 9
+title: Google Cloud Healthcare Integration
+summary: Guide to setting up Google Cloud Healthcare API as a DICOM data source for OHIF, including project creation, API configuration, OAuth authentication setup, and implementation details for connecting the viewer to Google-hosted medical imaging data.
 ---
 
 # Google Cloud Healthcare
@@ -125,7 +127,7 @@ Images can even be transcoded on the fly if this is desired.
 
 ```bash
 cd OHIFViewer
-yarn install
+yarn install --frozen-lockfile
 APP_CONFIG=config/google.js yarn run dev
 ```
 

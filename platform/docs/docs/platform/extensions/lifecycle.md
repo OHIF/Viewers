@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Lifecycle Hooks
+title: Extension Lifecycle Hooks
+summary: Documentation for OHIF extension lifecycle hooks including preRegistration, onModeEnter, and onModeExit, which allow extensions to initialize resources, handle mode transitions, and clean up data when needed.
 ---
 
 # Extensions: Lifecycle Hooks

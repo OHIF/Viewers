@@ -1,5 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import { getSOPInstanceAttributes } from '@ohif/extension-cornerstone';
 
 const RectangleROIStartEndThreshold = {
   toAnnotation: (measurement, definition) => {},

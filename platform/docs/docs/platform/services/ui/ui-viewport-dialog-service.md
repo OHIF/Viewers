@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: UI Viewport Dialog Service
+title: UI Viewport Dialog Service
+summary: Documentation for OHIF's UI Viewport Dialog Service, which creates modal dialogs inside specific viewports for contextual user interactions, supporting different types of messages and action buttons for user input.
 ---
 
 # UI Viewport Dialog Service

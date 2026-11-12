@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Toolbar Service
+title: Toolbar Service
+summary: Documentation for OHIF's ToolbarService, which manages the viewer's toolbar UI components, including button creation, section organization, and command execution, with support for nested dropdowns and state management.
 ---
 
 # Toolbar **Service**
@@ -26,6 +28,8 @@ The `ToolBarService` is a straightforward service designed to handle the toolbar
 
 - `addButtons`: add the button definition to the service.
   [See below for button definition](#button-definitions).
+
+- `removeButton(key)` : remove a button from the toolbar.
 
 - `setButtons`: sets the buttons defined in the service. It overrides all the
   previous buttons

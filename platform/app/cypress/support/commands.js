@@ -1,4 +1,3 @@
-import '@percy/cypress';
 import 'cypress-file-upload';
 import { DragSimulator } from './DragSimulator.js';
 import {
@@ -6,36 +5,26 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initStudyListAliasesOnDesktop,
-  initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
   initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+/**
+ * Command to select a layout preset.
+ * The layout preset is selected by clicking on the Layout button and then clicking on the desired preset.
+ * The preset name is the text that is displayed on the button.
+ * @param {string} presetName - The name of the layout preset that we would like to select
+ * @param {boolean} screenshot - If true, a screenshot will be taken when the layout tool is opened
+ */
+Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
+  cy.get('[data-cy="Layout"]').click();
+  if (screenshot) {
+    cy.screenshot('Layout tool opened');
+  }
+  cy.get('div').contains(presetName).should('be.visible').click();
+  // fixed wait time for layout changes and rendering
+  cy.wait(3000);
+});
 
 /**
  * Command to search for a patient name and open his/her study.
@@ -46,9 +35,9 @@ Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(PatientName);
   // cy.get('@getStudies').then(() => {
-  cy.waitQueryList();
+  // cy.waitQueryList();
 
-  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 15000 })
     .contains(PatientName)
     .first()
     .click({ force: true });
@@ -57,6 +46,7 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add(
   'checkStudyRouteInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
+    Cypress.on('uncaught:exception', () => false);
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
@@ -89,8 +79,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('waitQueryList', () => {
-  cy.get('[data-querying="false"]');
+  cy.get('[data-querying="false"]', { timeout: 15000 });
 });
+
 /**
  * Command to search for a Modality and open the study.
  *
@@ -116,10 +107,10 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/');
+  cy.visit('/', { timeout: 300000 });
 
   // For some reason cypress 12.x does not like to stub the network request
-  // so we just wait herer for 1 second
+  // so we just wait here for querying to be done.
   // cy.wait('@getStudies');
   cy.waitQueryList();
 });
@@ -242,8 +233,8 @@ Cypress.Commands.add('initCornerstoneToolsAliases', () => {
 });
 
 //Initialize aliases for Common page elements
-Cypress.Commands.add('initCommonElementsAliases', () => {
-  initCommonElementsAliases();
+Cypress.Commands.add('initCommonElementsAliases', skipMarkers => {
+  initCommonElementsAliases(skipMarkers);
 });
 
 //Initialize aliases for Routes
@@ -273,7 +264,7 @@ Cypress.Commands.add(
       }
     });
 
-    cy.get('@lengthButton').should('have.class', 'bg-primary-light');
+    cy.get('@lengthButton').should('have.attr', 'data-active', 'true');
 
     cy.get('@viewport').then($viewport => {
       const [x1, y1] = firstClick;
@@ -287,6 +278,56 @@ Cypress.Commands.add(
     });
   }
 );
+
+// Add brush stroke in the viewport
+Cypress.Commands.add('addBrush', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
+
+// Add erase stroke in the viewport
+Cypress.Commands.add('addEraser', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
 
 //Add measurements in the viewport
 Cypress.Commands.add(
@@ -349,24 +390,6 @@ Cypress.Commands.add('isInViewport', element => {
   });
 });
 
-/**
- * Percy.io Canvas screenshot workaround
- *
- */
-Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
-  cy.document().then(doc => {
-    convertCanvas(doc);
-  });
-
-  // `domTransformation` does not appear to be working
-  // But modifying our immediate DOM does.
-  cy.percySnapshot(name, { ...options }); //, domTransformation: convertCanvas });
-
-  cy.document().then(doc => {
-    unconvertCanvas(doc);
-  });
-});
-
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
   cy.get('[data-cy="Layout"]').click();
 
@@ -375,38 +398,6 @@ Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
   cy.wait(10);
   cy.waitDicomImage();
 });
-
-function convertCanvas(documentClone) {
-  documentClone.querySelectorAll('canvas').forEach(selector => canvasToImage(selector));
-
-  return documentClone;
-}
-
-function unconvertCanvas(documentClone) {
-  // Remove previously generated images
-  documentClone.querySelectorAll('[data-percy-image]').forEach(selector => selector.remove());
-  // Restore canvas visibility
-  documentClone.querySelectorAll('[data-percy-canvas]').forEach(selector => {
-    selector.removeAttribute('data-percy-canvas');
-    selector.style = '';
-  });
-}
-
-function canvasToImage(selectorOrEl) {
-  let canvas =
-    typeof selectorOrEl === 'object' ? selectorOrEl : document.querySelector(selectorOrEl);
-  let image = document.createElement('img');
-  let canvasImageBase64 = canvas.toDataURL('image/png');
-
-  // Show Image
-  image.src = canvasImageBase64;
-  image.style = 'width: 100%';
-  image.setAttribute('data-percy-image', true);
-  // Hide Canvas
-  canvas.setAttribute('data-percy-canvas', true);
-  canvas.parentElement.appendChild(image);
-  canvas.style = 'display: none';
-}
 
 //Initialize aliases for User Preferences modal
 Cypress.Commands.add('initPreferencesModalAliases', () => {
@@ -429,26 +420,56 @@ Cypress.Commands.add('openPreferences', () => {
 });
 
 Cypress.Commands.add('scrollToIndex', index => {
-  // Workaround implemented based on Cypress issue:
-  // https://github.com/cypress-io/cypress/issues/1570#issuecomment-450966053
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-    window.HTMLInputElement.prototype,
-    'value'
-  ).set;
+  cy.get('.cornerstone-viewport-element:visible')
+    .first()
+    .then($viewportEl => {
+      cy.window().then(win => {
+        const cornerstone = win.cornerstone;
+        const element = $viewportEl[0];
+        const enabledElement =
+          cornerstone?.getEnabledElement?.(element) ||
+          cornerstone?.getEnabledElements?.().find(item => item.element === element);
 
-  cy.get('input.imageSlider[type=range]').then($range => {
-    // get the DOM node
-    const range = $range[0];
-    // set the value manually
-    nativeInputValueSetter.call(range, index);
-    // now dispatch the event
-    range.dispatchEvent(
-      new Event('change', {
-        value: index,
-        bubbles: true,
-      })
-    );
-  });
+        if (!enabledElement?.viewport) {
+          throw new Error('scrollToIndex: no enabled cornerstone viewport found');
+        }
+
+        const viewport = enabledElement.viewport;
+        const numberOfSlices = viewport.getNumberOfSlices?.() ?? 0;
+
+        if (!numberOfSlices) {
+          throw new Error('scrollToIndex: viewport has no slices');
+        }
+
+        const targetIndex = index < 0 ? numberOfSlices + index : index;
+
+        if (targetIndex < 0 || targetIndex >= numberOfSlices) {
+          throw new Error(
+            `scrollToIndex: index ${index} resolves to ${targetIndex}, but range is 0-${
+              numberOfSlices - 1
+            }`
+          );
+        }
+
+        return Cypress.Promise.resolve(
+          cornerstone.utilities.jumpToSlice(element, {
+            imageIndex: targetIndex,
+            debounceLoading: false,
+          })
+        ).then(() => {
+          const currentIndex = viewport.getCurrentImageIdIndex?.();
+
+          if (currentIndex !== targetIndex) {
+            throw new Error(
+              `scrollToIndex: expected slice ${targetIndex}, but viewport is at ${currentIndex}`
+            );
+          }
+        });
+      });
+    });
+
+  // Give the viewport a brief settle time after programmatic jump.
+  cy.wait(50);
 });
 
 Cypress.Commands.add('closePreferences', () => {

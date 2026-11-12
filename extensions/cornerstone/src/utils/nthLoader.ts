@@ -48,7 +48,7 @@ export default function interleaveNthLoader({
   // iterate over all volumes, and get their imageIds, and interleave
   // the imageIds and save them in AllRequests for later use
   const originalRequests = volumes
-    .map(volume => volume.getImageLoadRequests())
+    .map(volume => volume.getImageLoadRequests?.() ?? [])
     .filter(requests => requests?.[0]?.imageId);
 
   const orderedRequests = originalRequests.map(request => getNthFrames(request));

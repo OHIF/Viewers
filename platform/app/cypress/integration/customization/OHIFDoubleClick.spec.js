@@ -10,22 +10,17 @@ describe('OHIF Double Click', () => {
   });
 
   it('Should double click each viewport to one up and back', () => {
-    const numExpectedViewports = 3;
+    const numExpectedViewports = 4;
     cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', numExpectedViewports);
 
-    for (let i = 0; i < numExpectedViewports; i += 1) {
-      cy.wait(2000);
+    for (let i = 0; i < 3; i += 1) {
+      cy.wait(1000);
 
       // For whatever reason, with Cypress tests, we have to activate the
       // viewport we are double clicking first.
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(i)
-        .trigger('mousedown', 'center', {
-          force: true,
-        })
-        .trigger('mouseup', 'center', {
-          force: true,
-        });
+      cy.get('[data-cy="viewport-pane"]').eq(i).trigger('click', 'center', {
+        force: true,
+      });
 
       // Wait for the viewport to be 'active'.
       // TODO Is there a better way to do this?

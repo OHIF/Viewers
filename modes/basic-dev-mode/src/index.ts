@@ -1,4 +1,4 @@
-import toolbarButtons from './toolbarButtons.js';
+import toolbarButtons from './toolbarButtons';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import i18n from 'i18next';
@@ -11,7 +11,7 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  measurements: '@ohif/extension-default.panelModule.measure',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
@@ -26,7 +26,6 @@ const dicomsr = {
 
 const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
 };
 
 const dicompdf = {
@@ -70,9 +69,12 @@ function modeFactory({ modeConfiguration }) {
           },
           {
             toolName: toolNames.Zoom,
-            bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+            bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
           },
-          { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+          {
+            toolName: toolNames.StackScroll,
+            bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
+          },
         ],
         passive: [
           { toolName: toolNames.Length },
@@ -91,8 +93,8 @@ function modeFactory({ modeConfiguration }) {
 
       toolGroupService.createToolGroupAndAddTools('default', tools);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -102,14 +104,8 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-        uiDialogService,
-        uiModalService,
-      } = servicesManager.services;
-      uiDialogService.dismissAll();
+      const { toolGroupService, uiDialogService, uiModalService } = servicesManager.services;
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
     },
@@ -138,15 +134,13 @@ function modeFactory({ modeConfiguration }) {
             props: {
               // TODO: Should be optional, or required to pass empty array for slots?
               leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
               rightPanels: [ohif.measurements],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: cs3d.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
-                },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
+                  displaySetsToDisplay: [ohif.sopClassHandler, dicomvideo.sopClassHandler],
                 },
                 {
                   namespace: dicompdf.viewport,
@@ -166,7 +160,6 @@ function modeFactory({ modeConfiguration }) {
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

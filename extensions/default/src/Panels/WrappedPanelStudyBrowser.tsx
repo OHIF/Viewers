@@ -1,10 +1,8 @@
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
-//
-import PanelStudyBrowser from './PanelStudyBrowser';
+import PanelStudyBrowser from './StudyBrowser/PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
 import getStudiesForPatientByMRN from './getStudiesForPatientByMRN';
 import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
+import { useSystem } from '@ohif/core';
 
 /**
  * Wraps the PanelStudyBrowser and provides features afforded by managers/services
@@ -13,15 +11,16 @@ import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStu
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowser() {
+  const { extensionManager } = useSystem();
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
-  const dataSource = extensionManager.getDataSources()[0];
+  const [dataSource] = extensionManager.getActiveDataSource();
   const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
-  const _getImageSrcFromImageId = useCallback(
-    _createGetImageSrcFromImageIdFn(extensionManager),
-    []
-  );
+  // Plain call: the React Compiler caches this keyed on extensionManager (a
+  // stable service), so it runs once and keeps a stable identity — what the
+  // old useCallback(fn(), []) wanted, but analyzable and correctly keyed.
+  const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(extensionManager);
   const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
     null,
     dataSource
@@ -29,7 +28,6 @@ function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesM
 
   return (
     <PanelStudyBrowser
-      servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
@@ -59,11 +57,5 @@ function _createGetImageSrcFromImageIdFn(extensionManager) {
     throw new Error('Required command not found');
   }
 }
-
-WrappedPanelStudyBrowser.propTypes = {
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 export default WrappedPanelStudyBrowser;

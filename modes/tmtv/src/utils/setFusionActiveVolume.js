@@ -7,6 +7,7 @@ export default function setFusionActiveVolume(
   displaySetService
 ) {
   const matchDetails = matches.get('ptDisplaySet');
+  const matchDetails2 = matches.get('ctDisplaySet');
 
   if (!matchDetails) {
     return;
@@ -32,10 +33,13 @@ export default function setFusionActiveVolume(
 
   // Todo: this should not take into account the loader id
   const volumeId = `cornerstoneStreamingImageVolume:${displaySets[0].displaySetInstanceUID}`;
+  const { SeriesInstanceUID: SeriesInstanceUID2 } = matchDetails2;
+  const ctDisplaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID2);
+  const ctVolumeId = `cornerstoneStreamingImageVolume:${ctDisplaySets[0].displaySetInstanceUID}`;
 
   const windowLevelConfig = {
     ...wlToolConfig,
-    volumeId,
+    volumeId: ctVolumeId,
   };
 
   const ellipticalROIConfig = {

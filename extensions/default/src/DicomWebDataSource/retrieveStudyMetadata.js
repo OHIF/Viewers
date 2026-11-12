@@ -13,7 +13,6 @@ const StudyMetaDataPromises = new Map();
  * @param {boolean} enableStudyLazyLoad Whether the study metadata should be loaded asynchronously.
  * @param {Object} [filters] Object containing filters to be applied on retrieve metadata process
  * @param {string} [filters.seriesInstanceUID] Series instance uid to filter results against
- * @param {array} [filters.SeriesInstanceUIDs] Series instance uids to filter results against
  * @param {function} [sortCriteria] Sort criteria function
  * @param {function} [sortFunction] Sort function
  *
@@ -48,7 +47,7 @@ export function retrieveStudyMetadata(
 
   let promise;
 
-  if (filters && filters.SeriesInstanceUIDs) {
+  if (filters && filters.seriesInstanceUID && Array.isArray(filters.seriesInstanceUID)) {
     promise = retrieveMetadataFiltered(
       dicomWebClient,
       StudyInstanceUID,
@@ -83,10 +82,27 @@ export function retrieveStudyMetadata(
  * Delete the cached study metadata retrieval promise to ensure that the browser will
  * re-retrieve the study metadata when it is next requested.
  *
+ * Callers know only the study, so this matches every
+ * `<data source name>:<StudyInstanceUID>` key rather than looking the bare UID
+ * up as one.
+ *
  * @param {String} StudyInstanceUID The UID of the Study to be removed from cache
  */
 export function deleteStudyMetadataPromise(StudyInstanceUID) {
-  if (StudyMetaDataPromises.has(StudyInstanceUID)) {
-    StudyMetaDataPromises.delete(StudyInstanceUID);
+  if (!StudyInstanceUID) {
+    return;
   }
+
+  const suffix = `:${StudyInstanceUID}`;
+
+  for (const promiseId of [...StudyMetaDataPromises.keys()]) {
+    if (promiseId === StudyInstanceUID || promiseId.endsWith(suffix)) {
+      StudyMetaDataPromises.delete(promiseId);
+    }
+  }
+}
+
+/** Test seam: the cached promises, so a test can assert what invalidation removed. */
+export function _getStudyMetadataPromiseCache() {
+  return StudyMetaDataPromises;
 }

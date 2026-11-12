@@ -181,14 +181,14 @@ const hpTestSwitch: Types.HangingProtocol.Protocol = {
         {
           attribute: 'numImageFrames',
           constraint: {
-            greaterThan: { value: 0 },
+            greaterThanOrEqual: { value: 0 },
           },
         },
         // This display set will select the specified items by preference
         // It has no affect if nothing is specified in the URL.
         {
           attribute: 'isDisplaySetFromUrl',
-          weight: 10,
+          weight: 20,
           constraint: {
             equals: true,
           },

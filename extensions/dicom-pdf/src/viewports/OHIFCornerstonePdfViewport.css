@@ -1,0 +1,11 @@
+.pdf-no-click {
+  pointer-events: none;
+  height: 100%;
+  width: 100%;
+}
+
+.pdf-yes-click {
+  pointer-events: auto;
+  height: 100%;
+  width: 100%;
+}

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+title: OHIF Services
+summary: Overview of OHIF's services architecture, which provides modular, concern-specific code components that manage state and operations throughout the application, including both data services and UI services that follow a pub/sub pattern to reduce coupling.
 ---
 
 # Services
@@ -105,6 +107,17 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
+                <a href="./data/ViewedDataService">
+                    ViewedDataService
+                </a>
+            </td>
+            <td>Data Service</td>
+            <td>
+                viewedDataService
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./ui/viewport-grid-service">
                     ViewportGridService
                 </a>
@@ -127,7 +140,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./ui/customization-service">
+                <a href="./customization-service">
                     CustomizationService
                 </a>
             </td>

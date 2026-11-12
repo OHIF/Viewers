@@ -6,6 +6,7 @@ import DatePicker from './DatePicker.json';
 import Header from './Header.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import MeasurementTable from './MeasurementTable.json';
+import DataRow from './DataRow.json';
 import Messages from './Messages.json';
 
 export default {
@@ -18,6 +19,7 @@ export default {
     Header,
     UserPreferencesModal,
     MeasurementTable,
+    DataRow,
     Messages,
   },
 };

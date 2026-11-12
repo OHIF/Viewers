@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+title: Build for Production
+summary: Step-by-step guide to building a production-ready version of the OHIF Viewer, including environment setup, code acquisition, dependency restoration, production build creation, and configuration options for deployment.
 ---
 
 # Build for Production
@@ -36,7 +38,7 @@ Next run these commands:
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Build source code for production
 yarn run build
@@ -102,18 +104,12 @@ directory:
 yarn global add http-server
 
 # Change the directory to the platform/app
+cd platform/app
 
 # Serve the files in our current directory
 npx serve ./dist -c ../public/serve.json
 ```
 
-:::caution
-In the video below notice that there is `platform/viewer` which has been renamed to `platform/app` in the latest version
-:::
-
-<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
-    <iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
-</div>
 
 
 ### Automating Builds and Deployments

@@ -2,19 +2,43 @@ const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  toolBox: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-toolbox',
-  export: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-export',
+  segmentation: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-segmentation',
 };
 
 const cornerstone = {
-  segmentation: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentationNoHeader',
   activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
-const defaultButtons = {
-  buttonSection: 'primary',
-  buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
-};
+function getDefaultButtons({ toolbarService }) {
+  return [
+    {
+      buttonSection: toolbarService.sections.primary,
+      buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
+    },
+    {
+      buttonSection: 'MeasurementTools',
+      buttons: ['Length', 'Bidirectional', 'ArrowAnnotate', 'EllipticalROI'],
+    },
+  ];
+}
+
+function getROIThresholdToolbox({ toolbarService }) {
+  return [
+    {
+      buttonSection: toolbarService.sections.dynamicToolbox,
+      buttons: ['SegmentationTools'],
+    },
+    {
+      buttonSection: 'SegmentationTools',
+      buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
+    },
+    {
+      buttonSection: 'BrushTools',
+      buttons: ['Brush', 'Eraser', 'Threshold'],
+    },
+  ];
+}
 
 const defaultLeftPanel = [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]];
 
@@ -26,6 +50,10 @@ const defaultLayout = {
 };
 
 function getWorkflowSettings({ servicesManager }) {
+  const { toolbarService } = servicesManager.services;
+  const defaultButtons = getDefaultButtons({ toolbarService });
+  const ROIThresholdToolbox = getROIThresholdToolbox({ toolbarService });
+
   return {
     steps: [
       {
@@ -60,20 +88,14 @@ function getWorkflowSettings({ servicesManager }) {
         layout: {
           panels: {
             left: defaultLeftPanel,
-            right: [[dynamicVolume.toolBox, cornerstone.segmentation, dynamicVolume.export]],
+            right: [[dynamicVolume.segmentation]],
           },
           options: {
             leftPanelClosed: false,
             rightPanelClosed: false,
           },
         },
-        toolbarButtons: [
-          defaultButtons,
-          {
-            buttonSection: 'dynamic-toolbox',
-            buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
-          },
-        ],
+        toolbarButtons: [...defaultButtons, ...ROIThresholdToolbox],
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'roiQuantification',

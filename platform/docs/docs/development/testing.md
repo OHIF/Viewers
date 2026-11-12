@@ -1,6 +1,8 @@
 ---
 sidebar_position: 7
 sidebar_label: Testing
+title: Testing OHIF
+summary: Comprehensive guide to OHIF's testing approach, covering unit tests and end-to-end tests with detailed instructions for running them, explanation of test data management, and an overview of the project's testing philosophy and best practices.
 ---
 
 # Running Tests for OHIF
@@ -18,7 +20,7 @@ To run the unit test:
 yarn run test:unit:ci
 ```
 
-Note: You should have already installed all the packages with `yarn install`.
+Note: You should have already installed all the packages with `yarn install --frozen-lockfile`.
 
 Running unit test will generate a report at the end showing the successful and
 unsuccessful tests with detailed explanations.

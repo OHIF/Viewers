@@ -1,10 +1,10 @@
 import RectangleROIOptions from './Panels/RectangleROIOptions';
 
-export default function getToolbarModule({ commandsManager, servicesManager }) {
+export default function getToolbarModule() {
   return [
     {
       name: 'tmtv.RectangleROIThresholdOptions',
-      defaultComponent: () => RectangleROIOptions({ commandsManager, servicesManager }),
+      defaultComponent: RectangleROIOptions,
     },
   ];
 }

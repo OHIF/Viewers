@@ -2,7 +2,8 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
-
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 /**
  * Represents a mapping utility for Livewire measurements.
  */
@@ -20,7 +21,7 @@ const LivewireContour = {
    */
   toMeasurement: (
     csToolsEventDetail,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
     getValueTypeFromToolType,
     customizationService
@@ -28,6 +29,8 @@ const LivewireContour = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Livewire tool: Missing metadata or data');
       return null;
@@ -40,16 +43,16 @@ const LivewireContour = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, frameNumber, StudyInstanceUID } =
-      getSOPInstanceAttributes(referencedImageId);
+      getSOPInstanceAttributes(referencedImageId, displaySetService, annotation);
 
     let displaySet;
     if (SOPInstanceUID) {
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
 
     return {
@@ -61,11 +64,14 @@ const LivewireContour = {
       metadata,
       frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
+      referencedImageId,
       referenceStudyUID: StudyInstanceUID,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: getDisplayText(annotation, displaySet, customizationService),
+      isLocked,
+      isVisible,
+      displayText: getDisplayText(annotation, displaySet, displaySetService),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
@@ -117,22 +123,29 @@ function getColumnValueReport(annotation, customizationService) {
  *
  * @param {Object} annotation - The annotation object.
  * @param {Object} displaySet - The display set object.
- * @returns {string[]} - An array of display text.
+ * @returns {object} - An object with primary and secondary text arrays.
  */
-function getDisplayText(annotation, displaySet, customizationService) {
+function getDisplayText(annotation, displaySet, displaySetService) {
   const { metadata, data } = annotation;
 
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
+
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
-    return [];
+    return displayText;
   }
 
   const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
-  const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
+  const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(
+    metadata.referencedImageId,
+    displaySetService,
+    annotation
+  );
 
-  const displayText = [];
-
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
   if (instance) {
     InstanceNumber = instance.InstanceNumber;
@@ -142,17 +155,18 @@ function getDisplayText(annotation, displaySet, customizationService) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  if (SeriesNumber) {
-    displayText.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  let seriesText = null;
+  if (SeriesNumber !== undefined) {
+    seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
   }
 
   if (area) {
-    /**
-     * Add Area
-     * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
-     */
     const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+    displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  }
+
+  if (seriesText) {
+    displayText.secondary.push(seriesText);
   }
 
   return displayText;

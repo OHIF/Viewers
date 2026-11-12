@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import PropTypes from 'prop-types';
 
 import Card from './PortalTooltipCard';
@@ -27,26 +27,27 @@ export default class PortalTooltip extends React.Component {
   };
 
   createPortal() {
+    const node = document.createElement('div');
     portalNodes[this.props.group] = {
-      node: document.createElement('div'),
+      node,
+      root: createRoot(node),
       timeout: false,
     };
-    portalNodes[this.props.group].node.className = 'ToolTipPortal';
-    document.body.appendChild(portalNodes[this.props.group].node);
+    node.className = 'ToolTipPortal';
+    document.body.appendChild(node);
   }
 
   renderPortal(props) {
     if (!portalNodes[this.props.group]) {
       this.createPortal();
     }
-    let { parent, ...other } = props;
-    let parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent;
-    ReactDOM.render(
+    const { parent, ...other } = props;
+    const parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent;
+    portalNodes[this.props.group].root.render(
       <Card
         parentEl={parentEl}
         {...other}
-      />,
-      portalNodes[this.props.group].node
+      />
     );
   }
 
@@ -66,8 +67,8 @@ export default class PortalTooltip extends React.Component {
       return;
     }
 
-    let props = { ...nextProps };
-    let newProps = { ...nextProps };
+    const props = { ...nextProps };
+    const newProps = { ...nextProps };
 
     if (portalNodes[this.props.group] && portalNodes[this.props.group].timeout) {
       clearTimeout(portalNodes[this.props.group].timeout);
@@ -85,15 +86,18 @@ export default class PortalTooltip extends React.Component {
   }
 
   componentWillUnmount() {
-    if (portalNodes[this.props.group]) {
-      ReactDOM.unmountComponentAtNode(portalNodes[this.props.group].node);
-      clearTimeout(portalNodes[this.props.group].timeout);
-
-      try {
-        document.body.removeChild(portalNodes[this.props.group].node);
-      } catch (e) {}
-
+    const portal = portalNodes[this.props.group];
+    if (portal) {
+      clearTimeout(portal.timeout);
       portalNodes[this.props.group] = null;
+
+      // componentWillUnmount runs inside React's commit phase, and root.unmount()
+      // refuses to run synchronously there (it warns and forces a nested flush).
+      // Defer the teardown of the portal's own root until this commit is done.
+      queueMicrotask(() => {
+        portal.root.unmount();
+        portal.node.remove();
+      });
     }
   }
 

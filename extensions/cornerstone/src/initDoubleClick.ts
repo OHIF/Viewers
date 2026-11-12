@@ -1,16 +1,9 @@
 import { eventTarget, EVENTS } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
-import { CommandsManager, CustomizationService, Types } from '@ohif/core';
+import { CommandsManager, CustomizationService } from '@ohif/core';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 
 const cs3DToolsEvents = Enums.Events;
-
-const DEFAULT_DOUBLE_CLICK = {
-  doubleClick: {
-    commandName: 'toggleOneUp',
-    commandOptions: {},
-  },
-};
 
 /**
  * Generates a double click event name, consisting of:
@@ -50,8 +43,9 @@ function initDoubleClick({ customizationService, commandsManager }: initDoubleCl
     const eventName = getDoubleClickEventName(evt);
 
     // Allows for the customization of the double click on a viewport.
-    const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_DOUBLE_CLICK;
+    const customizations = customizationService.getCustomization(
+      'cornerstoneViewportClickCommands'
+    );
 
     const toRun = customizations[eventName];
 

@@ -9,9 +9,7 @@ const RETRY_DELAY = 10000; // 10 seconds
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 
-  const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf8'));
-
-  const packages = lernaJson.packages;
+  const packages = ['extensions/*', 'platform/*', 'modes/*'];
 
   const rootDir = process.cwd();
 
@@ -39,13 +37,18 @@ async function run() {
         while (retries < MAX_RETRIES) {
           try {
             console.log(`Tying to publishing package at ${packageDirectory}`);
-            const publishArgs = ['publish'];
+            // Use `pnpm publish` (not npm) so the workspace:* specifiers on our
+            // internal @ohif/* deps are rewritten to the exact version in the
+            // published tarball. npm would publish the literal "workspace:*",
+            // which npm/yarn consumers cannot resolve. --no-git-checks because
+            // the bump commit/tag is created in CI on a possibly-detached ref.
+            const publishArgs = ['publish', '--no-git-checks'];
 
             if (branchName === 'master') {
               publishArgs.push('--tag', 'beta');
             }
 
-            await execa('npm', publishArgs);
+            await execa('pnpm', publishArgs);
             console.log(`Successfully published package at ${packageDirectory}`);
             break;
           } catch (error) {

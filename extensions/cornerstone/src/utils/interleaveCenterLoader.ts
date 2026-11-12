@@ -1,6 +1,8 @@
 import { cache, imageLoadPoolManager, Enums } from '@cornerstonejs/core';
 import getInterleavedFrames from './getInterleavedFrames';
-import { compact, flatten, zip } from 'lodash';
+import zip from 'lodash.zip';
+import compact from 'lodash.compact';
+import flatten from 'lodash.flatten';
 
 // Map of volumeId and SeriesInstanceId
 const volumeIdMapsToLoad = new Map<string, string>();
@@ -82,7 +84,7 @@ export default function interleaveCenterLoader({
   // the imageIds and save them in AllRequests for later use
   const AllRequests = [];
   volumes.forEach(volume => {
-    const requests = volume.getImageLoadRequests();
+    const requests = volume.getImageLoadRequests?.() ?? [];
 
     if (!requests.length || !requests[0] || !requests[0].imageId) {
       return;

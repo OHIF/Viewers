@@ -5,27 +5,6 @@ import { findNearbyToolData } from './utils/findNearbyToolData';
 
 const cs3DToolsEvents = Enums.Events;
 
-const DEFAULT_CONTEXT_MENU_CLICKS = {
-  button1: {
-    commands: [
-      {
-        commandName: 'closeContextMenu',
-      },
-    ],
-  },
-  button3: {
-    commands: [
-      {
-        commandName: 'showCornerstoneContextMenu',
-        commandOptions: {
-          requireNearbyToolData: true,
-          menuId: 'measurementsContextMenu',
-        },
-      },
-    ],
-  },
-};
-
 /**
  * Generates a name, consisting of:
  *    * alt when the alt key is down
@@ -60,8 +39,10 @@ function initContextMenu({
    * defaults on button1 and button2
    */
   const cornerstoneViewportHandleEvent = (name, evt) => {
-    const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_CONTEXT_MENU_CLICKS;
+    const customizations = customizationService.getCustomization(
+      'cornerstoneViewportClickCommands'
+    );
+
     const toRun = customizations[name];
 
     if (!toRun) {
@@ -71,7 +52,7 @@ function initContextMenu({
     // only find nearbyToolData if required, for the click (which closes the context menu
     // we don't need to find nearbyToolData)
     let nearbyToolData = null;
-    if (toRun.commands.some(command => command.commandOptions?.requireNearbyToolData)) {
+    if (toRun.some(command => command.commandOptions?.requireNearbyToolData)) {
       nearbyToolData = findNearbyToolData(commandsManager, evt);
     }
 

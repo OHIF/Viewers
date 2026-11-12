@@ -1,6 +1,8 @@
 ---
 sidebar_position: 7
 sidebar_label: Layout Template
+title: Layout Template Module
+summary: Documentation for OHIF Layout Template Module, which defines the structural organization of the viewer interface, controlling toolbar positioning, panel arrangement, and viewport grid placement through React components.
 ---
 
 # Module: Layout Template

@@ -22,26 +22,29 @@ export default function fetchPaletteColorLookupTableData(item, tag, descriptorTa
 }
 
 function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
-  const numLutEntries = lutDescriptor[0];
-  const bits = lutDescriptor[2];
+  // DICOM standard says to use 64k instead of 0 as 64k isn't specifiable in
+  // 2 bytes.
+  const numLutEntries = lutDescriptor[0] || 65536;
+  const bitsAllocated = lutDescriptor[2];
 
   if (!paletteColorLookupTableData) {
     return undefined;
   }
 
   const arrayBufferToPaletteColorLUT = arraybuffer => {
+    // Handle both ArrayBuffer and TypedArray inputs
+    const buffer = arraybuffer.buffer || arraybuffer;
+    // See note in PS3.3 C7.6.3.1.5 around 8 bit data encoded as 16 bit
+    const data =
+      buffer.byteLength === 2 * numLutEntries || bitsAllocated > 8
+        ? new Uint16Array(buffer)
+        : new Uint8Array(buffer);
     const lut = [];
 
-    if (bits === 16) {
-      let j = 0;
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = (arraybuffer[j++] + arraybuffer[j++]) << 8;
-      }
-    } else {
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = arraybuffer[i];
-      }
+    for (let i = 0; i < numLutEntries; i++) {
+      lut[i] = data[i];
     }
+
     return lut;
   };
 
@@ -51,14 +54,21 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
 
   if (paletteColorLookupTableData.InlineBinary) {
     try {
-      const arraybuffer = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), c =>
+      const uint8Array = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), c =>
         c.charCodeAt(0)
       );
-      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(arraybuffer));
+      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(uint8Array));
     } catch (e) {
       console.log("Couldn't decode", paletteColorLookupTableData.InlineBinary, e);
       return undefined;
     }
+  }
+
+  const arrayPalette = Array.isArray(paletteColorLookupTableData)
+    ? paletteColorLookupTableData[0]
+    : paletteColorLookupTableData;
+  if (arrayPalette instanceof ArrayBuffer) {
+    return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(arrayPalette));
   }
 
   if (paletteColorLookupTableData.retrieveBulkData) {

@@ -1,5 +1,5 @@
 import { ExtensionManager } from '../../extensions';
-import { DisplaySet, InstanceMetadata } from '../../types';
+import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 
@@ -115,23 +115,59 @@ export default class DisplaySetService extends PubSubService {
     return this.activeDisplaySets;
   }
 
+  /**
+   * Gets the set of display sets with this series instance UID
+   *
+   * <b>WARNING: Do not use this method when you have a referenced series sequence
+   * as this method does NOT check sop instances.  Instead, use getDisplaySetsForReference
+   * to get those with the correct sop instances in them.</b>
+   */
   public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
     return [...displaySetCache.values()].filter(
       displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID
     );
   };
 
+  /**
+   * Given a reference to a series/sop, returns the set of display sets
+   * containing an instance from the references.
+   */
+  public getDisplaySetsForReferences = (
+    references: ReferencedSeriesSequence | ReferencedSeriesSequence[]
+  ): DisplaySet[] => {
+    const mapSeriesReferences = new Map<string, Set<string>>();
+    const referenceArr = Array.isArray(references) ? references : [references];
+    for (const seriesRef of referenceArr) {
+      const { SeriesInstanceUID, ReferencedInstanceSequence } = seriesRef;
+      if (!mapSeriesReferences.has(SeriesInstanceUID)) {
+        mapSeriesReferences.set(SeriesInstanceUID, new Set<string>());
+      }
+      const sops = mapSeriesReferences.get(SeriesInstanceUID);
+      for (const sopReference of ReferencedInstanceSequence) {
+        sops.add(sopReference.ReferencedSOPInstanceUID);
+      }
+    }
+
+    return [...displaySetCache.values()].filter(displaySet => {
+      const sopReferences = mapSeriesReferences.get(displaySet.SeriesInstanceUID);
+      if (!sopReferences || !displaySet.instances) {
+        return;
+      }
+      return displaySet.instances.some(instance => sopReferences.has(instance.SOPInstanceUID));
+    });
+  };
+
   public getDisplaySetForSOPInstanceUID(
     sopInstanceUID: string,
     seriesInstanceUID: string,
-    frameNumber?: number
+    _frameNumber?: number
   ): DisplaySet {
     const displaySets = seriesInstanceUID
       ? this.getDisplaySetsForSeries(seriesInstanceUID)
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
-      return ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID);
+      return ds.instances?.some(i => i.SOPInstanceUID === sopInstanceUID);
     });
 
     return displaySet;
@@ -204,7 +240,7 @@ export default class DisplaySetService extends PubSubService {
     }
 
     // If array of instances => One instance.
-    const displaySetsAdded = [];
+    const displaySetsAdded = new Array<DisplaySet>();
 
     if (batch) {
       for (let i = 0; i < input.length; i++) {
@@ -423,5 +459,30 @@ export default class DisplaySetService extends PubSubService {
     });
 
     return result;
+  }
+
+  /**
+   *
+   * @param sortFn function to sort the display sets
+   * @param direction direction to sort the display sets.  Ascending means
+   *    increasing in value, which will typically put the lowest series numbers
+   *    first, with low priority display sets last with newest first.
+   *    The meaning of this flag may change to leave the image/non-image display
+   *    set sorting alone and only affect sorting within groups, or have additional
+   *    values for specific changes to the sort.
+   * @returns void
+   */
+  public sortDisplaySets(
+    sortFn: (a: DisplaySet, b: DisplaySet) => number,
+    direction: 'ascending' | 'descending' = 'ascending',
+    suppressEvent = false
+  ): void {
+    this.activeDisplaySets.sort(sortFn);
+    if (direction === 'descending') {
+      this.activeDisplaySets.reverse();
+    }
+    if (!suppressEvent) {
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    }
   }
 }

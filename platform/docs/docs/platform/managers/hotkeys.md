@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Hotkeys Manager
+title: Hotkeys Manager
+summary: Documentation for the HotkeysManager class which handles keyboard shortcut bindings to commands, allowing configuration of global and mode-specific keyboard shortcuts with user customization capabilities.
 ---
 # Hotkeys Managers
 
@@ -74,6 +76,7 @@ export default [
 ```
 
 
-## Behind the Scene
-When you `setHotkeys`,  the `commandName` gets registered with the `commandsManager` and
-get run after the key is pressed.
+### Global vs Mode specific hotkeys
+
+You can can set the global hotkeys and override them using the `$set` method
+in the customization service.

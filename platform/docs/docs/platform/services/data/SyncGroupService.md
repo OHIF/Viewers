@@ -1,6 +1,8 @@
 ---
 sidebar_position: 8
 sidebar_label: SyncGroup Service
+title: SyncGroup Service
+summary: Documentation for OHIF's SyncGroupService, which manages synchronization between multiple viewports based on various criteria like camera position, window level, and slice position, with both hanging protocol and manual configuration options.
 ---
 
 # Sync Group Service

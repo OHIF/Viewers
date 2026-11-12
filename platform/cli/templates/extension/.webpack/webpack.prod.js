@@ -12,13 +12,15 @@ const config = {
   entry: rootDir + '/' + pkg.module,
   devtool: 'source-map',
   output: {
+    library: {
+      type: 'umd',
+      umdNamedDefine: true,
+    },
     path: outputFolder,
     filename: outputFile,
     library: pkg.name,
-    libraryTarget: 'umd',
-    chunkFilename: '[name].chunk.js',
-    umdNamedDefine: true,
-    globalObject: "typeof self !== 'undefined' ? self : this",
+chunkFilename: '[name].chunk.js',
+globalObject: "typeof self !== 'undefined' ? self : this",
   },
   externals: [
     {
@@ -43,7 +45,40 @@ const config = {
     },
   ],
   module: {
+
     rules: [
+      {
+        test: /\.svg?$/,
+        oneOf: [
+          {
+            use: [
+              {
+                loader: '@svgr/webpack',
+                options: {
+                  svgoConfig: {
+                    plugins: [
+                      {
+                        name: 'preset-default',
+                        params: {
+                          overrides: {
+                            removeViewBox: false
+                          },
+                        },
+                      },
+                    ]
+                  },
+                  prettier: false,
+                  svgo: true,
+                  titleProp: true,
+                },
+              },
+            ],
+            issuer: {
+              and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+            },
+          },
+        ],
+      },
       {
         test: /(\.jsx|\.js|\.tsx|\.ts)$/,
         loader: 'babel-loader',

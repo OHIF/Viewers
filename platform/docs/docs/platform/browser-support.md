@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+title: Browser Support
+summary: Documentation of OHIF's browser compatibility standards, including supported browsers (IE11, Firefox, Chrome, Safari, Edge), transpilation and polyfill strategies, and development priorities focused on modern evergreen browsers.
 ---
 # Browser Support
 
@@ -37,9 +39,7 @@ language feature yet. Our earlier transpilation will rectify _syntax_
 discrepancies, but unimplemented features require a "temporary" implementation.
 That's where polyfills step in.
 
-You can utilize a service like [polyfill.io](https://polyfill.io/v3/) to
-auto-detect and apply polyfills as needed, or you can update the PWA build to
-include polyfill's in your bundle by incorporating [core-js][core-js]
+We previously used polyfill io, but due to a security vulnerability in the library, it's necessary to switch to alternative services.
 
 <!--
   Links

@@ -1,0 +1,21 @@
+{
+  "AccessionNumber": "Accessie #",
+  "ClearFilters": "Filters wissen",
+  "Description": "Beschrijving",
+  "Empty": "Leeg",
+  "Filter list to 100 studies or less to enable sorting": "Filter de lijst tot 100 studies of minder om sorteren in te schakelen",
+  "Instances": "Instanties",
+  "Modality": "Modaliteit",
+  "MRN": "MRN",
+  "Next": "Volgende >",
+  "No studies available": "Geen studies beschikbaar",
+  "Number of studies": "Aantal studies",
+  "Page": "Pagina",
+  "PatientName": "Patiëntnaam",
+  "Previous": "< Terug",
+  "Results per page": "Resultaten per pagina",
+  "Studies": "Studieën",
+  "StudyDate": "Studiedatum",
+  "StudyList": "Studie lijst",
+  "Upload": "Uploaden"
+}

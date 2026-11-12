@@ -24,10 +24,28 @@ Key features:
   Tailwind CSS
 
 
-<div className="text--center">
-    <div className="button-group">
-        <a className='button button--primary' href="https://ohif.org/news/">Subscribe to our newsletter</a>
-        <a className='button button--primary' href="./release-notes">Release Notes</a>
+<div style={{ textAlign: 'center' }}>
+    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <a style={{
+            backgroundColor: '#4042af',
+            color: 'white',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.25rem',
+            textDecoration: 'none',
+            ':hover': {
+                backgroundColor: '#2a2b74'
+            }
+        }} href="https://ohif.org/news/">Subscribe to our newsletter</a>
+        <a style={{
+            backgroundColor: '#4042af',
+            color: 'white',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.25rem',
+            textDecoration: 'none',
+            ':hover': {
+                backgroundColor: '#2a2b74'
+            }
+        }} href="./release-notes">Release Notes</a>
     </div>
 </div>
 

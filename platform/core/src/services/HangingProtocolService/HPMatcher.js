@@ -1,4 +1,4 @@
-import validate from './lib/validator';
+import validate, { isOhifValidator } from './lib/validator';
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
@@ -50,16 +50,23 @@ const match = (metadataInstance, rules = [], customAttributeRetrievalCallbacks, 
       readValues[attribute] = fromSrc[from]?.[attribute] ?? instance?.[attribute];
     }
 
+    // handle cases where the constraint is also a custom attribute
+    const resolvedConstraint = resolveConstraintAttributes(
+      readValues,
+      rule.constraint,
+      customAttributeRetrievalCallbacks,
+      fromSrc
+    );
+
     // Format the constraint as required by Validate.js
     const testConstraint = {
-      [attribute]: rule.constraint,
+      [attribute]: resolvedConstraint,
     };
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    let attributeValue = readValues[attribute];
     const attributeMap = {
-      [attribute]: attributeValue,
+      [attribute]: readValues[attribute],
     };
 
     // Use Validate.js to evaluate the constraints on the specified metadataInstance
@@ -117,6 +124,56 @@ const match = (metadataInstance, rules = [], customAttributeRetrievalCallbacks, 
     requiredFailed,
   };
 };
+
+// New helper function to resolve constraint attributes
+const resolveConstraintAttributes = (
+  readValues,
+  constraint,
+  customAttributeRetrievalCallbacks,
+  fromSrc
+) => {
+  if (typeof constraint !== 'object' || constraint === null) {
+    return constraint;
+  }
+
+  const resolvedConstraint = {};
+  Object.entries(constraint).forEach(([key, value]) => {
+    if (value && typeof value === 'object' && 'attribute' in value) {
+      const attributeName = value.attribute;
+      const attributeFrom = value.from ?? 'metadataInstance';
+
+      if (customAttributeRetrievalCallbacks.hasOwnProperty(attributeName)) {
+        const value = customAttributeRetrievalCallbacks[attributeName].callback.call(
+          null,
+          fromSrc[attributeFrom],
+          fromSrc.options
+        );
+
+        resolvedConstraint[key] = {
+          value,
+        };
+      } else {
+        resolvedConstraint[key] = {
+          value:
+            fromSrc[attributeFrom]?.[attributeName] ?? fromSrc.metadataInstance?.[attributeName],
+        };
+      }
+    } else {
+      resolvedConstraint[key] = isOhifValidator(key) ? wrapFalsyOperand(value) : value;
+    }
+  }, {});
+
+  return resolvedConstraint;
+};
+
+/**
+ * Validate.js does not run a validator whose operand is falsy, so
+ * `{ greaterThan: 0 }` would always pass. `{ value: 0 }` is truthy, and the
+ * validators read the operand from `value`. Only the OHIF validators get the
+ * wrapper: for a validate.js built-in such as `presence`, `false` means "off".
+ */
+const wrapFalsyOperand = operand =>
+  operand === 0 || operand === false || operand === '' ? { value: operand } : operand;
 
 const HPMatcher = {
   match,

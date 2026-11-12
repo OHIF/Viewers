@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: Video Tutorials
+title: OHIF Development Video Tutorials
+summary: Collection of instructional videos demonstrating key OHIF development workflows, including creating, linking, and publishing modes and extensions, with step-by-step demonstrations of the OHIF CLI and NPM publishing process.
 ---
 
 # Video Tutorials

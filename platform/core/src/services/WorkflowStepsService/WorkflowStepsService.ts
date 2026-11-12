@@ -77,6 +77,7 @@ export type WorkflowStep = {
     };
   };
   onEnter: () => void | CommandCallback[];
+  onExit: () => void | CommandCallback[];
 };
 
 class WorkflowStepsService extends PubSubService {
@@ -135,7 +136,8 @@ class WorkflowStepsService extends PubSubService {
     const toUse = Array.isArray(toolbarButtons) ? toolbarButtons : [toolbarButtons];
 
     toUse.forEach(({ buttonSection, buttons }) => {
-      toolbarService.createButtonSection(buttonSection, buttons);
+      toolbarService.clearButtonSection(buttonSection);
+      toolbarService.updateSection(buttonSection, buttons);
     });
   }
 
@@ -171,7 +173,7 @@ class WorkflowStepsService extends PubSubService {
 
     const commandsManager = this._commandsManager;
 
-    if (!Array.isArray) {
+    if (!Array.isArray(callbacks)) {
       callbacks = [callbacks];
     }
 
@@ -200,6 +202,10 @@ class WorkflowStepsService extends PubSubService {
 
     if (!newWorkflowStep) {
       throw new Error(`Invalid workflowStepId (${workflowStepId})`);
+    }
+
+    if (this._activeWorkflowStep) {
+      this._invokeCallbacks(previousWorkflowStep.onExit);
     }
 
     // onEnter needs to be called before updating the Hanging Protocol because

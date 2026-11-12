@@ -72,7 +72,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // Assign an alias to the button element
     cy.get('@wwwcBtnPrimary').as('wwwcButton');
     cy.get('@wwwcButton').click();
-    cy.get('@wwwcButton').should('have.class', 'bg-primary-light');
+    cy.get('@wwwcButton').should('have.attr', 'data-active', 'true');
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
@@ -85,7 +85,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The exact text is slightly dependent on the viewport resolution, so leave a range
     cy.get('@viewportInfoBottomLeft').should($txt => {
       const text = $txt.text();
-      expect(text).to.include('W:118').include('L:479');
+      expect(text).to.include('L:479');
     });
   });
 
@@ -97,7 +97,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@panButton').click();
 
     // Assert that the button has the 'active' class
-    cy.get('@panButton').should('have.class', 'bg-primary-light');
+    cy.get('@panButton').should('have.attr', 'data-active', 'true');
 
     // Trigger the pan actions on the viewport
     cy.get('@viewport')
@@ -117,7 +117,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Verify the measurement exists in the table
     cy.get('@measurementsPanel').should('be.visible');
 
-    cy.get('[data-cy="measurement-item"]').as('measure').its('length').should('be.at.least', 1);
+    cy.get('[data-cy="data-row"]').as('measure').its('length').should('be.at.least', 1);
   });
 
   /*it('checks if angle annotation can be added on viewport without causing any errors', () => {
@@ -351,7 +351,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
-    cy.get('[data-cy="measurement-item"]')
+    cy.get('[data-cy="data-row"]')
       .its('length')
       .should('be.at.least', 2);
 

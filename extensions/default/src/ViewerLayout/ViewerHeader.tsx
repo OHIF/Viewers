@@ -1,29 +1,23 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
 
-import { ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
-import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import { Header, useModal } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
+import { preserveQueryParameters } from '@ohif/app';
+import { Types } from '@ohif/core';
 
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
+  const { servicesManager, extensionManager } = useSystem();
+  const { customizationService } = servicesManager.services;
 
-function ViewerHeader({
-  hotkeysManager,
-  extensionManager,
-  servicesManager,
-  appConfig,
-}: withAppTypes) {
   const navigate = useNavigate();
   const location = useLocation();
 
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
 
     const dataSourceName = pathname.substring(dataSourceIdx + 1);
     const existingDataSource = extensionManager.getDataSources(dataSourceName);
@@ -32,10 +26,7 @@ function ViewerHeader({
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
+    preserveQueryParameters(searchQuery, customizationService);
 
     navigate({
       pathname: '/',
@@ -44,55 +35,62 @@ function ViewerHeader({
   };
 
   const { t } = useTranslation();
-  const { show, hide } = useModal();
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
+  const { show } = useModal();
+
+  const AboutModal = customizationService.getCustomization(
+    'ohif.aboutModal'
+  ) as Types.MenuComponentCustomization;
+
+  const AppearanceModal = customizationService.getCustomization(
+    'ohif.appearanceModal'
+  ) as Types.MenuComponentCustomization;
+
+  const UserPreferencesModal = customizationService.getCustomization(
+    'ohif.userPreferencesModal'
+  ) as Types.MenuComponentCustomization;
+
+  // Whatever fills the right side of the menu bar, in order: undo/redo then
+  // patient info by default. Each item is rendered as a component, so it can
+  // bring its own hooks, and reordering the list reorders the header.
+  const rightSideItems =
+    customizationService.getCustomization('ohif.headerRightSide')?.items ?? [];
 
   const menuOptions = [
     {
-      title: t('Header:About'),
+      title: AboutModal?.menuTitle ?? t('Header:About'),
       icon: 'info',
       onClick: () =>
         show({
           content: AboutModal,
-          title: t('AboutModal:About OHIF Viewer'),
-          contentProps: { versionNumber, commitHash },
-          containerDimensions: 'max-w-4xl max-h-4xl',
+          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+          containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
         }),
     },
     {
-      title: t('Header:Preferences'),
+      title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferences,
-          containerDimensions: 'w-[70%] max-w-[900px]',
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              if (language.value !== currentLanguage().value) {
-                i18n.changeLanguage(language.value);
-              }
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
+          content: UserPreferencesModal,
+          title: UserPreferencesModal.title ?? t('UserPreferencesModal:User preferences'),
+          containerClassName:
+            UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
   ];
+
+  if (AppearanceModal) {
+    menuOptions.splice(1, 0, {
+      title: AppearanceModal.menuTitle ?? t('Header:Appearance'),
+      icon: 'ColorChange',
+      onClick: () =>
+        show({
+          content: AppearanceModal,
+          title: AppearanceModal.title ?? t('AppearanceModal:Appearance'),
+          containerClassName: AppearanceModal.containerClassName ?? 'max-w-md',
+        }),
+    });
+  }
 
   if (appConfig.oidc) {
     menuOptions.push({
@@ -110,21 +108,15 @@ function ViewerHeader({
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
-      showPatientInfo={appConfig.showPatientInfo}
-      servicesManager={servicesManager}
-      Secondary={
-        <Toolbar
-          servicesManager={servicesManager}
-          buttonSection="secondary"
-        />
-      }
-      appConfig={appConfig}
+      Secondary={<Toolbar buttonSection="secondary" />}
+      RightSide={rightSideItems.map((Item, index) => (
+        // The list is static per configuration, so the index is a stable key.
+        <Item key={index} />
+      ))}
     >
-      <ErrorBoundary context="Primary Toolbar">
-        <div className="relative flex justify-center gap-[4px]">
-          <Toolbar servicesManager={servicesManager} />
-        </div>
-      </ErrorBoundary>
+      <div className="relative flex justify-center gap-[4px]">
+        <Toolbar buttonSection="primary" />
+      </div>
     </Header>
   );
 }

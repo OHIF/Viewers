@@ -1,0 +1,54 @@
+import viewportOverlayCustomization from './customizations/viewportOverlayCustomization';
+import getSegmentationPanelCustomization from './customizations/segmentationPanelCustomization';
+import layoutSelectorCustomization from './customizations/layoutSelectorCustomization';
+import viewportToolsCustomization from './customizations/viewportToolsCustomization';
+import viewportClickCommandsCustomization from './customizations/viewportClickCommandsCustomization';
+import measurementsCustomization from './customizations/measurementsCustomization';
+import volumeRenderingCustomization from './customizations/volumeRenderingCustomization';
+import colorbarCustomization from './customizations/colorbarCustomization';
+import modalityColorMapCustomization from './customizations/modalityColorMapCustomization';
+import segmentationHydrationCustomization from './customizations/segmentationHydrationCustomization';
+import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
+import toolbarButtonsCustomization from './customizations/toolbarButtonsCustomization';
+import segmentationToolbarCustomization from './customizations/segmentationToolbarCustomization';
+import getToolGroupToolsCustomization from './customizations/toolGroupToolsCustomization';
+import miscCustomization from './customizations/miscCustomization';
+import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
+import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
+import getViewportScrollbarCustomization from './customizations/viewportScrollbarCustomization';
+import gpuSettingsPresetCustomization from './customizations/gpuSettingsPresetCustomization';
+
+function getCustomizationModule({ commandsManager, servicesManager, extensionManager }) {
+  return [
+    {
+      name: 'default',
+      value: {
+        ...viewportOverlayCustomization,
+        ...getSegmentationPanelCustomization({
+          commandsManager,
+          servicesManager,
+          extensionManager,
+        }),
+        ...layoutSelectorCustomization,
+        ...viewportToolsCustomization,
+        ...viewportClickCommandsCustomization,
+        ...measurementsCustomization,
+        ...volumeRenderingCustomization,
+        ...colorbarCustomization,
+        ...modalityColorMapCustomization,
+        ...segmentationHydrationCustomization,
+        ...windowLevelPresetsCustomization,
+        ...toolbarButtonsCustomization,
+        ...segmentationToolbarCustomization,
+        ...getToolGroupToolsCustomization({ commandsManager }),
+        ...miscCustomization,
+        ...captureViewportModalCustomization,
+        ...viewportDownloadWarningCustomization,
+        ...getViewportScrollbarCustomization(),
+        ...gpuSettingsPresetCustomization,
+      },
+    },
+  ];
+}
+
+export default getCustomizationModule;

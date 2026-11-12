@@ -1,0 +1,18 @@
+{
+  "Do you want to add this measurement to the existing report?": "Souhaitez-vous ajouter cette mesure au rapport existant ?",
+  "Create new report": "Créer un nouveau rapport",
+  "Add to existing report": "Ajouter au rapport existant",
+  "Discard": "Ignorer",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "Des mesures suivies existent déjà. Que souhaitez-vous en faire ?",
+  "No, do not ask again for this series": "Non, ne plus demander pour cette série",
+  "No": "$t(Common:No)",
+  "Track measurements for this series?": "Suivre les mesures pour cette série ?",
+  "Yes": "$t(Common:Yes)",
+  "Cancel": "$t(Common:Cancel)",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "Les mesures ne peuvent pas couvrir plusieurs études. Voulez-vous enregistrer vos mesures suivies ?",
+  "No, discard previously tracked series & measurements": "Non, abandonner les séries et mesures suivies précédemment",
+  "Do you want to continue tracking measurements for this study?": "Souhaitez-vous continuer à suivre les mesures pour cette étude ?",
+  "Create Report": "Créer un rapport",
+  "Measurements saved successfully": "Mesures enregistrées avec succès",
+  "Failed to store measurements": "Échec de l'enregistrement des mesures"
+}

@@ -1,7 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
+import { Row } from './DicomTagBrowser';
+import { Icons } from '@ohif/ui-next';
 
 const lineHeightPx = 20;
 const lineHeightClassName = `leading-[${lineHeightPx}px]`;
@@ -12,19 +14,73 @@ const rowStyle = {
   borderBottomWidth: `${rowBottomBorderPx}px`,
   ...rowVerticalPaddingStyle,
 };
+const indentationPadding = 8;
+
+const RowComponent = ({
+  row,
+  style,
+  keyPrefix,
+  onToggle,
+}: {
+  row: Row;
+  style: any;
+  keyPrefix: string;
+  onToggle?: (areChildrenVisible: boolean) => void;
+}) => {
+  const handleToggle = useCallback(() => {
+    onToggle(!row.areChildrenVisible);
+  }, [row.areChildrenVisible, onToggle]);
+
+  const hasChildren = row.children && row.children.length > 0;
+  const isChildOrParent = hasChildren || row.depth > 0;
+  const padding = indentationPadding * (1 + 2 * row.depth);
+
+  return (
+    <div
+      style={{ ...style, ...rowStyle }}
+      className={classNames(
+        'hover:bg-primary/25 border-input text-foreground bg-background flex w-full flex-row items-center break-all text-base',
+        lineHeightClassName
+      )}
+      key={keyPrefix}
+    >
+      {isChildOrParent && (
+        <div style={{ paddingLeft: `${padding}px`, opacity: onToggle ? 1 : 0 }}>
+          {row.areChildrenVisible ? (
+            <div
+              className="cursor-pointer p-1"
+              onClick={handleToggle}
+            >
+              <Icons.ChevronDown />
+            </div>
+          ) : (
+            <div
+              className="cursor-pointer p-1"
+              onClick={handleToggle}
+            >
+              <Icons.ChevronRight />
+            </div>
+          )}
+        </div>
+      )}
+      <div className="w-4/24 px-3">{row.tag}</div>
+      <div className="w-2/24 px-3">{row.valueRepresentation}</div>
+      <div className="w-6/24 px-3">{row.keyword}</div>
+      <div className="w-5/24 grow px-3">{row.value}</div>
+    </div>
+  );
+};
 
 function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   return (
     <div
-      className={classNames(
-        'bg-secondary-dark ohif-scrollbar flex w-full flex-row overflow-y-scroll'
-      )}
+      className={classNames('bg-popover ohif-scrollbar flex w-full flex-row overflow-y-scroll')}
       style={rowVerticalPaddingStyle}
     >
       <div className="w-4/24 px-3">
         <label
           ref={tagRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">Tag</span>
         </label>
@@ -32,7 +88,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
       <div className="w-2/24 px-3">
         <label
           ref={vrRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">VR</span>
         </label>
@@ -40,7 +96,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
       <div className="w-6/24 px-3">
         <label
           ref={keywordRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">Keyword</span>
         </label>
@@ -48,7 +104,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
       <div className="w-5/24 grow px-3">
         <label
           ref={valueRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">Value</span>
         </label>
@@ -56,15 +112,47 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
     </div>
   );
 }
+/**
+ * Measures the tallest column of one row, in pixels, using the header column
+ * widths and a canvas for text metrics.
+ *
+ * Takes the header elements as arguments rather than closing over them: the
+ * compiler infers a callback's dependencies from its body, so reading
+ * `el.offsetWidth` inside a component-level callback gets hoisted into render,
+ * where these are still null. Passing the elements in means the emitted guard
+ * compares the references instead, and there is no property path to hoist.
+ */
+function measureRowHeight(row, headerElems, canvas) {
+  if (!canvas || headerElems.some(elem => !elem)) {
+    return 0;
+  }
 
-function DicomTagTable({ rows }) {
-  const listRef = useRef();
-  const canvasRef = useRef();
+  const headerWidths = headerElems.map(elem => elem.offsetWidth);
+
+  const context = canvas.getContext('2d');
+  context.font = getComputedStyle(canvas).font;
+
+  const propertiesToCheck = ['tag', 'valueRepresentation', 'keyword', 'value'];
+
+  return Object.entries(row)
+    .filter(([key]) => propertiesToCheck.includes(key))
+    .map(([, colText], index) => {
+      const colOneLineWidth = context.measureText(colText).width;
+      const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
+      return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
+    })
+    .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight), 0);
+}
+
+function DicomTagTable({ rows }: { rows: Row[] }) {
+  const listRef = useRef<List | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [tagHeaderElem, setTagHeaderElem] = useState(null);
   const [vrHeaderElem, setVrHeaderElem] = useState(null);
   const [keywordHeaderElem, setKeywordHeaderElem] = useState(null);
   const [valueHeaderElem, setValueHeaderElem] = useState(null);
+  const [internalRows, setInternalRows] = useState(rows);
 
   // Here the refs are inturn stored in state to trigger a render of the table.
   // This virtualized table does NOT render until the header is rendered because the header column widths are used to determine the row heights in the table.
@@ -89,6 +177,14 @@ function DicomTagTable({ rows }) {
       setValueHeaderElem(elem);
     }
   };
+
+  useEffect(() => {
+    setInternalRows(rows);
+  }, [rows]);
+
+  const visibleRows = useMemo(() => {
+    return internalRows.filter(row => row.isVisible);
+  }, [internalRows]);
 
   /**
    * When new rows are set, scroll to the top and reset the virtualization.
@@ -116,27 +212,60 @@ function DicomTagTable({ rows }) {
     };
   }, []);
 
-  const Row = useCallback(
-    ({ index, style }) => {
-      const row = rows[index];
+  /**
+   * Get the item/row size. We use the header column widths to calculate the various row heights.
+   * @param index the row index
+   * @returns the row height
+   */
+  const getItemSize = useCallback(
+    rows => index =>
+      measureRowHeight(
+        rows[index],
+        [tagHeaderElem, vrHeaderElem, keywordHeaderElem, valueHeaderElem],
+        canvasRef.current
+      ),
+    [tagHeaderElem, vrHeaderElem, keywordHeaderElem, valueHeaderElem]
+  );
 
-      return (
-        <div
-          style={{ ...style, ...rowStyle }}
-          className={classNames(
-            'hover:bg-secondary-main border-secondary-light flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
-            lineHeightClassName
-          )}
-          key={`DICOMTagRow-${index}`}
-        >
-          <div className="w-4/24 px-3">{row[0]}</div>
-          <div className="w-2/24 px-3">{row[1]}</div>
-          <div className="w-6/24 px-3">{row[2]}</div>
-          <div className="w-5/24 grow px-3">{row[3]}</div>
-        </div>
-      );
+  const onToggle = useCallback(
+    sourceRow => {
+      if (!sourceRow.children) {
+        return undefined;
+      }
+
+      return areChildrenVisible => {
+        const newInternalRows = internalRows.map(internalRow => {
+          if (sourceRow.uid === internalRow.uid) {
+            return { ...internalRow, areChildrenVisible };
+          }
+          if (sourceRow.children.includes(internalRow.uid)) {
+            return { ...internalRow, isVisible: areChildrenVisible, areChildrenVisible };
+          }
+          return internalRow;
+        });
+        setInternalRows(newInternalRows);
+
+        listRef?.current?.resetAfterIndex(0);
+      };
     },
-    [rows]
+    [internalRows, listRef]
+  );
+
+  const getRowComponent = useCallback(
+    ({ rows }: { rows: Row[] }) =>
+      function RowList({ index, style }) {
+        const row = rows[index];
+
+        return (
+          <RowComponent
+            style={style}
+            row={row}
+            keyPrefix={`DICOMTagRow-${index}`}
+            onToggle={onToggle(row)}
+          />
+        );
+      },
+    [onToggle]
   );
 
   /**
@@ -144,34 +273,6 @@ function DicomTagTable({ rows }) {
    * Here we chose the tag header.
    */
   const isHeaderRendered = useCallback(() => tagHeaderElem !== null, [tagHeaderElem]);
-
-  /**
-   * Get the item/row size. We use the header column widths to calculate the various row heights.
-   * @param index the row index
-   * @returns the row height
-   */
-  const getItemSize = useCallback(
-    index => {
-      const headerWidths = [
-        tagHeaderElem.offsetWidth,
-        vrHeaderElem.offsetWidth,
-        keywordHeaderElem.offsetWidth,
-        valueHeaderElem.offsetWidth,
-      ];
-
-      const context = canvasRef.current.getContext('2d');
-      context.font = getComputedStyle(canvasRef.current).font;
-
-      return rows[index]
-        .map((colText, index) => {
-          const colOneLineWidth = context.measureText(colText).width;
-          const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
-          return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
-        })
-        .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight));
-    },
-    [rows, keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
-  );
 
   return (
     <div>
@@ -187,19 +288,19 @@ function DicomTagTable({ rows }) {
         valueRef={valueRef}
       />
       <div
-        className="relative m-auto border-2 border-black bg-black"
+        className="border-background bg-background relative m-auto border-2"
         style={{ height: '32rem' }}
       >
         {isHeaderRendered() && (
           <List
             ref={listRef}
             height={500}
-            itemCount={rows.length}
-            itemSize={getItemSize}
+            itemCount={visibleRows.length}
+            itemSize={getItemSize(visibleRows)}
             width={'100%'}
-            className="ohif-scrollbar"
+            className="ohif-scrollbar text-foreground"
           >
-            {Row}
+            {getRowComponent({ rows: visibleRows })}
           </List>
         )}
       </div>
@@ -207,4 +308,4 @@ function DicomTagTable({ rows }) {
   );
 }
 
-export default DicomTagTable;
+export default React.memo(DicomTagTable);

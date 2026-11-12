@@ -1,5 +1,5 @@
 import formatDICOMPatientName from './formatDICOMPatientName';
-import formatDICOMDate from './formatDICOMDate';
+import { formatDICOMDate } from '@ohif/ui-next';
 import formatDICOMTime from './formatDICOMTime';
 import formatNumberPrecision from './formatNumberPrecision';
 import isValidNumber from './isValidNumber';

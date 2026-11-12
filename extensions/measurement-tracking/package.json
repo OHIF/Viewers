@@ -1,55 +1,54 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.9.0-beta.3",
+  "version": "3.14.0-beta.78",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-extension-measurement-tracking.umd.js",
   "module": "src/index.tsx",
-  "publishConfig": {
-    "access": "public"
-  },
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "node": ">=24"
   },
   "files": [
     "dist",
     "README.md"
   ],
-  "keywords": [
-    "ohif-extension"
-  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:dicom-pdf": "yarn run dev",
-    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev:dicom-pdf": "pnpm run dev",
+    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "^1.71.2",
-    "@cornerstonejs/tools": "^1.71.2",
-    "@ohif/core": "3.9.0-beta.3",
-    "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.3",
-    "@ohif/ui": "3.9.0-beta.3",
-    "classnames": "^2.3.2",
-    "dcmjs": "^0.29.12",
-    "lodash.debounce": "^4.17.21",
-    "prop-types": "^15.6.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "webpack": "^5.50.0",
-    "webpack-merge": "^5.7.3"
+    "@cornerstonejs/core": "5.17.1",
+    "@cornerstonejs/tools": "5.17.1",
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "classnames": "2.5.1",
+    "dcmjs": "0.52.0",
+    "lodash.debounce": "4.0.8",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "webpack-merge": "5.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@ohif/ui": "3.9.0-beta.3",
-    "@xstate/react": "^3.2.2",
-    "xstate": "^4.10.0"
-  }
+    "@babel/runtime": "7.29.7",
+    "@xstate/react": "3.2.2",
+    "xstate": "4.38.3"
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3",
+    "webpack-merge": "5.10.0"
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
 }

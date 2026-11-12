@@ -3,6 +3,8 @@
   "Browser": "Browser",
   "Build number": "Build Number",
   "Commit hash": "Commit hash",
+  "Commit Hash": "Commit Hash",
+  "Current Browser & OS": "Current Browser & OS",
   "Data citation": "Data citation",
   "Important links": "Important links",
   "Last master commits": "Latest Master Commits",

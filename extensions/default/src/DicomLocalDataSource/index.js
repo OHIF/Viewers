@@ -1,6 +1,11 @@
 import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 import OHIF from '@ohif/core';
-import dcmjs from 'dcmjs';
+import {
+  datasetToDicomBlob,
+  makeExistingPropertiesNonEnumerable,
+  setNonEnumerableInstanceProperty,
+} from '../utils/dicomWriter';
+import { appendFrameQueryToImageId } from '../utils/appendFrameQueryToImageId';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 const { EVENTS } = DicomMetadataStore;
@@ -152,14 +157,15 @@ function createDicomLocalApi(dicomLocalConfig) {
                 SOPInstanceUID,
               } = instance;
 
-              instance.imageId = imageId;
+              setNonEnumerableInstanceProperty(instance, 'imageId', imageId);
+              makeExistingPropertiesNonEnumerable(instance);
 
               // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
               metadataProvider.addImageIdToUIDs(imageId, {
                 StudyInstanceUID,
                 SeriesInstanceUID,
                 SOPInstanceUID,
-                frameIndex: isMultiframe ? index : 1,
+                frameNumber: isMultiframe ? index + 1 : 1,
               });
             });
 
@@ -174,7 +180,7 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     store: {
       dicom: naturalizedReport => {
-        const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+        const reportBlob = datasetToDicomBlob(naturalizedReport);
 
         //Create a URL for the binary.
         var objectUrl = URL.createObjectURL(reportBlob);
@@ -209,20 +215,31 @@ function createDicomLocalApi(dicomLocalConfig) {
       return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+      // Important: Never use instance.imageId because it might be multiframe,
+      // which would make it an invalid imageId.
+
+      const { StudyInstanceUID, SeriesInstanceUID } = instance;
+      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
       const storedInstance = DicomMetadataStore.getInstance(
         StudyInstanceUID,
         SeriesInstanceUID,
         SOPInstanceUID
       );
 
-      let imageId = storedInstance.url;
+      const baseImageId = storedInstance?.url || instance.url;
 
-      if (frame !== undefined) {
-        imageId += `&frame=${frame}`;
+      if (!baseImageId) {
+        return;
       }
 
-      return imageId;
+      const numberOfFrames = Number(storedInstance?.NumberOfFrames || instance.NumberOfFrames) || 1;
+
+      if (numberOfFrames > 1) {
+        const frameNumber = frame !== undefined ? frame : 1;
+        return appendFrameQueryToImageId(baseImageId, frameNumber);
+      }
+
+      return baseImageId;
     },
     deleteStudyMetadataPromise() {
       console.log('deleteStudyMetadataPromise not implemented');

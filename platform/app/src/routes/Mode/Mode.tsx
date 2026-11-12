@@ -1,18 +1,76 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router';
-import PropTypes from 'prop-types';
+import { useParams, useLocation } from 'react-router';
+import type { To, NavigateOptions } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { utils } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-import { useSearchParams } from '@hooks';
+import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
+import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
+
+/**
+ * The properties that the mode route gives to the `validateModeEntry` hook of a
+ * mode, and to the default hook below.
+ *
+ * `navigate` does nothing after the user leaves the route.
+ */
+export type ValidateModeEntryProps = {
+  studyInstanceUIDs?: string[];
+  dataSource: any;
+  navigate: (to: To, options?: NavigateOptions) => void;
+  servicesManager: AppTypes.ServicesManager;
+  extensionManager: AppTypes.ExtensionManager;
+  commandsManager: AppTypes.CommandsManager;
+  appConfig: AppTypes.Config;
+  query: URLSearchParams;
+};
+
+/**
+ * The default `validateModeEntry` hook. It checks that every study in the URL
+ * exists in the data source, and it navigates to `/notfoundstudy` when a study
+ * is absent or when the query fails.
+ *
+ * This check moved here from PanelStudyBrowser.tsx so that the check runs in
+ * all modes. A mode that does not load its data by StudyInstanceUID replaces
+ * this check with its own `validateModeEntry` - see `ModeRoute` below.
+ *
+ * @param props.studyInstanceUIDs the studies that the URL asks for
+ * @param props.dataSource the active data source
+ * @param props.navigate navigates away, and does nothing after an unmount
+ */
+async function validateStudies({
+  studyInstanceUIDs,
+  dataSource,
+  navigate,
+}: ValidateModeEntryProps) {
+  if (!studyInstanceUIDs?.length || !dataSource) {
+    return;
+  }
+
+  for (const studyInstanceUID of studyInstanceUIDs) {
+    try {
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: studyInstanceUID,
+      });
+
+      if (!qidoForStudyUID?.length) {
+        console.warn('Study not found:', studyInstanceUID);
+        navigate('/notfoundstudy');
+        return;
+      }
+    } catch (error) {
+      console.error('Error validating study:', studyInstanceUID, error);
+      navigate('/notfoundstudy');
+      return;
+    }
+  }
+}
 
 export default function ModeRoute({
   mode,
@@ -31,6 +89,8 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  const navigate = useNavigate();
 
   mode?.onModeInit?.({
     servicesManager,
@@ -52,39 +112,38 @@ export default function ModeRoute({
   const locationRef = useRef(null);
   const isMounted = useRef(false);
 
-  // Expose the react router dom navigation.
-  history.navigate = useNavigate();
-
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
     locationRef.current = location;
   }
 
-  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    panelService,
+    hangingProtocolService,
+    userAuthenticationService,
+    customizationService,
+  } = servicesManager.services;
 
-  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
+  const { extensions, sopClassHandlers, hangingProtocol } = mode;
 
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
+  const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {
     updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
   }
 
-  // Preserve the old array interface for hotkeys
-  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
-
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
     extensionManager.setActiveDataSource(dataSourceName);
   }
 
-  const dataSource = extensionManager.getActiveDataSource()[0];
+  const dataSource = extensionManager.getActiveDataSourceOrNull();
 
   // Only handling one route per mode for now
-  const route = mode.routes[0];
+  const route = mode.routes?.[0] ?? null;
 
   useEffect(() => {
     const loadExtensions = async () => {
@@ -95,7 +154,19 @@ export default function ModeRoute({
           await extensionManager.registerExtension(extension);
         }
       }
-      setExtensionDependenciesLoaded(true);
+
+      // Mode dependency extensions register their customization modules here,
+      // but `registerExtension` does not merge them into the customization
+      // service — that otherwise only happens later in
+      // `extensionManager.onModeEnter`. Merge them now so anything that runs
+      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+      // the defaults these extensions provide.
+      // `init` is idempotent — each extension module is merged at most once.
+      customizationService.init(extensionManager);
+
+      if (isMounted.current) {
+        setExtensionDependenciesLoaded(true);
+      }
     };
 
     loadExtensions();
@@ -144,9 +215,18 @@ export default function ModeRoute({
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
+        // Register panels immediately so ViewerLayout's first render sees them.
+        // ResizablePanelsHook only auto-expands side panels on the initial mount;
+        // if panels are added later, the viewport grid keeps the wrong width.
+        // setupRouteInit (below) resets and re-applies them after customizations
+        // are layered on, so URL/config modules can still modify the lists.
         panelService.reset();
         panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
         panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // Stash the layout lists for setupRouteInit to seed into the
+        // `leftPanels` / `rightPanels` customizations.
+        layoutData.panels = { leftPanels, rightPanels };
 
         // layoutProps contains all props but leftPanels and rightPanels
         layoutData.props = layoutProps;
@@ -164,29 +244,64 @@ export default function ModeRoute({
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
-      return;
-    }
-
-    hotkeysManager.setDefaultHotKeys(hotkeys);
-
-    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
-
-    if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
-    } else {
-      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
-    }
-
-    return () => {
-      hotkeysManager.destroy();
-    };
-  }, [ExtensionDependenciesLoaded, hotkeys, studyInstanceUIDs]);
-
-  useEffect(() => {
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       return;
     }
+
+    // The validation can complete after the user leaves the route, so a
+    // navigation can happen after an unmount. A navigation after an unmount
+    // removes the user from the route that the user already moved to.
+    const navigateIfMounted = (to: To, options?: NavigateOptions) => {
+      if (isMounted.current) {
+        navigate(to, options);
+      }
+    };
+
+    // Starts the validation, and does not wait for the validation.
+    //
+    // `setupRouteInit` calls this function after `route.init`, and before
+    // `defaultRouteInit`. Every hook that sets a custom authentication token
+    // runs before that point: `onModeInit`, the `onModeEnter` of the
+    // extensions, the `onModeEnter` of the mode, and `route.init`. The
+    // validation query then uses that token.
+    //
+    // The validation does not use the promise of `setupRouteInit`, and the
+    // validation runs at the same time as the retrieve of the metadata. Two
+    // results come from this:
+    //
+    //   - The validation does not add a delay to the retrieve. This keeps the
+    //     behaviour of OHIF 3.13, where the validation ran in its own effect.
+    //   - The validation still runs when `defaultRouteInit` rejects. An
+    //     invalid StudyInstanceUID gives an undefined `activeStudy`, and
+    //     `hangingProtocolService.run` throws for that undefined study. A
+    //     validation that waits for the promise of `setupRouteInit` never runs
+    //     in that case, and the viewer never shows the "not found" page.
+    //     See `tests/StudyValidation.spec.ts`.
+    const startModeEntryValidation = () => {
+      // `mode.validateModeEntry` replaces the default study check. The hook can
+      // be an async function, and the hook can navigate away on its own.
+      const validateModeEntry = mode?.validateModeEntry ?? validateStudies;
+
+      // `Promise.resolve` starts the chain, so a hook that throws before the
+      // hook returns its promise also gives a rejection, and no rejection
+      // stays unhandled.
+      Promise.resolve()
+        .then(() =>
+          validateModeEntry({
+            studyInstanceUIDs,
+            dataSource,
+            navigate: navigateIfMounted,
+            servicesManager,
+            extensionManager,
+            commandsManager,
+            appConfig,
+            query,
+          })
+        )
+        .catch(e => {
+          console.warn('mode entry validation failure', e);
+        });
+    };
 
     const setupRouteInit = async () => {
       // TODO: For some reason this is running before the Providers
@@ -205,6 +320,56 @@ export default function ModeRoute({
         appConfig,
       });
 
+      // `extensionManager.onModeEnter` resets the customization mode scope via
+      // `customizationService.onModeEnter`; the mode scope is then layered
+      // bottom-up so the final value of every key is decided by scope
+      // precedence (global > mode > default) and application order alone:
+      //   1. the mode's own values — its layout panel lists, seeded as the
+      //      standard `leftPanels` / `rightPanels` customizations;
+      //      its toolbar/tool-group composition, seeded as the plain
+      //      `toolbarButtons` / `toolbarSections` / `toolGroupAdditions`
+      //      customizations (resolved to concrete definitions later, when the
+      //      mode's `onModeEnter` registers the toolbar); and its
+      //      `modeCustomizations` block (declared as data on the mode
+      //      instance, usually as a customization name registered at default
+      //      scope when the mode loaded, so bootstrap/global customizations
+      //      can modify the block itself before it is applied);
+      //   2. the app config / URL `mode` phase blocks — the general (`*`)
+      //      block first, then any block keyed by this mode's id / routeName.
+      const { leftPanels = [], rightPanels = [] } = layoutTemplateData.current.panels ?? {};
+      customizationService.setCustomizations({
+        leftPanels,
+        rightPanels,
+        toolbarButtons: mode.toolbarButtons ?? [],
+        toolbarSections: mode.toolbarSections ?? [],
+        toolGroupAdditions: mode.toolGroupAdditions ?? {},
+      });
+
+      const modeCustomizations =
+        typeof mode.modeCustomizations === 'string'
+          ? customizationService.getCustomization(mode.modeCustomizations)
+          : mode.modeCustomizations;
+      if (modeCustomizations) {
+        customizationService.setCustomizations(modeCustomizations);
+      }
+      customizationService.applyModeCustomizations([mode.id, mode.routeName]);
+
+      // Re-apply panels only when customizations changed the lists. When they
+      // match the layout, the panels registered in retrieveLayoutData are left
+      // in place so ViewerLayout's ResizablePanelsHook keeps the correct sizes
+      // from its one-time initial expand.
+      const resolvedLeftPanels = customizationService.getValue('leftPanels') ?? [];
+      const resolvedRightPanels = customizationService.getValue('rightPanels') ?? [];
+      const panelsChanged =
+        JSON.stringify(resolvedLeftPanels) !== JSON.stringify(leftPanels) ||
+        JSON.stringify(resolvedRightPanels) !== JSON.stringify(rightPanels);
+
+      if (panelsChanged) {
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, resolvedLeftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, resolvedRightPanels);
+      }
+
       // use the URL hangingProtocolId if it exists, otherwise use the one
       // defined in the mode configuration
       const hangingProtocolIdToUse = hangingProtocolService.getProtocolById(
@@ -212,6 +377,16 @@ export default function ModeRoute({
       )
         ? runTimeHangingProtocolId
         : hangingProtocol;
+
+      // Determine the index of the stageId if the hangingProtocolIdToUse is defined
+      const stageIndex = Array.isArray(hangingProtocolIdToUse)
+        ? -1
+        : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
+            stageId: runTimeStageId || undefined,
+          });
+      // Ensure that the stage index is never negative
+      // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
+      const stageIndexToUse = Math.max(0, stageIndex);
 
       // Sets the active hanging protocols - if hangingProtocol is undefined,
       // resets to default.  Done before the onModeEnter to allow the onModeEnter
@@ -224,6 +399,10 @@ export default function ModeRoute({
         commandsManager,
         appConfig,
       });
+
+      // Move hotkeys setup here, after onModeEnter
+      const hotkeys = customizationService.getCustomization('ohif.hotkeyBindings');
+      hotkeysManager.setDefaultHotKeys(hotkeys);
 
       /**
        * The next line should get all the query parameters provided by the URL
@@ -239,18 +418,15 @@ export default function ModeRoute({
       const filters =
         Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
           const lowerVal = val.toLowerCase();
-          if (lowerVal !== 'studyinstanceuids') {
-            // Not sure why the case matters here - it doesn't in the URL
-            if (lowerVal === 'seriesinstanceuids') {
-              const seriesUIDs = getSplitParam(lowerVal, query);
-              return {
-                ...acc,
-                seriesInstanceUID: seriesUIDs,
-              };
-            }
-
-            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          // Not sure why the case matters here - it doesn't in the URL
+          if (lowerVal === 'seriesinstanceuids' || lowerVal === 'seriesinstanceuid') {
+            const seriesUIDs = getSplitParam(lowerVal, query);
+            return {
+              ...acc,
+              seriesInstanceUID: seriesUIDs,
+            };
           }
+          return { ...acc, [val]: getSplitParam(lowerVal, query) };
         }, {}) ?? {};
 
       let unsubs;
@@ -265,9 +441,15 @@ export default function ModeRoute({
             dataSource,
             filters,
           },
-          hangingProtocolIdToUse
+          hangingProtocolIdToUse,
+          stageIndexToUse
         );
       }
+
+      // Every hook that can set a custom authentication token has run, so the
+      // validation starts here. The validation runs at the same time as the
+      // retrieve below.
+      startModeEntryValidation();
 
       return defaultRouteInit(
         {
@@ -277,7 +459,8 @@ export default function ModeRoute({
           filters,
           appConfig,
         },
-        hangingProtocolIdToUse
+        hangingProtocolIdToUse,
+        stageIndexToUse
       );
     };
 
@@ -285,8 +468,6 @@ export default function ModeRoute({
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
 
-      // Some code may need to run after hanging protocol initialization
-      // (eg: workflowStepsService initialization on 4D mode)
       mode?.onSetupRouteComplete?.({
         servicesManager,
         extensionManager,
@@ -307,11 +488,16 @@ export default function ModeRoute({
       } catch (e) {
         console.warn('mode exit failure', e);
       }
+      // Clean up hotkeys
+      hotkeysManager.destroy();
+
       // The unsubscriptions must occur before the extension onModeExit
       // in order to prevent exceptions during cleanup caused by spurious events
-      unsubscriptions.forEach(unsub => {
-        unsub();
-      });
+      if (unsubscriptions) {
+        unsubscriptions.forEach(unsub => {
+          unsub();
+        });
+      }
       // The extension manager must be called after the mode, this is
       // expected to cleanup the state to a standard setup.
       extensionManager.onModeExit();
@@ -396,12 +582,3 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
     return Compose({ components: contextModuleProviders, children });
   };
 }
-
-ModeRoute.propTypes = {
-  mode: PropTypes.object.isRequired,
-  dataSourceName: PropTypes.string,
-  extensionManager: PropTypes.object,
-  servicesManager: PropTypes.object,
-  hotkeysManager: PropTypes.object,
-  commandsManager: PropTypes.object,
-};

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Issue & PR Triage Process
+title: OHIF Development Process
+summary: Detailed explanation of OHIF's issue triage, backlog management, contribution evaluation, and release processes, including categorization of issues, pull request workflow, quality assurance procedures, and continuous integration practices.
 ---
 
 # Our Process
@@ -152,5 +154,5 @@ addressed and a Stable version is released.
 [ohif-prod]: https://viewer.ohif.org
 [gh-board]: https://github.com/OHIF/Viewers/projects/4
 [label-grabs]: https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3A%22Up+For+Grabs+%3Araising_hand_woman%3A%22
-[contributing-docs]: ./development/contributing.md
+[contributing-docs]: ./contributing.md
 <!-- prettier-ignore-end -->

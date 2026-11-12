@@ -1,21 +1,9 @@
-/**
- * UI Modal
- *
- * @typedef {Object} ModalProps
- * @property {ReactElement|HTMLElement} [content=null] Modal content.
- * @property {Object} [contentProps=null] Modal content props.
- * @property {boolean} [shouldCloseOnEsc=false] Modal is dismissible via the esc key.
- * @property {boolean} [isOpen=true] Make the Modal visible or hidden.
- * @property {boolean} [closeButton=true] Should the modal body render the close button.
- * @property {string} [title=null] Should the modal render the title independently of the body content.
- * @property {string} [customClassName=null] The custom class to style the modal.
- */
-
 const name = 'uiModalService';
 
 const serviceImplementation = {
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
   _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _customComponent: null,
 };
 
 class UIModalService {
@@ -37,26 +25,20 @@ class UIModalService {
   show({
     content = null,
     contentProps = null,
-    shouldCloseOnEsc = true,
-    isOpen = true,
-    closeButton = true,
     title = null,
-    customClassName = null,
-    movable = false,
-    containerDimensions = null,
-    contentDimensions = null,
+    className = null,
+    shouldCloseOnEsc = true,
+    shouldCloseOnOverlayClick = true,
+    containerClassName = null,
   }) {
     return serviceImplementation._show({
       content,
       contentProps,
       shouldCloseOnEsc,
-      isOpen,
-      closeButton,
       title,
-      customClassName,
-      movable,
-      containerDimensions,
-      contentDimensions,
+      className,
+      shouldCloseOnOverlayClick,
+      containerClassName,
     });
   }
 
@@ -70,6 +52,15 @@ class UIModalService {
   }
 
   /**
+   * This provides flexibility in customizing the Modal's default component
+   *
+   * @returns {React.Component}
+   */
+  getCustomComponent() {
+    return serviceImplementation._customComponent;
+  }
+
+  /**
    *
    *
    * @param {*} {
@@ -77,12 +68,19 @@ class UIModalService {
    *   show: showImplementation,
    * }
    */
-  setServiceImplementation({ hide: hideImplementation, show: showImplementation }) {
+  setServiceImplementation({
+    hide: hideImplementation,
+    show: showImplementation,
+    customComponent: customComponentImplementation,
+  }) {
     if (hideImplementation) {
       serviceImplementation._hide = hideImplementation;
     }
     if (showImplementation) {
       serviceImplementation._show = showImplementation;
+    }
+    if (customComponentImplementation) {
+      serviceImplementation._customComponent = customComponentImplementation;
     }
   }
 }

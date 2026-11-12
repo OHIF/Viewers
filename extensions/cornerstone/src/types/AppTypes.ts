@@ -4,9 +4,18 @@ import CornerstoneViewportServiceType from '../services/ViewportService/Cornerst
 import SegmentationServiceType from '../services/SegmentationService';
 import SyncGroupServiceType from '../services/SyncGroupService';
 import ToolGroupServiceType from '../services/ToolGroupService';
-import ViewportActionCornersServiceType from '../services/ViewportActionCornersService/ViewportActionCornersService';
 import ColorbarServiceType from '../services/ColorbarService';
+import ViewedDataServiceType from '../services/ViewedDataService';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
+import type {
+  SegmentRepresentation as SegmentRep,
+  SegmentationData as SegData,
+  SegmentationRepresentation as SegRep,
+  SegmentationInfo as SegInfo,
+} from '../services/SegmentationService/SegmentationService';
+import type { ViewportOptions as ViewportOpts } from '../services/ViewportService/Viewport';
 declare global {
   namespace AppTypes {
     export type CornerstoneCacheService = CornerstoneCacheServiceType;
@@ -14,16 +23,48 @@ declare global {
     export type SegmentationService = SegmentationServiceType;
     export type SyncGroupService = SyncGroupServiceType;
     export type ToolGroupService = ToolGroupServiceType;
-    export type ViewportActionCornersService = ViewportActionCornersServiceType;
     export type ColorbarService = ColorbarServiceType;
+    export type ViewedDataService = ViewedDataServiceType;
+
     export interface Services {
       cornerstoneViewportService?: CornerstoneViewportServiceType;
       toolGroupService?: ToolGroupServiceType;
       syncGroupService?: SyncGroupServiceType;
       segmentationService?: SegmentationServiceType;
       cornerstoneCacheService?: CornerstoneCacheServiceType;
-      viewportActionCornersService?: ViewportActionCornersServiceType;
       colorbarService?: ColorbarServiceType;
+      viewedDataService?: ViewedDataServiceType;
     }
+
+    export namespace Segmentation {
+      export type SegmentRepresentation = SegmentRep;
+      export type SegmentationData = SegData;
+      export type SegmentationRepresentation = SegRep;
+      export type SegmentationInfo = SegInfo;
+    }
+
+    export interface Customizations {
+      /**
+       * Maximum number of undo/redo history items to keep. Segmentation memos
+       * hold full labelmap buffers, so a large history can cause out-of-memory
+       * or buffer allocation issues. Applied on mode entry; when unset, the
+       * size is 50. A value that is not a valid array length throws.
+       */
+      'cornerstone.maxUndoRedoCacheSize': number | undefined;
+    }
+
+    export interface PresentationIds {
+      lutPresentationId: string;
+      positionPresentationId: string;
+      segmentationPresentationId: string;
+    }
+
+    export interface Test {
+      services?: Services;
+      cornerstone?: typeof cornerstone;
+      cornerstoneTools?: typeof cornerstoneTools;
+    }
+
+    export type ViewportOptions = ViewportOpts;
   }
 }

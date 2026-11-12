@@ -1,9 +1,10 @@
 ---
 sidebar_position: 3
 sidebar_label: DisplaySet Service
+title: DisplaySet Service
+summary: Documentation for OHIF's DisplaySetService, which converts instance metadata into displayable sets for visualization, allowing dynamic creation, updating, and management of display sets from various data sources.
 ---
 # DisplaySet Service
-
 
 ## Overview
 `DisplaySetService` handles converting the `instanceMetadata` into `DisplaySet` that `OHIF` uses for the visualization. `DisplaySetService` gets initialized at service startup time, but is then cleared in the `Mode.jsx`. During the initialization `SOPClassHandlerIds` of the `modes` gets registered with the `DisplaySetService`.
@@ -12,7 +13,9 @@ sidebar_label: DisplaySet Service
 
 DisplaySet is a general set of entities and contains links to bunch of displayable objects (images, etc.) Some series might get split up into different displaySets e.g., MG might have mixed views in a single series, but users might want to have separate LCC, RCC, etc. for hanging protocol usage. A viewport renders a display set into a displayable object.
 
-imageSet is a particular implementation of image displays.
+An imageSet is a particular implementation of image displays.
+- Learn more about Study (https://www.dicomstandard.org/standards/view/information-object-definitions#sect_A.1.2.2)
+- Learn more about Series (https://www.dicomstandard.org/standards/view/information-object-definitions#sect_A.1.2.3)
 :::
 
 
@@ -26,6 +29,18 @@ of existing `DisplaySet` values to see if the new instance belongs in an existin
 Then, the same process is used as was originally done to create new display sets.
 
 NOTE: Any instances not matched are NOT added to any display set and will not be displayed.
+
+:::::info[Clarification of Terminology]
+
+Display Sets, which are custom to OHIF, are often confused with different DICOM terms, including study, series, and instances. The following are definitions for these terms to alleviate confusion.
+<br></br>
+
+DICOM Terms:
+* **Study**: A collection of series
+* **Series**: A collection of images or objects
+* **Instance**: Single image or object
+* **Display Set**: Set of displayable objects (Can be anything shown to the user)
+:::::
 
 ## Adding `madeInClient` display sets
 It is possible to filter or combine display sets from different series by

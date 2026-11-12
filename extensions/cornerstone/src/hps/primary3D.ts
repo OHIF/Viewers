@@ -1,7 +1,9 @@
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+import i18n from 'i18next';
 export const primary3D = {
   id: 'primary3D',
   locked: true,
-  name: '3D primary',
+  name: i18n.t('Hps:3D primary'),
   icon: 'layout-advanced-3d-primary',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
@@ -11,7 +13,7 @@ export const primary3D = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    mprDisplaySet: {
+    activeDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -75,7 +77,7 @@ export const primary3D = {
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',
@@ -94,21 +96,11 @@ export const primary3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -120,21 +112,11 @@ export const primary3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -146,21 +128,11 @@ export const primary3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },

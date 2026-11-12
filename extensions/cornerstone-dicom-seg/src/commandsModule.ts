@@ -1,126 +1,54 @@
 import dcmjs from 'dcmjs';
-import { createReportDialogPrompt } from '@ohif/extension-default';
-import { Types } from '@ohif/core';
+import { classes, Types, utils } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
+import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
+import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
+import { version as adaptersVersion } from '@cornerstonejs/adapters/version';
+import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
+import { utils as cornerstoneUtils } from '@ohif/extension-cornerstone';
+
+import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 import {
-  segmentation as cornerstoneToolsSegmentation,
-  Enums as cornerstoneToolsEnums,
-  utilities,
-} from '@cornerstonejs/tools';
-import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
-import { classes, DicomMetadataStore } from '@ohif/core';
-
-import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
-import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
-
+  getSegmentationSaveOptions,
+  LABELMAP_SEG_SOP_CLASS_UID,
+  BITMAP_SEG_SOP_CLASS_UID,
+} from './utils/segmentationConfig';
 import {
-  updateViewportsForSegmentationRendering,
-  getUpdatedViewportsForSegmentation,
-  getTargetViewport,
-} from './utils/hydrationUtils';
-const { segmentation: segmentationUtils } = utilities;
+  getExportedLabelValues,
+  getExportLabelToSegmentIndex,
+  type LabelToSegmentIndex,
+} from './utils/labelmapLayerSegmentIndices';
 
-const { datasetToBlob } = dcmjs.data;
+const getTargetViewport = ({ viewportId, viewportGridService }) => {
+  const { viewports, activeViewportId } = viewportGridService.getState();
+  const targetViewportId = viewportId || activeViewportId;
+
+  const viewport = viewports.get(targetViewportId);
+
+  return viewport;
+};
 
 const {
   Cornerstone3D: {
-    Segmentation: { generateLabelMaps2DFrom3D, generateSegmentation },
+    Segmentation: { generateSegmentation },
   },
 } = adaptersSEG;
 
 const {
   Cornerstone3D: {
-    RTSS: { generateRTSSFromSegmentations },
+    RTSS: { generateRTSSFromRepresentation },
   },
 } = adaptersRT;
-
-const { downloadDICOMData } = helpers;
 
 const commandsModule = ({
   servicesManager,
   extensionManager,
+  commandsManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const {
-    uiNotificationService,
-    segmentationService,
-    uiDialogService,
-    displaySetService,
-    viewportGridService,
-    toolGroupService,
-  } = servicesManager.services;
+  const { segmentationService, displaySetService, viewportGridService, customizationService } =
+    servicesManager.services as AppTypes.Services;
 
   const actions = {
-    /**
-     * Retrieves a list of viewports that require updates in preparation for segmentation rendering.
-     * This function evaluates viewports based on their compatibility with the provided segmentation's
-     * frame of reference UID and appends them to the updated list if they should render the segmentation.
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - the ID of the viewport to be updated.
-     * @param params.servicesManager - The services manager
-     * @param params.referencedDisplaySetInstanceUID - Optional UID for the referenced display set instance.
-     *
-     * @returns {Array} Returns an array of viewports that require updates for segmentation rendering.
-     */
-    getUpdatedViewportsForSegmentation,
-    /**
-     * Creates an empty segmentation for a specified viewport.
-     * It first checks if the display set associated with the viewport is reconstructable.
-     * If not, it raises a notification error. Otherwise, it creates a new segmentation
-     * for the display set after handling the necessary steps for making the viewport
-     * a volume viewport first
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - the target viewport ID.
-     *
-     */
-    createEmptySegmentationForViewport: async ({ viewportId }) => {
-      const viewport = getTargetViewport({ viewportId, viewportGridService });
-      // Todo: add support for multiple display sets
-      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-      if (!displaySet.isReconstructable) {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'Segmentation is not supported for non-reconstructible displaysets yet',
-          type: 'error',
-        });
-        return;
-      }
-
-      updateViewportsForSegmentationRendering({
-        viewportId,
-        servicesManager,
-        loadFn: async () => {
-          const currentSegmentations = segmentationService.getSegmentations();
-          const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-            displaySetInstanceUID,
-            { label: `Segmentation ${currentSegmentations.length + 1}` }
-          );
-
-          const toolGroupId = viewport.viewportOptions.toolGroupId;
-
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            toolGroupId,
-            segmentationId
-          );
-
-          // Add only one segment for now
-          segmentationService.addSegment(segmentationId, {
-            toolGroupId,
-            segmentIndex: 1,
-            properties: {
-              label: 'Segment 1',
-            },
-          });
-
-          return segmentationId;
-        },
-      });
-    },
     /**
      * Loads segmentations for a specified viewport.
      * The function prepares the viewport for rendering, then loads the segmentation details.
@@ -132,103 +60,30 @@ const commandsModule = ({
      *
      */
     loadSegmentationsForViewport: async ({ segmentations, viewportId }) => {
-      updateViewportsForSegmentationRendering({
-        viewportId,
-        servicesManager,
-        loadFn: async () => {
-          // Todo: handle adding more than one segmentation
-          const viewport = getTargetViewport({ viewportId, viewportGridService });
-          const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-          const segmentation = segmentations[0];
-          const segmentationId = segmentation.id;
-          const label = segmentation.label;
-          const segments = segmentation.segments;
-
-          delete segmentation.segments;
-
-          await segmentationService.createSegmentationForDisplaySet(displaySetInstanceUID, {
-            segmentationId,
-            label,
-          });
-
-          if (segmentation.scalarData) {
-            const labelmapVolume = segmentationService.getLabelmapVolume(segmentationId);
-            labelmapVolume.scalarData.set(segmentation.scalarData);
-          }
-
-          segmentationService.addOrUpdateSegmentation(segmentation);
-
-          const toolGroupId = viewport.viewportOptions.toolGroupId;
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            toolGroupId,
-            segmentationId
-          );
-
-          segments.forEach(segment => {
-            if (segment === null) {
-              return;
-            }
-            segmentationService.addSegment(segmentationId, {
-              segmentIndex: segment.segmentIndex,
-              toolGroupId,
-              properties: {
-                color: segment.color,
-                label: segment.label,
-                opacity: segment.opacity,
-                isLocked: segment.isLocked,
-                visibility: segment.isVisible,
-                active: segmentation.activeSegmentIndex === segment.segmentIndex,
-              },
-            });
-          });
-
-          if (segmentation.centroidsIJK) {
-            segmentationService.setCentroids(segmentation.id, segmentation.centroidsIJK);
-          }
-
-          return segmentationId;
-        },
-      });
-    },
-    /**
-     * Loads segmentation display sets for a specified viewport.
-     * Depending on the modality of the display set (SEG or RTSTRUCT),
-     * it chooses the appropriate service function to create
-     * the segmentation for the display set.
-     * The function then prepares the viewport for rendering segmentation.
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - ID of the viewport where the segmentation display sets should be loaded.
-     * @param params.displaySets - Array of display sets to be loaded for segmentation.
-     *
-     */
-    loadSegmentationDisplaySetsForViewport: async ({ viewportId, displaySets }) => {
       // Todo: handle adding more than one segmentation
-      const displaySet = displaySets[0];
-      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-        displaySet.referencedDisplaySetInstanceUID
-      );
+      const viewport = getTargetViewport({ viewportId, viewportGridService });
+      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
 
-      updateViewportsForSegmentationRendering({
-        viewportId,
-        servicesManager,
-        referencedDisplaySetInstanceUID: displaySet.referencedDisplaySetInstanceUID,
-        loadFn: async () => {
-          const segDisplaySet = displaySet;
-          const suppressEvents = false;
-          const serviceFunction =
-            segDisplaySet.Modality === 'SEG'
-              ? 'createSegmentationForSEGDisplaySet'
-              : 'createSegmentationForRTDisplaySet';
+      const segmentation = segmentations[0];
+      const segmentationId = segmentation.segmentationId;
+      const label = segmentation.config.label;
+      const segments = segmentation.config.segments;
 
-          const boundFn = segmentationService[serviceFunction].bind(segmentationService);
-          const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
-          const segmentation = segmentationService.getSegmentation(segmentationId);
-          segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
-          return segmentationId;
-        },
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      await segmentationService.createLabelmapForDisplaySet(displaySet, {
+        segmentationId,
+        segments,
+        label,
       });
+
+      segmentationService.addOrUpdateSegmentation(segmentation);
+
+      await segmentationService.addSegmentationRepresentation(viewport.viewportId, {
+        segmentationId,
+      });
+
+      return segmentationId;
     },
     /**
      * Generates a segmentation from a given segmentation ID.
@@ -244,37 +99,123 @@ const commandsModule = ({
      * @returns Returns the generated segmentation data.
      */
     generateSegmentation: ({ segmentationId, options = {} }) => {
+      // `dataSource` (a data source name) is consumed here to resolve the store
+      // overrides; it must not be forwarded to the adapter's generateSegmentation.
+      const { dataSource: dataSourceName, ...generateOptions } = options;
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
+      const predecessorImageId =
+        generateOptions.predecessorImageId ?? segmentation.predecessorImageId;
 
-      const { referencedVolumeId } = segmentation.representationData.LABELMAP;
+      // A data source may override the app-wide `segmentation.store.*` defaults
+      // via `configuration.segmentation.store` (different back ends support
+      // different SEG encodings). Use the named target data source when storing,
+      // otherwise the active one (e.g. download).
+      const dataSourceDefinition = dataSourceName
+        ? extensionManager.getDataSourceDefinition(dataSourceName)
+        : extensionManager.getActiveDataSourceDefinition();
+      const dataSourceStoreOverride = dataSourceDefinition?.configuration?.segmentation?.store;
 
-      const segmentationVolume = cache.getVolume(segmentationId);
-      const referencedVolume = cache.getVolume(referencedVolumeId);
-      const referencedImages = referencedVolume.getCornerstoneImages();
+      const labelmapData = segmentation.representationData.Labelmap;
 
-      const labelmapObj = generateLabelMaps2DFrom3D(segmentationVolume);
+      // Build a labelmap3D (one labelmaps2D entry per source slice) from a list of
+      // derived labelmap image ids. The voxels keep their label values, and the
+      // adapter maps them with `labelToSegmentIndex`. When `referencedImageIds` is
+      // supplied (the multi-layer/overlap path) each frame is indexed by its source
+      // slice so the layers align to the same frames; otherwise frames are sequential.
+      const buildLabelmap3D = (
+        segImageIds: string[],
+        metadata,
+        referencedImageIds?: string[],
+        labelToSegmentIndex?: LabelToSegmentIndex
+      ) => {
+        const segImages = segImageIds.map(imageId => cache.getImage(imageId));
+        const labelmaps2D = [];
 
-      // Generate fake metadata as an example
-      labelmapObj.metadata = [];
+        // Map each source imageId to its frame index once (O(n)) so the per-slice lookup
+        // below is O(1) — avoids the O(slices^2) indexOf scan on the multi-layer path.
+        const referencedFrameIndexById = referencedImageIds
+          ? new Map(referencedImageIds.map((imageId, index) => [imageId, index]))
+          : undefined;
 
+        let z = 0;
+        const unboundLabels = new Set<number>();
+
+        for (const segImage of segImages) {
+          const frameIndex = referencedFrameIndexById
+            ? (referencedFrameIndexById.get(segImage.referencedImageId) ?? -1)
+            : z++;
+
+          if (frameIndex < 0) {
+            continue;
+          }
+
+          const pixelData = segImage.getPixelData();
+          const segmentsOnLabelmap = getExportedLabelValues(
+            pixelData,
+            labelToSegmentIndex,
+            unboundLabels
+          );
+          // A slice with only unbound label values would give an empty LABELMAP frame.
+          if (!segmentsOnLabelmap.length) {
+            continue;
+          }
+          const { rows, columns } = segImage;
+
+          labelmaps2D[frameIndex] = {
+            segmentsOnLabelmap,
+            pixelData,
+            rows,
+            columns,
+          };
+        }
+
+        unboundLabels.forEach(labelValue =>
+          console.warn(
+            `Label value ${labelValue} of segmentation ${segmentationId} has no segment. The SEG export does not include its voxels.`
+          )
+        );
+
+        const allSegmentsOnLabelmap = labelmaps2D
+          .filter(Boolean)
+          .map(labelmap => labelmap.segmentsOnLabelmap);
+
+        return {
+          segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+          metadata,
+          labelmaps2D,
+          labelToSegmentIndex: getExportLabelToSegmentIndex(labelToSegmentIndex, unboundLabels),
+        };
+      };
+
+      // Segment metadata (shared across all layers).
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
-      segmentationInOHIF.segments.forEach(segment => {
+      const representations = segmentationService.getRepresentationsForSegmentation(segmentationId);
+      const metadata = [];
+
+      Object.entries(segmentationInOHIF.segments).forEach(([segmentIndex, segment]) => {
         // segmentation service already has a color for each segment
         if (!segment) {
           return;
         }
-        const segmentIndex = segment.segmentIndex;
-        const { label, color } = segment;
+
+        const { label } = segment;
+
+        const firstRepresentation = representations[0];
+        const color = segmentationService.getSegmentColor(
+          firstRepresentation.viewportId,
+          segmentationId,
+          segment.segmentIndex
+        );
 
         const RecommendedDisplayCIELabValue = dcmjs.data.Colors.rgb2DICOMLAB(
           color.slice(0, 3).map(value => value / 255)
         ).map(value => Math.round(value));
 
-        const segmentMetadata = {
+        metadata[segmentIndex] = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
-          SegmentAlgorithmType: 'MANUAL',
-          SegmentAlgorithmName: 'OHIF Brush',
+          SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
+          SegmentAlgorithmName: segment?.algorithmName || 'OHIF Brush',
           RecommendedDisplayCIELabValue,
           SegmentedPropertyCategoryCodeSequence: {
             CodeValue: 'T-D0050',
@@ -287,14 +228,112 @@ const commandsModule = ({
             CodeMeaning: 'Tissue',
           },
         };
-        labelmapObj.metadata[segmentIndex] = segmentMetadata;
       });
+
+      // Multi-layer (overlapping) SEGs register one labelmap layer per conflict-free
+      // group. Export each layer as its own labelmap3D against the UNIQUE referenced
+      // source series, so cornerstone writes overlapping segments as separate frames
+      // that reference the same source slice (the DICOM SEG overlap encoding). The
+      // cs3D adapter's fillSegmentation accepts an array of labelmap3D for exactly
+      // this. A single-layer SEG uses one labelmap3D with sequential frames.
+      const layers = labelmapData.labelmaps ? Object.values(labelmapData.labelmaps) : undefined;
+
+      // The referenced source images must be fully loaded (in cache) before we can
+      // build the SEG dataset against them; fail loudly rather than passing undefined
+      // frames to the adapter.
+      const resolveReferencedImage = (referencedImageId: string, sliceIndex: number) => {
+        const referencedImage = cache.getImage(referencedImageId);
+        if (!referencedImage) {
+          throw new Error(
+            `Referenced source image not in cache for segmentation slice ${sliceIndex} ` +
+              `(referencedImageId: ${referencedImageId}). Ensure the referenced series is fully loaded before storing.`
+          );
+        }
+        return referencedImage;
+      };
+
+      let referencedImages;
+      let labelmaps3D;
+
+      if (layers && layers.length > 1) {
+        const referencedImageIds =
+          layers[0].referencedImageIds ?? labelmapData.referencedImageIds ?? [];
+        referencedImages = referencedImageIds.map(resolveReferencedImage);
+        labelmaps3D = layers.map(layer =>
+          buildLabelmap3D(
+            layer.imageIds ?? [],
+            metadata,
+            referencedImageIds,
+            layer.labelToSegmentIndex
+          )
+        );
+      } else {
+        const { imageIds, labelToSegmentIndex, layerWithoutImageIds } =
+          cornerstoneUtils.getSingleLayerExportSource(labelmapData);
+        if (layerWithoutImageIds) {
+          console.warn(
+            `Labelmap layer ${layerWithoutImageIds.labelmapId} has no image ids. The SEG export uses the segmentation image ids with the label map of that layer.`
+          );
+        }
+        const segImages = imageIds.map(imageId => cache.getImage(imageId));
+        referencedImages = segImages.map((image, sliceIndex) =>
+          resolveReferencedImage(image.referencedImageId, sliceIndex)
+        );
+        labelmaps3D = buildLabelmap3D(imageIds, metadata, undefined, labelToSegmentIndex);
+      }
+
+      // `...generateOptions` has the last word on the predecessor: the store
+      // dialog sets it to `undefined` to say "a new series", which overrides the
+      // one the segmentation itself was loaded from.
+      const storeIntoSeriesImageId =
+        'predecessorImageId' in generateOptions
+          ? generateOptions.predecessorImageId
+          : predecessorImageId;
+
+      // dcmjs stamps every date/time of the object it derives in UTC, which is
+      // the wrong wall clock reading anywhere else and, around midnight, the
+      // wrong day - DICOM DA and TM are displayed as they are stored.  So they
+      // are supplied in the local zone instead.  The content date/time say when
+      // this instance was created whichever series it goes into, whereas a
+      // segmentation added to an existing series takes that series' date and
+      // time, which the adapter copies from the predecessor instance.
+      const { date: creationDate, time: creationTime } = utils.getCurrentDicomDateTime();
+
+      const saveOptions = {
+        predecessorImageId,
+        ContentDate: creationDate,
+        ContentTime: creationTime,
+        ...(storeIntoSeriesImageId ? {} : { SeriesDate: creationDate, SeriesTime: creationTime }),
+        ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
+        ...generateOptions,
+        ...utils.getOhifWriterHeader(
+          '@cornerstonejs/adapters',
+          'CS3D',
+          adaptersVersion,
+          generateOptions
+        ),
+      };
+
+      // A LABELMAP SEG frame stores a single label per voxel, so the labelmap
+      // encoder cannot represent overlapping segments — it keeps only the last
+      // layer written to each voxel. Overlapping segmentations arrive here as
+      // multiple layers, so switch those to the binary SEG encoding, which
+      // writes overlapping segments as separate frames referencing the same
+      // source slice.
+      const hasOverlappingLayers = Boolean(layers && layers.length > 1);
+      if (hasOverlappingLayers && saveOptions.sopClassUID === LABELMAP_SEG_SOP_CLASS_UID) {
+        console.warn(
+          'generateSegmentation: overlapping segments cannot be stored as a LABELMAP SEG; ' +
+            'switching to the binary SEG encoding for this store.'
+        );
+        saveOptions.sopClassUID = BITMAP_SEG_SOP_CLASS_UID;
+      }
 
       const generatedSegmentation = generateSegmentation(
         referencedImages,
-        labelmapObj,
+        labelmaps3D,
         metaData,
-        options
+        saveOptions
       );
 
       return generatedSegmentation;
@@ -314,8 +353,11 @@ const commandsModule = ({
       const generatedSegmentation = actions.generateSegmentation({
         segmentationId,
       });
-
-      downloadDICOMData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
+      const storeFn = commandsManager.runCommand('createStoreFunction', {
+        dataSource: 'download',
+        defaultFileName: `${segmentationInOHIF.label}.dcm`,
+      });
+      storeFn(generatedSegmentation.dataset);
     },
     /**
      * Stores a segmentation based on the provided segmentationId into a specified data source.
@@ -329,147 +371,169 @@ const commandsModule = ({
      * @returns {Object|void} Returns the naturalized report if successfully stored,
      * otherwise throws an error.
      */
-    storeSegmentation: async ({ segmentationId, dataSource }) => {
-      const promptResult = await createReportDialogPrompt(uiDialogService, {
-        extensionManager,
-      });
-
-      if (promptResult.action !== 1 && promptResult.value) {
-        return;
-      }
-
+    storeSegmentation: async ({ segmentationId, dataSource, modality = 'SEG' }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
       if (!segmentation) {
         throw new Error('No segmentation found');
       }
 
-      const { label } = segmentation;
-      const SeriesDescription = promptResult.value || label || 'Research Derived Series';
+      const { label, predecessorImageId, labelIsGenerated } = segmentation;
+      // Only a name the user chose goes to `itemName`, which the dialog offers
+      // first; a generated one goes to `defaultSeriesDescription`, offered last.
+      const chosenLabel = labelIsGenerated ? '' : label || '';
+      const defaultSeriesDescription =
+        (labelIsGenerated && label) || (modality === 'RTSTRUCT' ? 'Contours' : 'Segmentation');
 
-      const generatedData = actions.generateSegmentation({
-        segmentationId,
-        options: {
-          SeriesDescription,
-        },
+      const {
+        value: reportName,
+        dataSourceName,
+        series,
+        seriesNumber,
+        action,
+      } = await createReportDialogPrompt({
+        servicesManager,
+        extensionManager,
+        predecessorImageId,
+        title: modality === 'RTSTRUCT' ? 'Save Contours' : 'Save Segmentation',
+        modality,
+        itemName: chosenLabel,
+        defaultSeriesDescription,
+        enableDownload: true,
       });
 
-      if (!generatedData || !generatedData.dataset) {
-        throw new Error('Error during segmentation generation');
+      if (action !== PROMPT_RESPONSES.CREATE_REPORT) {
+        return;
       }
 
-      const { dataset: naturalizedReport } = generatedData;
+      const defaultFileName =
+        modality === 'RTSTRUCT' ? `rtss-${segmentationId}.dcm` : `${label || 'segmentation'}.dcm`;
 
-      await dataSource.store.dicom(naturalizedReport);
+      const storeFn = commandsManager.runCommand('createStoreFunction', {
+        dataSource: dataSourceName,
+        defaultFileName,
+      });
 
-      // The "Mode" route listens for DicomMetadataStore changes
-      // When a new instance is added, it listens and
-      // automatically calls makeDisplaySets
-
-      // add the information for where we stored it to the instance as well
-      naturalizedReport.wadoRoot = dataSource.getConfig().wadoRoot;
-
-      DicomMetadataStore.addInstances([naturalizedReport], true);
-
-      return naturalizedReport;
-    },
-    /**
-     * Converts segmentations into RTSS for download.
-     * This sample function retrieves all segentations and passes to
-     * cornerstone tool adapter to convert to DICOM RTSS format. It then
-     * converts dataset to downloadable blob.
-     *
-     */
-    downloadRTSS: ({ segmentationId }) => {
-      const segmentations = segmentationService.getSegmentation(segmentationId);
-      const vtkUtils = {
-        vtkImageMarchingSquares,
-        vtkDataArray,
-        vtkImageData,
-      };
-
-      const RTSS = generateRTSSFromSegmentations(
-        segmentations,
-        classes.MetadataProvider,
-        DicomMetadataStore,
-        cache,
-        cornerstoneToolsEnums,
-        vtkUtils
-      );
+      if (!storeFn) {
+        throw new Error(`No valid store for dataSource: ${dataSourceName}`);
+      }
 
       try {
-        const reportBlob = datasetToBlob(RTSS);
+        const args = {
+          segmentationId,
+          options: {
+            // Resolve store overrides against the data source we are storing into.
+            dataSource: dataSourceName,
+            SeriesDescription: series ? undefined : reportName || label || defaultSeriesDescription,
+            SeriesNumber: series ? undefined : seriesNumber,
+            predecessorImageId: series,
+          },
+        };
+        const generatedDataAsync =
+          (modality === 'SEG' && actions.generateSegmentation(args)) ||
+          (modality === 'RTSTRUCT' && actions.generateContour(args));
+        const generatedData = await generatedDataAsync;
 
-        //Create a URL for the binary.
-        const objectUrl = URL.createObjectURL(reportBlob);
-        window.location.assign(objectUrl);
-      } catch (e) {
-        console.warn(e);
+        if (!generatedData?.dataset) {
+          throw new Error('Error during segmentation generation');
+        }
+
+        const { dataset: naturalizedReport } = generatedData;
+
+        // After the generation, which is what names the series numbered here.
+        utils.updateNewInstanceMetadata(naturalizedReport);
+
+        // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
+        if (naturalizedReport.StudyID === 'No Study ID') {
+          naturalizedReport.StudyID = '';
+        }
+
+        await storeFn(naturalizedReport, {});
+
+        return naturalizedReport;
+      } catch (error) {
+        console.debug('Error storing segmentation:', error);
+        throw error;
       }
     },
-    setBrushSize: ({ value, toolNames }) => {
-      const brushSize = Number(value);
 
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        if (toolNames?.length === 0) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
-        } else {
-          toolNames?.forEach(toolName => {
-            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
-          });
-        }
+    generateContour: async args => {
+      const { segmentationId, options } = args;
+      // `dataSource` is only used by the SEG store path; keep it out of the RTSS options.
+      const { dataSource: _dataSource, ...contourOptions } = options ?? {};
+      const segmentations = segmentationService.getSegmentation(segmentationId);
+
+      // inject colors to the segmentIndex
+      const firstRepresentation =
+        segmentationService.getRepresentationsForSegmentation(segmentationId)[0];
+      Object.entries(segmentations.segments).forEach(([segmentIndex, segment]) => {
+        segment.color = segmentationService.getSegmentColor(
+          firstRepresentation.viewportId,
+          segmentationId,
+          Number(segmentIndex)
+        );
       });
+      const predecessorImageId =
+        contourOptions.predecessorImageId ?? segmentations.predecessorImageId;
+
+      // The adapter stamps the structure set date/time in UTC, which is the
+      // wrong wall clock reading anywhere else and, around midnight, the wrong
+      // day - DICOM DA and TM are displayed as they are stored.  This is the
+      // creation date/time of the structure set itself, so it is stamped
+      // whichever series it is stored into.  There is no series date/time to
+      // supply alongside it: an RTSTRUCT gets one only from the series it is
+      // added to, which the adapter copies from the predecessor instance.
+      const { date: structureSetDate, time: structureSetTime } = utils.getCurrentDicomDateTime();
+
+      const dataset = await generateRTSSFromRepresentation(segmentations, {
+        predecessorImageId,
+        StructureSetDate: structureSetDate,
+        StructureSetTime: structureSetTime,
+        ...contourOptions,
+        ...utils.getOhifWriterHeader(
+          '@cornerstonejs/adapters',
+          'CS3D',
+          adaptersVersion,
+          contourOptions
+        ),
+      });
+      return { dataset };
     },
-    setThresholdRange: ({
-      value,
-      toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
-    }) => {
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        toolNames?.forEach(toolName => {
-          toolGroup.setToolConfiguration(toolName, {
-            strategySpecificConfiguration: {
-              THRESHOLD: {
-                threshold: value,
-              },
-            },
-          });
-        });
+
+    /**
+     * Downloads an RTSS instance from a segmentation or contour
+     * representation.
+     */
+    downloadRTSS: async args => {
+      const { dataset } = await actions.generateContour(args);
+      const { InstanceNumber: instanceNumber = 1, SeriesInstanceUID: seriesUID } = dataset;
+      const storeFn = commandsManager.runCommand('createStoreFunction', {
+        dataSource: 'download',
+        defaultFileName: `rtss-${seriesUID}-${instanceNumber}.dcm`,
       });
+      await storeFn(dataset);
+    },
+
+    toggleActiveSegmentationUtility: ({ itemId: buttonId }) => {
+      const { uiState, setUIState } = useUIStateStore.getState();
+      const isButtonActive = uiState['activeSegmentationUtility'] === buttonId;
+      console.log('toggleActiveSegmentationUtility', isButtonActive, buttonId);
+      // if the button is active, clear the active segmentation utility
+      if (isButtonActive) {
+        setUIState('activeSegmentationUtility', null);
+      } else {
+        setUIState('activeSegmentationUtility', buttonId);
+      }
     },
   };
 
   const definitions = {
-    getUpdatedViewportsForSegmentation: {
-      commandFn: actions.getUpdatedViewportsForSegmentation,
-    },
-    loadSegmentationDisplaySetsForViewport: {
-      commandFn: actions.loadSegmentationDisplaySetsForViewport,
-    },
-    loadSegmentationsForViewport: {
-      commandFn: actions.loadSegmentationsForViewport,
-    },
-    createEmptySegmentationForViewport: {
-      commandFn: actions.createEmptySegmentationForViewport,
-    },
-    generateSegmentation: {
-      commandFn: actions.generateSegmentation,
-    },
-    downloadSegmentation: {
-      commandFn: actions.downloadSegmentation,
-    },
-    storeSegmentation: {
-      commandFn: actions.storeSegmentation,
-    },
-    downloadRTSS: {
-      commandFn: actions.downloadRTSS,
-    },
-    setBrushSize: {
-      commandFn: actions.setBrushSize,
-    },
-    setThresholdRange: {
-      commandFn: actions.setThresholdRange,
-    },
+    loadSegmentationsForViewport: actions.loadSegmentationsForViewport,
+    generateSegmentation: actions.generateSegmentation,
+    downloadSegmentation: actions.downloadSegmentation,
+    storeSegmentation: actions.storeSegmentation,
+    downloadRTSS: actions.downloadRTSS,
+    toggleActiveSegmentationUtility: actions.toggleActiveSegmentationUtility,
   };
 
   return {

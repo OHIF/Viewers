@@ -1,5 +1,7 @@
 import { cache, imageLoadPoolManager, Enums } from '@cornerstonejs/core';
-import { compact, flatten, zip } from 'lodash';
+import zip from 'lodash.zip';
+import compact from 'lodash.compact';
+import flatten from 'lodash.flatten';
 
 // Map of volumeId and SeriesInstanceId
 const volumeIdMapsToLoad = new Map<string, string>();
@@ -36,31 +38,6 @@ export default function interleaveTopToBottom({
       volumeIdMapsToLoad.set(volumeId, metadata.SeriesInstanceUID);
     }
   }
-
-  const filteredMatchDetails = [];
-  const displaySetsToLoad = new Set();
-
-  // Check all viewports that have a displaySet to be loaded. In some cases
-  // (eg: line chart viewports which is not a Cornerstone viewport) the
-  // displaySet is created on the client and there are no instances to be
-  // downloaded. For those viewports the displaySet may have the `skipLoading`
-  // option set to true otherwise it may block the download of all other
-  // instances resulting in blank viewports.
-  Array.from(matchDetails.values()).forEach(curMatchDetails => {
-    const { displaySetsInfo } = curMatchDetails;
-    let numDisplaySetsToLoad = 0;
-
-    displaySetsInfo.forEach(({ displaySetInstanceUID, displaySetOptions }) => {
-      if (!displaySetOptions?.options?.skipLoading) {
-        numDisplaySetsToLoad++;
-        displaySetsToLoad.add(displaySetInstanceUID);
-      }
-    });
-
-    if (numDisplaySetsToLoad) {
-      filteredMatchDetails.push(curMatchDetails);
-    }
-  });
 
   /**
    * The following is checking if all the viewports that were matched in the HP has been
@@ -106,9 +83,9 @@ export default function interleaveTopToBottom({
   // the imageIds and save them in AllRequests for later use
   const AllRequests = [];
   volumes.forEach(volume => {
-    const requests = volume.getImageLoadRequests();
+    const requests = volume.getImageLoadRequests?.() ?? [];
 
-    if (!requests.length || !requests[0] || !requests[0].imageId) {
+    if (!requests?.[0]?.imageId) {
       return;
     }
 

@@ -8,11 +8,11 @@
 # have this file as their .dockerignore.
 
 # Output
-dist/
-build/
+**/dist/
+**/build/
 
 # Dependencies
-node_modules/
+**/node_modules/
 
 # Root
 README.md
@@ -33,5 +33,5 @@ dockerfile
 .scripts/
 .vscode/
 coverage/
-docs/
+platform/docs/
 testdata/

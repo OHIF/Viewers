@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { CinePlayer, useCine } from '@ohif/ui';
+import { useCine } from '@ohif/ui-next';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
-import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
 import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({
@@ -54,13 +53,13 @@ function WrappedCinePlayer({
       // check if the displaySet is dynamic and set the dynamic info
       if (displaySet.isDynamicVolume) {
         const { dynamicVolumeInfo } = displaySet;
-        const numTimePoints = dynamicVolumeInfo.timePoints.length;
+        const numDimensionGroups = dynamicVolumeInfo.timePoints.length;
         const label = dynamicVolumeInfo.splittingTag;
-        const timePointIndex = dynamicVolumeInfo.timePointIndex || 0;
+        const dimensionGroupNumber = dynamicVolumeInfo.dimensionGroupNumber || 1;
         setDynamicInfo({
           volumeId: displaySet.displaySetInstanceUID,
-          timePointIndex,
-          numTimePoints,
+          dimensionGroupNumber,
+          numDimensionGroups,
           label,
         });
       } else {
@@ -101,7 +100,7 @@ function WrappedCinePlayer({
       return;
     }
 
-    eventTarget.addEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newDisplaySetHandler);
+    enabledVPElement.addEventListener(Enums.Events.VIEWPORT_NEW_IMAGE_SET, newDisplaySetHandler);
     // this doesn't makes sense that we are listening to this event on viewport element
     enabledVPElement.addEventListener(
       Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
@@ -111,7 +110,10 @@ function WrappedCinePlayer({
     return () => {
       cineService.setCine({ id: viewportId, isPlaying: false });
 
-      eventTarget.removeEventListener(Enums.Events.STACK_VIEWPORT_NEW_STACK, newDisplaySetHandler);
+      enabledVPElement.removeEventListener(
+        Enums.Events.VIEWPORT_NEW_IMAGE_SET,
+        newDisplaySetHandler
+      );
       enabledVPElement.removeEventListener(
         Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
         newDisplaySetHandler
@@ -158,8 +160,7 @@ function RenderCinePlayer({
   dynamicInfo: dynamicInfoProp,
   customizationService,
 }) {
-  const { component: CinePlayerComponent = CinePlayer } =
-    customizationService.get('cinePlayer') ?? {};
+  const CinePlayerComponent = customizationService.getCustomization('cinePlayer');
 
   const [dynamicInfo, setDynamicInfo] = useState(dynamicInfoProp);
 
@@ -175,20 +176,20 @@ function RenderCinePlayer({
       return;
     }
 
-    const handleTimePointIndexChange = evt => {
-      const { volumeId, timePointIndex, numTimePoints, splittingTag } = evt.detail;
-      setDynamicInfo({ volumeId, timePointIndex, numTimePoints, label: splittingTag });
+    const handleDimensionGroupChange = evt => {
+      const { volumeId, dimensionGroupNumber, numDimensionGroups, splittingTag } = evt.detail;
+      setDynamicInfo({ volumeId, dimensionGroupNumber, numDimensionGroups, label: splittingTag });
     };
 
     eventTarget.addEventListener(
-      StreamingEnums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
-      handleTimePointIndexChange
+      Enums.Events.DYNAMIC_VOLUME_DIMENSION_GROUP_CHANGED,
+      handleDimensionGroupChange
     );
 
     return () => {
       eventTarget.removeEventListener(
-        StreamingEnums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
-        handleTimePointIndexChange
+        Enums.Events.DYNAMIC_VOLUME_DIMENSION_GROUP_CHANGED,
+        handleDimensionGroupChange
       );
     };
   }, [dynamicInfo]);
@@ -198,17 +199,17 @@ function RenderCinePlayer({
       return;
     }
 
-    const { volumeId, timePointIndex, numTimePoints, splittingTag } = dynamicInfo || {};
-    const volume = cache.getVolume(volumeId);
-    volume.timePointIndex = timePointIndex;
+    const { volumeId, dimensionGroupNumber, numDimensionGroups, splittingTag } = dynamicInfo || {};
+    const volume = cache.getVolume(volumeId, true);
+    volume.dimensionGroupNumber = dimensionGroupNumber;
 
-    setDynamicInfo({ volumeId, timePointIndex, numTimePoints, label: splittingTag });
+    setDynamicInfo({ volumeId, dimensionGroupNumber, numDimensionGroups, label: splittingTag });
   }, []);
 
   const updateDynamicInfo = useCallback(props => {
-    const { volumeId, timePointIndex } = props;
-    const volume = cache.getVolume(volumeId);
-    volume.timePointIndex = timePointIndex;
+    const { volumeId, dimensionGroupNumber } = props;
+    const volume = cache.getVolume(volumeId, true);
+    volume.dimensionGroupNumber = dimensionGroupNumber;
   }, []);
 
   return (
@@ -223,6 +224,7 @@ function RenderCinePlayer({
           isPlaying: false,
         });
         cineService.setIsCineEnabled(false);
+        cineService.setViewportCineClosed(viewportId);
       }}
       onPlayPauseChange={isPlaying => {
         cineService.setCine({

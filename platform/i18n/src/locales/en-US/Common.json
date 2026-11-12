@@ -18,5 +18,12 @@
   "Show": "Show",
   "Stop": "Stop",
   "StudyDate": "Study Date",
-  "Yes": "Yes"
+  "Yes": "Yes",
+  "Cancel": "Cancel",
+  "Save": "Save",
+  "localDateFormat": "DD-MMM-YYYY",
+  "Back": "Back",
+  "Foreground": "Foreground",
+  "SELECT A FOREGROUND": "SELECT A FOREGROUND",
+  "SELECT A SEGMENTATION": "SELECT A SEGMENTATION"
 }
