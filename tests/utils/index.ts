@@ -29,6 +29,7 @@ import {
 } from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { drawFreehandContour } from './drawFreehandContour';
+import { livewireContourClicks } from './livewireContourClicks';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
@@ -82,6 +83,7 @@ export {
   measurementTextFormatters,
   clearAllAnnotations,
   drawFreehandContour,
+  livewireContourClicks,
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,

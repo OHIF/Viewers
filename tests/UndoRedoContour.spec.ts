@@ -4,6 +4,7 @@ import type { MainToolbarPageObject, RightPanelPageObject, ViewportPageObject } 
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 import {
   expect,
+  livewireContourClicks,
   readWhenSettled,
   test,
   visitStudy,
@@ -32,15 +33,6 @@ const SPLINE_POINTS = [
 // Drags the second control point outward.
 const SPLINE_POINT_MOVE = { start: { x: 0.6, y: 0.4 }, end: { x: 0.65, y: 0.35 } };
 
-// Livewire snaps to image edges, so these are viewport pixels tuned to edges on this study's
-// first displayed slice.
-const LIVEWIRE_CLICKS = [
-  { x: 350, y: 330 },
-  { x: 430, y: 210 },
-  { x: 570, y: 240 },
-  { x: 520, y: 340 },
-];
-
 type ContourTool = {
   select: (rightPanelPageObject: RightPanelPageObject) => Promise<void>;
   draw: (viewport: IViewportPageObject) => Promise<void>;
@@ -66,10 +58,10 @@ const SPLINE_CONTOUR: ContourTool = {
 const LIVEWIRE_CONTOUR: ContourTool = {
   select: panel => panel.contourSegmentationPanel.tools.livewireContour.click(),
   draw: async viewport => {
-    await viewport.clickAt(LIVEWIRE_CLICKS);
-    await expect(viewport.svg('circle')).toHaveCount(LIVEWIRE_CLICKS.length);
+    await viewport.clickAt(livewireContourClicks);
+    await expect(viewport.svg('circle')).toHaveCount(livewireContourClicks.length);
     // Double-clicking the last vertex closes the contour.
-    await viewport.doubleClickAt(LIVEWIRE_CLICKS[LIVEWIRE_CLICKS.length - 1]);
+    await viewport.doubleClickAt(livewireContourClicks[livewireContourClicks.length - 1]);
   },
 };
 
