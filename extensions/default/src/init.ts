@@ -1,5 +1,6 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
+import { ActiveThemeProvider } from '@ohif/ui-next';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';
@@ -16,7 +17,18 @@ export default function init({
   servicesManager,
   commandsManager,
   hotkeysManager,
+  serviceProvidersManager,
+  appConfig,
 }: withAppTypes): void {
+  const hasThemeModule =
+    Array.isArray(appConfig.customizationService) &&
+    appConfig.customizationService.some(
+      ref => typeof ref === 'string' && ref.includes('customizationModule.theme')
+    );
+
+  if (hasThemeModule) {
+    serviceProvidersManager.registerProvider('activeTheme', ActiveThemeProvider);
+  }
   const { toolbarService, cineService, viewportGridService } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(cineService, [

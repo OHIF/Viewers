@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
 import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
@@ -159,7 +158,7 @@ function ViewerLayout({
       />
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-background"
-        style={{ height: 'calc(100vh - 52px' }}
+        style={{ height: 'calc(100vh - 52px)' }}
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-background" />}
@@ -223,21 +222,6 @@ function ViewerLayout({
   );
 }
 
-ViewerLayout.propTypes = {
-  // From extension module params
-  extensionManager: PropTypes.shape({
-    getModuleEntry: PropTypes.func.isRequired,
-  }).isRequired,
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object.isRequired,
-  // From modes
-  leftPanels: PropTypes.array,
-  rightPanels: PropTypes.array,
-  leftPanelClosed: PropTypes.bool.isRequired,
-  rightPanelClosed: PropTypes.bool.isRequired,
-  /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  viewports: PropTypes.array,
-};
+
 
 export default ViewerLayout;

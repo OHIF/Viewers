@@ -499,7 +499,7 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        if (!sourceMissing.has(source.uid) ) {
+        if (!sourceMissing.has(source.uid)) {
           console.log('No source mapping', source.uid, annotationType, source);
           sourceMissing.add(source.uid);
         }
@@ -716,12 +716,12 @@ class MeasurementService extends PubSubService {
    * That allows, for example, clearing all of a single studies measurements
    * without needing to clear other measurements.
    */
-  public clearMeasurements(filter?: MeasurementFilter) {
+  public clearMeasurements(filter?: MeasurementFilter, metadata?: Record<string, unknown>) {
     // Make a copy of the measurements
     const toClear = this.getMeasurements(filter);
     const measurements = [...toClear];
     toClear.forEach(measurement => this.measurements.delete(measurement.uid));
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements, ...metadata });
   }
 
   /**

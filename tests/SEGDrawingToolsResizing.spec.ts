@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 
 import { RightPanelPageObject, ViewportPageObject } from './pages';
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import { checkForViewportScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page, rightPanelPageObject }) => {
@@ -50,6 +50,7 @@ async function performDrawingToolInteraction(
   await page.waitForTimeout(500);
 
   await brushRadiusInput.fill('42');
+  await brushRadiusInput.blur();
   await activeViewport.clickAt([{ x: 500, y: 500 }]);
   radius = parseFloat(await circle.getAttribute('r'));
   expect(radius).toBeGreaterThanOrEqual(108);
@@ -69,11 +70,11 @@ test('should resize segmentation brush tool', async ({
 
   await performDrawingToolInteraction(page, 'brush', rightPanelPageObject, viewportPageObject);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.segDrawingToolsResizing.brushTool
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segDrawingToolsResizing.brushTool,
+  });
 });
 
 test('should resize segmentation eraser tool', async ({
@@ -86,22 +87,24 @@ test('should resize segmentation eraser tool', async ({
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
+  await page.getByTestId('brush-radius').locator('input').blur();
   await activeViewport.clickAt([{ x: 400, y: 400 }]);
 
   await page.waitForTimeout(500);
 
   await page.getByTestId('Eraser-btn').click();
   await page.getByTestId('eraser-radius').locator('input').fill('25');
+  await page.getByTestId('eraser-radius').locator('input').blur();
 
   await page.waitForTimeout(500);
 
   await performDrawingToolInteraction(page, 'eraser', rightPanelPageObject, viewportPageObject);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.segDrawingToolsResizing.eraserTool
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.segDrawingToolsResizing.eraserTool,
+  });
 });
 
 test('should resize segmentation threshold tool', async ({

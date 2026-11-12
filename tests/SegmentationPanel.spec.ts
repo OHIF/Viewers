@@ -1,7 +1,5 @@
 import { expect, test, visitStudy } from './utils';
 
-const nonNumericError = 'Cannot type text into input[type=number]';
-
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -15,14 +13,17 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to labelmap tab.
-  segmentationPanel.click();
+  await segmentationPanel.click();
 
   // Add segmentation
   await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-  // Expect new segmentation and blank segment named "Segment 1"
-  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(1);
+  // Expect new segmentation and blank segment named "Segment 1". Use a retrying
+  // toHaveCount assertion: the segment row renders asynchronously after the add,
+  // so a one-shot getSegmentCount() races the render and was intermittently 0.
+  const { panel } = rightPanelPageObject.labelMapSegmentationPanel;
+  const segment1 = panel.nthSegment(0);
+  await expect(panel.rows).toHaveCount(1);
   await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
@@ -34,7 +35,8 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   // Delete
   await segment1.actions.delete();
 
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(0);
+  // Retrying assertion: row removal is async too.
+  await expect(panel.rows).toHaveCount(0);
 });
 
 test('checks saved segmentations loads and jumps to slices', async ({
@@ -84,21 +86,21 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
   test.beforeEach(async ({ rightPanelPageObject }) => {
     await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-    await rightPanelPageObject.labelMapSegmentationPanel.config.toggle.click();
+    await rightPanelPageObject.labelMapSegmentationPanel.config.open();
   });
 
   test.describe('opacity', () => {
     test('should accept valid values', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('0');
-      await expect(opacity.input).toHaveValue('0');
+      await opacity.setValue('0');
+      await expect(opacity.numberInput).toHaveValue('0');
 
-      await opacity.fill('0.5');
-      await expect(opacity.input).toHaveValue('0.5');
+      await opacity.setValue('0.5');
+      await expect(opacity.numberInput).toHaveValue('0.5');
 
-      await opacity.fill('1');
-      await expect(opacity.input).toHaveValue('1');
+      await opacity.setValue('1');
+      await expect(opacity.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity to max (1) when a value above the maximum is entered', async ({
@@ -106,8 +108,8 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('500');
-      await expect(opacity.input).toHaveValue('1');
+      await opacity.setValue('500');
+      await expect(opacity.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity to min (0) when a value below the minimum is entered', async ({
@@ -115,14 +117,17 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacity.fill('-1');
-      await expect(opacity.input).toHaveValue('0');
+      await opacity.setValue('-1');
+      await expect(opacity.numberInput).toHaveValue('0');
     });
 
     test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacity.fill('abc')).rejects.toThrow(nonNumericError);
+      await opacity.setValue('0.5');
+      await opacity.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacity.numberInput).toHaveValue('0.5');
     });
   });
 
@@ -130,14 +135,14 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should accept valid values', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('0');
-      await expect(border.input).toHaveValue('0');
+      await border.setValue('0');
+      await expect(border.numberInput).toHaveValue('0');
 
-      await border.fill('5');
-      await expect(border.input).toHaveValue('5');
+      await border.setValue('5');
+      await expect(border.numberInput).toHaveValue('5');
 
-      await border.fill('10');
-      await expect(border.input).toHaveValue('10');
+      await border.setValue('10');
+      await expect(border.numberInput).toHaveValue('10');
     });
 
     test('should clamp border to max (10) when a value above the maximum is entered', async ({
@@ -145,8 +150,8 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('500');
-      await expect(border.input).toHaveValue('10');
+      await border.setValue('500');
+      await expect(border.numberInput).toHaveValue('10');
     });
 
     test('should clamp border to min (0) when a value below the minimum is entered', async ({
@@ -154,14 +159,17 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await border.fill('-1');
-      await expect(border.input).toHaveValue('0');
+      await border.setValue('-1');
+      await expect(border.numberInput).toHaveValue('0');
     });
 
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(border.fill('abc')).rejects.toThrow(nonNumericError);
+      await border.setValue('3');
+      await border.setValue('abc');
+      // confirm that previous value was restored
+      await expect(border.numberInput).toHaveValue('3');
     });
   });
 
@@ -169,14 +177,14 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should accept valid values', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('0');
-      await expect(opacityInactive.input).toHaveValue('0');
+      await opacityInactive.setValue('0');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
 
-      await opacityInactive.fill('0.5');
-      await expect(opacityInactive.input).toHaveValue('0.5');
+      await opacityInactive.setValue('0.5');
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
 
-      await opacityInactive.fill('1');
-      await expect(opacityInactive.input).toHaveValue('1');
+      await opacityInactive.setValue('1');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity inactive to max (1) when a value above the maximum is entered', async ({
@@ -184,8 +192,8 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('500');
-      await expect(opacityInactive.input).toHaveValue('1');
+      await opacityInactive.setValue('500');
+      await expect(opacityInactive.numberInput).toHaveValue('1');
     });
 
     test('should clamp opacity inactive to min (0) when a value below the minimum is entered', async ({
@@ -193,14 +201,17 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await opacityInactive.fill('-1');
-      await expect(opacityInactive.input).toHaveValue('0');
+      await opacityInactive.setValue('-1');
+      await expect(opacityInactive.numberInput).toHaveValue('0');
     });
 
     test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacityInactive.fill('abc')).rejects.toThrow(nonNumericError);
+      await opacityInactive.setValue('0.5');
+      await opacityInactive.setValue('abc');
+      // confirm that previous value was restored
+      await expect(opacityInactive.numberInput).toHaveValue('0.5');
     });
   });
 });

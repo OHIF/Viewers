@@ -7,10 +7,16 @@ import measurementsCustomization from './customizations/measurementsCustomizatio
 import volumeRenderingCustomization from './customizations/volumeRenderingCustomization';
 import colorbarCustomization from './customizations/colorbarCustomization';
 import modalityColorMapCustomization from './customizations/modalityColorMapCustomization';
+import segmentationHydrationCustomization from './customizations/segmentationHydrationCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
+import toolbarButtonsCustomization from './customizations/toolbarButtonsCustomization';
+import segmentationToolbarCustomization from './customizations/segmentationToolbarCustomization';
+import getToolGroupToolsCustomization from './customizations/toolGroupToolsCustomization';
 import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
+import getViewportScrollbarCustomization from './customizations/viewportScrollbarCustomization';
+import gpuSettingsPresetCustomization from './customizations/gpuSettingsPresetCustomization';
 
 function getCustomizationModule({ commandsManager, servicesManager, extensionManager }) {
   return [
@@ -30,10 +36,16 @@ function getCustomizationModule({ commandsManager, servicesManager, extensionMan
         ...volumeRenderingCustomization,
         ...colorbarCustomization,
         ...modalityColorMapCustomization,
+        ...segmentationHydrationCustomization,
         ...windowLevelPresetsCustomization,
+        ...toolbarButtonsCustomization,
+        ...segmentationToolbarCustomization,
+        ...getToolGroupToolsCustomization({ commandsManager }),
         ...miscCustomization,
         ...captureViewportModalCustomization,
         ...viewportDownloadWarningCustomization,
+        ...getViewportScrollbarCustomization(),
+        ...gpuSettingsPresetCustomization,
       },
     },
   ];

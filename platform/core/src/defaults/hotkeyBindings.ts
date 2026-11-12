@@ -134,8 +134,8 @@ const bindings = [
     isEditable: true,
   },
   {
-    commandName: 'cancelMeasurement',
-    label: 'Cancel Measurement',
+    commandName: 'cancelActiveOperation',
+    label: 'Cancel',
     keys: ['esc'],
   },
   {
@@ -152,15 +152,21 @@ const bindings = [
   },
   {
     commandName: 'setWindowLevelPreset',
-    commandOptions: { presetName: 'ct-bone', presetIndex: 2 },
+    commandOptions: { presetName: 'ct-liver', presetIndex: 2 },
     label: 'W/L Preset 3',
     keys: ['3'],
   },
   {
     commandName: 'setWindowLevelPreset',
-    commandOptions: { presetName: 'ct-brain', presetIndex: 3 },
+    commandOptions: { presetName: 'ct-bone', presetIndex: 3 },
     label: 'W/L Preset 4',
     keys: ['4'],
+  },
+  {
+    commandName: 'setWindowLevelPreset',
+    commandOptions: { presetName: 'ct-brain', presetIndex: 4 },
+    label: 'W/L Preset 5',
+    keys: ['5'],
   },
   {
     commandName: 'deleteActiveAnnotation',
@@ -171,11 +177,6 @@ const bindings = [
     commandName: 'acceptPreview',
     label: 'Accept Preview',
     keys: ['enter'],
-  },
-  {
-    commandName: 'rejectPreview',
-    label: 'Reject Preview',
-    keys: ['esc'],
   },
   {
     commandName: 'undo',

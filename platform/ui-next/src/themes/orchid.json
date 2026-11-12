@@ -1,0 +1,31 @@
+{
+  "name": "orchid",
+  "label": "Tonal: Orchid",
+  "cssVars": {
+    "dark": {
+      "highlight": "292 75% 62%",
+      "neutral": "270 18% 55%",
+      "neutral-light": "275 35% 75%",
+      "neutral-dark": "268 20% 24%",
+      "background": "270 45% 6%",
+      "foreground": "280 15% 96%",
+      "card": "268 40% 10%",
+      "card-foreground": "280 15% 96%",
+      "popover": "264 48% 13%",
+      "popover-foreground": "280 15% 96%",
+      "primary": "270 85% 65%",
+      "primary-foreground": "0 0% 98%",
+      "secondary": "268 45% 32%",
+      "secondary-foreground": "275 45% 88%",
+      "muted": "268 40% 10%",
+      "muted-foreground": "272 30% 60%",
+      "accent": "268 50% 20%",
+      "accent-foreground": "280 15% 96%",
+      "destructive": "0 65% 40%",
+      "destructive-foreground": "0 0% 98%",
+      "border": "268 30% 18%",
+      "input": "268 40% 25%",
+      "ring": "270 80% 60%"
+    }
+  }
+}

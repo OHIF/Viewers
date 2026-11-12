@@ -20,19 +20,32 @@ window.config = {
   routerBasename: null,
   extensions: [],
   modes: ['@ohif/mode-test'],
+  // Allow the `default` prefix so e2e specs can exercise `?customization=` (e.g.
+  // Customization.spec.ts loads `?customization=veterinary/veterinaryOverlay`).
+  customizationUrlPrefixes: {
+    default: './customizations/',
+  },
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
   strictZSpacingForVolumeViewport: true,
+  // Lossy downsampling for the tests and the deploy previews. `final` reduces
+  // a volume texture to fit the `cornerstone.gpuSettingsPreset` below.
+  // config/default.js keeps final downsampling off.
+  lossyDownsampling: { final: true },
   // filterQueryParam: false,
 
   // Add some customizations to the default e2e datasource
-  customizationService: [
-    '@ohif/extension-default.customizationModule.datasources',
-    '@ohif/extension-default.customizationModule.helloPage',
-  ],
+  customizationService: {
+    // A `?customization=gpu/<preset>` URL module applies after this block, so it wins.
+    bootstrap: { 'cornerstone.gpuSettingsPreset': 'medium' },
+    global: [
+      '@ohif/extension-default.customizationModule.datasources',
+      '@ohif/extension-default.customizationModule.helloPage',
+    ],
+  },
 
   defaultDataSourceName: 'e2e',
   investigationalUseDialog: {
@@ -113,7 +126,8 @@ window.config = {
         wadoRoot: '/viewer-testdata',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,

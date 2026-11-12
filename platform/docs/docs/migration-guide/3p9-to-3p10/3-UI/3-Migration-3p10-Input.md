@@ -13,7 +13,7 @@ This guide explains how to migrate from the existing `Input`, `InputNumber`, `In
 
 ## Why Migrate?
 
-  See the full list of components in the [Numeric Component Showcase](/components-list#numeric)
+  See the full list of components in the [Numeric Component](/components/numeric)
 
 
 The old components relied heavily on props, making them complex and difficult to maintain and apply custom styles. The new `Numeric` component provides a structured approach with a context-based API, reducing prop clutter and improving reusability.

@@ -4,7 +4,7 @@ import { Numeric } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
-export function VolumeLighting({ viewportId, hasShade }: VolumeLightingProps): ReactElement {
+export function VolumeLighting({ viewportId, hasShade }: VolumeLightingProps): ReactElement<any> {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [lightingValues, setLightingValues] = useState({

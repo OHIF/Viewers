@@ -1,6 +1,7 @@
 import OHIF from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
+import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';
 import dcmjs from 'dcmjs';
 import { dicomWebUtils } from '@ohif/extension-default';
 import { buildEcgModule } from './utils/ecgMetadata';
@@ -8,7 +9,11 @@ import { buildEcgModule } from './utils/ecgMetadata';
 const { MetadataModules } = csEnums;
 const { utils } = OHIF;
 const { denaturalizeDataset } = dcmjs.data.DicomMetaDictionary;
-const { transferDenaturalizedDataset, fixMultiValueKeys } = dicomWebUtils;
+// NOTE: access transferDenaturalizedDataset / fixMultiValueKeys lazily (at call
+// time) rather than destructuring here. This module and @ohif/extension-default
+// form a circular import, so dicomWebUtils can be undefined at module-eval time
+// depending on bundler eval order; a top-level destructure then throws and
+// crashes app boot.
 
 const SOP_CLASS_UIDS = {
   VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.6',
@@ -82,7 +87,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
-    frameOfReferenceUID: FrameOfReferenceUID,
+    FrameOfReferenceUID,
     SOPClassHandlerId,
     SOPClassUID,
     SeriesDescription: SeriesDescription || 'Microscopy Data',
@@ -139,8 +144,8 @@ function getDICOMwebMetadata(instanceMap, imageId) {
     console.warn('Metadata not already found for', imageId, 'in', instanceMap);
     return this.super.getDICOMwebMetadata(imageId);
   }
-  return transferDenaturalizedDataset(
-    denaturalizeDataset(fixMultiValueKeys(instanceMap.get(imageId)))
+  return dicomWebUtils.transferDenaturalizedDataset(
+    denaturalizeDataset(dicomWebUtils.fixMultiValueKeys(instanceMap.get(imageId)))
   );
 }
 
@@ -191,6 +196,14 @@ function _getEcgDisplaySetsFromSeries(instances, servicesManager) {
           type: MetadataModules.ECG,
           metadata: ecgModule,
         });
+        // The time and mV region, so measurement tools report physical units
+        const calibration = csMetadataUtilities.buildEcgCalibrationFromInstance(instance);
+        if (calibration) {
+          csUtils.genericMetadataProvider.addRaw(imageId, {
+            type: MetadataModules.CALIBRATION,
+            metadata: calibration,
+          });
+        }
       }
     }
 

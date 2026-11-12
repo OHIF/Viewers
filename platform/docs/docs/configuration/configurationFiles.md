@@ -118,6 +118,7 @@ window.config = ({ servicesManager } = {}) => {
 
 
 Here are a list of some options available:
+- `customizationService`: An array of customization module references and inline overrides applied at the global scope. This is how deployers enable optional features like the [Appearance & Theming](./ui.md) system and configure UI components without modifying core code. See [Customization Service](../platform/services/customization-service/customizationService.md) for the full syntax reference.
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
   panel and locking already stored measurements.
 - `maxNumberOfWebWorkers`: The maximum number of web workers to use for
@@ -132,7 +133,7 @@ Here are a list of some options available:
 - `requestTransferSyntaxUID` : Request a specific Transfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
-- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type. For `thumbnail`, a small pool (around `5`) is recommended: the study list preview panel fetches a thumbnail per series in parallel, and a larger pool yields little throughput benefit while risking server overload and contention with `interaction`/`prefetch` requests.
 - `modesConfiguration`: Allows overriding modes configuration.
   - Example config:
   ```js
@@ -189,6 +190,12 @@ if auth headers are used, a preflight request is required.
 - `showStudyList`: (default to false), if set to false, the OHIF search (or work list) page will not be shown nor will there be a back button (chevron) in the viewer to navigate to it
 - `useNorm16Texture`: (default to false), if set to true, it will use 16 bit data type for the image data wherever possible which has
   significant impact on reducing the memory usage. However, the 16Bit textures require EXT_texture_norm16 extension in webGL 2.0 (you can check if you have it here https://webglreport.com/?v=2). In addition to the extension, there are reported problems for Intel Macs that might cause the viewer to crash. In summary, it is great a configuration if you have support for it.
+- `lossyDownsampling`: sets which lossy downsampling Cornerstone3D can use for a volume. The object has three flags:
+  - `final` (default `false`): a volume viewport reduces its texture to fit the GPU settings preset. Select the preset with the `cornerstone.gpuSettingsPreset` customization: `low-tablet`, `low`, `medium`, `high` or `high-texture-4096`. See [Select the GPU settings preset](../platform/services/customization-service/specificCustomizations.md#5-select-the-gpu-settings-preset).
+  - `interactive` (default `true`): a viewport lowers the detail while the user interacts, for example with a larger sample distance during a 3D rotation. The full detail returns when the interaction ends.
+  - `interleavedLoading` (default `true`): the loader fills the frames that have not loaded yet with copies of the nearby loaded frames. Each frame becomes exact when its own data loads.
+
+  These options are not fully safe on every device. A texture that is too large can lose the WebGL context, and then the user must reload the page. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` set `lossyDownsampling: { final: true }`. `config/dev.js`, `config/netlify.js` and `config/e2e.js` also select the `medium` preset, and a `?customization=gpu/<preset>` URL can select a different preset. The other bundled configs keep the defaults. `config/default.js` and the `config/docker-nginx-*.js` recipes show the setting in a comment.
 - `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to
   load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
 - `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
@@ -321,6 +328,17 @@ configuration: {
   stackRetrieveOptions: {
     retrieveOptions: { single: { streaming: false } },
   },
+}
+```
+
+### Data Source: volumeRetrieveOptions
+At the data source configuration level, you can set `volumeRetrieveOptions` to select the retrieve stages of a volume. The value is the name of a Cornerstone3D `ProgressiveRetrieveImages` stage set, or a `{ stages }` object. The default is `'coarseInterleavedRetrieveStages'`. A hanging protocol with an `imageLoadStrategy` does not use these stages.
+
+The 3.13 default was `'interleavedRetrieveStages'`. That stage set has a lossy first pass, which is fast on an HTJ2K server. To use it again:
+
+```js
+configuration: {
+  volumeRetrieveOptions: 'interleavedRetrieveStages',
 }
 ```
 

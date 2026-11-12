@@ -1,4 +1,12 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy, expect } from './utils';
+import {
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page }) => {
@@ -11,6 +19,7 @@ test('should display the spline tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.splineROI.click();
@@ -24,7 +33,29 @@ test('should display the spline tool', async ({
     { x: 383, y: 461 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.spline.splineDisplayedCorrectly);
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.spline.splineDisplayedCorrectly,
+  });
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  const expectedArea = 38963;
+
+  // SplineROI panel and SVG: area only.
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'SplineROI',
+    expectedPanelPrimaryLines: [measurementTextFormatters.areaPanelLine(`${expectedArea}`)],
+    expectedSvgLines: [measurementTextFormatters.areaSvgLine(`${expectedArea}`)],
+    assertStats: stats => {
+      expect(stats.areaUnit).toBe('mm²');
+      expect(Math.round(stats.area as number)).toBe(expectedArea);
+    },
+  });
 });
 
 test('should restore viewport interactivity after deleting an in-progress Spline annotation via context menu', async ({
@@ -47,6 +78,41 @@ test('should restore viewport interactivity after deleting an in-progress Spline
   await expect(deleteButton.locator).toBeVisible();
   await deleteButton.click();
 
+  await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
+
+  // Draw and complete a new Spline annotation to verify interactivity is restored
+  await activeViewport.clickAt([
+    { x: 380, y: 299 },
+    { x: 420, y: 236 },
+    { x: 523, y: 232 },
+    { x: 581, y: 287 },
+    { x: 482, y: 333 },
+    { x: 383, y: 301 },
+  ]);
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeVisible();
+});
+
+test('should cancel an in-progress Spline annotation via Escape', async ({
+  page,
+  DOMOverlayPageObject,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
+  await mainToolbarPageObject.measurementTools.splineROI.click();
+
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
+    { x: 380, y: 299 },
+    { x: 420, y: 236 },
+    { x: 523, y: 232 },
+  ]);
+
+  // Ensure the three points clicked above are rendered in the DOM before pressing Escape
+  await expect(activeViewport.svg('circle')).toHaveCount(3);
+  await press({ page, key: 'Escape' });
+
+  // Pressing Escape should cancel the in-progress Spline annotation
   await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
 
   // Draw and complete a new Spline annotation to verify interactivity is restored

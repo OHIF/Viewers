@@ -18,7 +18,7 @@ function TrackingStatus({ viewportId }: { viewportId: string }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <span>
-            <Icons.StatusTracking className="h-4 w-4" />
+            <Icons.StatusTracking className="h-4 w-4 text-highlight" />
           </span>
         </TooltipTrigger>
         <TooltipContent side="bottom">
