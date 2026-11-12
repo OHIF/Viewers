@@ -30,6 +30,7 @@ import getMetadataDisplaySetCustomization from './customizations/metadataDisplay
 import getMetadataContextCustomization from './customizations/metadataContextCustomization';
 import headerRightSideCustomization from './customizations/headerRightSideCustomization';
 import hideHeaderUndoRedoCustomization from './customizations/hideHeaderUndoRedoCustomization';
+import hangingProtocolsCustomization from './customizations/hangingProtocolsCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -101,6 +102,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...getMetadataDisplaySetCustomization({ servicesManager, extensionManager, appConfig }),
         ...getMetadataContextCustomization(),
         ...headerRightSideCustomization,
+        ...hangingProtocolsCustomization,
       },
     },
   ];

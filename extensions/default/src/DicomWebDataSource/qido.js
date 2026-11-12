@@ -158,7 +158,7 @@ function mapParams(params, options = {}) {
   }
   const commaSeparatedFields = [
     '00081030', // Study Description
-    '00080060', // Modality
+    '00080061', // Modalities In Study
     '00080090', // Referring Physician's Name
     '00100030', // Patient's Birth Date
     // Add more fields here if you want them in the result

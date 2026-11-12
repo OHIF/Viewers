@@ -23,7 +23,7 @@
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
 # Copy Files
-FROM node:24.22.2-slim as builder
+FROM node:24.22.2-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
     && rm -rf /var/lib/apt/lists/*
@@ -65,7 +65,7 @@ RUN ./.docker/compressDist.sh
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginxinc/nginx-unprivileged:1.27-alpine as final
+FROM nginxinc/nginx-unprivileged:1.30-alpine AS final
 #RUN apk add --no-cache bash
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
@@ -82,7 +82,9 @@ COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/
 
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
+# The base image is not rebuilt for each Alpine fix, so take the fixes at build time.
 USER root
+RUN apk upgrade --no-cache
 RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
