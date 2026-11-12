@@ -3,6 +3,7 @@ import { classes, Types, utils } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
+import { version as adaptersVersion } from '@cornerstonejs/adapters/version';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 import { utils as cornerstoneUtils } from '@ohif/extension-cornerstone';
 
@@ -305,6 +306,12 @@ const commandsModule = ({
         ...(storeIntoSeriesImageId ? {} : { SeriesDate: creationDate, SeriesTime: creationTime }),
         ...getSegmentationSaveOptions(customizationService, dataSourceStoreOverride),
         ...generateOptions,
+        ...utils.getOhifWriterHeader(
+          '@cornerstonejs/adapters',
+          'CS3D',
+          adaptersVersion,
+          generateOptions
+        ),
       };
 
       // A LABELMAP SEG frame stores a single label per voxel, so the labelmap
@@ -483,6 +490,12 @@ const commandsModule = ({
         StructureSetDate: structureSetDate,
         StructureSetTime: structureSetTime,
         ...contourOptions,
+        ...utils.getOhifWriterHeader(
+          '@cornerstonejs/adapters',
+          'CS3D',
+          adaptersVersion,
+          contourOptions
+        ),
       });
       return { dataset };
     },
