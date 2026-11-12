@@ -23,7 +23,7 @@
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
 # Copy Files
-FROM node:24.22.2-slim as builder
+FROM node:24.22.2-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
     && rm -rf /var/lib/apt/lists/*
