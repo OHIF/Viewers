@@ -77,3 +77,6 @@ auth.json
 
 # platform/ui-next UMD build emits font assets at the package root
 platform/ui-next/*.woff2
+
+# Local review notes
+temp/
