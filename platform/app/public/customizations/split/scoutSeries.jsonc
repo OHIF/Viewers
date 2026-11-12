@@ -12,10 +12,10 @@
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
 //  - `displaySetRules` is the registry, keyed by rule id, so `$merge` adds the
 //    rule under its id. `displaySetRuleOrder` lists the rule ids in
-//    evaluation order, with first-match-wins per instance. `$unshift` puts the
-//    scout rule first, before the default `localizer` and `volume3d` rules.
-//    The file uses only standard commands, so a server that applies it with
-//    plain immutability-helper gets the same order. So for CT this module replaces
+//    evaluation order, with first-match-wins per instance. `$spliceById` puts
+//    the scout rule just before the default `localizer` rule. A server that
+//    registers `spliceById` of @cornerstonejs/metadata gets the same order, and
+//    a server without the command gets an error. So for CT this module replaces
 //    the default `localizer` rule: the scout display set has `splitRuleId`
 //    `ctScout`, the "SCOUT" label and description, and `isLocalizer: true`, as
 //    the `localizer` display set has. The rule has no `Rows` test, unlike the
@@ -58,7 +58,7 @@
           }
         }
       },
-      "displaySetRuleOrder": { "$unshift": ["ctScout"] }
+      "displaySetRuleOrder": { "$spliceById": [["localizer", 0, "ctScout"]] }
     }
   }
 }

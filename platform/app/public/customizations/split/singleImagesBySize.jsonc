@@ -11,8 +11,8 @@
 //
 // How it works:
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
-//  - `$merge` adds the rule to the registry under its id, and `$unshift` puts
-//    the id first in the rule order, before the default `singleImageModality`
+//  - `$merge` adds the rule to the registry under its id, and `$spliceById`
+//    puts the id just before the default `singleImageModality`
 //    rule.
 //  - The rule `context` rounds `Rows` and `Columns` to a bucket of 64 pixels,
 //    and `imageSizeBucket` joins the two buckets into one key. The rounding is
@@ -45,7 +45,9 @@
           }
         }
       },
-      "displaySetRuleOrder": { "$unshift": ["singleImagesBySize"] }
+      "displaySetRuleOrder": {
+        "$spliceById": [["singleImageModality", 0, "singleImagesBySize"]]
+      }
     }
   }
 }

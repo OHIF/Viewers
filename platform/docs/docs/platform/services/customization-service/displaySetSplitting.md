@@ -238,8 +238,11 @@ plain `immutability-helper` reads a string position as `0`, gives no error,
 and so changes the wrong item.
 
 A keyed registry cannot hold two rules with one id, so a customization layer
-replaces or edits a rule instead of adding a copy of it. An id can be in the
-order only once.
+replaces or edits a rule instead of adding a copy of it. An id that occurs
+again in the order is the same rule, and its later copy can never claim an
+instance. OHIF keeps the first place of the id, and writes one warning in the
+console. This happens when two modules add the same rule, for example
+`split/usTimeClusters` and `split/optional/usTimeClusters`.
 
 :::caution
 A custom rule that claims video, whole-slide, ECG, SEG, RTSTRUCT, parametric
@@ -272,7 +275,7 @@ notification. The notification stays on the screen until the user closes it.
 **A rule that does not compile** — an unknown name, an unknown field (also
 `priority`), an invalid expression, an `id` that differs from the key — stops
 **all** display set creation. So does an id of `displaySetRuleOrder` that is not
-in `displaySetRules`, or that is in the order twice. The notification names
+in `displaySetRules`. The notification names
 every rule that does not compile. A rule in the registry that the order does
 not name is not compiled.
 

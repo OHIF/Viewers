@@ -126,8 +126,9 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRule): SplitRule {
  *
  * Each rule is compiled on its own (SP-PIPE-3), so that `errors` names every
  * rule that fails - an unknown name, an invalid expression, an id of the order
- * that is not in the registry or that occurs twice, an id that differs from
- * the key, an unsafe id such as `__proto__`. No rule is dropped: a rule set
+ * that is not in the registry, an id that differs from the key, an unsafe id
+ * such as `__proto__`. An id that occurs again in the order is the same rule:
+ * it keeps its first place, with one warning, as in `materializeSplitRules`. No rule is dropped: a rule set
  * with an error must stop display set creation (SP-SAFE-7), because the rule
  * that failed can be the rule a clinician depends on. The display set service
  * does that stop.
@@ -156,13 +157,15 @@ export function compileSplitRules(
     return { rules, errors };
   }
 
-  const seen = new Set<string>();
-  for (const id of order) {
+  const unique = [...new Set(order)];
+  if (unique.length < order.length) {
+    const repeated = [...new Set(order.filter((id, index) => order.indexOf(id) !== index))];
+    console.warn(
+      `displaySetRuleOrder: ${repeated.join(', ')} occurs more than once; the first place is used.`
+    );
+  }
+  for (const id of unique) {
     try {
-      if (seen.has(id)) {
-        throw new Error('the id occurs more than once in displaySetRuleOrder');
-      }
-      seen.add(id);
       // Checks the id against the registry: present, safe, equal to the key.
       const [rule] = materializeSplitRules(registry as Record<string, RawSplitRule>, [id]);
       rules.push(wrapRuleFunctions(id, createDisplaySetSplitRules([rule], options)[0]));

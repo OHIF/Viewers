@@ -156,13 +156,18 @@ describe('compileSplitRules', () => {
       expect(warn).not.toHaveBeenCalled();
     });
 
-    it('an id of the order that is not in the registry, or that occurs twice', () => {
-      const { rules, errors } = compileSplitRules({ good: {} }, ['missing', 'good', 'good']);
+    it('an id of the order that is not in the registry is an error; a repeated id keeps its first place', () => {
+      const { rules, errors } = compileSplitRules({ good: {}, other: {} }, [
+        'missing',
+        'good',
+        'other',
+        'good',
+      ]);
       expect(errors).toEqual([
         { ruleId: 'missing', message: expect.stringContaining('not in the registry') },
-        { ruleId: 'good', message: expect.stringContaining('more than once') },
       ]);
-      expect(rules.map(rule => rule.id)).toEqual(['good']);
+      expect(rules.map(rule => rule.id)).toEqual(['good', 'other']);
+      expect(warn).toHaveBeenCalledTimes(1);
     });
 
     it('names every rule that fails, because each rule compiles alone (SP-PIPE-3)', () => {

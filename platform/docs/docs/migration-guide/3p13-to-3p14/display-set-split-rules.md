@@ -138,9 +138,10 @@ error. Each entry finds its position after the earlier entries. For example,
 just before `localizer`. Do not put an id in `$splice`: plain
 `immutability-helper` reads a string position as `0` and gives no error.
 
-An id of the order that is not in the registry, or an id that is in the order
-twice, is a compile error. OHIF then creates no display sets, and shows an
-error that names the rule.
+An id of the order that is not in the registry is a compile error. OHIF then
+creates no display sets, and shows an error that names the rule. An id that is
+in the order twice keeps its first place, and OHIF writes a warning in the
+console.
 
 The default rule ids and their order are in the
 [Cornerstone docs](https://www.cornerstonejs.org/docs/concepts/cornerstone-metadata/display-sets#the-default-rules).

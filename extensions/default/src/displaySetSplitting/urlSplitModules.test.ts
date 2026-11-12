@@ -9,6 +9,7 @@ import {
   displaySetRules,
   groupInstancesBySplitRules,
   materializeSplitRules,
+  spliceById,
 } from '@cornerstonejs/metadata';
 import { CustomizationService } from '@ohif/core';
 import getMetadataDisplaySetCustomization from '../customizations/metadataDisplaySetCustomization';
@@ -52,8 +53,12 @@ const MODULE_NAMES = [
 ];
 const describeOptional = OPTIONAL_NAMES.length ? describe : describe.skip;
 
-/** `immutability-helper` with the standard commands only: no OHIF `$filter`. */
+/**
+ * `immutability-helper` as a server has it: the standard commands, and
+ * `$spliceById` of `@cornerstonejs/metadata` (SP-SRV-3). No OHIF `$filter`.
+ */
 const standardUpdate = newContext();
+standardUpdate.extend('$spliceById', (spec, list) => spliceById(list as string[], spec));
 
 /**
  * The customizations a server gets for one module: the CS3D defaults, then

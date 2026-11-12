@@ -193,8 +193,8 @@ display sets of one series for each module. `SP-EXM-2` is an optional file of
 }
 ```
 
-The module adds the rule to the registry with `$merge`, and puts its id first in the rule order
-with `"displaySetRuleOrder": { "$unshift": ["regularVolume"] }`.
+The module adds the rule to the registry with `$merge`, and puts its id just before the default
+`localizer` rule with `"displaySetRuleOrder": { "$spliceById": [["localizer", 0, "regularVolume"]] }`.
 
 The module also adds the rule `irregularImages` to the registry, but not to the rule order, so the
 rule is off. With its id in the order, for example
@@ -228,8 +228,8 @@ one (`SP-PIPE-7`). The file changes only `sortBy`, so it works together with the
 
 **SP-EXM-3** — `split/usTimeClusters.jsonc`. *Satisfies `SP-SUM-4`, `SP-SUM-7`, `SP-CTX-10`.*
 
-The module puts the id first in the rule order with
-`"displaySetRuleOrder": { "$unshift": ["usTimeClusters"] }`.
+The module puts the id just before the default `defaultImageRule` rule with
+`"displaySetRuleOrder": { "$spliceById": [["defaultImageRule", 0, "usTimeClusters"]] }`.
 
 ```jsonc
 "usTimeClusters": {
@@ -255,7 +255,7 @@ The module puts the id first in the rule order with
 
 | Stage | What happens |
 | --- | --- |
-| 6b | `regularVolume` runs first (it is first in the rule order), and its first read computes `planeGeometry`. `planeGeometry` finds the normal `[0, 0, 1]`. The gaps are 2, 1.1, 0.9, and 2, so the spacing is 2 mm. The anchor at 0 puts four positions on the lattice. The slice at 3.1 mm is 1.55 steps from the anchor, so it is off the lattice. `sliceIndex` is 0, 1, 2 and 3 for the slices at 0, 2, 4 and 6 mm. `mixesIrregular` is true. |
+| 6b | `regularVolume` is the first rule that can claim a single-frame CT image (it is just before `localizer` in the rule order), and its first read computes `planeGeometry`. `planeGeometry` finds the normal `[0, 0, 1]`. The gaps are 2, 1.1, 0.9, and 2, so the spacing is 2 mm. The anchor at 0 puts four positions on the lattice. The slice at 3.1 mm is 1.55 steps from the anchor, so it is off the lattice. `sliceIndex` is 0, 1, 2 and 3 for the slices at 0, 2, 4 and 6 mm. `mixesIrregular` is true. |
 | 6c | `regularVolume` claims the four slices with an index. The slice at 3.1 mm has no index, so the default `volume3d` rule claims it. |
 | 6d | Two groups: `["regularVolume", <SeriesInstanceUID>]` with four slices, and `["volume3d", <SeriesInstanceUID>]` with one slice. |
 | 6e | The four slices are in the order of `sliceDistance`: 0, 2, 4, 6 mm. |

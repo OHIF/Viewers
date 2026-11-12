@@ -79,7 +79,7 @@
           }
         }
       },
-      "displaySetRuleOrder": { "$unshift": ["regularVolume"] }
+      "displaySetRuleOrder": { "$spliceById": [["localizer", 0, "regularVolume"]] }
     }
   }
 }
