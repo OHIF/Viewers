@@ -51,10 +51,9 @@ viewer.
 :::
 
 :::note
-For multi-frame instances, include `NumberOfFrames` only when it matches the
-source object and the image URLs you provide. If a URL points to a specific
-frame, the `frame` query parameter is zero-based, so `frame=0` is the first
-frame.
+For a multi-frame instance, copy `NumberOfFrames` from the source object. If a
+URL points to a specific frame, the `frame` query parameter is the DICOM frame
+number. The first frame is `frame=1`, as in WADO-RS `/frames/1`.
 :::
 
 Note that at the instance level metadata we are storing both the `metadata` and
