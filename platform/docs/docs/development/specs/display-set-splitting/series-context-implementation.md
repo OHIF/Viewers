@@ -166,15 +166,15 @@ the cluster of each instance, and so satisfies `SP-CTX-10`.
 
 ### 2.3 Example rule modules — `SP-EXM`
 
-Each module is in `platform/app/public/customizations/split/`, and follows `SP-DEPLOY-1` and
-`SP-DEPLOY-2`. `urlSplitModules.test.ts` compiles each module, and checks the display sets of one
-series for each module.
+`SP-EXM-1` and `SP-EXM-3` are modules in `platform/app/public/customizations/split/`, and follow
+`SP-DEPLOY-1` and `SP-DEPLOY-2`. `urlSplitModules.test.ts` compiles each module, and checks the
+display sets of one series for each module. `SP-EXM-2` is an optional file of
+`@cornerstonejs/metadata`, and `optionalRules.test.ts` of that package checks it.
 
 **SP-EXM-1** — `split/regularVolume.jsonc`. *Satisfies `SP-SUM-2`, `SP-SUM-5`, `SP-SUM-7`.*
 
 ```jsonc
 "regularVolume": {
-  "priority": -2,
   "context": {
     "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
     "isRegularSlice": "sliceIndex != null"
@@ -193,28 +193,46 @@ series for each module.
 }
 ```
 
-The module also holds the rule `irregularImages`, with priority `null`. With priority `-1`, that
-rule puts the other images into one stack, with `"isRegularSlice": false`. Both rules read the
-global `planeGeometry` group and replace no entry that it reads, so the engine computes the lattice
-once (`SP-CTX-2`).
+The module adds the rule to the registry with `$merge`, and puts its id first in the rule order
+with `"displaySetRuleOrder": { "$unshift": ["regularVolume"] }`.
 
-**SP-EXM-2** — `split/volumeProjectionOrder.jsonc`. *Satisfies `SP-SUM-3`.*
+The module also adds the rule `irregularImages` to the registry, but not to the rule order, so the
+rule is off. With its id in the order, for example
+`{ "$splice": [["volume3d", 0, "irregularImages"]] }`, that rule puts the other images into one
+stack, with `"isRegularSlice": false`. Both rules read the global `planeGeometry` group and replace
+no entry that it reads, so the engine computes the lattice once (`SP-CTX-2`).
 
-The module changes one field of the default `volume3d` rule with the standard `$set` command, so
-the rule keeps its priority and claims the same instances:
+**SP-EXM-2** — the optional file `volumePositionOrder` of `@cornerstonejs/metadata`
+(`rules/optional/volumePositionOrder.jsonc`, loaded as
+`?customization=split/optional/volumePositionOrder`). *Satisfies `SP-SUM-3`.*
+
+The file changes one field of the default `volume3d` rule with the standard `$set` command, so
+the rule keeps its id `volume3d` and its place in the rule order, and claims the same instances:
 
 ```jsonc
-"volume3d": { "sortBy": { "$set": ["displaySet.sliceDistance"] } }
+{
+  "displaySetRules": {
+    "volume3d": {
+      "sortBy": { "$set": ["displaySet.sliceDistance", "InstanceNumber"] }
+    }
+  }
+}
 ```
 
 An image that is not in the dominant plane has no distance, so it goes after the images that have
-one (`SP-PIPE-7`).
+one (`SP-PIPE-7`). The file changes only `sortBy`, so it works together with the optional file
+`byAcquisition`, which changes the `groupBy` and the `attributes` of `volume3d`.
+
+> The OHIF module `split/volumeProjectionOrder.jsonc` is removed. The optional file
+> `volumePositionOrder` replaces it.
 
 **SP-EXM-3** — `split/usTimeClusters.jsonc`. *Satisfies `SP-SUM-4`, `SP-SUM-7`, `SP-CTX-10`.*
 
+The module puts the id first in the rule order with
+`"displaySetRuleOrder": { "$unshift": ["usTimeClusters"] }`.
+
 ```jsonc
 "usTimeClusters": {
-  "priority": -1,
   "context": { "timeClustersMaxGap": 20 },
   "matches": {
     "isImage": true,
@@ -237,7 +255,7 @@ one (`SP-PIPE-7`).
 
 | Stage | What happens |
 | --- | --- |
-| 6b | `regularVolume` runs first (priority −2), and its first read computes `planeGeometry`. `planeGeometry` finds the normal `[0, 0, 1]`. The gaps are 2, 1.1, 0.9, and 2, so the spacing is 2 mm. The anchor at 0 puts four positions on the lattice. The slice at 3.1 mm is 1.55 steps from the anchor, so it is off the lattice. `sliceIndex` is 0, 1, 2 and 3 for the slices at 0, 2, 4 and 6 mm. `mixesIrregular` is true. |
+| 6b | `regularVolume` runs first (it is first in the rule order), and its first read computes `planeGeometry`. `planeGeometry` finds the normal `[0, 0, 1]`. The gaps are 2, 1.1, 0.9, and 2, so the spacing is 2 mm. The anchor at 0 puts four positions on the lattice. The slice at 3.1 mm is 1.55 steps from the anchor, so it is off the lattice. `sliceIndex` is 0, 1, 2 and 3 for the slices at 0, 2, 4 and 6 mm. `mixesIrregular` is true. |
 | 6c | `regularVolume` claims the four slices with an index. The slice at 3.1 mm has no index, so the default `volume3d` rule claims it. |
 | 6d | Two groups: `["regularVolume", <SeriesInstanceUID>]` with four slices, and `["volume3d", <SeriesInstanceUID>]` with one slice. |
 | 6e | The four slices are in the order of `sliceDistance`: 0, 2, 4, 6 mm. |
@@ -268,6 +286,6 @@ and the series keeps the default `volume3d` display set (`SP-FIX-6`).
 | `SP-SFN-2`, `SP-SFN-3` | `seriesContext.test.ts`: the `planeGeometry` tests, one of them with the instances in reverse order |
 | `SP-SFN-4` | `seriesContext.test.ts`: the `timeClusters` test |
 | `SP-EXM-1` | `urlSplitModules.test.ts`: the `regularVolume` tests |
-| `SP-EXM-2` | `urlSplitModules.test.ts`: "volumeProjectionOrder orders the slices by position, not by InstanceNumber" |
+| `SP-EXM-2` | `optionalRules.test.ts` of `@cornerstonejs/metadata`: "volumePositionOrder: the slices of a volume in position order, not InstanceNumber order", and "volumePositionOrder with byAcquisition, in either order: one volume for each acquisition, in position order" |
 | `SP-EXM-3` | `urlSplitModules.test.ts`: "usTimeClusters makes one display set for each sweep, in time order" |
 | `SP-CTX-8` | `DisplaySetService.test.ts`: "passes the series facts of the re-split to the display set it extends" |

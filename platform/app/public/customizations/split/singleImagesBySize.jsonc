@@ -11,8 +11,9 @@
 //
 // How it works:
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
-//  - `$merge` adds the rule under its id with priority -1, so it runs before
-//    the default `singleImageModality` rule.
+//  - `$merge` adds the rule to the registry under its id, and `$unshift` puts
+//    the id first in the rule order, before the default `singleImageModality`
+//    rule.
 //  - The rule `context` rounds `Rows` and `Columns` to a bucket of 64 pixels,
 //    and `imageSizeBucket` joins the two buckets into one key. The rounding is
 //    coarse, so a size near a boundary can go into the next bucket (480 gives
@@ -25,10 +26,9 @@
   "requires": ["split/enableNewSplit"],
   "global": {
     "useMetadataDisplaySet": {
-      "splitRules": {
+      "displaySetRules": {
         "$merge": {
           "singleImagesBySize": {
-            "priority": -1,
             "description": "CR / DX / MG single images: one display set for each image size bucket of the series.",
             "context": {
               "rowsBucket": "round(Rows / 64)",
@@ -44,7 +44,8 @@
             "groupBy": ["SeriesInstanceUID", "imageSizeBucket"]
           }
         }
-      }
+      },
+      "displaySetRuleOrder": { "$unshift": ["singleImagesBySize"] }
     }
   }
 }

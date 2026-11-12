@@ -35,10 +35,9 @@
   "requires": ["split/enableNewSplit"],
   "global": {
     "useMetadataDisplaySet": {
-      "splitRules": {
+      "displaySetRules": {
         "$merge": {
           "usTimeClusters": {
-            "priority": -1,
             "description": "Ultrasound single images: one display set for each sweep of contiguous acquisition time.",
             "context": { "timeClustersMaxGap": 20 },
             "matches": {
@@ -55,7 +54,8 @@
             }
           }
         }
-      }
+      },
+      "displaySetRuleOrder": { "$unshift": ["usTimeClusters"] }
     }
   }
 }

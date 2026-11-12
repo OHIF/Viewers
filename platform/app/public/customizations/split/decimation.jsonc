@@ -13,8 +13,9 @@
 //
 // How it works:
 //  - `requires` loads split/enableNewSplit first, turning the splitter on.
-//  - `$merge` adds the rule under its id with priority -1, so it runs before
-//    every default rule.
+//  - `$merge` adds the rule to the registry under its id, and `$unshift` puts
+//    the id first in the rule order, so the rule runs before every default
+//    rule.
 //  - The rule `context` sets `decimationSize` (1000 images) and computes
 //    `decimationCount`, the count of display sets. `decimationPart` is the
 //    `sliceIndex` (the lattice index of the slice, from the built-in
@@ -27,7 +28,7 @@
 //    of a part by their distance along the normal.
 //
 // Change the size with a standard command, for example
-// `{ "useMetadataDisplaySet": { "splitRules": { "decimation": { "context":
+// `{ "useMetadataDisplaySet": { "displaySetRules": { "decimation": { "context":
 // { "decimationSize": { "$set": 500 } } } } } }`.
 //
 // Load it with `?customization=split/decimation`.
@@ -35,10 +36,9 @@
   "requires": ["split/enableNewSplit"],
   "global": {
     "useMetadataDisplaySet": {
-      "splitRules": {
+      "displaySetRules": {
         "$merge": {
           "decimation": {
-            "priority": -1,
             "description": "A series of more than decimationSize single-frame images: ceil(count / decimationSize) display sets, by sliceIndex modulo the count.",
             "context": {
               "decimationSize": 1000,
@@ -62,7 +62,8 @@
             }
           }
         }
-      }
+      },
+      "displaySetRuleOrder": { "$unshift": ["decimation"] }
     }
   }
 }

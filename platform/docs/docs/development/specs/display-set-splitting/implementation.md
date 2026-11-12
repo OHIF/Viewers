@@ -32,16 +32,24 @@ into the requirements specification first, under the change rule of that documen
 ### 2.1 The rule form — `SP-FORM`
 
 **SP-FORM-1**
-The rule set shall be a `DisplaySetRules` from `@cornerstonejs/metadata`: an object keyed by
-rule id, in the `splitRules` field of the `useMetadataDisplaySet` customization. *Satisfies
+The rule set shall have two fields of the `useMetadataDisplaySet` customization. The rule
+registry, `displaySetRules`, shall be a `DisplaySetRules` from `@cornerstonejs/metadata`: an object
+keyed by rule id. The rule order, `displaySetRuleOrder`, shall be an array of rule ids. *Satisfies
 `SP-READ-1`, `SP-READ-3`, `SP-REUSE-1`, `SP-REUSE-4`.*
 
 **SP-FORM-2**
-Each rule shall have a numeric `priority`, or `null`. The default rules shall use the priorities
-`10, 20, ... 170` (steps of 10), and shall keep `80` free for a later default rule
-`dynamicVolume`. A custom rule that must run before the defaults shall use a
-priority below `0`. A custom rule between two defaults shall use a number that is not a multiple of
-10. A fallback rule shall use a priority above `10000`. *Satisfies `SP-FIX-5`.*
+A rule shall have no `priority` field. The rule order alone shall set the evaluation order, and a
+rule of the registry that the rule order does not name shall be off. The default order shall be the
+`@cornerstonejs/metadata` `displaySetRuleOrder`, with the catch-all `unsupported` last. A custom
+rule that must run before the defaults shall put its id first in the order. A custom rule between
+two defaults shall put its id before the later default. A fallback rule shall put its id just
+before `unsupported`. *Satisfies `SP-FIX-5`.*
+
+> The `@cornerstonejs/metadata` compiler rejects a rule with a `priority` field
+> (`unknown field 'priority'`). The default order is `video`, `ecg`, `wholeslide`,
+> `singleImageModality`, `multiFrame`, `localizer`, `mixedDimensionalityBValue`, `volume3d`,
+> `defaultImageRule`, `segmentation`, `rtStructureSet`, `parametricMap`, `structuredReport`,
+> `encapsulatedDocument`, `bulkAnnotation`, `chart`, `unsupported`.
 
 **SP-FORM-3**
 A rule shall use the fields of `RawSplitRule`, and the reference documentation shall define each
@@ -100,21 +108,21 @@ numbers match the requirements below. Stage 3 and the stages in box 6 are in
 flowchart TD
   subgraph SRC["1 · Rule sources — the injection points"]
     direction LR
-    S1["Defaults<br/>@cornerstonejs/metadata<br/>priority 10, 20, ... 170"]
+    S1["Defaults<br/>@cornerstonejs/metadata<br/>displaySetRules + displaySetRuleOrder"]
     S2["Mode<br/>onModeEnter → setCustomizations"]
     S3["App config<br/>customizationService: [ ... ]"]
     S4["URL module<br/>?customization=split/optional/dwiByBValue<br/>only under customizationUrlPrefixes"]
   end
 
-  SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>$merge adds · $set replaces · priority: null turns off<br/>one entry per rule id"]
-  L --> C["3 · Compile — createDisplaySetSplitRules<br/>matches → predicate · names → readers<br/>context entries → one program for the rule set<br/>code context entries and functions from OHIF"]
-  C --> N{"4 · Validate<br/>does every rule compile,<br/>with a valid priority?"}
+  SRC --> L["2 · Layer merge — CustomizationService<br/>default → mode → global<br/>registry: $merge adds · $set replaces<br/>order: $splice by rule id adds, removes, moves<br/>one entry per rule id"]
+  L --> C["3 · Compile — the ids of the order, each alone<br/>materializeSplitRules → createDisplaySetSplitRules<br/>matches → predicate · names → readers<br/>context entries → one program for the rule set<br/>code context entries and functions from OHIF"]
+  C --> N{"4 · Validate<br/>does every rule of the order compile,<br/>is every id in the registry, once?"}
   N -- "no" --> STOP["Stop: no display sets for any study<br/>error that names the rule"]
   N -- "yes" --> P["5 · Partition the input by SeriesInstanceUID"]
 
   P --> E1
   subgraph ENG["6 · groupInstancesBySplitRules — one series, @cornerstonejs/metadata"]
-    E1["6a · Rule order<br/>ascending priority, then rule id"]
+    E1["6a · Rule order<br/>the order of displaySetRuleOrder"]
     E2["6b · Display set context<br/>an entry is computed at its first read, once per series<br/>a rule context replaces an entry for that rule"]
     E3["6c · Claim<br/>each instance → the first rule whose matches is true"]
     E4["6d · Group<br/>groupBy values only<br/>splitKey = [ruleId, ...values]"]
@@ -139,28 +147,36 @@ flowchart TD
 
 **The trace of one rule.** This example rule puts each b-value of a diffusion MR series into its
 own display set. The file `rules/optional/dwiByBValue.jsonc` of `@cornerstonejs/metadata` holds
-the rule, and the OHIF build copies the file to the module `split/optional/dwiByBValue.jsonc`.
-The copy below has the rule data of that file, without its comments. The file is the reference.
+the rule. The file is an `immutability-helper` spec over `{ displaySetRules, displaySetRuleOrder }`.
+The OHIF build copies the file to the module `split/optional/dwiByBValue.jsonc`, and applies the
+spec to the `useMetadataDisplaySet` customization. The copy below has the data of that file,
+without its comments. The file is the reference.
 
 ```jsonc
-"dwiByBValue": {
-  "priority": -1,
-  "description": "Diffusion MR: one display set for each b-value.",
-  "context": {
-    "bValue": "Number(DiffusionBValue)",
-    "isDiffusion": "series.instances.max(bValue) > 0"
+{
+  "displaySetRules": {
+    "$merge": {
+      "dwiByBValue": {
+        "description": "Diffusion MR: one display set for each b-value.",
+        "context": {
+          "bValue": "Number(DiffusionBValue)",
+          "isDiffusion": "series.instances.max(bValue) > 0"
+        },
+        "matches": {
+          "Modality": "MR",
+          "isDiffusion": true,
+          "isImage": true,
+          "DiffusionBValue": { "notNull": true }
+        },
+        "groupBy": ["SeriesInstanceUID", "bValue"],
+        "sortBy": ["displaySet.sliceDistance", "InstanceNumber"],
+        "attributes": {
+          "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
+        }
+      }
+    }
   },
-  "matches": {
-    "Modality": "MR",
-    "isDiffusion": true,
-    "isImage": true,
-    "DiffusionBValue": { "notNull": true }
-  },
-  "groupBy": ["SeriesInstanceUID", "bValue"],
-  "sortBy": ["displaySet.sliceDistance", "InstanceNumber"],
-  "attributes": {
-    "SeriesDescription": { "template": "{SeriesDescription} b={DiffusionBValue}" }
-  }
+  "displaySetRuleOrder": { "$unshift": ["dwiByBValue"] }
 }
 ```
 
@@ -170,10 +186,10 @@ of the b-values 0, 500, and 1000.
 | Stage | What happens to `dwiByBValue` |
 | --- | --- |
 | 1 | The URL `?customization=split/optional/dwiByBValue` loads the module. Its `requires` loads `split/enableNewSplit` first. |
-| 2 | `$merge` adds the key `dwiByBValue` with `priority: -1`. The default rules stay. |
+| 2 | `$merge` adds the key `dwiByBValue` to the registry, and `$unshift` puts the id first in the rule order. The default rules stay. |
 | 3 | `createDisplaySetSplitRules` compiles `matches` into one predicate, the rule `context` into entries of the context program, and the template into one value reader. |
-| 4 | The priority is a number, and every rule compiles, so display set creation continues. |
-| 6a | The order is `dwiByBValue` (−1), then the default rules (`10` to `170`, and `unsupported` last). |
+| 4 | Each id of the order is in the registry once, and every rule compiles, so display set creation continues. |
+| 6a | The order is `dwiByBValue`, then the default rules in the default order, with `unsupported` last. |
 | 6b | `isDiffusion` is true: the largest b-value of the series is above 0. A series with b=0 only is not a diffusion series for this rule. |
 | 6c | All 90 instances have `DiffusionBValue`, so `dwiByBValue` claims all of them. |
 | 6d | Three groups, with the keys `["dwiByBValue", <SeriesInstanceUID>, 0]`, `[…, 500]`, and `[…, 1000]`. |
@@ -186,32 +202,52 @@ of the b-values 0, 500, and 1000.
 The customization service shall merge the rule layers in the order default, mode, global, and a
 later layer shall edit a rule by its id. *Satisfies `SP-FIX-5`, `SP-REUSE-4`.*
 
-**SP-PIPE-2**
-OHIF shall compile a rule set value once, with `createDisplaySetSplitRules`, and use the compiled
-rules again until the `splitRules` value changes. *Satisfies `SP-DET-1`.*
+**SP-PIPE-19**
+The `$splice` command of the customization service shall also take a rule id as the position. A
+string position shall be the index of the item that equals the string, or of the item whose `id`
+equals the string. An unknown id shall be an error. Each entry of one `$splice` shall find its
+position after the edits of the earlier entries. A number shall work as in `immutability-helper`.
+*Satisfies `SP-FIX-5`.*
 
-> A mode that defines other rules gives a new `splitRules` object, and that object compiles
+> So a layer can turn off, replace, or move one default rule by its id, and does not depend on
+> the index of the rule: `[['volume3d', 0, 'myRule']]` inserts `myRule` before `volume3d`,
+> `[['ecg', 1]]` removes `ecg`, and `[['volume3d', 1, 'myVolume']]` replaces `volume3d`. A string
+> that looks like a number, for example `'3'`, is an id, not an index. An unknown id throws, so a
+> layer for a default rule that a later release renames fails with an error, and does not do
+> nothing.
+
+**SP-PIPE-2**
+OHIF shall compile a rule set once, with `createDisplaySetSplitRules`, and use the compiled rules
+again until the `displaySetRules` value, the `displaySetRuleOrder` value, or the `metadataContext`
+value changes. *Satisfies `SP-DET-1`.*
+
+> A mode that defines other rules, or another order, gives a new object, and that object compiles
 > again, and so does a new `metadataContext` value. A change of `seriesFunctions` or
 > `sortFunctions` alone does not compile the rules again, so a mode that changes them must also
-> give a new `splitRules` object.
+> give a new `displaySetRules` object.
 
 **SP-PIPE-3**
-The compile step shall compile each rule alone, so that it can name every rule that fails.
+The compile step shall compile each id of the rule order alone, so that it can name every rule
+that fails. The compile step shall not compile a rule of the registry that the order does not name.
 *Satisfies `SP-SAFE-7`.*
 
-> The compile step compiles every rule, also a rule that has functions. The compiler keeps a
-> function as it is, and compiles the data fields next to it. A rule id of `__proto__` is an error,
-> because the id cannot be a key of a plain object.
+> `compileSplitRules(registry, order, options)` takes each id of the order, gets the rule with
+> `materializeSplitRules(registry, [id])`, and compiles it. The compile step compiles every rule
+> of the order, also a rule that has functions. The compiler keeps a function as it is, and
+> compiles the data fields next to it. A rule id of `__proto__` is an error, because the id cannot
+> be a key of a plain object.
 
 **SP-PIPE-13**
-IF any rule does not compile, or has a priority that is not a number or `null`, THEN the display
-set service shall create no display sets for any study, not even SEG or SR display sets, and shall
-show an error through the UI notification service. *Satisfies `SP-SAFE-7`.*
+IF any rule of the rule order does not compile, or an id of the rule order is not in the registry
+or occurs twice in the order, THEN the display set service shall create no display sets for any
+study, not even SEG or SR display sets, and shall show an error through the UI notification
+service. *Satisfies `SP-SAFE-7`.*
 
-> `compileSplitRules` returns `{ rules, errors }`, and it does not drop a rule. While `errors` is
-> not empty, `makeDisplaySetForInstances` returns no display sets, and does not give the instances
-> to the SOP class handlers. The service shows one error notification that stays on screen until
-> the user closes it. The block clears when the `splitRules` value changes, and on mode exit.
+> `compileSplitRules` returns `{ rules, errors }`, and it does not drop a rule. A registry that is
+> not a keyed object, or an order that is not an array, is also an error. While `errors` is not
+> empty, `makeDisplaySetForInstances` returns no display sets, and does not give the instances to
+> the SOP class handlers. The service shows one error notification that stays on screen until the
+> user closes it. The block clears when the registry or the order changes, and on mode exit.
 
 **SP-PIPE-14**
 The compile step shall wrap each function of each rule, so that an error at run time names the rule
@@ -227,7 +263,7 @@ apply to a rule compiled from data and to a rule that code supplies. *Satisfies 
 The display set service shall give the engine one series at a time. *Satisfies `SP-DET-1`.*
 
 **SP-PIPE-5**
-The engine shall give each instance to the first rule, in priority order, whose `matches` is
+The engine shall give each instance to the first rule, in rule order, whose `matches` is
 true. *Satisfies `SP-FIX-6`, `SP-DET-1`.*
 
 **SP-PIPE-6**
@@ -243,8 +279,17 @@ returns `0` shall leave the earlier order. *Satisfies `SP-FIX-4`, `SP-DET-2`.*
 The engine shall give each instance that no rule claims to the SOP class handlers.
 *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
 With the default rules, no instance reaches this step: the `unsupported` rule has no `matches`, so
-it claims each instance that no other rule claims. The step applies to a rule set that turns
-`unsupported` off. The `unsupported` rule gives the result of `SP-FIX-9`.
+it claims each instance that no other rule claims. The step applies to a rule order without
+`unsupported` (`SP-PIPE-20`). The `unsupported` rule gives the result of `SP-FIX-9`.
+
+**SP-PIPE-20**
+A deployment may remove `unsupported` from the rule order. The compile step shall accept a rule
+order without `unsupported`, and the display set service shall then give each instance that no
+rule claims to the SOP class handlers of the mode (`SP-PIPE-8`). *Satisfies `SP-FIX-11`.*
+
+> For example, `{ "displaySetRuleOrder": { "$splice": [["unsupported", 1]] } }` removes the
+> catch-all. An instance of a private SOP class then shows with the SOP class handler of its
+> extension, as with the rules off.
 
 **SP-PIPE-9**
 IF the engine throws for a series, THEN the display set service shall create no further display
@@ -256,7 +301,7 @@ rule and the series. *Satisfies `SP-SAFE-3`.*
 > display sets for that study, and gives no further instances of that study to the SOP class
 > handlers. The display sets that exist stay (`SP-DET-3`). Other studies continue. The error is a
 > `SplitRuleRunError` that names the rule and the field (`SP-PIPE-14`), and the notification also
-> names the series. The block clears when the `splitRules` value changes, and on mode exit.
+> names the series. The block clears when the registry or the order changes, and on mode exit.
 
 **SP-PIPE-10**
 The display set service shall put a new instance into the display set that holds the other
@@ -302,8 +347,8 @@ the rule, else to the id of the rule. *Satisfies `SP-READ-6`.*
 > protocol then matches `splitGroupId` equal to `mammo`.
 
 **SP-PIPE-12**
-The default `splitRules` shall be the `@cornerstonejs/metadata` default rule set, with no OHIF copy
-or change of a rule. A rule shall test the SOP class with a list of the `metadataContext`, for
+The default `displaySetRules` and `displaySetRuleOrder` shall be the `@cornerstonejs/metadata`
+default registry and default order, with no OHIF copy or change of a rule. A rule shall test the SOP class with a list of the `metadataContext`, for
 example `isImage`. *Satisfies `SP-SAFE-4`, `SP-REUSE-1`.*
 
 **SP-PIPE-17**
@@ -366,16 +411,17 @@ A rule module shall state in its header comment the problem, the series that the
 the URL that loads the module. *Satisfies `SP-DESC-3`.*
 
 **SP-DEPLOY-3**
-A rule that must take instances before the defaults shall use a priority below `0`, and shall gate
-on a list of the `metadataContext` such as `isImage`, on `SOPClassUID`, or on `Modality`. *Satisfies
-`SP-FIX-6`, `SP-SAFE-4`.*
+A rule that must take instances before the defaults shall put its id first in the rule order
+(`$unshift`), or before the default rule that it must precede (`$splice` with the id of that rule),
+and shall gate on a list of the `metadataContext` such as `isImage`, on `SOPClassUID`, or on
+`Modality`. *Satisfies `SP-FIX-6`, `SP-SAFE-4`.*
 
 ### 2.5 Reuse by a server — `SP-SRV`
 
 ```mermaid
 flowchart LR
-  RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set"]
-  LD --> CP["Compile<br/>createDisplaySetSplitRules<br/>+ the metadataContext"]
+  RF["Rule module<br/>(the same file as the viewer)"] --> LD["Load and layer<br/>resolve $merge / $set / $splice"]
+  LD --> CP["Compile<br/>materializeSplitRules → createDisplaySetSplitRules<br/>+ the metadataContext"]
   CP --> G["groupInstancesBySplitRules<br/>per series"]
   G --> IX["Server index<br/>display sets with splitKey"]
   IX -.->|the viewer reads the index| VW["OHIF viewer"]
@@ -390,9 +436,15 @@ A server index shall record the `splitKey` of each display set, so that the view
 display sets to the index. *Satisfies `SP-REUSE-2`, `SP-DET-3`.*
 
 **SP-SRV-3**
-Each split file shall use only the standard `immutability-helper` commands, and no `$filter`. For
-each split file, the rules from `immutability-helper`, `JSON5` and `createDisplaySetSplitRules`,
-with no OHIF code, shall equal the rules from `CustomizationService`. *Satisfies `SP-REUSE-2`.*
+Each split file shall use only the standard `immutability-helper` commands: no `$filter`, and no
+rule id position of `$splice` (`SP-PIPE-19`). For each split file, the rules from
+`immutability-helper`, `JSON5`, `materializeSplitRules` and `createDisplaySetSplitRules`, with no
+other OHIF code, shall equal the rules from `CustomizationService`. *Satisfies `SP-REUSE-2`.*
+
+> Plain `immutability-helper` takes only a number as the position of `$splice`. It does not reject
+> a string: it inserts at index 0, so a server gets another order with no error. A split file
+> therefore uses `$unshift`, `$push`, or a numeric `$splice` position. A deployment customization
+> that only OHIF reads can use the rule id position.
 
 **SP-SRV-4**
 The SOP class tests shall be lists of the `metadataContext` customization, with the
@@ -426,6 +478,8 @@ difference. *Satisfies `SP-REUSE-2`.*
 | `SP-PIPE-4`, `SP-PIPE-10` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
 | `SP-PIPE-11`, `SP-PIPE-15`, `SP-PIPE-16` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `displaySetRules.test.ts` of `@cornerstonejs/metadata` |
 | `SP-FORM`, `SP-PIPE-1` | `extensions/default/src/customizations/metadataContextCustomization.test.ts` |
+| `SP-PIPE-19` | `platform/core/src/services/CustomizationService/CustomizationService.test.js`: "applies $splice with an id as the position" |
+| `SP-PIPE-20` | `DisplaySetService.test.ts`: "falls unmatched instances through to the legacy handlers" |
 | `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
 | `SP-PIPE-9` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |

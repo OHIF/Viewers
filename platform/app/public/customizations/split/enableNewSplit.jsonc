@@ -24,14 +24,14 @@
 //
 // Custom rules are @cornerstonejs/metadata rule data (a map of name to
 // test in `matches`, names in `groupBy` and `sortBy`, a rule `context`, and
-// `attributes`) - see `split/scoutSeries.jsonc` for a complete example.  `splitRules` is keyed by
-// rule id: add a rule with `$merge`.  Rules are evaluated in ascending
-// `priority` with first-match-wins per instance.  The default rules use the
-// priorities 10, 20, ... 170 (steps of 10; 80 is reserved for a later
-// `dynamicVolume` rule), so a priority below 0 runs before every default rule,
-// a number between two default priorities that is not a multiple of 10 runs
-// between those two rules, a priority above 10000 runs after every default rule (it only sees instances
-// no default rule matched), and a priority of null turns a rule off.
+// `attributes`) - see `split/scoutSeries.jsonc` for a complete example.
+// `displaySetRules` is the registry, keyed by rule id: add a rule with
+// `$merge`, or change a rule by its id. `displaySetRuleOrder` is the list of
+// rule ids in evaluation order, with first-match-wins per instance: add,
+// remove or replace an id with `$splice`, which takes a rule id as the
+// position (`[["volume3d", 0, "myRule"]]` inserts before `volume3d`). A rule
+// that the order does not name is not used. An instance that no rule claims
+// goes to the SOP class handlers.
 {
   "global": {
     "useMetadataDisplaySet": { "enabled": { "$set": true } }

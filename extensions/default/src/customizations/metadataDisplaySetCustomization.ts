@@ -1,4 +1,4 @@
-import { displaySetRules } from '@cornerstonejs/metadata';
+import { displaySetRuleOrder, displaySetRules } from '@cornerstonejs/metadata';
 import type { GroupInstancesOptions, InstanceGroup } from '@cornerstonejs/metadata';
 import { makeDisplaySetFromInstanceGroup } from '../displaySetSplitting/makeDisplaySetFromInstanceGroup';
 import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSetDisplaySet';
@@ -22,11 +22,17 @@ import type { ImageSetFactoryContext } from '../displaySetSplitting/makeImageSet
  * `'@ohif/extension-default.customizationModule.metadataDisplaySet'`,
  * or from the URL with `?customization=split/enableNewSplit`.
  *
- * `splitRules` is the `@cornerstonejs/metadata` default rule set, keyed by
- * rule id, with no OHIF copy. A customization adds a rule with `$merge`, turns
- * a default off with `priority: null`, or moves one by changing its priority.
- * DisplaySetService compiles the rules with `createDisplaySetSplitRules`, with
- * the `metadataContext` customization as the context.
+ * `displaySetRules` (the registry, keyed by rule id) and `displaySetRuleOrder`
+ * (the rule ids in evaluation order) are the `@cornerstonejs/metadata`
+ * defaults, with no OHIF copy. A customization changes a rule by its id in the
+ * registry, and adds, removes or replaces an id of the order with `$splice`,
+ * which takes a rule id as the position:
+ * ```js
+ * { displaySetRuleOrder: { $splice: [['volume3d', 0, 'byAcquisition']] } }
+ * ```
+ * DisplaySetService compiles the rules of the order with
+ * `createDisplaySetSplitRules`, with the `metadataContext` customization as
+ * the context.
  *
  * A rule error stops display set creation; OHIF does not drop the rule, and
  * does not fall back to the SOP class handlers. See `DisplaySetService`.
@@ -35,7 +41,8 @@ export default function getMetadataDisplaySetCustomization(context: ImageSetFact
   return {
     useMetadataDisplaySet: {
       enabled: false,
-      splitRules: displaySetRules,
+      displaySetRules,
+      displaySetRuleOrder,
       createDisplaySetFromGroup: (
         group: InstanceGroup,
         options: {

@@ -115,13 +115,17 @@ viewport displays.
 **Split rule** (or **rule**). One declarative entry that states which instances it claims, how it
 groups them, how it orders them, and what attributes the resulting display sets get.
 
-**Rule set.** The rules that apply to a deployment, keyed by rule id.
+**Rule set.** The rules that apply to a deployment: the rule registry and the rule order.
 
-**Rule id.** The key of a rule in the rule set. One id names one rule.
+**Rule registry.** The rules of a deployment, keyed by rule id. A rule in the registry does nothing
+until the rule order names it.
 
-**Priority.** A number that sets the evaluation order of the rules. `null` turns a rule off.
+**Rule id.** The key of a rule in the rule registry. One id names one rule.
 
-**Claim.** An instance is claimed by the first rule, in priority order, that matches the instance.
+**Rule order.** The list of rule ids that sets the evaluation order of the rules. A rule that the
+rule order does not name is off.
+
+**Claim.** An instance is claimed by the first rule, in rule order, that matches the instance.
 
 **Series fact.** A value that a rule computes once from all of the instances of a series, for
 example the frame count of the series. All rules of a split share the series facts. The
@@ -171,8 +175,8 @@ the viewport overlay show for each display set that the rule creates.
 The system shall let a rule set the order of the images in each display set that the rule creates.
 
 **SP-FIX-5**
-The system shall let a deployment turn off, replace, or move one default rule, and keep all of the
-other default rules.
+The system shall let a deployment turn off, replace, change, or move one default rule, and keep all
+of the other default rules.
 
 **SP-FIX-6**
 WHEN no custom rule matches an instance, the system shall group that instance exactly as it would
@@ -197,9 +201,14 @@ rule split those frames into separate display sets.
 > frames of one instance. See §6 item 6.
 
 **SP-FIX-9**
-WHILE the split rules are on, the system shall show an instance that no rule gives to an extension
-of the mode as an unsupported display set. The system shall show the same instance with the
-display of its extension while the split rules are off.
+WHILE the split rules are on and the rule order holds the catch-all rule, the system shall show an
+instance that no other rule gives to an extension of the mode as an unsupported display set. The
+system shall show the same instance with the display of its extension while the split rules are
+off.
+
+**SP-FIX-11**
+WHERE a deployment removes the catch-all rule from the rule order, the system shall give an
+instance that no rule claims to the display of its extension, as when the split rules are off.
 
 **SP-FIX-10**
 The documentation shall state what an extension must add so that its display sets show while the
@@ -218,7 +227,7 @@ clinical words, through an assistant, without knowledge of the rule syntax.
 
 **SP-DESC-2**
 The documentation shall give an assistant all of the information that a correct rule needs: the
-rule fields, the expression language, the priority bands, the ownership test for SOP classes, and
+rule fields, the expression language, the default rule order, the ownership test for SOP classes, and
 one complete worked example.
 
 **SP-DESC-3**

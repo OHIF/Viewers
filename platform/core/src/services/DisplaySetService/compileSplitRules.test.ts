@@ -9,6 +9,10 @@ const makeInstance = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
+/** Compiles every rule of the registry, in key order. */
+const compileAll = (registry, options = {}) =>
+  compileSplitRules(registry, Object.keys(registry), options);
+
 describe('compileSplitRules', () => {
   let warn: jest.SpyInstance;
 
@@ -21,9 +25,8 @@ describe('compileSplitRules', () => {
   });
 
   it('compiles raw selector data with the metadata compiler', () => {
-    const { rules, errors } = compileSplitRules({
+    const { rules, errors } = compileAll({
       ctOnly: {
-        priority: 1,
         context: { isLargeCt: "Modality == 'CT' && Rows > 100" },
         matches: { isLargeCt: true },
         attributes: {
@@ -33,11 +36,12 @@ describe('compileSplitRules', () => {
       },
     });
     expect(errors).toEqual([]);
-    expect(rules.ctOnly.priority).toBe(1);
-    expect(rules.ctOnly.matches(makeInstance(), { series: {} })).toBe(true);
-    expect(rules.ctOnly.matches(makeInstance({ Modality: 'MR' }), { series: {} })).toBe(false);
+    const [ctOnly] = rules;
+    expect(ctOnly.id).toBe('ctOnly');
+    expect(ctOnly.matches(makeInstance(), { series: {} })).toBe(true);
+    expect(ctOnly.matches(makeInstance({ Modality: 'MR' }), { series: {} })).toBe(false);
     expect(
-      rules.ctOnly.customAttributes({} as never, {
+      ctOnly.customAttributes({} as never, {
         instances: [makeInstance({ SeriesDescription: 'CHEST' })],
       })
     ).toEqual({ label: 'CT', SeriesDescription: 'CT CHEST' });
@@ -45,26 +49,31 @@ describe('compileSplitRules', () => {
   });
 
   it('resolves the entries of the metadata context from the options', () => {
-    const { rules } = compileSplitRules(
-      { stack: { priority: 1, matches: { isUltrasound: true } } },
+    const {
+      rules: [stack],
+    } = compileAll(
+      { stack: { matches: { isUltrasound: true } } },
       { context: { isUltrasound: "Modality == 'US'" } }
     );
-    expect(rules.stack.matches(makeInstance({ Modality: 'US' }), { series: {} })).toBe(true);
-    expect(rules.stack.matches(makeInstance(), { series: {} })).toBe(false);
+    expect(stack.matches(makeInstance({ Modality: 'US' }), { series: {} })).toBe(true);
+    expect(stack.matches(makeInstance(), { series: {} })).toBe(false);
   });
 
   it('keeps a function in a raw field, and compiles the data next to it', () => {
     const matches = jest.fn(instance => instance.Modality === 'CT');
-    const { rules, errors } = compileSplitRules({
-      native: { priority: 1, matches, groupBy: ['SeriesInstanceUID'] },
+    const {
+      rules: [native],
+      errors,
+    } = compileAll({
+      native: { matches, groupBy: ['SeriesInstanceUID'] },
     });
     expect(errors).toEqual([]);
     const context = { series: {} };
-    expect(rules.native.matches(makeInstance(), context)).toBe(true);
-    expect(rules.native.matches(makeInstance({ Modality: 'MR' }), context)).toBe(false);
+    expect(native.matches(makeInstance(), context)).toBe(true);
+    expect(native.matches(makeInstance({ Modality: 'MR' }), context)).toBe(false);
     expect(matches).toHaveBeenCalledWith(makeInstance(), context);
     // The data part is compiled too, and reads the same key.
-    const [seriesKey] = rules.native.groupBy as ((...args: unknown[]) => unknown)[];
+    const [seriesKey] = native.groupBy as ((...args: unknown[]) => unknown)[];
     expect(seriesKey(makeInstance(), context)).toBe('series-1');
   });
 
@@ -77,9 +86,8 @@ describe('compileSplitRules', () => {
       );
 
     it('a data groupBy part next to a function matches', () => {
-      const { rules, errors } = compileSplitRules({
+      const { rules, errors } = compileAll({
         dwi: {
-          priority: 1,
           matches: instance => instance.Modality === 'MR',
           groupBy: ['SeriesInstanceUID', 'DiffusionBValue'],
         } as never,
@@ -89,9 +97,8 @@ describe('compileSplitRules', () => {
     });
 
     it('an invalid data field next to a function is an error', () => {
-      const { errors } = compileSplitRules({
+      const { errors } = compileAll({
         dwi: {
-          priority: 1,
           matches: () => true,
           groupBy: [{ attribute: 'DiffusionBValue', unknownKey: true }],
         } as never,
@@ -102,84 +109,80 @@ describe('compileSplitRules', () => {
 
   it('rejects a rule that the compiler has already compiled', () => {
     // A compiled rule has the hook `series`, which is not a raw field.
-    const { rules, errors } = compileSplitRules({
-      volume3d: compiledDisplaySetRules.volume3d as never,
-    });
+    const compiledVolume = compiledDisplaySetRules.find(rule => rule.id === 'volume3d');
+    const { rules, errors } = compileAll({ volume3d: compiledVolume as never });
     expect(errors).toEqual([
       { ruleId: 'volume3d', message: expect.stringContaining("unknown field 'series'") },
     ]);
-    expect(rules).toEqual({});
+    expect(rules).toEqual([]);
   });
 
   it('reports a __proto__ rule id instead of losing the rule', () => {
     // JSON.parse makes `__proto__` a real own key.
-    const { rules, errors } = compileSplitRules(
-      JSON.parse('{"__proto__": {"priority": 1}, "good": {"priority": 2}}')
-    );
+    const { rules, errors } = compileAll(JSON.parse('{"__proto__": {}, "good": {}}'));
     expect(errors).toEqual([{ ruleId: '__proto__', message: expect.stringContaining('id') }]);
-    expect(Object.getPrototypeOf(rules)).toBe(Object.prototype);
-    expect(Object.keys(rules)).toEqual(['good']);
+    expect(rules.map(rule => rule.id)).toEqual(['good']);
   });
 
-  it('keeps the keys and the priorities, including null', () => {
-    const { rules, errors } = compileSplitRules({
-      volume3d: { priority: 4 },
-      ctScout: { priority: -1, matches: { Modality: 'CT' } },
-      off: { priority: null },
-    });
+  it('returns the rules in the order, and does not compile a registry rule that the order omits', () => {
+    const { rules, errors } = compileSplitRules(
+      {
+        volume3d: {},
+        ctScout: { matches: { Modality: 'CT' } },
+        off: { matches: { nope: true } },
+      },
+      ['ctScout', 'volume3d']
+    );
     expect(errors).toEqual([]);
-    expect(Object.fromEntries(Object.entries(rules).map(([id, r]) => [id, r.priority]))).toEqual({
-      volume3d: 4,
-      ctScout: -1,
-      off: null,
-    });
+    expect(rules.map(rule => rule.id)).toEqual(['ctScout', 'volume3d']);
     expect(warn).not.toHaveBeenCalled();
   });
 
   describe('a rule that does not compile is reported, not dropped (SP-SAFE-7)', () => {
     it.each([
-      ['an unknown name', { priority: 1, matches: { nope: true } }],
-      [
-        'an invalid expression',
-        { priority: 1, context: { isCt: "Modality == 'CT" }, matches: { isCt: true } },
-      ],
-      ['a missing priority', { matches: { Modality: 'CT' } }],
-      ['a text priority', { priority: 'high', matches: { Modality: 'CT' } }],
-      ['an id that differs from the key', { id: 'other', priority: 1 }],
+      ['an unknown name', { matches: { nope: true } }],
+      ['an invalid expression', { context: { isCt: "Modality == 'CT" }, matches: { isCt: true } }],
+      ['an id that differs from the key', { id: 'other' }],
       ['an entry that is not an object', 'not a rule'],
     ])('%s', (_label, entry) => {
-      const { rules, errors } = compileSplitRules({
+      const { rules, errors } = compileAll({
         broken: entry as never,
-        good: { priority: 2, matches: { Modality: 'MR' } },
+        good: { matches: { Modality: 'MR' } },
       });
       expect(errors).toEqual([{ ruleId: 'broken', message: expect.any(String) }]);
       expect(errors[0].message).not.toBe('');
       // The good rule still compiles, but the caller must not use the set.
-      expect(Object.keys(rules)).toEqual(['good']);
+      expect(rules.map(rule => rule.id)).toEqual(['good']);
       expect(warn).not.toHaveBeenCalled();
     });
 
-    it('also for a rule with functions and no usable priority', () => {
-      const { errors } = compileSplitRules({ native: { matches: () => true } as never });
-      expect(errors).toEqual([{ ruleId: 'native', message: expect.stringContaining('priority') }]);
+    it('an id of the order that is not in the registry, or that occurs twice', () => {
+      const { rules, errors } = compileSplitRules({ good: {} }, ['missing', 'good', 'good']);
+      expect(errors).toEqual([
+        { ruleId: 'missing', message: expect.stringContaining('not in the registry') },
+        { ruleId: 'good', message: expect.stringContaining('more than once') },
+      ]);
+      expect(rules.map(rule => rule.id)).toEqual(['good']);
     });
 
     it('names every rule that fails, because each rule compiles alone (SP-PIPE-3)', () => {
-      const { errors } = compileSplitRules({
-        first: { priority: 1, matches: { nope: true } },
-        good: { priority: 2 },
-        second: { priority: 'high' } as never,
+      const { errors } = compileAll({
+        first: { matches: { nope: true } },
+        good: {},
+        second: { id: 'other' } as never,
       });
       expect(errors.map(({ ruleId }) => ruleId)).toEqual(['first', 'second']);
     });
   });
 
-  it('reports input that is not a keyed rule set', () => {
-    for (const input of [undefined, [{ id: 'a' }]]) {
-      const { rules, errors } = compileSplitRules(input as never);
-      expect(rules).toEqual({});
+  it('reports a registry that is not keyed, and an order that is not an array', () => {
+    for (const registry of [undefined, [{ id: 'a' }]]) {
+      const { rules, errors } = compileSplitRules(registry as never, []);
+      expect(rules).toEqual([]);
       expect(errors).toEqual([{ message: expect.stringContaining('keyed by rule id') }]);
     }
+    const { errors } = compileSplitRules({}, undefined as never);
+    expect(errors).toEqual([{ message: expect.stringContaining('array of rule ids') }]);
   });
 
   describe('a run-time error names the rule and the field', () => {
@@ -206,7 +209,7 @@ describe('compileSplitRules', () => {
       ['a groupBy part', { groupBy: ['SeriesInstanceUID', fail] }, 'groupBy[1]'],
       ['a sortBy function', { sortBy: [fail] }, 'compareInstances'],
     ])('in %s of a rule that code supplies, through the engine', (_label, fields, field) => {
-      const { rules } = compileSplitRules({ native: { priority: 1, ...fields } as never });
+      const { rules } = compileAll({ native: { ...fields } as never });
       expectRunError(
         () =>
           groupInstancesBySplitRules(
@@ -219,19 +222,21 @@ describe('compileSplitRules', () => {
     });
 
     it('in an attributes function, which the display set factory calls', () => {
-      const { rules } = compileSplitRules({
-        native: { priority: 1, matches: () => true, attributes: fail } as never,
+      const {
+        rules: [native],
+      } = compileAll({
+        native: { matches: () => true, attributes: fail } as never,
       });
       expectRunError(
-        () => rules.native.customAttributes({} as never, { instances: [] }),
+        () => native.customAttributes({} as never, { instances: [] }),
         'native',
         'customAttributes'
       );
     });
 
     it('in a code entry of the metadata context that a raw rule references', () => {
-      const { rules } = compileSplitRules(
-        { raw: { priority: 1, matches: { throws: true } } },
+      const { rules } = compileAll(
+        { raw: { matches: { throws: true } } },
         { context: { throws: fail } }
       );
       expectRunError(

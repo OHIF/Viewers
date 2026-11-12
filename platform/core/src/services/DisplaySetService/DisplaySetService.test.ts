@@ -37,26 +37,24 @@ const makeMixedBValueSeries = () => [
   makeInstance(),
 ];
 
-/** An upstream default rule, with a test priority. */
-const upstreamRule = (id: string, priority: number): RawSplitRule => {
-  const entry = displaySetRules[id];
-  if (!entry) {
-    throw new Error(`upstream rule ${id} missing`);
-  }
-  return { ...entry, priority };
-};
-
-const testSplitRules: Record<string, RawSplitRule> = {
+const testRegistry: Record<string, RawSplitRule> = {
   // One display set PER IMAGE for single-image modalities (CR here).
   singleImageModality: {
-    priority: 1,
     matches: instance => instance.Modality === 'CR' && !!instance.Rows,
     groupBy: ['SeriesInstanceUID', 'SOPInstanceUID'],
   },
-  mixedDimensionalityBValue: upstreamRule('mixedDimensionalityBValue', 2),
-  volume3d: upstreamRule('volume3d', 3),
-  defaultImageRule: upstreamRule('defaultImageRule', 4),
+  mixedDimensionalityBValue: displaySetRules.mixedDimensionalityBValue,
+  volume3d: displaySetRules.volume3d,
+  defaultImageRule: displaySetRules.defaultImageRule,
 };
+const testRuleOrder = Object.keys(testRegistry);
+const testSplitRules = { displaySetRules: testRegistry, displaySetRuleOrder: testRuleOrder };
+
+/** The test rules, with the rules of `first` first in the order. */
+const withFirstRules = (first: Record<string, RawSplitRule>) => ({
+  displaySetRules: { ...testRegistry, ...first },
+  displaySetRuleOrder: [...Object.keys(first), ...testRuleOrder],
+});
 
 const makeCreateDisplaySetFromGroup = () => {
   let counter = 0;
@@ -167,7 +165,7 @@ describe('DisplaySetService', () => {
     it('behaves identically when the customization is disabled', () => {
       setCustomization({
         enabled: false,
-        splitRules: testSplitRules,
+        ...testSplitRules,
         createDisplaySetFromGroup: makeCreateDisplaySetFromGroup(),
       });
       service.makeDisplaySets(makeMixedBValueSeries());
@@ -200,7 +198,7 @@ describe('DisplaySetService', () => {
       createDisplaySetFromGroup = makeCreateDisplaySetFromGroup();
       setCustomization({
         enabled: true,
-        splitRules: testSplitRules,
+        ...testSplitRules,
         createDisplaySetFromGroup,
       });
     });
@@ -354,10 +352,7 @@ describe('DisplaySetService', () => {
       // A new rule that would claim every instance.
       setCustomization({
         enabled: true,
-        splitRules: {
-          ...testSplitRules,
-          everything: { priority: -1, groupBy: ['SOPInstanceUID'] },
-        },
+        ...withFirstRules({ everything: { groupBy: ['SOPInstanceUID'] } }),
         createDisplaySetFromGroup,
       });
       const extra = makeInstance();
@@ -368,11 +363,11 @@ describe('DisplaySetService', () => {
     });
 
     it('passes the series facts of the re-split to the display set it extends', () => {
-      const factRule = { priority: 1 };
       const seriesCount = series => series.displaySetContext.instances.length;
       setCustomization({
         enabled: true,
-        splitRules: { counted: factRule },
+        displaySetRules: { counted: {} },
+        displaySetRuleOrder: ['counted'],
         createDisplaySetFromGroup,
       });
       const first = [makeInstance(), makeInstance()];
@@ -390,7 +385,6 @@ describe('DisplaySetService', () => {
      * an instance value tests if the instance is a localizer.
      */
     const scoutRule: RawSplitRule = {
-      priority: -1,
       context: {
         isLocalizer: "includes(ImageType, 'LOCALIZER')",
         hasScout:
@@ -419,7 +413,7 @@ describe('DisplaySetService', () => {
     it('splits a localizer off a CT series with a raw selector rule (SCOUT example)', () => {
       setCustomization({
         enabled: true,
-        splitRules: { ...testSplitRules, ctScout: scoutRule },
+        ...withFirstRules({ ctScout: scoutRule }),
         createDisplaySetFromGroup,
       });
 
@@ -451,7 +445,7 @@ describe('DisplaySetService', () => {
     it('leaves a series of localizers only, and a series with none, whole', () => {
       setCustomization({
         enabled: true,
-        splitRules: { ...testSplitRules, ctScout: scoutRule },
+        ...withFirstRules({ ctScout: scoutRule }),
         createDisplaySetFromGroup,
       });
 
@@ -468,18 +462,16 @@ describe('DisplaySetService', () => {
       ]);
     });
 
-    describe('keyed rule sets', () => {
-      it('evaluates the rules in priority order', () => {
+    describe('rule registry and order', () => {
+      it('evaluates the rules in the order of displaySetRuleOrder', () => {
         setCustomization({
           enabled: true,
-          splitRules: {
-            ...testSplitRules,
+          ...withFirstRules({
             firstOnly: {
-              priority: -1,
               matches: instance => instance.InstanceNumber === 1,
               groupBy: ['SOPInstanceUID'],
             },
-          },
+          }),
           createDisplaySetFromGroup,
         });
         const added = service.makeDisplaySets([1, 2, 3].map(() => makeInstance()));
@@ -489,10 +481,11 @@ describe('DisplaySetService', () => {
         ]);
       });
 
-      it('turns off a rule with a null priority', () => {
+      it('does not use a registry rule that the order omits', () => {
         setCustomization({
           enabled: true,
-          splitRules: { ...testSplitRules, volume3d: { priority: null } },
+          ...testSplitRules,
+          displaySetRuleOrder: testRuleOrder.filter(id => id !== 'volume3d'),
           createDisplaySetFromGroup,
         });
         const [displaySet] = service.makeDisplaySets([1, 2, 3].map(() => makeInstance()));
@@ -529,13 +522,10 @@ describe('DisplaySetService', () => {
       };
 
       describe('a rule that does not compile (SP-SAFE-7, SP-PIPE-13)', () => {
-        const brokenRules = {
-          ...testSplitRules,
-          broken: { priority: 1, matches: { nope: true } },
-        };
+        const brokenRules = withFirstRules({ broken: { matches: { nope: true } } });
 
         beforeEach(() => {
-          setCustomization({ enabled: true, splitRules: brokenRules, createDisplaySetFromGroup });
+          setCustomization({ enabled: true, ...brokenRules, createDisplaySetFromGroup });
         });
 
         it('creates no display sets at all, SR and SEG included', () => {
@@ -565,31 +555,20 @@ describe('DisplaySetService', () => {
         it('names every rule that does not compile', () => {
           setCustomization({
             enabled: true,
-            splitRules: { ...brokenRules, textPriority: { priority: 'high' } },
+            ...brokenRules,
+            displaySetRuleOrder: [...brokenRules.displaySetRuleOrder, 'missing'],
             createDisplaySetFromGroup,
           });
           service.makeDisplaySets(makeMixedBValueSeries());
           expect(notices()).toHaveLength(1);
-          expect(notices()[0].message).toContain(
-            "split rules 'broken', 'textPriority' have errors"
-          );
-        });
-
-        it('blocks a rule with functions and a priority that is not a number', () => {
-          setCustomization({
-            enabled: true,
-            splitRules: { ...testSplitRules, native: { priority: '1', matches: () => true } },
-            createDisplaySetFromGroup,
-          });
-          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
-          expect(notices()[0].message).toContain("'native'");
+          expect(notices()[0].message).toContain("split rules 'broken', 'missing' have errors");
         });
 
         it('clears when the rule set changes', () => {
           service.makeDisplaySets(makeMixedBValueSeries());
           setCustomization({
             enabled: true,
-            splitRules: testSplitRules,
+            ...testSplitRules,
             createDisplaySetFromGroup,
           });
           expect(service.makeDisplaySets(makeMixedBValueSeries())).toHaveLength(2);
@@ -603,17 +582,17 @@ describe('DisplaySetService', () => {
         });
 
         it('does not block the legacy path when the customization is disabled', () => {
-          setCustomization({ enabled: false, splitRules: brokenRules, createDisplaySetFromGroup });
+          setCustomization({ enabled: false, ...brokenRules, createDisplaySetFromGroup });
           expect(service.makeDisplaySets(makeMixedBValueSeries())).toHaveLength(1);
           expect(notices()).toEqual([]);
         });
       });
 
       describe('a rule that fails at run time (SP-SAFE-3, SP-PIPE-9)', () => {
-        const failingRuleSet = (fields: Record<string, unknown>) => ({
-          ...testSplitRules,
-          failing: { priority: -1, matches: instance => instance.Modality === 'MR', ...fields },
-        });
+        const failingRuleSet = (fields: Record<string, unknown>) =>
+          withFirstRules({
+            failing: { matches: instance => instance.Modality === 'MR', ...fields },
+          });
 
         it.each([
           ['matches', { matches: () => fail() }, 'matches'],
@@ -621,7 +600,7 @@ describe('DisplaySetService', () => {
         ])('names the rule, the field %s and the series', (_label, fields, field) => {
           setCustomization({
             enabled: true,
-            splitRules: failingRuleSet(fields),
+            ...failingRuleSet(fields),
             createDisplaySetFromGroup,
           });
           const added = service.makeDisplaySets(makeMixedBValueSeries());
@@ -640,7 +619,7 @@ describe('DisplaySetService', () => {
         it('names the rule and customAttributes when the display set factory calls it', () => {
           setCustomization({
             enabled: true,
-            splitRules: failingRuleSet({ attributes: () => fail() }),
+            ...failingRuleSet({ attributes: () => fail() }),
             createDisplaySetFromGroup: jest.fn(group =>
               group.matchedRule.customAttributes({ instance: group.instances[0] }, group)
             ),
@@ -654,7 +633,7 @@ describe('DisplaySetService', () => {
         it('names the rule when the display set factory throws on its own', () => {
           setCustomization({
             enabled: true,
-            splitRules: testSplitRules,
+            ...testSplitRules,
             createDisplaySetFromGroup: jest.fn(() => fail('factory bug')),
           });
           expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
@@ -683,18 +662,16 @@ describe('DisplaySetService', () => {
         describe('with display sets before the failure', () => {
           // Fails for an instance that carries `Bad`, as a rule that code
           // supplies can.
-          const rules = {
-            ...testSplitRules,
+          const rules = withFirstRules({
             picky: {
-              priority: -1,
               matches: instance => (instance.Bad ? fail() : instance.Modality === 'MR'),
             },
-          };
+          });
           const series = (SeriesInstanceUID: string, overrides = {}) =>
             [1, 2].map(() => makeInstance({ SeriesInstanceUID, ...overrides }));
 
           beforeEach(() => {
-            setCustomization({ enabled: true, splitRules: rules, createDisplaySetFromGroup });
+            setCustomization({ enabled: true, ...rules, createDisplaySetFromGroup });
           });
 
           it('keeps the existing display sets, and later calls add nothing for the study', () => {
@@ -743,7 +720,7 @@ describe('DisplaySetService', () => {
             service.makeDisplaySets(series('series-2', { Bad: true }));
             setCustomization({
               enabled: true,
-              splitRules: testSplitRules,
+              ...testSplitRules,
               createDisplaySetFromGroup,
             });
             expect(service.makeDisplaySets(series('series-3'))).toHaveLength(1);
@@ -764,7 +741,8 @@ describe('DisplaySetService', () => {
               customizationService: {
                 getCustomization: () => ({
                   enabled: true,
-                  splitRules: { broken: { priority: 'x' } },
+                  displaySetRules: {},
+                  displaySetRuleOrder: ['broken'],
                   createDisplaySetFromGroup,
                 }),
               },
@@ -781,7 +759,7 @@ describe('DisplaySetService', () => {
       const compareInstances = jest.fn(() => 0);
       setCustomization({
         enabled: true,
-        splitRules: testSplitRules,
+        ...testSplitRules,
         createDisplaySetFromGroup,
         compareInstances,
       });
@@ -801,10 +779,7 @@ describe('DisplaySetService', () => {
       });
       const withHandler = (handler: string) => ({
         enabled: true,
-        splitRules: {
-          ...testSplitRules,
-          named: { priority: -1, handler, groupBy: ['SeriesInstanceUID'] },
-        },
+        ...withFirstRules({ named: { handler, groupBy: ['SeriesInstanceUID'] } }),
         createDisplaySetFromGroup,
       });
       let first;
@@ -862,10 +837,7 @@ describe('DisplaySetService', () => {
       it('gives a display set with no handler to the image handler only when the mode has one', () => {
         const noHandler = {
           enabled: true,
-          splitRules: {
-            ...testSplitRules,
-            named: { priority: -1, groupBy: ['SeriesInstanceUID'] },
-          },
+          ...withFirstRules({ named: { groupBy: ['SeriesInstanceUID'] } }),
           createDisplaySetFromGroup,
         };
         setCustomization(noHandler);

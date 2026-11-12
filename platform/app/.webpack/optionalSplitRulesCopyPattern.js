@@ -2,11 +2,13 @@ const path = require('path');
 
 /**
  * The copy pattern of the optional split rules of @cornerstonejs/metadata
- * (`rules/optional/<id>.jsonc`, bare rule data). The pattern wraps each file as
- * a customization module, `?customization=split/optional/<id>`, that turns on
- * the new split and `$merge`s the rules into `splitRules`. The wrap is text, so
- * the comments of the file stay. A metadata version without the files copies
- * nothing. Used by webpack.pwa.js and rsbuild.config.ts.
+ * (`rules/optional/<id>.jsonc`). Each file is an immutability-helper spec over
+ * `{ displaySetRules, displaySetRuleOrder }`, the same keys as the
+ * `useMetadataDisplaySet` customization. The pattern wraps each file as a
+ * customization module, `?customization=split/optional/<id>`, that turns on
+ * the new split and applies the file to `useMetadataDisplaySet`. The wrap is
+ * text, so the comments of the file stay. A metadata version without the
+ * files copies nothing. Used by webpack.pwa.js and rsbuild.config.ts.
  */
 module.exports = function optionalSplitRulesCopyPattern(distDir) {
   return {
@@ -15,9 +17,8 @@ module.exports = function optionalSplitRulesCopyPattern(distDir) {
     toType: 'dir',
     noErrorOnMissing: true,
     transform: content =>
-      '{"requires":["split/enableNewSplit"],"global":{"useMetadataDisplaySet":' +
-      '{"splitRules":{"$merge":\n' +
+      '{"requires":["split/enableNewSplit"],"global":{"useMetadataDisplaySet":\n' +
       content +
-      '\n}}}}',
+      '\n}}',
   };
 };

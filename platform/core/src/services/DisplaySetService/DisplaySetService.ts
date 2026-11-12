@@ -19,13 +19,14 @@ import type {
 } from './compileSplitRules';
 
 /**
- * Memoizes compiled split rules by the identity of the `splitRules` value and
- * of the `metadataContext` value. A mode that defines other rules, or another
- * context, gives a new object, and that object compiles again.
+ * Memoizes compiled split rules by the identity of the `displaySetRules`,
+ * `displaySetRuleOrder` and `metadataContext` values. A mode that defines other
+ * rules, another order or another context gives a new object, and that object
+ * compiles again. `source` stands for the registry and the order together.
  */
 const compiledSplitRulesCache = new WeakMap<
   object,
-  { context: unknown; compiled: CompiledSplitRules }
+  { order: unknown; context: unknown; compiled: CompiledSplitRules; source: object }
 >();
 
 /** The handler name of the unsupported display set. */
@@ -67,7 +68,7 @@ const SPLIT_RULE_ERROR_TITLE = 'Display set split rules';
  * record exists, the service creates no further display sets for the study.
  */
 type SplitRuleFailure = {
-  /** The `splitRules` customization value that failed; a different value clears the record. */
+  /** The rule registry and order that failed; a different value clears the record. */
   ruleSource: object;
   ruleId?: string;
   field?: string;
@@ -100,9 +101,9 @@ export type CreateDisplaySetFromGroupContext = {
  * class handlers (a fallback gives a grouping that looks correct but is not
  * the grouping the deployment intended):
  *
- * - a rule that does not compile, or has a priority that is not a number or
- *   null (SP-SAFE-7): no display sets at all - SEG and SR included - while
- *   that `splitRules` value is in effect;
+ * - a rule that does not compile, or an id of the order that is not in the
+ *   registry (SP-SAFE-7): no display sets at all - SEG and SR included - while
+ *   that registry and order are in effect;
  * - a rule that throws at run time, in the engine or in
  *   `createDisplaySetFromGroup` / `extendInstances` (SP-SAFE-3): no further
  *   display sets for the study. The display sets that exist stay.
@@ -114,21 +115,24 @@ export type UseMetadataDisplaySetCustomization = {
   /** Default false — the legacy SOP class handler path is used exclusively. */
   enabled?: boolean;
   /**
-   * Rules for `groupInstancesBySplitRules`, keyed by rule id. Each rule has a
-   * `priority`: rules run in ascending priority, and the first matching rule
-   * wins per instance. The default rules use the priorities 10 to 170 in
-   * steps of 10 (80 is reserved). A priority below 0 runs before them, a
-   * number between two default priorities that is not a multiple of 10 runs
-   * between those two rules, above 10000 runs after them, and `null` turns a
-   * rule off.
+   * The rule registry, keyed by rule id. A rule is used only when
+   * `displaySetRuleOrder` names it. A customization changes a rule by its id
+   * with the immutability-helper commands, and the rule keeps its place.
    *
    * An entry is a `@cornerstonejs/metadata` raw rule; a raw field can hold a
    * function. A rule that the compiler has already compiled is not a valid
-   * entry. Every entry is compiled by `createDisplaySetSplitRules` (see
-   * {@link compileSplitRules}), which keeps a function as is. An entry that
+   * entry. Every rule of the order is compiled by `createDisplaySetSplitRules`
+   * (see {@link compileSplitRules}), which keeps a function as is. A rule that
    * does not compile is not dropped: it stops display set creation.
    */
-  splitRules?: Record<string, SplitRuleCustomizationEntry>;
+  displaySetRules?: Record<string, SplitRuleCustomizationEntry>;
+  /**
+   * The rule ids in evaluation order; the first rule that matches an instance
+   * claims it. A customization adds, removes or replaces an id with `$splice`,
+   * which also takes a rule id as the position. An instance that no rule
+   * claims goes to the SOP class handlers.
+   */
+  displaySetRuleOrder?: string[];
   /**
    * Named series functions that a context group references with
    * `{ function: '<name>' }`, in addition to the built-in `planeGeometry` and
@@ -168,9 +172,12 @@ export type UseMetadataDisplaySetCustomization = {
 };
 
 /** The customization after {@link compileSplitRules}: the rules the engine takes. */
-type CompiledSplitConfig = Omit<UseMetadataDisplaySetCustomization, 'splitRules'> & {
+type CompiledSplitConfig = Omit<
+  UseMetadataDisplaySetCustomization,
+  'displaySetRules' | 'displaySetRuleOrder'
+> & {
   splitRules?: SplitRuleSet;
-  /** The `splitRules` customization value the rules came from. */
+  /** Stands for the registry and the order that the rules came from. */
   splitRulesSource?: object;
   /** The rules that did not compile. Not empty means: create no display sets. */
   compileErrors?: SplitRuleCompileError[];
@@ -220,12 +227,12 @@ export default class DisplaySetService extends PubSubService {
   /**
    * The split rule failures at run time, by StudyInstanceUID (SP-SAFE-3). A
    * study in this map gets no further display sets. A record clears when the
-   * `splitRules` value changes, and on `onModeExit`.
+   * registry or the order changes, and on `onModeExit`.
    */
   protected splitRuleFailures = new Map<string, SplitRuleFailure>();
 
   /**
-   * The `splitRules` values whose compile errors this mode already reported,
+   * The rule sources whose compile errors this mode already reported,
    * so that the notification shows once and not once per series.
    */
   protected reportedSplitRuleSets = new WeakSet<object>();
@@ -708,30 +715,36 @@ export default class DisplaySetService extends PubSubService {
     const config = this.servicesManager?.services?.customizationService?.getCustomization(
       'useMetadataDisplaySet'
     ) as UseMetadataDisplaySetCustomization | undefined;
-    if (!config?.enabled || !config.splitRules || typeof config.splitRules !== 'object') {
-      return { ...config, splitRules: undefined };
+    const { displaySetRules: registry, displaySetRuleOrder: order, ...rest } = config ?? {};
+    if (!config?.enabled || !registry || typeof registry !== 'object') {
+      return { ...rest, splitRules: undefined };
     }
     const context = this._applyMetadataContext();
-    const cached = compiledSplitRulesCache.get(config.splitRules);
-    let compiled = cached?.compiled;
-    if (!cached || cached.context !== context) {
-      compiled = compileSplitRules(config.splitRules, {
+    let cached = compiledSplitRulesCache.get(registry);
+    if (!cached || cached.order !== order || cached.context !== context) {
+      cached = {
+        order,
         context,
-        seriesFunctions: config.seriesFunctions,
-        sortFunctions: config.sortFunctions,
-      });
-      compiledSplitRulesCache.set(config.splitRules, { context, compiled });
+        compiled: compileSplitRules(registry, order, {
+          context,
+          seriesFunctions: config.seriesFunctions,
+          sortFunctions: config.sortFunctions,
+        }),
+        // A new context compiles again, but it is the same rule source.
+        source: cached?.order === order ? cached.source : { registry, order },
+      };
+      compiledSplitRulesCache.set(registry, cached);
     }
     return {
-      ...config,
-      splitRules: compiled.rules,
-      splitRulesSource: config.splitRules,
-      compileErrors: compiled.errors,
+      ...rest,
+      splitRules: cached.compiled.rules,
+      splitRulesSource: cached.source,
+      compileErrors: cached.compiled.errors,
     };
   }
 
   /**
-   * Shows the compile errors of a rule set, once for each `splitRules` value
+   * Shows the compile errors of a rule set, once for each rule source
    * in a mode (SP-SAFE-7, SP-PIPE-13). The message names every rule that
    * failed, because {@link compileSplitRules} compiles each rule alone.
    */

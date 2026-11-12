@@ -9,10 +9,11 @@ sidebar_position: 12
 
 The `useMetadataDisplaySet` customization switches display set creation from
 the SOP class handlers to the split-rules engine of `@cornerstonejs/metadata`.
-Series instances are matched against a set of **split rules**, keyed by rule id
-and evaluated in `priority` order (the first matching rule wins for each
-instance), grouped by each rule's `groupBy` keys, and every group becomes one
-display set.
+Series instances are matched against a set of **split rules**: a registry of
+rules keyed by rule id (`displaySetRules`), evaluated in the order of a list of
+rule ids (`displaySetRuleOrder`). The first matching rule wins for each
+instance. The instances are grouped by each rule's `groupBy` keys, and every
+group becomes one display set.
 
 The feature is **off by default**. With the rules off, the SOP class handlers
 make the display sets exactly as before.
@@ -71,9 +72,12 @@ prefix):
 useMetadataDisplaySet: {
   /** default false */
   enabled: boolean;
-  /** rules keyed by id; ascending priority, first match wins for each instance.
-   *  Default: the @cornerstonejs/metadata default rule set (displaySetRules). */
-  splitRules: Record<string, RawSplitRule>;
+  /** the rule registry, keyed by rule id. A rule is used only when the order names it.
+   *  Default: the @cornerstonejs/metadata default registry (displaySetRules). */
+  displaySetRules: Record<string, RawSplitRule>;
+  /** the rule ids in evaluation order; first match wins for each instance.
+   *  Default: the @cornerstonejs/metadata default order (displaySetRuleOrder). */
+  displaySetRuleOrder: string[];
   /** named series functions for a context group, in addition to planeGeometry and timeClusters (code) */
   seriesFunctions?: Record<string, SeriesFunction | { compute; fields }>;
   /** named comparators for a sortBy entry { "sortFunction": "name" } (code) */
@@ -91,9 +95,10 @@ customization.
 
 ### The default rules
 
-The default `splitRules` is the default rule set of `@cornerstonejs/metadata`.
-OHIF does not copy or change it. The Cornerstone docs list the rules, their
-priorities and their handlers:
+The default `displaySetRules` and `displaySetRuleOrder` are the default
+registry and the default order of `@cornerstonejs/metadata`. OHIF does not copy
+or change them. The Cornerstone docs list the rules, their order and their
+handlers:
 [The default rules](https://www.cornerstonejs.org/docs/concepts/cornerstone-metadata/display-sets#the-default-rules).
 
 | Data | Display sets |
@@ -106,13 +111,17 @@ priorities and their handlers:
 | SEG, RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation, chart | One display set for each series, with the handler of that kind of object. |
 | Presentation states and other objects | The unsupported display set. |
 
-The default rules use the priorities `10` to `170`, in steps of 10. The
-priority `80` is reserved for a later default rule `dynamicVolume`. A rule with
-a priority below `0` runs before every default rule. A number between two
-default priorities that is not a multiple of 10 runs between those two rules. A
-rule with a priority above `10000` runs
-after every default rule, before the `unsupported` catch-all. A priority of
-`null` turns a rule off.
+The default order is `video`, `ecg`, `wholeslide`, `singleImageModality`,
+`multiFrame`, `localizer`, `mixedDimensionalityBValue`, `volume3d`,
+`defaultImageRule`, `segmentation`, `rtStructureSet`, `parametricMap`,
+`structuredReport`, `encapsulatedDocument`, `bulkAnnotation`, `chart`,
+`unsupported`. A rule has no `priority`: its place in `displaySetRuleOrder`
+sets when it runs. A rule in the registry that the order does not name is off.
+
+`unsupported` is the catch-all: it has no `matches`, so it claims each
+instance that no other rule claims. A deployment can remove `unsupported` from
+the order. Then OHIF gives each instance that no rule claims to the SOP class
+handlers, as with the rules off.
 
 ### Optional modules
 
@@ -126,15 +135,24 @@ module has no effect until a site loads it, and a load turns it on.
 | `split/decimation` | Splits a series of more than `decimationSize` (default 1000) single-frame images into `ceil(count / decimationSize)` display sets, by `sliceIndex` modulo the count. |
 | `split/scoutSeries` | For CT, replaces the default `localizer` rule: the localizer images become one display set labelled `SCOUT`, with `isLocalizer: true`. |
 | `split/regularVolume` | A volume series with some irregular images: the regular slices become one volume display set. |
-| `split/volumeProjectionOrder` | Orders the slices of `volume3d` by the distance along the normal. |
 | `split/usTimeClusters` | An ultrasound series of several sweeps: one display set for each sweep. |
 
-The modules `split/optional/<id>` come from `@cornerstonejs/metadata`. The
-build copies each file `rules/optional/<id>.jsonc` of the package to
-`customizations/split/optional/<id>.jsonc`, and wraps the rule map in a module
-that requires `split/enableNewSplit` and `$merge`s the rules into
-`splitRules` (`platform/app/.webpack/optionalSplitRulesCopyPattern.js`). The
-viewer loads a module only when the URL asks for it, for example
+The OHIF module `split/volumeProjectionOrder` is removed. Use
+`split/optional/volumePositionOrder` (below) in its place.
+
+The modules `split/optional/<id>` come from `@cornerstonejs/metadata`. Each
+file `rules/optional/<id>.jsonc` of the package is an `immutability-helper`
+spec over `{ displaySetRules, displaySetRuleOrder }`, the same keys as the
+`useMetadataDisplaySet` customization. The build copies each file to
+`customizations/split/optional/<id>.jsonc`, and wraps it in a module that
+requires `split/enableNewSplit` and applies the file to `useMetadataDisplaySet`
+(`platform/app/.webpack/optionalSplitRulesCopyPattern.js`):
+
+```jsonc
+{ "requires": ["split/enableNewSplit"], "global": { "useMetadataDisplaySet": <the file> } }
+```
+
+The viewer loads a module only when the URL asks for it, for example
 `?customization=split/optional/dwiByBValue`. The rules are in the
 [CS3D documentation of the optional rules](https://www.cornerstonejs.org/docs/concepts/cornerstone-metadata/display-sets#optional-rules):
 
@@ -143,8 +161,13 @@ viewer loads a module only when the URL asks for it, for example
 | `split/optional/dwiByBValue` | One display set for each b-value of a diffusion MR series. |
 | `split/optional/multiEchoByEchoTime` | One display set for each echo time of a single-frame MR series. |
 | `split/optional/singleImageSeriesStack` | One stack for each CR, DX or MG series. CR and DX only up to 9 images. |
-| `split/optional/volumePositionOrder` | The instances of `volume3d`, with the slices in position order. |
-| `split/optional/byAcquisitionTime` | One display set for each `AcquisitionNumber` of a CT, MR, PT or NM series. |
+| `split/optional/volumePositionOrder` | The instances of `volume3d`, with the slices in position order. The file changes only the `sortBy` of `volume3d`, so the rule keeps its id. |
+| `split/optional/byAcquisition` | One display set for each `AcquisitionNumber` of a CT, MR, PT or NM series. The file changes only the `groupBy` and the `attributes` of `volume3d`. |
+
+`volumePositionOrder` and `byAcquisition` change different fields of
+`volume3d`, so a site can load both, in either order: one volume for each
+acquisition, with the slices in position order. The earlier name of
+`byAcquisition` is `byAcquisitionTime`.
 | `split/optional/usTimeClusters` | One display set for each ultrasound sweep. |
 | `split/optional/regularVolume` | The regular slices of a series with some irregular images become one volume. |
 | `split/optional/derivedObjectVersions` | One display set for each SR or SEG version, with `isLatestVersion`. |
@@ -153,34 +176,65 @@ A `@cornerstonejs/metadata` version without the files gives no
 `split/optional/` modules, and the build does not fail.
 
 The modules, and every other split file, use only the standard
-`immutability-helper` commands (`$set`, `$merge`, `$push`, ...). They do not
-use the OHIF command `$filter`. So a server that uses `@cornerstonejs/metadata`,
-`immutability-helper` and a JSONC parser, and no OHIF code, applies the same
-files to the same defaults and gets the same rules. A unit test
+`immutability-helper` commands (`$set`, `$merge`, `$push`, `$unshift`, ...),
+and the rule id position of `$splice` (see [Changing a rule](#changing-a-rule)).
+They do not use the OHIF command `$filter`. So a server that uses
+`@cornerstonejs/metadata`, `immutability-helper` with the same `$splice`
+extension, and a JSONC parser, and no other OHIF code, applies the same files to
+the same defaults and gets the same rules. A unit test
 (`urlSplitModules.test.ts`) checks this for each module.
 
 ### Changing a rule
 
 Split rules resolve through the usual customization scopes
 (global → mode → default) and can be edited with immutability-helper
-commands:
+commands. Change a rule in `displaySetRules` by its id. Add, remove, move or
+replace a rule in `displaySetRuleOrder`:
 
 ```js
 // Add a rule that runs before every default rule
-useMetadataDisplaySet: { splitRules: { $merge: { myRule: { ...myRule, priority: -1 } } } }
+useMetadataDisplaySet: {
+  displaySetRules: { $merge: { myRule } },
+  displaySetRuleOrder: { $unshift: ['myRule'] },
+}
 
-// Add a fallback rule (only sees instances no default rule matched)
-useMetadataDisplaySet: { splitRules: { $merge: { myRule: { ...myRule, priority: 20000 } } } }
+// Add a rule that runs just before the default volume3d rule
+useMetadataDisplaySet: {
+  displaySetRules: { $merge: { myRule } },
+  displaySetRuleOrder: { $splice: [['volume3d', 0, 'myRule']] },
+}
+
+// Add a fallback rule (only sees instances no other default rule matched)
+useMetadataDisplaySet: {
+  displaySetRules: { $merge: { myRule } },
+  displaySetRuleOrder: { $splice: [['unsupported', 0, 'myRule']] },
+}
 
 // Change one field of a rule, and keep its place
-useMetadataDisplaySet: { splitRules: { volume3d: { sortBy: { $set: ['displaySet.sliceDistance'] } } } }
+useMetadataDisplaySet: {
+  displaySetRules: { volume3d: { sortBy: { $set: ['displaySet.sliceDistance'] } } },
+}
 
 // Turn one rule off
-useMetadataDisplaySet: { splitRules: { volume3d: { priority: { $set: null } } } }
+useMetadataDisplaySet: { displaySetRuleOrder: { $splice: [['volume3d', 1]] } }
+
+// Replace one rule in the order with another rule
+useMetadataDisplaySet: {
+  displaySetRules: { $merge: { myVolume } },
+  displaySetRuleOrder: { $splice: [['volume3d', 1, 'myVolume']] },
+}
 ```
 
-A keyed rule set cannot hold two rules with one id, so a customization layer
-replaces or edits a rule instead of adding a copy of it.
+The OHIF `$splice` takes a rule id as the position, in addition to a number.
+The id is the item of the list that equals the string, or the item whose `id`
+equals the string. A string that looks like a number, for example `'3'`, is an
+id and not an index. An id that is not in the list is an error. Each entry of
+one `$splice` finds its position after the edits of the earlier entries. Plain
+`immutability-helper` takes only a number.
+
+A keyed registry cannot hold two rules with one id, so a customization layer
+replaces or edits a rule instead of adding a copy of it. An id can be in the
+order only once.
 
 :::caution
 A custom rule that claims video, whole-slide, ECG, SEG, RTSTRUCT, parametric
@@ -210,17 +264,20 @@ stops display set creation when a rule has an error, and shows an error
 notification. The notification stays on the screen until the user closes it.
 
 :::caution
-**A rule that does not compile** — an unknown name, an unknown field, an invalid
-expression, a missing priority, a priority that is not a number or `null`, an
-`id` that differs from the key — stops **all** display set creation. The
-notification names every rule that does not compile.
+**A rule that does not compile** — an unknown name, an unknown field (also
+`priority`), an invalid expression, an `id` that differs from the key — stops
+**all** display set creation. So does an id of `displaySetRuleOrder` that is not
+in `displaySetRules`, or that is in the order twice. The notification names
+every rule that does not compile. A rule in the registry that the order does
+not name is not compiled.
 
 **A rule that fails at run time** — a function that code supplies throws, or
 the display set factory or a handler's `extendDisplaySet` throws — stops
 display set creation for **that study**. The notification names the rule, the
 field and the series. The display sets that exist before the error stay.
 
-The stop ends when the `splitRules` value changes, and when the mode exits.
+The stop ends when the `displaySetRules` value or the `displaySetRuleOrder`
+value changes, and when the mode exits.
 The console holds the full error.
 :::
 
@@ -387,16 +444,15 @@ To serve such a SOP class with the rules on, the extension does two things:
 
 1. The handler declares a name in `handlerNames`, and has an
    `extendDisplaySet` that adds its fields.
-2. A rule with a priority below the default rules claims the SOP class, and
+2. A rule before the default rules in the order claims the SOP class, and
    names the handler:
 
 ```js
 customizationService.setCustomizations({
   useMetadataDisplaySet: {
-    splitRules: {
+    displaySetRules: {
       $merge: {
         myPrivateObject: {
-          priority: -1,
           description: 'My private SOP class: one display set for each instance.',
           handler: 'myPrivateObject',
           matches: { SOPClassUID: '1.2.3.4.5' },
@@ -404,9 +460,17 @@ customizationService.setCustomizations({
         },
       },
     },
+    displaySetRuleOrder: { $unshift: ['myPrivateObject'] },
   },
 });
 ```
+
+A deployment can also remove `unsupported` from the order, with
+`{ displaySetRuleOrder: { $splice: [['unsupported', 1]] } }`. Then each
+instance that no rule claims goes to the SOP class handlers, so the handler of
+the extension runs as with the rules off. The other instances that no rule
+claims also go to the SOP class handlers, and do not show as unsupported
+display sets.
 
 ## New instances and new rules
 
@@ -457,12 +521,10 @@ customizationService.setCustomizations(
   {
     useMetadataDisplaySet: {
       enabled: { $set: true },
-      splitRules: {
+      displaySetRules: {
         $merge: {
           ctScout: {
-            priority: -1,
             context: {
-              isLocalizer: "includes(ImageType, 'LOCALIZER')",
               hasScout:
                 'series.instances.count(isLocalizer) > 0 && ' +
                 'series.instances.count(isLocalizer) < series.instances.count()',
@@ -476,13 +538,17 @@ customizationService.setCustomizations(
           },
         },
       },
+      // Run ctScout just before the default localizer rule.
+      displaySetRuleOrder: { $splice: [['localizer', 0, 'ctScout']] },
     },
   },
   customizationService.Scope.Global
 );
 ```
 
-The global scope keeps the rule when the mode changes. A page reload removes
+`isLocalizer` (`ImageType` holds `LOCALIZER`) is a name of the default
+context, so the rule does not define it. The global scope keeps the rule when
+the mode changes. A page reload removes
 it. A rule with an error stops display set creation, as a rule from any other
 source does (see [Rule errors](#rule-errors)).
 

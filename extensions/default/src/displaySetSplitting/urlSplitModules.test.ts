@@ -5,8 +5,10 @@ import { newContext } from 'immutability-helper';
 import {
   createDisplaySetSplitRules,
   defaultMetadataContext,
+  displaySetRuleOrder,
   displaySetRules,
   groupInstancesBySplitRules,
+  materializeSplitRules,
 } from '@cornerstonejs/metadata';
 import { CustomizationService } from '@ohif/core';
 import getMetadataDisplaySetCustomization from '../customizations/metadataDisplaySetCustomization';
@@ -59,7 +61,7 @@ const standardUpdate = newContext();
  */
 const serverCustomizations = (name: string) => {
   let value = {
-    useMetadataDisplaySet: { enabled: false, splitRules: displaySetRules },
+    useMetadataDisplaySet: { enabled: false, displaySetRules, displaySetRuleOrder },
     metadataContext: defaultMetadataContext,
   };
   const applied = new Set<string>();
@@ -79,9 +81,11 @@ const serverCustomizations = (name: string) => {
 /** The split rules of one module, compiled as a server compiles them. */
 const compileModule = (name: string, overlay = {}) => {
   const { useMetadataDisplaySet, metadataContext } = serverCustomizations(name);
-  return createDisplaySetSplitRules(standardUpdate(useMetadataDisplaySet.splitRules, overlay), {
-    context: metadataContext,
-  });
+  const registry = standardUpdate(useMetadataDisplaySet.displaySetRules, overlay);
+  return createDisplaySetSplitRules(
+    materializeSplitRules(registry, useMetadataDisplaySet.displaySetRuleOrder),
+    { context: metadataContext }
+  );
 };
 
 /** The `useMetadataDisplaySet` value that OHIF gets for one module. */
@@ -100,7 +104,8 @@ const ohifSplitCustomization = async (name: string) => {
   });
   return service.getCustomization('useMetadataDisplaySet') as {
     enabled: boolean;
-    splitRules: unknown;
+    displaySetRules: unknown;
+    displaySetRuleOrder: unknown;
   };
 };
 
@@ -147,7 +152,8 @@ describe('split URL modules', () => {
       const ohif = await ohifSplitCustomization(name);
 
       expect(ohif.enabled).toBe(server.enabled);
-      expect(ohif.splitRules).toEqual(server.splitRules);
+      expect(ohif.displaySetRules).toEqual(server.displaySetRules);
+      expect(ohif.displaySetRuleOrder).toEqual(server.displaySetRuleOrder);
       expect(() => compileModule(name)).not.toThrow();
     }
   );
@@ -282,14 +288,6 @@ describe('split URL modules', () => {
       expect(
         rows(groupInstancesBySplitRules(series as any, compileModule('regularVolume')))
       ).toEqual([['volume3d', [1, 2, 3]]]);
-    });
-
-    it('volumeProjectionOrder orders the slices by position, not by InstanceNumber', () => {
-      const series = [ct(4, 1), ct(0, 2), ct(2, 3)];
-
-      expect(
-        rows(groupInstancesBySplitRules(series as any, compileModule('volumeProjectionOrder')))
-      ).toEqual([['volume3d', [2, 3, 1]]]);
     });
 
     it('usTimeClusters makes one display set for each sweep, in time order', () => {

@@ -1,4 +1,4 @@
-import { chartSopClassUids, displaySetRules } from '@cornerstonejs/metadata';
+import { chartSopClassUids, displaySetRuleOrder, displaySetRules } from '@cornerstonejs/metadata';
 import getMetadataContextCustomization from './metadataContextCustomization';
 import getMetadataDisplaySetCustomization from './metadataDisplaySetCustomization';
 import { ChartDataSOPClassUid } from '../SOPClassHandlers/chartSOPClassHandler';
@@ -16,6 +16,7 @@ describe('split customization defaults', () => {
 
   it('uses the CS3D default rule set as the default split rules', () => {
     const { useMetadataDisplaySet } = getMetadataDisplaySetCustomization({} as never);
-    expect(useMetadataDisplaySet.splitRules).toBe(displaySetRules);
+    expect(useMetadataDisplaySet.displaySetRules).toBe(displaySetRules);
+    expect(useMetadataDisplaySet.displaySetRuleOrder).toBe(displaySetRuleOrder);
   });
 });

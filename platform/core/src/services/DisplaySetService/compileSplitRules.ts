@@ -1,13 +1,13 @@
-import { createDisplaySetSplitRules } from '@cornerstonejs/metadata';
+import { createDisplaySetSplitRules, materializeSplitRules } from '@cornerstonejs/metadata';
 import type {
   CreateDisplaySetSplitRulesOptions,
   RawSplitRule,
+  SplitRule,
   SplitRuleSet,
-  SplitRuleSetEntry,
 } from '@cornerstonejs/metadata';
 
 /**
- * A `useMetadataDisplaySet.splitRules` entry: a `@cornerstonejs/metadata` raw
+ * A `useMetadataDisplaySet.displaySetRules` entry: a `@cornerstonejs/metadata` raw
  * rule. A raw field can hold a function at a function place (a whole
  * `matches`, a `groupBy` entry, a `sortBy` entry, `attributes`, ...).
  *
@@ -17,9 +17,9 @@ import type {
  */
 export type SplitRuleCustomizationEntry = RawSplitRule;
 
-/** A rule that did not compile, or a rule set that is not a keyed object. */
+/** A rule that did not compile, or a registry or an order that is not valid. */
 export type SplitRuleCompileError = {
-  /** The key of the rule in `splitRules`; undefined when the rule set itself is invalid. */
+  /** The rule id; undefined when the registry or the order itself is invalid. */
   ruleId?: string;
   /** Why the compiler rejected the entry. */
   message: string;
@@ -28,7 +28,7 @@ export type SplitRuleCompileError = {
 /** What {@link compileSplitRules} returns. */
 export type CompiledSplitRules = {
   /**
-   * The compiled rules, keyed by rule id. Every function field is wrapped so
+   * The compiled rules, in rule order. Every function field is wrapped so
    * that a run-time error is a {@link SplitRuleRunError}. When `errors` is not
    * empty, the rule set is incomplete and must not be used (SP-SAFE-7).
    */
@@ -93,8 +93,8 @@ function wrapRuleFunction<F extends (...args: unknown[]) => unknown>(
  * wrapped functions, so an error from any of them - `customAttributes`
  * included, which the factory calls - names the rule and the field.
  */
-function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleSetEntry {
-  const wrapped: SplitRuleSetEntry = { ...entry };
+function wrapRuleFunctions(ruleId: string, entry: SplitRule): SplitRule {
+  const wrapped: SplitRule = { ...entry };
   for (const field of BEHAVIOUR_FIELDS) {
     const value = entry[field];
     if (typeof value === 'function') {
@@ -113,61 +113,61 @@ function wrapRuleFunctions(ruleId: string, entry: SplitRuleSetEntry): SplitRuleS
 }
 
 /**
- * Compiles the `useMetadataDisplaySet.splitRules` customization into the
- * `SplitRuleSet` the split engine takes.
+ * Compiles the `useMetadataDisplaySet` registry (`displaySetRules`) in the
+ * order of `displaySetRuleOrder` into the `SplitRuleSet` the split engine
+ * takes. A registry rule that the order does not name is not compiled.
  *
- * Every entry is compiled by the `@cornerstonejs/metadata`
+ * Every rule is compiled by the `@cornerstonejs/metadata`
  * `createDisplaySetSplitRules` - there is no OHIF rule language. `options`
  * supplies the context (the `metadataContext` customization) and the named
- * functions the rules reference. The compiler keeps a
- * function at a function place as is, so an entry that mixes functions with
- * data goes through the same compiler as raw data. No field is left
- * uncompiled because another field is a function.
+ * functions the rules reference. The compiler keeps a function at a function
+ * place as is, so an entry that mixes functions with data goes through the
+ * same compiler as raw data.
  *
- * Each entry is compiled on its own (SP-PIPE-3), so that `errors` names every
- * rule that fails - an unknown name, an invalid expression, a missing or
- * non-numeric priority, an id that differs from the key, an unsafe id such as
- * `__proto__`. No rule is dropped:
- * a rule set with an error must stop display set creation (SP-SAFE-7), because
- * the rule that failed can be the rule a clinician depends on. The display set
- * service does that stop.
+ * Each rule is compiled on its own (SP-PIPE-3), so that `errors` names every
+ * rule that fails - an unknown name, an invalid expression, an id of the order
+ * that is not in the registry or that occurs twice, an id that differs from
+ * the key, an unsafe id such as `__proto__`. No rule is dropped: a rule set
+ * with an error must stop display set creation (SP-SAFE-7), because the rule
+ * that failed can be the rule a clinician depends on. The display set service
+ * does that stop.
  *
- * Every function field of a compiled rule - from data or from a function in a
- * raw field - is wrapped, so that an error at run time is a {@link SplitRuleRunError} that
- * names the rule and the field.
- *
- * @returns the compiled rules with the same keys and priorities, and one error
- *   for each entry that did not compile.
+ * Every function field of a compiled rule is wrapped, so that an error at run
+ * time is a {@link SplitRuleRunError} that names the rule and the field.
  */
 export function compileSplitRules(
-  ruleSet: Record<string, SplitRuleCustomizationEntry>,
+  registry: Record<string, SplitRuleCustomizationEntry>,
+  order: readonly string[],
   options: CreateDisplaySetSplitRulesOptions = {}
 ): CompiledSplitRules {
-  const rules: SplitRuleSet = {};
+  const rules: SplitRuleSet = [];
   const errors: SplitRuleCompileError[] = [];
-  if (!ruleSet || typeof ruleSet !== 'object' || Array.isArray(ruleSet)) {
+  if (!registry || typeof registry !== 'object' || Array.isArray(registry)) {
     errors.push({
-      message: 'the splitRules customization must be an object keyed by rule id',
+      message: 'the displaySetRules customization must be an object keyed by rule id',
     });
+  }
+  if (!Array.isArray(order)) {
+    errors.push({
+      message: 'the displaySetRuleOrder customization must be an array of rule ids',
+    });
+  }
+  if (errors.length) {
     return { rules, errors };
   }
 
-  for (const [id, entry] of Object.entries(ruleSet)) {
-    // `rules['__proto__'] = rule` replaces the prototype of `rules` instead of
-    // adding the rule, and `JSON.parse` makes `__proto__` a real own key.
-    if (id === '__proto__') {
-      errors.push({ ruleId: id, message: 'the rule id is not allowed; give the rule another id' });
-      continue;
-    }
-    if (!entry || typeof entry !== 'object') {
-      errors.push({ ruleId: id, message: 'the entry is not an object' });
-      continue;
-    }
+  const seen = new Set<string>();
+  for (const id of order) {
     try {
-      const compiled = createDisplaySetSplitRules({ [id]: entry as RawSplitRule }, options)[id];
-      rules[id] = wrapRuleFunctions(id, compiled);
+      if (seen.has(id)) {
+        throw new Error('the id occurs more than once in displaySetRuleOrder');
+      }
+      seen.add(id);
+      // Checks the id against the registry: present, safe, equal to the key.
+      const [rule] = materializeSplitRules(registry as Record<string, RawSplitRule>, [id]);
+      rules.push(wrapRuleFunctions(id, createDisplaySetSplitRules([rule], options)[0]));
     } catch (error) {
-      errors.push({ ruleId: id, message: (error as Error).message });
+      errors.push({ ruleId: String(id), message: (error as Error).message });
     }
   }
   return { rules, errors };

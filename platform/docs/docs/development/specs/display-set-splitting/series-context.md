@@ -190,7 +190,7 @@ implementation requirements: the groups `SP-CTX`, `SP-SFN`, and `SP-EXM`.
 | 3 | A series fact sees every instance of the series, also the instances that an earlier rule claims. In `usTimeClusters`, a multi-frame clip counts in the time clusters, and can join two sweeps. Must a fact take a filter of the instances? | **Open.** A possible form is an optional `where` condition on a series fact. |
 | 4 | The anchor search of `planeGeometry` takes a time proportional to the square of the number of distinct positions. | **Open.** The time is small for a series of a few thousand slices. A faster search can replace it, and `SP-SFN-3` stays the same. |
 | 5 | Must the expression language get vector functions, for example `dot` and `cross`? | **Open.** Not needed for the three cases, because `planeGeometry` gives `distance`. |
-| 6 | `DisplaySetService` keeps the compiled rules for one `splitRules` value. A change of `seriesFunctions` alone does not compile the rules again. | **Accepted.** A mode that defines other rules gives a new `splitRules` object, which compiles again (`SP-PIPE-2`). |
+| 6 | `DisplaySetService` keeps the compiled rules for one `displaySetRules` value and one `displaySetRuleOrder` value. A change of `seriesFunctions` alone does not compile the rules again. | **Accepted.** A mode that defines other rules gives a new `displaySetRules` object, which compiles again (`SP-PIPE-2`). |
 | 7 | The `series` list of a rule is gone. A custom rule set in the earlier form does not compile. | **Accepted.** The feature is off by default, and no release of OHIF holds it. The earlier form must be stated in the release notes of `@cornerstonejs/metadata`. |
 | 8 | The prefix groups `SP-SUM`, `SP-CTX`, `SP-SFN`, and `SP-EXM` must go into the specification register (`specs/index.md`). | **Deferred**, as §6 item 5 of the requirements specification. |
 
@@ -216,7 +216,7 @@ The tests fall in two groups: "the API must do this" (`displaySetRules.test.ts` 
 | `SP-SUM-9` | `displaySetRules.test.ts`: "rejects a loop of entries, an unknown group field, and a group replaced by a value" |
 | `SP-SUM-7` | `seriesContext.test.ts`: "splits the lattice from the other images, and labels each display set from the whole series" |
 | `SP-SUM-2` | `urlSplitModules.test.ts`: "regularVolume makes a volume of the regular slices, and leaves the extra slice", and "regularVolume keeps a fully regular series as the default volume" |
-| `SP-SUM-3` | `urlSplitModules.test.ts`: "volumeProjectionOrder orders the slices by position, not by InstanceNumber" |
+| `SP-SUM-3` | `optionalRules.test.ts` of `@cornerstonejs/metadata`: "volumePositionOrder: the slices of a volume in position order, not InstanceNumber order". The optional file `volumePositionOrder` replaces the removed OHIF module `split/volumeProjectionOrder`. |
 | `SP-SUM-4` | `urlSplitModules.test.ts`: "usTimeClusters makes one display set for each sweep, in time order" |
 | `SP-DET-3` with a changed summary | *Pending* — a `DisplaySetService` test that adds a late slice which changes the lattice |
 | The implementation requirements | See §4 of the [implementation specification](./series-context-implementation.md) |

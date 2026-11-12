@@ -25,9 +25,11 @@
 //    `displaySet.` prefix reads the value of the display set; a bare name reads
 //    the value of the series.
 //  - `attributes` adds the spacing of the display set to the SeriesDescription.
-//  - `irregularImages` is off (priority null). With priority -1 it puts the
-//    other images into one stack. Both rules read the same `planeGeometry`
-//    group, so the engine computes it once for each series.
+//  - `irregularImages` is in the registry, but not in the rule order, so it is
+//    off. Add its id to the order (for example `{ "$splice":
+//    [["volume3d", 0, "irregularImages"]] }`) to put the other images into one
+//    stack. Both rules read the same `planeGeometry` group, so the engine
+//    computes it once for each series.
 //
 // Series that this module changes: only series that mix a regular lattice with
 // other images. A fully regular series, and a series with no lattice, keep the
@@ -38,10 +40,9 @@
   "requires": ["split/enableNewSplit"],
   "global": {
     "useMetadataDisplaySet": {
-      "splitRules": {
+      "displaySetRules": {
         "$merge": {
           "regularVolume": {
-            "priority": -2,
             "description": "Volume series with some irregular images: the regular slices become one volume display set.",
             "context": {
               "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
@@ -60,8 +61,7 @@
             }
           },
           "irregularImages": {
-            "priority": null,
-            "description": "Off. With priority -1: the images that regularVolume leaves become one stack.",
+            "description": "Off until the rule order names it: the images that regularVolume leaves become one stack.",
             "context": {
               "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
               "isRegularSlice": "sliceIndex != null"
@@ -78,7 +78,8 @@
             }
           }
         }
-      }
+      },
+      "displaySetRuleOrder": { "$unshift": ["regularVolume"] }
     }
   }
 }
