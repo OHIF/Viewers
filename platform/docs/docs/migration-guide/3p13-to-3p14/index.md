@@ -88,4 +88,14 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `OneOrMoreSeries` weight of `@ohif/mnGrid`, `@ohif/mnGrid8` and `@ohif/hpScale`); the page
   lists them.
 
+- **[Multi-resolution volumes and Cornerstone3D 5.17](./multi-resolution-volumes.md)** —
+  every volume loads with `coarseInterleavedRetrieveStages`, and the `mpr` protocol no longer
+  sets `imageLoadStrategy: 'nth'`. The data source `volumeRetrieveOptions` and a copy of `mpr`
+  with `nth` restore the 3.13 load. The Cornerstone3D "Transient Low Fidelity" label shows
+  while a volume loads, until the OHIF indicator
+  ([#6413](https://github.com/OHIF/Viewers/pull/6413)) replaces it. Cornerstone3D 5.17 makes
+  `volume.vtkOpenGLTexture` a getter that can return `undefined`, and removes
+  `RenderingCapabilities.webgl2`; use `volume.modified()` in place of the per-frame
+  texture updates. The developer configs select the `medium` GPU settings preset.
+
 <DocCardList />

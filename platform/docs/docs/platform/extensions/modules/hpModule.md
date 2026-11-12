@@ -231,6 +231,19 @@ sooner than those loaded later.  The available strategies are:
 and end points, and then filling in progressively all along the image.  This results in partial
 image view very quickly.
 
+A protocol without `imageLoadStrategy` loads each volume with `volume.load()`. The cornerstone
+extension sets the volume retrieve configuration to the Cornerstone3D
+`coarseInterleavedRetrieveStages`. That configuration loads every 64th image first, at the offsets
+0, 21 and 42, and copies each image to the empty frames around it. A reformat then holds no gray
+line while the volume loads. The `mpr` protocol sets no strategy, so it uses this configuration. A
+strategy above does not copy images to empty frames.
+
+Earlier versions of the `mpr` protocol used the `nth` strategy. The change applies to all users, also
+with lossy downsampling off: the load order changes, and the first images show at a coarse depth
+resolution before they refine. The data source `volumeRetrieveOptions` selects other volume
+stages. See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/multi-resolution-volumes.md)
+to get the 3.13 load back.
+
 ### protocolMatchingRules
 A list of criteria for the protocol along with the provided points for ranking.
 

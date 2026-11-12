@@ -81,6 +81,15 @@ const makeDisplaySet = (instances, index) => {
   const imageSet = new ImageSet(instances);
   const { extensionManager } = appContext;
   const dataSource = extensionManager.getActiveDataSource()[0];
+
+  // Data sources can use the display set's UIDs when they generate image IDs.
+  // Set them before asking the data source, rather than waiting for the rest of
+  // the display-set attributes which depend on the generated image IDs.
+  imageSet.setAttributes({
+    StudyInstanceUID: instance.StudyInstanceUID,
+    SeriesInstanceUID: instance.SeriesInstanceUID,
+  });
+
   const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
   const {
     isDynamicVolume,

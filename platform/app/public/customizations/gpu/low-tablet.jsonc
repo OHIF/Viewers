@@ -1,0 +1,7 @@
+// GPU settings preset low-tablet: texture edge 256, 1 GB. The reduction is easy to see.
+// Load it with `?customization=gpu/low-tablet`. See specificCustomizations.md.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "low-tablet"
+  }
+}
