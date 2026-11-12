@@ -1,4 +1,5 @@
 const mockCalculateCachedStats = jest.fn();
+const mockDrawPath = jest.fn();
 
 jest.mock('@cornerstonejs/tools', () => ({
   ProbeTool: class {
@@ -23,7 +24,7 @@ jest.mock('@cornerstonejs/tools', () => ({
       mockCalculateCachedStats(JSON.parse(JSON.stringify(annotation.data.cachedStats)));
     }
   },
-  drawing: { drawTextBox: jest.fn(), drawPath: jest.fn() },
+  drawing: { drawTextBox: jest.fn(), drawPath: (...args) => mockDrawPath(...args) },
   annotation: {
     state: { getAnnotations: () => mockAnnotations },
     visibility: { isAnnotationVisible: () => true },
@@ -47,7 +48,10 @@ describe('SRPointTool', () => {
       {} as never
     );
 
-  beforeEach(() => mockCalculateCachedStats.mockReset());
+  beforeEach(() => {
+    mockCalculateCachedStats.mockReset();
+    mockDrawPath.mockReset();
+  });
 
   it('calculates the statistics of a new point for the current target', () => {
     mockAnnotations = [{ annotationUID: 'a', data: { handles: { points: [[0, 0, 0]] } } }];
@@ -81,5 +85,39 @@ describe('SRPointTool', () => {
     render();
 
     expect(mockCalculateCachedStats).not.toHaveBeenCalled();
+  });
+
+  it('calculates again while the image of the target is not available', () => {
+    mockAnnotations = [
+      {
+        annotationUID: 'a',
+        data: { handles: { points: [[0, 0, 0]] }, cachedStats: { 'imageId:1': { value: null } } },
+      },
+    ];
+    render();
+
+    expect(mockCalculateCachedStats).toHaveBeenCalledWith({ 'imageId:1': { value: null } });
+  });
+
+  it('draws a dashed cross centred on the point', () => {
+    mockAnnotations = [{ annotationUID: 'a', data: { handles: { points: [[0, 0, 0]] } } }];
+    render();
+
+    expect(mockDrawPath).toHaveBeenCalledWith(
+      {},
+      'a',
+      'cross',
+      [
+        [
+          [5, -1],
+          [5, 11],
+        ],
+        [
+          [-1, 5],
+          [11, 5],
+        ],
+      ],
+      { color: 'red', lineWidth: 1, lineDash: '4,4' }
+    );
   });
 });

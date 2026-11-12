@@ -75,9 +75,12 @@ class SRPointTool extends ProbeTool {
        */
       const targetId = this.getTargetId(viewport, data);
       data.cachedStats ??= {};
-      if (!data.cachedStats[targetId]) {
-        /** The Probe calculation only fills the targets that already have an entry. */
-        data.cachedStats[targetId] = { Modality: null, index: null, value: null };
+      if (!data.cachedStats[targetId] || data.cachedStats[targetId].value === null) {
+        /**
+         * The Probe calculation only fills the targets that already have an entry, and leaves the
+         * value null until the image is available, so the calculation runs again until then.
+         */
+        data.cachedStats[targetId] ??= { Modality: null, index: null, value: null };
         this._calculateCachedStats(annotation, renderingEngine, enabledElement);
       } else if (annotation.invalidated) {
         this._calculateCachedStats(annotation, renderingEngine, enabledElement);
