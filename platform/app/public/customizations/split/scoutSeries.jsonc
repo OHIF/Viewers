@@ -28,7 +28,8 @@
 //    is left whole.
 //  - `matches` claims the localizer images of a CT series that has a scout.
 //  - `attributes` sets a fixed label, `isLocalizer: true` (so a hanging
-//    protocol that excludes localizers also excludes the scout), and builds
+//    protocol that excludes localizers also excludes the scout),
+//    `isReconstructable: false` (scouts never open as a volume), and builds
 //    the SeriesDescription overlay text with a template.
 //
 // Load it with `?customization=split/scoutSeries`.
@@ -51,6 +52,7 @@
             "attributes": {
               "label": { "template": "SCOUT" },
               "isLocalizer": true,
+              "isReconstructable": false,
               "SeriesDescription": { "template": "SCOUT {SeriesDescription}" }
             }
           }

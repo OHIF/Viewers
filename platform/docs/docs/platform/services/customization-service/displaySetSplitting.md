@@ -106,7 +106,7 @@ handlers:
 | CR, DX, MG | One display set for each instance, in `InstanceNumber` order. A four-view MG series gives four display sets. |
 | Video, ECG, whole slide | One display set for each object, with the handler of that kind of object. |
 | Multi-frame image | One display set for each `SOPInstanceUID`, in `InstanceNumber` order. A multi-frame instance that is not a clip, for example an Enhanced CT, opens as a volume. |
-| CT, MR, PT series with localizer images and other images | One display set for the localizer images (`isLocalizer: true`), and the other display sets for the other images. |
+| CT, MR, PT series with localizer images and other images | One display set for the localizer images (`isLocalizer: true`, and `isReconstructable: false`, so it never opens as a volume), and the other display sets for the other images. |
 | CT, MR, PT, NM series | One volume display set for each series, or the `mixedDimensionalityBValue` split of a diffusion series. |
 | SEG, RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation, chart | One display set for each series, with the handler of that kind of object. |
 | Presentation states and other objects | The unsupported display set. |
@@ -133,7 +133,7 @@ module has no effect until a site loads it, and a load turns it on.
 | `split/enableNewSplit` | Turns the split on. Every other module requires it. |
 | `split/singleImagesBySize` | Groups the single CR, DX and MG images of a series by image size, in place of one display set for each image. |
 | `split/decimation` | Splits a series of more than `decimationSize` (default 1000) single-frame images into `ceil(count / decimationSize)` display sets, by `sliceIndex` modulo the count. |
-| `split/scoutSeries` | For CT, replaces the default `localizer` rule: the localizer images become one display set labelled `SCOUT`, with `isLocalizer: true`. |
+| `split/scoutSeries` | For CT, replaces the default `localizer` rule: the localizer images become one display set labelled `SCOUT`, with `isLocalizer: true` and `isReconstructable: false`. |
 | `split/regularVolume` | A volume series with some irregular images: the regular slices become one volume display set. |
 | `split/usTimeClusters` | An ultrasound series of several sweeps: one display set for each sweep. |
 
@@ -158,7 +158,7 @@ The viewer loads a module only when the URL asks for it, for example
 
 | Module | Case |
 |---|---|
-| `split/optional/dwiByBValue` | One display set for each b-value of a diffusion MR series. |
+| `split/optional/dwiByBValue` | One display set for each b-value of a single-frame diffusion MR series. Localizer images and multi-frame instances keep their default rules. |
 | `split/optional/multiEchoByEchoTime` | One display set for each echo time of a single-frame MR series. |
 | `split/optional/singleImageSeriesStack` | One stack for each CR, DX or MG series. CR and DX only up to 9 images. |
 | `split/optional/volumePositionOrder` | The instances of `volume3d`, with the slices in position order. The file changes only the `sortBy` of `volume3d`, so the rule keeps its id. |
@@ -538,6 +538,7 @@ customizationService.setCustomizations(
             groupBy: ['SeriesInstanceUID'],
             attributes: {
               isLocalizer: true,
+              isReconstructable: false,
               SeriesDescription: { template: 'SCOUT {SeriesDescription}' },
             },
           },
