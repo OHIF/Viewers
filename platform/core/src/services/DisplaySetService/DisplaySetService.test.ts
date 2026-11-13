@@ -934,3 +934,102 @@ describe('DisplaySetService', () => {
     expect(isImageInstance(privateImage as never)).toBe(false);
   });
 });
+
+describe('DisplaySetService — sortDisplaySets', () => {
+  const bySeriesNumber = (a, b) => a.SeriesNumber - b.SeriesNumber;
+
+  it('reports no sort until one is applied', () => {
+    expect(new DisplaySetService().getDisplaySetSort()).toBeNull();
+  });
+
+  it('keeps the active display sets in the default order, and a picked sort changes only the thumbnail tray order', () => {
+    const service = new DisplaySetService();
+    const seriesNumbers = displaySets => displaySets.map(ds => ds.SeriesNumber);
+    for (const SeriesNumber of [3, 1, 2]) {
+      service.addDisplaySets({
+        displaySetInstanceUID: `sort-ds-${SeriesNumber}`,
+        StudyInstanceUID: 'sort-study',
+        SeriesInstanceUID: `sort-series-${SeriesNumber}`,
+        SeriesNumber,
+      } as never);
+    }
+
+    expect(seriesNumbers(service.getActiveDisplaySets())).toEqual([1, 2, 3]);
+    expect(service.getMostRecentDisplaySet().SeriesNumber).toBe(2);
+
+    service.sortDisplaySets(bySeriesNumber, 'descending');
+
+    expect(seriesNumbers(service.getActiveDisplaySets())).toEqual([1, 2, 3]);
+    expect(seriesNumbers(service.getDisplaySets({ order: 'thumbnailTray' }))).toEqual([3, 2, 1]);
+    expect(seriesNumbers(service.getDisplaySets())).toEqual([1, 2, 3]);
+    expect(service.getDisplaySetSort()).toEqual({
+      sortFn: bySeriesNumber,
+      direction: 'descending',
+    });
+    service.onModeExit();
+  });
+
+  it('forgets the sort when the mode exits, so the next study starts in the default order', () => {
+    const service = new DisplaySetService();
+    service.sortDisplaySets(bySeriesNumber, 'descending');
+
+    service.onModeExit();
+
+    expect(service.getDisplaySetSort()).toBeNull();
+  });
+
+  it('breaks ties under the picked sort with the default order, which does not reverse', () => {
+    const byDescription = (a, b) => a.SeriesDescription.localeCompare(b.SeriesDescription);
+    const service = new DisplaySetService({
+      servicesManager: {
+        services: { customizationService: { getCustomization: () => byDescription } },
+      },
+    } as never);
+    const sameSeries = () => 0;
+    // Two display sets of one split series: the picked sort ties on them.
+    const displaySets = [
+      { SeriesDescription: 'b', SeriesNumber: 1 },
+      { SeriesDescription: 'a', SeriesNumber: 1 },
+    ];
+    const order = () =>
+      [...displaySets]
+        .sort(service.getSortCriteria('thumbnailTray'))
+        .map(ds => ds.SeriesDescription);
+
+    expect(service.getSortCriteria('default')).toBe(byDescription);
+    for (const direction of ['ascending', 'descending'] as const) {
+      service.sortDisplaySets(sameSeries, direction);
+      expect(order()).toEqual(['a', 'b']);
+    }
+  });
+
+  it('keeps a study together in the thumbnail tray when a derived object carries another StudyTime or none', () => {
+    const byDescription = (a, b) => a.SeriesDescription.localeCompare(b.SeriesDescription);
+    const service = new DisplaySetService({
+      servicesManager: {
+        services: { customizationService: { getCustomization: () => byDescription } },
+      },
+    } as never);
+    const inStudy = (SeriesDescription, StudyTime) => ({
+      StudyInstanceUID: 'tray-study',
+      SeriesDescription,
+      instance: { StudyDate: '20080918', StudyTime },
+    });
+    const olderStudy = {
+      StudyInstanceUID: 'older-study',
+      SeriesDescription: 'z',
+      instance: { StudyDate: '20000101' },
+    };
+    const noDate = { StudyInstanceUID: 'tray-study', SeriesDescription: 'c' };
+    service.activeDisplaySets = [
+      olderStudy,
+      inStudy('b', '120000'),
+      noDate,
+      inStudy('a', '090000'),
+    ];
+
+    expect(
+      service.getDisplaySets({ order: 'thumbnailTray' }).map(ds => ds.SeriesDescription)
+    ).toEqual(['a', 'b', 'c', 'z']);
+  });
+});
