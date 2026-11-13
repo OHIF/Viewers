@@ -98,10 +98,14 @@ export interface IViewportPageObject {
   pane: Locator;
   /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
   getViewportType: () => Promise<string | undefined>;
+  /** The tool the primary mouse button uses in this viewport, e.g. 'Length'. */
+  getActiveToolName: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
   /** The text box of each annotation drawn in the viewport. */
   annotationTextBoxes: Locator;
+  /** Every shape drawn for annotations in the viewport: outlines, handles, lines and text boxes. */
+  annotationShapes: Locator;
   /** The two axes of each bidirectional measurement drawn in the viewport. */
   bidirectionalAxes: Locator;
   navigationArrows: {
@@ -505,6 +509,14 @@ export class ViewportPageObject {
           { viewportId, services: await this.page.evaluateHandle('window.services') }
         );
       },
+      getActiveToolName: async () => {
+        const viewportId = await this.getViewportId(viewport);
+        return this.page.evaluate(
+          ({ services, viewportId }) =>
+            (services as any).toolGroupService.getActiveToolForViewport(viewportId),
+          { viewportId, services: await this.page.evaluateHandle('window.services') }
+        );
+      },
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
@@ -512,6 +524,9 @@ export class ViewportPageObject {
         return this.getSvg(viewport).locator(`g[data-annotation-uid="${uid}"]`).locator('tspan');
       },
       annotationTextBoxes: this.getSvg(viewport).locator('g[data-annotation-uid] > text'),
+      annotationShapes: this.getSvg(viewport).locator(
+        ':is(circle, ellipse, rect, line, polyline, path, text):not(defs *)'
+      ),
       bidirectionalAxes: this.getSvg(viewport).locator(
         'line[data-id$="-line-1"], line[data-id$="-line-2"]'
       ),
