@@ -11,6 +11,10 @@ import DocCardList from '@theme/DocCardList';
 
 This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 
+- **[Display set storage](./display-set-store.md)** — display sets now live in
+  the `@cornerstonejs/metadata` typed metadata cache.
+  `DisplaySetService.getDisplaySetCache()` is deprecated and returns a
+  read-only snapshot.
 - **[React 19](./react-19.md)** — the monorepo moves to **React 19.2.7**.
   `@ohif/ui-next` now declares react/react-dom as `peerDependencies`, so
   consuming applications must supply React 19, and extensions and modes require
@@ -97,5 +101,11 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `volume.vtkOpenGLTexture` a getter that can return `undefined`, and removes
   `RenderingCapabilities.webgl2`; use `volume.modified()` in place of the per-frame
   texture updates. The developer configs select the `medium` GPU settings preset.
+
+- **[Display set split rules](./display-set-split-rules.md)** — the split rules of
+  `@cornerstonejs/metadata` are an opt-in customization, off by default. With the rules on, a
+  SOP class handler of another extension runs only when it declares `handlerNames` and
+  `extendDisplaySet`, and a rule names it. Otherwise its series shows as an unsupported display
+  set.
 
 <DocCardList />

@@ -100,6 +100,24 @@ function _getDisplaySetsFromSeries(
     throw new Error('No instances were provided');
   }
 
+  const displaySet = { displaySetInstanceUID: utils.guid(), instances };
+  _extendDisplaySet(displaySet, { servicesManager, extensionManager });
+  return [displaySet];
+}
+
+/**
+ * Adds the SR fields to `displaySet`, for the newest of its instances. Shared
+ * by the legacy builder and the split-rule path (the `structuredReport`
+ * handler).
+ */
+function _extendDisplaySet(
+  displaySet,
+  {
+    servicesManager,
+    extensionManager,
+  }: { servicesManager: AppTypes.ServicesManager; extensionManager: AppTypes.ExtensionManager }
+) {
+  const { instances } = displaySet;
   utils.sortStudyInstances(instances);
   // The last instance is the newest one, so is the one most interesting.
   // Eventually, the SR viewer should have the ability to choose which SR
@@ -143,9 +161,8 @@ function _getDisplaySetsFromSeries(
     messages.addMessage(DisplaySetMessage.CODES.MISSING_REPORT_CONTENT);
   }
 
-  const displaySet = {
+  Object.assign(displaySet, {
     Modality: 'SR',
-    displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
@@ -155,7 +172,6 @@ function _getDisplaySetsFromSeries(
     StudyInstanceUID,
     SOPClassHandlerId: is3DSR ? SOPClassHandlerId3D : SOPClassHandlerId,
     SOPClassUID,
-    instances,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
@@ -167,11 +183,9 @@ function _getDisplaySetsFromSeries(
     predecessorImageId,
     addInstances,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
-  };
+  });
 
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
-
-  return [displaySet];
 }
 
 /**
@@ -434,11 +448,15 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
       name: SOPClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
+      handlerNames: ['structuredReport'],
+      extendDisplaySet: _extendDisplaySet,
     },
     {
       name: SOPClassHandlerName3D,
       sopClassUids: [sopClassDictionary.Comprehensive3DSR],
       getDisplaySetsFromSeries,
+      handlerNames: ['structuredReport'],
+      extendDisplaySet: _extendDisplaySet,
     },
   ];
 }
