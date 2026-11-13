@@ -164,6 +164,19 @@ const screenShotPaths = {
     stackAfterColorChange: 'segAcrossViewportTypes-stackAfterColorChange.png',
     mprAfterColorChange: 'segAcrossViewportTypes-mprAfterColorChange.png',
   },
+  segLayoutRenderPersistence: {
+    oneUpWithContour: 'segLayoutRenderPersistence-oneUpWithContour.png',
+    twoByTwoFromOneUp: 'segLayoutRenderPersistence-twoByTwoFromOneUp.png',
+    leftPaneAfterColorChange: 'segLayoutRenderPersistence-leftPaneAfterColorChange.png',
+    t2PaneWithLabelmap: 'segLayoutRenderPersistence-t2PaneWithLabelmap.png',
+    adcPaneWithStroke: 'segLayoutRenderPersistence-adcPaneWithStroke.png',
+  },
+  segMPRDisplay: {
+    mprAfterHydration: 'segMPRDisplay-mprAfterHydration.png',
+    axialScrolled: 'segMPRDisplay-axialScrolled.png',
+    sagittalScrolled: 'segMPRDisplay-sagittalScrolled.png',
+    coronalScrolled: 'segMPRDisplay-coronalScrolled.png',
+  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',

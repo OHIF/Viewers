@@ -9,6 +9,7 @@ import {
   waitForViewportRenderCycle,
   expect,
 } from './utils';
+import { expectViewportActive } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';
@@ -98,7 +99,7 @@ test.describe('3D four up to 3x2 layout SEG hydration', () => {
     // Activate the 3rd viewport (index 2) then load the SEG into it
     await viewportPageObject.getNthLocator(2).click();
 
-    await expect(viewportPageObject.getNthLocator(2)).toHaveAttribute('data-is-active', 'true');
+    await expectViewportActive(viewportPageObject.getNthLocator(2));
 
     await leftPanelPageObject.loadSeriesByDescription('SEG');
 
