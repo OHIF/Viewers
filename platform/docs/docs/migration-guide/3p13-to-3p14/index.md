@@ -36,6 +36,11 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   it in `try/catch` should check for `undefined`; callers that require the
   provider should assert for themselves.
 
+- **[4D segmentation](./segmentation-4d.md)** — a labelmap of a 4D series can
+  apply to all time points or to each time point. `SEGMENTATION_DATA_MODIFIED`
+  has the time point in `dimensionGroupNumber`, and fires on each change of
+  time point.
+
 - **[Viewport element hooks](./use-viewport-refs.md)** — `useViewportRef` and
   `useViewportRefs` are replaced by `useViewportElement` for readers and
   `useViewportElementRegistration` for the viewport that owns the element, and

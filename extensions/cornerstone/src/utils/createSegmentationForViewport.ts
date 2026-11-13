@@ -1,4 +1,5 @@
-import { utilities as csUtils } from '@cornerstonejs/core';
+import { cache, utilities as csUtils } from '@cornerstonejs/core';
+import { promptTimePointScope, type TimePointScope } from './promptTimePointScope';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 import { ServicesManager } from '@ohif/core';
@@ -19,6 +20,8 @@ type CreateSegmentationForViewportOptions = {
   label?: string;
   segmentationId?: string;
   createInitialSegment?: boolean;
+  /** For a 4D labelmap; when not set, a dialog asks the user. */
+  timePointScope?: TimePointScope;
 };
 
 type CreateSegmentationForViewportParams = {
@@ -37,7 +40,13 @@ export async function createSegmentationForViewport(
   servicesManager: ServicesManager,
   { viewportId, options = {}, segmentationType }: CreateSegmentationForViewportParams
 ): Promise<string | undefined> {
-  const { viewportGridService, displaySetService, segmentationService } = servicesManager.services;
+  const {
+    viewportGridService,
+    displaySetService,
+    segmentationService,
+    uiDialogService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
   const { viewports } = viewportGridService.getState();
   const targetViewportId = viewportId;
 
@@ -61,11 +70,33 @@ export async function createSegmentationForViewport(
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+  // A 4D labelmap that applies to all time points is one 3D labelmap of the
+  // time point on display.
+  let timePointIndex: number | undefined;
+  let timePointScope: TimePointScope | undefined;
+  if (displaySet.isDynamicVolume && segmentationType === SegmentationRepresentations.Labelmap) {
+    timePointScope = options.timePointScope;
+    if (!timePointScope) {
+      timePointScope = await promptTimePointScope(uiDialogService);
+    }
+    if (!timePointScope) {
+      return undefined;
+    }
+    if (timePointScope === 'all') {
+      const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const volumeId = csViewport?.getVolumeId?.();
+      const groupNumber = volumeId && cache.getVolume(volumeId)?.dimensionGroupNumber;
+      timePointIndex = (groupNumber || 1) - 1;
+    }
+  }
+
   const segmentationCreationOptions = {
     label,
     segmentationId,
     labelIsGenerated: !options.label,
     segments: _createDefaultSegments(options.createInitialSegment),
+    timePointScope,
+    timePointIndex,
   };
 
   // This will create the segmentation and register it as a display set
